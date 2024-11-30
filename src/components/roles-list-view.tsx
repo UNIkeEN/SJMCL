@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { RoleMenuBtnGroup } from "@/components/role-menu";
 import { Role } from "@/models/account";
+import { useLauncherConfig } from '@/contexts/config';
 
 interface RolesListProps extends BoxProps {
   roles: Role[];
@@ -16,6 +17,8 @@ interface RolesListProps extends BoxProps {
 
 const RolesListView: React.FC<RolesListProps> = ({ roles, ...boxProps }) => {
   const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   const items = roles.map(role => ({
     title: role.name,
@@ -24,7 +27,7 @@ const RolesListView: React.FC<RolesListProps> = ({ roles, ...boxProps }) => {
       : `${t("Enums.roleTypes.3rdparty")} - ${role.authServer?.name} (${role.authAccount})`,
       prefixElement: 
         <HStack spacing={2.5}>
-          <Radio value={role.uuid}/>
+          <Radio value={role.uuid} colorScheme={primaryColor}/>
           <Image
             boxSize='32px'
             objectFit='cover'

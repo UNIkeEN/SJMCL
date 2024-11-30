@@ -15,6 +15,7 @@ import { LuMoreHorizontal } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import RoleMenu from "@/components/role-menu";
 import { Role } from "@/models/account";
+import { useLauncherConfig } from '@/contexts/config';
 
 interface RoleCardProps {
   role: Role;
@@ -27,16 +28,18 @@ interface RolesGridProps extends BoxProps {
 
 const RoleCard: React.FC<RoleCardProps> = ({ role, isSelected }) => {
   const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   return (
     <Card 
       className="content-card" 
       w="10.55rem" 
-      borderColor="blue.400"
+      borderColor={`${primaryColor}.400`}
       variant={isSelected ? "outline" : "elevated"}
     >
       <Box position="absolute" top={2} left={2}>
-        <Radio value={role.uuid} />
+        <Radio value={role.uuid} colorScheme={primaryColor}/>
       </Box>
       <Box position="absolute" top={0.5} right={1}>
         <RoleMenu role={role} />
