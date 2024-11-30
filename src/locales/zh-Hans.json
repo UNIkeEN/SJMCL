@@ -67,35 +67,44 @@
     },
     "DownloadSettingsPage": {
         "source": {
-            "title": "下载源选择",
-            "strategy": {
-            "title": "下载源",
-            "select": "选择下载源",
+            "title": "源",
+        "strategy": {
+            "title": "下载源选择策略",
             "auto": "自动选择",
             "official": "官方源优先",
-            "mirror": "镜像源优先",
-            "current":"当前下载源"
-            }
+            "mirror": "镜像源优先"
+        }
         },
         "download": {
-            "title": "下载设置",
-            "concurrent": {
-                "title": "自动选择并发数",
-                "auto": "自动选择",
-                "count": "并发数"
+            "title": "下载",
+        "concurrent": {
+            "auto": {
+                "title": "自动选择并发数"
             },
-            "speed": {
-                "title": "限制下载速度",
-                "enable": "启用限速",
-                "limit": "限速设置(KB/s)"
+            "count": {
+                "title": "并发数"
             }
         },
+        "speed": {
+            "enable": {
+                "title": "限制下载速度    "
+            },
+            "limit": {
+                "title": "限速设置"
+            }
+        }
+        },
         "cache": {
-            "title": "缓存设置",
+            "title": "缓存",
             "directory": {
                 "title": "下载缓存目录",
-                "select": "选择目录",
-                "open": "打开目录"
+                "select": {
+                    "label": "修改"
+                },
+                "open": {
+                    "label": "打开"
+                },
+                "description": "/mock/path/to/cache/"
             }
         }
     },

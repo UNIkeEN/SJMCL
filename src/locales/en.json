@@ -67,35 +67,46 @@
     },
     "DownloadSettingsPage": {
         "source": {
-            "title": "Download Source Selection",
-            "strategy": {
-                "title": "Download Source Strategy",
-                "select": "Select Download Source",
-                "auto": "Auto Select",
-                "official": "Official Source Priority",
-                "mirror": "Mirror Source Priority",
-                "current":"Current download source"
-            }
+            "title": "Download Source",
+        "strategy": {
+            "title": "Download Source Strategy",
+            "auto": "Auto",
+            "official": "Official",
+            "mirror": "Mirror"
+        }
         },
         "download": {
             "title": "Download Settings",
-            "concurrent": {
-                "title": "Auto Select Concurrency",
-                "auto": "Auto Select",
-                "count": "Concurrency Count"
+        "concurrent": {
+            "auto": {
+                "title": "Auto Concurrent",
+                "label": "Enable Auto Concurrent"
             },
-            "speed": {
-                "title": "Limit Download Speed",
-                "enable": "Enable Speed Limit",
-                "limit": "Speed Limit Settings (KB/s)"
+            "count": {
+                "title": "Concurrent Count"
             }
+        },
+        "speed": {
+            "enable": {
+                "title": "Speed Limit",
+                "label": "Enable Speed Limit"
+            },
+            "limit": {
+                "title": "Speed Limit"
+            }
+        }
         },
         "cache": {
             "title": "Cache Settings",
             "directory": {
-                "title": "Download Cache Directory",
-                "select": "Select Directory",
-                "open": "Open Directory"
+                "title": "Cache Directory",
+                "select": {
+                    "label": "Select Directory"
+                },
+                "open": {
+                    "label": "Open Directory"
+                },
+                "description": "/mock/path/to/cache/"
             }
         }
     },
