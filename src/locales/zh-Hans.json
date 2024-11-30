@@ -65,6 +65,40 @@
             }
         }
     },
+    "DownloadSettingsPage": {
+        "source": {
+            "title": "下载源选择",
+            "strategy": {
+            "title": "下载源",
+            "select": "选择下载源",
+            "auto": "自动选择",
+            "official": "官方源优先",
+            "mirror": "镜像源优先",
+            "current":"当前下载源"
+            }
+        },
+        "download": {
+            "title": "下载设置",
+            "concurrent": {
+                "title": "自动选择并发数",
+                "auto": "自动选择",
+                "count": "并发数"
+            },
+            "speed": {
+                "title": "限制下载速度",
+                "enable": "启用限速",
+                "limit": "限速设置(KB/s)"
+            }
+        },
+        "cache": {
+            "title": "缓存设置",
+            "directory": {
+                "title": "下载缓存目录",
+                "select": "选择目录",
+                "open": "打开目录"
+            }
+        }
+    },
     "Enums": {
         "chakraColors": {
             "gray": "灰色",

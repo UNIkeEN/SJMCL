@@ -65,6 +65,40 @@
             }
         }
     },
+    "DownloadSettingsPage": {
+        "source": {
+            "title": "Download Source Selection",
+            "strategy": {
+                "title": "Download Source Strategy",
+                "select": "Select Download Source",
+                "auto": "Auto Select",
+                "official": "Official Source Priority",
+                "mirror": "Mirror Source Priority",
+                "current":"Current download source"
+            }
+        },
+        "download": {
+            "title": "Download Settings",
+            "concurrent": {
+                "title": "Auto Select Concurrency",
+                "auto": "Auto Select",
+                "count": "Concurrency Count"
+            },
+            "speed": {
+                "title": "Limit Download Speed",
+                "enable": "Enable Speed Limit",
+                "limit": "Speed Limit Settings (KB/s)"
+            }
+        },
+        "cache": {
+            "title": "Cache Settings",
+            "directory": {
+                "title": "Download Cache Directory",
+                "select": "Select Directory",
+                "open": "Open Directory"
+            }
+        }
+    },
     "Enums": {
         "chakraColors": {
             "gray": "Gray",
