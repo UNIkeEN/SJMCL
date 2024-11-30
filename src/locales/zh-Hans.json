@@ -65,49 +65,6 @@
             }
         }
     },
-    "DownloadSettingsPage": {
-        "source": {
-            "title": "源",
-        "strategy": {
-            "title": "下载源选择策略",
-            "auto": "自动选择",
-            "official": "官方源优先",
-            "mirror": "镜像源优先"
-        }
-        },
-        "download": {
-            "title": "下载",
-        "concurrent": {
-            "auto": {
-                "title": "自动选择并发数"
-            },
-            "count": {
-                "title": "并发数"
-            }
-        },
-        "speed": {
-            "enable": {
-                "title": "限制下载速度    "
-            },
-            "limit": {
-                "title": "限速设置"
-            }
-        }
-        },
-        "cache": {
-            "title": "缓存",
-            "directory": {
-                "title": "下载缓存目录",
-                "select": {
-                    "label": "修改"
-                },
-                "open": {
-                    "label": "打开"
-                },
-                "description": "/mock/path/to/cache/"
-            }
-        }
-    },
     "Enums": {
         "chakraColors": {
             "gray": "灰色",
@@ -162,6 +119,43 @@
         "label": {
             "skin": "管理皮肤",
             "delete": "删除此角色"
+        }
+    },
+    "Page": {
+        "download": {
+            "settings": {
+                "source": {
+                    "title": "源",
+                    "strategy": "下载源选择策略",
+                    "auto": "自动选择",
+                    "official": "官方源优先",
+                    "mirror": "镜像源优先"
+                },
+                "download": {
+                    "title": "下载"
+                },
+                "autoconcurrent": {
+                    "title": "自动选择并发数"
+                },
+                "countconcurrent": {
+                    "title": "并发数"
+                },
+                "speedenable": {
+                    "title": "限制下载速度"
+                },
+                "speedlimit": {
+                    "title": "限速设置"
+                },
+                "cache": {
+                    "title": "缓存"
+                },
+                "cachedirectory": {
+                    "title": "下载缓存目录",
+                    "description": "/mock/path/to/cache/",
+                    "select": "修改",
+                    "open": "打开"
+                } 
+            }   
         }
     },
     "SettingsLayout": {

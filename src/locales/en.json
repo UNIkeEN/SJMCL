@@ -1,180 +1,172 @@
 {
-    "AboutSettingsPage": {
-        "about": {
-            "title": "About",
-            "settings": {
-                "version": {
-                    "title": "Version"
-                },
-                "contributors": {
-                    "title": "Contributors"
-                },
-                "reportIssue": {
-                    "title": "Report Issue"
-                },
-                "aboutSJMC": {
-                    "title": "About SJTU Minecraft Club (SJMC)"
-                }
-            }
+  "AboutSettingsPage": {
+    "about": {
+      "title": "About",
+      "settings": {
+        "version": {
+          "title": "Version"
         },
-        "ack": {
-            "title": "Acknowledgement",
-            "settings": {
-                "bmclapi": {
-                    "title": "BMCLAPI",
-                    "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
-                }
-            }
+        "contributors": {
+          "title": "Contributors"
         },
-        "legalInfo": {
-            "title": "Legal Notices",
-            "settings": {
-                "copyright": {
-                    "title": "Copyright",
-                    "description": "Copyright © 2024 SJMC."
-                },
-                "userAgreement": {
-                    "title": "User Agreement"
-                },
-                "openSourceLicense": {
-                    "title": "Open Source License"
-                }
-            }
-        }
-    },
-    "AccountsPage": {
-        "Button": {
-            "addRole": "Add Role",
-            "add3rdPartySource": "Add 3rd-party Auth"
+        "reportIssue": {
+          "title": "Report Issue"
         },
-        "roleTypeList": {
-            "all": "All Source"
+        "aboutSJMC": {
+          "title": "About SJTU Minecraft Club (SJMC)"
+        }
+      }
+    },
+    "ack": {
+      "title": "Acknowledgement",
+      "settings": {
+        "bmclapi": {
+          "title": "BMCLAPI",
+          "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "Legal Notices",
+      "settings": {
+        "copyright": {
+          "title": "Copyright",
+          "description": "Copyright © 2024 SJMC."
         },
-        "viewTypeList": {
-            "grid": "Grid View",
-            "list": "List View"
-        }
-    },
-    "AppearanceSettingsPage": {
-        "theme": {
-            "title": "Theme",
-            "settings": {
-                "primaryColor": {
-                    "title": "Launcher Primary Color"
-                }
-            }
-        }
-    },
-    "DownloadSettingsPage": {
-        "source": {
-            "title": "Download Source",
-        "strategy": {
-            "title": "Download Source Strategy",
-            "auto": "Auto",
-            "official": "Official",
-            "mirror": "Mirror"
-        }
+        "userAgreement": {
+          "title": "User Agreement"
         },
-        "download": {
-            "title": "Download Settings",
-        "concurrent": {
-            "auto": {
-                "title": "Auto Concurrent",
-                "label": "Enable Auto Concurrent"
-            },
-            "count": {
-                "title": "Concurrent Count"
-            }
-        },
-        "speed": {
-            "enable": {
-                "title": "Speed Limit",
-                "label": "Enable Speed Limit"
-            },
-            "limit": {
-                "title": "Speed Limit"
-            }
+        "openSourceLicense": {
+          "title": "Open Source License"
         }
-        },
-        "cache": {
-            "title": "Cache Settings",
-            "directory": {
-                "title": "Cache Directory",
-                "select": {
-                    "label": "Select Directory"
-                },
-                "open": {
-                    "label": "Open Directory"
-                },
-                "description": "/mock/path/to/cache/"
-            }
-        }
-    },
-    "Enums": {
-        "chakraColors": {
-            "gray": "Gray",
-            "red": "Red",
-            "orange": "Orange",
-            "yellow": "Yellow",
-            "green": "Green",
-            "teal": "Teal",
-            "blue": "Blue",
-            "cyan": "Cyan",
-            "purple": "Purple",
-            "pink": "Pink"
-        },
-        "roleTypes": {
-            "offline": "Offline Mode",
-            "3rdparty": "The 3rd-party Authentication"
-        }
-    },
-    "GeneralSettingsPage": {
-        "general": {
-            "title": "General Settings",
-            "settings": {
-                "language": {
-                    "title": "Language"
-                }
-            }
-        }
-    },
-    "HeadNavBar": {
-        "navList": {
-            "launch": "Launch",
-            "games": "Games",
-            "accounts": "Accounts",
-            "settings": "Settings"
-        }
-    },
-    "LaunchPage": {
-        "Button": {
-            "launch": "Launch Game"
-        },
-        "SwitchButton": {
-            "tooltip": {
-                "switchRole": "Switch Role",
-                "switchGame": "Switch Game"
-            }
-        }
-    },
-    "NotFoundPage": {
-        "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
-    },
-    "RoleMenu": {
-        "label": {
-            "skin": "Manage Skin",
-            "delete": "Delete"
-        }
-    },
-    "SettingsLayout": {
-        "settingsDomainList": {
-            "global-game": "Game Settings",
-            "general": "General",
-            "appearance": "Appearance",
-            "download": "Download",
-            "help": "Docs and Help",
-            "about": "About",
-            "dev-test": "Dev - Test Page"
-        }
+      }
     }
+  },
+  "AccountsPage": {
+    "Button": {
+      "addRole": "Add Role",
+      "add3rdPartySource": "Add 3rd-party Auth"
+    },
+    "roleTypeList": {
+      "all": "All Source"
+    },
+    "viewTypeList": {
+      "grid": "Grid View",
+      "list": "List View"
+    }
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "Theme",
+      "settings": {
+        "primaryColor": {
+          "title": "Launcher Primary Color"
+        }
+      }
+    }
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "Gray",
+      "red": "Red",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "green": "Green",
+      "teal": "Teal",
+      "blue": "Blue",
+      "cyan": "Cyan",
+      "purple": "Purple",
+      "pink": "Pink"
+    },
+    "roleTypes": {
+      "offline": "Offline Mode",
+      "3rdparty": "The 3rd-party Authentication"
+    }
+  },
+  "GeneralSettingsPage": {
+    "general": {
+      "title": "General Settings",
+      "settings": {
+        "language": {
+          "title": "Language"
+        }
+      }
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "Launch",
+      "games": "Games",
+      "accounts": "Accounts",
+      "settings": "Settings"
+    }
+  },
+  "LaunchPage": {
+    "Button": {
+      "launch": "Launch Game"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchRole": "Switch Role",
+        "switchGame": "Switch Game"
+      }
+    }
+  },
+  "NotFoundPage": {
+    "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
+  },
+  "RoleMenu": {
+    "label": {
+      "skin": "Manage Skin",
+      "delete": "Delete"
+    }
+  },
+    "Page": {
+      "download": {
+        "settings": {
+          "source": {
+            "title": "Source",
+            "strategy": "Download Source Strategy",
+            "auto": "Auto Select",
+            "official": "Official Source Priority",
+            "mirror": "Mirror Source Priority"
+          },
+          "download": {
+            "title": "Download"
+          },
+          "autoconcurrent": {
+            "title": "Auto Select Concurrent Count"
+          },
+          "countconcurrent": {
+            "title": "Concurrent Count"
+          },
+          "speedenable": {
+            "title": "Limit Download Speed"
+          },
+          "speedlimit": {
+            "title": "Speed Limit Settings"
+          },
+          "cache": {
+            "title": "Cache"
+          },
+          "cachedirectory": {
+            "title": "Download Cache Directory",
+            "description": "/mock/path/to/cache/",
+            "select": "Change",
+            "open": "Open"
+          }
+        }
+      }
+    },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "Game Settings",
+      "general": "General",
+      "appearance": "Appearance",
+      "download": "Download",
+      "help": "Docs and Help",
+      "about": "About",
+      "dev-test": "Dev - Test Page"
+    }
+  }
 }
