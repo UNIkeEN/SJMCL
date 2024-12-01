@@ -121,45 +121,6 @@
             }
         }
     },
-    "HelpSettingsPage": {
-        "help": {
-            "title": "",
-            "settings": {
-                "LauncherGuide": {
-                    "title": "启动器使用指南"
-                }
-            }
-        },
-        "archive": {
-            "title": "Minecraft",
-            "settings": {
-                "MinecraftWiki": {
-                    "title": "中文Minecraft Wiki",
-                    "description": "最详细的 Minecraft 百科全书"
-                },
-                "MinecraftMod": {
-                    "title": "MCMOD",
-                    "description": "最大的 Minecraft Mod 中文百科"
-                },
-                "curseforge": {
-                    "title": "CourseForge",
-                    "description": "探索世界上最大的 Minecraft Mod 存储库"
-                }
-            }
-        },
-        "community": {
-            "title": "高校 Minecraft 社区",
-            "settings": {
-                "mua": {
-                    "title": "Minecraft 高校联盟",
-                    "description": "和全国的高校玩家一起游玩"
-                },
-                "SJMC": {
-                    "title": "上海交通大学 Minecraft 社"
-                }
-            }
-        }
-    },
     "Enums": {
         "chakraColors": {
             "gray": "灰色",
@@ -194,6 +155,46 @@
             "games": "游戏",
             "accounts": "账户",
             "settings": "设置"
+        }
+    },
+    "HelpSettingsPage": {
+        "community": {
+            "title": "高校玩家社区",
+            "settings": {
+                "MUA": {
+                    "title": "Minecraft 高校联盟 (MUA)",
+                    "description": "和全国的高校玩家一起游玩"
+                },
+                "SJMC": {
+                    "title": "上海交通大学 Minecraft 社 (SJMC)"
+                }
+            }
+        },
+        "minecraft": {
+            "title": "Minecraft",
+            "settings": {
+                "mcWiki": {
+                    "title": "中文 Minecraft Wiki",
+                    "description": "最详细的 Minecraft 百科全书",
+                    "url": "https://zh.minecraft.wiki/"
+                },
+                "mcMod": {
+                    "title": "MCMod",
+                    "description": "Minecraft 模组中文百科"
+                },
+                "curseforge": {
+                    "title": "CurseForge",
+                    "description": "探索世界上最大的 Minecraft Mod 存储库"
+                }
+            }
+        },
+        "top": {
+            "title": "",
+            "settings": {
+                "LauncherDocs": {
+                    "title": "启动器使用指南"
+                }
+            }
         }
     },
     "LaunchPage": {
