@@ -121,21 +121,23 @@
             "delete": "Delete"
         }
     },
-    "Page": {
-        "download": {
+    "DownloadSettingPage": {
+        "source": {
+            "title": "Source",
             "settings": {
-                "source": {
-                    "title": "Source",
-                    "strategy": "Download Source Strategy",
+                "strategy": {
+                    "title": "Download Select Strategy",
                     "auto": "Auto Select",
-                    "official": "Official Source Priority",
-                    "mirror": "Mirror Source Priority"
-                },
-                "download": {
-                    "title": "Download"
-                },
+                    "official": "Official First",
+                    "mirror": "Mirror First"
+                }
+            }
+        },
+        "download": {
+            "title": "Download",
+            "settings": {
                 "autoconcurrent": {
-                    "title": "Auto Select Concurrent Count"
+                    "title": "Auto Concurrent"
                 },
                 "countconcurrent": {
                     "title": "Concurrent Count"
@@ -144,20 +146,23 @@
                     "title": "Limit Download Speed"
                 },
                 "speedlimit": {
-                    "title": "Speed Limit Settings"
-                },
-                "cache": {
-                    "title": "Cache"
-                },
-                "cachedirectory": {
-                    "title": "Download Cache Directory",
+                    "title": "Speed Limit Setting",
+                    "kbps": "KB/s"
+                }
+            }
+        },
+        "cache": {
+            "title": "Cache",
+            "settings": {
+                "directory": {
+                    "title": "Cache Directory",
                     "description": "/mock/path/to/cache/",
-                    "select": "Change",
-                    "open": "Open"
+                    "select": "Select ",
+                    "open": "Open "
                 }
             }
         }
-    },
+    },  
     "SettingsLayout": {
         "settingsDomainList": {
             "global-game": "Game Settings",

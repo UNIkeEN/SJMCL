@@ -21,62 +21,17 @@ import {
   Text
 } from '@chakra-ui/react';
 import { OptionItemGroupProps, OptionItemGroup } from "@/components/common/option-item";
-import { useState, useEffect } from 'react';
 import { FiChevronDown } from "react-icons/fi";
 
 const DownloadSettingsPage = () => {
   const { t } = useTranslation();
 
-  const [autoConcurrent, setAutoConcurrent] = useState(true);
-  const [concurrentCount, setConcurrentCount] = useState(8); 
-  const [downloadSource, setDownloadSource] = useState("auto");
-  const [speedLimitEnabled, setSpeedLimitEnabled] = useState(false); 
-  const [speedLimit, setSpeedLimit] = useState(50); 
-
-  useEffect(() => {
-    const savedDownloadSource = localStorage.getItem('downloadSource');
-    if (savedDownloadSource) {
-      setDownloadSource(savedDownloadSource); 
-    }
-  }, []);
-
-  const handleConcurrentChange = (value: number) => {
-    if (!autoConcurrent) {
-      setConcurrentCount(value);
-    }
-  };
-
-  const handleSpeedLimitChange = (value: number) => {
-    setSpeedLimit(value < 1 ? 1 : value); 
-  };
-
-  const handleAutoConcurrentChange = (checked: boolean) => {
-    setAutoConcurrent(checked);
-    if (checked) {
-      setConcurrentCount(8); 
-    }
-  };
-
-  const handleDownloadSourceChange = (strategy: string) => {
-    setDownloadSource(strategy);
-    localStorage.setItem('downloadSource', strategy); 
-  };
-
-  const handleSpeedLimitToggle = (checked: boolean) => {
-    setSpeedLimitEnabled(checked);
-    if (checked) {
-      setSpeedLimit(50); 
-    } else {
-      setSpeedLimit(0); 
-    }
-  };
-
   const downloadSettingGroups: OptionItemGroupProps[] = [
     {
-      title: t("Page.download.settings.source.title"),
+      title: t("DownloadSettingPage.source.title"),
       items: [
         {
-          title: t("Page.download.settings.source.strategy"),
+          title: t("DownloadSettingPage.source.settings.strategy.title"),
           children: (
             <HStack spacing={4}>
               <Menu>
@@ -86,17 +41,17 @@ const DownloadSettingsPage = () => {
                   variant="outline"
                   textAlign="left"
                 >
-                  {t(`Page.download.settings.source.${downloadSource}`)} 
+                  {t("DownloadSettingPage.source.settings.strategy.auto")} 
                 </MenuButton>
                 <MenuList>
                   <MenuOptionGroup
-                    value={downloadSource}
-                    onChange={(value) => handleDownloadSourceChange(value as string)} 
+                    value="auto"
+                    onChange={() => {}}
                     type="radio" 
                   >
-                    <MenuItemOption value="auto" fontSize="xs">{t("Page.download.settings.source.auto")}</MenuItemOption>
-                    <MenuItemOption value="official" fontSize="xs">{t("Page.download.settings.source.official")}</MenuItemOption>
-                    <MenuItemOption value="mirror" fontSize="xs">{t("Page.download.settings.source.mirror")}</MenuItemOption>
+                    <MenuItemOption value="auto" fontSize="xs">{t("DownloadSettingPage.source.settings.strategy.auto")}</MenuItemOption>
+                    <MenuItemOption value="official" fontSize="xs">{t("DownloadSettingPage.source.settings.strategy.official")}</MenuItemOption>
+                    <MenuItemOption value="mirror" fontSize="xs">{t("DownloadSettingPage.source.settings.strategy.mirror")}</MenuItemOption>
                   </MenuOptionGroup>
                 </MenuList>
               </Menu>
@@ -106,20 +61,20 @@ const DownloadSettingsPage = () => {
       ]
     },
     {
-      title: t("Page.download.settings.download.title"),
+      title: t("DownloadSettingPage.download.title"),
       items: [
         {
-          title: t("Page.download.settings.autoconcurrent.title"),
+          title: t("DownloadSettingPage.download.settings.autoconcurrent.title"),
           children: (
             <HStack spacing={4}>
               <FormControl display="flex" alignItems="center">
-                <Switch id="auto-concurrent" isChecked={autoConcurrent} onChange={(e) => handleAutoConcurrentChange(e.target.checked)} />
+                <Switch id="auto-concurrent" isChecked={false} onChange={() => {}} />
               </FormControl>
             </HStack>
           )
         },
         {
-          title: t("Page.download.settings.countconcurrent.title"),
+          title: t("DownloadSettingPage.download.settings.countconcurrent.title"),
           children: (
             <HStack spacing={4}>
               <Slider 
@@ -128,9 +83,9 @@ const DownloadSettingsPage = () => {
                 max={128} 
                 step={1} 
                 width="150px"
-                value={autoConcurrent ? 8 : concurrentCount} 
-                onChange={handleConcurrentChange}
-                isDisabled={autoConcurrent}
+                value={8} 
+                onChange={() => {}}
+                isDisabled={false}
               >
                 <SliderTrack>
                   <SliderFilledTrack />
@@ -141,9 +96,9 @@ const DownloadSettingsPage = () => {
                 min={1} 
                 max={128} 
                 defaultValue={8} 
-                value={autoConcurrent ? 8 : concurrentCount} 
-                onChange={(value) => handleConcurrentChange(Number(value))}
-                isDisabled={autoConcurrent}
+                value={8} 
+                onChange={() => {}}
+                isDisabled={false}
                 width="80px"
               >
                 <NumberInputField />
@@ -156,26 +111,26 @@ const DownloadSettingsPage = () => {
           )
         },
         {
-          title: t("Page.download.settings.speedenable.title"),
+          title: t("DownloadSettingPage.download.settings.speedenable.title"),
           children: (
             <HStack spacing={4}>
               <FormControl display="flex" alignItems="center">
-                <Switch id="speed-limit" isChecked={speedLimitEnabled} onChange={(e) => handleSpeedLimitToggle(e.target.checked)} />
+                <Switch id="speed-limit" isChecked={false} onChange={() => {}} />
               </FormControl>
             </HStack>
           )
         },
         {
-          title: t("Page.download.settings.speedlimit.title"),
+          title: t("DownloadSettingPage.download.settings.speedlimit.title"),
           children: (
             <HStack spacing={4} width="120px">
               <FormControl display="flex" alignItems="center">
                 <NumberInput 
                   min={1} 
                   max={1000} 
-                  value={speedLimit} 
-                  onChange={(value) => handleSpeedLimitChange(Number(value))}
-                  isDisabled={speedLimitEnabled}
+                  value={50} 
+                  onChange={() => {}}
+                  isDisabled={false}
                 >
                   <NumberInputField />
                 </NumberInput>
@@ -187,18 +142,18 @@ const DownloadSettingsPage = () => {
       ]
     },
     {
-      title: t("Page.download.settings.cache.title"),
+      title: t("DownloadSettingPage.cache.title"),
       items: [
         {
-          title: t("Page.download.settings.cachedirectory.title"),
-          description: t("Page.download.settings.cachedirectory.description"),
+          title: t("DownloadSettingPage.cache.settings.directory.title"),
+          description: t("DownloadSettingPage.cache.settings.directory.description"),
           children: (
             <HStack spacing={2}>
               <Button colorScheme="gray" fontSize="xs" w="auto" variant="outline" textAlign="left">
-                {t("Page.download.settings.cachedirectory.select")}
+                {t("DownloadSettingPage.cache.settings.directory.select")}
               </Button>
               <Button colorScheme="gray" fontSize="xs" w="auto" variant="outline" textAlign="left">
-                {t("Page.download.settings.cachedirectory.open")}
+                {t("DownloadSettingPage.cache.settings.directory.open")}
               </Button>
             </HStack>
           ),
