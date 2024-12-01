@@ -25,6 +25,7 @@ import { FiChevronDown } from "react-icons/fi";
 
 const DownloadSettingsPage = () => {
   const { t } = useTranslation();
+  const directoryName = "/mock/path/to/cache/";
 
   const downloadSettingGroups: OptionItemGroupProps[] = [
     {
@@ -37,7 +38,7 @@ const DownloadSettingsPage = () => {
               <Menu>
                 <MenuButton 
                   as={Button} size="xs" w="auto"
-                  rightIcon={<FiChevronDown/>} 
+                  rightIcon={<FiChevronDown />} 
                   variant="outline"
                   textAlign="left"
                 >
@@ -49,9 +50,15 @@ const DownloadSettingsPage = () => {
                     onChange={() => {}}
                     type="radio" 
                   >
-                    <MenuItemOption value="auto" fontSize="xs">{t("DownloadSettingPage.source.settings.strategy.auto")}</MenuItemOption>
-                    <MenuItemOption value="official" fontSize="xs">{t("DownloadSettingPage.source.settings.strategy.official")}</MenuItemOption>
-                    <MenuItemOption value="mirror" fontSize="xs">{t("DownloadSettingPage.source.settings.strategy.mirror")}</MenuItemOption>
+                    <MenuItemOption value="auto" fontSize="xs">
+                      {t("DownloadSettingPage.source.settings.strategy.auto")}
+                    </MenuItemOption>
+                    <MenuItemOption value="official" fontSize="xs">
+                      {t("DownloadSettingPage.source.settings.strategy.official")}
+                    </MenuItemOption>
+                    <MenuItemOption value="mirror" fontSize="xs">
+                      {t("DownloadSettingPage.source.settings.strategy.mirror")}
+                    </MenuItemOption>
                   </MenuOptionGroup>
                 </MenuList>
               </Menu>
@@ -134,7 +141,7 @@ const DownloadSettingsPage = () => {
                 >
                   <NumberInputField />
                 </NumberInput>
-                <Text ml={2} fontSize="sm">{t("KB/s")}</Text>
+                <Text ml={2} fontSize="sm">{"KB/s"}</Text>
               </FormControl>
             </HStack>
           )
@@ -146,9 +153,9 @@ const DownloadSettingsPage = () => {
       items: [
         {
           title: t("DownloadSettingPage.cache.settings.directory.title"),
-          description: t("DownloadSettingPage.cache.settings.directory.description"),
+          description: directoryName,
           children: (
-            <HStack spacing={2}>
+            <HStack>
               <Button colorScheme="gray" fontSize="xs" w="auto" variant="outline" textAlign="left">
                 {t("DownloadSettingPage.cache.settings.directory.select")}
               </Button>

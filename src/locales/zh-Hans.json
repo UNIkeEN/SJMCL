@@ -65,6 +65,46 @@
             }
         }
     },
+    "DownloadSettingPage": {
+        "source": {
+            "title": "源",
+            "settings": {
+                "strategy": {
+                "title": "下载源选择策略",
+                "auto": "自动选择",
+                "official": "官方源优先",
+                "mirror": "镜像源优先"
+                }
+            }
+        },
+        "download": {
+            "title": "下载",
+            "settings": {
+                "autoconcurrent": {
+                    "title": "自动选择并发数"
+            },
+                "countconcurrent": {
+                    "title": "并发数"
+                },
+                "speedenable": {
+                    "title": "限制下载速度"
+                },
+                "speedlimit": {
+                    "title": "限速设置"
+                }
+            }
+        },
+        "cache": {
+            "title": "缓存",
+            "settings": {
+                "directory": {
+                    "title": "下载缓存目录",
+                    "select": "修改",
+                    "open": "打开"
+                }
+            }
+        }
+    },
     "Enums": {
         "chakraColors": {
             "gray": "灰色",
@@ -121,48 +161,7 @@
             "delete": "删除此角色"
         }
     },
-    "DownloadSettingPage": {
-        "source": {
-            "title": "源",
-            "settings": {
-                "strategy": {
-                "title": "下载源选择策略",
-                "auto": "自动选择",
-                "official": "官方源优先",
-                "mirror": "镜像源优先"
-                }
-            }
-        },
-        "download": {
-            "title": "下载",
-            "settings": {
-                "autoconcurrent": {
-                    "title": "自动选择并发数"
-            },
-                "countconcurrent": {
-                    "title": "并发数"
-                },
-                "speedenable": {
-                    "title": "限制下载速度"
-                },
-                "speedlimit": {
-                    "title": "限速设置",
-                    "kbps": "KB/s"
-                }
-            }
-        },
-        "cache": {
-            "title": "缓存",
-            "settings": {
-                "directory": {
-                    "title": "下载缓存目录",
-                    "description": "/moch/path/to/cache/",
-                    "select": "修改",
-                    "open": "打开"
-                }
-            }
-        }
-    },
+    
     "SettingsLayout": {
         "settingsDomainList": {
             "global-game": "全局游戏设置",
