@@ -120,7 +120,46 @@
                 }
             }
         }
-    },  
+    },
+    "HelpSettingsPage": {
+        "help": {
+            "title": "",
+            "settings": {
+                "LauncherGuide": {
+                    "title": "Launcher User Guide"
+                }
+            }
+        },
+        "archive": {
+            "title": "Minecraft",
+            "settings": {
+                "MinecraftWiki": {
+                    "title": "Minecraft Wiki",
+                    "description": "The most detailed Minecraft encyclopedia"
+                },
+                "MinecraftMod": {
+                    "title": "MCMOD",
+                    "description": "The largest Minecraft Mod Chinese encyclopedia"
+                },
+                "curseforge": {
+                    "title": "CurseForge",
+                    "description": "Discover the world's largest Minecraft Mod repository"
+                }
+            }
+        },
+        "community": {
+            "title": "Minecraft University Community",
+            "settings": {
+                "mua": {
+                    "title": "Minecraft University Alliance",
+                    "description": "Play with college players across the country"
+                },
+                "SJMC": {
+                    "title": "SJTU Minecraft Club"
+                }
+            }
+        }
+    },
     "Enums": {
         "chakraColors": {
             "gray": "Gray",
