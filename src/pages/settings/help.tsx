@@ -3,36 +3,34 @@ import { OptionItemGroupProps, OptionItemGroup } from "@/components/common/optio
 import LinkIconButton from "@/components/common/link-icon-button";
 
 const HelpSettingsPage = () => {
-  const { t,i18n } = useTranslation();
+  const { t } = useTranslation();
   const helpSettingGroups: OptionItemGroupProps[] = [
     {
-      title: t("HelpSettingsPage.help.title"),
+      title: t("HelpSettingsPage.top.title"),
       items: [
         {
-          title: t("HelpSettingsPage.help.settings.LauncherGuide.title"),
-          children: <LinkIconButton url="https://mc.sjtu.cn/launcher-faq" aria-label="launcherguide" isExternal h={18}/>
+          title: t("HelpSettingsPage.top.settings.LauncherDocs.title"),
+          children: <LinkIconButton url="https://mc.sjtu.cn/launcher-faq" aria-label="launcherdoc" isExternal h={18}/>
         }
       ]
     },
     {
-      title: t("HelpSettingsPage.archive.title"),
+      title: t("HelpSettingsPage.minecraft.title"),
       items: [
         {
-          title: t("HelpSettingsPage.archive.settings.MinecraftWiki.title"),
-          description: t("HelpSettingsPage.archive.settings.MinecraftWiki.description"),
-          children: <LinkIconButton url={i18n.language === 'en'
-              ? 'https://minecraft.wiki/'
-              : 'https://zh.minecraft.wiki/'} aria-label="minecraftwiki" isExternal h={18}/>
+          title: t("HelpSettingsPage.minecraft.settings.mcWiki.title"),
+          description: t("HelpSettingsPage.minecraft.settings.mcWiki.description"),
+          children: <LinkIconButton url={t(`HelpSettingsPage.minecraft.settings.mcWiki.url`)} aria-label="mcWiki" isExternal/>
         },
         {
-          title: t("HelpSettingsPage.archive.settings.MinecraftMod.title"),
-          description: t("HelpSettingsPage.archive.settings.MinecraftMod.description"),
-          children: <LinkIconButton url="https://www.mcmod.cn/" aria-label="minecraftmod" isExternal h={18}/>
+          title: t("HelpSettingsPage.minecraft.settings.mcMod.title"),
+          description: t("HelpSettingsPage.minecraft.settings.mcMod.description"),
+          children: <LinkIconButton url="https://www.mcmod.cn/" aria-label="mcMod" isExternal/>
         },
         {
-          title: t("HelpSettingsPage.archive.settings.curseforge.title"),
-          description: t("HelpSettingsPage.archive.settings.curseforge.description"),
-          children: <LinkIconButton url="https://www.curseforge.com/minecraft" aria-label="curseforge" isExternal h={18}/>
+          title: t("HelpSettingsPage.minecraft.settings.curseforge.title"),
+          description: t("HelpSettingsPage.minecraft.settings.curseforge.description"),
+          children: <LinkIconButton url="https://www.curseforge.com/minecraft" aria-label="curseforge" isExternal/>
         },
       ]
     },
@@ -40,9 +38,9 @@ const HelpSettingsPage = () => {
       title: t("HelpSettingsPage.community.title"),
       items: [
         {
-          title: t("HelpSettingsPage.community.settings.mua.title"),
-          description: t("HelpSettingsPage.community.settings.mua.description"),
-          children: <LinkIconButton url="https://www.mualliance.cn/" aria-label="mua" isExternal h={18}/>
+          title: t("HelpSettingsPage.community.settings.MUA.title"),
+          description: t("HelpSettingsPage.community.settings.MUA.description"),
+          children: <LinkIconButton url="https://www.mualliance.cn/" aria-label="MUA" isExternal/>
         },
         {
           title: t("HelpSettingsPage.community.settings.SJMC.title"),
