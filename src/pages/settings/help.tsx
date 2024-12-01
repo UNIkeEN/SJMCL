@@ -20,7 +20,7 @@ const HelpSettingsPage = () => {
         {
           title: t("HelpSettingsPage.minecraft.settings.mcWiki.title"),
           description: t("HelpSettingsPage.minecraft.settings.mcWiki.description"),
-          children: <LinkIconButton url={t(`HelpSettingsPage.minecraft.settings.mcWiki.url`)} aria-label="mcWiki" isExternal/>
+          children: <LinkIconButton url={t("HelpSettingsPage.minecraft.settings.mcWiki.url")} aria-label="mcWiki" isExternal/>
         },
         {
           title: t("HelpSettingsPage.minecraft.settings.mcMod.title"),
