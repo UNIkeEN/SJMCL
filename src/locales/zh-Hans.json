@@ -122,6 +122,9 @@
             }
         }
     },
+    "Empty": {
+        "nodata": "暂无数据"
+    },
     "Enums": {
         "chakraColors": {
             "gray": "灰色",
