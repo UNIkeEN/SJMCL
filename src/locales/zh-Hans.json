@@ -83,11 +83,24 @@
     }
   },
   "CreateRoleModal":{
-    "addAuthSource": "添加认证源",
-    "enterRolename": "请输入用户名",
-    "enterPassword": "请输入密码",
-    "noAuthSource": "没有可用的第三方认证源，请先添加第三方认证源",
-    "selectAuthSource": "选择认证源"
+    "modal":{
+      "cancel": "取消",
+      "confirm": "确认",
+      "header": "创建角色",
+      "create": "创建"
+    },
+    "auth":{
+      "noSource": "未找到第三方认证源",
+      "addSource": "添加第三方认证源"
+    },
+    "rolename":{
+      "placeholder": "角色名",
+      "required": "角色名不能为空"
+    },
+    "password":{
+      "placeholder": "密码",
+      "required": "密码不能为空"
+    }
   },
   "DownloadSettingPage": {
     "source": {

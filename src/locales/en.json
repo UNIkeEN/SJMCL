@@ -83,11 +83,24 @@
     }
   },
   "CreateRoleModal":{
-    "addAuthSource": "Add Auth Source",
-    "enterRolename": "Enter Rolename",
-    "enterPassword": "Enter Password",
-    "noAuthSource": "No available 3rd-party authentication source, please add one first",
-    "selectAuthSource": "Select Auth Source"
+    "modal":{
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "header": "Create Role",
+      "create": "Create"
+    },
+    "auth":{
+      "noSource": "No 3rd-party authentication source found",
+      "addSource": "Add 3rd-party authentication source"
+    },
+    "rolename":{
+      "placeholder": "Role Name",
+      "required": "Role Name is required"
+    },
+    "password":{
+      "placeholder": "Password",
+      "required": "Password is required"
+    }
   },
   "DownloadSettingPage": {
     "source": {
