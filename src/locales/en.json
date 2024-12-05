@@ -82,6 +82,13 @@
       }
     }
   },
+  "CreateRoleModal":{
+    "addAuthSource": "Add Auth Source",
+    "enterRolename": "Enter Rolename",
+    "enterPassword": "Enter Password",
+    "noAuthSource": "No available 3rd-party authentication source, please add one first",
+    "selectAuthSource": "Select Auth Source"
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "Source",

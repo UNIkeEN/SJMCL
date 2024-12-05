@@ -82,6 +82,13 @@
       }
     }
   },
+  "CreateRoleModal":{
+    "addAuthSource": "添加认证源",
+    "enterRolename": "请输入用户名",
+    "enterPassword": "请输入密码",
+    "noAuthSource": "没有可用的第三方认证源，请先添加第三方认证源",
+    "selectAuthSource": "选择认证源"
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "源",
