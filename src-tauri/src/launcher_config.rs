@@ -18,6 +18,39 @@ pub fn update_launcher_config(
   save_config(&state);
 }
 
+#[tauri::command]
+pub fn add_account(account: Account, state: State<'_, Mutex<LauncherConfig>>) {
+  let mut state = state.lock().unwrap();
+  (*state).accounts.push(account);
+  save_config(&state);
+}
+
+#[tauri::command]
+pub fn add_server(server: Server, state: State<'_, Mutex<LauncherConfig>>) {
+  let mut state = state.lock().unwrap();
+  (*state).servers.push(server);
+  save_config(&state);
+}
+
+#[tauri::command]
+pub fn edit_server(server: Server, state: State<'_, Mutex<LauncherConfig>>) {
+  let mut state = state.lock().unwrap();
+  for s in (*state).servers.iter_mut() {
+    if s.id == server.clone().id && s.mutable {
+      *s = server.clone();
+      break;
+    }
+  }
+  save_config(&state);
+}
+
+#[tauri::command]
+pub fn remove_server(server_id: String, state: State<'_, Mutex<LauncherConfig>>) {
+  let mut state = state.lock().unwrap();
+  (*state).servers.retain(|s| !s.mutable || s.id != server_id);
+  save_config(&state);
+}
+
 static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
   std::env::current_exe()
     .unwrap()
@@ -65,12 +98,33 @@ structstruck::strike! {
   }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct Server {
+  pub name: String,
+  pub id: String,
+  pub auth_url: String,
+  pub mutable: bool,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct Account {
+  pub name: String,
+  pub uuid: String,
+  pub avatar_url: String,
+  pub server_type: String,
+  pub auth_account: String,
+}
+
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct LauncherConfig {
     pub version: String,
     pub mocked: bool,
+    pub accounts: Vec<Account>,
+    pub servers: Vec<Server>,
     pub appearance: struct AppearanceConfig {
       pub theme: struct {
         pub primary_color: String,
@@ -135,6 +189,21 @@ impl Default for LauncherConfig {
     Self {
       version: "dev".to_string(),
       mocked: false,
+      accounts: vec![],
+      servers: vec![
+        Server {
+          id: "sjmc".to_string(),
+          name: "SJMC 用户中心".to_string(),
+          auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
+          mutable: false,
+        },
+        Server {
+          id: "mua".to_string(),
+          name: "MUA 用户中心".to_string(),
+          auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
+          mutable: false,
+        },
+      ],
       appearance: AppearanceConfig {
         theme: Theme {
           primary_color: "blue".to_string(),
