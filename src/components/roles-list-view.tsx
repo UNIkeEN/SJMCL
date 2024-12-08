@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { RoleMenuBtnGroup } from "@/components/role-menu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useData, useDataDispatch } from "@/contexts/data";
 import { Role } from "@/models/account";
 
 interface RolesListProps extends BoxProps {
@@ -12,6 +13,8 @@ interface RolesListProps extends BoxProps {
 const RolesListView: React.FC<RolesListProps> = ({ roles, ...boxProps }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const { selectedRole } = useData();
+  const { setSelectedRole } = useDataDispatch();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const items = roles.map((role) => ({
@@ -22,7 +25,11 @@ const RolesListView: React.FC<RolesListProps> = ({ roles, ...boxProps }) => {
         : `${t("Enums.roleTypes.3rdparty")} - ${role.authServer?.name} (${role.authAccount})`,
     prefixElement: (
       <HStack spacing={2.5}>
-        <Radio value={role.uuid} colorScheme={primaryColor} />
+        <Radio
+          value={role.uuid}
+          onClick={() => setSelectedRole(role)}
+          colorScheme={primaryColor}
+        />
         <Image
           boxSize="32px"
           objectFit="cover"
@@ -35,9 +42,7 @@ const RolesListView: React.FC<RolesListProps> = ({ roles, ...boxProps }) => {
   }));
 
   return (
-    <RadioGroup>
-      {" "}
-      {/* TBD: select id and logic from context */}
+    <RadioGroup value={selectedRole?.uuid}>
       <OptionItemGroup items={items} {...boxProps} />
     </RadioGroup>
   );

@@ -18,15 +18,16 @@ import { GameInstanceSummary } from "@/models/game-instance";
 interface GameCardProps {
   game: GameInstanceSummary;
   isSelected: boolean;
+  onSelect: () => void;
 }
 
 interface GamesGridProps extends BoxProps {
   games: GameInstanceSummary[];
-  selectedGame: string;
-  setSelectedGame: (gameId: string) => void;
+  selectedGame: GameInstanceSummary | undefined;
+  setSelectedGame: (game: GameInstanceSummary) => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ game, isSelected }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -39,7 +40,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected }) => {
       variant={isSelected ? "outline" : "elevated"}
     >
       <Box position="absolute" top={2} left={2}>
-        <Radio value={game.uuid} colorScheme={primaryColor} />
+        <Radio
+          value={game.uuid}
+          onClick={onSelect}
+          colorScheme={primaryColor}
+        />
       </Box>
       <Box position="absolute" top={0.5} right={1}>
         <GameMenu game={game} />
@@ -74,11 +79,15 @@ const GamesGridView: React.FC<GamesGridProps> = ({
   ...boxProps
 }) => {
   return (
-    <RadioGroup onChange={setSelectedGame} value={selectedGame}>
+    <RadioGroup value={selectedGame?.uuid}>
       <Wrap spacing={3.5} {...boxProps}>
         {games.map((game, index) => (
           <WrapItem key={game.id}>
-            <GameCard game={game} isSelected={selectedGame === game.uuid} />
+            <GameCard
+              game={game}
+              isSelected={selectedGame?.uuid === game.uuid}
+              onSelect={() => setSelectedGame(game)}
+            />
             {/* TBD: only mock */}
           </WrapItem>
         ))}

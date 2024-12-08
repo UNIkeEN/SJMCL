@@ -7,8 +7,8 @@ import { GameInstanceSummary } from "@/models/game-instance";
 
 interface GamesListProps extends BoxProps {
   games: GameInstanceSummary[];
-  selectedGame: string;
-  setSelectedGame: (game: string) => void;
+  selectedGame: GameInstanceSummary | undefined;
+  setSelectedGame: (game: GameInstanceSummary) => void;
 }
 
 const GamesListView: React.FC<GamesListProps> = ({
@@ -26,7 +26,11 @@ const GamesListView: React.FC<GamesListProps> = ({
     description: game.description,
     prefixElement: (
       <HStack spacing={2.5}>
-        <Radio value={game.uuid} colorScheme={primaryColor} />
+        <Radio
+          value={game.uuid}
+          onClick={() => setSelectedGame(game)}
+          colorScheme={primaryColor}
+        />
         <Image
           boxSize="32px"
           objectFit="cover"
@@ -39,7 +43,7 @@ const GamesListView: React.FC<GamesListProps> = ({
   }));
 
   return (
-    <RadioGroup onChange={setSelectedGame} value={selectedGame}>
+    <RadioGroup value={selectedGame?.uuid}>
       <OptionItemGroup items={items} {...boxProps} />
     </RadioGroup>
   );

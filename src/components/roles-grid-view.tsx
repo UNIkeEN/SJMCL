@@ -15,18 +15,20 @@ import { useTranslation } from "react-i18next";
 import { LuEllipsis } from "react-icons/lu";
 import RoleMenu from "@/components/role-menu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useData, useDataDispatch } from "@/contexts/data";
 import { Role } from "@/models/account";
 
 interface RoleCardProps {
   role: Role;
   isSelected: boolean;
+  onSelect: () => void;
 }
 
 interface RolesGridProps extends BoxProps {
   roles: Role[];
 }
 
-const RoleCard: React.FC<RoleCardProps> = ({ role, isSelected }) => {
+const RoleCard: React.FC<RoleCardProps> = ({ role, isSelected, onSelect }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -39,7 +41,11 @@ const RoleCard: React.FC<RoleCardProps> = ({ role, isSelected }) => {
       variant={isSelected ? "outline" : "elevated"}
     >
       <Box position="absolute" top={2} left={2}>
-        <Radio value={role.uuid} colorScheme={primaryColor} />
+        <Radio
+          value={role.uuid}
+          colorScheme={primaryColor}
+          onClick={onSelect}
+        />
       </Box>
       <Box position="absolute" top={0.5} right={1}>
         <RoleMenu role={role} />
@@ -70,14 +76,20 @@ const RoleCard: React.FC<RoleCardProps> = ({ role, isSelected }) => {
 };
 
 const RolesGridView: React.FC<RolesGridProps> = ({ roles, ...boxProps }) => {
+  const { selectedRole } = useData();
+  const { setSelectedRole } = useDataDispatch();
   return (
-    <RadioGroup>
-      {" "}
-      {/* TBD: select id and logic from context */}
+    <RadioGroup value={selectedRole?.uuid}>
       <Wrap spacing={3.5} {...boxProps}>
         {roles.map((role, index) => (
           <WrapItem key={role.id}>
-            <RoleCard role={role} isSelected={index === 0} />{" "}
+            <RoleCard
+              role={role}
+              isSelected={selectedRole?.id === role.id}
+              onSelect={() => {
+                setSelectedRole(role);
+              }}
+            />{" "}
             {/* TBD: only mock */}
           </WrapItem>
         ))}

@@ -15,6 +15,7 @@ import SegmentedControl from "@/components/common/segmented";
 import GamesGridView from "@/components/games-grid-view";
 import GamesListView from "@/components/games-list-view";
 import { useLauncherConfig } from "@/contexts/config";
+import { useData, useDataDispatch } from "@/contexts/data";
 import {
   GameInstanceSummary,
   mockGameInstanceSummaryList,
@@ -27,15 +28,14 @@ const AllGames = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [selectedView, setSelectedView] = useState<string>("list");
-  const [selectedGame, setSelectedGame] = useState<string>("");
-  const [gameInstanceList, setGameInstanceList] = useState<
-    GameInstanceSummary[]
-  >([]);
+  const { selectedGameInstance, gameInstanceSummaryList } = useData();
+  const { setSelectedGameInstance, setGameInstanceSummaryList } =
+    useDataDispatch();
 
-  useEffect(() => {
-    // TBD: only use mock data now
-    setGameInstanceList(mockGameInstanceSummaryList);
-  }, []);
+  // useEffect(() => {
+  //   // TBD: only use mock data now
+  //   setGameInstanceSummaryList(mockGameInstanceSummaryList);
+  // }, []);
 
   const viewTypeList = [
     {
@@ -84,7 +84,7 @@ const AllGames = () => {
             leftIcon={<LuPlay />}
             size="xs"
             colorScheme={primaryColor}
-            isDisabled={selectedGame === ""}
+            isDisabled={!selectedGameInstance}
             onClick={() => {}} // todo
           >
             {t("GamesPage.Button.launch")}
@@ -94,16 +94,16 @@ const AllGames = () => {
       <Box overflow="auto" flexGrow={1} mt={2.5}>
         {selectedView === "grid" && (
           <GamesGridView
-            games={gameInstanceList}
-            selectedGame={selectedGame}
-            setSelectedGame={setSelectedGame}
+            games={gameInstanceSummaryList}
+            selectedGame={selectedGameInstance}
+            setSelectedGame={setSelectedGameInstance}
           />
         )}
         {selectedView === "list" && (
           <GamesListView
-            games={gameInstanceList}
-            selectedGame={selectedGame}
-            setSelectedGame={setSelectedGame}
+            games={gameInstanceSummaryList}
+            selectedGame={selectedGameInstance}
+            setSelectedGame={setSelectedGameInstance}
           />
         )}
       </Box>

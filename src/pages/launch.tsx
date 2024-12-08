@@ -13,7 +13,8 @@ import {
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeftRight } from "react-icons/lu";
-import { mockRoleList } from "@/models/account";
+import { useLauncherConfig } from "@/contexts/config";
+import { useData } from "@/contexts/data";
 import styles from "./launch.module.css";
 
 interface SwitchButtonProps extends IconButtonProps {
@@ -38,8 +39,9 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({ tooltip, ...props }) => {
 const LaunchPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
-
-  const role = mockRoleList[0]; // only for mock
+  const { selectedRole, selectedGameInstance } = useData();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   return (
     <HStack position="absolute" bottom={7} right={7} spacing={4}>
@@ -51,34 +53,53 @@ const LaunchPage = () => {
           onClick={() => router.push("/accounts")}
         />
         <HStack spacing={2.5} h="100%" w="100%">
-          <Image
-            boxSize="32px"
-            objectFit="cover"
-            src={role.avatarUrl}
-            alt={role.name}
-          />
-          <VStack spacing={0} align="left" mt={-2}>
-            <Text fontSize="sm" className="no-select" fontWeight="bold" mt={2}>
-              {role.name}
-            </Text>
-            <Text fontSize="2xs" className="secondary-text no-select">
-              {t(
-                `Enums.roleTypes.${role.type === "3rdparty" ? "3rdpartyShort" : role.type}`
-              )}
-            </Text>
-            <Text fontSize="2xs" className="secondary-text no-select">
-              {role.type === "3rdparty" && role.authServer?.name}
-            </Text>
-          </VStack>
+          {selectedRole ? (
+            <>
+              <Image
+                boxSize="32px"
+                objectFit="cover"
+                src={selectedRole.avatarUrl}
+                alt={selectedRole.name}
+              />
+              <VStack spacing={0} align="left" mt={-2}>
+                <Text
+                  fontSize="sm"
+                  className="no-select"
+                  fontWeight="bold"
+                  mt={2}
+                >
+                  {selectedRole.name}
+                </Text>
+                <Text fontSize="2xs" className="secondary-text no-select">
+                  {t(
+                    `Enums.roleTypes.${selectedRole.type === "3rdparty" ? "3rdpartyShort" : selectedRole.type}`
+                  )}
+                </Text>
+                <Text fontSize="2xs" className="secondary-text no-select">
+                  {selectedRole.type === "3rdparty" &&
+                    selectedRole.authServer?.name}
+                </Text>
+              </VStack>
+            </>
+          ) : (
+            <Text fontSize="sm">尚未登录</Text>
+          )}
         </HStack>
       </Card>
       <Box position="relative">
-        <Button colorScheme="blackAlpha" className={styles["launch-button"]}>
+        <Button
+          colorScheme={selectedGameInstance ? primaryColor : "blackAlpha"}
+          className={styles["launch-button"]}
+        >
           <VStack spacing={1.5}>
             <Text fontSize="lg" fontWeight="bold">
               {t("LaunchPage.Button.launch")}
             </Text>
-            <Text fontSize="sm">尚未选择游戏实例</Text>{" "}
+            <Text fontSize="sm">
+              {selectedGameInstance
+                ? selectedGameInstance.name
+                : "尚未选择游戏实例"}
+            </Text>{" "}
             {/* TODO: use locales text after finish instance select logic */}
           </VStack>
         </Button>

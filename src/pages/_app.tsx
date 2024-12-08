@@ -7,6 +7,7 @@ import { initReactI18next } from "react-i18next";
 import chakraExtendTheme from "@/chakra-theme";
 import { Fade } from "@/components/common/transition";
 import { LauncherConfigContextProvider } from "@/contexts/config";
+import { DataContextProvider } from "@/contexts/data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { ToastContextProvider } from "@/contexts/toast";
 import GamesLayout from "@/layouts/games-layout";
@@ -60,13 +61,15 @@ export default function App({ Component, pageProps }: AppProps) {
       <ToastContextProvider>
         <RoutingHistoryContextProvider>
           <LauncherConfigContextProvider>
-            <MainLayout>
-              <Fade key={router.pathname.split("/")[1] || ""} in>
-                <SpecLayout>
-                  <Component {...pageProps} />
-                </SpecLayout>
-              </Fade>
-            </MainLayout>
+            <DataContextProvider>
+              <MainLayout>
+                <Fade key={router.pathname.split("/")[1] || ""} in>
+                  <SpecLayout>
+                    <Component {...pageProps} />
+                  </SpecLayout>
+                </Fade>
+              </MainLayout>
+            </DataContextProvider>
           </LauncherConfigContextProvider>
         </RoutingHistoryContextProvider>
       </ToastContextProvider>
