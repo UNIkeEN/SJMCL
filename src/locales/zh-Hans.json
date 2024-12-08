@@ -89,6 +89,40 @@
       }
     }
   },
+  "CreateRoleModal":{
+    "auth":{
+      "selectSource":"选择认证源"
+    },
+    "error":{
+      "general":"添加失败",
+      "rolename":{
+        "required":"角色名不能为空",
+        "pattern":"角色名只能包含字母、数字、下划线和中划线"
+      },
+      "authServer":{
+        "required":"请选择认证源"
+      },
+      "password":{
+        "required":"密码不能为空"
+      }
+      },
+      "modal":{
+        "header":"添加角色",
+        "cancel":"取消",
+        "confirm":"确认",
+        "success":"添加成功"
+    },
+    "rolename":{
+      "placeholder":"角色名"
+    },
+    "roleType":
+    {
+      "label":"请选择认证源"
+    },
+    "password":{
+      "placeholder":"密码"
+    }
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "源",

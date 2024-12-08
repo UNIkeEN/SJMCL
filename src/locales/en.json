@@ -89,6 +89,40 @@
       }
     }
   },
+  "CreateRoleModal":{
+    "auth":{
+      "selectSource":"Select Auth Source"
+    },
+    "error":{
+      "general":"Failed to add role",
+      "rolename":{
+        "required":"Role name is required",
+        "pattern":"Role name can only contain letters, numbers, underscores, and hyphens"
+      },
+      "authServer":{
+        "required":"Auth source is required"
+      },
+      "password":{
+        "required":"Password is required"
+      }
+      },
+      "modal":{
+        "header":"Add Role",
+        "cancel":"Cancel",
+        "confirm":"Confirm",
+        "success":"Role added successfully"
+    },
+    "rolename":{
+      "placeholder":"Role Name"
+    },
+    "roleType":
+    {
+      "label":"Select Auth Source"
+    },
+    "password":{
+      "placeholder":"Password"
+    }
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "Source",
