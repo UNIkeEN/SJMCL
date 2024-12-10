@@ -1,11 +1,11 @@
+mod launcher_config;
+mod utils;
+
 use std::sync::Mutex;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
 use tauri::Manager;
-use tauri_plugin_http::reqwest;
-
-mod launcher_config;
 
 pub async fn run() {
   tauri::Builder::default()
@@ -13,9 +13,9 @@ pub async fn run() {
     .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_shell::init())
     .invoke_handler(tauri::generate_handler![
-      launcher_config::get_launcher_config,
-      launcher_config::update_launcher_config,
-      launcher_config::get_memory_info,
+      launcher_config::commands::get_launcher_config,
+      launcher_config::commands::update_launcher_config,
+      launcher_config::commands::get_memory_info,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
@@ -30,15 +30,15 @@ pub async fn run() {
       let os = tauri_plugin_os::platform().to_string();
 
       // Set the launcher config
-      let mut launcher_config = launcher_config::read_or_default();
+      let mut launcher_config = launcher_config::helpers::read_or_default();
       launcher_config.version = version.clone();
-      launcher_config::save_config(&launcher_config);
+      launcher_config::helpers::save_config(&launcher_config);
 
       app.manage(Mutex::new(launcher_config));
 
       // send statistics
       tokio::spawn(async move {
-        let _ = send_statistics(version, os).await;
+        let _ = utils::send_statistics(version, os).await;
       });
 
       // Set up menu
@@ -57,16 +57,4 @@ pub async fn run() {
     })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
-}
-
-async fn send_statistics(version: String, os: String) -> Result<(), ()> {
-  let url = "https://mc.sjtu.cn/api-sjmcl/statistics";
-  let data = serde_json::json!({
-      "version": version,
-      "os": os,
-  });
-
-  let client = reqwest::Client::new();
-  if client.post(url).json(&data).send().await.is_ok() {}
-  Ok(())
 }

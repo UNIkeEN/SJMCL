@@ -1,62 +1,10 @@
 use serde::{Deserialize, Serialize};
-use std::sync::LazyLock;
-use std::{path::PathBuf, sync::Mutex};
-use systemstat::{saturating_sub_bytes, Platform};
-use tauri::State;
-
-#[tauri::command]
-pub fn get_launcher_config(state: State<'_, Mutex<LauncherConfig>>) -> LauncherConfig {
-  state.lock().unwrap().clone()
-}
-
-#[tauri::command]
-pub fn update_launcher_config(
-  launcher_config: LauncherConfig,
-  state: State<'_, Mutex<LauncherConfig>>,
-) {
-  let mut state = state.lock().unwrap();
-  *state = launcher_config;
-  save_config(&state);
-}
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct MemoryInfo {
   pub total: u64,
   pub used: u64,
-}
-
-#[tauri::command]
-pub fn get_memory_info() -> Result<MemoryInfo, String> {
-  let sys = systemstat::System::new();
-  match sys.memory() {
-    Ok(mem) => Ok(MemoryInfo {
-      total: mem.total.as_u64(),
-      used: saturating_sub_bytes(mem.total, mem.free).as_u64(),
-    }),
-    Err(e) => Err(e.to_string()),
-  }
-}
-
-static CONFIG_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
-  std::env::current_exe()
-    .unwrap()
-    .parent()
-    .unwrap()
-    .join("launcher_config.json")
-});
-
-pub fn read_or_default() -> LauncherConfig {
-  if let Ok(config) = std::fs::read_to_string(CONFIG_PATH.as_path()) {
-    serde_json::from_str(&config).unwrap_or_default()
-  } else {
-    LauncherConfig::default()
-  }
-}
-
-pub fn save_config(config: &LauncherConfig) {
-  let config = serde_json::to_string_pretty(config).unwrap();
-  std::fs::write(CONFIG_PATH.as_path(), config).unwrap();
 }
 
 structstruck::strike! {
