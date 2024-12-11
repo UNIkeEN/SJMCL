@@ -43,6 +43,29 @@
       }
     }
   },
+  "CreateRoleModal":{
+    "modal":{
+      "header": "Create Role",
+      "confirm": "Create",
+      "cancel": "Cancel"
+    },
+    "label":{
+      "playerType":"Role Source",
+      "playername":"Role Name",
+      "authServer":"Auth Source",
+      "password":"Password"
+    },
+    "auth":
+    {
+      "selectSource": "Select Auth Source",
+      "nodata":"No Auth Source",
+      "addServer":" Add a source"
+    },
+    "placeholder":{
+      "playername": "Role Name",
+      "password": "Password"
+    }
+  },
   "AccountsPage": {
     "Button": {
       "addRole": "Add Role",
@@ -87,40 +110,6 @@
           "name": "Jokull"
         }
       }
-    }
-  },
-  "CreateRoleModal":{
-    "auth":{
-      "selectSource":"Select Auth Source"
-    },
-    "error":{
-      "general":"Failed to add role",
-      "rolename":{
-        "required":"Role name is required",
-        "pattern":"Role name can only contain letters, numbers, underscores, and hyphens"
-      },
-      "authServer":{
-        "required":"Auth source is required"
-      },
-      "password":{
-        "required":"Password is required"
-      }
-      },
-      "modal":{
-        "header":"Add Role",
-        "cancel":"Cancel",
-        "confirm":"Confirm",
-        "success":"Role added successfully"
-    },
-    "rolename":{
-      "placeholder":"Role Name"
-    },
-    "roleType":
-    {
-      "label":"Select Auth Source"
-    },
-    "password":{
-      "placeholder":"Password"
     }
   },
   "DownloadSettingPage": {
