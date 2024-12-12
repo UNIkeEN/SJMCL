@@ -1,12 +1,11 @@
 import {
-  Box,
   Button,
   Flex,
   FormControl,
   FormLabel,
+  HStack,
   Icon,
   Input,
-  Link,
   Menu,
   MenuButton,
   MenuItem,
@@ -18,42 +17,42 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  ModalProps,
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuLink2Off, LuServer } from "react-icons/lu";
+import { LuChevronDown, LuLink2Off, LuPlus, LuServer } from "react-icons/lu";
 import SegmentedControl from "@/components/common/segmented";
+import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { AuthServer } from "@/models/account";
 
-interface CreatePlayerModalProps {
-  initialSelectedPlayerType?: string;
-  isOpen: boolean;
-  onClose: () => void;
-  addAuthServerPath?: string;
+interface CreatePlayerModalProps extends Omit<ModalProps, "children"> {
+  initialPlayerType?: string;
+  initialAuthServerUrl?: string;
 }
 
 const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
-  initialSelectedPlayerType = "offline",
-  isOpen,
-  onClose,
-  addAuthServerPath = "/auth-servers/add",
+  initialPlayerType = "offline",
+  initialAuthServerUrl = "",
+  ...modalProps
 }) => {
   const { t } = useTranslation();
   const { authServerList } = useData();
-  const [selectedPlayerType, setSelectedPlayerType] = useState<string>(
-    initialSelectedPlayerType
-  );
+  const [playerType, setPlayerType] = useState<string>(initialPlayerType);
   const [playername, setPlayername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [authServerName, setAuthServerName] = useState<string>("");
+  const [authServerUrl, setAuthServerUrl] = useState<string>(
+    initialAuthServerUrl ||
+      (authServerList.length > 0 ? authServerList[0].authUrl : "")
+  );
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   useEffect(() => {
-    setPlayername("");
     setPassword("");
-    setAuthServerName("");
-  }, [selectedPlayerType]);
+  }, [playerType]);
 
   const playerTypeList = [
     {
@@ -69,7 +68,7 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
   ];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal {...modalProps}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("CreatePlayerModal.modal.header")}</ModalHeader>
@@ -78,12 +77,11 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
           <FormControl mb={4}>
             <FormLabel>{t("CreatePlayerModal.label.playerType")}</FormLabel>
             <SegmentedControl
-              selected={selectedPlayerType}
-              onSelectItem={(s) => setSelectedPlayerType(s)}
+              selected={playerType}
+              onSelectItem={(s) => setPlayerType(s)}
               size="sm"
               items={playerTypeList.map((item) => ({
-                ...item,
-                label: item.label,
+                label: item.key,
                 value: (
                   <Flex align="center">
                     <Icon as={item.icon} mr={2} />
@@ -95,8 +93,8 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
             />
           </FormControl>
 
-          {selectedPlayerType === "offline" ? (
-            <FormControl mb={4}>
+          {playerType === "offline" ? (
+            <FormControl mb={4} isRequired>
               <FormLabel>{t("CreatePlayerModal.label.playername")}</FormLabel>
               <Input
                 placeholder={t("CreatePlayerModal.placeholder.playername")}
@@ -108,14 +106,13 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
           ) : (
             <>
               {authServerList.length === 0 ? (
-                <Box mb={4}>
-                  <Text>
-                    {t("CreatePlayerModal.auth.nodata") + " "}
-                    <Link color="blue.500" href={addAuthServerPath}>
-                      {t("CreatePlayerModal.auth.addServer")}
-                    </Link>
-                  </Text>
-                </Box>
+                <HStack mb={4}>
+                  <Text>{t("CreatePlayerModal.auth.nodata")}</Text>
+                  <Button variant="link" colorScheme={primaryColor}>
+                    <LuPlus />
+                    <Text ml={1}>{t("CreatePlayerModal.auth.addServer")}</Text>
+                  </Button>
+                </HStack>
               ) : (
                 <>
                   <FormControl mb={4}>
@@ -123,15 +120,20 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
                       {t("CreatePlayerModal.label.authServer")}
                     </FormLabel>
                     <Menu>
-                      <MenuButton as={Button} variant="outline">
-                        {authServerName ||
-                          t("CreatePlayerModal.auth.selectSource")}
+                      <MenuButton
+                        as={Button}
+                        variant="outline"
+                        rightIcon={<LuChevronDown />}
+                      >
+                        {authServerList.find(
+                          (server) => server?.authUrl === authServerUrl
+                        )?.name || t("CreatePlayerModal.auth.selectSource")}
                       </MenuButton>
                       <MenuList>
                         {authServerList.map((server: AuthServer) => (
                           <MenuItem
-                            key={server.name}
-                            onClick={() => setAuthServerName(server.name)}
+                            key={server.authUrl}
+                            onClick={() => setAuthServerUrl(server.authUrl)}
                           >
                             {server.name}
                           </MenuItem>
@@ -139,11 +141,9 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
                       </MenuList>
                     </Menu>
                   </FormControl>
-
-                  {/* 角色名和密码输入 */}
-                  {authServerName && (
+                  {authServerUrl && (
                     <>
-                      <FormControl mb={4}>
+                      <FormControl mb={4} isRequired>
                         <FormLabel>
                           {t("CreatePlayerModal.label.playername")}
                         </FormLabel>
@@ -156,7 +156,7 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
                           required
                         />
                       </FormControl>
-                      <FormControl mb={4}>
+                      <FormControl mb={4} isRequired>
                         <FormLabel>
                           {t("CreatePlayerModal.label.password")}
                         </FormLabel>
@@ -178,18 +178,18 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({
           )}
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={modalProps.onClose}>
             {t("CreatePlayerModal.modal.cancel")}
           </Button>
           <Button
-            colorScheme="blue"
-            onClick={onClose}
+            colorScheme={primaryColor}
+            onClick={modalProps.onClose}
             ml={3}
             isDisabled={
               !playername ||
-              (selectedPlayerType === "3rdparty" &&
+              (playerType === "3rdparty" &&
                 authServerList.length > 0 &&
-                (!authServerName || !password))
+                (!authServerUrl || !password))
             }
           >
             {t("CreatePlayerModal.modal.confirm")}

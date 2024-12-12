@@ -43,29 +43,6 @@
       }
     }
   },
-  "CreateRoleModal":{
-    "modal":{
-      "header": "Create Role",
-      "confirm": "Create",
-      "cancel": "Cancel"
-    },
-    "label":{
-      "playerType":"Role Source",
-      "playername":"Role Name",
-      "authServer":"Auth Source",
-      "password":"Password"
-    },
-    "auth":
-    {
-      "selectSource": "Select Auth Source",
-      "nodata":"No Auth Source",
-      "addServer":" Add a source"
-    },
-    "placeholder":{
-      "playername": "Role Name",
-      "password": "Password"
-    }
-  },
   "AccountsPage": {
     "Button": {
       "addRole": "Add Role",
@@ -110,6 +87,28 @@
           "name": "Jokull"
         }
       }
+    }
+  },
+  "CreatePlayerModal": {
+    "modal": {
+      "header": "Create Player",
+      "confirm": "Create",
+      "cancel": "Cancel"
+    },
+    "label": {
+      "playerType": "Player Type",
+      "playername": "Player Name",
+      "authServer": "Auth Source",
+      "password": "Password"
+    },
+    "auth": {
+      "selectSource": "Select Auth Source",
+      "nodata": "No Auth Source",
+      "addServer": "Add a source"
+    },
+    "placeholder": {
+      "playername": "Player Name",
+      "password": "Password"
     }
   },
   "DownloadSettingPage": {
@@ -168,7 +167,7 @@
       "purple": "Purple",
       "pink": "Pink"
     },
-    "roleTypes": {
+    "playerTypes": {
       "offline": "Offline Mode",
       "3rdparty": "The 3rd-party Authentication",
       "3rdpartyShort": "3rd-party Auth"

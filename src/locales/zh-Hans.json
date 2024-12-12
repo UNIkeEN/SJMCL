@@ -43,29 +43,6 @@
       }
     }
   },
-  "CreateRoleModal":{
-    "modal":{
-      "header": "创建角色",
-      "confirm": "创建",
-      "cancel": "取消"
-    },
-    "label":{
-      "playerType":"角色来源",
-      "playername":"角色名称",
-      "authServer":"认证源",
-      "password":"密码"
-    },
-    "auth":
-    {
-      "selectSource": "选择认证源",
-      "nodata":"暂无认证源",
-      "addServer":" 去添加"
-    },
-    "placeholder":{
-      "playername": "角色名称",
-      "password": "密码"
-    }
-  },
   "AccountsPage": {
     "Button": {
       "addRole": "添加角色",
@@ -110,6 +87,28 @@
           "name": "SJTU 紫气东来门"
         }
       }
+    }
+  },
+  "CreatePlayerModal": {
+    "modal": {
+      "header": "创建角色",
+      "confirm": "创建",
+      "cancel": "取消"
+    },
+    "label": {
+      "playerType": "认证类型",
+      "playername": "角色名称",
+      "authServer": "认证源",
+      "password": "密码"
+    },
+    "auth": {
+      "selectSource": "请选择认证源",
+      "nodata": "暂无认证源",
+      "addServer": "去添加"
+    },
+    "placeholder": {
+      "playername": "角色名称",
+      "password": "密码"
     }
   },
   "DownloadSettingPage": {
@@ -168,7 +167,7 @@
       "purple": "紫色",
       "pink": "粉色"
     },
-    "roleTypes": {
+    "playerTypes": {
       "offline": "离线模式",
       "3rdparty": "第三方认证",
       "3rdpartyShort": "第三方认证"

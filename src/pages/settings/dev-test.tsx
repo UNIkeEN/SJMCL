@@ -1,6 +1,13 @@
-import { Alert, AlertIcon, VStack } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  Button,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import CreatePlayerModal from "@/components/modals/create-player-modal";
 import { isProd } from "@/utils/env";
 
 // ============================================================
@@ -16,6 +23,8 @@ const DevTestPage = () => {
     }
   }, [router]);
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <VStack>
       <Alert status="warning" fontSize="sm" variant="left-accent">
@@ -25,6 +34,12 @@ const DevTestPage = () => {
       </Alert>
 
       {/* Add test components here */}
+      <CreatePlayerModal
+        isOpen={isOpen}
+        onClose={onClose}
+        initialPlayerType="3rdparty"
+      />
+      <Button onClick={onOpen}>Open CreatePlayerModal</Button>
     </VStack>
   );
 };
