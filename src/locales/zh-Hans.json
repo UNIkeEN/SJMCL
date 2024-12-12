@@ -56,6 +56,28 @@
       "list": "列表视图"
     }
   },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "添加角色",
+      "confirm": "确定",
+      "cancel": "取消"
+    },
+    "label": {
+      "playerType": "角色类型",
+      "playerName": "角色名称",
+      "authServer": "认证源",
+      "password": "密码"
+    },
+    "authServer": {
+      "selectSource": "请选择认证源",
+      "noSource": "未添加可用认证源服务器",
+      "addSource": "添加认证源"
+    },
+    "placeholder": {
+      "playerName": "请输入",
+      "password": "请输入"
+    }
+  },
   "AllGamesPage": {
     "Button": {
       "addAndImport": "添加与导入",

@@ -56,6 +56,28 @@
       "list": "List View"
     }
   },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "Add Player",
+      "confirm": "Add",
+      "cancel": "Cancel"
+    },
+    "label": {
+      "playerType": "Player Type",
+      "playerName": "Player Name",
+      "authServer": "Auth Source",
+      "password": "Password"
+    },
+    "authServer": {
+      "selectSource": "Select Auth Source",
+      "noSource": "No auth source added.",
+      "addSource": "Add one"
+    },
+    "placeholder": {
+      "playerName": "Player Name",
+      "password": "Password"
+    }
+  },
   "AllGamesPage": {
     "Button": {
       "addAndImport": "Add & Import",

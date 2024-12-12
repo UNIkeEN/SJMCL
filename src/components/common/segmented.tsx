@@ -31,7 +31,7 @@ const SegmentedControl: React.FC<SegmentedControlProps> = ({
   withTooltip = false,
   ...boxProps
 }) => {
-  const sp = { "2xs": 0.5, xs: 0.5, sm: 1, md: 1, lg: 2 }[size];
+  const sp = { "2xs": 0.5, xs: 0.5, sm: "0.175rem", md: 1, lg: 2 }[size];
 
   return (
     <Box
