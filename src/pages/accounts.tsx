@@ -8,6 +8,7 @@ import {
   Icon,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -24,6 +25,7 @@ import {
 import NavMenu from "@/components/common/nav-menu";
 import SegmentedControl from "@/components/common/segmented";
 import SelectableButton from "@/components/common/selectable-button";
+import AddPlayerModal from "@/components/modals/add-player-modal";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
@@ -37,6 +39,12 @@ const AccountsPage = () => {
 
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const { playerList, authServerList } = useData();
+
+  const {
+    isOpen: isAddPlayerModalOpen,
+    onOpen: onAddPlayerModalOpen,
+    onClose: onAddPlayerModalClose,
+  } = useDisclosure();
 
   const playerTypeList = [
     {
@@ -81,85 +89,103 @@ const AccountsPage = () => {
   };
 
   return (
-    <Grid templateColumns="1fr 3fr" gap={4} h="100%">
-      <GridItem className="content-full-y">
-        <VStack align="stretch" h="100%">
-          <Box flex="1" overflowY="auto">
-            <NavMenu
-              selectedKeys={[selectedPlayerType]}
-              onClick={(value) => {
-                setSelectedPlayerType(value);
-              }}
-              items={playerTypeList.map((item) => ({
-                label: (
-                  <HStack spacing={2} overflow="hidden">
-                    <Icon as={item.icon} />
-                    <Text fontSize="sm">{item.label}</Text>
-                  </HStack>
-                ),
-                value: item.key,
-              }))}
-            />
-          </Box>
-          <SelectableButton mt="auto" size="sm">
-            <HStack spacing={2}>
-              <Icon as={LuCirclePlus} />
-              <Text fontSize="sm">
-                {t("AccountsPage.Button.add3rdPartySource")}
-              </Text>
-            </HStack>
-          </SelectableButton>
-        </VStack>
-      </GridItem>
-      <GridItem className="content-full-y">
-        <Box display="flex" flexDirection="column" height="100%">
-          <Flex alignItems="flex-start" flexShrink={0}>
-            <VStack spacing={0} align="start">
-              <Text fontWeight="bold" fontSize="sm" className="no-select">
-                {
-                  playerTypeList.find((item) => item.key === selectedPlayerType)
-                    ?.label
-                }
-              </Text>
-              {!["all", "offline"].includes(selectedPlayerType) && (
-                <Text fontSize="xs" className="secondary-text no-select">
-                  {selectedPlayerType}
-                </Text>
-              )}
-            </VStack>
-            <HStack spacing={2} ml="auto" alignItems="flex-start">
-              <SegmentedControl
-                selected={selectedViewType}
-                onSelectItem={(s) => {
-                  update("page.accounts.viewType", s as string);
+    <>
+      <Grid templateColumns="1fr 3fr" gap={4} h="100%">
+        <GridItem className="content-full-y">
+          <VStack align="stretch" h="100%">
+            <Box flex="1" overflowY="auto">
+              <NavMenu
+                selectedKeys={[selectedPlayerType]}
+                onClick={(value) => {
+                  setSelectedPlayerType(value);
                 }}
-                size="2xs"
-                items={viewTypeList.map((item) => ({
-                  ...item,
-                  label: item.key,
-                  value: <Icon as={item.icon} />,
+                items={playerTypeList.map((item) => ({
+                  label: (
+                    <HStack spacing={2} overflow="hidden">
+                      <Icon as={item.icon} />
+                      <Text fontSize="sm">{item.label}</Text>
+                    </HStack>
+                  ),
+                  value: item.key,
                 }))}
-                withTooltip={true}
               />
-              <Button
-                leftIcon={<LuPlus />}
-                size="xs"
-                colorScheme={primaryColor}
-                onClick={() => {}} // todo
-              >
-                {t("AccountsPage.Button.addPlayer")}
-              </Button>
-            </HStack>
-          </Flex>
-          <Box overflow="auto" flexGrow={1} mt={2.5} rounded="md">
-            <PlayersView
-              players={filterPlayersByType(selectedPlayerType)}
-              viewType={selectedViewType}
-            />
+            </Box>
+            <SelectableButton mt="auto" size="sm">
+              <HStack spacing={2}>
+                <Icon as={LuCirclePlus} />
+                <Text fontSize="sm">
+                  {t("AccountsPage.Button.add3rdPartySource")}
+                </Text>
+              </HStack>
+            </SelectableButton>
+          </VStack>
+        </GridItem>
+        <GridItem className="content-full-y">
+          <Box display="flex" flexDirection="column" height="100%">
+            <Flex alignItems="flex-start" flexShrink={0}>
+              <VStack spacing={0} align="start">
+                <Text fontWeight="bold" fontSize="sm" className="no-select">
+                  {
+                    playerTypeList.find(
+                      (item) => item.key === selectedPlayerType
+                    )?.label
+                  }
+                </Text>
+                {!["all", "offline"].includes(selectedPlayerType) && (
+                  <Text fontSize="xs" className="secondary-text no-select">
+                    {selectedPlayerType}
+                  </Text>
+                )}
+              </VStack>
+              <HStack spacing={2} ml="auto" alignItems="flex-start">
+                <SegmentedControl
+                  selected={selectedViewType}
+                  onSelectItem={(s) => {
+                    update("page.accounts.viewType", s as string);
+                  }}
+                  size="2xs"
+                  items={viewTypeList.map((item) => ({
+                    ...item,
+                    label: item.key,
+                    value: <Icon as={item.icon} />,
+                  }))}
+                  withTooltip={true}
+                />
+                <Button
+                  leftIcon={<LuPlus />}
+                  size="xs"
+                  colorScheme={primaryColor}
+                  onClick={onAddPlayerModalOpen}
+                >
+                  {t("AccountsPage.Button.addPlayer")}
+                </Button>
+              </HStack>
+            </Flex>
+            <Box overflow="auto" flexGrow={1} mt={2.5} rounded="md">
+              <PlayersView
+                players={filterPlayersByType(selectedPlayerType)}
+                viewType={selectedViewType}
+              />
+            </Box>
           </Box>
-        </Box>
-      </GridItem>
-    </Grid>
+        </GridItem>
+      </Grid>
+      <AddPlayerModal
+        isOpen={isAddPlayerModalOpen}
+        onClose={onAddPlayerModalClose}
+        initialPlayerType={
+          selectedPlayerType === "all" || selectedPlayerType === "offline"
+            ? "offline"
+            : "3rdparty"
+        }
+        initialAuthServerUrl={
+          selectedPlayerType === "all" || selectedPlayerType === "offline"
+            ? ""
+            : selectedPlayerType
+        }
+        isCentered
+      />
+    </>
   );
 };
 
