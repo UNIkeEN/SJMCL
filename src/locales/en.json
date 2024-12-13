@@ -431,5 +431,10 @@
       "about": "About",
       "dev-test": "Dev - Test Page"
     }
+  },
+  "InstancePage": {
+    "tabs": {
+      "home": "Home"
+    }
   }
 }
