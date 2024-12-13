@@ -1,7 +1,7 @@
+import i18n from "i18next";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/contexts/toast";
-import { changeLanguage } from "@/locales";
 import { LauncherConfig, defaultConfig } from "@/models/config";
 import { getLauncherConfig, updateLauncherConfig } from "@/services/config";
 
@@ -35,7 +35,7 @@ export const LauncherConfigContextProvider: React.FC<{
   }, [toast, t]);
 
   useEffect(() => {
-    changeLanguage(config.general.general.language);
+    i18n.changeLanguage(config.general.general.language);
   }, [config.general.general.language]);
 
   const updateByKeyPath = (obj: any, path: string, value: any): void => {

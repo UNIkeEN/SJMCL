@@ -1,10 +1,16 @@
-import i18n from "i18next";
 import { i18nConfig } from "../../next-i18next.config.mjs";
 import en from "./en.json";
 import zh_Hans from "./zh-Hans.json";
 import zh_Hant from "./zh-Hant.json";
 
-export const localeResources = {
+type LocaleResources = {
+  [key: string]: {
+    translation: Record<string, any>;
+    display_name: string;
+  };
+};
+
+export const localeResources: LocaleResources = {
   en: {
     translation: en,
     display_name: "English",
@@ -18,12 +24,5 @@ export const localeResources = {
     display_name: "繁體中文",
   },
 };
-
-// Function to save i18n language changes to localStorage
-export function changeLanguage(lang) {
-  if (!lang) lang = i18nConfig.defaultLocale;
-  i18n.changeLanguage(lang);
-  localStorage.setItem("locale", lang);
-}
 
 export const DEFAULT_LOCALE = i18nConfig.defaultLocale;

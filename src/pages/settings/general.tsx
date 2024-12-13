@@ -44,7 +44,7 @@ const GeneralSettingsPage = () => {
             defaultValue={currentLanguage}
             type="radio"
             onChange={(value) => {
-              update("general.general.language", value as string);
+              update("general.general.language", value);
             }}
           >
             {Object.keys(localeResources).map((key) => (
