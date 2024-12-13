@@ -172,8 +172,8 @@
         "strategy": {
           "title": "Download Source Selection Strategy",
           "auto": "Auto Select",
-          "official": "Official Source Priority",
-          "mirror": "Mirror Source Priority"
+          "official": "Prioritize Official Source",
+          "mirror": "Prioritize Mirror Source"
         }
       }
     },
@@ -181,10 +181,10 @@
       "title": "Download",
       "settings": {
         "autoConcurrent": {
-          "title": "Auto Select Concurrent Downloads"
+          "title": "Auto Select the Number of Concurrent Threads"
         },
         "concurrentCount": {
-          "title": "Concurrent Count"
+          "title": "Concurrent Thread Count"
         },
         "enableSpeedLimit": {
           "title": "Limit Download Speed"
@@ -235,7 +235,7 @@
     },
     "playerTypes": {
       "offline": "Offline Mode",
-      "3rdparty": "The 3rd-party Authentication",
+      "3rdparty": "3rd-party Authentication",
       "3rdpartyShort": "3rd-party Auth"
     }
   },
@@ -321,7 +321,7 @@
           "always": "Launcher Always Visible"
         },
         "displayGameLog": {
-          "title": "Display Game Log"
+          "title": "Display Game Logs"
         },
         "enableAdvancedOptions": {
           "title": "Enable Advanced Options"
