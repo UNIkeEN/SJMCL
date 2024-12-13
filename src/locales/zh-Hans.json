@@ -431,5 +431,10 @@
       "about": "关于",
       "dev-test": "开发 - 测试页"
     }
+  },
+  "InstancePage": {
+    "tabs": {
+      "home": "主页"
+    }
   }
 }
