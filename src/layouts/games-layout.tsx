@@ -89,7 +89,7 @@ const GamesLayout: React.FC<GamesLayoutProps> = ({ children }) => {
       </GridItem>
       <GridItem className="content-full-y">
         {isInstanceRoute ? (
-          <InstanceLayout /> // Render InstanceLayout for instance routes
+          <InstanceLayout>{children}</InstanceLayout>
         ) : (
           children // Render the default children
         )}

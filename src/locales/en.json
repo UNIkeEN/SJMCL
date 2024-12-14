@@ -433,7 +433,7 @@
     }
   },
   "InstancePage": {
-    "tabs": {
+    "navMenuList": {
       "home": "Home"
     }
   }
