@@ -374,6 +374,11 @@
       }
     }
   },
+  "InstancePage": {
+    "tabs": {
+      "home": "主頁"
+    }
+  },
   "LaunchPage": {
     "Button": {
       "launch": "啟動遊戲"

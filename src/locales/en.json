@@ -377,6 +377,11 @@
       }
     }
   },
+  "InstancePage": {
+    "navMenuList": {
+      "home": "Home"
+    }
+  },
   "LaunchPage": {
     "Button": {
       "launch": "Launch Game"
@@ -430,11 +435,6 @@
       "help": "Docs & Help",
       "about": "About",
       "dev-test": "Dev - Test Page"
-    }
-  },
-  "InstancePage": {
-    "navMenuList": {
-      "home": "Home"
     }
   }
 }

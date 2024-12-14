@@ -377,6 +377,11 @@
       }
     }
   },
+  "InstancePage": {
+    "tabs": {
+      "home": "主页"
+    }
+  },
   "LaunchPage": {
     "Button": {
       "launch": "启动游戏"
@@ -430,11 +435,6 @@
       "help": "文档与帮助",
       "about": "关于",
       "dev-test": "开发 - 测试页"
-    }
-  },
-  "InstancePage": {
-    "tabs": {
-      "home": "主页"
     }
   }
 }
