@@ -29,6 +29,7 @@
     "@tauri-apps/plugin-http": "^2.0.1",
     "@tauri-apps/plugin-os": "^2.0.0",
     "@tauri-apps/plugin-shell": "^2.0.1",
+    "@tauri-apps/plugin-window-state": "^2.2.0",
     "i18next": "^24.0.0",
     "next": "15.0.3",
     "react": "^18",

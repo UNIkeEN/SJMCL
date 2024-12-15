@@ -31,3 +31,6 @@ tokio = { version = "1", features = ["full"] }
 systemstat = "0.2.3"
 partial_derive = { path = "./libs/partial_derive" }
 uuid = { version = "1.11.0", features = ["v4", "fast-rng",  "macro-diagnostics"] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-window-state = "2"
