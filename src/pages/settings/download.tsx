@@ -18,6 +18,8 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react";
+import { open } from "@tauri-apps/plugin-dialog";
+import { open as openFinder } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import {
@@ -204,10 +206,31 @@ const DownloadSettingsPage = () => {
           description: downloadConfigs.cache.directory,
           children: (
             <HStack>
-              <Button variant="subtle" size="xs">
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={async () => {
+                  const selectedDirectory = await open({
+                    directory: true,
+                    multiple: false,
+                    title: t(
+                      "DownloadSettingPage.cache.settings.directory.select"
+                    ),
+                  });
+                  if (selectedDirectory) {
+                    update("download.cache.directory", selectedDirectory);
+                  }
+                }}
+              >
                 {t("DownloadSettingPage.cache.settings.directory.select")}
               </Button>
-              <Button variant="subtle" size="xs">
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={() => {
+                  openFinder(downloadConfigs.cache.directory);
+                }}
+              >
                 {t("DownloadSettingPage.cache.settings.directory.open")}
               </Button>
             </HStack>

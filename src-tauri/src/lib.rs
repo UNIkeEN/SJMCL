@@ -15,6 +15,7 @@ pub async fn run() {
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_shell::init())
+    .plugin(tauri_plugin_dialog::init())
     .invoke_handler(tauri::generate_handler![
       launcher_config::commands::get_launcher_config,
       launcher_config::commands::update_launcher_config,
