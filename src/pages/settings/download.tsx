@@ -215,10 +215,13 @@ const DownloadSettingsPage = () => {
                     multiple: false,
                     defaultPath: downloadConfigs.cache.directory,
                   });
-                  if (Array.isArray(selectedDirectory)) {
+                  if (
+                    selectedDirectory &&
+                    typeof selectedDirectory === "string"
+                  ) {
                     update("download.cache.directory", selectedDirectory);
                   } else if (selectedDirectory === null) {
-                    return downloadConfigs.cache.directory;
+                    console.log("Directory selection was cancelled.");
                   }
                 }}
               >
