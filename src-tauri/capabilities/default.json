@@ -9,6 +9,7 @@
     "core:default",
     "core:webview:allow-create-webview-window",
     "shell:default",
+    "dialog:default",
     "http:default",
     "os:default"
   ]

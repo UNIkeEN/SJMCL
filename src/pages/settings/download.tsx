@@ -213,12 +213,12 @@ const DownloadSettingsPage = () => {
                   const selectedDirectory = await open({
                     directory: true,
                     multiple: false,
-                    title: t(
-                      "DownloadSettingPage.cache.settings.directory.select"
-                    ),
+                    defaultPath: downloadConfigs.cache.directory,
                   });
-                  if (selectedDirectory) {
+                  if (Array.isArray(selectedDirectory)) {
                     update("download.cache.directory", selectedDirectory);
+                  } else if (selectedDirectory === null) {
+                    return downloadConfigs.cache.directory;
                   }
                 }}
               >
