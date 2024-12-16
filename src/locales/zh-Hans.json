@@ -428,6 +428,10 @@
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？",
     "btnOk": "确定"
   },
+  "ScreenshotsPage": {
+    "title": "截图一览",
+    "openFolder": "打开"
+  },
   "Services": {
     "config": {
       "getLauncherConfig": {

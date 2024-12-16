@@ -442,6 +442,10 @@
       }
     }
   },
+  "ScreenshotsPage": {
+    "title": "Screenshot Overview",
+    "openFolder": "Open"
+  },
   "SettingsLayout": {
     "settingsDomainList": {
       "global-game": "Game Settings",

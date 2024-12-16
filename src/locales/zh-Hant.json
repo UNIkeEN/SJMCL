@@ -428,6 +428,10 @@
     "body": "此操作將重置所有啟動器設定為預設值。確定要繼續嗎？",
     "btnOk": "确定"
   },
+  "ScreenshotsPage": {
+    "title": "截圖一覽",
+    "openFolder": "打開"
+  },
   "Services": {
     "config": {
       "getLauncherConfig": {

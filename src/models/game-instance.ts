@@ -6,6 +6,12 @@ export interface GameInstanceSummary {
   description: string;
 }
 
+export interface Screenshot {
+  fileName: string;
+  path: string;
+  imgUrl: string;
+}
+
 // only for test
 export const mockGameInstanceSummaryList: GameInstanceSummary[] = [
   {
@@ -21,5 +27,30 @@ export const mockGameInstanceSummaryList: GameInstanceSummary[] = [
     iconUrl: "/images/Anvil.webp",
     name: "Better MC [FORGE]",
     description: "1.20.1, Forge: 47.2.17",
+  },
+];
+
+export const mockScreenshots: Screenshot[] = [
+  {
+    fileName: "樱の小屋1",
+    path: "/screenshots/screenshot1.png",
+    imgUrl:
+      "https://mc.sjtu.cn/wiki/images/8/80/%E6%A8%B1%E3%81%AE%E5%B0%8F%E5%B1%8B-1.jpg",
+  },
+  {
+    fileName: "樱の小屋2",
+    path: "/screenshots/screenshot2.png",
+    imgUrl:
+      "https://mc.sjtu.cn/wiki/images/8/87/%E6%A8%B1%E3%81%AE%E5%B0%8F%E5%B1%8B-2.jpg",
+  },
+  {
+    fileName: "亭子",
+    path: "/screenshots/screenshot3.png",
+    imgUrl: "https://mc.sjtu.cn/wiki/images/4/48/%E4%BA%AD%E5%AD%90.png",
+  },
+  {
+    fileName: "桥",
+    path: "/screenshots/screenshot4.png",
+    imgUrl: "https://mc.sjtu.cn/wiki/images/2/2f/%E6%A1%A5.png",
   },
 ];
