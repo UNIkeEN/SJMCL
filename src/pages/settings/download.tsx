@@ -19,7 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { open as openFinder } from "@tauri-apps/plugin-shell";
+import { open as openFolder } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import {
@@ -35,6 +35,23 @@ const DownloadSettingsPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const sourceStrategyTypes = ["auto", "official", "mirror"];
+
+  const handleSelectDirectory = async () => {
+    const selectedDirectory = await open({
+      directory: true,
+      multiple: false,
+      defaultPath: downloadConfigs.cache.directory,
+    });
+    if (selectedDirectory && typeof selectedDirectory === "string") {
+      update("download.cache.directory", selectedDirectory);
+    } else if (selectedDirectory === null) {
+      console.log("Directory selection was cancelled.");
+    }
+  };
+
+  const handleOpenDirectory = () => {
+    openFolder(downloadConfigs.cache.directory);
+  };
 
   const downloadSettingGroups: OptionItemGroupProps[] = [
     {
@@ -209,31 +226,11 @@ const DownloadSettingsPage = () => {
               <Button
                 variant="subtle"
                 size="xs"
-                onClick={async () => {
-                  const selectedDirectory = await open({
-                    directory: true,
-                    multiple: false,
-                    defaultPath: downloadConfigs.cache.directory,
-                  });
-                  if (
-                    selectedDirectory &&
-                    typeof selectedDirectory === "string"
-                  ) {
-                    update("download.cache.directory", selectedDirectory);
-                  } else if (selectedDirectory === null) {
-                    console.log("Directory selection was cancelled.");
-                  }
-                }}
+                onClick={handleSelectDirectory}
               >
                 {t("DownloadSettingPage.cache.settings.directory.select")}
               </Button>
-              <Button
-                variant="subtle"
-                size="xs"
-                onClick={() => {
-                  openFinder(downloadConfigs.cache.directory);
-                }}
-              >
+              <Button variant="subtle" size="xs" onClick={handleOpenDirectory}>
                 {t("DownloadSettingPage.cache.settings.directory.open")}
               </Button>
             </HStack>
