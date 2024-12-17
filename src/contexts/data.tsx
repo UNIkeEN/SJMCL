@@ -1,14 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import {
-  AuthServer,
-  Player,
-  mockAuthServerList,
-  mockPlayerList,
-} from "@/models/account";
-import {
-  GameInstanceSummary,
-  mockGameInstanceSummaryList,
-} from "@/models/game-instance";
+import { AuthServer, Player } from "@/models/account";
+import { GameInstanceSummary } from "@/models/game-instance";
+import { mockAuthServerList, mockPlayerList } from "@/models/mock/account";
+import { mockGameInstanceSummaryList } from "@/models/mock/game-instance";
 
 interface DataContextType {
   playerList: Player[];
