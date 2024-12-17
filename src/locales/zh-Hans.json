@@ -473,5 +473,17 @@
         }
       }
     }
+  },
+  "WorldsPage":{
+    "worldList":{
+      "local":"本地存档列表",
+      "lastPlayedAt":"上次游玩时间",
+      "empty":"暂无存档"
+
+    },
+    "serverList":{
+      "local":"服务器列表",
+      "empty":"暂无服务器"
+    }
   }
 }

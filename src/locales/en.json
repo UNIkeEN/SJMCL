@@ -473,5 +473,17 @@
         }
       }
     }
+  },
+  "WorldsPage":{
+    "worldList":{
+      "local":"Local Worlds",
+      "lastPlayedAt":"Last Played At",
+      "empty":"No Worlds"
+
+    },
+    "serverList":{
+      "local":"Local Servers",
+      "empty":"No Server"
+    }
   }
 }
