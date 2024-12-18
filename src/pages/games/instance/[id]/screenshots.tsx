@@ -3,7 +3,7 @@ import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
 import { LuFolderOpen } from "react-icons/lu";
 import { WrapCardGroup } from "@/components/common/wrap-card";
-import { mockScreenshots } from "@/models/game-instance";
+import { mockScreenshots } from "@/models/mock/game-instance";
 
 const InstanceScreenshotsPage: React.FC = () => {
   const { t } = useTranslation();
