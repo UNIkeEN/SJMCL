@@ -419,6 +419,11 @@
       "minAllocation": "為 Minecraft 分配的最小值"
     }
   },
+  "InstanceShaderPacksPage":{
+    "shaderPackList": {
+      "title": "光影包"
+    }
+  },
   "NotFoundPage": {
     "text": "頁面不存在，即將在 {{seconds}} 秒後跳轉"
   },

@@ -3,6 +3,7 @@ import {
   GameServerInfo,
   ResourcePacksInfo,
   Screenshot,
+  ShaderPacksInfo,
   WorldInfo,
 } from "@/models/game-instance";
 
@@ -84,5 +85,20 @@ export const mockResourcePacks: ResourcePacksInfo[] = [
     description: "测试空白资源包",
     iconUrl: "",
     fileDir: "/.minecraft/resourcepacks",
+  },
+];
+
+export const mockShaderPacks: ShaderPacksInfo[] = [
+  {
+    name: "Kappa_v5.2",
+    fileDir: "/.minecraft/shaderpacks",
+  },
+  {
+    name: "rethinking-voxels_r0.1_beta2",
+    fileDir: "/.minecraft/shaderpacks",
+  },
+  {
+    name: "§r§lAstra§4§lLex§r§l_By_LexBoosT_§4§lV93.0§r§l",
+    fileDir: "/.minecraft/shaderpacks",
   },
 ];

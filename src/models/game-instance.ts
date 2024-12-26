@@ -31,3 +31,8 @@ export interface ResourcePacksInfo {
   iconUrl?: string;
   fileDir: string;
 }
+
+export interface ShaderPacksInfo {
+  name: string;
+  fileDir: string;
+}
