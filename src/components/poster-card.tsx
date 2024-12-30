@@ -25,6 +25,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
 
   return (
     <Card
+      className="content-card"
       cursor="pointer"
       overflow="hidden" // show the border
       p={0}
@@ -35,7 +36,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {imageSrc && <Image objectFit="cover" src={imageSrc} alt={title} />}
-      <CardBody className="content-card">
+      <CardBody p={3}>
         <VStack spacing={0} alignItems="start" overflow="hidden">
           <Text fontSize="xs-sm" className="no-select">
             {title}

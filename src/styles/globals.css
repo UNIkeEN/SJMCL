@@ -60,7 +60,7 @@ body {
 
 .content-card {
   background-color: var(--chakra-colors-gray-50) !important;
-  padding: var(--chakra-space-3) !important;
+  padding: var(--chakra-space-3);
 }
 
 .content-full-y {
