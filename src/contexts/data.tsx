@@ -7,11 +7,13 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { AuthServer, Player } from "@/models/account";
+import { Player } from "@/models/account";
+import { AuthServer } from "@/models/auth_server";
 import { GameInstanceSummary } from "@/models/game-instance";
 import { mockAuthServerList, mockPlayerList } from "@/models/mock/account";
 import { mockGameInstanceSummaryList } from "@/models/mock/game-instance";
 import { getPlayerList } from "@/services/account";
+import { getAuthServerList } from "@/services/auth_server";
 
 interface DataContextType {
   playerList: Player[];
@@ -65,14 +67,30 @@ export const DataContextProvider: React.FC<{
       });
   }, [setPlayerList, toast, t]);
 
+  const fetchAuthServerList = useCallback(() => {
+    getAuthServerList()
+      .then((authServerList) => {
+        setAuthServerList(authServerList);
+      })
+      .catch((error) => {
+        toast({
+          title: t("Services.auth_server.getAuthServerList.error"),
+          status: "error",
+        });
+      });
+  }, [setAuthServerList, toast, t]);
+
   useEffect(() => {
     fetchPlayerList();
   }, [fetchPlayerList]);
 
   useEffect(() => {
+    fetchAuthServerList();
+  }, [fetchAuthServerList]);
+
+  useEffect(() => {
     setGameInstanceSummaryList(mockGameInstanceSummaryList);
     setSelectedGameInstance(mockGameInstanceSummaryList[0]);
-    setAuthServerList(mockAuthServerList);
   }, []);
 
   return (

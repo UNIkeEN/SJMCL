@@ -30,7 +30,8 @@ import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
-import { AuthServer, Player } from "@/models/account";
+import { PlayerInfo } from "@/models/account";
+import { AuthServer } from "@/models/auth_server";
 import { addPlayer, getPlayerList } from "@/services/account";
 
 interface AddPlayerModalProps extends Omit<ModalProps, "children"> {
@@ -75,15 +76,13 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   }, [playerType]);
 
   const handleLogin = useCallback(() => {
-    let player: Player = {
+    let player: PlayerInfo = {
       name: "",
       playerType: playerType,
       password: password,
       uuid: "",
       avatarSrc: "",
-      authServer: authServerUrl
-        ? authServerList.find((server) => server.authUrl === authServerUrl)
-        : undefined,
+      authServerUrl,
     };
     if (playerType === "offline") {
       player.name = playername;
@@ -118,7 +117,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     playerType,
     password,
     authServerUrl,
-    authServerList,
     setPlayerList,
     setIsLoading,
     toast,

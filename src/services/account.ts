@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Player } from "@/models/account";
+import { Player, PlayerInfo } from "@/models/account";
 
 /**
  * Fetches the list of players.
@@ -16,12 +16,12 @@ export const getPlayerList = async (): Promise<Player[]> => {
 };
 
 /**
- * Adds a new player.
- * @param {Player} player - The player object to be added.
- * @returns {Promise<void>} A promise that resolves when the player is added.
- * @throws Will throw an error if the invocation fails.
+ * Adds a new player to the system.
+ * @param {PlayerInfo} player - The information of the player to be added.
+ * @returns {Promise<void>} A promise that resolves when the player is successfully added.
+ * @throws Will throw an error if the invocation of "add_player" fails.
  */
-export const addPlayer = async (player: Player): Promise<void> => {
+export const addPlayer = async (player: PlayerInfo): Promise<void> => {
   try {
     await invoke("add_player", { player });
   } catch (error) {

@@ -21,7 +21,8 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
-import { AuthServer } from "@/models/account";
+import { AuthServer } from "@/models/auth_server";
+import { addAuthServer, getAuthServerList } from "@/services/auth_server";
 
 interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {}
 
@@ -37,7 +38,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const { isOpen, onClose } = modalProps;
 
   const [serverUrl, setServerUrl] = useState<string>("");
-  const [serverName] = useState<string>("Mock Server Name");
+  const [serverName, setServerName] = useState<string>("");
   const [isNextStep, setIsNextStep] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -64,22 +65,39 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       return;
     }
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsNextStep(true);
-    }, 1000);
+    (async () => {
+      try {
+        setIsLoading(true);
+        setServerName(await addAuthServer(serverUrl));
+        setIsLoading(false);
+        setIsNextStep(true);
+      } catch (error) {
+        setIsLoading(false);
+        toast({
+          title: t("AddAuthServerModal.toast.error"),
+          status: "error",
+        });
+      }
+    })();
   };
 
   const handleFinish = () => {
-    const newServer: AuthServer = { name: serverName, authUrl: serverUrl };
-
-    setAuthServerList([...authServerList, newServer]);
-    toast({
-      title: t("AddAuthServerModal.toast.success"),
-      status: "success",
-    });
-    onClose?.();
+    (async () => {
+      try {
+        setAuthServerList(await getAuthServerList());
+        toast({
+          title: t("AddAuthServerModal.toast.success"),
+          status: "success",
+        });
+        onClose?.();
+      } catch (error) {
+        setIsLoading(false);
+        toast({
+          title: t("AddAuthServerModal.toast.error"),
+          status: "error",
+        });
+      }
+    })();
   };
 
   return (

@@ -1,3 +1,5 @@
+import { AuthServer } from "./auth_server";
+
 // player
 export interface Player {
   name: string;
@@ -9,9 +11,13 @@ export interface Player {
   password?: string; // only from authlib-injector
 }
 
-// authlib-injector source
-export interface AuthServer {
-  // id: number;
+// player info upload to / receive from the server
+export interface PlayerInfo {
   name: string;
-  authUrl: string;
+  uuid: string;
+  avatarSrc: string;
+  playerType: "offline" | "3rdparty";
+  authServerUrl: string; // only from authlib-injector
+  authAccount?: string; // only from authlib-injector
+  password?: string; // only from authlib-injector
 }
