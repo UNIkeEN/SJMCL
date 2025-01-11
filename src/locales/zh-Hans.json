@@ -57,11 +57,6 @@
     }
   },
   "AddAuthServerModal": {
-    "toast": {
-      "duplicateServer": "服务器已存在",
-      "success": "服务器添加成功",
-      "invalidServerUrl": "无效的服务器地址"
-    },
     "header": {
       "title": "添加认证服务器"
     },
@@ -488,6 +483,10 @@
       "deletePlayer": {
         "success": "角色删除成功",
         "error": "角色删除失败"
+      },
+      "addAuthServer": {
+        "success": "认证服务器添加成功",
+        "error": "认证服务器添加失败"
       }
     }
   },

@@ -21,7 +21,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { error } from "console";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuLink2Off, LuPlus, LuServer } from "react-icons/lu";

@@ -57,11 +57,6 @@
     }
   },
   "AddAuthServerModal": {
-    "toast": {
-      "duplicateServer": "Server already exists",
-      "success": "Successfully added new server",
-      "invalidServerUrl": "Invalid server address"
-    },
     "header": {
       "title": "Add Authentication Server"
     },
@@ -488,6 +483,10 @@
       "deletePlayer": {
         "success": "Successfully deleted player",
         "error": "Failed to delete player"
+      },
+      "addAuthServer": {
+        "success": "Successfully added authentication server",
+        "error": "Failed to add authentication server"
       }
     }
   },

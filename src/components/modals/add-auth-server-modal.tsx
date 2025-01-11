@@ -53,17 +53,6 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   }, [isOpen]);
 
   const handleNextStep = () => {
-    const isDuplicate = authServerList.some(
-      (server) => server.authUrl === serverUrl
-    );
-    if (isDuplicate) {
-      toast({
-        title: t("AddAuthServerModal.toast.duplicateServer"),
-        status: "error",
-      });
-      return;
-    }
-
     (async () => {
       try {
         setIsLoading(true);
@@ -73,7 +62,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       } catch (error) {
         setIsLoading(false);
         toast({
-          title: t("AddAuthServerModal.toast.error"),
+          title: t("Services.account.addAuthServer.error"),
           status: "error",
         });
       }
@@ -85,14 +74,14 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       try {
         setAuthServerList(await getAuthServerList());
         toast({
-          title: t("AddAuthServerModal.toast.success"),
+          title: t("Services.account.addAuthServer.success"),
           status: "success",
         });
         onClose?.();
       } catch (error) {
         setIsLoading(false);
         toast({
-          title: t("AddAuthServerModal.toast.error"),
+          title: t("Services.account.addAuthServer.error"),
           status: "error",
         });
       }
