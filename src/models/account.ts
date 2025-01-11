@@ -1,5 +1,3 @@
-import { AuthServer } from "./auth_server";
-
 // player
 export interface Player {
   name: string;
@@ -20,4 +18,12 @@ export interface PlayerInfo {
   authServerUrl: string; // only from authlib-injector
   authAccount?: string; // only from authlib-injector
   password?: string; // only from authlib-injector
+}
+
+// authlib-injector source
+export interface AuthServer {
+  // id: number;
+  name: string;
+  authUrl: string;
+  mutable?: boolean;
 }

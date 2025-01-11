@@ -7,13 +7,10 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { Player } from "@/models/account";
-import { AuthServer } from "@/models/auth_server";
+import { AuthServer, Player } from "@/models/account";
 import { GameInstanceSummary } from "@/models/game-instance";
-import { mockAuthServerList, mockPlayerList } from "@/models/mock/account";
 import { mockGameInstanceSummaryList } from "@/models/mock/game-instance";
-import { getPlayerList } from "@/services/account";
-import { getAuthServerList } from "@/services/auth_server";
+import { getAuthServerList, getPlayerList } from "@/services/account";
 
 interface DataContextType {
   playerList: Player[];

@@ -30,8 +30,7 @@ import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
-import { PlayerInfo } from "@/models/account";
-import { AuthServer } from "@/models/auth_server";
+import { AuthServer, PlayerInfo } from "@/models/account";
 import { addPlayer, getPlayerList } from "@/services/account";
 
 interface AddPlayerModalProps extends Omit<ModalProps, "children"> {

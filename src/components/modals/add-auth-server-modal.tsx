@@ -21,8 +21,7 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
-import { AuthServer } from "@/models/auth_server";
-import { addAuthServer, getAuthServerList } from "@/services/auth_server";
+import { addAuthServer, getAuthServerList } from "@/services/account";
 
 interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {}
 
