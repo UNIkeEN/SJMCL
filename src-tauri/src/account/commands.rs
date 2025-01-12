@@ -43,6 +43,7 @@ pub async fn add_player(mut player: PlayerInfo) -> SJMCLResult<()> {
   match player.player_type.as_str() {
     "offline" => {
       player.uuid = uuid.to_string();
+      // use the default steve skin (maybe the wrong way, need help)
       player.avatar_src = "https://littleskin.cn/avatar/0?size=72&png=1".to_string();
 
       state.players.push(player);
@@ -80,6 +81,7 @@ pub fn get_auth_servers() -> SJMCLResult<Vec<AuthServer>> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
 
   if state.auth_servers.len() == 0 {
+    // first time launch the app, add some default auth servers
     let sjmc_auth_server = AuthServer {
       name: "SJMC 用户中心".to_string(),
       auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
@@ -101,6 +103,8 @@ pub fn get_auth_servers() -> SJMCLResult<Vec<AuthServer>> {
 
 #[tauri::command]
 pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> {
+  // check the url integrity following the standard
+  // https://github.com/yushijinhun/authlib-injector/wiki/%E5%90%AF%E5%8A%A8%E5%99%A8%E6%8A%80%E6%9C%AF%E8%A7%84%E8%8C%83#%E5%9C%A8%E5%90%AF%E5%8A%A8%E5%99%A8%E4%B8%AD%E8%BE%93%E5%85%A5%E5%9C%B0%E5%9D%80
   if !url.starts_with("http://") && !url.starts_with("https://") {
     url = format!("https://{}", url);
   }
@@ -134,6 +138,7 @@ pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> 
         mutable: true,
       };
 
+      // we don't save the server here, just return it to the frontend
       Ok(new_server)
     }
     Err(_) => return Err(SJMCLError(AuthServerError::InvalidServer.to_string())),
@@ -148,8 +153,10 @@ pub fn add_auth_server(server: AuthServer) -> SJMCLResult<()> {
     .iter()
     .any(|s| s.auth_url == server.auth_url)
   {
+    // we need to strictly ensure the uniqueness of the url
     return Err(SJMCLError(AuthServerError::DuplicateServer.to_string()));
   }
+  // save the server
   state.auth_servers.push(server);
   state.save()?;
   Ok(())
@@ -158,13 +165,19 @@ pub fn add_auth_server(server: AuthServer) -> SJMCLResult<()> {
 #[tauri::command]
 pub fn delete_auth_server(url: String) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
+
   let initial_len = state.auth_servers.len();
+  // try to remove the server from the storage if it is mutable
   state
     .auth_servers
     .retain(|server| server.auth_url != url || !server.mutable);
   if state.auth_servers.len() == initial_len {
     return Err(SJMCLError(AuthServerError::NotFound.to_string()));
   }
+
+  // remove all players using this server
+  state.players.retain(|player| player.auth_server_url != url);
+
   state.save()?;
   Ok(())
 }

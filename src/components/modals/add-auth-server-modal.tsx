@@ -61,6 +61,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
     (async () => {
       try {
         setIsLoading(true);
+        // test the server url in backend & get the server name (without saving)
         const newServer = await fetchAuthServerInfo(serverUrl);
         setServerName(newServer.name);
         setServerUrl(newServer.authUrl);
@@ -96,6 +97,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
     (async () => {
       try {
         setIsLoading(true);
+        // save the server info to the storage
         await addAuthServer({
           name: serverName,
           authUrl: serverUrl,
