@@ -486,6 +486,8 @@
       },
       "addAuthServer": {
         "success": "Successfully added authentication server",
+        "duplicate": "The server has already been added",
+        "invalid": "Invalid server URL",
         "error": "Failed to add authentication server"
       }
     }

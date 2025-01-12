@@ -27,3 +27,9 @@ export interface AuthServer {
   authUrl: string;
   mutable?: boolean;
 }
+
+export enum AuthServerError {
+  DUPLICATE_SERVER = "DUPLICATE_SERVER",
+  INVALID_SERVER = "INVALID_SERVER",
+  NOT_FOUND = "NOT_FOUND",
+}

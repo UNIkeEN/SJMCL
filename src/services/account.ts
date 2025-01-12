@@ -62,10 +62,10 @@ export const getAuthServerList = async (): Promise<AuthServer[]> => {
 /**
  * Adds a new authentication server.
  * @param {string} url - The URL of the authentication server to be added.
- * @returns {Promise<string>} A promise that resolves to the server name from fetching the API.
+ * @returns {Promise<AuthServer>} A promise that resolves to the new server details after fetching the API.
  * @throws Will throw an error if the invocation of "add_auth_server" fails.
  */
-export const addAuthServer = async (url: string): Promise<string> => {
+export const addAuthServer = async (url: string): Promise<AuthServer> => {
   try {
     return await invoke("add_auth_server", { url });
   } catch (error) {

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -43,4 +44,21 @@ pub struct AuthServer {
 pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
   pub auth_servers: Vec<AuthServer>,
+}
+
+#[derive(Debug)]
+pub enum AuthServerError {
+  DuplicateServer,
+  InvalidServer,
+  NotFound,
+}
+
+impl fmt::Display for AuthServerError {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      AuthServerError::InvalidServer => write!(f, "INVALID_SERVER"),
+      AuthServerError::DuplicateServer => write!(f, "DUPLICATE_SERVER"),
+      AuthServerError::NotFound => write!(f, "NOT_FOUND"),
+    }
+  }
 }

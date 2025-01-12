@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
+import { AuthServerError } from "@/models/account";
 import { addAuthServer, getAuthServerList } from "@/services/account";
 
 interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {}
@@ -56,15 +57,33 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
     (async () => {
       try {
         setIsLoading(true);
-        setServerName(await addAuthServer(serverUrl));
+        const newServer = await addAuthServer(serverUrl);
+        setServerName(newServer.name);
+        setServerUrl(newServer.authUrl);
         setIsLoading(false);
         setIsNextStep(true);
       } catch (error) {
         setIsLoading(false);
-        toast({
-          title: t("Services.account.addAuthServer.error"),
-          status: "error",
-        });
+        switch (error as AuthServerError) {
+          case AuthServerError.INVALID_SERVER:
+            toast({
+              title: t("Services.account.addAuthServer.invalid"),
+              status: "error",
+            });
+            break;
+          case AuthServerError.DUPLICATE_SERVER:
+            toast({
+              title: t("Services.account.addAuthServer.duplicate"),
+              status: "error",
+            });
+            break;
+          default:
+            toast({
+              title: t("Services.account.addAuthServer.error"),
+              status: "error",
+            });
+            break;
+        }
       }
     })();
   };

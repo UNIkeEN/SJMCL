@@ -1,4 +1,4 @@
-use super::models::{AccountInfo, AuthServer, Player, PlayerInfo};
+use super::models::{AccountInfo, AuthServer, AuthServerError, Player, PlayerInfo};
 use crate::{
   error::{SJMCLError, SJMCLResult},
   storage::Storage,
@@ -100,7 +100,7 @@ pub fn get_auth_servers() -> SJMCLResult<Vec<AuthServer>> {
 }
 
 #[tauri::command]
-pub async fn add_auth_server(mut url: String) -> SJMCLResult<String> {
+pub async fn add_auth_server(mut url: String) -> SJMCLResult<AuthServer> {
   if !url.starts_with("http://") && !url.starts_with("https://") {
     url = format!("https://{}", url);
   }
@@ -115,30 +115,32 @@ pub async fn add_auth_server(mut url: String) -> SJMCLResult<String> {
     .iter()
     .any(|server| server.auth_url == url)
   {
-    return Err(SJMCLError("Auth server already exists".to_string()));
+    return Err(SJMCLError(AuthServerError::DuplicateServer.to_string()));
   }
   match reqwest::get(&url).await {
     Ok(response) => {
       let json: serde_json::Value = response
         .json()
         .await
-        .map_err(|_| SJMCLError("Failed to parse response".to_string()))?;
+        .map_err(|_| SJMCLError(AuthServerError::InvalidServer.to_string()))?;
       let server_name = json["meta"]["serverName"]
         .as_str()
-        .ok_or_else(|| SJMCLError("Invalid response format".to_string()))?
+        .ok_or_else(|| SJMCLError(AuthServerError::InvalidServer.to_string()))?
         .to_string();
 
-      state.auth_servers.push(AuthServer {
-        name: server_name.clone(),
+      let new_server = AuthServer {
+        name: server_name,
         auth_url: url,
         mutable: true,
-      });
+      };
+
+      state.auth_servers.push(new_server.clone());
 
       state.save()?;
 
-      Ok(server_name)
+      Ok(new_server)
     }
-    Err(_) => return Err(SJMCLError("Invalid auth server".to_string())),
+    Err(_) => return Err(SJMCLError(AuthServerError::InvalidServer.to_string())),
   }
 }
 
@@ -150,9 +152,7 @@ pub fn delete_auth_server(url: String) -> SJMCLResult<()> {
     .auth_servers
     .retain(|server| server.auth_url != url || !server.mutable);
   if state.auth_servers.len() == initial_len {
-    return Err(SJMCLError(
-      "Auth server not found or not mutable".to_string(),
-    ));
+    return Err(SJMCLError(AuthServerError::NotFound.to_string()));
   }
   state.save()?;
   Ok(())

@@ -486,6 +486,8 @@
       },
       "addAuthServer": {
         "success": "认证服务器添加成功",
+        "duplicate": "认证服务器已存在",
+        "invalid": "无效的认证服务器地址",
         "error": "认证服务器添加失败"
       }
     }
