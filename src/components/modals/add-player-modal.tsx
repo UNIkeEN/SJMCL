@@ -47,7 +47,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const { setPlayerList } = useDataDispatch();
   const toast = useToast();
   const [playerType, setPlayerType] = useState<"offline" | "3rdparty">(
-    initialPlayerType
+    "offline"
   );
   const [playername, setPlayername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -61,6 +61,10 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     onOpen: onAddAuthServerModalOpen,
     onClose: onAddAuthServerModalClose,
   } = useDisclosure();
+
+  useEffect(() => {
+    setPlayerType(initialPlayerType);
+  }, [initialPlayerType]);
 
   useEffect(() => {
     setAuthServerUrl(
