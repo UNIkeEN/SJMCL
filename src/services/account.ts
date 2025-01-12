@@ -60,14 +60,29 @@ export const getAuthServerList = async (): Promise<AuthServer[]> => {
 };
 
 /**
- * Adds a new authentication server.
+ * Fetch information of a new authentication server.
  * @param {string} url - The URL of the authentication server to be added.
  * @returns {Promise<AuthServer>} A promise that resolves to the new server details after fetching the API.
+ * @throws Will throw an error if the invocation of "fetch_auth_server_info" fails.
+ */
+export const fetchAuthServerInfo = async (url: string): Promise<AuthServer> => {
+  try {
+    return await invoke("fetch_auth_server_info", { url });
+  } catch (error) {
+    console.error("Error in fetch_auth_server_info:", error);
+    throw error;
+  }
+};
+
+/**
+ * Add the new authentication server to the storage.
+ * @param {AuthServer} server - The authentication server to be added.
+ * @returns {Promise<void>} A promise that resolves when the server is added.
  * @throws Will throw an error if the invocation of "add_auth_server" fails.
  */
-export const addAuthServer = async (url: string): Promise<AuthServer> => {
+export const addAuthServer = async (server: AuthServer): Promise<void> => {
   try {
-    return await invoke("add_auth_server", { url });
+    await invoke("add_auth_server", { server });
   } catch (error) {
     console.error("Error in add_auth_server:", error);
     throw error;

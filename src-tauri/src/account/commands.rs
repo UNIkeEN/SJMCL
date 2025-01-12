@@ -100,7 +100,7 @@ pub fn get_auth_servers() -> SJMCLResult<Vec<AuthServer>> {
 }
 
 #[tauri::command]
-pub async fn add_auth_server(mut url: String) -> SJMCLResult<AuthServer> {
+pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> {
   if !url.starts_with("http://") && !url.starts_with("https://") {
     url = format!("https://{}", url);
   }
@@ -108,7 +108,7 @@ pub async fn add_auth_server(mut url: String) -> SJMCLResult<AuthServer> {
     url = format!("{}/api/yggdrasil", url);
   }
 
-  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+  let state: AccountInfo = Storage::load().unwrap_or_default();
 
   if state
     .auth_servers
@@ -134,14 +134,25 @@ pub async fn add_auth_server(mut url: String) -> SJMCLResult<AuthServer> {
         mutable: true,
       };
 
-      state.auth_servers.push(new_server.clone());
-
-      state.save()?;
-
       Ok(new_server)
     }
     Err(_) => return Err(SJMCLError(AuthServerError::InvalidServer.to_string())),
   }
+}
+
+#[tauri::command]
+pub fn add_auth_server(server: AuthServer) -> SJMCLResult<()> {
+  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+  if state
+    .auth_servers
+    .iter()
+    .any(|s| s.auth_url == server.auth_url)
+  {
+    return Err(SJMCLError(AuthServerError::DuplicateServer.to_string()));
+  }
+  state.auth_servers.push(server);
+  state.save()?;
+  Ok(())
 }
 
 #[tauri::command]

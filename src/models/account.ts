@@ -25,7 +25,7 @@ export interface AuthServer {
   // id: number;
   name: string;
   authUrl: string;
-  mutable?: boolean;
+  mutable: boolean;
 }
 
 export enum AuthServerError {

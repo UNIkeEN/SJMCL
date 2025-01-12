@@ -22,7 +22,11 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { AuthServerError } from "@/models/account";
-import { addAuthServer, getAuthServerList } from "@/services/account";
+import {
+  addAuthServer,
+  fetchAuthServerInfo,
+  getAuthServerList,
+} from "@/services/account";
 
 interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {}
 
@@ -57,7 +61,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
     (async () => {
       try {
         setIsLoading(true);
-        const newServer = await addAuthServer(serverUrl);
+        const newServer = await fetchAuthServerInfo(serverUrl);
         setServerName(newServer.name);
         setServerUrl(newServer.authUrl);
         setIsLoading(false);
@@ -91,7 +95,14 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const handleFinish = () => {
     (async () => {
       try {
+        setIsLoading(true);
+        await addAuthServer({
+          name: serverName,
+          authUrl: serverUrl,
+          mutable: true,
+        });
         setAuthServerList(await getAuthServerList());
+        setIsLoading(false);
         toast({
           title: t("Services.account.addAuthServer.success"),
           status: "success",
@@ -164,7 +175,11 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
                 <Button variant="ghost" onClick={() => setIsNextStep(false)}>
                   {t("AddAuthServerModal.button.previous")}
                 </Button>
-                <Button colorScheme={primaryColor} onClick={handleFinish}>
+                <Button
+                  colorScheme={primaryColor}
+                  onClick={handleFinish}
+                  isLoading={isLoading}
+                >
                   {t("AddAuthServerModal.button.finish")}
                 </Button>
               </>
