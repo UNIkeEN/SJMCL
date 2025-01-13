@@ -7,6 +7,7 @@ import {
   TabList,
   Tabs,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
@@ -57,17 +58,21 @@ const HeadNavBar = () => {
           >
             <TabList>
               {navList.map((item, index) => (
-                <Tab
+                <Tooltip
                   key={item.path}
-                  fontWeight={selectedIndex === index ? "600" : "normal"}
+                  label={t(`HeadNavBar.navList.${item.label}`)}
+                  placement="bottom"
+                  isDisabled={!isSimplified || selectedIndex === index}
                 >
-                  <HStack spacing={2}>
-                    <Icon as={item.icon} />
-                    {(!isSimplified || selectedIndex === index) && (
-                      <Text>{t(`HeadNavBar.navList.${item.label}`)}</Text>
-                    )}
-                  </HStack>
-                </Tab>
+                  <Tab fontWeight={selectedIndex === index ? "600" : "normal"}>
+                    <HStack spacing={2}>
+                      <Icon as={item.icon} />
+                      {(!isSimplified || selectedIndex === index) && (
+                        <Text>{t(`HeadNavBar.navList.${item.label}`)}</Text>
+                      )}
+                    </HStack>
+                  </Tab>
+                </Tooltip>
               ))}
             </TabList>
           </Tabs>
