@@ -46,7 +46,7 @@ const AboutSettingsPage = () => {
           title: t("AboutSettingsPage.about.settings.reportIssue.title"),
           children: (
             <LinkIconButton
-              url="https://github.com/UNIkeEN/SJMCL/issues/new"
+              url="https://github.com/UNIkeEN/SJMCL/issues"
               aria-label="issue"
               isExternal
               showTooltip

@@ -1,12 +1,16 @@
 name: Bug Report
-description: Create a report to help us improve.
+description: File a bug report to help us improve.
 title: "[Bug] "
 labels: 🐛 BUG
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to report a bug! Please ensure that this issue hasn't been reported before.
+        Thank you for taking the time to report a bug!
+        Before submitting a bug report, please make sure that:
+          * You have verified that this issue is related to SJMCL itself and NOT caused by Minecraft or any installed mods
+          * You have searched through [existing issues](https://github.com/UNIkeEN/SJMCL/issues) and confirmed this bug hasn't been reported before
+          Please provide a clear and descriptive title for your issue.
 
   - type: textarea
     id: description
@@ -15,6 +19,25 @@ body:
       description: "A clear and concise description of what the bug is."
     validations:
       required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: "Operating System"
+      description: "If you know this bug occurs on multiple operating systems, select all you have tested."
+        multiple: true
+        options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+
+  - type: textarea
+    id: osVersion
+    attributes:
+      label: "OS Version"
+      description: "Please enter the version(s) of the OS(es) that you found or tested where this bug occurs."
+      placeholder: e.g. Windows 11 23H2 / MacOS Sequoia 15.2 / Ubuntu 24.04.1 LTS
 
   - type: textarea
     id: steps
@@ -29,7 +52,16 @@ body:
     id: expected
     attributes:
       label: "Expected Behavior"
-      description: "A clear and concise description of what you expected to happen."
+      description: "A clear and concise description of what you expected."
+    validations:
+      required: true
+
+  - type: textarea
+    id: launcherVersion
+    attributes:
+      label: "SJMCL Version"
+      description: "Please enter the version(s) of SJMCL that you found where this bug occurs."
+      placeholder: "0.0.0"
     validations:
       required: true
 
@@ -37,10 +69,19 @@ body:
     id: config
     attributes:
       label: "Environment"
-      description: "Provide your system information, launcher version, launcher settings (from `sjmcl.conf.json`), or development environment information (full `tauri info` output) to help us better resolve the issue."
+      description: "Provide your launcher settings (from `sjmcl.conf.json`), or development environment information (full `tauri info` output) to help us better resolve the issue."
+
+  - type: textarea
+    id: suspect
+    attributes:
+      label: "Suspected cause"
+      description: "If you have a clue what might be causing this bug, describe it here."
+    validations:
+      required: false
 
   - type: textarea
     id: context
     attributes:
-      label: Additional context
-      description: Add any other context about the problem here.
+      label: "Additional context"
+      description: "Add any other context about the problem here that you think may be helpful."
+
