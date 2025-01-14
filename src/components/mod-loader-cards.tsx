@@ -28,37 +28,61 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const loaderTypes = ["Fabric", "Forge", "NeoForge"];
+  const baseTypes = ["Fabric", "Forge", "NeoForge"];
+  const loaderTypes =
+    installedType === "none"
+      ? baseTypes
+      : [installedType, ...baseTypes.filter((type) => type !== installedType)];
 
-  //for un-installed loaders
-  const renderCard = (type: string) => (
-    <Card key={type} className="content-card" pr={1.5}>
-      <Flex justify="space-between" alignItems="center">
-        <HStack spacing={2}>
-          <Image
-            src={`/images/icons/${type}.png`}
-            alt={type}
-            boxSize="28px"
-            style={{ borderRadius: "4px" }}
+  const renderCard = (type: string) => {
+    const isInstalled = type === installedType && installedType !== "none";
+    return (
+      <Card
+        key={type}
+        className="content-card"
+        pr={1.5}
+        variant={isInstalled ? "outline" : "filled"}
+        borderColor={isInstalled ? `${primaryColor}.500` : "transparent"}
+      >
+        <Flex justify="space-between" alignItems="center">
+          <HStack spacing={2}>
+            <Image
+              src={`/images/icons/${type}.png`}
+              alt={type}
+              boxSize="28px"
+              style={{ borderRadius: "4px" }}
+            />
+            <VStack spacing={0} alignItems="start">
+              <Text
+                fontSize="xs-sm"
+                className="no-select"
+                fontWeight={isInstalled ? "bold" : "normal"}
+                color={isInstalled ? primaryColor : "inherit"}
+                mt={-0.5}
+              >
+                {type}
+              </Text>
+              {isInstalled ? (
+                <Text fontSize="xs" className="secondary-text no-select">
+                  {`${t("ModLoaderCards.installed")} ${installedVersion}`}
+                </Text>
+              ) : (
+                <Text fontSize="xs" className="secondary-text no-select">
+                  {t("ModLoaderCards.unInstalled")}
+                </Text>
+              )}
+            </VStack>
+          </HStack>
+          <IconButton
+            aria-label={type}
+            icon={<Icon as={LuChevronRight} boxSize={3.5} />}
+            variant="ghost"
+            size="xs"
           />
-          <VStack spacing={0} alignItems="start">
-            <Text fontSize="xs-sm" className="no-select">
-              {type}
-            </Text>
-            <Text fontSize="xs" className="secondary-text no-select">
-              {t("ModLoaderCards.unInstalled")}
-            </Text>
-          </VStack>
-        </HStack>
-        <IconButton
-          aria-label={type}
-          icon={<Icon as={LuChevronRight} boxSize={3.5} />}
-          variant="ghost"
-          size="xs"
-        />
-      </Flex>
-    </Card>
-  );
+        </Flex>
+      </Card>
+    );
+  };
 
   return (
     <Grid
@@ -68,51 +92,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
       gap={3.5}
       {...boxProps}
     >
-      {installedType !== "none" && (
-        <Card
-          className="content-card"
-          pr={1.5}
-          variant="outline"
-          borderColor={`${primaryColor}.500`}
-        >
-          <Flex justify="space-between" alignItems="center">
-            <HStack spacing={2}>
-              <Image
-                src={`/images/icons/${installedType}.png`}
-                alt={installedType}
-                boxSize="28px"
-                style={{ borderRadius: "4px" }}
-              />
-              <VStack spacing={0} alignItems="start">
-                <Text
-                  fontSize="xs-sm"
-                  fontWeight="bold"
-                  className="no-select"
-                  color={primaryColor}
-                  mt={-0.5}
-                >
-                  {installedType}
-                </Text>
-                <HStack>
-                  <Text fontSize="xs" className="secondary-text no-select">
-                    {`${t("ModLoaderCards.installed")} ${installedVersion}`}
-                  </Text>
-                </HStack>
-              </VStack>
-            </HStack>
-            <IconButton
-              aria-label={installedType}
-              icon={<Icon as={LuChevronRight} boxSize={3.5} />}
-              variant="ghost"
-              size="xs"
-            />
-          </Flex>
-        </Card>
-      )}
-
-      {loaderTypes
-        .filter((type) => type !== installedType)
-        .map((type) => renderCard(type))}
+      {loaderTypes.map(renderCard)}
     </Grid>
   );
 };
