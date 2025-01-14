@@ -41,7 +41,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
         key={type}
         className="content-card"
         pr={1.5}
-        variant={isInstalled ? "outline" : "filled"}
+        variant={isInstalled ? "outline" : "elevated"}
         borderColor={isInstalled ? `${primaryColor}.500` : "transparent"}
       >
         <Flex justify="space-between" alignItems="center">
@@ -58,19 +58,15 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
                 className="no-select"
                 fontWeight={isInstalled ? "bold" : "normal"}
                 color={isInstalled ? primaryColor : "inherit"}
-                mt={-0.5}
+                mt={isInstalled ? -0.5 : 0}
               >
                 {type}
               </Text>
-              {isInstalled ? (
-                <Text fontSize="xs" className="secondary-text no-select">
-                  {`${t("ModLoaderCards.installed")} ${installedVersion}`}
-                </Text>
-              ) : (
-                <Text fontSize="xs" className="secondary-text no-select">
-                  {t("ModLoaderCards.unInstalled")}
-                </Text>
-              )}
+              <Text fontSize="xs" className="secondary-text no-select">
+                {isInstalled
+                  ? `${t("ModLoaderCards.installed")} ${installedVersion}`
+                  : t("ModLoaderCards.unInstalled")}
+              </Text>
             </VStack>
           </HStack>
           <IconButton
