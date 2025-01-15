@@ -10,7 +10,7 @@
           "title": "开发者名单"
         },
         "reportIssue": {
-          "title": "报告问题"
+          "title": "报告问题或请求功能"
         },
         "aboutSJMC": {
           "title": "关于上海交通大学 Minecraft 社（SJMC）"
@@ -46,7 +46,9 @@
   "AccountsPage": {
     "Button": {
       "addPlayer": "添加角色",
-      "add3rdPartySource": "添加第三方认证源"
+      "add3rdPartyServer": "添加认证服务器",
+      "sourceHomepage": "访问主页",
+      "deleteServer": "删除此服务器"
     },
     "playerTypeList": {
       "all": "全部来源"
@@ -177,6 +179,15 @@
     "Button": {
       "sources": "管理数据源",
       "refresh": "刷新"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "Button": {
+      "addSource": "添加数据源",
+      "deleteSource": "删除数据源"
+    },
+    "tag": {
+      "online": "在线"
     }
   },
   "DownloadSettingPage": {
@@ -403,6 +414,14 @@
       "launch": "启动实例"
     }
   },
+  "InstanceModsPage": {
+    "modLoaderList": {
+      "title": "加载器"
+    },
+    "modList": {
+      "title": "模组"
+    }
+  },
   "InstanceWorldsPage": {
     "worldList": {
       "title": "本地世界",
@@ -447,6 +466,10 @@
       "now": "正在使用",
       "minAllocation": "为 Minecraft 分配的最小值"
     }
+  },
+  "ModLoaderCards": {
+    "installed": "已安装",
+    "unInstalled": "未安装"
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"

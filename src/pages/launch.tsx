@@ -24,7 +24,7 @@ interface SwitchButtonProps extends IconButtonProps {
 
 const SwitchButton: React.FC<SwitchButtonProps> = ({ tooltip, ...props }) => {
   return (
-    <Tooltip label={tooltip} placement="top-end" fontSize="sm">
+    <Tooltip label={tooltip} placement="top-end">
       <IconButton
         size="xs"
         position="absolute"
@@ -67,7 +67,7 @@ const LaunchPage = () => {
                   fontSize="xs-sm"
                   className="no-select ellipsis-text"
                   fontWeight="bold"
-                  w="90%"
+                  w="100%"
                   mt={2}
                 >
                   {selectedPlayer.name}

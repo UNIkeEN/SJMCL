@@ -29,7 +29,7 @@ const ChakraColorSelector: React.FC<ChakraColorSelectorProps> = ({
       <Flex>
         {ChakraColorEnums.map((color: ColorSelectorType, index: number) => (
           <>
-            <Tooltip label={t(`Enums.chakraColors.${color}`)} fontSize={size}>
+            <Tooltip label={t(`Enums.chakraColors.${color}`)}>
               <IconButton
                 key={color}
                 size={size}

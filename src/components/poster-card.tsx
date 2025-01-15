@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Card,
   CardBody,
   CardProps,
@@ -15,7 +16,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCalendar } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
-import { PostSummary } from "@/models/post";
+import { PostSourceInfo, PostSummary } from "@/models/post";
 import { formatRelativeTime } from "@/utils/datetime";
 
 interface PosterCardProps extends CardProps {
@@ -28,7 +29,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const { title, abstract, keywords, imageSrc, updateAt, link } = data;
+  const { title, abstract, keywords, imageSrc, source, updateAt, link } = data;
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -65,11 +66,20 @@ const PosterCard = ({ data }: PosterCardProps) => {
               {abstract}
             </Text>
           )}
-          <HStack className="secondary-text" mt={1} spacing={1}>
+          <HStack className="secondary-text" fontSize="xs" mt={1} spacing={1}>
             <LuCalendar size={12} />
-            <Text fontSize="xs">
-              {formatRelativeTime(updateAt, t).replace("on", "")}
-            </Text>
+            <Text>{formatRelativeTime(updateAt, t).replace("on", "")}</Text>
+            {(source as PostSourceInfo).name !== undefined && (
+              <>
+                <Avatar
+                  name={source.name}
+                  size="2xs"
+                  src={source.iconSrc}
+                  ml={1}
+                />
+                <Text>{source.name}</Text>
+              </>
+            )}
           </HStack>
         </VStack>
       </CardBody>

@@ -4,6 +4,7 @@ import {
   Divider,
   Flex,
   HStack,
+  Skeleton,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -13,8 +14,9 @@ import { Section, SectionProps } from "@/components/common/section";
 export interface OptionItemProps extends BoxProps {
   prefixElement?: React.ReactNode;
   title: string;
-  description?: string;
+  description?: React.ReactNode;
   titleExtra?: React.ReactNode;
+  isLoading?: boolean;
   children: React.ReactNode;
 }
 
@@ -27,31 +29,45 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   title,
   description,
   titleExtra,
+  isLoading = false,
   children,
   ...boxProps
 }) => {
   return (
     <Flex justify="space-between" alignItems="self-start" {...boxProps}>
       <HStack spacing={2.5}>
-        {prefixElement}
+        {prefixElement && (
+          <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
+        )}
         <VStack spacing={0} mr={2} alignItems="start" overflow="hidden">
           <HStack spacing={2} flexWrap="wrap">
-            <Text fontSize="xs-sm" className="no-select">
-              {title}
-            </Text>
-            {titleExtra}
+            <Skeleton isLoaded={!isLoading}>
+              <Text fontSize="xs-sm" className="no-select">
+                {title}
+              </Text>
+            </Skeleton>
+            {titleExtra && (
+              <Skeleton isLoaded={!isLoading}>{titleExtra}</Skeleton>
+            )}
           </HStack>
-          {description && (
-            <Text fontSize="xs" className="secondary-text no-select">
-              {description}
-            </Text>
-          )}
+          {description &&
+            (typeof description === "string" ? (
+              <Skeleton isLoaded={!isLoading}>
+                <Text fontSize="xs" className="secondary-text no-select">
+                  {description}
+                </Text>
+              </Skeleton>
+            ) : (
+              description
+            ))}
         </VStack>
       </HStack>
       {typeof children === "string" ? (
-        <Text fontSize="xs-sm" className="secondary-text">
-          {children}
-        </Text>
+        <Skeleton isLoaded={!isLoading}>
+          <Text fontSize="xs-sm" className="secondary-text">
+            {children}
+          </Text>
+        </Skeleton>
       ) : (
         children
       )}

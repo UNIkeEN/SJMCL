@@ -33,7 +33,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const { t } = useTranslation();
 
-  const { currentInstanceSummary } = useContext(InstanceContext);
+  const { summary } = useContext(InstanceContext);
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
@@ -51,7 +51,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     <VStack align="strench" h="100%" spacing={4}>
       <Flex alignItems="flex-start">
         <Text fontWeight="bold" fontSize="sm">
-          {currentInstanceSummary?.name}
+          {summary?.name}
         </Text>
         <Button
           leftIcon={<LuPlay />}

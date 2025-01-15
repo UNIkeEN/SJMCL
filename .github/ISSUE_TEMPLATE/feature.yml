@@ -11,14 +11,16 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: "Problem"
+      label: Problem (Optional)
       description: "Is your feature request related to a problem? Please describe."
       placeholder: "e.g. I'm always frustrated when [...]"
+    validations:
+      required: false
 
   - type: textarea
     id: solution
     attributes:
-      label: "Solution"
+      label: Solution
       description: "A clear and concise description of what you want to happen."
     validations:
       required: true
@@ -26,11 +28,15 @@ body:
   - type: textarea
     id: alternatives
     attributes:
-      label: "Alternatives"
+      label: Alternatives (Optional)
       description: "A clear and concise description of any alternative solutions or features you've considered."
+    validations:
+      required: false
 
   - type: textarea
     id: context
     attributes:
-      label: "Additional context"
+      label: Additional context (Optional)
       description: "Add any other context or screenshots about the feature request here."
+    validations:
+      required: false

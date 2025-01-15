@@ -36,8 +36,7 @@ const InstanceWorldsPage = () => {
                   <Image
                     src={world.iconUrl}
                     alt={world.name}
-                    width={30}
-                    height={30}
+                    boxSize="28px"
                     style={{ borderRadius: "4px" }}
                   />
                 }
@@ -71,8 +70,7 @@ const InstanceWorldsPage = () => {
                   <Image
                     src={server.icon}
                     alt={server.name}
-                    width={30}
-                    height={30}
+                    boxSize="28px"
                     style={{ borderRadius: "4px" }}
                   />
                 }

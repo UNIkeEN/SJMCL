@@ -1,25 +1,48 @@
 name: Bug Report
-description: Create a report to help us improve.
+description: File a bug report to help us improve.
 title: "[Bug] "
 labels: 🐛 BUG
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to report a bug! Please ensure that this issue hasn't been reported before.
+        Thank you for taking the time to report a bug!
+        Before submitting a bug report, please make sure that:
+          * You have verified that this issue is related to SJMCL itself and NOT caused by Minecraft or any installed mods
+          * You have searched through [existing issues](https://github.com/UNIkeEN/SJMCL/issues) and confirmed this bug hasn't been reported before
+
+        Please provide a clear and descriptive title for your issue.
 
   - type: textarea
     id: description
     attributes:
-      label: "Description"
+      label: Description
       description: "A clear and concise description of what the bug is."
     validations:
       required: true
 
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: "Please enter the Operating System(s) (and preferrably the version) that you found or tested where this bug occurs."
+      placeholder: "e.g. Windows 11 23H2 / MacOS Sequoia 15.2 / Ubuntu 24.04.1"
+    validations:
+      required: true
+  
+  - type: input
+    id: launcherVersion
+    attributes:
+      label: SJMCL Version (Optional)
+      description: "Please enter the version(s) of SJMCL that you found where this bug occurs."
+      placeholder: "0.0.0"
+    validations:
+      required: false
+
   - type: textarea
     id: steps
     attributes:
-      label: "Reproduction"
+      label: Reproduction
       description: "Detailed steps to reproduce the bug behavior."
       placeholder: "Please provide a minimal reproduction or steps to reproduce."
     validations:
@@ -28,19 +51,23 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: "Expected Behavior"
-      description: "A clear and concise description of what you expected to happen."
+      label: Expected Behavior
+      description: "A clear and concise description of what you expected."
     validations:
       required: true
 
   - type: textarea
     id: config
     attributes:
-      label: "Environment"
-      description: "Provide your system information, launcher version, launcher settings (from `sjmcl.conf.json`), or development environment information (full `tauri info` output) to help us better resolve the issue."
+      label: Environment (Optional)
+      description: "Provide your launcher settings (from `sjmcl.conf.json`), or development environment information (full `tauri info` output) to help us better resolve the issue."
+    validations:
+      required: false
 
   - type: textarea
     id: context
     attributes:
-      label: Additional context
-      description: Add any other context about the problem here.
+      label: Additional context (Optional)
+      description: "Add any other context about the problem here that you think may be helpful, such as screenshots, what you think might be causing this issue, etc."
+    validations:
+      required: false

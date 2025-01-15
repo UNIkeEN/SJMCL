@@ -55,8 +55,7 @@ const InstanceResourcePacksPage = () => {
                       <Image
                         src={pack.iconUrl || defaultIcon}
                         alt={pack.name}
-                        width={30}
-                        height={30}
+                        boxSize="28px"
                         style={{ borderRadius: "4px" }}
                         onError={(e) => {
                           e.currentTarget.src = defaultIcon;

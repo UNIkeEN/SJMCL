@@ -13,14 +13,23 @@ export const mockGameInstanceSummaryList: GameInstanceSummary[] = [
     uuid: "aaaaaaaa-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
     iconSrc: "/images/icons/GrassBlock.webp",
     name: "1.20.1 纯净生存整合包",
-    description: "1.20.1, Fabric: 0.15.6",
+    version: "1.20.1",
+    modLoader: {
+      type: "Fabric",
+      version: "0.15.6",
+    },
   },
   {
     id: 2,
     uuid: "00000000-0000-0000-0000-000000000000",
     iconSrc: "/images/icons/Anvil.webp",
     name: "Better MC [FORGE]",
-    description: "1.20.1, Forge: 47.2.17",
+    description: "更好的 MC 整合包",
+    version: "1.20.1",
+    modLoader: {
+      type: "Forge",
+      version: "47.2.17",
+    },
   },
 ];
 

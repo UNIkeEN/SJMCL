@@ -3,7 +3,12 @@ export interface GameInstanceSummary {
   uuid: string;
   iconSrc: string;
   name: string;
-  description: string;
+  description?: string;
+  version: string;
+  modLoader: {
+    type: "none" | "Fabric" | "Forge" | "NeoForge";
+    version?: string;
+  };
 }
 
 export interface Screenshot {

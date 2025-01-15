@@ -5,7 +5,9 @@ import {
   GridItem,
   HStack,
   Icon,
+  IconButton,
   Text,
+  Tooltip,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -14,11 +16,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuCirclePlus,
+  LuHouse,
   LuLayoutGrid,
   LuLayoutList,
   LuLink2Off,
   LuPlus,
   LuServer,
+  LuServerOff,
   LuUsersRound,
 } from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
@@ -125,7 +129,7 @@ const AccountsPage = () => {
               <HStack spacing={2}>
                 <Icon as={LuCirclePlus} />
                 <Text fontSize="sm">
-                  {t("AccountsPage.Button.add3rdPartySource")}
+                  {t("AccountsPage.Button.add3rdPartyServer")}
                 </Text>
               </HStack>
             </SelectableButton>
@@ -147,6 +151,27 @@ const AccountsPage = () => {
             }
             headExtra={
               <HStack spacing={2} alignItems="flex-start">
+                {!["all", "offline"].includes(selectedPlayerType) && (
+                  <Tooltip label={t("AccountsPage.Button.sourceHomepage")}>
+                    <IconButton
+                      aria-label="home"
+                      size="xs"
+                      variant="ghost"
+                      icon={<LuHouse />}
+                    />
+                  </Tooltip>
+                )}
+                {!["all", "offline"].includes(selectedPlayerType) && (
+                  <Tooltip label={t("AccountsPage.Button.deleteServer")}>
+                    <IconButton
+                      aria-label="home"
+                      size="xs"
+                      colorScheme="red"
+                      variant="ghost"
+                      icon={<LuServerOff />}
+                    />
+                  </Tooltip>
+                )}
                 <SegmentedControl
                   selected={selectedViewType}
                   onSelectItem={(s) => {

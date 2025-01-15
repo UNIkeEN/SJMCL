@@ -109,11 +109,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
       ) : (
         <HStack spacing={0}>
           {playerMenuOperations.map((item) => (
-            <Tooltip
-              label={t(`PlayerMenu.label.${item.key}`)}
-              fontSize="sm"
-              key={item.key}
-            >
+            <Tooltip label={t(`PlayerMenu.label.${item.key}`)} key={item.key}>
               <IconButton
                 size="sm"
                 aria-label={item.key}

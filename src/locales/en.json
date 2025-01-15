@@ -10,7 +10,7 @@
           "title": "Contributors"
         },
         "reportIssue": {
-          "title": "Report Issue"
+          "title": "Report an Issue or Submit a Feature Request"
         },
         "aboutSJMC": {
           "title": "About SJTU Minecraft Club (SJMC)"
@@ -46,7 +46,9 @@
   "AccountsPage": {
     "Button": {
       "addPlayer": "Add Player",
-      "add3rdPartySource": "Add 3rd-party Auth"
+      "add3rdPartyServer": "Add 3rd-party Auth",
+      "sourceHomepage": "View Homepage",
+      "deleteServer": "Delete Auth Server"
     },
     "playerTypeList": {
       "all": "All Source"
@@ -177,6 +179,15 @@
     "Button": {
       "sources": "Manage Sources",
       "refresh": "Refresh"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "Button": {
+      "addSource": "Add Source",
+      "deleteSource": "Delete"
+    },
+    "tag": {
+      "online": "Online"
     }
   },
   "DownloadSettingPage": {
@@ -403,6 +414,14 @@
       "launch": "Launch Instance"
     }
   },
+  "InstanceModsPage": {
+    "modLoaderList": {
+      "title": "Mod Loader"
+    },
+    "modList": {
+      "title": "Mods"
+    }
+  },
   "InstanceWorldsPage": {
     "worldList": {
       "title": "Worlds",
@@ -447,6 +466,10 @@
       "now": "In use",
       "minAllocation": "Minimum allocated for Minecraft"
     }
+  },
+  "ModLoaderCards": {
+    "installed": "Installed",
+    "unInstalled": "Not Installed"
   },
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."

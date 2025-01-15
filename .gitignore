@@ -25,10 +25,14 @@ pnpm-lock.yaml
 .DS_Store
 *.pem
 
-# debug
+# debug and logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*
@@ -44,5 +48,12 @@ next-env.d.ts
 package-lock.json
 
 # IDE
-/.vscode
-/.idea
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
