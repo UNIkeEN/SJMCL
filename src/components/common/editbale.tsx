@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   FormControl,
   FormErrorMessage,
   HStack,
@@ -8,22 +9,23 @@ import {
   Text,
   TextProps,
   Textarea,
-  VStack,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuSquarePen, LuX } from "react-icons/lu";
 
-interface EditableProps extends TextProps {
+interface EditableProps extends BoxProps {
   isTextArea: boolean;
   value: string;
   onEditSubmit: (value: string) => void;
   localeKey?: string;
   placeholder?: string;
-  textareaWidth?: string;
   checkError?: (value: string) => number;
   onFocus?: () => void;
   onBlur?: () => void;
+  textProps?: TextProps;
+  inputProps?: React.ComponentProps<typeof Input>;
+  textareaProps?: React.ComponentProps<typeof Textarea>;
 }
 
 const Editable: React.FC<EditableProps> = ({
@@ -32,11 +34,13 @@ const Editable: React.FC<EditableProps> = ({
   onEditSubmit,
   localeKey,
   placeholder = "",
-  textareaWidth = "sm",
   checkError = () => 0,
   onFocus = () => {},
   onBlur = () => {},
-  ...textProps
+  textProps = {},
+  inputProps = {},
+  textareaProps = {},
+  ...boxProps
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
@@ -94,10 +98,10 @@ const Editable: React.FC<EditableProps> = ({
   }, [value]);
 
   return (
-    <Box>
+    <Box {...boxProps}>
       {isEditing ? (
         isTextArea ? (
-          <FormControl pb={5} isInvalid={isInvalid}>
+          <FormControl pb={5} isInvalid={isInvalid} w="100%">
             <Textarea
               ref={ref as React.RefObject<HTMLTextAreaElement>}
               value={tempValue}
@@ -114,6 +118,8 @@ const Editable: React.FC<EditableProps> = ({
                 setIsInvalid(false);
                 onFocus();
               }}
+              w="100%"
+              {...textareaProps}
             />
             <HStack>
               <FormErrorMessage>
@@ -128,7 +134,7 @@ const Editable: React.FC<EditableProps> = ({
             </HStack>
           </FormControl>
         ) : (
-          <FormControl isInvalid={isInvalid}>
+          <FormControl isInvalid={isInvalid} w="100%">
             <HStack>
               <Input
                 ref={ref as React.RefObject<HTMLInputElement>}
@@ -146,6 +152,8 @@ const Editable: React.FC<EditableProps> = ({
                   setIsInvalid(false);
                   onFocus();
                 }}
+                w="100%"
+                {...inputProps}
               />
               {EditButtons()}
             </HStack>
@@ -158,10 +166,10 @@ const Editable: React.FC<EditableProps> = ({
           </FormControl>
         )
       ) : isTextArea ? (
-        <HStack>
+        <HStack w="100%">
           <Text
             {...textProps}
-            maxW={textareaWidth}
+            w="100%"
             wordBreak="break-all"
             whiteSpace="pre-wrap"
           >
@@ -170,7 +178,7 @@ const Editable: React.FC<EditableProps> = ({
           {EditButtons()}
         </HStack>
       ) : (
-        <HStack spacing={0}>
+        <HStack spacing={0} w="100%">
           <Text {...textProps}>{value}</Text>
           {EditButtons()}
         </HStack>
