@@ -7,14 +7,20 @@ import {
   IconButton,
   Input,
   Text,
-  TextProps,
   Textarea,
+  VStack,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuSquarePen, LuX } from "react-icons/lu";
 
-interface EditableProps extends BoxProps {
+type CombinedProps = Omit<BoxProps, "color"> &
+  Omit<
+    React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
+    "color"
+  >;
+
+interface EditableProps extends CombinedProps {
   isTextArea: boolean;
   value: string;
   onEditSubmit: (value: string) => void;
@@ -24,17 +30,8 @@ interface EditableProps extends BoxProps {
   checkError?: (value: string) => number;
   onFocus?: () => void;
   onBlur?: () => void;
-  textProps?: TextProps;
-  inputProps?: Omit<
-    React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> &
-      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    "size"
-  > &
-    BoxProps;
-  formControlProps?: Omit<
-    React.ComponentProps<typeof FormControl>,
-    "isInvalid"
-  >;
+  textProps?: any;
+  inputProps?: any;
 }
 
 const Editable: React.FC<EditableProps> = (props) => {
@@ -50,7 +47,6 @@ const Editable: React.FC<EditableProps> = (props) => {
     onBlur = () => {},
     textProps = {},
     inputProps = {},
-    formControlProps = {},
     ...boxProps
   } = props;
 
@@ -58,13 +54,14 @@ const Editable: React.FC<EditableProps> = (props) => {
   const [isInvalid, setIsInvalid] = useState(true);
   const [tempValue, setTempValue] = useState(value);
 
-  const ref = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const ref = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
   const { t } = useTranslation();
 
   const EditButtons = () => {
     return isEditing ? (
       <HStack ml="auto">
         <IconButton
+          variant="subtle"
           icon={<LuCheck />}
           size="sm"
           aria-label="submit"
@@ -76,6 +73,7 @@ const Editable: React.FC<EditableProps> = (props) => {
         />
         <IconButton
           icon={<LuX />}
+          variant="subtle"
           size="sm"
           aria-label="cancel"
           onClick={() => {
@@ -87,6 +85,7 @@ const Editable: React.FC<EditableProps> = (props) => {
       </HStack>
     ) : (
       <IconButton
+        variant="subtle"
         icon={<LuSquarePen />}
         size="sm"
         aria-label="edit"
@@ -114,32 +113,37 @@ const Editable: React.FC<EditableProps> = (props) => {
     <Box {...boxProps}>
       {isEditing ? (
         isTextArea ? (
-          <FormControl pb={5} isInvalid={isInvalid} {...formControlProps}>
+          <FormControl pb={5} isInvalid={isInvalid && isEditing}>
             <Textarea
               ref={ref}
               value={tempValue}
               placeholder={placeholder}
               onChange={(e) => {
                 setTempValue(e.target.value);
-                setIsInvalid(checkError(e.target.value) !== 0);
               }}
-              onBlur={onBlur}
-              onFocus={onFocus}
+              onBlur={() => {
+                setIsInvalid(checkError(tempValue) !== 0);
+                onBlur();
+              }}
+              onFocus={() => {
+                setIsInvalid(false);
+                onFocus();
+              }}
               {...inputProps}
             />
-            <HStack>
+            <VStack>
               <FormErrorMessage>
-                {localeKey && isInvalid
+                {localeKey && isInvalid && isEditing
                   ? t(`${localeKey}.error-${checkError(tempValue)}`)
                   : ""}
               </FormErrorMessage>
               <Box mt="2" ml="auto">
                 {EditButtons()}
               </Box>
-            </HStack>
+            </VStack>
           </FormControl>
         ) : (
-          <FormControl isInvalid={isInvalid} {...formControlProps}>
+          <FormControl isInvalid={isInvalid && isEditing}>
             <HStack>
               <Input
                 ref={ref}
@@ -147,16 +151,21 @@ const Editable: React.FC<EditableProps> = (props) => {
                 placeholder={placeholder}
                 onChange={(e) => {
                   setTempValue(e.target.value);
-                  setIsInvalid(checkError(e.target.value) !== 0);
                 }}
-                onBlur={onBlur}
-                onFocus={onFocus}
+                onBlur={() => {
+                  setIsInvalid(checkError(tempValue) !== 0);
+                  onBlur();
+                }}
+                onFocus={() => {
+                  setIsInvalid(false);
+                  onFocus();
+                }}
                 {...inputProps}
               />
               {EditButtons()}
             </HStack>
             <FormErrorMessage>
-              {localeKey && isInvalid
+              {localeKey && isInvalid && isEditing
                 ? t(`${localeKey}.error-${checkError(tempValue)}`)
                 : ""}
             </FormErrorMessage>
