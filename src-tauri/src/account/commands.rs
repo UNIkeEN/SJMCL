@@ -170,12 +170,12 @@ pub async fn add_auth_server(auth_url: String) -> SJMCLResult<()> {
         .to_string();
       let homepage_url = json["meta"]["links"]["homepage"]
         .as_str()
-        .map(|s| s.to_string())
-        .unwrap_or_default();
+        .ok_or_else(|| SJMCLError(AuthServerError::InvalidServer.to_string()))?
+        .to_string();
       let register_url = json["meta"]["links"]["register"]
         .as_str()
-        .map(|s| s.to_string())
-        .unwrap_or_default();
+        .ok_or_else(|| SJMCLError(AuthServerError::InvalidServer.to_string()))?
+        .to_string();
 
       let new_server = AuthServer {
         name: server_name,

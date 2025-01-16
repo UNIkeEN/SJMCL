@@ -126,11 +126,14 @@ const AccountsPage = () => {
         if (servers.length > 0) {
           let url = servers[0].authUrl;
           await deleteAuthServer(url);
+          // check if the selected player was deleted with the server
           if (selectedPlayer?.authServer?.authUrl === url) {
             setSelectedPlayer(undefined);
           }
+          // update the new player list & auth server list
           setPlayerList(await getPlayerList());
           setAuthServerList(await getAuthServerList());
+          // redirect the selected player type to "all" to avoid display error
           setSelectedPlayerType("all");
           toast({
             title: t("Services.account.deleteAuthServer.success"),
