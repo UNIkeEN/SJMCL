@@ -1,4 +1,4 @@
-import { CloseButton, extendTheme } from "@chakra-ui/react";
+import { CloseButton, extendTheme, withDefaultProps } from "@chakra-ui/react";
 
 const subtleButtonVariant = (props: any) => ({
   bg: `${props.colorScheme}.100`,
@@ -126,6 +126,13 @@ const chakraExtendTheme = extendTheme({
         body: {
           fontSize: "sm",
           paddingX: 4,
+        },
+      },
+      defaultProps: {
+        size: {
+          base: "md",
+          lg: "lg",
+          xl: "xl",
         },
       },
     },
