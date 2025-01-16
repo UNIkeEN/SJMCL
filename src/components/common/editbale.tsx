@@ -20,32 +20,42 @@ interface EditableProps extends BoxProps {
   onEditSubmit: (value: string) => void;
   localeKey?: string;
   placeholder?: string;
+  textareaWidth?: string;
   checkError?: (value: string) => number;
   onFocus?: () => void;
   onBlur?: () => void;
   textProps?: TextProps;
   inputProps?: Omit<
-    React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
+    React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> &
+      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
     "size"
   > &
     BoxProps;
+  formControlProps?: Omit<
+    React.ComponentProps<typeof FormControl>,
+    "isInvalid"
+  >;
 }
 
-const Editable: React.FC<EditableProps> = ({
-  isTextArea,
-  value,
-  onEditSubmit,
-  localeKey,
-  placeholder = "",
-  checkError = () => 0,
-  onFocus = () => {},
-  onBlur = () => {},
-  textProps = {},
-  inputProps = {},
-  ...boxProps
-}) => {
+const Editable: React.FC<EditableProps> = (props) => {
+  const {
+    isTextArea,
+    value,
+    onEditSubmit,
+    localeKey,
+    placeholder = "",
+    textareaWidth = "sm",
+    checkError = () => 0,
+    onFocus = () => {},
+    onBlur = () => {},
+    textProps = {},
+    inputProps = {},
+    formControlProps = {},
+    ...boxProps
+  } = props;
+
   const [isEditing, setIsEditing] = useState(false);
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(true);
   const [tempValue, setTempValue] = useState(value);
 
   const ref = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
@@ -90,45 +100,38 @@ const Editable: React.FC<EditableProps> = ({
   };
 
   useEffect(() => {
-    if (isEditing && ref.current) {
-      ref.current.focus();
+    if (isEditing) {
+      ref.current?.focus();
     }
   }, [isEditing]);
 
   useEffect(() => {
     setTempValue(value);
-  }, [value]);
+    setIsInvalid(checkError(value) !== 0);
+  }, [value, checkError]);
 
   return (
     <Box {...boxProps}>
       {isEditing ? (
         isTextArea ? (
-          <FormControl pb={5} isInvalid={isInvalid} w="100%">
+          <FormControl pb={5} isInvalid={isInvalid} {...formControlProps}>
             <Textarea
-              ref={ref as React.RefObject<HTMLTextAreaElement>}
+              ref={ref}
               value={tempValue}
               placeholder={placeholder}
               onChange={(e) => {
                 setTempValue(e.target.value);
+                setIsInvalid(checkError(e.target.value) !== 0);
               }}
-              onBlur={() => {
-                const error = checkError(tempValue);
-                setIsInvalid(error !== 0);
-                onBlur();
-              }}
-              onFocus={() => {
-                setIsInvalid(false);
-                onFocus();
-              }}
-              w="100%"
+              onBlur={onBlur}
+              onFocus={onFocus}
               {...inputProps}
             />
             <HStack>
               <FormErrorMessage>
-                {localeKey &&
-                  (isInvalid
-                    ? t(`${localeKey}.error-${checkError(tempValue)}`)
-                    : "")}
+                {localeKey && isInvalid
+                  ? t(`${localeKey}.error-${checkError(tempValue)}`)
+                  : ""}
               </FormErrorMessage>
               <Box mt="2" ml="auto">
                 {EditButtons()}
@@ -136,52 +139,43 @@ const Editable: React.FC<EditableProps> = ({
             </HStack>
           </FormControl>
         ) : (
-          <FormControl isInvalid={isInvalid} w="100%">
+          <FormControl isInvalid={isInvalid} {...formControlProps}>
             <HStack>
               <Input
-                ref={ref as React.RefObject<HTMLInputElement>}
+                ref={ref}
                 value={tempValue}
                 placeholder={placeholder}
                 onChange={(e) => {
                   setTempValue(e.target.value);
+                  setIsInvalid(checkError(e.target.value) !== 0);
                 }}
-                onBlur={() => {
-                  const error = checkError(tempValue);
-                  setIsInvalid(error !== 0);
-                  onBlur();
-                }}
-                onFocus={() => {
-                  setIsInvalid(false);
-                  onFocus();
-                }}
-                w="100%"
+                onBlur={onBlur}
+                onFocus={onFocus}
                 {...inputProps}
               />
               {EditButtons()}
             </HStack>
             <FormErrorMessage>
-              {localeKey &&
-                (isInvalid
-                  ? t(`${localeKey}.error-${checkError(tempValue)}`)
-                  : "")}
+              {localeKey && isInvalid
+                ? t(`${localeKey}.error-${checkError(tempValue)}`)
+                : ""}
             </FormErrorMessage>
           </FormControl>
         )
-      ) : isTextArea ? (
-        <HStack w="100%">
-          <Text
-            {...textProps}
-            w="100%"
-            wordBreak="break-all"
-            whiteSpace="pre-wrap"
-          >
-            {value}
-          </Text>
-          {EditButtons()}
-        </HStack>
       ) : (
-        <HStack spacing={0} w="100%">
-          <Text {...textProps}>{value}</Text>
+        <HStack w="100%" align="start">
+          {isTextArea ? (
+            <Text
+              maxW={textareaWidth}
+              wordBreak="break-all"
+              whiteSpace="pre-wrap"
+              {...textProps}
+            >
+              {value}
+            </Text>
+          ) : (
+            <Text {...textProps}>{value}</Text>
+          )}
           {EditButtons()}
         </HStack>
       )}
