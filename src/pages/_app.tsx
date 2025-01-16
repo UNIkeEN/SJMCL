@@ -7,6 +7,7 @@ import { initReactI18next } from "react-i18next";
 import { Fade } from "@/components/common/transition";
 import { LauncherConfigContextProvider } from "@/contexts/config";
 import { DataContextProvider } from "@/contexts/data";
+import { ModalPropsProvider } from "@/contexts/modal-props";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { ToastContextProvider } from "@/contexts/toast";
 import GamesLayout from "@/layouts/games-layout";
@@ -65,21 +66,23 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <ChakraProvider theme={chakraExtendTheme}>
-      <ToastContextProvider>
-        <RoutingHistoryContextProvider>
-          <LauncherConfigContextProvider>
-            <DataContextProvider>
-              <MainLayout>
-                <Fade key={router.pathname.split("/")[1] || ""} in>
-                  <SpecLayout>
-                    <Component {...pageProps} />
-                  </SpecLayout>
-                </Fade>
-              </MainLayout>
-            </DataContextProvider>
-          </LauncherConfigContextProvider>
-        </RoutingHistoryContextProvider>
-      </ToastContextProvider>
+      <ModalPropsProvider>
+        <ToastContextProvider>
+          <RoutingHistoryContextProvider>
+            <LauncherConfigContextProvider>
+              <DataContextProvider>
+                <MainLayout>
+                  <Fade key={router.pathname.split("/")[1] || ""} in>
+                    <SpecLayout>
+                      <Component {...pageProps} />
+                    </SpecLayout>
+                  </Fade>
+                </MainLayout>
+              </DataContextProvider>
+            </LauncherConfigContextProvider>
+          </RoutingHistoryContextProvider>
+        </ToastContextProvider>
+      </ModalPropsProvider>
     </ChakraProvider>
   );
 }
