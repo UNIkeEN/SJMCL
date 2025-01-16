@@ -1,20 +1,47 @@
+import { Box, BoxProps } from "@chakra-ui/react";
 import { useEffect, useRef } from "react";
 import * as skinview3d from "skinview3d";
 
-interface SkinPreviewProps {
+interface SkinPreviewProps extends BoxProps {
   skinUrl: string;
   capeUrl?: string;
+  defaultWidth?: number;
+  defaultHeight?: number;
 }
 
-const SkinPreview: React.FC<SkinPreviewProps> = ({ skinUrl, capeUrl }) => {
+const SkinPreview: React.FC<SkinPreviewProps> = ({
+  skinUrl,
+  capeUrl,
+  defaultWidth = 400,
+  defaultHeight = 500,
+  width,
+  height,
+  ...rest
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const widthAsNumber =
+    typeof width === "number" ? width : parseInt(width as string, 10);
+  const heightAsNumber =
+    typeof height === "number" ? height : parseInt(height as string, 10);
+
+  const computedWidth =
+    widthAsNumber ||
+    (heightAsNumber
+      ? (heightAsNumber * defaultWidth) / defaultHeight
+      : defaultWidth);
+  const computedHeight =
+    heightAsNumber ||
+    (widthAsNumber
+      ? (widthAsNumber * defaultHeight) / defaultWidth
+      : defaultHeight);
 
   useEffect(() => {
     if (canvasRef.current && skinUrl) {
       const skinViewer = new skinview3d.SkinViewer({
         canvas: canvasRef.current,
-        width: 400,
-        height: 500,
+        width: computedWidth,
+        height: computedHeight,
         skin: skinUrl,
       });
 
@@ -31,10 +58,19 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({ skinUrl, capeUrl }) => {
         skinViewer.dispose();
       };
     }
-  }, [skinUrl, capeUrl]);
+  }, [skinUrl, capeUrl, computedWidth, computedHeight]);
 
   return (
-    <canvas ref={canvasRef} style={{ width: "100%", height: "auto" }}></canvas>
+    <Box {...rest}>
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: "100%",
+          height: "auto",
+          display: "block",
+        }}
+      ></canvas>
+    </Box>
   );
 };
 
