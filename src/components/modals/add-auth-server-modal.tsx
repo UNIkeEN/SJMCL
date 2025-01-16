@@ -98,11 +98,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       try {
         setIsLoading(true);
         // save the server info to the storage
-        await addAuthServer({
-          name: serverName,
-          authUrl: serverUrl,
-          mutable: true,
-        });
+        await addAuthServer(serverUrl);
         setAuthServerList(await getAuthServerList());
         setIsLoading(false);
         toast({

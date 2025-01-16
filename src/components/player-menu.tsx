@@ -51,12 +51,13 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           title: t("Services.account.deletePlayer.success"),
           status: "success",
         });
-        onDeleteClose();
       } catch (error) {
         toast({
           title: t("Services.account.deletePlayer.error"),
           status: "error",
         });
+      } finally {
+        onDeleteClose();
       }
     })();
   };
@@ -132,9 +133,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         })}
         btnOK={t("GenericConfirmModal.Button.delete")}
         btnCancel={t("GenericConfirmModal.Button.cancel")}
-        onOKCallback={() => {
-          handleDelete();
-        }}
+        onOKCallback={handleDelete}
         isAlert
       />
     </>

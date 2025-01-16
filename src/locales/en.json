@@ -175,6 +175,12 @@
       "content": "Are you sure you want to delete the player \"{{name}}\" ?"
     }
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Delete Authentication Server",
+      "content": "Are you sure you want to delete the authentication server \"{{name}}\" ?"
+    }
+  },
   "DiscoverPage": {
     "title": "Discover",
     "Button": {
@@ -513,6 +519,12 @@
         "duplicate": "The server has already been added",
         "invalid": "Invalid server URL",
         "error": "Failed to add authentication server"
+      },
+      "deleteAuthServer": {
+        "success": "Successfully deleted authentication server",
+        "notFound": "The authentication server does not exist",
+        "immutable": "The default authentication server cannot be deleted",
+        "error": "Failed to delete authentication server"
       }
     }
   },

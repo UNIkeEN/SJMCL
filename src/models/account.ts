@@ -25,11 +25,14 @@ export interface AuthServer {
   // id: number;
   name: string;
   authUrl: string;
+  homepageUrl: string;
+  registerUrl: string;
   mutable: boolean;
 }
 
 export enum AuthServerError {
   DUPLICATE_SERVER = "DUPLICATE_SERVER",
   INVALID_SERVER = "INVALID_SERVER",
+  IMMUTABLE_SERVER = "IMMUTABLE_SERVER",
   NOT_FOUND = "NOT_FOUND",
 }

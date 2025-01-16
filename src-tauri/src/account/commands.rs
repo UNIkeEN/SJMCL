@@ -85,11 +85,15 @@ pub fn get_auth_servers() -> SJMCLResult<Vec<AuthServer>> {
     let sjmc_auth_server = AuthServer {
       name: "SJMC 用户中心".to_string(),
       auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
+      homepage_url: "https://skin.mc.sjtu.cn".to_string(),
+      register_url: "https://skin.mc.sjtu.cn/auth/register".to_string(),
       mutable: false,
     };
     let mua_auth_server = AuthServer {
       name: "MUA 用户中心".to_string(),
       auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
+      homepage_url: "https://skin.mualliance.ltd".to_string(),
+      register_url: "https://skin.mualliance.ltd/auth/register".to_string(),
       mutable: false,
     };
     state.auth_servers.push(sjmc_auth_server);
@@ -135,6 +139,8 @@ pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> 
       let new_server = AuthServer {
         name: server_name,
         auth_url: url,
+        homepage_url: "".to_string(),
+        register_url: "".to_string(),
         mutable: true,
       };
 
@@ -146,20 +152,46 @@ pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> 
 }
 
 #[tauri::command]
-pub fn add_auth_server(server: AuthServer) -> SJMCLResult<()> {
+pub async fn add_auth_server(auth_url: String) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
-  if state
-    .auth_servers
-    .iter()
-    .any(|s| s.auth_url == server.auth_url)
-  {
+  if state.auth_servers.iter().any(|s| s.auth_url == auth_url) {
     // we need to strictly ensure the uniqueness of the url
     return Err(SJMCLError(AuthServerError::DuplicateServer.to_string()));
   }
-  // save the server
-  state.auth_servers.push(server);
-  state.save()?;
-  Ok(())
+  match reqwest::get(&auth_url).await {
+    Ok(response) => {
+      let json: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|_| SJMCLError(AuthServerError::InvalidServer.to_string()))?;
+      let server_name = json["meta"]["serverName"]
+        .as_str()
+        .ok_or_else(|| SJMCLError(AuthServerError::InvalidServer.to_string()))?
+        .to_string();
+      let homepage_url = json["meta"]["links"]["homepage"]
+        .as_str()
+        .map(|s| s.to_string())
+        .unwrap_or_default();
+      let register_url = json["meta"]["links"]["register"]
+        .as_str()
+        .map(|s| s.to_string())
+        .unwrap_or_default();
+
+      let new_server = AuthServer {
+        name: server_name,
+        auth_url,
+        homepage_url,
+        register_url,
+        mutable: true,
+      };
+
+      // save the server
+      state.auth_servers.push(new_server);
+      state.save()?;
+      Ok(())
+    }
+    Err(_) => return Err(SJMCLError(AuthServerError::InvalidServer.to_string())),
+  }
 }
 
 #[tauri::command]
@@ -167,10 +199,17 @@ pub fn delete_auth_server(url: String) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
 
   let initial_len = state.auth_servers.len();
+  let mut is_mutable = true;
   // try to remove the server from the storage if it is mutable
-  state
-    .auth_servers
-    .retain(|server| server.auth_url != url || !server.mutable);
+  state.auth_servers.retain(|server| {
+    if server.auth_url == url {
+      is_mutable = server.mutable;
+    }
+    server.auth_url != url || !server.mutable
+  });
+  if !is_mutable {
+    return Err(SJMCLError(AuthServerError::ImmutableServer.to_string()));
+  }
   if state.auth_servers.len() == initial_len {
     return Err(SJMCLError(AuthServerError::NotFound.to_string()));
   }
