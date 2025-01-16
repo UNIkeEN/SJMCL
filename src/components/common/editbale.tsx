@@ -24,8 +24,11 @@ interface EditableProps extends BoxProps {
   onFocus?: () => void;
   onBlur?: () => void;
   textProps?: TextProps;
-  inputProps?: React.ComponentProps<typeof Input>;
-  textareaProps?: React.ComponentProps<typeof Textarea>;
+  inputProps?: Omit<
+    React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
+    "size"
+  > &
+    BoxProps;
 }
 
 const Editable: React.FC<EditableProps> = ({
@@ -39,7 +42,6 @@ const Editable: React.FC<EditableProps> = ({
   onBlur = () => {},
   textProps = {},
   inputProps = {},
-  textareaProps = {},
   ...boxProps
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -119,7 +121,7 @@ const Editable: React.FC<EditableProps> = ({
                 onFocus();
               }}
               w="100%"
-              {...textareaProps}
+              {...inputProps}
             />
             <HStack>
               <FormErrorMessage>
