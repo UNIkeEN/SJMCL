@@ -270,7 +270,7 @@
       "delete": "Delete"
     }
   },
-  "General":{
+  "General": {
     "open": "Open",
     "openFolder": "Open Folder",
     "openInFolder": "Open in Folder"
@@ -293,7 +293,7 @@
       }
     }
   },
-  "GenericConfirmModal":{
+  "GenericConfirmModal": {
     "Button": {
       "delete": "Delete",
       "cancel": "Cancel"
@@ -438,7 +438,7 @@
       "title": "Servers"
     }
   },
-  "InstanceResourcePacksPage":{
+  "InstanceResourcePacksPage": {
     "resourcePackList": {
       "title": "Global Resource Packs"
     },
@@ -446,7 +446,7 @@
       "title": "Server Resource Packs"
     }
   },
-  "InstanceShaderPacksPage":{
+  "InstanceShaderPacksPage": {
     "shaderPackList": {
       "title": "Shader Packs"
     }
@@ -516,15 +516,24 @@
       },
       "addAuthServer": {
         "success": "Successfully added authentication server",
-        "duplicate": "The server has already been added",
-        "invalid": "Invalid server URL",
-        "error": "Failed to add authentication server"
+        "error": {
+          "title": "Failed to add authentication server",
+          "description": {
+            "duplicate": "The server has already been added",
+            "invalid": "Invalid server URL",
+            "unknown": "Unknown error"
+          }
+        }
       },
       "deleteAuthServer": {
         "success": "Successfully deleted authentication server",
-        "notFound": "The authentication server does not exist",
-        "immutable": "The default authentication server cannot be deleted",
-        "error": "Failed to delete authentication server"
+        "error": {
+          "title": "Failed to delete authentication server",
+          "description": {
+            "notFound": "The authentication server does not exist",
+            "unknown": "Unknown error"
+          }
+        }
       }
     }
   },

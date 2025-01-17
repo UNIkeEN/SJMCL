@@ -39,7 +39,7 @@ pub async fn run() {
       account::commands::add_player,
       account::commands::delete_player,
       account::commands::get_auth_servers,
-      account::commands::fetch_auth_server_info,
+      account::commands::get_auth_server_info,
       account::commands::add_auth_server,
       account::commands::delete_auth_server,
     ])

@@ -10,7 +10,6 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
 import { useRouter } from "next/router";
@@ -37,7 +36,8 @@ import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
-import { AuthServerError } from "@/models/account";
+import { useToast } from "@/contexts/toast";
+import { AuthServerError, errorToLocaleKey } from "@/models/account";
 import {
   deleteAuthServer,
   getAuthServerList,
@@ -141,26 +141,13 @@ const AccountsPage = () => {
           });
         }
       } catch (error) {
-        switch (error) {
-          case AuthServerError.NOT_FOUND:
-            toast({
-              title: t("Services.account.deleteAuthServer.notFound"),
-              status: "error",
-            });
-            break;
-          case AuthServerError.IMMUTABLE_SERVER:
-            toast({
-              title: t("Services.account.deleteAuthServer.immutable"),
-              status: "error",
-            });
-            break;
-          default:
-            toast({
-              title: t("Services.account.deleteAuthServer.error"),
-              status: "error",
-            });
-            break;
-        }
+        toast({
+          title: t("Services.account.deleteAuthServer.error.title"),
+          description: t(
+            `Services.account.deleteAuthServer.error.description.${errorToLocaleKey(error)}`
+          ),
+          status: "error",
+        });
       } finally {
         onDeleteAuthServerDialogClose();
       }

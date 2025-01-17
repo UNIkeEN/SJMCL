@@ -21,10 +21,10 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
-import { AuthServerError } from "@/models/account";
+import { AuthServerError, errorToLocaleKey } from "@/models/account";
 import {
   addAuthServer,
-  fetchAuthServerInfo,
+  getAuthServerInfo,
   getAuthServerList,
 } from "@/services/account";
 
@@ -62,33 +62,20 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       try {
         setIsLoading(true);
         // test the server url in backend & get the server name (without saving)
-        const newServer = await fetchAuthServerInfo(serverUrl);
+        const newServer = await getAuthServerInfo(serverUrl);
         setServerName(newServer.name);
         setServerUrl(newServer.authUrl);
-        setIsLoading(false);
         setIsNextStep(true);
       } catch (error) {
+        toast({
+          title: t("Services.account.addAuthServer.error.title"),
+          description: t(
+            `Services.account.addAuthServer.error.description.${errorToLocaleKey(error)}`
+          ),
+          status: "error",
+        });
+      } finally {
         setIsLoading(false);
-        switch (error as AuthServerError) {
-          case AuthServerError.INVALID_SERVER:
-            toast({
-              title: t("Services.account.addAuthServer.invalid"),
-              status: "error",
-            });
-            break;
-          case AuthServerError.DUPLICATE_SERVER:
-            toast({
-              title: t("Services.account.addAuthServer.duplicate"),
-              status: "error",
-            });
-            break;
-          default:
-            toast({
-              title: t("Services.account.addAuthServer.error"),
-              status: "error",
-            });
-            break;
-        }
       }
     })();
   };
@@ -100,18 +87,21 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
         // save the server info to the storage
         await addAuthServer(serverUrl);
         setAuthServerList(await getAuthServerList());
-        setIsLoading(false);
         toast({
           title: t("Services.account.addAuthServer.success"),
           status: "success",
         });
         onClose?.();
       } catch (error) {
-        setIsLoading(false);
         toast({
-          title: t("Services.account.addAuthServer.error"),
+          title: t("Services.account.addAuthServer.error.title"),
+          description: t(
+            `Services.account.addAuthServer.error.description.${errorToLocaleKey(error)}`
+          ),
           status: "error",
         });
+      } finally {
+        setIsLoading(false);
       }
     })();
   };

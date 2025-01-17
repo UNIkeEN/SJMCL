@@ -40,7 +40,6 @@ pub struct AuthServer {
   pub auth_url: String,
   pub homepage_url: String,
   pub register_url: String,
-  pub mutable: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -54,7 +53,6 @@ pub struct AccountInfo {
 pub enum AuthServerError {
   DuplicateServer,
   InvalidServer,
-  ImmutableServer,
   NotFound,
 }
 
@@ -63,7 +61,6 @@ impl fmt::Display for AuthServerError {
     match self {
       AuthServerError::DuplicateServer => write!(f, "DUPLICATE_SERVER"),
       AuthServerError::InvalidServer => write!(f, "INVALID_SERVER"),
-      AuthServerError::ImmutableServer => write!(f, "IMMUTABLE_SERVER"),
       AuthServerError::NotFound => write!(f, "NOT_FOUND"),
     }
   }

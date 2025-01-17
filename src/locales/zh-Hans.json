@@ -516,15 +516,24 @@
       },
       "addAuthServer": {
         "success": "认证服务器添加成功",
-        "duplicate": "认证服务器已存在",
-        "invalid": "无效的认证服务器地址",
-        "error": "认证服务器添加失败"
+        "error": {
+          "title": "认证服务器添加失败",
+          "description": {
+            "duplicate": "认证服务器已存在",
+            "invalid": "无效的认证服务器地址",
+            "unknown": "未知错误"
+          }
+        }
       },
       "deleteAuthServer": {
         "success": "认证服务器删除成功",
-        "notFound": "认证服务器不存在",
-        "immutable": "默认认证服务器不可删除",
-        "error": "认证服务器删除失败"
+        "error": {
+          "title": "认证服务器删除失败",
+          "description": {
+            "notFound": "认证服务器不存在",
+            "unknown": "未知错误"
+          }
+        }
       }
     }
   },

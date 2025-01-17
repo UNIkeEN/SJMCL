@@ -33,6 +33,18 @@ export interface AuthServer {
 export enum AuthServerError {
   DUPLICATE_SERVER = "DUPLICATE_SERVER",
   INVALID_SERVER = "INVALID_SERVER",
-  IMMUTABLE_SERVER = "IMMUTABLE_SERVER",
   NOT_FOUND = "NOT_FOUND",
+}
+
+export function errorToLocaleKey(error: any) {
+  switch (error) {
+    case AuthServerError.DUPLICATE_SERVER:
+      return "duplicate";
+    case AuthServerError.INVALID_SERVER:
+      return "invalid";
+    case AuthServerError.NOT_FOUND:
+      return "notFound";
+    default:
+      return "unknown";
+  }
 }
