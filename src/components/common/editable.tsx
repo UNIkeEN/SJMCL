@@ -18,8 +18,10 @@ interface EditableProps extends BoxProps {
   value: string;
   onEditSubmit: (value: string) => void;
   localeKey?: string;
+  // If use the default editable localeKey, error-1 :empty, error-2: too long
   placeholder?: string;
   checkError?: (value: string) => number;
+  // default：always return zero (no check)
   onFocus?: () => void;
   onBlur?: () => void;
   inputProps?: React.InputHTMLAttributes<
@@ -32,7 +34,7 @@ const Editable: React.FC<EditableProps> = ({
   isTextArea,
   value,
   onEditSubmit,
-  localeKey,
+  localeKey = "default.localekey",
   placeholder = "",
   checkError = () => 0,
   onFocus = () => {},
