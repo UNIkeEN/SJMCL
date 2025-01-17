@@ -7,54 +7,45 @@ import {
   IconButton,
   Input,
   Text,
-  Textarea,
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuSquarePen, LuX } from "react-icons/lu";
 
-type CombinedProps = Omit<BoxProps, "color"> &
-  Omit<
-    React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
-    "color"
-  >;
-
-interface EditableProps extends CombinedProps {
+interface EditableProps extends BoxProps {
   isTextArea: boolean;
   value: string;
   onEditSubmit: (value: string) => void;
   localeKey?: string;
   placeholder?: string;
-  textareaWidth?: string;
   checkError?: (value: string) => number;
   onFocus?: () => void;
   onBlur?: () => void;
-  textProps?: any;
-  inputProps?: any;
+  inputProps?: React.InputHTMLAttributes<
+    HTMLInputElement | HTMLTextAreaElement
+  >;
+  textProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
-const Editable: React.FC<EditableProps> = (props) => {
-  const {
-    isTextArea,
-    value,
-    onEditSubmit,
-    localeKey,
-    placeholder = "",
-    textareaWidth = "sm",
-    checkError = () => 0,
-    onFocus = () => {},
-    onBlur = () => {},
-    textProps = {},
-    inputProps = {},
-    ...boxProps
-  } = props;
-
+const Editable: React.FC<EditableProps> = ({
+  isTextArea,
+  value,
+  onEditSubmit,
+  localeKey,
+  placeholder = "",
+  checkError = () => 0,
+  onFocus = () => {},
+  onBlur = () => {},
+  inputProps = {},
+  textProps = {},
+  ...boxProps
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isInvalid, setIsInvalid] = useState(true);
   const [tempValue, setTempValue] = useState(value);
 
-  const ref = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
+  const ref = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const { t } = useTranslation();
 
   const EditButtons = () => {
@@ -100,7 +91,9 @@ const Editable: React.FC<EditableProps> = (props) => {
 
   useEffect(() => {
     if (isEditing) {
-      ref.current?.focus();
+      if (ref.current) {
+        ref.current.focus();
+      }
     }
   }, [isEditing]);
 
@@ -114,7 +107,8 @@ const Editable: React.FC<EditableProps> = (props) => {
       {isEditing ? (
         isTextArea ? (
           <FormControl pb={5} isInvalid={isInvalid && isEditing}>
-            <Textarea
+            <Input
+              as="textarea"
               ref={ref}
               value={tempValue}
               placeholder={placeholder}
@@ -130,17 +124,19 @@ const Editable: React.FC<EditableProps> = (props) => {
                 onFocus();
               }}
               {...inputProps}
+              w="100%"
             />
-            <VStack>
+            <HStack>
               <FormErrorMessage>
-                {localeKey && isInvalid && isEditing
-                  ? t(`${localeKey}.error-${checkError(tempValue)}`)
-                  : ""}
+                {localeKey &&
+                  (isInvalid && isEditing
+                    ? t(`${localeKey}.error-${checkError(tempValue)}`)
+                    : "")}
               </FormErrorMessage>
               <Box mt="2" ml="auto">
                 {EditButtons()}
               </Box>
-            </VStack>
+            </HStack>
           </FormControl>
         ) : (
           <FormControl isInvalid={isInvalid && isEditing}>
@@ -161,30 +157,31 @@ const Editable: React.FC<EditableProps> = (props) => {
                   onFocus();
                 }}
                 {...inputProps}
+                w="100%"
               />
               {EditButtons()}
             </HStack>
             <FormErrorMessage>
-              {localeKey && isInvalid && isEditing
-                ? t(`${localeKey}.error-${checkError(tempValue)}`)
-                : ""}
+              {localeKey &&
+                (isInvalid && isEditing
+                  ? t(`${localeKey}.error-${checkError(tempValue)}`)
+                  : "")}
             </FormErrorMessage>
           </FormControl>
         )
+      ) : isTextArea ? (
+        <Text
+          wordBreak="break-all"
+          whiteSpace="pre-wrap"
+          w="100%"
+          {...textProps}
+        >
+          {value}
+          {EditButtons()}
+        </Text>
       ) : (
-        <HStack w="100%" align="start">
-          {isTextArea ? (
-            <Text
-              maxW={textareaWidth}
-              wordBreak="break-all"
-              whiteSpace="pre-wrap"
-              {...textProps}
-            >
-              {value}
-            </Text>
-          ) : (
-            <Text {...textProps}>{value}</Text>
-          )}
+        <HStack spacing={0}>
+          <Text w="100%">{value}</Text>
           {EditButtons()}
         </HStack>
       )}
