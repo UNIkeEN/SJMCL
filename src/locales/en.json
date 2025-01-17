@@ -236,9 +236,11 @@
     }
   },
   "Editable": {
-    "error-1": "Input cannot be empty",
-    "error-2": "Input is too long"
-},
+    "defaultMessage": {
+      "error-1": "Input cannot be empty",
+      "error-2": "Input is too long"
+    }
+  },
   "Empty": {
     "noData": "No Data"
   },

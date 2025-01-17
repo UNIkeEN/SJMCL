@@ -9,7 +9,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuSquarePen, LuX } from "react-icons/lu";
 
@@ -18,10 +18,8 @@ interface EditableProps extends BoxProps {
   value: string;
   onEditSubmit: (value: string) => void;
   localeKey?: string;
-  // If use the default editable localeKey, error-1 :empty, error-2: too long
   placeholder?: string;
   checkError?: (value: string) => number;
-  // default：always return zero (no check)
   onFocus?: () => void;
   onBlur?: () => void;
   inputProps?: React.InputHTMLAttributes<
@@ -34,9 +32,9 @@ const Editable: React.FC<EditableProps> = ({
   isTextArea,
   value,
   onEditSubmit,
-  localeKey = "default.localekey",
+  localeKey = "Editable.defaultMessage", // If use the default editable localeKey, error-1 :empty, error-2: too long
   placeholder = "",
-  checkError = () => 0,
+  checkError = () => 0, // default：always return zero (no check)
   onFocus = () => {},
   onBlur = () => {},
   inputProps = {},
@@ -111,7 +109,7 @@ const Editable: React.FC<EditableProps> = ({
           <FormControl pb={5} isInvalid={isInvalid && isEditing}>
             <Input
               as="textarea"
-              ref={ref}
+              ref={ref as RefObject<HTMLTextAreaElement>}
               value={tempValue}
               placeholder={placeholder}
               onChange={(e) => {
@@ -126,6 +124,7 @@ const Editable: React.FC<EditableProps> = ({
                 onFocus();
               }}
               {...inputProps}
+              size="md"
               w="100%"
             />
             <HStack>
@@ -144,7 +143,8 @@ const Editable: React.FC<EditableProps> = ({
           <FormControl isInvalid={isInvalid && isEditing}>
             <HStack>
               <Input
-                ref={ref}
+                as="textarea"
+                ref={ref as RefObject<HTMLTextAreaElement>}
                 value={tempValue}
                 placeholder={placeholder}
                 onChange={(e) => {
@@ -160,6 +160,7 @@ const Editable: React.FC<EditableProps> = ({
                 }}
                 {...inputProps}
                 w="100%"
+                size="md"
               />
               {EditButtons()}
             </HStack>
