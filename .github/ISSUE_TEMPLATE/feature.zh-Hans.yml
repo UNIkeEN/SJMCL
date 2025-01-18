@@ -1,0 +1,42 @@
+name: 功能建议
+description: 为SJMCL提出新功能建议
+title: "[Feature] "
+labels: 📝 Feature Request
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您抽出时间提出新功能建议！在提交之前，请确保该功能未被其他人提出过。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 相关问题（可选）
+      description: "您的功能建议是否与某个问题相关？请描述。"
+      placeholder: "例如：我经常对[...]感到困扰"
+    validations:
+      required: false
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 解决方案
+      description: "简要描述您希望实现的功能。"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案（可选）
+      description: "简洁地描述您考虑过的任何替代解决方案或功能。"
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 补充信息（可选）
+      description: "在此添加关于该功能建议的任何其他信息或截图。"
+    validations:
+      required: false
