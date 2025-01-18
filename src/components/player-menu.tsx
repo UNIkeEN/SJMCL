@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { LuEllipsis, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
+import SkinManageModal from "@/components/modals/skin-manage-modal";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
@@ -32,6 +33,11 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
+  } = useDisclosure();
+  const {
+    isOpen: isSkinModalOpen,
+    onOpen: onSkinModalOpen,
+    onClose: onSkinModalClose,
   } = useDisclosure();
   const { selectedPlayer } = useData();
   const { setPlayerList, setSelectedPlayer } = useDataDispatch();
@@ -66,9 +72,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     {
       key: "skin",
       icon: TbHanger,
-      onClick: () => {
-        console.log("Skin operation clicked");
-      },
+      onClick: onSkinModalOpen,
     },
     {
       key: "delete",
@@ -136,6 +140,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         onOKCallback={handleDelete}
         isAlert
       />
+      <SkinManageModal isOpen={isSkinModalOpen} onClose={onSkinModalClose} />
     </>
   );
 };

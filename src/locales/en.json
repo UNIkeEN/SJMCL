@@ -567,8 +567,17 @@
       "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
       "about": "About",
-      "dev-test": "Dev - Test Page"
+      "dev-test": "Dev - Test Page",
+      "success":"Successfully change the skin"
     }
+  },
+  "SkinManageModal": {
+    "skinManage": "Skin Management",
+    "default": "Default",
+    "steve": "Steve",
+    "alex": "Alex",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "SkinPreview":{
     "cape": "Cape",

@@ -570,6 +570,15 @@
       "dev-test": "开发 - 测试页"
     }
   },
+  "SkinManageModal": {
+    "skinManage": "皮肤管理",
+    "default": "默认",
+    "steve": "Steve",
+    "alex": "Alex",
+    "confirm": "确定",
+    "cancel": "取消",
+    "success":  "成功更换皮肤"
+  },
   "SkinPreview":{
     "cape": "披风",
     "animation": {
