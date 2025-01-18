@@ -22,13 +22,11 @@ interface EditableProps extends BoxProps {
   onEditSubmit: (value: string) => void;
   localeKey?: string;
   placeholder?: string;
-  textareaWidth?: string;
   checkError?: (value: string) => number;
   onFocus?: () => void;
   onBlur?: () => void;
-  textProps?: TextProps;
+  textProps?: TextProps | TextareaProps;
   inputProps?: InputProps;
-  textareaProps?: TextareaProps;
 }
 
 const Editable: React.FC<EditableProps> = ({
@@ -37,13 +35,11 @@ const Editable: React.FC<EditableProps> = ({
   onEditSubmit,
   localeKey,
   placeholder = "",
-  textareaWidth = "sm",
   checkError = () => 0,
   onFocus = () => {},
   onBlur = () => {},
   textProps = {},
   inputProps = {},
-  textareaProps = {},
   ...boxProps
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -117,7 +113,7 @@ const Editable: React.FC<EditableProps> = ({
                 setIsInvalid(false);
                 onFocus();
               }}
-              {...textareaProps}
+              {...(textProps as TextareaProps)}
             />
             <HStack>
               <FormErrorMessage>
@@ -161,17 +157,17 @@ const Editable: React.FC<EditableProps> = ({
         )
       ) : isTextArea ? (
         <Text
-          maxW={textareaWidth}
+          w="100%"
           wordBreak="break-all"
           whiteSpace="pre-wrap"
-          {...textProps}
+          {...(textProps as TextProps)}
         >
           {value}
           {EditButtons()}
         </Text>
       ) : (
         <HStack spacing={0}>
-          <Text {...textProps}>{value}</Text>
+          <Text {...(textProps as TextProps)}>{value}</Text>
           {EditButtons()}
         </HStack>
       )}
