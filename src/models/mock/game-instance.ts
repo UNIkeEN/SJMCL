@@ -1,6 +1,7 @@
 import {
   GameInstanceSummary,
   GameServerInfo,
+  LocalModInfo,
   ResourcePacksInfo,
   Screenshot,
   ShaderPacksInfo,
@@ -109,5 +110,28 @@ export const mockShaderPacks: ShaderPacksInfo[] = [
   {
     name: "§r§lAstra§4§lLex§r§l_By_LexBoosT_§4§lV93.0§r§l",
     fileDir: "/.minecraft/shaderpacks",
+  },
+];
+
+export const mockLocalMods: LocalModInfo[] = [
+  {
+    icon: "https://media.forgecdn.net/avatars/thumbnails/92/854/64/64/636258666554688823.png",
+    enabled: true,
+    name: "Xaero's Minimap",
+    transltedName: "Xaero 的小地图",
+    version: "24.4.0",
+    fileName: "Xaeros_Minimap_24.4.0_Fabric_1.20",
+    description: "Displays the world nearby terrain, players, mobs",
+    potentialIncompatibility: false,
+  },
+  {
+    icon: "https://media.forgecdn.net/avatars/thumbnails/29/69/64/64/635838945588716414.jpeg",
+    enabled: false,
+    name: "Just Enough Items (JEI)",
+    transltedName: "JEI物品管理器",
+    version: "15.20.0.106",
+    fileName: "jei-1.20.1-fabric-15.20.0.106",
+    description: "View items and recipes",
+    potentialIncompatibility: true,
   },
 ];

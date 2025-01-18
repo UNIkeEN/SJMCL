@@ -23,6 +23,10 @@
         "bmclapi": {
           "title": "BMCLAPI",
           "description": "感谢 @bangbang93 提供的高速下载源"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "皮肤预览组件基于此开源项目实现，遵循 MIT 协议使用"
         }
       }
     },
@@ -37,7 +41,7 @@
           "title": "用户协议"
         },
         "openSourceLicense": {
-          "title": "开源许可",
+          "title": "开源协议",
           "description": "本项目遵循 GNU General Public License v3.0 协议"
         }
       }
@@ -238,7 +242,7 @@
     }
   },
   "Empty": {
-    "noData": "暂无数据"
+    "noData": "无数据"
   },
   "Enums": {
     "chakraColors": {
@@ -271,6 +275,8 @@
     }
   },
   "General": {
+    "disable": "禁用",
+    "enable": "启用",
     "open": "打开",
     "openFolder": "打开文件夹",
     "openInFolder": "打开文件位置"
@@ -426,7 +432,11 @@
       "title": "加载器"
     },
     "modList": {
-      "title": "模组"
+      "title": "模组",
+      "menu": {
+        "alert": "可能不兼容",
+        "info": "查看信息"
+      }
     }
   },
   "InstanceWorldsPage": {
@@ -560,6 +570,22 @@
       "dev-test": "开发 - 测试页"
     }
   },
+  "SkinPreview":{
+    "cape": "披风",
+    "animation": {
+      "idle": "空闲",
+      "walk": "步行 ",
+      "run": "跑步",
+      "wave": "挥手"
+    },
+    "Button": {
+      "enableRotation": "启用旋转",
+      "disableRotation": "禁用旋转",
+      "play": "播放",
+      "pause": "暂停"
+    }    
+  },
+
   "SyncAndRestoreSettingsPage": {
     "launcherConfig": {
       "title": "启动器设置",

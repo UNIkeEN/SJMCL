@@ -9,15 +9,17 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
+import { useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
 
 export interface OptionItemProps extends BoxProps {
   prefixElement?: React.ReactNode;
   title: string;
-  description?: React.ReactNode;
   titleExtra?: React.ReactNode;
+  description?: React.ReactNode;
   isLoading?: boolean;
   children: React.ReactNode;
+  childrenOnHover?: boolean;
 }
 
 export interface OptionItemGroupProps extends SectionProps {
@@ -27,15 +29,24 @@ export interface OptionItemGroupProps extends SectionProps {
 export const OptionItem: React.FC<OptionItemProps> = ({
   prefixElement,
   title,
-  description,
   titleExtra,
+  description,
   isLoading = false,
   children,
+  childrenOnHover = false,
   ...boxProps
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <Flex justify="space-between" alignItems="self-start" {...boxProps}>
-      <HStack spacing={2.5}>
+    <Flex
+      justify="space-between"
+      alignItems="self-start"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      {...boxProps}
+    >
+      <HStack spacing={2.5} overflowY="hidden">
         {prefixElement && (
           <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
         )}
@@ -62,15 +73,16 @@ export const OptionItem: React.FC<OptionItemProps> = ({
             ))}
         </VStack>
       </HStack>
-      {typeof children === "string" ? (
-        <Skeleton isLoaded={!isLoading}>
-          <Text fontSize="xs-sm" className="secondary-text">
-            {children}
-          </Text>
-        </Skeleton>
-      ) : (
-        children
-      )}
+      {(childrenOnHover ? isHovered : true) &&
+        (typeof children === "string" ? (
+          <Skeleton isLoaded={!isLoading}>
+            <Text fontSize="xs-sm" className="secondary-text">
+              {children}
+            </Text>
+          </Skeleton>
+        ) : (
+          children
+        ))}
     </Flex>
   );
 };

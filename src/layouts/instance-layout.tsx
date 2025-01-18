@@ -84,7 +84,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           ),
         }))}
       />
-      <VStack overflow="auto" align="strench" spacing={4}>
+      <VStack overflow="auto" align="strench" spacing={4} flex="1">
         {children}
       </VStack>
     </VStack>

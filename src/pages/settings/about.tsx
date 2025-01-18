@@ -83,6 +83,20 @@ const AboutSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t("AboutSettingsPage.ack.settings.skinview3d.title"),
+          description: t(
+            "AboutSettingsPage.ack.settings.skinview3d.description"
+          ),
+          children: (
+            <LinkIconButton
+              url="https://github.com/bs-community/skinview3d"
+              aria-label="skinview3d"
+              isExternal
+              showTooltip
+            />
+          ),
+        },
       ],
     },
     {

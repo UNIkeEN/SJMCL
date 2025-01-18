@@ -128,6 +128,13 @@ const chakraExtendTheme = extendTheme({
           paddingX: 4,
         },
       },
+      defaultProps: {
+        size: {
+          base: "md",
+          lg: "lg",
+          xl: "xl",
+        },
+      },
     },
     Switch: {
       defaultProps: {

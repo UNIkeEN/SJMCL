@@ -6,6 +6,7 @@ import {
   Radio,
   RadioGroup,
 } from "@chakra-ui/react";
+import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import GameMenu from "@/components/game-menu";
@@ -74,13 +75,19 @@ const GamesView: React.FC<GamesViewProps> = ({
   }));
 
   return (
-    <RadioGroup value={selectedGameInstance?.uuid}>
-      {viewType === "list" ? (
-        <OptionItemGroup items={listItems} {...boxProps} />
+    <Box {...boxProps}>
+      {games.length > 0 ? (
+        <RadioGroup value={selectedGameInstance?.uuid}>
+          {viewType === "list" ? (
+            <OptionItemGroup items={listItems} />
+          ) : (
+            <WrapCardGroup items={gridItems} variant="radio" />
+          )}
+        </RadioGroup>
       ) : (
-        <WrapCardGroup items={gridItems} variant="radio" {...boxProps} />
+        <Empty withIcon={false} size="sm" />
       )}
-    </RadioGroup>
+    </Box>
   );
 };
 
