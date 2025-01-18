@@ -25,8 +25,8 @@ interface EditableProps extends BoxProps {
   checkError?: (value: string) => number;
   onFocus?: () => void;
   onBlur?: () => void;
-  textProps?: TextProps | TextareaProps;
-  inputProps?: InputProps;
+  textProps?: TextProps;
+  inputProps?: InputProps | TextareaProps;
 }
 
 const Editable: React.FC<EditableProps> = ({
@@ -113,7 +113,7 @@ const Editable: React.FC<EditableProps> = ({
                 setIsInvalid(false);
                 onFocus();
               }}
-              {...(textProps as TextareaProps)}
+              {...(inputProps as TextareaProps)}
             />
             <HStack>
               <FormErrorMessage>
@@ -143,7 +143,7 @@ const Editable: React.FC<EditableProps> = ({
                   setIsInvalid(false);
                   onFocus();
                 }}
-                {...inputProps}
+                {...(inputProps as InputProps)}
               />
               {EditButtons()}
             </HStack>
@@ -160,14 +160,14 @@ const Editable: React.FC<EditableProps> = ({
           w="100%"
           wordBreak="break-all"
           whiteSpace="pre-wrap"
-          {...(textProps as TextProps)}
+          {...textProps}
         >
           {value}
           {EditButtons()}
         </Text>
       ) : (
         <HStack spacing={0}>
-          <Text {...(textProps as TextProps)}>{value}</Text>
+          <Text {...textProps}>{value}</Text>
           {EditButtons()}
         </HStack>
       )}
