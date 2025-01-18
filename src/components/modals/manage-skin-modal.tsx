@@ -9,19 +9,20 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  ModalProps,
   Radio,
   RadioGroup,
   VStack,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SkinPreview from "@/components/common/skin-preview";
-import { useToast } from "@/contexts/toast";
+import { useLauncherConfig } from "@/contexts/config";
 
-interface SkinManageModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface ManageSkinModalProps extends Omit<ModalProps, "children"> {
+  initialSkin?: "default" | "steve" | "alex";
+  isCenter?: boolean;
+  onOKCallback?: () => void;
 }
 
 const skinOptions = {
@@ -32,34 +33,44 @@ const skinOptions = {
 
 type SkinType = keyof typeof skinOptions;
 
-const SkinManageModal: React.FC<SkinManageModalProps> = ({
+const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
   isOpen,
   onClose,
+  isCenter = false,
+  initialSkin = "default",
+  onOKCallback,
+  ...modalProps
 }) => {
-  const [skin, setSkin] = useState<SkinType>("default");
+  const [skin, setSkin] = useState<SkinType>(initialSkin);
   const { t } = useTranslation();
-  const toast = useToast();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
+
+  useEffect(() => {
+    setSkin(initialSkin);
+  }, [initialSkin]);
 
   const handleSkinChange = (skinType: SkinType) => {
     setSkin(skinType);
   };
 
   const handleSave = () => {
-    console.log(skinOptions[skin]);
-    toast({
-      title: t("SkinManageModal.success"),
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+    if (onOKCallback) {
+      onOKCallback();
+    }
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered={isCenter}
+      {...modalProps}
+    >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("SkinManageModal.skinManage")}</ModalHeader>
+        <ModalHeader>{t("ManageSkinModal.skinManage")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Grid templateColumns="3fr 2fr" gap={4} h="320px">
@@ -68,49 +79,34 @@ const SkinManageModal: React.FC<SkinManageModalProps> = ({
                 skinSrc={skinOptions[skin]}
                 width={270}
                 height={310}
-                showControlBar={true}
+                showControlBar
               />
             </Flex>
 
-            <VStack
-              spacing={8}
-              align="flex-start"
-              mt={4}
-              height="100%"
-              justify="flex-start"
-              width="180"
-            >
-              <RadioGroup value={skin} onChange={handleSkinChange}>
+            <RadioGroup value={skin} onChange={handleSkinChange}>
+              <VStack spacing={4}>
                 {Object.keys(skinOptions).map((key) => (
-                  <Radio
-                    key={key}
-                    value={key}
-                    border="1px solid"
-                    borderColor="black"
-                    _active={{ bg: "blue" }}
-                    width="100%"
-                    mb={2}
-                  >
-                    {t(`SkinManageModal.${key}`)}
+                  <Radio key={key} value={key} colorScheme={primaryColor}>
+                    {t(`ManageSkinModal.${key}`)}
                   </Radio>
                 ))}
-              </RadioGroup>
-            </VStack>
+              </VStack>
+            </RadioGroup>
           </Grid>
         </ModalBody>
 
         <ModalFooter>
           <Flex width="100%" justify="flex-end" alignItems="center">
             <Button variant="ghost" onClick={onClose} ml={2}>
-              {t("SkinManageModal.cancel")}
+              {t("ManageSkinModal.cancel")}
             </Button>
             <Button
               variant="solid"
-              colorScheme="blue"
+              colorScheme={primaryColor}
               onClick={handleSave}
               ml={2}
             >
-              {t("SkinManageModal.confirm")}
+              {t("ManageSkinModal.confirm")}
             </Button>
           </Flex>
         </ModalFooter>
@@ -119,4 +115,4 @@ const SkinManageModal: React.FC<SkinManageModalProps> = ({
   );
 };
 
-export default SkinManageModal;
+export default ManageSkinModal;
