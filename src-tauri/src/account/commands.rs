@@ -136,14 +136,10 @@ pub async fn add_auth_server(auth_url: String) -> SJMCLResult<()> {
     // we need to strictly ensure the uniqueness of the url
     return Err(SJMCLError(AuthServerError::DuplicateServer.to_string()));
   }
-  match fetch_auth_server(auth_url.clone()).await {
-    Ok(server) => {
-      state.auth_servers.push(server);
-      state.save()?;
-      Ok(())
-    }
-    Err(e) => Err(e),
-  }
+  let server = fetch_auth_server(auth_url).await?;
+  state.auth_servers.push(server);
+  state.save()?;
+  Ok(())
 }
 
 #[tauri::command]

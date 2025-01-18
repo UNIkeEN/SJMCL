@@ -68,9 +68,9 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
         setIsNextStep(true);
       } catch (error) {
         toast({
-          title: t("Services.account.addAuthServer.error.title"),
+          title: t("Services.account.getAuthServerInfo.error.title"),
           description: t(
-            `Services.account.addAuthServer.error.description.${errorToLocaleKey(error)}`
+            `Services.account.getAuthServerInfo.error.description.${errorToLocaleKey(error)}`
           ),
           status: "error",
         });

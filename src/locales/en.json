@@ -514,6 +514,16 @@
         "success": "Successfully deleted player",
         "error": "Failed to delete player"
       },
+      "getAuthServerInfo": {
+        "error": {
+          "title": "Failed to get authentication server information",
+          "description": {
+            "duplicate": "The server has already been added",
+            "invalid": "Invalid server URL",
+            "unknown": "Unknown error"
+          }
+        }
+      },
       "addAuthServer": {
         "success": "Successfully added authentication server",
         "error": {

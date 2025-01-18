@@ -270,7 +270,7 @@
       "delete": "删除实例"
     }
   },
-  "General":{
+  "General": {
     "open": "打开",
     "openFolder": "打开文件夹",
     "openInFolder": "打开文件位置"
@@ -293,7 +293,7 @@
       }
     }
   },
-  "GenericConfirmModal":{
+  "GenericConfirmModal": {
     "Button": {
       "delete": "删除",
       "cancel": "取消"
@@ -438,7 +438,7 @@
       "title": "服务器"
     }
   },
-  "InstanceResourcePacksPage":{
+  "InstanceResourcePacksPage": {
     "resourcePackList": {
       "title": "全局资源包"
     },
@@ -446,7 +446,7 @@
       "title": "服务器资源包"
     }
   },
-  "InstanceShaderPacksPage":{
+  "InstanceShaderPacksPage": {
     "shaderPackList": {
       "title": "光影包"
     }
@@ -513,6 +513,16 @@
       "deletePlayer": {
         "success": "角色删除成功",
         "error": "角色删除失败"
+      },
+      "getAuthServerInfo": {
+        "error": {
+          "title": "获取认证服务器信息失败",
+          "description": {
+            "duplicate": "认证服务器已存在",
+            "invalid": "无效的认证服务器地址",
+            "unknown": "未知错误"
+          }
+        }
       },
       "addAuthServer": {
         "success": "认证服务器添加成功",
