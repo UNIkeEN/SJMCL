@@ -3,17 +3,17 @@ const path = require("path");
 
 // Read package.json
 const packageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../package.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, "../../package.json"), "utf8")
 );
 
 // Read tauri.conf.json
 const tauriConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../src-tauri/tauri.conf.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, "../../src-tauri/tauri.conf.json"), "utf8")
 );
 
 // Read Cargo.toml
 const cargoToml = fs.readFileSync(
-  path.join(__dirname, "../src-tauri/Cargo.toml"),
+  path.join(__dirname, "../../src-tauri/Cargo.toml"),
   "utf8"
 );
 const cargoVersion = cargoToml.match(/version\s*=\s*"([^"]+)"/)[1];
