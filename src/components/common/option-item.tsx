@@ -1,4 +1,5 @@
 import {
+  Box,
   BoxProps,
   Card,
   Divider,
@@ -24,6 +25,7 @@ export interface OptionItemProps extends BoxProps {
 
 export interface OptionItemGroupProps extends SectionProps {
   items: (OptionItemProps | React.ReactNode)[];
+  withDivider?: boolean;
 }
 
 export const OptionItem: React.FC<OptionItemProps> = ({
@@ -89,6 +91,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
 
 export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   items,
+  withDivider = true,
   ...props
 }) => {
   function isOptionItemProps(item: any): item is OptionItemProps {
@@ -116,7 +119,8 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
               ) : (
                 item
               )}
-              {index !== items.length - 1 && <Divider my={2} />}
+              {index !== items.length - 1 &&
+                (withDivider ? <Divider my={2} /> : <Box h={2} />)}
             </React.Fragment>
           ))}
         </Card>
