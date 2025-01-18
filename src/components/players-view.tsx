@@ -7,6 +7,7 @@ import {
   RadioGroup,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import PlayerMenu from "@/components/player-menu";
@@ -74,13 +75,19 @@ const PlayersView: React.FC<PlayersViewProps> = ({
   }));
 
   return (
-    <RadioGroup value={selectedPlayer?.uuid}>
-      {viewType === "list" ? (
-        <OptionItemGroup items={listItems} {...boxProps} />
+    <Box {...boxProps}>
+      {players.length > 0 ? (
+        <RadioGroup value={selectedPlayer?.uuid}>
+          {viewType === "list" ? (
+            <OptionItemGroup items={listItems} />
+          ) : (
+            <WrapCardGroup items={gridItems} variant="radio" />
+          )}
+        </RadioGroup>
       ) : (
-        <WrapCardGroup items={gridItems} variant="radio" {...boxProps} />
+        <Empty withIcon={false} size="sm" />
       )}
-    </RadioGroup>
+    </Box>
   );
 };
 

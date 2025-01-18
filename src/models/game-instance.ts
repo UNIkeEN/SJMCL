@@ -30,6 +30,17 @@ export interface GameServerInfo {
   name: string;
 }
 
+export interface LocalModInfo {
+  icon: string;
+  enabled: boolean;
+  name: string;
+  transltedName?: string;
+  version: string;
+  fileName: string;
+  description?: string;
+  potentialIncompatibility: boolean;
+}
+
 export interface ResourcePacksInfo {
   name: string;
   description?: string;

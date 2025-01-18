@@ -23,6 +23,10 @@
         "bmclapi": {
           "title": "BMCLAPI",
           "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "Our skin preview component is built based on this open-source project, under the MIT License"
         }
       }
     },
@@ -271,6 +275,8 @@
     }
   },
   "General": {
+    "disable": "Disable",
+    "enable": "Enable",
     "open": "Open",
     "openFolder": "Open Folder",
     "openInFolder": "Open in Folder"
@@ -426,7 +432,11 @@
       "title": "Mod Loader"
     },
     "modList": {
-      "title": "Mods"
+      "title": "Mods",
+      "menu": {
+        "alert": "Potentially incompatible",
+        "info": "Mod Info"
+      }
     }
   },
   "InstanceWorldsPage": {
@@ -558,6 +568,21 @@
       "help": "Docs & Help",
       "about": "About",
       "dev-test": "Dev - Test Page"
+    }
+  },
+  "SkinPreview":{
+    "cape": "Cape",
+    "animation": {
+      "idle": "Idle",
+      "walk": "Walk",
+      "run": "Run",
+      "wave": "Wave"
+    },
+    "Button": {
+      "enableRotation": "Enable Rotation",
+      "disableRotation": "Disable Rotation",
+      "play": "Play",
+      "pause": "Pause"
     }
   },
   "SyncAndRestoreSettingsPage": {

@@ -37,7 +37,7 @@
           "title": "使用者協議"
         },
         "openSourceLicense": {
-          "title": "開源授權",
+          "title": "開源協議",
           "description": "本專案遵循 GNU General Public License v3.0 授權"
         }
       }
@@ -493,6 +493,18 @@
       "about": "關於",
       "dev-test": "開發 - 測試頁"
     }
+  },
+  "SkinPreviewModal":{
+    "cape": "披風",
+    "idle": "靜止",
+    "walk": "走路",
+    "run": "跑步",
+    "wave": "揮手",
+    "rotation": "旋轉",
+    "enableRotation": "啟用旋轉",
+    "disableRotation": "禁用旋轉",
+    "play": "播放",
+    "pause": "暫停"
   },
   "SyncAndRestoreSettingsPage": {
     "launcherConfig": {
