@@ -94,7 +94,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" onClick={onClose} ml={3}>
+          <Button variant="ghost" onClick={onClose}>
             {t("ManageSkinModal.cancel")}
           </Button>
           <Button
