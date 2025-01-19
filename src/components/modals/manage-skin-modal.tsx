@@ -94,19 +94,17 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Flex width="100%" justify="flex-end" alignItems="center">
-            <Button variant="ghost" onClick={onClose} ml={2}>
-              {t("ManageSkinModal.cancel")}
-            </Button>
-            <Button
-              variant="solid"
-              colorScheme={primaryColor}
-              onClick={handleSave}
-              ml={2}
-            >
-              {t("ManageSkinModal.confirm")}
-            </Button>
-          </Flex>
+          <Button variant="ghost" onClick={onClose} ml={3}>
+            {t("ManageSkinModal.cancel")}
+          </Button>
+          <Button
+            variant="solid"
+            colorScheme={primaryColor}
+            onClick={handleSave}
+            ml={3}
+          >
+            {t("ManageSkinModal.confirm")}
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
