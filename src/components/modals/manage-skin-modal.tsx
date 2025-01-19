@@ -43,15 +43,11 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
     default: "/images/skins/unicorn_isla.png",
     steve: "/images/skins/steve.png",
     alex: "/images/skins/alex.png",
-  } as const;
+  };
 
   useEffect(() => {
     setSelectedSkin(skin);
   }, [skin]);
-
-  const handleSkinChange = (skinType: SkinType) => {
-    setSelectedSkin(skinType);
-  };
 
   const handleSave = () => {
     if (onSelectSkin) {
@@ -82,7 +78,10 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
               />
             </Flex>
 
-            <RadioGroup value={selectedSkin} onChange={handleSkinChange}>
+            <RadioGroup
+              value={selectedSkin}
+              onChange={(skinType: SkinType) => setSelectedSkin(skinType)}
+            >
               <VStack spacing={4} alignItems="flex-start">
                 {Object.keys(skinOptions).map((key) => (
                   <Radio key={key} value={key} colorScheme={primaryColor}>

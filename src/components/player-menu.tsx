@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { LuEllipsis, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
-import SkinManageModal from "@/components/modals/manage-skin-modal";
+import ManageSkinModal from "@/components/modals/manage-skin-modal";
 import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
@@ -140,7 +140,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         onOKCallback={handleDelete}
         isAlert
       />
-      <SkinManageModal
+      <ManageSkinModal
         isOpen={isManageSkinModalOpen}
         onClose={onManageSkinModalClose}
         isCenter
