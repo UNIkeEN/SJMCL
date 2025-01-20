@@ -8,7 +8,10 @@ const packageJson = JSON.parse(
 
 // Read tauri.conf.json
 const tauriConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../../src-tauri/tauri.conf.json"), "utf8")
+  fs.readFileSync(
+    path.join(__dirname, "../../src-tauri/tauri.conf.json"),
+    "utf8"
+  )
 );
 
 // Read Cargo.toml

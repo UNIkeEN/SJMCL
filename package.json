@@ -11,7 +11,7 @@
     "lint-staged": "lint-staged",
     "prepare": "husky",
     "version": "node scripts/version/index.js",
-    "check-locales-diff": "node src/locales/check-diff.js"
+    "locale": "node scripts/locale/index.js"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
@@ -19,6 +19,13 @@
     ],
     "src-tauri/src/**/*.rs": [
       "rustfmt --check"
+    ],
+    "scripts/**/*.js": [
+      "eslint --no-fix --max-warnings=0"
+    ],
+    "src/locales/*.json": [
+      "npm run locale diff en",
+      "npm run locale diff zh-Hans"
     ]
   },
   "dependencies": {
