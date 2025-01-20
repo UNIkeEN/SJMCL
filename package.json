@@ -10,7 +10,7 @@
     "tauri": "tauri",
     "lint-staged": "lint-staged",
     "prepare": "husky",
-    "version": "node scripts/index.js version",
+    "version": "node scripts/version/index.js",
     "check-locales-diff": "node src/locales/check-diff.js"
   },
   "lint-staged": {

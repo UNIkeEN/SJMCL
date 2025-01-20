@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const newVersion = process.argv[4];
+const newVersion = process.argv[3];
 
 if (!newVersion) {
   console.error("Usage: npm run version bump <new-version>");
