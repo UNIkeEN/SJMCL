@@ -80,9 +80,7 @@
   },
   "AddPlayerModal": {
     "modal": {
-      "header": "Add Player",
-      "confirm": "Add",
-      "cancel": "Cancel"
+      "header": "Add Player"
     },
     "label": {
       "playerType": "Player Type",
@@ -289,7 +287,7 @@
     "cancel": "Cancel",
     "finish": "Finish",
     "next": "Next",
-    "previous": "Previos",
+    "previous": "Previous",
     "close": "Close"
   },
   "GeneralSettingsPage": {
@@ -504,8 +502,7 @@
   },
   "RestoreConfigConfirmDialog": {
     "title": "Restore Launcher Settings",
-    "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?",
-    "btnOk": "Confirm"
+    "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
   },
   "Services": {
     "config": {
@@ -579,9 +576,7 @@
     "skinManage": "Manage Skin",
     "default": "Default",
     "steve": "Steve",
-    "alex": "Alex",
-    "confirm": "Confirm",
-    "cancel": "Cancel"
+    "alex": "Alex"
   },
   "SkinPreview":{
     "cape": "Cape",
