@@ -107,8 +107,8 @@ export const GameMenu: React.FC<GameMenuProps> = ({
         body={t("DeleteGameAlertDialog.dialog.content", {
           gameName: game.name,
         })}
-        btnOK={t("GenericConfirmModal.Button.delete")}
-        btnCancel={t("GenericConfirmModal.Button.cancel")}
+        btnOK={t("General.delete")}
+        btnCancel={t("General.cancel")}
         onOKCallback={handleDelete}
         isAlert
       />

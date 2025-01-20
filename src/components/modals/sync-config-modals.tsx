@@ -88,7 +88,7 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
         </ModalBody>
         <ModalFooter>
           <Button colorScheme={primaryColor} onClick={modalProps.onClose}>
-            {t("SyncConfigExportModal.button.close")}
+            {t("General.close")}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -126,10 +126,10 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
         </ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={modalProps.onClose}>
-            {t("SyncConfigImportModal.button.cancel")}
+            {t("General.cancel")}
           </Button>
           <Button colorScheme={primaryColor} onClick={modalProps.onClose}>
-            {t("SyncConfigImportModal.button.finish")}
+            {t("General.finish")}
           </Button>
         </ModalFooter>
       </ModalContent>

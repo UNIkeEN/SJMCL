@@ -96,7 +96,7 @@ const LaunchPage = () => {
         <Button colorScheme="blackAlpha" className={styles["launch-button"]}>
           <VStack spacing={1.5} w="100%">
             <Text fontSize="lg" fontWeight="bold">
-              {t("LaunchPage.Button.launch")}
+              {t("LaunchPage.button.launch")}
             </Text>
             <Text fontSize="sm" className="ellipsis-text">
               {selectedGameInstance

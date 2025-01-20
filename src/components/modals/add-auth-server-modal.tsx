@@ -155,19 +155,19 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" onClick={onClose}>
-            {t("AddAuthServerModal.button.cancel")}
+            {t("General.cancel")}
           </Button>
           {isNextStep ? (
             <>
               <Button variant="ghost" onClick={() => setIsNextStep(false)}>
-                {t("AddAuthServerModal.button.previous")}
+                {t("General.previous")}
               </Button>
               <Button
                 colorScheme={primaryColor}
                 onClick={handleFinish}
                 isLoading={isLoading}
               >
-                {t("AddAuthServerModal.button.finish")}
+                {t("General.finish")}
               </Button>
             </>
           ) : (
@@ -177,7 +177,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
               isLoading={isLoading}
               isDisabled={!serverUrl}
             >
-              {t("AddAuthServerModal.button.next")}
+              {t("General.next")}
             </Button>
           )}
         </ModalFooter>

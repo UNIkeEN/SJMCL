@@ -31,7 +31,7 @@ export const DiscoverSourcesPage = () => {
   return (
     <Section
       className="content-full-y"
-      title={t("DiscoverPage.Button.sources")}
+      title={t("DiscoverPage.button.sources")}
       withBackButton
       headExtra={
         <Button
@@ -40,7 +40,7 @@ export const DiscoverSourcesPage = () => {
           colorScheme={primaryColor}
           isDisabled // TBD
         >
-          {t("DiscoverSourcesPage.Button.addSource")}
+          {t("DiscoverSourcesPage.button.addSource")}
         </Button>
       }
     >
@@ -79,7 +79,7 @@ export const DiscoverSourcesPage = () => {
                     </TagLabel>
                   </Tag>
                 )}
-                <Tooltip label={t("DiscoverSourcesPage.Button.deleteSource")}>
+                <Tooltip label={t("DiscoverSourcesPage.button.deleteSource")}>
                   <IconButton
                     size="sm"
                     aria-label="delete-source"

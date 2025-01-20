@@ -39,7 +39,7 @@ export const DiscoverPage = () => {
               router.push("/discover/sources");
             }}
           >
-            {t("DiscoverPage.Button.sources")}
+            {t("DiscoverPage.button.sources")}
           </Button>
           <Button
             leftIcon={<LuRefreshCcw />}
@@ -49,7 +49,7 @@ export const DiscoverPage = () => {
               setPosts([]); // TODO
             }}
           >
-            {t("DiscoverPage.Button.refresh")}
+            {t("DiscoverPage.button.refresh")}
           </Button>
         </HStack>
       }

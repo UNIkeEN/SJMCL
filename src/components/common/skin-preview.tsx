@@ -249,7 +249,7 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
             </Tooltip>
             <Tooltip
               label={t(
-                `SkinPreview.Button.${autoRotate ? "disable" : "enable"}Rotation`
+                `SkinPreview.button.${autoRotate ? "disable" : "enable"}Rotation`
               )}
             >
               <IconButton
@@ -260,7 +260,7 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
               />
             </Tooltip>
             <Tooltip
-              label={t(`SkinPreview.Button.${isPlaying ? "pause" : "play"}`)}
+              label={t(`SkinPreview.button.${isPlaying ? "pause" : "play"}`)}
             >
               <IconButton
                 aria-label="Play/Pause Animation"

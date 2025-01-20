@@ -48,7 +48,7 @@
     }
   },
   "AccountsPage": {
-    "Button": {
+    "button": {
       "addPlayer": "添加角色",
       "add3rdPartyServer": "添加认证服务器",
       "sourceHomepage": "访问主页",
@@ -76,19 +76,11 @@
     "page2": {
       "name": "名称",
       "serverUrl": "服务器地址"
-    },
-    "button": {
-      "cancel": "取消",
-      "previous": "上一步",
-      "finish": "完成",
-      "next": "下一步"
     }
   },
   "AddPlayerModal": {
     "modal": {
-      "header": "添加角色",
-      "confirm": "确定",
-      "cancel": "取消"
+      "header": "添加角色"
     },
     "label": {
       "playerType": "角色类型",
@@ -107,7 +99,7 @@
     }
   },
   "AllGamesPage": {
-    "Button": {
+    "button": {
       "addAndImport": "添加与导入",
       "globalSettings": "全局游戏设置",
       "launch": "启动游戏"
@@ -175,12 +167,6 @@
       "game": "选择游戏版本",
       "loader": "选择加载器",
       "mods": "模组与资源包"
-    },
-    "button": {
-      "cancel": "取消",
-      "previous": "上一步",
-      "next": "下一步",
-      "finish": "完成"
     }
   },
   "DeleteGameAlertDialog": {
@@ -203,13 +189,13 @@
   },
   "DiscoverPage": {
     "title": "发现",
-    "Button": {
+    "button": {
       "sources": "管理数据源",
       "refresh": "刷新"
     }
   },
   "DiscoverSourcesPage": {
-    "Button": {
+    "button": {
       "addSource": "添加数据源",
       "deleteSource": "删除数据源"
     },
@@ -295,7 +281,14 @@
     "enable": "启用",
     "open": "打开",
     "openFolder": "打开文件夹",
-    "openInFolder": "打开文件位置"
+    "openInFolder": "打开文件位置",
+    "delete": "删除",
+    "confirm": "确定",
+    "cancel": "取消",
+    "finish": "完成",
+    "next": "下一步",
+    "previous": "上一步",
+    "close": "关闭"
   },
   "GeneralSettingsPage": {
     "general": {
@@ -313,12 +306,6 @@
           "title": "发现页"
         }
       }
-    }
-  },
-  "GenericConfirmModal": {
-    "Button": {
-      "delete": "删除",
-      "cancel": "取消"
     }
   },
   "GlobalGameSettingsPage": {
@@ -439,7 +426,7 @@
       "screenshots": "截图",
       "settings": "设置"
     },
-    "Button": {
+    "button": {
       "launch": "启动实例"
     }
   },
@@ -478,7 +465,7 @@
     }
   },
   "LaunchPage": {
-    "Button": {
+    "button": {
       "launch": "启动游戏"
     },
     "SwitchButton": {
@@ -515,8 +502,7 @@
   },
   "RestoreConfigConfirmDialog": {
     "title": "还原启动器设置",
-    "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？",
-    "btnOk": "确定"
+    "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
   "Services": {
     "config": {
@@ -590,9 +576,7 @@
     "skinManage": "管理皮肤",
     "default": "默认",
     "steve": "Steve",
-    "alex": "Alex",
-    "confirm": "确定",
-    "cancel": "取消"
+    "alex": "Alex"
   },
   "SkinPreview":{
     "cape": "披风",
@@ -602,7 +586,7 @@
       "run": "跑步",
       "wave": "挥手"
     },
-    "Button": {
+    "button": {
       "enableRotation": "启用旋转",
       "disableRotation": "禁用旋转",
       "play": "播放",
@@ -635,10 +619,7 @@
       "token": "令牌"
     },
     "helper": "将上述令牌输入至待同步的设备以完成同步",
-    "countdown": "{{seconds}} 秒后刷新",
-    "button": {
-      "close": "关闭"
-    }
+    "countdown": "{{seconds}} 秒后刷新"
   },
   "SyncConfigImportModal": {
     "header": {
@@ -647,11 +628,7 @@
     "label": {
       "token": "令牌"
     },
-    "helper": "请输入需同步设备生成的令牌",
-    "button": {
-      "cancel": "取消",
-      "finish": "完成"
-    }
+    "helper": "请输入需同步设备生成的令牌"
   },
   "Utils": {
     "datetime": {

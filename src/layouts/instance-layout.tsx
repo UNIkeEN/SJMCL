@@ -60,7 +60,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           colorScheme={primaryColor}
           onClick={() => {}} // todo
         >
-          {t("InstanceLayout.Button.launch")}
+          {t("InstanceLayout.button.launch")}
         </Button>
       </Flex>
       <NavMenu

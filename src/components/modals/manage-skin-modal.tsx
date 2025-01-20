@@ -95,14 +95,14 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" onClick={onClose}>
-            {t("ManageSkinModal.cancel")}
+            {t("General.cancel")}
           </Button>
           <Button
             variant="solid"
             colorScheme={primaryColor}
             onClick={handleSave}
           >
-            {t("ManageSkinModal.confirm")}
+            {t("General.confirm")}
           </Button>
         </ModalFooter>
       </ModalContent>

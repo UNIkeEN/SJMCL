@@ -42,10 +42,10 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalBody>Step1 TBD</ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={modalProps.onClose}>
-            {t("CreateInstanceModal.button.cancel")}
+            {t("General.cancel")}
           </Button>
           <Button colorScheme={primaryColor} onClick={() => setActiveStep(1)}>
-            {t("CreateInstanceModal.button.next")}
+            {t("General.next")}
           </Button>
         </ModalFooter>
       </>
@@ -58,13 +58,13 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalBody>Step2 TBD</ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={modalProps.onClose}>
-            {t("CreateInstanceModal.button.cancel")}
+            {t("General.cancel")}
           </Button>
           <Button variant="ghost" onClick={() => setActiveStep(0)}>
-            {t("CreateInstanceModal.button.previous")}
+            {t("General.previous")}
           </Button>
           <Button colorScheme={primaryColor} onClick={() => setActiveStep(2)}>
-            {t("CreateInstanceModal.button.next")}
+            {t("General.next")}
           </Button>
         </ModalFooter>
       </>
@@ -77,13 +77,13 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalBody>Step3 TBD</ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={modalProps.onClose}>
-            {t("CreateInstanceModal.button.cancel")}
+            {t("General.cancel")}
           </Button>
           <Button variant="ghost" onClick={() => setActiveStep(1)}>
-            {t("CreateInstanceModal.button.previous")}
+            {t("General.previous")}
           </Button>
           <Button colorScheme={primaryColor} onClick={modalProps.onClose}>
-            {t("CreateInstanceModal.button.finish")}
+            {t("General.finish")}
           </Button>
         </ModalFooter>
       </>

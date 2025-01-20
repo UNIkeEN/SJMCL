@@ -267,7 +267,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
         <ModalFooter>
           <Button variant="ghost" onClick={modalProps.onClose}>
-            {t("AddPlayerModal.modal.cancel")}
+            {t("General.cancel")}
           </Button>
           <Button
             colorScheme={primaryColor}
@@ -280,7 +280,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 (!authServerUrl || !password))
             }
           >
-            {t("AddPlayerModal.modal.confirm")}
+            {t("General.confirm")}
           </Button>
         </ModalFooter>
       </ModalContent>

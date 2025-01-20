@@ -58,7 +58,7 @@ const AllGamesPage = () => {
             variant={primaryColor === "gray" ? "subtle" : "outline"}
             onClick={() => {}} // TODO
           >
-            {t("AllGamesPage.Button.addAndImport")}
+            {t("AllGamesPage.button.addAndImport")}
           </Button>
           <Button
             leftIcon={<LuPlay />}
@@ -67,7 +67,7 @@ const AllGamesPage = () => {
             isDisabled={!selectedGameInstance}
             onClick={() => {}} // TODO
           >
-            {t("AllGamesPage.Button.launch")}
+            {t("AllGamesPage.button.launch")}
           </Button>
         </HStack>
       }

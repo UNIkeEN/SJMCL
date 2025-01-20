@@ -184,7 +184,7 @@ const AccountsPage = () => {
               <HStack spacing={2}>
                 <Icon as={LuCirclePlus} />
                 <Text fontSize="sm">
-                  {t("AccountsPage.Button.add3rdPartyServer")}
+                  {t("AccountsPage.button.add3rdPartyServer")}
                 </Text>
               </HStack>
             </SelectableButton>
@@ -207,7 +207,7 @@ const AccountsPage = () => {
             headExtra={
               <HStack spacing={2} alignItems="flex-start">
                 {!["all", "offline"].includes(selectedPlayerType) && (
-                  <Tooltip label={t("AccountsPage.Button.sourceHomepage")}>
+                  <Tooltip label={t("AccountsPage.button.sourceHomepage")}>
                     <IconButton
                       aria-label="home"
                       size="xs"
@@ -225,7 +225,7 @@ const AccountsPage = () => {
                   </Tooltip>
                 )}
                 {!["all", "offline"].includes(selectedPlayerType) && (
-                  <Tooltip label={t("AccountsPage.Button.deleteServer")}>
+                  <Tooltip label={t("AccountsPage.button.deleteServer")}>
                     <IconButton
                       aria-label="home"
                       size="xs"
@@ -255,7 +255,7 @@ const AccountsPage = () => {
                   colorScheme={primaryColor}
                   onClick={onAddPlayerModalOpen}
                 >
-                  {t("AccountsPage.Button.addPlayer")}
+                  {t("AccountsPage.button.addPlayer")}
                 </Button>
               </HStack>
             }
@@ -283,8 +283,8 @@ const AccountsPage = () => {
             (server) => server.authUrl === selectedPlayerType
           )?.name,
         })}
-        btnOK={t("GenericConfirmModal.Button.delete")}
-        btnCancel={t("GenericConfirmModal.Button.cancel")}
+        btnOK={t("General.delete")}
+        btnCancel={t("General.cancel")}
         onOKCallback={handleDeleteAuthServer}
       />
       <AddPlayerModal
