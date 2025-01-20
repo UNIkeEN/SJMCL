@@ -578,7 +578,7 @@
     "steve": "Steve",
     "alex": "Alex"
   },
-  "SkinPreview":{
+  "SkinPreview": {
     "cape": "披风",
     "animation": {
       "idle": "空闲",
@@ -591,9 +591,8 @@
       "disableRotation": "禁用旋转",
       "play": "播放",
       "pause": "暂停"
-    }    
+    }
   },
-
   "SyncAndRestoreSettingsPage": {
     "launcherConfig": {
       "title": "启动器设置",
