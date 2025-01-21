@@ -62,14 +62,17 @@ pub async fn run() {
 
       app.manage(Mutex::new(launcher_config));
 
+      // On platforms other than macOS, set the menu to empty to hide the default menu.
+      // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
+      if os.clone() != "macos" {
+        let menu = MenuBuilder::new(app).build()?;
+        app.set_menu(menu)?;
+      };
+
       // send statistics
       tokio::spawn(async move {
         let _ = utils::send_statistics(version, os).await;
       });
-
-      // Set up menu
-      let menu = MenuBuilder::new(app).build()?;
-      app.set_menu(menu)?;
 
       // Log in debug mode
       if is_dev {
