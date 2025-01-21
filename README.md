@@ -24,7 +24,7 @@ We warmly invite contributions from everyone.
 
 ### Copyright
 
-Copyright © 2024 SJMCL Team.
+Copyright © 2024-2025 SJMCL Team.
 
 Licensed under the [GNU General Public License v3.0](/LICENSE.md).
 
