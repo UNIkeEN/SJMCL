@@ -12,8 +12,3 @@ export const ChakraColorEnums = [
 ] as const;
 
 export type ColorSelectorType = (typeof ChakraColorEnums)[number];
-
-export interface MemoryInfo {
-  total: number;
-  used: number;
-}

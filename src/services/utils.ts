@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { MemoryInfo } from "@/models/misc";
+import { MemoryInfo } from "@/models/system-info";
 
 /**
  * Fetches the memory info of the system.

@@ -493,6 +493,11 @@
       "title": "光影包"
     }
   },
+  "JavaInfoPage":{
+    "javaList":{
+      "title":"Java 管理"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "启动游戏"

@@ -493,6 +493,11 @@
       "title": "Shader Packs"
     }
   },
+  "JavaInfoPage":{
+    "javaList":{
+      "title":"Java Management"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "Launch Game"
