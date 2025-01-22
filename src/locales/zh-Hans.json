@@ -210,8 +210,7 @@
   "DiscoverPage": {
     "title": "发现",
     "button": {
-      "sources": "管理数据源",
-      "refresh": "刷新"
+      "sources": "管理数据源"
     }
   },
   "DiscoverSourcesPage": {
@@ -308,7 +307,8 @@
     "open": "打开",
     "openFolder": "打开文件夹",
     "openInFolder": "打开文件位置",
-    "previous": "上一步"
+    "previous": "上一步",
+    "refresh": "刷新"
   },
   "GeneralSettingsPage": {
     "general": {
@@ -495,7 +495,9 @@
   },
   "JavaInfoPage":{
     "javaList":{
-      "title":"Java 管理"
+      "title":"Java 管理",
+      "download":"下载 Java",
+      "add":"添加 Java"
     }
   },
   "LaunchPage": {
