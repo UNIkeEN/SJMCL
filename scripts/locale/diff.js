@@ -4,7 +4,8 @@
  * compared to a reference locale file.
  *
  * Usage:
- *   npm run check-locales-diff <base_locale> <target_locales>
+ *   npm run locale diff <base_locale> <target_locales>
+ *   e.g. npm run locale diff en zh-Hans
  *
  * Parameters:
  *   base_locale (optional) : str, defaults to zh-Hans, the base language
@@ -20,7 +21,7 @@ const chalk = require("chalk");
 
 try {
   const arg = process.argv[3];
-  if (arg.includes("/") && arg.match(/\.json$/)) {
+  if (arg.includes("/") || arg.match(/\.json$/)) {
     base = arg.split("/").pop().replace(".json", "");
   } else {
     base = arg || "zh-Hans";
@@ -33,7 +34,7 @@ let targets = process.argv.slice(4) || [];
 if (targets != null) {
   for (let i = 0; i < targets.length; i++) {
     let target = targets[i];
-    if (target.includes("/") && target.match(/\.json$/)) {
+    if (target.includes("/") || target.match(/\.json$/)) {
       target = target.split("/").pop().replace(".json", "");
     }
     targets[i] = target;
