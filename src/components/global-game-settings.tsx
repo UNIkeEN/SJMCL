@@ -98,7 +98,10 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
                 }}
               >
                 {/* no stepper NumberInput, use pr={0} */}
-                <NumberInputField pr={0} />
+                <NumberInputField
+                  pr={0}
+                  focusBorderColor={`${primaryColor}.500`}
+                />
               </NumberInput>
               <Text fontSize="sm" mt={-1}>
                 ×
@@ -118,7 +121,10 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
                   );
                 }}
               >
-                <NumberInputField pr={0} />
+                <NumberInputField
+                  pr={0}
+                  focusBorderColor={`${primaryColor}.500`}
+                />
               </NumberInput>
               <Switch
                 colorScheme={primaryColor}
@@ -202,7 +208,10 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
                         );
                       }}
                     >
-                      <NumberInputField pr={0} />
+                      <NumberInputField
+                        pr={0}
+                        focusBorderColor={`${primaryColor}.500`}
+                      />
                     </NumberInput>
                     <Text fontSize="xs">MB</Text>
                   </HStack>

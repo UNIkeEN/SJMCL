@@ -149,7 +149,9 @@ const DownloadSettingsPage = () => {
                         );
                       }}
                     >
-                      <NumberInputField />
+                      <NumberInputField
+                        focusBorderColor={`${primaryColor}.500`}
+                      />
                       <NumberInputStepper>
                         <NumberIncrementStepper>
                           <LuChevronUp size={8} />
@@ -201,7 +203,10 @@ const DownloadSettingsPage = () => {
                       }}
                     >
                       {/* no stepper NumberInput, use pr={0} */}
-                      <NumberInputField pr={0} />
+                      <NumberInputField
+                        pr={0}
+                        focusBorderColor={`${primaryColor}.500`}
+                      />
                     </NumberInput>
                     <Text fontSize="xs">KB/s</Text>
                   </HStack>

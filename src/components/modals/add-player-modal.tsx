@@ -181,6 +181,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                   onChange={(e) => setPlayername(e.target.value)}
                   required
                   ref={initialRef}
+                  focusBorderColor={`${primaryColor}.500`}
                 />
               </FormControl>
             ) : (
@@ -246,6 +247,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             value={playername}
                             onChange={(e) => setPlayername(e.target.value)}
                             required
+                            ref={initialRef}
+                            focusBorderColor={`${primaryColor}.500`}
                           />
                         </FormControl>
                         <FormControl isRequired>
@@ -260,6 +263,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            focusBorderColor={`${primaryColor}.500`}
                           />
                         </FormControl>
                       </>

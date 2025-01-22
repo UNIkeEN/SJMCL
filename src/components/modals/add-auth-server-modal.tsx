@@ -134,6 +134,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
                 onChange={(e) => setServerUrl(e.target.value)}
                 onBlur={() => setIsServerUrlTouched(true)}
                 ref={initialRef}
+                focusBorderColor={`${primaryColor}.500`}
               />
               {isServerUrlInvalid && (
                 <FormErrorMessage>
