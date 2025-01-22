@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEarth, LuRefreshCcw } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -27,7 +27,7 @@ import {
 } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { GameResourceInfo } from "@/models/resource/game-resource-info";
+import { GameResourceInfo } from "@/models/resource";
 import { ISOtoDate } from "@/utils/datetime";
 
 interface GameResourceVersionListProps extends BoxProps {}
@@ -44,14 +44,11 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const gameTypes: Record<string, string> = useMemo(
-    () => ({
-      release: "GrassBlock.webp",
-      snapshot: "CommandBlock.webp",
-      oldBeta: "CraftingTable.webp",
-    }),
-    []
-  );
+  const gameTypes: Record<string, string> = {
+    release: "GrassBlock.webp",
+    snapshot: "CommandBlock.webp",
+    old_beta: "CraftingTable.webp",
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -68,12 +65,10 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
           releaseTime: string;
           url: string;
         }) => ({
-          version: {
-            id: version.id,
-            type: version.type,
-            releaseTime: version.releaseTime,
-            url: version.url,
-          },
+          id: version.id,
+          type: version.type,
+          releaseTime: version.releaseTime,
+          url: version.url,
         })
       );
 
@@ -89,24 +84,6 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
     fetchData();
   }, [fetchData]);
 
-  const filterVersions = useCallback(
-    (versions: GameResourceInfo[]) =>
-      versions.filter(
-        (version) =>
-          version.version &&
-          version.version.type &&
-          selectedTypes.has(version.version.type)
-      ),
-    [selectedTypes]
-  );
-
-  const sortVersions = (versions: GameResourceInfo[]) =>
-    versions.sort(
-      (a, b) =>
-        new Date(b.version.releaseTime).getTime() -
-        new Date(a.version.releaseTime).getTime()
-    );
-
   const handleTypeToggle = (type: string) => {
     setSelectedTypes((prev) => {
       const newSelectedTypes = new Set(prev);
@@ -119,29 +96,22 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
     });
   };
 
-  const processedVersions = useMemo(() => {
-    const filteredVersions = filterVersions(versions);
-    return sortVersions(filteredVersions);
-  }, [versions, filterVersions]);
-
   const buildOptionItem = (version: GameResourceInfo): OptionItemProps => ({
-    title: version.version.id,
-    description: ISOtoDate(version.version.releaseTime),
+    title: version.id,
+    description: ISOtoDate(version.releaseTime),
     children: null,
     prefixElement: (
       <Image
-        src={`/images/icons/${gameTypes[version.version.type]}`}
-        alt={version.version.type}
+        src={`/images/icons/${gameTypes[version.type]}`}
+        alt={version.type}
         boxSize="28px"
         borderRadius="4px"
       />
     ),
     titleExtra: (
-      <Box display="inline-flex" alignItems="center">
-        <Tag colorScheme={primaryColor}>
-          {t(`GameResourceVersionList.${version.version.type}`)}
-        </Tag>
-      </Box>
+      <Tag colorScheme={primaryColor}>
+        {t(`GameResourceVersionList.${version.type}`)}
+      </Tag>
     ),
   });
 
@@ -156,17 +126,14 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
                 isChecked={selectedTypes.has(type)}
                 onChange={() => handleTypeToggle(type)}
                 colorScheme={primaryColor}
-                borderColor="black"
+                borderColor="gray.400"
               >
                 <HStack spacing={2} alignItems="center">
                   <Text fontWeight="bold" fontSize="sm" className="no-select">
                     {t(`GameResourceVersionList.${type}`)}
                   </Text>
                   <CountTag
-                    count={
-                      processedVersions.filter((v) => v.version.type === type)
-                        .length
-                    }
+                    count={versions.filter((v) => v.type === type).length}
                   />
                 </HStack>
               </Checkbox>
@@ -178,11 +145,10 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
             aria-label="refresh"
             icon={<Icon as={LuRefreshCcw} boxSize={3.5} />}
             onClick={fetchData}
-            size="xs"
+            size="sm"
             h={21}
             variant="ghost"
             colorScheme="gray"
-            aria-live="polite"
           />
         }
       >
@@ -190,35 +156,32 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
           <Center h="100%">
             <BeatLoader size={16} color={primaryColor} />
           </Center>
-        ) : processedVersions.length === 0 ? (
+        ) : selectedTypes.size === 0 ? (
           <Empty size="sm" />
         ) : (
           <OptionItemGroup
-            items={processedVersions.map((version) => (
-              <OptionItem
-                key={version.version.id}
-                childrenOnHover
-                {...buildOptionItem(version)}
-              >
-                <Tooltip
-                  label={t("GameResourceVersionList.viewOnWiki")}
-                  aria-label={t("GameResourceVersionList.viewOnWiki")}
+            items={versions
+              .filter((version) => selectedTypes.has(version.type))
+              .map((version) => (
+                <OptionItem
+                  key={version.id}
+                  childrenOnHover
+                  {...buildOptionItem(version)}
                 >
-                  <Box display="inline-block" _hover={{ cursor: "pointer" }}>
-                    <Icon
-                      as={LuEarth}
-                      boxSize={5}
-                      color="black"
+                  <Tooltip label={t("GameResourceVersionList.viewOnWiki")}>
+                    <IconButton
+                      size="sm"
+                      aria-label={"GameResourceVersionList.viewOnWiki"}
+                      icon={<LuEarth />}
+                      variant="ghost"
+                      _hover={{ cursor: "pointer" }}
                       onClick={() =>
-                        open(
-                          `https://zh.minecraft.wiki/w/${version.version.id}`
-                        )
+                        open(`https://zh.minecraft.wiki/w/${version.id}`)
                       }
                     />
-                  </Box>
-                </Tooltip>
-              </OptionItem>
-            ))}
+                  </Tooltip>
+                </OptionItem>
+              ))}
             w="100%"
           />
         )}

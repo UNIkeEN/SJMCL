@@ -297,7 +297,7 @@
     }
   },
   "GameResourceVersionList": {
-    "oldBeta": "Old Beta",
+    "old_beta": "Old Beta",
     "release": "Release",
     "snapshot": "Snapshot",
     "viewOnWiki":"Minecraft Wiki"

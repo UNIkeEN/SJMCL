@@ -297,7 +297,7 @@
     }
   },
   "GameResourceVersionList": {
-    "oldBeta": "远古版",
+    "old_beta": "远古版",
     "release": "正式版",
     "snapshot": "测试版",
     "viewOnWiki":"Minecraft Wiki 页面"
