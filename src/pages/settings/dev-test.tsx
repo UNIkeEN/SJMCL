@@ -2,6 +2,7 @@ import { Alert, AlertIcon, Button, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import SkinPreview from "@/components/common/skin-preview";
+import GameResourceInfo from "@/models/resource/game-resource-info";
 import { isProd } from "@/utils/env";
 import { createWindow } from "@/utils/window";
 
@@ -41,6 +42,8 @@ const DevTestPage = () => {
 
       {/* Add test components here */}
       <SkinPreview />
+
+      <GameResourceInfo />
     </VStack>
   );
 };

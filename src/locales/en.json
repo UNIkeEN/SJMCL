@@ -296,6 +296,14 @@
       "delete": "Delete"
     }
   },
+  "gameResourceInfo": {
+    "loading": "Loading...",
+    "noVersions": "No versions available",
+    "oldBeta": "Old Beta",
+    "release": "Release",
+    "snapshot": "Snapshot",
+    "viewOnWiki":"Minecraft Wiki"
+  },
   "General": {
     "cancel": "Cancel",
     "close": "Close",
