@@ -296,9 +296,7 @@
       "delete": "Delete"
     }
   },
-  "gameResourceInfo": {
-    "loading": "Loading...",
-    "noVersions": "No versions available",
+  "GameResourceVersionList": {
     "oldBeta": "Old Beta",
     "release": "Release",
     "snapshot": "Snapshot",

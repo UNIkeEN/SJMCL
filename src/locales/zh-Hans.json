@@ -296,9 +296,7 @@
       "delete": "删除实例"
     }
   },
-  "gameResourceInfo": {
-    "loading": "加载中...",
-    "noVersions": "暂无版本",
+  "GameResourceVersionList": {
     "oldBeta": "远古版",
     "release": "正式版",
     "snapshot": "测试版",
