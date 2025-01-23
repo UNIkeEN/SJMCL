@@ -11,10 +11,12 @@ import {
   TextProps,
   Textarea,
   TextareaProps,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuPenLine, LuX } from "react-icons/lu";
+import { useLauncherConfig } from "@/contexts/config";
 
 interface EditableProps extends BoxProps {
   isTextArea: boolean;
@@ -50,42 +52,57 @@ const Editable: React.FC<EditableProps> = ({
     null
   );
   const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   const EditButtons = () => {
     return isEditing ? (
       <HStack ml="auto">
-        <IconButton
-          icon={<LuCheck />}
-          size="sm"
-          aria-label="submit"
-          onClick={() => {
-            if (isInvalid) return;
-            if (tempValue !== value) onEditSubmit(tempValue);
-            setIsEditing(false);
-          }}
-        />
-        <IconButton
-          icon={<LuX />}
-          size="sm"
-          aria-label="cancel"
-          onClick={() => {
-            setTempValue(value);
-            setIsEditing(false);
-            setIsInvalid(false);
-          }}
-        />
+        <Tooltip label={t("Editable.save")}>
+          <IconButton
+            icon={<LuCheck />}
+            size="xs"
+            variant="ghost"
+            h={18}
+            aria-label="submit"
+            onClick={() => {
+              if (isInvalid) return;
+              if (tempValue !== value) onEditSubmit(tempValue);
+              setIsEditing(false);
+            }}
+          />
+        </Tooltip>
+
+        <Tooltip label={t("Editable.cancel")}>
+          <IconButton
+            icon={<LuX />}
+            size="xs"
+            variant="ghost"
+            h={18}
+            aria-label="cancel"
+            onClick={() => {
+              setTempValue(value);
+              setIsEditing(false);
+              setIsInvalid(false);
+            }}
+          />
+        </Tooltip>
       </HStack>
     ) : (
-      <IconButton
-        icon={<LuPenLine />}
-        size="sm"
-        aria-label="edit"
-        onClick={() => {
-          setTempValue(value);
-          setIsEditing(true);
-        }}
-        ml="2"
-      />
+      <Tooltip label={t("Editable.edit")}>
+        <IconButton
+          icon={<LuPenLine />}
+          size="xs"
+          variant="ghost"
+          h={18}
+          aria-label="edit"
+          onClick={() => {
+            setTempValue(value);
+            setIsEditing(true);
+          }}
+          ml="2"
+        />
+      </Tooltip>
     );
   };
 
@@ -113,6 +130,7 @@ const Editable: React.FC<EditableProps> = ({
                 setIsInvalid(false);
                 onFocus();
               }}
+              focusBorderColor={`${primaryColor}.500`}
               {...(inputProps as TextareaProps)}
             />
             <HStack>
@@ -143,6 +161,7 @@ const Editable: React.FC<EditableProps> = ({
                   setIsInvalid(false);
                   onFocus();
                 }}
+                focusBorderColor={`${primaryColor}.500`}
                 {...(inputProps as InputProps)}
               />
               {EditButtons()}

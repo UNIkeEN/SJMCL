@@ -2,7 +2,6 @@ import {
   Button,
   Center,
   Flex,
-  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -100,7 +99,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       content: <Step2Content />,
     },
     {
-      key: "mods",
+      key: "info",
       content: <Step3Content />,
     },
   ];
@@ -112,7 +111,12 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalHeader>{t("CreateInstanceModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <Center>
-          <Stepper index={activeStep} w="80%" my={1.5}>
+          <Stepper
+            colorScheme={primaryColor}
+            index={activeStep}
+            w="80%"
+            my={1.5}
+          >
             {steps.map((step, index) => (
               <Step key={index}>
                 <StepIndicator>
@@ -122,7 +126,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
                     active={<StepNumber />}
                   />
                 </StepIndicator>
-                <Text fontSize="sm">
+                <Text fontSize="sm" className="no-select">
                   {t(`CreateInstanceModal.stepper.${step.key}`)}
                 </Text>
                 <StepSeparator />

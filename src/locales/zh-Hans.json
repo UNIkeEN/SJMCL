@@ -39,7 +39,7 @@
       "settings": {
         "copyright": {
           "title": "版权",
-          "description": "版权所有 © 2024 SJMCL 开发团队."
+          "description": "版权所有 © 2024-2025 SJMCL 开发团队."
         },
         "userAgreement": {
           "title": "用户协议"
@@ -186,7 +186,7 @@
     "stepper": {
       "game": "选择游戏版本",
       "loader": "选择加载器",
-      "mods": "模组与资源包"
+      "info": "基本设置"
     }
   },
   "DeleteGameAlertDialog": {
@@ -262,6 +262,11 @@
       }
     }
   },
+  "Editable": {
+    "edit": "编辑",
+    "save": "保存",
+    "cancel": "取消"
+  },
   "Empty": {
     "noData": "无数据"
   },
@@ -294,6 +299,12 @@
       "details": "实例详情",
       "delete": "删除实例"
     }
+  },
+  "GameVersionSelector": {
+    "old_beta": "远古版",
+    "release": "正式版",
+    "snapshot": "测试版",
+    "viewOnWiki":"Minecraft Wiki 页面"
   },
   "General": {
     "cancel": "取消",
@@ -488,6 +499,14 @@
       "title": "服务器资源包"
     }
   },
+  "InstanceSettingsPage": {
+    "name": "实例名称",
+    "description": "实例描述",
+    "applySettings": "启动特定游戏设置",
+    "restoreSettings": "重置以下特定设置",
+    "restoreSettingsDesc": "将以下特定设置重置为全局游戏设置",
+    "restore": "重置"
+  },
   "InstanceShaderPacksPage": {
     "shaderPackList": {
       "title": "光影包"
@@ -627,6 +646,16 @@
       "disableRotation": "禁用旋转",
       "play": "播放",
       "pause": "暂停"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "在 GitHub 为我们点亮星标"
+    },
+    "body": "如果您喜爱 SJMCL，并希望支持我们，可以在 GitHub 为我们点一颗星吗？这个小小的动作对我们来说意义重大，能激励我们为您持续提供特性体验",
+    "button": {
+      "later": "稍后",
+      "starUs": "点亮星标 🌟"
     }
   },
   "SyncAndRestoreSettingsPage": {

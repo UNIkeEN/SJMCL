@@ -141,6 +141,7 @@ const DownloadSettingsPage = () => {
                       max={128}
                       size="xs"
                       maxW={16}
+                      focusBorderColor={`${primaryColor}.500`}
                       value={downloadConfigs.download.concurrentCount}
                       onChange={(value) => {
                         update(
@@ -192,6 +193,7 @@ const DownloadSettingsPage = () => {
                       min={1}
                       size="xs"
                       maxW={16}
+                      focusBorderColor={`${primaryColor}.500`}
                       value={downloadConfigs.download.speedLimitValue}
                       onChange={(value) => {
                         update(

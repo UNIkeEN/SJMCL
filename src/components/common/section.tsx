@@ -40,7 +40,7 @@ export const Section: React.FC<SectionProps> = ({
 
   return (
     <Box {...props}>
-      {(isAccordion || title || description) && (
+      {(isAccordion || title || description || titleExtra || headExtra) && (
         <Flex alignItems="flex-start" flexShrink={0} mb={isOpen ? 2.5 : 0}>
           <HStack spacing={1}>
             {withBackButton && (

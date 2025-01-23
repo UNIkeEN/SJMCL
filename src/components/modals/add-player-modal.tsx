@@ -21,7 +21,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuLink2Off, LuPlus, LuServer } from "react-icons/lu";
 import SegmentedControl from "@/components/common/segmented";
@@ -55,6 +55,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const initialRef = useRef(null);
 
   const {
     isOpen: isAddAuthServerModalOpen,
@@ -140,7 +141,11 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   ];
 
   return (
-    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
+    <Modal
+      size={{ base: "md", lg: "lg", xl: "xl" }}
+      initialFocusRef={initialRef}
+      {...modalProps}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("AddPlayerModal.modal.header")}</ModalHeader>
@@ -175,6 +180,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                   value={playername}
                   onChange={(e) => setPlayername(e.target.value)}
                   required
+                  ref={initialRef}
+                  focusBorderColor={`${primaryColor}.500`}
                 />
               </FormControl>
             ) : (
@@ -240,6 +247,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             value={playername}
                             onChange={(e) => setPlayername(e.target.value)}
                             required
+                            ref={initialRef}
+                            focusBorderColor={`${primaryColor}.500`}
                           />
                         </FormControl>
                         <FormControl isRequired>
@@ -254,6 +263,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            focusBorderColor={`${primaryColor}.500`}
                           />
                         </FormControl>
                       </>

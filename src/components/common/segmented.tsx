@@ -1,11 +1,4 @@
-import {
-  Box,
-  BoxProps,
-  Button,
-  Stack,
-  Tooltip,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import { Box, BoxProps, Button, Stack, Tooltip } from "@chakra-ui/react";
 
 interface SegmentedControlProps extends BoxProps {
   size?: "2xs" | "xs" | "sm" | "md" | "lg";

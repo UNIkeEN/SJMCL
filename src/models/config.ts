@@ -56,11 +56,11 @@ export interface LauncherConfig {
   };
   localGameDirectories: string[];
   globalGameConfig: GameConfig;
-  page: {
-    accounts: {
+  states: {
+    accountsPage: {
       viewType: string;
     };
-    games: {
+    allGamesPage: {
       viewType: string;
     };
   };
@@ -124,11 +124,11 @@ export const defaultConfig: LauncherConfig = {
   },
   localGameDirectories: [".minecraft/"],
   globalGameConfig: defaultGameConfig,
-  page: {
-    accounts: {
+  states: {
+    accountsPage: {
       viewType: "grid",
     },
-    games: {
+    allGamesPage: {
       viewType: "list",
     },
   },

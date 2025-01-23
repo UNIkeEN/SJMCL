@@ -39,7 +39,7 @@
       "settings": {
         "copyright": {
           "title": "Copyright",
-          "description": "Copyright © 2024 SJMCL Team."
+          "description": "Copyright © 2024-2025 SJMCL Team."
         },
         "userAgreement": {
           "title": "User Agreement"
@@ -186,7 +186,7 @@
     "stepper": {
       "game": "Game",
       "loader": "Loader",
-      "mods": "Mods and Resource Packs"
+      "info": "Basic Settings"
     }
   },
   "DeleteGameAlertDialog": {
@@ -262,6 +262,11 @@
       }
     }
   },
+  "Editable": {
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
   "Empty": {
     "noData": "No Data"
   },
@@ -294,6 +299,12 @@
       "details": "Instance Details",
       "delete": "Delete"
     }
+  },
+  "GameVersionSelector": {
+    "old_beta": "Old Beta",
+    "release": "Release",
+    "snapshot": "Snapshot",
+    "viewOnWiki":"Minecraft Wiki"
   },
   "General": {
     "cancel": "Cancel",
@@ -488,6 +499,14 @@
       "title": "Server Resource Packs"
     }
   },
+  "InstanceSettingsPage": {
+    "name": "Instance Name",
+    "description": "Instance Description",
+    "applySettings": "Apply the following specific settings",
+    "restoreSettings": "Restore to default settings",
+    "restoreSettingsDesc": "Restore the following specific settings to their default values",
+    "restore": "Restore"
+  },
   "InstanceShaderPacksPage": {
     "shaderPackList": {
       "title": "Shader Packs"
@@ -627,6 +646,16 @@
       "disableRotation": "Disable Rotation",
       "play": "Play",
       "pause": "Pause"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "Star Us on GitHub"
+    },
+    "body": "If you love our product and would like to support us, could you give us a star on GitHub? This small action means a lot to us and will motivate us to continue delivering new features and experiences for you.",
+    "button": {
+      "later": "Later",
+      "starUs": "Star Us 🌟"
     }
   },
   "SyncAndRestoreSettingsPage": {

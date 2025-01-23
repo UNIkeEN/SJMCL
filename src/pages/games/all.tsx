@@ -13,7 +13,7 @@ const AllGamesPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const selectedViewType = config.page.games.viewType;
+  const selectedViewType = config.states.allGamesPage.viewType;
 
   const { selectedGameInstance, gameInstanceSummaryList } = useData();
 
@@ -41,7 +41,7 @@ const AllGamesPage = () => {
           <SegmentedControl
             selected={selectedViewType}
             onSelectItem={(s) => {
-              update("page.games.viewType", s as string);
+              update("states.allGamesPage.viewType", s as string);
             }}
             size="2xs"
             items={viewTypeList.map((item) => ({

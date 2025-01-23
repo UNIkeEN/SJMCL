@@ -50,7 +50,7 @@ const AccountsPage = () => {
   const { config, update } = useLauncherConfig();
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
-  const selectedViewType = config.page.accounts.viewType;
+  const selectedViewType = config.states.accountsPage.viewType;
 
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const { selectedPlayer, playerList, authServerList } = useData();
@@ -239,7 +239,7 @@ const AccountsPage = () => {
                 <SegmentedControl
                   selected={selectedViewType}
                   onSelectItem={(s) => {
-                    update("page.accounts.viewType", s as string);
+                    update("states.accountsPage.viewType", s as string);
                   }}
                   size="2xs"
                   items={viewTypeList.map((item) => ({

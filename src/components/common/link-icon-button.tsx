@@ -1,4 +1,4 @@
-import { IconButton, IconButtonProps, Tooltip } from "@chakra-ui/react";
+import { Icon, IconButton, IconButtonProps, Tooltip } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
 import { useRouter } from "next/router";
 import React from "react";
@@ -34,7 +34,9 @@ const LinkIconButton: React.FC<LinkIconButtonProps> = ({
         }}
         variant="ghost"
         size="xs"
-        icon={isExternal ? <LuExternalLink /> : <LuArrowRight />}
+        icon={
+          <Icon as={isExternal ? LuExternalLink : LuArrowRight} boxSize={3.5} />
+        }
         {...buttonProps}
       />
     </Tooltip>

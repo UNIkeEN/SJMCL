@@ -82,11 +82,11 @@ structstruck::strike! {
     },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<String>,
-    pub page: struct Page {
-      pub accounts: struct {
+    pub states: struct States {
+      pub accounts_page: struct {
         pub view_type: String
       },
-      pub games: struct {
+      pub all_games_page: struct {
         pub view_type: String
       },
     }
@@ -153,11 +153,11 @@ impl Default for LauncherConfig {
       },
       global_game_config: GameConfig::default(),
       local_game_directories: vec![".minecraft/".to_string()],
-      page: Page {
-        accounts: Accounts {
+      states: States {
+        accounts_page: AccountsPage {
           view_type: "grid".to_string(),
         },
-        games: Games {
+        all_games_page: AllGamesPage {
           view_type: "list".to_string(),
         },
       },
