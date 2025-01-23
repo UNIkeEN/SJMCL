@@ -24,30 +24,29 @@ import { useLauncherConfig } from "@/contexts/config";
 import { mockJavaInfo } from "@/models/mock/system-info";
 import { JavaInfo } from "@/models/system-info";
 
-const JavaInfoPage = () => {
-  const [javaInfo, setJavaInfo] = useState<JavaInfo[]>([]);
+const JavaSettingsPage = () => {
+  const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();
   const { t } = useTranslation();
 
   useEffect(() => {
-    setJavaInfo(mockJavaInfo);
+    setJavaInfos(mockJavaInfo);
   }, []);
 
   return (
     <Section
-      title={t("JavaInfoPage.javaList.title")}
+      title={t("JavaSettingsPage.javaList.title")}
       headExtra={
         <HStack spacing={2}>
-          <Tooltip label={t("JavaInfoPage.javaList.download")}>
+          <Tooltip label={t("JavaSettingsPage.javaList.download")}>
             <IconButton
-              aria-label={t("JavaInfoPage.javaList.download")}
+              aria-label={t("JavaSettingsPage.javaList.download")}
               icon={<Icon as={LuArrowDownToLine} boxSize={3.5} />}
               size="xs"
               h={21}
               variant="ghost"
-              colorScheme="gray"
             ></IconButton>
           </Tooltip>
           <Tooltip label={t("General.refresh")}>
@@ -57,47 +56,47 @@ const JavaInfoPage = () => {
               size="xs"
               h={21}
               variant="ghost"
-              colorScheme="gray"
               onClick={() => {
                 router.push("/settings/java");
               }}
             ></IconButton>
           </Tooltip>
-          <Tooltip label={t("JavaInfoPage.javaList.add")}>
+          <Tooltip label={t("JavaSettingsPage.javaList.add")}>
             <IconButton
-              aria-label={t("JavaInfoPage.javaList.add")}
+              aria-label={t("JavaSettingsPage.javaList.add")}
               icon={<Icon as={LuPlus} boxSize={3.5} />}
               size="xs"
               h={21}
               variant="ghost"
-              colorScheme="gray"
             ></IconButton>
           </Tooltip>
         </HStack>
       }
     >
-      {javaInfo.length > 0 ? (
+      {javaInfos.length > 0 ? (
         <OptionItemGroup
-          items={javaInfo.map((info) => (
+          items={javaInfos.map((info) => (
             <OptionItem
               key={info.name}
               title={info.name}
               description={info.fileDir}
               titleExtra={
-                <Flex alignItems={"center"}>
-                  <Tag
-                    fontSize="2xs"
-                    variant="subtle"
-                    colorScheme={primaryColor}
-                  >
-                    {info.version}
-                  </Tag>
-                  <Text fontSize="xs" color={`${primaryColor}.500`} ml={2}>
-                    {info.architecture}
-                  </Text>
-                  <Text fontSize="xs" color={`${primaryColor}.500`} ml={2}>
-                    {info.vendor}
-                  </Text>
+                <Flex>
+                  <HStack spacing={1}>
+                    <Tag
+                      className="tag-xs"
+                      variant="subtle"
+                      colorScheme={primaryColor}
+                    >
+                      {info.version}
+                    </Tag>
+                    <Text fontSize="xs" color={`${primaryColor}.500`}>
+                      {info.architecture}
+                    </Text>
+                    <Text fontSize="xs" color={`${primaryColor}.500`}>
+                      {info.vendor}
+                    </Text>
+                  </HStack>
                 </Flex>
               }
             >
@@ -120,4 +119,4 @@ const JavaInfoPage = () => {
   );
 };
 
-export default JavaInfoPage;
+export default JavaSettingsPage;

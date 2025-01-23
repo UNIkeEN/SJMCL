@@ -59,9 +59,16 @@ export const OptionItem: React.FC<OptionItemProps> = ({
                 {title}
               </Text>
             </Skeleton>
-            {titleExtra && (
-              <Skeleton isLoaded={!isLoading}>{titleExtra}</Skeleton>
-            )}
+            {titleExtra &&
+              (isLoading ? (
+                <Skeleton isLoaded={!isLoading}>
+                  <Text fontSize="xs-sm">
+                    PLACEHOLDER{/*width holder for skeleton*/}
+                  </Text>
+                </Skeleton>
+              ) : (
+                titleExtra
+              ))}
           </HStack>
           {description &&
             (typeof description === "string" ? (

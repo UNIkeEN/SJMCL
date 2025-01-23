@@ -49,7 +49,7 @@ export const DiscoverPage = () => {
               setPosts([]); // TODO
             }}
           >
-            {t(t("General.refresh"))}
+            {t("General.refresh")}
           </Button>
         </HStack>
       }
