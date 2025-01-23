@@ -50,6 +50,7 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
     old_beta: "CraftingTable.webp",
   };
 
+  // TBD: move this logic to backend and get data by invoke
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -157,24 +158,20 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
             <BeatLoader size={16} color={primaryColor} />
           </Center>
         ) : selectedTypes.size === 0 ? (
-          <Empty size="sm" />
+          <Empty withIcon={false} size="sm" />
         ) : (
           <OptionItemGroup
             items={versions
               .filter((version) => selectedTypes.has(version.type))
               .map((version) => (
-                <OptionItem
-                  key={version.id}
-                  childrenOnHover
-                  {...buildOptionItem(version)}
-                >
+                <OptionItem key={version.id} {...buildOptionItem(version)}>
                   <Tooltip label={t("GameResourceVersionList.viewOnWiki")}>
                     <IconButton
                       size="sm"
                       aria-label={"GameResourceVersionList.viewOnWiki"}
                       icon={<LuEarth />}
                       variant="ghost"
-                      _hover={{ cursor: "pointer" }}
+                      cursor="pointer"
                       onClick={() =>
                         open(`https://zh.minecraft.wiki/w/${version.id}`)
                       }
@@ -182,7 +179,6 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
                   </Tooltip>
                 </OptionItem>
               ))}
-            w="100%"
           />
         )}
       </Section>
