@@ -304,8 +304,7 @@
     "old_beta": "远古版",
     "release": "正式版",
     "snapshot": "测试版",
-    "viewOnWiki":"Minecraft Wiki 页面",
-    "wikiUrlPrefix": "https://zh.minecraft.wiki/w/"
+    "viewOnWiki":"Minecraft Wiki 页面"
   },
   "General": {
     "cancel": "取消",
@@ -711,6 +710,11 @@
         "warning": {
           "title": "系统 WebView 版本低，部分界面元素可能无法正常显示"
         }
+      }
+    },
+    "wiki":{
+      "baseUrl": {
+        "wikiUrlPrefix": "https://zh.minecraft.wiki/w/Java版"
       }
     }
   }

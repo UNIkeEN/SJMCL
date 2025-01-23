@@ -304,8 +304,7 @@
     "old_beta": "Old Beta",
     "release": "Release",
     "snapshot": "Snapshot",
-    "viewOnWiki":"Minecraft Wiki",
-    "wikiUrlPrefix": "https://minecraft.wiki/w/"
+    "viewOnWiki":"Minecraft Wiki"
   },
   "General": {
     "cancel": "Cancel",
@@ -711,6 +710,11 @@
         "warning": {
           "title": "System's webview version is outdated. Some UI elements may not display correctly."
         }
+      }
+    },
+    "wiki": {
+      "baseUrl": {
+            "wikiUrlPrefix": "https://minecraft.wiki/w/Java_Edition_"
       }
     }
   }
