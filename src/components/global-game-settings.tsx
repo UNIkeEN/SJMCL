@@ -25,7 +25,7 @@ import {
 } from "@/components/common/option-item";
 import MemoryStatusProgress from "@/components/memory-status-progress";
 import { useLauncherConfig } from "@/contexts/config";
-import { MemoryInfo } from "@/models/misc";
+import { MemoryInfo } from "@/models/system-info";
 import { getMemoryInfo } from "@/services/utils";
 
 interface GlobalGameSettingsProps {
