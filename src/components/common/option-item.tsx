@@ -63,7 +63,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
               (isLoading ? (
                 <Skeleton isLoaded={!isLoading}>
                   <Text fontSize="xs-sm">
-                    PLACEHOLDER{/*width holder for skeleton*/}
+                    PLACEHOLDER {/*width holder for skeleton*/}
                   </Text>
                 </Skeleton>
               ) : (

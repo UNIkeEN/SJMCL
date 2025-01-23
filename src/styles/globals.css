@@ -79,7 +79,7 @@ body {
 .tag-xs {
   font-size: 0.675rem !important;
   padding-inline: var(--chakra-space-1-5) !important;
-  min-height:1.125rem !important;
+  min-height: 1.125rem !important;
 }
 
 /* alert and toast */

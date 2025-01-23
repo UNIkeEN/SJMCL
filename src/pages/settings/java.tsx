@@ -47,7 +47,7 @@ const JavaSettingsPage = () => {
               size="xs"
               h={21}
               variant="ghost"
-            ></IconButton>
+            />
           </Tooltip>
           <Tooltip label={t("General.refresh")}>
             <IconButton
@@ -59,7 +59,7 @@ const JavaSettingsPage = () => {
               onClick={() => {
                 router.push("/settings/java");
               }}
-            ></IconButton>
+            />
           </Tooltip>
           <Tooltip label={t("JavaSettingsPage.javaList.add")}>
             <IconButton
@@ -68,7 +68,7 @@ const JavaSettingsPage = () => {
               size="xs"
               h={21}
               variant="ghost"
-            ></IconButton>
+            />
           </Tooltip>
         </HStack>
       }
