@@ -118,14 +118,14 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
       </HStack>
     ),
     titleExtra: (
-      <Tag colorScheme={primaryColor}>
-        {t(`GameVersionSelector.${version.type}`)} className=“tag-xs”
+      <Tag colorScheme={primaryColor} className="tag-xs">
+        {t(`GameVersionSelector.${version.type}`)}
       </Tag>
     ),
   });
 
   return (
-    <Box p={4} {...props} w="100%">
+    <Box {...props}>
       <Section
         titleExtra={
           <HStack spacing={4}>
