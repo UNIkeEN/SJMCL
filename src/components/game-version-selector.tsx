@@ -7,11 +7,11 @@ import {
   Icon,
   IconButton,
   Image,
+  Radio,
+  RadioGroup,
   Tag,
   Text,
   Tooltip,
-  VStack,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
 import { useCallback, useEffect, useState } from "react";
@@ -30,9 +30,14 @@ import { useLauncherConfig } from "@/contexts/config";
 import { GameResourceInfo } from "@/models/resource";
 import { ISOtoDate } from "@/utils/datetime";
 
-interface GameResourceVersionListProps extends BoxProps {}
+interface GameVersionSelectorProps extends BoxProps {
+  selectedVersion: string;
+  onVersionSelect: (versionId: string) => void;
+}
 
-const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
+const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
+  selectedVersion,
+  onVersionSelect,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -102,16 +107,19 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
     description: ISOtoDate(version.releaseTime),
     children: null,
     prefixElement: (
-      <Image
-        src={`/images/icons/${gameTypes[version.type]}`}
-        alt={version.type}
-        boxSize="28px"
-        borderRadius="4px"
-      />
+      <HStack spacing={2.5}>
+        <Radio value={version.id} colorScheme={primaryColor} />
+        <Image
+          src={`/images/icons/${gameTypes[version.type]}`}
+          alt={version.type}
+          boxSize="28px"
+          borderRadius="4px"
+        />
+      </HStack>
     ),
     titleExtra: (
       <Tag colorScheme={primaryColor}>
-        {t(`GameResourceVersionList.${version.type}`)}
+        {t(`GameVersionSelector.${version.type}`)} className=“tag-xs”
       </Tag>
     ),
   });
@@ -131,7 +139,7 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
               >
                 <HStack spacing={2} alignItems="center">
                   <Text fontWeight="bold" fontSize="sm" className="no-select">
-                    {t(`GameResourceVersionList.${type}`)}
+                    {t(`GameVersionSelector.${type}`)}
                   </Text>
                   <CountTag
                     count={versions.filter((v) => v.type === type).length}
@@ -160,30 +168,33 @@ const GameResourceVersionList: React.FC<GameResourceVersionListProps> = ({
         ) : selectedTypes.size === 0 ? (
           <Empty withIcon={false} size="sm" />
         ) : (
-          <OptionItemGroup
-            items={versions
-              .filter((version) => selectedTypes.has(version.type))
-              .map((version) => (
-                <OptionItem key={version.id} {...buildOptionItem(version)}>
-                  <Tooltip label={t("GameResourceVersionList.viewOnWiki")}>
-                    <IconButton
-                      size="sm"
-                      aria-label={"GameResourceVersionList.viewOnWiki"}
-                      icon={<LuEarth />}
-                      variant="ghost"
-                      cursor="pointer"
-                      onClick={() =>
-                        open(`https://zh.minecraft.wiki/w/${version.id}`)
-                      }
-                    />
-                  </Tooltip>
-                </OptionItem>
-              ))}
-          />
+          <RadioGroup value={selectedVersion || ""} onChange={onVersionSelect}>
+            <OptionItemGroup
+              items={versions
+                .filter((version) => selectedTypes.has(version.type))
+                .map((version) => {
+                  return (
+                    <OptionItem key={version.id} {...buildOptionItem(version)}>
+                      <Tooltip label={t("GameVersionSelector.viewOnWiki")}>
+                        <IconButton
+                          size="sm"
+                          aria-label="viewOnWiki"
+                          icon={<LuEarth />}
+                          variant="ghost"
+                          onClick={() =>
+                            open(`https://zh.minecraft.wiki/w/${version.id}`)
+                          }
+                        />
+                      </Tooltip>
+                    </OptionItem>
+                  );
+                })}
+            />
+          </RadioGroup>
         )}
       </Section>
     </Box>
   );
 };
 
-export default GameResourceVersionList;
+export default GameVersionSelector;

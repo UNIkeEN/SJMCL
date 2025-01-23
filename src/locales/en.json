@@ -296,7 +296,7 @@
       "delete": "Delete"
     }
   },
-  "GameResourceVersionList": {
+  "GameVersionSelector": {
     "old_beta": "Old Beta",
     "release": "Release",
     "snapshot": "Snapshot",
