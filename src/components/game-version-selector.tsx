@@ -128,7 +128,9 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           aria-label="viewOnWiki"
           icon={<LuEarth />}
           variant="ghost"
-          onClick={() => open(`https://zh.minecraft.wiki/w/${version.id}`)}
+          onClick={() =>
+            open(`${t("GameVersionSelector.wikiUrlPrefix")}${version.id}`)
+          }
         />
       </Tooltip>
     ),

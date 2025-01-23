@@ -304,7 +304,8 @@
     "old_beta": "Old Beta",
     "release": "Release",
     "snapshot": "Snapshot",
-    "viewOnWiki":"Minecraft Wiki"
+    "viewOnWiki":"Minecraft Wiki",
+    "wikiUrlPrefix": "https://minecraft.wiki/w/"
   },
   "General": {
     "cancel": "Cancel",
