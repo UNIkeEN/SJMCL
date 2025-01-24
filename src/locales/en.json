@@ -284,6 +284,7 @@
       "pink": "Pink"
     },
     "playerTypes": {
+      "microsoft": "Microsoft",
       "offline": "Offline Mode",
       "3rdparty": "3rd-party Authentication",
       "3rdpartyShort": "3rd-party Auth"

@@ -3,7 +3,7 @@ export interface Player {
   name: string;
   uuid: string;
   avatarSrc: string;
-  playerType: "offline" | "3rdparty";
+  playerType: "offline" | "microsoft" | "3rdparty";
   authServer?: AuthServer; // only from authlib-injector
   authAccount?: string; // only from authlib-injector
   password?: string; // only from authlib-injector
@@ -14,7 +14,7 @@ export interface PlayerInfo {
   name: string;
   uuid: string;
   avatarSrc: string;
-  playerType: "offline" | "3rdparty";
+  playerType: "offline" | "microsoft" | "3rdparty";
   authServerUrl: string; // only from authlib-injector
   authAccount?: string; // only from authlib-injector
   password?: string; // only from authlib-injector

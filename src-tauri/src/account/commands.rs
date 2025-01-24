@@ -52,6 +52,14 @@ pub async fn add_player(mut player: PlayerInfo) -> SJMCLResult<()> {
       state.save()?;
       Ok(())
     }
+    "microsoft" => {
+      player.uuid = uuid.to_string();
+      player.avatar_src = "https://littleskin.cn/avatar/0?size=72&png=1".to_string();
+
+      state.players.push(player);
+      state.save()?;
+      Ok(())
+    }
     "3rdparty" => {
       // todo: real login
       player.name = "Player".to_string();

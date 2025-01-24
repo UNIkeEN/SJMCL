@@ -36,7 +36,9 @@ const PlayersView: React.FC<PlayersViewProps> = ({
     description:
       player.playerType === "offline"
         ? t("Enums.playerTypes.offline")
-        : `${t("Enums.playerTypes.3rdparty")} - ${player.authServer?.name} (${player.authAccount})`,
+        : player.playerType === "microsoft"
+          ? t("Enums.playerTypes.microsoft")
+          : `${t("Enums.playerTypes.3rdparty")} - ${player.authServer?.name} (${player.authAccount})`,
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio
@@ -61,7 +63,9 @@ const PlayersView: React.FC<PlayersViewProps> = ({
       description:
         player.playerType === "offline"
           ? t("Enums.playerTypes.offline")
-          : player.authServer?.name || "",
+          : player.playerType === "microsoft"
+            ? t("Enums.playerTypes.microsoft")
+            : player.authServer?.name || "",
       image: player.avatarSrc,
       extraContent: (
         <Box position="absolute" top={0.5} right={1}>

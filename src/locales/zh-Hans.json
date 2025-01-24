@@ -284,6 +284,7 @@
       "pink": "粉色"
     },
     "playerTypes": {
+      "microsoft": "微软账户",
       "offline": "离线模式",
       "3rdparty": "第三方认证",
       "3rdpartyShort": "第三方认证"
