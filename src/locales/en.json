@@ -304,7 +304,12 @@
     "old_beta": "Old Beta",
     "release": "Release",
     "snapshot": "Snapshot",
-    "viewOnWiki":"Minecraft Wiki"
+    "viewOnWiki":"Minecraft Wiki",
+    "wikiKey": {
+      "release": "Java_Edition_",
+      "snapshot": "",
+      "old_beta": "Beta_"
+    }
   },
   "General": {
     "cancel": "Cancel",
@@ -714,7 +719,7 @@
     },
     "wiki": {
       "baseUrl": {
-            "wikiUrlPrefix": "https://minecraft.wiki/w/Java_Edition_"
+            "wikiUrlPrefix": "https://minecraft.wiki/"
       }
     }
   }

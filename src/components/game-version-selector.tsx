@@ -73,7 +73,7 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
         }) => ({
           id:
             version.type === "old_beta"
-              ? `Beta_${version.id.replace(/^b/, "")}`
+              ? `${version.id.replace(/^b/, "")}`
               : version.id,
           type: version.type,
           releaseTime: version.releaseTime,
@@ -132,7 +132,9 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           icon={<LuEarth />}
           variant="ghost"
           onClick={() =>
-            open(`${t("Utils.wiki.baseUrl.wikiUrlPrefix")}${version.id}`)
+            open(
+              `${t("Utils.wiki.baseUrl.wikiUrlPrefix")}${t(`GameVersionSelector.wikiKey.${version.type}`)}${version.id}`
+            )
           }
         />
       </Tooltip>
