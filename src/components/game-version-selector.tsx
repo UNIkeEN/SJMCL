@@ -73,7 +73,7 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
         }) => ({
           id:
             version.type === "old_beta"
-              ? `${version.id.replace(/^b/, "")}`
+              ? `Beta_${version.id.replace("b", "")}`
               : version.id,
           type: version.type,
           releaseTime: version.releaseTime,
@@ -125,7 +125,7 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
       </Tag>
     ),
     children: (
-      <Tooltip label={t("GameVersionSelector.viewOnWiki")}>
+      <Tooltip label={t("General.viewOnWiki")}>
         <IconButton
           size="sm"
           aria-label="viewOnWiki"
@@ -133,7 +133,7 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           variant="ghost"
           onClick={() =>
             open(
-              `${t("Utils.wiki.baseUrl.wikiUrlPrefix")}${t(`GameVersionSelector.wikiKey.${version.type}`)}${version.id}`
+              `${t("Utils.wiki.baseUrl.wikiUrl")}${t(`GameVersionSelector.wikiKey.${version.type}`)}${version.id}`
             )
           }
         />

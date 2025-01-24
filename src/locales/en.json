@@ -304,7 +304,6 @@
     "old_beta": "Old Beta",
     "release": "Release",
     "snapshot": "Snapshot",
-    "viewOnWiki":"Minecraft Wiki",
     "wikiKey": {
       "release": "Java_Edition_",
       "snapshot": "",
@@ -324,7 +323,8 @@
     "openFolder": "Open Folder",
     "openInFolder": "Open in Folder",
     "previous": "Previous",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "viewOnWiki":"View on Minecraft Wiki"
   },
   "GeneralSettingsPage": {
     "general": {
@@ -719,7 +719,7 @@
     },
     "wiki": {
       "baseUrl": {
-            "wikiUrlPrefix": "https://minecraft.wiki/"
+        "wikiUrl": "https://minecraft.wiki/"
       }
     }
   }
