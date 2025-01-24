@@ -307,7 +307,7 @@
     "wikiKey": {
       "release": "Java_Edition_",
       "snapshot": "",
-      "old_beta": "Beta_"
+      "old_beta": "Java_Edition_Beta_"
     }
   },
   "General": {
@@ -718,9 +718,7 @@
       }
     },
     "wiki": {
-      "baseUrl": {
-        "wikiUrl": "https://minecraft.wiki/"
-      }
+      "baseUrl": "https://minecraft.wiki/"
     }
   }
 }

@@ -307,7 +307,7 @@
     "wikiKey": {
       "release": "Java版",
       "snapshot": "",
-      "old_beta": "Beta_"
+      "old_beta": "Java版Beta_"
     }
   },
   "General": {
@@ -718,9 +718,7 @@
       }
     },
     "wiki":{
-      "baseUrl": {
-        "wikiUrl": "https://zh.minecraft.wiki/w/"
-      }
+      "baseUrl": "https://zh.minecraft.wiki/w/"
     }
   }
 }
