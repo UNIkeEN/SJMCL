@@ -129,12 +129,8 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           icon={<LuEarth />}
           variant="ghost"
           onClick={() => {
-            const modifiedVersionId =
-              version.type === "old_beta"
-                ? `${version.id.replace("b", "")}`
-                : version.id;
             open(
-              `${t("Utils.wiki.baseUrl")}${t(`GameVersionSelector.wikiKey.${version.type}`)}${modifiedVersionId}`
+              `${t("Utils.wiki.baseUrl")}${t(`GameVersionSelector.wikiKey.${version.type}`)}${version.id.replace("b", "")}`
             );
           }}
         />
