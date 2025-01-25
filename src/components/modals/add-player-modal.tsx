@@ -185,7 +185,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               />
             </FormControl>
 
-            {playerType === "offline" || playerType === "microsoft" ? (
+            {playerType === "offline" && (
               <FormControl isRequired>
                 <FormLabel>{t("AddPlayerModal.label.playerName")}</FormLabel>
                 <Input
@@ -197,7 +197,12 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                   focusBorderColor={`${primaryColor}.500`}
                 />
               </FormControl>
-            ) : (
+            )}
+
+            {playerType === "microsoft" && (
+              <FormControl>{/*TODO*/}</FormControl>
+            )}
+            {playerType === "3rdparty" && (
               <>
                 {authServerList.length === 0 ? (
                   <Stack direction="row" align="center">

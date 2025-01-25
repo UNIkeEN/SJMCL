@@ -310,9 +310,7 @@ const AccountsPage = () => {
               : "3rdparty"
         }
         initialAuthServerUrl={
-          selectedPlayerType === "all" ||
-          selectedPlayerType === "offline" ||
-          selectedPlayerType === "microsoft"
+          ["all", "offline", "microsoft"].includes(selectedPlayerType)
             ? ""
             : selectedPlayerType
         }

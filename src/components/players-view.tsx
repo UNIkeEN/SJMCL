@@ -60,12 +60,12 @@ const PlayersView: React.FC<PlayersViewProps> = ({
   const gridItems = players.map((player) => ({
     cardContent: {
       title: player.name,
-      description:
-        player.playerType === "offline"
-          ? t("Enums.playerTypes.offline")
-          : player.playerType === "microsoft"
-            ? t("Enums.playerTypes.microsoft")
-            : player.authServer?.name || "",
+      description: t(
+        ["offline", "microsoft"].includes(player.playerType)
+          ? `Enums.playerTypes.${player.playerType}`
+          : player.authServer?.name || ""
+      ),
+
       image: player.avatarSrc,
       extraContent: (
         <Box position="absolute" top={0.5} right={1}>
