@@ -23,6 +23,14 @@
         "bmclapi": {
           "title": "BMCLAPI",
           "description": "感謝 @bangbang93 提供的高速下載源"
+        },
+        "littleskin": {
+          "title": "LittleSkin",
+          "description": "感謝 LittleSkin 和 @tnqzh123 對登錄流程設計的幫助"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "皮膚預覽組件基於此開源項目實現，遵循 MIT 協議使用"
         }
       }
     },
@@ -44,9 +52,11 @@
     }
   },
   "AccountsPage": {
-    "Button": {
-      "addPlayer": "新增角色",
-      "add3rdPartySource": "新增第三方認證源"
+    "button": {
+      "addPlayer": "添加角色",
+      "add3rdPartyServer": "添加認證伺服器",
+      "sourceHomepage": "訪問主頁",
+      "deleteServer": "刪除此伺服器"
     },
     "playerTypeList": {
       "all": "全部來源"
@@ -56,12 +66,23 @@
       "list": "清單視圖"
     }
   },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "安裝新實例",
+        "description": "選擇並安裝遊戲版本、加載器與模組"
+      },
+      "modpack": {
+        "title": "導入整合包",
+        "description": "從本地文件或互聯網導入整合包（CurseForge, Modrinth 或 HMCL 格式）"
+      },
+      "manageDirs": {
+        "title": "管理遊戲目錄",
+        "description": "管理本地遊戲存儲目錄，以添加已安裝實例"
+      }
+    }
+  },
   "AddAuthServerModal": {
-    "toast": {
-      "duplicateServer": "伺服器已存在",
-      "success": "伺服器新增成功",
-      "invalidServerUrl": "無效的伺服器位址"
-    },
     "header": {
       "title": "新增認證伺服器"
     },
@@ -74,20 +95,12 @@
     },
     "page2": {
       "name": "名稱",
-      "serverUrl": "伺服器位址"
-    },
-    "button": {
-      "cancel": "取消",
-      "previous": "上一步",
-      "finish": "完成",
-      "next": "下一步"
+      "serverUrl": "伺服器地址"
     }
   },
   "AddPlayerModal": {
     "modal": {
-      "header": "新增角色",
-      "confirm": "確定",
-      "cancel": "取消"
+      "header": "新增角色"
     },
     "label": {
       "playerType": "角色類型",
@@ -106,10 +119,10 @@
     }
   },
   "AllGamesPage": {
-    "Button": {
-      "addAndImport": "新增與匯入",
-      "globalSettings": "全域遊戲設定",
-      "launch": "啟動遊戲"
+    "button": {
+      "addAndImport": "添加與導入",
+      "globalSettings": "全局遊戲設置",
+      "launch": "啓動遊戲"
     },
     "viewTypeList": {
       "grid": "網格視圖",
@@ -160,9 +173,20 @@
       "fullStackDev": "全棧開發",
       "frontendDev": "前端開發",
       "backendDev": "後端開發",
+      "externalAPI": "外部服務",
       "doc": "文件",
       "cicd": "CI / CD",
       "design": "視覺設計"
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "創建新實例"
+    },
+    "stepper": {
+      "game": "選擇遊戲版本",
+      "loader": "選擇加載器",
+      "info": "基本設置"
     }
   },
   "DeleteGameAlertDialog": {
@@ -177,11 +201,25 @@
       "content": "確定要刪除角色 “{{name}}” 嗎？"
     }
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "刪除認證伺服器",
+      "content": "確定要刪除認證伺服器 “{{name}}” 嗎？"
+    }
+  },
   "DiscoverPage": {
     "title": "發現",
-    "Button": {
-      "sources": "管理資料來源",
-      "refresh": "重新整理"
+    "button": {
+      "sources": "管理數據源"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "添加數據源",
+      "deleteSource": "刪除數據源"
+    },
+    "tag": {
+      "online": "在線"
     }
   },
   "DownloadSettingPage": {
@@ -224,6 +262,11 @@
       }
     }
   },
+  "Editable": {
+    "edit": "編輯",
+    "save": "保存",
+    "cancel": "取消"
+  },
   "Empty": {
     "noData": "暫無資料"
   },
@@ -257,10 +300,31 @@
       "delete": "刪除實例"
     }
   },
+  "GameVersionSelector": {
+    "old_beta": "遠古版",
+    "release": "正式版",
+    "snapshot": "測試版",
+    "wikiKey": {
+      "release": "Java版",
+      "snapshot": "",
+      "old_beta": "Java版Beta_"
+    }
+  },
   "General": {
+    "cancel": "取消",
+    "close": "關閉",
+    "confirm": "確定",
+    "delete": "刪除",
+    "disable": "禁用",
+    "enable": "啓用",
+    "finish": "完成",
+    "next": "下一步",
     "open": "打開",
     "openFolder": "打開資料夾",
-    "openInFolder": "在資料夾中打開"
+    "openInFolder": "打開資料位置",
+    "previous": "上一步",
+    "refresh": "刷新",
+    "viewOnWiki": "在 Minecraft Wiki 中查看"
   },
   "GeneralSettingsPage": {
     "general": {
@@ -280,13 +344,16 @@
       }
     }
   },
-  "GenericConfirmModal": {
-    "Button": {
-      "delete": "刪除",
-      "cancel": "取消"
-    }
-  },
   "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "遊戲目錄",
+      "settings": {
+        "directories": {
+          "title": "本地遊戲存儲目錄",
+          "add": "添加"
+        }
+      }
+    },
     "performance": {
       "title": "效能",
       "settings": {
@@ -352,12 +419,12 @@
       "games": "遊戲",
       "accounts": "帳號",
       "discover": "發現",
-      "settings": "設定"
+      "settings": "設置"
     }
   },
   "HelpSettingsPage": {
     "community": {
-      "title": "高校玩家社群",
+      "title": "高校玩家社區",
       "settings": {
         "MUA": {
           "title": "Minecraft 高校聯盟 (MUA)",
@@ -404,8 +471,20 @@
       "screenshots": "截圖",
       "settings": "設定"
     },
-    "Button": {
-      "launch": "啟動實例"
+    "button": {
+      "launch": "啓動實例"
+    }
+  },
+  "InstanceModsPage": {
+    "modLoaderList": {
+      "title": "加載器"
+    },
+    "modList": {
+      "title": "模組",
+      "menu": {
+        "alert": "可能不兼容",
+        "info": "查看信息"
+      }
     }
   },
   "InstanceWorldsPage": {
@@ -425,13 +504,28 @@
       "title": "伺服器資源包"
     }
   },
+  "InstanceSettingsPage": {
+    "name": "實例名稱",
+    "description": "實例描述",
+    "applySettings": "啓動特定遊戲設置",
+    "restoreSettings": "重置以下特定設置",
+    "restoreSettingsDesc": "將以下特定設置重置爲全局遊戲設置",
+    "restore": "重置"
+  },
   "InstanceShaderPacksPage": {
     "shaderPackList": {
       "title": "光影包"
     }
   },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Java 管理",
+      "download": "下載 Java",
+      "add": "添加 Java"
+    }
+  },
   "LaunchPage": {
-    "Button": {
+    "button": {
       "launch": "啟動遊戲"
     },
     "SwitchButton": {
@@ -445,6 +539,12 @@
       "noSelectedGame": "尚未選擇遊戲實例"
     }
   },
+  "ManageSkinModal": {
+    "skinManage": "管理皮膚",
+    "default": "默認",
+    "steve": "Steve",
+    "alex": "Alex"
+  },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
     "info": "{{used}} / {{total}} GB 已使用",
@@ -452,6 +552,10 @@
       "now": "正在使用",
       "minAllocation": "為 Minecraft 分配的最小值"
     }
+  },
+  "ModLoaderCards": {
+    "installed": "已安裝",
+    "unInstalled": "未安裝"
   },
   "NotFoundPage": {
     "text": "頁面不存在，即將在 {{seconds}} 秒後跳轉"
@@ -464,8 +568,7 @@
   },
   "RestoreConfigConfirmDialog": {
     "title": "還原啟動器設定",
-    "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？",
-    "btnOk": "確定"
+    "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？"
   },
   "Services": {
     "config": {
@@ -476,8 +579,49 @@
         "error": "更新啟動器設定失敗"
       },
       "restoreLauncherConfig": {
-        "success": "設定已成功還原",
-        "error": "還原設定失敗，請重試"
+        "success": "設置已成功還原",
+        "error": "還原設置失敗，請重試"
+      }
+    },
+    "account": {
+      "addPlayer": {
+        "success": "角色添加成功",
+        "error": "角色添加失敗"
+      },
+      "deletePlayer": {
+        "success": "角色刪除成功",
+        "error": "角色刪除失敗"
+      },
+      "getAuthServerInfo": {
+        "error": {
+          "title": "獲取認證伺服器信息失敗",
+          "description": {
+            "duplicate": "認證伺服器已存在",
+            "invalid": "無效的認證伺服器地址",
+            "unknown": "未知錯誤"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "認證伺服器添加成功",
+        "error": {
+          "title": "認證伺服器添加失敗",
+          "description": {
+            "duplicate": "認證伺服器已存在",
+            "invalid": "無效的認證伺服器地址",
+            "unknown": "未知錯誤"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "認證伺服器刪除成功",
+        "error": {
+          "title": "認證伺服器刪除失敗",
+          "description": {
+            "notFound": "認證伺服器不存在",
+            "unknown": "未知錯誤"
+          }
+        }
       }
     }
   },
@@ -494,17 +638,30 @@
       "dev-test": "開發 - 測試頁"
     }
   },
-  "SkinPreviewModal":{
+  "SkinPreview": {
     "cape": "披風",
-    "idle": "靜止",
-    "walk": "走路",
-    "run": "跑步",
-    "wave": "揮手",
-    "rotation": "旋轉",
-    "enableRotation": "啟用旋轉",
-    "disableRotation": "禁用旋轉",
-    "play": "播放",
-    "pause": "暫停"
+    "animation": {
+      "idle": "空閒",
+      "walk": "步行 ",
+      "run": "跑步",
+      "wave": "揮手"
+    },
+    "button": {
+      "enableRotation": "啓用旋轉",
+      "disableRotation": "禁用旋轉",
+      "play": "播放",
+      "pause": "暫停"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "在 GitHub 爲我們點亮星標"
+    },
+    "body": "如果您喜愛 SJMCL，並希望支持我們，可以在 GitHub 爲我們點一顆星嗎？這個小小的動作對我們來說意義重大，能激勵我們爲您持續提供特性體驗。",
+    "button": {
+      "later": "稍後",
+      "starUs": "點亮星標"
+    }
   },
   "SyncAndRestoreSettingsPage": {
     "launcherConfig": {
@@ -512,7 +669,8 @@
       "settings": {
         "internetSync": {
           "title": "聯網同步",
-          "begin": "開始"
+          "import": "導入",
+          "export": "導出"
         },
         "restoreAll": {
           "title": "還原所有設定",
@@ -521,6 +679,25 @@
         }
       }
     }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "同步設置 - 導出"
+    },
+    "label": {
+      "token": "令牌"
+    },
+    "helper": "將上述令牌輸入至待同步的設備以完成同步",
+    "countdown": "{{seconds}} 秒後刷新"
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "同步設置 - 導入"
+    },
+    "label": {
+      "token": "令牌"
+    },
+    "helper": "請輸入需同步設備生成的令牌"
   },
   "Utils": {
     "datetime": {
@@ -539,6 +716,23 @@
           "title": "系統 WebView 版本較低，部分介面元素可能無法正常顯示"
         }
       }
+    },
+    "wiki": {
+      "baseUrl": "https://zh.minecraft.wiki/w/"
+    }
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "歡迎！"
+    },
+    "body": {
+      "part1": "歡迎使用 SJMCL！在開始使用之前，請務必閱讀並同意我們的",
+      "terms": "用戶協議",
+      "periods": "。"
+    },
+    "button": {
+      "exit": "退出",
+      "agree": "同意並繼續"
     }
   }
 }
