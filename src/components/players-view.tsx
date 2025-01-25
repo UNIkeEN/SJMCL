@@ -33,11 +33,10 @@ const PlayersView: React.FC<PlayersViewProps> = ({
 
   const listItems = players.map((player) => ({
     title: player.name,
-    description: t(
+    description:
       player.playerType === "offline" || player.playerType === "microsoft"
-        ? `Enums.playerTypes.${player.playerType}`
-        : `${t("Enums.playerTypes.3rdparty")} - ${player.authServer?.name} (${player.authAccount})`
-    ),
+        ? t(`Enums.playerTypes.${player.playerType}`)
+        : `${t("Enums.playerTypes.3rdparty")} - ${player.authServer?.name} (${player.authAccount})`,
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio
@@ -59,11 +58,10 @@ const PlayersView: React.FC<PlayersViewProps> = ({
   const gridItems = players.map((player) => ({
     cardContent: {
       title: player.name,
-      description: t(
+      description:
         player.playerType === "offline" || player.playerType === "microsoft"
-          ? `Enums.playerTypes.${player.playerType}`
-          : player.authServer?.name || ""
-      ),
+          ? t(`Enums.playerTypes.${player.playerType}`)
+          : player.authServer?.name || "",
       image: player.avatarSrc,
       extraContent: (
         <Box position="absolute" top={0.5} right={1}>
