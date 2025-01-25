@@ -5,6 +5,7 @@ mod partial;
 mod storage;
 mod utils;
 
+use std::fs;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 
@@ -60,12 +61,17 @@ pub async fn run() {
       // Set the launcher config
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
 
+      // Set default download cache dir if not exists, create dir
       if launcher_config.download.cache.directory == PathBuf::default() {
         launcher_config.download.cache.directory = app
           .handle()
           .path()
-          .resolve::<PathBuf>("Download".into(), BaseDirectory::Cache)
+          .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)
           .unwrap();
+      }
+
+      if !launcher_config.download.cache.directory.exists() {
+        fs::create_dir_all(&launcher_config.download.cache.directory).unwrap();
       }
 
       launcher_config.version = version.clone();

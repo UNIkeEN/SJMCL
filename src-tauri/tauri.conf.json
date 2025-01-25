@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SJMCL",
   "version": "0.0.0",
-  "identifier": "com.sjmc.launcher",
+  "identifier": "SJMCL",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
