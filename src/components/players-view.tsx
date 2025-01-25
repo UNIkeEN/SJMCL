@@ -33,12 +33,11 @@ const PlayersView: React.FC<PlayersViewProps> = ({
 
   const listItems = players.map((player) => ({
     title: player.name,
-    description:
-      player.playerType === "offline"
-        ? t("Enums.playerTypes.offline")
-        : player.playerType === "microsoft"
-          ? t("Enums.playerTypes.microsoft")
-          : `${t("Enums.playerTypes.3rdparty")} - ${player.authServer?.name} (${player.authAccount})`,
+    description: t(
+      player.playerType === "offline" || player.playerType === "microsoft"
+        ? `Enums.playerTypes.${player.playerType}`
+        : `${t("Enums.playerTypes.3rdparty")} - ${player.authServer?.name} (${player.authAccount})`
+    ),
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio
@@ -61,11 +60,10 @@ const PlayersView: React.FC<PlayersViewProps> = ({
     cardContent: {
       title: player.name,
       description: t(
-        ["offline", "microsoft"].includes(player.playerType)
+        player.playerType === "offline" || player.playerType === "microsoft"
           ? `Enums.playerTypes.${player.playerType}`
           : player.authServer?.name || ""
       ),
-
       image: player.avatarSrc,
       extraContent: (
         <Box position="absolute" top={0.5} right={1}>
