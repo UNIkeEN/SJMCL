@@ -284,6 +284,7 @@
       "pink": "粉色"
     },
     "playerTypes": {
+      "microsoft": "微軟賬戶",
       "offline": "離線模式",
       "3rdparty": "第三方認證",
       "3rdpartyShort": "第三方認證"
@@ -419,7 +420,7 @@
       "games": "遊戲",
       "accounts": "帳號",
       "discover": "發現",
-      "settings": "設置"
+      "settings": "設定"
     }
   },
   "HelpSettingsPage": {
