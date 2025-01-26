@@ -46,12 +46,12 @@ const GlobalGameSettingsPage = () => {
           ),
         },
         <VStack key="dir-list" ml={1.5} spacing={0.5}>
-          {config.localGameDirectories.map((dir) => (
-            <Flex key={dir} alignItems="center" w="100%">
+          {config.localGameDirectories.map((directory, index) => (
+            <Flex key={index} alignItems="center" w="100%">
               <HStack>
                 <LuFolder size={12} />
                 <Text fontSize="xs" className="secondary-text">
-                  {dir}
+                  {directory.name} ({directory.dir})
                 </Text>
               </HStack>
               <HStack spacing={1} ml="auto">
