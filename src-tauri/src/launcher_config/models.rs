@@ -1,6 +1,7 @@
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use tauri_plugin_os::locale;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -154,7 +155,13 @@ impl Default for LauncherConfig {
       },
       general: GeneralConfig {
         general: General {
-          language: "zh-Hans".to_string(),
+          language: match locale().unwrap().as_str() {
+            "zh-CN" => "zh-Hans".to_string(),
+            "zh-TW" => "zh-Hant".to_string(),
+            "zh-HK" => "zh-Hant".to_string(),
+            "zh-MO" => "zh-Hant".to_string(),
+            _ => "en".to_string(),
+          },
         },
         optional_functions: OptionalFunctions { discover: false },
       },
