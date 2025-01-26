@@ -519,7 +519,12 @@
       "lastPlayedAt": "上次游玩于"
     },
     "serverList": {
-      "title": "服务器"
+      "title": "服务器",
+      "players": "玩家",
+      "tag": {
+        "online": "在线",
+        "offline": "离线"
+      }
     }
   },
   "JavaSettingsPage":{

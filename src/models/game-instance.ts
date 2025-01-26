@@ -28,6 +28,10 @@ export interface GameServerInfo {
   iconSrc: string;
   ip: string;
   name: string;
+  isQueried: boolean;
+  playersOnline?: number;
+  playersMax?: number;
+  online: boolean;
 }
 
 export interface LocalModInfo {

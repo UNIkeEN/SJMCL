@@ -1,5 +1,6 @@
 mod account;
 mod error;
+mod instance;
 mod launcher_config;
 mod partial;
 mod storage;
@@ -44,6 +45,7 @@ pub async fn run() {
       account::commands::get_auth_server_info,
       account::commands::add_auth_server,
       account::commands::delete_auth_server,
+      instance::commands::get_game_servers,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);

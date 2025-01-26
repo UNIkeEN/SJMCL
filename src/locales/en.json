@@ -519,7 +519,12 @@
       "lastPlayedAt": "Last played"
     },
     "serverList": {
-      "title": "Servers"
+      "title": "Servers",
+      "players": "Players",
+      "tag": {
+        "online": "Online",
+        "offline": "Offline"
+      }
     }
   },
   "JavaSettingsPage":{
