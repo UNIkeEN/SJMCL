@@ -50,8 +50,11 @@ const GlobalGameSettingsPage = () => {
             <Flex key={index} alignItems="center" w="100%">
               <HStack>
                 <LuFolder size={12} />
+                <Text fontSize="xs" className="secondary-text" color="black">
+                  {directory.name}
+                </Text>
                 <Text fontSize="xs" className="secondary-text">
-                  {directory.name} ({directory.dir})
+                  {directory.dir}
                 </Text>
               </HStack>
               <HStack spacing={1} ml="auto">

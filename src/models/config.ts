@@ -55,7 +55,7 @@ export interface LauncherConfig {
       discover: boolean;
     };
   };
-  localGameDirectories: Array<{ name: string; dir: string }>;
+  localGameDirectories: { name: string; dir: string }[];
   globalGameConfig: GameConfig;
   states: {
     accountsPage: {
