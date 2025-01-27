@@ -294,22 +294,30 @@
     }
   },
   "GameErrorPage": {
-    "architecture": "架构",
-    "crashReason": "崩溃原因",
-    "exportGameInfo": "导出游戏崩溃信息",
-    "fabric": "Fabric版本",
-    "gameLogs": "游戏日志",
-    "gameMemory": "游戏内存",
-    "gamePath": "游戏路径",
-    "gameVersion": "游戏版本",
-    "help": "帮助",
-    "java": "Java版本",
-    "javaPath": "Java路径",
-    "launcherVersion": "启动器版本",
-    "minecraft": "Minecraft版本",
-    "notice": "请不要将本界面截图给他人！如果你要求助他人，请你点击左下角 导出游戏崩溃信息 后将导出的文件发送给他人以供分析。你可以点击下方的 帮助 前往交流群寻求帮助。检测到多个原因：",
-    "os": "操作系统",
-    "physicalMemory": "物理内存"
+    "button": {
+      "exportGameInfo": "导出游戏崩溃信息",
+      "gameLogs": "游戏日志",
+      "help": "帮助"
+    },
+    "errorInfo": {
+      "crashReason": "崩溃原因",
+      "notice": "请不要将本界面截图给他人！如果你需要帮助，请点击左下角的“导出游戏崩溃信息”，将导出的文件发送给他人进行分析。你也可以点击下方的“帮助”加入交流群寻求帮助。检测到多个原因："
+    },
+    "gameInfo": {
+      "gamePath": "游戏路径",
+      "fabric": "Fabric 版本",
+      "minecraft": "Minecraft 版本"
+    },
+    "PCInfo": {
+      "architecture": "架构",
+      "gameMemory": "游戏内存",
+      "gameVersion": "游戏版本",
+      "java": "Java 版本",
+      "javaPath": "Java 路径",
+      "launcherVersion": "启动器版本",
+      "os": "操作系统",
+      "physicalMemory": "物理内存"
+    }
   },
   "GameLogPage": {
     "placeholder": "输入关键词筛选",

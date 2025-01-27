@@ -294,22 +294,30 @@
     }
   },
   "GameErrorPage": {
-    "architecture": "架構",
-    "crashReason": "崩潰原因",
-    "exportGameInfo": "導出遊戲崩潰信息",
-    "fabric": "Fabric 版本",
-    "gameLogs": "遊戲日誌",
-    "gameMemory": "遊戲記憶體",
-    "gamePath": "遊戲路徑",
-    "gameVersion": "遊戲版本",
-    "help": "幫助",
-    "launcherVersion": "啟動器版本",
-    "java": "Java 版本",
-    "javaPath": "Java 路徑",
-    "minecraft": "Minecraft 版本",  
-    "notice": "請不要將本界面截圖給他人！如果你需要幫助，請點擊左下角的 '導出遊戲崩潰信息'，並將導出的文件發送給他人以供分析。你可以點擊下方的 '幫助' 前往交流群尋求幫助。檢測到多個原因: ",
-    "os": "操作系統",
-    "physicalMemory": "物理記憶體"
+    "button": {
+      "exportGameInfo": "導出遊戲崩潰信息",
+      "gameLogs": "遊戲日誌",
+      "help": "幫助"
+    },
+    "errorInfo": {
+      "crashReason": "崩潰原因",
+      "notice": "請不要將本界面截圖給他人！如果你需要幫助，請點擊左下角的 '導出遊戲崩潰信息'，並將導出的文件發送給他人以供分析。你可以點擊下方的 '幫助' 前往交流群尋求幫助。檢測到多個原因："
+    },
+    "gameInfo": {
+      "gamePath": "遊戲路徑",
+      "fabric": "Fabric 版本",
+      "minecraft": "Minecraft 版本"
+    },
+    "PCInfo": {
+      "architecture": "架構",
+      "gameMemory": "遊戲記憶體",
+      "gameVersion": "遊戲版本",
+      "java": "Java 版本",
+      "javaPath": "Java 路徑",
+      "launcherVersion": "啟動器版本",
+      "os": "操作系統",
+      "physicalMemory": "物理記憶體"
+    }
   },
   "GameLogPage": {
     "placeholder": "輸入關鍵字篩選",

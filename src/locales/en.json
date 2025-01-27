@@ -294,22 +294,30 @@
     }
   },
   "GameErrorPage": {
-    "architecture": "Architecture",
-    "crashReason": "Crash Reason",
-    "exportGameInfo": "Export Game Crash Information",
-    "fabric": "Fabric Version",
-    "gameLogs": "Game Logs",
-    "gameMemory": "Game Memory",
-    "gamePath": "Game Path",
-    "gameVersion": "Game Version",
-    "help": "Help",
-    "java": "Java Version",
-    "javaPath": "Java Path",
-    "launcherVersion": "Launcher Version",
-    "minecraft": "Minecraft Version",
-    "notice": "Please do not share this interface screenshot with others! If you need help, please click on the 'Export Game Crash Information' at the bottom left, and send the exported file to others for analysis. You can click on 'Help' below to join the community group and seek help. Multiple causes detected: ",
-    "os": "Operating System",
-    "physicalMemory": "Physical Memory"
+    "button": {
+      "exportGameInfo": "Export Game Crash Information",
+      "gameLogs": "Game Logs",
+      "help": "Help"
+    },
+    "errorInfo": {
+      "crashReason": "Crash Reason",
+      "notice": "Please do not share this interface screenshot with others! If you need help, please click on the 'Export Game Crash Information' at the bottom left, and send the exported file to others for analysis. You can click on 'Help' below to join the community group and seek help. Multiple causes detected: "
+    },
+    "gameInfo": {
+      "gamePath": "Game Path",
+      "fabric": "Fabric Version",
+      "minecraft": "Minecraft Version"
+    },
+    "PCInfo": {
+      "architecture": "Architecture",
+      "gameMemory": "Game Memory",
+      "gameVersion": "Game Version",
+      "java": "Java Version",
+      "javaPath": "Java Path",
+      "launcherVersion": "Launcher Version",
+      "os": "Operating System",
+      "physicalMemory": "Physical Memory"
+    }
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
