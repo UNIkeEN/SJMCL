@@ -1,6 +1,7 @@
 use super::models::{LauncherConfig, MemoryInfo};
 use crate::storage::Storage;
 use crate::{error::SJMCLResult, partial::PartialUpdate};
+use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use systemstat::{saturating_sub_bytes, Platform};
@@ -39,9 +40,13 @@ pub fn restore_launcher_config(
 ) -> SJMCLResult<LauncherConfig> {
   let mut state = state.lock()?;
   *state = LauncherConfig::default();
+  // Set and create default download cache dir
   state.download.cache.directory = app
     .path()
-    .resolve::<PathBuf>("Download".into(), BaseDirectory::Cache)?;
+    .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)?;
+  if !state.download.cache.directory.exists() {
+    fs::create_dir_all(&state.download.cache.directory).unwrap();
+  }
   state.save()?;
   Ok(state.clone())
 }

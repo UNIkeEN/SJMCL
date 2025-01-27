@@ -118,7 +118,7 @@
       "password": "請輸入密碼"
     },
     "errorMessage": {
-      "playerName": "只能包含英文字母、數字和下劃線，不超過16個字符。"
+      "playerName": "只能包含英文字母、數字和底線，且不超過16個字符。"
     }
   },
   "AllGamesPage": {
@@ -520,7 +520,12 @@
       "lastPlayedAt": "上次遊玩於"
     },
     "serverList": {
-      "title": "伺服器"
+      "title": "伺服器",
+      "players": "玩家",
+      "tag": {
+        "online": "在線",
+        "offline": "離線"
+      }
     }
   },
   "JavaSettingsPage": {

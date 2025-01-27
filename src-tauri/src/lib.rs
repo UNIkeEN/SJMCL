@@ -1,10 +1,12 @@
 mod account;
 mod error;
+mod instance;
 mod launcher_config;
 mod partial;
 mod storage;
 mod utils;
 
+use std::fs;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 
@@ -44,6 +46,7 @@ pub async fn run() {
       account::commands::get_auth_server_info,
       account::commands::add_auth_server,
       account::commands::delete_auth_server,
+      instance::commands::get_game_servers,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
@@ -60,12 +63,17 @@ pub async fn run() {
       // Set the launcher config
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
 
+      // Set default download cache dir if not exists, create dir
       if launcher_config.download.cache.directory == PathBuf::default() {
         launcher_config.download.cache.directory = app
           .handle()
           .path()
-          .resolve::<PathBuf>("Download".into(), BaseDirectory::Cache)
+          .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)
           .unwrap();
+      }
+
+      if !launcher_config.download.cache.directory.exists() {
+        fs::create_dir_all(&launcher_config.download.cache.directory).unwrap();
       }
 
       launcher_config.version = version.clone();

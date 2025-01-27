@@ -1,25 +1,44 @@
 import { IconButton, Image, Tooltip } from "@chakra-ui/react";
+import { HStack, Tag, TagLabel, Text } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuFolderOpen } from "react-icons/lu";
+import { LuCheck, LuFolderOpen, LuX } from "react-icons/lu";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import { useInstanceSharedData } from "@/contexts/instance";
 import { GameServerInfo, WorldInfo } from "@/models/game-instance";
-import { mockGameserver, mockWorlds } from "@/models/mock/game-instance";
+import { mockWorlds } from "@/models/mock/game-instance";
+import { getGameServers } from "@/services/instance";
 import { formatRelativeTime } from "@/utils/datetime";
 
 const InstanceWorldsPage = () => {
+  const { t } = useTranslation();
+
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
-  const { t } = useTranslation();
+  const { summary } = useInstanceSharedData();
 
   useEffect(() => {
     setWorlds(mockWorlds);
-    setGameServers(mockGameserver);
-  }, []);
+
+    (async () => {
+      if (summary?.id) {
+        setGameServers(await getGameServers(summary.id, false)); // without online query, quickly get server list from local servers.dat to render
+        setGameServers(await getGameServers(summary.id, true));
+      }
+    })();
+
+    // refresh every minute to query server info
+    const intervalId = setInterval(async () => {
+      if (summary?.id) {
+        setGameServers(await getGameServers(summary.id, true));
+      }
+    }, 60000);
+    return () => clearInterval(intervalId);
+  }, [summary?.id]);
 
   return (
     <>
@@ -84,7 +103,30 @@ const InstanceWorldsPage = () => {
                   />
                 }
               >
-                <></>
+                {server.isQueried && (
+                  <HStack>
+                    {server.online && (
+                      <Text fontSize="xs-sm" color="gray.500">
+                        {`${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
+                      </Text>
+                    )}
+                    {server.online ? (
+                      <Tag colorScheme="green">
+                        <LuCheck />
+                        <TagLabel ml={0.5}>
+                          {t("InstanceWorldsPage.serverList.tag.online")}
+                        </TagLabel>
+                      </Tag>
+                    ) : (
+                      <Tag colorScheme="red">
+                        <LuX />
+                        <TagLabel ml={0.5}>
+                          {t("InstanceWorldsPage.serverList.tag.offline")}
+                        </TagLabel>
+                      </Tag>
+                    )}
+                  </HStack>
+                )}
               </OptionItem>
             ))}
           />

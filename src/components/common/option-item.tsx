@@ -43,7 +43,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   return (
     <Flex
       justify="space-between"
-      alignItems="self-start"
+      alignItems="center"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       {...boxProps}
