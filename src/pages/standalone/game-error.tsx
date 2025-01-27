@@ -8,6 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { arch, platform } from "@tauri-apps/plugin-os";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 
@@ -15,13 +16,28 @@ const GameErrorPage: React.FC = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { t } = useTranslation();
+  const [os, setOs] = useState<string | null>(null);
+  const [architecture, setArchitecture] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const platformInfo = await platform();
+      const archInfo = await arch();
+      setOs(
+        platformInfo
+          .replace("bsd", "BSD")
+          .replace(/\w/, (match) => match.toUpperCase())
+          .replace("Macos", "macOS")
+      );
+      setArchitecture(archInfo);
+    };
+    fetchInfo();
+  }, []);
+
   const BasicInfo = {
     launcherVersion: config.version,
-    os: platform()
-      .replace("bsd", "BSD")
-      .replace(/\w/, (match) => match.toUpperCase())
-      .replace("Macos", "macOS"),
-    architecture: arch(),
+    os: os,
+    architecture: architecture,
   };
 
   const PCInfo = [
