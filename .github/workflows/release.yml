@@ -30,7 +30,7 @@ jobs:
           node-version: lts/*
       
       - name: Check version consistency
-        run: npm run check-version
+        run: npm run version check
 
       - name: Check Tag Version
         id: check-tag
@@ -63,10 +63,11 @@ jobs:
             target: x86_64-pc-windows-msvc
             platform: windows
             arch: x86_64
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            platform: macos
-            arch: x86_64
+          # macos-large just doesn't start; job fails so it's disabled currently.
+          # - os: macos-latest-large
+          #   target: x86_64-apple-darwin
+          #   platform: macos
+          #   arch: x86_64
           - os: macos-latest
             target: aarch64-apple-darwin
             platform: macos
@@ -104,6 +105,11 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
 
+      - name: Remove Font files (MacOS)
+        if: matrix.platform == 'macos'
+        run: |
+          rm -r public/fonts/
+
       - name: Build the app
         run: npm run tauri build
         env:
@@ -138,7 +144,7 @@ jobs:
 
       - name: Upload artifact (Windows/exe)
         if: matrix.platform == 'windows'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_PATH }}
           path: SJMCL_*.exe
@@ -146,7 +152,7 @@ jobs:
 
       - name: Upload artifact (MacOS/app)
         if: matrix.platform == 'macos'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_PATH }}
           path: SJMCL_*.tar.gz
@@ -154,7 +160,7 @@ jobs:
 
       - name: Upload artifact (Linux/deb, rpm, AppImage)
         if: matrix.platform == 'linux'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_PATH }}
           path: |
@@ -172,7 +178,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         
       - name: Create Release
         env:
