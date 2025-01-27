@@ -20,15 +20,6 @@ const GlobalGameSettingsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
 
-  const getLocalizedDir = (name: string) => {
-    if (name === "CURRENT_DIR") {
-      return t(
-        "GlobalGameSettingsPage.directories.settings.directories.current"
-      );
-    }
-    return name;
-  };
-
   const globalSpecSettingsGroups: OptionItemGroupProps[] = [
     {
       title: t("GlobalGameSettingsPage.directories.title"),
@@ -57,21 +48,17 @@ const GlobalGameSettingsPage = () => {
         <VStack key="dir-list" ml={1.5} spacing={0.5}>
           {config.localGameDirectories.map((directory, index) => (
             <Flex key={index} alignItems="center" w="100%">
-              <HStack>
+              <HStack overflow="hidden" mr={2}>
                 <LuFolder size={12} />
-                <Text
-                  fontSize="xs"
-                  className="secondary-text ellipsis-text"
-                  color="black"
-                >
-                  {getLocalizedDir(directory.name)}
-                </Text>
-                <Text
-                  fontSize="xs"
-                  className="secondary-text ellipsis-text"
-                  color="gray"
-                >
-                  {directory.dir}
+                <Text fontSize="xs" className="ellipsis-text" flex={1}>
+                  <span>
+                    {directory.name === "CURRENT_DIR"
+                      ? t(
+                          "GlobalGameSettingsPage.directories.settings.directories.currentDir"
+                        )
+                      : directory.name}
+                  </span>
+                  <span className="secondary-text">&ensp;{directory.dir}</span>
                 </Text>
               </HStack>
               <HStack spacing={1} ml="auto">

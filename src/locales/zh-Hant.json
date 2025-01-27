@@ -354,8 +354,8 @@
       "settings": {
         "directories": {
           "title": "本地遊戲存儲目錄",
-          "current":"當前目錄",
-          "add": "添加"
+          "add": "添加",
+          "currentDir":"當前目錄"
         }
       }
     },
