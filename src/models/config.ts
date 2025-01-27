@@ -19,6 +19,10 @@ export interface GameConfig {
     enabled: boolean;
   };
 }
+export interface GameDirectory {
+  name: string;
+  dir: string;
+}
 
 export interface LauncherConfig {
   version: string;
@@ -55,7 +59,7 @@ export interface LauncherConfig {
       discover: boolean;
     };
   };
-  localGameDirectories: { name: string; dir: string }[];
+  localGameDirectories: [GameDirectory];
   globalGameConfig: GameConfig;
   states: {
     accountsPage: {
@@ -127,9 +131,7 @@ export const defaultConfig: LauncherConfig = {
       discover: false,
     },
   },
-  localGameDirectories: [
-    { name: "Default Game Directory", dir: ".minecraft/" },
-  ],
+  localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
   states: {
     accountsPage: {

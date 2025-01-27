@@ -116,6 +116,9 @@
     "placeholder": {
       "playerName": "請輸入使用者名稱",
       "password": "請輸入密碼"
+    },
+    "errorMessage": {
+      "playerName": "只能包含英文字母、數字和下劃線，不超過16個字符。"
     }
   },
   "AllGamesPage": {
@@ -351,6 +354,7 @@
       "settings": {
         "directories": {
           "title": "本地遊戲存儲目錄",
+          "current":"當前目錄",
           "add": "添加"
         }
       }
@@ -499,6 +503,7 @@
   "InstanceSettingsPage": {
     "name": "實例名稱",
     "description": "實例描述",
+    "icon": "實例圖標",
     "applySettings": "啓動特定遊戲設置",
     "restoreSettings": "重置以下特定設置",
     "restoreSettingsDesc": "將以下特定設置重置爲全局遊戲設置",

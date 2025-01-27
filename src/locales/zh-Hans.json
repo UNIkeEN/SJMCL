@@ -354,6 +354,7 @@
       "settings": {
         "directories": {
           "title": "本地游戏存储目录",
+          "current": "当前文件夹",
           "add": "添加"
         }
       }

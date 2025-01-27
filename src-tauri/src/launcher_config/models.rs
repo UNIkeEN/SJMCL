@@ -167,7 +167,7 @@ impl Default for LauncherConfig {
       },
       global_game_config: GameConfig::default(),
       local_game_directories: vec![GameDirectory {
-        name: "Default Game Directory".to_string(),
+        name: "CURRENT_DIR".to_string(),
         dir: PathBuf::from(".minecraft"),
       }],
       states: States {
