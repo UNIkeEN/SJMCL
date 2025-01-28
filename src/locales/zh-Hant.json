@@ -116,9 +116,6 @@
     "placeholder": {
       "playerName": "請輸入使用者名稱",
       "password": "請輸入密碼"
-    },
-    "errorMessage": {
-      "playerName": "只能包含字母、數字和底線，且長度不超過16個字符。"
     }
   },
   "AllGamesPage": {
@@ -291,32 +288,6 @@
       "offline": "離線模式",
       "3rdparty": "第三方認證",
       "3rdpartyShort": "第三方認證"
-    }
-  },
-  "GameErrorPage": {
-    "button": {
-      "exportGameInfo": "導出遊戲崩潰信息",
-      "gameLogs": "遊戲日誌",
-      "help": "幫助"
-    },
-    "errorInfo": {
-      "crashReason": "崩潰原因",
-      "notice": "請不要將本界面截圖給他人！如果你需要幫助，請點擊左下角的 '導出遊戲崩潰信息'，並將導出的文件發送給他人以供分析。你可以點擊下方的 '幫助' 前往交流群尋求幫助。檢測到多個原因："
-    },
-    "gameInfo": {
-      "gamePath": "遊戲路徑",
-      "fabric": "Fabric 版本",
-      "minecraft": "Minecraft 版本"
-    },
-    "PCInfo": {
-      "architecture": "架構",
-      "gameMemory": "遊戲記憶體",
-      "gameVersion": "遊戲版本",
-      "java": "Java 版本",
-      "javaPath": "Java 路徑",
-      "launcherVersion": "啟動器版本",
-      "os": "操作系統",
-      "physicalMemory": "物理記憶體"
     }
   },
   "GameLogPage": {
@@ -528,7 +499,6 @@
   "InstanceSettingsPage": {
     "name": "實例名稱",
     "description": "實例描述",
-    "icon": "實例圖標",
     "applySettings": "啓動特定遊戲設置",
     "restoreSettings": "重置以下特定設置",
     "restoreSettingsDesc": "將以下特定設置重置爲全局遊戲設置",
