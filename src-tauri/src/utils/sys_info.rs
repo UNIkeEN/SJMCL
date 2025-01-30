@@ -19,7 +19,7 @@ pub fn get_mapped_locale() -> String {
   // only apple can do 🌈🧑🏻‍🍳👐🏻
   // The return value of tauri_plugin_os::locale() on macOS(e.g. zh-Hans-CN) differs from that on Windows and Linux(e.g. zh-CN).
 
-  let language_map = vec![
+  let language_map = [
     (
       "zh-Hans",
       vec!["zh-CN", "zh-Hans-CN", "wuu-Hans-CN", "yue-Hans-CN"],
