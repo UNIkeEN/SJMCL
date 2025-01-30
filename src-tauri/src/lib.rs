@@ -90,7 +90,7 @@ pub async fn run() {
 
       // send statistics
       tokio::spawn(async move {
-        let _ = utils::sys_info::send_statistics(version, os).await;
+        utils::sys_info::send_statistics(version, os).await;
       });
 
       // Log in debug mode

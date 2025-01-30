@@ -2,16 +2,15 @@ use serde_json::json;
 use tauri_plugin_http::reqwest;
 use tauri_plugin_os::locale;
 
-pub async fn send_statistics(version: String, os: String) -> Result<(), ()> {
-  let url = "https://mc.sjtu.cn/api-sjmcl/statistics";
-  let data = json!({
-    "version": version,
-    "os": os,
-  });
-
-  let client = reqwest::Client::new();
-  if client.post(url).json(&data).send().await.is_ok() {}
-  Ok(())
+pub async fn send_statistics(version: String, os: String) {
+  _ = reqwest::Client::new()
+    .post("https://mc.sjtu.cn/api-sjmcl/statistics")
+    .json(&json!({
+      "version": version,
+      "os": os,
+    }))
+    .send()
+    .await;
 }
 
 pub fn get_mapped_locale() -> String {
