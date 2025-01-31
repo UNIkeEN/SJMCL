@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { IconType } from "react-icons";
 import { LuBox, LuCalendarClock } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
@@ -19,13 +20,17 @@ import { mockScreenshots } from "@/models/mock/game-instance";
 interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
   title?: string;
   children: React.ReactNode;
+  icon?: IconType;
 }
 
 const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
   title,
   children,
+  icon: IconComponent,
   ...props
 }) => {
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
   return (
     <VStack align="stretch" spacing={2} {...props}>
       {title && (
@@ -43,6 +48,16 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
         </Text>
       )}
       {children}
+      {IconComponent && (
+        <Icon
+          as={IconComponent}
+          position="absolute"
+          color={`${primaryColor}.100`}
+          boxSize={20}
+          bottom={-5}
+          right={-5}
+        />
+      )}
     </VStack>
   );
 };
@@ -54,7 +69,10 @@ export const InstanceBasicInfoWidget = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   return (
-    <InstanceWidgetBase title={t("InstanceWidgets.basicInfo.title")}>
+    <InstanceWidgetBase
+      title={t("InstanceWidgets.basicInfo.title")}
+      icon={LuBox}
+    >
       <OptionItem
         title={t("InstanceWidgets.basicInfo.gameVersion")}
         description={
@@ -82,14 +100,6 @@ export const InstanceBasicInfoWidget = () => {
             <LuCalendarClock fontSize="24px" />
           </Center>
         }
-      />
-      <Icon
-        as={LuBox}
-        position="absolute"
-        color={`${primaryColor}.100`}
-        boxSize={20}
-        bottom={-5}
-        right={-5}
       />
     </InstanceWidgetBase>
   );
