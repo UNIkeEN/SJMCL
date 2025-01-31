@@ -63,12 +63,16 @@ export const mockWorlds: WorldInfo[] = [
   {
     name: "Dev-SJMC",
     lastPlayedAt: "2024-12-18T10:00:00Z",
+    difficulty: "Normal",
+    gamemode: "Survival",
     iconSrc: "/images/icons/GrassBlock.png",
     fileDir: "/.minecraft/saves",
   },
   {
     name: "SMP-SJMC",
     lastPlayedAt: "2024-12-18T10:00:00Z",
+    difficulty: "Hard",
+    gamemode: "Creative",
     iconSrc: "/images/icons/Anvil.png",
     fileDir: "/.minecraft/saves",
   },
@@ -116,6 +120,61 @@ export const mockLocalMods: LocalModInfo[] = [
     fileName: "Xaeros_Minimap_24.4.0_Fabric_1.20",
     description: "Displays the world nearby terrain, players, mobs",
     potentialIncompatibility: false,
+  },
+  {
+    iconSrc:
+      "https://media.forgecdn.net/avatars/thumbnails/29/69/64/64/635838945588716414.jpeg",
+    enabled: false,
+    name: "Just Enough Items (JEI)",
+    transltedName: "JEI物品管理器",
+    version: "15.20.0.106",
+    fileName: "jei-1.20.1-fabric-15.20.0.106",
+    description: "View items and recipes",
+    potentialIncompatibility: true,
+  },
+  {
+    iconSrc:
+      "https://media.forgecdn.net/avatars/thumbnails/29/69/64/64/635838945588716414.jpeg",
+    enabled: false,
+    name: "Just Enough Items (JEI)",
+    transltedName: "JEI物品管理器",
+    version: "15.20.0.106",
+    fileName: "jei-1.20.1-fabric-15.20.0.106",
+    description: "View items and recipes",
+    potentialIncompatibility: true,
+  },
+  {
+    iconSrc:
+      "https://media.forgecdn.net/avatars/thumbnails/29/69/64/64/635838945588716414.jpeg",
+    enabled: false,
+    name: "Just Enough Items (JEI)",
+    transltedName: "JEI物品管理器",
+    version: "15.20.0.106",
+    fileName: "jei-1.20.1-fabric-15.20.0.106",
+    description: "View items and recipes",
+    potentialIncompatibility: true,
+  },
+  {
+    iconSrc:
+      "https://media.forgecdn.net/avatars/thumbnails/29/69/64/64/635838945588716414.jpeg",
+    enabled: false,
+    name: "Just Enough Items (JEI)",
+    transltedName: "JEI物品管理器",
+    version: "15.20.0.106",
+    fileName: "jei-1.20.1-fabric-15.20.0.106",
+    description: "View items and recipes",
+    potentialIncompatibility: true,
+  },
+  {
+    iconSrc:
+      "https://media.forgecdn.net/avatars/thumbnails/29/69/64/64/635838945588716414.jpeg",
+    enabled: false,
+    name: "Just Enough Items (JEI)",
+    transltedName: "JEI物品管理器",
+    version: "15.20.0.106",
+    fileName: "jei-1.20.1-fabric-15.20.0.106",
+    description: "View items and recipes",
+    potentialIncompatibility: true,
   },
   {
     iconSrc:

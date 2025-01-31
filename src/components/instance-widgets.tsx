@@ -19,13 +19,19 @@ import {
   LuArrowRight,
   LuBox,
   LuCalendarClock,
+  LuClock4,
   LuSquareLibrary,
 } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { LocalModInfo } from "@/models/game-instance";
-import { mockLocalMods, mockScreenshots } from "@/models/mock/game-instance";
+import { LocalModInfo, WorldInfo } from "@/models/game-instance";
+import {
+  mockLocalMods,
+  mockScreenshots,
+  mockWorlds,
+} from "@/models/mock/game-instance";
+import { formatRelativeTime } from "@/utils/datetime";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
 interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
@@ -37,7 +43,7 @@ interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
 const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
   title,
   children,
-  icon: IconComponent,
+  icon: IconType,
   ...props
 }) => {
   const { config } = useLauncherConfig();
@@ -59,9 +65,9 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
         </Text>
       )}
       {children}
-      {IconComponent && (
+      {IconType && (
         <Icon
-          as={IconComponent}
+          as={IconType}
           position="absolute"
           color={`${primaryColor}.100`}
           boxSize={20}
@@ -146,11 +152,12 @@ export const InstanceScreenshotsWidget = () => {
 
 export const InstanceModsWidget = () => {
   const { t } = useTranslation();
-  const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
   const router = useRouter();
   const { id } = router.query;
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+
+  const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
 
   useEffect(() => {
     // only for mock
@@ -183,24 +190,101 @@ export const InstanceModsWidget = () => {
           <Button
             fontSize="xs"
             variant="ghost"
+            position="absolute"
+            left={0}
+            bottom={0}
+            justifyContent="flex-start"
             leftIcon={<Icon as={LuArrowRight} />}
             color={`${primaryColor}.600`}
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               const { id } = router.query;
               if (id) {
                 const instanceId = Array.isArray(id) ? id[0] : id;
                 router.push(`/games/instance/${instanceId}/mods`);
               }
             }}
-            pl={0}
-            pr={0}
-            justifyContent="flex-start"
           >
             <Text>{t("InstanceWidgets.mods.manage")}</Text>
           </Button>
         </VStack>
       </HStack>
+    </InstanceWidgetBase>
+  );
+};
+
+export const InstanceLastPlayedWidget = () => {
+  const { t } = useTranslation();
+  const [localWorlds, setLocalWorlds] = useState<WorldInfo[]>([]);
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
+  const router = useRouter();
+
+  useEffect(() => {
+    // only for mock
+    setLocalWorlds(mockWorlds);
+  }, []);
+
+  const lastPlayedWorld = localWorlds[0];
+
+  return (
+    <InstanceWidgetBase
+      title={t("InstanceWidgets.lastPlayed.title")}
+      icon={LuClock4}
+    >
+      <OptionItem
+        title={lastPlayedWorld?.name}
+        description={
+          <VStack
+            spacing={0}
+            fontSize="xs"
+            alignItems="flex-start"
+            className="secondary-text"
+          >
+            {lastPlayedWorld && (
+              <Text>
+                {t("InstanceWorldsPage.worldList.lastPlayedAt")}:{" "}
+                {formatRelativeTime(lastPlayedWorld.lastPlayedAt, t)}
+              </Text>
+            )}
+            {lastPlayedWorld && (
+              <Text>
+                {t("InstanceWorldsPage.worldList.gamemode.title")}:{" "}
+                {t(
+                  `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode.toLowerCase()}`
+                )}
+              </Text>
+            )}
+            {lastPlayedWorld && (
+              <Text>
+                {t("InstanceWorldsPage.worldList.difficulty.title")}:{" "}
+                {t(
+                  `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty.toLowerCase()}`
+                )}
+              </Text>
+            )}
+          </VStack>
+        }
+        prefixElement={
+          <Image
+            src={`/images/icons/StoneOldBeta.png`}
+            alt={lastPlayedWorld?.name || "Last Played World"}
+            boxSize="28px"
+            objectFit="cover"
+          />
+        }
+      />
+      <Button
+        fontSize="xs"
+        variant="ghost"
+        leftIcon={<Icon as={LuArrowRight} />}
+        color={`${primaryColor}.600`}
+        position="absolute"
+        left={0}
+        bottom={0}
+        justifyContent="flex-start"
+      >
+        <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
+      </Button>
     </InstanceWidgetBase>
   );
 };

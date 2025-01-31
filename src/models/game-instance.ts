@@ -22,6 +22,8 @@ export interface Screenshot {
 export interface WorldInfo {
   name: string;
   lastPlayedAt: string;
+  difficulty: string;
+  gamemode: string;
   iconSrc: string;
   fileDir: string;
 }

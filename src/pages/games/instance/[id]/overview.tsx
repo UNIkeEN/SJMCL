@@ -2,6 +2,7 @@ import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import {
   InstanceBasicInfoWidget,
+  InstanceLastPlayedWidget,
   InstanceModsWidget,
   InstanceScreenshotsWidget,
 } from "@/components/instance-widgets";
@@ -11,6 +12,7 @@ const InstanceOverviewPage = () => {
     { content: <InstanceBasicInfoWidget />, colSpan: 1 },
     { content: <InstanceScreenshotsWidget />, colSpan: 1 },
     { content: <InstanceModsWidget />, colSpan: 1 },
+    { content: <InstanceLastPlayedWidget />, colSpan: 1 },
   ];
 
   return (

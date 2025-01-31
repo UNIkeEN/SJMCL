@@ -561,12 +561,31 @@
       "title": "Mods",
       "summary": "{{totalMods}} mods, {{enabledMods}} enabled",
       "manage": "Manage"
+    },
+    "lastPlayed": {
+      "title": "Last Played",
+      "continuePlaying": "Continue Playing"
     }
   },
   "InstanceWorldsPage": {
     "worldList": {
       "title": "Worlds",
-      "lastPlayedAt": "Last played"
+      "lastPlayedAt": "Last played",
+      "difficulty": {
+        "title": "Difficulty",
+        "peaceful": "Peaceful",
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard",
+        "hardcore": "Hardcore"
+      },
+      "gamemode": {
+        "title": "Game Mode",
+        "survival": "Survival",
+        "creative": "Creative",
+        "adventure": "Adventure",
+        "spectator": "Spectator"
+      }
     },
     "serverList": {
       "title": "Servers",
