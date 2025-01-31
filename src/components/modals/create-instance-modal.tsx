@@ -202,7 +202,10 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       {
         key: "loader",
         content: Step2Content,
-        description: `${selectedModLoader.type} ${selectedModLoader.version}`,
+        description:
+          selectedModLoader.type === "none"
+            ? t("CreateInstanceModal.stepper.skipped")
+            : `${selectedModLoader.type} ${selectedModLoader.version}`,
       },
       {
         key: "info",

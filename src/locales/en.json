@@ -193,6 +193,7 @@
     "stepper": {
       "game": "Game",
       "loader": "Loader",
+      "skipped": "Skipped",
       "info": "Basic Settings"
     }
   },

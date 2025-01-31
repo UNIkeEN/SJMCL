@@ -11,7 +11,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuChevronRight } from "react-icons/lu";
+import { LuChevronRight, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/models/resource";
 
@@ -90,7 +90,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
               <Icon
                 as={
                   displayMode === "selector" && isSelected
-                    ? LuChevronDown
+                    ? LuX
                     : LuChevronRight
                 }
                 boxSize={3.5}
@@ -106,12 +106,16 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
     );
   };
 
-  const columnWeights = loaderTypes
-    .map((type) => (type === currentType ? "1.35fr" : "1fr"))
-    .join(" ");
-
   return (
-    <Grid templateColumns={columnWeights} gap={3.5} {...boxProps}>
+    <Grid
+      templateColumns={
+        displayMode === "entry" && currentType !== "none"
+          ? "1.35fr 1fr 1fr"
+          : "repeat(3, 1fr)"
+      }
+      gap={3.5}
+      {...boxProps}
+    >
       {loaderTypes.map(renderCard)}
     </Grid>
   );

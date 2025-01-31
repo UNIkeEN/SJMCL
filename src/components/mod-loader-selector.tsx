@@ -122,14 +122,16 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
 
   const onSelectModLoaderVersion = useCallback(
     (version: string) => {
-      let _modLoaders = modLoaders.filter(
-        (loader) => loader.version === version
-      );
-      if (_modLoaders.length > 0) {
-        onSelectModLoader(_modLoaders[0]);
+      if (version === selectedModLoader.version) {
+        onSelectModLoader(defaultModLoaderResourceInfo);
+      } else {
+        let _modLoader = modLoaders.filter(
+          (loader) => loader.version === version
+        )[0];
+        onSelectModLoader(_modLoader);
       }
     },
-    [modLoaders, onSelectModLoader]
+    [modLoaders, onSelectModLoader, selectedModLoader.version]
   );
 
   const buildOptionItems = useCallback(
@@ -158,7 +160,7 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
   );
 
   return (
-    <VStack {...props} w="100%" h="100%">
+    <VStack {...props} w="100%" h="100%" spacing={4}>
       <ModLoaderCards
         currentType={selectedModLoader.type}
         currentVersion={selectedModLoader.version}

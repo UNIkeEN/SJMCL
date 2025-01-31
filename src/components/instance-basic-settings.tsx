@@ -1,5 +1,6 @@
 import { Box, HStack, Image, Radio, VStack } from "@chakra-ui/react";
 import { t } from "i18next";
+import { useEffect } from "react";
 import Editable from "@/components/common/editable";
 import {
   OptionItemGroup,
@@ -32,6 +33,12 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
   setGameDirectory,
 }) => {
   const { config } = useLauncherConfig();
+
+  useEffect(() => {
+    if (config.localGameDirectories.length > 0) {
+      setGameDirectory(config.localGameDirectories[0]);
+    }
+  }, [config, setGameDirectory]);
 
   const instanceSpecSettingsGroups: OptionItemGroupProps[] = [
     {
