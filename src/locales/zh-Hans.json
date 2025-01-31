@@ -556,6 +556,11 @@
     },
     "screenshots": {
       "title": "截图"
+    },
+    "mods": {
+      "title": "模组",
+      "summary": "{{totalMods}} 个模组, {{enabledMods}} 个已启用",
+      "manage": "前往管理"
     }
   },
   "InstanceWorldsPage": {
@@ -572,11 +577,11 @@
       }
     }
   },
-  "JavaSettingsPage":{
-    "javaList":{
-      "title":"Java 管理",
-      "download":"下载 Java",
-      "add":"添加 Java"
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Java 管理",
+      "download": "下载 Java",
+      "add": "添加 Java"
     }
   },
   "LaunchPage": {
@@ -779,7 +784,7 @@
         }
       }
     },
-    "wiki":{
+    "wiki": {
       "baseUrl": "https://zh.minecraft.wiki/w/"
     }
   },

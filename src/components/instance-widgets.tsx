@@ -1,20 +1,31 @@
 import {
+  Avatar,
+  AvatarGroup,
   BoxProps,
   Center,
   Fade,
+  HStack,
   Icon,
   Image,
+  Link,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
-import { LuBox, LuCalendarClock } from "react-icons/lu";
+import {
+  LuBox,
+  LuCalendarClock,
+  LuChevronsRight,
+  LuSquareLibrary,
+} from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { mockScreenshots } from "@/models/mock/game-instance";
+import { LocalModInfo } from "@/models/game-instance";
+import { mockLocalMods, mockScreenshots } from "@/models/mock/game-instance";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
 interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
@@ -129,6 +140,59 @@ export const InstanceScreenshotsWidget = () => {
         ml={-3}
         mt={-3}
       />
+    </InstanceWidgetBase>
+  );
+};
+
+export const InstanceModsWidget = () => {
+  const { t } = useTranslation();
+  const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
+  const router = useRouter();
+  const { id } = router.query;
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
+
+  useEffect(() => {
+    // only for mock
+    setLocalMods(mockLocalMods);
+  }, []);
+
+  const totalMods = localMods.length;
+  const enabledMods = localMods.filter((mod) => mod.enabled).length;
+
+  return (
+    <InstanceWidgetBase
+      title={t("InstanceWidgets.mods.title")}
+      icon={LuSquareLibrary}
+    >
+      <AvatarGroup size="sm" max={4} spacing={-3}>
+        {localMods.map((mod, index) => (
+          <Avatar key={index} name={mod.name} src={mod.iconSrc} />
+        ))}
+      </AvatarGroup>
+      <Text fontSize="xs" color="gray.500" mb={2}>
+        {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
+      </Text>
+
+      <Link
+        fontSize="sm"
+        variant="ghost"
+        color={`${primaryColor}.600`}
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          const { id } = router.query;
+          if (id) {
+            const instanceId = Array.isArray(id) ? id[0] : id;
+            router.push(`/games/instance/${instanceId}/mods`);
+          }
+        }}
+      >
+        <HStack spacing={0} alignItems="center">
+          <Icon as={LuChevronsRight} />
+          <Text>{t("InstanceWidgets.mods.manage")}</Text>
+        </HStack>
+      </Link>
     </InstanceWidgetBase>
   );
 };

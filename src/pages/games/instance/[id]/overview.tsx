@@ -2,6 +2,7 @@ import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import {
   InstanceBasicInfoWidget,
+  InstanceModsWidget,
   InstanceScreenshotsWidget,
 } from "@/components/instance-widgets";
 
@@ -9,6 +10,7 @@ const InstanceOverviewPage = () => {
   const widgetList = [
     { content: <InstanceBasicInfoWidget />, colSpan: 1 },
     { content: <InstanceScreenshotsWidget />, colSpan: 1 },
+    { content: <InstanceModsWidget />, colSpan: 1 },
   ];
 
   return (

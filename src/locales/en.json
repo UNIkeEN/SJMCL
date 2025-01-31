@@ -556,6 +556,11 @@
     },
     "screenshots": {
       "title": "Screenshots"
+    },
+    "mods": {
+      "title": "Mods",
+      "summary": "{{totalMods}} mods, {{enabledMods}} enabled",
+      "manage": "Manage"
     }
   },
   "InstanceWorldsPage": {
@@ -572,11 +577,11 @@
       }
     }
   },
-  "JavaSettingsPage":{
-    "javaList":{
-      "title":"Java Management",
-      "download":"Download Java",
-      "add":"Add Java"
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Java Management",
+      "download": "Download Java",
+      "add": "Add Java"
     }
   },
   "LaunchPage": {
