@@ -564,7 +564,10 @@
     },
     "lastPlayed": {
       "title": "Last Played",
-      "continuePlaying": "Continue Playing"
+      "continuePlaying": "Continue"
+    },
+    "more": {
+      "title": "More"
     }
   },
   "InstanceWorldsPage": {
@@ -581,10 +584,10 @@
       },
       "gamemode": {
         "title": "Game Mode",
-        "survival": "Survival",
-        "creative": "Creative",
-        "adventure": "Adventure",
-        "spectator": "Spectator"
+        "survival": "Survival Mode",
+        "creative": "Creative Mode",
+        "adventure": "Adventure Mode",
+        "spectator": "Spectator Mode"
       }
     },
     "serverList": {

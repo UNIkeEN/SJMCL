@@ -565,6 +565,9 @@
     "lastPlayed": {
       "title": "上次游玩",
       "continuePlaying": "继续游玩"
+    },
+    "more": {
+      "title": "更多"
     }
   },
   "InstanceWorldsPage": {
@@ -581,10 +584,10 @@
       },
       "gamemode": {
         "title": "游戏模式",
-        "survival": "生存",
-        "creative": "创造",
-        "adventure": "冒险",
-        "spectator": "观察者"
+        "survival": "生存模式",
+        "creative": "创造模式",
+        "adventure": "冒险模式",
+        "spectator": "观察者模式"
       }
     },
     "serverList": {

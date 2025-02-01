@@ -4,15 +4,17 @@ import {
   InstanceBasicInfoWidget,
   InstanceLastPlayedWidget,
   InstanceModsWidget,
+  InstanceMoreWidget,
   InstanceScreenshotsWidget,
 } from "@/components/instance-widgets";
 
 const InstanceOverviewPage = () => {
   const widgetList = [
     { content: <InstanceBasicInfoWidget />, colSpan: 1 },
-    { content: <InstanceScreenshotsWidget />, colSpan: 1 },
-    { content: <InstanceModsWidget />, colSpan: 1 },
     { content: <InstanceLastPlayedWidget />, colSpan: 1 },
+    { content: <InstanceModsWidget />, colSpan: 1 },
+    { content: <InstanceScreenshotsWidget />, colSpan: 1 },
+    { content: <InstanceMoreWidget />, colSpan: 1 },
   ];
 
   return (

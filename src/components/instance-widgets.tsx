@@ -5,6 +5,8 @@ import {
   Button,
   Center,
   Fade,
+  Grid,
+  GridItem,
   HStack,
   Icon,
   Image,
@@ -20,6 +22,11 @@ import {
   LuBox,
   LuCalendarClock,
   LuClock4,
+  LuEarth,
+  LuHaze,
+  LuPackage,
+  LuSettings,
+  LuShapes,
   LuSquareLibrary,
 } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
@@ -242,13 +249,14 @@ export const InstanceLastPlayedWidget = () => {
           >
             {lastPlayedWorld && (
               <Text>
-                {t("InstanceWorldsPage.worldList.lastPlayedAt")}:{" "}
-                {formatRelativeTime(lastPlayedWorld.lastPlayedAt, t)}
+                {formatRelativeTime(lastPlayedWorld.lastPlayedAt, t).replace(
+                  "on",
+                  ""
+                )}
               </Text>
             )}
             {lastPlayedWorld && (
               <Text>
-                {t("InstanceWorldsPage.worldList.gamemode.title")}:{" "}
                 {t(
                   `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode.toLowerCase()}`
                 )}
@@ -256,7 +264,6 @@ export const InstanceLastPlayedWidget = () => {
             )}
             {lastPlayedWorld && (
               <Text>
-                {t("InstanceWorldsPage.worldList.difficulty.title")}:{" "}
                 {t(
                   `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty.toLowerCase()}`
                 )}
@@ -285,6 +292,81 @@ export const InstanceLastPlayedWidget = () => {
       >
         <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
       </Button>
+    </InstanceWidgetBase>
+  );
+};
+
+export const InstanceMoreWidget = () => {
+  const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
+  const router = useRouter();
+
+  const features = [
+    {
+      icon: LuEarth,
+      label: t("InstanceLayout.instanceTabList.worlds"),
+      onClick: () => {
+        const { id } = router.query;
+        if (id) {
+          const instanceId = Array.isArray(id) ? id[0] : id;
+          router.push(`/games/instance/${instanceId}/worlds`);
+        }
+      },
+    },
+    {
+      icon: LuPackage,
+      label: t("InstanceLayout.instanceTabList.resourcepacks"),
+      onClick: () => {
+        const { id } = router.query;
+        if (id) {
+          const instanceId = Array.isArray(id) ? id[0] : id;
+          router.push(`/games/instance/${instanceId}/resourcepacks`);
+        }
+      },
+    },
+    {
+      icon: LuHaze,
+      label: t("InstanceLayout.instanceTabList.shaderpacks"),
+      onClick: () => {
+        const { id } = router.query;
+        if (id) {
+          const instanceId = Array.isArray(id) ? id[0] : id;
+          router.push(`/games/instance/${instanceId}/shaderpacks`);
+        }
+      },
+    },
+    {
+      icon: LuSettings,
+      label: t("InstanceLayout.instanceTabList.settings"),
+      onClick: () => {
+        const { id } = router.query;
+        if (id) {
+          const instanceId = Array.isArray(id) ? id[0] : id;
+          router.push(`/games/instance/${instanceId}/settings`);
+        }
+      },
+    },
+  ];
+
+  return (
+    <InstanceWidgetBase title={t("InstanceWidgets.more.title")} icon={LuShapes}>
+      <Grid templateColumns="repeat(3, 0fr)" gap={5}>
+        {features.map((feature, index) => (
+          <Button
+            key={index}
+            variant="ghost"
+            color={`${primaryColor}.600`}
+            onClick={feature.onClick}
+            top={2}
+          >
+            <VStack spacing={1} align="center">
+              <Icon as={feature.icon} boxSize="24px" />
+              <Text fontSize="xs">{feature.label}</Text>
+            </VStack>
+          </Button>
+        ))}
+      </Grid>
     </InstanceWidgetBase>
   );
 };
