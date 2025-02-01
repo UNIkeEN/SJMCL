@@ -575,7 +575,7 @@
       "title": "Worlds",
       "lastPlayedAt": "Last played",
       "difficulty": {
-        "title": "Difficulty",
+        "title": "(Difficulty: {{difficulty}})",
         "peaceful": "Peaceful",
         "easy": "Easy",
         "normal": "Normal",
@@ -583,7 +583,6 @@
         "hardcore": "Hardcore"
       },
       "gamemode": {
-        "title": "Game Mode",
         "survival": "Survival Mode",
         "creative": "Creative Mode",
         "adventure": "Adventure Mode",

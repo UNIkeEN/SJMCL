@@ -181,14 +181,9 @@ export const InstanceModsWidget = () => {
     >
       <HStack spacing={4}>
         <VStack align="flex-start" spacing={3}>
-          <AvatarGroup size="sm" max={4} spacing={-2.5}>
+          <AvatarGroup size="sm" max={5} spacing={-2.5}>
             {localMods.map((mod, index) => (
-              <Avatar
-                key={index}
-                name={mod.name}
-                src={mod.iconSrc}
-                borderRadius="4px"
-              />
+              <Avatar key={index} name={mod.name} src={mod.iconSrc} />
             ))}
           </AvatarGroup>
           <Text fontSize="xs" color="gray.500">
@@ -198,11 +193,10 @@ export const InstanceModsWidget = () => {
             fontSize="xs"
             variant="ghost"
             position="absolute"
-            left={0}
-            bottom={0}
+            left={3}
+            bottom={3}
             justifyContent="flex-start"
-            leftIcon={<Icon as={LuArrowRight} />}
-            color={`${primaryColor}.600`}
+            colorScheme={primaryColor}
             onClick={() => {
               const { id } = router.query;
               if (id) {
@@ -211,7 +205,10 @@ export const InstanceModsWidget = () => {
               }
             }}
           >
-            <Text>{t("InstanceWidgets.mods.manage")}</Text>
+            <HStack spacing={1.5}>
+              <Icon as={LuArrowRight} />
+              <Text>{t("InstanceWidgets.mods.manage")}</Text>
+            </HStack>
           </Button>
         </VStack>
       </HStack>
@@ -258,14 +255,14 @@ export const InstanceLastPlayedWidget = () => {
             {lastPlayedWorld && (
               <Text>
                 {t(
-                  `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode.toLowerCase()}`
+                  `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode}`
                 )}
               </Text>
             )}
             {lastPlayedWorld && (
               <Text>
                 {t(
-                  `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty.toLowerCase()}`
+                  `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
                 )}
               </Text>
             )}
@@ -274,24 +271,28 @@ export const InstanceLastPlayedWidget = () => {
         prefixElement={
           <Image
             src={`/images/icons/StoneOldBeta.png`}
-            alt={lastPlayedWorld?.name || "Last Played World"}
+            alt={lastPlayedWorld?.name}
             boxSize="28px"
             objectFit="cover"
           />
         }
       />
-      <Button
-        fontSize="xs"
-        variant="ghost"
-        leftIcon={<Icon as={LuArrowRight} />}
-        color={`${primaryColor}.600`}
-        position="absolute"
-        left={0}
-        bottom={0}
-        justifyContent="flex-start"
-      >
-        <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
-      </Button>
+      <HStack spacing={1.5}>
+        <Button
+          fontSize="xs"
+          variant="ghost"
+          colorScheme={primaryColor}
+          position="absolute"
+          left={3}
+          bottom={3}
+          justifyContent="flex-start"
+        >
+          <HStack spacing={1.5}>
+            <Icon as={LuArrowRight} />
+            <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
+          </HStack>
+        </Button>
+      </HStack>
     </InstanceWidgetBase>
   );
 };
@@ -356,7 +357,7 @@ export const InstanceMoreWidget = () => {
           <Button
             key={index}
             variant="ghost"
-            color={`${primaryColor}.600`}
+            colorScheme={primaryColor}
             onClick={feature.onClick}
             top={2}
           >

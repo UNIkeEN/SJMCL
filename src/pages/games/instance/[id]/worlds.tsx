@@ -50,11 +50,11 @@ const InstanceWorldsPage = () => {
         {worlds.length > 0 ? (
           <OptionItemGroup
             items={worlds.map((world) => {
-              const translatedDifficulty = t(
-                `InstanceWorldsPage.worldList.difficulty.${world.difficulty.toLowerCase()}`
+              const difficulty = t(
+                `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
               );
-              const translatedGamemode = t(
-                `InstanceWorldsPage.worldList.gamemode.${world.gamemode.toLowerCase()}`
+              const gamemode = t(
+                `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
               );
 
               return (
@@ -63,11 +63,7 @@ const InstanceWorldsPage = () => {
                   title={world.name}
                   description={`${t(
                     "InstanceWorldsPage.worldList.lastPlayedAt"
-                  )} ${formatRelativeTime(world.lastPlayedAt, t)} | ${t(
-                    "InstanceWorldsPage.worldList.difficulty.title"
-                  )}: ${translatedDifficulty} | ${t(
-                    "InstanceWorldsPage.worldList.gamemode.title"
-                  )}: ${translatedGamemode}`}
+                  )} ${formatRelativeTime(world.lastPlayedAt, t)} | ${gamemode} ${t("InstanceWorldsPage.worldList.difficulty.title", { difficulty })}`}
                   prefixElement={
                     <Image
                       src={world.iconSrc}
