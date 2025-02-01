@@ -6,15 +6,16 @@ mod launcher_config;
 mod partial;
 mod resource;
 mod storage;
+mod tasks;
 mod utils;
-
-use std::path::PathBuf;
-use std::sync::{LazyLock, Mutex};
 
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::Instance;
 use launcher_config::models::LauncherConfig;
+use std::path::PathBuf;
+use std::sync::{LazyLock, Mutex};
 use storage::Storage;
+use tasks::monitor::TaskMonitor;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
@@ -70,6 +71,11 @@ pub async fn run() {
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,
+      tasks::commands::schedule_one_task,
+      tasks::commands::cancel_one_task,
+      tasks::commands::resume_one_task,
+      tasks::commands::stop_one_task,
+      tasks::commands::retrieve_task_list,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
@@ -88,6 +94,11 @@ pub async fn run() {
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
 
+      app.manage(Box::pin(TaskMonitor::new(
+        app.handle().clone(),
+        launcher_config.download.cache.directory.clone(),
+      )));
+
       app.manage(Mutex::new(launcher_config));
 
       let instances: Vec<Instance> = vec![];
@@ -97,6 +108,11 @@ pub async fn run() {
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move {
         refresh_and_update_instances(&app_handle).await;
+      });
+
+      let monitor_app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        tasks::background::monitor_background_process(monitor_app_handle).await;
       });
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.

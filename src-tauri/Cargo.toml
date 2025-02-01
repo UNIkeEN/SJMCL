@@ -30,9 +30,10 @@ tauri-plugin-log = "2.0.0-rc"
 tauri-plugin-shell = "2"
 tauri-plugin-dialog = "2.1.0"
 structstruck = "0.4.1"
-tauri-plugin-http = "2"
+tauri-plugin-http = { version = "2", features = ["json", "stream"] }
 tauri-plugin-os = "2"
 tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7.13", features = ["compat"] }
 systemstat = "0.2.3"
 partial_derive = { path = "./libs/partial_derive" }
 uuid = { version = "1.11.0", features = ["v4", "v5", "fast-rng",  "macro-diagnostics"] }
@@ -44,8 +45,9 @@ rand = "0.9.0"
 zip = "2.2"
 quartz_nbt = "0.2.9"
 regex = "1.11"
-futures = "0.3"
 toml = "0.8"
+pin-project = "1.1.8"
+futures = "0.3.31"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"
