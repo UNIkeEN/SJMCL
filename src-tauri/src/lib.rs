@@ -7,10 +7,8 @@ mod launcher_config;
 mod partial;
 mod resource;
 mod storage;
+mod tasks;
 mod utils;
-
-use std::path::PathBuf;
-use std::sync::{LazyLock, Mutex};
 
 use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
@@ -19,7 +17,11 @@ use launcher_config::{
   helpers::refresh_and_update_javas,
   models::{JavaInfo, LauncherConfig},
 };
+use std::path::PathBuf;
+use std::sync::{Arc, LazyLock, Mutex};
 use storage::Storage;
+use tasks::monitor::TaskMonitor;
+use tokio::sync::Notify;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
@@ -87,6 +89,11 @@ pub async fn run() {
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,
+      tasks::commands::schedule_task_group,
+      tasks::commands::cancel_task,
+      tasks::commands::resume_task,
+      tasks::commands::stop_task,
+      tasks::commands::retrieve_task_list,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
@@ -106,12 +113,13 @@ pub async fn run() {
       launcher_config.save().unwrap();
 
       app.manage(Mutex::new(launcher_config));
-
       let instances: Vec<Instance> = vec![];
       app.manage(Mutex::new(instances));
 
       let account_info: AccountInfo = AccountInfo::load().unwrap_or_default();
       app.manage(Mutex::new(account_info));
+      let notify = Arc::new(Notify::new());
+      app.manage(Box::pin(TaskMonitor::new(app.handle().clone(), notify)));
 
       // Refresh all instances
       let app_handle = app.handle().clone();
@@ -126,6 +134,11 @@ pub async fn run() {
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move {
         refresh_and_update_javas(&app_handle).await;
+      });
+
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        tasks::background::monitor_background_process(app_handle).await;
       });
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.

@@ -16,7 +16,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.0.2", features = [] }
 
 [profile.release]
-opt-level = 3    # as default
+opt-level = 3   # as default
 strip = true
 lto = true
 panic = "abort"
@@ -31,12 +31,18 @@ tauri-plugin-shell = "2"
 tauri-plugin-dialog = "2.1.0"
 tauri-plugin-fs = "2.0.1"
 structstruck = "0.4.1"
-tauri-plugin-http = "2"
+tauri-plugin-http = { version = "2", features = ["json", "stream"] }
 tauri-plugin-os = "2"
 tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7.13", features = ["compat"] }
 systemstat = "0.2.3"
 partial_derive = { path = "./libs/partial_derive" }
-uuid = { version = "1.11.0", features = ["v4", "v5", "fast-rng",  "macro-diagnostics"] }
+uuid = { version = "1.11.0", features = [
+	"v4",
+	"v5",
+	"fast-rng",
+	"macro-diagnostics",
+] }
 tauri-plugin-process = "2"
 tauri-plugin-opener = "2"
 base64 = "0.22.1"
@@ -45,7 +51,6 @@ rand = "0.9.0"
 zip = "2.2"
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
 regex = "1.11"
-futures = "0.3"
 toml = "0.8"
 lazy_static = "1.5"
 jsonwebtoken = "9.3.1"
@@ -54,6 +59,9 @@ sha1 = "0.10.1"
 hex = "0.4.3"
 url = "2.5.4"
 shlex = "1.3.0"
+pin-project = "1.1.8"
+futures = "0.3.31"
+governor = { version = "0.8.1", features = ["std"] }
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"
