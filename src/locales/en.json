@@ -583,10 +583,10 @@
         "hardcore": "Hardcore"
       },
       "gamemode": {
-        "survival": "Survival Mode",
-        "creative": "Creative Mode",
-        "adventure": "Adventure Mode",
-        "spectator": "Spectator Mode"
+        "survival": ", Survival Mode",
+        "creative": ", Creative Mode",
+        "adventure": ", Adventure Mode",
+        "spectator": ", Spectator Mode"
       }
     },
     "serverList": {

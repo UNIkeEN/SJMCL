@@ -583,10 +583,10 @@
         "hardcore": "极限生存"
       },
       "gamemode": {
-        "survival": "生存模式",
-        "creative": "创造模式",
-        "adventure": "冒险模式",
-        "spectator": "观察者模式"
+        "survival": "，生存模式",
+        "creative": "，创造模式",
+        "adventure": "，冒险模式",
+        "spectator": "，观察者模式"
       }
     },
     "serverList": {

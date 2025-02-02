@@ -29,6 +29,7 @@ import {
   LuShapes,
   LuSquareLibrary,
 } from "react-icons/lu";
+import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
@@ -50,7 +51,7 @@ interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
 const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
   title,
   children,
-  icon: IconType,
+  icon,
   ...props
 }) => {
   const { config } = useLauncherConfig();
@@ -72,9 +73,9 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
         </Text>
       )}
       {children}
-      {IconType && (
+      {icon && (
         <Icon
-          as={IconType}
+          as={icon}
           position="absolute"
           color={`${primaryColor}.100`}
           boxSize={20}
@@ -198,11 +199,7 @@ export const InstanceModsWidget = () => {
             justifyContent="flex-start"
             colorScheme={primaryColor}
             onClick={() => {
-              const { id } = router.query;
-              if (id) {
-                const instanceId = Array.isArray(id) ? id[0] : id;
-                router.push(`/games/instance/${instanceId}/mods`);
-              }
+              router.push(`/games/instance/${id}/mods`);
             }}
           >
             <HStack spacing={1.5}>
@@ -235,64 +232,64 @@ export const InstanceLastPlayedWidget = () => {
       title={t("InstanceWidgets.lastPlayed.title")}
       icon={LuClock4}
     >
-      <OptionItem
-        title={lastPlayedWorld?.name}
-        description={
-          <VStack
-            spacing={0}
-            fontSize="xs"
-            alignItems="flex-start"
-            className="secondary-text"
-          >
-            {lastPlayedWorld && (
-              <Text>
-                {formatRelativeTime(lastPlayedWorld.lastPlayedAt, t).replace(
-                  "on",
-                  ""
-                )}
-              </Text>
-            )}
-            {lastPlayedWorld && (
-              <Text>
-                {t(
-                  `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode}`
-                )}
-              </Text>
-            )}
-            {lastPlayedWorld && (
-              <Text>
-                {t(
-                  `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
-                )}
-              </Text>
-            )}
-          </VStack>
-        }
-        prefixElement={
-          <Image
-            src={`/images/icons/StoneOldBeta.png`}
-            alt={lastPlayedWorld?.name}
-            boxSize="28px"
-            objectFit="cover"
+      {lastPlayedWorld ? (
+        <>
+          <OptionItem
+            title={lastPlayedWorld.name}
+            description={
+              <VStack
+                spacing={0}
+                fontSize="xs"
+                alignItems="flex-start"
+                className="secondary-text"
+              >
+                <Text>
+                  {formatRelativeTime(lastPlayedWorld.lastPlayedAt, t).replace(
+                    "on",
+                    ""
+                  )}
+                </Text>
+                <Text>
+                  {t(
+                    `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode}`
+                  )}
+                </Text>
+                <Text>
+                  {t(
+                    `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
+                  )}
+                </Text>
+              </VStack>
+            }
+            prefixElement={
+              <Image
+                src={`/images/icons/lastPlayedWorld.png`}
+                alt={lastPlayedWorld.name}
+                boxSize="28px"
+                objectFit="cover"
+              />
+            }
           />
-        }
-      />
-      <HStack spacing={1.5}>
-        <Button
-          fontSize="xs"
-          variant="ghost"
-          colorScheme={primaryColor}
-          position="absolute"
-          left={3}
-          bottom={3}
-          justifyContent="flex-start"
-        >
           <HStack spacing={1.5}>
-            <Icon as={LuArrowRight} />
-            <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
+            <Button
+              fontSize="xs"
+              variant="ghost"
+              colorScheme={primaryColor}
+              position="absolute"
+              left={3}
+              bottom={3}
+              justifyContent="flex-start"
+            >
+              <HStack spacing={1.5}>
+                <Icon as={LuArrowRight} />
+                <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
+              </HStack>
+            </Button>
           </HStack>
-        </Button>
-      </HStack>
+        </>
+      ) : (
+        <Empty withIcon={false} size="sm" />
+      )}
     </InstanceWidgetBase>
   );
 };
@@ -302,50 +299,35 @@ export const InstanceMoreWidget = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();
+  const { id } = router.query;
 
   const features = [
     {
       icon: LuEarth,
       label: t("InstanceLayout.instanceTabList.worlds"),
       onClick: () => {
-        const { id } = router.query;
-        if (id) {
-          const instanceId = Array.isArray(id) ? id[0] : id;
-          router.push(`/games/instance/${instanceId}/worlds`);
-        }
+        router.push(`/games/instance/${id}/worlds`);
       },
     },
     {
       icon: LuPackage,
       label: t("InstanceLayout.instanceTabList.resourcepacks"),
       onClick: () => {
-        const { id } = router.query;
-        if (id) {
-          const instanceId = Array.isArray(id) ? id[0] : id;
-          router.push(`/games/instance/${instanceId}/resourcepacks`);
-        }
+        router.push(`/games/instance/${id}/resourcepacks`);
       },
     },
     {
       icon: LuHaze,
       label: t("InstanceLayout.instanceTabList.shaderpacks"),
       onClick: () => {
-        const { id } = router.query;
-        if (id) {
-          const instanceId = Array.isArray(id) ? id[0] : id;
-          router.push(`/games/instance/${instanceId}/shaderpacks`);
-        }
+        router.push(`/games/instance/${id}/shaderpacks`);
       },
     },
     {
       icon: LuSettings,
       label: t("InstanceLayout.instanceTabList.settings"),
       onClick: () => {
-        const { id } = router.query;
-        if (id) {
-          const instanceId = Array.isArray(id) ? id[0] : id;
-          router.push(`/games/instance/${instanceId}/settings`);
-        }
+        router.push(`/games/instance/${id}/settings`);
       },
     },
   ];
