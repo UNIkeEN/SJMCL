@@ -263,7 +263,7 @@ export const InstanceLastPlayedWidget = () => {
             }
             prefixElement={
               <Image
-                src={`/images/icons/lastPlayedWorld.png`}
+                src={`/images/icons/GrassBlock.png`}
                 alt={lastPlayedWorld.name}
                 boxSize="28px"
                 objectFit="cover"
@@ -301,50 +301,28 @@ export const InstanceMoreWidget = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const features = [
-    {
-      icon: LuEarth,
-      label: t("InstanceLayout.instanceTabList.worlds"),
-      onClick: () => {
-        router.push(`/games/instance/${id}/worlds`);
-      },
-    },
-    {
-      icon: LuPackage,
-      label: t("InstanceLayout.instanceTabList.resourcepacks"),
-      onClick: () => {
-        router.push(`/games/instance/${id}/resourcepacks`);
-      },
-    },
-    {
-      icon: LuHaze,
-      label: t("InstanceLayout.instanceTabList.shaderpacks"),
-      onClick: () => {
-        router.push(`/games/instance/${id}/shaderpacks`);
-      },
-    },
-    {
-      icon: LuSettings,
-      label: t("InstanceLayout.instanceTabList.settings"),
-      onClick: () => {
-        router.push(`/games/instance/${id}/settings`);
-      },
-    },
-  ];
+  const features: Record<string, IconType> = {
+    worlds: LuEarth,
+    resourcepacks: LuPackage,
+    shaderpacks: LuHaze,
+    settings: LuSettings,
+  };
 
   return (
     <InstanceWidgetBase title={t("InstanceWidgets.more.title")} icon={LuShapes}>
-      <Grid templateColumns="repeat(3, 0fr)" gap={5} mt={2}>
-        {features.map((feature, index) => (
+      <Grid templateColumns="repeat(3, 1fr)" gap={5} mt={2}>
+        {Object.entries(features).map(([key, icon]) => (
           <Button
-            key={index}
+            key={key}
             variant="ghost"
             colorScheme={primaryColor}
-            onClick={feature.onClick}
+            onClick={() => router.push(`/games/instance/${id}/${key}`)}
           >
             <VStack spacing={1} align="center">
-              <Icon as={feature.icon} boxSize="24px" />
-              <Text fontSize="xs">{feature.label}</Text>
+              <Icon as={icon} boxSize="24px" />
+              <Text fontSize="xs">
+                {t(`InstanceLayout.instanceTabList.${key}`)}
+              </Text>
             </VStack>
           </Button>
         ))}
