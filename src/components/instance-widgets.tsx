@@ -334,14 +334,13 @@ export const InstanceMoreWidget = () => {
 
   return (
     <InstanceWidgetBase title={t("InstanceWidgets.more.title")} icon={LuShapes}>
-      <Grid templateColumns="repeat(3, 0fr)" gap={5}>
+      <Grid templateColumns="repeat(3, 0fr)" gap={5} mt={2}>
         {features.map((feature, index) => (
           <Button
             key={index}
             variant="ghost"
             colorScheme={primaryColor}
             onClick={feature.onClick}
-            top={2}
           >
             <VStack spacing={1} align="center">
               <Icon as={feature.icon} boxSize="24px" />

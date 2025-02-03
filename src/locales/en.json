@@ -575,7 +575,6 @@
       "title": "Worlds",
       "lastPlayedAt": "Last played",
       "difficulty": {
-        "title": "(Difficulty: {{difficulty}})",
         "peaceful": "Peaceful",
         "easy": "Easy",
         "normal": "Normal",
@@ -583,11 +582,12 @@
         "hardcore": "Hardcore"
       },
       "gamemode": {
-        "survival": ", Survival Mode",
-        "creative": ", Creative Mode",
-        "adventure": ", Adventure Mode",
-        "spectator": ", Spectator Mode"
-      }
+        "survival": "Survival Mode",
+        "creative": "Creative Mode",
+        "adventure": "Adventure Mode",
+        "spectator": "Spectator Mode"
+      },
+      "moreDesc": "{{gamemode}}, (Difficulty: {{difficulty}})"
     },
     "serverList": {
       "title": "Servers",
