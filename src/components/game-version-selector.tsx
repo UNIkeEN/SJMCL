@@ -220,7 +220,7 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           <Center>
             <BeatLoader size={16} color="gray" />
           </Center>
-        ) : selectedTypes.size === 0 ? (
+        ) : selectedTypes.size === 0 || versions.length === 0 ? (
           <Empty withIcon={false} size="sm" />
         ) : (
           <RadioGroup

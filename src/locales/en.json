@@ -773,6 +773,17 @@
           }
         }
       }
+    },
+    "resource": {
+      "retriveGameVersionList": {
+        "error": {
+          "title": "Failed to retrieve game version list",
+          "description": {
+            "fetchError": "Failed to communicate with the server",
+            "parseError": "The server returned data in an incorrect format"
+          }
+        }
+      }
     }
   },
   "SettingsLayout": {

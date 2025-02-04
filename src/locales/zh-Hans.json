@@ -773,6 +773,17 @@
           }
         }
       }
+    },
+    "resource": {
+      "retriveGameVersionList": {
+        "error": {
+          "title": "获取游戏版本列表失败",
+          "description": {
+            "fetchError": "与服务器通信失败，请尝试切换下载策略",
+            "parseError": "服务器返回数据格式错误，请尝试切换下载策略"
+          }
+        }
+      }
     }
   },
   "SettingsLayout": {
