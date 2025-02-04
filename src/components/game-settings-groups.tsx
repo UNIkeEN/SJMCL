@@ -26,7 +26,7 @@ import {
 import MemoryStatusProgress from "@/components/memory-status-progress";
 import { useLauncherConfig } from "@/contexts/config";
 import { MemoryInfo } from "@/models/system-info";
-import { getMemoryInfo } from "@/services/utils";
+import { retriveMemoryInfo } from "@/services/utils";
 
 interface GameSettingsGroupsProps {
   instanceId?: number;
@@ -60,8 +60,8 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   });
   const maxMemCanAllocated = Math.floor(memoryInfo.total / 1024 / 1024);
 
-  const fetchMemoryInfo = async () => {
-    getMemoryInfo()
+  const handleRetriveMemoryInfo = async () => {
+    retriveMemoryInfo()
       .then((info) => {
         setMemoryInfo(info);
       })
@@ -69,8 +69,8 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   };
 
   useEffect(() => {
-    fetchMemoryInfo();
-    const interval = setInterval(fetchMemoryInfo, 10000);
+    handleRetriveMemoryInfo();
+    const interval = setInterval(handleRetriveMemoryInfo, 10000);
     return () => clearInterval(interval);
   }, []);
 

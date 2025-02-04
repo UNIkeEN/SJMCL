@@ -643,7 +643,7 @@
   },
   "Services": {
     "config": {
-      "getLauncherConfig": {
+      "retriveLauncherConfig": {
         "error": {
           "title": "獲取啟動器設定失敗"
         }
@@ -718,7 +718,7 @@
           }
         }
       },
-      "retriveAuthServerInfo": {
+      "fetchAuthServerInfo": {
         "error": {
           "title": "獲取認證伺服器信息失敗",
           "description": {

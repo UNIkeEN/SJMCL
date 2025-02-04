@@ -9,7 +9,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub fn get_launcher_config() -> SJMCLResult<LauncherConfig> {
+pub fn retrive_launcher_config() -> SJMCLResult<LauncherConfig> {
   let state: LauncherConfig = Storage::load().unwrap_or_default();
   Ok(state)
 }
@@ -126,7 +126,7 @@ pub async fn import_launcher_config(app: AppHandle, code: String) -> SJMCLResult
 }
 
 #[tauri::command]
-pub fn get_memory_info() -> SJMCLResult<MemoryInfo> {
+pub fn retrive_memory_info() -> SJMCLResult<MemoryInfo> {
   let sys = systemstat::System::new();
   let mem = sys.memory()?;
   Ok(MemoryInfo {

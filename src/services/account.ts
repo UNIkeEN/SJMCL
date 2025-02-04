@@ -86,15 +86,15 @@ export class AccountService {
   }
 
   /**
-   * RETRIVE the information of a new authentication server.
+   * FETCH the information of a new authentication server.
    * @param {string} url - The URL of the authentication server to be added.
    * @returns {Promise<InvokeResponse<AuthServer>>}
    */
   @responseHandler("account", errorToLocaleKey)
-  static async retriveAuthServerInfo(
+  static async fetchAuthServerInfo(
     url: string
   ): Promise<InvokeResponse<AuthServer>> {
-    return await invoke("retrive_auth_server_info", { url });
+    return await invoke("fetch_auth_server_info", { url });
   }
 
   /**

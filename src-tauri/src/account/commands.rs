@@ -133,7 +133,7 @@ pub fn retrive_auth_server_list() -> SJMCLResult<Vec<AuthServer>> {
 }
 
 #[tauri::command]
-pub async fn retrive_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> {
+pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> {
   // check the url integrity following the standard
   // https://github.com/yushijinhun/authlib-injector/wiki/%E5%90%AF%E5%8A%A8%E5%99%A8%E6%8A%80%E6%9C%AF%E8%A7%84%E8%8C%83#%E5%9C%A8%E5%90%AF%E5%8A%A8%E5%99%A8%E4%B8%AD%E8%BE%93%E5%85%A5%E5%9C%B0%E5%9D%80
   if !url.starts_with("http://") && !url.starts_with("https://") {

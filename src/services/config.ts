@@ -15,12 +15,14 @@ const errorToLocaleKey: { [key: string]: string } = {
  */
 export class ConfigService {
   /**
-   * GET the launcher configs.
+   * RETRIVE the launcher configs.
    * @returns {Promise<InvokeResponse<LauncherConfig>>}
    */
   @responseHandler("config", errorToLocaleKey)
-  static async getLauncherConfig(): Promise<InvokeResponse<LauncherConfig>> {
-    return await invoke("get_launcher_config");
+  static async retriveLauncherConfig(): Promise<
+    InvokeResponse<LauncherConfig>
+  > {
+    return await invoke("retrive_launcher_config");
   }
 
   /**

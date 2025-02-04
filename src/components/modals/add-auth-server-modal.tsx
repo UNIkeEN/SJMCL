@@ -55,7 +55,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const handleNextStep = () => {
     setIsLoading(true);
     // test the server url in backend & get the server name (without saving)
-    AccountService.retriveAuthServerInfo(serverUrl)
+    AccountService.fetchAuthServerInfo(serverUrl)
       .then((response) => {
         if (response.status === "success") {
           setServerName(response.data.name);

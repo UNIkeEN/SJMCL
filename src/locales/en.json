@@ -669,7 +669,7 @@
   },
   "Services": {
     "config": {
-      "getLauncherConfig": {
+      "retriveLauncherConfig": {
         "error": {
           "title": "Failed to get launcher settings"
         }
@@ -744,7 +744,7 @@
           }
         }
       },
-      "retriveAuthServerInfo": {
+      "fetchAuthServerInfo": {
         "error": {
           "title": "Failed to get authentication server information",
           "description": {

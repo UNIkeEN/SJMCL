@@ -4,7 +4,7 @@ use serde_json::Value;
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub async fn get_game_servers(
+pub async fn retrive_game_server_list(
   instance_id: usize,
   query_online: bool,
 ) -> SJMCLResult<Vec<GameServerInfo>> {

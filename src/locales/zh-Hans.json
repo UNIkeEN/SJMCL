@@ -669,7 +669,7 @@
   },
   "Services": {
     "config": {
-      "getLauncherConfig": {
+      "retriveLauncherConfig": {
         "error": {
           "title": "获取启动器设置失败"
         }
@@ -744,7 +744,7 @@
           }
         }
       },
-      "retriveAuthServerInfo": {
+      "fetchAuthServerInfo": {
         "error": {
           "title": "获取认证服务器信息失败",
           "description": {

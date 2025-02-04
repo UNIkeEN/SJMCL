@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import MultiLevelProgressBar from "@/components/common/multi-level-progress";
 import { useLauncherConfig } from "@/contexts/config";
 import { MemoryInfo } from "@/models/system-info";
-import { getMemoryInfo } from "@/services/utils";
 
 interface MemoryStatusProgressProps {
   memoryInfo: MemoryInfo;

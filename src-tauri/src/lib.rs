@@ -35,25 +35,25 @@ pub async fn run() {
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_dialog::init())
     .invoke_handler(tauri::generate_handler![
-      launcher_config::commands::get_launcher_config,
+      launcher_config::commands::retrive_launcher_config,
       launcher_config::commands::update_launcher_config,
       launcher_config::commands::restore_launcher_config,
       launcher_config::commands::export_launcher_config,
       launcher_config::commands::import_launcher_config,
-      launcher_config::commands::get_memory_info,
+      launcher_config::commands::retrive_memory_info,
       launcher_config::commands::retrive_custom_background_list,
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       account::commands::retrive_player_list,
-      account::commands::retrive_selected_player,
-      account::commands::update_selected_player,
       account::commands::add_player,
       account::commands::delete_player,
+      account::commands::retrive_selected_player,
+      account::commands::update_selected_player,
       account::commands::retrive_auth_server_list,
-      account::commands::retrive_auth_server_info,
       account::commands::add_auth_server,
       account::commands::delete_auth_server,
-      instance::commands::get_game_servers,
+      account::commands::fetch_auth_server_info,
+      instance::commands::retrive_game_server_list,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);

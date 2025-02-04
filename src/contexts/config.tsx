@@ -30,8 +30,8 @@ export const LauncherConfigContextProvider: React.FC<{
   const { t } = useTranslation();
   const toast = useToast();
 
-  const fetchAll = useCallback(() => {
-    ConfigService.getLauncherConfig().then((response) => {
+  const handleRetriveLauncherConfig = useCallback(() => {
+    ConfigService.retriveLauncherConfig().then((response) => {
       if (response.status === "success") {
         setConfig(response.data);
       } else {
@@ -45,8 +45,8 @@ export const LauncherConfigContextProvider: React.FC<{
   }, [setConfig, toast]);
 
   useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+    handleRetriveLauncherConfig();
+  }, [handleRetriveLauncherConfig]);
 
   useEffect(() => {
     i18n.changeLanguage(config.general.general.language);
@@ -65,7 +65,7 @@ export const LauncherConfigContextProvider: React.FC<{
     current[keys[keys.length - 1]] = value;
   };
 
-  const update = (path: string, value: any) => {
+  const handleUpdateLauncherConfig = (path: string, value: any) => {
     const newConfig = { ...config };
     updateByKeyPath(newConfig, path, value);
 
@@ -83,7 +83,7 @@ export const LauncherConfigContextProvider: React.FC<{
     });
   };
 
-  const restoreAll = () => {
+  const handleRestoreLauncherConfig = () => {
     ConfigService.restoreLauncherConfig().then((response) => {
       if (response.status === "success") {
         setConfig(response.data);
@@ -103,7 +103,13 @@ export const LauncherConfigContextProvider: React.FC<{
 
   return (
     <LauncherConfigContext.Provider
-      value={{ config, setConfig, update, fetchAll, restoreAll }}
+      value={{
+        config,
+        setConfig,
+        update: handleUpdateLauncherConfig,
+        fetchAll: handleRetriveLauncherConfig,
+        restoreAll: handleRestoreLauncherConfig,
+      }}
     >
       {children}
     </LauncherConfigContext.Provider>

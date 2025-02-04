@@ -11,7 +11,7 @@ import { Section } from "@/components/common/section";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { GameServerInfo, WorldInfo } from "@/models/game-instance";
 import { mockWorlds } from "@/models/mock/game-instance";
-import { getGameServers } from "@/services/instance";
+import { retriveGameServerList } from "@/services/instance";
 import { formatRelativeTime } from "@/utils/datetime";
 
 const InstanceWorldsPage = () => {
@@ -26,15 +26,15 @@ const InstanceWorldsPage = () => {
 
     (async () => {
       if (summary?.id) {
-        setGameServers(await getGameServers(summary.id, false)); // without online query, quickly get server list from local servers.dat to render
-        setGameServers(await getGameServers(summary.id, true));
+        setGameServers(await retriveGameServerList(summary.id, false)); // without online query, quickly get server list from local servers.dat to render
+        setGameServers(await retriveGameServerList(summary.id, true));
       }
     })();
 
     // refresh every minute to query server info
     const intervalId = setInterval(async () => {
       if (summary?.id) {
-        setGameServers(await getGameServers(summary.id, true));
+        setGameServers(await retriveGameServerList(summary.id, true));
       }
     }, 60000);
     return () => clearInterval(intervalId);
