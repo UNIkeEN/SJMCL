@@ -340,6 +340,7 @@
     "old_beta": "远古版",
     "release": "正式版",
     "snapshot": "测试版",
+    "april_fools": "愚人节快照",
     "wikiKey": {
       "release": "Java版",
       "snapshot": "",
@@ -596,7 +597,7 @@
         "adventure": "冒险模式",
         "spectator": "观察者模式"
       },
-      "moreDesc":"，{{gamemode}}（难度：{{difficulty}}）"
+      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）"
     },
     "serverList": {
       "title": "服务器",

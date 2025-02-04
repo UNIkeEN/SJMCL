@@ -3,6 +3,7 @@ mod error;
 mod instance;
 mod launcher_config;
 mod partial;
+mod resource;
 mod storage;
 mod utils;
 
@@ -54,6 +55,7 @@ pub async fn run() {
       account::commands::delete_auth_server,
       account::commands::fetch_auth_server_info,
       instance::commands::retrive_game_server_list,
+      resource::commands::retrive_game_version_list,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);

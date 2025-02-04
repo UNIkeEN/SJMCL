@@ -1,6 +1,6 @@
 export interface GameResourceInfo {
   id: string;
-  type: string;
+  gameType: string;
   releaseTime: string;
   url: string;
 }

@@ -120,7 +120,9 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
                 if (!selectedModLoader.version) {
                   setSelectedModLoader(defaultModLoaderResourceInfo); // if the user selected the loader but did not choose a version from the list
                   setInstanceName(selectedGameVersion.id);
-                  setInstanceIconSrc(gameTypesToIcon[selectedGameVersion.type]);
+                  setInstanceIconSrc(
+                    gameTypesToIcon[selectedGameVersion.gameType]
+                  );
                 } else {
                   setInstanceName(
                     `${selectedGameVersion.id}-${selectedModLoader.type}`
@@ -197,7 +199,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         content: Step1Content,
         description:
           selectedGameVersion &&
-          `${selectedGameVersion.id} ${t(`GameVersionSelector.${selectedGameVersion.type}`)}`,
+          `${selectedGameVersion.id} ${t(`GameVersionSelector.${selectedGameVersion.gameType}`)}`,
       },
       {
         key: "loader",
