@@ -3,19 +3,23 @@ use crate::storage::Storage;
 use crate::{error::SJMCLResult, partial::PartialUpdate};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 use systemstat::{saturating_sub_bytes, Platform};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub fn retrive_launcher_config() -> SJMCLResult<LauncherConfig> {
-  let state: LauncherConfig = Storage::load().unwrap_or_default();
-  Ok(state)
+pub fn retrive_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
+  let binding = app.state::<Mutex<LauncherConfig>>();
+  let state = binding.lock()?;
+  Ok(state.clone())
 }
 
 #[tauri::command]
-pub fn update_launcher_config(key_path: String, value: String) -> SJMCLResult<()> {
+pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<LauncherConfig>>();
+  let mut state = binding.lock()?;
   let mut snake = String::new();
   for (i, ch) in key_path.char_indices() {
     if i > 0 && ch.is_uppercase() {
@@ -23,7 +27,6 @@ pub fn update_launcher_config(key_path: String, value: String) -> SJMCLResult<()
     }
     snake.push(ch.to_ascii_lowercase());
   }
-  let mut state: LauncherConfig = Storage::load().unwrap_or_default();
   state.update(&snake, &value)?;
   state.save()?;
   Ok(())
@@ -31,7 +34,8 @@ pub fn update_launcher_config(key_path: String, value: String) -> SJMCLResult<()
 
 #[tauri::command]
 pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
-  let mut state = LauncherConfig::default();
+  let binding = app.state::<Mutex<LauncherConfig>>();
+  let mut state = binding.lock()?;
   // Set and create default download cache dir
   state.download.cache.directory = app
     .path()
@@ -40,12 +44,13 @@ pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
     fs::create_dir_all(&state.download.cache.directory).unwrap();
   }
   state.save()?;
-  Ok(state)
+  Ok(state.clone())
 }
 
 #[tauri::command]
 pub async fn export_launcher_config(app: AppHandle) -> SJMCLResult<String> {
-  let state: LauncherConfig = Storage::load().unwrap_or_default();
+  let binding = app.state::<Mutex<LauncherConfig>>();
+  let state = binding.lock()?.clone();
   let client = reqwest::Client::new();
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/settings")
@@ -53,7 +58,7 @@ pub async fn export_launcher_config(app: AppHandle) -> SJMCLResult<String> {
     .body(
       serde_json::json!({
         "version": app.package_info().version.to_string(),
-        "json_data": state.clone(),
+        "json_data": state,
       })
       .to_string(),
     )
@@ -104,11 +109,12 @@ pub async fn import_launcher_config(app: AppHandle, code: String) -> SJMCLResult
         .await
         .map_err(|_| LauncherConfigError::FetchError)?;
       if status.is_success() {
-        let state: LauncherConfig =
-          serde_json::from_value(json).map_err(|_| LauncherConfigError::FetchError)?;
+        let binding = app.state::<Mutex<LauncherConfig>>();
+        let mut state = binding.lock()?;
+        *state = serde_json::from_value(json).map_err(|_| LauncherConfigError::FetchError)?;
         state.save()?;
 
-        Ok(state)
+        Ok(state.clone())
       } else {
         let message = json["message"]
           .as_str()
