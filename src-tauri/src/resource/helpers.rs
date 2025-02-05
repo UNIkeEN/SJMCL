@@ -36,7 +36,7 @@ pub fn get_download_api(resource_type: ResourceType) -> String {
 
     _ => {
       // auto mode
-      // todo: compare the speed between official server and bmclapi2
+      // TODO: try to fetch mirror first, then official
       match resource_type {
         ResourceType::Game => {
           return "https://bmclapi2.bangbang93.com".to_string();

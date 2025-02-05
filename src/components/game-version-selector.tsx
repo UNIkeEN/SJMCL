@@ -39,16 +39,6 @@ const gameTypesToIcon: Record<string, string> = {
   april_fools: "WhiteGlazedTerracotta.png",
 };
 
-const aprilFoolsVersionToWiki = (versionId: string) => {
-  switch (versionId) {
-    case "22w13oneblockatatime":
-      return "22w13oneBlockAtATime";
-
-    default:
-      return versionId;
-  }
-};
-
 interface GameVersionSelectorProps extends BoxProps {
   selectedVersion: GameResourceInfo | undefined;
   onVersionSelect: (version: GameResourceInfo) => void;
@@ -151,11 +141,10 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           variant="ghost"
           onClick={() => {
             open(
-              `${t("Utils.wiki.baseUrl")}${
-                version.gameType === "april_fools"
-                  ? aprilFoolsVersionToWiki(version.id)
-                  : t(`GameVersionSelector.wikiKey.${version.gameType}`) +
-                    version.id.replace("b", "")
+              `${t("Utils.wiki.baseUrl")}${t(`GameVersionSelector.wikiKey.${version.gameType}`)}${
+                version.gameType === "snapshot"
+                  ? version.id.replace("b", "")
+                  : version.id
               }`
             );
           }}

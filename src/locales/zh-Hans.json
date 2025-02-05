@@ -340,11 +340,12 @@
     "old_beta": "远古版",
     "release": "正式版",
     "snapshot": "测试版",
-    "april_fools": "愚人节快照",
+    "april_fools": "愚人节版",
     "wikiKey": {
       "release": "Java版",
       "snapshot": "",
-      "old_beta": "Java版Beta_"
+      "old_beta": "Java版Beta_",
+      "april_fools": ""
     }
   },
   "General": {

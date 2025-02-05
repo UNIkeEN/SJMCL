@@ -344,7 +344,8 @@
     "wikiKey": {
       "release": "Java_Edition_",
       "snapshot": "",
-      "old_beta": "Java_Edition_Beta_"
+      "old_beta": "Java_Edition_Beta_",
+      "april_fools": ""
     }
   },
   "General": {
