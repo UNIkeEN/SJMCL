@@ -1,7 +1,7 @@
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use serde::{Deserialize, Serialize};
-
+#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
 pub enum ResourceType {
   Game,
   Forge,
@@ -31,6 +31,7 @@ pub struct ModLoaderResourceInfo {
 pub enum ResourceError {
   FetchError,
   ParseError,
+  NoDownloadApi,
 }
 
 impl fmt::Display for ResourceError {
@@ -38,6 +39,7 @@ impl fmt::Display for ResourceError {
     match self {
       ResourceError::FetchError => write!(f, "FETCH_ERROR"),
       ResourceError::ParseError => write!(f, "PARSE_ERROR"),
+      ResourceError::NoDownloadApi => write!(f, "NO_DOWNLOAD_API"),
     }
   }
 }
