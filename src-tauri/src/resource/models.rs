@@ -29,7 +29,6 @@ pub struct ModLoaderResourceInfo {
 
 #[derive(Debug)]
 pub enum ResourceError {
-  FetchError,
   ParseError,
   NoDownloadApi,
 }
@@ -37,7 +36,6 @@ pub enum ResourceError {
 impl fmt::Display for ResourceError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
-      ResourceError::FetchError => write!(f, "FETCH_ERROR"),
       ResourceError::ParseError => write!(f, "PARSE_ERROR"),
       ResourceError::NoDownloadApi => write!(f, "NO_DOWNLOAD_API"),
     }

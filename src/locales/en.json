@@ -780,9 +780,8 @@
         "error": {
           "title": "Failed to retrieve game version list",
           "description": {
-            "fetchError": "Failed to communicate with the server",
             "parseError": "The server returned data in an incorrect format",
-            "noDownloadApi": "No download strategy available"
+            "noDownloadApi": "No download strategy available, please check internet connection"
           }
         }
       }

@@ -780,9 +780,8 @@
         "error": {
           "title": "获取游戏版本列表失败",
           "description": {
-            "fetchError": "与服务器通信失败",
             "parseError": "服务器返回数据格式错误",
-            "noDownloadApi": "无可用的下载策略"
+            "noDownloadApi": "无可用的下载策略，请检查网络连接"
           }
         }
       }

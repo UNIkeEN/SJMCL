@@ -50,13 +50,13 @@ pub async fn retrive_game_version_list() -> SJMCLResult<Vec<GameResourceInfo>> {
               }
               return Ok(game_version_list);
             }
-            Err(_) => return Err(ResourceError::ParseError.into()),
+            Err(_) => continue,
           }
         } else {
-          return Err(ResourceError::FetchError.into());
+          continue;
         }
       }
-      Err(_) => return Err(ResourceError::FetchError.into()),
+      Err(_) => continue,
     }
   }
   return Err(ResourceError::NoDownloadApi.into());

@@ -4,7 +4,6 @@ import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
 const errorToLocaleKey: { [key: string]: string } = {
-  FETCH_ERROR: "fetchError",
   PARSE_ERROR: "parseError",
   NO_DOWNLOAD_API: "noDownloadApi",
 };
