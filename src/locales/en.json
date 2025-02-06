@@ -83,6 +83,10 @@
       "manageDirs": {
         "title": "Manage Game Directories",
         "description": "Manage local game storage directories to add installed instances"
+      },
+      "more": {
+        "title": "More",
+        "description": "Choose and install game Server"
       }
     }
   },
@@ -232,6 +236,15 @@
     },
     "tag": {
       "online": "Online"
+    }
+  },
+  "DownloadGameServerModal": {
+    "header": {
+      "title": "Download Game Server"
+    },
+    "stepper": {
+      "server": "Select Server Version",
+      "info": "Basic Settings"
     }
   },
   "DownloadSettingPage": {
@@ -655,6 +668,17 @@
     "stable": "Stable",
     "beta": "Beta",
     "releaseDate": "Released at {{date}}"
+  },
+  "morePage": {
+    "button": {
+      "more": "More"
+    },
+    "moreOptions": {
+      "server": {
+        "title": "Download Game Server",
+        "description": "Select and install the game server"
+      }
+    }
   },
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."

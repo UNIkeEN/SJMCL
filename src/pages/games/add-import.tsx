@@ -19,6 +19,7 @@ const AddAndImportInstancePage = () => {
     new: onOpenCreateInstanceModal,
     modpack: () => {},
     manageDirs: () => router.push("/settings/global-game"),
+    more: () => router.push("/games/more"),
   };
 
   return (

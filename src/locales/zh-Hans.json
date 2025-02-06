@@ -83,6 +83,10 @@
       "manageDirs": {
         "title": "管理游戏目录",
         "description": "管理本地游戏存储目录，以添加已安装实例"
+      },
+      "more": {
+        "title": "更多",
+        "description": "选择并安装游戏服务端"
       }
     }
   },
@@ -232,6 +236,15 @@
     },
     "tag": {
       "online": "在线"
+    }
+  },
+  "DownloadGameServerModal": {
+    "header": {
+      "title": "下载服务端"
+    },
+    "stepper": {
+      "server":"选择服务端版本",
+      "info":"基本设置"
     }
   },
   "DownloadSettingPage": {
@@ -655,6 +668,17 @@
     "stable": "稳定版",
     "beta": "测试版",
     "releaseDate": "发布于 {{date}}"
+  },
+  "morePage": {
+    "button": {
+      "more": "更多"
+    },
+    "moreOptions": {
+      "server": {
+        "title": "下载服务端",
+        "description": "选择并安装游戏服务端"
+      }
+    }
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
