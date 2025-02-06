@@ -665,6 +665,13 @@
       "delete": "Delete"
     }
   },
+  "reloginPlayerModal": {
+    "title": "Re-login",
+    "relogin": "Login",
+    "user": "User",
+    "input": "Enter password",
+    "password": "Password"
+  },
   "RestoreConfigConfirmDialog": {
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
