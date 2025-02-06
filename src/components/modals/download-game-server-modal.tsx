@@ -29,24 +29,26 @@ export const DownloadGameServerModal: React.FC<
   const Content = useMemo(() => {
     return (
       <>
-        <ModalBody>
-          <GameVersionSelector
-            selectedVersion={selectedGameVersion}
-            onVersionSelect={setSelectedGameVersion}
-          />
-        </ModalBody>
-        <ModalFooter mt={1}>
-          <Button variant="ghost" onClick={modalProps.onClose}>
-            {t("General.cancel")}
-          </Button>
-          <Button
-            disabled={!selectedGameVersion}
-            colorScheme={primaryColor}
-            onClick={modalProps.onClose}
-          >
-            {t("General.finish")}
-          </Button>
-        </ModalFooter>
+        <Flex h="60vh" flexDir="column">
+          <ModalBody>
+            <GameVersionSelector
+              selectedVersion={selectedGameVersion}
+              onVersionSelect={setSelectedGameVersion}
+            />
+          </ModalBody>
+          <ModalFooter mt={1}>
+            <Button variant="ghost" onClick={modalProps.onClose}>
+              {t("General.cancel")}
+            </Button>
+            <Button
+              disabled={!selectedGameVersion}
+              colorScheme={primaryColor}
+              onClick={modalProps.onClose}
+            >
+              {t("DownloadSettingPage.download.title")}
+            </Button>
+          </ModalFooter>
+        </Flex>
       </>
     );
   }, [modalProps.onClose, primaryColor, selectedGameVersion, t]);
@@ -62,10 +64,7 @@ export const DownloadGameServerModal: React.FC<
           {t("AddAndImportInstancePage.moreOptions.server.title")}
         </ModalHeader>
         <ModalCloseButton />
-
-        <Flex h="60vh" flexDir="column">
-          {Content}
-        </Flex>
+        {Content}
       </ModalContent>
     </Modal>
   );
