@@ -45,27 +45,24 @@ const ReLogin3rdPartyPlayerModal: React.FC<
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={3.5} align="flex-start">
-            <HStack>
-              <Text fontWeight={500}>
+            <FormControl>
+              <FormLabel>
                 {t("ReLogin3rdPartyPlayerModal.label.user")}
-              </Text>
+              </FormLabel>
               <Text>{username}</Text>
-            </HStack>
+            </FormControl>
             <FormControl isRequired>
-              <HStack>
-                <FormLabel>
-                  {t("ReLogin3rdPartyPlayerModal.label.password")}
-                </FormLabel>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={t(
-                    "ReLogin3rdPartyPlayerModal.placeholder.password"
-                  )}
-                  w="80%"
-                />
-              </HStack>
+              <FormLabel>
+                {t("ReLogin3rdPartyPlayerModal.label.password")}
+              </FormLabel>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t(
+                  "ReLogin3rdPartyPlayerModal.placeholder.password"
+                )}
+              />
             </FormControl>
           </VStack>
         </ModalBody>
