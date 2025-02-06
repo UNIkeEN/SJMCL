@@ -11,58 +11,66 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  ModalProps,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 
-interface ReLogin3rdPartyPlayerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  username: string;
-  onReLogin: (password: string) => void;
-}
-
-const ReLogin3rdPartyPlayerModal: React.FC<ReLogin3rdPartyPlayerModalProps> = ({
-  isOpen,
-  onClose,
-  username,
-  onReLogin,
-}) => {
-  const [password, setPassword] = useState<string>("");
+const ReLogin3rdPartyPlayerModal: React.FC<
+  Omit<ModalProps, "children"> & {
+    username: string;
+    onReLogin: (password: string) => void;
+  }
+> = ({ username, onReLogin, ...props }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
+  const [password, setPassword] = useState<string>("");
+
   const handleReLogin = async () => {
     onReLogin(password);
-    onClose();
+    setPassword("");
+    props.onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("reloginPlayerModal.title")}</ModalHeader>
+        <ModalHeader>{t("ReLogin3rdPartyPlayerModal.modal.title")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <HStack>
-            <Text fontWeight={500}>{t("reloginPlayerModal.user")}</Text>
-            <Text>{username}</Text>
-          </HStack>
-          <FormControl isRequired>
-            <FormLabel>{t("reloginPlayerModal.password")}</FormLabel>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t("reloginPlayerModal.input")}
-            />
-          </FormControl>
+          <VStack spacing={3.5} align="flex-start">
+            <HStack>
+              <Text fontWeight={500}>
+                {t("ReLogin3rdPartyPlayerModal.label.user")}
+              </Text>
+              <Text>{username}</Text>
+            </HStack>
+            <FormControl isRequired>
+              <HStack>
+                <FormLabel>
+                  {t("ReLogin3rdPartyPlayerModal.label.password")}
+                </FormLabel>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={t(
+                    "ReLogin3rdPartyPlayerModal.placeholder.password"
+                  )}
+                  w="80%"
+                />
+              </HStack>
+            </FormControl>
+          </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button variant="outline" mr={2} onClick={onClose}>
+          <Button variant="outline" mr={2} onClick={props.onClose}>
             {t("General.cancel")}
           </Button>
           <Button
@@ -70,7 +78,7 @@ const ReLogin3rdPartyPlayerModal: React.FC<ReLogin3rdPartyPlayerModalProps> = ({
             onClick={handleReLogin}
             isDisabled={!password.trim()}
           >
-            {t("reloginPlayerModal.relogin")}
+            {t("ReLogin3rdPartyPlayerModal.button.login")}
           </Button>
         </ModalFooter>
       </ModalContent>

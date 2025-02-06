@@ -665,12 +665,20 @@
       "delete": "Delete"
     }
   },
-  "reloginPlayerModal": {
-    "title": "Re-login",
-    "relogin": "Login",
-    "user": "User",
-    "input": "Enter password",
-    "password": "Password"
+  "ReLogin3rdPartyPlayerModal": {
+    "modal": {
+      "title": "Re-login"
+    },
+    "label": {
+      "user": "Username",
+      "password": "Password"
+    },
+    "placeholder": {
+      "password": "Enter your password"
+    },
+    "button": {
+      "login": "Login"
+    }
   },
   "RestoreConfigConfirmDialog": {
     "title": "Restore Launcher Settings",

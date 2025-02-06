@@ -669,12 +669,20 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
-  "reloginPlayerModal": {
-    "title": "重新登陆",
-    "relogin": "登录",
-    "user": "用户",
-    "input": "请输入密码",
-    "password": "密码"
+  "ReLogin3rdPartyPlayerModal": {
+    "modal": {
+      "title": "重新登录"
+    },
+    "label": {
+      "user": "用户名",
+      "password": "密码"
+    },
+    "placeholder": {
+      "password": "请输入密码"
+    },
+    "button": {
+      "login": "登录"
+    }
   },
   "Services": {
     "config": {
