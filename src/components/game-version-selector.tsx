@@ -44,7 +44,7 @@ interface GameVersionSelectorProps extends BoxProps {
   onVersionSelect: (version: GameResourceInfo) => void;
 }
 
-const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
+export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
   selectedVersion,
   onVersionSelect,
   ...props
@@ -227,5 +227,3 @@ const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
     </Flex>
   );
 };
-
-export default GameVersionSelector;

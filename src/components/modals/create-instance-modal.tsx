@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import GameVersionSelector from "@/components/game-version-selector";
+import { GameVersionSelector } from "@/components/game-version-selector";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import { ModLoaderSelector } from "@/components/mod-loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
