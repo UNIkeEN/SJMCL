@@ -10,7 +10,7 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { useLauncherConfig } from "@/contexts/config";
@@ -26,9 +26,18 @@ export const DownloadGameServerModal: React.FC<
   const [selectedGameVersion, setSelectedGameVersion] =
     useState<GameResourceInfo>();
 
-  const Content = useMemo(() => {
-    return (
-      <>
+  return (
+    <Modal
+      scrollBehavior="inside"
+      size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      {...modalProps}
+    >
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
+          {t("AddAndImportInstancePage.moreOptions.server.title")}
+        </ModalHeader>
+        <ModalCloseButton />
         <Flex h="60vh" flexDir="column">
           <ModalBody>
             <GameVersionSelector
@@ -45,26 +54,10 @@ export const DownloadGameServerModal: React.FC<
               colorScheme={primaryColor}
               onClick={modalProps.onClose}
             >
-              {t("DownloadSettingPage.download.title")}
+              {t("General.finish")}
             </Button>
           </ModalFooter>
         </Flex>
-      </>
-    );
-  }, [modalProps.onClose, primaryColor, selectedGameVersion, t]);
-  return (
-    <Modal
-      scrollBehavior="inside"
-      size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
-      {...modalProps}
-    >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          {t("AddAndImportInstancePage.moreOptions.server.title")}
-        </ModalHeader>
-        <ModalCloseButton />
-        {Content}
       </ModalContent>
     </Modal>
   );
