@@ -67,7 +67,7 @@ const ReLogin3rdPartyPlayerModal: React.FC<
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button variant="outline" mr={2} onClick={props.onClose}>
+          <Button variant="ghost" onClick={props.onClose}>
             {t("General.cancel")}
           </Button>
           <Button
