@@ -18,7 +18,7 @@ import { formatRelativeTime } from "@/utils/datetime";
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const accordionState = config.states.instanceWorldsPage.accordionState;
+  const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
   const { summary } = useInstanceSharedData();
@@ -47,12 +47,12 @@ const InstanceWorldsPage = () => {
       <Section
         isAccordion
         title={t("InstanceWorldsPage.worldList.title")}
-        initialIsOpen={accordionState[0]}
+        initialIsOpen={accordionStates[0]}
         titleExtra={<CountTag count={worlds.length} />}
         onClick={() => {
           update(
-            "states.instanceWorldsPage.accordionState",
-            [...accordionState].toSpliced(0, 1, !accordionState[0])
+            "states.instanceWorldsPage.accordionStates",
+            [...accordionStates].toSpliced(0, 1, !accordionStates[0])
           );
         }}
       >
@@ -103,12 +103,12 @@ const InstanceWorldsPage = () => {
       <Section
         isAccordion
         title={t("InstanceWorldsPage.serverList.title")}
-        initialIsOpen={accordionState[1]}
+        initialIsOpen={accordionStates[1]}
         titleExtra={<CountTag count={gameServers.length} />}
         onClick={() => {
           update(
-            "states.instanceWorldsPage.accordionState",
-            [...accordionState].toSpliced(1, 1, !accordionState[1])
+            "states.instanceWorldsPage.accordionStates",
+            [...accordionStates].toSpliced(1, 1, !accordionStates[1])
           );
         }}
       >

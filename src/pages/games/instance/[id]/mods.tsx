@@ -29,7 +29,7 @@ const InstanceModsPage = () => {
   const { t } = useTranslation();
   const { summary } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
-  const accordionState = config.states.instanceModsPage.accordionState;
+  const accordionStates = config.states.instanceModsPage.accordionStates;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
 
@@ -87,11 +87,11 @@ const InstanceModsPage = () => {
       <Section
         title={t("InstanceModsPage.modLoaderList.title")}
         isAccordion
-        initialIsOpen={accordionState[0]}
+        initialIsOpen={accordionStates[0]}
         onClick={() => {
           update(
-            "states.instanceModsPage.accordionState",
-            [...accordionState].toSpliced(0, 1, !accordionState[0])
+            "states.instanceModsPage.accordionStates",
+            [...accordionStates].toSpliced(0, 1, !accordionStates[0])
           );
         }}
       >
@@ -104,12 +104,12 @@ const InstanceModsPage = () => {
       <Section
         title={t("InstanceModsPage.modList.title")}
         isAccordion
-        initialIsOpen={accordionState[1]}
+        initialIsOpen={accordionStates[1]}
         titleExtra={<CountTag count={localMods.length} />}
         onClick={() => {
           update(
-            "states.instanceModsPage.accordionState",
-            [...accordionState].toSpliced(1, 1, !accordionState[1])
+            "states.instanceModsPage.accordionStates",
+            [...accordionStates].toSpliced(1, 1, !accordionStates[1])
           );
         }}
       >

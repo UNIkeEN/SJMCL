@@ -76,13 +76,13 @@ export interface LauncherConfig {
       gameTypes: string[];
     };
     instanceModsPage: {
-      accordionState: boolean[];
+      accordionStates: boolean[];
     };
     instanceResourcepackPage: {
-      accordionState: boolean[];
+      accordionStates: boolean[];
     };
     instanceWorldsPage: {
-      accordionState: boolean[];
+      accordionStates: boolean[];
     };
   };
 }
@@ -161,13 +161,13 @@ export const defaultConfig: LauncherConfig = {
       gameTypes: ["release"],
     },
     instanceModsPage: {
-      accordionState: [true, true],
+      accordionStates: [true, true],
     },
     instanceResourcepackPage: {
-      accordionState: [true, true],
+      accordionStates: [true, true],
     },
     instanceWorldsPage: {
-      accordionState: [true, true],
+      accordionStates: [true, true],
     },
   },
 };
