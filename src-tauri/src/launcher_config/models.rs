@@ -116,7 +116,19 @@ structstruck::strike! {
       },
       pub game_version_selector: struct {
         pub game_types: Vec<String>
-      }
+      },
+      pub instance_worlds_page: struct  {
+        pub world_list: bool,
+        pub server_list: bool,
+      },
+      pub instance_mods_page:struct {
+        pub mod_loader_list: bool,
+        pub mod_list: bool,
+      },
+      pub instance_resourcepack_page: struct {
+        pub global_list: bool,
+        pub server_pack_list: bool,
+      },
     }
   }
 }
@@ -195,6 +207,18 @@ impl Default for LauncherConfig {
         },
         game_version_selector: GameVersionSelector {
           game_types: ["release".to_string()].to_vec(),
+        },
+        instance_worlds_page: InstanceWorldsPage {
+          world_list: true,
+          server_list: true,
+        },
+        instance_mods_page: InstanceModsPage {
+          mod_loader_list: true,
+          mod_list: true,
+        },
+        instance_resourcepack_page: InstanceResourcepackPage {
+          global_list: true,
+          server_pack_list: true,
         },
       },
     }

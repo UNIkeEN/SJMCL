@@ -8,6 +8,7 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { GameServerInfo, WorldInfo } from "@/models/game-instance";
 import { mockWorlds } from "@/models/mock/game-instance";
@@ -16,7 +17,7 @@ import { formatRelativeTime } from "@/utils/datetime";
 
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
-
+  const { config, update } = useLauncherConfig();
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
   const { summary } = useInstanceSharedData();
@@ -45,7 +46,14 @@ const InstanceWorldsPage = () => {
       <Section
         isAccordion
         title={t("InstanceWorldsPage.worldList.title")}
+        initialIsOpen={config.states.instanceWorldsPage.worldList}
         titleExtra={<CountTag count={worlds.length} />}
+        onClick={() => {
+          update(
+            "states.instanceWorldsPage.worldList",
+            !config.states.instanceWorldsPage.worldList
+          );
+        }}
       >
         {worlds.length > 0 ? (
           <OptionItemGroup
@@ -94,7 +102,14 @@ const InstanceWorldsPage = () => {
       <Section
         isAccordion
         title={t("InstanceWorldsPage.serverList.title")}
+        initialIsOpen={config.states.instanceWorldsPage.serverList}
         titleExtra={<CountTag count={gameServers.length} />}
+        onClick={() => {
+          update(
+            "states.instanceWorldsPage.serverList",
+            !config.states.instanceWorldsPage.serverList
+          );
+        }}
       >
         {gameServers.length > 0 ? (
           <OptionItemGroup

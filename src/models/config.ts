@@ -75,6 +75,18 @@ export interface LauncherConfig {
     gameVersionSelector: {
       gameTypes: string[];
     };
+    instanceWorldsPage: {
+      worldList: boolean;
+      serverList: boolean;
+    };
+    instanceModsPage: {
+      modLoaderList: boolean;
+      modList: boolean;
+    };
+    instanceResourcepackPage: {
+      globalList: boolean;
+      serverPackList: boolean;
+    };
   };
 }
 
@@ -150,6 +162,18 @@ export const defaultConfig: LauncherConfig = {
     },
     gameVersionSelector: {
       gameTypes: ["release"],
+    },
+    instanceWorldsPage: {
+      worldList: true,
+      serverList: true,
+    },
+    instanceModsPage: {
+      modLoaderList: true,
+      modList: true,
+    },
+    instanceResourcepackPage: {
+      globalList: true,
+      serverPackList: true,
     },
   },
 };

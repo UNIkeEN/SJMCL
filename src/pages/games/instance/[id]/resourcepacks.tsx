@@ -7,6 +7,7 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import { useLauncherConfig } from "@/contexts/config";
 import { ResourcePacksInfo } from "@/models/game-instance";
 import { mockResourcePacks } from "@/models/mock/game-instance";
 
@@ -14,6 +15,7 @@ const InstanceResourcePacksPage = () => {
   const [resourcePacks, setResourcePacks] = useState<ResourcePacksInfo[]>([]);
   const [serverResPacks, setServerResPacks] = useState<ResourcePacksInfo[]>([]);
   const { t } = useTranslation();
+  const { config, update } = useLauncherConfig();
 
   useEffect(() => {
     setResourcePacks(mockResourcePacks);
@@ -26,12 +28,12 @@ const InstanceResourcePacksPage = () => {
     global: {
       data: resourcePacks,
       locale: "resourcePackList",
-      initIsOpen: true,
+      configKey: "globalList" as "globalList",
     },
     server: {
       data: serverResPacks,
       locale: "serverResPackList",
-      initIsOpen: false,
+      configKey: "serverPackList" as "serverPackList",
     },
   };
 
@@ -43,8 +45,16 @@ const InstanceResourcePacksPage = () => {
             key={key}
             title={t(`InstanceResourcePacksPage.${value.locale}.title`)}
             isAccordion
-            initialIsOpen={value.initIsOpen}
+            initialIsOpen={
+              config.states.instanceResourcepackPage[value.configKey]
+            }
             titleExtra={<CountTag count={value.data.length} />}
+            onClick={() => {
+              update(
+                `states.instanceResourcepackPage.${value.configKey}`,
+                !config.states.instanceResourcepackPage[value.configKey]
+              );
+            }}
           >
             {value.data.length > 0 ? (
               <OptionItemGroup
