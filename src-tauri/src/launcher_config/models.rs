@@ -118,13 +118,13 @@ structstruck::strike! {
         pub game_types: Vec<String>
       },
       pub instance_mods_page: struct {
-        pub accordion_state: [bool;2],
+        pub accordion_state: [bool; 2],
       },
       pub instance_resourcepack_page: struct {
-        pub accordion_state: [bool;2],
+        pub accordion_state: [bool; 2],
       },
-      pub instance_worlds_page: struct  {
-        pub accordion_state: [bool;2],
+      pub instance_worlds_page: struct {
+        pub accordion_state: [bool; 2],
       },
     }
   }
