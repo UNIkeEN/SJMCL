@@ -91,7 +91,7 @@ const InstanceModsPage = () => {
         onClick={() => {
           update(
             "states.instanceModsPage.accordionState",
-            [...accordionState].toSpliced(1, 1, !accordionState[1])
+            [...accordionState].toSpliced(0, 1, !accordionState[0])
           );
         }}
       >
