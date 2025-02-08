@@ -29,7 +29,7 @@ const InstanceModsPage = () => {
   const { t } = useTranslation();
   const { summary } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
-  const accordionState = config.states.instanceModsPage.modsAccordionState;
+  const accordionState = config.states.instanceModsPage.accordionState;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
 
@@ -89,7 +89,7 @@ const InstanceModsPage = () => {
         isAccordion
         initialIsOpen={accordionState[0]}
         onClick={() => {
-          update("states.instanceModsPage.modsAccordionState", [
+          update("states.instanceModsPage.accordionState", [
             !accordionState[0],
             accordionState[1],
           ]);
@@ -107,7 +107,7 @@ const InstanceModsPage = () => {
         initialIsOpen={accordionState[1]}
         titleExtra={<CountTag count={localMods.length} />}
         onClick={() => {
-          update("states.instanceModsPage.modsAccordionState", [
+          update("states.instanceModsPage.accordionState", [
             accordionState[0],
             !accordionState[1],
           ]);

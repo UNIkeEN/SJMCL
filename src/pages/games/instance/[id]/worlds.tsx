@@ -18,7 +18,7 @@ import { formatRelativeTime } from "@/utils/datetime";
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const accordionState = config.states.instanceWorldsPage.worldsAccordionState;
+  const accordionState = config.states.instanceWorldsPage.accordionState;
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
   const { summary } = useInstanceSharedData();
@@ -50,7 +50,7 @@ const InstanceWorldsPage = () => {
         initialIsOpen={accordionState[0]}
         titleExtra={<CountTag count={worlds.length} />}
         onClick={() => {
-          update("states.instanceWorldsPage.worldsAccordionState", [
+          update("states.instanceWorldsPage.accordionState", [
             !accordionState[0],
             accordionState[1],
           ]);
@@ -106,7 +106,7 @@ const InstanceWorldsPage = () => {
         initialIsOpen={accordionState[1]}
         titleExtra={<CountTag count={gameServers.length} />}
         onClick={() => {
-          update("states.instanceWorldsPage.worldsAccordionState", [
+          update("states.instanceWorldsPage.accordionState", [
             accordionState[0],
             !accordionState[1],
           ]);

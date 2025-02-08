@@ -17,7 +17,7 @@ const InstanceResourcePacksPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const accordionState =
-    config.states.instanceResourcepackPage.resourcepackAccordionState;
+    config.states.instanceResourcepackPage.accordionState;
 
   useEffect(() => {
     setResourcePacks(mockResourcePacks);
@@ -30,29 +30,27 @@ const InstanceResourcePacksPage = () => {
     global: {
       data: resourcePacks,
       locale: "resourcePackList",
-      index: 0,
     },
     server: {
       data: serverResPacks,
       locale: "serverResPackList",
-      index: 1,
     },
   };
 
   return (
     <>
-      {Object.entries(renderSections).map(([key, value]) => {
+      {Object.entries(renderSections).map(([key, value],index) => {
         return (
           <Section
             key={key}
             title={t(`InstanceResourcePacksPage.${value.locale}.title`)}
             isAccordion
-            initialIsOpen={accordionState[value.index]}
+            initialIsOpen={accordionState[index]}
             titleExtra={<CountTag count={value.data.length} />}
             onClick={() => {
               update(
-                "states.instanceResourcepackPage.resourcepackAccordionState",
-                value.index
+                "states.instanceResourcepackPage.accordionState",
+                index
                   ? [accordionState[0], !accordionState[1]]
                   : [!accordionState[0], accordionState[1]]
               );

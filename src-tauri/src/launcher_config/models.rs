@@ -118,13 +118,13 @@ structstruck::strike! {
         pub game_types: Vec<String>
       },
       pub instance_worlds_page: struct  {
-        pub worlds_accordion_state: (bool, bool), 
+        pub accordion_state: (bool, bool), 
       },
       pub instance_mods_page:struct {
-        pub mods_accordion_state: (bool, bool), 
+        pub accordion_state: (bool, bool), 
       },
       pub instance_resourcepack_page: struct {
-        pub resourcepack_accordion_state: (bool, bool), 
+        pub accordion_state: (bool, bool), 
       },
     }
   }
@@ -206,13 +206,13 @@ impl Default for LauncherConfig {
           game_types: ["release".to_string()].to_vec(),
         },
         instance_worlds_page: InstanceWorldsPage {
-          worlds_accordion_state: (true, true), 
+          accordion_state: (true, true), 
         },
         instance_mods_page: InstanceModsPage {
-          mods_accordion_state: (true, true),
+          accordion_state: (true, true),
         },
         instance_resourcepack_page: InstanceResourcepackPage {
-          resourcepack_accordion_state: (true, true),
+          accordion_state: (true, true),
         },
       },
     }
