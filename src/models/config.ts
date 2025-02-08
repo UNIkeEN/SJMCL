@@ -76,16 +76,13 @@ export interface LauncherConfig {
       gameTypes: string[];
     };
     instanceWorldsPage: {
-      worldList: boolean;
-      serverList: boolean;
+      worldsAccordionState: [boolean, boolean];
     };
     instanceModsPage: {
-      modLoaderList: boolean;
-      modList: boolean;
+      modsAccordionState: [boolean, boolean];
     };
     instanceResourcepackPage: {
-      globalList: boolean;
-      serverPackList: boolean;
+      resourcepackAccordionState: [boolean, boolean];
     };
   };
 }
@@ -164,16 +161,13 @@ export const defaultConfig: LauncherConfig = {
       gameTypes: ["release"],
     },
     instanceWorldsPage: {
-      worldList: true,
-      serverList: true,
+      worldsAccordionState: [true, true],
     },
     instanceModsPage: {
-      modLoaderList: true,
-      modList: true,
+      modsAccordionState: [true, true],
     },
     instanceResourcepackPage: {
-      globalList: true,
-      serverPackList: true,
+      resourcepackAccordionState: [true, true],
     },
   },
 };
