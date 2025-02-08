@@ -16,8 +16,7 @@ const InstanceResourcePacksPage = () => {
   const [serverResPacks, setServerResPacks] = useState<ResourcePacksInfo[]>([]);
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const accordionState =
-    config.states.instanceResourcepackPage.accordionState;
+  const accordionState = config.states.instanceResourcepackPage.accordionState;
 
   useEffect(() => {
     setResourcePacks(mockResourcePacks);
@@ -39,7 +38,7 @@ const InstanceResourcePacksPage = () => {
 
   return (
     <>
-      {Object.entries(renderSections).map(([key, value],index) => {
+      {Object.entries(renderSections).map(([key, value], index) => {
         return (
           <Section
             key={key}
@@ -50,9 +49,7 @@ const InstanceResourcePacksPage = () => {
             onClick={() => {
               update(
                 "states.instanceResourcepackPage.accordionState",
-                index
-                  ? [accordionState[0], !accordionState[1]]
-                  : [!accordionState[0], accordionState[1]]
+                [...accordionState].toSpliced(index, 1, !accordionState[index])
               );
             }}
           >

@@ -89,10 +89,10 @@ const InstanceModsPage = () => {
         isAccordion
         initialIsOpen={accordionState[0]}
         onClick={() => {
-          update("states.instanceModsPage.accordionState", [
-            !accordionState[0],
-            accordionState[1],
-          ]);
+          update(
+            "states.instanceModsPage.accordionState",
+            [...accordionState].toSpliced(1, 1, !accordionState[1])
+          );
         }}
       >
         <ModLoaderCards
@@ -107,10 +107,10 @@ const InstanceModsPage = () => {
         initialIsOpen={accordionState[1]}
         titleExtra={<CountTag count={localMods.length} />}
         onClick={() => {
-          update("states.instanceModsPage.accordionState", [
-            accordionState[0],
-            !accordionState[1],
-          ]);
+          update(
+            "states.instanceModsPage.accordionState",
+            [...accordionState].toSpliced(1, 1, !accordionState[1])
+          );
         }}
       >
         {localMods.length > 0 ? (

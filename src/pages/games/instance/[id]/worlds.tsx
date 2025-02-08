@@ -50,10 +50,10 @@ const InstanceWorldsPage = () => {
         initialIsOpen={accordionState[0]}
         titleExtra={<CountTag count={worlds.length} />}
         onClick={() => {
-          update("states.instanceWorldsPage.accordionState", [
-            !accordionState[0],
-            accordionState[1],
-          ]);
+          update(
+            "states.instanceWorldsPage.accordionState",
+            [...accordionState].toSpliced(0, 1, !accordionState[0])
+          );
         }}
       >
         {worlds.length > 0 ? (
@@ -106,10 +106,10 @@ const InstanceWorldsPage = () => {
         initialIsOpen={accordionState[1]}
         titleExtra={<CountTag count={gameServers.length} />}
         onClick={() => {
-          update("states.instanceWorldsPage.accordionState", [
-            accordionState[0],
-            !accordionState[1],
-          ]);
+          update(
+            "states.instanceWorldsPage.accordionState",
+            [...accordionState].toSpliced(1, 1, !accordionState[1])
+          );
         }}
       >
         {gameServers.length > 0 ? (

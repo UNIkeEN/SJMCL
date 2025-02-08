@@ -76,13 +76,13 @@ export interface LauncherConfig {
       gameTypes: string[];
     };
     instanceWorldsPage: {
-      accordionState: [boolean, boolean];
+      accordionState: boolean[];
     };
     instanceModsPage: {
-      accordionState: [boolean, boolean];
+      accordionState: boolean[];
     };
     instanceResourcepackPage: {
-      accordionState: [boolean, boolean];
+      accordionState: boolean[];
     };
   };
 }
