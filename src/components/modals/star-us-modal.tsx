@@ -10,14 +10,14 @@ import {
   ModalProps,
   Text,
 } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
 
 const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
   const { t } = useTranslation();
 
   const handleStar = () => {
-    open("https://github.com/UNIkeEN/SJMCL");
+    openUrl("https://github.com/UNIkeEN/SJMCL");
     props.onClose();
   };
 

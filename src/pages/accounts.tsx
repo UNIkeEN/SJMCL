@@ -11,7 +11,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -222,7 +222,7 @@ const AccountsPage = () => {
                           (server) => server.authUrl === selectedPlayerType
                         )?.homepageUrl;
                         if (homepageUrl) {
-                          open(homepageUrl);
+                          openUrl(homepageUrl);
                         }
                       }}
                     />

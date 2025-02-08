@@ -11,8 +11,8 @@ import {
   ModalProps,
   Text,
 } from "@chakra-ui/react";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
-import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import LanguageMenu from "@/components/language-menu";
@@ -50,7 +50,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
             <Link
               color={`${primaryColor}.500`}
               onClick={() => {
-                open("https://mc.sjtu.cn/sjmcl-tos/");
+                openUrl("https://mc.sjtu.cn/sjmcl-tos/");
               }}
             >
               {t("WelcomeAndTermsModal.body.terms")}

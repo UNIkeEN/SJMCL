@@ -14,7 +14,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEarth, LuRefreshCcw } from "react-icons/lu";
@@ -140,7 +140,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           icon={<LuEarth />}
           variant="ghost"
           onClick={() => {
-            open(
+            openUrl(
               `${t("Utils.wiki.baseUrl")}${t(`GameVersionSelector.wikiKey.${version.gameType}`)}${
                 version.gameType === "snapshot"
                   ? version.id.replace("b", "")

@@ -24,7 +24,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -293,7 +293,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               <Link
                 color={`${primaryColor}.500`}
                 onClick={() => {
-                  open(
+                  openUrl(
                     "https://www.microsoft.com/store/productId/9NXP44L49SHJ"
                   );
                 }}

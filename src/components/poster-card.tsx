@@ -11,7 +11,7 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCalendar } from "react-icons/lu";
@@ -40,7 +40,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
       p={0}
       borderColor={`${primaryColor}.500`}
       variant={isHovered ? "outline" : "elevated"}
-      onClick={() => open(link)}
+      onClick={() => openUrl(link)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

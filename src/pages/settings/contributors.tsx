@@ -1,5 +1,5 @@
 import { Avatar, Box, IconButton } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
 import { LuGithub } from "react-icons/lu";
 import LinkIconButton from "@/components/common/link-icon-button";
@@ -114,7 +114,7 @@ const ContributorsPage = () => {
                     aria-label={`${item.username}-github`}
                     icon={<LuGithub />}
                     onClick={() => {
-                      open(`https://github.com/${item.username}`);
+                      openUrl(`https://github.com/${item.username}`);
                     }}
                   />
                 </Box>

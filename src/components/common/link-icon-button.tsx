@@ -1,5 +1,5 @@
 import { Icon, IconButton, IconButtonProps, Tooltip } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React from "react";
 import { LuArrowRight, LuExternalLink } from "react-icons/lu";
@@ -30,7 +30,7 @@ const LinkIconButton: React.FC<LinkIconButtonProps> = ({
     >
       <IconButton
         onClick={() => {
-          isExternal ? open(url) : router.push(url);
+          isExternal ? openUrl(url) : router.push(url);
         }}
         variant="ghost"
         size="xs"
