@@ -88,7 +88,7 @@ const InstanceModsPage = () => {
         title={t("InstanceModsPage.modLoaderList.title")}
         isAccordion
         initialIsOpen={accordionStates[0]}
-        onClick={() => {
+        onAccordionToggle={(isOpen) => {
           update(
             "states.instanceModsPage.accordionStates",
             accordionStates.toSpliced(0, 1, !accordionStates[0])
@@ -106,7 +106,7 @@ const InstanceModsPage = () => {
         isAccordion
         initialIsOpen={accordionStates[1]}
         titleExtra={<CountTag count={localMods.length} />}
-        onClick={() => {
+        onAccordionToggle={(isOpen) => {
           update(
             "states.instanceModsPage.accordionStates",
             accordionStates.toSpliced(1, 1, !accordionStates[1])

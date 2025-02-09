@@ -16,7 +16,8 @@ const InstanceResourcePacksPage = () => {
   const [serverResPacks, setServerResPacks] = useState<ResourcePacksInfo[]>([]);
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const accordionStates = config.states.instanceResourcepackPage.accordionStates;
+  const accordionStates =
+    config.states.instanceResourcepackPage.accordionStates;
 
   useEffect(() => {
     setResourcePacks(mockResourcePacks);
@@ -46,7 +47,7 @@ const InstanceResourcePacksPage = () => {
             isAccordion
             initialIsOpen={accordionStates[index]}
             titleExtra={<CountTag count={value.data.length} />}
-            onClick={() => {
+            onAccordionToggle={(isOpen) => {
               update(
                 "states.instanceResourcepackPage.accordionStates",
                 accordionStates.toSpliced(index, 1, !accordionStates[index])

@@ -49,7 +49,7 @@ const InstanceWorldsPage = () => {
         title={t("InstanceWorldsPage.worldList.title")}
         initialIsOpen={accordionStates[0]}
         titleExtra={<CountTag count={worlds.length} />}
-        onClick={() => {
+        onAccordionToggle={(isOpen) => {
           update(
             "states.instanceWorldsPage.accordionStates",
             accordionStates.toSpliced(0, 1, !accordionStates[0])
@@ -105,7 +105,7 @@ const InstanceWorldsPage = () => {
         title={t("InstanceWorldsPage.serverList.title")}
         initialIsOpen={accordionStates[1]}
         titleExtra={<CountTag count={gameServers.length} />}
-        onClick={() => {
+        onAccordionToggle={(isOpen) => {
           update(
             "states.instanceWorldsPage.accordionStates",
             accordionStates.toSpliced(1, 1, !accordionStates[1])

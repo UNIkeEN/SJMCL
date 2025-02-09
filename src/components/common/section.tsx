@@ -20,6 +20,7 @@ export interface SectionProps extends Omit<BoxProps, "children"> {
   description?: string;
   isAccordion?: boolean;
   initialIsOpen?: boolean;
+  onAccordionToggle?: (isOpen: boolean) => void;
   withBackButton?: boolean;
   children?: React.ReactNode;
 }
@@ -31,13 +32,15 @@ export const Section: React.FC<SectionProps> = ({
   description,
   isAccordion = false,
   initialIsOpen = true,
+  onAccordionToggle,
   withBackButton = false,
   children,
   ...props
 }) => {
-  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: initialIsOpen });
+  const { isOpen, onToggle: internalOnToggle } = useDisclosure({
+    defaultIsOpen: initialIsOpen,
+  });
   const router = useRouter();
-
   return (
     <Box {...props}>
       {(isAccordion || title || description || titleExtra || headExtra) && (
@@ -73,7 +76,10 @@ export const Section: React.FC<SectionProps> = ({
                 h={21}
                 variant="ghost"
                 colorScheme="gray"
-                onClick={onToggle}
+                onClick={() => {
+                  internalOnToggle();
+                  onAccordionToggle?.(!isOpen);
+                }}
               />
             )}
             <VStack spacing={0} mr={1} align="start">
