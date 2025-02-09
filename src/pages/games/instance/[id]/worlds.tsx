@@ -52,7 +52,7 @@ const InstanceWorldsPage = () => {
         onAccordionToggle={(isOpen) => {
           update(
             "states.instanceWorldsPage.accordionStates",
-            accordionStates.toSpliced(0, 1, !accordionStates[0])
+            accordionStates.toSpliced(0, 1, isOpen)
           );
         }}
       >
@@ -108,7 +108,7 @@ const InstanceWorldsPage = () => {
         onAccordionToggle={(isOpen) => {
           update(
             "states.instanceWorldsPage.accordionStates",
-            accordionStates.toSpliced(1, 1, !accordionStates[1])
+            accordionStates.toSpliced(1, 1, isOpen)
           );
         }}
       >

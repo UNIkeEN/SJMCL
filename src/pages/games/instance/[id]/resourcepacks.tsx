@@ -50,7 +50,7 @@ const InstanceResourcePacksPage = () => {
             onAccordionToggle={(isOpen) => {
               update(
                 "states.instanceResourcepackPage.accordionStates",
-                accordionStates.toSpliced(index, 1, !accordionStates[index])
+                accordionStates.toSpliced(index, 1, isOpen)
               );
             }}
           >

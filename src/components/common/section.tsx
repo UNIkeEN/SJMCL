@@ -77,8 +77,8 @@ export const Section: React.FC<SectionProps> = ({
                 variant="ghost"
                 colorScheme="gray"
                 onClick={() => {
-                  internalOnToggle();
                   onAccordionToggle?.(!isOpen);
+                  internalOnToggle();
                 }}
               />
             )}
