@@ -8,13 +8,13 @@ interface LinkIconButtonProps extends IconButtonProps {
   url: string;
   isExternal?: boolean;
   size?: string;
-  showTooltip?: boolean;
+  withTooltip?: boolean;
 }
 
 const LinkIconButton: React.FC<LinkIconButtonProps> = ({
   url,
   isExternal = false,
-  showTooltip = false,
+  withTooltip = false,
   size = "xs",
   ...buttonProps
 }) => {
@@ -24,7 +24,7 @@ const LinkIconButton: React.FC<LinkIconButtonProps> = ({
     <Tooltip
       label={url}
       fontSize={size}
-      isDisabled={!showTooltip || buttonProps.isDisabled}
+      isDisabled={!withTooltip || buttonProps.isDisabled}
       aria-label={url}
       placement="bottom-end"
     >

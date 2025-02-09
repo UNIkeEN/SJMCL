@@ -355,6 +355,11 @@
       "offline": "Offline Mode",
       "3rdparty": "3rd-party Authentication",
       "3rdpartyShort": "3rd-party Auth"
+    },
+    "systemFileManager": {
+      "linux": "File Manager",
+      "macos": "Finder",
+      "windows": "File Explorer"
     }
   },
   "GameErrorPage": {
@@ -407,6 +412,7 @@
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
+    "copyOrMove": "Copy / Move",
     "delete": "Delete",
     "dialog": {
       "filterName": {
@@ -420,9 +426,9 @@
     "next": "Next",
     "open": "Open",
     "openFolder": "Open Folder",
-    "openInFolder": "Open in Folder",
     "previous": "Previous",
     "refresh": "Refresh",
+    "revealFile": "Reveal in {{opener}}",
     "viewOnWiki": "View on Minecraft Wiki"
   },
   "GeneralSettingsPage": {

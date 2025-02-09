@@ -1,7 +1,7 @@
-import { Icon, IconButton, Image, Tooltip } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
-import { LuFolderOpen } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import { mockScreenshots } from "@/models/mock/game-instance";
@@ -25,20 +25,19 @@ const InstanceScreenshotsPage: React.FC = () => {
                 position="relative"
                 borderRadius="md"
               />
-              <Tooltip label={t("General.open")} placement="auto">
-                <IconButton
-                  icon={<Icon as={LuFolderOpen} />}
-                  aria-label="open"
-                  size="xs"
-                  colorScheme="blackAlpha"
-                  position="absolute"
-                  top={1}
-                  right={1}
-                  onClick={() => {
-                    open(screenshot.filePath);
-                  }}
-                />
-              </Tooltip>
+              <CommonIconButton
+                icon="open"
+                colorScheme="blackAlpha"
+                variant="solid"
+                size="xs"
+                tooltipPlacement="auto"
+                position="absolute"
+                top={1}
+                right={1}
+                onClick={() => {
+                  open(screenshot.filePath);
+                }}
+              />
             </>
           ),
           p: 0,

@@ -355,6 +355,11 @@
       "offline": "离线模式",
       "3rdparty": "第三方认证",
       "3rdpartyShort": "第三方认证"
+    },
+    "systemFileManager": {
+      "linux": "文件管理器",
+      "macos": "访达",
+      "windows": "文件资源管理器"
     }
   },
   "GameErrorPage": {
@@ -407,6 +412,7 @@
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
+    "copyOrMove": "复制或移动",
     "delete": "删除",
     "dialog": {
       "filterName": {
@@ -420,9 +426,9 @@
     "next": "下一步",
     "open": "打开",
     "openFolder": "打开文件夹",
-    "openInFolder": "打开文件位置",
     "previous": "上一步",
     "refresh": "刷新",
+    "revealFile": "在{{opener}}中显示",
     "viewOnWiki": "在 Minecraft Wiki 中查看"
   },
   "GeneralSettingsPage": {

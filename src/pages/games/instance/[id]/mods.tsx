@@ -1,20 +1,8 @@
-import {
-  Avatar,
-  AvatarBadge,
-  HStack,
-  IconButton,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Avatar, AvatarBadge, HStack, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  LuCircleCheck,
-  LuCircleMinus,
-  LuFolderOpen,
-  LuInfo,
-  LuTriangleAlert,
-} from "react-icons/lu";
+import { LuCircleCheck, LuCircleMinus, LuTriangleAlert } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -35,12 +23,11 @@ const InstanceModsPage = () => {
     setLocalMods(mockLocalMods);
   }, []);
 
-  const modMenuOperations = (mod: LocalModInfo) => [
+  const modItemMenuOperations = (mod: LocalModInfo) => [
     ...(mod.potentialIncompatibility
       ? [
           {
-            key: "alert",
-            localesKey: "InstanceModsPage.modList.menu.alert",
+            label: t("InstanceModsPage.modList.menu.alert"),
             icon: LuTriangleAlert,
             danger: true,
             onClick: () => {},
@@ -48,8 +35,7 @@ const InstanceModsPage = () => {
         ]
       : []),
     {
-      key: "switch",
-      localesKey: mod.enabled ? "General.disable" : "General.enable",
+      label: t(mod.enabled ? "General.disable" : "General.enable"),
       icon: mod.enabled ? LuCircleMinus : LuCircleCheck,
       danger: false,
       onClick: () => {
@@ -64,16 +50,14 @@ const InstanceModsPage = () => {
       },
     },
     {
-      key: "openFolder",
-      localesKey: "General.openFolder",
-      icon: LuFolderOpen,
+      label: "",
+      icon: "revealFile", // use common-icon-button predefined icon
       danger: false,
       onClick: () => {},
     },
     {
-      key: "info",
-      localesKey: "InstanceModsPage.modList.menu.info",
-      icon: LuInfo,
+      label: t("InstanceModsPage.modList.menu.info"),
+      icon: "info",
       danger: false,
       onClick: () => {},
     },
@@ -137,17 +121,14 @@ const InstanceModsPage = () => {
                 }
               >
                 <HStack spacing={0}>
-                  {modMenuOperations(mod).map((item) => (
-                    <Tooltip label={t(item.localesKey)} key={item.key}>
-                      <IconButton
-                        size="sm"
-                        aria-label={item.key}
-                        icon={<item.icon />}
-                        variant="ghost"
-                        colorScheme={item.danger ? "red" : "gray"}
-                        onClick={item.onClick}
-                      />
-                    </Tooltip>
+                  {modItemMenuOperations(mod).map((item, index) => (
+                    <CommonIconButton
+                      key={index}
+                      icon={item.icon}
+                      label={item.label}
+                      colorScheme={item.danger ? "red" : "gray"}
+                      onClick={item.onClick}
+                    />
                   ))}
                 </HStack>
               </OptionItem>

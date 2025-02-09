@@ -1,8 +1,10 @@
-import { HStack, IconButton, Tooltip } from "@chakra-ui/react";
+import { HStack } from "@chakra-ui/react";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { open } from "@tauri-apps/plugin-shell";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuEye, LuFolderOpen } from "react-icons/lu";
+import { LuEye } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -18,20 +20,21 @@ const InstanceSchematicsPage = () => {
     setSchematics(mockSchematics);
   }, []);
 
-  const schemMenuOperations = (schematic: SchematicsInfo) => [
+  const schemItemMenuOperations = (schematic: SchematicsInfo) => [
     {
-      key: "preview",
-      localesKey: "InstanceSchematicsPage.schematicList.preview",
+      label: t("InstanceSchematicsPage.schematicList.preview"),
       icon: LuEye,
-      danger: false,
       onClick: () => {},
     },
     {
-      key: "openFolder",
-      localesKey: "General.openFolder",
-      icon: LuFolderOpen,
-      danger: false,
-      onClick: () => open(schematic.filePath),
+      label: "",
+      icon: "copyOrMove",
+      onClick: () => {},
+    },
+    {
+      label: "",
+      icon: "revealFile",
+      onClick: () => revealItemInDir(schematic.filePath),
     },
   ];
 
@@ -45,18 +48,14 @@ const InstanceSchematicsPage = () => {
           items={schematics.map((pack) => (
             <OptionItem key={pack.name} title={pack.name}>
               <HStack spacing={0}>
-                {schemMenuOperations(pack).map((item) => (
-                  <Tooltip label={t(item.localesKey)} key={item.key}>
-                    <IconButton
-                      aria-label={t(item.localesKey)}
-                      icon={<item.icon />}
-                      variant="ghost"
-                      size="sm"
-                      h={18}
-                      colorScheme={item.danger ? "red" : "gray"}
-                      onClick={item.onClick}
-                    />
-                  </Tooltip>
+                {schemItemMenuOperations(pack).map((item, index) => (
+                  <CommonIconButton
+                    key={index}
+                    icon={item.icon}
+                    label={item.label}
+                    onClick={item.onClick}
+                    h={18}
+                  />
                 ))}
               </HStack>
             </OptionItem>

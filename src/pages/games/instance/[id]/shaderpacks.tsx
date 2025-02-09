@@ -1,8 +1,7 @@
-import { IconButton, Tooltip } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuFolderOpen } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -27,16 +26,11 @@ const InstanceShaderPacksPage = () => {
         <OptionItemGroup
           items={shaderPacks.map((pack) => (
             <OptionItem key={pack.name} title={pack.name}>
-              <Tooltip label={t("General.openFolder")}>
-                <IconButton
-                  aria-label={t("General.openFolder")}
-                  icon={<LuFolderOpen />}
-                  variant="ghost"
-                  size="sm"
-                  h={18}
-                  onClick={() => open(pack.filePath)}
-                />
-              </Tooltip>
+              <CommonIconButton
+                icon="revealFile"
+                onClick={() => revealItemInDir(pack.filePath)}
+                h={18}
+              />
             </OptionItem>
           ))}
         />

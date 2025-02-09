@@ -83,7 +83,7 @@ const ContributorsPage = () => {
                 url="https://github.com/UNIkeEN/SJMCL/graphs/contributors"
                 aria-label="all-contributors"
                 isExternal
-                showTooltip
+                withTooltip
                 h={18}
               />
             ),

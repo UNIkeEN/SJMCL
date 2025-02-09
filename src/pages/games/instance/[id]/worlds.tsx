@@ -1,9 +1,10 @@
-import { IconButton, Image, Tooltip } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
 import { HStack, Tag, TagLabel, Text } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCheck, LuFolderOpen, LuX } from "react-icons/lu";
+import { LuCheck, LuX } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -40,6 +41,19 @@ const InstanceWorldsPage = () => {
     return () => clearInterval(intervalId);
   }, [summary?.id]);
 
+  const worldItemMenuOperations = (save: WorldInfo) => [
+    {
+      label: "",
+      icon: "copyOrMove",
+      onClick: () => {},
+    },
+    {
+      label: "",
+      icon: "revealFile",
+      onClick: () => revealItemInDir(save.filePath),
+    },
+  ];
+
   return (
     <>
       <Section
@@ -73,15 +87,16 @@ const InstanceWorldsPage = () => {
                     />
                   }
                 >
-                  <Tooltip label={t("General.openFolder")}>
-                    <IconButton
-                      aria-label={"open"}
-                      icon={<LuFolderOpen />}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => open(world.filePath)}
-                    />
-                  </Tooltip>
+                  <HStack spacing={0}>
+                    {worldItemMenuOperations(world).map((item, index) => (
+                      <CommonIconButton
+                        key={index}
+                        icon={item.icon}
+                        label={item.label}
+                        onClick={item.onClick}
+                      />
+                    ))}
+                  </HStack>
                 </OptionItem>
               );
             })}

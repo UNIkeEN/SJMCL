@@ -49,7 +49,7 @@ const AboutSettingsPage = () => {
               url="https://github.com/UNIkeEN/SJMCL/issues"
               aria-label="issue"
               isExternal
-              showTooltip
+              withTooltip
               h={18}
             />
           ),
@@ -61,7 +61,7 @@ const AboutSettingsPage = () => {
               url="https://mc.sjtu.cn/welcome/content/3/"
               aria-label="aboutSJMC"
               isExternal
-              showTooltip
+              withTooltip
               h={18}
             />
           ),
@@ -81,7 +81,7 @@ const AboutSettingsPage = () => {
               url="https://github.com/bs-community/skinview3d"
               aria-label="skinview3d"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -93,7 +93,7 @@ const AboutSettingsPage = () => {
               url="https://bmclapidoc.bangbang93.com/"
               aria-label="bmclapi"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -107,7 +107,7 @@ const AboutSettingsPage = () => {
               url="https://github.com/LittleSkinChina"
               aria-label="littleskin"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -119,7 +119,7 @@ const AboutSettingsPage = () => {
               url="https://m.ui.cn/details/615564"
               aria-label="sinter"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -142,7 +142,7 @@ const AboutSettingsPage = () => {
               url="https://mc.sjtu.cn/sjmcl-tos/"
               aria-label="userAgreement"
               isExternal
-              showTooltip
+              withTooltip
               h={18}
             />
           ),
@@ -159,7 +159,7 @@ const AboutSettingsPage = () => {
               url="https://github.com/UNIkeEN/SJMCL?tab=GPL-3.0-1-ov-file#readme"
               aria-label="openSourceLicense"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },

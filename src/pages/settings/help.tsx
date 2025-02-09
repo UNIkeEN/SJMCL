@@ -17,7 +17,7 @@ const HelpSettingsPage = () => {
               url="https://mc.sjtu.cn/launcher-faq"
               aria-label="launcherdoc"
               isExternal
-              showTooltip
+              withTooltip
               h={18}
             />
           ),
@@ -37,7 +37,7 @@ const HelpSettingsPage = () => {
               url={t("HelpSettingsPage.minecraft.settings.mcWiki.url")}
               aria-label="mcWiki"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -51,7 +51,7 @@ const HelpSettingsPage = () => {
               url="https://www.mcmod.cn/"
               aria-label="mcMod"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -65,7 +65,7 @@ const HelpSettingsPage = () => {
               url="https://www.curseforge.com/minecraft"
               aria-label="curseforge"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -82,7 +82,7 @@ const HelpSettingsPage = () => {
               url="https://www.mualliance.cn/"
               aria-label="MUA"
               isExternal
-              showTooltip
+              withTooltip
             />
           ),
         },
@@ -93,7 +93,7 @@ const HelpSettingsPage = () => {
               url="https://mc.sjtu.cn/"
               aria-label="SJMC"
               isExternal
-              showTooltip
+              withTooltip
               h={18}
             />
           ),
