@@ -231,6 +231,11 @@ pub fn retrive_java_list() -> SJMCLResult<Vec<JavaInfo>> {
       .parent()
       .unwrap_or_else(|| Path::new(""))
       .to_path_buf();
+
+    #[cfg(target_os = "windows")]
+    let is_jdk = java_bin_path.join("javac.exe").exists();
+
+    #[cfg(any(target_os = "macos", target_os = "linux"))]
     let is_jdk = java_bin_path.join("javac").exists();
 
     let (major_version, is_lts) = parse_java_major_version(&full_version);
