@@ -412,7 +412,11 @@
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
-    "copyOrMove": "Copy / Move",
+    "copyOrMove": {
+      "linux": "Copy / Move",
+      "macos": "Copy / Move",
+      "windows": "Copy / Move"
+    },
     "delete": "Delete",
     "dialog": {
       "filterName": {

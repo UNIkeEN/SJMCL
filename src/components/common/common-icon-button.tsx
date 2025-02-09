@@ -51,10 +51,11 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     revealFile: <LuFolderSearch />,
   };
 
-  const extraParams: Record<string, Record<string, string>> = {
-    revealFile: {
+  const specLabels: Record<string, string> = {
+    copyOrMove: t(`General.copyOrMove.${type()}`),
+    revealFile: t("General.revealFile", {
       opener: t(`Enums.systemFileManager.${type()}`),
-    },
+    }),
   };
 
   const selectedIcon =
@@ -66,7 +67,11 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
 
   const finalLabel =
     label ||
-    (typeof icon === "string" ? t(`General.${icon}`, extraParams[icon]) : "");
+    (typeof icon === "string"
+      ? specLabels[icon]
+        ? specLabels[icon]
+        : t(`General.${icon}`)
+      : "");
 
   return (
     <Tooltip

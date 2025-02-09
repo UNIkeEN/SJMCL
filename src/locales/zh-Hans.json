@@ -412,7 +412,11 @@
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
-    "copyOrMove": "复制或移动",
+    "copyOrMove": {
+      "linux": "复制或移动",
+      "macos": "拷贝或移动",
+      "windows": "复制或移动"
+    },
     "delete": "删除",
     "dialog": {
       "filterName": {
