@@ -95,7 +95,9 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
     setFilteredVersions(
       versions
         .filter((version) => selectedTypes.has(version.gameType))
-        .filter((version) => version.id.includes(searchText))
+        .filter((version) =>
+          version.id.toLowerCase().includes(searchText.toLowerCase())
+        )
     );
   }, [versions, selectedTypes, searchText]);
 
