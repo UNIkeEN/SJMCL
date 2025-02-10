@@ -300,7 +300,7 @@
     "proxy": {
       "title": "Proxy",
       "settings": {
-        "enable": {
+        "enabled": {
           "title": "Enable Proxy"
         },
         "type": {

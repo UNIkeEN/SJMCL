@@ -97,7 +97,7 @@ structstruck::strike! {
         pub directory: PathBuf,
       },
       pub proxy: struct {
-        pub enable: bool,
+        pub enabled: bool,
         pub selected_type: String,
         pub host: String,
         pub port: usize,
@@ -193,7 +193,7 @@ impl Default for LauncherConfig {
           directory: PathBuf::default(),
         },
         proxy: Proxy {
-          enable: false,
+          enabled: false,
           selected_type: "HTTP".to_string(),
           host: "127.0.0.1".to_string(),
           port: 80,

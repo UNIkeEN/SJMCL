@@ -300,7 +300,7 @@
     "proxy": {
       "title": "代理",
       "settings": {
-        "enable": {
+        "enabled": {
           "title": "启用代理"
         },
         "type": {

@@ -55,7 +55,7 @@ export interface LauncherConfig {
       directory: string;
     };
     proxy: {
-      enable: boolean;
+      enabled: boolean;
       selectedType: string;
       host: string;
       port: number;
@@ -146,7 +146,7 @@ export const defaultConfig: LauncherConfig = {
       directory: "/mock/path/to/cache/",
     },
     proxy: {
-      enable: false,
+      enabled: false,
       selectedType: "HTTP",
       host: "127.0.0.1",
       port: 80,

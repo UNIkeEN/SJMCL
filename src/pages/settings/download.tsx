@@ -259,18 +259,18 @@ const DownloadSettingsPage = () => {
       title: t("DownloadSettingPage.proxy.title"),
       items: [
         {
-          title: t("DownloadSettingPage.proxy.settings.enable.title"),
+          title: t("DownloadSettingPage.proxy.settings.enabled.title"),
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={downloadConfigs.proxy.enable}
+              isChecked={downloadConfigs.proxy.enabled}
               onChange={(event) => {
-                update("download.proxy.enable", event.target.checked);
+                update("download.proxy.enabled", event.target.checked);
               }}
             />
           ),
         },
-        ...(downloadConfigs.proxy.enable
+        ...(downloadConfigs.proxy.enabled
           ? [
               {
                 title: t("DownloadSettingPage.proxy.settings.type.title"),
@@ -311,13 +311,11 @@ const DownloadSettingsPage = () => {
                   <NumberInput
                     size="xs"
                     maxW={16}
+                    min={0}
+                    max={65535}
                     focusBorderColor={`${primaryColor}.500`}
-                    value={downloadConfigs.proxy.port}
+                    value={downloadConfigs.proxy.port || 80}
                     onChange={(value) => {
-                      value =
-                        Number(value) >= 0 && Number(value) <= 65535
-                          ? value
-                          : "80";
                       update("download.proxy.port", Number(value));
                     }}
                   >
