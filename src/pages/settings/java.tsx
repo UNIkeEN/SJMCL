@@ -1,21 +1,8 @@
-import {
-  Flex,
-  HStack,
-  Icon,
-  IconButton,
-  Tag,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Flex, HStack, Tag, Text } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  LuArrowDownToLine,
-  LuFolderOpen,
-  LuPlus,
-  LuRefreshCcw,
-} from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
@@ -51,39 +38,38 @@ const JavaSettingsPage = () => {
     handleRetriveJavaList();
   }, [handleRetriveJavaList]);
 
+  const javaSecMenuOperations = [
+    {
+      icon: "download",
+      label: t("JavaSettingsPage.javaList.download"),
+    },
+    {
+      icon: "refresh",
+      onClick: handleRetriveJavaList,
+    },
+    {
+      icon: "add",
+      label: t("JavaSettingsPage.javaList.add"),
+    },
+  ];
+
   return (
     <Section
       title={t("JavaSettingsPage.javaList.title")}
       headExtra={
         <HStack spacing={2}>
-          <Tooltip label={t("JavaSettingsPage.javaList.download")}>
-            <IconButton
-              aria-label={t("JavaSettingsPage.javaList.download")}
-              icon={<Icon as={LuArrowDownToLine} boxSize={3.5} />}
+          {javaSecMenuOperations.map((btn, index) => (
+            <CommonIconButton
+              key={index}
+              icon={btn.icon}
+              label={btn.label}
+              onClick={btn.onClick}
               size="xs"
+              fontSize="sm"
               h={21}
               variant="ghost"
             />
-          </Tooltip>
-          <Tooltip label={t("General.refresh")}>
-            <IconButton
-              aria-label={t("General.refresh")}
-              icon={<Icon as={LuRefreshCcw} boxSize={3.5} />}
-              size="xs"
-              h={21}
-              variant="ghost"
-              onClick={handleRetriveJavaList}
-            />
-          </Tooltip>
-          <Tooltip label={t("JavaSettingsPage.javaList.add")}>
-            <IconButton
-              aria-label={t("JavaSettingsPage.javaList.add")}
-              icon={<Icon as={LuPlus} boxSize={3.5} />}
-              size="xs"
-              h={21}
-              variant="ghost"
-            />
-          </Tooltip>
+          ))}
         </HStack>
       }
     >
@@ -119,15 +105,12 @@ const JavaSettingsPage = () => {
                 </Flex>
               }
             >
-              <Tooltip label={t("General.openFolder")}>
-                <IconButton
-                  aria-label={t("General.openFolder")}
-                  icon={<LuFolderOpen />}
-                  variant="ghost"
-                  size="sm"
-                  onClick={async () => await revealItemInDir(info.execPath)}
-                />
-              </Tooltip>
+              <CommonIconButton
+                icon="openFolder"
+                onClick={async () => await revealItemInDir(info.execPath)}
+                variant="ghost"
+                size="sm"
+              />
             </OptionItem>
           ))}
         />

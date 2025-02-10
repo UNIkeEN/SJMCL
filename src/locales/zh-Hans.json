@@ -670,8 +670,10 @@
   },
   "InstanceWorldsPage": {
     "worldList": {
+      "addWorld": "添加世界",
       "title": "本地世界",
       "lastPlayedAt": "上次游玩于",
+      "download": "存档下载",
       "difficulty": {
         "peaceful": "和平",
         "easy": "简单",

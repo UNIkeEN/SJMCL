@@ -670,8 +670,10 @@
   },
   "InstanceWorldsPage": {
     "worldList": {
+      "addWorld": "Add World",
       "title": "Worlds",
       "lastPlayedAt": "Last played",
+      "download": "Download",
       "difficulty": {
         "peaceful": "Peaceful",
         "easy": "Easy",

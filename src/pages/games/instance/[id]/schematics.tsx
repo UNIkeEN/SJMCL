@@ -1,7 +1,7 @@
 import { HStack } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { open } from "@tauri-apps/plugin-shell";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEye } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -16,9 +16,24 @@ const InstanceSchematicsPage = () => {
   const [schematics, setSchematics] = useState<SchematicsInfo[]>([]);
   const { t } = useTranslation();
 
+  const handleRefresh = useCallback(() => {
+    setSchematics(mockSchematics);
+  }, []);
+
   useEffect(() => {
     setSchematics(mockSchematics);
   }, []);
+
+  const schemSecMenuOperations = [
+    {
+      icon: "refresh",
+      onClick: handleRefresh,
+    },
+    {
+      icon: "open",
+      onClick: () => {},
+    },
+  ];
 
   const schemItemMenuOperations = (schematic: SchematicsInfo) => [
     {
@@ -42,6 +57,20 @@ const InstanceSchematicsPage = () => {
     <Section
       title={t("InstanceSchematicsPage.schematicList.title")}
       titleExtra={<CountTag count={schematics.length} />}
+      headExtra={
+        <HStack spacing={2}>
+          {schemSecMenuOperations.map((btn, index) => (
+            <CommonIconButton
+              key={index}
+              icon={btn.icon}
+              onClick={btn.onClick}
+              size="xs"
+              fontSize="sm"
+              h={18}
+            />
+          ))}
+        </HStack>
+      }
     >
       {schematics.length > 0 ? (
         <OptionItemGroup
