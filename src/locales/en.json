@@ -296,6 +296,23 @@
           "open": "Open"
         }
       }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enableProxy": {
+          "title": "Enable Proxy"
+        },
+        "proxyType": {
+          "title": "Proxy Type"
+        },
+        "host": {
+          "title": "Host"
+        },
+        "port": {
+          "title": "Port"
+        }
+      }
     }
   },
   "Editable": {

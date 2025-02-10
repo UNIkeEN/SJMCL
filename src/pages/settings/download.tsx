@@ -1,6 +1,7 @@
 import {
   Button,
   HStack,
+  Input,
   Menu,
   MenuButton,
   MenuItemOption,
@@ -18,6 +19,7 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react";
+import { downloadDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { open as openFolder } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
@@ -26,6 +28,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 
 const DownloadSettingsPage = () => {
@@ -35,6 +38,16 @@ const DownloadSettingsPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const sourceStrategyTypes = ["auto", "official", "mirror"];
+  const proxyTypeList = [
+    {
+      key: "http",
+      type: "HTTP",
+    },
+    {
+      key: "socks",
+      type: "Socks",
+    },
+  ];
 
   const handleSelectDirectory = async () => {
     const selectedDirectory = await open({
@@ -240,6 +253,80 @@ const DownloadSettingsPage = () => {
             </HStack>
           ),
         },
+      ],
+    },
+    {
+      title: t("DownloadSettingPage.proxy.title"),
+      items: [
+        {
+          title: t("DownloadSettingPage.proxy.settings.enableProxy.title"),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={downloadConfigs.proxy.enableProxy}
+              onChange={(event) => {
+                update("download.proxy.enableProxy", event.target.checked);
+              }}
+            />
+          ),
+        },
+        ...(downloadConfigs.proxy.enableProxy
+          ? [
+              {
+                title: t("DownloadSettingPage.proxy.settings.proxyType.title"),
+                children: (
+                  <HStack>
+                    <SegmentedControl
+                      selected={downloadConfigs.proxy.selectedProxyType}
+                      onSelectItem={(s) => {
+                        update("download.proxy.selectedProxyType", s as string);
+                      }}
+                      size="xs"
+                      items={proxyTypeList.map((item) => ({
+                        ...item,
+                        label: item.key,
+                        value: <Text>{item.type}</Text>,
+                      }))}
+                    />
+                  </HStack>
+                ),
+              },
+              {
+                title: t("DownloadSettingPage.proxy.settings.host.title"),
+                children: (
+                  <Input
+                    size="xs"
+                    maxW={32}
+                    focusBorderColor={`${primaryColor}.500`}
+                    value={downloadConfigs.proxy.host}
+                    onChange={(event) => {
+                      update("download.proxy.host", event.target.value);
+                    }}
+                  />
+                ),
+              },
+              {
+                title: t("DownloadSettingPage.proxy.settings.port.title"),
+                children: (
+                  <NumberInput
+                    size="xs"
+                    maxW={16}
+                    focusBorderColor={`${primaryColor}.500`}
+                    value={downloadConfigs.proxy.port}
+                    onChange={(value) => {
+                      value =
+                        Number(value) >= 0 && Number(value) <= 65535
+                          ? value
+                          : "80";
+                      update("download.proxy.port", Number(value));
+                    }}
+                  >
+                    <NumberInputField pr={0} />
+                  </NumberInput>
+                ),
+              },
+            ]
+          : []),
       ],
     },
   ];
