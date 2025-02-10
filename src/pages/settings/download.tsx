@@ -259,27 +259,27 @@ const DownloadSettingsPage = () => {
       title: t("DownloadSettingPage.proxy.title"),
       items: [
         {
-          title: t("DownloadSettingPage.proxy.settings.enableProxy.title"),
+          title: t("DownloadSettingPage.proxy.settings.enable.title"),
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={downloadConfigs.proxy.enableProxy}
+              isChecked={downloadConfigs.proxy.enable}
               onChange={(event) => {
-                update("download.proxy.enableProxy", event.target.checked);
+                update("download.proxy.enable", event.target.checked);
               }}
             />
           ),
         },
-        ...(downloadConfigs.proxy.enableProxy
+        ...(downloadConfigs.proxy.enable
           ? [
               {
-                title: t("DownloadSettingPage.proxy.settings.proxyType.title"),
+                title: t("DownloadSettingPage.proxy.settings.type.title"),
                 children: (
                   <HStack>
                     <SegmentedControl
-                      selected={downloadConfigs.proxy.selectedProxyType}
+                      selected={downloadConfigs.proxy.selectedType}
                       onSelectItem={(s) => {
-                        update("download.proxy.selectedProxyType", s as string);
+                        update("download.proxy.selectedType", s as string);
                       }}
                       size="xs"
                       items={proxyTypeList.map((item) => ({

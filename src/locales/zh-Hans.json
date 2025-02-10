@@ -300,10 +300,10 @@
     "proxy": {
       "title": "代理",
       "settings": {
-        "enableProxy": {
+        "enable": {
           "title": "启用代理"
         },
-        "proxyType": {
+        "type": {
           "title": "代理类型"
         },
         "host": {

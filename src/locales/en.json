@@ -300,10 +300,10 @@
     "proxy": {
       "title": "Proxy",
       "settings": {
-        "enableProxy": {
+        "enable": {
           "title": "Enable Proxy"
         },
-        "proxyType": {
+        "type": {
           "title": "Proxy Type"
         },
         "host": {
