@@ -234,7 +234,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent h="100%">
         <ModalHeader>{t("CreateInstanceModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <Center>
@@ -266,7 +266,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
             ))}
           </Stepper>
         </Center>
-        <Flex h="60vh" flexDir="column">
+        <Flex flexGrow="1" flexDir="column">
           {steps[activeStep].content}
         </Flex>
       </ModalContent>
