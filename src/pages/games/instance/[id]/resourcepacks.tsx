@@ -38,6 +38,7 @@ const InstanceResourcePacksPage = () => {
       resourcePackSecMenuOperations: [
         {
           icon: "openFolder",
+          label: "",
           onClick: () => {},
         },
         {
@@ -46,6 +47,7 @@ const InstanceResourcePacksPage = () => {
         },
         {
           icon: "refresh",
+          label: "",
           onClick: handleRefresh,
         },
       ],
@@ -56,6 +58,7 @@ const InstanceResourcePacksPage = () => {
       resourcePackSecMenuOperations: [
         {
           icon: "openFolder",
+          label: "",
           onClick: () => {},
         },
       ],
@@ -84,6 +87,7 @@ const InstanceResourcePacksPage = () => {
                   <CommonIconButton
                     key={index}
                     icon={btn.icon}
+                    label={btn.label}
                     size="xs"
                     fontSize="sm"
                     h={21}

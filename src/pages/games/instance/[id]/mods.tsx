@@ -38,14 +38,6 @@ const InstanceModsPage = () => {
 
   const modSecMenuOperations = [
     {
-      icon: "refresh",
-      label: "",
-      onClick: () => {
-        setLocalMods(mockLocalMods);
-        handleRefresh();
-      },
-    },
-    {
       icon: "openFolder",
       label: "",
       onClick: () => {},
@@ -61,14 +53,22 @@ const InstanceModsPage = () => {
       onClick: () => {},
     },
     {
+      icon: LuClockArrowUp,
+      label: t("InstanceModsPage.modList.menu.update"),
+      onClick: () => {},
+    },
+    {
       icon: LuSearch,
       label: t("InstanceModsPage.modList.menu.search"),
       onClick: () => {},
     },
     {
-      icon: LuClockArrowUp,
-      label: t("InstanceModsPage.modList.menu.update"),
-      onClick: () => {},
+      icon: "refresh",
+      label: "",
+      onClick: () => {
+        setLocalMods(mockLocalMods);
+        handleRefresh();
+      },
     },
   ];
 

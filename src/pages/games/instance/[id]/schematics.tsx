@@ -26,12 +26,14 @@ const InstanceSchematicsPage = () => {
 
   const schemSecMenuOperations = [
     {
-      icon: "refresh",
-      onClick: handleRefresh,
+      icon: "openFolder",
+      label: "",
+      onClick: () => {},
     },
     {
-      icon: "open",
-      onClick: () => {},
+      icon: "refresh",
+      label: "",
+      onClick: handleRefresh,
     },
   ];
 

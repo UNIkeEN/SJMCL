@@ -1,3 +1,4 @@
+import { HStack } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -46,7 +47,7 @@ const InstanceShaderPacksPage = () => {
       title={t("InstanceShaderPacksPage.shaderPackList.title")}
       titleExtra={<CountTag count={shaderPacks.length} />}
       headExtra={
-        <div>
+        <HStack spacing={2}>
           {shaderPackSecMenuOperations.map((btn, index) => (
             <CommonIconButton
               key={index}
@@ -55,10 +56,10 @@ const InstanceShaderPacksPage = () => {
               onClick={btn.onClick}
               size="xs"
               fontSize="sm"
-              h={21}
+              h={18}
             />
           ))}
-        </div>
+        </HStack>
       }
     >
       {shaderPacks.length > 0 ? (
