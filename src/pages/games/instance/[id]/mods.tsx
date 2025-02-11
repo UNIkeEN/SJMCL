@@ -45,7 +45,7 @@ const InstanceModsPage = () => {
     },
     {
       icon: "download",
-      label: t("InstanceModsPage.modList.menu.download"),
+      label: "",
       onClick: () => {},
     },
     {

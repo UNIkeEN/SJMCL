@@ -613,7 +613,6 @@
       "menu": {
         "add": "Add Mod",
         "alert": "Potentially incompatible",
-        "download": "Download Mods",
         "search": "Search",
         "update": "Update",
         "info": "Mod Info"
@@ -675,10 +674,9 @@
   },
   "InstanceWorldsPage": {
     "worldList": {
-      "addWorld": "Add World",
+      "add": "Add World",
       "title": "Worlds",
       "lastPlayedAt": "Last played",
-      "download": "Download",
       "difficulty": {
         "peaceful": "Peaceful",
         "easy": "Easy",

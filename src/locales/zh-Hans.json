@@ -613,7 +613,6 @@
       "menu": {
         "add": "添加模组",
         "alert": "可能不兼容",
-        "download": "下载模组",
         "search": "搜索",
         "update": "检查更新",
         "info": "查看信息"
@@ -675,10 +674,9 @@
   },
   "InstanceWorldsPage": {
     "worldList": {
-      "addWorld": "添加世界",
+      "add": "添加世界",
       "title": "本地世界",
       "lastPlayedAt": "上次游玩于",
-      "download": "存档下载",
       "difficulty": {
         "peaceful": "和平",
         "easy": "简单",
