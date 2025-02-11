@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import {
   LuCircleCheck,
   LuCircleMinus,
+  LuClockArrowUp,
   LuSearch,
-  LuSquareArrowUp,
   LuTriangleAlert,
 } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -66,7 +66,7 @@ const InstanceModsPage = () => {
       onClick: () => {},
     },
     {
-      icon: LuSquareArrowUp,
+      icon: LuClockArrowUp,
       label: t("InstanceModsPage.modList.menu.update"),
       onClick: () => {},
     },
