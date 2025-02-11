@@ -24,7 +24,7 @@ const InstanceShaderPacksPage = () => {
   const shaderPackSecMenuOperations = [
     {
       icon: "openFolder",
-      label: t("General.openFolder"),
+      label: "",
       onClick: () => {
         if (shaderPacks.length > 0) {
           revealItemInDir(shaderPacks[0].filePath);

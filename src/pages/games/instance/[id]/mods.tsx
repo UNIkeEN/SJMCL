@@ -1,7 +1,13 @@
 import { Avatar, AvatarBadge, HStack, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCircleCheck, LuCircleMinus, LuTriangleAlert } from "react-icons/lu";
+import {
+  LuCircleCheck,
+  LuCircleMinus,
+  LuSearch,
+  LuSquareArrowUp,
+  LuTriangleAlert,
+} from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -25,6 +31,46 @@ const InstanceModsPage = () => {
     // only for mock
     setLocalMods(mockLocalMods);
   }, []);
+
+  const handleRefresh = useCallback(() => {
+    setLocalMods(mockLocalMods);
+  }, []);
+
+  const modSecMenuOperations = [
+    {
+      icon: "refresh",
+      label: "",
+      onClick: () => {
+        setLocalMods(mockLocalMods);
+        handleRefresh();
+      },
+    },
+    {
+      icon: "openFolder",
+      label: "",
+      onClick: () => {},
+    },
+    {
+      icon: "add",
+      label: t("InstanceModsPage.modList.menu.add"),
+      onClick: () => {},
+    },
+    {
+      icon: "download",
+      label: t("InstanceModsPage.modList.menu.download"),
+      onClick: () => {},
+    },
+    {
+      icon: LuSearch,
+      label: t("InstanceModsPage.modList.menu.search"),
+      onClick: () => {},
+    },
+    {
+      icon: LuSquareArrowUp,
+      label: t("InstanceModsPage.modList.menu.update"),
+      onClick: () => {},
+    },
+  ];
 
   const modItemMenuOperations = (mod: LocalModInfo) => [
     ...(mod.potentialIncompatibility
@@ -96,6 +142,21 @@ const InstanceModsPage = () => {
             accordionStates.toSpliced(1, 1, isOpen)
           );
         }}
+        headExtra={
+          <HStack spacing={2}>
+            {modSecMenuOperations.map((btn, index) => (
+              <CommonIconButton
+                key={index}
+                icon={btn.icon}
+                label={btn.label}
+                onClick={btn.onClick}
+                size="xs"
+                fontSize="sm"
+                h={21}
+              />
+            ))}
+          </HStack>
+        }
       >
         {localMods.length > 0 ? (
           <OptionItemGroup

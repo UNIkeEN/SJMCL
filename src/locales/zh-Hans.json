@@ -610,7 +610,11 @@
     "modList": {
       "title": "模组",
       "menu": {
+        "add": "添加模组",
         "alert": "可能不兼容",
+        "download": "下载模组",
+        "search": "搜索",
+        "update": "检查更新",
         "info": "查看信息"
       }
     }

@@ -610,7 +610,11 @@
     "modList": {
       "title": "Mods",
       "menu": {
+        "add": "Add Mod",
         "alert": "Potentially incompatible",
+        "download": "Download Mods",
+        "search": "Search",
+        "update": "Update",
         "info": "Mod Info"
       }
     }
