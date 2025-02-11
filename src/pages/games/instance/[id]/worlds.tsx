@@ -24,24 +24,21 @@ const InstanceWorldsPage = () => {
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
   const { summary } = useInstanceSharedData();
 
+  const handleGetServersRefresh = useCallback(async () => {
+    if (!summary?.id) return;
+    const localServers = await retriveGameServerList(summary.id, false);
+    setGameServers(localServers);
+
+    const onlineServers = await retriveGameServerList(summary.id, true);
+    setGameServers(onlineServers);
+  }, [summary?.id]);
+
   useEffect(() => {
     setWorlds(mockWorlds);
-
-    (async () => {
-      if (summary?.id) {
-        setGameServers(await retriveGameServerList(summary.id, false)); // without online query, quickly get server list from local servers.dat to render
-        setGameServers(await retriveGameServerList(summary.id, true));
-      }
-    })();
-
-    // refresh every minute to query server info
-    const intervalId = setInterval(async () => {
-      if (summary?.id) {
-        setGameServers(await retriveGameServerList(summary.id, true));
-      }
-    }, 60000);
+    handleGetServersRefresh();
+    const intervalId = setInterval(handleGetServersRefresh, 60000);
     return () => clearInterval(intervalId);
-  }, [summary?.id]);
+  }, [handleGetServersRefresh]);
 
   const worldItemMenuOperations = (save: WorldInfo) => [
     {
@@ -81,7 +78,7 @@ const InstanceWorldsPage = () => {
   const serverSecMenuOperations = [
     {
       icon: "refresh",
-      onClick: () => {},
+      onClick: handleGetServersRefresh,
     },
   ];
 

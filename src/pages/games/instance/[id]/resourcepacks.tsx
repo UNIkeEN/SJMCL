@@ -1,5 +1,6 @@
 import { HStack, Image } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { on } from "events";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -38,7 +39,8 @@ const InstanceResourcePacksPage = () => {
         },
         {
           icon: "download",
-          label: t("JavaSettingsPage.javaList.download"),
+          label: "",
+          onClick: () => {},
         },
         {
           icon: "refresh",
