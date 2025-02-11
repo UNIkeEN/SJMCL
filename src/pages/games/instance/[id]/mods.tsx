@@ -32,10 +32,6 @@ const InstanceModsPage = () => {
     setLocalMods(mockLocalMods);
   }, []);
 
-  const handleRefresh = useCallback(() => {
-    setLocalMods(mockLocalMods);
-  }, []);
-
   const modSecMenuOperations = [
     {
       icon: "openFolder",
@@ -65,10 +61,7 @@ const InstanceModsPage = () => {
     {
       icon: "refresh",
       label: "",
-      onClick: () => {
-        setLocalMods(mockLocalMods);
-        handleRefresh();
-      },
+      onClick: () => {},
     },
   ];
 

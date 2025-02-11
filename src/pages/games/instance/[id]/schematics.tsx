@@ -16,10 +16,6 @@ const InstanceSchematicsPage = () => {
   const [schematics, setSchematics] = useState<SchematicsInfo[]>([]);
   const { t } = useTranslation();
 
-  const handleRefresh = useCallback(() => {
-    setSchematics(mockSchematics);
-  }, []);
-
   useEffect(() => {
     setSchematics(mockSchematics);
   }, []);
@@ -33,7 +29,7 @@ const InstanceSchematicsPage = () => {
     {
       icon: "refresh",
       label: "",
-      onClick: handleRefresh,
+      onClick: () => {},
     },
   ];
 
@@ -68,7 +64,7 @@ const InstanceSchematicsPage = () => {
               onClick={btn.onClick}
               size="xs"
               fontSize="sm"
-              h={18}
+              h={21}
             />
           ))}
         </HStack>

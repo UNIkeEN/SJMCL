@@ -26,16 +26,11 @@ const InstanceResourcePacksPage = () => {
 
   const defaultIcon = "/images/icons/DefaultPack.webp";
 
-  const handleRefresh = useCallback(() => {
-    setResourcePacks(mockResourcePacks);
-    setServerResPacks(mockResourcePacks);
-  }, []);
-
   const renderSections = {
     global: {
       data: resourcePacks,
       locale: "resourcePackList",
-      resourcePackSecMenuOperations: [
+      resPackSecMenuOperations: [
         {
           icon: "openFolder",
           label: "",
@@ -48,14 +43,14 @@ const InstanceResourcePacksPage = () => {
         {
           icon: "refresh",
           label: "",
-          onClick: handleRefresh,
+          onClick: () => {},
         },
       ],
     },
     server: {
       data: serverResPacks,
       locale: "serverResPackList",
-      resourcePackSecMenuOperations: [
+      resPackSecMenuOperations: [
         {
           icon: "openFolder",
           label: "",
@@ -83,7 +78,7 @@ const InstanceResourcePacksPage = () => {
             }}
             headExtra={
               <HStack spacing={2}>
-                {value.resourcePackSecMenuOperations.map((btn, index) => (
+                {value.resPackSecMenuOperations.map((btn, index) => (
                   <CommonIconButton
                     key={index}
                     icon={btn.icon}

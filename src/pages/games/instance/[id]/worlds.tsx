@@ -24,16 +24,6 @@ const InstanceWorldsPage = () => {
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
   const { summary } = useInstanceSharedData();
 
-  const handleWorldsRefresh = useCallback(async () => {
-    setWorlds(mockWorlds);
-  }, []);
-
-  const handleServersRefresh = useCallback(async () => {
-    if (summary?.id) {
-      setGameServers(await retriveGameServerList(summary.id, true));
-    }
-  }, [summary?.id]);
-
   useEffect(() => {
     setWorlds(mockWorlds);
 
@@ -66,176 +56,184 @@ const InstanceWorldsPage = () => {
     },
   ];
 
-  const renderSections = {
-    world: {
-      data: worlds,
-      locale: "worldList",
-      worldSecMenuOperations: [
-        {
-          icon: "openFolder",
-          label: "",
-          onClick: () => {
-            if (worlds.length > 0) {
-              revealItemInDir(worlds[0].filePath);
-            }
-          },
-        },
-        {
-          icon: "add",
-          label: t("InstanceWorldsPage.worldList.addWorld"),
-          onClick: () => {},
-        },
-        {
-          icon: "download",
-          label: t("InstanceWorldsPage.worldList.download"),
-          onClick: () => {},
-        },
-        {
-          icon: "refresh",
-          onClick: handleWorldsRefresh,
-        },
-      ],
+  const worldSecMenuOperations = [
+    {
+      icon: "openFolder",
+      label: "",
+      onClick: () => {},
     },
-    server: {
-      data: gameServers,
-      locale: "serverList",
-      worldSecMenuOperations: [
-        {
-          icon: "refresh",
-          label: "",
-          onClick: handleServersRefresh,
-        },
-      ],
+    {
+      icon: "add",
+      label: t("InstanceWorldsPage.worldList.addWorld"),
+      onClick: () => {},
     },
-  };
+    {
+      icon: "download",
+      label: t("InstanceWorldsPage.worldList.download"),
+      onClick: () => {},
+    },
+    {
+      icon: "refresh",
+      label: "",
+      onClick: () => {},
+    },
+  ];
+  const serverSecMenuOperations = [
+    {
+      icon: "refresh",
+      onClick: () => {},
+    },
+  ];
 
   return (
     <>
-      {Object.entries(renderSections).map(([key, value], index) => {
-        return (
-          <Section
-            key={key}
-            isAccordion
-            title={t(`InstanceWorldsPage.${value.locale}.title`)}
-            initialIsOpen={accordionStates[index]}
-            titleExtra={<CountTag count={value.data.length} />}
-            onAccordionToggle={(isOpen) => {
-              update(
-                "states.instanceWorldsPage.accordionStates",
-                accordionStates.toSpliced(index, 1, isOpen)
-              );
-            }}
-            headExtra={
-              <HStack spacing={2}>
-                {value.worldSecMenuOperations.map((btn, index) => (
-                  <CommonIconButton
-                    key={index}
-                    icon={btn.icon}
-                    label={btn.label}
-                    onClick={btn.onClick}
-                    size="xs"
-                    fontSize="sm"
-                    h={21}
-                  />
-                ))}
-              </HStack>
-            }
-          >
-            {value.data.length > 0 ? (
-              <OptionItemGroup
-                items={value.data.map((item) => {
-                  if (key === "world") {
-                    const world = item as WorldInfo;
-                    const difficulty = t(
-                      `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
-                    );
-                    const gamemode = t(
-                      `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
-                    );
-
-                    return (
-                      <OptionItem
-                        key={world.name}
-                        title={world.name}
-                        description={`${t(
-                          "InstanceWorldsPage.worldList.lastPlayedAt"
-                        )} ${formatRelativeTime(world.lastPlayedAt, t)}${t("InstanceWorldsPage.worldList.moreDesc", { gamemode, difficulty })}`}
-                        prefixElement={
-                          <Image
-                            src={world.iconSrc}
-                            alt={world.name}
-                            boxSize="28px"
-                            style={{ borderRadius: "4px" }}
-                          />
-                        }
-                      >
-                        <HStack spacing={0}>
-                          {worldItemMenuOperations(world).map((op, opIndex) => (
-                            <CommonIconButton
-                              key={opIndex}
-                              icon={op.icon}
-                              label={op.label}
-                              onClick={op.onClick}
-                            />
-                          ))}
-                        </HStack>
-                      </OptionItem>
-                    );
-                  } else {
-                    const server = item as GameServerInfo;
-                    return (
-                      <OptionItem
-                        key={server.name}
-                        title={server.name}
-                        description={server.ip}
-                        prefixElement={
-                          <Image
-                            src={server.iconSrc}
-                            alt={server.name}
-                            boxSize="28px"
-                            style={{ borderRadius: "4px" }}
-                          />
-                        }
-                      >
-                        {server.isQueried && (
-                          <HStack>
-                            {server.online && (
-                              <Text fontSize="xs-sm" color="gray.500">
-                                {`${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
-                              </Text>
-                            )}
-                            {server.online ? (
-                              <Tag colorScheme="green">
-                                <LuCheck />
-                                <TagLabel ml={0.5}>
-                                  {t(
-                                    "InstanceWorldsPage.serverList.tag.online"
-                                  )}
-                                </TagLabel>
-                              </Tag>
-                            ) : (
-                              <Tag colorScheme="red">
-                                <LuX />
-                                <TagLabel ml={0.5}>
-                                  {t(
-                                    "InstanceWorldsPage.serverList.tag.offline"
-                                  )}
-                                </TagLabel>
-                              </Tag>
-                            )}
-                          </HStack>
-                        )}
-                      </OptionItem>
-                    );
-                  }
-                })}
+      <Section
+        isAccordion
+        title={t("InstanceWorldsPage.worldList.title")}
+        initialIsOpen={accordionStates[0]}
+        titleExtra={<CountTag count={worlds.length} />}
+        onAccordionToggle={(isOpen) => {
+          update(
+            "states.instanceWorldsPage.accordionStates",
+            accordionStates.toSpliced(0, 1, isOpen)
+          );
+        }}
+        headExtra={
+          <HStack spacing={2}>
+            {worldSecMenuOperations.map((btn, index) => (
+              <CommonIconButton
+                key={index}
+                icon={btn.icon}
+                label={btn.label}
+                onClick={btn.onClick}
+                size="xs"
+                fontSize="sm"
+                h={21}
+                variant="ghost"
               />
-            ) : (
-              <Empty withIcon={false} size="sm" />
-            )}
-          </Section>
-        );
-      })}
+            ))}
+          </HStack>
+        }
+      >
+        {worlds.length > 0 ? (
+          <OptionItemGroup
+            items={worlds.map((world) => {
+              const difficulty = t(
+                `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
+              );
+              const gamemode = t(
+                `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
+              );
+
+              return (
+                <OptionItem
+                  key={world.name}
+                  title={world.name}
+                  description={`${t(
+                    "InstanceWorldsPage.worldList.lastPlayedAt"
+                  )} ${formatRelativeTime(world.lastPlayedAt, t)}${t("InstanceWorldsPage.worldList.moreDesc", { gamemode, difficulty })}`}
+                  prefixElement={
+                    <Image
+                      src={world.iconSrc}
+                      alt={world.name}
+                      boxSize="28px"
+                      style={{ borderRadius: "4px" }}
+                    />
+                  }
+                >
+                  <HStack spacing={0}>
+                    {worldItemMenuOperations(world).map((item, index) => (
+                      <CommonIconButton
+                        key={index}
+                        icon={item.icon}
+                        label={item.label}
+                        onClick={item.onClick}
+                      />
+                    ))}
+                  </HStack>
+                </OptionItem>
+              );
+            })}
+          />
+        ) : (
+          <Empty withIcon={false} size="sm" />
+        )}
+      </Section>
+
+      <Section
+        isAccordion
+        title={t("InstanceWorldsPage.serverList.title")}
+        initialIsOpen={accordionStates[1]}
+        titleExtra={<CountTag count={gameServers.length} />}
+        onAccordionToggle={(isOpen) => {
+          update(
+            "states.instanceWorldsPage.accordionStates",
+            accordionStates.toSpliced(1, 1, isOpen)
+          );
+        }}
+        headExtra={
+          <HStack spacing={2}>
+            {serverSecMenuOperations.map((btn, index) => (
+              <CommonIconButton
+                key={index}
+                icon={btn.icon}
+                onClick={btn.onClick}
+                size="xs"
+                fontSize="sm"
+                h={21}
+                variant="ghost"
+              />
+            ))}
+          </HStack>
+        }
+      >
+        {gameServers.length > 0 ? (
+          <OptionItemGroup
+            items={gameServers.map((server) => (
+              <OptionItem
+                key={server.name}
+                title={server.name}
+                description={server.ip}
+                prefixElement={
+                  <Image
+                    src={server.iconSrc}
+                    alt={server.name}
+                    boxSize="28px"
+                    style={{ borderRadius: "4px" }}
+                  />
+                }
+              >
+                {server.isQueried && (
+                  <HStack>
+                    {server.online && (
+                      <Text fontSize="xs-sm" color="gray.500">
+                        {`${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
+                      </Text>
+                    )}
+                    {server.online ? (
+                      <Tag colorScheme="green">
+                        <LuCheck />
+                        <TagLabel ml={0.5}>
+                          {t("InstanceWorldsPage.serverList.tag.online")}
+                        </TagLabel>
+                      </Tag>
+                    ) : (
+                      <Tag colorScheme="red">
+                        <LuX />
+                        <TagLabel ml={0.5}>
+                          {t("InstanceWorldsPage.serverList.tag.offline")}
+                        </TagLabel>
+                      </Tag>
+                    )}
+                  </HStack>
+                )}
+              </OptionItem>
+            ))}
+          />
+        ) : (
+          <Empty withIcon={false} size="sm" />
+        )}
+      </Section>
     </>
   );
 };

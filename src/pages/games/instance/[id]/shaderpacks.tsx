@@ -14,10 +14,6 @@ const InstanceShaderPacksPage = () => {
   const [shaderPacks, setShaderPacks] = useState<ShaderPacksInfo[]>([]);
   const { t } = useTranslation();
 
-  const handleRefresh = useCallback(() => {
-    setShaderPacks(mockShaderPacks);
-  }, []);
-
   useEffect(() => {
     setShaderPacks(mockShaderPacks);
   }, []);
@@ -26,19 +22,12 @@ const InstanceShaderPacksPage = () => {
     {
       icon: "openFolder",
       label: "",
-      onClick: () => {
-        if (shaderPacks.length > 0) {
-          revealItemInDir(shaderPacks[0].filePath);
-        }
-      },
+      onClick: () => {},
     },
     {
       icon: "refresh",
-      label: t("General.refresh"),
-      onClick: () => {
-        setShaderPacks(mockShaderPacks);
-        handleRefresh();
-      },
+      label: "",
+      onClick: () => {},
     },
   ];
 
@@ -56,7 +45,7 @@ const InstanceShaderPacksPage = () => {
               onClick={btn.onClick}
               size="xs"
               fontSize="sm"
-              h={18}
+              h={21}
             />
           ))}
         </HStack>
