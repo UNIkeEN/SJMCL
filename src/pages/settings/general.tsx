@@ -22,6 +22,8 @@ const GeneralSettingsPage = () => {
     onClose: onDiscoverNoticeDialogClose,
   } = useDisclosure();
 
+  const osType = type();
+
   const generalSettingGroups: OptionItemGroupProps[] = [
     {
       title: t("GeneralSettingsPage.general.title"),
@@ -68,7 +70,13 @@ const GeneralSettingsPage = () => {
             {t(
               "GeneralSettingsPage.functions.settings.discover.openNotice.part-1"
             )}
-            <Kbd>{t(`Enums.metaKey.${type()}`)}</Kbd> + <Kbd>S</Kbd>
+            <Kbd>
+              {t(
+                `Enums.${osType === "macos" ? "metaKey" : "ctrlKey"}.${osType}`
+              )}
+            </Kbd>
+            {" + "}
+            <Kbd>S</Kbd>
             {t(
               "GeneralSettingsPage.functions.settings.discover.openNotice.part-2"
             )}

@@ -373,6 +373,11 @@
       "purple": "Purple",
       "pink": "Pink"
     },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",

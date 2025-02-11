@@ -1,3 +1,5 @@
+import { type } from "@tauri-apps/plugin-os";
+import { useEffect, useState } from "react";
 import SpotlightSearchModal from "@/components/modals/spotlight-search-modal";
 import { SharedModalContextProvider } from "@/contexts/shared-modal";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -22,8 +24,13 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
     "spotlight-search": SpotlightSearchModal,
   };
 
-  useKeyboardShortcut({ metaKey: true, key: "s" }, () =>
-    openSharedModal("spotlight-search")
+  useKeyboardShortcut(
+    {
+      macos: { metaKey: true, key: "s" },
+      windows: { ctrlKey: true, key: "s" },
+      linux: { ctrlKey: true, key: "s" },
+    },
+    () => openSharedModal("spotlight-search")
   );
 
   return (

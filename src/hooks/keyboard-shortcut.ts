@@ -1,3 +1,4 @@
+import { type } from "@tauri-apps/plugin-os";
 import { useEffect } from "react";
 
 interface ShortcutCondition {
@@ -10,12 +11,18 @@ interface ShortcutCondition {
 }
 
 const useKeyboardShortcut = (
-  shortcutConditions: ShortcutCondition,
+  shortcutConditions: { all?: ShortcutCondition } & {
+    [key: string]: ShortcutCondition;
+  },
   callback: () => void
 ) => {
   useEffect(() => {
+    const osType = type() as string;
+
+    const activeShortcut = shortcutConditions[osType] || shortcutConditions.all;
+    if (!activeShortcut) return;
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.warn(event);
       const {
         metaKey = false, // "Win" on Windows and "Command" on macOS
         ctrlKey = false,
@@ -23,7 +30,7 @@ const useKeyboardShortcut = (
         shiftKey = false,
         key,
         code,
-      } = shortcutConditions;
+      } = activeShortcut;
 
       const isMetaKey = metaKey === event.metaKey;
       const isCtrlKey = ctrlKey === event.ctrlKey;
