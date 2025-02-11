@@ -15,11 +15,13 @@ import {
   LuBox,
   LuCircleUserRound,
   LuCompass,
+  LuSearch,
   LuSettings,
   LuZap,
 } from "react-icons/lu";
 import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 
 const HeadNavBar = () => {
   const router = useRouter();
@@ -27,6 +29,7 @@ const HeadNavBar = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const isSimplified = config.appearance.theme.headNavStyle === "simplified";
+  const { openSharedModal } = useSharedModals();
 
   const navList = [
     { icon: LuZap, label: "launch", path: "/launch" },
@@ -34,13 +37,27 @@ const HeadNavBar = () => {
     { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
     ...(config.general.optionalFunctions.discover
       ? [{ icon: LuCompass, label: "discover", path: "/discover" }]
-      : []),
+      : [
+          {
+            icon: LuSearch,
+            label: "search",
+            path: "%not-page",
+            onNav: () => {
+              openSharedModal("spotlight-search");
+            },
+          },
+        ]),
     { icon: LuSettings, label: "settings", path: "/settings" },
   ];
 
   const selectedIndex = navList.findIndex((item) =>
     router.pathname.startsWith(item.path)
   );
+
+  const handleTabChange = (index: number) => {
+    const target = navList[index];
+    target.path === "%not-page" ? target.onNav?.() : router.push(target.path);
+  };
 
   return (
     <Flex justify="center" p={4}>
@@ -52,9 +69,7 @@ const HeadNavBar = () => {
             size="sm"
             colorScheme={primaryColor}
             index={selectedIndex}
-            onChange={(index) => {
-              router.push(navList[index].path);
-            }}
+            onChange={handleTabChange}
           >
             <TabList>
               {navList.map((item, index) => (

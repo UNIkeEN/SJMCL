@@ -373,6 +373,11 @@
       "purple": "Purple",
       "pink": "Pink"
     },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
     "playerTypes": {
       "microsoft": "Microsoft",
       "offline": "Offline Mode",
@@ -452,6 +457,7 @@
     "enable": "Enable",
     "finish": "Finish",
     "next": "Next",
+    "notice": "Notice",
     "open": "Open",
     "openFolder": "Open Folder",
     "previous": "Previous",
@@ -472,7 +478,11 @@
       "title": "Functionality",
       "settings": {
         "discover": {
-          "title": "Discover Page"
+          "title": "Discover Page",
+          "openNotice": {
+            "part-1": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut ",
+            "part-2": "."
+          }
         }
       }
     }
@@ -560,6 +570,7 @@
       "games": "Games",
       "accounts": "Accounts",
       "discover": "Discover",
+      "search": "Search",
       "settings": "Settings"
     }
   },
@@ -938,6 +949,12 @@
       "play": "Play",
       "pause": "Pause"
     }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "Global Search"
+    },
+    "tip": "Search local and online game resources in one place"
   },
   "StarUsModal": {
     "header": {

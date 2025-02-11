@@ -15,7 +15,7 @@ interface GenericConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  body: string;
+  body: string | React.ReactElement;
   btnOK: string;
   btnCancel: string;
   onOKCallback?: () => void;
@@ -41,6 +41,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
       onClose={onClose}
+      autoFocus={false}
       isCentered
     >
       <AlertDialogOverlay>
@@ -49,9 +50,11 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
           <AlertDialogCloseButton />
           <AlertDialogBody>{body}</AlertDialogBody>
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose} variant="ghost">
-              {btnCancel}
-            </Button>
+            {btnCancel && (
+              <Button ref={cancelRef} onClick={onClose} variant="ghost">
+                {btnCancel}
+              </Button>
+            )}
             <Button
               colorScheme={isAlert ? "red" : primaryColor}
               onClick={onOKCallback}

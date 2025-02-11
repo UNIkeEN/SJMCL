@@ -1,4 +1,5 @@
-import { Switch } from "@chakra-ui/react";
+import { Kbd, Switch, Text, useDisclosure } from "@chakra-ui/react";
+import { type } from "@tauri-apps/plugin-os";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -6,6 +7,7 @@ import {
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import LanguageMenu from "@/components/language-menu";
+import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 
 const GeneralSettingsPage = () => {
@@ -13,6 +15,12 @@ const GeneralSettingsPage = () => {
   const { config, update } = useLauncherConfig();
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
+
+  const {
+    isOpen: isDiscoverNoticeDialogOpen,
+    onOpen: onDiscoverNoticeDialogOpen,
+    onClose: onDiscoverNoticeDialogClose,
+  } = useDisclosure();
 
   const generalSettingGroups: OptionItemGroupProps[] = [
     {
@@ -35,6 +43,9 @@ const GeneralSettingsPage = () => {
               isChecked={generalConfigs.optionalFunctions.discover}
               onChange={(e) => {
                 update("general.optionalFunctions.discover", e.target.checked);
+                if (e.target.checked) {
+                  onDiscoverNoticeDialogOpen();
+                }
               }}
             />
           ),
@@ -48,6 +59,25 @@ const GeneralSettingsPage = () => {
       {generalSettingGroups.map((group, index) => (
         <OptionItemGroup title={group.title} items={group.items} key={index} />
       ))}
+      <GenericConfirmDialog
+        isOpen={isDiscoverNoticeDialogOpen}
+        onClose={onDiscoverNoticeDialogClose}
+        title={t("General.notice")}
+        body={
+          <Text>
+            {t(
+              "GeneralSettingsPage.functions.settings.discover.openNotice.part-1"
+            )}
+            <Kbd>{t(`Enums.metaKey.${type()}`)}</Kbd> + <Kbd>S</Kbd>
+            {t(
+              "GeneralSettingsPage.functions.settings.discover.openNotice.part-2"
+            )}
+          </Text>
+        }
+        btnOK={t("General.confirm")}
+        btnCancel=""
+        onOKCallback={onDiscoverNoticeDialogClose}
+      />
     </>
   );
 };

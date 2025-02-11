@@ -373,6 +373,11 @@
       "purple": "紫色",
       "pink": "粉色"
     },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
     "playerTypes": {
       "microsoft": "微软账户",
       "offline": "离线模式",
@@ -452,6 +457,7 @@
     "enable": "启用",
     "finish": "完成",
     "next": "下一步",
+    "notice": "提示",
     "open": "打开",
     "openFolder": "打开文件夹",
     "previous": "上一步",
@@ -472,7 +478,11 @@
       "title": "功能",
       "settings": {
         "discover": {
-          "title": "发现页"
+          "title": "发现页",
+          "openNotice": {
+            "part-1": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 ",
+            "part-2": " 继续使用 “聚合搜索”。"
+          }
         }
       }
     }
@@ -560,6 +570,7 @@
       "games": "游戏",
       "accounts": "账户",
       "discover": "发现",
+      "search": "搜索",
       "settings": "设置"
     }
   },
@@ -938,6 +949,12 @@
       "play": "播放",
       "pause": "暂停"
     }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "聚合搜索"
+    },
+    "tip": "集中一处搜索本地内容与线上游戏资源"
   },
   "StarUsModal": {
     "header": {
