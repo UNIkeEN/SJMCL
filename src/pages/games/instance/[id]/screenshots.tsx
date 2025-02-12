@@ -6,15 +6,12 @@ import { LuEllipsis } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
+import { Screenshot } from "@/models/game-instance";
 import { mockScreenshots } from "@/models/mock/game-instance";
 
 const InstanceScreenshotsPage: React.FC = () => {
   const { t } = useTranslation();
-  const ScreenshotsCard = ({
-    screenshot,
-  }: {
-    screenshot: (typeof mockScreenshots)[number];
-  }) => {
+  const ScreenshotsCard = ({ screenshot }: { screenshot: Screenshot }) => {
     const [isHovered, setIsHovered] = useState(false);
     return (
       <div
@@ -31,20 +28,22 @@ const InstanceScreenshotsPage: React.FC = () => {
           position="relative"
           borderRadius="md"
         />
-        <CommonIconButton
-          icon={LuEllipsis}
-          colorScheme="blackAlpha"
-          variant="solid"
-          size="xs"
-          tooltipPlacement="auto"
-          position="absolute"
-          top={1}
-          right={1}
-          opacity={isHovered ? 1 : 0}
-          onClick={() => {
-            open(screenshot.filePath);
-          }}
-        />
+        {isHovered && (
+          <CommonIconButton
+            icon={LuEllipsis}
+            colorScheme="blackAlpha"
+            variant="solid"
+            size="xs"
+            tooltipPlacement="auto"
+            position="absolute"
+            top={1}
+            right={1}
+            opacity={isHovered ? 1 : 0}
+            onClick={() => {
+              open(screenshot.filePath);
+            }}
+          />
+        )}
       </div>
     );
   };
