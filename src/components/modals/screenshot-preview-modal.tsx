@@ -15,6 +15,7 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React from "react";
 import { LuCalendarDays } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import { useLauncherConfig } from "@/contexts/config";
 import { Screenshot } from "@/models/game-instance";
 import { ISOToDatetime } from "@/utils/datetime";
 
@@ -26,23 +27,24 @@ const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   screenshot,
   ...props
 }) => {
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
   return (
     <Modal {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalCloseButton />
-        <ModalBody pt={0} pl={0} pr={0} pb={2}>
-          <Image
-            src={screenshot.imgSrc}
-            alt={screenshot.fileName}
-            borderRadius="md"
-            objectFit="cover"
-          />
-          <Flex justify="space-between" align="center" mt={2} px={4}>
+        <Image
+          src={screenshot.imgSrc}
+          alt={screenshot.fileName}
+          borderRadius="md"
+          objectFit="cover"
+        />
+        <ModalCloseButton color={primaryColor} />
+        <ModalBody>
+          <Flex justify="space-between" align="center" mt={-1}>
             <Text fontSize="sm" fontWeight="bold">
               {screenshot.fileName}
             </Text>
-
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />
               <Text fontSize="xs" className="secondary-text">
