@@ -71,13 +71,17 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         </Button>
       </Flex>
       <NavMenu
-        className="no-scrollbar"
-        overflowX="scroll"
+        flexWrap="wrap"
         selectedKeys={[router.asPath]}
         onClick={(value) => router.push(value)}
         direction="row"
         size="xs"
-        spacing={summary?.hasSchemFolder ? "0.05rem" : 1}
+        spacing={
+          config.general.general.language.startsWith("zh") &&
+          summary?.hasSchemFolder
+            ? "0.05rem"
+            : 1
+        }
         mt={-1.5}
         items={instanceTabList.map((item) => ({
           value: `/games/instance/${router.query.id}/${item.key}`,
