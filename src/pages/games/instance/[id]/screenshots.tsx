@@ -43,9 +43,7 @@ const InstanceScreenshotsPage: React.FC = () => {
               aria-label="more"
               top={1}
               right={1}
-              onClick={() => {
-                open(screenshot.filePath);
-              }}
+              onClick={() => {}}
             />
           </Tooltip>
         )}
