@@ -894,6 +894,11 @@
       }
     }
   },
+  "ScreenshotsPage": {
+    "button": {
+      "more": "更多"
+    }
+  },
   "SettingsLayout": {
     "settingsDomainList": {
       "global-game": "全局游戏设置",

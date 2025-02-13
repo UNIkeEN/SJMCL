@@ -1,4 +1,4 @@
-import { Image } from "@chakra-ui/react";
+import { IconButton, Image, Tooltip } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,19 +29,21 @@ const InstanceScreenshotsPage: React.FC = () => {
           borderRadius="md"
         />
         {isHovered && (
-          <CommonIconButton
-            icon={LuEllipsis}
-            colorScheme="blackAlpha"
-            variant="solid"
-            size="xs"
-            tooltipPlacement="auto"
-            position="absolute"
-            top={1}
-            right={1}
-            onClick={() => {
-              open(screenshot.filePath);
-            }}
-          />
+          <Tooltip label={t("ScreenshotsPage.button.more")}>
+            <IconButton
+              icon={<LuEllipsis />}
+              colorScheme="blackAlpha"
+              variant="solid"
+              size="xs"
+              position="absolute"
+              aria-label="more"
+              top={1}
+              right={1}
+              onClick={() => {
+                open(screenshot.filePath);
+              }}
+            />
+          </Tooltip>
         )}
       </div>
     );
