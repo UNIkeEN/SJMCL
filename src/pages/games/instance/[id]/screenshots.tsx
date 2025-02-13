@@ -36,11 +36,11 @@ const InstanceScreenshotsPage: React.FC = () => {
           >
             <IconButton
               icon={<LuEllipsis />}
+              aria-label="more"
               colorScheme="blackAlpha"
               variant="solid"
               size="xs"
               position="absolute"
-              aria-label="more"
               top={1}
               right={1}
               onClick={() => {}}
