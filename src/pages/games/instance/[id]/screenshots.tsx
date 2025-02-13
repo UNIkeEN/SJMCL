@@ -38,13 +38,13 @@ const InstanceScreenshotsPage: React.FC = () => {
             position="absolute"
             top={1}
             right={1}
-            opacity={isHovered ? 1 : 0}
             onClick={() => {
               open(screenshot.filePath);
             }}
           />
         )}
       </div>
+      
     );
   };
   return (
