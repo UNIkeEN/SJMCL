@@ -24,19 +24,25 @@ const InstanceWorldsPage = () => {
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
   const { summary } = useInstanceSharedData();
 
-  const handleRetriveServerList = useCallback(async () => {
-    if (!summary?.id) return;
-    setGameServers(await retriveGameServerList(summary.id, false)); // without online query, quickly get server list from local servers.dat to render
-    setGameServers(await retriveGameServerList(summary.id, true));
+  const handleRetriveGameServerList = useCallback(async () => {
+    if (summary?.id) {
+      setGameServers(await retriveGameServerList(summary.id, false)); // without online query, quickly get server list from local servers.dat to render
+      setGameServers(await retriveGameServerList(summary.id, true));
+    }
   }, [summary?.id]);
 
   useEffect(() => {
     setWorlds(mockWorlds);
+    handleRetriveGameServerList();
 
-    handleRetriveServerList();
-    const intervalId = setInterval(handleRetriveServerList, 60000);
+    // refresh every minute to query server info
+    const intervalId = setInterval(async () => {
+      if (summary?.id) {
+        setGameServers(await retriveGameServerList(summary.id, true));
+      }
+    }, 60000);
     return () => clearInterval(intervalId);
-  }, [handleRetriveServerList]);
+  }, [handleRetriveGameServerList, summary?.id]);
 
   const worldItemMenuOperations = (save: WorldInfo) => [
     {
@@ -73,12 +79,10 @@ const InstanceWorldsPage = () => {
       onClick: () => {},
     },
   ];
-  const serverSecMenuOperations = [
-    {
-      icon: "refresh",
-      onClick: handleRetriveServerList,
-    },
-  ];
+  const serverSecOperations = {
+    icon: "refresh",
+    onClick: handleRetriveGameServerList,
+  };
 
   return (
     <>
@@ -104,7 +108,6 @@ const InstanceWorldsPage = () => {
                 size="xs"
                 fontSize="sm"
                 h={21}
-                variant="ghost"
               />
             ))}
           </HStack>
@@ -168,17 +171,13 @@ const InstanceWorldsPage = () => {
         }}
         headExtra={
           <HStack spacing={2}>
-            {serverSecMenuOperations.map((btn, index) => (
-              <CommonIconButton
-                key={index}
-                icon={btn.icon}
-                onClick={btn.onClick}
-                size="xs"
-                fontSize="sm"
-                h={21}
-                variant="ghost"
-              />
-            ))}
+            <CommonIconButton
+              icon={serverSecOperations.icon}
+              onClick={serverSecOperations.onClick}
+              size="xs"
+              fontSize="sm"
+              h={21}
+            />
           </HStack>
         }
       >

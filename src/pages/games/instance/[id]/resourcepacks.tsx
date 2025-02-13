@@ -31,7 +31,7 @@ const InstanceResourcePacksPage = () => {
     global: {
       data: resourcePacks,
       locale: "resourcePackList",
-      resPackSecMenuOperations: [
+      secMenu: [
         {
           icon: "openFolder",
           label: "",
@@ -52,7 +52,7 @@ const InstanceResourcePacksPage = () => {
     server: {
       data: serverResPacks,
       locale: "serverResPackList",
-      resPackSecMenuOperations: [
+      secMenu: [
         {
           icon: "openFolder",
           label: "",
@@ -80,7 +80,7 @@ const InstanceResourcePacksPage = () => {
             }}
             headExtra={
               <HStack spacing={2}>
-                {value.resPackSecMenuOperations.map((btn, index) => (
+                {value.secMenu.map((btn, index) => (
                   <CommonIconButton
                     key={index}
                     icon={btn.icon}
