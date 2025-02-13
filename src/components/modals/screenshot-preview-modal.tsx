@@ -14,9 +14,9 @@ import {
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React from "react";
 import { LuCalendarDays } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import { Screenshot } from "@/models/game-instance";
 import { ISOToDatetime } from "@/utils/datetime";
-import { CommonIconButton } from "../common/common-icon-button";
 
 interface ScreenshotPreviewModalProps extends Omit<ModalProps, "children"> {
   screenshot: Screenshot;
@@ -45,7 +45,7 @@ const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
 
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />
-              <Text fontSize="xs" fontWeight="bold" color="gray.500">
+              <Text fontSize="xs" color="gray.500">
                 {ISOToDatetime(screenshot.time)}
               </Text>
               <CommonIconButton
