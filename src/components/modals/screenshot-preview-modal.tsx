@@ -39,13 +39,13 @@ const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
             objectFit="cover"
           />
           <Flex justify="space-between" align="center" mt={2} px={4}>
-            <Text fontSize="sm" fontWeight="bold" color="black">
+            <Text fontSize="sm" fontWeight="bold">
               {screenshot.fileName}
             </Text>
 
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />
-              <Text fontSize="xs" color="gray.500">
+              <Text fontSize="xs" className="secondary-text">
                 {ISOToDatetime(screenshot.time)}
               </Text>
               <CommonIconButton
