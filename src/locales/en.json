@@ -522,13 +522,34 @@
         "content": "Are you sure you want to delete the game directory {{dirName}} ? (only from the launcher, not the actual directory files)"
       }
     },
-    "performance": {
-      "title": "Performance",
+    "gameWindow": {
+      "title": "Game Window",
       "settings": {
         "gameWindowResolution": {
           "title": "Game Window Resolution",
           "switch": "Fullscreen"
         },
+        "gameWindowTitle": {
+          "title": "Game Window Title"
+        },
+        "gameWindowCustomInfo": {
+          "title": "Custom Information",
+          "description": "It is displayed in the bottom right corner of the game's main screen and top left corner of the F3 debugging page."
+        }
+      }
+    },
+    "gameServer": {
+      "title": "Server",
+      "settings": {
+        "autoJoinGameServer": {
+          "title": "Auto Join Game Server",
+          "serverUrl": "Server URL"
+        }
+      }
+    },
+    "performance": {
+      "title": "Performance",
+      "settings": {
         "autoMemAllocation": {
           "title": "Allocate Memory Automatically"
         },

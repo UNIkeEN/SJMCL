@@ -522,13 +522,34 @@
         "content": "确定要删除游戏目录 {{dirName}} 吗？（仅从启动器删除，不会删除实际目录文件）"
       }
     },
-    "performance": {
-      "title": "性能",
+    "gameWindow": {
+      "title": "窗口",
       "settings": {
         "gameWindowResolution": {
           "title": "游戏窗口分辨率",
           "switch": "全屏"
         },
+        "gameWindowTitle": {
+          "title": "游戏窗口标题"
+        },
+        "gameWindowCustomInfo": {
+          "title": "自定义信息",
+          "description": "将显示在游戏主界面右下角，与 F3 调试页面左上角"
+        }
+      }
+    },
+    "gameServer": {
+      "title": "服务器",
+      "settings": {
+        "autoJoinGameServer": {
+          "title": "自动加入服务器",
+          "serverUrl": "服务器地址"
+        }
+      }
+    },
+    "performance": {
+      "title": "性能",
+      "settings": {
         "autoMemAllocation": {
           "title": "自动分配内存"
         },

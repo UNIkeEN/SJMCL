@@ -33,15 +33,22 @@ structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct GameConfig {
-    pub performance: struct {
+    pub game_window: struct {
       pub game_window_resolution: struct {
         pub width: u32,
         pub height: u32,
         pub fullscreen: bool,
       },
+    },
+    pub performance: struct {
       pub auto_mem_allocation: bool,
       pub min_mem_allocation: u32,
       pub process_priority: String,
+    },
+    pub game_server: struct {
+      pub auto_join_game_server: struct {
+        pub enabled: bool,
+      },
     },
     pub version_isolation: struct {
       pub enabled: bool,
@@ -139,15 +146,20 @@ structstruck::strike! {
 impl Default for GameConfig {
   fn default() -> Self {
     Self {
-      performance: Performance {
+      game_window: GameWindow {
         game_window_resolution: GameWindowResolution {
           width: 1280,
           height: 720,
           fullscreen: false,
         },
+      },
+      performance: Performance {
         auto_mem_allocation: true,
         min_mem_allocation: 1024,
         process_priority: "middle".to_string(),
+      },
+      game_server: GameServer {
+        auto_join_game_server: AutoJoinGameServer { enabled: false },
       },
       version_isolation: VersionIsolation {
         enabled: true,
