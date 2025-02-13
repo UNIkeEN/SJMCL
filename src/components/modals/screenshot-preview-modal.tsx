@@ -2,7 +2,6 @@ import {
   Flex,
   HStack,
   Icon,
-  IconButton,
   Image,
   Modal,
   ModalBody,
@@ -12,12 +11,12 @@ import {
   ModalProps,
   Text,
 } from "@chakra-ui/react";
-import { open } from "@tauri-apps/plugin-shell";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React from "react";
-import { LuCalendarDays, LuFolderOpen } from "react-icons/lu";
-import { useLauncherConfig } from "@/contexts/config";
+import { LuCalendarDays } from "react-icons/lu";
 import { Screenshot } from "@/models/game-instance";
 import { ISOToDatetime } from "@/utils/datetime";
+import { CommonIconButton } from "../common/common-icon-button";
 
 interface ScreenshotPreviewModalProps extends Omit<ModalProps, "children"> {
   screenshot: Screenshot;
@@ -27,9 +26,6 @@ const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   screenshot,
   ...props
 }) => {
-  const { config } = useLauncherConfig();
-  const primaryColor = config.appearance.theme.primaryColor;
-
   return (
     <Modal {...props}>
       <ModalOverlay />
@@ -45,22 +41,24 @@ const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
             objectFit="cover"
           />
           <Flex justify="space-between" align="center" mt={2} px={4}>
-            <Text fontSize="sm" color="gray.500">
+            <Text fontSize="sm" fontWeight="bold" color="black">
               {screenshot.fileName}
             </Text>
 
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />
-              <Text fontSize="sm" color="gray.500">
+              <Text fontSize="sm" fontWeight="bold" color="black">
                 {ISOToDatetime(screenshot.time)}
               </Text>
-              <IconButton
-                icon={<LuFolderOpen />}
+              <CommonIconButton
+                icon="revealFile"
+                tooltipPlacement="top"
                 aria-label="Open Folder"
-                colorScheme={primaryColor}
+                variant="ghost"
+                colorScheme="gray"
                 size="xs"
                 onClick={() => {
-                  open(screenshot.filePath);
+                  revealItemInDir(screenshot.filePath);
                 }}
               />
             </HStack>
