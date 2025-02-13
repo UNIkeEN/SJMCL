@@ -12,7 +12,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -42,7 +41,6 @@ import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 
 const AccountsPage = () => {
-  const router = useRouter();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const toast = useToast();
@@ -57,6 +55,7 @@ const AccountsPage = () => {
   useEffect(() => {
     setPlayerList(getPlayerList() || []);
   }, [getPlayerList]);
+
   useEffect(() => {
     setAuthServerList(getAuthServerList() || []);
   }, [getAuthServerList]);
@@ -250,8 +249,8 @@ const AccountsPage = () => {
                   size="2xs"
                   items={viewTypeList.map((item) => ({
                     ...item,
-                    label: item.key,
-                    value: <Icon as={item.icon} />,
+                    value: item.key,
+                    label: <Icon as={item.icon} />,
                   }))}
                   withTooltip
                 />

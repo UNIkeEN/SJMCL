@@ -33,6 +33,10 @@ structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct GameConfig {
+    pub game_java: struct {
+      pub auto: bool,
+      pub exec_path: String,
+    },
     pub performance: struct {
       pub game_window_resolution: struct {
         pub width: u32,
@@ -95,6 +99,12 @@ structstruck::strike! {
       },
       pub cache: struct {
         pub directory: PathBuf,
+      },
+      pub proxy: struct {
+        pub enabled: bool,
+        pub selected_type: String,
+        pub host: String,
+        pub port: usize,
       }
     },
     pub general: struct GeneralConfig {
@@ -133,6 +143,10 @@ structstruck::strike! {
 impl Default for GameConfig {
   fn default() -> Self {
     Self {
+      game_java: GameJava {
+        auto: true,
+        exec_path: "".to_string(),
+      },
       performance: Performance {
         game_window_resolution: GameWindowResolution {
           width: 1280,
@@ -185,6 +199,12 @@ impl Default for LauncherConfig {
         },
         cache: Cache {
           directory: PathBuf::default(),
+        },
+        proxy: Proxy {
+          enabled: false,
+          selected_type: "http".to_string(),
+          host: "127.0.0.1".to_string(),
+          port: 80,
         },
       },
       general: GeneralConfig {

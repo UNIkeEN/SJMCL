@@ -114,25 +114,38 @@
       "header": "添加角色"
     },
     "label": {
-      "playerType": "角色类型",
-      "playerName": "角色名称",
-      "authServer": "认证源",
-      "password": "密码"
+      "playerType": "角色类型"
     },
-    "authServer": {
-      "selectSource": "请选择认证源",
-      "noSource": "未添加可用认证源服务器",
-      "addSource": "添加认证源"
+    "offline": {
+      "playerName": {
+        "label": "角色名称",
+        "placeholder": "请输入角色名称",
+        "errorMessage": "只能包含英文字母、数字和下划线，不超过16个字符。"
+      }
     },
-    "placeholder": {
-      "playerName": "请输入用户名",
-      "password": "请输入密码"
-    },
-    "errorMessage": {
-      "playerName": "只能包含英文字母、数字和下划线，不超过16个字符。"
+    "3rdparty": {
+      "authServer": {
+        "label": "认证源",
+        "selectSource": "请选择认证源",
+        "noSource": "未添加可用认证源服务器",
+        "addSource": "添加认证源"
+      },
+      "email": {
+        "label": "邮箱",
+        "placeholder": "请输入邮箱"
+      },
+      "emailOrPlayerName": {
+        "label": "邮箱或角色名称",
+        "placeholder": "请输入邮箱或角色名称"
+      },
+      "password": {
+        "label": "密码",
+        "placeholder": "请输入密码"
+      }
     },
     "button": {
-      "buyMinecraft": "购买 Minecraft"
+      "buyMinecraft": "购买 Minecraft",
+      "loginOAuth": "使用 OAuth 登录"
     }
   },
   "AllGamesPage": {
@@ -258,6 +271,17 @@
   "DownloadFloatButton": {
     "tooltip": "正在下载"
   },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "下载资源"
+    },
+    "resourceTypeList": {
+      "world": "世界",
+      "mod": "模组",
+      "resourcepack": "资源包",
+      "shaderpack": "光影"
+    }
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "源",
@@ -294,6 +318,23 @@
           "title": "下载缓存目录",
           "select": "修改",
           "open": "打开"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "启用代理"
+        },
+        "type": {
+          "title": "代理类型"
+        },
+        "host": {
+          "title": "服务器"
+        },
+        "port": {
+          "title": "端口"
         }
       }
     }
@@ -356,6 +397,16 @@
       "purple": "紫色",
       "pink": "粉色"
     },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
     "playerTypes": {
       "microsoft": "微软账户",
       "offline": "离线模式",
@@ -416,6 +467,7 @@
     }
   },
   "General": {
+    "add": "添加",
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
@@ -436,6 +488,7 @@
     "enable": "启用",
     "finish": "完成",
     "next": "下一步",
+    "notice": "提示",
     "open": "打开",
     "openFolder": "打开文件夹",
     "previous": "上一步",
@@ -456,7 +509,11 @@
       "title": "功能",
       "settings": {
         "discover": {
-          "title": "发现页"
+          "title": "发现页",
+          "openNotice": {
+            "part-1": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 ",
+            "part-2": " 继续使用 “聚合搜索”。"
+          }
         }
       }
     }
@@ -466,8 +523,6 @@
       "title": "游戏目录",
       "settings": {
         "directories": {
-          "title": "本地游戏存储目录",
-          "add": "添加",
           "special": {
             "CURRENT_DIR": "当前文件夹",
             "OFFICIAL_DIR": "官方启动器文件夹"
@@ -477,6 +532,17 @@
       "deleteDialog": {
         "title": "删除游戏目录",
         "content": "确定要删除游戏目录 {{dirName}} 吗？（仅从启动器删除，不会删除实际目录文件）"
+      }
+    },
+    "gameJava": {
+      "title": "游戏 Java",
+      "settings": {
+        "autoSelect": {
+          "title": "自动选择合适 Java"
+        },
+        "execPath": {
+          "title": "指定 Java 版本"
+        }
       }
     },
     "performance": {
@@ -544,6 +610,7 @@
       "games": "游戏",
       "accounts": "账户",
       "discover": "发现",
+      "search": "搜索",
       "settings": "设置"
     }
   },
@@ -625,6 +692,11 @@
     },
     "serverResPackList": {
       "title": "服务器资源包"
+    }
+  },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "详情"
     }
   },
   "InstanceSettingsPage": {
@@ -757,10 +829,6 @@
       "delete": "删除此角色"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "还原启动器设置",
-    "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
-  },
   "ReLogin3rdPartyPlayerModal": {
     "modal": {
       "title": "重新登录"
@@ -775,6 +843,178 @@
     "button": {
       "login": "登录"
     }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "下载源",
+      "gameVer": "游戏版本",
+      "tag": "类型",
+      "sortBy": "排序",
+      "name": "名称"
+    },
+    "button": {
+      "search": "搜索"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Addons": "插件",
+        "Adventure and RPG": "冒险 RPG",
+        "API and Library": "支持库",
+        "Armor, Tools, and Weapons": "装备 武器",
+        "Bug Fixes": "错误修复",
+        "Cosmetic": "装饰",
+        "Education": "教育",
+        "Food": "食物",
+        "Magic": "魔法",
+        "Map and Information": "地图 信息",
+        "MCreator": "MCreator",
+        "Miscellaneous": "杂项",
+        "Performance": "性能",
+        "Redstone": "红石",
+        "Server Utility": "服务器",
+        "Storage": "存储",
+        "Technology": "科技",
+        "Twitch Integration": "Twitch",
+        "Utility & QoL": "实用 QoL",
+        "World Gen": "世界生成"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Adventure": "冒险",
+        "Cursed": "诅咒",
+        "Decoration": "装饰",
+        "Economy": "经济",
+        "Equipment": "装备",
+        "Food": "食物",
+        "Game Mechanics": "游戏机制",
+        "Library": "支持库",
+        "Magic": "魔法",
+        "Management": "管理",
+        "Minigame": "小游戏",
+        "Mobs": "生物",
+        "Optimization": "优化",
+        "Social": "社交",
+        "Storage": "存储",
+        "Technology": "科技",
+        "Transportation": "交通运输",
+        "Utility": "实用",
+        "World Generation": "世界生成"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Adventure": "冒险模式",
+        "Creation": "创造模式",
+        "Game Map": "游戏挑战",
+        "Modded World": "模组",
+        "Parkour": "跑酷",
+        "Puzzle": "解谜地图",
+        "Survival": "生存模式"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x 及以上",
+        "Animated": "动画",
+        "Data Packs": "数据包",
+        "Font Packs": "字体包",
+        "Medieval": "中世纪",
+        "Miscellaneous": "杂项",
+        "Mod Support": "模组支持",
+        "Modern": "现代",
+        "Photo Realistic": "影视级",
+        "Steampunk": "蒸汽朋克",
+        "Traditional": "传统"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "8x or lower": "8x 或更低",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x or higher": "512x 或更高",
+        "Audio": "音频",
+        "Blocks": "方块",
+        "Core Shaders": "核心着色器",
+        "Entities": "实体",
+        "Environment": "环境",
+        "Equipment": "装备",
+        "Fonts": "字体",
+        "GUI": "用户界面",
+        "Items": "物品",
+        "Locale": "本地化",
+        "Models": "模型",
+        "Combat": "战斗",
+        "Cursed": "诅咒",
+        "Decoration": "装饰",
+        "Modded": "模组",
+        "Realistic": "写实",
+        "Simplistic": "简约",
+        "Themed": "主题",
+        "Tweaks": "优化",
+        "Utility": "实用",
+        "Vanilla-like": "原版风格"
+      }
+    },
+    "shaderpackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Fantasy": "奇幻",
+        "Realistic": "写实",
+        "Vanilla": "原版"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Cartoon": "卡通",
+        "Cursed": "诅咒",
+        "Fantasy": "奇幻",
+        "Realistic": "写实",
+        "Semi-Realistic": "半写实",
+        "Vanilla-like": "原版风格",
+        "Atmosphere": "大气",
+        "Bloom": "泛光",
+        "Colored Lighting": "彩色光照",
+        "Foliage": "植被",
+        "Path Tracing": "路径追踪",
+        "PBR": "PBR",
+        "Reflections": "反射",
+        "Shadows": "阴影"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Relevancy": "相关度",
+        "Popularity": "热度",
+        "Lastest update": "最近更新",
+        "Creation date": "创建日期",
+        "Total downloads": "下载量",
+        "A-Z": "名称"
+      },
+      "Modrinth": {
+        "Relevance": "相关度",
+        "Downloads": "下载量",
+        "Followers": "关注量",
+        "Date published": "发布日期",
+        "Date updated": "更新日期"
+      }
+    },
+    "versionList": {
+      "All": "全部"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "还原启动器设置",
+    "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
   "Services": {
     "config": {
@@ -926,6 +1166,12 @@
       "play": "播放",
       "pause": "暂停"
     }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "聚合搜索"
+    },
+    "tip": "集中一处搜索本地内容与线上游戏资源"
   },
   "StarUsModal": {
     "header": {

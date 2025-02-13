@@ -8,6 +8,7 @@ import {
   MenuOptionGroup,
   NumberInput,
   NumberInputField,
+  Portal,
   Slider,
   SliderFilledTrack,
   SliderThumb,
@@ -26,6 +27,7 @@ import {
 import MemoryStatusProgress from "@/components/memory-status-progress";
 import { useLauncherConfig } from "@/contexts/config";
 import { MemoryInfo } from "@/models/system-info";
+import { JavaInfo } from "@/models/system-info";
 import { retriveMemoryInfo } from "@/services/utils";
 
 interface GameSettingsGroupsProps {
@@ -36,9 +38,20 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   instanceId = 0,
 }) => {
   const { t } = useTranslation();
-  const { config, update } = useLauncherConfig();
+  const { config, update, getJavaInfos } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const globalGameConfigs = config.globalGameConfig;
+
+  const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
+
+  const buildJavaMenuLabel = (java: JavaInfo | undefined) => {
+    if (!java) return "";
+    return `Java ${java.majorVersion}${java.isLts ? " (LTS)" : ""} (${java.execPath})`;
+  };
+
+  useEffect(() => {
+    setJavaInfos(getJavaInfos() || []);
+  }, [getJavaInfos]);
 
   const isolationStrategy = [
     "off",
@@ -75,6 +88,79 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   }, []);
 
   const settingGroups: OptionItemGroupProps[] = [
+    {
+      title: t("GlobalGameSettingsPage.gameJava.title"),
+      items: [
+        {
+          title: t("GlobalGameSettingsPage.gameJava.settings.autoSelect.title"),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={globalGameConfigs.gameJava.auto}
+              onChange={(event) => {
+                if (instanceId) return; // TBD
+                update("globalGameConfig.gameJava.auto", event.target.checked);
+              }}
+            />
+          ),
+        },
+        ...(globalGameConfigs.gameJava.auto
+          ? []
+          : [
+              {
+                title: t(
+                  "GlobalGameSettingsPage.gameJava.settings.execPath.title"
+                ),
+                children: (
+                  <Menu>
+                    <MenuButton
+                      as={Button}
+                      size="xs"
+                      w="auto"
+                      maxW="80%"
+                      variant="outline"
+                    >
+                      <HStack spacing={1}>
+                        <Text noOfLines={1}>
+                          {buildJavaMenuLabel(
+                            javaInfos.find(
+                              (java) =>
+                                java.execPath ===
+                                globalGameConfigs.gameJava.execPath
+                            )
+                          )}
+                        </Text>
+                        <LuChevronDown />
+                      </HStack>
+                    </MenuButton>
+                    <Portal>
+                      <MenuList>
+                        <MenuOptionGroup
+                          value={globalGameConfigs.gameJava.execPath}
+                          type="radio"
+                          onChange={(value) => {
+                            if (instanceId) return; // TBD
+                            update("globalGameConfig.gameJava.execPath", value);
+                          }}
+                        >
+                          {javaInfos.map((java) => (
+                            <MenuItemOption
+                              value={java.execPath}
+                              fontSize="xs"
+                              key={java.execPath}
+                            >
+                              <Text>{buildJavaMenuLabel(java)}</Text>
+                            </MenuItemOption>
+                          ))}
+                        </MenuOptionGroup>
+                      </MenuList>
+                    </Portal>
+                  </Menu>
+                ),
+              },
+            ]),
+      ],
+    },
     {
       title: t("GlobalGameSettingsPage.performance.title"),
       items: [

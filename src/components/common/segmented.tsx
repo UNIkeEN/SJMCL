@@ -4,8 +4,8 @@ interface SegmentedControlProps extends BoxProps {
   size?: "2xs" | "xs" | "sm" | "md" | "lg";
   colorScheme?: string;
   items: {
-    label: string;
-    value: string | React.ReactNode;
+    label: string | React.ReactNode;
+    value: string;
     tooltip?: string;
   }[];
   selected: string;
@@ -38,11 +38,11 @@ const SegmentedControl: React.FC<SegmentedControlProps> = ({
     >
       <Stack direction={direction} spacing={sp}>
         {items.map((item) => {
-          const isSelected = selected === item.label;
+          const isSelected = selected === item.value;
 
           const button = (
             <Button
-              key={item.label}
+              key={item.value}
               size={size == "2xs" ? "xs" : size}
               {...(size == "2xs" && { h: "1.25rem", w: "1.25rem" })}
               colorScheme={colorScheme}
@@ -54,16 +54,16 @@ const SegmentedControl: React.FC<SegmentedControlProps> = ({
               _active={
                 isSelected ? { bgColor: "white" } : { bg: `${colorScheme}.300` }
               }
-              onClick={() => onSelectItem(item.label)}
+              onClick={() => onSelectItem(item.value)}
             >
-              {item.value}
+              {item.label}
             </Button>
           );
 
           return (
             <Tooltip
-              key={item.label}
-              label={item.tooltip || item.label}
+              key={item.value}
+              label={item.tooltip || item.value}
               isDisabled={!withTooltip}
             >
               {button}

@@ -109,6 +109,8 @@ jobs:
         if: matrix.platform == 'macos'
         run: |
           rm -r public/fonts/Sinter/
+          rm src/styles/fonts.css
+          touch src/styles/fonts.css
 
       - name: Build the app
         run: npm run tauri build

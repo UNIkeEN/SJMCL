@@ -17,4 +17,10 @@ export interface AuthServer {
   homepageUrl: string;
   registerUrl: string;
   mutable: boolean;
+  features: AuthServerFeatures;
+}
+
+export interface AuthServerFeatures {
+  nonEmailLogin: boolean;
+  openidConfigurationUrl: string;
 }

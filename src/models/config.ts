@@ -1,4 +1,8 @@
 export interface GameConfig {
+  gameJava: {
+    auto: boolean;
+    execPath: string;
+  };
   performance: {
     gameWindowResolution: {
       width: number;
@@ -54,6 +58,12 @@ export interface LauncherConfig {
     cache: {
       directory: string;
     };
+    proxy: {
+      enabled: boolean;
+      selectedType: string;
+      host: string;
+      port: number;
+    };
   };
   general: {
     general: {
@@ -88,6 +98,10 @@ export interface LauncherConfig {
 }
 
 export const defaultGameConfig: GameConfig = {
+  gameJava: {
+    auto: true,
+    execPath: "",
+  },
   performance: {
     gameWindowResolution: {
       width: 1280,
@@ -138,6 +152,12 @@ export const defaultConfig: LauncherConfig = {
     },
     cache: {
       directory: "/mock/path/to/cache/",
+    },
+    proxy: {
+      enabled: false,
+      selectedType: "http",
+      host: "127.0.0.1",
+      port: 80,
     },
   },
   general: {

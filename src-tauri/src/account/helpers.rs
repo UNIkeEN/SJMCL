@@ -2,7 +2,7 @@ use tauri_plugin_http::reqwest;
 
 use crate::{error::SJMCLResult, storage::Storage, EXE_DIR};
 
-use super::models::{AccountError, AccountInfo, AuthServer};
+use super::models::{AccountError, AccountInfo, AuthServer, Features};
 use std::path::PathBuf;
 
 impl Storage for AccountInfo {
@@ -27,12 +27,23 @@ pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
         .as_str()
         .ok_or(AccountError::Invalid)?
         .to_string();
+      let non_email_login = json["meta"]["feature.non_email_login"]
+        .as_bool()
+        .unwrap_or(false);
+      let openid_configuration_url = json["meta"]["feature.openid_configuaration_url"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
 
       let new_server = AuthServer {
         name: server_name,
         auth_url,
         homepage_url,
         register_url,
+        features: Features {
+          non_email_login,
+          openid_configuration_url,
+        },
       };
 
       Ok(new_server)

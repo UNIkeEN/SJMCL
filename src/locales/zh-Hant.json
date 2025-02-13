@@ -10,7 +10,7 @@
           "title": "開發者名單"
         },
         "reportIssue": {
-          "title": "回報錯誤或請求功能"
+          "title": "報告問題或請求功能"
         },
         "aboutSJMC": {
           "title": "關於上海交通大學 Minecraft 社（SJMC）"
@@ -26,15 +26,15 @@
         },
         "littleskin": {
           "title": "LittleSkin",
-          "description": "感謝 LittleSkin 和 @tnqzh123 對登錄流程設計的幫助"
+          "description": "感謝 LittleSkin 和 @tnqzh123 對登入流程設計的幫助"
         },
         "sinter": {
           "title": "Sinter",
-          "description": "在 Windows 和 Linux 平臺作為啟動器界面字體，遵循 SIL 協議使用"
+          "description": "在 Windows 和 Linux 平臺作為啟動器介面字型，遵循 SIL 協議使用"
         },
         "skinview3d": {
           "title": "bs-community / skinview3d",
-          "description": "皮膚預覽組件基於此開源項目實現，遵循 MIT 協議使用"
+          "description": "皮膚預覽元件基於此開源專案實現，遵循 MIT 協議使用"
         }
       }
     },
@@ -50,15 +50,15 @@
         },
         "openSourceLicense": {
           "title": "開源協議",
-          "description": "本專案遵循 GNU General Public License v3.0 授權"
+          "description": "本專案遵循 GNU General Public License v3.0 協議"
         }
       }
     }
   },
   "AccountsPage": {
     "button": {
-      "addPlayer": "添加角色",
-      "add3rdPartyServer": "添加認證伺服器",
+      "addPlayer": "新增角色",
+      "add3rdPartyServer": "新增認證伺服器",
       "sourceHomepage": "訪問主頁",
       "deleteServer": "刪除此伺服器"
     },
@@ -66,23 +66,30 @@
       "all": "全部來源"
     },
     "viewTypeList": {
-      "grid": "網格視圖",
-      "list": "清單視圖"
+      "grid": "網格檢視",
+      "list": "列表檢視"
     }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
-        "title": "安裝新實例",
-        "description": "選擇並安裝遊戲版本、加載器與模組"
+        "title": "安裝新例項",
+        "description": "選擇並安裝遊戲版本、載入器與模組"
       },
       "modpack": {
-        "title": "導入整合包",
-        "description": "從本地文件或互聯網導入整合包（CurseForge, Modrinth 或 HMCL 格式）"
+        "title": "匯入整合包",
+        "description": "從本地檔案或網際網路匯入整合包（CurseForge, Modrinth 或 HMCL 格式）"
       },
       "manageDirs": {
         "title": "管理遊戲目錄",
-        "description": "管理本地遊戲存儲目錄，以添加已安裝實例"
+        "description": "管理本地遊戲儲存目錄，以新增已安裝例項"
+      }
+    },
+    "moreOptions": {
+      "title": "更多",
+      "server": {
+        "title": "下載服務端",
+        "description": "下載各版本原版遊戲服務端檔案"
       }
     }
   },
@@ -91,10 +98,10 @@
       "title": "新增認證伺服器"
     },
     "placeholder": {
-      "inputServerUrl": "請輸入伺服器位址"
+      "inputServerUrl": "請輸入伺服器地址"
     },
     "page1": {
-      "serverUrl": "伺服器位址",
+      "serverUrl": "伺服器地址",
       "serverUrlRequired": "必填欄位"
     },
     "page2": {
@@ -107,35 +114,51 @@
       "header": "新增角色"
     },
     "label": {
-      "playerType": "角色類型",
-      "playerName": "角色名稱",
-      "authServer": "認證源",
-      "password": "密碼"
+      "playerType": "角色型別"
     },
-    "authServer": {
-      "selectSource": "請選擇認證源",
-      "noSource": "未新增可用認證源伺服器",
-      "addSource": "新增認證源"
+    "offline": {
+      "playerName": {
+        "label": "角色名稱",
+        "placeholder": "請輸入角色名稱",
+        "errorMessage": "只能包含英文字母、數字和下劃線，不超過16個字元。"
+      }
     },
-    "placeholder": {
-      "playerName": "請輸入使用者名稱",
-      "password": "請輸入密碼"
+    "3rdparty": {
+      "authServer": {
+        "label": "認證源",
+        "selectSource": "請選擇認證源",
+        "noSource": "未新增可用認證源伺服器",
+        "addSource": "新增認證源"
+      },
+      "email": {
+        "label": "郵箱",
+        "placeholder": "請輸入郵箱"
+      },
+      "emailOrPlayerName": {
+        "label": "郵箱或角色名稱",
+        "placeholder": "請輸入郵箱或角色名稱"
+      },
+      "password": {
+        "label": "密碼",
+        "placeholder": "請輸入密碼"
+      }
     },
-    "errorMessage": {
-      "playerName": "只能包含英文字母、數字和底線，且不超過16個字符。"
+    "button": {
+      "buyMinecraft": "購買 Minecraft",
+      "loginOAuth": "使用 OAuth 登入"
     }
   },
   "AllGamesPage": {
     "button": {
-      "addAndImport": "添加與導入",
-      "globalSettings": "全局遊戲設置",
-      "launch": "啓動遊戲"
+      "addAndImport": "新增與匯入",
+      "globalSettings": "全域性遊戲設定",
+      "launch": "啟動遊戲"
     },
     "viewTypeList": {
-      "grid": "網格視圖",
-      "list": "清單視圖"
+      "grid": "網格檢視",
+      "list": "列表檢視"
     },
-    "title": "全部實例"
+    "title": "全部例項"
   },
   "AppearanceSettingsPage": {
     "theme": {
@@ -145,7 +168,7 @@
           "title": "啟動器強調色"
         },
         "headNavStyle": {
-          "title": "頂部導覽列樣式",
+          "title": "頂部導航欄樣式",
           "type": {
             "standard": "標準",
             "simplified": "簡約"
@@ -157,11 +180,11 @@
       "title": "背景",
       "settings": {
         "preset": {
-          "title": "選擇預設"
+          "title": "預設影像"
         },
         "custom": {
-          "title": "自定義圖像",
-          "add": "添加"
+          "title": "自定義影像",
+          "add": "新增"
         }
       },
       "presetBgList": {
@@ -172,10 +195,21 @@
           "name": "SJTU 紫氣東來門"
         }
       }
+    },
+    "accessibility": {
+      "title": "顯示輔助",
+      "settings": {
+        "invertColors": {
+          "title": "反轉顏色"
+        },
+        "enhanceContrast": {
+          "title": "增強對比度"
+        }
+      }
     }
   },
   "ComingSoonSign": {
-    "text": "此頁面暫未開放，敬請期待"
+    "text": "該頁面暫未開放，敬請期待"
   },
   "ContributorsPage": {
     "all": "全部開發者名單",
@@ -192,19 +226,19 @@
   },
   "CreateInstanceModal": {
     "header": {
-      "title": "創建新實例"
+      "title": "建立新例項"
     },
     "stepper": {
       "game": "選擇遊戲版本",
-      "loader": "選擇加載器",
+      "loader": "選擇載入器",
       "skipped": "不安裝",
-      "info": "基本設置"
+      "info": "基本設定"
     }
   },
   "DeleteGameAlertDialog": {
     "dialog": {
-      "title": "刪除遊戲實例",
-      "content": "確定要刪除遊戲實例 “{{gameName}}” 嗎？"
+      "title": "刪除遊戲例項",
+      "content": "確定要刪除遊戲例項 “{{gameName}}” 嗎？"
     }
   },
   "DeletePlayerAlertDialog": {
@@ -222,27 +256,41 @@
   "DiscoverPage": {
     "title": "發現",
     "button": {
-      "sources": "管理數據源"
+      "sources": "管理資料來源"
     }
   },
   "DiscoverSourcesPage": {
     "button": {
-      "addSource": "添加數據源",
-      "deleteSource": "刪除數據源"
+      "addSource": "新增資料來源",
+      "deleteSource": "刪除資料來源"
     },
     "tag": {
-      "online": "在線"
+      "online": "線上"
+    }
+  },
+  "DownloadFloatButton": {
+    "tooltip": "正在下載"
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "下載資源"
+    },
+    "resourceTypeList": {
+      "world": "世界",
+      "mod": "模組",
+      "resourcepack": "資源包",
+      "shaderpack": "光影"
     }
   },
   "DownloadSettingPage": {
     "source": {
-      "title": "來源",
+      "title": "源",
       "settings": {
         "strategy": {
-          "title": "下載來源選擇策略",
+          "title": "下載源選擇策略",
           "auto": "自動選擇",
-          "official": "官方來源優先",
-          "mirror": "鏡像來源優先"
+          "official": "官方源優先",
+          "mirror": "映象源優先"
         }
       }
     },
@@ -250,10 +298,10 @@
       "title": "下載",
       "settings": {
         "autoConcurrent": {
-          "title": "自動選擇並發數"
+          "title": "自動選擇併發數"
         },
         "concurrentCount": {
-          "title": "並發數"
+          "title": "併發數"
         },
         "enableSpeedLimit": {
           "title": "限制下載速度"
@@ -269,24 +317,78 @@
         "directory": {
           "title": "下載快取目錄",
           "select": "修改",
-          "open": "打開"
+          "open": "開啟"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "啟用代理"
+        },
+        "type": {
+          "title": "代理型別"
+        },
+        "host": {
+          "title": "伺服器"
+        },
+        "port": {
+          "title": "埠"
         }
       }
     }
   },
   "Editable": {
     "edit": "編輯",
-    "save": "保存",
+    "save": "儲存",
     "cancel": "取消"
   },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "新增遊戲目錄",
+        "edit": "編輯遊戲目錄"
+      }
+    },
+    "label": {
+      "dirName": "名稱",
+      "dirPath": "遊戲目錄路徑"
+    },
+    "placeholder": {
+      "dirName": "請輸入名稱",
+      "dirPath": "請選擇遊戲目錄"
+    },
+    "button": {
+      "browse": "瀏覽"
+    },
+    "dialog": {
+      "title": "選擇目錄"
+    },
+    "toast": {
+      "error": {
+        "title": "新增遊戲目錄失敗"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "empty": "目錄名稱不能為空",
+        "tooLong": "目錄名稱不能超過 20 個字元",
+        "exist": "目錄名稱已存在"
+      },
+      "dirPath": {
+        "exist": "目錄路徑已存在"
+      }
+    }
+  },
   "Empty": {
-    "noData": "暫無資料"
+    "noData": "無資料"
   },
   "Enums": {
     "chakraColors": {
       "gray": "灰色",
       "red": "紅色",
-      "orange": "橘色",
+      "orange": "橙色",
       "yellow": "黃色",
       "green": "綠色",
       "teal": "藍綠色",
@@ -295,15 +397,30 @@
       "purple": "紫色",
       "pink": "粉色"
     },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
     "playerTypes": {
       "microsoft": "微軟賬戶",
       "offline": "離線模式",
       "3rdparty": "第三方認證",
       "3rdpartyShort": "第三方認證"
+    },
+    "systemFileManager": {
+      "linux": "檔案管理器",
+      "macos": "訪達",
+      "windows": "檔案資源管理器"
     }
   },
   "GameErrorPage": {
-    "title": "遊戲非正常退出，請查看日誌，或尋求他人幫助",
+    "title": "遊戲非正常退出，請檢視日誌，或尋求他人幫助",
     "basicInfo": {
       "arch": "架構",
       "launcherVersion": "啟動器版本",
@@ -316,56 +433,67 @@
       "javaVersion": "Java 版本"
     },
     "crashDetails": {
-      "title": "崩潰信息"
+      "title": "崩潰資訊"
     },
     "button": {
-      "exportGameInfo": "導出遊戲崩潰報告",
+      "exportGameInfo": "匯出遊戲崩潰報告",
       "gameLogs": "遊戲日誌",
       "help": "幫助"
     },
-    "bottomAlert": "如需尋求他人幫助，請導出並發送崩潰報告，而非這個窗口的截圖"
+    "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖"
   },
   "GameLogPage": {
-    "placeholder": "輸入關鍵字篩選",
+    "placeholder": "輸入關鍵詞篩選",
     "exportLogs": "匯出日誌",
     "clearLogs": "清除所有日誌"
   },
   "GameMenu": {
     "label": {
-      "details": "實例詳情",
-      "delete": "刪除實例"
+      "details": "例項詳情",
+      "delete": "刪除例項"
     }
   },
   "GameVersionSelector": {
     "old_beta": "遠古版",
     "release": "正式版",
     "snapshot": "測試版",
+    "april_fools": "愚人節版",
+    "searchPlaceholder": "搜尋版本",
     "wikiKey": {
       "release": "Java版",
       "snapshot": "",
-      "old_beta": "Java版Beta_"
+      "old_beta": "Java版Beta_",
+      "april_fools": ""
     }
   },
   "General": {
+    "add": "新增",
     "cancel": "取消",
     "close": "關閉",
     "confirm": "確定",
+    "copyOrMove": {
+      "linux": "複製或移動",
+      "macos": "複製或移動",
+      "windows": "複製或移動"
+    },
     "delete": "刪除",
     "dialog": {
       "filterName": {
-        "image": "圖片文件"
+        "image": "圖片檔案"
       }
     },
-    "disable": "禁用",
-    "enable": "啓用",
+    "disable": "停用",
+    "edit": "編輯",
+    "enable": "啟用",
     "finish": "完成",
     "next": "下一步",
-    "open": "打開",
-    "openFolder": "打開資料夾",
-    "openInFolder": "打開資料位置",
+    "notice": "提示",
+    "open": "開啟",
+    "openFolder": "開啟資料夾",
     "previous": "上一步",
-    "refresh": "刷新",
-    "viewOnWiki": "在 Minecraft Wiki 中查看"
+    "refresh": "重新整理",
+    "revealFile": "在{{opener}}中顯示",
+    "viewOnWiki": "在 Minecraft Wiki 中檢視"
   },
   "GeneralSettingsPage": {
     "general": {
@@ -380,7 +508,11 @@
       "title": "功能",
       "settings": {
         "discover": {
-          "title": "發現頁"
+          "title": "發現頁",
+          "openNotice": {
+            "part-1": "頂部導航欄的 “搜尋” 已替換為 “發現”，您可以透過鍵盤快捷鍵 ",
+            "part-2": " 繼續使用 “聚合搜尋”。"
+          }
         }
       }
     }
@@ -390,9 +522,25 @@
       "title": "遊戲目錄",
       "settings": {
         "directories": {
-          "title": "本地遊戲存儲目錄",
-          "add": "添加",
-          "currentDir": "當前目錄"
+          "special": {
+            "CURRENT_DIR": "當前資料夾",
+            "OFFICIAL_DIR": "官方啟動器資料夾"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "刪除遊戲目錄",
+        "content": "確定要刪除遊戲目錄 {{dirName}} 嗎？（僅從啟動器刪除，不會刪除實際目錄檔案）"
+      }
+    },
+    "gameJava": {
+      "title": "遊戲 Java",
+      "settings": {
+        "autoSelect": {
+          "title": "自動選擇合適 Java"
+        },
+        "execPath": {
+          "title": "指定 Java 版本"
         }
       }
     },
@@ -401,7 +549,7 @@
       "settings": {
         "gameWindowResolution": {
           "title": "遊戲視窗解析度",
-          "switch": "全螢幕"
+          "switch": "全屏"
         },
         "autoMemAllocation": {
           "title": "自動分配記憶體"
@@ -410,11 +558,11 @@
           "title": "最小記憶體分配"
         },
         "memoryUsage": {
-          "title": "記憶體使用情況",
+          "title": "記憶體佔用情況",
           "description": "已用記憶體{{usedMemory}}GB；遊戲分配{{allocatedMemory}}GB；總記憶體{{totalMemory}}GB"
         },
         "processPriority": {
-          "title": "程序優先級",
+          "title": "程序優先順序",
           "low": "低",
           "middle": "中",
           "high": "高"
@@ -443,14 +591,14 @@
         "launcherVisibility": {
           "title": "啟動器可見性",
           "start-close": "遊戲啟動後結束啟動器",
-          "running-hidden": "遊戲運行時隱藏啟動器",
+          "running-hidden": "遊戲執行時隱藏啟動器",
           "always": "啟動器始終可見"
         },
         "displayGameLog": {
           "title": "顯示遊戲日誌"
         },
         "enableAdvancedOptions": {
-          "title": "啟用高級選項"
+          "title": "啟用高階選項"
         }
       }
     }
@@ -459,21 +607,22 @@
     "navList": {
       "launch": "啟動",
       "games": "遊戲",
-      "accounts": "帳號",
+      "accounts": "賬戶",
       "discover": "發現",
+      "search": "搜尋",
       "settings": "設定"
     }
   },
   "HelpSettingsPage": {
     "community": {
-      "title": "高校玩家社區",
+      "title": "高校玩家社群",
       "settings": {
         "MUA": {
-          "title": "Minecraft 高校聯盟 (MUA)",
+          "title": "Minecraft 高校聯盟（MUA）",
           "description": "和全國各高校的玩家一起遊玩"
         },
         "SJMC": {
-          "title": "上海交通大學 Minecraft 社 (SJMC)"
+          "title": "上海交通大學 Minecraft 社（SJMC）"
         }
       }
     },
@@ -512,54 +661,50 @@
       "worlds": "世界",
       "mods": "模組",
       "resourcepacks": "資源包",
+      "schematics": "原理圖",
       "shaderpacks": "光影",
       "screenshots": "截圖",
       "settings": "設定"
     },
     "button": {
-      "launch": "啓動實例"
+      "launch": "啟動例項"
     }
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": "加載器"
+      "title": "載入器"
     },
     "modList": {
       "title": "模組",
       "menu": {
-        "alert": "可能不兼容",
-        "info": "查看信息"
+        "alert": "可能不相容",
+        "info": "檢視資訊"
       }
     }
   },
   "InstanceResourcePacksPage": {
     "resourcePackList": {
-      "title": "全域資源包"
+      "title": "全域性資源包"
     },
     "serverResPackList": {
       "title": "伺服器資源包"
     }
   },
-  "InstanceSettingsPage": {
-    "name": "實例名稱",
-    "description": "實例描述",
-    "icon": "實例圖標",
-    "applySettings": "啓動特定遊戲設置",
-    "restoreSettings": "重置以下特定設置",
-    "restoreSettingsDesc": "將以下特定設置重置爲全局遊戲設置",
-    "restore": "重置",
-    "errorMessage": {
-      "error-1": "實例名稱不能為空"
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "詳情"
     }
   },
-  "InstanceWidgets": {
-    "basicInfo": {
-      "title": "基本信息",
-      "gameVersion": "遊戲版本",
-      "playTime": "遊戲時長"
-    },
-    "screenshots": {
-      "title": "截圖"
+  "InstanceSettingsPage": {
+    "name": "例項名稱",
+    "description": "例項描述",
+    "icon": "例項圖示",
+    "applySettings": "啟動特定遊戲設定",
+    "restoreSettings": "重置以下特定設定",
+    "restoreSettingsDesc": "將以下特定設定重置為全域性遊戲設定",
+    "restore": "重置",
+    "errorMessage": {
+      "error-1": "例項名稱不能為空"
     }
   },
   "InstanceShaderPacksPage": {
@@ -567,16 +712,58 @@
       "title": "光影包"
     }
   },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "原理圖",
+      "preview": "預覽"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "基本資訊",
+      "gameVersion": "遊戲版本",
+      "playTime": "遊戲時長"
+    },
+    "screenshots": {
+      "title": "截圖"
+    },
+    "mods": {
+      "title": "模組",
+      "summary": "{{totalMods}} 個模組, {{enabledMods}} 個已啟用",
+      "manage": "前往管理"
+    },
+    "lastPlayed": {
+      "title": "上次遊玩",
+      "continuePlaying": "繼續遊玩"
+    },
+    "more": {
+      "title": "更多"
+    }
+  },
   "InstanceWorldsPage": {
     "worldList": {
       "title": "本地世界",
-      "lastPlayedAt": "上次遊玩於"
+      "lastPlayedAt": "上次遊玩於",
+      "difficulty": {
+        "peaceful": "和平",
+        "easy": "簡單",
+        "normal": "普通",
+        "hard": "困難",
+        "hardcore": "極限生存"
+      },
+      "gamemode": {
+        "survival": "生存模式",
+        "creative": "創造模式",
+        "adventure": "冒險模式",
+        "spectator": "觀察者模式"
+      },
+      "moreDesc": "，{{gamemode}}（難度：{{difficulty}}）"
     },
     "serverList": {
       "title": "伺服器",
       "players": "玩家",
       "tag": {
-        "online": "在線",
+        "online": "線上",
         "offline": "離線"
       }
     }
@@ -585,7 +772,7 @@
     "javaList": {
       "title": "Java 管理",
       "download": "下載 Java",
-      "add": "添加 Java"
+      "add": "新增 Java"
     }
   },
   "LaunchPage": {
@@ -595,17 +782,17 @@
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "切換角色",
-        "switchGame": "切換遊戲實例"
+        "switchGame": "切換遊戲例項"
       }
     },
     "Text": {
       "noSelectedPlayer": "尚未選擇角色",
-      "noSelectedGame": "尚未選擇遊戲實例"
+      "noSelectedGame": "尚未選擇遊戲例項"
     }
   },
   "ManageSkinModal": {
     "skinManage": "管理皮膚",
-    "default": "默認",
+    "default": "預設",
     "steve": "Steve",
     "alex": "Alex"
   },
@@ -620,21 +807,204 @@
   "ModLoaderCards": {
     "installed": "已安裝",
     "unInstalled": "未安裝",
-    "notCompatibleWith": "與 {{modLoader}} 不兼容",
+    "notCompatibleWith": "與 {{modLoader}} 不相容",
     "versionNotSelected": "未選擇版本"
   },
   "ModLoaderSelector": {
     "stable": "穩定版",
     "beta": "測試版",
-    "releaseDate": "發佈於 {{date}}"
+    "releaseDate": "釋出於 {{date}}"
   },
   "NotFoundPage": {
     "text": "頁面不存在，即將在 {{seconds}} 秒後跳轉"
   },
   "PlayerMenu": {
     "label": {
-      "skin": "管理外觀",
+      "skin": "管理皮膚",
       "delete": "刪除此角色"
+    }
+  },
+  "ReLogin3rdPartyPlayerModal": {
+    "modal": {
+      "title": "重新登入"
+    },
+    "label": {
+      "user": "使用者名稱",
+      "password": "密碼"
+    },
+    "placeholder": {
+      "password": "請輸入密碼"
+    },
+    "button": {
+      "login": "登入"
+    }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "下載源",
+      "gameVer": "遊戲版本",
+      "tag": "型別",
+      "sortBy": "排序",
+      "name": "名稱"
+    },
+    "button": {
+      "search": "搜尋"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Addons": "外掛",
+        "Adventure and RPG": "冒險 RPG",
+        "API and Library": "支援庫",
+        "Armor, Tools, and Weapons": "裝備 武器",
+        "Bug Fixes": "錯誤修復",
+        "Cosmetic": "裝飾",
+        "Education": "教育",
+        "Food": "食物",
+        "Magic": "魔法",
+        "Map and Information": "地圖 資訊",
+        "MCreator": "MCreator",
+        "Miscellaneous": "雜項",
+        "Performance": "效能",
+        "Redstone": "紅石",
+        "Server Utility": "伺服器",
+        "Storage": "儲存",
+        "Technology": "科技",
+        "Twitch Integration": "Twitch",
+        "Utility & QoL": "實用 QoL",
+        "World Gen": "世界生成"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Adventure": "冒險",
+        "Cursed": "詛咒",
+        "Decoration": "裝飾",
+        "Economy": "經濟",
+        "Equipment": "裝備",
+        "Food": "食物",
+        "Game Mechanics": "遊戲機制",
+        "Library": "支援庫",
+        "Magic": "魔法",
+        "Management": "管理",
+        "Minigame": "小遊戲",
+        "Mobs": "生物",
+        "Optimization": "最佳化",
+        "Social": "社交",
+        "Storage": "儲存",
+        "Technology": "科技",
+        "Transportation": "交通運輸",
+        "Utility": "實用",
+        "World Generation": "世界生成"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Adventure": "冒險模式",
+        "Creation": "創造模式",
+        "Game Map": "遊戲挑戰",
+        "Modded World": "模組",
+        "Parkour": "跑酷",
+        "Puzzle": "解謎地圖",
+        "Survival": "生存模式"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x 及以上",
+        "Animated": "動畫",
+        "Data Packs": "資料包",
+        "Font Packs": "字型包",
+        "Medieval": "中世紀",
+        "Miscellaneous": "雜項",
+        "Mod Support": "模組支援",
+        "Modern": "現代",
+        "Photo Realistic": "影視級",
+        "Steampunk": "蒸汽朋克",
+        "Traditional": "傳統"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "8x or lower": "8x 或更低",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x or higher": "512x 或更高",
+        "Audio": "音訊",
+        "Blocks": "方塊",
+        "Core Shaders": "核心著色器",
+        "Entities": "實體",
+        "Environment": "環境",
+        "Equipment": "裝備",
+        "Fonts": "字型",
+        "GUI": "使用者介面",
+        "Items": "物品",
+        "Locale": "本地化",
+        "Models": "模型",
+        "Combat": "戰鬥",
+        "Cursed": "詛咒",
+        "Decoration": "裝飾",
+        "Modded": "模組",
+        "Realistic": "寫實",
+        "Simplistic": "簡約",
+        "Themed": "主題",
+        "Tweaks": "最佳化",
+        "Utility": "實用",
+        "Vanilla-like": "原版風格"
+      }
+    },
+    "shaderpackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Fantasy": "奇幻",
+        "Realistic": "寫實",
+        "Vanilla": "原版"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Cartoon": "卡通",
+        "Cursed": "詛咒",
+        "Fantasy": "奇幻",
+        "Realistic": "寫實",
+        "Semi-Realistic": "半寫實",
+        "Vanilla-like": "原版風格",
+        "Atmosphere": "大氣",
+        "Bloom": "泛光",
+        "Colored Lighting": "彩色光照",
+        "Foliage": "植被",
+        "Path Tracing": "路徑追蹤",
+        "PBR": "PBR",
+        "Reflections": "反射",
+        "Shadows": "陰影"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Relevancy": "相關度",
+        "Popularity": "熱度",
+        "Lastest update": "最近更新",
+        "Creation date": "建立日期",
+        "Total downloads": "下載量",
+        "A-Z": "名稱"
+      },
+      "Modrinth": {
+        "Relevance": "相關度",
+        "Downloads": "下載量",
+        "Followers": "關注量",
+        "Date published": "釋出日期",
+        "Date updated": "更新日期"
+      }
+    },
+    "versionList": {
+      "All": "全部"
     }
   },
   "RestoreConfigConfirmDialog": {
@@ -654,29 +1024,29 @@
         }
       },
       "restoreLauncherConfig": {
-        "success": "設置已成功還原",
+        "success": "設定已成功還原",
         "error": {
-          "title": "還原設置失敗，請重試"
+          "title": "還原設定失敗，請重試"
         }
       },
       "exportLauncherConfig": {
-        "success": "啟動器設置導出成功",
+        "success": "啟動器設定匯出成功",
         "error": {
-          "title": "啟動器設置導出失敗",
+          "title": "啟動器設定匯出失敗",
           "description": {
-        "fetchError": "與伺服器通信失敗"
+            "fetchError": "與伺服器通訊失敗"
           }
         }
       },
       "importLauncherConfig": {
-        "success": "啟動器設置導入成功",
+        "success": "啟動器設定匯入成功",
         "error": {
-          "title": "啟動器設置導入失敗",
+          "title": "啟動器設定匯入失敗",
           "description": {
-        "fetchError": "與伺服器通信失敗",
-        "invalidCode": "無效的代碼",
-        "codeExpired": "代碼已過期",
-        "versionMismatch": "啟動器版本不匹配"
+            "fetchError": "與伺服器通訊失敗",
+            "invalidCode": "無效的程式碼",
+            "codeExpired": "程式碼已過期",
+            "versionMismatch": "啟動器版本不匹配"
           }
         }
       },
@@ -687,9 +1057,9 @@
         }
       },
       "addCustomBackground": {
-        "success": "自定義背景添加成功",
+        "success": "自定義背景新增成功",
         "error": {
-          "title": "自定義背景添加失敗"
+          "title": "自定義背景新增失敗"
         }
       },
       "deleteCustomBackground": {
@@ -697,15 +1067,20 @@
         "error": {
           "title": "自定義背景刪除失敗"
         }
+      },
+      "retriveJavaList": {
+        "error": {
+          "title": "Java 列表獲取失敗"
+        }
       }
     },
     "account": {
       "addPlayer": {
-        "success": "角色添加成功",
+        "success": "角色新增成功",
         "error": {
-          "title": "角色添加失敗",
+          "title": "角色新增失敗",
           "description": {
-            "invalid": "無效的角色類型"
+            "invalid": "無效的角色的型別"
           }
         }
       },
@@ -720,7 +1095,7 @@
       },
       "fetchAuthServerInfo": {
         "error": {
-          "title": "獲取認證伺服器信息失敗",
+          "title": "獲取認證伺服器資訊失敗",
           "description": {
             "duplicate": "認證伺服器已存在",
             "invalid": "無效的認證伺服器地址"
@@ -728,9 +1103,9 @@
         }
       },
       "addAuthServer": {
-        "success": "認證伺服器添加成功",
+        "success": "認證伺服器新增成功",
         "error": {
-          "title": "認證伺服器添加失敗",
+          "title": "認證伺服器新增失敗",
           "description": {
             "duplicate": "認證伺服器已存在",
             "invalid": "無效的認證伺服器地址"
@@ -746,11 +1121,22 @@
           }
         }
       }
+    },
+    "resource": {
+      "retriveGameVersionList": {
+        "error": {
+          "title": "獲取遊戲版本列表失敗",
+          "description": {
+            "parseError": "伺服器返回資料格式錯誤",
+            "noDownloadApi": "無可用的下載策略，請檢查網路連線"
+          }
+        }
+      }
     }
   },
   "SettingsLayout": {
     "settingsDomainList": {
-      "global-game": "全域遊戲設定",
+      "global-game": "全域性遊戲設定",
       "java": "Java",
       "general": "通用",
       "appearance": "外觀",
@@ -770,17 +1156,23 @@
       "wave": "揮手"
     },
     "button": {
-      "enableRotation": "啓用旋轉",
-      "disableRotation": "禁用旋轉",
+      "enableRotation": "啟用旋轉",
+      "disableRotation": "停用旋轉",
       "play": "播放",
       "pause": "暫停"
     }
   },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "聚合搜尋"
+    },
+    "tip": "集中一處搜尋本地內容與線上遊戲資源"
+  },
   "StarUsModal": {
     "header": {
-      "title": "在 GitHub 爲我們點亮星標"
+      "title": "在 GitHub 為我們點亮星標"
     },
-    "body": "如果您喜愛 SJMCL，並希望支持我們，可以在 GitHub 爲我們點一顆星嗎？這個小小的動作對我們來說意義重大，能激勵我們爲您持續提供特性體驗。",
+    "body": "如果您喜愛 SJMCL，並希望支援我們，可以在 GitHub 為我們點一顆星嗎？這個小小的動作對我們來說意義重大，能激勵我們為您持續提供特性體驗。",
     "button": {
       "later": "稍後",
       "starUs": "點亮星標"
@@ -792,8 +1184,8 @@
       "settings": {
         "internetSync": {
           "title": "聯網同步",
-          "import": "導入",
-          "export": "導出"
+          "import": "匯入",
+          "export": "匯出"
         },
         "restoreAll": {
           "title": "還原所有設定",
@@ -805,22 +1197,22 @@
   },
   "SyncConfigExportModal": {
     "header": {
-      "title": "同步設置 - 導出"
+      "title": "同步設定 - 匯出"
     },
     "label": {
       "token": "令牌"
     },
-    "helper": "將上述令牌輸入至待同步的設備以完成同步",
-    "countdown": "{{seconds}} 秒後刷新"
+    "helper": "將上述令牌輸入至待同步的裝置以完成同步",
+    "countdown": "{{seconds}} 秒後重新整理"
   },
   "SyncConfigImportModal": {
     "header": {
-      "title": "同步設置 - 導入"
+      "title": "同步設定 - 匯入"
     },
     "label": {
       "token": "令牌"
     },
-    "helper": "請輸入需同步設備生成的令牌"
+    "helper": "請輸入需同步裝置生成的令牌"
   },
   "Utils": {
     "datetime": {
@@ -836,7 +1228,7 @@
     "env": {
       "checkFrontendCompatibility": {
         "warning": {
-          "title": "系統 WebView 版本較低，部分介面元素可能無法正常顯示"
+          "title": "系統 WebView 版本低，部分介面元素可能無法正常顯示"
         }
       }
     },
@@ -850,7 +1242,7 @@
     },
     "body": {
       "part1": "歡迎使用 SJMCL！在開始使用之前，請務必閱讀並同意我們的",
-      "terms": "用戶協議",
+      "terms": "使用者協議",
       "periods": "。"
     },
     "button": {

@@ -54,13 +54,19 @@ pub struct PlayerInfo {
   pub auth_server_url: String,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct AuthServer {
-  pub name: String,
-  pub auth_url: String,
-  pub homepage_url: String,
-  pub register_url: String,
+structstruck::strike! {
+  #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
+  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
+  pub struct AuthServer {
+    pub name: String,
+    pub auth_url: String,
+    pub homepage_url: String,
+    pub register_url: String,
+    pub features: struct {
+      pub non_email_login: bool,
+      pub openid_configuration_url: String,
+    }
+  }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
@@ -82,12 +88,21 @@ impl Default for AccountInfo {
           auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
           homepage_url: "https://skin.mc.sjtu.cn".to_string(),
           register_url: "https://skin.mc.sjtu.cn/auth/register".to_string(),
+          features: Features {
+            non_email_login: true,
+            openid_configuration_url:
+              "https://skin.mc.sjtu.cn/open/.well-known/openid-configuration".to_string(),
+          },
         },
         AuthServer {
           name: "MUA 用户中心".to_string(),
           auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
           homepage_url: "https://skin.mualliance.ltd".to_string(),
           register_url: "https://skin.mualliance.ltd/auth/register".to_string(),
+          features: Features {
+            non_email_login: true,
+            openid_configuration_url: "".to_string(),
+          },
         },
       ]
       .to_vec(),

@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { FaCircleCheck, FaRegCircle } from "react-icons/fa6";
-import { ChakraColorEnums, ColorSelectorType } from "@/models/misc";
+import { ChakraColorEnums, ColorSelectorType } from "@/enums/misc";
 
 interface ChakraColorSelectorProps extends BoxProps {
   current: string;

@@ -24,18 +24,18 @@ interface GamesLayoutProps {
 const GamesLayout: React.FC<GamesLayoutProps> = ({ children }) => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { getGameInstanceSummaryList } = useData();
-  const [gameInstanceSummaryList, setGameInstanceSummaryList] = useState<
+  const { getGameInstanceList } = useData();
+  const [gameInstanceList, setGameInstanceList] = useState<
     GameInstanceSummary[]
   >([]);
 
   useEffect(() => {
-    setGameInstanceSummaryList(getGameInstanceSummaryList() || []);
-  }, [getGameInstanceSummaryList]);
+    setGameInstanceList(getGameInstanceList() || []);
+  }, [getGameInstanceList]);
 
-  const gameInstanceList: { key: string; icon: IconType; label: string }[] = [
+  const gameInstanceItems: { key: string; icon: IconType; label: string }[] = [
     { key: "all", icon: LuBoxes, label: t("AllGamesPage.title") },
-    ...gameInstanceSummaryList.map((item) => ({
+    ...gameInstanceList.map((item) => ({
       key: `instance/${item.id}`,
       icon: LuBox,
       label: item.name,
@@ -55,7 +55,7 @@ const GamesLayout: React.FC<GamesLayoutProps> = ({ children }) => {
               onClick={(value) => {
                 router.push(value);
               }}
-              items={gameInstanceList.map((item) => ({
+              items={gameInstanceItems.map((item) => ({
                 label: (
                   <HStack spacing={2} overflow="hidden">
                     <Icon as={item.icon} />

@@ -672,3 +672,11 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
+
+Additional terms:
+
+By GNUv3 License term 7, we require the modified versions to follow the following rules: 
+1. Use a different software name than SJMCL or SJMC Launcher;
+2. Do not send statisitics to our statisitics server (src-tauri/src/utils/sys_info.rs), otherwise send only version numbers of the origin repository.
+3. Mark clearly in about page that you program is based on SJMCL and give out the url of the origin repository.
+
