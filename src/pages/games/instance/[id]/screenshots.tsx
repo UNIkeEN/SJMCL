@@ -44,9 +44,9 @@ const InstanceScreenshotsPage: React.FC = () => {
           />
         )}
       </div>
-      
     );
   };
+
   return (
     <Section>
       <WrapCardGroup
