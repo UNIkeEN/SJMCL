@@ -18,6 +18,7 @@ export interface Screenshot {
   fileName: string;
   filePath: string;
   imgSrc: string;
+  time: string;
 }
 
 export interface WorldInfo {

@@ -271,6 +271,17 @@
   "DownloadFloatButton": {
     "tooltip": "Downloading"
   },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "Download Resource"
+    },
+    "resourceTypeList": {
+      "world": "Worlds",
+      "mod": "Mods",
+      "resourcepack": "Resourcepacks",
+      "shaderpack": "Shaderpacks"
+    }
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "Source",
@@ -522,6 +533,17 @@
         "content": "Are you sure you want to delete the game directory {{dirName}} ? (only from the launcher, not the actual directory files)"
       }
     },
+    "gameJava": {
+      "title": "Game Java",
+      "settings": {
+        "autoSelect": {
+          "title": "Automatically Choose Game Java"
+        },
+        "execPath": {
+          "title": "Specify Java Version"
+        }
+      }
+    },
     "performance": {
       "title": "Performance",
       "settings": {
@@ -668,6 +690,11 @@
       "title": "Server Resource Packs"
     }
   },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "Details"
+    }
+  },
   "InstanceSettingsPage": {
     "name": "Instance Name",
     "description": "Instance Description",
@@ -812,6 +839,174 @@
       "login": "Login"
     }
   },
+  "ResourceDownloader": {
+    "label": {
+      "source": "Source",
+      "gameVer": "Game Ver.",
+      "tag": "Type",
+      "sortBy": "Sort by",
+      "name": "Name"
+    },
+    "button": {
+      "search": "Search"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Addons": "Addons",
+        "Adventure and RPG": "Adventure RPG",
+        "API and Library": "API Library",
+        "Armor, Tools, and Weapons": "Armor Tools Weapons",
+        "Bug Fixes": "Bug Fixes",
+        "Cosmetic": "Cosmetic",
+        "Education": "Education",
+        "Food": "Food",
+        "Magic": "Magic",
+        "Map and Information": "Map Information",
+        "MCreator": "MCreator",
+        "Miscellaneous": "Miscellaneous",
+        "Performance": "Performance",
+        "Redstone": "Redstone",
+        "Server Utility": "Server",
+        "Storage": "Storage",
+        "Technology": "Technology",
+        "Twitch Integration": "Twitch",
+        "Utility & QoL": "Utility QoL",
+        "World Gen": "World Gen"
+      },
+      "Modrinth": {
+        "All": "All",
+        "Adventure": "Adventure",
+        "Cursed": "Cursed",
+        "Decoration": "Decoration",
+        "Economy": "Economy",
+        "Equipment": "Equipment",
+        "Food": "Food",
+        "Game Mechanics": "Game Mechanics",
+        "Library": "Library",
+        "Magic": "Magic",
+        "Management": "Management",
+        "Minigame": "Minigame",
+        "Mobs": "Mobs",
+        "Optimization": "Optimization",
+        "Social": "Social",
+        "Storage": "Storage",
+        "Technology": "Technology",
+        "Transportation": "Transportation",
+        "Utility": "Utility",
+        "World Generation": "World Gen"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Adventure": "Adventure",
+        "Creation": "Creation",
+        "Game Map": "Game Map",
+        "Modded World": "Modded World",
+        "Parkour": "Parkour",
+        "Puzzle": "Puzzle",
+        "Survival": "Survival"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x and Higher",
+        "Animated": "Animated",
+        "Data Packs": "Data Packs",
+        "Font Packs": "Font Packs",
+        "Medieval": "Medieval",
+        "Miscellaneous": "Miscellaneous",
+        "Mod Support": "Mod Support",
+        "Modern": "Modern",
+        "Photo Realistic": "Photo Realistic",
+        "Steampunk": "Steampunk",
+        "Traditional": "Traditional"
+      },
+      "Modrinth": {
+        "All": "All",
+        "8x or lower": "8x or Lower",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x or higher": "512x or Higher",
+        "Audio": "Audio",
+        "Blocks": "Blocks",
+        "Core Shaders": "Core Shaders",
+        "Entities": "Entities",
+        "Environment": "Environment",
+        "Equipment": "Equipment",
+        "Fonts": "Fonts",
+        "GUI": "GUI",
+        "Items": "Items",
+        "Locale": "Locale",
+        "Models": "Models",
+        "Combat": "Combat",
+        "Cursed": "Cursed",
+        "Decoration": "Decoration",
+        "Modded": "Modded",
+        "Realistic": "Realistic",
+        "Simplistic": "Simplistic",
+        "Themed": "Themed",
+        "Tweaks": "Tweaks",
+        "Utility": "Utility",
+        "Vanilla-like": "Vanilla-like"
+      }
+    },
+    "shaderpackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Fantasy": "Fantasy",
+        "Realistic": "Realistic",
+        "Vanilla": "Vanilla"
+      },
+      "Modrinth": {
+        "All": "All",
+        "Cartoon": "Cartoon",
+        "Cursed": "Cursed",
+        "Fantasy": "Fantasy",
+        "Realistic": "Realistic",
+        "Semi-Realistic": "Semi-Realistic",
+        "Vanilla-like": "Vanilla-like",
+        "Atmosphere": "Atmosphere",
+        "Bloom": "Bloom",
+        "Colored Lighting": "Colored Lighting",
+        "Foliage": "Foliage",
+        "Path Tracing": "Path Tracing",
+        "PBR": "PBR",
+        "Reflections": "Reflections",
+        "Shadows": "Shadows"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Relevancy": "Relevancy",
+        "Popularity": "Popularity",
+        "Lastest update": "Lastest update",
+        "Creation date": "Creation date",
+        "Total downloads": "Total downloads",
+        "A-Z": "A-Z"
+      },
+      "Modrinth": {
+        "Relevance": "Relevance",
+        "Downloads": "Downloads",
+        "Followers": "Followers",
+        "Date published": "Date published",
+        "Date updated": "Date updated"
+      }
+    },
+    "versionList": {
+      "All": "All"
+    }
+  },
   "RestoreConfigConfirmDialog": {
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
@@ -937,11 +1132,6 @@
           }
         }
       }
-    }
-  },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "more": "More"
     }
   },
   "SettingsLayout": {

@@ -3,15 +3,13 @@ import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
 import { GameInstanceSummary } from "@/models/game-instance";
-import { mockGameInstanceSummaryList } from "@/models/mock/game-instance";
+import { mockGameInstanceList } from "@/models/mock/game-instance";
 import { AccountService } from "@/services/account";
 
 interface DataContextType {
   getPlayerList: (sync?: boolean) => Player[] | undefined;
   getSelectedPlayer: (sync?: boolean) => Player | undefined;
-  getGameInstanceSummaryList: (
-    sync?: boolean
-  ) => GameInstanceSummary[] | undefined;
+  getGameInstanceList: (sync?: boolean) => GameInstanceSummary[] | undefined;
   getSelectedGameInstance: (sync?: boolean) => GameInstanceSummary | undefined;
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
 }
@@ -19,7 +17,7 @@ interface DataContextType {
 interface DataDispatchContextType {
   setPlayerList: React.Dispatch<Player[]>;
   setSelectedPlayer: React.Dispatch<Player | undefined>;
-  setGameInstanceSummaryList: React.Dispatch<GameInstanceSummary[]>;
+  setGameInstanceList: React.Dispatch<GameInstanceSummary[]>;
   setSelectedGameInstance: React.Dispatch<GameInstanceSummary | undefined>;
   setAuthServerList: React.Dispatch<AuthServer[]>;
 }
@@ -33,14 +31,15 @@ const DataDispatchContext = createContext<DataDispatchContextType | undefined>(
 export const DataContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const toast = useToast();
+
   const [playerList, setPlayerList] = useState<Player[]>();
   const [selectedPlayer, setSelectedPlayer] = useState<Player>();
-  const [gameInstanceSummaryList, setGameInstanceSummaryList] =
+  const [gameInstanceList, setGameInstanceList] =
     useState<GameInstanceSummary[]>();
   const [selectedGameInstance, setSelectedGameInstance] =
     useState<GameInstanceSummary>();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>();
-  const toast = useToast();
 
   const handleRetrivePlayerList = useCallback(() => {
     AccountService.retrivePlayerList().then((response) => {
@@ -79,19 +78,20 @@ export const DataContextProvider: React.FC<{
   }, [setAuthServerList, toast]);
 
   const getPlayerList = useGetState(playerList, handleRetrivePlayerList);
+
   const getSelectedPlayer = useGetState(
     selectedPlayer,
     handleRetriveSelectedPlayer
   );
-  const getGameInstanceSummaryList = useGetState(
-    gameInstanceSummaryList,
-    () => {
-      setGameInstanceSummaryList(mockGameInstanceSummaryList);
-    }
-  );
+
+  const getGameInstanceList = useGetState(gameInstanceList, () => {
+    setGameInstanceList(mockGameInstanceList);
+  });
+
   const getSelectedGameInstance = useGetState(selectedGameInstance, () =>
-    setSelectedGameInstance(mockGameInstanceSummaryList[0])
+    setSelectedGameInstance(mockGameInstanceList[0])
   );
+
   const getAuthServerList = useGetState(
     authServerList,
     handleRetriveAuthServerList
@@ -102,7 +102,7 @@ export const DataContextProvider: React.FC<{
       value={{
         getPlayerList,
         getSelectedPlayer,
-        getGameInstanceSummaryList,
+        getGameInstanceList,
         getSelectedGameInstance,
         getAuthServerList,
       }}
@@ -111,7 +111,7 @@ export const DataContextProvider: React.FC<{
         value={{
           setPlayerList,
           setSelectedPlayer,
-          setGameInstanceSummaryList,
+          setGameInstanceList,
           setSelectedGameInstance,
           setAuthServerList,
         }}

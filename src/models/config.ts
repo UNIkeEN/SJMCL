@@ -1,4 +1,8 @@
 export interface GameConfig {
+  gameJava: {
+    auto: boolean;
+    execPath: string;
+  };
   performance: {
     gameWindowResolution: {
       width: number;
@@ -94,6 +98,10 @@ export interface LauncherConfig {
 }
 
 export const defaultGameConfig: GameConfig = {
+  gameJava: {
+    auto: true,
+    execPath: "",
+  },
   performance: {
     gameWindowResolution: {
       width: 1280,

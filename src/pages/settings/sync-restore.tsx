@@ -1,4 +1,5 @@
 import { Button, HStack, useDisclosure } from "@chakra-ui/react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   OptionItemGroup,
@@ -11,10 +12,12 @@ import {
 } from "@/components/modals/sync-config-modals";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
+import { ConfigService } from "@/services/config";
 
 const SyncAndRestoreSettingsPage = () => {
   const { t } = useTranslation();
-  const { restoreAll } = useLauncherConfig();
+  const { setConfig } = useLauncherConfig();
+  const toast = useToast();
 
   const {
     isOpen: isRestoreConfirmDialogOpen,
@@ -33,6 +36,25 @@ const SyncAndRestoreSettingsPage = () => {
     onOpen: onSyncConfigImportModalOpen,
     onClose: onSyncConfigImportModalClose,
   } = useDisclosure();
+
+  const handleRestoreLauncherConfig = useCallback(async () => {
+    ConfigService.restoreLauncherConfig().then((response) => {
+      if (response.status === "success") {
+        setConfig(response.data);
+        toast({
+          title: response.message,
+          status: "success",
+        });
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    });
+    onRestoreConfirmDialogClose();
+  }, [setConfig, toast, onRestoreConfirmDialogClose]);
 
   const syncAndRestoreSettingGroups: OptionItemGroupProps[] = [
     {
@@ -110,10 +132,7 @@ const SyncAndRestoreSettingsPage = () => {
         body={t("RestoreConfigConfirmDialog.body")}
         btnOK={t("General.confirm")}
         btnCancel={t("General.cancel")}
-        onOKCallback={() => {
-          restoreAll();
-          onRestoreConfirmDialogClose();
-        }}
+        onOKCallback={handleRestoreLauncherConfig}
         isAlert
       />
     </>

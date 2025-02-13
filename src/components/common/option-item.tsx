@@ -9,8 +9,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
 
 export interface OptionItemProps extends BoxProps {

@@ -1,6 +1,13 @@
-import { Box, Card, Divider } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
-import { AutoSizer, List, ListRowProps } from "react-virtualized";
+import { Box, Card, Center, Divider } from "@chakra-ui/react";
+import { debounce } from "lodash";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { BeatLoader } from "react-spinners";
+import {
+  AutoSizer,
+  List,
+  ListRowProps,
+  ScrollEventData,
+} from "react-virtualized";
 import { OptionItem, OptionItemProps } from "@/components/common/option-item";
 import { Section, SectionProps } from "@/components/common/section";
 
@@ -10,16 +17,25 @@ export type { OptionItemProps };
 export interface VirtualOptionItemGroupProps extends SectionProps {
   items: (OptionItemProps | React.ReactNode)[];
   withDivider?: boolean;
+  useInfiniteScroll?: boolean;
+  hasMore?: boolean;
+  loadMore?: () => void;
 }
 
 export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
   items,
   withDivider = true,
+  useInfiniteScroll = false,
+  hasMore = false,
+  loadMore = () => {},
   ...props
 }) => {
   const offscreenItemRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<List>(null);
   const [itemHeight, setItemHeight] = useState(0);
   const [isHeightCalculated, setIsHeightCalculated] = useState(false);
+  const [canLoadMore, setCanLoadMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     if (offscreenItemRef.current) {
@@ -27,6 +43,32 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
       setIsHeightCalculated(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (hasMore && isHeightCalculated) {
+      setCanLoadMore(true);
+    }
+  }, [hasMore, isHeightCalculated]);
+
+  useEffect(() => {
+    setLoadingMore(false);
+  }, [items]);
+
+  const debouncedLoadMore = debounce(() => {
+    if (canLoadMore && hasMore && !loadingMore) {
+      setLoadingMore(true);
+      loadMore();
+    }
+  }, 250);
+
+  const handleScroll = useCallback(
+    ({ clientHeight, scrollHeight, scrollTop }: ScrollEventData) => {
+      if (scrollTop + clientHeight >= scrollHeight - 300) {
+        debouncedLoadMore();
+      }
+    },
+    [debouncedLoadMore]
+  );
 
   function isOptionItemProps(item: any): item is OptionItemProps {
     return (
@@ -83,14 +125,21 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
             <AutoSizer>
               {({ height, width }) => (
                 <List
+                  ref={listRef}
                   height={height}
                   width={width}
                   rowCount={items.length}
                   rowHeight={itemHeight}
                   rowRenderer={rowRenderer}
+                  onScroll={handleScroll}
                 />
               )}
             </AutoSizer>
+          )}
+          {loadingMore && (
+            <Center key="loading" mt="auto">
+              <BeatLoader size={12} color="gray" />
+            </Center>
           )}
         </Card>
       )}

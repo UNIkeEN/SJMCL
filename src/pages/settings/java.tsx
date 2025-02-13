@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuArrowDownToLine,
@@ -20,36 +20,18 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { useToast } from "@/contexts/toast";
 import { JavaInfo } from "@/models/system-info";
-import { ConfigService } from "@/services/config";
 
 const JavaSettingsPage = () => {
   const { t } = useTranslation();
-  const toast = useToast();
-  const { config } = useLauncherConfig();
+  const { config, getJavaInfos } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
 
-  const handleRetriveJavaList = useCallback(() => {
-    ConfigService.retriveJavaList().then((response) => {
-      if (response.status === "success") {
-        setJavaInfos(response.data);
-      } else {
-        toast({
-          title: response.message,
-          description: response.details,
-          status: "error",
-        });
-        setJavaInfos([]);
-      }
-    });
-  }, [toast]);
-
   useEffect(() => {
-    handleRetriveJavaList();
-  }, [handleRetriveJavaList]);
+    setJavaInfos(getJavaInfos() || []);
+  }, [getJavaInfos]);
 
   return (
     <Section
@@ -72,7 +54,7 @@ const JavaSettingsPage = () => {
               size="xs"
               h={21}
               variant="ghost"
-              onClick={handleRetriveJavaList}
+              onClick={() => getJavaInfos(true)}
             />
           </Tooltip>
           <Tooltip label={t("JavaSettingsPage.javaList.add")}>

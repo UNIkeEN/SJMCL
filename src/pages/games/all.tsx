@@ -17,10 +17,10 @@ const AllGamesPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.allGamesPage.viewType;
 
-  const { getSelectedGameInstance, getGameInstanceSummaryList } = useData();
+  const { getSelectedGameInstance, getGameInstanceList } = useData();
   const [selectedGameInstance, setSelectedGameInstance] =
     useState<GameInstanceSummary>();
-  const [gameInstanceSummaryList, setGameInstanceSummaryList] = useState<
+  const [gameInstanceList, setGameInstanceList] = useState<
     GameInstanceSummary[]
   >([]);
 
@@ -29,8 +29,8 @@ const AllGamesPage = () => {
   }, [getSelectedGameInstance]);
 
   useEffect(() => {
-    setGameInstanceSummaryList(getGameInstanceSummaryList() || []);
-  }, [getGameInstanceSummaryList]);
+    setGameInstanceList(getGameInstanceList() || []);
+  }, [getGameInstanceList]);
 
   const viewTypeList = [
     {
@@ -90,10 +90,7 @@ const AllGamesPage = () => {
       }
     >
       <Box overflow="auto" flexGrow={1} rounded="md">
-        <GamesView
-          games={gameInstanceSummaryList}
-          viewType={selectedViewType}
-        />
+        <GamesView games={gameInstanceList} viewType={selectedViewType} />
       </Box>
     </Section>
   );

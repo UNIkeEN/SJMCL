@@ -33,6 +33,10 @@ structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct GameConfig {
+    pub game_java: struct {
+      pub auto: bool,
+      pub exec_path: String,
+    },
     pub performance: struct {
       pub game_window_resolution: struct {
         pub width: u32,
@@ -139,6 +143,10 @@ structstruck::strike! {
 impl Default for GameConfig {
   fn default() -> Self {
     Self {
+      game_java: GameJava {
+        auto: true,
+        exec_path: "".to_string(),
+      },
       performance: Performance {
         game_window_resolution: GameWindowResolution {
           width: 1280,

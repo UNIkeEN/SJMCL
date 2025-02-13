@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Button, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import DownloadResourceModal from "@/components/modals/download-resource-modal";
 import SkinPreview from "@/components/skin-preview";
 import { isProd } from "@/utils/env";
 import { createWindow } from "@/utils/window";
@@ -17,6 +18,8 @@ const DevTestPage = () => {
       router.push("/launch");
     }
   }, [router]);
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   return (
     <VStack align="start" spacing={4}>
@@ -38,6 +41,15 @@ const DevTestPage = () => {
       >
         Create New Window
       </Button>
+
+      <Button onClick={() => setIsModalOpen(true)}>
+        Download Resource Modal
+      </Button>
+      <DownloadResourceModal
+        initialResourceType="shaderpack"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       {/* Add test components here */}
       <SkinPreview />

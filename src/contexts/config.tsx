@@ -6,17 +6,18 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
 import { useToast } from "@/contexts/toast";
+import { useGetState } from "@/hooks/get-state";
 import { LauncherConfig, defaultConfig } from "@/models/config";
+import { JavaInfo } from "@/models/system-info";
 import { ConfigService } from "@/services/config";
 
 interface LauncherConfigContextType {
   config: LauncherConfig;
   setConfig: React.Dispatch<React.SetStateAction<LauncherConfig>>;
   update: (path: string, value: any) => void;
-  fetchAll: () => void;
-  restoreAll: () => void;
+  // other shared data associated with the launcher config.
+  getJavaInfos: (sync?: boolean) => JavaInfo[] | undefined;
 }
 
 const LauncherConfigContext = createContext<
@@ -26,8 +27,10 @@ const LauncherConfigContext = createContext<
 export const LauncherConfigContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [config, setConfig] = useState<LauncherConfig>(defaultConfig);
   const toast = useToast();
+
+  const [config, setConfig] = useState<LauncherConfig>(defaultConfig);
+  const [javaInfos, setJavaInfos] = useState<JavaInfo[]>();
 
   const handleRetriveLauncherConfig = useCallback(() => {
     ConfigService.retriveLauncherConfig().then((response) => {
@@ -82,23 +85,22 @@ export const LauncherConfigContextProvider: React.FC<{
     });
   };
 
-  const handleRestoreLauncherConfig = () => {
-    ConfigService.restoreLauncherConfig().then((response) => {
+  const handleRetriveJavaList = useCallback(() => {
+    ConfigService.retriveJavaList().then((response) => {
       if (response.status === "success") {
-        setConfig(response.data);
-        toast({
-          title: response.message,
-          status: "success",
-        });
+        setJavaInfos(response.data);
       } else {
         toast({
           title: response.message,
           description: response.details,
           status: "error",
         });
+        setJavaInfos([]);
       }
     });
-  };
+  }, [toast]);
+
+  const getJavaInfos = useGetState(javaInfos, handleRetriveJavaList);
 
   return (
     <LauncherConfigContext.Provider
@@ -106,8 +108,7 @@ export const LauncherConfigContextProvider: React.FC<{
         config,
         setConfig,
         update: handleUpdateLauncherConfig,
-        fetchAll: handleRetriveLauncherConfig,
-        restoreAll: handleRestoreLauncherConfig,
+        getJavaInfos,
       }}
     >
       {children}

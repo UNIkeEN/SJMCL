@@ -271,6 +271,17 @@
   "DownloadFloatButton": {
     "tooltip": "正在下载"
   },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "下载资源"
+    },
+    "resourceTypeList": {
+      "world": "世界",
+      "mod": "模组",
+      "resourcepack": "资源包",
+      "shaderpack": "光影"
+    }
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "源",
@@ -522,6 +533,17 @@
         "content": "确定要删除游戏目录 {{dirName}} 吗？（仅从启动器删除，不会删除实际目录文件）"
       }
     },
+    "gameJava": {
+      "title": "游戏 Java",
+      "settings": {
+        "autoSelect": {
+          "title": "自动选择合适 Java"
+        },
+        "execPath": {
+          "title": "指定 Java 版本"
+        }
+      }
+    },
     "performance": {
       "title": "性能",
       "settings": {
@@ -668,6 +690,11 @@
       "title": "服务器资源包"
     }
   },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "详情"
+    }
+  },
   "InstanceSettingsPage": {
     "name": "实例名称",
     "description": "实例描述",
@@ -797,10 +824,6 @@
       "delete": "删除此角色"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "还原启动器设置",
-    "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
-  },
   "ReLogin3rdPartyPlayerModal": {
     "modal": {
       "title": "重新登录"
@@ -815,6 +838,178 @@
     "button": {
       "login": "登录"
     }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "下载源",
+      "gameVer": "游戏版本",
+      "tag": "类型",
+      "sortBy": "排序",
+      "name": "名称"
+    },
+    "button": {
+      "search": "搜索"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Addons": "插件",
+        "Adventure and RPG": "冒险 RPG",
+        "API and Library": "支持库",
+        "Armor, Tools, and Weapons": "装备 武器",
+        "Bug Fixes": "错误修复",
+        "Cosmetic": "装饰",
+        "Education": "教育",
+        "Food": "食物",
+        "Magic": "魔法",
+        "Map and Information": "地图 信息",
+        "MCreator": "MCreator",
+        "Miscellaneous": "杂项",
+        "Performance": "性能",
+        "Redstone": "红石",
+        "Server Utility": "服务器",
+        "Storage": "存储",
+        "Technology": "科技",
+        "Twitch Integration": "Twitch",
+        "Utility & QoL": "实用 QoL",
+        "World Gen": "世界生成"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Adventure": "冒险",
+        "Cursed": "诅咒",
+        "Decoration": "装饰",
+        "Economy": "经济",
+        "Equipment": "装备",
+        "Food": "食物",
+        "Game Mechanics": "游戏机制",
+        "Library": "支持库",
+        "Magic": "魔法",
+        "Management": "管理",
+        "Minigame": "小游戏",
+        "Mobs": "生物",
+        "Optimization": "优化",
+        "Social": "社交",
+        "Storage": "存储",
+        "Technology": "科技",
+        "Transportation": "交通运输",
+        "Utility": "实用",
+        "World Generation": "世界生成"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Adventure": "冒险模式",
+        "Creation": "创造模式",
+        "Game Map": "游戏挑战",
+        "Modded World": "模组",
+        "Parkour": "跑酷",
+        "Puzzle": "解谜地图",
+        "Survival": "生存模式"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x 及以上",
+        "Animated": "动画",
+        "Data Packs": "数据包",
+        "Font Packs": "字体包",
+        "Medieval": "中世纪",
+        "Miscellaneous": "杂项",
+        "Mod Support": "模组支持",
+        "Modern": "现代",
+        "Photo Realistic": "影视级",
+        "Steampunk": "蒸汽朋克",
+        "Traditional": "传统"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "8x or lower": "8x 或更低",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x or higher": "512x 或更高",
+        "Audio": "音频",
+        "Blocks": "方块",
+        "Core Shaders": "核心着色器",
+        "Entities": "实体",
+        "Environment": "环境",
+        "Equipment": "装备",
+        "Fonts": "字体",
+        "GUI": "用户界面",
+        "Items": "物品",
+        "Locale": "本地化",
+        "Models": "模型",
+        "Combat": "战斗",
+        "Cursed": "诅咒",
+        "Decoration": "装饰",
+        "Modded": "模组",
+        "Realistic": "写实",
+        "Simplistic": "简约",
+        "Themed": "主题",
+        "Tweaks": "优化",
+        "Utility": "实用",
+        "Vanilla-like": "原版风格"
+      }
+    },
+    "shaderpackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Fantasy": "奇幻",
+        "Realistic": "写实",
+        "Vanilla": "原版"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Cartoon": "卡通",
+        "Cursed": "诅咒",
+        "Fantasy": "奇幻",
+        "Realistic": "写实",
+        "Semi-Realistic": "半写实",
+        "Vanilla-like": "原版风格",
+        "Atmosphere": "大气",
+        "Bloom": "泛光",
+        "Colored Lighting": "彩色光照",
+        "Foliage": "植被",
+        "Path Tracing": "路径追踪",
+        "PBR": "PBR",
+        "Reflections": "反射",
+        "Shadows": "阴影"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Relevancy": "相关度",
+        "Popularity": "热度",
+        "Lastest update": "最近更新",
+        "Creation date": "创建日期",
+        "Total downloads": "下载量",
+        "A-Z": "名称"
+      },
+      "Modrinth": {
+        "Relevance": "相关度",
+        "Downloads": "下载量",
+        "Followers": "关注量",
+        "Date published": "发布日期",
+        "Date updated": "更新日期"
+      }
+    },
+    "versionList": {
+      "All": "全部"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "还原启动器设置",
+    "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
   "Services": {
     "config": {
@@ -937,11 +1132,6 @@
           }
         }
       }
-    }
-  },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "more": "更多"
     }
   },
   "SettingsLayout": {
