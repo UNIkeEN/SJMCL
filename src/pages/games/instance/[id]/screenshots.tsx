@@ -11,6 +11,7 @@ import { mockScreenshots } from "@/models/mock/game-instance";
 
 const InstanceScreenshotsPage: React.FC = () => {
   const { t } = useTranslation();
+
   const ScreenshotsCard = ({ screenshot }: { screenshot: Screenshot }) => {
     const [isHovered, setIsHovered] = useState(false);
     return (
@@ -29,7 +30,10 @@ const InstanceScreenshotsPage: React.FC = () => {
           borderRadius="md"
         />
         {isHovered && (
-          <Tooltip label={t("ScreenshotsPage.button.more")}>
+          <Tooltip
+            label={t("InstanceScreenshotsPage.button.more")}
+            placement="auto"
+          >
             <IconButton
               icon={<LuEllipsis />}
               colorScheme="blackAlpha"
