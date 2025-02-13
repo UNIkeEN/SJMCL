@@ -271,6 +271,17 @@
   "DownloadFloatButton": {
     "tooltip": "正在下載"
   },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "下載資源"
+    },
+    "resourceTypeList": {
+      "world": "世界",
+      "mod": "模組",
+      "resourcepack": "資源包",
+      "shaderpack": "光影"
+    }
+  },
   "DownloadSettingPage": {
     "source": {
       "title": "源",
@@ -522,6 +533,17 @@
         "content": "確定要刪除遊戲目錄 {{dirName}} 嗎？（僅從啟動器刪除，不會刪除實際目錄檔案）"
       }
     },
+    "gameJava": {
+      "title": "遊戲 Java",
+      "settings": {
+        "autoSelect": {
+          "title": "自動選擇合適 Java"
+        },
+        "execPath": {
+          "title": "指定 Java 版本"
+        }
+      }
+    },
     "performance": {
       "title": "效能",
       "settings": {
@@ -668,6 +690,11 @@
       "title": "伺服器資源包"
     }
   },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "詳情"
+    }
+  },
   "InstanceSettingsPage": {
     "name": "例項名稱",
     "description": "例項描述",
@@ -797,10 +824,6 @@
       "delete": "刪除此角色"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "還原啟動器設定",
-    "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？"
-  },
   "ReLogin3rdPartyPlayerModal": {
     "modal": {
       "title": "重新登入"
@@ -815,6 +838,178 @@
     "button": {
       "login": "登入"
     }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "下載源",
+      "gameVer": "遊戲版本",
+      "tag": "型別",
+      "sortBy": "排序",
+      "name": "名稱"
+    },
+    "button": {
+      "search": "搜尋"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Addons": "外掛",
+        "Adventure and RPG": "冒險 RPG",
+        "API and Library": "支援庫",
+        "Armor, Tools, and Weapons": "裝備 武器",
+        "Bug Fixes": "錯誤修復",
+        "Cosmetic": "裝飾",
+        "Education": "教育",
+        "Food": "食物",
+        "Magic": "魔法",
+        "Map and Information": "地圖 資訊",
+        "MCreator": "MCreator",
+        "Miscellaneous": "雜項",
+        "Performance": "效能",
+        "Redstone": "紅石",
+        "Server Utility": "伺服器",
+        "Storage": "儲存",
+        "Technology": "科技",
+        "Twitch Integration": "Twitch",
+        "Utility & QoL": "實用 QoL",
+        "World Gen": "世界生成"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Adventure": "冒險",
+        "Cursed": "詛咒",
+        "Decoration": "裝飾",
+        "Economy": "經濟",
+        "Equipment": "裝備",
+        "Food": "食物",
+        "Game Mechanics": "遊戲機制",
+        "Library": "支援庫",
+        "Magic": "魔法",
+        "Management": "管理",
+        "Minigame": "小遊戲",
+        "Mobs": "生物",
+        "Optimization": "最佳化",
+        "Social": "社交",
+        "Storage": "儲存",
+        "Technology": "科技",
+        "Transportation": "交通運輸",
+        "Utility": "實用",
+        "World Generation": "世界生成"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Adventure": "冒險模式",
+        "Creation": "創造模式",
+        "Game Map": "遊戲挑戰",
+        "Modded World": "模組",
+        "Parkour": "跑酷",
+        "Puzzle": "解謎地圖",
+        "Survival": "生存模式"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x 及以上",
+        "Animated": "動畫",
+        "Data Packs": "資料包",
+        "Font Packs": "字型包",
+        "Medieval": "中世紀",
+        "Miscellaneous": "雜項",
+        "Mod Support": "模組支援",
+        "Modern": "現代",
+        "Photo Realistic": "影視級",
+        "Steampunk": "蒸汽朋克",
+        "Traditional": "傳統"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "8x or lower": "8x 或更低",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x or higher": "512x 或更高",
+        "Audio": "音訊",
+        "Blocks": "方塊",
+        "Core Shaders": "核心著色器",
+        "Entities": "實體",
+        "Environment": "環境",
+        "Equipment": "裝備",
+        "Fonts": "字型",
+        "GUI": "使用者介面",
+        "Items": "物品",
+        "Locale": "本地化",
+        "Models": "模型",
+        "Combat": "戰鬥",
+        "Cursed": "詛咒",
+        "Decoration": "裝飾",
+        "Modded": "模組",
+        "Realistic": "寫實",
+        "Simplistic": "簡約",
+        "Themed": "主題",
+        "Tweaks": "最佳化",
+        "Utility": "實用",
+        "Vanilla-like": "原版風格"
+      }
+    },
+    "shaderpackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Fantasy": "奇幻",
+        "Realistic": "寫實",
+        "Vanilla": "原版"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Cartoon": "卡通",
+        "Cursed": "詛咒",
+        "Fantasy": "奇幻",
+        "Realistic": "寫實",
+        "Semi-Realistic": "半寫實",
+        "Vanilla-like": "原版風格",
+        "Atmosphere": "大氣",
+        "Bloom": "泛光",
+        "Colored Lighting": "彩色光照",
+        "Foliage": "植被",
+        "Path Tracing": "路徑追蹤",
+        "PBR": "PBR",
+        "Reflections": "反射",
+        "Shadows": "陰影"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Relevancy": "相關度",
+        "Popularity": "熱度",
+        "Lastest update": "最近更新",
+        "Creation date": "建立日期",
+        "Total downloads": "下載量",
+        "A-Z": "名稱"
+      },
+      "Modrinth": {
+        "Relevance": "相關度",
+        "Downloads": "下載量",
+        "Followers": "關注量",
+        "Date published": "釋出日期",
+        "Date updated": "更新日期"
+      }
+    },
+    "versionList": {
+      "All": "全部"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "還原啟動器設定",
+    "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？"
   },
   "Services": {
     "config": {
@@ -937,11 +1132,6 @@
           }
         }
       }
-    }
-  },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "more": "更多"
     }
   },
   "SettingsLayout": {
