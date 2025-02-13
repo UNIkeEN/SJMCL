@@ -1,10 +1,20 @@
 export interface GameConfig {
-  performance: {
+  gameServer: {
+    autoJoinGameServer: {
+      enabled: boolean;
+      gameServer: string;
+    };
+  };
+  gameWindow: {
     gameWindowResolution: {
       width: number;
       height: number;
       fullscreen: boolean;
     };
+    gameWindowTitle: string;
+    gameWindowCustomInfo: string;
+  };
+  performance: {
     autoMemAllocation: boolean;
     minMemAllocation: number;
     processPriority: string;
@@ -67,12 +77,22 @@ export interface LauncherConfig {
 }
 
 export const defaultGameConfig: GameConfig = {
-  performance: {
+  gameServer: {
+    autoJoinGameServer: {
+      enabled: false,
+      gameServer: "",
+    },
+  },
+  gameWindow: {
     gameWindowResolution: {
-      width: 1280,
-      height: 720,
+      width: 1920,
+      height: 1080,
       fullscreen: false,
     },
+    gameWindowTitle: "",
+    gameWindowCustomInfo: "",
+  },
+  performance: {
     autoMemAllocation: true,
     minMemAllocation: 1024,
     processPriority: "middle",

@@ -1,6 +1,7 @@
 import {
   Button,
   HStack,
+  Input,
   Menu,
   MenuButton,
   MenuItemOption,
@@ -76,11 +77,11 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
 
   const settingGroups: OptionItemGroupProps[] = [
     {
-      title: t("GlobalGameSettingsPage.performance.title"),
+      title: t("GlobalGameSettingsPage.gameWindow.title"),
       items: [
         {
           title: t(
-            "GlobalGameSettingsPage.performance.settings.gameWindowResolution.title"
+            "GlobalGameSettingsPage.gameWindow.settings.gameWindowResolution.title"
           ),
           children: (
             <HStack>
@@ -88,11 +89,11 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
                 min={400}
                 size="xs"
                 maxW={16}
-                value={globalGameConfigs.performance.gameWindowResolution.width}
+                value={globalGameConfigs.gameWindow.gameWindowResolution.width}
                 onChange={(value) => {
                   if (instanceId) return; // TBD
                   update(
-                    "globalGameConfig.performance.gameWindowResolution.width",
+                    "globalGameConfig.gameWindow.gameWindowResolution.width",
                     Number(value)
                   );
                 }}
@@ -110,13 +111,11 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
                 min={300}
                 size="xs"
                 maxW={16}
-                value={
-                  globalGameConfigs.performance.gameWindowResolution.height
-                }
+                value={globalGameConfigs.gameWindow.gameWindowResolution.height}
                 onChange={(value) => {
                   if (instanceId) return; // TBD
                   update(
-                    "globalGameConfig.performance.gameWindowResolution.height",
+                    "globalGameConfig.gameWindow.gameWindowResolution.height",
                     Number(value)
                   );
                 }}
@@ -129,24 +128,74 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
               <Switch
                 colorScheme={primaryColor}
                 isChecked={
-                  globalGameConfigs.performance.gameWindowResolution.fullscreen
+                  globalGameConfigs.gameWindow.gameWindowResolution.fullscreen
                 }
                 onChange={(event) => {
                   if (instanceId) return; // TBD
                   update(
-                    "globalGameConfig.performance.gameWindowResolution.fullscreen",
+                    "globalGameConfig.gameWindow.gameWindowResolution.fullscreen",
                     event.target.checked
                   );
                 }}
               />
               <Text fontSize="xs">
                 {t(
-                  "GlobalGameSettingsPage.performance.settings.gameWindowResolution.switch"
+                  "GlobalGameSettingsPage.gameWindow.settings.gameWindowResolution.switch"
                 )}
               </Text>
             </HStack>
           ),
         },
+        {
+          title: t(
+            "GlobalGameSettingsPage.gameWindow.settings.gameWindowTitle.title"
+          ),
+          children: (
+            <Input
+              size="xs"
+              maxW={32}
+              value={globalGameConfigs.gameWindow.gameWindowTitle}
+              onChange={(event) => {
+                if (instanceId) return; // TBD
+                update(
+                  "globalGameConfig.gameWindow.gameWindowTitle",
+                  event.target.value
+                );
+              }}
+              focusBorderColor={`${primaryColor}.500`}
+            />
+          ),
+        },
+        {
+          title: t(
+            "GlobalGameSettingsPage.gameWindow.settings.gameWindowCustomInfo.title"
+          ),
+          description: t(
+            "GlobalGameSettingsPage.gameWindow.settings.gameWindowCustomInfo.description"
+          ),
+          children: (
+            <Input
+              size="xs"
+              maxW={32}
+              value={globalGameConfigs.gameWindow.gameWindowCustomInfo}
+              onChange={(event) => {
+                if (instanceId) return; // TBD
+                update(
+                  "globalGameConfig.gameWindow.gameWindowCustomInfo",
+                  event.target.value
+                );
+              }}
+              alignSelf="center"
+              margin="auto 0"
+              focusBorderColor={`${primaryColor}.500`}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      title: t("GlobalGameSettingsPage.performance.title"),
+      items: [
         {
           title: t(
             "GlobalGameSettingsPage.performance.settings.autoMemAllocation.title"
@@ -268,7 +317,58 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
       ],
     },
     {
-      title: t("GlobalGameSettingsPage.versionIsolation.title"),
+      title: t("GlobalGameSettingsPage.gameServer.title"),
+      items: [
+        {
+          title: t(
+            "GlobalGameSettingsPage.gameServer.settings.autoJoinGameServer.title"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={
+                globalGameConfigs.gameServer.autoJoinGameServer.enabled
+              }
+              onChange={(event) => {
+                if (instanceId) return; // TBD
+                update(
+                  "globalGameConfig.gameServer.autoJoinGameServer.enabled",
+                  event.target.checked
+                );
+              }}
+            />
+          ),
+        },
+        ...(globalGameConfigs.gameServer.autoJoinGameServer.enabled
+          ? [
+              {
+                title: t(
+                  "GlobalGameSettingsPage.gameServer.settings.autoJoinGameServer.serverUrl"
+                ),
+                children: (
+                  <Input
+                    size="xs"
+                    w={64}
+                    value={
+                      globalGameConfigs.gameServer.autoJoinGameServer.gameServer
+                    }
+                    onChange={(event) => {
+                      if (instanceId) return; // TBD
+                      update(
+                        "globalGameConfig.gameServer.autoJoinGameServer.gameServer",
+                        event.target.value
+                      );
+                    }}
+                    focusBorderColor={`${primaryColor}.500`}
+                  />
+                ),
+              },
+            ]
+          : []),
+      ],
+    },
+    {
+      title: t("GlobalGameSettingsPage.moreOptions.title"),
       items: [
         {
           title: t(
@@ -288,59 +388,6 @@ const GlobalGameSettings: React.FC<GlobalGameSettingsProps> = ({
             />
           ),
         },
-        ...(globalGameConfigs.versionIsolation.enabled
-          ? [
-              {
-                title: t(
-                  "GlobalGameSettingsPage.versionIsolation.settings.isolationStrategy.title"
-                ),
-                children: (
-                  <Menu>
-                    <MenuButton
-                      as={Button}
-                      size="xs"
-                      w="auto"
-                      rightIcon={<LuChevronDown />}
-                      variant="outline"
-                      textAlign="left"
-                    >
-                      {t(
-                        `GlobalGameSettingsPage.versionIsolation.settings.isolationStrategy.${globalGameConfigs.versionIsolation.isolationStrategy}`
-                      )}
-                    </MenuButton>
-                    <MenuList>
-                      <MenuOptionGroup
-                        type="radio"
-                        value={
-                          globalGameConfigs.versionIsolation.isolationStrategy
-                        }
-                        onChange={(value) => {
-                          if (instanceId) return; // TBD
-                          update(
-                            "globalGameConfig.versionIsolation.isolationStrategy",
-                            value
-                          );
-                        }}
-                      >
-                        {isolationStrategy.map((type) => (
-                          <MenuItemOption value={type} fontSize="xs" key={type}>
-                            {t(
-                              `GlobalGameSettingsPage.versionIsolation.settings.isolationStrategy.${type}`
-                            )}
-                          </MenuItemOption>
-                        ))}
-                      </MenuOptionGroup>
-                    </MenuList>
-                  </Menu>
-                ),
-              },
-            ]
-          : []),
-      ],
-    },
-    {
-      title: t("GlobalGameSettingsPage.moreOptions.title"),
-      items: [
         {
           title: t(
             "GlobalGameSettingsPage.moreOptions.settings.launcherVisibility.title"
