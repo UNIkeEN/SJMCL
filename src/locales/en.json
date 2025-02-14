@@ -599,14 +599,6 @@
       "settings": {
         "enabled": {
           "title": "Enable Version Isolation"
-        },
-        "isolationStrategy": {
-          "title": "Isolation Strategy",
-          "off": "Off",
-          "full": "Full Isolation",
-          "modable": "Isolate Installable Mod Versions",
-          "informal": "Isolate Informal Versions",
-          "modable-and-informal": "Isolate Mod Versions and Informal Versions"
         }
       }
     },

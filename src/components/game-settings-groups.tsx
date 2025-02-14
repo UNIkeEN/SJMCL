@@ -54,13 +54,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     setJavaInfos(getJavaInfos() || []);
   }, [getJavaInfos]);
 
-  const isolationStrategy = [
-    "off",
-    "full",
-    "modable",
-    "informal",
-    "modable-and-informal",
-  ];
   const launcherVisibilityStrategy = [
     "start-close",
     "running-hidden",
@@ -404,9 +397,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={
-                globalGameConfigs.gameServer.autoJoinGameServer.enabled
-              }
+              isChecked={globalGameConfigs.gameServer.autoJoinGameServer}
               onChange={(event) => {
                 if (instanceId) return; // TBD
                 update(
@@ -417,7 +408,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             />
           ),
         },
-        ...(globalGameConfigs.gameServer.autoJoinGameServer.enabled
+        ...(globalGameConfigs.gameServer.autoJoinGameServer
           ? [
               {
                 title: t(

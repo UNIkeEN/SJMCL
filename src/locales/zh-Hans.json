@@ -599,14 +599,6 @@
       "settings": {
         "enabled": {
           "title": "启用版本隔离"
-        },
-        "isolationStrategy": {
-          "title": "隔离策略",
-          "off": "关闭",
-          "full": "全部隔离",
-          "modable": "隔离可安装 Mod 版本",
-          "informal": "隔离非正式版",
-          "modable-and-informal": "隔离可安装 Mod 版本与非正式版"
         }
       }
     },

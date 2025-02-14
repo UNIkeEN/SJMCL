@@ -52,14 +52,11 @@ structstruck::strike! {
       pub process_priority: String,
     },
     pub game_server: struct {
-      pub auto_join_game_server: struct {
-        pub enabled: bool,
-      },
+      pub auto_join_game_server: bool,
       pub server_url: String,
     },
     pub version_isolation: struct {
       pub enabled: bool,
-      pub isolation_strategy: String,
     },
     pub launcher_visibility: String,
     pub display_game_log: bool,
@@ -172,13 +169,10 @@ impl Default for GameConfig {
         process_priority: "middle".to_string(),
       },
       game_server: GameServer {
-        auto_join_game_server: AutoJoinGameServer { enabled: false },
+        auto_join_game_server: false,
         server_url: "".to_string(),
       },
-      version_isolation: VersionIsolation {
-        enabled: true,
-        isolation_strategy: "full".to_string(),
-      },
+      version_isolation: VersionIsolation { enabled: true },
       launcher_visibility: "start-close".to_string(),
       display_game_log: false,
       advanced_options: AdvancedOptions { enabled: false },

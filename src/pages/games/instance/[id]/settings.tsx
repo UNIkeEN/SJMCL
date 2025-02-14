@@ -101,6 +101,11 @@ const InstanceSettingsPage = () => {
               },
             ]
           : []),
+      ],
+    },
+    {
+      title: t("GlobalGameSettingsPage.versionIsolation.title"),
+      items: [
         {
           title: t(
             "GlobalGameSettingsPage.versionIsolation.settings.enabled.title"
