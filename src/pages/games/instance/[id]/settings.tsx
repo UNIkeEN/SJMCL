@@ -16,7 +16,10 @@ const InstanceSettingsPage = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
+  const { id } = router.query;
+  const instanceId = Array.isArray(id) ? id[0] : id;
   const primaryColor = config.appearance.theme.primaryColor;
+  const globalGameConfigs = config.globalGameConfig;
   const instanceCtx = useContext(InstanceContext);
 
   const [applySettings, setApplySettings] = useState<boolean>(false);
@@ -98,6 +101,24 @@ const InstanceSettingsPage = () => {
               },
             ]
           : []),
+        {
+          title: t(
+            "GlobalGameSettingsPage.versionIsolation.settings.enabled.title"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={globalGameConfigs.versionIsolation.enabled}
+              onChange={(event) => {
+                if (instanceId) return; // TBD
+                update(
+                  "globalGameConfig.versionIsolation.enabled",
+                  event.target.checked
+                );
+              }}
+            />
+          ),
+        },
       ],
     },
   ];
