@@ -55,9 +55,7 @@ structstruck::strike! {
       pub auto_join_game_server: bool,
       pub server_url: String,
     },
-    pub version_isolation: struct {
-      pub enabled: bool,
-    },
+    pub version_isolation: bool,
     pub launcher_visibility: String,
     pub display_game_log: bool,
     pub advanced_options: struct {
@@ -172,7 +170,7 @@ impl Default for GameConfig {
         auto_join_game_server: false,
         server_url: "".to_string(),
       },
-      version_isolation: VersionIsolation { enabled: true },
+      version_isolation: true,
       launcher_visibility: "start-close".to_string(),
       display_game_log: false,
       advanced_options: AdvancedOptions { enabled: false },

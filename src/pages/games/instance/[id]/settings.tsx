@@ -113,11 +113,11 @@ const InstanceSettingsPage = () => {
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={globalGameConfigs.versionIsolation.enabled}
+              isChecked={globalGameConfigs.versionIsolation}
               onChange={(event) => {
                 if (instanceId) return; // TBD
                 update(
-                  "globalGameConfig.versionIsolation.enabled",
+                  "globalGameConfig.versionIsolation",
                   event.target.checked
                 );
               }}

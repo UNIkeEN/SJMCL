@@ -401,7 +401,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               onChange={(event) => {
                 if (instanceId) return; // TBD
                 update(
-                  "globalGameConfig.gameServer.autoJoinGameServer.enabled",
+                  "globalGameConfig.gameServer.autoJoinGameServer",
                   event.target.checked
                 );
               }}

@@ -21,10 +21,7 @@ export interface GameConfig {
     minMemAllocation: number;
     processPriority: string;
   };
-  versionIsolation: {
-    enabled: boolean;
-    isolationStrategy: string;
-  };
+  versionIsolation: boolean;
   launcherVisibility: string;
   displayGameLog: boolean;
   advancedOptions: {
@@ -128,10 +125,7 @@ export const defaultGameConfig: GameConfig = {
     minMemAllocation: 1024,
     processPriority: "middle",
   },
-  versionIsolation: {
-    enabled: true,
-    isolationStrategy: "full",
-  },
+  versionIsolation: true,
   launcherVisibility: "start-close",
   displayGameLog: false,
   advancedOptions: {
