@@ -546,13 +546,36 @@
         }
       }
     },
+    "gameWindow": {
+      "title": "Game Window",
+      "settings": {
+        "resolution": {
+          "title": "Game Resolution",
+          "switch": "Fullscreen"
+        },
+        "customTitle": {
+          "title": "Custom Window Title"
+        },
+        "customInfo": {
+          "title": "Custom Information",
+          "description": "It is displayed in the bottom right corner of the game's main screen and top left corner of the F3 debugging page."
+        }
+      }
+    },
+    "gameServer": {
+      "title": "Server",
+      "settings": {
+        "autoJoinGameServer": {
+          "title": "Auto Join Game Server"
+        },
+        "serverUrl": {
+          "title": "Server URL"
+        }
+      }
+    },
     "performance": {
       "title": "Performance",
       "settings": {
-        "gameWindowResolution": {
-          "title": "Game Window Resolution",
-          "switch": "Fullscreen"
-        },
         "autoMemAllocation": {
           "title": "Allocate Memory Automatically"
         },

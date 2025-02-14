@@ -3,12 +3,22 @@ export interface GameConfig {
     auto: boolean;
     execPath: string;
   };
-  performance: {
-    gameWindowResolution: {
+  gameServer: {
+    autoJoinGameServer: {
+      enabled: boolean;
+    };
+    serverUrl: string;
+  };
+  gameWindow: {
+    resolution: {
       width: number;
       height: number;
       fullscreen: boolean;
     };
+    customTitle: string;
+    customInfo: string;
+  };
+  performance: {
     autoMemAllocation: boolean;
     minMemAllocation: number;
     processPriority: string;
@@ -102,12 +112,22 @@ export const defaultGameConfig: GameConfig = {
     auto: true,
     execPath: "",
   },
-  performance: {
-    gameWindowResolution: {
+  gameServer: {
+    autoJoinGameServer: {
+      enabled: false,
+    },
+    serverUrl: "",
+  },
+  gameWindow: {
+    resolution: {
       width: 1280,
       height: 720,
       fullscreen: false,
     },
+    customTitle: "",
+    customInfo: "",
+  },
+  performance: {
     autoMemAllocation: true,
     minMemAllocation: 1024,
     processPriority: "middle",

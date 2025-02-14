@@ -546,13 +546,36 @@
         }
       }
     },
+    "gameWindow": {
+      "title": "窗口",
+      "settings": {
+        "resolution": {
+          "title": "游戏分辨率",
+          "switch": "全屏"
+        },
+        "customTitle": {
+          "title": "自定义窗口标题"
+        },
+        "customInfo": {
+          "title": "自定义信息",
+          "description": "将显示在游戏主界面右下角，与 F3 调试页面左上角"
+        }
+      }
+    },
+    "gameServer": {
+      "title": "服务器",
+      "settings": {
+        "autoJoinGameServer": {
+          "title": "自动加入服务器"
+        },
+        "serverUrl": {
+          "title": "服务器地址"
+        }
+      }
+    },
     "performance": {
       "title": "性能",
       "settings": {
-        "gameWindowResolution": {
-          "title": "游戏窗口分辨率",
-          "switch": "全屏"
-        },
         "autoMemAllocation": {
           "title": "自动分配内存"
         },

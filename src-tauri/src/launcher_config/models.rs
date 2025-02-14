@@ -37,15 +37,25 @@ structstruck::strike! {
       pub auto: bool,
       pub exec_path: String,
     },
-    pub performance: struct {
-      pub game_window_resolution: struct {
+    pub game_window: struct {
+      pub resolution: struct {
         pub width: u32,
         pub height: u32,
         pub fullscreen: bool,
       },
+      pub custom_title: String,
+      pub custom_info: String,
+    },
+    pub performance: struct {
       pub auto_mem_allocation: bool,
       pub min_mem_allocation: u32,
       pub process_priority: String,
+    },
+    pub game_server: struct {
+      pub auto_join_game_server: struct {
+        pub enabled: bool,
+      },
+      pub server_url: String,
     },
     pub version_isolation: struct {
       pub enabled: bool,
@@ -147,15 +157,23 @@ impl Default for GameConfig {
         auto: true,
         exec_path: "".to_string(),
       },
-      performance: Performance {
-        game_window_resolution: GameWindowResolution {
+      game_window: GameWindow {
+        resolution: Resolution {
           width: 1280,
           height: 720,
           fullscreen: false,
         },
+        custom_title: "".to_string(),
+        custom_info: "".to_string(),
+      },
+      performance: Performance {
         auto_mem_allocation: true,
         min_mem_allocation: 1024,
         process_priority: "middle".to_string(),
+      },
+      game_server: GameServer {
+        auto_join_game_server: AutoJoinGameServer { enabled: false },
+        server_url: "".to_string(),
       },
       version_isolation: VersionIsolation {
         enabled: true,
