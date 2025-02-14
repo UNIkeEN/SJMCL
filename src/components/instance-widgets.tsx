@@ -135,11 +135,18 @@ export const InstanceBasicInfoWidget = () => {
 export const InstanceScreenshotsWidget = () => {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % mockScreenshots.length);
-    }, 10000); // carousel (TODO: transition)
+      setIsFading(true);
+      setTimeout(() => {
+        setCurrentIndex(
+          (prevIndex) => (prevIndex + 1) % mockScreenshots.length
+        );
+        setIsFading(false);
+      }, 500);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -155,6 +162,8 @@ export const InstanceScreenshotsWidget = () => {
         h="100%"
         ml={-3}
         mt={-3}
+        opacity={isFading ? 0 : 1}
+        transition="opacity 0.5s ease-in-out"
       />
     </InstanceWidgetBase>
   );
