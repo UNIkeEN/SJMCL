@@ -125,9 +125,7 @@ const GlobalGameSettingsPage = () => {
             }) as OptionItemProps
         ),
         {
-          title: t(
-            "GlobalGameSettingsPage.versionIsolation.settings.enabled.title"
-          ),
+          title: t("GlobalGameSettingsPage.versionIsolation.settings.title"),
           children: (
             <Switch
               colorScheme={primaryColor}

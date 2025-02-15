@@ -19,7 +19,6 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react";
-import { downloadDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { open as openFolder } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";

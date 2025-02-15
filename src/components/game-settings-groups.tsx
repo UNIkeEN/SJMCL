@@ -258,8 +258,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                   event.target.value
                 );
               }}
-              alignSelf="center"
-              margin="auto 0"
               focusBorderColor={`${primaryColor}.500`}
             />
           ),
@@ -388,53 +386,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       ],
     },
     {
-      title: t("GlobalGameSettingsPage.gameServer.title"),
-      items: [
-        {
-          title: t(
-            "GlobalGameSettingsPage.gameServer.settings.autoJoinGameServer.title"
-          ),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={globalGameConfigs.gameServer.autoJoinGameServer}
-              onChange={(event) => {
-                if (instanceId) return; // TBD
-                update(
-                  "globalGameConfig.gameServer.autoJoinGameServer",
-                  event.target.checked
-                );
-              }}
-            />
-          ),
-        },
-        ...(globalGameConfigs.gameServer.autoJoinGameServer
-          ? [
-              {
-                title: t(
-                  "GlobalGameSettingsPage.gameServer.settings.serverUrl.title"
-                ),
-                children: (
-                  <Input
-                    size="xs"
-                    w={64}
-                    value={globalGameConfigs.gameServer.serverUrl}
-                    onChange={(event) => {
-                      if (instanceId) return; // TBD
-                      update(
-                        "globalGameConfig.gameServer.serverUrl",
-                        event.target.value
-                      );
-                    }}
-                    focusBorderColor={`${primaryColor}.500`}
-                  />
-                ),
-              },
-            ]
-          : []),
-      ],
-    },
-    {
       title: t("GlobalGameSettingsPage.moreOptions.title"),
       items: [
         {
@@ -476,6 +427,48 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             </Menu>
           ),
         },
+        {
+          title: t(
+            "GlobalGameSettingsPage.moreOptions.settings.autoJoinGameServer.title"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={globalGameConfigs.gameServer.autoJoin}
+              onChange={(event) => {
+                if (instanceId) return; // TBD
+                update(
+                  "globalGameConfig.gameServer.autoJoin",
+                  event.target.checked
+                );
+              }}
+            />
+          ),
+        },
+        ...(globalGameConfigs.gameServer.autoJoin
+          ? [
+              {
+                title: t(
+                  "GlobalGameSettingsPage.moreOptions.settings.serverUrl.title"
+                ),
+                children: (
+                  <Input
+                    size="xs"
+                    w={64}
+                    value={globalGameConfigs.gameServer.serverUrl}
+                    onChange={(event) => {
+                      if (instanceId) return; // TBD
+                      update(
+                        "globalGameConfig.gameServer.serverUrl",
+                        event.target.value
+                      );
+                    }}
+                    focusBorderColor={`${primaryColor}.500`}
+                  />
+                ),
+              },
+            ]
+          : []),
         {
           title: t(
             "GlobalGameSettingsPage.moreOptions.settings.displayGameLog.title"

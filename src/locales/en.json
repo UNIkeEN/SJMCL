@@ -562,17 +562,6 @@
         }
       }
     },
-    "gameServer": {
-      "title": "Server",
-      "settings": {
-        "autoJoinGameServer": {
-          "title": "Auto Join Game Server"
-        },
-        "serverUrl": {
-          "title": "Server URL"
-        }
-      }
-    },
     "performance": {
       "title": "Performance",
       "settings": {
@@ -595,11 +584,8 @@
       }
     },
     "versionIsolation": {
-      "title": "Version Isolation",
       "settings": {
-        "enabled": {
-          "title": "Enable Version Isolation"
-        }
+        "title": "Enable Version Isolation"
       }
     },
     "moreOptions": {
@@ -610,6 +596,12 @@
           "start-close": "Close Launcher after Game Starts",
           "running-hidden": "Hide Launcher while Game is Running",
           "always": "Launcher Always Visible"
+        },
+        "autoJoinGameServer": {
+          "title": "Auto Join Game Server"
+        },
+        "serverUrl": {
+          "title": "Server URL"
         },
         "displayGameLog": {
           "title": "Display Game Logs"

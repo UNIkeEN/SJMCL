@@ -562,17 +562,6 @@
         }
       }
     },
-    "gameServer": {
-      "title": "服务器",
-      "settings": {
-        "autoJoinGameServer": {
-          "title": "自动加入服务器"
-        },
-        "serverUrl": {
-          "title": "服务器地址"
-        }
-      }
-    },
     "performance": {
       "title": "性能",
       "settings": {
@@ -595,11 +584,8 @@
       }
     },
     "versionIsolation": {
-      "title": "版本隔离",
       "settings": {
-        "enabled": {
-          "title": "启用版本隔离"
-        }
+        "title": "启用版本隔离"
       }
     },
     "moreOptions": {
@@ -610,6 +596,12 @@
           "start-close": "游戏启动后结束启动器",
           "running-hidden": "游戏运行时隐藏启动器",
           "always": "启动器始终可见"
+        },
+        "autoJoinGameServer": {
+          "title": "自动加入服务器"
+        },
+        "serverUrl": {
+          "title": "服务器地址"
         },
         "displayGameLog": {
           "title": "显示游戏日志"
@@ -717,7 +709,7 @@
     "name": "实例名称",
     "description": "实例描述",
     "icon": "实例图标",
-    "applySettings": "启动特定游戏设置",
+    "applySettings": "启用特定游戏设置",
     "restoreSettings": "重置以下特定设置",
     "restoreSettingsDesc": "将以下特定设置重置为全局游戏设置",
     "restore": "重置",

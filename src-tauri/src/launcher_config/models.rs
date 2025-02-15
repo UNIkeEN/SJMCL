@@ -52,7 +52,7 @@ structstruck::strike! {
       pub process_priority: String,
     },
     pub game_server: struct {
-      pub auto_join_game_server: bool,
+      pub auto_join: bool,
       pub server_url: String,
     },
     pub version_isolation: bool,
@@ -167,7 +167,7 @@ impl Default for GameConfig {
         process_priority: "middle".to_string(),
       },
       game_server: GameServer {
-        auto_join_game_server: false,
+        auto_join: false,
         server_url: "".to_string(),
       },
       version_isolation: true,

@@ -4,7 +4,7 @@ export interface GameConfig {
     execPath: string;
   };
   gameServer: {
-    autoJoinGameServer: boolean;
+    autoJoin: boolean;
     serverUrl: string;
   };
   gameWindow: {
@@ -108,7 +108,7 @@ export const defaultGameConfig: GameConfig = {
     execPath: "",
   },
   gameServer: {
-    autoJoinGameServer: false,
+    autoJoin: false,
     serverUrl: "",
   },
   gameWindow: {
