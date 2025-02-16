@@ -47,7 +47,8 @@ export const GameMenu: React.FC<GameMenuProps> = ({
 
   const gameMenuOperations = [
     {
-      icon: "openFolder",
+      icon: LuFolderOpen,
+      label: t("General.openFolder"),
       onClick: () => {}, // TBD
     },
     {
@@ -80,16 +81,16 @@ export const GameMenu: React.FC<GameMenuProps> = ({
           />
           <Portal>
             <MenuList>
-              {gameMenuOperations.map((item, index) => (
+              {gameMenuOperations.map((item) => (
                 <MenuItem
-                  key={index}
+                  key={item.label}
                   fontSize="xs"
                   color={item.danger ? "red.500" : "inherit"}
                   onClick={item.onClick}
                 >
                   <HStack>
                     <item.icon />
-                    <Text>{t(`GameMenu.label.${item}`)}</Text>
+                    <Text>{t(`${item.label}`)}</Text>
                   </HStack>
                 </MenuItem>
               ))}
@@ -98,9 +99,9 @@ export const GameMenu: React.FC<GameMenuProps> = ({
         </Menu>
       ) : (
         <HStack spacing={0}>
-          {gameMenuOperations.map((item, index) => (
+          {gameMenuOperations.map((item) => (
             <CommonIconButton
-              key={index}
+              key={item.label}
               icon={item.icon}
               label={item.label}
               colorScheme={item.danger ? "red" : "gray"}

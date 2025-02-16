@@ -7,12 +7,12 @@ import {
   MenuList,
   Portal,
   Text,
-  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { LuEllipsis, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
 import { useData } from "@/contexts/data";
@@ -65,13 +65,13 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
 
   const playerMenuOperations = [
     {
-      key: "skin",
       icon: TbHanger,
+      label: t("PlayerMenu.label.skin"),
       onClick: onManageSkinModalOpen,
     },
     {
-      key: "delete",
       icon: LuTrash,
+      label: t("PlayerMenu.label.delete"),
       danger: true,
       onClick: () => {
         onDeleteOpen();
@@ -94,14 +94,14 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
             <MenuList>
               {playerMenuOperations.map((item) => (
                 <MenuItem
-                  key={item.key}
+                  key={item.label}
                   fontSize="xs"
                   color={item.danger ? "red.500" : "inherit"}
                   onClick={item.onClick}
                 >
                   <HStack>
                     <item.icon />
-                    <Text>{t(`PlayerMenu.label.${item.key}`)}</Text>
+                    <Text>{t(`${item.label}`)}</Text>
                   </HStack>
                 </MenuItem>
               ))}
@@ -111,16 +111,13 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
       ) : (
         <HStack spacing={0}>
           {playerMenuOperations.map((item) => (
-            <Tooltip label={t(`PlayerMenu.label.${item.key}`)} key={item.key}>
-              <IconButton
-                size="sm"
-                aria-label={item.key}
-                icon={<item.icon />}
-                variant="ghost"
-                colorScheme={item.danger ? "red" : "gray"}
-                onClick={item.onClick}
-              />
-            </Tooltip>
+            <CommonIconButton
+              key={item.label}
+              icon={item.icon}
+              label={item.label}
+              colorScheme={item.danger ? "red" : "gray"}
+              onClick={item.onClick}
+            />
           ))}
         </HStack>
       )}
