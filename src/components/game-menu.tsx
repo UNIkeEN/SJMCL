@@ -47,14 +47,13 @@ export const GameMenu: React.FC<GameMenuProps> = ({
 
   const gameMenuOperations = [
     {
-      key: "openFolder",
-      icon: LuFolderOpen,
-      label: t("General.openFolder"),
+      icon: "openFolder",
       onClick: () => {}, // TBD
     },
     {
       key: "details",
       icon: LuLayoutList,
+      label: t("GameMenu.label.details"),
       onClick: () => {
         router.push(`/games/instance/${game.id}`);
       },
@@ -62,6 +61,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
     {
       key: "delete",
       icon: LuTrash,
+      label: t("GameMenu.label.delete"),
       danger: true,
       onClick: () => {
         onDeleteOpen();
@@ -104,7 +104,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
             <CommonIconButton
               key={item.key}
               icon={item.icon}
-              label={item.label || t(`GameMenu.label.${item.key}`)}
+              label={item.label}
               colorScheme={item.danger ? "red" : "gray"}
               onClick={item.onClick}
             />
