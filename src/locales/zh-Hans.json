@@ -450,7 +450,6 @@
   },
   "GameMenu": {
     "label": {
-      "openFolder":"打开实例文件夹",
       "details": "实例详情",
       "delete": "删除实例"
     }

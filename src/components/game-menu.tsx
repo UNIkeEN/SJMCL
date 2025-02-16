@@ -49,6 +49,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
     {
       key: "openFolder",
       icon: LuFolderOpen,
+      label: t("General.openFolder"),
       onClick: () => {}, // TBD
     },
     {
@@ -103,7 +104,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
             <CommonIconButton
               key={item.key}
               icon={item.icon}
-              label={t(`GameMenu.label.${item.key}`)}
+              label={item.label || t(`GameMenu.label.${item.key}`)}
               colorScheme={item.danger ? "red" : "gray"}
               onClick={item.onClick}
             />
