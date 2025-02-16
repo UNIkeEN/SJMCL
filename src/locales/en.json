@@ -450,6 +450,7 @@
   },
   "GameMenu": {
     "label": {
+      "openFolder":"Open Instance Folder",
       "details": "Instance Details",
       "delete": "Delete"
     }
