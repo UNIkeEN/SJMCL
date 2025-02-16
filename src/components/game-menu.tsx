@@ -51,7 +51,6 @@ export const GameMenu: React.FC<GameMenuProps> = ({
       onClick: () => {}, // TBD
     },
     {
-      key: "details",
       icon: LuLayoutList,
       label: t("GameMenu.label.details"),
       onClick: () => {
@@ -59,7 +58,6 @@ export const GameMenu: React.FC<GameMenuProps> = ({
       },
     },
     {
-      key: "delete",
       icon: LuTrash,
       label: t("GameMenu.label.delete"),
       danger: true,
@@ -82,16 +80,16 @@ export const GameMenu: React.FC<GameMenuProps> = ({
           />
           <Portal>
             <MenuList>
-              {gameMenuOperations.map((item) => (
+              {gameMenuOperations.map((item, index) => (
                 <MenuItem
-                  key={item.key}
+                  key={index}
                   fontSize="xs"
                   color={item.danger ? "red.500" : "inherit"}
                   onClick={item.onClick}
                 >
                   <HStack>
                     <item.icon />
-                    <Text>{t(`GameMenu.label.${item.key}`)}</Text>
+                    <Text>{t(`GameMenu.label.${item}`)}</Text>
                   </HStack>
                 </MenuItem>
               ))}
@@ -100,9 +98,9 @@ export const GameMenu: React.FC<GameMenuProps> = ({
         </Menu>
       ) : (
         <HStack spacing={0}>
-          {gameMenuOperations.map((item) => (
+          {gameMenuOperations.map((item, index) => (
             <CommonIconButton
-              key={item.key}
+              key={index}
               icon={item.icon}
               label={item.label}
               colorScheme={item.danger ? "red" : "gray"}
