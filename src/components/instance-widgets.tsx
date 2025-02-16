@@ -141,20 +141,22 @@ export const InstanceScreenshotsWidget = () => {
     const interval = setInterval(() => {
       setIsFading(true);
       setTimeout(() => {
-        setCurrentIndex(
-          (prevIndex) => (prevIndex + 1) % mockScreenshots.length
-        );
+        setCurrentIndex((prev) => (prev + 1) % mockScreenshots.length);
         setIsFading(false);
-      }, 500);
-    }, 10000);
+      }, 1000);
+    }, 3000);
+
     return () => clearInterval(interval);
   }, []);
 
+  const nextIndex = (currentIndex + 1) % mockScreenshots.length;
   return (
     <InstanceWidgetBase title={t("InstanceWidgets.screenshots.title")}>
       <Image
         src={mockScreenshots[currentIndex].imgSrc}
         alt={mockScreenshots[currentIndex].fileName}
+        opacity={isFading ? 0 : 1}
+        transition="opacity 1s ease-in-out"
         objectFit="cover"
         position="absolute"
         borderRadius="md"
@@ -162,8 +164,19 @@ export const InstanceScreenshotsWidget = () => {
         h="100%"
         ml={-3}
         mt={-3}
-        opacity={isFading ? 0 : 1}
-        transition="opacity 0.5s ease-in-out"
+      />
+      <Image
+        src={mockScreenshots[nextIndex].imgSrc}
+        alt={mockScreenshots[nextIndex].fileName}
+        opacity={isFading ? 1 : 0}
+        transition="opacity 1s ease-in-out"
+        objectFit="cover"
+        position="absolute"
+        borderRadius="md"
+        w="100%"
+        h="100%"
+        ml={-3}
+        mt={-3}
       />
     </InstanceWidgetBase>
   );
