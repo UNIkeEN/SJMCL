@@ -90,7 +90,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
                 >
                   <HStack>
                     <item.icon />
-                    <Text>{t(`${item.label}`)}</Text>
+                    <Text>{item.label}</Text>
                   </HStack>
                 </MenuItem>
               ))}

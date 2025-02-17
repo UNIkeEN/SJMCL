@@ -101,7 +101,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
                 >
                   <HStack>
                     <item.icon />
-                    <Text>{t(`${item.label}`)}</Text>
+                    <Text>{item.label}</Text>
                   </HStack>
                 </MenuItem>
               ))}
