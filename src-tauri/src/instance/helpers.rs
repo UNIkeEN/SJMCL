@@ -51,6 +51,7 @@ pub fn get_instance_subdir_path(
     InstanceSubdirType::Mods => Some(path.join("mods")),
     InstanceSubdirType::ResourcePacks => Some(path.join("resourcepacks")),
     InstanceSubdirType::Saves => Some(path.join("saves")),
+    InstanceSubdirType::Schematics => Some(path.join("schematics")),
     InstanceSubdirType::Screenshots => Some(path.join("screenshots")),
     InstanceSubdirType::ShaderPacks => Some(path.join("shaderpacks")),
   }
@@ -94,7 +95,7 @@ pub async fn refresh_instances(
         loader_type: "none".to_string(),
         version: "".to_string(),
       },
-      has_schem_folder: false, // TODO: if exists schematics folder, return true
+      has_schem_folder: true, // TODO: if exists schematics folder, return true
       game_config: None,
     });
   }

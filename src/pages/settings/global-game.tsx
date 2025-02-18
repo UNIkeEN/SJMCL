@@ -14,6 +14,7 @@ import GameSettingsGroups from "@/components/game-settings-groups";
 import EditGameDirectoryModal from "@/components/modals/edit-game-directory-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
+import { useData } from "@/contexts/data";
 import { GameDirectory } from "@/models/config";
 
 const GlobalGameSettingsPage = () => {
@@ -21,6 +22,7 @@ const GlobalGameSettingsPage = () => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const globalGameConfigs = config.globalGameConfig;
+  const { getGameInstanceList } = useData();
 
   const router = useRouter();
   const { id } = router.query;
@@ -54,6 +56,7 @@ const GlobalGameSettingsPage = () => {
       "localGameDirectories",
       config.localGameDirectories.filter((dir) => dir.dir !== selectedDir.dir)
     );
+    getGameInstanceList(true); // refresh frontend state of instance list
     onDeleteDirDialogClose();
   };
 

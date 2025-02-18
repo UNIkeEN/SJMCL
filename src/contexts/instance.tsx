@@ -13,6 +13,7 @@ import { useGetState } from "@/hooks/get-state";
 import {
   GameInstanceSummary,
   ResourcePackInfo,
+  SchematicInfo,
   ScreenshotInfo,
   ShaderPackInfo,
 } from "@/models/game-instance";
@@ -22,6 +23,7 @@ export interface InstanceContextType {
   summary: GameInstanceSummary | undefined;
   openSubdir: (dirType: InstanceSubdirType) => void;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
+  getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
   getShaderPackList: (sync?: boolean) => ShaderPackInfo[] | undefined;
   getScreenshotList: (sync?: boolean) => ScreenshotInfo[] | undefined;
 }
@@ -41,6 +43,7 @@ export const InstanceContextProvider: React.FC<{
     GameInstanceSummary | undefined
   >(undefined);
   const [resourcePacks, setResourcePacks] = useState<ResourcePackInfo[]>();
+  const [schematics, setSchematics] = useState<SchematicInfo[]>();
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>();
 
@@ -88,6 +91,22 @@ export const InstanceContextProvider: React.FC<{
       );
     }
   }, [instanceSummary?.id, setResourcePacks, toast]);
+  
+  const handleRetriveSchematicList = useCallback(() => {
+    if (instanceSummary?.id !== undefined) {
+      InstanceService.retriveSchematicList(instanceSummary.id).then(
+        (response) => {
+          if (response.status === "success") setSchematics(response.data);
+          else
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+        }
+      );
+    }
+  }, [instanceSummary?.id, setSchematics, toast]);
 
   const handleRetriveShaderPackList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
@@ -125,6 +144,8 @@ export const InstanceContextProvider: React.FC<{
     resourcePacks,
     handleRetriveResourcePackList
   );
+  
+  const getSchematicList = useGetState(schematics, handleRetriveSchematicList);
 
   const getShaderPackList = useGetState(
     shaderPacks,
@@ -142,6 +163,7 @@ export const InstanceContextProvider: React.FC<{
         summary: instanceSummary,
         openSubdir: handleOpenInstanceSubdir,
         getResourcePackList,
+        getSchematicList,
         getShaderPackList,
         getScreenshotList,
       }}

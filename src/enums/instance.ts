@@ -4,6 +4,7 @@ export enum InstanceSubdirType {
   Mods = "Mods",
   ResourcePacks = "ResourcePacks",
   Saves = "Saves",
+  Schematics = "Schematics",
   Screenshots = "Screenshots",
   ShaderPacks = "ShaderPacks",
 }

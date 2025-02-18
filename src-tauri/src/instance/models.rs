@@ -9,6 +9,7 @@ pub enum InstanceSubdirType {
   Mods,
   ResourcePacks,
   Saves,
+  Schematics,
   Screenshots,
   ShaderPacks,
 }
@@ -50,6 +51,13 @@ pub struct ResourcePackInfo {
   pub name: String,
   pub description: String,
   pub icon_src: Option<String>,
+  pub file_path: String,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SchematicInfo {
+  pub name: String,
   pub file_path: String,
 }
 

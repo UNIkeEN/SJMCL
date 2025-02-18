@@ -4,6 +4,7 @@ import {
   GameInstanceSummary,
   GameServerInfo,
   ResourcePackInfo,
+  SchematicInfo,
   ScreenshotInfo,
   ShaderPackInfo,
 } from "@/models/game-instance";
@@ -71,6 +72,20 @@ export class InstanceService {
     instanceId: number
   ): Promise<InvokeResponse<ResourcePackInfo[]>> {
     return await invoke("retrive_resource_pack_list", {
+      instanceId,
+    });
+  }
+  
+  /**
+   * RETRIVE the list of schematics.
+   * @param {number} instanceId - The instance ID to retrive the schematics for.
+   * @returns {Promise<InvokeResponse<SchematicInfo[]>>}
+   */
+  @responseHandler("instance", errorToLocaleKey)
+  static async retriveSchematicList(
+    instanceId: number
+  ): Promise<InvokeResponse<SchematicInfo[]>> {
+    return await invoke("retrive_schematic_list", {
       instanceId,
     });
   }

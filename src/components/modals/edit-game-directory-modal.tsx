@@ -22,6 +22,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
+import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 
 interface EditGameDirectoryModalProps extends Omit<ModalProps, "children"> {
@@ -41,6 +42,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const initialRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
+  const { getGameInstanceList } = useData();
 
   const [dirName, setDirName] = useState<string>("");
   const [dirPath, setDirPath] = useState<string>("");
@@ -94,6 +96,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         )
       );
     }
+    getGameInstanceList(true); // refresh frontend state of instance list
     modalProps.onClose();
   };
 
