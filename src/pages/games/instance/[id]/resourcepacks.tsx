@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import { FormattedMCText } from "@/components/common/formatted-mc-text";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
@@ -12,11 +13,12 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { InstanceSubdirType } from "@/enums/instance";
 import { ResourcePackInfo } from "@/models/game-instance";
 import { mockResourcePacks } from "@/models/mock/game-instance";
+import { base64ImgSrc } from "@/utils/string";
 
 const InstanceResourcePacksPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const { openSubdir } = useInstanceSharedData();
+  const { openSubdir, getResourcePackList } = useInstanceSharedData();
   const accordionStates =
     config.states.instanceResourcepackPage.accordionStates;
 
@@ -24,9 +26,9 @@ const InstanceResourcePacksPage = () => {
   const [serverResPacks, setServerResPacks] = useState<ResourcePackInfo[]>([]);
 
   useEffect(() => {
-    setResourcePacks(mockResourcePacks);
+    setResourcePacks(getResourcePackList() || []);
     setServerResPacks(mockResourcePacks);
-  }, []);
+  }, [getResourcePackList]);
 
   const defaultIcon = "/images/icons/DefaultPack.webp";
 
@@ -51,7 +53,9 @@ const InstanceResourcePacksPage = () => {
         },
         {
           icon: "refresh",
-          onClick: () => {},
+          onClick: () => {
+            setResourcePacks(getResourcePackList(true) || []);
+          },
         },
       ],
     },
@@ -104,10 +108,18 @@ const InstanceResourcePacksPage = () => {
                   <OptionItem
                     key={pack.name}
                     title={pack.name}
-                    description={pack.description}
+                    description={
+                      <FormattedMCText fontSize="xs" className="secondary-text">
+                        {pack.description}
+                      </FormattedMCText>
+                    }
                     prefixElement={
                       <Image
-                        src={pack.iconSrc || defaultIcon}
+                        src={
+                          pack.iconSrc
+                            ? base64ImgSrc(pack.iconSrc)
+                            : defaultIcon
+                        }
                         alt={pack.name}
                         boxSize="28px"
                         style={{ borderRadius: "4px" }}

@@ -1,15 +1,25 @@
 use super::{
+  super::utils::image::image_to_base64,
   helpers::{get_instance_subdir_path, refresh_and_update_instances},
   models::{
-    GameServerInfo, Instance, InstanceError, InstanceSubdirType, Screenshot, ShaderPackInfo,
+    GameServerInfo, Instance, InstanceError, InstanceSubdirType, ResourcePackInfo, ScreenshotInfo,
+    ShaderPackInfo,
   },
 };
 use crate::error::SJMCLResult;
+use image::ImageReader;
 use serde_json::Value;
-use std::{fs, path::Path, sync::Mutex, time::SystemTime};
+use std::{
+  fs,
+  io::{Cursor, Read},
+  path::{Path, PathBuf},
+  sync::Mutex,
+  time::SystemTime,
+};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_shell::ShellExt;
+use zip::read::ZipArchive;
 
 #[tauri::command]
 pub async fn retrive_instance_list(app: AppHandle) -> SJMCLResult<Vec<Instance>> {
@@ -95,6 +105,112 @@ pub async fn retrive_game_server_list(
 }
 
 #[tauri::command]
+pub async fn retrive_resource_pack_list(
+  app: AppHandle,
+  instance_id: usize,
+) -> SJMCLResult<Vec<ResourcePackInfo>> {
+  // Get the resource packs list based on the instance
+  let resource_packs_dir =
+    match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::ResourcePacks) {
+      Some(path) => path,
+      None => return Ok(Vec::new()),
+    };
+
+  if !resource_packs_dir.exists() {
+    return Ok(Vec::new());
+  }
+  let valid_extension = "zip";
+  let resource_pack_list: Vec<PathBuf> = fs::read_dir(resource_packs_dir)?
+    .filter_map(|entry| entry.ok())
+    .filter_map(|entry| {
+      let file_name = entry.file_name().into_string().ok()?;
+      let extension = Path::new(&file_name)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .map(|ext| ext.to_lowercase());
+
+      if extension.is_some() && extension.unwrap() == valid_extension {
+        Some(entry.path())
+      } else {
+        None
+      }
+    })
+    .collect();
+  let mut info_list: Vec<ResourcePackInfo> = Vec::new();
+
+  // TODO: async read files
+  for path in resource_pack_list {
+    let name = if let Some(file_stem_osstr) = path.file_stem() {
+      if let Some(file_stem) = file_stem_osstr.to_str() {
+        file_stem.to_owned() // Convert &str to String
+      } else {
+        String::new() // Handle case where filename is not valid UTF-8
+      }
+    } else {
+      String::new() // Handle case where there is no file stem
+    };
+
+    let file = fs::File::open(&path)?;
+    let mut zip = ZipArchive::new(file)?;
+    let mut description = String::new();
+    let mut icon_src = None;
+
+    if let Ok(mut file) = zip.by_name("pack.mcmeta") {
+      let mut contents = String::new();
+      if let Err(err) = file.read_to_string(&mut contents) {
+        #[cfg(debug_assertions)]
+        println!("read to string error: {}", err.to_string());
+      } else {
+        // Check for and remove the UTF-8 BOM if present
+        if contents.starts_with('\u{FEFF}') {
+          contents = contents.strip_prefix('\u{FEFF}').unwrap().to_string();
+        }
+        let json_result = serde_json::from_str::<Value>(&contents);
+        if json_result.is_ok() {
+          // Safely extract `description`
+          if let Some(pack_data) = json_result.ok().unwrap().get("pack") {
+            if let Some(desc) = pack_data.get("description") {
+              // Assume `desc` is a valid JSON object or primitive
+              if let Some(desc_str) = desc.as_str() {
+                description = desc_str.to_string(); // Assigns the description to your variable
+              } else {
+                #[cfg(debug_assertions)]
+                println!("Description is not a string");
+              }
+            }
+          }
+        } else {
+          #[cfg(debug_assertions)]
+          println!(
+            "json parse error: {}",
+            json_result.err().unwrap().to_string()
+          );
+        }
+      }
+    }
+
+    if let Ok(mut file) = zip.by_name("pack.png") {
+      let mut buffer = Vec::new();
+      file.read_to_end(&mut buffer)?;
+      // Use `image` crate to decode the image
+      let img = ImageReader::new(Cursor::new(buffer))
+        .with_guessed_format()?
+        .decode()?;
+      if let Ok(b64) = image_to_base64(img.to_rgba8()) {
+        icon_src = Some(b64);
+      }
+    }
+    info_list.push(ResourcePackInfo {
+      name,
+      description,
+      icon_src,
+      file_path: path.to_string_lossy().to_string(),
+    });
+  }
+  Ok(info_list)
+}
+
+#[tauri::command]
 pub fn retrive_shader_pack_list(
   app: AppHandle,
   instance_id: usize,
@@ -138,7 +254,10 @@ pub fn retrive_shader_pack_list(
 }
 
 #[tauri::command]
-pub fn retrive_screenshot_list(app: AppHandle, instance_id: usize) -> SJMCLResult<Vec<Screenshot>> {
+pub fn retrive_screenshot_list(
+  app: AppHandle,
+  instance_id: usize,
+) -> SJMCLResult<Vec<ScreenshotInfo>> {
   let screenshots_dir =
     match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Screenshots) {
       Some(path) => path,
@@ -152,7 +271,7 @@ pub fn retrive_screenshot_list(app: AppHandle, instance_id: usize) -> SJMCLResul
   // The default screenshot format in Minecraft is PNG. For broader compatibility, JPG and JPEG formats are also included here.
   let valid_extensions = ["jpg", "jpeg", "png"];
 
-  let screenshot_list: Vec<Screenshot> = fs::read_dir(screenshots_dir)?
+  let screenshot_list: Vec<ScreenshotInfo> = fs::read_dir(screenshots_dir)?
     .filter_map(|entry| entry.ok())
     .filter_map(|entry| {
       let file_name = entry.file_name().into_string().ok()?;
@@ -171,7 +290,7 @@ pub fn retrive_screenshot_list(app: AppHandle, instance_id: usize) -> SJMCLResul
           .ok()?
           .as_secs();
 
-        Some(Screenshot {
+        Some(ScreenshotInfo {
           file_name,
           file_path,
           time: timestamp,

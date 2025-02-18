@@ -59,6 +59,7 @@ pub async fn run() {
       instance::commands::retrive_instance_list,
       instance::commands::open_instance_subdir,
       instance::commands::retrive_game_server_list,
+      instance::commands::retrive_resource_pack_list,
       instance::commands::retrive_shader_pack_list,
       instance::commands::retrive_screenshot_list,
       resource::commands::retrive_game_version_list,

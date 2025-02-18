@@ -46,6 +46,15 @@ pub struct GameServerInfo {
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ResourcePackInfo {
+  pub name: String,
+  pub description: String,
+  pub icon_src: Option<String>,
+  pub file_path: String,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ShaderPackInfo {
   pub file_name: String,
   pub file_path: String,
@@ -53,7 +62,7 @@ pub struct ShaderPackInfo {
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct Screenshot {
+pub struct ScreenshotInfo {
   pub file_name: String,
   pub file_path: String,
   pub time: u64,
