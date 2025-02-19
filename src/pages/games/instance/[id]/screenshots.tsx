@@ -3,6 +3,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEllipsis } from "react-icons/lu";
+import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import ScreenshotPreviewModal from "@/components/modals/screenshot-preview-modal";
@@ -71,13 +72,17 @@ const InstanceScreenshotsPage: React.FC = () => {
 
   return (
     <Section>
-      <WrapCardGroup
-        cardAspectRatio={16 / 9}
-        items={screenshots.map((screenshot) => ({
-          cardContent: <ScreenshotsCard screenshot={screenshot} />,
-          p: 0,
-        }))}
-      />
+      {screenshots.length > 0 ? (
+        <WrapCardGroup
+          cardAspectRatio={16 / 9}
+          items={screenshots.map((screenshot) => ({
+            cardContent: <ScreenshotsCard screenshot={screenshot} />,
+            p: 0,
+          }))}
+        />
+      ) : (
+        <Empty withIcon={false} size="sm" />
+      )}
       {currentScreenshot && (
         <ScreenshotPreviewModal
           screenshot={currentScreenshot}

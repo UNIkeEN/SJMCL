@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { open as openFolder } from "@tauri-apps/plugin-shell";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import {
@@ -35,6 +36,19 @@ const DownloadSettingsPage = () => {
   const { config, update } = useLauncherConfig();
   const downloadConfigs = config.download;
   const primaryColor = config.appearance.theme.primaryColor;
+
+  const [concurrentCount, setConcurrentCount] = useState<number>(
+    downloadConfigs.transmission.concurrentCount
+  );
+  const [speedLimitValue, setSpeedLimitValue] = useState<number>(
+    downloadConfigs.transmission.speedLimitValue
+  );
+  const [proxyPort, setProxyPort] = useState<number>(
+    downloadConfigs.proxy.port
+  );
+  const [proxyHost, setProxyHost] = useState<string>(
+    downloadConfigs.proxy.host
+  );
 
   const sourceStrategyTypes = ["auto", "official", "mirror"];
   const proxyTypeOptions = [
@@ -138,9 +152,15 @@ const DownloadSettingsPage = () => {
                       step={1}
                       w={32}
                       colorScheme={primaryColor}
-                      value={downloadConfigs.transmission.concurrentCount}
+                      value={concurrentCount}
                       onChange={(value) => {
-                        update("download.transmission.concurrentCount", value);
+                        setConcurrentCount(value);
+                      }}
+                      onBlur={() => {
+                        update(
+                          "download.transmission.concurrentCount",
+                          concurrentCount
+                        );
                       }}
                     >
                       <SliderTrack>
@@ -154,11 +174,13 @@ const DownloadSettingsPage = () => {
                       size="xs"
                       maxW={16}
                       focusBorderColor={`${primaryColor}.500`}
-                      value={downloadConfigs.transmission.concurrentCount}
+                      value={concurrentCount}
                       onChange={(value) => {
-                        update(
-                          "download.transmission.concurrentCount",
-                          Number(value)
+                        setConcurrentCount(Number(value));
+                      }}
+                      onBlur={() => {
+                        setConcurrentCount(
+                          Math.max(1, Math.min(concurrentCount, 128))
                         );
                       }}
                     >
@@ -206,11 +228,14 @@ const DownloadSettingsPage = () => {
                       size="xs"
                       maxW={16}
                       focusBorderColor={`${primaryColor}.500`}
-                      value={downloadConfigs.transmission.speedLimitValue}
+                      value={speedLimitValue}
                       onChange={(value) => {
+                        setSpeedLimitValue(Number(value));
+                      }}
+                      onBlur={() => {
                         update(
                           "download.transmission.speedLimitValue",
-                          Number(value)
+                          Math.max(1, Math.min(speedLimitValue, 2 ** 32 - 1))
                         );
                       }}
                     >
@@ -293,9 +318,12 @@ const DownloadSettingsPage = () => {
                     size="xs"
                     w="107px" // align with the segmented-control above
                     focusBorderColor={`${primaryColor}.500`}
-                    value={downloadConfigs.proxy.host}
+                    value={proxyHost}
                     onChange={(event) => {
-                      update("download.proxy.host", event.target.value);
+                      setProxyHost(event.target.value);
+                    }}
+                    onBlur={() => {
+                      update("download.proxy.host", proxyHost);
                     }}
                   />
                 ),
@@ -309,9 +337,15 @@ const DownloadSettingsPage = () => {
                     min={0}
                     max={65535}
                     focusBorderColor={`${primaryColor}.500`}
-                    value={downloadConfigs.proxy.port || 80}
+                    value={proxyPort || 80}
                     onChange={(value) => {
-                      update("download.proxy.port", Number(value));
+                      setProxyPort(Number(value));
+                    }}
+                    onBlur={() => {
+                      update(
+                        "download.proxy.port",
+                        Math.max(0, Math.min(proxyPort || 80, 65535))
+                      );
                     }}
                   >
                     <NumberInputField pr={0} />

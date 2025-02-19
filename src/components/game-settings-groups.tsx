@@ -27,6 +27,7 @@ import {
 } from "@/components/common/option-item";
 import MemoryStatusProgress from "@/components/memory-status-progress";
 import { useLauncherConfig } from "@/contexts/config";
+import { defaultGameConfig } from "@/models/config";
 import { MemoryInfo } from "@/models/system-info";
 import { JavaInfo } from "@/models/system-info";
 import { retriveMemoryInfo } from "@/services/utils";
@@ -41,9 +42,35 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const { t } = useTranslation();
   const { config, update, getJavaInfos } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const globalGameConfigs = config.globalGameConfig;
+  const gameConfigs = instanceId
+    ? defaultGameConfig // TBD
+    : config.globalGameConfig;
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
+
+  const [gameWindowWidth, setGameWindowWidth] = useState<number>(
+    gameConfigs.gameWindow.resolution.width
+  );
+  const [gameWindowHeight, setGameWindowHeight] = useState<number>(
+    gameConfigs.gameWindow.resolution.height
+  );
+  const [minMemAllocation, setMinMemAllocation] = useState<number>(
+    gameConfigs.performance.minMemAllocation
+  );
+  const [customTitle, setCustomTitle] = useState<string>(
+    gameConfigs.gameWindow.customTitle
+  );
+  const [customInfo, setCustomInfo] = useState<string>(
+    gameConfigs.gameWindow.customInfo
+  );
+  const [serverUrl, setServerUrl] = useState<string>(
+    gameConfigs.gameServer.serverUrl
+  );
+
+  const updateGameConfig = (key: string, value: any) => {
+    if (instanceId) return; // TBD
+    update(`globalGameConfig.${key}`, value);
+  };
 
   const buildJavaMenuLabel = (java: JavaInfo | undefined) => {
     if (!java) return "";
@@ -90,15 +117,14 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={globalGameConfigs.gameJava.auto}
+              isChecked={gameConfigs.gameJava.auto}
               onChange={(event) => {
-                if (instanceId) return; // TBD
-                update("globalGameConfig.gameJava.auto", event.target.checked);
+                updateGameConfig("gameJava.auto", event.target.checked);
               }}
             />
           ),
         },
-        ...(globalGameConfigs.gameJava.auto
+        ...(gameConfigs.gameJava.auto
           ? []
           : [
               {
@@ -119,8 +145,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                           {buildJavaMenuLabel(
                             javaInfos.find(
                               (java) =>
-                                java.execPath ===
-                                globalGameConfigs.gameJava.execPath
+                                java.execPath === gameConfigs.gameJava.execPath
                             )
                           )}
                         </Text>
@@ -130,11 +155,10 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                     <Portal>
                       <MenuList>
                         <MenuOptionGroup
-                          value={globalGameConfigs.gameJava.execPath}
+                          value={gameConfigs.gameJava.execPath}
                           type="radio"
                           onChange={(value) => {
-                            if (instanceId) return; // TBD
-                            update("globalGameConfig.gameJava.execPath", value);
+                            updateGameConfig("gameJava.execPath", value);
                           }}
                         >
                           {javaInfos.map((java) => (
@@ -169,12 +193,14 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 size="xs"
                 maxW={16}
                 focusBorderColor={`${primaryColor}.500`}
-                value={globalGameConfigs.gameWindow.resolution.width}
+                value={gameWindowWidth}
                 onChange={(value) => {
-                  if (instanceId) return; // TBD
-                  update(
-                    "globalGameConfig.gameWindow.resolution.width",
-                    Number(value)
+                  setGameWindowWidth(Number(value));
+                }}
+                onBlur={() => {
+                  updateGameConfig(
+                    "gameWindow.resolution.width",
+                    Math.max(400, Math.min(gameWindowWidth, 2 ** 32 - 1))
                   );
                 }}
               >
@@ -189,12 +215,14 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 size="xs"
                 maxW={16}
                 focusBorderColor={`${primaryColor}.500`}
-                value={globalGameConfigs.gameWindow.resolution.height}
+                value={gameWindowHeight}
                 onChange={(value) => {
-                  if (instanceId) return; // TBD
-                  update(
-                    "globalGameConfig.gameWindow.resolution.height",
-                    Number(value)
+                  setGameWindowHeight(Number(value));
+                }}
+                onBlur={() => {
+                  updateGameConfig(
+                    "gameWindow.resolution.height",
+                    Math.max(300, Math.min(gameWindowHeight, 2 ** 32 - 1))
                   );
                 }}
               >
@@ -202,11 +230,10 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               </NumberInput>
               <Switch
                 colorScheme={primaryColor}
-                isChecked={globalGameConfigs.gameWindow.resolution.fullscreen}
+                isChecked={gameConfigs.gameWindow.resolution.fullscreen}
                 onChange={(event) => {
-                  if (instanceId) return; // TBD
-                  update(
-                    "globalGameConfig.gameWindow.resolution.fullscreen",
+                  updateGameConfig(
+                    "gameWindow.resolution.fullscreen",
                     event.target.checked
                   );
                 }}
@@ -227,13 +254,12 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             <Input
               size="xs"
               maxW={32}
-              value={globalGameConfigs.gameWindow.customTitle}
+              value={customTitle}
               onChange={(event) => {
-                if (instanceId) return; // TBD
-                update(
-                  "globalGameConfig.gameWindow.customTitle",
-                  event.target.value
-                );
+                setCustomTitle(event.target.value);
+              }}
+              onBlur={() => {
+                updateGameConfig("gameWindow.customTitle", customTitle);
               }}
               focusBorderColor={`${primaryColor}.500`}
             />
@@ -250,13 +276,12 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             <Input
               size="xs"
               maxW={32}
-              value={globalGameConfigs.gameWindow.customInfo}
+              value={customInfo}
               onChange={(event) => {
-                if (instanceId) return; // TBD
-                update(
-                  "globalGameConfig.gameWindow.customInfo",
-                  event.target.value
-                );
+                setCustomInfo(event.target.value);
+              }}
+              onBlur={() => {
+                updateGameConfig("gameWindow.customInfo", customInfo);
               }}
               focusBorderColor={`${primaryColor}.500`}
             />
@@ -274,18 +299,17 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={globalGameConfigs.performance.autoMemAllocation}
+              isChecked={gameConfigs.performance.autoMemAllocation}
               onChange={(event) => {
-                if (instanceId) return; // TBD
-                update(
-                  "globalGameConfig.performance.autoMemAllocation",
+                updateGameConfig(
+                  "performance.autoMemAllocation",
                   event.target.checked
                 );
               }}
             />
           ),
         },
-        ...(globalGameConfigs.performance.autoMemAllocation
+        ...(gameConfigs.performance.autoMemAllocation
           ? []
           : [
               {
@@ -300,12 +324,14 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                       step={16}
                       w={32}
                       colorScheme={primaryColor}
-                      value={globalGameConfigs.performance.minMemAllocation}
+                      value={minMemAllocation}
                       onChange={(value) => {
-                        if (instanceId) return; // TBD
-                        update(
-                          "globalGameConfig.performance.minMemAllocation",
-                          value
+                        setMinMemAllocation(Number(value));
+                      }}
+                      onBlur={() => {
+                        updateGameConfig(
+                          "performance.minMemAllocation",
+                          minMemAllocation
                         );
                       }}
                     >
@@ -320,12 +346,20 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                       size="xs"
                       maxW={16}
                       focusBorderColor={`${primaryColor}.500`}
-                      value={globalGameConfigs.performance.minMemAllocation}
+                      value={minMemAllocation}
                       onChange={(value) => {
-                        if (instanceId) return; // TBD
-                        update(
-                          "globalGameConfig.performance.minMemAllocation",
-                          Number(value)
+                        setMinMemAllocation(Number(value));
+                      }}
+                      onBlur={() => {
+                        updateGameConfig(
+                          "performance.minMemAllocation",
+                          Math.max(
+                            256,
+                            Math.min(
+                              minMemAllocation,
+                              maxMemCanAllocated || 8192
+                            )
+                          )
                         );
                       }}
                     >
@@ -339,7 +373,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
         <MemoryStatusProgress
           key="mem"
           memoryInfo={memoryInfo}
-          allocatedMemory={globalGameConfigs.performance.minMemAllocation}
+          allocatedMemory={minMemAllocation}
         />,
         {
           title: t(
@@ -356,19 +390,15 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 textAlign="left"
               >
                 {t(
-                  `GlobalGameSettingsPage.performance.settings.processPriority.${globalGameConfigs.performance.processPriority}`
+                  `GlobalGameSettingsPage.performance.settings.processPriority.${gameConfigs.performance.processPriority}`
                 )}
               </MenuButton>
               <MenuList>
                 <MenuOptionGroup
-                  value={globalGameConfigs.performance.processPriority}
+                  value={gameConfigs.performance.processPriority}
                   type="radio"
                   onChange={(value) => {
-                    if (instanceId) return; // TBD
-                    update(
-                      "globalGameConfig.performance.processPriority",
-                      value
-                    );
+                    updateGameConfig("performance.processPriority", value);
                   }}
                 >
                   {processPriority.map((type) => (
@@ -403,16 +433,15 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 textAlign="left"
               >
                 {t(
-                  `GlobalGameSettingsPage.moreOptions.settings.launcherVisibility.${globalGameConfigs.launcherVisibility}`
+                  `GlobalGameSettingsPage.moreOptions.settings.launcherVisibility.${gameConfigs.launcherVisibility}`
                 )}
               </MenuButton>
               <MenuList>
                 <MenuOptionGroup
                   type="radio"
-                  value={globalGameConfigs.launcherVisibility}
+                  value={gameConfigs.launcherVisibility}
                   onChange={(value) => {
-                    if (instanceId) return; // TBD
-                    update("globalGameConfig.launcherVisibility", value);
+                    updateGameConfig("launcherVisibility", value);
                   }}
                 >
                   {launcherVisibilityStrategy.map((type) => (
@@ -434,18 +463,14 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={globalGameConfigs.gameServer.autoJoin}
+              isChecked={gameConfigs.gameServer.autoJoin}
               onChange={(event) => {
-                if (instanceId) return; // TBD
-                update(
-                  "globalGameConfig.gameServer.autoJoin",
-                  event.target.checked
-                );
+                updateGameConfig("gameServer.autoJoin", event.target.checked);
               }}
             />
           ),
         },
-        ...(globalGameConfigs.gameServer.autoJoin
+        ...(gameConfigs.gameServer.autoJoin
           ? [
               {
                 title: t(
@@ -455,13 +480,12 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                   <Input
                     size="xs"
                     w={64}
-                    value={globalGameConfigs.gameServer.serverUrl}
+                    value={serverUrl}
                     onChange={(event) => {
-                      if (instanceId) return; // TBD
-                      update(
-                        "globalGameConfig.gameServer.serverUrl",
-                        event.target.value
-                      );
+                      setServerUrl(event.target.value);
+                    }}
+                    onBlur={() => {
+                      updateGameConfig("gameServer.serverUrl", serverUrl);
                     }}
                     focusBorderColor={`${primaryColor}.500`}
                   />
@@ -476,10 +500,9 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={globalGameConfigs.displayGameLog}
+              isChecked={gameConfigs.displayGameLog}
               onChange={(event) => {
-                if (instanceId) return; // TBD
-                update("globalGameConfig.displayGameLog", event.target.checked);
+                updateGameConfig("displayGameLog", event.target.checked);
               }}
             />
           ),
@@ -491,11 +514,10 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={globalGameConfigs.advancedOptions.enabled}
+              isChecked={gameConfigs.advancedOptions.enabled}
               onChange={(event) => {
-                if (instanceId) return; // TBD
-                update(
-                  "globalGameConfig.advancedOptions.enabled",
+                updateGameConfig(
+                  "advancedOptions.enabled",
                   event.target.checked
                 );
               }}
