@@ -12,6 +12,7 @@ pub enum InstanceSubdirType {
   Schematics,
   Screenshots,
   ShaderPacks,
+  GameRoot,
 }
 
 structstruck::strike! {

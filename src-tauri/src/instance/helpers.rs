@@ -54,6 +54,7 @@ pub fn get_instance_subdir_path(
     InstanceSubdirType::Schematics => Some(path.join("schematics")),
     InstanceSubdirType::Screenshots => Some(path.join("screenshots")),
     InstanceSubdirType::ShaderPacks => Some(path.join("shaderpacks")),
+    InstanceSubdirType::GameRoot => Some(path.to_path_buf()),
   }
 }
 

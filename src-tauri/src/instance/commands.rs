@@ -8,8 +8,11 @@ use super::{
 };
 use crate::error::SJMCLResult;
 use image::ImageReader;
-use quartz_nbt::io::{read_nbt, Flavor, NbtIoError};
 use quartz_nbt::NbtCompound;
+use quartz_nbt::{
+  io::{read_nbt, Flavor},
+  NbtList,
+};
 use serde_json::Value;
 use std::{
   fs::{self, File},
@@ -72,23 +75,24 @@ pub async fn retrive_world_list(app: AppHandle, instance_id: usize) -> SJMCLResu
   for path in world_dirs {
     let name = path.file_name().unwrap().to_str().unwrap();
 
-    let mut icon_path = path.clone();
-    icon_path.push("icon.png");
-
-    let mut nbt_path = path.clone();
-    nbt_path.push("level.dat");
+    let icon_path = path.join("icon.png");
+    let nbt_path = path.join("level.dat");
 
     if let Ok(mut nbt_file) = File::open(nbt_path) {
       let mut nbt_bytes = Vec::new();
-      nbt_file.read_to_end(&mut nbt_bytes);
+      if nbt_file.read_to_end(&mut nbt_bytes).is_err() {
+        continue;
+      }
       let nbt_result = read_nbt(&mut Cursor::new(nbt_bytes), Flavor::GzCompressed);
       if nbt_result.is_err() {
+        #[cfg(debug_assertions)]
         println!("nbt read error: {}", nbt_result.err().unwrap());
         continue;
       }
       let nbt = nbt_result.unwrap().0;
       let data = nbt.get::<_, &NbtCompound>("Data");
       if data.is_err() {
+        #[cfg(debug_assertions)]
         println!("nbt not contains 'Data'");
         continue;
       }
@@ -139,31 +143,61 @@ pub async fn retrive_world_list(app: AppHandle, instance_id: usize) -> SJMCLResu
 
 #[tauri::command]
 pub async fn retrive_game_server_list(
+  app: AppHandle,
   instance_id: usize,
   query_online: bool,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   // query_online is false, return local data from nbt (servers.dat)
-  // TODO: now use mock data
-  let mut game_servers = vec![
-    GameServerInfo {
-        icon_src: "https://mc.sjtu.cn/wiki/images/8/8c/SMP2-server-icon.png".to_string(),
-        ip: "smp2.sjmc.club".to_string(),
-        name: "SJMC-SMP2.6".to_string(),
-        is_queried: false,
-        players_online: 0,
-        players_max: 0,
-        online: false,
-    },
-    GameServerInfo {
-        icon_src: "https://zh.minecraft.wiki/images/thumb/Minecraft_Preview_icon_2.png/240px-Minecraft_Preview_icon_2.png".to_string(),
-        ip: "smp3.sjmc.club".to_string(),
-        name: "SJMC-SMP3(offline display test)".to_string(),
-        is_queried: false,
-        players_online: 0,
-        players_max: 0,
-        online: false,
-    },
-  ];
+  let mut game_servers: Vec<GameServerInfo> = Vec::new();
+  let game_root_dir =
+    match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::GameRoot) {
+      Some(path) => path,
+      None => return Ok(Vec::new()),
+    };
+
+  let nbt_path = game_root_dir.join("servers.dat");
+  let mut nbt_file = match File::open(&nbt_path) {
+    Ok(file) => file,
+    Err(_) => return Ok(Vec::new()),
+  };
+
+  let mut nbt_bytes = Vec::new();
+  if nbt_file.read_to_end(&mut nbt_bytes).is_err() {
+    return Ok(Vec::new());
+  }
+
+  let (nbt, _) = match read_nbt(&mut Cursor::new(nbt_bytes), Flavor::Uncompressed) {
+    Ok(result) => result,
+    Err(_) => return Ok(Vec::new()),
+  };
+
+  let servers = match nbt.get::<_, &NbtList>("servers") {
+    Ok(list) => list,
+    Err(_) => return Ok(Vec::new()),
+  };
+
+  for server_idx in 0..servers.len() {
+    if let Ok(server) = servers.get::<&NbtCompound>(server_idx) {
+      if let Ok(ip) = server.get::<_, &str>("ip") {
+        let name = server.get::<_, &str>("name").unwrap_or("unknown");
+        let icon;
+        if let Ok(val) = server.get::<_, &str>("icon") {
+          icon = val;
+        } else {
+          icon = "";
+        }
+        game_servers.push(GameServerInfo {
+          icon_src: icon.to_string(),
+          ip: ip.to_string(),
+          name: name.to_string(),
+          is_queried: false,
+          players_online: 0,
+          players_max: 0,
+          online: false,
+        });
+      }
+    }
+  }
 
   // query_online is true, amend query and return player count and online status
   if query_online {
