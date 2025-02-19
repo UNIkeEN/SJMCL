@@ -36,25 +36,6 @@ export const mockGameInstanceList: GameInstanceSummary[] = [
   },
 ];
 
-export const mockWorlds: WorldInfo[] = [
-  {
-    name: "Dev-SJMC",
-    lastPlayedAt: "2024-12-18T10:00:00Z",
-    difficulty: "normal",
-    gamemode: "survival",
-    iconSrc: "/images/icons/GrassBlock.png",
-    dirPath: "/.minecraft/saves",
-  },
-  {
-    name: "SMP-SJMC",
-    lastPlayedAt: "2024-12-18T10:00:00Z",
-    difficulty: "hard",
-    gamemode: "creative",
-    iconSrc: "/images/icons/Anvil.png",
-    dirPath: "/.minecraft/saves",
-  },
-];
-
 export const mockResourcePacks: ResourcePackInfo[] = [
   {
     name: "Faithful 32x32",

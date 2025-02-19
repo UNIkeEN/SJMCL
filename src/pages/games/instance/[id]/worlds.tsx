@@ -148,6 +148,7 @@ const InstanceWorldsPage = () => {
                   prefixElement={
                     <Image
                       src={convertFileSrc(world.iconSrc)}
+                      fallbackSrc="/images/icons/UnknownWorld.webp"
                       alt={world.name}
                       boxSize="28px"
                       style={{ borderRadius: "4px" }}

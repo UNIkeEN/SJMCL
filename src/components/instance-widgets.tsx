@@ -37,7 +37,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { LocalModInfo, WorldInfo } from "@/models/game-instance";
 import { ScreenshotInfo } from "@/models/game-instance";
-import { mockLocalMods, mockWorlds } from "@/models/mock/game-instance";
+import { mockLocalMods } from "@/models/mock/game-instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
@@ -275,9 +275,10 @@ export const InstanceLastPlayedWidget = () => {
             prefixElement={
               <Image
                 src={convertFileSrc(lastPlayedWorld.iconSrc)}
+                fallbackSrc="/images/icons/UnknownWorld.webp"
                 alt={lastPlayedWorld.name}
                 boxSize="28px"
-                objectFit="cover"
+                style={{ borderRadius: "4px" }}
               />
             }
           />
