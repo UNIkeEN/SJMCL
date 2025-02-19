@@ -8,10 +8,9 @@ use super::{
 };
 use crate::error::SJMCLResult;
 use image::ImageReader;
-use quartz_nbt::NbtCompound;
 use quartz_nbt::{
   io::{read_nbt, Flavor},
-  NbtList,
+  NbtCompound, NbtList,
 };
 use serde_json::Value;
 use std::{
