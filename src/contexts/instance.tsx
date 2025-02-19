@@ -25,6 +25,7 @@ export interface InstanceContextType {
   openSubdir: (dirType: InstanceSubdirType) => void;
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
+  getServerResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
   getShaderPackList: (sync?: boolean) => ShaderPackInfo[] | undefined;
   getScreenshotList: (sync?: boolean) => ScreenshotInfo[] | undefined;
@@ -46,6 +47,8 @@ export const InstanceContextProvider: React.FC<{
   >(undefined);
   const [worlds, setWorlds] = useState<WorldInfo[]>();
   const [resourcePacks, setResourcePacks] = useState<ResourcePackInfo[]>();
+  const [serverResourcePacks, setServerResourcePacks] =
+    useState<ResourcePackInfo[]>();
   const [schematics, setSchematics] = useState<SchematicInfo[]>();
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>();
@@ -112,6 +115,23 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setResourcePacks, toast]);
 
+  const handleServerRetriveResourcePackList = useCallback(() => {
+    if (instanceSummary?.id !== undefined) {
+      InstanceService.retriveServerResourcePackList(instanceSummary.id).then(
+        (response) => {
+          if (response.status === "success")
+            setServerResourcePacks(response.data);
+          else
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+        }
+      );
+    }
+  }, [instanceSummary?.id, setServerResourcePacks, toast]);
+
   const handleRetriveSchematicList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
       InstanceService.retriveSchematicList(instanceSummary.id).then(
@@ -167,6 +187,11 @@ export const InstanceContextProvider: React.FC<{
     handleRetriveResourcePackList
   );
 
+  const getServerResourcePackList = useGetState(
+    serverResourcePacks,
+    handleServerRetriveResourcePackList
+  );
+
   const getSchematicList = useGetState(schematics, handleRetriveSchematicList);
 
   const getShaderPackList = useGetState(
@@ -186,6 +211,7 @@ export const InstanceContextProvider: React.FC<{
         openSubdir: handleOpenInstanceSubdir,
         getWorldList,
         getResourcePackList,
+        getServerResourcePackList,
         getSchematicList,
         getShaderPackList,
         getScreenshotList,

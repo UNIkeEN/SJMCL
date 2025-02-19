@@ -78,6 +78,20 @@ export class InstanceService {
   }
 
   /**
+   * RETRIVE the list of server resource packs.
+   * @param {number} instanceId - The instance ID to retrive the server resource packs for.
+   * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
+   */
+  @responseHandler("instance", errorToLocaleKey)
+  static async retriveServerResourcePackList(
+    instanceId: number
+  ): Promise<InvokeResponse<ResourcePackInfo[]>> {
+    return await invoke("retrive_server_resource_pack_list", {
+      instanceId,
+    });
+  }
+
+  /**
    * RETRIVE the list of resource packs.
    * @param {number} instanceId - The instance ID to retrive the resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}

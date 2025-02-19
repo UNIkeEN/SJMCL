@@ -227,18 +227,9 @@ pub async fn retrive_game_server_list(
   Ok(game_servers)
 }
 
-#[tauri::command]
-pub async fn retrive_resource_pack_list(
-  app: AppHandle,
-  instance_id: usize,
+fn load_resource_packs_from_dir(
+  resource_packs_dir: &PathBuf,
 ) -> SJMCLResult<Vec<ResourcePackInfo>> {
-  // Get the resource packs list based on the instance
-  let resource_packs_dir =
-    match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::ResourcePacks) {
-      Some(path) => path,
-      None => return Ok(Vec::new()),
-    };
-
   let valid_extensions = RegexBuilder::new(r"\.zip$")
     .case_insensitive(true)
     .build()
@@ -315,6 +306,32 @@ pub async fn retrive_resource_pack_list(
     });
   }
   Ok(info_list)
+}
+#[tauri::command]
+pub async fn retrive_resource_pack_list(
+  app: AppHandle,
+  instance_id: usize,
+) -> SJMCLResult<Vec<ResourcePackInfo>> {
+  // Get the resource packs list based on the instance
+  let resource_packs_dir =
+    match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::ResourcePacks) {
+      Some(path) => path,
+      None => return Ok(Vec::new()),
+    };
+  load_resource_packs_from_dir(&resource_packs_dir)
+}
+
+#[tauri::command]
+pub async fn retrive_server_resource_pack_list(
+  app: AppHandle,
+  instance_id: usize,
+) -> SJMCLResult<Vec<ResourcePackInfo>> {
+  let resource_packs_dir =
+    match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::ServerResourcePacks) {
+      Some(path) => path,
+      None => return Ok(Vec::new()),
+    };
+  load_resource_packs_from_dir(&resource_packs_dir)
 }
 
 #[tauri::command]

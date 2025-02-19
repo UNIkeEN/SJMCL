@@ -12,6 +12,7 @@ pub enum InstanceSubdirType {
   Libraries,
   Mods,
   ResourcePacks,
+  ServerResourcePacks,
   Saves,
   Schematics,
   Screenshots,

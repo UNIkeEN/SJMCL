@@ -12,13 +12,13 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { InstanceSubdirType } from "@/enums/instance";
 import { ResourcePackInfo } from "@/models/game-instance";
-import { mockResourcePacks } from "@/models/mock/game-instance";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceResourcePacksPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const { openSubdir, getResourcePackList } = useInstanceSharedData();
+  const { openSubdir, getResourcePackList, getServerResourcePackList } =
+    useInstanceSharedData();
   const accordionStates =
     config.states.instanceResourcepackPage.accordionStates;
 
@@ -27,8 +27,8 @@ const InstanceResourcePacksPage = () => {
 
   useEffect(() => {
     setResourcePacks(getResourcePackList() || []);
-    setServerResPacks(mockResourcePacks);
-  }, [getResourcePackList]);
+    setServerResPacks(getServerResourcePackList() || []);
+  }, [getResourcePackList, getServerResourcePackList]);
 
   const defaultIcon = "/images/icons/DefaultPack.webp";
 
@@ -65,7 +65,9 @@ const InstanceResourcePacksPage = () => {
       secMenu: [
         {
           icon: "refresh",
-          onClick: () => {},
+          onClick: () => {
+            setServerResPacks(getServerResourcePackList(true) || []);
+          },
         },
       ],
     },

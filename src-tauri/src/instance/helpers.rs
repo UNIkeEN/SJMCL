@@ -50,6 +50,7 @@ pub fn get_instance_subdir_path(
     InstanceSubdirType::Libraries => Some(path.join("libraries")),
     InstanceSubdirType::Mods => Some(path.join("mods")),
     InstanceSubdirType::ResourcePacks => Some(path.join("resourcepacks")),
+    InstanceSubdirType::ServerResourcePacks => Some(path.join("server-resource-packs")),
     InstanceSubdirType::Saves => Some(path.join("saves")),
     InstanceSubdirType::Schematics => Some(path.join("schematics")),
     InstanceSubdirType::Screenshots => Some(path.join("screenshots")),
