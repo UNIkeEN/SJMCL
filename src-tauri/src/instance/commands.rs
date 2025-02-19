@@ -1,20 +1,26 @@
 use super::{
-  super::utils::image::image_to_base64,
+  super::utils::{
+    image::image_to_base64,
+    path_util::{get_files_with_regex, get_subdirectories},
+  },
   helpers::{get_instance_subdir_path, refresh_and_update_instances},
   models::{
     GameServerInfo, Instance, InstanceError, InstanceSubdirType, ResourcePackInfo, SchematicInfo,
     ScreenshotInfo, ShaderPackInfo, WorldInfo,
   },
 };
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use image::ImageReader;
 use quartz_nbt::NbtCompound;
 use quartz_nbt::{
   io::{read_nbt, Flavor},
   NbtList,
 };
+use regex::{Regex, RegexBuilder};
 use serde_json::Value;
 use std::{
+  ffi::OsStr,
+  fmt::format,
   fs::{self, File},
   io::{Cursor, Read},
   path::{Path, PathBuf},
@@ -57,19 +63,11 @@ pub async fn retrive_world_list(app: AppHandle, instance_id: usize) -> SJMCLResu
     None => return Ok(Vec::new()),
   };
 
-  if !worlds_dir.exists() {
-    return Ok(Vec::new());
-  }
-  let world_dirs: Vec<PathBuf> = fs::read_dir(worlds_dir)?
-    .filter_map(|entry| entry.ok())
-    .filter_map(|entry| {
-      if entry.path().is_dir() {
-        Some(entry.path())
-      } else {
-        None
-      }
-    })
-    .collect();
+  let world_dirs = match get_subdirectories(worlds_dir) {
+    Ok(val) => val,
+    Err(e) => return Err(e),
+  };
+
   let mut world_list: Vec<WorldInfo> = Vec::new();
   // TODO: async read
   for path in world_dirs {
@@ -133,8 +131,8 @@ pub async fn retrive_world_list(app: AppHandle, instance_id: usize) -> SJMCLResu
         last_played_at: last_played,
         gamemode: GAMEMODE_STR[gametype as usize].to_string(),
         difficulty: DIFFICULTY_STR[difficulty as usize].to_string(),
-        icon_src: icon_path.to_str().unwrap().to_string(),
-        dir_path: path.to_str().unwrap().to_string(),
+        icon_src: icon_path,
+        dir_path: path,
       });
     }
   }
@@ -163,17 +161,17 @@ pub async fn retrive_game_server_list(
 
   let mut nbt_bytes = Vec::new();
   if nbt_file.read_to_end(&mut nbt_bytes).is_err() {
-    return Ok(Vec::new());
+    return Err(InstanceError::ServerNbtReadError.into());
   }
 
   let (nbt, _) = match read_nbt(&mut Cursor::new(nbt_bytes), Flavor::Uncompressed) {
     Ok(result) => result,
-    Err(_) => return Ok(Vec::new()),
+    Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
 
   let servers = match nbt.get::<_, &NbtList>("servers") {
     Ok(list) => list,
-    Err(_) => return Ok(Vec::new()),
+    Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
 
   for server_idx in 0..servers.len() {
@@ -241,30 +239,14 @@ pub async fn retrive_resource_pack_list(
       None => return Ok(Vec::new()),
     };
 
-  if !resource_packs_dir.exists() {
-    return Ok(Vec::new());
-  }
-  let valid_extension = "zip";
-  let resource_pack_list: Vec<PathBuf> = fs::read_dir(resource_packs_dir)?
-    .filter_map(|entry| entry.ok())
-    .filter_map(|entry| {
-      let file_name = entry.file_name().into_string().ok()?;
-      let extension = Path::new(&file_name)
-        .extension()
-        .and_then(|ext| ext.to_str())
-        .map(|ext| ext.to_lowercase());
-
-      if extension.is_some() && extension.unwrap() == valid_extension {
-        Some(entry.path())
-      } else {
-        None
-      }
-    })
-    .collect();
+  let valid_extensions = RegexBuilder::new(r"\.zip$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
   let mut info_list: Vec<ResourcePackInfo> = Vec::new();
 
   // TODO: async read files
-  for path in resource_pack_list {
+  for path in get_files_with_regex(resource_packs_dir, &valid_extensions)? {
     let name = if let Some(file_stem_osstr) = path.file_stem() {
       if let Some(file_stem) = file_stem_osstr.to_str() {
         file_stem.to_owned() // Convert &str to String
@@ -329,7 +311,7 @@ pub async fn retrive_resource_pack_list(
       name,
       description,
       icon_src,
-      file_path: path.to_string_lossy().to_string(),
+      file_path: path,
     });
   }
   Ok(info_list)
@@ -349,30 +331,21 @@ pub fn retrive_schematic_list(
   if !schematics_dir.exists() {
     return Ok(Vec::new());
   }
-
-  let valid_extensions = ["litematic", "schematic"];
-
-  let schematic_list: Vec<SchematicInfo> = fs::read_dir(schematics_dir)?
-    .filter_map(|entry| entry.ok())
-    .filter_map(|entry| {
-      let file_name = entry.file_name().into_string().ok()?;
-      let extension = Path::new(&file_name)
-        .extension()
-        .and_then(|ext| ext.to_str())
-        .map(|ext| ext.to_lowercase());
-
-      if extension.is_some() && valid_extensions.contains(&extension.unwrap().as_str()) {
-        let file_path = entry.path().to_string_lossy().to_string();
-
-        Some(SchematicInfo {
-          name: file_name,
-          file_path,
-        })
-      } else {
-        None
-      }
-    })
-    .collect();
+  let valid_extensions = RegexBuilder::new(r"\.(litematic|schematic)$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+  let mut schematic_list = Vec::new();
+  for schematic_path in get_files_with_regex(schematics_dir.as_path(), &valid_extensions)? {
+    schematic_list.push(SchematicInfo {
+      name: schematic_path
+        .file_stem()
+        .unwrap()
+        .to_string_lossy()
+        .to_string(),
+      file_path: schematic_path,
+    });
+  }
 
   Ok(schematic_list)
 }
@@ -393,29 +366,18 @@ pub fn retrive_shader_pack_list(
     return Ok(Vec::new());
   }
 
-  let valid_extension = "zip";
-
-  let shaderpack_list: Vec<ShaderPackInfo> = fs::read_dir(shaderpacks_dir)?
-    .filter_map(|entry| entry.ok())
-    .filter_map(|entry| {
-      let file_name = entry.file_name().into_string().ok()?;
-      let extension = Path::new(&file_name)
-        .extension()
-        .and_then(|ext| ext.to_str())
-        .map(|ext| ext.to_lowercase());
-
-      if extension.is_some() && extension.unwrap() == valid_extension {
-        let file_path = entry.path().to_string_lossy().to_string();
-
-        Some(ShaderPackInfo {
-          file_name,
-          file_path,
-        })
-      } else {
-        None
-      }
-    })
-    .collect();
+  let valid_extensions = RegexBuilder::new(r"\.zip$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+  let mut shaderpack_list = Vec::new();
+  // TODO: async read files
+  for path in get_files_with_regex(shaderpacks_dir, &valid_extensions)? {
+    shaderpack_list.push(ShaderPackInfo {
+      file_name: path.file_stem().unwrap().to_string_lossy().to_string(),
+      file_path: path,
+    });
+  }
 
   Ok(shaderpack_list)
 }
@@ -436,37 +398,24 @@ pub fn retrive_screenshot_list(
   }
 
   // The default screenshot format in Minecraft is PNG. For broader compatibility, JPG and JPEG formats are also included here.
-  let valid_extensions = ["jpg", "jpeg", "png"];
-
-  let screenshot_list: Vec<ScreenshotInfo> = fs::read_dir(screenshots_dir)?
-    .filter_map(|entry| entry.ok())
-    .filter_map(|entry| {
-      let file_name = entry.file_name().into_string().ok()?;
-      let extension = Path::new(&file_name)
-        .extension()
-        .and_then(|ext| ext.to_str())
-        .map(|ext| ext.to_lowercase());
-
-      if extension.is_some() && valid_extensions.contains(&extension.unwrap().as_str()) {
-        let file_path = entry.path().to_string_lossy().to_string();
-
-        let metadata = entry.metadata().ok()?;
-        let modified_time = metadata.modified().ok()?;
-        let timestamp = modified_time
-          .duration_since(SystemTime::UNIX_EPOCH)
-          .ok()?
-          .as_secs();
-
-        Some(ScreenshotInfo {
-          file_name,
-          file_path,
-          time: timestamp,
-        })
-      } else {
-        None
-      }
-    })
-    .collect();
+  let valid_extensions = RegexBuilder::new(r"\.(jpg|jpeg|png)$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+  let mut screenshot_list = Vec::new();
+  for path in get_files_with_regex(screenshots_dir, &valid_extensions)? {
+    let metadata = path.metadata().unwrap();
+    let modified_time = metadata.modified().unwrap();
+    let timestamp = modified_time
+      .duration_since(SystemTime::UNIX_EPOCH)
+      .unwrap()
+      .as_secs();
+    screenshot_list.push(ScreenshotInfo {
+      file_name: path.file_stem().unwrap().to_string_lossy().to_string(),
+      file_path: path,
+      time: timestamp,
+    });
+  }
 
   Ok(screenshot_list)
 }

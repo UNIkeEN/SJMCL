@@ -1,6 +1,10 @@
 use crate::launcher_config::models::GameConfig;
 use serde::{Deserialize, Serialize};
-use std::{fmt, path::PathBuf};
+use std::{
+  ffi::{OsStr, OsString},
+  fmt::{self, write},
+  path::PathBuf,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstanceSubdirType {
@@ -41,8 +45,8 @@ pub struct WorldInfo {
   pub last_played_at: i64,
   pub difficulty: String,
   pub gamemode: String,
-  pub icon_src: String,
-  pub dir_path: String,
+  pub icon_src: PathBuf,
+  pub dir_path: PathBuf,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -63,28 +67,28 @@ pub struct ResourcePackInfo {
   pub name: String,
   pub description: String,
   pub icon_src: Option<String>,
-  pub file_path: String,
+  pub file_path: PathBuf,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SchematicInfo {
   pub name: String,
-  pub file_path: String,
+  pub file_path: PathBuf,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ShaderPackInfo {
   pub file_name: String,
-  pub file_path: String,
+  pub file_path: PathBuf,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ScreenshotInfo {
   pub file_name: String,
-  pub file_path: String,
+  pub file_path: PathBuf,
   pub time: u64,
 }
 
@@ -92,6 +96,7 @@ pub struct ScreenshotInfo {
 pub enum InstanceError {
   SubdirTypeNotFound,
   ExecOpenDirError,
+  ServerNbtReadError,
 }
 
 impl fmt::Display for InstanceError {
@@ -99,6 +104,7 @@ impl fmt::Display for InstanceError {
     match self {
       InstanceError::SubdirTypeNotFound => write!(f, "SUBDIR_TYPE_NOT_FOUND"),
       InstanceError::ExecOpenDirError => write!(f, "EXEC_OPEN_DIR_ERROR"),
+      InstanceError::ServerNbtReadError => write!(f, "SERVER_NBT_READ_ERROR"),
     }
   }
 }

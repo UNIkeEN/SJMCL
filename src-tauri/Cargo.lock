@@ -12,6 +12,7 @@ dependencies = [
  "partial_derive",
  "quartz_nbt",
  "rand 0.9.0",
+ "regex",
  "serde",
  "serde_json",
  "structstruck",
