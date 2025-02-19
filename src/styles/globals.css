@@ -1,5 +1,10 @@
 @import 'fonts.css';
 
+html {
+  /* disable elastic scrolling */
+  overscroll-behavior: none;
+}
+
 /* root */
 body {
   margin: 0;
