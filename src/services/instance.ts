@@ -7,6 +7,7 @@ import {
   SchematicInfo,
   ScreenshotInfo,
   ShaderPackInfo,
+  WorldInfo,
 } from "@/models/game-instance";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
@@ -46,6 +47,20 @@ export class InstanceService {
   }
 
   /**
+   * RETRIVE the list of world saves.
+   * @param {number} instanceId - The instance ID to retrive the worlds for.
+   * @returns {Promise<InvokeResponse<WorldInfo[]>>}
+   */
+  @responseHandler("instance", errorToLocaleKey)
+  static async retriveWorldList(
+    instanceId: number
+  ): Promise<InvokeResponse<WorldInfo[]>> {
+    return await invoke("retrive_world_list", {
+      instanceId,
+    });
+  }
+
+  /**
    * RETRIVE the list of game servers.
    * @param {number} instanceId - The instance ID to retrive the game servers for.
    * @param {boolean} queryOnline - A flag to determine whether to query online server status.
@@ -75,7 +90,7 @@ export class InstanceService {
       instanceId,
     });
   }
-  
+
   /**
    * RETRIVE the list of schematics.
    * @param {number} instanceId - The instance ID to retrive the schematics for.

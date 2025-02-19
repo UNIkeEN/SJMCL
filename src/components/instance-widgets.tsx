@@ -38,7 +38,7 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { LocalModInfo, WorldInfo } from "@/models/game-instance";
 import { ScreenshotInfo } from "@/models/game-instance";
 import { mockLocalMods, mockWorlds } from "@/models/mock/game-instance";
-import { formatRelativeTime } from "@/utils/datetime";
+import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
 interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
@@ -226,15 +226,15 @@ export const InstanceModsWidget = () => {
 
 export const InstanceLastPlayedWidget = () => {
   const { t } = useTranslation();
-  const [localWorlds, setLocalWorlds] = useState<WorldInfo[]>([]);
   const { config } = useLauncherConfig();
+  const { getWorldList } = useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
-  const router = useRouter();
+
+  const [localWorlds, setLocalWorlds] = useState<WorldInfo[]>([]);
 
   useEffect(() => {
-    // only for mock
-    setLocalWorlds(mockWorlds);
-  }, []);
+    setLocalWorlds(getWorldList() || []);
+  }, [getWorldList]);
 
   const lastPlayedWorld = localWorlds[0];
 
@@ -255,10 +255,10 @@ export const InstanceLastPlayedWidget = () => {
                 className="secondary-text"
               >
                 <Text>
-                  {formatRelativeTime(lastPlayedWorld.lastPlayedAt, t).replace(
-                    "on",
-                    ""
-                  )}
+                  {formatRelativeTime(
+                    UNIXToISOString(lastPlayedWorld.lastPlayedAt),
+                    t
+                  ).replace("on", "")}
                 </Text>
                 <Text>
                   {t(
@@ -274,7 +274,7 @@ export const InstanceLastPlayedWidget = () => {
             }
             prefixElement={
               <Image
-                src={`/images/icons/GrassBlock.png`}
+                src={convertFileSrc(lastPlayedWorld.iconSrc)}
                 alt={lastPlayedWorld.name}
                 boxSize="28px"
                 objectFit="cover"

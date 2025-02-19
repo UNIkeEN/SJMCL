@@ -43,7 +43,7 @@ export const mockWorlds: WorldInfo[] = [
     difficulty: "normal",
     gamemode: "survival",
     iconSrc: "/images/icons/GrassBlock.png",
-    filePath: "/.minecraft/saves",
+    dirPath: "/.minecraft/saves",
   },
   {
     name: "SMP-SJMC",
@@ -51,7 +51,7 @@ export const mockWorlds: WorldInfo[] = [
     difficulty: "hard",
     gamemode: "creative",
     iconSrc: "/images/icons/Anvil.png",
-    filePath: "/.minecraft/saves",
+    dirPath: "/.minecraft/saves",
   },
 ];
 

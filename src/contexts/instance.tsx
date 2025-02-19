@@ -16,12 +16,14 @@ import {
   SchematicInfo,
   ScreenshotInfo,
   ShaderPackInfo,
+  WorldInfo,
 } from "@/models/game-instance";
 import { InstanceService } from "@/services/instance";
 
 export interface InstanceContextType {
   summary: GameInstanceSummary | undefined;
   openSubdir: (dirType: InstanceSubdirType) => void;
+  getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
   getShaderPackList: (sync?: boolean) => ShaderPackInfo[] | undefined;
@@ -42,6 +44,7 @@ export const InstanceContextProvider: React.FC<{
   const [instanceSummary, setInstanceSummary] = useState<
     GameInstanceSummary | undefined
   >(undefined);
+  const [worlds, setWorlds] = useState<WorldInfo[]>();
   const [resourcePacks, setResourcePacks] = useState<ResourcePackInfo[]>();
   const [schematics, setSchematics] = useState<SchematicInfo[]>();
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>();
@@ -76,6 +79,23 @@ export const InstanceContextProvider: React.FC<{
     [instanceSummary?.id, toast]
   );
 
+  const handleRetriveWorldList = useCallback(() => {
+    if (instanceSummary?.id !== undefined) {
+      InstanceService.retriveWorldList(instanceSummary.id).then((response) => {
+        if (response.status === "success") {
+          setWorlds(
+            [...response.data].sort((a, b) => b.lastPlayedAt - a.lastPlayedAt)
+          );
+        } else
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+      });
+    }
+  }, [instanceSummary?.id, setWorlds, toast]);
+
   const handleRetriveResourcePackList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
       InstanceService.retriveResourcePackList(instanceSummary.id).then(
@@ -91,7 +111,7 @@ export const InstanceContextProvider: React.FC<{
       );
     }
   }, [instanceSummary?.id, setResourcePacks, toast]);
-  
+
   const handleRetriveSchematicList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
       InstanceService.retriveSchematicList(instanceSummary.id).then(
@@ -140,11 +160,13 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setScreenshots, toast]);
 
+  const getWorldList = useGetState(worlds, handleRetriveWorldList);
+
   const getResourcePackList = useGetState(
     resourcePacks,
     handleRetriveResourcePackList
   );
-  
+
   const getSchematicList = useGetState(schematics, handleRetriveSchematicList);
 
   const getShaderPackList = useGetState(
@@ -162,6 +184,7 @@ export const InstanceContextProvider: React.FC<{
       value={{
         summary: instanceSummary,
         openSubdir: handleOpenInstanceSubdir,
+        getWorldList,
         getResourcePackList,
         getSchematicList,
         getShaderPackList,

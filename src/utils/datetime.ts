@@ -25,6 +25,11 @@ export const UNIXToDate = (unixTimestamp: number): string => {
   return ISOToDate(isoString);
 };
 
+export const UNIXToISOString = (unixTimestamp: number): string => {
+  const isoString = new Date(unixTimestamp * 1000).toISOString();
+  return isoString;
+};
+
 export const formatRelativeTime = (
   isoString: string,
   t: (key: string, options?: any) => string

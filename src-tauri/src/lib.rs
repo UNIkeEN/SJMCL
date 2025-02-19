@@ -58,6 +58,7 @@ pub async fn run() {
       account::commands::fetch_auth_server_info,
       instance::commands::retrive_instance_list,
       instance::commands::open_instance_subdir,
+      instance::commands::retrive_world_list,
       instance::commands::retrive_game_server_list,
       instance::commands::retrive_resource_pack_list,
       instance::commands::retrive_schematic_list,

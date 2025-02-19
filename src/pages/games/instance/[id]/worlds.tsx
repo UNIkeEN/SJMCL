@@ -1,6 +1,7 @@
 import { Image } from "@chakra-ui/react";
 import { HStack, Tag, TagLabel, Text } from "@chakra-ui/react";
-import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-shell";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuX } from "react-icons/lu";
@@ -14,19 +15,22 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType } from "@/enums/instance";
 import { GameServerInfo, WorldInfo } from "@/models/game-instance";
-import { mockWorlds } from "@/models/mock/game-instance";
 import { InstanceService } from "@/services/instance";
-import { formatRelativeTime } from "@/utils/datetime";
+import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const { summary, openSubdir } = useInstanceSharedData();
+  const { summary, openSubdir, getWorldList } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
 
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
+
+  useEffect(() => {
+    setWorlds(getWorldList() || []);
+  }, [getWorldList]);
 
   const handleRetriveGameServerList = useCallback(
     (queryOnline: boolean) => {
@@ -50,7 +54,6 @@ const InstanceWorldsPage = () => {
   );
 
   useEffect(() => {
-    setWorlds(mockWorlds);
     handleRetriveGameServerList(false);
     handleRetriveGameServerList(true);
 
@@ -79,8 +82,7 @@ const InstanceWorldsPage = () => {
     {
       icon: "refresh",
       onClick: () => {
-        handleRetriveGameServerList(false);
-        handleRetriveGameServerList(true);
+        setWorlds(getWorldList(true) || []);
       },
     },
   ];
@@ -94,7 +96,7 @@ const InstanceWorldsPage = () => {
     {
       label: "",
       icon: "revealFile",
-      onClick: () => revealItemInDir(save.filePath),
+      onClick: () => open(save.dirPath),
     },
   ];
 
@@ -142,10 +144,10 @@ const InstanceWorldsPage = () => {
                   title={world.name}
                   description={`${t(
                     "InstanceWorldsPage.worldList.lastPlayedAt"
-                  )} ${formatRelativeTime(world.lastPlayedAt, t)}${t("InstanceWorldsPage.worldList.moreDesc", { gamemode, difficulty })}`}
+                  )} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}${t("InstanceWorldsPage.worldList.moreDesc", { gamemode, difficulty })}`}
                   prefixElement={
                     <Image
-                      src={world.iconSrc}
+                      src={convertFileSrc(world.iconSrc)}
                       alt={world.name}
                       boxSize="28px"
                       style={{ borderRadius: "4px" }}
@@ -185,7 +187,10 @@ const InstanceWorldsPage = () => {
         headExtra={
           <CommonIconButton
             icon="refresh"
-            onClick={() => {}}
+            onClick={() => {
+              handleRetriveGameServerList(false);
+              handleRetriveGameServerList(true);
+            }}
             size="xs"
             fontSize="sm"
             h={21}

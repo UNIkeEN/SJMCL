@@ -16,11 +16,11 @@ export interface GameInstanceSummary {
 
 export interface WorldInfo {
   name: string;
-  lastPlayedAt: string;
+  lastPlayedAt: number;
   difficulty: string;
   gamemode: string;
   iconSrc: string;
-  filePath: string;
+  dirPath: string;
 }
 
 export interface GameServerInfo {

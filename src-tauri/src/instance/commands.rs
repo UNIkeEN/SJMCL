@@ -3,14 +3,16 @@ use super::{
   helpers::{get_instance_subdir_path, refresh_and_update_instances},
   models::{
     GameServerInfo, Instance, InstanceError, InstanceSubdirType, ResourcePackInfo, SchematicInfo,
-    ScreenshotInfo, ShaderPackInfo,
+    ScreenshotInfo, ShaderPackInfo, WorldInfo,
   },
 };
 use crate::error::SJMCLResult;
 use image::ImageReader;
+use quartz_nbt::io::{read_nbt, Flavor, NbtIoError};
+use quartz_nbt::NbtCompound;
 use serde_json::Value;
 use std::{
-  fs,
+  fs::{self, File},
   io::{Cursor, Read},
   path::{Path, PathBuf},
   sync::Mutex,
@@ -20,7 +22,6 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_shell::ShellExt;
 use zip::read::ZipArchive;
-
 #[tauri::command]
 pub async fn retrive_instance_list(app: AppHandle) -> SJMCLResult<Vec<Instance>> {
   refresh_and_update_instances(&app).await; // firstly refresh and update
@@ -44,6 +45,96 @@ pub fn open_instance_subdir(
     Ok(_) => Ok(()),
     Err(_) => Err(InstanceError::ExecOpenDirError.into()),
   }
+}
+
+#[tauri::command]
+pub async fn retrive_world_list(app: AppHandle, instance_id: usize) -> SJMCLResult<Vec<WorldInfo>> {
+  let worlds_dir = match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Saves) {
+    Some(path) => path,
+    None => return Ok(Vec::new()),
+  };
+
+  if !worlds_dir.exists() {
+    return Ok(Vec::new());
+  }
+  let world_dirs: Vec<PathBuf> = fs::read_dir(worlds_dir)?
+    .filter_map(|entry| entry.ok())
+    .filter_map(|entry| {
+      if entry.path().is_dir() {
+        Some(entry.path())
+      } else {
+        None
+      }
+    })
+    .collect();
+  let mut world_list: Vec<WorldInfo> = Vec::new();
+  // TODO: async read
+  for path in world_dirs {
+    let name = path.file_name().unwrap().to_str().unwrap();
+
+    let mut icon_path = path.clone();
+    icon_path.push("icon.png");
+
+    let mut nbt_path = path.clone();
+    nbt_path.push("level.dat");
+
+    if let Ok(mut nbt_file) = File::open(nbt_path) {
+      let mut nbt_bytes = Vec::new();
+      nbt_file.read_to_end(&mut nbt_bytes);
+      let nbt_result = read_nbt(&mut Cursor::new(nbt_bytes), Flavor::GzCompressed);
+      if nbt_result.is_err() {
+        println!("nbt read error: {}", nbt_result.err().unwrap());
+        continue;
+      }
+      let nbt = nbt_result.unwrap().0;
+      let data = nbt.get::<_, &NbtCompound>("Data");
+      if data.is_err() {
+        println!("nbt not contains 'Data'");
+        continue;
+      }
+      let data = data.unwrap();
+      let last_played: i64;
+      if let Ok(val) = data.get::<_, &i64>("LastPlayed") {
+        last_played = *val / 1000;
+      } else {
+        last_played = 0;
+      }
+      let mut difficulty: u8;
+      if let Ok(val) = data.get::<_, &u8>("Difficulty") {
+        difficulty = *val;
+      } else {
+        difficulty = 2;
+      }
+      if let Ok(val) = data.get::<_, &u8>("hardcore") {
+        if *val != 0 {
+          difficulty = 4;
+        }
+      }
+      const DIFFICULTY_STR: [&str; 5] = ["peaceful", "easy", "normal", "hard", "hardcore"];
+      if difficulty >= DIFFICULTY_STR.len() as u8 {
+        continue;
+      }
+      let gametype: i32;
+      if let Ok(val) = data.get::<_, &i32>("GameType") {
+        gametype = *val;
+      } else {
+        gametype = 0;
+      }
+      const GAMEMODE_STR: [&str; 4] = ["survival", "creative", "adventure", "spectator"];
+      if gametype < 0 || gametype >= GAMEMODE_STR.len() as i32 {
+        continue;
+      }
+      world_list.push(WorldInfo {
+        name: name.to_string(),
+        last_played_at: last_played,
+        gamemode: GAMEMODE_STR[gametype as usize].to_string(),
+        difficulty: DIFFICULTY_STR[difficulty as usize].to_string(),
+        icon_src: icon_path.to_str().unwrap().to_string(),
+        dir_path: path.to_str().unwrap().to_string(),
+      });
+    }
+  }
+  Ok(world_list)
 }
 
 #[tauri::command]
