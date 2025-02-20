@@ -12,7 +12,18 @@ import {
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
-const errorToLocaleKey: { [key: string]: string } = {};
+const errorToLocaleKey: { [key: string]: string } = {
+  retrive_instance_list: "instance.retriveInstanceList.error.title",
+  open_instance_subdir: "instance.openInstanceSubdir.error.title",
+  retrive_world_list: "instance.retriveWorldList.error.title",
+  retrive_game_server_list: "instance.retriveGameServerList.error.title",
+  retrive_server_resource_pack_list:
+    "instance.retriveServerResourcePackList.error.title",
+  retrive_resource_pack_list: "instance.retriveResourcePackList.error.title",
+  retrive_schematic_list: "instance.retriveSchematicList.error.title",
+  retrive_shader_pack_list: "instance.retriveShaderPackList.error.title",
+  retrive_screenshot_list: "instance.retriveScreenshotList.error.title",
+};
 
 /**
  * Service class for managing instances and its local resources.
