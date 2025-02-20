@@ -32,6 +32,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
@@ -362,6 +363,24 @@ const AppearanceSettingsPage = () => {
         {
           title: t("AppearanceSettingsPage.theme.settings.primaryColor.title"),
           children: <ColorSelectPopover />,
+        },
+        {
+          title: t("AppearanceSettingsPage.theme.settings.colorMode.title"),
+          children: (
+            <SegmentedControl
+              selected={appearanceConfigs.theme.colorMode}
+              onSelectItem={(s) => {
+                update("appearance.theme.colorMode", s as string);
+              }}
+              size="xs"
+              items={["light", "dark"].map((item) => ({
+                label: t(
+                  `AppearanceSettingsPage.theme.settings.colorMode.type.${item}`
+                ),
+                value: item,
+              }))}
+            />
+          ),
         },
         {
           title: t("AppearanceSettingsPage.theme.settings.headNavStyle.title"),

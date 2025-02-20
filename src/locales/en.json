@@ -167,6 +167,13 @@
         "primaryColor": {
           "title": "Launcher Primary Color"
         },
+        "colorMode": {
+          "title": "Color Mode",
+          "type": {
+            "light": "Light",
+            "dark": "Dark"
+          }
+        },
         "headNavStyle": {
           "title": "Navigation Bar Style",
           "type": {

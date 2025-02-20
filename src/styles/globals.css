@@ -60,16 +60,6 @@ body {
 
 
 /* card-style content container */
-.content-blur-bg {
-  background-color: rgba(255, 255, 255, 0.75) !important;
-  backdrop-filter: blur(20px);
-}
-
-.content-card {
-  background-color: var(--chakra-colors-gray-50) !important;
-  padding: var(--chakra-space-3);
-}
-
 .content-full-y {
   height: 100%;
   overflow-y: auto;

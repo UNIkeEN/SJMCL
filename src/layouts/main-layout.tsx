@@ -9,6 +9,7 @@ import HeadNavBar from "@/components/head-navbar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const { config, update } = useLauncherConfig();
+  const themedStyles = useThemedCSSStyle();
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
@@ -121,7 +123,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <>{children}</>
       ) : (
         <Card
-          className="content-blur-bg"
+          className={themedStyles.card["card-back"]}
           h="100%"
           overflow="auto"
           mt={1}

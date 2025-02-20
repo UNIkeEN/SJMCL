@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { LuChevronRight, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { ModLoaderType } from "@/models/resource";
 
 interface ModLoaderCardsProps extends BoxProps {
@@ -34,6 +35,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const themedStyles = useThemedCSSStyle();
 
   const baseTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
   const loaderTypes =
@@ -46,7 +48,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
     return (
       <Card
         key={type}
-        className="content-card"
+        className={themedStyles.card["card-front"]}
         pr={1.5}
         variant={isSelected ? "outline" : "elevated"}
         borderColor={isSelected ? `${primaryColor}.500` : "transparent"}

@@ -11,16 +11,18 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuArrowDownToLine } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 export const DownloadFloatButton: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();
+  const themedStyles = useThemedCSSStyle();
 
   return (
     <Card
-      className="content-blur-bg"
+      className={themedStyles.card["card-back"]}
       position="absolute"
       top={4}
       right={4}
@@ -29,7 +31,7 @@ export const DownloadFloatButton: React.FC = () => {
       <Tooltip label={t("DownloadFloatButton.tooltip")}>
         <Button
           variant="ghost"
-          colorScheme="blackAlpha"
+          // colorScheme="blackAlpha"
           p={1}
           size="auto"
           onClick={() => {

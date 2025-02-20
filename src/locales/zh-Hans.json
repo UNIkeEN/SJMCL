@@ -167,6 +167,13 @@
         "primaryColor": {
           "title": "启动器强调色"
         },
+        "colorMode": {
+          "title": "颜色模式",
+          "type": {
+            "light": "浅色",
+            "dark": "深色"
+          }
+        },
         "headNavStyle": {
           "title": "顶部导航栏样式",
           "type": {

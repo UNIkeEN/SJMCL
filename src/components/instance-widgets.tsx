@@ -12,6 +12,7 @@ import {
   Text,
   Tooltip,
   VStack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
@@ -55,6 +56,8 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const backIconColor = `${primaryColor}.${useColorModeValue(100, 900)}`;
+
   return (
     <VStack align="stretch" spacing={2} {...props}>
       {title && (
@@ -77,7 +80,7 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
         <Icon
           as={icon}
           position="absolute"
-          color={`${primaryColor}.100`}
+          color={backIconColor}
           boxSize={20}
           bottom={-5}
           right={-5}
@@ -121,7 +124,10 @@ export const InstanceBasicInfoWidget = () => {
         title={t("InstanceWidgets.basicInfo.playTime")}
         description={"12.1 小时"}
         prefixElement={
-          <Center boxSize={7} color={`${primaryColor}.600`}>
+          <Center
+            boxSize={7}
+            color={`${primaryColor}.${useColorModeValue(600, 200)}`}
+          >
             <LuCalendarClock fontSize="24px" />
           </Center>
         }

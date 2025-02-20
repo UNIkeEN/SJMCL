@@ -13,6 +13,7 @@ import {
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 type WrapCardContentObject = {
   title: string;
@@ -50,6 +51,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const themedStyles = useThemedCSSStyle();
 
   const renderContent = () => {
     if (!cardContent) return null;
@@ -87,7 +89,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
 
   return (
     <Card
-      className="content-card"
+      className={themedStyles.card["card-front"]}
       borderColor={`${primaryColor}.500`}
       variant={isSelected ? "outline" : "elevated"}
       position="relative"

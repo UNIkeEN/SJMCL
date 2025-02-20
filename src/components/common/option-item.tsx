@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 export interface OptionItemProps extends BoxProps {
   prefixElement?: React.ReactNode;
@@ -100,6 +101,8 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   withDivider = true,
   ...props
 }) => {
+  const themedStyles = useThemedCSSStyle();
+
   function isOptionItemProps(item: any): item is OptionItemProps {
     return (
       (item as OptionItemProps)?.title != null &&
@@ -110,7 +113,7 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   return (
     <Section {...props}>
       {items.length > 0 && (
-        <Card className="content-card">
+        <Card className={themedStyles.card["card-front"]}>
           {items.map((item, index) => (
             <React.Fragment key={index}>
               {isOptionItemProps(item) ? (

@@ -40,6 +40,7 @@ export interface LauncherConfig {
   appearance: {
     theme: {
       primaryColor: string;
+      colorMode: "light" | "dark" | "system";
       headNavStyle: string;
     };
     background: {
@@ -140,6 +141,7 @@ export const defaultConfig: LauncherConfig = {
   appearance: {
     theme: {
       primaryColor: "blue",
+      colorMode: "light",
       headNavStyle: "standard",
     },
     background: {

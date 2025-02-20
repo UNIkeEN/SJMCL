@@ -1,0 +1,9 @@
+.card-back {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(20px);
+}
+
+.card-front {
+  background-color: var(--chakra-colors-gray-800) !important;
+  padding: var(--chakra-space-3);
+}

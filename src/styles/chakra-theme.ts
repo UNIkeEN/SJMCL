@@ -47,6 +47,8 @@ const customGraySolidButtonTheme = {
 };
 
 const chakraExtendTheme = extendTheme({
+  initialColorMode: "dark",
+  useSystemColorMode: false,
   components: {
     Alert: {
       baseStyle: {
