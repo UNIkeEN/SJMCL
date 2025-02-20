@@ -81,7 +81,7 @@ const chakraExtendTheme = extendTheme({
     },
     Divider: {
       baseStyle: {
-        borderColor: "gray.300",
+        borderColor: "blackAlpha.300",
       },
     },
     FormLabel: {

@@ -4,6 +4,6 @@
 }
 
 .card-front {
-  background-color: var(--chakra-colors-gray-50) !important;
+  background-color: #FAFAFA !important;
   padding: var(--chakra-space-3);
 }
