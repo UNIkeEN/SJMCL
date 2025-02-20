@@ -1,4 +1,10 @@
-import { Card, Center, Flex, useDisclosure } from "@chakra-ui/react";
+import {
+  Card,
+  Center,
+  Flex,
+  useColorModeValue,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 import { useRouter } from "next/router";
@@ -93,9 +99,19 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     };
   };
 
+  const standaloneBgColor = useColorModeValue(
+    "white",
+    "var(--chakra-colors-gray-900)"
+  );
+
   if (isStandAlone) {
     return (
-      <div style={{ ...getGlobalExtraStyle(config), backgroundColor: "white" }}>
+      <div
+        style={{
+          ...getGlobalExtraStyle(config),
+          backgroundColor: standaloneBgColor,
+        }}
+      >
         {children}
       </div>
     );
