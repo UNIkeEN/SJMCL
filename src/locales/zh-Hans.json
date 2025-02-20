@@ -1153,6 +1153,53 @@
           }
         }
       }
+    },
+    "instance": {
+      "retriveInstanceList": {
+        "error": {
+          "title": "获取实例列表失败"
+        }
+      },
+      "openInstanceSubdir": {
+        "error": {
+          "title": "打开实例子目录失败"
+        }
+      },
+      "retriveWorldList": {
+        "error": {
+          "title": "获取世界列表失败"
+        }
+      },
+      "retriveGameServerList": {
+        "error": {
+          "title": "获取游戏服务器列表失败"
+        }
+      },
+      "retriveServerResourcePackList": {
+        "error": {
+          "title": "获取服务器资源包列表失败"
+        }
+      },
+      "retriveResourcePackList": {
+        "error": {
+          "title": "获取资源包列表失败"
+        }
+      },
+      "retriveSchematicList": {
+        "error": {
+          "title": "获取原理图列表失败"
+        }
+      },
+      "retriveShaderPackList": {
+        "error": {
+          "title": "获取光影包列表失败"
+        }
+      },
+      "retriveScreenshotList": {
+        "error": {
+          "title": "获取截图列表失败"
+        }
+      }
     }
   },
   "SettingsLayout": {

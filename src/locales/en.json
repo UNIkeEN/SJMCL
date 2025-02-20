@@ -1153,6 +1153,53 @@
           }
         }
       }
+    },
+    "instance": {
+      "retriveInstanceList": {
+        "error": {
+          "title": "Failed to retrieve instance list"
+        }
+      },
+      "openInstanceSubdir": {
+        "error": {
+          "title": "Failed to open instance directory"
+        }
+      },
+      "retriveWorldList": {
+        "error": {
+          "title": "Failed to retrieve world list"
+        }
+      },
+      "retriveGameServerList": {
+        "error": {
+          "title": "Failed to retrieve game server list"
+        }
+      },
+      "retriveServerResourcePackList": {
+        "error": {
+          "title": "Failed to retrieve server resource pack list"
+        }
+      },
+      "retriveResourcePackList": {
+        "error": {
+          "title": "Failed to retrieve resource pack list"
+        }
+      },
+      "retriveSchematicList": {
+        "error": {
+          "title": "Failed to retrieve schematic list"
+        }
+      },
+      "retriveShaderPackList": {
+        "error": {
+          "title": "Failed to retrieve shader pack list"
+        }
+      },
+      "retriveScreenshotList": {
+        "error": {
+          "title": "Failed to retrieve screenshot list"
+        }
+      }
     }
   },
   "SettingsLayout": {
