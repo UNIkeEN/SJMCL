@@ -132,7 +132,7 @@ jobs:
           mkdir artifacts
           if [ "${{ matrix.platform }}" = "windows" ]; then
             # For Windows, copy the portable exe
-            mv "src-tauri/target/release/SJMCL.exe" artifacts/"$ARTIFACT_NAME".exe
+            mv "src-tauri/target/release/SJMCL.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
             mv "src-tauri/target/release/bundle/msi/"*.msi artifacts/"$ARTIFACT_NAME".msi
             ls -la artifacts
           elif [ "${{ matrix.platform }}" = "macos" ]; then
@@ -173,11 +173,11 @@ jobs:
         run: |
           RELEASE_TAG="${{ env.VERSION }}"
 
-          ls -la
+          ls -la ./*/*
           
           # Create the release
           gh release create "$GITHUB_REF_NAME" \
             --title "SJMCL ${{ env.VERSION }}" \
             --draft \
             $PRERELEASE \
-            ./**/*{.AppImage,.deb,.exe,.rpm,.tar.gz,.msi}
+            ./*/*
