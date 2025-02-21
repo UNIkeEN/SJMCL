@@ -150,7 +150,7 @@ jobs:
             ls -la artifacts
           elif [ "${{ matrix.platform }}" = "macos" ]; then
             # For MacOS, compress the .app folder
-            tar -cvzf artifacts/"$ARTIFACT_NAME".tar.gz -C "src-tauri/target/release/bundle/macos" "SJMCL.app"
+            tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/release/bundle/macos" "SJMCL.app"
             ls -la artifacts
           elif [ "${{ matrix.platform }}" = "linux" ]; then
             mv "src-tauri/target/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
