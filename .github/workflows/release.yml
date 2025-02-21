@@ -153,7 +153,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: "*"
+          path: "artifacts/*"
           if-no-files-found: error
 
   Create-Release:
@@ -161,11 +161,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
-        
+        with:
+          path: "artifacts"
+
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -180,4 +182,4 @@ jobs:
             --title "SJMCL ${{ env.VERSION }}" \
             --draft \
             $PRERELEASE \
-            ./*/*
+            ./artifacts/*/*
