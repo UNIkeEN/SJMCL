@@ -48,6 +48,11 @@ jobs:
               exit 1
             fi
             echo "✅ Git tag version matches package version: $TAG_VERSION"
+          else
+            COMMIT_HASH=$(git rev-parse HEAD)
+            COMMIT_HASH=${COMMIT_HASH:0:6}
+            PKG_VERSION="$PKG_VERSION"-"$COMMIT_HASH"
+            echo "Not a tag, using package version with commit hash: $PKG_VERSION"
           fi
           
           # Set the version as output
@@ -166,7 +171,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: "artifacts"
+          path: artifacts
 
       - name: Create Release
         env:
@@ -175,7 +180,7 @@ jobs:
         run: |
           RELEASE_TAG="${{ env.VERSION }}"
 
-          ls -la ./*/*
+          ls -la ./artifacts/*/*
           
           # Create the release
           gh release create "$GITHUB_REF_NAME" \
