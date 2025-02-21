@@ -266,7 +266,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
             ))}
           </Stepper>
         </Center>
-        <Flex flexGrow="1" flexDir="column">
+        <Flex flexGrow="1" flexDir="column" h="100%" overflow="auto">
           {steps[activeStep].content}
         </Flex>
       </ModalContent>
