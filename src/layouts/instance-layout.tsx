@@ -82,6 +82,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <Section
+      overflow="hidden"
       display="flex"
       flexDirection="column"
       height="100%"
