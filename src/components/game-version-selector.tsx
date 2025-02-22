@@ -210,6 +210,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
             <LuSearch />
           </InputLeftElement>
           <Input
+            focusBorderColor={`${primaryColor}.500`}
             borderRadius="md"
             placeholder={t("GameVersionSelector.searchPlaceholder")}
             onChange={(e) => setSearchText(e.target.value)}
