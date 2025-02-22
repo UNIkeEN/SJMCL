@@ -118,6 +118,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         onClick={(value) => router.push(value)}
         direction="row"
         size="xs"
+        marginBottom={4}
         spacing={
           config.general.general.language.startsWith("zh") &&
           summary?.hasSchemFolder
