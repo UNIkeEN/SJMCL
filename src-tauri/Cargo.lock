@@ -3719,6 +3719,7 @@ dependencies = [
  "cesu8",
  "flate2",
  "quartz_nbt_macros",
+ "serde",
 ]
 
 [[package]]
