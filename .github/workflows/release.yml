@@ -81,7 +81,7 @@ jobs:
             platform: macos
             arch: x86_64
           - os: ubuntu-latest
-            target: x86_64-linux-gnu
+            target: x86_64-unknown-linux-gnu
             platform: linux
             arch: x86_64
           # macos-large just doesn't start; job fails so it's disabled currently.
