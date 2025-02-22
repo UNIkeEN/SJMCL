@@ -4,7 +4,7 @@ import { useRoutingHistory } from "@/contexts/routing-history";
 
 const InstanceDetailIndexPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, screenshotIndex } = router.query;
   const { history } = useRoutingHistory();
 
   useEffect(() => {
@@ -15,13 +15,14 @@ const InstanceDetailIndexPage = () => {
 
     const instanceId = Array.isArray(id) ? id[0] : id;
 
-    router.replace(
+    const targetRoute =
       [...history]
         .reverse()
         .find((route) => route.startsWith(`/games/instance/${instanceId}/`)) ||
-        `/games/instance/${instanceId}/overview`
-    );
-  }, [history, router, id]);
+      `/games/instance/${instanceId}/overview`;
+
+    router.replace(targetRoute.split("?")[0]);
+  }, [history, router, id, screenshotIndex]);
 
   return null;
 };

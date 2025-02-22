@@ -1,6 +1,7 @@
 import { IconButton, Image, Tooltip, useDisclosure } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
-import { useState } from "react";
+import router from "next/router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEllipsis } from "react-icons/lu";
 import { Section } from "@/components/common/section";
@@ -20,6 +21,17 @@ const InstanceScreenshotsPage: React.FC = () => {
   const [currentScreenshot, setCurrentScreenshot] = useState<Screenshot | null>(
     null
   );
+
+  useEffect(() => {
+    if (router.isReady) {
+      const { screenshotIndex } = router.query;
+      if (screenshotIndex) {
+        setCurrentScreenshot(mockScreenshots[Number(screenshotIndex)]);
+        onScreenshotPreviewModalOpen();
+      }
+    }
+  }, [onScreenshotPreviewModalOpen]);
+
   const ScreenshotsCard = ({ screenshot }: { screenshot: Screenshot }) => {
     const [isHovered, setIsHovered] = useState(false);
     return (

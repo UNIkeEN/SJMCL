@@ -12,8 +12,9 @@ import {
   Text,
   Tooltip,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
@@ -41,6 +42,7 @@ import {
   mockWorlds,
 } from "@/models/mock/game-instance";
 import { formatRelativeTime } from "@/utils/datetime";
+import ScreenshotPreviewModal from "./modals/screenshot-preview-modal";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
 interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
@@ -134,6 +136,8 @@ export const InstanceBasicInfoWidget = () => {
 
 export const InstanceScreenshotsWidget = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { id } = router.query;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
 
@@ -141,47 +145,48 @@ export const InstanceScreenshotsWidget = () => {
     const interval = setInterval(() => {
       setIsFading(true);
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % mockScreenshots.length);
+        setCurrentIndex(
+          (prevIndex) => (prevIndex + 1) % mockScreenshots.length
+        );
         setIsFading(false);
       }, 1000);
-    }, 3000);
-
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  const nextIndex = (currentIndex + 1) % mockScreenshots.length;
   return (
-    <InstanceWidgetBase title={t("InstanceWidgets.screenshots.title")}>
+    <InstanceWidgetBase
+      title={t("InstanceWidgets.screenshots.title")}
+      style={{ cursor: "pointer" }}
+    >
       <Image
         src={mockScreenshots[currentIndex].imgSrc}
         alt={mockScreenshots[currentIndex].fileName}
+        objectFit="cover"
+        position="absolute"
+        borderRadius="md"
+        w="100%"
+        h="100%"
+        ml={-3}
+        mt={-3}
         opacity={isFading ? 0 : 1}
         transition="opacity 1s ease-in-out"
-        objectFit="cover"
-        position="absolute"
-        borderRadius="md"
-        w="100%"
-        h="100%"
-        ml={-3}
-        mt={-3}
-      />
-      <Image
-        src={mockScreenshots[nextIndex].imgSrc}
-        alt={mockScreenshots[nextIndex].fileName}
-        opacity={isFading ? 1 : 0}
-        transition="opacity 1s ease-in-out"
-        objectFit="cover"
-        position="absolute"
-        borderRadius="md"
-        w="100%"
-        h="100%"
-        ml={-3}
-        mt={-3}
+        onClick={() => {
+          router.push(
+            {
+              pathname: `/games/instance/${id}/screenshots`,
+              query: {
+                screenshotIndex: currentIndex.toString(),
+              },
+            },
+            undefined,
+            { shallow: true }
+          );
+        }}
       />
     </InstanceWidgetBase>
   );
 };
-
 export const InstanceModsWidget = () => {
   const { t } = useTranslation();
   const router = useRouter();
