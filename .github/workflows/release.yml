@@ -131,9 +131,7 @@ jobs:
           key: ${{ matrix.platform }}-${{ matrix.target }}
 
       - name: Build the app
-        run: npm run tauri build
-        env:
-          RUST_TARGET: ${{ matrix.target }}
+        run: npm run tauri build --target ${{ matrix.target }}
 
       - name: Prepare release artifact
         shell: bash
