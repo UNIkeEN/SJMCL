@@ -123,21 +123,24 @@ const AppearanceSettingsPage = () => {
           title: response.message,
           status: "success",
         });
-        // set the next bgKey (custom+1 > custom-1 > default) after delete
-        const deletedIndex = customBgList.findIndex(
-          (bg) => bg.fileName === fileName
-        );
 
-        let newSelectedBgKey;
-        if (customBgList.length === 1) {
-          newSelectedBgKey = "%built-in:Jokull";
-        } else {
-          newSelectedBgKey =
-            deletedIndex < customBgList.length - 1
-              ? customBgList[deletedIndex + 1].fileName
-              : customBgList[deletedIndex - 1].fileName;
+        // set the next bgKey (custom+1 > custom-1 > default) if current choice is deleted
+        if (fileName === selectedBgKey) {
+          const deletedIndex = customBgList.findIndex(
+            (bg) => bg.fileName === fileName
+          );
+
+          let newSelectedBgKey;
+          if (customBgList.length === 1) {
+            newSelectedBgKey = "%built-in:Jokull";
+          } else {
+            newSelectedBgKey =
+              deletedIndex < customBgList.length - 1
+                ? customBgList[deletedIndex + 1].fileName
+                : customBgList[deletedIndex - 1].fileName;
+          }
+          update("appearance.background.choice", newSelectedBgKey);
         }
-        update("appearance.background.choice", newSelectedBgKey);
 
         // refresh custom bg list state
         handleRetriveCustomBackgroundList();
