@@ -115,7 +115,9 @@ jobs:
           sudo apt-get install -y rpm
 
       - name: Install frontend dependencies
-        run: pnpm install
+        run: |
+          npm install -g pnpm
+          pnpm install
 
       - name: Remove Font files (MacOS)
         if: matrix.platform == 'macos'
