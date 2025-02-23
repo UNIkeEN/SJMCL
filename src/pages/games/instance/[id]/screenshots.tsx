@@ -36,6 +36,20 @@ const InstanceScreenshotsPage: React.FC = () => {
       onScreenshotPreviewModalOpen();
     }
   }, [screenshots, onScreenshotPreviewModalOpen]);
+  const handleModalClose = () => {
+    onScreenshotPreviewModalClose();
+    const { id } = router.query;
+    if (id) {
+      router.replace(
+        {
+          pathname: `/games/instance/${id}/screenshots`,
+          query: {},
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  };
 
   const ScreenshotsCard = ({ screenshot }: { screenshot: ScreenshotInfo }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -96,7 +110,7 @@ const InstanceScreenshotsPage: React.FC = () => {
         <ScreenshotPreviewModal
           screenshot={currentScreenshot}
           isOpen={isScreenshotPreviewModalOpen}
-          onClose={onScreenshotPreviewModalClose}
+          onClose={handleModalClose}
         />
       )}
     </Section>

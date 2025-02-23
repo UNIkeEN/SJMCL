@@ -15,14 +15,13 @@ const InstanceDetailIndexPage = () => {
 
     const instanceId = Array.isArray(id) ? id[0] : id;
 
-    const targetRoute =
+    router.replace(
       [...history]
         .reverse()
         .find((route) => route.startsWith(`/games/instance/${instanceId}/`)) ||
-      `/games/instance/${instanceId}/overview`;
-
-    router.replace(targetRoute.split("?")[0]);
-  }, [history, router, id, screenshotIndex]);
+        `/games/instance/${instanceId}/overview`
+    );
+  }, [history, router, id]);
 
   return null;
 };
