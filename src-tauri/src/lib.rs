@@ -67,6 +67,7 @@ pub async fn run() {
       instance::commands::retrive_schematic_list,
       instance::commands::retrive_shader_pack_list,
       instance::commands::retrive_screenshot_list,
+      instance::commands::modify_mod_extension,
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,

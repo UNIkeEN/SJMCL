@@ -15,10 +15,13 @@ use super::{
     SchematicInfo, ScreenshotInfo, ShaderPackInfo, WorldInfo,
   },
 };
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use futures;
+use lazy_static::lazy_static;
 use quartz_nbt::io::Flavor;
-use regex::RegexBuilder;
+use regex::{Regex, RegexBuilder};
+use std::fs;
+use std::path::PathBuf;
 use std::{sync::Mutex, time::SystemTime};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::ShellExt;
@@ -368,4 +371,52 @@ pub fn retrive_screenshot_list(
   }
 
   Ok(screenshot_list)
+}
+
+lazy_static! {
+  static ref RENAME_LOCK: Mutex<()> = Mutex::new(());
+  static ref RENAME_REGEX: Regex = RegexBuilder::new(r"^(.*?)(\.disable)*$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+}
+
+#[tauri::command]
+pub fn modify_mod_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<()> {
+  let _lock = RENAME_LOCK.lock().expect("Failed to acquire lock");
+  if !file_path.is_file() {
+    return Err(InstanceError::FileNotFoundError.into());
+  }
+
+  let file_name = file_path
+    .file_name()
+    .unwrap_or_default()
+    .to_str()
+    .unwrap_or_default();
+
+  let new_name = if enable {
+    if let Some(captures) = RENAME_REGEX.captures(file_name) {
+      captures
+        .get(1)
+        .map(|m| m.as_str())
+        .unwrap_or(file_name)
+        .to_string()
+    } else {
+      file_name.to_string()
+    }
+  } else {
+    if RENAME_REGEX.is_match(file_name) {
+      format!("{}.disable", file_name)
+    } else {
+      file_name.to_string()
+    }
+  };
+
+  let new_path = file_path.with_file_name(new_name);
+
+  if new_path != file_path {
+    fs::rename(&file_path, &new_path)?;
+  }
+
+  Ok(())
 }

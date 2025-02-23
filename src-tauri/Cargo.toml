@@ -46,6 +46,7 @@ quartz_nbt = "0.2.9"
 regex = "1.11"
 futures = "0.3"
 toml = "0.8"
+lazy_static = "1.5"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

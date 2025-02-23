@@ -147,6 +147,7 @@ pub enum InstanceError {
   InstanceNotFoundByID,
   ExecOpenDirError,
   ServerNbtReadError,
+  FileNotFoundError,
 }
 
 impl fmt::Display for InstanceError {
@@ -155,6 +156,7 @@ impl fmt::Display for InstanceError {
       InstanceError::InstanceNotFoundByID => write!(f, "INSTANCE_NOT_FOUND_BY_ID"),
       InstanceError::ExecOpenDirError => write!(f, "EXEC_OPEN_DIR_ERROR"),
       InstanceError::ServerNbtReadError => write!(f, "SERVER_NBT_READ_ERROR"),
+      InstanceError::FileNotFoundError => write!(f, "FILE_NOT_FOUND_ERROR"),
     }
   }
 }

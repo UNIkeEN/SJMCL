@@ -9,6 +9,7 @@ dependencies = [
  "base64 0.22.1",
  "futures",
  "image",
+ "lazy_static",
  "log",
  "partial_derive",
  "quartz_nbt",
