@@ -79,12 +79,7 @@ const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
           borderRadius="md"
           objectFit="cover"
         />
-        <ModalCloseButton
-          zIndex={999}
-          color="white"
-          mixBlendMode="exclusion"
-          noOfLines={1}
-        />
+        <ModalCloseButton />
         <ModalBody>
           <Flex justify="space-between" align="center">
             <Text fontSize="sm" fontWeight="bold">

@@ -151,16 +151,18 @@ export const InstanceScreenshotsWidget = () => {
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIsFading(true);
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
-        setIsFading(false);
-      }, 1000);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [screenshots]);
+    if (screenshots.length >= 2) {
+      const interval = setInterval(() => {
+        setIsFading(true);
+        setTimeout(() => {
+          setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
+          setIsFading(false);
+        }, 1000);
+      }, 10000);
 
+      return () => clearInterval(interval);
+    }
+  }, [screenshots]);
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.screenshots.title")}
