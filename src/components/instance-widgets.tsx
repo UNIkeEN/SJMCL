@@ -13,10 +13,9 @@ import {
   Tooltip,
   VStack,
   useColorModeValue,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
@@ -41,7 +40,6 @@ import { LocalModInfo, WorldInfo } from "@/models/instance";
 import { ScreenshotInfo } from "@/models/instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
-import ScreenshotPreviewModal from "./modals/screenshot-preview-modal";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
 interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
