@@ -1,7 +1,7 @@
 export interface Texture {
   textureType: string;
   image: string;
-  model: string;
+  model: "default" | "slim";
 }
 
 // player

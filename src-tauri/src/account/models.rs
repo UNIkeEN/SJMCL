@@ -27,7 +27,6 @@ pub struct Player {
   #[serde(default)]
   pub auth_server: AuthServer,
   pub textures: Vec<Texture>,
-  pub uploadable_textures: String,
 }
 
 impl From<PlayerInfo> for Player {
@@ -52,7 +51,6 @@ impl From<PlayerInfo> for Player {
       password: player_info.password,
       auth_server,
       textures: player_info.textures,
-      uploadable_textures: player_info.uploadable_textures,
     }
   }
 }
@@ -69,7 +67,6 @@ pub struct PlayerInfo {
   pub auth_server_url: String,
   pub access_token: String,
   pub textures: Vec<Texture>,
-  pub uploadable_textures: String,
 }
 
 structstruck::strike! {
@@ -136,6 +133,7 @@ pub enum AccountError {
   NotFound,
   TextureError,
   AuthServerError,
+  Cancelled,
 }
 
 impl fmt::Display for AccountError {
@@ -146,6 +144,7 @@ impl fmt::Display for AccountError {
       AccountError::NotFound => write!(f, "NOT_FOUND"),
       AccountError::TextureError => write!(f, "TEXTURE_ERROR"),
       AccountError::AuthServerError => write!(f, "AUTH_SERVER_ERROR"),
+      AccountError::Cancelled => write!(f, "CANCELLED"),
     }
   }
 }

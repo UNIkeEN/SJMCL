@@ -47,7 +47,7 @@ interface SkinPreviewProps extends Omit<BoxProps, "width" | "height"> {
 }
 
 const SkinPreview: React.FC<SkinPreviewProps> = ({
-  skinSrc = "/images/skins/unicorn_isla.png",
+  skinSrc,
   capeSrc,
   width = 300,
   height = 400,
@@ -76,7 +76,7 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
   }, [showCape]);
 
   useEffect(() => {
-    if (skinViewer) {
+    if (skinViewer && skinSrc) {
       skinViewer.loadSkin(skinSrc);
       if (isCapeVisible && capeSrc) {
         skinViewer.loadCape(capeSrc);

@@ -841,6 +841,9 @@
     "steve": "Steve",
     "alex": "Alex"
   },
+  "ViewSkinModal": {
+    "skinView": "View Skin"
+  },
   "MemoryStatusProgress": {
     "title": "Memory Status",
     "info": "{{used}} / {{total}} GB used",
@@ -865,7 +868,8 @@
   },
   "PlayerMenu": {
     "label": {
-      "skin": "Manage Skin",
+      "manageSkin": "Manage Skin",
+      "viewSkin": "View Skin",
       "delete": "Delete"
     }
   },
@@ -1125,14 +1129,36 @@
       }
     },
     "account": {
-      "addPlayer": {
-        "success": "Successfully added player",
+      "addPlayerOffline": {
+        "success": "Successfully added offline player",
         "error": {
-          "title": "Failed to add player",
+          "title": "Failed to add offline player",
           "description": {
-            "invalid": "Invalid player type",
-            "textureError": "Failed to get player texture",
-            "authServerError": "Failed to get player authentication information"
+            "duplicate": "Player already exists",
+            "textureError": "Unable to get player texture"
+          }
+        }
+      },
+      "addPlayer3rdPartyOAuth": {
+        "success": "Succcessfully added player using OAuth",
+        "error": {
+          "title": "Failed to add player using OAuth",
+          "description": {
+            "duplicate": "Player already exists",
+            "authServerError": "Unable to connect to authentication server, or OAuth is not enabled",
+            "textureError": "Unable to get player texture",
+            "cancelled": "OAuth login cancelled"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "Successfully updated player skin",
+        "error": {
+          "title": "Failed to update player skin",
+          "description": {
+            "notFound": "The player does not exist",
+            "invalid": "The player type is invalid",
+            "textureError": "Unable to get player texture"
           }
         }
       },

@@ -1,5 +1,8 @@
 use crate::{
-  account::models::{AccountError, PlayerInfo, Texture},
+  account::{
+    constants::TEXTURE_ROLES,
+    models::{AccountError, PlayerInfo, Texture},
+  },
   error::SJMCLResult,
   utils::image::image_to_base64,
 };
@@ -8,17 +11,11 @@ use std::fs;
 use tauri::{path::BaseDirectory, AppHandle, Manager};
 use uuid::Uuid;
 
-pub async fn offline_login(app: AppHandle, username: String) -> SJMCLResult<PlayerInfo> {
-  let name_with_prefix = format!("OfflinePlayer:{}", username);
-  let uuid = Uuid::new_v5(&Uuid::NAMESPACE_URL, name_with_prefix.as_bytes());
-
-  let texture_roles = ["steve", "alex"];
-  let texture_role = texture_roles.choose(&mut rand::rng()).unwrap_or(&"steve");
-
+pub fn load_preset_skin(app: AppHandle, preset_role: String) -> SJMCLResult<Vec<Texture>> {
   let texture_path = app
     .path()
     .resolve(
-      format!("assets/skins/{}.png", texture_role),
+      format!("assets/skins/{}.png", preset_role),
       BaseDirectory::Resource,
     )
     .map_err(|_| AccountError::TextureError)?;
@@ -30,6 +27,19 @@ pub async fn offline_login(app: AppHandle, username: String) -> SJMCLResult<Play
   let texture_img =
     image::load_from_memory(&texture_bytes).map_err(|_| AccountError::TextureError)?;
 
+  Ok(vec![Texture {
+    texture_type: "SKIN".to_string(),
+    image: image_to_base64(texture_img.into())?,
+    model: "default".to_string(),
+  }])
+}
+
+pub async fn login(app: AppHandle, username: String) -> SJMCLResult<PlayerInfo> {
+  let name_with_prefix = format!("OfflinePlayer:{}", username);
+  let uuid = Uuid::new_v5(&Uuid::NAMESPACE_URL, name_with_prefix.as_bytes());
+
+  let texture_role = TEXTURE_ROLES.choose(&mut rand::rng()).unwrap_or(&"steve");
+
   Ok(PlayerInfo {
     name: username,
     uuid,
@@ -38,11 +48,6 @@ pub async fn offline_login(app: AppHandle, username: String) -> SJMCLResult<Play
     password: "".to_string(),
     auth_server_url: "".to_string(),
     access_token: "".to_string(),
-    textures: vec![Texture {
-      texture_type: "SKIN".to_string(),
-      image: image_to_base64(texture_img.into())?,
-      model: "default".to_string(),
-    }],
-    uploadable_textures: "skin,cape".to_string(),
+    textures: load_preset_skin(app, texture_role.to_string())?,
   })
 }

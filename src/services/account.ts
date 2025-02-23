@@ -9,6 +9,7 @@ const errorToLocaleKey: { [key: string]: string } = {
   NOT_FOUND: "notFound",
   TEXTURE_ERROR: "textureError",
   AUTH_SERVER_ERROR: "authServerError",
+  CANCELLED: "cancelled",
 };
 
 /**
@@ -25,25 +26,50 @@ export class AccountService {
   }
 
   /**
-   * ADD a new player to the system.
-   * @param {string} playerType - The type of the player to be added.
+   * ADD a new player to the system using offline login.
    * @param {string} username - The username of the player to be added.
-   * @param {string} password - The password of the player to be added.
-   * @param {string} authServerUrl - The authentication server URL for the player.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account", errorToLocaleKey)
-  static async addPlayer(
-    playerType: string,
-    username: string,
-    password: string,
-    authServerUrl: string
+  static async addPlayerOffline(
+    username: string
   ): Promise<InvokeResponse<void>> {
-    return await invoke("add_player", {
-      playerType,
+    return await invoke("add_player_offline", {
       username,
-      password,
+    });
+  }
+
+  /**
+   * ADD a new player to the system using new authlib_injector's OAuth.
+   * @param {string} authServerUrl - The authentication server's URL.
+   * @param {string} openidConfigurationUrl - The authentication server's openid configuration url.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account", errorToLocaleKey)
+  static async addPlayer3rdPartyOAuth(
+    authServerUrl: string,
+    openidConfigurationUrl: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_player_3rdparty_oauth", {
       authServerUrl,
+      openidConfigurationUrl,
+    });
+  }
+
+  /**
+   * UPDATE the skin of an offline player within preset roles (Steve, Alex).
+   * @param {string} uuid - The UUID of the player to be updated.
+   * @param {string} presetRole - The preset role that the player's skin will be.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account", errorToLocaleKey)
+  static async updatePlayerSkinOfflinePreset(
+    uuid: string,
+    presetRole: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("update_player_skin_offline_preset", {
+      uuid,
+      presetRole,
     });
   }
 

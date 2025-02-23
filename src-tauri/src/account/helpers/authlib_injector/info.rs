@@ -1,4 +1,4 @@
-use super::super::models::{AccountError, AuthServer, Features};
+use crate::account::models::{AccountError, AuthServer, Features};
 use crate::error::SJMCLResult;
 use tauri_plugin_http::reqwest;
 

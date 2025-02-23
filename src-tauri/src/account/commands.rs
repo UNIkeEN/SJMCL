@@ -1,5 +1,9 @@
 use super::{
-  helpers::{authlib_injector::fetch_auth_server, offline::offline_login},
+  constants::TEXTURE_ROLES,
+  helpers::{
+    authlib_injector::{info::fetch_auth_server, oauth},
+    offline,
+  },
   models::{AccountError, AccountInfo, AuthServer, Player},
 };
 use crate::{error::SJMCLResult, storage::Storage};
@@ -41,33 +45,77 @@ pub fn update_selected_player(uuid: Uuid) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
-pub async fn add_player(
+pub async fn add_player_offline(app: AppHandle, username: String) -> SJMCLResult<()> {
+  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+
+  let new_player = offline::login(app, username).await?;
+
+  if state
+    .players
+    .iter()
+    .any(|player| player.uuid.to_string() == new_player.uuid.to_string())
+  {
+    return Err(AccountError::Duplicate.into());
+  }
+
+  state.selected_player_id = new_player.uuid.to_string();
+
+  state.players.push(new_player);
+  state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn add_player_3rdparty_oauth(
   app: AppHandle,
-  player_type: String,
-  username: String,
-  password: String,
   auth_server_url: String,
+  openid_configuration_url: String,
+) -> SJMCLResult<()> {
+  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+  let new_player = oauth::login(app, auth_server_url, openid_configuration_url).await?;
+
+  if state
+    .players
+    .iter()
+    .any(|player| player.uuid.to_string() == new_player.uuid.to_string())
+  {
+    return Err(AccountError::Duplicate.into());
+  }
+
+  state.selected_player_id = new_player.uuid.to_string();
+
+  state.players.push(new_player);
+  state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub fn update_player_skin_offline_preset(
+  app: AppHandle,
+  uuid: Uuid,
+  preset_role: String,
 ) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
 
-  match player_type.as_str() {
-    "offline" => {
-      let player = offline_login(app, username).await?;
-      state.selected_player_id = player.uuid.to_string();
-      state.players.push(player);
-      state.save()?;
-      Ok(())
-    }
-    "microsoft" => {
-      // todo
-      Ok(())
-    }
-    "3rdparty" => {
-      // todo
-      Ok(())
-    }
-    _ => Err(AccountError::Invalid.into()),
+  let player = state
+    .players
+    .iter_mut()
+    .find(|player| player.uuid.to_string() == uuid.to_string())
+    .ok_or(AccountError::NotFound)?;
+
+  if player.player_type != "offline" {
+    return Err(AccountError::Invalid.into());
   }
+
+  if TEXTURE_ROLES.contains(&preset_role.as_str()) {
+    player.textures = offline::load_preset_skin(app, preset_role)?;
+  } else {
+    return Err(AccountError::TextureError.into());
+  }
+
+  state.save()?;
+
+  Ok(())
 }
 
 #[tauri::command]

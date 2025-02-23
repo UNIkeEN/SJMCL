@@ -42,6 +42,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { AuthServer } from "@/models/account";
+import { InvokeResponse } from "@/models/response";
 import { AccountService } from "@/services/account";
 
 interface AddPlayerModalProps extends Omit<ModalProps, "children"> {
@@ -101,14 +102,23 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   const isOfflinePlayernameValid = /^[a-zA-Z0-9_]{0,16}$/.test(playername);
 
-  const handleLogin = () => {
+  const handleLogin = (isOAuth = false) => {
     setIsLoading(true);
-    AccountService.addPlayer(
-      playerType,
-      playername,
-      password,
-      authServer?.authUrl || ""
-    )
+
+    let loginServiceFunction: () => Promise<InvokeResponse<void>>;
+    if (isOAuth && authServer) {
+      loginServiceFunction = () =>
+        AccountService.addPlayer3rdPartyOAuth(
+          authServer.authUrl,
+          authServer.features.openidConfigurationUrl
+        );
+    } else if (playerType === "offline") {
+      loginServiceFunction = () => AccountService.addPlayerOffline(playername);
+    } else {
+      return;
+    }
+
+    loginServiceFunction()
       .then((response) => {
         if (response.status === "success") {
           getPlayerList(true);
@@ -324,13 +334,18 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
           )}
           {playerType === "3rdparty" &&
             authServer?.features.openidConfigurationUrl && (
-              <Button
-                variant="outline"
-                colorScheme={primaryColor}
-                leftIcon={<LuKeyRound />}
-              >
-                {t("AddPlayerModal.button.loginOAuth")}
-              </Button>
+              <HStack spacing={2}>
+                <LuKeyRound />
+                <Button
+                  variant="link"
+                  colorScheme={primaryColor}
+                  onClick={() => {
+                    handleLogin(true);
+                  }}
+                >
+                  {t("AddPlayerModal.button.loginOAuth")}
+                </Button>
+              </HStack>
             )}
           <HStack spacing={3} ml="auto">
             <Button variant="ghost" onClick={modalProps.onClose}>
@@ -338,7 +353,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             </Button>
             <Button
               colorScheme={primaryColor}
-              onClick={handleLogin}
+              onClick={() => handleLogin()}
               isLoading={isLoading}
               isDisabled={
                 !playername ||
