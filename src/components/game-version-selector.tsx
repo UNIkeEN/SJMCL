@@ -68,9 +68,9 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
 
   const [searchText, setSearchText] = useState("");
 
-  const fetchData = useCallback(async () => {
+  const handleFetchGameVersionList = useCallback(async () => {
     setIsLoading(true);
-    const response = await ResourceService.retriveGameVersionList();
+    const response = await ResourceService.fetchGameVersionList();
     if (response.status === "success") {
       const versionData = response.data;
       setVersions(versionData);
@@ -102,8 +102,8 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
   }, [versions, selectedTypes, searchText]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    handleFetchGameVersionList();
+  }, [handleFetchGameVersionList]);
 
   const handleTypeToggle = useCallback(
     (gameType: string) => {
@@ -210,6 +210,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
             <LuSearch />
           </InputLeftElement>
           <Input
+            focusBorderColor={`${primaryColor}.500`}
             borderRadius="md"
             placeholder={t("GameVersionSelector.searchPlaceholder")}
             onChange={(e) => setSearchText(e.target.value)}
@@ -218,7 +219,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
         <IconButton
           aria-label="refresh"
           icon={<Icon as={LuRefreshCcw} boxSize={3.5} />}
-          onClick={fetchData}
+          onClick={handleFetchGameVersionList}
           size="xs"
           variant="ghost"
           colorScheme="gray"

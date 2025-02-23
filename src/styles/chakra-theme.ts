@@ -47,6 +47,8 @@ const customGraySolidButtonTheme = {
 };
 
 const chakraExtendTheme = extendTheme({
+  initialColorMode: "dark",
+  useSystemColorMode: false,
   components: {
     Alert: {
       baseStyle: {
@@ -79,7 +81,7 @@ const chakraExtendTheme = extendTheme({
     },
     Divider: {
       baseStyle: {
-        borderColor: "gray.300",
+        borderColor: "var(--chakra-colors-chakra-border-color)", // prevent overwrite
       },
     },
     FormLabel: {

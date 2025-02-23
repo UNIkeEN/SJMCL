@@ -1,3 +1,5 @@
+import { ModLoaderType } from "@/enums/instance";
+
 export interface GameResourceInfo {
   id: string;
   gameType: string;
@@ -16,7 +18,6 @@ export interface OtherResourceInfo {
   downloads: number;
   source?: string; // CurseForge, Modrinth, etc.
 }
-export type ModLoaderType = "none" | "Fabric" | "Forge" | "NeoForge";
 
 export interface ModLoaderResourceInfo {
   loaderType: ModLoaderType;
@@ -26,7 +27,7 @@ export interface ModLoaderResourceInfo {
 }
 
 export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
-  loaderType: "none",
+  loaderType: "Unknown",
   version: "",
   stable: true,
 };

@@ -13,10 +13,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuFileInput, LuTrash } from "react-icons/lu";
 import Empty from "@/components/common/empty";
+import { useLauncherConfig } from "@/contexts/config";
 import styles from "@/styles/game-log.module.css";
 
 const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   const [logs, setLogs] = useState<string[]>([
     "16:14:57.388 [INFO] Using default game log configuration client-1.21.2.xml",
@@ -80,6 +83,7 @@ const GameLogPage: React.FC = () => {
           size="sm"
           w="200px"
           mr={4}
+          focusBorderColor={`${primaryColor}.500`}
         />
         <Spacer />
         {Object.keys(logLevelMap).map((level) => (

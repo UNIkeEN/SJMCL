@@ -15,6 +15,21 @@ export const ISOToDate = (isoString: string): string => {
   return datetime.split(" ")[0];
 };
 
+export const UNIXToDatetime = (unixTimestamp: number): string => {
+  const isoString = new Date(unixTimestamp * 1000).toISOString();
+  return ISOToDatetime(isoString);
+};
+
+export const UNIXToDate = (unixTimestamp: number): string => {
+  const isoString = new Date(unixTimestamp * 1000).toISOString();
+  return ISOToDate(isoString);
+};
+
+export const UNIXToISOString = (unixTimestamp: number): string => {
+  const isoString = new Date(unixTimestamp * 1000).toISOString();
+  return isoString;
+};
+
 export const formatRelativeTime = (
   isoString: string,
   t: (key: string, options?: any) => string
@@ -58,4 +73,16 @@ export const formatRelativeTime = (
       time: `${year}-${month}-${day}`,
     });
   }
+};
+
+export const formatTimeInterval = (sec: number) => {
+  const hours = Math.floor(sec / 3600);
+  const minutes = Math.floor((sec % 3600) / 60);
+  const remainingSeconds = sec % 60;
+
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+  const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 };

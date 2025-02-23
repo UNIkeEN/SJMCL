@@ -32,6 +32,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
@@ -122,21 +123,24 @@ const AppearanceSettingsPage = () => {
           title: response.message,
           status: "success",
         });
-        // set the next bgKey (custom+1 > custom-1 > default) after delete
-        const deletedIndex = customBgList.findIndex(
-          (bg) => bg.fileName === fileName
-        );
 
-        let newSelectedBgKey;
-        if (customBgList.length === 1) {
-          newSelectedBgKey = "%built-in:Jokull";
-        } else {
-          newSelectedBgKey =
-            deletedIndex < customBgList.length - 1
-              ? customBgList[deletedIndex + 1].fileName
-              : customBgList[deletedIndex - 1].fileName;
+        // set the next bgKey (custom+1 > custom-1 > default) if current choice is deleted
+        if (fileName === selectedBgKey) {
+          const deletedIndex = customBgList.findIndex(
+            (bg) => bg.fileName === fileName
+          );
+
+          let newSelectedBgKey;
+          if (customBgList.length === 1) {
+            newSelectedBgKey = "%built-in:Jokull";
+          } else {
+            newSelectedBgKey =
+              deletedIndex < customBgList.length - 1
+                ? customBgList[deletedIndex + 1].fileName
+                : customBgList[deletedIndex - 1].fileName;
+          }
+          update("appearance.background.choice", newSelectedBgKey);
         }
-        update("appearance.background.choice", newSelectedBgKey);
 
         // refresh custom bg list state
         handleRetriveCustomBackgroundList();
@@ -362,6 +366,24 @@ const AppearanceSettingsPage = () => {
         {
           title: t("AppearanceSettingsPage.theme.settings.primaryColor.title"),
           children: <ColorSelectPopover />,
+        },
+        {
+          title: t("AppearanceSettingsPage.theme.settings.colorMode.title"),
+          children: (
+            <SegmentedControl
+              selected={appearanceConfigs.theme.colorMode}
+              onSelectItem={(s) => {
+                update("appearance.theme.colorMode", s as string);
+              }}
+              size="xs"
+              items={["light", "dark"].map((item) => ({
+                label: t(
+                  `AppearanceSettingsPage.theme.settings.colorMode.type.${item}`
+                ),
+                value: item,
+              }))}
+            />
+          ),
         },
         {
           title: t("AppearanceSettingsPage.theme.settings.headNavStyle.title"),

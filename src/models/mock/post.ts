@@ -15,7 +15,7 @@ export const mockPostSources: PostSourceInfo[] = [
 export const mockPosts: PostSummary[] = [
   {
     title: "Minecraft 1.21 更新",
-    abstract: "嘎吱，嘎吱",
+    abstracts: "嘎吱，嘎吱",
     keywords: " 新闻, 游戏更新,Minecraft,官方",
     imageSrc:
       "https://zh.minecraft.wiki/images/thumb/The_Garden_Awakens_Artwork.jpg/600px-The_Garden_Awakens_Artwork.jpg?325b7",
@@ -27,7 +27,7 @@ export const mockPosts: PostSummary[] = [
   },
   {
     title: "⛏️",
-    abstract: "争取至少为社团健康工作五十年",
+    abstracts: "争取至少为社团健康工作五十年",
     keywords: "SJMC,社员",
     imageSrc: "https://skin.mc.sjtu.cn/preview/3.png",
     source: {
@@ -53,7 +53,7 @@ export const mockPosts: PostSummary[] = [
   },
   {
     title: "走进方块交大",
-    abstract: "以心为砖，以爱为瓦，一砖一瓦，方块交大",
+    abstracts: "以心为砖，以爱为瓦，一砖一瓦，方块交大",
     keywords: "SJMC",
     imageSrc:
       "https://mc.sjtu.cn/welcome/_next/static/media/bg-light.333750fa.png",
@@ -65,7 +65,7 @@ export const mockPosts: PostSummary[] = [
   },
   {
     title: "Senko",
-    abstract: "这是仙，她很可爱",
+    abstracts: "这是仙，她很可爱",
     imageSrc: "https://mc.sjtu.cn/wiki/images/1/1b/Senko.gif",
     source: {
       name: "SJMC",

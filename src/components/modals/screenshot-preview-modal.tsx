@@ -11,27 +11,70 @@ import {
   ModalProps,
   Text,
 } from "@chakra-ui/react";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React from "react";
-import { LuCalendarDays } from "react-icons/lu";
+import { useTranslation } from "react-i18next";
+import { LuCalendarDays, LuImagePlay } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
-import { Screenshot } from "@/models/game-instance";
-import { ISOToDatetime } from "@/utils/datetime";
+import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
+import { ScreenshotInfo } from "@/models/instance";
+import { ConfigService } from "@/services/config";
+import { UNIXToDatetime } from "@/utils/datetime";
+import { extractFileName } from "@/utils/string";
 
 interface ScreenshotPreviewModalProps extends Omit<ModalProps, "children"> {
-  screenshot: Screenshot;
+  screenshot: ScreenshotInfo;
 }
 
 const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
   screenshot,
   ...props
 }) => {
+  const { t } = useTranslation();
+  const { update } = useLauncherConfig();
+  const toast = useToast();
+
+  const handleSetAsBackground = () => {
+    ConfigService.addCustomBackground(screenshot.filePath).then((response) => {
+      if (response.status === "success") {
+        // set selected background to the new added one.
+        update("appearance.background.choice", response.data);
+        toast({
+          title: response.message,
+          status: "success",
+        });
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    });
+  };
+
+  const screenshotMenuOperations = [
+    {
+      icon: LuImagePlay,
+      label: t("ScreenshotPreviewModal.menu.setAsBg"),
+      onClick: handleSetAsBackground,
+    },
+    {
+      icon: "revealFile",
+      onClick: () => {
+        revealItemInDir(screenshot.filePath);
+      },
+    },
+  ];
+
   return (
-    <Modal {...props}>
+    <Modal size={{ base: "lg", lg: "2xl", xl: "4xl" }} {...props}>
       <ModalOverlay />
       <ModalContent>
         <Image
-          src={screenshot.imgSrc}
+          src={convertFileSrc(screenshot.filePath)}
           alt={screenshot.fileName}
           borderRadius="md"
           objectFit="cover"
@@ -43,23 +86,25 @@ const ScreenshotPreviewModal: React.FC<ScreenshotPreviewModalProps> = ({
           noOfLines={1}
         />
         <ModalBody>
-          <Flex justify="space-between" align="center" mt={-1}>
+          <Flex justify="space-between" align="center">
             <Text fontSize="sm" fontWeight="bold">
-              {screenshot.fileName}
+              {extractFileName(screenshot.fileName)}
             </Text>
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />
               <Text fontSize="xs" className="secondary-text">
-                {ISOToDatetime(screenshot.time)}
+                {UNIXToDatetime(screenshot.time)}
               </Text>
-              <CommonIconButton
-                icon="revealFile"
-                tooltipPlacement="top"
-                variant="ghost"
-                onClick={() => {
-                  revealItemInDir(screenshot.filePath);
-                }}
-              />
+              <HStack spacing={0}>
+                {screenshotMenuOperations.map((btn, index) => (
+                  <CommonIconButton
+                    key={index}
+                    icon={btn.icon}
+                    label={btn.label}
+                    onClick={btn.onClick}
+                  />
+                ))}
+              </HStack>
             </HStack>
           </Flex>
         </ModalBody>

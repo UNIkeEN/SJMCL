@@ -1,8 +1,16 @@
+use super::helpers::skin::draw_avatar;
+use crate::{storage::Storage, utils::image::base64_to_image};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use uuid::Uuid;
 
-use crate::storage::Storage;
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct Texture {
+  pub texture_type: String,
+  pub image: String, // base64 encoded
+  pub model: String,
+}
 
 // only for the client
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -10,7 +18,7 @@ use crate::storage::Storage;
 pub struct Player {
   pub name: String,
   pub uuid: Uuid,
-  pub avatar_src: String,
+  pub avatar: String, // base64 encoded
   pub player_type: String,
   #[serde(default)]
   pub auth_account: String,
@@ -18,6 +26,8 @@ pub struct Player {
   pub password: String,
   #[serde(default)]
   pub auth_server: AuthServer,
+  pub textures: Vec<Texture>,
+  pub uploadable_textures: String,
 }
 
 impl From<PlayerInfo> for Player {
@@ -32,11 +42,17 @@ impl From<PlayerInfo> for Player {
     Player {
       name: player_info.name,
       uuid: player_info.uuid,
-      avatar_src: player_info.avatar_src,
+      avatar: draw_avatar(
+        36,
+        base64_to_image(player_info.textures[0].image.clone()).unwrap_or_default(),
+      )
+      .unwrap_or_default(),
       player_type: player_info.player_type,
       auth_account: player_info.auth_account,
       password: player_info.password,
       auth_server,
+      textures: player_info.textures,
+      uploadable_textures: player_info.uploadable_textures,
     }
   }
 }
@@ -47,11 +63,13 @@ impl From<PlayerInfo> for Player {
 pub struct PlayerInfo {
   pub name: String,
   pub uuid: Uuid,
-  pub avatar_src: String,
   pub player_type: String,
   pub auth_account: String,
   pub password: String,
   pub auth_server_url: String,
+  pub access_token: String,
+  pub textures: Vec<Texture>,
+  pub uploadable_textures: String,
 }
 
 structstruck::strike! {
@@ -75,6 +93,7 @@ pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
   pub selected_player_id: String, // maybe "" if none of the player was selected
   pub auth_servers: Vec<AuthServer>,
+  pub client_id: Uuid,
 }
 
 impl Default for AccountInfo {
@@ -82,7 +101,7 @@ impl Default for AccountInfo {
     AccountInfo {
       players: Vec::new(),
       selected_player_id: String::new(),
-      auth_servers: [
+      auth_servers: vec![
         AuthServer {
           name: "SJMC 用户中心".to_string(),
           auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
@@ -104,8 +123,8 @@ impl Default for AccountInfo {
             openid_configuration_url: "".to_string(),
           },
         },
-      ]
-      .to_vec(),
+      ],
+      client_id: Uuid::new_v4(),
     }
   }
 }
@@ -115,6 +134,8 @@ pub enum AccountError {
   Duplicate,
   Invalid,
   NotFound,
+  TextureError,
+  AuthServerError,
 }
 
 impl fmt::Display for AccountError {
@@ -123,6 +144,8 @@ impl fmt::Display for AccountError {
       AccountError::Duplicate => write!(f, "DUPLICATE"),
       AccountError::Invalid => write!(f, "INVALID"),
       AccountError::NotFound => write!(f, "NOT_FOUND"),
+      AccountError::TextureError => write!(f, "TEXTURE_ERROR"),
+      AccountError::AuthServerError => write!(f, "AUTH_SERVER_ERROR"),
     }
   }
 }

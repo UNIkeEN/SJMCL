@@ -1,3 +1,4 @@
+import { ColorModeScript, useColorMode } from "@chakra-ui/react";
 import i18n from "i18next";
 import React, {
   createContext,
@@ -28,6 +29,7 @@ export const LauncherConfigContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const toast = useToast();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const [config, setConfig] = useState<LauncherConfig>(defaultConfig);
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>();
@@ -53,6 +55,14 @@ export const LauncherConfigContextProvider: React.FC<{
   useEffect(() => {
     i18n.changeLanguage(config.general.general.language);
   }, [config.general.general.language]);
+
+  useEffect(() => {
+    if (config.appearance.theme.colorMode !== "system") {
+      if (config.appearance.theme.colorMode !== colorMode) {
+        toggleColorMode();
+      }
+    }
+  }, [colorMode, config.appearance.theme.colorMode, toggleColorMode]);
 
   const updateByKeyPath = (obj: any, path: string, value: any): void => {
     const keys = path.split(".");
@@ -111,6 +121,7 @@ export const LauncherConfigContextProvider: React.FC<{
         getJavaInfos,
       }}
     >
+      <ColorModeScript initialColorMode={config.appearance.theme.colorMode} />
       {children}
     </LauncherConfigContext.Provider>
   );

@@ -1,9 +1,9 @@
 export interface PostSummary {
   title: string;
-  abstract?: string;
+  abstracts?: string;
   keywords?: string;
   imageSrc?: string;
-  source: PostSourceInfo; // The post server response does not include this field in every item, so the client request function needs to add this field.
+  source: PostSourceInfo;
   updateAt: string;
   link: string;
 }

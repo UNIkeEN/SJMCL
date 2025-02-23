@@ -5,24 +5,30 @@ import { useTranslation } from "react-i18next";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import { FormattedMCText } from "@/components/common/formatted-mc-text";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { ResourcePacksInfo } from "@/models/game-instance";
-import { mockResourcePacks } from "@/models/mock/game-instance";
+import { useInstanceSharedData } from "@/contexts/instance";
+import { InstanceSubdirEnums } from "@/enums/instance";
+import { ResourcePackInfo } from "@/models/instance";
+import { base64ImgSrc } from "@/utils/string";
 
 const InstanceResourcePacksPage = () => {
-  const [resourcePacks, setResourcePacks] = useState<ResourcePacksInfo[]>([]);
-  const [serverResPacks, setServerResPacks] = useState<ResourcePacksInfo[]>([]);
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
+  const { openSubdir, getResourcePackList, getServerResourcePackList } =
+    useInstanceSharedData();
   const accordionStates =
     config.states.instanceResourcepackPage.accordionStates;
 
+  const [resourcePacks, setResourcePacks] = useState<ResourcePackInfo[]>([]);
+  const [serverResPacks, setServerResPacks] = useState<ResourcePackInfo[]>([]);
+
   useEffect(() => {
-    setResourcePacks(mockResourcePacks);
-    setServerResPacks(mockResourcePacks);
-  }, []);
+    setResourcePacks(getResourcePackList() || []);
+    setServerResPacks(getServerResourcePackList() || []);
+  }, [getResourcePackList, getServerResourcePackList]);
 
   const defaultIcon = "/images/icons/DefaultPack.webp";
 
@@ -33,7 +39,9 @@ const InstanceResourcePacksPage = () => {
       secMenu: [
         {
           icon: "openFolder",
-          onClick: () => {},
+          onClick: () => {
+            openSubdir(InstanceSubdirEnums.ResourcePacks);
+          },
         },
         {
           icon: "add",
@@ -45,7 +53,9 @@ const InstanceResourcePacksPage = () => {
         },
         {
           icon: "refresh",
-          onClick: () => {},
+          onClick: () => {
+            setResourcePacks(getResourcePackList(true) || []);
+          },
         },
       ],
     },
@@ -55,7 +65,9 @@ const InstanceResourcePacksPage = () => {
       secMenu: [
         {
           icon: "refresh",
-          onClick: () => {},
+          onClick: () => {
+            setServerResPacks(getServerResourcePackList(true) || []);
+          },
         },
       ],
     },
@@ -98,10 +110,18 @@ const InstanceResourcePacksPage = () => {
                   <OptionItem
                     key={pack.name}
                     title={pack.name}
-                    description={pack.description}
+                    description={
+                      <FormattedMCText fontSize="xs" className="secondary-text">
+                        {pack.description}
+                      </FormattedMCText>
+                    }
                     prefixElement={
                       <Image
-                        src={pack.iconSrc || defaultIcon}
+                        src={
+                          pack.iconSrc
+                            ? base64ImgSrc(pack.iconSrc)
+                            : defaultIcon
+                        }
                         alt={pack.name}
                         boxSize="28px"
                         style={{ borderRadius: "4px" }}

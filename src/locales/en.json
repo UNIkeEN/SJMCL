@@ -109,6 +109,17 @@
       "serverUrl": "Server URL"
     }
   },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "Add Data Source"
+    },
+    "label": {
+      "endpointUrl": "Endpoint URL"
+    },
+    "placeholder": {
+      "endpointUrl": "Endpoint URL"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "Add Player"
@@ -167,6 +178,13 @@
         "primaryColor": {
           "title": "Launcher Primary Color"
         },
+        "colorMode": {
+          "title": "Color Mode",
+          "type": {
+            "light": "Light",
+            "dark": "Dark"
+          }
+        },
         "headNavStyle": {
           "title": "Navigation Bar Style",
           "type": {
@@ -192,7 +210,7 @@
           "name": "Jǫkull Village"
         },
         "SJTU-eastgate": {
-          "name": "Jokull"
+          "name": "SJTU Eastgate"
         }
       }
     },
@@ -221,7 +239,8 @@
       "externalAPI": "External API",
       "doc": "Documentation",
       "cicd": "CI / CD",
-      "design": "Visual Design"
+      "design": "Visual Design",
+      "mascot": "Team Mascot"
     }
   },
   "CreateInstanceModal": {
@@ -337,6 +356,19 @@
           "title": "Port"
         }
       }
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "Downloading Tasks",
+    "button": {
+      "settings": "Download Settings",
+      "pause": "Pause",
+      "begin": "Start",
+      "retry": "Retry"
+    },
+    "label": {
+      "paused": "Paused",
+      "error": "Error"
     }
   },
   "Editable": {
@@ -546,13 +578,25 @@
         }
       }
     },
+    "gameWindow": {
+      "title": "Game Window",
+      "settings": {
+        "resolution": {
+          "title": "Game Resolution",
+          "switch": "Fullscreen"
+        },
+        "customTitle": {
+          "title": "Custom Window Title"
+        },
+        "customInfo": {
+          "title": "Custom Information",
+          "description": "It is displayed in the bottom right corner of the game's main screen and top left corner of the F3 debugging page."
+        }
+      }
+    },
     "performance": {
       "title": "Performance",
       "settings": {
-        "gameWindowResolution": {
-          "title": "Game Window Resolution",
-          "switch": "Fullscreen"
-        },
         "autoMemAllocation": {
           "title": "Allocate Memory Automatically"
         },
@@ -572,19 +616,8 @@
       }
     },
     "versionIsolation": {
-      "title": "Version Isolation",
       "settings": {
-        "enabled": {
-          "title": "Enable Version Isolation"
-        },
-        "isolationStrategy": {
-          "title": "Isolation Strategy",
-          "off": "Off",
-          "full": "Full Isolation",
-          "modable": "Isolate Installable Mod Versions",
-          "informal": "Isolate Informal Versions",
-          "modable-and-informal": "Isolate Mod Versions and Informal Versions"
-        }
+        "title": "Enable Version Isolation"
       }
     },
     "moreOptions": {
@@ -595,6 +628,12 @@
           "start-close": "Close Launcher after Game Starts",
           "running-hidden": "Hide Launcher while Game is Running",
           "always": "Launcher Always Visible"
+        },
+        "autoJoinGameServer": {
+          "title": "Auto Join Game Server"
+        },
+        "serverUrl": {
+          "title": "Server URL"
         },
         "displayGameLog": {
           "title": "Display Game Logs"
@@ -658,6 +697,9 @@
     "selectDirectory": "Select Game Diretory"
   },
   "InstanceLayout": {
+    "secMenu": {
+      "exportModPack": "Export as Modpack"
+    },
     "instanceTabList": {
       "overview": "Overview",
       "worlds": "Worlds",
@@ -1014,6 +1056,11 @@
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
   },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "Set as Launcher Background"
+    }
+  },
   "Services": {
     "config": {
       "retriveLauncherConfig": {
@@ -1083,7 +1130,9 @@
         "error": {
           "title": "Failed to add player",
           "description": {
-            "invalid": "Invalid player type"
+            "invalid": "Invalid player type",
+            "textureError": "Failed to get player texture",
+            "authServerError": "Failed to get player authentication information"
           }
         }
       },
@@ -1133,6 +1182,60 @@
             "parseError": "The server returned data in an incorrect format",
             "noDownloadApi": "No download strategy available, please check internet connection"
           }
+        }
+      }
+    },
+    "instance": {
+      "retriveInstanceList": {
+        "error": {
+          "title": "Failed to retrieve instance list"
+        }
+      },
+      "openInstanceSubdir": {
+        "error": {
+          "title": "Failed to open instance directory",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
+            "execOpenDirError": "Unable to execute command for the non-existent subdirectory type"
+          }
+        }
+      },
+      "retriveWorldList": {
+        "error": {
+          "title": "Failed to retrive world list"
+        }
+      },
+      "retriveGameServerList": {
+        "error": {
+          "title": "Failed to retraive game server list",
+          "description": {
+            "serverNbtReadError": "server.dat may have been corrupted"
+          }
+        }
+      },
+      "retriveResourcePackList": {
+        "error": {
+          "title": "Failed to retrive resource pack list"
+        }
+      },
+      "retriveServerResourcePackList": {
+        "error": {
+          "title": "Failed to retrive resource pack list from servers"
+        }
+      },
+      "retriveSchematicList": {
+        "error": {
+          "title": "Failed to retrive schematic list"
+        }
+      },
+      "retriveShaderPackList": {
+        "error": {
+          "title": "Failed to retrive shader pack list"
+        }
+      },
+      "retriveScreenshotList": {
+        "error": {
+          "title": "Failed to retrive screenshot list"
         }
       }
     }

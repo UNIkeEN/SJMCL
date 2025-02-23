@@ -16,6 +16,7 @@ import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
+import { base64ImgSrc } from "@/utils/string";
 
 interface PlayersViewProps extends BoxProps {
   players: Player[];
@@ -64,7 +65,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         <Image
           boxSize="32px"
           objectFit="cover"
-          src={player.avatarSrc}
+          src={base64ImgSrc(player.avatar)}
           alt={player.name}
         />
       </HStack>
@@ -79,7 +80,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         player.playerType === "offline" || player.playerType === "microsoft"
           ? t(`Enums.playerTypes.${player.playerType}`)
           : player.authServer?.name || "",
-      image: player.avatarSrc,
+      image: base64ImgSrc(player.avatar),
       extraContent: (
         <Box position="absolute" top={0.5} right={1}>
           <PlayerMenu player={player} />

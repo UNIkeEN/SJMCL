@@ -7,6 +7,8 @@ const errorToLocaleKey: { [key: string]: string } = {
   DUPLICATE: "duplicate",
   INVALID: "invalid",
   NOT_FOUND: "notFound",
+  TEXTURE_ERROR: "textureError",
+  AUTH_SERVER_ERROR: "authServerError",
 };
 
 /**

@@ -13,7 +13,7 @@ import { WrapCardGroup } from "@/components/common/wrap-card";
 import GameMenu from "@/components/game-menu";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData, useDataDispatch } from "@/contexts/data";
-import { GameInstanceSummary } from "@/models/game-instance";
+import { GameInstanceSummary } from "@/models/instance";
 
 interface GamesViewProps extends BoxProps {
   games: GameInstanceSummary[];
@@ -38,10 +38,10 @@ const GamesView: React.FC<GamesViewProps> = ({
   }, [getSelectedGameInstance]);
 
   const generateDesc = (game: GameInstanceSummary) => {
-    if (game.modLoader.type === "none") {
+    if (game.modLoader.loaderType === "Unknown") {
       return game.version;
     }
-    return `${game.version}, ${game.modLoader.type} ${game.modLoader.version}`;
+    return `${game.version}, ${game.modLoader.loaderType} ${game.modLoader.version}`;
   };
 
   const listItems = games.map((game) => ({
@@ -51,7 +51,7 @@ const GamesView: React.FC<GamesViewProps> = ({
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio
-          value={game.uuid}
+          value={game.id.toString()}
           onClick={() => setSelectedGameInstance(game)}
           colorScheme={primaryColor}
         />
@@ -77,15 +77,15 @@ const GamesView: React.FC<GamesViewProps> = ({
         </Box>
       ),
     },
-    isSelected: selectedGameInstance?.uuid === game.uuid,
-    radioValue: game.uuid,
+    isSelected: selectedGameInstance?.id === game.id,
+    radioValue: game.id.toString(),
     onSelect: () => setSelectedGameInstance(game),
   }));
 
   return (
     <Box {...boxProps}>
       {games.length > 0 ? (
-        <RadioGroup value={selectedGameInstance?.uuid}>
+        <RadioGroup value={selectedGameInstance?.id.toString()}>
           {viewType === "list" ? (
             <OptionItemGroup items={listItems} />
           ) : (

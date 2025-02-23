@@ -1,4 +1,5 @@
 mod account;
+mod discover;
 mod error;
 mod instance;
 mod launcher_config;
@@ -10,6 +11,8 @@ mod utils;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 
+use instance::helpers::misc::refresh_and_update_instances;
+use instance::models::Instance;
 use launcher_config::models::LauncherConfig;
 use storage::Storage;
 
@@ -54,9 +57,19 @@ pub async fn run() {
       account::commands::add_auth_server,
       account::commands::delete_auth_server,
       account::commands::fetch_auth_server_info,
+      instance::commands::retrive_instance_list,
+      instance::commands::open_instance_subdir,
+      instance::commands::retrive_world_list,
+      instance::commands::retrive_local_mod_list,
       instance::commands::retrive_game_server_list,
-      resource::commands::retrive_game_version_list,
-      resource::commands::retrive_mod_loader_version_list,
+      instance::commands::retrive_resource_pack_list,
+      instance::commands::retrive_server_resource_pack_list,
+      instance::commands::retrive_schematic_list,
+      instance::commands::retrive_shader_pack_list,
+      instance::commands::retrive_screenshot_list,
+      resource::commands::fetch_game_version_list,
+      resource::commands::fetch_mod_loader_version_list,
+      discover::commands::fetch_post_sources_info,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
@@ -76,6 +89,15 @@ pub async fn run() {
       launcher_config.save().unwrap();
 
       app.manage(Mutex::new(launcher_config));
+
+      let instances: Vec<Instance> = vec![];
+      app.manage(Mutex::new(instances));
+
+      // Refresh all instances
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        refresh_and_update_instances(&app_handle).await;
+      });
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458

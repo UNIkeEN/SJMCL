@@ -3,20 +3,25 @@ export interface GameConfig {
     auto: boolean;
     execPath: string;
   };
-  performance: {
-    gameWindowResolution: {
+  gameServer: {
+    autoJoin: boolean;
+    serverUrl: string;
+  };
+  gameWindow: {
+    resolution: {
       width: number;
       height: number;
       fullscreen: boolean;
     };
+    customTitle: string;
+    customInfo: string;
+  };
+  performance: {
     autoMemAllocation: boolean;
     minMemAllocation: number;
     processPriority: string;
   };
-  versionIsolation: {
-    enabled: boolean;
-    isolationStrategy: string;
-  };
+  versionIsolation: boolean;
   launcherVisibility: string;
   displayGameLog: boolean;
   advancedOptions: {
@@ -35,6 +40,7 @@ export interface LauncherConfig {
   appearance: {
     theme: {
       primaryColor: string;
+      colorMode: "light" | "dark" | "system";
       headNavStyle: string;
     };
     background: {
@@ -75,6 +81,7 @@ export interface LauncherConfig {
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
+  discoverSourceEndpoints: string[];
   states: {
     accountsPage: {
       viewType: string;
@@ -102,20 +109,25 @@ export const defaultGameConfig: GameConfig = {
     auto: true,
     execPath: "",
   },
-  performance: {
-    gameWindowResolution: {
+  gameServer: {
+    autoJoin: false,
+    serverUrl: "",
+  },
+  gameWindow: {
+    resolution: {
       width: 1280,
       height: 720,
       fullscreen: false,
     },
+    customTitle: "",
+    customInfo: "",
+  },
+  performance: {
     autoMemAllocation: true,
     minMemAllocation: 1024,
     processPriority: "middle",
   },
-  versionIsolation: {
-    enabled: true,
-    isolationStrategy: "full",
-  },
+  versionIsolation: true,
   launcherVisibility: "start-close",
   displayGameLog: false,
   advancedOptions: {
@@ -130,6 +142,7 @@ export const defaultConfig: LauncherConfig = {
   appearance: {
     theme: {
       primaryColor: "blue",
+      colorMode: "light",
       headNavStyle: "standard",
     },
     background: {
@@ -170,6 +183,7 @@ export const defaultConfig: LauncherConfig = {
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
+  discoverSourceEndpoints: ["https://mc.sjtu.cn/api-sjmcl/article"],
   states: {
     accountsPage: {
       viewType: "grid",

@@ -214,6 +214,7 @@ const AccountsPage = () => {
                     <IconButton
                       aria-label="home"
                       size="xs"
+                      fontSize="sm"
                       variant="ghost"
                       icon={<LuHouse />}
                       onClick={() => {
@@ -234,6 +235,7 @@ const AccountsPage = () => {
                     <IconButton
                       aria-label="home"
                       size="xs"
+                      fontSize="sm"
                       colorScheme="red"
                       variant="ghost"
                       icon={<LuServerOff />}
@@ -247,6 +249,7 @@ const AccountsPage = () => {
                     update("states.accountsPage.viewType", s as string);
                   }}
                   size="2xs"
+                  ml={1}
                   items={viewTypeList.map((item) => ({
                     ...item,
                     value: item.key,

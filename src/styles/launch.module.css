@@ -27,7 +27,6 @@
 .selected-user-card {
   height: 4.5rem !important;
   width: 10.5rem !important;
-  background-color: rgba(255, 255, 255, 0.75) !important;
   backdrop-filter: blur(7px);
-  padding: var(--chakra-sizes-3);
+  padding: var(--chakra-space-3);
 }

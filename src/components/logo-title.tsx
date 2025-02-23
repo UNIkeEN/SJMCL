@@ -1,4 +1,4 @@
-import { BoxProps, Heading, Highlight } from "@chakra-ui/react";
+import { BoxProps, HStack, Heading, Highlight, Image } from "@chakra-ui/react";
 import styles from "@/styles/logo-title.module.css";
 
 interface LogoTitleProps extends BoxProps {}
@@ -20,5 +20,14 @@ export const TitleFull: React.FC<LogoTitleProps> = (props) => {
         SJMC Launcher
       </Highlight>
     </Heading>
+  );
+};
+
+export const TitleFullWithLogo: React.FC<LogoTitleProps> = (props) => {
+  return (
+    <HStack>
+      <Image src="/images/icons/Logo_128x128.png" alt="Logo" boxSize="36px" />
+      <TitleFull {...props} />
+    </HStack>
   );
 };

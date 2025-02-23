@@ -12,7 +12,7 @@ use super::{
 };
 
 #[tauri::command]
-pub async fn retrive_game_version_list(
+pub async fn fetch_game_version_list(
   state: State<'_, Mutex<LauncherConfig>>,
 ) -> SJMCLResult<Vec<GameResourceInfo>> {
   let priority_list = {
@@ -77,7 +77,7 @@ pub async fn retrive_game_version_list(
 }
 
 #[tauri::command]
-pub async fn retrive_mod_loader_version_list(
+pub async fn fetch_mod_loader_version_list(
   game_version: String,
   mod_loader_type: String,
   state: State<'_, Mutex<LauncherConfig>>,

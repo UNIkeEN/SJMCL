@@ -37,20 +37,25 @@ structstruck::strike! {
       pub auto: bool,
       pub exec_path: String,
     },
-    pub performance: struct {
-      pub game_window_resolution: struct {
+    pub game_window: struct {
+      pub resolution: struct {
         pub width: u32,
         pub height: u32,
         pub fullscreen: bool,
       },
+      pub custom_title: String,
+      pub custom_info: String,
+    },
+    pub performance: struct {
       pub auto_mem_allocation: bool,
       pub min_mem_allocation: u32,
       pub process_priority: String,
     },
-    pub version_isolation: struct {
-      pub enabled: bool,
-      pub isolation_strategy: String,
+    pub game_server: struct {
+      pub auto_join: bool,
+      pub server_url: String,
     },
+    pub version_isolation: bool,
     pub launcher_visibility: String,
     pub display_game_log: bool,
     pub advanced_options: struct {
@@ -77,6 +82,7 @@ structstruck::strike! {
     pub appearance: struct AppearanceConfig {
       pub theme: struct {
         pub primary_color: String,
+        pub color_mode: String,
         pub head_nav_style: String,
       },
       pub background: struct {
@@ -117,6 +123,7 @@ structstruck::strike! {
     },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,
+    pub discover_source_endpoints: Vec<String>,
     pub states: struct States {
       pub accounts_page: struct {
         pub view_type: String
@@ -147,20 +154,25 @@ impl Default for GameConfig {
         auto: true,
         exec_path: "".to_string(),
       },
-      performance: Performance {
-        game_window_resolution: GameWindowResolution {
+      game_window: GameWindow {
+        resolution: Resolution {
           width: 1280,
           height: 720,
           fullscreen: false,
         },
+        custom_title: "".to_string(),
+        custom_info: "".to_string(),
+      },
+      performance: Performance {
         auto_mem_allocation: true,
         min_mem_allocation: 1024,
         process_priority: "middle".to_string(),
       },
-      version_isolation: VersionIsolation {
-        enabled: true,
-        isolation_strategy: "full".to_string(),
+      game_server: GameServer {
+        auto_join: false,
+        server_url: "".to_string(),
       },
+      version_isolation: true,
       launcher_visibility: "start-close".to_string(),
       display_game_log: false,
       advanced_options: AdvancedOptions { enabled: false },
@@ -177,6 +189,7 @@ impl Default for LauncherConfig {
       appearance: AppearanceConfig {
         theme: Theme {
           primary_color: "blue".to_string(),
+          color_mode: "light".to_string(),
           head_nav_style: "standard".to_string(),
         },
         background: Background {
@@ -215,6 +228,7 @@ impl Default for LauncherConfig {
       },
       global_game_config: GameConfig::default(),
       local_game_directories: vec![],
+      discover_source_endpoints: vec!["https://mc.sjtu.cn/api-sjmcl/article".to_string()],
       states: States {
         accounts_page: AccountsPage {
           view_type: "grid".to_string(),
@@ -223,7 +237,7 @@ impl Default for LauncherConfig {
           view_type: "list".to_string(),
         },
         game_version_selector: GameVersionSelector {
-          game_types: ["release".to_string()].to_vec(),
+          game_types: vec!["release".to_string()],
         },
         instance_mods_page: InstanceModsPage {
           accordion_states: [true, true],

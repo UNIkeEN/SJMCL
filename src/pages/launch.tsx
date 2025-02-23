@@ -15,11 +15,12 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeftRight } from "react-icons/lu";
-import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
-import { GameInstanceSummary } from "@/models/game-instance";
+import { GameInstanceSummary } from "@/models/instance";
 import styles from "@/styles/launch.module.css";
+import { base64ImgSrc } from "@/utils/string";
 
 interface SwitchButtonProps extends IconButtonProps {
   tooltip: string;
@@ -44,8 +45,8 @@ const LaunchPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { getSelectedPlayer, getSelectedGameInstance } = useData();
-  const { config } = useLauncherConfig();
-  const primaryColor = config.appearance.theme.primaryColor;
+  const themedStyles = useThemedCSSStyle();
+
   const [selectedPlayer, setSelectedPlayer] = useState<Player>();
   const [selectedGameInstance, setSelectedGameInstance] =
     useState<GameInstanceSummary>();
@@ -60,7 +61,11 @@ const LaunchPage = () => {
 
   return (
     <HStack position="absolute" bottom={7} right={7} spacing={4}>
-      <Card className={styles["selected-user-card"]}>
+      <Card
+        className={
+          styles["selected-user-card"] + " " + themedStyles.card["card-back"]
+        }
+      >
         <SwitchButton
           tooltip={t("LaunchPage.SwitchButton.tooltip.switchPlayer")}
           aria-label="switch-player"
@@ -73,7 +78,7 @@ const LaunchPage = () => {
               <Image
                 boxSize="32px"
                 objectFit="cover"
-                src={selectedPlayer.avatarSrc}
+                src={base64ImgSrc(selectedPlayer.avatar)}
                 alt={selectedPlayer.name}
               />
               <VStack spacing={0} align="left" mt={-2}>

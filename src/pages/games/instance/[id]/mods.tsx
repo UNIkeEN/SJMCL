@@ -1,4 +1,5 @@
-import { Avatar, AvatarBadge, HStack, Text } from "@chakra-ui/react";
+import { Avatar, AvatarBadge, HStack, Tag, Text } from "@chakra-ui/react";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -16,26 +17,29 @@ import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { LocalModInfo } from "@/models/game-instance";
-import { mockLocalMods } from "@/models/mock/game-instance";
+import { InstanceSubdirEnums } from "@/enums/instance";
+import { LocalModInfo } from "@/models/instance";
+import { base64ImgSrc } from "@/utils/string";
 
 const InstanceModsPage = () => {
   const { t } = useTranslation();
-  const { summary } = useInstanceSharedData();
+  const { summary, openSubdir, getLocalModList } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
 
   useEffect(() => {
-    // only for mock
-    setLocalMods(mockLocalMods);
-  }, []);
+    setLocalMods(getLocalModList() || []);
+  }, [getLocalModList]);
 
   const modSecMenuOperations = [
     {
       icon: "openFolder",
-      onClick: () => {},
+      onClick: () => {
+        openSubdir(InstanceSubdirEnums.Mods);
+      },
     },
     {
       icon: "add",
@@ -57,7 +61,9 @@ const InstanceModsPage = () => {
     },
     {
       icon: "refresh",
-      onClick: () => {},
+      onClick: () => {
+        setLocalMods(getLocalModList(true) || []);
+      },
     },
   ];
 
@@ -91,7 +97,9 @@ const InstanceModsPage = () => {
       label: "",
       icon: "revealFile", // use common-icon-button predefined icon
       danger: false,
-      onClick: () => {},
+      onClick: () => {
+        revealItemInDir(mod.filePath);
+      },
     },
     {
       label: t("InstanceModsPage.modList.menu.info"),
@@ -115,7 +123,7 @@ const InstanceModsPage = () => {
         }}
       >
         <ModLoaderCards
-          currentType={summary?.modLoader.type || "none"}
+          currentType={summary?.modLoader.loaderType || "Unknown"}
           currentVersion={summary?.modLoader.version}
           displayMode="entry"
         />
@@ -154,14 +162,19 @@ const InstanceModsPage = () => {
                 key={mod.fileName} // unique
                 childrenOnHover
                 title={
-                  mod.transltedName
-                    ? `${mod.transltedName}｜${mod.name}`
+                  mod.translatedName
+                    ? `${mod.translatedName}｜${mod.name}`
                     : mod.name
                 }
                 titleExtra={
-                  <Text fontSize="xs" className="secondary-text no-select">
-                    {mod.version}
-                  </Text>
+                  <HStack>
+                    <Text fontSize="xs" className="secondary-text no-select">
+                      {mod.version}
+                    </Text>
+                    <Tag colorScheme={primaryColor} className="tag-xs">
+                      {mod.loaderType}
+                    </Tag>
+                  </HStack>
                 }
                 description={
                   <Text
@@ -169,12 +182,12 @@ const InstanceModsPage = () => {
                     overflow="hidden"
                     className="secondary-text no-select ellipsis-text" // only show one line
                   >
-                    {`${mod.fileName}: ${mod.description}`}
+                    {`${mod.fileName.replace(/(\.jar|\.jar\.disabled)$/, "")}: ${mod.description}`}
                   </Text>
                 }
                 prefixElement={
                   <Avatar
-                    src={mod.iconSrc}
+                    src={base64ImgSrc(mod.iconSrc)}
                     name={mod.name}
                     boxSize="28px"
                     borderRadius="4px"

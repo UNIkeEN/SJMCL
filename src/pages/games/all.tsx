@@ -3,12 +3,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuLayoutGrid, LuLayoutList, LuPlay, LuPlus } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import GamesView from "@/components/games-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
-import { GameInstanceSummary } from "@/models/game-instance";
+import { GameInstanceSummary } from "@/models/instance";
 
 const AllGamesPage = () => {
   const router = useRouter();
@@ -53,12 +54,21 @@ const AllGamesPage = () => {
       title={t("AllGamesPage.title")}
       headExtra={
         <HStack spacing={2}>
+          <CommonIconButton
+            icon="refresh"
+            size="xs"
+            fontSize="sm"
+            onClick={() => {
+              setGameInstanceList(getGameInstanceList(true) || []);
+            }}
+          />
           <SegmentedControl
             selected={selectedViewType}
             onSelectItem={(s) => {
               update("states.allGamesPage.viewType", s as string);
             }}
             size="2xs"
+            ml={1}
             items={viewTypeList.map((item) => ({
               ...item,
               value: item.key,

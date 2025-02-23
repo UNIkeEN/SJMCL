@@ -1,4 +1,8 @@
-import { UseToastOptions, useToast as chakraUseToast } from "@chakra-ui/react";
+import {
+  UseToastOptions,
+  useToast as chakraUseToast,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import React, { ReactNode, createContext, useContext } from "react";
 
 interface ToastContextProviderProps {
@@ -15,12 +19,13 @@ export const ToastContextProvider: React.FC<ToastContextProviderProps> = ({
   children,
 }) => {
   const chakraToast = chakraUseToast();
+  const toastVariant = useColorModeValue("left-accent", "solid");
 
   const customToast: ToastContextType = (options) => {
     chakraToast({
       position: "bottom-left",
       duration: 3000,
-      variant: "left-accent",
+      variant: toastVariant,
       isClosable: true,
       containerStyle: {
         minWidth: "2xs",

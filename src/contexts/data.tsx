@@ -2,9 +2,10 @@ import React, { createContext, useCallback, useContext, useState } from "react";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
-import { GameInstanceSummary } from "@/models/game-instance";
-import { mockGameInstanceList } from "@/models/mock/game-instance";
+import { GameInstanceSummary } from "@/models/instance";
+import { mockGameInstanceList } from "@/models/mock/instance";
 import { AccountService } from "@/services/account";
+import { InstanceService } from "@/services/instance";
 
 interface DataContextType {
   getPlayerList: (sync?: boolean) => Player[] | undefined;
@@ -77,6 +78,18 @@ export const DataContextProvider: React.FC<{
     });
   }, [setAuthServerList, toast]);
 
+  const handleRetriveInstanceList = useCallback(() => {
+    InstanceService.retriveInstanceList().then((response) => {
+      if (response.status === "success") setGameInstanceList(response.data);
+      else
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+    });
+  }, [setGameInstanceList, toast]);
+
   const getPlayerList = useGetState(playerList, handleRetrivePlayerList);
 
   const getSelectedPlayer = useGetState(
@@ -84,9 +97,10 @@ export const DataContextProvider: React.FC<{
     handleRetriveSelectedPlayer
   );
 
-  const getGameInstanceList = useGetState(gameInstanceList, () => {
-    setGameInstanceList(mockGameInstanceList);
-  });
+  const getGameInstanceList = useGetState(
+    gameInstanceList,
+    handleRetriveInstanceList
+  );
 
   const getSelectedGameInstance = useGetState(selectedGameInstance, () =>
     setSelectedGameInstance(mockGameInstanceList[0])

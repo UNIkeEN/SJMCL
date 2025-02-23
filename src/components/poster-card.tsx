@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCalendar } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { PostSourceInfo, PostSummary } from "@/models/post";
 import { formatRelativeTime } from "@/utils/datetime";
 
@@ -28,13 +29,14 @@ const PosterCard = ({ data }: PosterCardProps) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const themedStyles = useThemedCSSStyle();
 
-  const { title, abstract, keywords, imageSrc, source, updateAt, link } = data;
+  const { title, abstracts, keywords, imageSrc, source, updateAt, link } = data;
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Card
-      className="content-card"
+      className={themedStyles.card["card-front"]}
       cursor="pointer"
       overflow="hidden" // show the border
       p={0}
@@ -59,9 +61,9 @@ const PosterCard = ({ data }: PosterCardProps) => {
               ))}
             </Wrap>
           )}
-          {abstract && (
+          {abstracts && (
             <Text fontSize="xs" className="secondary-text no-select">
-              {abstract}
+              {abstracts}
             </Text>
           )}
           <HStack className="secondary-text" fontSize="xs" mt={1} spacing={1}>

@@ -32,7 +32,7 @@ import { ResourceService } from "@/services/resource";
 import { ISOToDatetime } from "@/utils/datetime";
 
 const modLoaderTypesToIcon: Record<string, string> = {
-  none: "",
+  Unknown: "",
   Fabric: "Fabric.png",
   Forge: "Forge.png",
   NeoForge: "NeoForge.png",
@@ -58,7 +58,7 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
 
   useEffect(() => {
     setLoading(true);
-    ResourceService.retriveModLoaderVersionList(
+    ResourceService.fetchModLoaderVersionList(
       selectedGameVersion.id,
       selectedModLoader.loaderType
     )

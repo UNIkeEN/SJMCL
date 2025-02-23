@@ -1,6 +1,7 @@
-import { Button, Flex, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import { Button, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import { open } from "@tauri-apps/plugin-shell";
 import { useRouter } from "next/router";
-import React, { useContext } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -14,7 +15,10 @@ import {
   LuSettings,
   LuSquareLibrary,
 } from "react-icons/lu";
+import { LuPackagePlus } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import NavMenu from "@/components/common/nav-menu";
+import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import {
   InstanceContextProvider,
@@ -41,6 +45,28 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
+  const instanceSecMenuOperations = [
+    {
+      icon: "openFolder",
+      danger: false,
+      onClick: () => {
+        open(summary?.versionPath || "");
+      },
+    },
+    {
+      icon: LuPackagePlus,
+      label: t("InstanceLayout.secMenu.exportModPack"),
+      danger: false,
+      onClick: () => {},
+    },
+    {
+      icon: "delete",
+      label: t("GameMenu.label.delete"),
+      danger: true,
+      onClick: () => {},
+    },
+  ];
+
   const instanceTabList: { key: string; icon: IconType }[] = [
     { key: "overview", icon: LuHouse },
     { key: "worlds", icon: LuEarth },
@@ -55,34 +81,50 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   ];
 
   return (
-    <VStack align="strench" h="100%" spacing={4}>
-      <Flex alignItems="flex-start">
-        <Text fontWeight="bold" fontSize="sm">
-          {summary?.name}
-        </Text>
-        <Button
-          leftIcon={<LuPlay />}
-          size="xs"
-          ml="auto"
-          colorScheme={primaryColor}
-          onClick={() => {}} // todo
-        >
-          {t("InstanceLayout.button.launch")}
-        </Button>
-      </Flex>
+    <Section
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      title={summary?.name}
+      headExtra={
+        <HStack spacing={2}>
+          {instanceSecMenuOperations.map((btn, index) => (
+            <CommonIconButton
+              key={index}
+              icon={btn.icon}
+              label={btn.label}
+              colorScheme={btn.danger ? "red" : "gray"}
+              onClick={btn.onClick}
+              size="xs"
+              fontSize="sm"
+              h={21}
+            />
+          ))}
+          <Button
+            leftIcon={<LuPlay />}
+            size="xs"
+            ml={1}
+            colorScheme={primaryColor}
+            onClick={() => {}} // todo
+          >
+            {t("InstanceLayout.button.launch")}
+          </Button>
+        </HStack>
+      }
+    >
       <NavMenu
         flexWrap="wrap"
         selectedKeys={[router.asPath]}
         onClick={(value) => router.push(value)}
         direction="row"
         size="xs"
+        mb={4}
         spacing={
           config.general.general.language.startsWith("zh") &&
           summary?.hasSchemFolder
-            ? "0.05rem"
+            ? 0
             : 1
         }
-        mt={-1.5}
         items={instanceTabList.map((item) => ({
           value: `/games/instance/${router.query.id}/${item.key}`,
           label: (
@@ -98,7 +140,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       <VStack overflow="auto" align="strench" spacing={4} flex="1">
         {children}
       </VStack>
-    </VStack>
+    </Section>
   );
 };
 

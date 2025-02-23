@@ -13,7 +13,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { LuChevronRight, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
-import { ModLoaderType } from "@/models/resource";
+import { ModLoaderType } from "@/enums/instance";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 interface ModLoaderCardsProps extends BoxProps {
   currentType: ModLoaderType;
@@ -34,19 +35,20 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const themedStyles = useThemedCSSStyle();
 
   const baseTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
   const loaderTypes =
-    currentType === "none" || displayMode === "selector"
+    currentType === "Unknown" || displayMode === "selector"
       ? baseTypes
       : [currentType, ...baseTypes.filter((type) => type !== currentType)];
 
   const renderCard = (type: ModLoaderType) => {
-    const isSelected = type === currentType && currentType !== "none";
+    const isSelected = type === currentType && currentType !== "Unknown";
     return (
       <Card
         key={type}
-        className="content-card"
+        className={themedStyles.card["card-front"]}
         pr={1.5}
         variant={isSelected ? "outline" : "elevated"}
         borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
@@ -76,7 +78,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
                     : t("ModLoaderCards.unInstalled")
                   : isSelected
                     ? currentVersion || t("ModLoaderCards.versionNotSelected")
-                    : currentType === "none"
+                    : currentType === "Unknown"
                       ? t("ModLoaderCards.versionNotSelected")
                       : t("ModLoaderCards.notCompatibleWith", {
                           modLoader: currentType,
@@ -109,7 +111,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   return (
     <Grid
       templateColumns={
-        displayMode === "entry" && currentType !== "none"
+        displayMode === "entry" && currentType !== "Unknown"
           ? "1.35fr 1fr 1fr"
           : "repeat(3, 1fr)"
       }

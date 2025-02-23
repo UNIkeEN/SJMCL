@@ -1,4 +1,10 @@
-import { Card, Center, Flex, useDisclosure } from "@chakra-ui/react";
+import {
+  Card,
+  Center,
+  Flex,
+  useColorModeValue,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 import { useRouter } from "next/router";
@@ -9,6 +15,7 @@ import HeadNavBar from "@/components/head-navbar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +24,7 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const { config, update } = useLauncherConfig();
+  const themedStyles = useThemedCSSStyle();
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
@@ -91,9 +99,19 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     };
   };
 
+  const standaloneBgColor = useColorModeValue(
+    "white",
+    "var(--chakra-colors-gray-900)"
+  );
+
   if (isStandAlone) {
     return (
-      <div style={{ ...getGlobalExtraStyle(config), backgroundColor: "white" }}>
+      <div
+        style={{
+          ...getGlobalExtraStyle(config),
+          backgroundColor: standaloneBgColor,
+        }}
+      >
         {children}
       </div>
     );
@@ -121,7 +139,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <>{children}</>
       ) : (
         <Card
-          className="content-blur-bg"
+          className={themedStyles.card["card-back"]}
           h="100%"
           overflow="auto"
           mt={1}

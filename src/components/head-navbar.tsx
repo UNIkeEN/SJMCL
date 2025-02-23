@@ -22,6 +22,7 @@ import {
 import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 const HeadNavBar = () => {
   const router = useRouter();
@@ -29,6 +30,7 @@ const HeadNavBar = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const isSimplified = config.appearance.theme.headNavStyle === "simplified";
+  const themedStyles = useThemedCSSStyle();
   const { openSharedModal } = useSharedModals();
 
   const navList = [
@@ -61,7 +63,7 @@ const HeadNavBar = () => {
 
   return (
     <Flex justify="center" p={4}>
-      <Card className="content-blur-bg" px={8} py={2}>
+      <Card className={themedStyles.card["card-back"]} px={8} py={2}>
         <HStack spacing={4}>
           <TitleShort />
           <Tabs

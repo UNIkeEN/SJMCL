@@ -109,6 +109,17 @@
       "serverUrl": "服务器地址"
     }
   },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "添加数据源"
+    },
+    "label": {
+      "endpointUrl": "源地址"
+    },
+    "placeholder": {
+      "endpointUrl": "源地址"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "添加角色"
@@ -167,6 +178,13 @@
         "primaryColor": {
           "title": "启动器强调色"
         },
+        "colorMode": {
+          "title": "颜色模式",
+          "type": {
+            "light": "浅色",
+            "dark": "深色"
+          }
+        },
         "headNavStyle": {
           "title": "顶部导航栏样式",
           "type": {
@@ -197,7 +215,7 @@
       }
     },
     "accessibility": {
-      "title": "显示辅助",
+      "title": "辅助显示",
       "settings": {
         "invertColors": {
           "title": "反转颜色"
@@ -221,7 +239,8 @@
       "externalAPI": "外部服务",
       "doc": "文档",
       "cicd": "CI / CD",
-      "design": "视觉设计"
+      "design": "视觉设计",
+      "mascot": "吉祥物"
     }
   },
   "CreateInstanceModal": {
@@ -337,6 +356,19 @@
           "title": "端口"
         }
       }
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "下载中任务",
+    "button": {
+      "settings": "下载设置",
+      "pause": "暂停",
+      "begin": "开始",
+      "retry": "重试"
+    },
+    "label": {
+      "paused": "已暂停",
+      "error": "错误"
     }
   },
   "Editable": {
@@ -546,13 +578,25 @@
         }
       }
     },
+    "gameWindow": {
+      "title": "窗口",
+      "settings": {
+        "resolution": {
+          "title": "游戏分辨率",
+          "switch": "全屏"
+        },
+        "customTitle": {
+          "title": "自定义窗口标题"
+        },
+        "customInfo": {
+          "title": "自定义信息",
+          "description": "将显示在游戏主界面右下角与 F3 调试页面左上角"
+        }
+      }
+    },
     "performance": {
       "title": "性能",
       "settings": {
-        "gameWindowResolution": {
-          "title": "游戏窗口分辨率",
-          "switch": "全屏"
-        },
         "autoMemAllocation": {
           "title": "自动分配内存"
         },
@@ -572,19 +616,8 @@
       }
     },
     "versionIsolation": {
-      "title": "版本隔离",
       "settings": {
-        "enabled": {
-          "title": "启用版本隔离"
-        },
-        "isolationStrategy": {
-          "title": "隔离策略",
-          "off": "关闭",
-          "full": "全部隔离",
-          "modable": "隔离可安装 Mod 版本",
-          "informal": "隔离非正式版",
-          "modable-and-informal": "隔离可安装 Mod 版本与非正式版"
-        }
+        "title": "启用版本隔离"
       }
     },
     "moreOptions": {
@@ -595,6 +628,12 @@
           "start-close": "游戏启动后结束启动器",
           "running-hidden": "游戏运行时隐藏启动器",
           "always": "启动器始终可见"
+        },
+        "autoJoinGameServer": {
+          "title": "自动加入服务器"
+        },
+        "serverUrl": {
+          "title": "服务器地址"
         },
         "displayGameLog": {
           "title": "显示游戏日志"
@@ -658,6 +697,9 @@
     "selectDirectory": "选择游戏目录"
   },
   "InstanceLayout": {
+    "secMenu": {
+      "exportModPack": "导出为整合包"
+    },
     "instanceTabList": {
       "overview": "概览",
       "worlds": "世界",
@@ -702,7 +744,7 @@
     "name": "实例名称",
     "description": "实例描述",
     "icon": "实例图标",
-    "applySettings": "启动特定游戏设置",
+    "applySettings": "启用特定游戏设置",
     "restoreSettings": "重置以下特定设置",
     "restoreSettingsDesc": "将以下特定设置重置为全局游戏设置",
     "restore": "重置",
@@ -1014,6 +1056,11 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "设置为启动器背景"
+    }
+  },
   "Services": {
     "config": {
       "retriveLauncherConfig": {
@@ -1083,7 +1130,9 @@
         "error": {
           "title": "角色添加失败",
           "description": {
-            "invalid": "无效的角色的类型"
+            "invalid": "无效的角色的类型",
+            "textureError": "角色皮肤获取失败",
+            "authServerError": "登录认证服务器失败"
           }
         }
       },
@@ -1133,6 +1182,60 @@
             "parseError": "服务器返回数据格式错误",
             "noDownloadApi": "无可用的下载策略，请检查网络连接"
           }
+        }
+      }
+    },
+    "instance": {
+      "retriveInstanceList": {
+        "error": {
+          "title": "获取实例列表失败"
+        }
+      },
+      "openInstanceSubdir": {
+        "error": {
+          "title": "打开实例目录失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在或类型错误",
+            "execOpenDirError": "命令执行失败"
+          }
+        }
+      },
+      "retriveWorldList": {
+        "error": {
+          "title": "获取世界列表失败"
+        }
+      },
+      "retriveGameServerList": {
+        "error": {
+          "title": "获取服务器列表失败",
+          "description": {
+            "serverNbtReadError": "server.dat 可能已损坏"
+          }
+        }
+      },
+      "retriveResourcePackList": {
+        "error": {
+          "title": "获取资源包列表失败"
+        }
+      },
+      "retriveServerResourcePackList": {
+        "error": {
+          "title": "获取服务器资源包列表失败"
+        }
+      },
+      "retriveSchematicList": {
+        "error": {
+          "title": "获取原理图列表失败"
+        }
+      },
+      "retriveShaderPackList": {
+        "error": {
+          "title": "获取着色器包列表失败"
+        }
+      },
+      "retriveScreenshotList": {
+        "error": {
+          "title": "获取截图列表失败"
         }
       }
     }

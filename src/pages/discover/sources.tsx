@@ -7,26 +7,50 @@ import {
   TagLabel,
   Text,
   Tooltip,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuPlus, LuTrash } from "react-icons/lu";
+import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import AddDiscoverSourceModal from "@/components/modals/add-post-source-mocal";
 import { useLauncherConfig } from "@/contexts/config";
-import { mockPostSources } from "@/models/mock/post";
 import { PostSourceInfo } from "@/models/post";
+import { DiscoverService } from "@/services/discover";
 
 export const DiscoverSourcesPage = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const sources = config.discoverSourceEndpoints;
 
-  const [sources, setSources] = useState<PostSourceInfo[]>([]);
+  const [sourcesInfo, setSourcesInfo] = useState<PostSourceInfo[]>([]);
+
+  const {
+    isOpen: isAddDiscoverSourceModalOpen,
+    onOpen: onAddDiscoverSourceModalOpen,
+    onClose: onAddDiscoverSourceModalClose,
+  } = useDisclosure();
+
+  const handleFetchPostSourcesInfo = useCallback(() => {
+    DiscoverService.fetchPostSourcesInfo().then((response) => {
+      if (response.status === "success") setSourcesInfo(response.data);
+      // no toast here, keep slient if no internet connection or etc.
+    });
+  }, [setSourcesInfo]);
 
   useEffect(() => {
-    setSources(mockPostSources);
-  }, []);
+    // iniailly load url from config
+    setSourcesInfo(
+      sources.map((url) => ({
+        endpointUrl: url,
+      }))
+    );
+    // query details use invoke
+    handleFetchPostSourcesInfo();
+  }, [sources, handleFetchPostSourcesInfo]);
 
   return (
     <Section
@@ -38,19 +62,18 @@ export const DiscoverSourcesPage = () => {
           leftIcon={<LuPlus />}
           size="xs"
           colorScheme={primaryColor}
-          isDisabled // TBD
+          onClick={onAddDiscoverSourceModalOpen}
         >
           {t("DiscoverSourcesPage.button.addSource")}
         </Button>
       }
     >
-      {sources.length > 0 ? (
+      {sourcesInfo.length > 0 ? (
         <OptionItemGroup
-          items={sources.map((source) => (
+          items={sourcesInfo.map((source) => (
             <OptionItem
               key={source.endpointUrl}
-              isLoading={source.name == null}
-              title={source.name || "Placeholder for Skeleton"}
+              title={source.name || ""}
               titleExtra={
                 <Text className="secondary-text" fontSize="xs-sm">
                   {source.fullName}
@@ -93,10 +116,16 @@ export const DiscoverSourcesPage = () => {
           ))}
         />
       ) : (
-        <div className="flex flex-col items-center justify-center h-full">
-          <div className="text-xl font-bold">{t("DiscoverPage.NoSources")}</div>
-        </div>
+        <Empty
+          withIcon={false}
+          size="sm"
+          description={t("DiscoverPage.NoSources")}
+        />
       )}
+      <AddDiscoverSourceModal
+        isOpen={isAddDiscoverSourceModalOpen}
+        onClose={onAddDiscoverSourceModalClose}
+      />
     </Section>
   );
 };

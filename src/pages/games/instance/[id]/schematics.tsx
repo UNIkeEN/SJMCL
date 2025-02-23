@@ -1,6 +1,5 @@
 import { HStack } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { open } from "@tauri-apps/plugin-shell";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEye } from "react-icons/lu";
@@ -9,29 +8,37 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import { SchematicsInfo } from "@/models/game-instance";
-import { mockSchematics } from "@/models/mock/game-instance";
+import { useInstanceSharedData } from "@/contexts/instance";
+import { InstanceSubdirEnums } from "@/enums/instance";
+import { SchematicInfo } from "@/models/instance";
+import { mockSchematics } from "@/models/mock/instance";
 
 const InstanceSchematicsPage = () => {
-  const [schematics, setSchematics] = useState<SchematicsInfo[]>([]);
   const { t } = useTranslation();
+  const { openSubdir, getSchematicList } = useInstanceSharedData();
+
+  const [schematics, setSchematics] = useState<SchematicInfo[]>([]);
 
   useEffect(() => {
-    setSchematics(mockSchematics);
-  }, []);
+    setSchematics(getSchematicList() || []);
+  }, [getSchematicList]);
 
   const schemSecMenuOperations = [
     {
       icon: "openFolder",
-      onClick: () => {},
+      onClick: () => {
+        openSubdir(InstanceSubdirEnums.Schematics);
+      },
     },
     {
       icon: "refresh",
-      onClick: () => {},
+      onClick: () => {
+        setSchematics(getSchematicList(true) || []);
+      },
     },
   ];
 
-  const schemItemMenuOperations = (schematic: SchematicsInfo) => [
+  const schemItemMenuOperations = (schematic: SchematicInfo) => [
     {
       label: t("InstanceSchematicsPage.schematicList.preview"),
       icon: LuEye,

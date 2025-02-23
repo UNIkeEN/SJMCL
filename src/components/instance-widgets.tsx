@@ -12,8 +12,10 @@ import {
   Text,
   Tooltip,
   VStack,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,13 +37,10 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { LocalModInfo, WorldInfo } from "@/models/game-instance";
-import {
-  mockLocalMods,
-  mockScreenshots,
-  mockWorlds,
-} from "@/models/mock/game-instance";
-import { formatRelativeTime } from "@/utils/datetime";
+import { LocalModInfo, WorldInfo } from "@/models/instance";
+import { ScreenshotInfo } from "@/models/instance";
+import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
+import { base64ImgSrc } from "@/utils/string";
 import ScreenshotPreviewModal from "./modals/screenshot-preview-modal";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
@@ -59,6 +58,8 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const backIconColor = `${primaryColor}.${useColorModeValue(100, 900)}`;
+
   return (
     <VStack align="stretch" spacing={2} {...props}>
       {title && (
@@ -81,7 +82,7 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
         <Icon
           as={icon}
           position="absolute"
-          color={`${primaryColor}.100`}
+          color={backIconColor}
           boxSize={20}
           bottom={-5}
           right={-5}
@@ -112,8 +113,8 @@ export const InstanceBasicInfoWidget = () => {
             className="secondary-text"
           >
             <Text>{summary?.version}</Text>
-            {summary?.modLoader.type && (
-              <Text>{`${summary.modLoader.type} ${summary?.modLoader.version}`}</Text>
+            {summary?.modLoader.loaderType !== "Unknown" && (
+              <Text>{`${summary?.modLoader.loaderType} ${summary?.modLoader.version}`}</Text>
             )}
           </VStack>
         }
@@ -125,7 +126,10 @@ export const InstanceBasicInfoWidget = () => {
         title={t("InstanceWidgets.basicInfo.playTime")}
         description={"12.1 小时"}
         prefixElement={
-          <Center boxSize={7} color={`${primaryColor}.600`}>
+          <Center
+            boxSize={7}
+            color={`${primaryColor}.${useColorModeValue(600, 200)}`}
+          >
             <LuCalendarClock fontSize="24px" />
           </Center>
         }
@@ -136,54 +140,63 @@ export const InstanceBasicInfoWidget = () => {
 
 export const InstanceScreenshotsWidget = () => {
   const { t } = useTranslation();
+  const { getScreenshotList } = useInstanceSharedData();
+
+  const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
   const router = useRouter();
   const { id } = router.query;
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setScreenshots(getScreenshotList() || []);
+  }, [getScreenshotList]);
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsFading(true);
       setTimeout(() => {
-        setCurrentIndex(
-          (prevIndex) => (prevIndex + 1) % mockScreenshots.length
-        );
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
         setIsFading(false);
       }, 1000);
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [screenshots]);
 
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.screenshots.title")}
       style={{ cursor: "pointer" }}
     >
-      <Image
-        src={mockScreenshots[currentIndex].imgSrc}
-        alt={mockScreenshots[currentIndex].fileName}
-        objectFit="cover"
-        position="absolute"
-        borderRadius="md"
-        w="100%"
-        h="100%"
-        ml={-3}
-        mt={-3}
-        opacity={isFading ? 0 : 1}
-        transition="opacity 1s ease-in-out"
-        onClick={() => {
-          router.push(
-            {
-              pathname: `/games/instance/${id}/screenshots`,
-              query: {
-                screenshotIndex: currentIndex.toString(),
+      {screenshots && screenshots.length ? (
+        <Image
+          src={convertFileSrc(screenshots[currentIndex].filePath)}
+          alt={screenshots[currentIndex].fileName}
+          objectFit="cover"
+          position="absolute"
+          borderRadius="md"
+          w="100%"
+          h="100%"
+          ml={-3}
+          mt={-3}
+          opacity={isFading ? 0 : 1}
+          transition="opacity 1s ease-in-out"
+          onClick={() => {
+            router.push(
+              {
+                pathname: `/games/instance/${id}/screenshots`,
+                query: {
+                  screenshotIndex: currentIndex.toString(),
+                },
               },
-            },
-            undefined,
-            { shallow: true }
-          );
-        }}
-      />
+              undefined,
+              { shallow: true }
+            );
+          }}
+        />
+      ) : (
+        <Empty withIcon={false} size="sm" />
+      )}
     </InstanceWidgetBase>
   );
 };
@@ -193,13 +206,13 @@ export const InstanceModsWidget = () => {
   const { id } = router.query;
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const { getLocalModList } = useInstanceSharedData();
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
 
   useEffect(() => {
-    // only for mock
-    setLocalMods(mockLocalMods);
-  }, []);
+    setLocalMods(getLocalModList() || []);
+  }, [getLocalModList]);
 
   const totalMods = localMods.length;
   const enabledMods = localMods.filter((mod) => mod.enabled).length;
@@ -213,7 +226,11 @@ export const InstanceModsWidget = () => {
         <VStack align="flex-start" spacing={3}>
           <AvatarGroup size="sm" max={5} spacing={-2.5}>
             {localMods.map((mod, index) => (
-              <Avatar key={index} name={mod.name} src={mod.iconSrc} />
+              <Avatar
+                key={index}
+                name={mod.name}
+                src={base64ImgSrc(mod.iconSrc)}
+              />
             ))}
           </AvatarGroup>
           <Text fontSize="xs" color="gray.500">
@@ -244,15 +261,15 @@ export const InstanceModsWidget = () => {
 
 export const InstanceLastPlayedWidget = () => {
   const { t } = useTranslation();
-  const [localWorlds, setLocalWorlds] = useState<WorldInfo[]>([]);
   const { config } = useLauncherConfig();
+  const { getWorldList } = useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
-  const router = useRouter();
+
+  const [localWorlds, setLocalWorlds] = useState<WorldInfo[]>([]);
 
   useEffect(() => {
-    // only for mock
-    setLocalWorlds(mockWorlds);
-  }, []);
+    setLocalWorlds(getWorldList() || []);
+  }, [getWorldList]);
 
   const lastPlayedWorld = localWorlds[0];
 
@@ -273,10 +290,10 @@ export const InstanceLastPlayedWidget = () => {
                 className="secondary-text"
               >
                 <Text>
-                  {formatRelativeTime(lastPlayedWorld.lastPlayedAt, t).replace(
-                    "on",
-                    ""
-                  )}
+                  {formatRelativeTime(
+                    UNIXToISOString(lastPlayedWorld.lastPlayedAt),
+                    t
+                  ).replace("on", "")}
                 </Text>
                 <Text>
                   {t(
@@ -292,10 +309,11 @@ export const InstanceLastPlayedWidget = () => {
             }
             prefixElement={
               <Image
-                src={`/images/icons/GrassBlock.png`}
+                src={convertFileSrc(lastPlayedWorld.iconSrc)}
+                fallbackSrc="/images/icons/UnknownWorld.webp"
                 alt={lastPlayedWorld.name}
                 boxSize="28px"
-                objectFit="cover"
+                style={{ borderRadius: "4px" }}
               />
             }
           />

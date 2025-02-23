@@ -1,4 +1,4 @@
-import { Tag, TagLabel, TagProps } from "@chakra-ui/react";
+import { Tag, TagLabel, TagProps, useColorModeValue } from "@chakra-ui/react";
 
 interface CountTagProps extends TagProps {
   count?: number;
@@ -6,7 +6,11 @@ interface CountTagProps extends TagProps {
 }
 
 const CountTag: React.FC<CountTagProps> = ({ count, children, ...props }) => (
-  <Tag borderRadius="full" colorScheme="blackAlpha" {...props}>
+  <Tag
+    borderRadius="full"
+    colorScheme={useColorModeValue("blackAlpha", "gray")}
+    {...props}
+  >
     <TagLabel>{count || Number(children) || 0}</TagLabel>
   </Tag>
 );

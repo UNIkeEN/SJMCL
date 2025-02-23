@@ -1,9 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import {
-  GameResourceInfo,
-  ModLoaderResourceInfo,
-  ModLoaderType,
-} from "@/models/resource";
+import { ModLoaderType } from "@/enums/instance";
+import { GameResourceInfo, ModLoaderResourceInfo } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -17,26 +14,26 @@ const errorToLocaleKey: { [key: string]: string } = {
  */
 export class ResourceService {
   /**
-   * RETRIVE the list of game versions.
+   * FETCH the list of game versions.
    * @returns {Promise<InvokeResponse<GameResourceInfo[]>>}
    */
   @responseHandler("resource", errorToLocaleKey)
-  static async retriveGameVersionList(): Promise<
+  static async fetchGameVersionList(): Promise<
     InvokeResponse<GameResourceInfo[]>
   > {
-    return await invoke("retrive_game_version_list");
+    return await invoke("fetch_game_version_list");
   }
 
   /**
-   * RETRIVE the list of mode loader versions.
+   * FETCH the list of mode loader versions.
    * @returns {Promise<InvokeResponse<ModLoaderResourceInfo[]>>}
    */
   @responseHandler("resource", errorToLocaleKey)
-  static async retriveModLoaderVersionList(
+  static async fetchModLoaderVersionList(
     gameVersion: string,
     modLoaderType: ModLoaderType
   ): Promise<InvokeResponse<ModLoaderResourceInfo[]>> {
-    return await invoke("retrive_mod_loader_version_list", {
+    return await invoke("fetch_mod_loader_version_list", {
       gameVersion,
       modLoaderType,
     });

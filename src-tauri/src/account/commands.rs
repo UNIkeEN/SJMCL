@@ -1,8 +1,9 @@
 use super::{
-  helpers::fetch_auth_server,
-  models::{AccountError, AccountInfo, AuthServer, Player, PlayerInfo},
+  helpers::{authlib_injector::fetch_auth_server, offline::offline_login},
+  models::{AccountError, AccountInfo, AuthServer, Player},
 };
 use crate::{error::SJMCLResult, storage::Storage};
+use tauri::AppHandle;
 use uuid::Uuid;
 
 #[tauri::command]
@@ -41,6 +42,7 @@ pub fn update_selected_player(uuid: Uuid) -> SJMCLResult<()> {
 
 #[tauri::command]
 pub async fn add_player(
+  app: AppHandle,
   player_type: String,
   username: String,
   password: String,
@@ -48,57 +50,20 @@ pub async fn add_player(
 ) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
 
-  let uuid = Uuid::new_v4();
   match player_type.as_str() {
     "offline" => {
-      let player = PlayerInfo {
-        name: username,
-        uuid,
-        player_type,
-        // this url for avatar_src is a mock.
-        avatar_src: "https://littleskin.cn/avatar/0?size=72&png=1".to_string(),
-        auth_account: "".to_string(),
-        password: "".to_string(),
-        auth_server_url: "".to_string(),
-      };
-
-      state.selected_player_id = uuid.to_string();
+      let player = offline_login(app, username).await?;
+      state.selected_player_id = player.uuid.to_string();
       state.players.push(player);
       state.save()?;
       Ok(())
     }
     "microsoft" => {
-      let player = PlayerInfo {
-        name: username,
-        uuid,
-        player_type,
-        // this url for avatar_src is a mock.
-        avatar_src: "https://littleskin.cn/avatar/0?size=72&png=1".to_string(),
-        auth_account: "".to_string(),
-        password: "".to_string(),
-        auth_server_url: "".to_string(),
-      };
-
-      state.selected_player_id = uuid.to_string();
-      state.players.push(player);
-      state.save()?;
+      // todo
       Ok(())
     }
     "3rdparty" => {
-      // todo: real login
-      let player = PlayerInfo {
-        name: "Player".to_string(), // mock name
-        uuid,
-        player_type,
-        avatar_src: "https://littleskin.cn/avatar/0?size=72&png=1".to_string(),
-        auth_account: username,
-        password,
-        auth_server_url,
-      };
-
-      state.selected_player_id = uuid.to_string();
-      state.players.push(player);
-      state.save()?;
+      // todo
       Ok(())
     }
     _ => Err(AccountError::Invalid.into()),

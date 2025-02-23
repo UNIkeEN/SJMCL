@@ -7,21 +7,25 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import { ShaderPacksInfo } from "@/models/game-instance";
-import { mockShaderPacks } from "@/models/mock/game-instance";
+import { useInstanceSharedData } from "@/contexts/instance";
+import { InstanceSubdirEnums } from "@/enums/instance";
+import { ShaderPackInfo } from "@/models/instance";
 
 const InstanceShaderPacksPage = () => {
-  const [shaderPacks, setShaderPacks] = useState<ShaderPacksInfo[]>([]);
   const { t } = useTranslation();
+  const { openSubdir, getShaderPackList } = useInstanceSharedData();
+  const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>([]);
 
   useEffect(() => {
-    setShaderPacks(mockShaderPacks);
-  }, []);
+    setShaderPacks(getShaderPackList() || []);
+  }, [getShaderPackList]);
 
   const shaderSecMenuOperations = [
     {
       icon: "openFolder",
-      onClick: () => {},
+      onClick: () => {
+        openSubdir(InstanceSubdirEnums.ShaderPacks);
+      },
     },
     {
       icon: "add",
@@ -33,11 +37,13 @@ const InstanceShaderPacksPage = () => {
     },
     {
       icon: "refresh",
-      onClick: () => {},
+      onClick: () => {
+        setShaderPacks(getShaderPackList(true) || []);
+      },
     },
   ];
 
-  const shaderItemMenuOperations = (pack: ShaderPacksInfo) => [
+  const shaderItemMenuOperations = (pack: ShaderPackInfo) => [
     {
       label: "",
       icon: "copyOrMove",
@@ -72,7 +78,7 @@ const InstanceShaderPacksPage = () => {
       {shaderPacks.length > 0 ? (
         <OptionItemGroup
           items={shaderPacks.map((pack) => (
-            <OptionItem key={pack.name} title={pack.name}>
+            <OptionItem key={pack.fileName} title={pack.fileName}>
               <HStack spacing={0}>
                 {shaderItemMenuOperations(pack).map((item, index) => (
                   <CommonIconButton

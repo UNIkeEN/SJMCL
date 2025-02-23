@@ -1,15 +1,6 @@
+use super::super::models::{AccountError, AuthServer, Features};
+use crate::error::SJMCLResult;
 use tauri_plugin_http::reqwest;
-
-use crate::{error::SJMCLResult, storage::Storage, EXE_DIR};
-
-use super::models::{AccountError, AccountInfo, AuthServer, Features};
-use std::path::PathBuf;
-
-impl Storage for AccountInfo {
-  fn file_path() -> PathBuf {
-    EXE_DIR.join("sjmcl.account.json")
-  }
-}
 
 pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
   match reqwest::get(&auth_url).await {
