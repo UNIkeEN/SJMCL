@@ -1,6 +1,6 @@
 import { HStack, Image } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
@@ -10,6 +10,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirEnums } from "@/enums/instance";
 import { ResourcePackInfo } from "@/models/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -17,10 +18,15 @@ import { base64ImgSrc } from "@/utils/string";
 const InstanceResourcePacksPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const { openSubdir, getResourcePackList, getServerResourcePackList } =
-    useInstanceSharedData();
+  const {
+    summary,
+    openSubdir,
+    getResourcePackList,
+    getServerResourcePackList,
+  } = useInstanceSharedData();
   const accordionStates =
     config.states.instanceResourcepackPage.accordionStates;
+  const { openSharedModal } = useSharedModals();
 
   const [resourcePacks, setResourcePacks] = useState<ResourcePackInfo[]>([]);
   const [serverResPacks, setServerResPacks] = useState<ResourcePackInfo[]>([]);
@@ -131,10 +137,23 @@ const InstanceResourcePacksPage = () => {
                       />
                     }
                   >
-                    <CommonIconButton
-                      icon="revealFile"
-                      onClick={() => revealItemInDir(pack.filePath)}
-                    />
+                    <HStack spacing={0}>
+                      {value.locale === "resourcePackList" && (
+                        <CommonIconButton
+                          icon="copyOrMove"
+                          onClick={() => {
+                            openSharedModal("copy-or-move", {
+                              srcResName: pack.name,
+                              srcFilePath: pack.filePath,
+                            });
+                          }}
+                        />
+                      )}
+                      <CommonIconButton
+                        icon="revealFile"
+                        onClick={() => revealItemInDir(pack.filePath)}
+                      />
+                    </HStack>
                   </OptionItem>
                 ))}
               />

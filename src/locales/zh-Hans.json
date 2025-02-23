@@ -243,6 +243,29 @@
       "mascot": "吉祥物"
     }
   },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "复制或移动资源"
+    },
+    "operation": {
+      "copy": "复制",
+      "move": "移动"
+    },
+    "tag": {
+      "source": "源"
+    },
+    "body": "到",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "资源包",
+      "Saves": "地图",
+      "Schematics": "原理图",
+      "ShaderPacks": "光影"
+    },
+    "error": {
+      "lackOfArguments": "缺少必要参数，请开发者检查代码"
+    }
+  },
   "CreateInstanceModal": {
     "header": {
       "title": "创建新实例"
@@ -1262,6 +1285,26 @@
       "retriveScreenshotList": {
         "error": {
           "title": "获取截图列表失败"
+        }
+      },
+      "copyAcrossInstances": {
+        "error": {
+          "title": "复制资源失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在或类型错误",
+            "invalidSourcePath": "无效的源路径",
+            "fileCopyFailed": "文件复制失败"
+          }
+        }
+      },
+      "moveAcrossInstances": {
+        "error": {
+          "title": "移动资源失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在或类型错误",
+            "invalidSourcePath": "无效的源路径",
+            "fileMoveFailed": "文件移动失败"
+          }
         }
       }
     }

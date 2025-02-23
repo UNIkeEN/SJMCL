@@ -1,5 +1,6 @@
 import { type } from "@tauri-apps/plugin-os";
 import { useEffect, useState } from "react";
+import CopyOrMoveModal from "@/components/modals/copy-or-move-modal";
 import SpotlightSearchModal from "@/components/modals/spotlight-search-modal";
 import { SharedModalContextProvider } from "@/contexts/shared-modal";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -22,6 +23,7 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
 
   const modals: Record<string, React.FC<any>> = {
     "spotlight-search": SpotlightSearchModal,
+    "copy-or-move": CopyOrMoveModal,
   };
 
   useKeyboardShortcut(

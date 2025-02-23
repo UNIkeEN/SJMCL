@@ -243,6 +243,29 @@
       "mascot": "Team Mascot"
     }
   },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "Copy or Move Resource"
+    },
+    "operation": {
+      "copy": "Copy",
+      "move": "Move"
+    },
+    "tag": {
+      "source": "Source"
+    },
+    "body": "to",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "ResourcePack",
+      "Saves": "World",
+      "Schematics": "Schematic",
+      "ShaderPacks": "ShaderPack"
+    },
+    "error": {
+      "lackOfArguments": "Missing necessary parameters. Please have the developer check the code"
+    }
+  },
   "CreateInstanceModal": {
     "header": {
       "title": "Create New Instance"
@@ -1262,6 +1285,26 @@
       "retriveScreenshotList": {
         "error": {
           "title": "Failed to retrive screenshot list"
+        }
+      },
+      "copyAcrossInstances": {
+        "error": {
+          "title": "Failed to copy resource",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
+            "invalidSourcePath": "Invalid source path",
+            "fileCopyFailed": "File copy failed"
+          }
+        }
+      },
+      "moveAcrossInstances": {
+        "error": {
+          "title": "Failed to move resource",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
+            "invalidSourcePath": "Invalid source path",
+            "fileMoveFailed": "File move failed"
+          }
         }
       }
     }

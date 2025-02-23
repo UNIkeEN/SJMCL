@@ -1,6 +1,6 @@
 import { HStack } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
@@ -8,12 +8,15 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirEnums } from "@/enums/instance";
 import { ShaderPackInfo } from "@/models/instance";
 
 const InstanceShaderPacksPage = () => {
   const { t } = useTranslation();
-  const { openSubdir, getShaderPackList } = useInstanceSharedData();
+  const { summary, openSubdir, getShaderPackList } = useInstanceSharedData();
+  const { openSharedModal } = useSharedModals();
+
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>([]);
 
   useEffect(() => {
@@ -47,7 +50,12 @@ const InstanceShaderPacksPage = () => {
     {
       label: "",
       icon: "copyOrMove",
-      onClick: () => {},
+      onClick: () => {
+        openSharedModal("copy-or-move", {
+          srcResName: pack.fileName,
+          srcFilePath: pack.filePath,
+        });
+      },
     },
     {
       label: "",

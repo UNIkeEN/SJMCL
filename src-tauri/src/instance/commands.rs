@@ -1,5 +1,6 @@
 use super::{
   super::utils::{
+    fs::copy_whole_dir,
     nbt::load_nbt,
     path::{get_files_with_regex, get_subdirectories},
   },
@@ -50,6 +51,69 @@ pub fn open_instance_subdir(
     Ok(_) => Ok(()),
     Err(_) => Err(InstanceError::ExecOpenDirError.into()),
   }
+}
+
+#[tauri::command]
+pub fn copy_across_instances(
+  app: AppHandle,
+  src_file_path: String,
+  tgt_inst_ids: Vec<usize>,
+  tgt_dir_type: InstanceSubdirType,
+) -> SJMCLResult<()> {
+  let src_path = Path::new(&src_file_path);
+
+  if src_path.is_file() {
+    let filename = match src_path.file_name() {
+      Some(name) => name.to_os_string(),
+      None => return Err(InstanceError::InvalidSourcePath.into()),
+    };
+
+    for tgt_inst_id in tgt_inst_ids {
+      let tgt_path = match get_instance_subdir_path(&app, tgt_inst_id, &tgt_dir_type) {
+        Some(path) => path,
+        None => return Err(InstanceError::InstanceNotFoundByID.into()),
+      };
+
+      let dest_path = Path::new(&tgt_path).join(&filename);
+      fs::copy(&src_file_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+    }
+  } else if src_path.is_dir() {
+    for tgt_inst_id in tgt_inst_ids {
+      let tgt_path = match get_instance_subdir_path(&app, tgt_inst_id, &tgt_dir_type) {
+        Some(path) => path,
+        None => return Err(InstanceError::InstanceNotFoundByID.into()),
+      };
+
+      let dest_path = Path::new(&tgt_path).join(src_path.file_name().unwrap());
+      copy_whole_dir(&src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+    }
+  } else {
+    return Err(InstanceError::InvalidSourcePath.into());
+  }
+  Ok(())
+}
+
+#[tauri::command]
+pub fn move_across_instances(
+  app: AppHandle,
+  src_file_path: String,
+  tgt_inst_id: usize,
+  tgt_dir_type: InstanceSubdirType,
+) -> SJMCLResult<()> {
+  let tgt_path = match get_instance_subdir_path(&app, tgt_inst_id, &tgt_dir_type) {
+    Some(path) => path,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+
+  let src_path = Path::new(&src_file_path);
+  let filename = match src_path.file_name() {
+    Some(name) => name.to_os_string(),
+    None => return Err(InstanceError::InvalidSourcePath.into()),
+  };
+
+  let dest_path = Path::new(&tgt_path).join(&filename);
+  fs::rename(&src_file_path, &dest_path).map_err(|_| InstanceError::FileMoveFailed)?;
+  Ok(())
 }
 
 #[tauri::command]

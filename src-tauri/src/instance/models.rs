@@ -148,6 +148,9 @@ pub enum InstanceError {
   ExecOpenDirError,
   ServerNbtReadError,
   FileNotFoundError,
+  InvalidSourcePath,
+  FileCopyFailed,
+  FileMoveFailed,
 }
 
 impl fmt::Display for InstanceError {
@@ -157,6 +160,9 @@ impl fmt::Display for InstanceError {
       InstanceError::ExecOpenDirError => write!(f, "EXEC_OPEN_DIR_ERROR"),
       InstanceError::ServerNbtReadError => write!(f, "SERVER_NBT_READ_ERROR"),
       InstanceError::FileNotFoundError => write!(f, "FILE_NOT_FOUND_ERROR"),
+      InstanceError::InvalidSourcePath => write!(f, "INVALID_SOURCE_PATH"),
+      InstanceError::FileCopyFailed => write!(f, "FILE_COPY_FAILED"),
+      InstanceError::FileMoveFailed => write!(f, "FILE_MOVE_FAILED"),
     }
   }
 }

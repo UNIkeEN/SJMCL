@@ -1,6 +1,6 @@
 import { HStack } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEye } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -9,13 +9,14 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirEnums } from "@/enums/instance";
-import { SchematicInfo } from "@/models/instance";
-import { mockSchematics } from "@/models/mock/instance";
+import { SchematicInfo } from "@/models/game-instance";
 
 const InstanceSchematicsPage = () => {
   const { t } = useTranslation();
-  const { openSubdir, getSchematicList } = useInstanceSharedData();
+  const { summary, openSubdir, getSchematicList } = useInstanceSharedData();
+  const { openSharedModal } = useSharedModals();
 
   const [schematics, setSchematics] = useState<SchematicInfo[]>([]);
 
@@ -47,7 +48,12 @@ const InstanceSchematicsPage = () => {
     {
       label: "",
       icon: "copyOrMove",
-      onClick: () => {},
+      onClick: () => {
+        openSharedModal("copy-or-move", {
+          srcResName: schematic.name,
+          srcFilePath: schematic.filePath,
+        });
+      },
     },
     {
       label: "",
