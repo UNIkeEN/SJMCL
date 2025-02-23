@@ -4,7 +4,7 @@ import { useRoutingHistory } from "@/contexts/routing-history";
 
 const InstanceDetailIndexPage = () => {
   const router = useRouter();
-  const { id, screenshotIndex } = router.query;
+  const { id } = router.query;
   const { history } = useRoutingHistory();
 
   useEffect(() => {
