@@ -3,7 +3,9 @@ use crate::{
   instance::models::ModLoaderType,
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
-use serde_json::Value;
+use serde::{Deserialize, Deserializer};
+use serde_json::{self, Value};
+use std::fmt::Debug;
 use std::{fs, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;

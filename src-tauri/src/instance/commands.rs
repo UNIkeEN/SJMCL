@@ -6,7 +6,7 @@ use super::{
   },
   helpers::{
     misc::{fetch_url, get_instance_subdir_path, refresh_and_update_instances},
-    mods::main_loader::load_mod_from_file,
+    mods::main_loader::{load_mod_from_dir, load_mod_from_file},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::nbt_to_servers_info,
     world::nbt_to_world_info,
@@ -18,6 +18,7 @@ use super::{
 };
 use crate::error::SJMCLResult;
 use futures;
+use futures::stream::{self, StreamExt};
 use lazy_static::lazy_static;
 use quartz_nbt::io::Flavor;
 use regex::{Regex, RegexBuilder};
@@ -214,24 +215,40 @@ pub async fn retrive_local_mod_list(
   app: AppHandle,
   instance_id: usize,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
-  let mut local_mods: Vec<LocalModInfo> = Vec::new();
   let mods_dir = match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Mods) {
     Some(path) => path,
     None => return Ok(Vec::new()),
   };
-  let valid_extensions = RegexBuilder::new(r"\.jar(\.disabled)?$")
+  let valid_extensions = RegexBuilder::new(r"\.(jar|zip)(\.disabled)*$")
     .case_insensitive(true)
     .build()
     .unwrap();
-
-  for path in get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default() {
-    if let Ok(mod_info) = load_mod_from_file(&path) {
-      local_mods.push(mod_info);
-    }
-  }
-  local_mods.sort();
-
-  Ok(local_mods)
+  let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
+  let mut mod_infos = futures::stream::iter(mod_paths)
+    .then(|path| async move { load_mod_from_file(&path).await })
+    .filter_map(|result| async move {
+      match result {
+        Ok(mod_info) => Some(mod_info),
+        Err(_) => None,
+      }
+    })
+    .collect::<Vec<LocalModInfo>>()
+    .await;
+  let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
+  mod_infos.extend(
+    futures::stream::iter(mod_paths)
+      .then(|path| async move { load_mod_from_dir(&path).await })
+      .filter_map(|result| async move {
+        match result {
+          Ok(mod_info) => Some(mod_info),
+          Err(_) => None,
+        }
+      })
+      .collect::<Vec<LocalModInfo>>()
+      .await,
+  );
+  mod_infos.sort();
+  Ok(mod_infos)
 }
 
 #[tauri::command]

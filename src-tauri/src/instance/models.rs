@@ -1,4 +1,4 @@
-use crate::launcher_config::models::GameConfig;
+use crate::{error::SJMCLResult, launcher_config::models::GameConfig};
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::{Ord, Ordering, PartialOrd},
@@ -91,7 +91,7 @@ pub struct LocalModInfo {
 
 impl PartialEq for LocalModInfo {
   fn eq(&self, other: &Self) -> bool {
-    self.name == other.name && self.version == other.version
+    self.name.to_lowercase() == other.name.to_lowercase() && self.version == other.version
   }
 }
 
@@ -104,7 +104,7 @@ impl PartialOrd for LocalModInfo {
 }
 impl Ord for LocalModInfo {
   fn cmp(&self, other: &Self) -> Ordering {
-    match self.name.cmp(&other.name) {
+    match self.name.to_lowercase().cmp(&other.name.to_lowercase()) {
       Ordering::Equal => self.version.cmp(&other.version),
       order => order,
     }
@@ -168,36 +168,3 @@ impl fmt::Display for InstanceError {
 }
 
 impl std::error::Error for InstanceError {}
-
-#[derive(PartialEq, Eq, Clone)]
-pub enum TranslatableItem {
-  Id,
-  Name,
-  Version,
-  Description,
-  Author,
-  Contact,
-  License,
-  Credits,
-  McVersion,
-}
-
-impl fmt::Display for TranslatableItem {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      Self::Id => write!(f, "TI_ID"),
-      Self::Name => write!(f, "TI_NAME"),
-      Self::Version => write!(f, "TI_VERSION"),
-      Self::Description => write!(f, "TI_DESCRIPTION"),
-      Self::Author => write!(f, "TI_AUTHOR"),
-      Self::Contact => write!(f, "TI_CONTACT"),
-      Self::License => write!(f, "TI_LICENSE"),
-      Self::Credits => write!(f, "TI_CREDITS"),
-      Self::McVersion => write!(f, "TI_MC_VERSION"),
-    }
-  }
-}
-
-pub trait ToTranslatableTable {
-  fn to_translatable_table(&self) -> Vec<(TranslatableItem, String)>;
-}

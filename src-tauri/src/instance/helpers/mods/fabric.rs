@@ -1,13 +1,14 @@
 // see https://wiki.fabricmc.net/zh_cn:documentation:fabric_mod_json
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::models::{ToTranslatableTable, TranslatableItem};
 use crate::utils::image::image_to_base64;
 use image::ImageReader;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::collections::HashMap;
 use std::io::{Cursor, Read, Seek};
+use std::path::PathBuf;
+use tokio;
 use zip::ZipArchive;
-
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct FabricModMetadata {
@@ -16,41 +17,8 @@ pub struct FabricModMetadata {
   pub name: Option<String>,
   pub description: Option<String>,
   pub icon: Option<String>,
-  pub authors: Option<Vec<String>>,
+  pub authors: Option<Value>,
   pub contact: Option<HashMap<String, String>>,
-}
-
-impl ToTranslatableTable for FabricModMetadata {
-  fn to_translatable_table(&self) -> Vec<(TranslatableItem, String)> {
-    let mut table = vec![
-      (TranslatableItem::Id, self.id.clone()),
-      (TranslatableItem::Version, self.version.clone()),
-    ];
-
-    if let Some(ref name) = self.name {
-      table.push((TranslatableItem::Name, name.clone()));
-    }
-
-    if let Some(ref description) = self.description {
-      table.push((TranslatableItem::Description, description.clone()));
-    }
-
-    if let Some(ref authors) = self.authors {
-      let authors_str = authors.clone().join(", ");
-      table.push((TranslatableItem::Author, authors_str));
-    }
-
-    if let Some(ref contact) = self.contact {
-      let contact_str = contact
-        .iter()
-        .map(|(k, v)| format!("{}: {}", k, v))
-        .collect::<Vec<_>>()
-        .join(", ");
-      table.push((TranslatableItem::Contact, contact_str));
-    }
-
-    table
-  }
 }
 
 pub fn load_fabric_from_jar<R: Read + Seek>(
@@ -73,6 +41,31 @@ pub fn load_fabric_from_jar<R: Read + Seek>(
             if let Ok(b64) = image_to_base64(img.to_rgba8()) {
               meta.icon = Some(b64);
             }
+          }
+        }
+      }
+    }
+  }
+  Ok(meta)
+}
+
+pub async fn load_fabric_from_dir(dir_path: &PathBuf) -> SJMCLResult<FabricModMetadata> {
+  let fabric_file_path = dir_path.join("fabric.mod.json");
+  let mut meta: FabricModMetadata = match tokio::fs::read_to_string(fabric_file_path).await {
+    Ok(val) => match serde_json::from_str(val.as_str()) {
+      Ok(val) => val,
+      Err(e) => return Err(SJMCLError::from(e)),
+    },
+    Err(e) => return Err(SJMCLError::from(e)),
+  };
+  if let Some(ref icon) = meta.icon {
+    let icon_file_path = dir_path.join(icon);
+    if let Ok(buffer) = tokio::fs::read(icon_file_path).await {
+      // Use `image` crate to decode the image
+      if let Ok(image_reader) = ImageReader::new(Cursor::new(buffer)).with_guessed_format() {
+        if let Ok(img) = image_reader.decode() {
+          if let Ok(b64) = image_to_base64(img.to_rgba8()) {
+            meta.icon = Some(b64);
           }
         }
       }

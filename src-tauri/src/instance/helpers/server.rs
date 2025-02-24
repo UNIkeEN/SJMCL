@@ -1,5 +1,18 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use quartz_nbt::{NbtCompound, NbtList};
+use serde::{self, Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct NbtServerInfo {
+  pub ip: String,
+  pub icon: String,
+  pub name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+struct NbtServersInfo {
+  pub servers: Vec<NbtServerInfo>,
+}
 
 pub fn nbt_to_servers_info(nbt: &NbtCompound) -> SJMCLResult<Vec<(String, String, String)>> {
   // return vec of (ip, name, icon_src)

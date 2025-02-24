@@ -9,6 +9,7 @@ dependencies = [
  "base64 0.22.1",
  "futures",
  "image",
+ "java-properties",
  "jsonwebtoken",
  "lazy_static",
  "log",
@@ -2451,6 +2452,17 @@ name = "itoa"
 version = "1.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "540654e97a3f4470a492cd30ff187bc95d89557a903a2bbf112e2fae98104ef2"
+
+[[package]]
+name = "java-properties"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37bf6f484471c451f2b51eabd9e66b3fa7274550c5ec4b6c3d6070840945117f"
+dependencies = [
+ "encoding_rs",
+ "lazy_static",
+ "regex",
+]
 
 [[package]]
 name = "javascriptcore-rs"
