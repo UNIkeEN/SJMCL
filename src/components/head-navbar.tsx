@@ -36,7 +36,7 @@ const HeadNavBar = () => {
   const navList = [
     { icon: LuZap, label: "launch", path: "/launch" },
     { icon: LuBox, label: "games", path: "/games" },
-    { icon: LuCircleUserRound, label: "accounts", path: "/account" },
+    { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
     ...(config.general.optionalFunctions.discover
       ? [{ icon: LuCompass, label: "discover", path: "/discover" }]
       : [

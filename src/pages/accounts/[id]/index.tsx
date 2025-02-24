@@ -177,7 +177,7 @@ const AccountsPage = () => {
               <NavMenu
                 selectedKeys={[selectedPlayerType]}
                 onClick={(value) => {
-                  router.push(`/account/${value}`);
+                  router.push(`/accounts/${value}`);
                 }}
                 items={playerTypeList.map((item) => ({
                   label: (

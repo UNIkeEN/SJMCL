@@ -8,8 +8,8 @@ const AccountsPage = () => {
 
   useEffect(() => {
     router.replace(
-      [...history].reverse().find((route) => route.startsWith("/account/")) ||
-        "/account/index"
+      [...history].reverse().find((route) => route.startsWith("/accounts/")) ||
+        "/accounts/index"
     );
   }, [history, router]);
 
