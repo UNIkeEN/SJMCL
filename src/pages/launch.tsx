@@ -70,9 +70,7 @@ const LaunchPage = () => {
           tooltip={t("LaunchPage.SwitchButton.tooltip.switchPlayer")}
           aria-label="switch-player"
           variant="subtle"
-          onClick={(value) => {
-            router.push(`/account/${value}`);
-          }}
+          onClick={() => router.push("/accounts")}
         />
         <HStack spacing={2.5} h="100%" w="100%">
           {selectedPlayer ? (
