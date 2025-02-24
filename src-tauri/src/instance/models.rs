@@ -1,4 +1,4 @@
-use crate::{error::SJMCLResult, launcher_config::models::GameConfig};
+use crate::launcher_config::models::GameConfig;
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::{Ord, Ordering, PartialOrd},

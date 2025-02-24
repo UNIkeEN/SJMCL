@@ -1,6 +1,7 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use quartz_nbt::{NbtCompound, NbtList};
 use serde::{self, Deserialize, Serialize};
+use tauri_plugin_http::reqwest;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct NbtServerInfo {
@@ -39,4 +40,26 @@ pub fn nbt_to_servers_info(nbt: &NbtCompound) -> SJMCLResult<Vec<(String, String
   }
 }
 
-// TODO: remove misc/fetch_url(), merge fetch and json process to query_server_info_online() here.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SjmcServerQueryResult {
+  pub online: bool,
+  pub players: Players,
+  pub favicon: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Players {
+  pub online: u64,
+  pub max: u64,
+}
+
+pub async fn query_server_status(server: &String) -> SJMCLResult<SjmcServerQueryResult> {
+  // 构建请求URL
+  let url = format!("https://mc.sjtu.cn/custom/serverlist/?query={}", server);
+  let response = reqwest::get(&url).await?;
+  if !response.status().is_success() {
+    return Err(SJMCLError(format!("http error: {}", response.status())));
+  }
+  let query_result: SjmcServerQueryResult = response.json().await?;
+  Ok(query_result)
+}

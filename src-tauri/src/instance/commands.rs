@@ -5,10 +5,10 @@ use super::{
     path::{get_files_with_regex, get_subdirectories},
   },
   helpers::{
-    misc::{fetch_url, get_instance_subdir_path, refresh_and_update_instances},
+    misc::{get_instance_subdir_path, refresh_and_update_instances},
     mods::main_loader::{load_mod_from_dir, load_mod_from_file},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
-    server::nbt_to_servers_info,
+    server::{nbt_to_servers_info, query_server_status},
     world::nbt_to_world_info,
   },
   models::{
@@ -17,8 +17,6 @@ use super::{
   },
 };
 use crate::error::SJMCLResult;
-use futures;
-use futures::stream::{self, StreamExt};
 use lazy_static::lazy_static;
 use quartz_nbt::io::Flavor;
 use regex::{Regex, RegexBuilder};
@@ -184,27 +182,33 @@ pub async fn retrive_game_server_list(
 
     // query_online is true, amend query and return player count and online status
     if query_online {
-      let mut tasks = Vec::new();
-      for server in game_servers {
-        let url = format!("https://mc.sjtu.cn/custom/serverlist/?query={}", server.ip);
-        tasks.push(tokio::spawn(async move { (server, fetch_url(&url).await) }));
-      }
-      let results = futures::future::join_all(tasks).await;
-      game_servers = Vec::new();
-      for result in results {
-        if let Ok((mut server, data)) = result {
-          if let Some(data) = data {
-            if let Some(players) = data["players"].as_object() {
-              server.players_online = players["online"].as_u64().unwrap_or(0) as usize;
-              server.players_max = players["max"].as_u64().unwrap_or(0) as usize;
+      let query_tasks = game_servers.clone().into_iter().map(|mut server| {
+        tokio::spawn(async move {
+          // 查询服务器状态
+          match query_server_status(&server.ip).await {
+            Ok(query_result) => {
+              server.is_queried = true;
+              server.players_online = query_result.players.online as usize;
+              server.players_max = query_result.players.max as usize;
+              server.online = query_result.online;
+              server.icon_src = query_result.favicon.unwrap_or_default();
             }
-            server.online = data["online"].as_bool().unwrap_or(false);
-            server.icon_src = data["favicon"].as_str().unwrap_or("").to_string();
-            server.is_queried = true;
+            Err(_) => {
+              server.is_queried = false;
+            }
           }
-          game_servers.push(server);
+          server
+        })
+      });
+      let mut updated_servers = Vec::new();
+      for (prev, query) in game_servers.into_iter().zip(query_tasks) {
+        if let Ok(updated_server) = query.await {
+          updated_servers.push(updated_server);
+        } else {
+          updated_servers.push(prev); // 如果查询失败，保留原始数据
         }
       }
+      game_servers = updated_servers;
     }
   } // don't report error when missing nbt file
   Ok(game_servers)
@@ -219,35 +223,33 @@ pub async fn retrive_local_mod_list(
     Some(path) => path,
     None => return Ok(Vec::new()),
   };
+
   let valid_extensions = RegexBuilder::new(r"\.(jar|zip)(\.disabled)*$")
     .case_insensitive(true)
     .build()
     .unwrap();
+
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
-  let mut mod_infos = futures::stream::iter(mod_paths)
-    .then(|path| async move { load_mod_from_file(&path).await })
-    .filter_map(|result| async move {
-      match result {
-        Ok(mod_info) => Some(mod_info),
-        Err(_) => None,
-      }
-    })
-    .collect::<Vec<LocalModInfo>>()
-    .await;
+  let mut tasks = Vec::new();
+  for path in mod_paths {
+    let task = tokio::spawn(async move { load_mod_from_file(&path).await.ok() });
+    tasks.push(task);
+  }
   let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
-  mod_infos.extend(
-    futures::stream::iter(mod_paths)
-      .then(|path| async move { load_mod_from_dir(&path).await })
-      .filter_map(|result| async move {
-        match result {
-          Ok(mod_info) => Some(mod_info),
-          Err(_) => None,
-        }
-      })
-      .collect::<Vec<LocalModInfo>>()
-      .await,
-  );
+  for path in mod_paths {
+    let task = tokio::spawn(async move { load_mod_from_dir(&path).await.ok() });
+    tasks.push(task);
+  }
+  let mut mod_infos = Vec::new();
+  for task in tasks {
+    if let Ok(Some(mod_info)) = task.await {
+      mod_infos.push(mod_info);
+    }
+  }
+
+  // 对模组信息进行排序
   mod_infos.sort();
+
   Ok(mod_infos)
 }
 

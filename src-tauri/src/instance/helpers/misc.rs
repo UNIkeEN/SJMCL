@@ -3,12 +3,8 @@ use crate::{
   instance::models::ModLoaderType,
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
-use serde::{Deserialize, Deserializer};
-use serde_json::{self, Value};
-use std::fmt::Debug;
 use std::{fs, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 // if instance_id not exists, return None
 pub fn get_instance_subdir_path(
@@ -136,20 +132,4 @@ pub async fn refresh_and_update_instances(app: &AppHandle) {
   let binding = app.state::<Mutex<Vec<Instance>>>();
   let mut state = binding.lock().unwrap();
   *state = instances;
-}
-
-pub async fn fetch_url(url: &String) -> Option<Value> {
-  match reqwest::get(url).await {
-    Ok(response) => {
-      if response.status().is_success() {
-        match response.json::<Value>().await {
-          Ok(val) => Some(val),
-          Err(_) => None,
-        }
-      } else {
-        None
-      }
-    }
-    Err(_) => None, // request error
-  }
 }

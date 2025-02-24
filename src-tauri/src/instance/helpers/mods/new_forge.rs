@@ -119,5 +119,17 @@ pub async fn load_newforge_from_dir(dir_path: &PathBuf) -> SJMCLResult<NewforgeM
       }
     }
   }
+  if let Some(ref mut version) = meta.mods[0].version {
+    if version == "${file.jarVersion}" {
+      if let Ok(mf_string) = tokio::fs::read_to_string(dir_path.join("META-INF/MANIFEST.MF")).await
+      {
+        if let Ok(mf) = java_properties::read(Cursor::new(mf_string)) {
+          if let Some(jar_version) = mf.get("Implementation-Version") {
+            *version = jar_version.clone();
+          }
+        }
+      }
+    }
+  }
   Ok(meta)
 }
