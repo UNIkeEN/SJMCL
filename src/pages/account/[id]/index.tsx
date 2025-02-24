@@ -12,6 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -36,18 +37,24 @@ import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
+import { useRoutingHistory } from "@/contexts/routing-history";
 import { useToast } from "@/contexts/toast";
 import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 
 const AccountsPage = () => {
+  const router = useRouter();
+  const { id } = router.query;
+  const { history } = useRoutingHistory();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.accountsPage.viewType;
 
-  const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
+  const [selectedPlayerType, setSelectedPlayerType] = useState<string>(
+    (id as string) || "all"
+  );
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
   const { getPlayerList, getAuthServerList, getSelectedPlayer } = useData();
@@ -59,6 +66,12 @@ const AccountsPage = () => {
   useEffect(() => {
     setAuthServerList(getAuthServerList() || []);
   }, [getAuthServerList]);
+
+  useEffect(() => {
+    if (id) {
+      setSelectedPlayerType(id as string);
+    }
+  }, [id]);
 
   const {
     isOpen: isAddAuthServerModalOpen,
@@ -121,24 +134,32 @@ const AccountsPage = () => {
       return playerList.filter(
         (player) =>
           player.playerType === "3rdparty" &&
-          authServerList.find((server) => server.authUrl === type)?.authUrl ===
-            player.authServer?.authUrl
+          authServerList.find((server) => server.id === type)?.authUrl ===
+            player.authServer?.id
       );
     }
   };
 
   const handleDeleteAuthServer = () => {
     let servers = authServerList.filter(
-      (server) => server.authUrl === selectedPlayerType
+      (server) => server.id === selectedPlayerType
     );
     if (servers.length > 0) {
-      AccountService.deleteAuthServer(servers[0].authUrl).then((response) => {
+      AccountService.deleteAuthServer(servers[0].id).then((response) => {
         if (response.status === "success") {
           getAuthServerList(true);
           getPlayerList(true);
           getSelectedPlayer(true);
-          // redirect the selected player type to "all" to avoid display error
-          setSelectedPlayerType("all");
+          const previousAccountRoute = [...history]
+            .reverse()
+            .find(
+              (route) =>
+                route.startsWith("/account/") &&
+                route !== `/account/${selectedPlayerType}`
+            );
+
+          router.push(previousAccountRoute || "/account/all");
+
           toast({
             title: response.message,
             status: "success",
@@ -164,7 +185,7 @@ const AccountsPage = () => {
               <NavMenu
                 selectedKeys={[selectedPlayerType]}
                 onClick={(value) => {
-                  setSelectedPlayerType(value);
+                  router.push(`/account/${value}`);
                 }}
                 items={playerTypeList.map((item) => ({
                   label: (
@@ -202,7 +223,9 @@ const AccountsPage = () => {
             }
             description={
               !["all", "offline", "microsoft"].includes(selectedPlayerType)
-                ? selectedPlayerType
+                ? authServerList.find(
+                    (server) => server.id === selectedPlayerType
+                  )?.name
                 : undefined
             }
             headExtra={
@@ -219,7 +242,7 @@ const AccountsPage = () => {
                       icon={<LuHouse />}
                       onClick={() => {
                         const homepageUrl = authServerList.find(
-                          (server) => server.authUrl === selectedPlayerType
+                          (server) => server.id === selectedPlayerType
                         )?.homepageUrl;
                         if (homepageUrl) {
                           openUrl(homepageUrl);
@@ -288,7 +311,7 @@ const AccountsPage = () => {
         title={t("DeleteAuthServerAlertDialog.dialog.title")}
         body={t("DeleteAuthServerAlertDialog.dialog.content", {
           name: authServerList.find(
-            (server) => server.authUrl === selectedPlayerType
+            (server) => server.id === selectedPlayerType
           )?.name,
         })}
         btnOK={t("General.delete")}
