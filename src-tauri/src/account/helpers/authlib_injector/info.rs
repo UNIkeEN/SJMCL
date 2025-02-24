@@ -21,7 +21,7 @@ pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
       let non_email_login = json["meta"]["feature.non_email_login"]
         .as_bool()
         .unwrap_or(false);
-      let openid_configuration_url = json["meta"]["feature.openid_configuaration_url"]
+      let openid_configuration_url = json["meta"]["feature.openid_configuration_url"]
         .as_str()
         .unwrap_or_default()
         .to_string();
