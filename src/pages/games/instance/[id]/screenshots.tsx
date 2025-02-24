@@ -36,6 +36,7 @@ const InstanceScreenshotsPage: React.FC = () => {
       onScreenshotPreviewModalOpen();
     }
   }, [screenshots, onScreenshotPreviewModalOpen]);
+  
   const handleModalClose = () => {
     onScreenshotPreviewModalClose();
     const { id } = router.query;
