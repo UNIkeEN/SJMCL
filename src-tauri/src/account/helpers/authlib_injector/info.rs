@@ -6,6 +6,10 @@ pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
   match reqwest::get(&auth_url).await {
     Ok(response) => {
       let json: serde_json::Value = response.json().await.map_err(|_| AccountError::Invalid)?;
+      let id = json["meta"]["id"]
+        .as_str()
+        .ok_or(AccountError::Invalid)?
+        .to_string();
       let server_name = json["meta"]["serverName"]
         .as_str()
         .ok_or(AccountError::Invalid)?
@@ -27,6 +31,7 @@ pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
         .to_string();
 
       let new_server = AuthServer {
+        id,
         name: server_name,
         auth_url,
         homepage_url,

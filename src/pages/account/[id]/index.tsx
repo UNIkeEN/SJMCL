@@ -104,7 +104,7 @@ const AccountsPage = () => {
       label: t("Enums.playerTypes.microsoft"),
     },
     ...authServerList.map((server) => ({
-      key: server.authUrl,
+      key: server.id,
       icon: LuServer,
       label: server.name,
     })),
@@ -141,25 +141,17 @@ const AccountsPage = () => {
   };
 
   const handleDeleteAuthServer = () => {
-    let servers = authServerList.filter(
+    const serverToDelete = authServerList.find(
       (server) => server.id === selectedPlayerType
     );
-    if (servers.length > 0) {
-      AccountService.deleteAuthServer(servers[0].id).then((response) => {
+    if (serverToDelete) {
+      AccountService.deleteAuthServer(serverToDelete.id).then((response) => {
         if (response.status === "success") {
           getAuthServerList(true);
           getPlayerList(true);
           getSelectedPlayer(true);
-          const previousAccountRoute = [...history]
-            .reverse()
-            .find(
-              (route) =>
-                route.startsWith("/account/") &&
-                route !== `/account/${selectedPlayerType}`
-            );
 
-          router.push(previousAccountRoute || "/account/all");
-
+          setSelectedPlayerType("all");
           toast({
             title: response.message,
             status: "success",
