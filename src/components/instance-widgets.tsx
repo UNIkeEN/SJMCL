@@ -157,7 +157,7 @@ export const InstanceScreenshotsWidget = () => {
         setTimeout(() => {
           setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
           setIsFading(false);
-        }, 1000);
+        }, 800);
       }, 10000);
 
       return () => clearInterval(interval);
@@ -180,7 +180,7 @@ export const InstanceScreenshotsWidget = () => {
           ml={-3}
           mt={-3}
           opacity={isFading ? 0 : 1}
-          transition="opacity 1s ease-in-out"
+          transition="opacity 0.8s ease-in-out"
           onClick={() => {
             router.push(
               {
