@@ -202,6 +202,7 @@ export const InstanceScreenshotsWidget = () => {
     </InstanceWidgetBase>
   );
 };
+
 export const InstanceModsWidget = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -246,28 +247,28 @@ export const InstanceModsWidget = () => {
             <Text fontSize="xs" color="gray.500">
               {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
             </Text>
-            <Button
-              size="xs"
-              variant="ghost"
-              position="absolute"
-              left={2}
-              bottom={2}
-              justifyContent="flex-start"
-              colorScheme={primaryColor}
-              onClick={() => {
-                router.push(`/games/instance/${id}/mods`);
-              }}
-            >
-              <HStack spacing={1.5}>
-                <Icon as={LuArrowRight} />
-                <Text>{t("InstanceWidgets.mods.manage")}</Text>
-              </HStack>
-            </Button>
           </VStack>
         </HStack>
       ) : (
         <Empty withIcon={false} size="sm" />
       )}
+      <Button
+        size="xs"
+        variant="ghost"
+        position="absolute"
+        left={2}
+        bottom={2}
+        justifyContent="flex-start"
+        colorScheme={primaryColor}
+        onClick={() => {
+          router.push(`/games/instance/${id}/mods`);
+        }}
+      >
+        <HStack spacing={1.5}>
+          <Icon as={LuArrowRight} />
+          <Text>{t("InstanceWidgets.mods.manage")}</Text>
+        </HStack>
+      </Button>
     </InstanceWidgetBase>
   );
 };
