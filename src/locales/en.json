@@ -139,7 +139,8 @@
         "label": "Auth Source",
         "selectSource": "Select Auth Source",
         "noSource": "No auth source added.",
-        "addSource": "Add one"
+        "addSource": "Add one",
+        "supportOAuth": "This auth source supports the Yggdrasil Connect Proposal"
       },
       "email": {
         "label": "Email",
@@ -156,7 +157,9 @@
     },
     "button": {
       "buyMinecraft": "Buy Minecraft",
-      "loginOAuth": "Login with OAuth"
+      "beginOAuth": "Start OAuth Login",
+      "useOAuthLogin": "OAuth Login",
+      "usePasswordLogin": "Account Password Login"
     }
   },
   "AllGamesPage": {

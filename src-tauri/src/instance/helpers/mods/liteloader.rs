@@ -6,6 +6,7 @@ use std::io::{Read, Seek};
 use std::path::PathBuf;
 use tokio;
 use zip::ZipArchive;
+
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct LiteloaderModMetadata {

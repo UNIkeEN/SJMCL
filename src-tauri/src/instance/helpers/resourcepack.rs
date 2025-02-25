@@ -3,7 +3,7 @@ use crate::utils::image::image_to_base64;
 use image::ImageReader;
 use std::fs;
 use std::io::{Cursor, Read};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use zip::ZipArchive;
 
 pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option<String>)> {
@@ -65,7 +65,7 @@ pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option
   Ok((description, icon_src))
 }
 
-pub fn load_resourcepack_from_dir(path: &PathBuf) -> SJMCLResult<(String, Option<String>)> {
+pub fn load_resourcepack_from_dir(path: &Path) -> SJMCLResult<(String, Option<String>)> {
   let mut description = String::new();
   let mut icon_src = None;
 

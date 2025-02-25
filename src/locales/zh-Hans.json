@@ -139,7 +139,8 @@
         "label": "认证源",
         "selectSource": "请选择认证源",
         "noSource": "未添加可用认证源服务器",
-        "addSource": "添加认证源"
+        "addSource": "添加认证源",
+        "supportOAuth": "此认证源支持 Yggdrasil Connect 规范提案"
       },
       "email": {
         "label": "邮箱",
@@ -156,7 +157,9 @@
     },
     "button": {
       "buyMinecraft": "购买 Minecraft",
-      "loginOAuth": "使用 OAuth 登录"
+      "beginOAuth": "开始 OAuth 登录",
+      "useOAuthLogin": "OAuth 登录",
+      "usePasswordLogin": "账号密码登录"
     }
   },
   "AllGamesPage": {

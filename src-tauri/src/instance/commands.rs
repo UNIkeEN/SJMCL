@@ -184,7 +184,6 @@ pub async fn retrive_game_server_list(
     if query_online {
       let query_tasks = game_servers.clone().into_iter().map(|mut server| {
         tokio::spawn(async move {
-          // 查询服务器状态
           match query_server_status(&server.ip).await {
             Ok(query_result) => {
               server.is_queried = true;
@@ -205,7 +204,7 @@ pub async fn retrive_game_server_list(
         if let Ok(updated_server) = query.await {
           updated_servers.push(updated_server);
         } else {
-          updated_servers.push(prev); // 如果查询失败，保留原始数据
+          updated_servers.push(prev); // query error, use local data
         }
       }
       game_servers = updated_servers;

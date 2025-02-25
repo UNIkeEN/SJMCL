@@ -9,6 +9,7 @@ use std::io::{Cursor, Read, Seek};
 use std::path::PathBuf;
 use tokio;
 use zip::ZipArchive;
+
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct FabricModMetadata {
