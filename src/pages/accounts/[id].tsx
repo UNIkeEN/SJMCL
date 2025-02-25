@@ -45,6 +45,7 @@ import { AccountService } from "@/services/account";
 const AccountsPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const decodedId = id ? decodeURIComponent(id as string) : null;
   const { history } = useRoutingHistory();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
@@ -53,7 +54,7 @@ const AccountsPage = () => {
   const selectedViewType = config.states.accountsPage.viewType;
 
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>(
-    (id as string) || "all"
+    decodedId || "all"
   );
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
@@ -68,10 +69,10 @@ const AccountsPage = () => {
   }, [getAuthServerList]);
 
   useEffect(() => {
-    if (id) {
-      setSelectedPlayerType(id as string);
+    if (decodedId) {
+      setSelectedPlayerType(decodedId);
     }
-  }, [id]);
+  }, [decodedId]);
 
   const {
     isOpen: isAddAuthServerModalOpen,
@@ -104,7 +105,7 @@ const AccountsPage = () => {
       label: t("Enums.playerTypes.microsoft"),
     },
     ...authServerList.map((server) => ({
-      key: server.id,
+      key: server.authUrl,
       icon: LuServer,
       label: server.name,
     })),
@@ -134,37 +135,54 @@ const AccountsPage = () => {
       return playerList.filter(
         (player) =>
           player.playerType === "3rdparty" &&
-          authServerList.find((server) => server.id === type)?.authUrl ===
-            player.authServer?.id
+          authServerList.find((server) => server.authUrl === type)?.authUrl ===
+            player.authServer?.authUrl
       );
     }
   };
 
   const handleDeleteAuthServer = () => {
     const serverToDelete = authServerList.find(
-      (server) => server.id === selectedPlayerType
+      (server) => server.authUrl === selectedPlayerType
     );
     if (serverToDelete) {
-      AccountService.deleteAuthServer(serverToDelete.id).then((response) => {
-        if (response.status === "success") {
-          getAuthServerList(true);
-          getPlayerList(true);
-          getSelectedPlayer(true);
+      AccountService.deleteAuthServer(serverToDelete.authUrl).then(
+        (response) => {
+          if (response.status === "success") {
+            getAuthServerList(true);
+            getPlayerList(true);
+            getSelectedPlayer(true);
+            const previousAccountRoute = [...history]
+              .reverse()
+              .find(
+                (route) =>
+                  route.startsWith("/accounts") &&
+                  route !==
+                    `/accounts/${encodeURIComponent(selectedPlayerType)}`
+              );
 
-          setSelectedPlayerType("all");
-          toast({
-            title: response.message,
-            status: "success",
-          });
-        } else {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
+            router.push(previousAccountRoute || "/accounts");
+
+            toast({
+              title: response.message,
+              status: "success",
+            });
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
         }
+      );
+    } else {
+      toast({
+        title: "Server not found",
+        status: "error",
       });
     }
+
     onDeleteAuthServerDialogClose();
   };
 
@@ -177,7 +195,7 @@ const AccountsPage = () => {
               <NavMenu
                 selectedKeys={[selectedPlayerType]}
                 onClick={(value) => {
-                  router.push(`/accounts/${value}`);
+                  router.push(`/accounts/${encodeURIComponent(value)}`);
                 }}
                 items={playerTypeList.map((item) => ({
                   label: (
@@ -215,9 +233,7 @@ const AccountsPage = () => {
             }
             description={
               !["all", "offline", "microsoft"].includes(selectedPlayerType)
-                ? authServerList.find(
-                    (server) => server.id === selectedPlayerType
-                  )?.name
+                ? selectedPlayerType
                 : undefined
             }
             headExtra={
@@ -234,7 +250,7 @@ const AccountsPage = () => {
                       icon={<LuHouse />}
                       onClick={() => {
                         const homepageUrl = authServerList.find(
-                          (server) => server.id === selectedPlayerType
+                          (server) => server.authUrl === selectedPlayerType
                         )?.homepageUrl;
                         if (homepageUrl) {
                           openUrl(homepageUrl);
@@ -303,7 +319,7 @@ const AccountsPage = () => {
         title={t("DeleteAuthServerAlertDialog.dialog.title")}
         body={t("DeleteAuthServerAlertDialog.dialog.content", {
           name: authServerList.find(
-            (server) => server.id === selectedPlayerType
+            (server) => server.authUrl === selectedPlayerType
           )?.name,
         })}
         btnOK={t("General.delete")}

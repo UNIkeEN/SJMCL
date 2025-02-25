@@ -9,7 +9,7 @@ const AccountsPage = () => {
   useEffect(() => {
     router.replace(
       [...history].reverse().find((route) => route.startsWith("/accounts/")) ||
-        "/accounts/index"
+        "/accounts/all"
     );
   }, [history, router]);
 

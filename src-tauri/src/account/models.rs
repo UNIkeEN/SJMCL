@@ -73,7 +73,6 @@ structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct AuthServer {
-    pub id: String,
     pub name: String,
     pub auth_url: String,
     pub homepage_url: String,
@@ -101,7 +100,6 @@ impl Default for AccountInfo {
       selected_player_id: String::new(),
       auth_servers: vec![
         AuthServer {
-          id: Uuid::new_v4().to_string(),
           name: "SJMC 用户中心".to_string(),
           auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
           homepage_url: "https://skin.mc.sjtu.cn".to_string(),
@@ -113,7 +111,6 @@ impl Default for AccountInfo {
           },
         },
         AuthServer {
-          id: Uuid::new_v4().to_string(),
           name: "MUA 用户中心".to_string(),
           auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
           homepage_url: "https://skin.mualliance.ltd".to_string(),

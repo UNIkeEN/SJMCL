@@ -18,7 +18,7 @@ export interface Player {
 
 // authlib-injector source
 export interface AuthServer {
-  id: string;
+  // id: number;
   name: string;
   authUrl: string;
   homepageUrl: string;
