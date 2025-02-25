@@ -78,8 +78,8 @@ pub struct ArgumentsItemDefault {
 #[serde(rename_all = "camelCase", default)]
 pub struct InstructionRule {
   pub action: String,
-  pub features: Option<HashMap<String, Value>>,
-  pub os: Option<Value>,
+  pub features: Option<FeaturesInfo>,
+  pub os: Option<OsInfo>,
 }
 impl<'de> Deserialize<'de> for ArgumentsItem {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -87,9 +87,9 @@ impl<'de> Deserialize<'de> for ArgumentsItem {
     D: Deserializer<'de>,
   {
     let raw_value: Value = Value::deserialize(deserializer)?;
-    if raw_value.is_string() {
+    if let Some(val) = raw_value.as_str() {
       return Ok(ArgumentsItem {
-        value: vec![raw_value.to_string()],
+        value: vec![val.to_string()],
         ..Default::default()
       });
     }
@@ -100,6 +100,25 @@ impl<'de> Deserialize<'de> for ArgumentsItem {
       rules: game.rules,
     })
   }
+}
+
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", default)]
+pub struct OsInfo {
+  name: String,
+  version: Option<String>,
+  arch: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default)]
+#[serde(default)]
+pub struct FeaturesInfo {
+  is_demo_user: Option<bool>,
+  has_custom_resolution: Option<bool>,
+  has_quick_plays_support: Option<bool>,
+  is_quick_play_singleplayer: Option<bool>,
+  is_quick_play_multiplayer: Option<bool>,
+  is_quick_play_realms: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
@@ -121,21 +140,19 @@ pub struct DownloadsValue {
 }
 
 structstruck::strike! {
-    #[derive(Debug, Deserialize, Serialize, Default)]
-    #[serde(rename_all="camelCase", default)]
-    pub struct LibrariesValue {
-        pub name: String,
-        pub downloads:
-            #[derive(Debug, Deserialize, Serialize, Default)]
-            #[serde(rename_all="camelCase", default)]
-            pub struct{
-                pub artifact: DownloadsArtifact,
-                pub classifiers: Option<Classifiers>
-            },
-        pub natives: Option<Value>,
-        pub extract: Option<Value>,
-        pub rules: Option<Vec<Value>>,
-    }
+  #[strikethrough[derive(Debug, Deserialize, Serialize, Default)]]
+  #[strikethrough[serde(rename_all="camelCase", default)]]
+  pub struct LibrariesValue {
+    pub name: String,
+    pub downloads:
+      pub struct{
+        pub artifact: DownloadsArtifact,
+        pub classifiers: Option<Classifiers>
+      },
+    pub natives: Option<Value>,
+    pub extract: Option<Value>,
+    pub rules: Option<Vec<Value>>,
+  }
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
@@ -159,19 +176,17 @@ pub struct Classifiers {
 }
 
 structstruck::strike! {
-    #[derive(Debug, Deserialize, Serialize, Default)]
-    #[serde(rename_all="camelCase", default)]
-    pub struct Logging {
-        pub client:
-            #[derive(Debug, Deserialize, Serialize, Default)]
-            #[serde(rename_all="camelCase", default)]
-            pub struct {
-                pub argument: String,
-                pub file: DownloadsArtifact,
-                #[serde(rename="type")]
-                pub type_: String,
-            },
-    }
+  #[strikethrough[derive(Debug, Deserialize, Serialize, Default)]]
+  #[strikethrough[serde(rename_all="camelCase", default)]]
+  pub struct Logging {
+    pub client:
+      pub struct {
+        pub argument: String,
+        pub file: DownloadsArtifact,
+        #[serde(rename="type")]
+        pub type_: String,
+      },
+  }
 }
 
 pub async fn load_client_info_from_json(path: &PathBuf) -> SJMCLResult<McClientInfo> {
