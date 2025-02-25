@@ -4,6 +4,7 @@ use std::{
   cmp::{Ord, Ordering, PartialOrd},
   fmt,
   path::PathBuf,
+  str::FromStr,
 };
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -31,7 +32,22 @@ pub enum ModLoaderType {
   LiteLoader,
   Quilt,
 }
+impl FromStr for ModLoaderType {
+  type Err = String; // 定义错误类型
 
+  fn from_str(input: &str) -> Result<Self, Self::Err> {
+    match input.to_lowercase().as_str() {
+      "unknown" => Ok(ModLoaderType::Unknown),
+      "fabric" => Ok(ModLoaderType::Fabric),
+      "forge" => Ok(ModLoaderType::Forge),
+      "forgeold" => Ok(ModLoaderType::ForgeOld),
+      "neoforge" => Ok(ModLoaderType::NeoForge),
+      "liteloader" => Ok(ModLoaderType::LiteLoader),
+      "quilt" => Ok(ModLoaderType::Quilt),
+      _ => Err(format!("Unsupported ModLoaderType: {}", input)),
+    }
+  }
+}
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]

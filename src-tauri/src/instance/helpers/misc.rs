@@ -1,6 +1,7 @@
 use super::super::models::{Instance, InstanceSubdirType, ModLoader};
+use super::client::load_client_info_from_json;
 use crate::{
-  instance::models::ModLoaderType,
+  instance::{helpers::client::patchs_to_info, models::ModLoaderType},
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
 use std::{fs, path::PathBuf, sync::Mutex};
@@ -82,24 +83,27 @@ pub async fn refresh_instances(
     if !jar_path.exists() || !json_path.exists() {
       continue; // not a valid instance
     }
-
     // TODO: read the config file if exists, else create one
     // TODO: determine the version isolation strategy
-
-    instances.push(Instance {
-      id: 0, // not decided yet
-      name,
-      description: "mock desc".to_string(), // TODO: fix these mock fields
-      icon_src: "/images/icons/GrassBlock.png".to_string(),
-      version: "1.20.1".to_string(), // TODO: may read from name.json["patches"]["version"]?
-      version_path,
-      mod_loader: ModLoader {
-        loader_type: ModLoaderType::Unknown,
-        version: "".to_string(),
-      },
-      has_schem_folder: true, // TODO: if exists schematics folder, return true
-      game_config: None,
-    });
+    if json_path.exists() {
+      if let Ok(client_data) = load_client_info_from_json(&json_path).await {
+        let (game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
+        instances.push(Instance {
+          id: 0, // not decided yet
+          name: client_data.id,
+          description: "mock desc".to_string(), // TODO: fix these mock fields
+          icon_src: "/images/icons/GrassBlock.png".to_string(),
+          version: game_version.unwrap_or_default(),
+          version_path,
+          mod_loader: ModLoader {
+            loader_type,
+            version: mod_version.unwrap_or_default(),
+          },
+          has_schem_folder: true, // TODO: if exists schematics folder, return true
+          game_config: None,
+        });
+      }
+    }
   }
 
   Ok(instances)
