@@ -37,7 +37,6 @@ import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
-import { useRoutingHistory } from "@/contexts/routing-history";
 import { useToast } from "@/contexts/toast";
 import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
@@ -46,7 +45,6 @@ const AccountsPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const decodedId = id ? decodeURIComponent(id as string) : null;
-  const { history } = useRoutingHistory();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const toast = useToast();
@@ -142,47 +140,30 @@ const AccountsPage = () => {
   };
 
   const handleDeleteAuthServer = () => {
-    const serverToDelete = authServerList.find(
+    let servers = authServerList.filter(
       (server) => server.authUrl === selectedPlayerType
     );
-    if (serverToDelete) {
-      AccountService.deleteAuthServer(serverToDelete.authUrl).then(
-        (response) => {
-          if (response.status === "success") {
-            getAuthServerList(true);
-            getPlayerList(true);
-            getSelectedPlayer(true);
-            const previousAccountRoute = [...history]
-              .reverse()
-              .find(
-                (route) =>
-                  route.startsWith("/accounts") &&
-                  route !==
-                    `/accounts/${encodeURIComponent(selectedPlayerType)}`
-              );
-
-            router.push(previousAccountRoute || "/accounts");
-
-            toast({
-              title: response.message,
-              status: "success",
-            });
-          } else {
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-          }
+    if (servers.length > 0) {
+      AccountService.deleteAuthServer(servers[0].authUrl).then((response) => {
+        if (response.status === "success") {
+          getAuthServerList(true);
+          getPlayerList(true);
+          getSelectedPlayer(true);
+          // redirect the selected player type to "all" to avoid display error
+          setSelectedPlayerType("all");
+          toast({
+            title: response.message,
+            status: "success",
+          });
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
         }
-      );
-    } else {
-      toast({
-        title: "Server not found",
-        status: "error",
       });
     }
-
     onDeleteAuthServerDialogClose();
   };
 
