@@ -4,13 +4,16 @@ use crate::{
   error::SJMCLResult,
 };
 use serde_json::{json, Value};
+use tauri::AppHandle;
 use tauri_plugin_http::reqwest;
 
 async fn get_profile(
+  app: AppHandle,
   auth_server_url: String,
   access_token: String,
   id: String,
   auth_account: String,
+  password: String,
 ) -> SJMCLResult<PlayerInfo> {
   let profile = reqwest::get(format!(
     "{}/sessionserver/session/minecraft/profile/{}",
@@ -22,10 +25,19 @@ async fn get_profile(
   .await
   .map_err(|_| AccountError::AuthServerError)?;
 
-  parse_profile(profile, access_token, auth_server_url, auth_account).await
+  parse_profile(
+    app,
+    profile,
+    access_token,
+    auth_server_url,
+    auth_account,
+    password,
+  )
+  .await
 }
 
 pub async fn login(
+  app: AppHandle,
   auth_server_url: String,
   username: String,
   password: String,
@@ -78,10 +90,12 @@ pub async fn login(
       .to_string();
 
     let player = get_profile(
+      app.clone(),
       auth_server_url.clone(),
       access_token.clone(),
       id,
       username.clone(),
+      password.clone(),
     )
     .await?;
 

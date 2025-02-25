@@ -57,6 +57,7 @@ async fn device_authorization(
 }
 
 async fn parse_token(
+  app: AppHandle,
   jwks: Value,
   id_token: String,
   access_token: String,
@@ -86,15 +87,17 @@ async fn parse_token(
     .to_string();
 
   parse_profile(
+    app,
     selected_profile,
     access_token,
     auth_server_url,
     auth_account,
+    "".to_string(),
   )
   .await
 }
 pub async fn login(
-  app_handle: AppHandle,
+  app: AppHandle,
   auth_server_url: String,
   openid_configuration_url: String,
 ) -> SJMCLResult<PlayerInfo> {
@@ -126,7 +129,7 @@ pub async fn login(
   let cancelled_clone = Arc::clone(&is_cancelled);
 
   let auth_webview_window =
-    WebviewWindowBuilder::new(&app_handle, "", WebviewUrl::External(verification_url))
+    WebviewWindowBuilder::new(&app, "", WebviewUrl::External(verification_url))
       .title("")
       .build()
       .map_err(|_| AccountError::AuthServerError)?;
@@ -176,5 +179,5 @@ pub async fn login(
     sleep(Duration::from_secs(1)).await;
   }
 
-  parse_token(jwks, id_token, access_token, auth_server_url).await
+  parse_token(app, jwks, id_token, access_token, auth_server_url).await
 }

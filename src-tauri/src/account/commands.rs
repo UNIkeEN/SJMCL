@@ -91,12 +91,13 @@ pub async fn add_player_3rdparty_oauth(
 
 #[tauri::command]
 pub async fn add_player_3rdparty_password(
+  app: AppHandle,
   auth_server_url: String,
   username: String,
   password: String,
 ) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
-  let new_players = password::login(auth_server_url, username, password).await?;
+  let new_players = password::login(app, auth_server_url, username, password).await?;
 
   if new_players.is_empty() {
     return Err(AccountError::NotFound.into());
