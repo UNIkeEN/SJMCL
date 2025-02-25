@@ -334,13 +334,11 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                           justifyContent="center"
                         >
                           <VStack>
-                            <HStack>
-                              <Text fontSize="sm">
-                                {t(
-                                  "AddPlayerModal.3rdparty.authServer.supportOAuth"
-                                )}
-                              </Text>
-                            </HStack>
+                            <Text fontSize="sm">
+                              {t(
+                                "AddPlayerModal.3rdparty.authServer.supportOAuth"
+                              )}
+                            </Text>
                             <Button
                               colorScheme={primaryColor}
                               onClick={() => handleLogin(true)}
