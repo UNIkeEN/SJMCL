@@ -720,7 +720,7 @@
     }
   },
   "InstanceBasicSettings": {
-    "selectDirectory": "Select Game Diretory"
+    "selectDirectory": "Select Game Directory"
   },
   "InstanceLayout": {
     "secMenu": {
@@ -1066,7 +1066,7 @@
       "CurseForge": {
         "Relevancy": "Relevancy",
         "Popularity": "Popularity",
-        "Lastest update": "Lastest update",
+        "Latest update": "Latest update",
         "Creation date": "Creation date",
         "Total downloads": "Total downloads",
         "A-Z": "A-Z"
@@ -1094,7 +1094,7 @@
   },
   "Services": {
     "config": {
-      "retriveLauncherConfig": {
+      "retrieveLauncherConfig": {
         "error": {
           "title": "Failed to get launcher settings"
         }
@@ -1131,7 +1131,7 @@
           }
         }
       },
-      "retriveCustomBackgroundList": {
+      "retrieveCustomBackgroundList": {
         "success": "Successfully retrieved custom background list",
         "error": {
           "title": "Failed to retrieve custom background list"
@@ -1149,7 +1149,7 @@
           "title": "Failed to delete custom background"
         }
       },
-      "retriveJavaList": {
+      "retrieveJavaList": {
         "error": {
           "title": "Failed to retrieve installed Java list"
         }
@@ -1167,7 +1167,7 @@
         }
       },
       "addPlayer3rdPartyOAuth": {
-        "success": "Succcessfully added player using OAuth",
+        "success": "Successfully added player using OAuth",
         "error": {
           "title": "Failed to add player using OAuth",
           "description": {
@@ -1175,6 +1175,18 @@
             "authServerError": "Unable to connect to authentication server, or OAuth is not enabled",
             "textureError": "Unable to get player texture",
             "cancelled": "OAuth login cancelled"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "Successfully added player using password",
+        "error": {
+          "title": "Failed to add player using password",
+          "description": {
+            "duplicate": "Player already exists",
+            "authServerError": "Unable to connect to authentication server",
+            "textureError": "Unable to get player texture",
+            "invalid": "Wrong account or password"
           }
         }
       },
@@ -1228,7 +1240,7 @@
       }
     },
     "resource": {
-      "retriveGameVersionList": {
+      "retrieveGameVersionList": {
         "error": {
           "title": "Failed to retrieve game version list",
           "description": {
@@ -1239,7 +1251,7 @@
       }
     },
     "instance": {
-      "retriveInstanceList": {
+      "retrieveInstanceList": {
         "error": {
           "title": "Failed to retrieve instance list"
         }
@@ -1253,42 +1265,42 @@
           }
         }
       },
-      "retriveWorldList": {
+      "retrieveWorldList": {
         "error": {
-          "title": "Failed to retrive world list"
+          "title": "Failed to retrieve world list"
         }
       },
-      "retriveGameServerList": {
+      "retrieveGameServerList": {
         "error": {
-          "title": "Failed to retraive game server list",
+          "title": "Failed to retrieve game server list",
           "description": {
             "serverNbtReadError": "server.dat may have been corrupted"
           }
         }
       },
-      "retriveResourcePackList": {
+      "retrieveResourcePackList": {
         "error": {
-          "title": "Failed to retrive resource pack list"
+          "title": "Failed to retrieve resource pack list"
         }
       },
-      "retriveServerResourcePackList": {
+      "retrieveServerResourcePackList": {
         "error": {
-          "title": "Failed to retrive resource pack list from servers"
+          "title": "Failed to retrieve resource pack list from servers"
         }
       },
-      "retriveSchematicList": {
+      "retrieveSchematicList": {
         "error": {
-          "title": "Failed to retrive schematic list"
+          "title": "Failed to retrieve schematic list"
         }
       },
-      "retriveShaderPackList": {
+      "retrieveShaderPackList": {
         "error": {
-          "title": "Failed to retrive shader pack list"
+          "title": "Failed to retrieve shader pack list"
         }
       },
-      "retriveScreenshotList": {
+      "retrieveScreenshotList": {
         "error": {
-          "title": "Failed to retrive screenshot list"
+          "title": "Failed to retrieve screenshot list"
         }
       },
       "copyAcrossInstances": {

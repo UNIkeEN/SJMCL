@@ -53,10 +53,10 @@ const AppearanceSettingsPage = () => {
     []
   );
 
-  const handleRetriveCustomBackgroundList = useCallback(() => {
+  const handleRetrieveCustomBackgroundList = useCallback(() => {
     appDataDir()
       .then((_appDataDir) => {
-        ConfigService.retriveCustomBackgroundList().then((response) => {
+        ConfigService.retrieveCustomBackgroundList().then((response) => {
           if (response.status === "success") {
             const list = response.data;
             const updatedList = list.map((bg) => ({
@@ -80,8 +80,8 @@ const AppearanceSettingsPage = () => {
   }, [toast]);
 
   useEffect(() => {
-    handleRetriveCustomBackgroundList();
-  }, [handleRetriveCustomBackgroundList]);
+    handleRetrieveCustomBackgroundList();
+  }, [handleRetrieveCustomBackgroundList]);
 
   const handleAddCustomBackground = () => {
     open({
@@ -97,7 +97,7 @@ const AppearanceSettingsPage = () => {
         if (!selectedPath) return;
         ConfigService.addCustomBackground(selectedPath).then((response) => {
           if (response.status === "success") {
-            handleRetriveCustomBackgroundList();
+            handleRetrieveCustomBackgroundList();
             // set selected background to the new added one.
             update("appearance.background.choice", response.data);
             toast({
@@ -143,7 +143,7 @@ const AppearanceSettingsPage = () => {
         }
 
         // refresh custom bg list state
-        handleRetriveCustomBackgroundList();
+        handleRetrieveCustomBackgroundList();
       } else {
         toast({
           title: response.message,

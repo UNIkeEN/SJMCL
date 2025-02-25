@@ -16,7 +16,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub fn retrive_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
+pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
   let binding = app.state::<Mutex<LauncherConfig>>();
   let state = binding.lock()?;
   Ok(state.clone())
@@ -135,7 +135,7 @@ pub async fn import_launcher_config(app: AppHandle, code: String) -> SJMCLResult
 }
 
 #[tauri::command]
-pub fn retrive_memory_info() -> SJMCLResult<MemoryInfo> {
+pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
   let sys = systemstat::System::new();
   let mem = sys.memory()?;
   Ok(MemoryInfo {
@@ -145,7 +145,7 @@ pub fn retrive_memory_info() -> SJMCLResult<MemoryInfo> {
 }
 
 #[tauri::command]
-pub fn retrive_custom_background_list(app: AppHandle) -> SJMCLResult<Vec<String>> {
+pub fn retrieve_custom_background_list(app: AppHandle) -> SJMCLResult<Vec<String>> {
   let custom_bg_dir = app
     .path()
     .resolve::<PathBuf>("UserContent/Backgrounds".into(), BaseDirectory::AppData)?;
@@ -213,7 +213,7 @@ pub fn delete_custom_background(app: AppHandle, file_name: String) -> SJMCLResul
 }
 
 #[tauri::command]
-pub fn retrive_java_list() -> SJMCLResult<Vec<JavaInfo>> {
+pub fn retrieve_java_list() -> SJMCLResult<Vec<JavaInfo>> {
   let java_paths = get_java_paths();
   let mut java_list = Vec::new();
 

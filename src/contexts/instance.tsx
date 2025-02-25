@@ -85,9 +85,9 @@ export const InstanceContextProvider: React.FC<{
     [instanceSummary?.id, toast]
   );
 
-  const handleRetriveWorldList = useCallback(() => {
+  const handleRetrieveWorldList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retriveWorldList(instanceSummary.id).then((response) => {
+      InstanceService.retrieveWorldList(instanceSummary.id).then((response) => {
         if (response.status === "success") {
           setWorlds(
             [...response.data].sort((a, b) => b.lastPlayedAt - a.lastPlayedAt)
@@ -102,9 +102,9 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setWorlds, toast]);
 
-  const handleRetriveLocalModList = useCallback(() => {
+  const handleRetrieveLocalModList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retriveLocalModList(instanceSummary.id).then(
+      InstanceService.retrieveLocalModList(instanceSummary.id).then(
         (response) => {
           if (response.status === "success") setLocalMods(response.data);
           else
@@ -118,9 +118,9 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setLocalMods, toast]);
 
-  const handleRetriveResourcePackList = useCallback(() => {
+  const handleRetrieveResourcePackList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retriveResourcePackList(instanceSummary.id).then(
+      InstanceService.retrieveResourcePackList(instanceSummary.id).then(
         (response) => {
           if (response.status === "success") setResourcePacks(response.data);
           else
@@ -134,9 +134,9 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setResourcePacks, toast]);
 
-  const handleServerRetriveResourcePackList = useCallback(() => {
+  const handleServerRetrieveResourcePackList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retriveServerResourcePackList(instanceSummary.id).then(
+      InstanceService.retrieveServerResourcePackList(instanceSummary.id).then(
         (response) => {
           if (response.status === "success")
             setServerResourcePacks(response.data);
@@ -151,9 +151,9 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setServerResourcePacks, toast]);
 
-  const handleRetriveSchematicList = useCallback(() => {
+  const handleRetrieveSchematicList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retriveSchematicList(instanceSummary.id).then(
+      InstanceService.retrieveSchematicList(instanceSummary.id).then(
         (response) => {
           if (response.status === "success") setSchematics(response.data);
           else
@@ -167,9 +167,9 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setSchematics, toast]);
 
-  const handleRetriveShaderPackList = useCallback(() => {
+  const handleRetrieveShaderPackList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retriveShaderPackList(instanceSummary.id).then(
+      InstanceService.retrieveShaderPackList(instanceSummary.id).then(
         (response) => {
           if (response.status === "success") setShaderPacks(response.data);
           else
@@ -183,9 +183,9 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setShaderPacks, toast]);
 
-  const handleRetriveScreenshotList = useCallback(() => {
+  const handleRetrieveScreenshotList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retriveScreenshotList(instanceSummary.id).then(
+      InstanceService.retrieveScreenshotList(instanceSummary.id).then(
         (response) => {
           if (response.status === "success") setScreenshots(response.data);
           else
@@ -199,30 +199,30 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setScreenshots, toast]);
 
-  const getWorldList = useGetState(worlds, handleRetriveWorldList);
+  const getWorldList = useGetState(worlds, handleRetrieveWorldList);
 
-  const getLocalModList = useGetState(localMods, handleRetriveLocalModList);
+  const getLocalModList = useGetState(localMods, handleRetrieveLocalModList);
 
   const getResourcePackList = useGetState(
     resourcePacks,
-    handleRetriveResourcePackList
+    handleRetrieveResourcePackList
   );
 
   const getServerResourcePackList = useGetState(
     serverResourcePacks,
-    handleServerRetriveResourcePackList
+    handleServerRetrieveResourcePackList
   );
 
-  const getSchematicList = useGetState(schematics, handleRetriveSchematicList);
+  const getSchematicList = useGetState(schematics, handleRetrieveSchematicList);
 
   const getShaderPackList = useGetState(
     shaderPacks,
-    handleRetriveShaderPackList
+    handleRetrieveShaderPackList
   );
 
   const getScreenshotList = useGetState(
     screenshots,
-    handleRetriveScreenshotList
+    handleRetrieveScreenshotList
   );
 
   return (

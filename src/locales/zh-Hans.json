@@ -1066,7 +1066,7 @@
       "CurseForge": {
         "Relevancy": "相关度",
         "Popularity": "热度",
-        "Lastest update": "最近更新",
+        "Latest update": "最近更新",
         "Creation date": "创建日期",
         "Total downloads": "下载量",
         "A-Z": "名称"
@@ -1094,7 +1094,7 @@
   },
   "Services": {
     "config": {
-      "retriveLauncherConfig": {
+      "retrieveLauncherConfig": {
         "error": {
           "title": "获取启动器设置失败"
         }
@@ -1131,7 +1131,7 @@
           }
         }
       },
-      "retriveCustomBackgroundList": {
+      "retrieveCustomBackgroundList": {
         "success": "自定义背景列表获取成功",
         "error": {
           "title": "自定义背景列表获取失败"
@@ -1149,7 +1149,7 @@
           "title": "自定义背景删除失败"
         }
       },
-      "retriveJavaList": {
+      "retrieveJavaList": {
         "error": {
           "title": "Java 列表获取失败"
         }
@@ -1175,6 +1175,18 @@
             "authServerError": "无法连接至认证服务器，或服务器不支持该登录方式",
             "textureError": "角色皮肤获取失败",
             "cancelled": "已取消"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "账号密码方式添加角色成功",
+        "error": {
+          "title": "账号密码方式添加角色失败",
+          "description": {
+            "duplicate": "角色已存在",
+            "authServerError": "无法连接至认证服务器",
+            "textureError": "角色皮肤获取失败",
+            "invalid": "账号或密码错误"
           }
         }
       },
@@ -1228,7 +1240,7 @@
       }
     },
     "resource": {
-      "retriveGameVersionList": {
+      "retrieveGameVersionList": {
         "error": {
           "title": "获取游戏版本列表失败",
           "description": {
@@ -1239,7 +1251,7 @@
       }
     },
     "instance": {
-      "retriveInstanceList": {
+      "retrieveInstanceList": {
         "error": {
           "title": "获取实例列表失败"
         }
@@ -1253,12 +1265,12 @@
           }
         }
       },
-      "retriveWorldList": {
+      "retrieveWorldList": {
         "error": {
           "title": "获取世界列表失败"
         }
       },
-      "retriveGameServerList": {
+      "retrieveGameServerList": {
         "error": {
           "title": "获取服务器列表失败",
           "description": {
@@ -1266,27 +1278,27 @@
           }
         }
       },
-      "retriveResourcePackList": {
+      "retrieveResourcePackList": {
         "error": {
           "title": "获取资源包列表失败"
         }
       },
-      "retriveServerResourcePackList": {
+      "retrieveServerResourcePackList": {
         "error": {
           "title": "获取服务器资源包列表失败"
         }
       },
-      "retriveSchematicList": {
+      "retrieveSchematicList": {
         "error": {
           "title": "获取原理图列表失败"
         }
       },
-      "retriveShaderPackList": {
+      "retrieveShaderPackList": {
         "error": {
           "title": "获取着色器包列表失败"
         }
       },
-      "retriveScreenshotList": {
+      "retrieveScreenshotList": {
         "error": {
           "title": "获取截图列表失败"
         }

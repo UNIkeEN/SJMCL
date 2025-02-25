@@ -1,7 +1,7 @@
 use super::{
   constants::TEXTURE_ROLES,
   helpers::{
-    authlib_injector::{info::fetch_auth_server, oauth},
+    authlib_injector::{info::fetch_auth_server, oauth, password},
     offline,
   },
   models::{AccountError, AccountInfo, AuthServer, Player},
@@ -11,14 +11,14 @@ use tauri::AppHandle;
 use uuid::Uuid;
 
 #[tauri::command]
-pub fn retrive_player_list() -> SJMCLResult<Vec<Player>> {
+pub fn retrieve_player_list() -> SJMCLResult<Vec<Player>> {
   let state: AccountInfo = Storage::load().unwrap_or_default();
   let player_list: Vec<Player> = state.players.into_iter().map(Player::from).collect();
   Ok(player_list)
 }
 
 #[tauri::command]
-pub fn retrive_selected_player() -> SJMCLResult<Player> {
+pub fn retrieve_selected_player() -> SJMCLResult<Player> {
   let state: AccountInfo = Storage::load().unwrap_or_default();
   if state.selected_player_id.is_empty() {
     return Err(AccountError::NotFound.into());
@@ -90,6 +90,48 @@ pub async fn add_player_3rdparty_oauth(
 }
 
 #[tauri::command]
+pub async fn add_player_3rdparty_password(
+  auth_server_url: String,
+  username: String,
+  password: String,
+) -> SJMCLResult<()> {
+  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+  let new_players = password::login(auth_server_url, username, password).await?;
+
+  if new_players.is_empty() {
+    return Err(AccountError::NotFound.into());
+  }
+
+  if new_players.len() == 1 {
+    state.selected_player_id = new_players[0].uuid.to_string();
+  }
+
+  let players_len_before = state.players.len();
+
+  for new_player in new_players {
+    if state
+      .players
+      .iter()
+      .any(|player| player.uuid.to_string() == new_player.uuid.to_string())
+    {
+      // if some of the players have already been added, skip and try others
+      continue;
+    }
+
+    state.players.push(new_player);
+  }
+
+  if players_len_before == state.players.len() {
+    // raise duplicate error only if all players are duplicated
+    return Err(AccountError::Duplicate.into());
+  }
+
+  state.save()?;
+
+  Ok(())
+}
+
+#[tauri::command]
 pub fn update_player_skin_offline_preset(
   app: AppHandle,
   uuid: Uuid,
@@ -136,7 +178,7 @@ pub fn delete_player(uuid: Uuid) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
-pub fn retrive_auth_server_list() -> SJMCLResult<Vec<AuthServer>> {
+pub fn retrieve_auth_server_list() -> SJMCLResult<Vec<AuthServer>> {
   let state: AccountInfo = Storage::load().unwrap_or_default();
   Ok(state.auth_servers)
 }

@@ -34,10 +34,10 @@ const InstanceWorldsPage = () => {
     setWorlds(getWorldList() || []);
   }, [getWorldList]);
 
-  const handleRetriveGameServerList = useCallback(
+  const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
       if (summary?.id !== undefined) {
-        InstanceService.retriveGameServerList(summary.id, queryOnline).then(
+        InstanceService.retrieveGameServerList(summary.id, queryOnline).then(
           (response) => {
             if (response.status === "success") {
               setGameServers(response.data);
@@ -56,15 +56,15 @@ const InstanceWorldsPage = () => {
   );
 
   useEffect(() => {
-    handleRetriveGameServerList(false);
-    handleRetriveGameServerList(true);
+    handleRetrieveGameServerList(false);
+    handleRetrieveGameServerList(true);
 
     // refresh every minute to query server info
     const intervalId = setInterval(async () => {
-      handleRetriveGameServerList(true);
+      handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [summary?.id, handleRetriveGameServerList]);
+  }, [summary?.id, handleRetrieveGameServerList]);
 
   const worldSecMenuOperations = [
     {
@@ -196,8 +196,8 @@ const InstanceWorldsPage = () => {
           <CommonIconButton
             icon="refresh"
             onClick={() => {
-              handleRetriveGameServerList(false);
-              handleRetriveGameServerList(true);
+              handleRetrieveGameServerList(false);
+              handleRetrieveGameServerList(true);
             }}
             size="xs"
             fontSize="sm"

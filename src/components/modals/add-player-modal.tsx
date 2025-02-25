@@ -118,8 +118,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const isOfflinePlayernameValid = /^[a-zA-Z0-9_]{0,16}$/.test(playername);
 
   const handleLogin = (isOAuth = false) => {
-    setIsLoading(true);
-
     let loginServiceFunction: () => Promise<InvokeResponse<void>>;
     if (isOAuth && authServer) {
       loginServiceFunction = () =>
@@ -129,9 +127,18 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
         );
     } else if (playerType === "offline") {
       loginServiceFunction = () => AccountService.addPlayerOffline(playername);
+    } else if (playerType === "3rdparty" && authServer) {
+      loginServiceFunction = () =>
+        AccountService.addPlayer3rdPartyPassword(
+          authServer.authUrl,
+          playername,
+          password
+        );
     } else {
       return;
     }
+
+    setIsLoading(true);
 
     loginServiceFunction()
       .then((response) => {
