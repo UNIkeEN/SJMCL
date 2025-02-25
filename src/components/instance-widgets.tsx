@@ -26,6 +26,7 @@ import {
   LuCalendarClock,
   LuClock4,
   LuEarth,
+  LuFullscreen,
   LuHaze,
   LuPackage,
   LuSettings,
@@ -166,6 +167,7 @@ export const InstanceScreenshotsWidget = () => {
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.screenshots.title")}
+      icon={LuFullscreen}
       style={{ cursor: "pointer" }}
     >
       {screenshots && screenshots.length ? (
@@ -222,39 +224,50 @@ export const InstanceModsWidget = () => {
       title={t("InstanceWidgets.mods.title")}
       icon={LuSquareLibrary}
     >
-      <HStack spacing={4}>
-        <VStack align="flex-start" spacing={3}>
-          <AvatarGroup size="sm" max={5} spacing={-2.5}>
-            {localMods.map((mod, index) => (
-              <Avatar
-                key={index}
-                name={mod.name || mod.fileName}
-                src={base64ImgSrc(mod.iconSrc)}
-              />
-            ))}
-          </AvatarGroup>
-          <Text fontSize="xs" color="gray.500">
-            {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
-          </Text>
-          <Button
-            size="xs"
-            variant="ghost"
-            position="absolute"
-            left={2}
-            bottom={2}
-            justifyContent="flex-start"
-            colorScheme={primaryColor}
-            onClick={() => {
-              router.push(`/games/instance/${id}/mods`);
-            }}
-          >
-            <HStack spacing={1.5}>
-              <Icon as={LuArrowRight} />
-              <Text>{t("InstanceWidgets.mods.manage")}</Text>
-            </HStack>
-          </Button>
-        </VStack>
-      </HStack>
+      {localMods && localMods.length ? (
+        <HStack spacing={4}>
+          <VStack align="flex-start" spacing={3}>
+            <AvatarGroup size="sm" max={5} spacing={-2.5}>
+              {localMods
+                .slice()
+                .sort((a, b) => Number(b.enabled) - Number(a.enabled))
+                .map((mod, index) => (
+                  <Avatar
+                    key={index}
+                    name={mod.name || mod.fileName}
+                    src={base64ImgSrc(mod.iconSrc)}
+                    style={{
+                      filter: mod.enabled ? "none" : "grayscale(90%)",
+                      opacity: mod.enabled ? 1 : 0.5,
+                    }}
+                  />
+                ))}
+            </AvatarGroup>
+            <Text fontSize="xs" color="gray.500">
+              {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
+            </Text>
+            <Button
+              size="xs"
+              variant="ghost"
+              position="absolute"
+              left={2}
+              bottom={2}
+              justifyContent="flex-start"
+              colorScheme={primaryColor}
+              onClick={() => {
+                router.push(`/games/instance/${id}/mods`);
+              }}
+            >
+              <HStack spacing={1.5}>
+                <Icon as={LuArrowRight} />
+                <Text>{t("InstanceWidgets.mods.manage")}</Text>
+              </HStack>
+            </Button>
+          </VStack>
+        </HStack>
+      ) : (
+        <Empty withIcon={false} size="sm" />
+      )}
     </InstanceWidgetBase>
   );
 };
