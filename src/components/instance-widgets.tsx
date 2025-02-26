@@ -216,7 +216,7 @@ export const InstanceModsWidget = () => {
 
   const totalMods = localMods.length;
   const enabledMods = localMods.filter((mod) => mod.enabled).length;
-  
+
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.mods.title")}
@@ -234,6 +234,7 @@ export const InstanceModsWidget = () => {
                     src={base64ImgSrc(mod.iconSrc)}
                     style={{
                       filter: mod.enabled ? "none" : "grayscale(90%)",
+                      opacity: mod.enabled ? 1 : 0.5,
                     }}
                   />
                 ))}
