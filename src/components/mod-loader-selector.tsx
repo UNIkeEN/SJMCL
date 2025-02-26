@@ -19,11 +19,6 @@ import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
 import { useLauncherConfig } from "@/contexts/config";
 import {
-  mockFabricVersions,
-  mockForgeVersions,
-  mockNeoForgeVersions,
-} from "@/models/mock/resource";
-import {
   GameResourceInfo,
   ModLoaderResourceInfo,
   defaultModLoaderResourceInfo,

@@ -30,7 +30,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { defaultGameConfig } from "@/models/config";
 import { MemoryInfo } from "@/models/system-info";
 import { JavaInfo } from "@/models/system-info";
-import { retriveMemoryInfo } from "@/services/utils";
+import { retrieveMemoryInfo } from "@/services/utils";
 
 interface GameSettingsGroupsProps {
   instanceId?: number;
@@ -94,8 +94,8 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   });
   const maxMemCanAllocated = Math.floor(memoryInfo.total / 1024 / 1024);
 
-  const handleRetriveMemoryInfo = async () => {
-    retriveMemoryInfo()
+  const handleRetrieveMemoryInfo = async () => {
+    retrieveMemoryInfo()
       .then((info) => {
         setMemoryInfo(info);
       })
@@ -103,8 +103,8 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   };
 
   useEffect(() => {
-    handleRetriveMemoryInfo();
-    const interval = setInterval(handleRetriveMemoryInfo, 10000);
+    handleRetrieveMemoryInfo();
+    const interval = setInterval(handleRetrieveMemoryInfo, 10000);
     return () => clearInterval(interval);
   }, []);
 

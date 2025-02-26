@@ -34,8 +34,8 @@ export const LauncherConfigContextProvider: React.FC<{
   const [config, setConfig] = useState<LauncherConfig>(defaultConfig);
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>();
 
-  const handleRetriveLauncherConfig = useCallback(() => {
-    ConfigService.retriveLauncherConfig().then((response) => {
+  const handleRetrieveLauncherConfig = useCallback(() => {
+    ConfigService.retrieveLauncherConfig().then((response) => {
       if (response.status === "success") {
         setConfig(response.data);
       } else {
@@ -49,8 +49,8 @@ export const LauncherConfigContextProvider: React.FC<{
   }, [setConfig, toast]);
 
   useEffect(() => {
-    handleRetriveLauncherConfig();
-  }, [handleRetriveLauncherConfig]);
+    handleRetrieveLauncherConfig();
+  }, [handleRetrieveLauncherConfig]);
 
   useEffect(() => {
     i18n.changeLanguage(config.general.general.language);
@@ -95,8 +95,8 @@ export const LauncherConfigContextProvider: React.FC<{
     });
   };
 
-  const handleRetriveJavaList = useCallback(() => {
-    ConfigService.retriveJavaList().then((response) => {
+  const handleRetrieveJavaList = useCallback(() => {
+    ConfigService.retrieveJavaList().then((response) => {
       if (response.status === "success") {
         setJavaInfos(response.data);
       } else {
@@ -110,7 +110,7 @@ export const LauncherConfigContextProvider: React.FC<{
     });
   }, [toast]);
 
-  const getJavaInfos = useGetState(javaInfos, handleRetriveJavaList);
+  const getJavaInfos = useGetState(javaInfos, handleRetrieveJavaList);
 
   return (
     <LauncherConfigContext.Provider

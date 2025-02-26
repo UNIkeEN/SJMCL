@@ -990,7 +990,7 @@
       "CurseForge": {
         "Relevancy": "相關度",
         "Popularity": "熱度",
-        "Lastest update": "最近更新",
+        "Latest update": "最近更新",
         "Creation date": "建立日期",
         "Total downloads": "下載量",
         "A-Z": "名稱"
@@ -1013,7 +1013,7 @@
   },
   "Services": {
     "config": {
-      "retriveLauncherConfig": {
+      "retrieveLauncherConfig": {
         "error": {
           "title": "獲取啟動器設定失敗"
         }
@@ -1050,7 +1050,7 @@
           }
         }
       },
-      "retriveCustomBackgroundList": {
+      "retrieveCustomBackgroundList": {
         "success": "自定義背景列表獲取成功",
         "error": {
           "title": "自定義背景列表獲取失敗"
@@ -1068,7 +1068,7 @@
           "title": "自定義背景刪除失敗"
         }
       },
-      "retriveJavaList": {
+      "retrieveJavaList": {
         "error": {
           "title": "Java 列表獲取失敗"
         }
@@ -1123,7 +1123,7 @@
       }
     },
     "resource": {
-      "retriveGameVersionList": {
+      "retrieveGameVersionList": {
         "error": {
           "title": "獲取遊戲版本列表失敗",
           "description": {

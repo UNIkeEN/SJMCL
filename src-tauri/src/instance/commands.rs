@@ -1,6 +1,6 @@
 use super::{
   super::utils::{
-    fs::copy_whole_dir,
+    fs::{copy_whole_dir, generate_unique_filename},
     nbt::load_nbt,
     path::{get_files_with_regex, get_subdirectories},
   },
@@ -28,7 +28,7 @@ use tauri_plugin_shell::ShellExt;
 use tokio;
 
 #[tauri::command]
-pub async fn retrive_instance_list(app: AppHandle) -> SJMCLResult<Vec<Instance>> {
+pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<Instance>> {
   refresh_and_update_instances(&app).await; // firstly refresh and update
   let binding = app.state::<Mutex<Vec<Instance>>>();
   let state = binding.lock()?;
@@ -73,7 +73,11 @@ pub fn copy_across_instances(
         None => return Err(InstanceError::InstanceNotFoundByID.into()),
       };
 
-      let dest_path = Path::new(&tgt_path).join(&filename);
+      if !tgt_path.exists() {
+        fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+      }
+
+      let dest_path = generate_unique_filename(&tgt_path, &filename);
       fs::copy(&src_file_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
     }
   } else if src_path.is_dir() {
@@ -83,7 +87,11 @@ pub fn copy_across_instances(
         None => return Err(InstanceError::InstanceNotFoundByID.into()),
       };
 
-      let dest_path = Path::new(&tgt_path).join(src_path.file_name().unwrap());
+      if !tgt_path.exists() {
+        fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+      }
+
+      let dest_path = generate_unique_filename(&tgt_path, src_path.file_name().unwrap());
       copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
     }
   } else {
@@ -105,18 +113,30 @@ pub fn move_across_instances(
   };
 
   let src_path = Path::new(&src_file_path);
+
+  if !src_path.is_dir() && !src_path.is_file() {
+    return Err(InstanceError::InvalidSourcePath.into());
+  }
+
   let filename = match src_path.file_name() {
     Some(name) => name.to_os_string(),
     None => return Err(InstanceError::InvalidSourcePath.into()),
   };
 
-  let dest_path = Path::new(&tgt_path).join(&filename);
+  if !tgt_path.exists() {
+    fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+  }
+
+  let dest_path = generate_unique_filename(&tgt_path, &filename);
   fs::rename(&src_file_path, &dest_path).map_err(|_| InstanceError::FileMoveFailed)?;
   Ok(())
 }
 
 #[tauri::command]
-pub async fn retrive_world_list(app: AppHandle, instance_id: usize) -> SJMCLResult<Vec<WorldInfo>> {
+pub async fn retrieve_world_list(
+  app: AppHandle,
+  instance_id: usize,
+) -> SJMCLResult<Vec<WorldInfo>> {
   let worlds_dir = match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Saves) {
     Some(path) => path,
     None => return Ok(Vec::new()),
@@ -150,7 +170,7 @@ pub async fn retrive_world_list(app: AppHandle, instance_id: usize) -> SJMCLResu
 }
 
 #[tauri::command]
-pub async fn retrive_game_server_list(
+pub async fn retrieve_game_server_list(
   app: AppHandle,
   instance_id: usize,
   query_online: bool,
@@ -214,7 +234,7 @@ pub async fn retrive_game_server_list(
 }
 
 #[tauri::command]
-pub async fn retrive_local_mod_list(
+pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: usize,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
@@ -253,7 +273,7 @@ pub async fn retrive_local_mod_list(
 }
 
 #[tauri::command]
-pub async fn retrive_resource_pack_list(
+pub async fn retrieve_resource_pack_list(
   app: AppHandle,
   instance_id: usize,
 ) -> SJMCLResult<Vec<ResourcePackInfo>> {
@@ -303,7 +323,7 @@ pub async fn retrive_resource_pack_list(
 }
 
 #[tauri::command]
-pub async fn retrive_server_resource_pack_list(
+pub async fn retrieve_server_resource_pack_list(
   app: AppHandle,
   instance_id: usize,
 ) -> SJMCLResult<Vec<ResourcePackInfo>> {
@@ -353,7 +373,7 @@ pub async fn retrive_server_resource_pack_list(
 }
 
 #[tauri::command]
-pub fn retrive_schematic_list(
+pub fn retrieve_schematic_list(
   app: AppHandle,
   instance_id: usize,
 ) -> SJMCLResult<Vec<SchematicInfo>> {
@@ -386,7 +406,7 @@ pub fn retrive_schematic_list(
 }
 
 #[tauri::command]
-pub fn retrive_shader_pack_list(
+pub fn retrieve_shader_pack_list(
   app: AppHandle,
   instance_id: usize,
 ) -> SJMCLResult<Vec<ShaderPackInfo>> {
@@ -418,7 +438,7 @@ pub fn retrive_shader_pack_list(
 }
 
 #[tauri::command]
-pub fn retrive_screenshot_list(
+pub fn retrieve_screenshot_list(
   app: AppHandle,
   instance_id: usize,
 ) -> SJMCLResult<Vec<ScreenshotInfo>> {

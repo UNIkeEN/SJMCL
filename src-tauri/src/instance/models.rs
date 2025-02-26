@@ -167,6 +167,7 @@ pub enum InstanceError {
   InvalidSourcePath,
   FileCopyFailed,
   FileMoveFailed,
+  FolderCreationFailed,
 }
 
 impl fmt::Display for InstanceError {
@@ -179,6 +180,7 @@ impl fmt::Display for InstanceError {
       InstanceError::InvalidSourcePath => write!(f, "INVALID_SOURCE_PATH"),
       InstanceError::FileCopyFailed => write!(f, "FILE_COPY_FAILED"),
       InstanceError::FileMoveFailed => write!(f, "FILE_MOVE_FAILED"),
+      InstanceError::FolderCreationFailed => write!(f, "FOLDER_CREATION_FAILED"),
     }
   }
 }

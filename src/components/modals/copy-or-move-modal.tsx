@@ -143,7 +143,11 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
             ) {
               router.push(router.asPath); // meet error, refresh page to get new instance and file list.
             }
-          }
+          } else
+            toast({
+              title: response.message,
+              status: "success",
+            });
         });
       }
     },
@@ -171,6 +175,11 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
               title: response.message,
               description: response.details,
               status: "error",
+            });
+          else
+            toast({
+              title: response.message,
+              status: "success",
             });
         });
       }

@@ -17,8 +17,9 @@ import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
 import { LocalModInfo } from "@/models/instance";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -28,6 +29,7 @@ const InstanceModsPage = () => {
   const toast = useToast();
   const { summary, openSubdir, getLocalModList } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
+  const { openSharedModal } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
@@ -92,7 +94,11 @@ const InstanceModsPage = () => {
     },
     {
       icon: "download",
-      onClick: () => {},
+      onClick: () => {
+        openSharedModal("download-resource", {
+          initialResourceType: "mod",
+        });
+      },
     },
     {
       icon: LuClockArrowUp,
@@ -202,16 +208,20 @@ const InstanceModsPage = () => {
                 title={
                   mod.translatedName
                     ? `${mod.translatedName}｜${mod.name}`
-                    : mod.name
+                    : mod.name || mod.fileName
                 }
                 titleExtra={
                   <HStack>
-                    <Text fontSize="xs" className="secondary-text no-select">
-                      {mod.version}
-                    </Text>
-                    <Tag colorScheme={primaryColor} className="tag-xs">
-                      {mod.loaderType}
-                    </Tag>
+                    {mod.version && (
+                      <Text fontSize="xs" className="secondary-text no-select">
+                        {mod.version}
+                      </Text>
+                    )}
+                    {mod.loaderType !== ModLoaderEnums.Unknown && (
+                      <Tag colorScheme={primaryColor} className="tag-xs">
+                        {mod.loaderType}
+                      </Tag>
+                    )}
                   </HStack>
                 }
                 description={
@@ -220,21 +230,29 @@ const InstanceModsPage = () => {
                     overflow="hidden"
                     className="secondary-text no-select ellipsis-text" // only show one line
                   >
-                    {`${mod.fileName}: ${mod.description}`}
+                    {mod.fileName}
+                    {mod.description ? `: ${mod.description}` : ""}
                   </Text>
                 }
                 prefixElement={
                   <Avatar
                     src={base64ImgSrc(mod.iconSrc)}
-                    name={mod.name}
+                    name={mod.name || mod.fileName}
                     boxSize="28px"
                     borderRadius="4px"
                     style={{
                       filter: mod.enabled ? "none" : "grayscale(90%)",
+                      opacity: mod.enabled ? 1 : 0.5,
                     }}
                   >
                     <AvatarBadge
-                      bg={mod.enabled ? "green" : "gray"}
+                      bg={
+                        mod.enabled
+                          ? mod.potentialIncompatibility
+                            ? "orange"
+                            : "green"
+                          : "black" // black with 0.5 opacity looks like gray.
+                      }
                       boxSize="0.75em"
                       borderWidth={2}
                     />

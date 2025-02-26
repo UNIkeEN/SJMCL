@@ -36,7 +36,11 @@ const InstanceShaderPacksPage = () => {
     },
     {
       icon: "download",
-      onClick: () => {},
+      onClick: () => {
+        openSharedModal("download-resource", {
+          initialResourceType: "shaderpack",
+        });
+      },
     },
     {
       icon: "refresh",

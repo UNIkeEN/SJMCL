@@ -21,8 +21,8 @@ export class AccountService {
    * @returns {Promise<InvokeResponse<Player[]>>}
    */
   @responseHandler("account", errorToLocaleKey)
-  static async retrivePlayerList(): Promise<InvokeResponse<Player[]>> {
-    return await invoke("retrive_player_list");
+  static async retrievePlayerList(): Promise<InvokeResponse<Player[]>> {
+    return await invoke("retrieve_player_list");
   }
 
   /**
@@ -53,6 +53,26 @@ export class AccountService {
     return await invoke("add_player_3rdparty_oauth", {
       authServerUrl,
       openidConfigurationUrl,
+    });
+  }
+
+  /**
+   * ADD a new player to the system using authlib_injector's password authentication.
+   * @param {string} authServerUrl - The authentication server's URL.
+   * @param {string} username - The username of the player to be added.
+   * @param {string} password - The password of the player to be added.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account", errorToLocaleKey)
+  static async addPlayer3rdPartyPassword(
+    authServerUrl: string,
+    username: string,
+    password: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_player_3rdparty_password", {
+      authServerUrl,
+      username,
+      password,
     });
   }
 
@@ -88,8 +108,8 @@ export class AccountService {
    * @returns {Promise<InvokeResponse<Player>>}
    */
   @responseHandler("account", errorToLocaleKey)
-  static async retriveSelectedPlayer(): Promise<InvokeResponse<Player>> {
-    return await invoke("retrive_selected_player");
+  static async retrieveSelectedPlayer(): Promise<InvokeResponse<Player>> {
+    return await invoke("retrieve_selected_player");
   }
 
   /**
@@ -109,8 +129,8 @@ export class AccountService {
    * @returns {Promise<InvokeResponse<AuthServer[]>>}
    */
   @responseHandler("account", errorToLocaleKey)
-  static async retriveAuthServerList(): Promise<InvokeResponse<AuthServer[]>> {
-    return await invoke("retrive_auth_server_list");
+  static async retrieveAuthServerList(): Promise<InvokeResponse<AuthServer[]>> {
+    return await invoke("retrieve_auth_server_list");
   }
 
   /**

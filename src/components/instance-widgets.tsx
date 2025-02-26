@@ -224,18 +224,27 @@ export const InstanceModsWidget = () => {
     >
       <HStack spacing={4}>
         <VStack align="flex-start" spacing={3}>
-          <AvatarGroup size="sm" max={5} spacing={-2.5}>
-            {localMods.map((mod, index) => (
-              <Avatar
-                key={index}
-                name={mod.name}
-                src={base64ImgSrc(mod.iconSrc)}
-              />
-            ))}
-          </AvatarGroup>
-          <Text fontSize="xs" color="gray.500">
-            {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
-          </Text>
+          {localMods.length > 0 ? (
+            <>
+              <AvatarGroup size="sm" max={5} spacing={-2.5}>
+                {localMods.map((mod, index) => (
+                  <Avatar
+                    key={index}
+                    name={mod.name || mod.fileName}
+                    src={base64ImgSrc(mod.iconSrc)}
+                    style={{
+                      filter: mod.enabled ? "none" : "grayscale(90%)",
+                    }}
+                  />
+                ))}
+              </AvatarGroup>
+              <Text fontSize="xs" color="gray.500">
+                {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
+              </Text>
+            </>
+          ) : (
+            <Empty withIcon={false} size="sm" />
+          )}
           <Button
             size="xs"
             variant="ghost"

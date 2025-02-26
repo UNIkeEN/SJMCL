@@ -55,7 +55,11 @@ const InstanceResourcePacksPage = () => {
         },
         {
           icon: "download",
-          onClick: () => {},
+          onClick: () => {
+            openSharedModal("download-resource", {
+              initialResourceType: "resourcepack",
+            });
+          },
         },
         {
           icon: "refresh",

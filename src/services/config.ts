@@ -20,10 +20,10 @@ export class ConfigService {
    * @returns {Promise<InvokeResponse<LauncherConfig>>}
    */
   @responseHandler("config", errorToLocaleKey)
-  static async retriveLauncherConfig(): Promise<
+  static async retrieveLauncherConfig(): Promise<
     InvokeResponse<LauncherConfig>
   > {
-    return await invoke("retrive_launcher_config");
+    return await invoke("retrieve_launcher_config");
   }
 
   /**
@@ -79,10 +79,10 @@ export class ConfigService {
    * @returns {Promise<InvokeResponse<string[]>>} A list of background file names.
    */
   @responseHandler("config", errorToLocaleKey)
-  static async retriveCustomBackgroundList(): Promise<
+  static async retrieveCustomBackgroundList(): Promise<
     InvokeResponse<string[]>
   > {
-    return await invoke("retrive_custom_background_list");
+    return await invoke("retrieve_custom_background_list");
   }
 
   /**
@@ -114,7 +114,7 @@ export class ConfigService {
    * @returns {Promise<InvokeResponse<JavaInfo[]>>} A list of installed Java versions.
    */
   @responseHandler("config", errorToLocaleKey)
-  static async retriveJavaList(): Promise<InvokeResponse<JavaInfo[]>> {
-    return await invoke("retrive_java_list");
+  static async retrieveJavaList(): Promise<InvokeResponse<JavaInfo[]>> {
+    return await invoke("retrieve_java_list");
   }
 }

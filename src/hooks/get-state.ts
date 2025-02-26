@@ -2,14 +2,14 @@ import { useCallback } from "react";
 
 export function useGetState<T>(
   state: T | undefined,
-  retriveHandler: () => void
+  retrieveHandler: () => void
 ): (sync?: boolean) => T | undefined {
   const getState = useCallback(
     (sync = false) => {
-      if (sync || state === undefined) retriveHandler();
+      if (sync || state === undefined) retrieveHandler();
       return state;
     },
-    [state, retriveHandler]
+    [state, retrieveHandler]
   );
 
   return getState;

@@ -1,6 +1,5 @@
 import {
   GameInstanceSummary,
-  LocalModInfo,
   ResourcePackInfo,
   SchematicInfo,
 } from "@/models/instance";
