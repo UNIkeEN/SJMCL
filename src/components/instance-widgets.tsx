@@ -216,9 +216,6 @@ export const InstanceModsWidget = () => {
 
   const totalMods = localMods.length;
   const enabledMods = localMods.filter((mod) => mod.enabled).length;
-  const sortedMods = [...localMods].sort((a, b) =>
-    a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1
-  );
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.mods.title")}
@@ -229,14 +226,13 @@ export const InstanceModsWidget = () => {
           {localMods.length > 0 ? (
             <>
               <AvatarGroup size="sm" max={5} spacing={-2.5}>
-                {sortedMods.map((mod, index) => (
+                {localMods.map((mod, index) => (
                   <Avatar
                     key={index}
                     name={mod.name || mod.fileName}
                     src={base64ImgSrc(mod.iconSrc)}
                     style={{
                       filter: mod.enabled ? "none" : "grayscale(90%)",
-                      opacity: mod.enabled ? 1 : 0.5,
                     }}
                   />
                 ))}
