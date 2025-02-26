@@ -28,6 +28,27 @@ export interface GameConfig {
     enabled: boolean;
   };
 }
+interface GameAdvancedConfig {
+  customCommands: {
+    gameArgument: string;
+    prelaunchCommand: string;
+    wrapperCommands: string;
+    postexitCommand: string;
+  };
+  javaVMOptions: {
+    argument: string;
+    permGenSpace: string;
+    environmentVariable: string;
+  };
+  workaround: {
+    notAddJVM: boolean;
+    notCheckGameIntergrity: boolean;
+    notCheckJVMCompatibility: boolean;
+    notAutomaticallyReplaceNativeLibrary: boolean;
+    useSystemGLFW: boolean;
+    useSystemOpenAL: boolean;
+  };
+}
 export interface GameDirectory {
   name: string;
   dir: string;
@@ -81,6 +102,7 @@ export interface LauncherConfig {
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
+  gameAdvanceConfig: GameAdvancedConfig;
   discoverSourceEndpoints: string[];
   states: {
     accountsPage: {
@@ -135,6 +157,28 @@ export const defaultGameConfig: GameConfig = {
   },
 };
 
+const defaultGameAdvancedConfig: GameAdvancedConfig = {
+  customCommands: {
+    gameArgument: "",
+    prelaunchCommand: "",
+    wrapperCommands: "",
+    postexitCommand: "",
+  },
+  javaVMOptions: {
+    argument: "",
+    permGenSpace: "",
+    environmentVariable: "",
+  },
+  workaround: {
+    notAddJVM: false,
+    notCheckGameIntergrity: false,
+    notCheckJVMCompatibility: false,
+    notAutomaticallyReplaceNativeLibrary: false,
+    useSystemGLFW: false,
+    useSystemOpenAL: false,
+  },
+};
+
 export const defaultConfig: LauncherConfig = {
   version: "dev",
   mocked: true,
@@ -183,6 +227,7 @@ export const defaultConfig: LauncherConfig = {
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
+  gameAdvanceConfig: defaultGameAdvancedConfig,
   discoverSourceEndpoints: ["https://mc.sjtu.cn/api-sjmcl/article"],
   states: {
     accountsPage: {

@@ -64,6 +64,32 @@ structstruck::strike! {
   }
 }
 
+structstruck::strike! {
+  #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
+  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
+  pub struct GameAdvancedConfig {
+    pub custom_commands: struct {
+      pub game_argument: String,
+      pub prelaunch_command: String,
+      pub wrapper_command: String,
+      pub postexit_command: String,
+    },
+    pub java_v_m_options: struct {
+      pub argument: String,
+      pub prem_gen_space: String,
+      pub environment_vaviable: String,
+    },
+    pub workaround: struct {
+      pub not_add_j_v_m: bool,
+      pub not_check_game_intergrity: bool,
+      pub not_check_j_v_m_compatibility: bool,
+      pub not_automatically_replace_native_library: bool,
+      pub use_system_g_l_f_w: bool,
+      pub use_system_open_a_l: bool,
+    }
+  }
+}
+
 #[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct GameDirectory {
@@ -122,6 +148,7 @@ structstruck::strike! {
       }
     },
     pub global_game_config: GameConfig,
+    pub game_advanced_config: GameAdvancedConfig,
     pub local_game_directories: Vec<GameDirectory>,
     pub discover_source_endpoints: Vec<String>,
     pub states: struct States {
@@ -180,6 +207,32 @@ impl Default for GameConfig {
   }
 }
 
+impl Default for GameAdvancedConfig {
+  fn default() -> Self {
+    Self {
+      custom_commands: CustomCommands {
+        game_argument: "".to_string(),
+        prelaunch_command: "".to_string(),
+        wrapper_command: "".to_string(),
+        postexit_command: "".to_string(),
+      },
+      java_v_m_options: JavaVMOptions {
+        argument: "".to_string(),
+        prem_gen_space: "".to_string(),
+        environment_vaviable: "".to_string(),
+      },
+      workaround: Workaround {
+        not_add_j_v_m: false,
+        not_check_game_intergrity: false,
+        not_check_j_v_m_compatibility: false,
+        not_automatically_replace_native_library: false,
+        use_system_g_l_f_w: false,
+        use_system_open_a_l: false,
+      },
+    }
+  }
+}
+
 impl Default for LauncherConfig {
   fn default() -> Self {
     Self {
@@ -227,6 +280,7 @@ impl Default for LauncherConfig {
         optional_functions: OptionalFunctions { discover: false },
       },
       global_game_config: GameConfig::default(),
+      game_advanced_config: GameAdvancedConfig::default(),
       local_game_directories: vec![],
       discover_source_endpoints: vec!["https://mc.sjtu.cn/api-sjmcl/article".to_string()],
       states: States {

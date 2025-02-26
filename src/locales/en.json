@@ -482,6 +482,65 @@
       "windows": "File Explorer"
     }
   },
+  "GameAdvanceSettingsPage": {
+    "customCommands": {
+      "title": "Custom Commands",
+      "settings": {
+        "gameArgument": {
+          "title": "Launcher Argument",
+          "placeholder": "Default"
+        },
+        "prelaunchCommand": {
+          "title": "Pre-launch Command",
+          "placeholder": "Commands to execute before the game launches"
+        },
+        "wrapperCommands": {
+          "title": "Wrapper Command",
+          "placeholder": "Allows launching using an extra wrapper program like \"optirun\" on Linux"
+        },
+        "postexitCommand": {
+          "title": "Post-exit Command",
+          "placeholder": "Commands to execute after game exits"
+        }
+      }
+    },
+    "javaVMOptions": {
+      "title": "Java VM Options",
+      "settings": {
+        "argument": {
+          "title": "JVM VM Argument"
+        },
+        "permGenSpace": {
+          "title": "PermGen Space",
+          "placeholder": "in MB"
+        },
+        "environmentVariable": {
+          "title": "Environment Variables"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Workaround",
+      "settings": {
+        "notAddJVM": "Do not add default Java VM arguments",
+        "notCheckGameIntergrity": {
+          "title": "Do not check game intergrity"
+        },
+        "notCheckJVMCompatibility": {
+          "title": "Do not check Java VM compatibility"
+        },
+        "notAutomaticallyReplaceNativeLibrary": {
+          "title": "Do not attempt to automatically replace native libraries"
+        },
+        "useSystemGLFW": {
+          "title": "[Linux/FreeBSD Only] Use System GLFW"
+        },
+        "useSystemOpenAL": {
+          "title": "[Linux/FreeBSD Only] Use System OpenAL"
+        }
+      }
+    }
+  },
   "GameErrorPage": {
     "title": "Game exited unexpectedly. Check the logs or seek assistance.",
     "basicInfo": {

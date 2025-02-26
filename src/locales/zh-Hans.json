@@ -482,6 +482,65 @@
       "windows": "文件资源管理器"
     }
   },
+  "GameAdvanceSettingsPage": {
+    "customCommands": {
+      "title": "自定义命令",
+      "settings": {
+        "gameArgument": {
+          "title": "游戏参数",
+          "placeholder": "默认"
+        },
+        "prelaunchCommand": {
+          "title": "游戏启动前执行命令",
+          "placeholder": "将在游戏启动前调用"
+        },
+        "wrapperCommands": {
+          "title": "包装命令",
+          "placeholder": "如填写\"optirun\"后，启动命令将从\"java ...\"变为\"optirun java ...\""
+        },
+        "postexitCommand": {
+          "title": "游戏结束后执行命令",
+          "placeholder": "将在游戏结束后调用"
+        }
+      }
+    },
+    "javaVMOptions": {
+      "title": "Java 虚拟机设置",
+      "settings": {
+        "argument": {
+          "title": "JVM 虚拟机参数"
+        },
+        "permGenSpace": {
+          "title": "内存永久保存区域",
+          "placeholder": "内存 MB"
+        },
+        "environmentVariable": {
+          "title": "环境变量"
+        }
+      }
+    },
+    "workaround": {
+      "title": "调试选项",
+      "settings": {
+        "notAddJVM": "不添加默认的 JVM参数",
+        "notCheckGameIntergrity": {
+          "title": "不检查游戏完整性"
+        },
+        "notCheckJVMCompatibility": {
+          "title": "不检查 JVM 与游戏的兼容性"
+        },
+        "notAutomaticallyReplaceNativeLibrary": {
+          "title": "不尝试自动替换本地库"
+        },
+        "useSystemGLFW": {
+          "title": "[仅 Linux/FreeBSD] 使用系统 GLFW"
+        },
+        "useSystemOpenAL": {
+          "title": "[仅 Linux/FreeBSD] 使用系统 OpenAL"
+        }
+      }
+    }
+  },
   "GameErrorPage": {
     "title": "游戏非正常退出，请查看日志，或寻求他人帮助",
     "basicInfo": {
