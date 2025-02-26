@@ -26,6 +26,7 @@ import {
   LuCalendarClock,
   LuClock4,
   LuEarth,
+  LuFullscreen,
   LuHaze,
   LuPackage,
   LuSettings,
@@ -139,11 +140,12 @@ export const InstanceBasicInfoWidget = () => {
 export const InstanceScreenshotsWidget = () => {
   const { t } = useTranslation();
   const { getScreenshotList } = useInstanceSharedData();
-
-  const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
   const router = useRouter();
   const { id } = router.query;
+
+  const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const hasScreenshots = screenshots && screenshots.length;
 
   useEffect(() => {
     setScreenshots(getScreenshotList() || []);
@@ -158,17 +160,19 @@ export const InstanceScreenshotsWidget = () => {
           setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
           setIsFading(false);
         }, 800);
-      }, 10000);
+      }, 8000);
 
       return () => clearInterval(interval);
     }
   }, [screenshots]);
+
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.screenshots.title")}
       style={{ cursor: "pointer" }}
+      {...(hasScreenshots ? {} : { icon: LuFullscreen })}
     >
-      {screenshots && screenshots.length ? (
+      {hasScreenshots ? (
         <Image
           src={convertFileSrc(screenshots[currentIndex].filePath)}
           alt={screenshots[currentIndex].fileName}

@@ -38,6 +38,20 @@ export default function App({ Component, pageProps }: AppProps) {
         event.preventDefault();
       });
     }
+
+    // forbid keyboard shortcut in webview: https://github.com/UNIkeEN/SJMCL/issues/163
+    document.addEventListener("keydown", (event) => {
+      const disabledShortcuts =
+        ["F3", "F5", "F7"].includes(event.key) ||
+        (event.altKey && ["ArrowLeft", "ArrowRight"].includes(event.key)) ||
+        ((event.ctrlKey || event.metaKey) &&
+          event.shiftKey &&
+          event.key.toUpperCase() === "S") ||
+        ["F", "G", "H", "J", "P", "Q", "R", "U"].includes(
+          event.key.toUpperCase()
+        );
+      disabledShortcuts && event.preventDefault();
+    });
   }, []);
 
   const layoutMappings: {
