@@ -216,6 +216,7 @@ export const InstanceModsWidget = () => {
 
   const totalMods = localMods.length;
   const enabledMods = localMods.filter((mod) => mod.enabled).length;
+  
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.mods.title")}
