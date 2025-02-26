@@ -107,7 +107,6 @@ pub async fn load_mod_from_file(path: &PathBuf) -> SJMCLResult<LocalModInfo> {
       file_path,
     });
   }
-  // println!("{} cannot be recognized as known", file_name);
   Err(SJMCLError(format!(
     "{} cannot be recognized as known",
     file_name
