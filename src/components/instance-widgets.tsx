@@ -234,7 +234,6 @@ export const InstanceModsWidget = () => {
                     src={base64ImgSrc(mod.iconSrc)}
                     style={{
                       filter: mod.enabled ? "none" : "grayscale(90%)",
-                      opacity: mod.enabled ? 1 : 0.5,
                     }}
                   />
                 ))}
