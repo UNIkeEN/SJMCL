@@ -71,13 +71,13 @@ structstruck::strike! {
     pub custom_commands: struct {
       pub game_argument: String,
       pub prelaunch_command: String,
-      pub wrapper_command: String,
+      pub wrapper_commands: String,
       pub postexit_command: String,
     },
     pub java_v_m_options: struct {
       pub argument: String,
-      pub prem_gen_space: String,
-      pub environment_vaviable: String,
+      pub perm_gen_space: String,
+      pub environment_variable: String,
     },
     pub workaround: struct {
       pub not_add_j_v_m: bool,
@@ -213,13 +213,13 @@ impl Default for GameAdvancedConfig {
       custom_commands: CustomCommands {
         game_argument: "".to_string(),
         prelaunch_command: "".to_string(),
-        wrapper_command: "".to_string(),
+        wrapper_commands: "".to_string(),
         postexit_command: "".to_string(),
       },
       java_v_m_options: JavaVMOptions {
         argument: "".to_string(),
-        prem_gen_space: "".to_string(),
-        environment_vaviable: "".to_string(),
+        perm_gen_space: "".to_string(),
+        environment_variable: "".to_string(),
       },
       workaround: Workaround {
         not_add_j_v_m: false,

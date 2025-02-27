@@ -102,7 +102,7 @@ export interface LauncherConfig {
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
-  gameAdvanceConfig: GameAdvancedConfig;
+  gameAdvancedConfig: GameAdvancedConfig;
   discoverSourceEndpoints: string[];
   states: {
     accountsPage: {
@@ -157,7 +157,7 @@ export const defaultGameConfig: GameConfig = {
   },
 };
 
-const defaultGameAdvancedConfig: GameAdvancedConfig = {
+export const defaultGameAdvancedConfig: GameAdvancedConfig = {
   customCommands: {
     gameArgument: "",
     prelaunchCommand: "",
@@ -227,7 +227,7 @@ export const defaultConfig: LauncherConfig = {
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
-  gameAdvanceConfig: defaultGameAdvancedConfig,
+  gameAdvancedConfig: defaultGameAdvancedConfig,
   discoverSourceEndpoints: ["https://mc.sjtu.cn/api-sjmcl/article"],
   states: {
     accountsPage: {
