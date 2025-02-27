@@ -24,6 +24,10 @@
           "title": "BMCLAPI",
           "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
         },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "Some design and code implementation are referenced from this open-source project"
+        },
         "littleskin": {
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
@@ -751,6 +755,7 @@
     },
     "modList": {
       "title": "Mods",
+      "warning": "Mod loader not found, these mods may not work properly",
       "menu": {
         "alert": "Potentially incompatible",
         "info": "Mod Info",

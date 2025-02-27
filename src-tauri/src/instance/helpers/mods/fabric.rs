@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 use std::io::{Cursor, Read, Seek};
-use std::path::PathBuf;
+use std::path::Path;
 use tokio;
 use zip::ZipArchive;
 
@@ -22,7 +22,7 @@ pub struct FabricModMetadata {
   pub contact: Option<HashMap<String, String>>,
 }
 
-pub fn load_fabric_from_jar<R: Read + Seek>(
+pub fn get_mod_metadata_from_jar<R: Read + Seek>(
   jar: &mut ZipArchive<R>,
 ) -> SJMCLResult<FabricModMetadata> {
   let mut meta: FabricModMetadata = match jar.by_name("fabric.mod.json") {
@@ -36,7 +36,7 @@ pub fn load_fabric_from_jar<R: Read + Seek>(
     if let Ok(mut img_file) = jar.by_name(icon) {
       // Use `image` crate to decode the image
       let mut buffer = Vec::new();
-      if let Ok(_) = img_file.read_to_end(&mut buffer) {
+      if img_file.read_to_end(&mut buffer).is_ok() {
         if let Ok(image_reader) = ImageReader::new(Cursor::new(buffer)).with_guessed_format() {
           if let Ok(img) = image_reader.decode() {
             if let Ok(b64) = image_to_base64(img.to_rgba8()) {
@@ -50,7 +50,7 @@ pub fn load_fabric_from_jar<R: Read + Seek>(
   Ok(meta)
 }
 
-pub async fn load_fabric_from_dir(dir_path: &PathBuf) -> SJMCLResult<FabricModMetadata> {
+pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<FabricModMetadata> {
   let fabric_file_path = dir_path.join("fabric.mod.json");
   let mut meta: FabricModMetadata = match tokio::fs::read_to_string(fabric_file_path).await {
     Ok(val) => match serde_json::from_str(val.as_str()) {

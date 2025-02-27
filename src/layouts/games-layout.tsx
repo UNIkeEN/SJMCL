@@ -45,6 +45,8 @@ const GamesLayout: React.FC<GamesLayoutProps> = ({ children }) => {
   // Truncate to the ID, excluding subpage routes
   const prefixAsPathPart = router.asPath.split("/").slice(0, 4).join("/");
 
+  const isInstancePage = (path: String) => path.startsWith("/games/instance/");
+
   return (
     <Grid templateColumns="1fr 3fr" gap={4} h="100%">
       <GridItem className="content-full-y">
@@ -53,7 +55,12 @@ const GamesLayout: React.FC<GamesLayoutProps> = ({ children }) => {
             <NavMenu
               selectedKeys={[prefixAsPathPart]}
               onClick={(value) => {
-                router.push(value);
+                if (isInstancePage(router.asPath) && isInstancePage(value)) {
+                  router.push(
+                    // acorss instances, not change subpath
+                    `${value}${router.asPath.replace(prefixAsPathPart, "")}`
+                  );
+                } else router.push(value);
               }}
               items={gameInstanceItems.map((item) => ({
                 label: (

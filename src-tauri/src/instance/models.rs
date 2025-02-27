@@ -62,8 +62,7 @@ structstruck::strike! {
       pub loader_type: ModLoaderType,
       pub version: String,
     },
-    pub has_schem_folder: bool,
-    pub game_config: Option<GameConfig>, // TODO: any sub-config can be None?
+    pub spec_game_config: Option<GameConfig>, // TODO: any sub-config can be None?
   }
 }
 

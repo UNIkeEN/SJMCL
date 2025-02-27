@@ -1,4 +1,4 @@
-use crate::utils::sys_info;
+use crate::{storage::Storage, utils::sys_info, EXE_DIR};
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
 use std::{fmt, path::PathBuf};
@@ -177,6 +177,12 @@ impl Default for GameConfig {
       display_game_log: false,
       advanced_options: AdvancedOptions { enabled: false },
     }
+  }
+}
+
+impl Storage for LauncherConfig {
+  fn file_path() -> PathBuf {
+    EXE_DIR.join("sjmcl.conf.json")
   }
 }
 

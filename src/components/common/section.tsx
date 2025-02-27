@@ -82,19 +82,21 @@ export const Section: React.FC<SectionProps> = ({
                 }}
               />
             )}
-            <VStack spacing={0} mr={1} align="start">
-              {title && (
-                <Text fontWeight="bold" fontSize="sm" className="no-select">
-                  {title}
-                </Text>
-              )}
+            <VStack spacing={0} align="start">
+              <HStack spacing={2}>
+                {title && (
+                  <Text fontWeight="bold" fontSize="sm" className="no-select">
+                    {title}
+                  </Text>
+                )}
+                {titleExtra}
+              </HStack>
               {description && (
                 <Text fontSize="xs" className="secondary-text no-select">
                   {description}
                 </Text>
               )}
             </VStack>
-            {titleExtra}
           </HStack>
           <Box ml="auto" display="flex">
             {headExtra}

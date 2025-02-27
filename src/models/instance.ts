@@ -11,7 +11,6 @@ export interface GameInstanceSummary {
     loaderType: ModLoaderType;
     version?: string;
   };
-  hasSchemFolder: boolean;
 }
 
 export interface WorldInfo {

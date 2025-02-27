@@ -15,7 +15,6 @@ export const mockGameInstanceList: GameInstanceSummary[] = [
       loaderType: "Fabric",
       version: "0.15.6",
     },
-    hasSchemFolder: false,
   },
   {
     id: 2,
@@ -28,7 +27,6 @@ export const mockGameInstanceList: GameInstanceSummary[] = [
       loaderType: "Forge",
       version: "47.2.17",
     },
-    hasSchemFolder: true,
   },
 ];
 

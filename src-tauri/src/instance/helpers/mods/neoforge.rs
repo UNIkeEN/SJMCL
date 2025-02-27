@@ -6,7 +6,7 @@ use image::ImageReader;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::{Cursor, Read, Seek};
-use std::path::PathBuf;
+use std::path::Path;
 use tokio;
 use toml;
 use zip::ZipArchive;
@@ -34,7 +34,7 @@ pub struct NeoforgeModSubItem {
   pub authors: Option<Value>,
 }
 
-pub fn load_neoforge_from_jar<R: Read + Seek>(
+pub fn get_mod_metadata_from_jar<R: Read + Seek>(
   jar: &mut ZipArchive<R>,
 ) -> SJMCLResult<NeoforgeModMetadata> {
   let mut meta: NeoforgeModMetadata = match jar.by_name("META-INF/neoforge.mods.toml") {
@@ -53,10 +53,10 @@ pub fn load_neoforge_from_jar<R: Read + Seek>(
   if meta.mods.is_empty() {
     return Err(SJMCLError("neoforge mod len(mods) == 0".to_string()));
   }
-  let ref mut mods = meta.mods[0];
+  let mods = &mut meta.mods[0];
 
   if let Some(ref logo_file) = mods.logo_file {
-    if let Ok(mut img_file) = jar.by_name(&logo_file) {
+    if let Ok(mut img_file) = jar.by_name(logo_file) {
       // Use `image` crate to decode the image
       let mut buffer = Vec::new();
       if img_file.read_to_end(&mut buffer).is_ok() {
@@ -73,7 +73,7 @@ pub fn load_neoforge_from_jar<R: Read + Seek>(
   Ok(meta)
 }
 
-pub async fn load_neoforge_from_dir(dir_path: &PathBuf) -> SJMCLResult<NeoforgeModMetadata> {
+pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<NeoforgeModMetadata> {
   let neoforge_file_path = dir_path.join("META-INF/neoforge.mods.toml");
   let mut meta: NeoforgeModMetadata = match tokio::fs::read_to_string(neoforge_file_path).await {
     Ok(val) => match serde_json::from_str(val.as_str()) {
@@ -85,7 +85,7 @@ pub async fn load_neoforge_from_dir(dir_path: &PathBuf) -> SJMCLResult<NeoforgeM
   if meta.mods.is_empty() {
     return Err(SJMCLError("neoforge mod len(mods) == 0".to_string()));
   }
-  let ref mut mods = meta.mods[0];
+  let mods = &mut meta.mods[0];
 
   if let Some(ref logo_file) = mods.logo_file {
     if let Ok(buffer) = tokio::fs::read(&logo_file).await {

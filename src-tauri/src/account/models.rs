@@ -1,7 +1,7 @@
 use super::helpers::skin::draw_avatar;
-use crate::{storage::Storage, utils::image::base64_to_image};
+use crate::{storage::Storage, utils::image::base64_to_image, EXE_DIR};
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{fmt, path::PathBuf};
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -91,6 +91,12 @@ pub struct AccountInfo {
   pub selected_player_id: String, // maybe "" if none of the player was selected
   pub auth_servers: Vec<AuthServer>,
   pub client_id: Uuid,
+}
+
+impl Storage for AccountInfo {
+  fn file_path() -> PathBuf {
+    EXE_DIR.join("sjmcl.account.json")
+  }
 }
 
 impl Default for AccountInfo {

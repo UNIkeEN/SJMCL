@@ -5,7 +5,7 @@ use image::ImageReader;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::{Cursor, Read, Seek};
-use std::path::PathBuf;
+use std::path::Path;
 use tokio;
 use zip::ZipArchive;
 
@@ -35,7 +35,9 @@ pub struct QuiltLoaderMetadata {
   pub contact: Option<Value>,
 }
 
-pub fn load_quiltmod_from_jar<R: Read + Seek>(jar: &mut ZipArchive<R>) -> SJMCLResult<QuiltLoader> {
+pub fn get_mod_metadata_from_jar<R: Read + Seek>(
+  jar: &mut ZipArchive<R>,
+) -> SJMCLResult<QuiltLoader> {
   let mut meta: QuiltLoader = match jar.by_name("quilt.mod.json") {
     Ok(val) => match serde_json::from_reader(val) {
       Ok(val) => val,
@@ -44,7 +46,7 @@ pub fn load_quiltmod_from_jar<R: Read + Seek>(jar: &mut ZipArchive<R>) -> SJMCLR
     Err(e) => return Err(SJMCLError::from(e)),
   };
   if let Some(ref mut icon) = meta.metadata.icon {
-    if let Ok(mut img_file) = jar.by_name(&icon) {
+    if let Ok(mut img_file) = jar.by_name(icon) {
       // Use `image` crate to decode the image
       let mut buffer = Vec::new();
       if img_file.read_to_end(&mut buffer).is_ok() {
@@ -61,7 +63,7 @@ pub fn load_quiltmod_from_jar<R: Read + Seek>(jar: &mut ZipArchive<R>) -> SJMCLR
   Ok(meta)
 }
 
-pub async fn load_quiltmod_from_dir(dir_path: &PathBuf) -> SJMCLResult<QuiltLoader> {
+pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<QuiltLoader> {
   let quilt_file_path = dir_path.join("quilt.mod.json");
   let content = tokio::fs::read_to_string(quilt_file_path).await?;
   let mut meta: QuiltLoader = serde_json::from_str(&content)?;

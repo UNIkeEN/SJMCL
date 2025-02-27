@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, HStack, Tag, Text } from "@chakra-ui/react";
+import { Avatar, AvatarBadge, HStack, Icon, Tag, Text } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -199,6 +199,13 @@ const InstanceModsPage = () => {
           </HStack>
         }
       >
+        {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
+          localMods.length > 0 && (
+            <HStack fontSize="xs" color="red.500" mt={-0.5} ml={1.5} mb={2}>
+              <Icon as={LuTriangleAlert} />
+              <Text>{t("InstanceModsPage.modList.warning")}</Text>
+            </HStack>
+          )}
         {localMods.length > 0 ? (
           <OptionItemGroup
             items={localMods.map((mod) => (
