@@ -1,6 +1,18 @@
-import { Input, Switch, VStack } from "@chakra-ui/react";
-import { useState } from "react";
+import {
+  Button,
+  Input,
+  Menu,
+  MenuButton,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
+  Switch,
+  VStack,
+} from "@chakra-ui/react";
+import { platform } from "@tauri-apps/plugin-os";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuChevronDown } from "react-icons/lu";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -44,7 +56,19 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
   const [environmentVariable, setEnvironmentVariable] = useState<string>(
     gameAdvancedConfigs.javaVMOptions.environmentVariable
   );
-
+  const [platformName, setPlatformName] = useState<string>("");
+  useEffect(() => {
+    const fetchPlatform = async () => {
+      const name = await platform();
+      setPlatformName(name);
+    };
+    fetchPlatform();
+  }, []);
+  const gameIntergrityCheckPolicy = [
+    "not-check",
+    "common-check",
+    "strengthen-check",
+  ];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     if (instanceId) return; // TBD
     update(`gameAdvancedConfig.${key}`, value);
@@ -217,6 +241,49 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
       title: t("GameAdvancedSettingsPage.workaround.title"),
       items: [
         {
+          title: t(
+            "GameAdvancedSettingsPage.workaround.settings.gameIntergrityCheckPolicy.title"
+          ),
+          children: (
+            <Menu>
+              <MenuButton
+                as={Button}
+                size="xs"
+                w="auto"
+                rightIcon={<LuChevronDown />}
+                variant="outline"
+                textAlign="left"
+              >
+                {t(
+                  `GameAdvancedSettingsPage.workaround.settings.gameIntergrityCheckPolicy.${gameAdvancedConfigs.workaround.gameIntergrityCheckPolicy}`
+                )}
+              </MenuButton>
+              <MenuList>
+                <MenuOptionGroup
+                  type="radio"
+                  value={
+                    gameAdvancedConfigs.workaround.gameIntergrityCheckPolicy
+                  }
+                  onChange={(value) => {
+                    updateGameAdvancedConfig(
+                      "workaround.gameIntergrityCheckPolicy",
+                      value
+                    );
+                  }}
+                >
+                  {gameIntergrityCheckPolicy.map((type) => (
+                    <MenuItemOption value={type} fontSize="xs" key={type}>
+                      {t(
+                        `GameAdvancedSettingsPage.workaround.settings.gameIntergrityCheckPolicy.${type}`
+                      )}
+                    </MenuItemOption>
+                  ))}
+                </MenuOptionGroup>
+              </MenuList>
+            </Menu>
+          ),
+        },
+        {
           title: t("GameAdvancedSettingsPage.workaround.settings.notAddJVM"),
           children: (
             <Switch
@@ -225,23 +292,6 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               onChange={(event) => {
                 updateGameAdvancedConfig(
                   "workaround.notAddJVM",
-                  event.target.checked
-                );
-              }}
-            />
-          ),
-        },
-        {
-          title: t(
-            "GameAdvancedSettingsPage.workaround.settings.notCheckGameIntergrity.title"
-          ),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.workaround.notCheckGameIntergrity}
-              onChange={(event) => {
-                updateGameAdvancedConfig(
-                  "workaround.notCheckGameIntergrity",
                   event.target.checked
                 );
               }}
@@ -287,40 +337,44 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
             />
           ),
         },
-        {
-          title: t(
-            "GameAdvancedSettingsPage.workaround.settings.useSystemGLFW.title"
-          ),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.workaround.useSystemGLFW}
-              onChange={(event) => {
-                updateGameAdvancedConfig(
-                  "workaround.useSystemGLFW",
-                  event.target.checked
-                );
-              }}
-            />
-          ),
-        },
-        {
-          title: t(
-            "GameAdvancedSettingsPage.workaround.settings.useSystemOpenAL.title"
-          ),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.workaround.useSystemOpenAL}
-              onChange={(event) => {
-                updateGameAdvancedConfig(
-                  "workaround.useSystemOpenAL",
-                  event.target.checked
-                );
-              }}
-            />
-          ),
-        },
+        ...(platformName === "linux"
+          ? [
+              {
+                title: t(
+                  "GameAdvancedSettingsPage.workaround.settings.useSystemGLFW.title"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={gameAdvancedConfigs.workaround.useSystemGLFW}
+                    onChange={(event) => {
+                      updateGameAdvancedConfig(
+                        "workaround.useSystemGLFW",
+                        event.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
+              {
+                title: t(
+                  "GameAdvancedSettingsPage.workaround.settings.useSystemOpenAL.title"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={gameAdvancedConfigs.workaround.useSystemOpenAL}
+                    onChange={(event) => {
+                      updateGameAdvancedConfig(
+                        "workaround.useSystemOpenAL",
+                        event.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
+            ]
+          : []),
       ],
     },
   ];

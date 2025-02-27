@@ -81,7 +81,7 @@ structstruck::strike! {
     },
     pub workaround: struct {
       pub not_add_j_v_m: bool,
-      pub not_check_game_intergrity: bool,
+      pub game_intergrity_check_policy: String,
       pub not_check_j_v_m_compatibility: bool,
       pub not_automatically_replace_native_library: bool,
       pub use_system_g_l_f_w: bool,
@@ -223,7 +223,7 @@ impl Default for GameAdvancedConfig {
       },
       workaround: Workaround {
         not_add_j_v_m: false,
-        not_check_game_intergrity: false,
+        game_intergrity_check_policy: "strengthen-check".to_string(),
         not_check_j_v_m_compatibility: false,
         not_automatically_replace_native_library: false,
         use_system_g_l_f_w: false,

@@ -527,9 +527,12 @@
     "workaround": {
       "title": "调试选项",
       "settings": {
-        "notAddJVM": "不添加默认的 JVM参数",
-        "notCheckGameIntergrity": {
-          "title": "不检查游戏完整性"
+        "notAddJVM": "不添加默认的 JVM 参数",
+        "gameIntergrityCheckPolicy": {
+          "title": "游戏文件完整性检查策略",
+          "not-check": "不检查",
+          "common-check":"普通检查",
+          "strengthen-check":"增强检查"
         },
         "notCheckJVMCompatibility": {
           "title": "不检查 JVM 与游戏的兼容性"
@@ -538,10 +541,10 @@
           "title": "不尝试自动替换本地库"
         },
         "useSystemGLFW": {
-          "title": "[仅 Linux/FreeBSD] 使用系统 GLFW"
+          "title": "使用系统 GLFW(仅 Linux—)"
         },
         "useSystemOpenAL": {
-          "title": "[仅 Linux/FreeBSD] 使用系统 OpenAL"
+          "title": "使用系统 OpenAL(仅 Linux)"
         }
       }
     }

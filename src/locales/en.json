@@ -528,8 +528,11 @@
       "title": "Workaround",
       "settings": {
         "notAddJVM": "Do not add default Java VM arguments",
-        "notCheckGameIntergrity": {
-          "title": "Do not check game intergrity"
+        "gameIntergrityCheckPolicy": {
+          "title": "Game File Integrity Check Policy",
+          "not-check": "Not Check",
+          "common-check":"Common Check",
+          "strengthen-check":"Strenthen Check"
         },
         "notCheckJVMCompatibility": {
           "title": "Do not check Java VM compatibility"
@@ -538,10 +541,10 @@
           "title": "Do not attempt to automatically replace native libraries"
         },
         "useSystemGLFW": {
-          "title": "[Linux/FreeBSD Only] Use System GLFW"
+          "title": "Use System GLFW(Linux Only)"
         },
         "useSystemOpenAL": {
-          "title": "[Linux/FreeBSD Only] Use System OpenAL"
+          "title": "Use System OpenAL(Linux Only)"
         }
       }
     }

@@ -42,7 +42,7 @@ interface GameAdvancedConfig {
   };
   workaround: {
     notAddJVM: boolean;
-    notCheckGameIntergrity: boolean;
+    gameIntergrityCheckPolicy: string;
     notCheckJVMCompatibility: boolean;
     notAutomaticallyReplaceNativeLibrary: boolean;
     useSystemGLFW: boolean;
@@ -171,7 +171,7 @@ export const defaultGameAdvancedConfig: GameAdvancedConfig = {
   },
   workaround: {
     notAddJVM: false,
-    notCheckGameIntergrity: false,
+    gameIntergrityCheckPolicy: "strengthen-check",
     notCheckJVMCompatibility: false,
     notAutomaticallyReplaceNativeLibrary: false,
     useSystemGLFW: false,
