@@ -99,7 +99,6 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
       file_path,
     });
   }
-  // println!("{} cannot be recognized as known", file_name);
   Err(SJMCLError(format!(
     "{} cannot be recognized as known",
     file_name

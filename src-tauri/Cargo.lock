@@ -8,6 +8,7 @@ version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
  "futures",
+ "hex",
  "image",
  "java-properties",
  "jsonwebtoken",
@@ -19,6 +20,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "sha1",
  "structstruck",
  "systemstat",
  "tauri",

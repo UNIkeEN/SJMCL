@@ -7,6 +7,21 @@ use crate::{
 use std::{fs, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
 
+pub fn get_instance_client_json_path(app: &AppHandle, instance_id: usize) -> Option<PathBuf> {
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let state = binding.lock().unwrap();
+  let instance = state.get(instance_id)?;
+
+  let version_path = &instance.version_path;
+  let game_name = version_path
+    .file_name()
+    .unwrap()
+    .to_string_lossy()
+    .to_string();
+  let json_path = version_path.join(format!("{}.json", game_name));
+  Some(json_path)
+}
+
 // if instance_id not exists, return None
 pub fn get_instance_subdir_path(
   app: &AppHandle,

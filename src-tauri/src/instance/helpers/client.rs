@@ -105,20 +105,20 @@ impl<'de> Deserialize<'de> for ArgumentsItem {
 #[derive(Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", default)]
 pub struct OsInfo {
-  name: String,
-  version: Option<String>,
-  arch: Option<String>,
+  pub name: String,
+  pub version: Option<String>,
+  pub arch: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
 pub struct FeaturesInfo {
-  is_demo_user: Option<bool>,
-  has_custom_resolution: Option<bool>,
-  has_quick_plays_support: Option<bool>,
-  is_quick_play_singleplayer: Option<bool>,
-  is_quick_play_multiplayer: Option<bool>,
-  is_quick_play_realms: Option<bool>,
+  pub is_demo_user: Option<bool>,
+  pub has_custom_resolution: Option<bool>,
+  pub has_quick_plays_support: Option<bool>,
+  pub is_quick_play_singleplayer: Option<bool>,
+  pub is_quick_play_multiplayer: Option<bool>,
+  pub is_quick_play_realms: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
@@ -144,18 +144,23 @@ structstruck::strike! {
   #[strikethrough[serde(rename_all="camelCase", default)]]
   pub struct LibrariesValue {
     pub name: String,
-    pub downloads:
+    pub downloads: Option<
       pub struct{
-        pub artifact: DownloadsArtifact,
+        pub artifact: Option<DownloadsArtifact>,
         pub classifiers: Option<Classifiers>
-      },
+      }>,
     pub natives: Option<Value>,
     pub extract: Option<Value>,
-    pub rules: Option<Vec<Value>>,
+    pub rules: Option<Vec<pub struct{
+      pub action: String,
+      pub os: Option<pub struct{
+        pub name: String,
+      }>
+    }>>,
   }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase", default)]
 pub struct DownloadsArtifact {
   pub path: String,
@@ -182,7 +187,12 @@ structstruck::strike! {
     pub client:
       pub struct {
         pub argument: String,
-        pub file: DownloadsArtifact,
+        pub file: pub struct {
+          pub id: String,
+          pub url: String,
+          pub sha1: String,
+          pub size: i64,
+        },
         #[serde(rename="type")]
         pub type_: String,
       },
