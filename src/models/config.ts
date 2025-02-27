@@ -172,7 +172,7 @@ export const defaultGameAdvancedConfig: GameAdvancedConfig = {
   },
   workaround: {
     notAddJVM: false,
-    gameIntergrityCheckPolicy: "strengthen-check",
+    gameIntergrityCheckPolicy: "full",
     notCheckJVMCompatibility: false,
     notAutomaticallyReplaceNativeLibrary: false,
     useSystemGLFW: false,

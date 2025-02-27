@@ -57,6 +57,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
     gameAdvancedConfigs.javaVMOptions.environmentVariable
   );
   const [platformName, setPlatformName] = useState<string>("");
+
   useEffect(() => {
     const fetchPlatform = async () => {
       const name = await platform();
@@ -64,11 +65,8 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
     };
     fetchPlatform();
   }, []);
-  const gameIntergrityCheckPolicy = [
-    "not-check",
-    "common-check",
-    "strengthen-check",
-  ];
+
+  const gameIntergrityCheckPolicy = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     if (instanceId) return; // TBD
     update(`gameAdvancedConfig.${key}`, value);

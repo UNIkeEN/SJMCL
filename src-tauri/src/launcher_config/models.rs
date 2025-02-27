@@ -74,17 +74,22 @@ structstruck::strike! {
       pub wrapper_commands: String,
       pub postexit_command: String,
     },
+    #[serde(rename = "javaVMOptions")]
     pub java_v_m_options: struct {
       pub argument: String,
       pub perm_gen_space: String,
       pub environment_variable: String,
     },
     pub workaround: struct {
+      #[serde(rename = "notAddJVM")]
       pub not_add_j_v_m: bool,
       pub game_intergrity_check_policy: String,
+      #[serde(rename = "notCheckJVMCompatibility")]
       pub not_check_j_v_m_compatibility: bool,
       pub not_automatically_replace_native_library: bool,
+      #[serde(rename = "useSystemGlfw")]
       pub use_system_g_l_f_w: bool,
+      #[serde(rename = "useSystemOpenAl")]
       pub use_system_open_a_l: bool,
     }
   }
@@ -229,7 +234,7 @@ impl Default for GameAdvancedConfig {
       },
       workaround: Workaround {
         not_add_j_v_m: false,
-        game_intergrity_check_policy: "strengthen-check".to_string(),
+        game_intergrity_check_policy: "full".to_string(),
         not_check_j_v_m_compatibility: false,
         not_automatically_replace_native_library: false,
         use_system_g_l_f_w: false,
