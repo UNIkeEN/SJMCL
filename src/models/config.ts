@@ -28,6 +28,7 @@ export interface GameConfig {
     enabled: boolean;
   };
 }
+
 interface GameAdvancedConfig {
   customCommands: {
     gameArgument: string;
