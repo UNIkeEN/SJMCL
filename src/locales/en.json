@@ -152,7 +152,7 @@
       },
       "password": {
         "label": "Password",
-        "placeholder": "P@s$w0rd"
+        "placeholder": "Enter password"
       }
     },
     "button": {
@@ -280,7 +280,7 @@
       "info": "Basic Settings"
     }
   },
-  "DeleteGameAlertDialog": {
+  "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
       "content": "Confirm delete the game instance \"{{gameName}}\" ? It will be lost forever! (A long time!)"

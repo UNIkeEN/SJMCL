@@ -144,11 +144,11 @@
       },
       "email": {
         "label": "邮箱",
-        "placeholder": "请输入邮箱"
+        "placeholder": "steve@example.com"
       },
       "emailOrPlayerName": {
         "label": "邮箱或角色名称",
-        "placeholder": "请输入邮箱或角色名称"
+        "placeholder": "steve@example.com 或 Steve"
       },
       "password": {
         "label": "密码",
@@ -280,22 +280,22 @@
       "info": "基本设置"
     }
   },
-  "DeleteGameAlertDialog": {
+  "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{gameName}}” 吗？"
+      "content": "确定要删除游戏实例 “{{gameName}}” 吗？它将会永久消失！（真的很久！）"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
-      "content": "确定要删除角色 “{{name}}” 吗？"
+      "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
     }
   },
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？"
+      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
   "DiscoverPage": {
@@ -595,7 +595,7 @@
       },
       "deleteDialog": {
         "title": "删除游戏目录",
-        "content": "确定要删除游戏目录 {{dirName}} 吗？（仅从启动器删除，不会删除实际目录文件）"
+        "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL将不会扫描此目录，但不会删除硬盘上的文件）"
       }
     },
     "gameJava": {
