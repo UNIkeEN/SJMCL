@@ -144,15 +144,15 @@
       },
       "email": {
         "label": "Email",
-        "placeholder": "steve@example.com"
+        "placeholder": "Email"
       },
       "emailOrPlayerName": {
         "label": "Email or Player Name",
-        "placeholder": "steve@example.com or Steve"
+        "placeholder": "Email or Player Name"
       },
       "password": {
         "label": "Password",
-        "placeholder": "Enter password"
+        "placeholder": "Password"
       }
     },
     "button": {

@@ -144,11 +144,11 @@
       },
       "email": {
         "label": "邮箱",
-        "placeholder": "steve@example.com"
+        "placeholder": "请输入邮箱"
       },
       "emailOrPlayerName": {
         "label": "邮箱或角色名称",
-        "placeholder": "steve@example.com 或 Steve"
+        "placeholder": "请输入邮箱或角色名称"
       },
       "password": {
         "label": "密码",
