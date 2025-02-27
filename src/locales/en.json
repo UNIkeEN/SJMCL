@@ -482,7 +482,12 @@
       "windows": "File Explorer"
     }
   },
-  "GameAdvanceSettingsPage": {
+  "GameAdvancedSettingsModal": {
+    "header": {
+      "title": "Advanced Settings"
+    }
+  },
+  "GameAdvancedSettingsPage": {
     "customCommands": {
       "title": "Custom Commands",
       "settings": {
@@ -729,7 +734,8 @@
           "title": "Display Game Logs"
         },
         "enableAdvancedOptions": {
-          "title": "Enable Advanced Options"
+          "title": "Enable Advanced Options",
+          "button": "Edit Advanced Settings"
         }
       }
     }

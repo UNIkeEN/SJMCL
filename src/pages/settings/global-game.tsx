@@ -10,7 +10,6 @@ import {
   OptionItemGroupProps,
   OptionItemProps,
 } from "@/components/common/option-item";
-import GameAdvancedSettingsGroups from "@/components/game-advanced-settings-group";
 import GameSettingsGroups from "@/components/game-settings-groups";
 import EditGameDirectoryModal from "@/components/modals/edit-game-directory-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
@@ -185,7 +184,6 @@ const GlobalGameSettingsPage = () => {
 
       {/* Game config option-items */}
       <GameSettingsGroups />
-      <GameAdvancedSettingsGroups />
     </>
   );
 };

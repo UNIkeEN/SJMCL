@@ -482,7 +482,12 @@
       "windows": "文件资源管理器"
     }
   },
-  "GameAdvanceSettingsPage": {
+  "GameAdvancedSettingsModal": {
+    "header": {
+      "title": "高级设置"
+    }
+  },
+  "GameAdvancedSettingsPage": {
     "customCommands": {
       "title": "自定义命令",
       "settings": {
@@ -729,7 +734,8 @@
           "title": "显示游戏日志"
         },
         "enableAdvancedOptions": {
-          "title": "启用高级选项"
+          "title": "启用高级选项",
+          "button": "编辑高级设置"
         }
       }
     }

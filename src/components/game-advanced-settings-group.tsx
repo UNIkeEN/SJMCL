@@ -52,11 +52,11 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
 
   const settingGroups: OptionItemGroupProps[] = [
     {
-      title: t("GameAdvanceSettingsPage.customCommands.title"),
+      title: t("GameAdvancedSettingsPage.customCommands.title"),
       items: [
         {
           title: t(
-            "GameAdvanceSettingsPage.customCommands.settings.gameArgument.title"
+            "GameAdvancedSettingsPage.customCommands.settings.gameArgument.title"
           ),
           children: (
             <Input
@@ -72,14 +72,14 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvanceSettingsPage.customCommands.settings.gameArgument.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.gameArgument.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.customCommands.settings.prelaunchCommand.title"
+            "GameAdvancedSettingsPage.customCommands.settings.prelaunchCommand.title"
           ),
           children: (
             <Input
@@ -95,14 +95,14 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvanceSettingsPage.customCommands.settings.prelaunchCommand.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.prelaunchCommand.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.customCommands.settings.wrapperCommands.title"
+            "GameAdvancedSettingsPage.customCommands.settings.wrapperCommands.title"
           ),
           children: (
             <Input
@@ -118,14 +118,14 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvanceSettingsPage.customCommands.settings.wrapperCommands.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.wrapperCommands.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.customCommands.settings.postexitCommand.title"
+            "GameAdvancedSettingsPage.customCommands.settings.postexitCommand.title"
           ),
           children: (
             <Input
@@ -141,7 +141,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvanceSettingsPage.customCommands.settings.postexitCommand.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.postexitCommand.placeholder"
               )}
             />
           ),
@@ -149,11 +149,11 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
       ],
     },
     {
-      title: t("GameAdvanceSettingsPage.javaVMOptions.title"),
+      title: t("GameAdvancedSettingsPage.javaVMOptions.title"),
       items: [
         {
           title: t(
-            "GameAdvanceSettingsPage.javaVMOptions.settings.argument.title"
+            "GameAdvancedSettingsPage.javaVMOptions.settings.argument.title"
           ),
           children: (
             <Input
@@ -170,7 +170,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.javaVMOptions.settings.permGenSpace.title"
+            "GameAdvancedSettingsPage.javaVMOptions.settings.permGenSpace.title"
           ),
           children: (
             <Input
@@ -186,14 +186,14 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvanceSettingsPage.javaVMOptions.settings.permGenSpace.placeholder"
+                "GameAdvancedSettingsPage.javaVMOptions.settings.permGenSpace.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.javaVMOptions.settings.environmentVariable.title"
+            "GameAdvancedSettingsPage.javaVMOptions.settings.environmentVariable.title"
           ),
           children: (
             <Input
@@ -214,10 +214,10 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
       ],
     },
     {
-      title: t("GameAdvanceSettingsPage.workaround.title"),
+      title: t("GameAdvancedSettingsPage.workaround.title"),
       items: [
         {
-          title: t("GameAdvanceSettingsPage.workaround.settings.notAddJVM"),
+          title: t("GameAdvancedSettingsPage.workaround.settings.notAddJVM"),
           children: (
             <Switch
               colorScheme={primaryColor}
@@ -233,7 +233,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.workaround.settings.notCheckGameIntergrity.title"
+            "GameAdvancedSettingsPage.workaround.settings.notCheckGameIntergrity.title"
           ),
           children: (
             <Switch
@@ -250,7 +250,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.workaround.settings.notCheckJVMCompatibility.title"
+            "GameAdvancedSettingsPage.workaround.settings.notCheckJVMCompatibility.title"
           ),
           children: (
             <Switch
@@ -269,7 +269,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.workaround.settings.notAutomaticallyReplaceNativeLibrary.title"
+            "GameAdvancedSettingsPage.workaround.settings.notAutomaticallyReplaceNativeLibrary.title"
           ),
           children: (
             <Switch
@@ -289,7 +289,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.workaround.settings.useSystemGLFW.title"
+            "GameAdvancedSettingsPage.workaround.settings.useSystemGLFW.title"
           ),
           children: (
             <Switch
@@ -306,7 +306,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvanceSettingsPage.workaround.settings.useSystemOpenAL.title"
+            "GameAdvancedSettingsPage.workaround.settings.useSystemOpenAL.title"
           ),
           children: (
             <Switch
