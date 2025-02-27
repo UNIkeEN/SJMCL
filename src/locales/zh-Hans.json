@@ -495,31 +495,31 @@
     "customCommands": {
       "title": "自定义命令",
       "settings": {
-        "gameArgument": {
+        "minecraftArgument": {
           "title": "游戏参数",
           "placeholder": "默认"
         },
-        "prelaunchCommand": {
+        "precallCommand": {
           "title": "游戏启动前执行命令",
           "placeholder": "将在游戏启动前调用"
         },
-        "wrapperCommands": {
+        "wrapperLauncher": {
           "title": "包装命令",
           "placeholder": "如填写\"optirun\"后，启动命令将从\"java ...\"变为\"optirun java ...\""
         },
-        "postexitCommand": {
+        "postExitCommand": {
           "title": "游戏结束后执行命令",
           "placeholder": "将在游戏结束后调用"
         }
       }
     },
-    "javaVMOptions": {
+    "jvm": {
       "title": "Java 虚拟机设置",
       "settings": {
-        "argument": {
+        "args": {
           "title": "JVM 虚拟机参数"
         },
-        "permGenSpace": {
+        "javaPermanentGenerationSpace": {
           "title": "内存永久保存区域",
           "placeholder": "内存 MB"
         },
@@ -531,23 +531,23 @@
     "workaround": {
       "title": "调试选项",
       "settings": {
-        "notAddJVM": "不添加默认的 JVM 参数",
-        "gameIntergrityCheckPolicy": {
+        "noJvmArgs": "不添加默认的 JVM 参数",
+        "gameCompletnessCheckPolicy": {
           "title": "游戏文件完整性检查策略",
           "disable": "不检查",
           "normal":"普通检查",
           "full":"增强检查"
         },
-        "notCheckJVMCompatibility": {
+        "dontCheckJvmValidity": {
           "title": "不检查 JVM 与游戏的兼容性"
         },
-        "notAutomaticallyReplaceNativeLibrary": {
+        "dontPatchNatives": {
           "title": "不尝试自动替换本地库"
         },
-        "useSystemGLFW": {
+        "useNativeGlfw": {
           "title": "使用系统 GLFW(仅 Linux)"
         },
-        "useSystemOpenAL": {
+        "useNativeOpenal": {
           "title": "使用系统 OpenAL(仅 Linux)"
         }
       }

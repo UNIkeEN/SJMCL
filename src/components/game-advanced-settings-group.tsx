@@ -35,26 +35,23 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
     ? defaultGameAdvancedConfig // TBD
     : config.gameAdvancedConfig;
 
-  const [gameArgument, setGameArgument] = useState<string>(
-    gameAdvancedConfigs.customCommands.gameArgument
+  const [minecraftArgument, setMinecraftArgument] = useState<string>(
+    gameAdvancedConfigs.customCommands.minecraftArgument
   );
-  const [prelaunchCommand, setPrelaunchCommand] = useState<string>(
-    gameAdvancedConfigs.customCommands.prelaunchCommand
+  const [precallCommand, setPrecallCommand] = useState<string>(
+    gameAdvancedConfigs.customCommands.precallCommand
   );
-  const [wrapperCommands, setWrapperCommands] = useState<string>(
-    gameAdvancedConfigs.customCommands.wrapperCommands
+  const [wrapperLauncher, setWrapperLauncher] = useState<string>(
+    gameAdvancedConfigs.customCommands.wrapperLauncher
   );
-  const [postexitCommand, setPostexitCommand] = useState<string>(
-    gameAdvancedConfigs.customCommands.postexitCommand
+  const [postExitCommand, setPostExitCommand] = useState<string>(
+    gameAdvancedConfigs.customCommands.postExitCommand
   );
-  const [argument, setArgument] = useState<string>(
-    gameAdvancedConfigs.javaVMOptions.argument
-  );
-  const [permGenSpace, setPermGenSpace] = useState<string>(
-    gameAdvancedConfigs.javaVMOptions.permGenSpace
-  );
+  const [args, setArgs] = useState<string>(gameAdvancedConfigs.jvm.args);
+  const [javaPermanentGenerationSpace, setJavaPermanentGenerationSpace] =
+    useState<string>(gameAdvancedConfigs.jvm.javaPermanentGenerationSpace);
   const [environmentVariable, setEnvironmentVariable] = useState<string>(
-    gameAdvancedConfigs.javaVMOptions.environmentVariable
+    gameAdvancedConfigs.jvm.environmentVariable
   );
   const [platformName, setPlatformName] = useState<string>("");
 
@@ -66,7 +63,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
     fetchPlatform();
   }, []);
 
-  const gameIntergrityCheckPolicy = ["disable", "normal", "full"];
+  const gameCompletnessCheckPolicy = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     if (instanceId) return; // TBD
     update(`gameAdvancedConfig.${key}`, value);
@@ -78,92 +75,92 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
       items: [
         {
           title: t(
-            "GameAdvancedSettingsPage.customCommands.settings.gameArgument.title"
+            "GameAdvancedSettingsPage.customCommands.settings.minecraftArgument.title"
           ),
           children: (
             <Input
               size="xs"
               maxW={380}
-              value={gameArgument}
-              onChange={(event) => setGameArgument(event.target.value)}
+              value={minecraftArgument}
+              onChange={(event) => setMinecraftArgument(event.target.value)}
               onBlur={() => {
                 updateGameAdvancedConfig(
-                  "customCommands.gameArgument",
-                  gameArgument
+                  "customCommands.minecraftArgument",
+                  minecraftArgument
                 );
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvancedSettingsPage.customCommands.settings.gameArgument.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.minecraftArgument.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.customCommands.settings.prelaunchCommand.title"
+            "GameAdvancedSettingsPage.customCommands.settings.precallCommand.title"
           ),
           children: (
             <Input
               size="xs"
               maxW={380}
-              value={prelaunchCommand}
-              onChange={(event) => setPrelaunchCommand(event.target.value)}
+              value={precallCommand}
+              onChange={(event) => setPrecallCommand(event.target.value)}
               onBlur={() => {
                 updateGameAdvancedConfig(
-                  "customCommands.prelaunchCommand",
-                  prelaunchCommand
+                  "customCommands.precallCommand",
+                  precallCommand
                 );
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvancedSettingsPage.customCommands.settings.prelaunchCommand.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.precallCommand.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.customCommands.settings.wrapperCommands.title"
+            "GameAdvancedSettingsPage.customCommands.settings.wrapperLauncher.title"
           ),
           children: (
             <Input
               size="xs"
               maxW={380}
-              value={wrapperCommands}
-              onChange={(event) => setWrapperCommands(event.target.value)}
+              value={wrapperLauncher}
+              onChange={(event) => setWrapperLauncher(event.target.value)}
               onBlur={() => {
                 updateGameAdvancedConfig(
-                  "customCommands.wrapperCommands",
-                  wrapperCommands
+                  "customCommands.wrapperLauncher",
+                  wrapperLauncher
                 );
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvancedSettingsPage.customCommands.settings.wrapperCommands.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.wrapperLauncher.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.customCommands.settings.postexitCommand.title"
+            "GameAdvancedSettingsPage.customCommands.settings.postExitCommand.title"
           ),
           children: (
             <Input
               size="xs"
               maxW={380}
-              value={postexitCommand}
-              onChange={(event) => setPostexitCommand(event.target.value)}
+              value={postExitCommand}
+              onChange={(event) => setPostExitCommand(event.target.value)}
               onBlur={() => {
                 updateGameAdvancedConfig(
-                  "customCommands.postexitCommand",
-                  postexitCommand
+                  "customCommands.postExitCommand",
+                  postExitCommand
                 );
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvancedSettingsPage.customCommands.settings.postexitCommand.placeholder"
+                "GameAdvancedSettingsPage.customCommands.settings.postExitCommand.placeholder"
               )}
             />
           ),
@@ -171,20 +168,18 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
       ],
     },
     {
-      title: t("GameAdvancedSettingsPage.javaVMOptions.title"),
+      title: t("GameAdvancedSettingsPage.jvm.title"),
       items: [
         {
-          title: t(
-            "GameAdvancedSettingsPage.javaVMOptions.settings.argument.title"
-          ),
+          title: t("GameAdvancedSettingsPage.jvm.settings.args.title"),
           children: (
             <Input
               size="xs"
               maxW={380}
-              value={argument}
-              onChange={(event) => setArgument(event.target.value)}
+              value={args}
+              onChange={(event) => setArgs(event.target.value)}
               onBlur={() => {
-                updateGameAdvancedConfig("javaVMOptions.argument", argument);
+                updateGameAdvancedConfig("jvm.args", args);
               }}
               focusBorderColor={`${primaryColor}.500`}
             />
@@ -192,30 +187,32 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.javaVMOptions.settings.permGenSpace.title"
+            "GameAdvancedSettingsPage.jvm.settings.javaPermanentGenerationSpace.title"
           ),
           children: (
             <Input
               size="xs"
               maxW={380}
-              value={permGenSpace}
-              onChange={(event) => setPermGenSpace(event.target.value)}
+              value={javaPermanentGenerationSpace}
+              onChange={(event) =>
+                setJavaPermanentGenerationSpace(event.target.value)
+              }
               onBlur={() => {
                 updateGameAdvancedConfig(
-                  "javaVMOptions.permGenSpace",
-                  permGenSpace
+                  "jvm.javaPermanentGenerationSpace",
+                  javaPermanentGenerationSpace
                 );
               }}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
-                "GameAdvancedSettingsPage.javaVMOptions.settings.permGenSpace.placeholder"
+                "GameAdvancedSettingsPage.jvm.settings.javaPermanentGenerationSpace.placeholder"
               )}
             />
           ),
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.javaVMOptions.settings.environmentVariable.title"
+            "GameAdvancedSettingsPage.jvm.settings.environmentVariable.title"
           ),
           children: (
             <Input
@@ -225,7 +222,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               onChange={(event) => setEnvironmentVariable(event.target.value)}
               onBlur={() => {
                 updateGameAdvancedConfig(
-                  "javaVMOptions.environmentVariable",
+                  "jvm.environmentVariable",
                   environmentVariable
                 );
               }}
@@ -240,7 +237,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
       items: [
         {
           title: t(
-            "GameAdvancedSettingsPage.workaround.settings.gameIntergrityCheckPolicy.title"
+            "GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.title"
           ),
           children: (
             <Menu>
@@ -253,26 +250,26 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
                 textAlign="left"
               >
                 {t(
-                  `GameAdvancedSettingsPage.workaround.settings.gameIntergrityCheckPolicy.${gameAdvancedConfigs.workaround.gameIntergrityCheckPolicy}`
+                  `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${gameAdvancedConfigs.workaround.gameCompletnessCheckPolicy}`
                 )}
               </MenuButton>
               <MenuList>
                 <MenuOptionGroup
                   type="radio"
                   value={
-                    gameAdvancedConfigs.workaround.gameIntergrityCheckPolicy
+                    gameAdvancedConfigs.workaround.gameCompletnessCheckPolicy
                   }
                   onChange={(value) => {
                     updateGameAdvancedConfig(
-                      "workaround.gameIntergrityCheckPolicy",
+                      "workaround.gameCompletnessCheckPolicy",
                       value
                     );
                   }}
                 >
-                  {gameIntergrityCheckPolicy.map((type) => (
+                  {gameCompletnessCheckPolicy.map((type) => (
                     <MenuItemOption value={type} fontSize="xs" key={type}>
                       {t(
-                        `GameAdvancedSettingsPage.workaround.settings.gameIntergrityCheckPolicy.${type}`
+                        `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${type}`
                       )}
                     </MenuItemOption>
                   ))}
@@ -282,14 +279,14 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           ),
         },
         {
-          title: t("GameAdvancedSettingsPage.workaround.settings.notAddJVM"),
+          title: t("GameAdvancedSettingsPage.workaround.settings.noJvmArgs"),
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.workaround.notAddJVM}
+              isChecked={gameAdvancedConfigs.workaround.noJvmArgs}
               onChange={(event) => {
                 updateGameAdvancedConfig(
-                  "workaround.notAddJVM",
+                  "workaround.noJvmArgs",
                   event.target.checked
                 );
               }}
@@ -298,17 +295,15 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.workaround.settings.notCheckJVMCompatibility.title"
+            "GameAdvancedSettingsPage.workaround.settings.dontCheckJvmValidity.title"
           ),
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={
-                gameAdvancedConfigs.workaround.notCheckJVMCompatibility
-              }
+              isChecked={gameAdvancedConfigs.workaround.dontCheckJvmValidity}
               onChange={(event) => {
                 updateGameAdvancedConfig(
-                  "workaround.notCheckJVMCompatibility",
+                  "workaround.dontCheckJvmValidity",
                   event.target.checked
                 );
               }}
@@ -317,18 +312,15 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.workaround.settings.notAutomaticallyReplaceNativeLibrary.title"
+            "GameAdvancedSettingsPage.workaround.settings.dontPatchNatives.title"
           ),
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={
-                gameAdvancedConfigs.workaround
-                  .notAutomaticallyReplaceNativeLibrary
-              }
+              isChecked={gameAdvancedConfigs.workaround.dontPatchNatives}
               onChange={(event) => {
                 updateGameAdvancedConfig(
-                  "workaround.notAutomaticallyReplaceNativeLibrary",
+                  "workaround.dontPatchNatives",
                   event.target.checked
                 );
               }}
@@ -339,15 +331,15 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           ? [
               {
                 title: t(
-                  "GameAdvancedSettingsPage.workaround.settings.useSystemGLFW.title"
+                  "GameAdvancedSettingsPage.workaround.settings.useNativeGlfw.title"
                 ),
                 children: (
                   <Switch
                     colorScheme={primaryColor}
-                    isChecked={gameAdvancedConfigs.workaround.useSystemGLFW}
+                    isChecked={gameAdvancedConfigs.workaround.useNativeGlfw}
                     onChange={(event) => {
                       updateGameAdvancedConfig(
-                        "workaround.useSystemGLFW",
+                        "workaround.useNativeGlfw",
                         event.target.checked
                       );
                     }}
@@ -356,15 +348,15 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
               },
               {
                 title: t(
-                  "GameAdvancedSettingsPage.workaround.settings.useSystemOpenAL.title"
+                  "GameAdvancedSettingsPage.workaround.settings.useNativeOpenal.title"
                 ),
                 children: (
                   <Switch
                     colorScheme={primaryColor}
-                    isChecked={gameAdvancedConfigs.workaround.useSystemOpenAL}
+                    isChecked={gameAdvancedConfigs.workaround.useNativeOpenal}
                     onChange={(event) => {
                       updateGameAdvancedConfig(
-                        "workaround.useSystemOpenAL",
+                        "workaround.useNativeOpenal",
                         event.target.checked
                       );
                     }}

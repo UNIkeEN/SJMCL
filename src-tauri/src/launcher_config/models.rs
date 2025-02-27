@@ -69,28 +69,23 @@ structstruck::strike! {
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct GameAdvancedConfig {
     pub custom_commands: struct {
-      pub game_argument: String,
-      pub prelaunch_command: String,
-      pub wrapper_commands: String,
-      pub postexit_command: String,
+      pub minecraft_argument: String,
+      pub precall_command: String,
+      pub wrapper_launcher: String,
+      pub post_exit_command: String,
     },
-    #[serde(rename = "javaVMOptions")]
-    pub java_v_m_options: struct {
-      pub argument: String,
-      pub perm_gen_space: String,
+    pub jvm: struct {
+      pub args: String,
+      pub java_permanent_generation_space: String,
       pub environment_variable: String,
     },
     pub workaround: struct {
-      #[serde(rename = "notAddJVM")]
-      pub not_add_j_v_m: bool,
-      pub game_intergrity_check_policy: String,
-      #[serde(rename = "notCheckJVMCompatibility")]
-      pub not_check_j_v_m_compatibility: bool,
-      pub not_automatically_replace_native_library: bool,
-      #[serde(rename = "useSystemGlfw")]
-      pub use_system_g_l_f_w: bool,
-      #[serde(rename = "useSystemOpenAl")]
-      pub use_system_open_a_l: bool,
+      pub no_jvm_args: bool,
+      pub game_completness_check_policy: String,
+      pub dont_check_jvm_validity: bool,
+      pub dont_patch_natives: bool,
+      pub use_native_glfw: bool,
+      pub use_native_openal: bool,
     }
   }
 }
@@ -222,23 +217,23 @@ impl Default for GameAdvancedConfig {
   fn default() -> Self {
     Self {
       custom_commands: CustomCommands {
-        game_argument: "".to_string(),
-        prelaunch_command: "".to_string(),
-        wrapper_commands: "".to_string(),
-        postexit_command: "".to_string(),
+        minecraft_argument: "".to_string(),
+        precall_command: "".to_string(),
+        wrapper_launcher: "".to_string(),
+        post_exit_command: "".to_string(),
       },
-      java_v_m_options: JavaVMOptions {
-        argument: "".to_string(),
-        perm_gen_space: "".to_string(),
+      jvm: Jvm {
+        args: "".to_string(),
+        java_permanent_generation_space: "".to_string(),
         environment_variable: "".to_string(),
       },
       workaround: Workaround {
-        not_add_j_v_m: false,
-        game_intergrity_check_policy: "full".to_string(),
-        not_check_j_v_m_compatibility: false,
-        not_automatically_replace_native_library: false,
-        use_system_g_l_f_w: false,
-        use_system_open_a_l: false,
+        no_jvm_args: false,
+        game_completness_check_policy: "full".to_string(),
+        dont_check_jvm_validity: false,
+        dont_patch_natives: false,
+        use_native_glfw: false,
+        use_native_openal: false,
       },
     }
   }

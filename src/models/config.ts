@@ -31,23 +31,23 @@ export interface GameConfig {
 
 interface GameAdvancedConfig {
   customCommands: {
-    gameArgument: string;
-    prelaunchCommand: string;
-    wrapperCommands: string;
-    postexitCommand: string;
+    minecraftArgument: string;
+    precallCommand: string;
+    wrapperLauncher: string;
+    postExitCommand: string;
   };
-  javaVMOptions: {
-    argument: string;
-    permGenSpace: string;
+  jvm: {
+    args: string;
+    javaPermanentGenerationSpace: string;
     environmentVariable: string;
   };
   workaround: {
-    notAddJVM: boolean;
-    gameIntergrityCheckPolicy: string;
-    notCheckJVMCompatibility: boolean;
-    notAutomaticallyReplaceNativeLibrary: boolean;
-    useSystemGLFW: boolean;
-    useSystemOpenAL: boolean;
+    noJvmArgs: boolean;
+    gameCompletnessCheckPolicy: string;
+    dontCheckJvmValidity: boolean;
+    dontPatchNatives: boolean;
+    useNativeGlfw: boolean;
+    useNativeOpenal: boolean;
   };
 }
 export interface GameDirectory {
@@ -160,23 +160,23 @@ export const defaultGameConfig: GameConfig = {
 
 export const defaultGameAdvancedConfig: GameAdvancedConfig = {
   customCommands: {
-    gameArgument: "",
-    prelaunchCommand: "",
-    wrapperCommands: "",
-    postexitCommand: "",
+    minecraftArgument: "",
+    precallCommand: "",
+    wrapperLauncher: "",
+    postExitCommand: "",
   },
-  javaVMOptions: {
-    argument: "",
-    permGenSpace: "",
+  jvm: {
+    args: "",
+    javaPermanentGenerationSpace: "",
     environmentVariable: "",
   },
   workaround: {
-    notAddJVM: false,
-    gameIntergrityCheckPolicy: "full",
-    notCheckJVMCompatibility: false,
-    notAutomaticallyReplaceNativeLibrary: false,
-    useSystemGLFW: false,
-    useSystemOpenAL: false,
+    noJvmArgs: false,
+    gameCompletnessCheckPolicy: "full",
+    dontCheckJvmValidity: false,
+    dontPatchNatives: false,
+    useNativeGlfw: false,
+    useNativeOpenal: false,
   },
 };
 

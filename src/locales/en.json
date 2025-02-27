@@ -495,31 +495,31 @@
     "customCommands": {
       "title": "Custom Commands",
       "settings": {
-        "gameArgument": {
+        "minecraftArgument": {
           "title": "Launcher Argument",
           "placeholder": "Default"
         },
-        "prelaunchCommand": {
+        "precallCommand": {
           "title": "Pre-launch Command",
           "placeholder": "Commands to execute before the game launches"
         },
-        "wrapperCommands": {
+        "wrapperLauncher": {
           "title": "Wrapper Command",
           "placeholder": "Allows launching using an extra wrapper program like \"optirun\" on Linux"
         },
-        "postexitCommand": {
+        "postExitCommand": {
           "title": "Post-exit Command",
           "placeholder": "Commands to execute after game exits"
         }
       }
     },
-    "javaVMOptions": {
+    "jvm": {
       "title": "Java VM Options",
       "settings": {
-        "argument": {
+        "args": {
           "title": "JVM VM Argument"
         },
-        "permGenSpace": {
+        "javaPermanentGenerationSpace": {
           "title": "PermGen Space",
           "placeholder": "in MB"
         },
@@ -531,23 +531,23 @@
     "workaround": {
       "title": "Workaround",
       "settings": {
-        "notAddJVM": "Do not add default Java VM arguments",
-        "gameIntergrityCheckPolicy": {
+        "noJvmArgs": "Do not add default Java VM arguments",
+        "gameCompletnessCheckPolicy": {
           "title": "Game File Integrity Check Policy",
           "disable": "Disable Check",
           "normal":"Normal Check",
           "full":"Full Check"
         },
-        "notCheckJVMCompatibility": {
+        "dontCheckJvmValidity": {
           "title": "Do not check Java VM compatibility"
         },
-        "notAutomaticallyReplaceNativeLibrary": {
+        "dontPatchNatives": {
           "title": "Do not attempt to automatically replace native libraries"
         },
-        "useSystemGLFW": {
+        "useNativeGlfw": {
           "title": "Use System GLFW(Linux Only)"
         },
-        "useSystemOpenAL": {
+        "useNativeOpenal": {
           "title": "Use System OpenAL(Linux Only)"
         }
       }
