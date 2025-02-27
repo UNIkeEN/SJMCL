@@ -235,7 +235,7 @@
       "info": "基本設定"
     }
   },
-  "DeleteGameAlertDialog": {
+  "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "刪除遊戲例項",
       "content": "確定要刪除遊戲例項 “{{gameName}}” 嗎？"

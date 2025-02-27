@@ -1,5 +1,4 @@
-use crate::error::SJMCLResult;
-use crate::{storage::Storage, EXE_DIR};
+use crate::{error::SJMCLResult, EXE_DIR};
 use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
@@ -13,12 +12,6 @@ use std::error::Error;
 use std::os::windows::process::CommandExt;
 
 use super::models::{GameDirectory, LauncherConfig};
-
-impl Storage for LauncherConfig {
-  fn file_path() -> PathBuf {
-    EXE_DIR.join("sjmcl.conf.json")
-  }
-}
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {

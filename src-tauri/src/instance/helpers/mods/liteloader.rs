@@ -3,7 +3,7 @@ use crate::error::{SJMCLError, SJMCLResult};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::{Read, Seek};
-use std::path::PathBuf;
+use std::path::Path;
 use tokio;
 use zip::ZipArchive;
 
@@ -23,7 +23,7 @@ pub struct LiteloaderModMetadata {
   pub update_uri: Option<String>,
 }
 
-pub fn load_liteloader_from_jar<R: Read + Seek>(
+pub fn get_mod_metadata_from_jar<R: Read + Seek>(
   jar: &mut ZipArchive<R>,
 ) -> SJMCLResult<LiteloaderModMetadata> {
   let meta: LiteloaderModMetadata = match jar.by_name("litemod.json") {
@@ -36,7 +36,7 @@ pub fn load_liteloader_from_jar<R: Read + Seek>(
   Ok(meta)
 }
 
-pub async fn load_liteloader_from_dir(dir_path: &PathBuf) -> SJMCLResult<LiteloaderModMetadata> {
+pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<LiteloaderModMetadata> {
   let liteloader_file_path = dir_path.join("litemod.json");
   let meta: LiteloaderModMetadata = serde_json::from_str(
     tokio::fs::read_to_string(liteloader_file_path)

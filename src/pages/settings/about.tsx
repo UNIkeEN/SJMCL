@@ -98,6 +98,18 @@ const AboutSettingsPage = () => {
           ),
         },
         {
+          title: t("AboutSettingsPage.ack.settings.hmcl.title"),
+          description: t("AboutSettingsPage.ack.settings.hmcl.description"),
+          children: (
+            <LinkIconButton
+              url="https://hmcl.huangyuhui.net/"
+              aria-label="hmcl"
+              isExternal
+              withTooltip
+            />
+          ),
+        },
+        {
           title: t("AboutSettingsPage.ack.settings.littleskin.title"),
           description: t(
             "AboutSettingsPage.ack.settings.littleskin.description"

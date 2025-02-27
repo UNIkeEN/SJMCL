@@ -362,7 +362,7 @@ export const InstanceMoreWidget = () => {
   const features: Record<string, IconType> = {
     worlds: LuEarth,
     resourcepacks: LuPackage,
-    ...(summary?.hasSchemFolder ? { schematics: LuBookDashed } : {}),
+    schematics: LuBookDashed,
     shaderpacks: LuHaze,
     settings: LuSettings,
   };

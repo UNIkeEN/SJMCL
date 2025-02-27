@@ -72,9 +72,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     { key: "worlds", icon: LuEarth },
     { key: "mods", icon: LuSquareLibrary },
     { key: "resourcepacks", icon: LuPackage },
-    ...(summary?.hasSchemFolder
-      ? [{ key: "schematics", icon: LuBookDashed }]
-      : []),
+    { key: "schematics", icon: LuBookDashed },
     { key: "shaderpacks", icon: LuHaze },
     { key: "screenshots", icon: LuFullscreen },
     { key: "settings", icon: LuSettings },
@@ -120,10 +118,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         size="xs"
         mb={4}
         spacing={
-          config.general.general.language.startsWith("zh") &&
-          summary?.hasSchemFolder
-            ? 0
-            : 1
+          config.general.general.language.startsWith("zh") ? "0.05rem" : 0.5
         }
         items={instanceTabList.map((item) => ({
           value: `/games/instance/${router.query.id}/${item.key}`,

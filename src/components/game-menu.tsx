@@ -115,8 +115,8 @@ export const GameMenu: React.FC<GameMenuProps> = ({
       <GenericConfirmDialog
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
-        title={t("DeleteGameAlertDialog.dialog.title")}
-        body={t("DeleteGameAlertDialog.dialog.content", {
+        title={t("DeleteGameInstanceAlertDialog.dialog.title")}
+        body={t("DeleteGameInstanceAlertDialog.dialog.content", {
           gameName: game.name,
         })}
         btnOK={t("General.delete")}

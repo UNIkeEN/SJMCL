@@ -6,14 +6,14 @@ use super::{
   },
   helpers::{
     misc::{get_instance_subdir_path, refresh_and_update_instances},
-    mods::main_loader::{load_mod_from_dir, load_mod_from_file},
+    mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::{nbt_to_servers_info, query_server_status},
     world::nbt_to_world_info,
   },
   models::{
-    GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ResourcePackInfo,
-    SchematicInfo, ScreenshotInfo, ShaderPackInfo, WorldInfo,
+    GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ModLoaderType,
+    ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo, WorldInfo,
   },
 };
 use crate::error::SJMCLResult;
@@ -251,12 +251,12 @@ pub async fn retrieve_local_mod_list(
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
   let mut tasks = Vec::new();
   for path in mod_paths {
-    let task = tokio::spawn(async move { load_mod_from_file(&path).await.ok() });
+    let task = tokio::spawn(async move { get_mod_info_from_jar(&path).await.ok() });
     tasks.push(task);
   }
   let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
   for path in mod_paths {
-    let task = tokio::spawn(async move { load_mod_from_dir(&path).await.ok() });
+    let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
     tasks.push(task);
   }
   let mut mod_infos = Vec::new();
@@ -266,7 +266,19 @@ pub async fn retrieve_local_mod_list(
     }
   }
 
-  // 对模组信息进行排序
+  // check potential incompatibility
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let state = binding.lock().unwrap();
+  let instance = state
+    .get(instance_id)
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+  mod_infos.iter_mut().for_each(|mod_info| {
+    mod_info.potential_incompatibility = instance.mod_loader.loader_type != ModLoaderType::Unknown
+      && mod_info.loader_type != instance.mod_loader.loader_type;
+  });
+
+  // sort by name (and version)
   mod_infos.sort();
 
   Ok(mod_infos)

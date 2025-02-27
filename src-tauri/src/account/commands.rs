@@ -165,15 +165,19 @@ pub fn update_player_skin_offline_preset(
 pub fn delete_player(uuid: Uuid) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
 
-  if state.selected_player_id == uuid.to_string() {
-    state.selected_player_id = "".to_string();
-  }
-
   let initial_len = state.players.len();
   state.players.retain(|s| s.uuid != uuid);
   if state.players.len() == initial_len {
     return Err(AccountError::NotFound.into());
   }
+
+  if state.selected_player_id == uuid.to_string() {
+    state.selected_player_id = state
+      .players
+      .first()
+      .map_or("".to_string(), |player| player.uuid.to_string());
+  }
+
   state.save()?;
   Ok(())
 }

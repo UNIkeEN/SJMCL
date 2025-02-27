@@ -36,7 +36,7 @@ pub fn get_instance_subdir_path(
   let game_dir = version_path.parent().unwrap().parent().unwrap(); // TODO: remove unwrap
 
   // TODO: function to extract config
-  let version_isolation = match &instance.game_config {
+  let version_isolation = match &instance.spec_game_config {
     Some(v) => v.version_isolation,
     None => {
       app
@@ -103,7 +103,7 @@ pub async fn refresh_instances(
     if let Ok(client_data) = load_client_info_from_json(&json_path).await {
       let (game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
       instances.push(Instance {
-        id: 0, // not decided yet
+        id: 0, // not assigned yet
         name: client_data.id,
         description: "mock desc".to_string(), // TODO: fix these mock fields
         icon_src: "/images/icons/GrassBlock.png".to_string(),
@@ -113,8 +113,7 @@ pub async fn refresh_instances(
           loader_type,
           version: mod_version.unwrap_or_default(),
         },
-        has_schem_folder: true, // TODO: if exists schematics folder, return true
-        game_config: None,
+        spec_game_config: None,
       });
     }
   }

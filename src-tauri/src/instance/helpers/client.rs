@@ -211,9 +211,7 @@ pub async fn load_client_info_from_json(path: &PathBuf) -> SJMCLResult<McClientI
   Ok(meta)
 }
 
-pub fn patchs_to_info(
-  patches: &Vec<PatchesInfo>,
-) -> (Option<String>, Option<String>, ModLoaderType) {
+pub fn patchs_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String>, ModLoaderType) {
   let mut mod_loader_type = ModLoaderType::Unknown;
   let mut game_version = None;
   let mut mod_version = None;
