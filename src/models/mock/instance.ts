@@ -1,34 +1,4 @@
-import {
-  GameInstanceSummary,
-  ResourcePackInfo,
-  SchematicInfo,
-} from "@/models/instance";
-
-export const mockGameInstanceList: GameInstanceSummary[] = [
-  {
-    id: 1,
-    iconSrc: "/images/icons/GrassBlock.png",
-    name: "1.20.1 纯净生存整合包",
-    version: "1.20.1",
-    versionPath: "",
-    modLoader: {
-      loaderType: "Fabric",
-      version: "0.15.6",
-    },
-  },
-  {
-    id: 2,
-    iconSrc: "/images/icons/Anvil.png",
-    name: "Better MC [FORGE]",
-    description: "更好的 MC 整合包",
-    version: "1.20.1",
-    versionPath: "",
-    modLoader: {
-      loaderType: "Forge",
-      version: "47.2.17",
-    },
-  },
-];
+import { ResourcePackInfo, SchematicInfo } from "@/models/instance";
 
 export const mockResourcePacks: ResourcePackInfo[] = [
   {

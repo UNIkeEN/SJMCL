@@ -287,7 +287,11 @@
   "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{gameName}}” 吗？它将会永久消失！（真的很久！）"
+      "content": "确定要删除游戏实例 “{{gameName}}” 吗？它将会永久消失！（真的很久！）",
+      "warning": {
+        "withVerIso": "请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
+        "woVerIso": "请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
+      }
     }
   },
   "DeletePlayerAlertDialog": {
@@ -1307,6 +1311,15 @@
           "description": {
             "instanceNotFoundByID": "实例 ID 不存在或类型错误",
             "execOpenDirError": "命令执行失败"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "实例删除成功",
+        "error": {
+          "title": "实例删除失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在"
           }
         }
       },

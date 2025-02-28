@@ -63,6 +63,7 @@ pub async fn run() {
       account::commands::fetch_auth_server_info,
       instance::commands::retrieve_instance_list,
       instance::commands::open_instance_subdir,
+      instance::commands::delete_instance,
       instance::commands::copy_across_instances,
       instance::commands::move_across_instances,
       instance::commands::retrieve_world_list,
