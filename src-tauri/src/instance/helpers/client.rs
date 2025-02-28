@@ -1,6 +1,6 @@
 use crate::{
   error::{SJMCLError, SJMCLResult},
-  instance::models::ModLoaderType,
+  instance::models::misc::ModLoaderType,
 };
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
