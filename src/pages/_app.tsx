@@ -45,11 +45,9 @@ export default function App({ Component, pageProps }: AppProps) {
         ["F3", "F5", "F7"].includes(event.key) ||
         (event.altKey && ["ArrowLeft", "ArrowRight"].includes(event.key)) ||
         ((event.ctrlKey || event.metaKey) &&
-          event.shiftKey &&
-          event.key.toUpperCase() === "S") ||
-        ["F", "G", "H", "J", "P", "Q", "R", "U"].includes(
-          event.key.toUpperCase()
-        );
+          ["F", "G", "H", "J", "P", "Q", "R", "U", "S"].includes(
+            event.key.toUpperCase()
+          ));
       disabledShortcuts && event.preventDefault();
     });
   }, []);
