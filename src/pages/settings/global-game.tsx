@@ -1,4 +1,5 @@
-import { HStack, Icon, Switch, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, HStack, Icon, Switch, useDisclosure } from "@chakra-ui/react";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { exists } from "@tauri-apps/plugin-fs";
 import { open } from "@tauri-apps/plugin-shell";
 import { useRouter } from "next/router";
@@ -60,15 +61,11 @@ const GlobalGameSettingsPage = () => {
     const checkDirectories = async () => {
       const status: Record<string, boolean> = {};
       for (const directory of config.localGameDirectories) {
-        if (["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name)) {
-          continue;
-        }
-
         try {
-          const dirExists = await exists(directory.dir);
+          const absolutePath = convertFileSrc(directory.dir);
+          const dirExists = await exists(absolutePath);
           status[directory.dir] = dirExists;
         } catch (error) {
-          console.error(`Error checking directory ${directory.dir}:`, error);
           status[directory.dir] = false;
         }
       }
@@ -139,17 +136,17 @@ const GlobalGameSettingsPage = () => {
                   )
                 : directory.name,
               description: (
-                <Text fontSize="xs" color="gray.500">
+                <Box fontSize="xs" color="gray.500">
                   {directory.dir}
                   {!["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) &&
-                    directoryStatus[directory.dir] === false && ( // 仅检查用户添加的文件夹
-                      <Text color="red.500" fontSize="xs">
+                    directoryStatus[directory.dir] === false && (
+                      <Box color="red.500" fontSize="xs">
                         {t(
                           "GlobalGameSettingsPage.directories.directoryNotExist"
                         )}
-                      </Text>
+                      </Box>
                     )}
-                </Text>
+                </Box>
               ),
               prefixElement: (
                 <Icon
