@@ -1,22 +1,31 @@
-export enum ServiceError {
-  AUTH_SERVER_ERROR = "AUTH_SERVER_ERROR",
-  CANCELLED = "CANCELLED",
-  CODE_EXPIRED = "CODE_EXPIRED",
-  DUPLICATE = "DUPLICATE",
-  EXEC_OPEN_DIR_ERROR = "EXEC_OPEN_DIR_ERROR",
-  FETCH_ERROR = "FETCH_ERROR",
-  FILE_COPY_FAILED = "FILE_COPY_FAILED",
-  FILE_MOVE_FAILED = "FILE_MOVE_FAILED",
-  FILE_NOT_FOUND_ERROR = "FILE_NOT_FOUND_ERROR",
-  FOLDER_CREATION_FAILED = "FOLDER_CREATION_FAILED",
-  INSTANCE_NOT_FOUND_BY_ID = "INSTANCE_NOT_FOUND_BY_ID",
-  INVALID = "INVALID",
-  INVALID_CODE = "INVALID_CODE",
-  INVALID_SOURCE_PATH = "INVALID_SOURCE_PATH",
+export enum AccountServiceError {
+  Duplicate = "DUPLICATE",
+  Invalid = "INVALID",
+  NotFound = "NOT_FOUND",
+  TextureError = "TEXTURE_ERROR",
+  AuthServerError = "AUTH_SERVER_ERROR",
+  Cancelled = "CANCELLED",
+}
 
-  NOT_FOUND = "NOT_FOUND",
-  PARSE_ERROR = "PARSE_ERROR",
-  SERVER_NBT_READ_ERROR = "SERVER_NBT_READ_ERROR",
-  TEXTURE_ERROR = "TEXTURE_ERROR",
-  VERSION_MISMATCH = "VERSION_MISMATCH",
+export enum InstanceError {
+  InstanceNotFoundById = "INSTANCE_NOT_FOUND_BY_ID",
+  ExecOpenDirError = "EXEC_OPEN_DIR_ERROR",
+  ServerNbtReadError = "SERVER_NBT_READ_ERROR",
+  FileNotFoundError = "FILE_NOT_FOUND_ERROR",
+  InvalidSourcePath = "INVALID_SOURCE_PATH",
+  FileCopyFailed = "FILE_COPY_FAILED",
+  FileMoveFailed = "FILE_MOVE_FAILED",
+  FolderCreationFailed = "FOLDER_CREATION_FAILED",
+}
+
+export enum ConfigServiceError {
+  FetchError = "FETCH_ERROR",
+  InvalidCode = "INVALID_CODE",
+  CodeExpired = "CODE_EXPIRED",
+  VersionMismatch = "VERSION_MISMATCH",
+}
+
+export enum ResourceServiceError {
+  ParseError = "PARSE_ERROR",
+  NoDownloadApi = "NO_DOWNLOAD_API",
 }

@@ -1285,7 +1285,7 @@
           "title": "Failed to retrieve game version list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "noDownloadApi": "No download strategy available, please check internet connection"
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
           }
         }
       }

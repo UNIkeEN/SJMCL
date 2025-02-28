@@ -1,5 +1,10 @@
 import { t } from "i18next";
-import { ServiceError } from "@/enums/service-error";
+import {
+  AccountServiceError,
+  ConfigServiceError,
+  InstanceError,
+  ResourceServiceError,
+} from "@/enums/service-error";
 import { InvokeResponse } from "@/models/response";
 import { isDev } from "@/utils/env";
 
@@ -25,10 +30,38 @@ export function responseHandler(serviceDomain: string): MethodDecorator {
           `Services.${serviceDomain}.${String(propertyKey)}.error.title`
         );
         let details = "";
-        if (error in ServiceError) {
-          details = t(
-            `Services.${serviceDomain}.${String(propertyKey)}.error.description.${error}`
-          );
+
+        switch (serviceDomain) {
+          case "account":
+            if (Object.values(AccountServiceError).includes(error)) {
+              details = t(
+                `Services.${serviceDomain}.${String(propertyKey)}.error.description.${error}`
+              );
+            }
+            break;
+          case "instance":
+            if (Object.values(InstanceError).includes(error)) {
+              details = t(
+                `Services.${serviceDomain}.${String(propertyKey)}.error.description.${error}`
+              );
+            }
+            break;
+          case "config":
+            if (Object.values(ConfigServiceError).includes(error)) {
+              details = t(
+                `Services.${serviceDomain}.${String(propertyKey)}.error.description.${error}`
+              );
+            }
+            break;
+          case "resource":
+            if (Object.values(ResourceServiceError).includes(error)) {
+              details = t(
+                `Services.${serviceDomain}.${String(propertyKey)}.error.description.${error}`
+              );
+            }
+            break;
+          default:
+            break;
         }
 
         if (isDev) {

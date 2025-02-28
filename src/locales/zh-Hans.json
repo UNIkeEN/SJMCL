@@ -1285,7 +1285,7 @@
           "title": "获取游戏版本列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "noDownloadApi": "无可用的下载策略，请检查网络连接"
+            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
           }
         }
       }
