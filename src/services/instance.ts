@@ -57,6 +57,20 @@ export class InstanceService {
   }
 
   /**
+   * DELETE the specified instance's version folder from disk.
+   * @param {number} instanceId - The instance ID to delete.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance", errorToLocaleKey)
+  static async deleteInstance(
+    instanceId: number
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("delete_instance", {
+      instanceId,
+    });
+  }
+
+  /**
    * COPY the specified resource to the target instance(s).
    * @param {string} srcFilePath - The path of the file to copy.
    * @param {number} tgtInstIds - ID of the target instance(s).

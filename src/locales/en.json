@@ -287,7 +287,11 @@
   "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
-      "content": "Confirm delete the game instance \"{{gameName}}\" ? It will be lost forever! (A long time!)"
+      "content": "Confirm delete the game instance \"{{gameName}}\" ? It will be lost forever! (A long time!)",
+      "warning": {
+        "withVerIso": "Please note that since version isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
+        "woVerIso": "Please note that if version isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
+      }
     }
   },
   "DeletePlayerAlertDialog": {
@@ -1307,6 +1311,15 @@
           "description": {
             "instanceNotFoundByID": "Instance ID does not exist or has a type error",
             "execOpenDirError": "Unable to execute command for the non-existent subdirectory type"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "Successfully deleted instance",
+        "error": {
+          "title": "Failed to delete instance",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist"
           }
         }
       },

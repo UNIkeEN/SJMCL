@@ -53,6 +53,26 @@ pub fn open_instance_subdir(
 }
 
 #[tauri::command]
+pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let state = binding.lock().unwrap();
+  let instance = state
+    .get(instance_id)
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+  let version_path = &instance.version_path;
+  let path = Path::new(version_path);
+
+  if path.exists() {
+    fs::remove_dir_all(path)?;
+  }
+  // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
+
+  // TODO: update selected instance if necessary.
+  Ok(())
+}
+
+#[tauri::command]
 pub fn copy_across_instances(
   app: AppHandle,
   src_file_path: String,

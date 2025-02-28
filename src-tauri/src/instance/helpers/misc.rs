@@ -98,7 +98,9 @@ pub async fn refresh_instances(
     if !jar_path.exists() || !json_path.exists() {
       continue; // not a valid instance
     }
+
     // TODO: read the config file if exists, else create one
+
     // TODO: determine the version isolation strategy
     if let Ok(client_data) = load_client_info_from_json(&json_path).await {
       let (game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
@@ -109,6 +111,7 @@ pub async fn refresh_instances(
         icon_src: "/images/icons/GrassBlock.png".to_string(),
         version: game_version.unwrap_or_default(),
         version_path,
+        is_version_isolated: false, // TODO
         mod_loader: ModLoader {
           loader_type,
           version: mod_version.unwrap_or_default(),
