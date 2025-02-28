@@ -4,11 +4,6 @@ import { GameResourceInfo, ModLoaderResourceInfo } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
-const errorToLocaleKey: { [key: string]: string } = {
-  PARSE_ERROR: "parseError",
-  NO_DOWNLOAD_API: "noDownloadApi",
-};
-
 /**
  * Service class for managing game & mod loader resources.
  */
@@ -17,7 +12,7 @@ export class ResourceService {
    * FETCH the list of game versions.
    * @returns {Promise<InvokeResponse<GameResourceInfo[]>>}
    */
-  @responseHandler("resource", errorToLocaleKey)
+  @responseHandler("resource")
   static async fetchGameVersionList(): Promise<
     InvokeResponse<GameResourceInfo[]>
   > {
@@ -28,7 +23,7 @@ export class ResourceService {
    * FETCH the list of mode loader versions.
    * @returns {Promise<InvokeResponse<ModLoaderResourceInfo[]>>}
    */
-  @responseHandler("resource", errorToLocaleKey)
+  @responseHandler("resource")
   static async fetchModLoaderVersionList(
     gameVersion: string,
     modLoaderType: ModLoaderType

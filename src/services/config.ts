@@ -4,13 +4,6 @@ import { InvokeResponse } from "@/models/response";
 import { JavaInfo } from "@/models/system-info";
 import { responseHandler } from "@/utils/response";
 
-const errorToLocaleKey: { [key: string]: string } = {
-  FETCH_ERROR: "fetchError",
-  INVALID_CODE: "invalidCode",
-  CODE_EXPIRED: "codeExpired",
-  VERSION_MISMATCH: "versionMismatch",
-};
-
 /**
  * Service class for managing launcher configurations.
  */
@@ -19,7 +12,7 @@ export class ConfigService {
    * RETRIVE the launcher configs.
    * @returns {Promise<InvokeResponse<LauncherConfig>>}
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async retrieveLauncherConfig(): Promise<
     InvokeResponse<LauncherConfig>
   > {
@@ -32,7 +25,7 @@ export class ConfigService {
    * @param {any} value The new value.
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async updateLauncherConfig(
     keyPath: string,
     value: any
@@ -47,7 +40,7 @@ export class ConfigService {
    * RESTORE the launcher configs to their default state and returns the new configuration.
    * @returns {Promise<InvokeResponse<LauncherConfig>>}
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async restoreLauncherConfig(): Promise<
     InvokeResponse<LauncherConfig>
   > {
@@ -58,7 +51,7 @@ export class ConfigService {
    * EXPORT the launcher configs to the meta server and get a token code.
    * @returns {Promise<InvokeResponse<string>>} the token code if its successful.
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async exportLauncherConfig(): Promise<InvokeResponse<string>> {
     return await invoke("export_launcher_config");
   }
@@ -67,7 +60,7 @@ export class ConfigService {
    * IMPORT the launcher configs from the meta server using the token code.
    * @returns {Promise<InvokeResponse<LauncherConfig>>} the launcher configs from the server, which have been saved in backend.
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async importLauncherConfig(
     code: string
   ): Promise<InvokeResponse<LauncherConfig>> {
@@ -78,7 +71,7 @@ export class ConfigService {
    * RETRIVE the list of custom background files.
    * @returns {Promise<InvokeResponse<string[]>>} A list of background file names.
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async retrieveCustomBackgroundList(): Promise<
     InvokeResponse<string[]>
   > {
@@ -90,7 +83,7 @@ export class ConfigService {
    * @param {string} sourceSrc The file path of the background image.
    * @returns {Promise<InvokeResponse<string>>} The saved background file name.
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async addCustomBackground(
     sourceSrc: string
   ): Promise<InvokeResponse<string>> {
@@ -102,7 +95,7 @@ export class ConfigService {
    * @param {string} fileName The name of the background image to delete.
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async deleteCustomBackground(
     fileName: string
   ): Promise<InvokeResponse<void>> {
@@ -113,7 +106,7 @@ export class ConfigService {
    * RETRIEVE the list of installed Java versions.
    * @returns {Promise<InvokeResponse<JavaInfo[]>>} A list of installed Java versions.
    */
-  @responseHandler("config", errorToLocaleKey)
+  @responseHandler("config")
   static async retrieveJavaList(): Promise<InvokeResponse<JavaInfo[]>> {
     return await invoke("retrieve_java_list");
   }

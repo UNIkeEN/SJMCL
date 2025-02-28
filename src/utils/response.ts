@@ -1,11 +1,9 @@
 import { t } from "i18next";
+import { ServiceError } from "@/enums/service-error";
 import { InvokeResponse } from "@/models/response";
 import { isDev } from "@/utils/env";
 
-export function responseHandler(
-  serviceDomain: string,
-  errorToLocaleKey: { [key: string]: string }
-): MethodDecorator {
+export function responseHandler(serviceDomain: string): MethodDecorator {
   return function (
     target: any,
     propertyKey: string | symbol,
@@ -26,12 +24,12 @@ export function responseHandler(
         const message = t(
           `Services.${serviceDomain}.${String(propertyKey)}.error.title`
         );
-        const detailsKey = errorToLocaleKey[String(error)];
-        const details = detailsKey
-          ? t(
-              `Services.${serviceDomain}.${String(propertyKey)}.error.description.${detailsKey}`
-            )
-          : "";
+        let details = "";
+        if (error in ServiceError) {
+          details = t(
+            `Services.${serviceDomain}.${String(propertyKey)}.error.description.${error}`
+          );
+        }
 
         if (isDev) {
           const errorSet = {

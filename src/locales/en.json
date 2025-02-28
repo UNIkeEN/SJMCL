@@ -1155,7 +1155,7 @@
         "error": {
           "title": "Failed to export launcher settings",
           "description": {
-            "fetchError": "Failed to fetch the meta server"
+            "FETCH_ERROR": "Failed to fetch the meta server"
           }
         }
       },
@@ -1164,10 +1164,10 @@
         "error": {
           "title": "Failed to import launcher settings",
           "description": {
-            "fetchError": "Failed to fetch the meta server",
-            "invalidCode": "Invalid code",
-            "codeExpired": "Code expired",
-            "versionMismatch": "Launcher version mismatch"
+            "FETCH_ERROR": "Failed to fetch the meta server",
+            "INVALID_CODE": "Invalid code",
+            "CODE_EXPIRED": "Code expired",
+            "VERSION_MISMATCH": "Launcher version mismatch"
           }
         }
       },
@@ -1201,8 +1201,8 @@
         "error": {
           "title": "Failed to add offline player",
           "description": {
-            "duplicate": "Player already exists",
-            "textureError": "Unable to get player texture"
+            "DUPLICATE": "Player already exists",
+            "TEXTURE_ERROR": "Unable to get player texture"
           }
         }
       },
@@ -1211,10 +1211,10 @@
         "error": {
           "title": "Failed to add player using OAuth",
           "description": {
-            "duplicate": "Player already exists",
-            "authServerError": "Unable to connect to authentication server, or OAuth is not enabled",
-            "textureError": "Unable to get player texture",
-            "cancelled": "OAuth login cancelled"
+            "DUPLICATE": "Player already exists",
+            "AUTH_SERVER_ERROR": "Unable to connect to authentication server, or OAuth is not enabled",
+            "TEXTURE_ERROR": "Unable to get player texture",
+            "CANCELLED": "OAuth login cancelled"
           }
         }
       },
@@ -1223,10 +1223,10 @@
         "error": {
           "title": "Failed to add player using password",
           "description": {
-            "duplicate": "Player already exists",
-            "authServerError": "Unable to connect to authentication server",
-            "textureError": "Unable to get player texture",
-            "invalid": "Wrong account or password"
+            "DUPLICATE": "Player already exists",
+            "AUTH_SERVER_ERROR": "Unable to connect to authentication server",
+            "TEXTURE_ERROR": "Unable to get player texture",
+            "INVALID": "Wrong account or password"
           }
         }
       },
@@ -1235,9 +1235,9 @@
         "error": {
           "title": "Failed to update player skin",
           "description": {
-            "notFound": "The player does not exist",
-            "invalid": "The player type is invalid",
-            "textureError": "Unable to get player texture"
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The player type is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
           }
         }
       },
@@ -1246,7 +1246,7 @@
         "error": {
           "title": "Failed to delete player",
           "description": {
-            "notFound": "The player does not exist"
+            "NOT_FOUND": "The player does not exist"
           }
         }
       },
@@ -1254,8 +1254,8 @@
         "error": {
           "title": "Failed to get authentication server information",
           "description": {
-            "duplicate": "The server has already been added",
-            "invalid": "Invalid server URL"
+            "DUPLICATE": "The server has already been added",
+            "INVALID": "Invalid server URL"
           }
         }
       },
@@ -1264,8 +1264,8 @@
         "error": {
           "title": "Failed to add authentication server",
           "description": {
-            "duplicate": "The server has already been added",
-            "invalid": "Invalid server URL"
+            "DUPLICATE": "The server has already been added",
+            "INVALID": "Invalid server URL"
           }
         }
       },
@@ -1274,7 +1274,7 @@
         "error": {
           "title": "Failed to delete authentication server",
           "description": {
-            "notFound": "The authentication server does not exist"
+            "NOT_FOUND": "The authentication server does not exist"
           }
         }
       }
@@ -1284,7 +1284,7 @@
         "error": {
           "title": "Failed to retrieve game version list",
           "description": {
-            "parseError": "The server returned data in an incorrect format",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
             "noDownloadApi": "No download strategy available, please check internet connection"
           }
         }
@@ -1300,8 +1300,8 @@
         "error": {
           "title": "Failed to open instance directory",
           "description": {
-            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
-            "execOpenDirError": "Unable to execute command for the non-existent subdirectory type"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
+            "EXEC_OPEN_DIR_ERROR": "Unable to execute command for the non-existent subdirectory type"
           }
         }
       },
@@ -1314,7 +1314,7 @@
         "error": {
           "title": "Failed to retrieve game server list",
           "description": {
-            "serverNbtReadError": "server.dat may have been corrupted"
+            "SERVER_NBT_READ_ERROR": "server.dat may have been corrupted"
           }
         }
       },
@@ -1348,10 +1348,10 @@
         "error": {
           "title": "Failed to copy resource",
           "description": {
-            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
-            "invalidSourcePath": "Invalid source path",
-            "fileCopyFailed": "File copy failed",
-            "folderCreationFailed": "Destination folder creation failed"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_COPY_FAILED": "File copy failed",
+            "FOLDER_CREATION_FAILED": "Destination folder creation failed"
           }
         }
       },
@@ -1360,10 +1360,10 @@
         "error": {
           "title": "Failed to move resource",
           "description": {
-            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
-            "invalidSourcePath": "Invalid source path",
-            "fileMoveFailed": "File move failed",
-            "folderCreationFailed": "Destination folder creation failed"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_MOVE_FAILED": "File move failed",
+            "FOLDER_CREATION_FAILED": "Destination folder creation failed"
           }
         }
       },
@@ -1371,7 +1371,7 @@
         "error": {
           "title": "Mod state toggle failed",
           "description": {
-            "fileNotFoundError": "The mod file does not exist, it may have been renamed, moved, or deleted"
+            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
           }
         }
       }

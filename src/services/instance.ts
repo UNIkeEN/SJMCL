@@ -13,17 +13,6 @@ import {
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
-const errorToLocaleKey: { [key: string]: string } = {
-  INSTANCE_NOT_FOUND_BY_ID: "instanceNotFoundByID",
-  EXEC_OPEN_DIR_ERROR: "execOpenDirError",
-  SERVER_NBT_READ_ERROR: "serverNbtReadError",
-  FILE_NOT_FOUND_ERROR: "fileNotFoundError",
-  INVALID_SOURCE_PATH: "invalidSourcePath",
-  FILE_COPY_FAILED: "fileCopyFailed",
-  FILE_MOVE_FAILED: "fileMoveFailed",
-  FOLDER_CREATION_FAILED: "folderCreationFailed",
-};
-
 /**
  * Service class for managing instances and its local resources.
  */
@@ -32,7 +21,7 @@ export class InstanceService {
    * RETRIVE the list of local instances.
    * @returns {Promise<InvokeResponse<GameInstanceSummary[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveInstanceList(): Promise<
     InvokeResponse<GameInstanceSummary[]>
   > {
@@ -45,7 +34,7 @@ export class InstanceService {
    * @param {InstanceSubdirEnums} dirType - The instance subdir type to open.
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async openInstanceSubdir(
     instanceId: number,
     dirType: InstanceSubdirEnums
@@ -63,7 +52,7 @@ export class InstanceService {
    * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async copyAcrossInstances(
     srcFilePath: string,
     tgtInstIds: number[],
@@ -83,7 +72,7 @@ export class InstanceService {
    * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async moveAcrossInstances(
     srcFilePath: string,
     tgtInstId: number,
@@ -101,7 +90,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to retrieve the worlds for.
    * @returns {Promise<InvokeResponse<WorldInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveWorldList(
     instanceId: number
   ): Promise<InvokeResponse<WorldInfo[]>> {
@@ -116,7 +105,7 @@ export class InstanceService {
    * @param {boolean} queryOnline - A flag to determine whether to query online server status.
    * @returns {Promise<InvokeResponse<GameServerInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveGameServerList(
     instanceId: number,
     queryOnline: boolean
@@ -132,7 +121,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to retrieve the local mods for.
    * @returns {Promise<InvokeResponse<LocalModInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveLocalModList(
     instanceId: number
   ): Promise<InvokeResponse<LocalModInfo[]>> {
@@ -146,7 +135,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to retrieve the server resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveServerResourcePackList(
     instanceId: number
   ): Promise<InvokeResponse<ResourcePackInfo[]>> {
@@ -160,7 +149,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to retrieve the resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveResourcePackList(
     instanceId: number
   ): Promise<InvokeResponse<ResourcePackInfo[]>> {
@@ -174,7 +163,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to retrieve the schematics for.
    * @returns {Promise<InvokeResponse<SchematicInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveSchematicList(
     instanceId: number
   ): Promise<InvokeResponse<SchematicInfo[]>> {
@@ -188,7 +177,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to retrieve the shaderpacks for.
    * @returns {Promise<InvokeResponse<ShaderPackInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveShaderPackList(
     instanceId: number
   ): Promise<InvokeResponse<ShaderPackInfo[]>> {
@@ -202,7 +191,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to retrieve the screenshots for.
    * @returns {Promise<InvokeResponse<ScreenshotInfo[]>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveScreenshotList(
     instanceId: number
   ): Promise<InvokeResponse<ScreenshotInfo[]>> {
@@ -217,7 +206,7 @@ export class InstanceService {
    * @param {boolean} enable - Whether to enable or disable the mod (true to enable, false to disable).
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async toggleModByExtension(
     filePath: string,
     enable: boolean
