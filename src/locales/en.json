@@ -490,6 +490,73 @@
       "windows": "File Explorer"
     }
   },
+  "GameAdvancedSettingsModal": {
+    "header": {
+      "title": "Advanced Settings"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "customCommands": {
+      "title": "Custom Commands",
+      "settings": {
+        "minecraftArgument": {
+          "title": "Launcher Argument",
+          "placeholder": "Default"
+        },
+        "precallCommand": {
+          "title": "Pre-launch Command",
+          "placeholder": "Commands to execute before the game launches"
+        },
+        "wrapperLauncher": {
+          "title": "Wrapper Command",
+          "placeholder": "Allows launching using an extra wrapper program like \"optirun\" on Linux"
+        },
+        "postExitCommand": {
+          "title": "Post-exit Command",
+          "placeholder": "Commands to execute after game exits"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Java VM Options",
+      "settings": {
+        "args": {
+          "title": "JVM VM Argument"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "PermGen Space",
+          "placeholder": "in MB"
+        },
+        "environmentVariable": {
+          "title": "Environment Variables"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Workaround",
+      "settings": {
+        "noJvmArgs": "Do not add default Java VM arguments",
+        "gameCompletnessCheckPolicy": {
+          "title": "Game File Integrity Check Policy",
+          "disable": "Disable Check",
+          "normal":"Normal Check",
+          "full":"Full Check"
+        },
+        "dontCheckJvmValidity": {
+          "title": "Do not check Java VM compatibility"
+        },
+        "dontPatchNatives": {
+          "title": "Do not attempt to automatically replace native libraries"
+        },
+        "useNativeGlfw": {
+          "title": "Use System GLFW(Linux Only)"
+        },
+        "useNativeOpenal": {
+          "title": "Use System OpenAL(Linux Only)"
+        }
+      }
+    }
+  },
   "GameErrorPage": {
     "title": "Game exited unexpectedly. Check the logs or seek assistance.",
     "basicInfo": {
@@ -678,7 +745,8 @@
           "title": "Display Game Logs"
         },
         "enableAdvancedOptions": {
-          "title": "Enable Advanced Options"
+          "title": "Enable Advanced Options",
+          "button": "Edit Advanced Settings"
         }
       }
     }
@@ -1222,6 +1290,7 @@
           "description": {
             "duplicate": "Player already exists",
             "authServerError": "Unable to connect to authentication server, or OAuth is not enabled",
+            "notFound": "The authentication server does not exist",
             "textureError": "Unable to get player texture",
             "cancelled": "OAuth login cancelled"
           }

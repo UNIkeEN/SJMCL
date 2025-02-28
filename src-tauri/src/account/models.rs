@@ -1,5 +1,9 @@
-use super::helpers::skin::draw_avatar;
+use super::helpers::{
+  authlib_injector::info::{fetch_auth_url, get_client_id},
+  skin::draw_avatar,
+};
 use crate::{storage::Storage, utils::image::base64_to_image, EXE_DIR};
+use futures::executor::block_on;
 use serde::{Deserialize, Serialize};
 use std::{fmt, path::PathBuf};
 use uuid::Uuid;
@@ -80,7 +84,8 @@ structstruck::strike! {
     pub features: struct {
       pub non_email_login: bool,
       pub openid_configuration_url: String,
-    }
+    },
+    pub client_id: String,
   }
 }
 
@@ -90,7 +95,6 @@ pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
   pub selected_player_id: String, // maybe "" if none of the player was selected
   pub auth_servers: Vec<AuthServer>,
-  pub client_id: Uuid,
 }
 
 impl Storage for AccountInfo {
@@ -101,13 +105,20 @@ impl Storage for AccountInfo {
 
 impl Default for AccountInfo {
   fn default() -> Self {
+    let sjmc_auth_url = block_on(fetch_auth_url("https://skin.mc.sjtu.cn".to_string()))
+      .unwrap_or_else(|_| "".to_string());
+    let mua_auth_url = block_on(fetch_auth_url(
+      "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
+    ))
+    .unwrap_or_else(|_| "".to_string());
+
     AccountInfo {
       players: Vec::new(),
       selected_player_id: String::new(),
       auth_servers: vec![
         AuthServer {
           name: "SJMC 用户中心".to_string(),
-          auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
+          auth_url: sjmc_auth_url,
           homepage_url: "https://skin.mc.sjtu.cn".to_string(),
           register_url: "https://skin.mc.sjtu.cn/auth/register".to_string(),
           features: Features {
@@ -115,19 +126,20 @@ impl Default for AccountInfo {
             openid_configuration_url:
               "https://skin.mc.sjtu.cn/open/.well-known/openid-configuration".to_string(),
           },
+          client_id: get_client_id("skin.mc.sjtu.cn".to_string()),
         },
         AuthServer {
           name: "MUA 用户中心".to_string(),
-          auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
+          auth_url: mua_auth_url,
           homepage_url: "https://skin.mualliance.ltd".to_string(),
           register_url: "https://skin.mualliance.ltd/auth/register".to_string(),
           features: Features {
             non_email_login: true,
             openid_configuration_url: "".to_string(),
           },
+          client_id: get_client_id("skin.mualliance.ltd".to_string()),
         },
       ],
-      client_id: Uuid::new_v4(),
     }
   }
 }

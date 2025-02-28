@@ -42,17 +42,14 @@ export class AccountService {
   /**
    * ADD a new player to the system using new authlib_injector's OAuth.
    * @param {string} authServerUrl - The authentication server's URL.
-   * @param {string} openidConfigurationUrl - The authentication server's openid configuration url.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account", errorToLocaleKey)
   static async addPlayer3rdPartyOAuth(
-    authServerUrl: string,
-    openidConfigurationUrl: string
+    authServerUrl: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("add_player_3rdparty_oauth", {
       authServerUrl,
-      openidConfigurationUrl,
     });
   }
 

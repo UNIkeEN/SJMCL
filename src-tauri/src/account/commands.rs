@@ -1,7 +1,10 @@
 use super::{
   constants::TEXTURE_ROLES,
   helpers::{
-    authlib_injector::{info::fetch_auth_server, oauth, password},
+    authlib_injector::{
+      info::{fetch_auth_server, fetch_auth_url},
+      oauth, password,
+    },
     offline,
   },
   models::{AccountError, AccountInfo, AuthServer, Player},
@@ -66,13 +69,22 @@ pub async fn add_player_offline(app: AppHandle, username: String) -> SJMCLResult
 }
 
 #[tauri::command]
-pub async fn add_player_3rdparty_oauth(
-  app: AppHandle,
-  auth_server_url: String,
-  openid_configuration_url: String,
-) -> SJMCLResult<()> {
+pub async fn add_player_3rdparty_oauth(app: AppHandle, auth_server_url: String) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
-  let new_player = oauth::login(app, auth_server_url, openid_configuration_url).await?;
+  let auth_server = state
+    .auth_servers
+    .iter()
+    .find(|server| server.auth_url == auth_server_url)
+    .ok_or(AccountError::NotFound)?
+    .clone();
+
+  let new_player = oauth::login(
+    app,
+    auth_server_url,
+    auth_server.features.openid_configuration_url,
+    auth_server.client_id,
+  )
+  .await?;
 
   if state
     .players
@@ -195,9 +207,7 @@ pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> 
   if !url.starts_with("http://") && !url.starts_with("https://") {
     url = format!("https://{}", url);
   }
-  if !url.ends_with("/api/yggdrasil") && !url.ends_with("/api/yggdrasil/") {
-    url = format!("{}/api/yggdrasil", url);
-  }
+  url = fetch_auth_url(url).await?;
 
   let state: AccountInfo = Storage::load().unwrap_or_default();
 

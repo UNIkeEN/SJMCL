@@ -17,6 +17,7 @@ import {
   Switch,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,6 +27,7 @@ import {
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import MemoryStatusProgress from "@/components/memory-status-progress";
+import GameAdvancedSettingsModal from "@/components/modals/game-advanced-settings-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { defaultGameConfig } from "@/models/config";
 import { MemoryInfo } from "@/models/system-info";
@@ -66,6 +68,12 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const [serverUrl, setServerUrl] = useState<string>(
     gameConfigs.gameServer.serverUrl
   );
+
+  const {
+    isOpen: isGameAdvancedSettingsModalOpen,
+    onOpen: onGameAdvancedSettingsModalOpen,
+    onClose: onGameAdvancedSettingsModalClose,
+  } = useDisclosure();
 
   const updateGameConfig = (key: string, value: any) => {
     if (instanceId) return; // TBD
@@ -512,16 +520,21 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             "GlobalGameSettingsPage.moreOptions.settings.enableAdvancedOptions.title"
           ),
           children: (
-            <Switch
+            <Button
+              size="xs"
+              variant="ghost"
+              justifyContent="flex-start"
               colorScheme={primaryColor}
-              isChecked={gameConfigs.advancedOptions.enabled}
-              onChange={(event) => {
-                updateGameConfig(
-                  "advancedOptions.enabled",
-                  event.target.checked
-                );
+              onClick={() => {
+                onGameAdvancedSettingsModalOpen();
               }}
-            />
+            >
+              <Text>
+                {t(
+                  "GlobalGameSettingsPage.moreOptions.settings.enableAdvancedOptions.button"
+                )}
+              </Text>
+            </Button>
           ),
         },
       ],
@@ -529,11 +542,22 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   ];
 
   return (
-    <VStack overflow="auto" align="strench" spacing={4} flex="1">
-      {settingGroups.map((group, index) => (
-        <OptionItemGroup title={group.title} items={group.items} key={index} />
-      ))}
-    </VStack>
+    <>
+      <VStack overflow="auto" align="strench" spacing={4} flex="1">
+        {settingGroups.map((group, index) => (
+          <OptionItemGroup
+            title={group.title}
+            items={group.items}
+            key={index}
+          />
+        ))}
+      </VStack>
+      <GameAdvancedSettingsModal
+        instanceId={instanceId}
+        isOpen={isGameAdvancedSettingsModalOpen}
+        onClose={onGameAdvancedSettingsModalClose}
+      />
+    </>
   );
 };
 

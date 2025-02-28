@@ -35,6 +35,7 @@ dependencies = [
  "tauri-plugin-window-state",
  "tokio",
  "toml 0.8.2",
+ "url",
  "uuid",
  "winreg 0.55.0",
  "zip",

@@ -1,8 +1,6 @@
 use super::common::parse_profile;
-use crate::account::{
-  constants::{SCOPE, SJMC_CLIENT_ID},
-  models::{AccountError, PlayerInfo},
-};
+use super::constants::SCOPE;
+use crate::account::models::{AccountError, PlayerInfo};
 use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde_json::Value;
@@ -35,11 +33,12 @@ async fn fetch_jwks(jwks_uri: String) -> SJMCLResult<Value> {
 
 async fn device_authorization(
   device_authorization_endpoint: String,
+  client_id: String,
 ) -> SJMCLResult<(String, String)> {
   let client = Client::new();
   let response: Value = client
     .post(device_authorization_endpoint)
-    .form(&[("client_id", SJMC_CLIENT_ID), ("scope", SCOPE)])
+    .form(&[("client_id", client_id), ("scope", SCOPE.to_string())])
     .send()
     .await
     .map_err(|_| AccountError::AuthServerError)?
@@ -65,6 +64,7 @@ async fn parse_token(
   id_token: String,
   access_token: String,
   auth_server_url: String,
+  client_id: String,
 ) -> SJMCLResult<PlayerInfo> {
   let key = &jwks["keys"]
     .as_array()
@@ -77,7 +77,7 @@ async fn parse_token(
     DecodingKey::from_rsa_components(n, e).map_err(|_| AccountError::AuthServerError)?;
 
   let mut validation = Validation::new(Algorithm::RS256);
-  validation.set_audience(&[SJMC_CLIENT_ID]);
+  validation.set_audience(&[client_id]);
 
   let token_data = decode::<Value>(id_token.as_str(), &decoding_key, &validation)
     .map_err(|_| AccountError::AuthServerError)?;
@@ -103,6 +103,7 @@ pub async fn login(
   app: AppHandle,
   auth_server_url: String,
   openid_configuration_url: String,
+  client_id: String,
 ) -> SJMCLResult<PlayerInfo> {
   let client = Client::new();
 
@@ -123,7 +124,7 @@ pub async fn login(
   let jwks = fetch_jwks(jwks_uri.to_string()).await?;
 
   let (device_code, verification_uri_complete) =
-    device_authorization(device_authorization_endpoint.to_string()).await?;
+    device_authorization(device_authorization_endpoint.to_string(), client_id.clone()).await?;
 
   let verification_url =
     Url::parse(verification_uri_complete.as_str()).map_err(|_| AccountError::AuthServerError)?;
@@ -156,7 +157,7 @@ pub async fn login(
     let token_response = client
       .post(token_endpoint)
       .json(&serde_json::json!({
-          "client_id": SJMC_CLIENT_ID,
+          "client_id": client_id,
           "device_code": device_code,
           "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
       }))
@@ -182,5 +183,13 @@ pub async fn login(
     sleep(Duration::from_secs(1)).await;
   }
 
-  parse_token(app, jwks, id_token, access_token, auth_server_url).await
+  parse_token(
+    app,
+    jwks,
+    id_token,
+    access_token,
+    auth_server_url,
+    client_id,
+  )
+  .await
 }
