@@ -25,7 +25,7 @@ interface GameAdvancedSettingsGroupsProps {
 }
 
 const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
-  instanceId = undefined,
+  instanceId,
 }) => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();

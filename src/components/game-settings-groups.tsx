@@ -551,8 +551,9 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             key={index}
           />
         ))}
-      </VStack>{" "}
+      </VStack>
       <GameAdvancedSettingsModal
+        instanceId={instanceId}
         isOpen={isGameAdvancedSettingsModalOpen}
         onClose={onGameAdvancedSettingsModalClose}
       />

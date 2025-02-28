@@ -14,8 +14,8 @@ import { useTranslation } from "react-i18next";
 import GameAdvancedSettingsGroups from "@/components/game-advanced-settings-group";
 
 export const GameAdvancedSettingsModal: React.FC<
-  Omit<ModalProps, "children">
-> = ({ ...modalProps }) => {
+  Omit<ModalProps, "children"> & { instanceId?: number }
+> = ({ instanceId, ...modalProps }) => {
   const { t } = useTranslation();
 
   return (
@@ -34,7 +34,7 @@ export const GameAdvancedSettingsModal: React.FC<
         <ModalCloseButton />
         <Flex direction="column" h="full">
           <ModalBody overflowY="auto" flex="1" maxH="calc(100vh - 150px)">
-            <GameAdvancedSettingsGroups />
+            <GameAdvancedSettingsGroups instanceId={instanceId} />
           </ModalBody>
         </Flex>
       </ModalContent>
