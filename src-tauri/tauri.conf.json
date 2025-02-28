@@ -56,5 +56,10 @@
     "resources": [
       "assets/skins/*"
     ]
+  },
+  "plugins": {
+    "fs":{
+      "requireLiteralLeadingDot": false
+    }
   }
 }

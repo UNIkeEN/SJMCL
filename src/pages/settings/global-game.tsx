@@ -1,5 +1,11 @@
-import { Box, HStack, Icon, Switch, useDisclosure } from "@chakra-ui/react";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import {
+  HStack,
+  Icon,
+  Switch,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { exists } from "@tauri-apps/plugin-fs";
 import { open } from "@tauri-apps/plugin-shell";
 import { useRouter } from "next/router";
@@ -35,7 +41,7 @@ const GlobalGameSettingsPage = () => {
     dir: "",
   });
 
-  const [directoryStatus, setDirectoryStatus] = useState<
+  const [directoryExistence, setDirectoryExistence] = useState<
     Record<string, boolean>
   >({});
 
@@ -59,17 +65,20 @@ const GlobalGameSettingsPage = () => {
 
   useEffect(() => {
     const checkDirectories = async () => {
-      const status: Record<string, boolean> = {};
+      const existence: Record<string, boolean> = {};
       for (const directory of config.localGameDirectories) {
+        if (["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name)) {
+          existence[directory.dir] = true;
+          continue;
+        }
         try {
-          const absolutePath = convertFileSrc(directory.dir);
-          const dirExists = await exists(absolutePath);
-          status[directory.dir] = dirExists;
+          const dirExistence = await exists(directory.dir);
+          existence[directory.dir] = dirExistence;
         } catch (error) {
-          status[directory.dir] = false;
+          existence[directory.dir] = false;
         }
       }
-      setDirectoryStatus(status);
+      setDirectoryExistence(existence);
     };
 
     checkDirectories();
@@ -136,23 +145,23 @@ const GlobalGameSettingsPage = () => {
                   )
                 : directory.name,
               description: (
-                <Box fontSize="xs" color="gray.500">
-                  {directory.dir}
+                <VStack spacing={0} align="start" fontSize="xs">
+                  <Text className="secondary-text">{directory.dir}</Text>
                   {!["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) &&
-                    directoryStatus[directory.dir] === false && (
-                      <Box color="red.500" fontSize="xs">
+                    directoryExistence[directory.dir] === false && (
+                      <Text color="red.600">
                         {t(
                           "GlobalGameSettingsPage.directories.directoryNotExist"
                         )}
-                      </Box>
+                      </Text>
                     )}
-                </Box>
+                </VStack>
               ),
               prefixElement: (
                 <Icon
                   as={
                     ["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) ||
-                    directoryStatus[directory.dir]
+                    directoryExistence[directory.dir]
                       ? LuFolder
                       : LuFolderX
                   }
