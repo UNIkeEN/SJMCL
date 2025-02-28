@@ -76,6 +76,7 @@ pub async fn run() {
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
       launch::commands::validate_game_files,
+      launch::commands::launch_game,
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,

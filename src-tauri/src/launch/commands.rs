@@ -1,8 +1,9 @@
-use tauri::AppHandle;
-
-use super::helpers::file_validator::validate_library_files;
+use super::helpers::{
+  cmd_builder::{generate_launch_params, LaunchParams},
+  file_validator::validate_library_files,
+};
 use crate::{
-  error::SJMCLResult,
+  error::{SJMCLError, SJMCLResult},
   instance::{
     helpers::{
       client::{load_client_info_from_json, DownloadsArtifact},
@@ -11,6 +12,7 @@ use crate::{
     models::{InstanceError, InstanceSubdirType},
   },
 };
+use tauri::AppHandle;
 
 #[tauri::command]
 pub async fn validate_game_files(
@@ -29,4 +31,23 @@ pub async fn validate_game_files(
   };
   let bad_artifacts = validate_library_files(&library_dir, &client_info).await?;
   Ok(bad_artifacts)
+}
+
+#[tauri::command]
+pub async fn launch_game(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
+  let client_info = if let Some(path) = get_instance_client_json_path(&app, instance_id) {
+    load_client_info_from_json(&path).await?
+  } else {
+    return Err(InstanceError::FileNotFoundError.into());
+  };
+  let argument_template = if let Some(arguments) = client_info.arguments {
+    arguments
+  } else {
+    return Err(SJMCLError(format!("")));
+  };
+  println!(
+    "{:?}",
+    generate_launch_params(&LaunchParams::default(), &argument_template)?
+  );
+  Ok(())
 }

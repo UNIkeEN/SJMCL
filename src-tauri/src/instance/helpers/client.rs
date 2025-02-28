@@ -2,6 +2,7 @@ use crate::{
   error::{SJMCLError, SJMCLResult},
   instance::models::ModLoaderType,
 };
+use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use std::{collections::HashMap, path::PathBuf, str::FromStr};
@@ -10,7 +11,7 @@ use std::{collections::HashMap, path::PathBuf, str::FromStr};
 #[serde(rename_all = "camelCase", default)]
 pub struct McClientInfo {
   pub id: String,
-  pub arguments: Arguments,
+  pub arguments: Option<LaunchArgumentTemplate>, // new version
   pub asset_index: AssetIndex,
   pub assets: String,
   pub downloads: HashMap<String, DownloadsValue>,
@@ -23,6 +24,11 @@ pub struct McClientInfo {
   pub release_time: String,
   pub minimum_launcher_version: i64,
   pub patches: Vec<PatchesInfo>,
+
+  // old version
+  pub minecraft_arguments: Option<String>,
+  pub main_class: Option<String>,
+  pub jar: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
@@ -31,7 +37,7 @@ pub struct PatchesInfo {
   pub id: String,
   pub version: String,
   pub priority: i64,
-  pub arguments: Arguments,
+  pub arguments: LaunchArgumentTemplate,
   pub main_class: String,
   pub asset_index: AssetIndex,
   pub assets: String,
@@ -55,7 +61,7 @@ pub struct JavaVersion {
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", default)]
-pub struct Arguments {
+pub struct LaunchArgumentTemplate {
   pub game: Vec<ArgumentsItem>,
   pub jvm: Vec<ArgumentsItem>,
 }
@@ -81,6 +87,47 @@ pub struct InstructionRule {
   pub features: Option<FeaturesInfo>,
   pub os: Option<OsInfo>,
 }
+
+impl InstructionRule {
+  pub fn is_allowed(&self) -> SJMCLResult<(bool, bool)> {
+    let mut positive = match self.action.to_lowercase().as_str() {
+      "allow" => true,
+      "disallow" => false,
+      _ => {
+        return Err(SJMCLError(format!(
+          "unknown action format: {}",
+          self.action
+        )))
+      }
+    };
+    let mut strong = false;
+    if let Some(ref os_rule) = self.os {
+      strong = true;
+      let mut os_string = os_rule.name.to_lowercase();
+      if os_string == "osx" {
+        os_string = "macos".to_string();
+      }
+      if os_string != "unknown" && tauri_plugin_os::type_().to_string() != os_string {
+        positive = !positive;
+        return Ok((positive, strong));
+      }
+      if let Some(ref arch_string) = os_rule.arch {
+        if arch_string != "unknown" && arch_string != tauri_plugin_os::arch() {
+          positive = !positive;
+          return Ok((positive, strong));
+        }
+      }
+      if let Some(ref version_string) = os_rule.version {
+        let version_regex = RegexBuilder::new(version_string).build()?;
+        if version_regex.is_match(tauri_plugin_os::version().to_string().as_str()) {
+          return Ok((positive, strong));
+        }
+      }
+    }
+    Ok((positive, strong))
+  }
+}
+
 impl<'de> Deserialize<'de> for ArgumentsItem {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
   where
@@ -151,12 +198,7 @@ structstruck::strike! {
       }>,
     pub natives: Option<Value>,
     pub extract: Option<Value>,
-    pub rules: Option<Vec<pub struct{
-      pub action: String,
-      pub os: Option<pub struct{
-        pub name: String,
-      }>
-    }>>,
+    pub rules: Vec<InstructionRule>,
   }
 }
 
@@ -225,4 +267,49 @@ pub fn patchs_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String
     mod_version = Some(patches[1].version.clone())
   }
   (game_version, mod_version, mod_loader_type)
+}
+
+fn rules_is_allowed(rules: &Vec<InstructionRule>) -> SJMCLResult<bool> {
+  let mut weak_allowed = true;
+  for rule in rules {
+    let (allow, strong) = rule.is_allowed()?;
+    if strong {
+      return Ok(allow);
+    }
+    weak_allowed = allow;
+  }
+  Ok(weak_allowed)
+}
+
+pub trait IsAllowed {
+  fn is_allowed(&self) -> SJMCLResult<bool>;
+}
+
+impl IsAllowed for ArgumentsItem {
+  fn is_allowed(&self) -> SJMCLResult<bool> {
+    rules_is_allowed(&self.rules)
+  }
+}
+
+impl IsAllowed for LibrariesValue {
+  fn is_allowed(&self) -> SJMCLResult<bool> {
+    rules_is_allowed(&self.rules)
+  }
+}
+
+impl LaunchArgumentTemplate {
+  pub fn to_arguments(&self) -> SJMCLResult<Vec<String>> {
+    let mut arguments = Vec::new();
+    for argument in &self.game {
+      if argument.is_allowed().unwrap_or_default() {
+        arguments.extend(argument.value.clone());
+      }
+    }
+    for argument in &self.jvm {
+      if argument.is_allowed().unwrap_or_default() {
+        arguments.extend(argument.value.clone());
+      }
+    }
+    Ok(arguments)
+  }
 }

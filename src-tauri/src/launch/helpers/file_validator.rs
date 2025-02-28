@@ -1,6 +1,6 @@
 use crate::{
   error::SJMCLResult,
-  instance::helpers::client::{DownloadsArtifact, LibrariesValue, McClientInfo},
+  instance::helpers::client::{DownloadsArtifact, IsAllowed, McClientInfo},
 };
 use futures;
 use hex;
@@ -9,29 +9,10 @@ use sha1::{Digest, Sha1};
 use std::{collections::HashSet, path::PathBuf};
 use tokio::io::{AsyncReadExt, BufReader};
 
-fn check_os_same(library: &LibrariesValue) -> bool {
-  if let Some(ref rules) = &library.rules {
-    for rule in rules {
-      if rule.action == "allow" {
-        if let Some(ref os) = rule.os {
-          let mut os_string = os.name.to_lowercase();
-          if os_string == "osx" {
-            os_string = "macos".to_string();
-          }
-          if tauri_plugin_os::type_().to_string() != os_string {
-            return false;
-          }
-        }
-      }
-    }
-  }
-  true
-}
-
 pub fn convert_client_to_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
   for library in &client_info.libraries {
-    if !check_os_same(library) {
+    if !library.is_allowed().unwrap_or(false) {
       continue;
     }
     if let Some(ref downloads) = &library.downloads {
@@ -42,7 +23,7 @@ pub fn convert_client_to_artifacts(client_info: &McClientInfo) -> Vec<DownloadsA
   }
   for patch in &client_info.patches {
     for library in &patch.libraries {
-      if !check_os_same(library) {
+      if !library.is_allowed().unwrap_or(false) {
         continue;
       }
       if let Some(ref downloads) = &library.downloads {
