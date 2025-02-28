@@ -3,14 +3,14 @@ use tauri::Manager;
 
 use crate::{
   error::SJMCLResult,
-  launcher_config::commands::retrive_launcher_config,
+  launcher_config::commands::retrieve_launcher_config,
   tasks::{download::DownloadTask, monitor::TaskMonitor, TaskParam, TaskState},
 };
 
 #[tauri::command]
 pub async fn schedule_one_task(app: tauri::AppHandle, param: TaskParam) -> SJMCLResult<u32> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
-  let config = retrive_launcher_config(app.clone())?;
+  let config = retrieve_launcher_config(app.clone())?;
   let task_id = monitor.get_new_id();
   match param {
     TaskParam::Download(param) => {
