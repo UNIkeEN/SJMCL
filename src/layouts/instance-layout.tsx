@@ -24,6 +24,7 @@ import {
   InstanceContextProvider,
   useInstanceSharedData,
 } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 
 const InstanceLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -40,6 +41,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { openSharedModal } = useSharedModals();
 
   const { summary } = useInstanceSharedData();
   const { config } = useLauncherConfig();
@@ -63,7 +65,10 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       icon: "delete",
       label: t("GameMenu.label.delete"),
       danger: true,
-      onClick: () => {},
+      onClick: () => {
+        if (summary)
+          openSharedModal("delete-game-instance-alert", { game: summary });
+      },
     },
   ];
 

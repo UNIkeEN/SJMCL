@@ -13,7 +13,7 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 
 use instance::helpers::misc::refresh_and_update_instances;
-use instance::models::Instance;
+use instance::models::misc::Instance;
 use launcher_config::models::LauncherConfig;
 use storage::Storage;
 
@@ -63,9 +63,11 @@ pub async fn run() {
       account::commands::fetch_auth_server_info,
       instance::commands::retrieve_instance_list,
       instance::commands::open_instance_subdir,
+      instance::commands::delete_instance,
       instance::commands::copy_across_instances,
       instance::commands::move_across_instances,
       instance::commands::retrieve_world_list,
+      instance::commands::retrieve_world_detail,
       instance::commands::retrieve_game_server_list,
       instance::commands::retrieve_local_mod_list,
       instance::commands::retrieve_resource_pack_list,

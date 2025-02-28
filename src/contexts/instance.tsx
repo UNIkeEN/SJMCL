@@ -77,7 +77,6 @@ export const InstanceContextProvider: React.FC<{
                 description: response.details,
                 status: "error",
               });
-            console.log(response);
           }
         );
       }

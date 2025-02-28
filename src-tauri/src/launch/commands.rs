@@ -8,7 +8,7 @@ use crate::{
       client::{load_client_info_from_json, DownloadsArtifact},
       misc::{get_instance_client_json_path, get_instance_subdir_path},
     },
-    models::{InstanceError, InstanceSubdirType},
+    models::misc::{InstanceError, InstanceSubdirType},
   },
 };
 
