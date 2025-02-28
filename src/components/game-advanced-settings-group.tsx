@@ -31,9 +31,10 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
   const { config, update } = useLauncherConfig();
   const appearanceConfigs = config.appearance;
   const primaryColor = appearanceConfigs.theme.primaryColor;
-  const gameAdvancedConfigs = instanceId
-    ? defaultGameConfig // TBD
-    : config.globalGameConfig;
+  const gameAdvancedConfigs =
+    instanceId !== undefined
+      ? defaultGameConfig // TBD
+      : config.globalGameConfig;
 
   const [minecraftArgument, setMinecraftArgument] = useState<string>(
     gameAdvancedConfigs.advanced.customCommands.minecraftArgument
