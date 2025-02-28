@@ -60,32 +60,27 @@ structstruck::strike! {
     pub display_game_log: bool,
     pub advanced_options: struct {
       pub enabled: bool,
-    }
-  }
-}
-
-structstruck::strike! {
-  #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
-  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
-  pub struct GameAdvancedConfig {
-    pub custom_commands: struct {
-      pub minecraft_argument: String,
-      pub precall_command: String,
-      pub wrapper_launcher: String,
-      pub post_exit_command: String,
     },
-    pub jvm: struct {
-      pub args: String,
-      pub java_permanent_generation_space: String,
-      pub environment_variable: String,
-    },
-    pub workaround: struct {
-      pub no_jvm_args: bool,
-      pub game_completness_check_policy: String,
-      pub dont_check_jvm_validity: bool,
-      pub dont_patch_natives: bool,
-      pub use_native_glfw: bool,
-      pub use_native_openal: bool,
+    pub advanced: struct {
+      pub custom_commands: struct {
+        pub minecraft_argument: String,
+        pub precall_command: String,
+        pub wrapper_launcher: String,
+        pub post_exit_command: String,
+      },
+      pub jvm: struct {
+        pub args: String,
+        pub java_permanent_generation_space: String,
+        pub environment_variable: String,
+      },
+      pub workaround: struct {
+        pub no_jvm_args: bool,
+        pub game_completness_check_policy: String,
+        pub dont_check_jvm_validity: bool,
+        pub dont_patch_natives: bool,
+        pub use_native_glfw: bool,
+        pub use_native_openal: bool,
+      },
     }
   }
 }
@@ -148,7 +143,6 @@ structstruck::strike! {
       }
     },
     pub global_game_config: GameConfig,
-    pub game_advanced_config: GameAdvancedConfig,
     pub local_game_directories: Vec<GameDirectory>,
     pub discover_source_endpoints: Vec<String>,
     pub states: struct States {
@@ -203,6 +197,27 @@ impl Default for GameConfig {
       launcher_visibility: "start-close".to_string(),
       display_game_log: false,
       advanced_options: AdvancedOptions { enabled: false },
+      advanced: Advanced {
+        custom_commands: CustomCommands {
+          minecraft_argument: "".to_string(),
+          precall_command: "".to_string(),
+          wrapper_launcher: "".to_string(),
+          post_exit_command: "".to_string(),
+        },
+        jvm: Jvm {
+          args: "".to_string(),
+          java_permanent_generation_space: "".to_string(),
+          environment_variable: "".to_string(),
+        },
+        workaround: Workaround {
+          no_jvm_args: false,
+          game_completness_check_policy: "full".to_string(),
+          dont_check_jvm_validity: false,
+          dont_patch_natives: false,
+          use_native_glfw: false,
+          use_native_openal: false,
+        },
+      },
     }
   }
 }
@@ -210,32 +225,6 @@ impl Default for GameConfig {
 impl Storage for LauncherConfig {
   fn file_path() -> PathBuf {
     EXE_DIR.join("sjmcl.conf.json")
-  }
-}
-
-impl Default for GameAdvancedConfig {
-  fn default() -> Self {
-    Self {
-      custom_commands: CustomCommands {
-        minecraft_argument: "".to_string(),
-        precall_command: "".to_string(),
-        wrapper_launcher: "".to_string(),
-        post_exit_command: "".to_string(),
-      },
-      jvm: Jvm {
-        args: "".to_string(),
-        java_permanent_generation_space: "".to_string(),
-        environment_variable: "".to_string(),
-      },
-      workaround: Workaround {
-        no_jvm_args: false,
-        game_completness_check_policy: "full".to_string(),
-        dont_check_jvm_validity: false,
-        dont_patch_natives: false,
-        use_native_glfw: false,
-        use_native_openal: false,
-      },
-    }
   }
 }
 
@@ -286,7 +275,6 @@ impl Default for LauncherConfig {
         optional_functions: OptionalFunctions { discover: false },
       },
       global_game_config: GameConfig::default(),
-      game_advanced_config: GameAdvancedConfig::default(),
       local_game_directories: vec![],
       discover_source_endpoints: vec!["https://mc.sjtu.cn/api-sjmcl/article".to_string()],
       states: States {

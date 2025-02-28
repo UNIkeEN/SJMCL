@@ -18,7 +18,7 @@ import {
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
-import { defaultGameAdvancedConfig } from "@/models/config";
+import { defaultGameConfig } from "@/models/config";
 
 interface GameAdvancedSettingsGroupsProps {
   instanceId?: number;
@@ -32,26 +32,30 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
   const appearanceConfigs = config.appearance;
   const primaryColor = appearanceConfigs.theme.primaryColor;
   const gameAdvancedConfigs = instanceId
-    ? defaultGameAdvancedConfig // TBD
-    : config.gameAdvancedConfig;
+    ? defaultGameConfig // TBD
+    : config.globalGameConfig;
 
   const [minecraftArgument, setMinecraftArgument] = useState<string>(
-    gameAdvancedConfigs.customCommands.minecraftArgument
+    gameAdvancedConfigs.advanced.customCommands.minecraftArgument
   );
   const [precallCommand, setPrecallCommand] = useState<string>(
-    gameAdvancedConfigs.customCommands.precallCommand
+    gameAdvancedConfigs.advanced.customCommands.precallCommand
   );
   const [wrapperLauncher, setWrapperLauncher] = useState<string>(
-    gameAdvancedConfigs.customCommands.wrapperLauncher
+    gameAdvancedConfigs.advanced.customCommands.wrapperLauncher
   );
   const [postExitCommand, setPostExitCommand] = useState<string>(
-    gameAdvancedConfigs.customCommands.postExitCommand
+    gameAdvancedConfigs.advanced.customCommands.postExitCommand
   );
-  const [args, setArgs] = useState<string>(gameAdvancedConfigs.jvm.args);
+  const [args, setArgs] = useState<string>(
+    gameAdvancedConfigs.advanced.jvm.args
+  );
   const [javaPermanentGenerationSpace, setJavaPermanentGenerationSpace] =
-    useState<string>(gameAdvancedConfigs.jvm.javaPermanentGenerationSpace);
+    useState<string>(
+      gameAdvancedConfigs.advanced.jvm.javaPermanentGenerationSpace
+    );
   const [environmentVariable, setEnvironmentVariable] = useState<string>(
-    gameAdvancedConfigs.jvm.environmentVariable
+    gameAdvancedConfigs.advanced.jvm.environmentVariable
   );
   const [platformName, setPlatformName] = useState<string>("");
 
@@ -66,7 +70,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
   const gameCompletnessCheckPolicy = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     if (instanceId) return; // TBD
-    update(`gameAdvancedConfig.${key}`, value);
+    update(`globalGameConfig.advanced.${key}`, value);
   };
 
   const settingGroups: OptionItemGroupProps[] = [
@@ -250,14 +254,15 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
                 textAlign="left"
               >
                 {t(
-                  `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${gameAdvancedConfigs.workaround.gameCompletnessCheckPolicy}`
+                  `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${gameAdvancedConfigs.advanced.workaround.gameCompletnessCheckPolicy}`
                 )}
               </MenuButton>
               <MenuList>
                 <MenuOptionGroup
                   type="radio"
                   value={
-                    gameAdvancedConfigs.workaround.gameCompletnessCheckPolicy
+                    gameAdvancedConfigs.advanced.workaround
+                      .gameCompletnessCheckPolicy
                   }
                   onChange={(value) => {
                     updateGameAdvancedConfig(
@@ -283,7 +288,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.workaround.noJvmArgs}
+              isChecked={gameAdvancedConfigs.advanced.workaround.noJvmArgs}
               onChange={(event) => {
                 updateGameAdvancedConfig(
                   "workaround.noJvmArgs",
@@ -300,7 +305,9 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.workaround.dontCheckJvmValidity}
+              isChecked={
+                gameAdvancedConfigs.advanced.workaround.dontCheckJvmValidity
+              }
               onChange={(event) => {
                 updateGameAdvancedConfig(
                   "workaround.dontCheckJvmValidity",
@@ -317,7 +324,9 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.workaround.dontPatchNatives}
+              isChecked={
+                gameAdvancedConfigs.advanced.workaround.dontPatchNatives
+              }
               onChange={(event) => {
                 updateGameAdvancedConfig(
                   "workaround.dontPatchNatives",
@@ -336,7 +345,9 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
                 children: (
                   <Switch
                     colorScheme={primaryColor}
-                    isChecked={gameAdvancedConfigs.workaround.useNativeGlfw}
+                    isChecked={
+                      gameAdvancedConfigs.advanced.workaround.useNativeGlfw
+                    }
                     onChange={(event) => {
                       updateGameAdvancedConfig(
                         "workaround.useNativeGlfw",
@@ -353,7 +364,9 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
                 children: (
                   <Switch
                     colorScheme={primaryColor}
-                    isChecked={gameAdvancedConfigs.workaround.useNativeOpenal}
+                    isChecked={
+                      gameAdvancedConfigs.advanced.workaround.useNativeOpenal
+                    }
                     onChange={(event) => {
                       updateGameAdvancedConfig(
                         "workaround.useNativeOpenal",

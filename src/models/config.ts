@@ -27,29 +27,29 @@ export interface GameConfig {
   advancedOptions: {
     enabled: boolean;
   };
+  advanced: {
+    customCommands: {
+      minecraftArgument: string;
+      precallCommand: string;
+      wrapperLauncher: string;
+      postExitCommand: string;
+    };
+    jvm: {
+      args: string;
+      javaPermanentGenerationSpace: string;
+      environmentVariable: string;
+    };
+    workaround: {
+      noJvmArgs: boolean;
+      gameCompletnessCheckPolicy: string;
+      dontCheckJvmValidity: boolean;
+      dontPatchNatives: boolean;
+      useNativeGlfw: boolean;
+      useNativeOpenal: boolean;
+    };
+  };
 }
 
-interface GameAdvancedConfig {
-  customCommands: {
-    minecraftArgument: string;
-    precallCommand: string;
-    wrapperLauncher: string;
-    postExitCommand: string;
-  };
-  jvm: {
-    args: string;
-    javaPermanentGenerationSpace: string;
-    environmentVariable: string;
-  };
-  workaround: {
-    noJvmArgs: boolean;
-    gameCompletnessCheckPolicy: string;
-    dontCheckJvmValidity: boolean;
-    dontPatchNatives: boolean;
-    useNativeGlfw: boolean;
-    useNativeOpenal: boolean;
-  };
-}
 export interface GameDirectory {
   name: string;
   dir: string;
@@ -103,7 +103,6 @@ export interface LauncherConfig {
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
-  gameAdvancedConfig: GameAdvancedConfig;
   discoverSourceEndpoints: string[];
   states: {
     accountsPage: {
@@ -156,27 +155,26 @@ export const defaultGameConfig: GameConfig = {
   advancedOptions: {
     enabled: false,
   },
-};
-
-export const defaultGameAdvancedConfig: GameAdvancedConfig = {
-  customCommands: {
-    minecraftArgument: "",
-    precallCommand: "",
-    wrapperLauncher: "",
-    postExitCommand: "",
-  },
-  jvm: {
-    args: "",
-    javaPermanentGenerationSpace: "",
-    environmentVariable: "",
-  },
-  workaround: {
-    noJvmArgs: false,
-    gameCompletnessCheckPolicy: "full",
-    dontCheckJvmValidity: false,
-    dontPatchNatives: false,
-    useNativeGlfw: false,
-    useNativeOpenal: false,
+  advanced: {
+    customCommands: {
+      minecraftArgument: "",
+      precallCommand: "",
+      wrapperLauncher: "",
+      postExitCommand: "",
+    },
+    jvm: {
+      args: "",
+      javaPermanentGenerationSpace: "",
+      environmentVariable: "",
+    },
+    workaround: {
+      noJvmArgs: false,
+      gameCompletnessCheckPolicy: "full",
+      dontCheckJvmValidity: false,
+      dontPatchNatives: false,
+      useNativeGlfw: false,
+      useNativeOpenal: false,
+    },
   },
 };
 
@@ -228,7 +226,6 @@ export const defaultConfig: LauncherConfig = {
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
-  gameAdvancedConfig: defaultGameAdvancedConfig,
   discoverSourceEndpoints: ["https://mc.sjtu.cn/api-sjmcl/article"],
   states: {
     accountsPage: {
