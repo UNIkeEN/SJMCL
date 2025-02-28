@@ -604,7 +604,8 @@
       "deleteDialog": {
         "title": "Delete Game Directory",
         "content": "Confirm the removal of game directory {{dirName}} ? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
-      }
+      },
+      "directoryNotExist": "Directory does not exist, please add path again."
     },
     "gameJava": {
       "title": "Game Java",

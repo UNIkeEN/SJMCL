@@ -604,7 +604,8 @@
       "deleteDialog": {
         "title": "删除游戏目录",
         "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL将不会扫描此目录，但不会删除硬盘上的文件）"
-      }
+      },
+      "directoryNotExist": "该目录不存在，请删除并重新添加"
     },
     "gameJava": {
       "title": "游戏 Java",
