@@ -1,7 +1,7 @@
 export interface Texture {
   textureType: string;
   image: string;
-  model: string;
+  model: "default" | "slim";
 }
 
 // player
@@ -25,6 +25,7 @@ export interface AuthServer {
   registerUrl: string;
   mutable: boolean;
   features: AuthServerFeatures;
+  clientId: string;
 }
 
 export interface AuthServerFeatures {

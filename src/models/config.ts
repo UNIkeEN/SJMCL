@@ -27,7 +27,29 @@ export interface GameConfig {
   advancedOptions: {
     enabled: boolean;
   };
+  advanced: {
+    customCommands: {
+      minecraftArgument: string;
+      precallCommand: string;
+      wrapperLauncher: string;
+      postExitCommand: string;
+    };
+    jvm: {
+      args: string;
+      javaPermanentGenerationSpace: string;
+      environmentVariable: string;
+    };
+    workaround: {
+      noJvmArgs: boolean;
+      gameCompletnessCheckPolicy: string;
+      dontCheckJvmValidity: boolean;
+      dontPatchNatives: boolean;
+      useNativeGlfw: boolean;
+      useNativeOpenal: boolean;
+    };
+  };
 }
+
 export interface GameDirectory {
   name: string;
   dir: string;
@@ -132,6 +154,27 @@ export const defaultGameConfig: GameConfig = {
   displayGameLog: false,
   advancedOptions: {
     enabled: false,
+  },
+  advanced: {
+    customCommands: {
+      minecraftArgument: "",
+      precallCommand: "",
+      wrapperLauncher: "",
+      postExitCommand: "",
+    },
+    jvm: {
+      args: "",
+      javaPermanentGenerationSpace: "",
+      environmentVariable: "",
+    },
+    workaround: {
+      noJvmArgs: false,
+      gameCompletnessCheckPolicy: "full",
+      dontCheckJvmValidity: false,
+      dontPatchNatives: false,
+      useNativeGlfw: false,
+      useNativeOpenal: false,
+    },
   },
 };
 

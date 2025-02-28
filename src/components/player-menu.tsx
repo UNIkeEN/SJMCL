@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { LuEllipsis, LuTrash } from "react-icons/lu";
+import { LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
@@ -19,6 +19,7 @@ import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
+import ViewSkinModal from "./modals/view-skin-modal";
 
 interface PlayerMenuProps {
   player: Player;
@@ -37,9 +38,9 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     onClose: onDeleteClose,
   } = useDisclosure();
   const {
-    isOpen: isManageSkinModalOpen,
-    onOpen: onManageSkinModalOpen,
-    onClose: onManageSkinModalClose,
+    isOpen: isSkinModalOpen,
+    onOpen: onSkinModalOpen,
+    onClose: onSkinModalClose,
   } = useDisclosure();
   const { getPlayerList, getSelectedPlayer } = useData();
 
@@ -64,10 +65,21 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   };
 
   const playerMenuOperations = [
+    ...(player.playerType === "offline"
+      ? []
+      : [
+          {
+            icon: LuRefreshCcw,
+            label: t("General.refresh"),
+            onClick: () => {}, // TBD
+          },
+        ]),
     {
       icon: TbHanger,
-      label: t("PlayerMenu.label.skin"),
-      onClick: onManageSkinModalOpen,
+      label: t(
+        `PlayerMenu.label.${player.playerType === "offline" ? "manageSkin" : "viewSkin"}`
+      ),
+      onClick: onSkinModalOpen,
     },
     {
       icon: LuTrash,
@@ -134,10 +146,30 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         onOKCallback={handleDeletePlayer}
         isAlert
       />
-      <ManageSkinModal
-        isOpen={isManageSkinModalOpen}
-        onClose={onManageSkinModalClose}
-      />
+      {player.playerType === "offline" ? (
+        <ManageSkinModal
+          isOpen={isSkinModalOpen}
+          onClose={onSkinModalClose}
+          playerId={player.uuid}
+          skin={player.textures.find(
+            (texture) => texture.textureType === "SKIN"
+          )}
+          cape={player.textures.find(
+            (texture) => texture.textureType === "CAPE"
+          )}
+        />
+      ) : (
+        <ViewSkinModal
+          isOpen={isSkinModalOpen}
+          onClose={onSkinModalClose}
+          skin={player.textures.find(
+            (texture) => texture.textureType === "SKIN"
+          )}
+          cape={player.textures.find(
+            (texture) => texture.textureType === "CAPE"
+          )}
+        />
+      )}
     </>
   );
 };

@@ -47,7 +47,7 @@ fn draw_image_section(
         (src_rect[0] + x_offset as f32 * x_scale) as u32,
         (src_rect[1] + y_offset as f32 * y_scale) as u32,
       );
-      if pixel.0[0] == 0 && pixel.0[1] == 0 && pixel.0[2] == 0 && pixel.0[3] == 0 {
+      if pixel.0[3] == 0 {
         continue;
       }
       avatar_img.put_pixel(dest_rect[0] + x_offset, dest_rect[1] + y_offset, *pixel);

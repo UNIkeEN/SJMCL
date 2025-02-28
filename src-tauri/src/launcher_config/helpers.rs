@@ -1,5 +1,4 @@
-use crate::error::SJMCLResult;
-use crate::{storage::Storage, EXE_DIR};
+use crate::{error::SJMCLResult, EXE_DIR};
 use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
@@ -9,14 +8,10 @@ use tauri::{AppHandle, Manager};
 
 #[cfg(target_os = "windows")]
 use std::error::Error;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 use super::models::{GameDirectory, LauncherConfig};
-
-impl Storage for LauncherConfig {
-  fn file_path() -> PathBuf {
-    EXE_DIR.join("sjmcl.conf.json")
-  }
-}
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -106,10 +101,14 @@ pub fn get_java_paths() -> Vec<String> {
 
   // List java paths from System PATH variable
   #[cfg(target_os = "windows")]
-  let command_output = Command::new("where").arg("java").output();
+  let command_output = Command::new("where")
+    .arg("java")
+    // See https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
+    .creation_flags(0x08000000) // CREATE_NO_WINDOW
+    .output();
 
   #[cfg(any(target_os = "macos", target_os = "linux"))]
-  let command_output = Command::new("which").args(&["-a", "java"]).output();
+  let command_output = Command::new("which").args(["-a", "java"]).output();
 
   if let Ok(output) = command_output {
     if output.status.success() {
@@ -229,7 +228,7 @@ pub fn get_java_info_from_command(java_path: &str) -> Option<(String, String)> {
   let stderr_str = String::from_utf8_lossy(&stderr_bytes);
   let lines: Vec<&str> = stderr_str.lines().collect();
 
-  let mut vendor = "Unknown".to_string();
+  let vendor = "Unknown".to_string();
   let mut full_version = "0".to_string();
 
   if let Some(first_line) = lines.first() {

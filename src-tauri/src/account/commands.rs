@@ -1,5 +1,12 @@
 use super::{
-  helpers::{authlib_injector::fetch_auth_server, offline::offline_login},
+  constants::TEXTURE_ROLES,
+  helpers::{
+    authlib_injector::{
+      info::{fetch_auth_server, fetch_auth_url},
+      oauth, password,
+    },
+    offline,
+  },
   models::{AccountError, AccountInfo, AuthServer, Player},
 };
 use crate::{error::SJMCLResult, storage::Storage};
@@ -7,14 +14,14 @@ use tauri::AppHandle;
 use uuid::Uuid;
 
 #[tauri::command]
-pub fn retrive_player_list() -> SJMCLResult<Vec<Player>> {
+pub fn retrieve_player_list() -> SJMCLResult<Vec<Player>> {
   let state: AccountInfo = Storage::load().unwrap_or_default();
   let player_list: Vec<Player> = state.players.into_iter().map(Player::from).collect();
   Ok(player_list)
 }
 
 #[tauri::command]
-pub fn retrive_selected_player() -> SJMCLResult<Player> {
+pub fn retrieve_selected_player() -> SJMCLResult<Player> {
   let state: AccountInfo = Storage::load().unwrap_or_default();
   if state.selected_player_id.is_empty() {
     return Err(AccountError::NotFound.into());
@@ -41,54 +48,154 @@ pub fn update_selected_player(uuid: Uuid) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
-pub async fn add_player(
+pub async fn add_player_offline(app: AppHandle, username: String) -> SJMCLResult<()> {
+  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+
+  let new_player = offline::login(app, username).await?;
+
+  if state
+    .players
+    .iter()
+    .any(|player| player.uuid.to_string() == new_player.uuid.to_string())
+  {
+    return Err(AccountError::Duplicate.into());
+  }
+
+  state.selected_player_id = new_player.uuid.to_string();
+
+  state.players.push(new_player);
+  state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn add_player_3rdparty_oauth(app: AppHandle, auth_server_url: String) -> SJMCLResult<()> {
+  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+  let auth_server = state
+    .auth_servers
+    .iter()
+    .find(|server| server.auth_url == auth_server_url)
+    .ok_or(AccountError::NotFound)?
+    .clone();
+
+  let new_player = oauth::login(
+    app,
+    auth_server_url,
+    auth_server.features.openid_configuration_url,
+    auth_server.client_id,
+  )
+  .await?;
+
+  if state
+    .players
+    .iter()
+    .any(|player| player.uuid.to_string() == new_player.uuid.to_string())
+  {
+    return Err(AccountError::Duplicate.into());
+  }
+
+  state.selected_player_id = new_player.uuid.to_string();
+
+  state.players.push(new_player);
+  state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn add_player_3rdparty_password(
   app: AppHandle,
-  player_type: String,
+  auth_server_url: String,
   username: String,
   password: String,
-  auth_server_url: String,
+) -> SJMCLResult<()> {
+  let mut state: AccountInfo = Storage::load().unwrap_or_default();
+  let new_players = password::login(app, auth_server_url, username, password).await?;
+
+  if new_players.is_empty() {
+    return Err(AccountError::NotFound.into());
+  }
+
+  if new_players.len() == 1 {
+    state.selected_player_id = new_players[0].uuid.to_string();
+  }
+
+  let players_len_before = state.players.len();
+
+  for new_player in new_players {
+    if state
+      .players
+      .iter()
+      .any(|player| player.uuid.to_string() == new_player.uuid.to_string())
+    {
+      // if some of the players have already been added, skip and try others
+      continue;
+    }
+
+    state.players.push(new_player);
+  }
+
+  if players_len_before == state.players.len() {
+    // raise duplicate error only if all players are duplicated
+    return Err(AccountError::Duplicate.into());
+  }
+
+  state.save()?;
+
+  Ok(())
+}
+
+#[tauri::command]
+pub fn update_player_skin_offline_preset(
+  app: AppHandle,
+  uuid: Uuid,
+  preset_role: String,
 ) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
 
-  match player_type.as_str() {
-    "offline" => {
-      let player = offline_login(app, username).await?;
-      state.selected_player_id = player.uuid.to_string();
-      state.players.push(player);
-      state.save()?;
-      Ok(())
-    }
-    "microsoft" => {
-      // todo
-      Ok(())
-    }
-    "3rdparty" => {
-      // todo
-      Ok(())
-    }
-    _ => Err(AccountError::Invalid.into()),
+  let player = state
+    .players
+    .iter_mut()
+    .find(|player| player.uuid.to_string() == uuid.to_string())
+    .ok_or(AccountError::NotFound)?;
+
+  if player.player_type != "offline" {
+    return Err(AccountError::Invalid.into());
   }
+
+  if TEXTURE_ROLES.contains(&preset_role.as_str()) {
+    player.textures = offline::load_preset_skin(app, preset_role)?;
+  } else {
+    return Err(AccountError::TextureError.into());
+  }
+
+  state.save()?;
+
+  Ok(())
 }
 
 #[tauri::command]
 pub fn delete_player(uuid: Uuid) -> SJMCLResult<()> {
   let mut state: AccountInfo = Storage::load().unwrap_or_default();
 
-  if state.selected_player_id == uuid.to_string() {
-    state.selected_player_id = "".to_string();
-  }
-
   let initial_len = state.players.len();
   state.players.retain(|s| s.uuid != uuid);
   if state.players.len() == initial_len {
     return Err(AccountError::NotFound.into());
   }
+
+  if state.selected_player_id == uuid.to_string() {
+    state.selected_player_id = state
+      .players
+      .first()
+      .map_or("".to_string(), |player| player.uuid.to_string());
+  }
+
   state.save()?;
   Ok(())
 }
 
 #[tauri::command]
-pub fn retrive_auth_server_list() -> SJMCLResult<Vec<AuthServer>> {
+pub fn retrieve_auth_server_list() -> SJMCLResult<Vec<AuthServer>> {
   let state: AccountInfo = Storage::load().unwrap_or_default();
   Ok(state.auth_servers)
 }
@@ -100,9 +207,7 @@ pub async fn fetch_auth_server_info(mut url: String) -> SJMCLResult<AuthServer> 
   if !url.starts_with("http://") && !url.starts_with("https://") {
     url = format!("https://{}", url);
   }
-  if !url.ends_with("/api/yggdrasil") && !url.ends_with("/api/yggdrasil/") {
-    url = format!("{}/api/yggdrasil", url);
-  }
+  url = fetch_auth_url(url).await?;
 
   let state: AccountInfo = Storage::load().unwrap_or_default();
 

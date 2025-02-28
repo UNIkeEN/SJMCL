@@ -26,13 +26,12 @@ We warmly invite contributions from everyone.
 
 Copyright © 2024-2025 SJMCL Team.
 
-The software is distributed under [GNU General Public License v3.0](/LICENSE) license with the following additional terms:
-
-#### Additional terms under GPLv3 Section 7
-
-1. Use a different software name than SJMCL or SJMC Launcher;
-2. Do not send statisitics to our statisitics server (`src-tauri/src/utils/sys_info.rs`), otherwise send only version numbers of the origin repository.
-3. Mark clearly in about page that you program is based on SJMCL and give out the url of the origin repository.
-
 > NOT AN OFFICIAL MINECRAFT SERVICE. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
 
+The software is distributed under [GNU General Public License v3.0](/LICENSE).
+
+By GNUv3 License term 7, we require that when you distribute a modified version of the software, you must obey GNUv3 License as well as the following [additional terms](/LICENSE.EXTRA): 
+
+1. Use a different software name than SJMCL or SJMC Launcher;
+2. Do not remove the function of sending user statisitics to our statisitics server (`src-tauri/src/utils/sys_info.rs`), and send only version numbers with prefix (more than two letters, e.g. `XX-0.0.1`).
+3. Mark clearly in your repository README file, your distribution website or thread, Support documents, About Page in the software that you program is based on SJMCL and give out the url of the origin repository.

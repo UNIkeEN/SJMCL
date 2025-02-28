@@ -7,11 +7,11 @@ export interface GameInstanceSummary {
   description?: string;
   versionPath: string;
   version: string;
+  isVersionIsolated: boolean;
   modLoader: {
     loaderType: ModLoaderType;
     version?: string;
   };
-  hasSchemFolder: boolean;
 }
 
 export interface WorldInfo {
@@ -39,7 +39,9 @@ export interface LocalModInfo {
   name: string;
   translatedName?: string;
   version: string;
+  loaderType: ModLoaderType;
   fileName: string;
+  filePath: string;
   description?: string;
   potentialIncompatibility: boolean;
 }

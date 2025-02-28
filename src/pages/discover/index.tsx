@@ -1,7 +1,6 @@
 import { Button, HStack } from "@chakra-ui/react";
 import { Masonry } from "masonic";
 import { useRouter } from "next/router";
-import { mock } from "node:test";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuNewspaper, LuRefreshCcw } from "react-icons/lu";

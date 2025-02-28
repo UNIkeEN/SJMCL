@@ -1,5 +1,6 @@
-import { Avatar, AvatarBadge, HStack, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Avatar, AvatarBadge, HStack, Icon, Tag, Text } from "@chakra-ui/react";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuCircleCheck,
@@ -16,14 +17,20 @@ import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { InstanceSubdirEnums } from "@/enums/instance";
-import { LocalModInfo } from "@/models/game-instance";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { useToast } from "@/contexts/toast";
+import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
+import { LocalModInfo } from "@/models/instance";
+import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceModsPage = () => {
   const { t } = useTranslation();
+  const toast = useToast();
   const { summary, openSubdir, getLocalModList } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
+  const { openSharedModal } = useSharedModals();
+  const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
@@ -31,6 +38,48 @@ const InstanceModsPage = () => {
   useEffect(() => {
     setLocalMods(getLocalModList() || []);
   }, [getLocalModList]);
+
+  const handleToggleModByExtension = useCallback(
+    (filePath: string, enable: boolean) => {
+      console.warn(filePath, enable);
+      InstanceService.toggleModByExtension(filePath, enable).then(
+        (response) => {
+          if (response.status === "success") {
+            setLocalMods((prevMods) =>
+              prevMods.map((prev) => {
+                if (prev.filePath === filePath) {
+                  let newFilePath = prev.filePath;
+                  if (enable && newFilePath.endsWith(".disabled")) {
+                    newFilePath = newFilePath.slice(0, -9);
+                  }
+                  if (!enable && !newFilePath.endsWith(".disabled")) {
+                    newFilePath = newFilePath + ".disabled";
+                  }
+
+                  return {
+                    ...prev,
+                    filePath: newFilePath,
+                    enabled: enable,
+                  };
+                }
+                return prev;
+              })
+            );
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+            if (response.raw_error === "FILE_NOT_FOUND_ERROR") {
+              setLocalMods(getLocalModList(true) || []);
+            }
+          }
+        }
+      );
+    },
+    [toast, getLocalModList]
+  );
 
   const modSecMenuOperations = [
     {
@@ -45,7 +94,11 @@ const InstanceModsPage = () => {
     },
     {
       icon: "download",
-      onClick: () => {},
+      onClick: () => {
+        openSharedModal("download-resource", {
+          initialResourceType: "mod",
+        });
+      },
     },
     {
       icon: LuClockArrowUp,
@@ -54,7 +107,7 @@ const InstanceModsPage = () => {
     },
     {
       icon: LuSearch,
-      label: "search",
+      label: t("InstanceModsPage.modList.menu.search"),
       onClick: () => {},
     },
     {
@@ -81,21 +134,16 @@ const InstanceModsPage = () => {
       icon: mod.enabled ? LuCircleMinus : LuCircleCheck,
       danger: false,
       onClick: () => {
-        // TBD, only mock operation in frontend
-        setLocalMods((prevMods) =>
-          prevMods.map((prev) =>
-            prev.fileName === mod.fileName
-              ? { ...prev, enabled: !prev.enabled }
-              : prev
-          )
-        );
+        handleToggleModByExtension(mod.filePath, !mod.enabled);
       },
     },
     {
       label: "",
       icon: "revealFile", // use common-icon-button predefined icon
       danger: false,
-      onClick: () => {},
+      onClick: () => {
+        revealItemInDir(mod.filePath);
+      },
     },
     {
       label: t("InstanceModsPage.modList.menu.info"),
@@ -151,6 +199,13 @@ const InstanceModsPage = () => {
           </HStack>
         }
       >
+        {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
+          localMods.length > 0 && (
+            <HStack fontSize="xs" color="red.500" mt={-0.5} ml={1.5} mb={2}>
+              <Icon as={LuTriangleAlert} />
+              <Text>{t("InstanceModsPage.modList.warning")}</Text>
+            </HStack>
+          )}
         {localMods.length > 0 ? (
           <OptionItemGroup
             items={localMods.map((mod) => (
@@ -160,12 +215,21 @@ const InstanceModsPage = () => {
                 title={
                   mod.translatedName
                     ? `${mod.translatedName}｜${mod.name}`
-                    : mod.name
+                    : mod.name || mod.fileName
                 }
                 titleExtra={
-                  <Text fontSize="xs" className="secondary-text no-select">
-                    {mod.version}
-                  </Text>
+                  <HStack>
+                    {mod.version && (
+                      <Text fontSize="xs" className="secondary-text no-select">
+                        {mod.version}
+                      </Text>
+                    )}
+                    {mod.loaderType !== ModLoaderEnums.Unknown && (
+                      <Tag colorScheme={primaryColor} className="tag-xs">
+                        {mod.loaderType}
+                      </Tag>
+                    )}
+                  </HStack>
                 }
                 description={
                   <Text
@@ -173,21 +237,29 @@ const InstanceModsPage = () => {
                     overflow="hidden"
                     className="secondary-text no-select ellipsis-text" // only show one line
                   >
-                    {`${mod.fileName}: ${mod.description}`}
+                    {mod.fileName}
+                    {mod.description ? `: ${mod.description}` : ""}
                   </Text>
                 }
                 prefixElement={
                   <Avatar
                     src={base64ImgSrc(mod.iconSrc)}
-                    name={mod.name}
+                    name={mod.name || mod.fileName}
                     boxSize="28px"
                     borderRadius="4px"
                     style={{
                       filter: mod.enabled ? "none" : "grayscale(90%)",
+                      opacity: mod.enabled ? 1 : 0.5,
                     }}
                   >
                     <AvatarBadge
-                      bg={mod.enabled ? "green" : "gray"}
+                      bg={
+                        mod.enabled
+                          ? mod.potentialIncompatibility
+                            ? "orange"
+                            : "green"
+                          : "black" // black with 0.5 opacity looks like gray.
+                      }
                       boxSize="0.75em"
                       borderWidth={2}
                     />

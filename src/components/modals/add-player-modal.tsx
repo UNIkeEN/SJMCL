@@ -1,5 +1,6 @@
 import {
   Button,
+  Card,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -35,6 +36,7 @@ import {
   LuLink2Off,
   LuPlus,
   LuServer,
+  LuSquareUserRound,
 } from "react-icons/lu";
 import SegmentedControl from "@/components/common/segmented";
 import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
@@ -42,6 +44,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { AuthServer } from "@/models/account";
+import { InvokeResponse } from "@/models/response";
 import { AccountService } from "@/services/account";
 
 interface AddPlayerModalProps extends Omit<ModalProps, "children"> {
@@ -55,21 +58,21 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   ...modalProps
 }) => {
   const { t } = useTranslation();
+  const toast = useToast();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
+
   const { getAuthServerList, getPlayerList, getSelectedPlayer } = useData();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
-  useEffect(() => {
-    setAuthServerList(getAuthServerList() || []);
-  }, [getAuthServerList]);
-  const toast = useToast();
   const [playerType, setPlayerType] = useState<
     "offline" | "microsoft" | "3rdparty"
   >("offline");
   const [playername, setPlayername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [authServer, setAuthServer] = useState<AuthServer>();
+  const [authServer, setAuthServer] = useState<AuthServer>(); // selected auth server
+  const [showOAuth, setShowOAuth] = useState<boolean>(false); // show OAuth button instead of username and password input.
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { config } = useLauncherConfig();
-  const primaryColor = config.appearance.theme.primaryColor;
+
   const initialRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -77,6 +80,10 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     onOpen: onAddAuthServerModalOpen,
     onClose: onAddAuthServerModalClose,
   } = useDisclosure();
+
+  useEffect(() => {
+    setAuthServerList(getAuthServerList() || []);
+  }, [getAuthServerList]);
 
   useEffect(() => {
     setPlayerType(initialPlayerType);
@@ -95,20 +102,45 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   }, [initialAuthServerUrl, getAuthServerList, authServerList]);
 
   useEffect(() => {
+    if (
+      playerType === "3rdparty" &&
+      authServer?.features.openidConfigurationUrl &&
+      authServer.clientId
+    ) {
+      setShowOAuth(true); // if support, first show OAuth
+    } else {
+      setShowOAuth(false);
+    }
+  }, [authServer, playerType]);
+
+  useEffect(() => {
     setPassword("");
     initialRef.current?.focus();
   }, [playerType]);
 
   const isOfflinePlayernameValid = /^[a-zA-Z0-9_]{0,16}$/.test(playername);
 
-  const handleLogin = () => {
+  const handleLogin = (isOAuth = false) => {
+    let loginServiceFunction: () => Promise<InvokeResponse<void>>;
+    if (isOAuth && authServer) {
+      loginServiceFunction = () =>
+        AccountService.addPlayer3rdPartyOAuth(authServer.authUrl);
+    } else if (playerType === "offline") {
+      loginServiceFunction = () => AccountService.addPlayerOffline(playername);
+    } else if (playerType === "3rdparty" && authServer) {
+      loginServiceFunction = () =>
+        AccountService.addPlayer3rdPartyPassword(
+          authServer.authUrl,
+          playername,
+          password
+        );
+    } else {
+      return;
+    }
+
     setIsLoading(true);
-    AccountService.addPlayer(
-      playerType,
-      playername,
-      password,
-      authServer?.authUrl || ""
-    )
+
+    loginServiceFunction()
       .then((response) => {
         if (response.status === "success") {
           getPlayerList(true);
@@ -263,42 +295,67 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                         </Text>
                       </HStack>
                     </FormControl>
-                    {authServer?.authUrl && (
-                      <>
-                        <FormControl isRequired>
-                          <FormLabel>
-                            {t(
-                              `AddPlayerModal.3rdparty.${authServer.features.nonEmailLogin ? "emailOrPlayerName" : "email"}.label`
-                            )}
-                          </FormLabel>
-                          <Input
-                            placeholder={t(
-                              `AddPlayerModal.3rdparty.${authServer.features.nonEmailLogin ? "emailOrPlayerName" : "email"}.placeholder`
-                            )}
-                            value={playername}
-                            onChange={(e) => setPlayername(e.target.value)}
-                            required
-                            ref={initialRef}
-                            focusBorderColor={`${primaryColor}.500`}
-                          />
-                        </FormControl>
-                        <FormControl isRequired>
-                          <FormLabel>
-                            {t("AddPlayerModal.3rdparty.password.label")}
-                          </FormLabel>
-                          <Input
-                            placeholder={t(
-                              "AddPlayerModal.3rdparty.password.placeholder"
-                            )}
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            focusBorderColor={`${primaryColor}.500`}
-                          />
-                        </FormControl>
-                      </>
-                    )}
+                    {authServer?.authUrl &&
+                      (!showOAuth ? (
+                        <>
+                          <FormControl isRequired>
+                            <FormLabel>
+                              {t(
+                                `AddPlayerModal.3rdparty.${authServer.features.nonEmailLogin ? "emailOrPlayerName" : "email"}.label`
+                              )}
+                            </FormLabel>
+                            <Input
+                              placeholder={t(
+                                `AddPlayerModal.3rdparty.${authServer.features.nonEmailLogin ? "emailOrPlayerName" : "email"}.placeholder`
+                              )}
+                              value={playername}
+                              onChange={(e) => setPlayername(e.target.value)}
+                              required
+                              ref={initialRef}
+                              focusBorderColor={`${primaryColor}.500`}
+                            />
+                          </FormControl>
+                          <FormControl isRequired>
+                            <FormLabel>
+                              {t("AddPlayerModal.3rdparty.password.label")}
+                            </FormLabel>
+                            <Input
+                              placeholder={t(
+                                "AddPlayerModal.3rdparty.password.placeholder"
+                              )}
+                              type="password"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              required
+                              focusBorderColor={`${primaryColor}.500`}
+                            />
+                          </FormControl>
+                        </>
+                      ) : (
+                        <Card
+                          h="136px" // same as to inputs
+                          w="100%"
+                          display="flex"
+                          flexDirection="column"
+                          alignItems="center"
+                          justifyContent="center"
+                        >
+                          <VStack>
+                            <Text fontSize="sm">
+                              {t(
+                                "AddPlayerModal.3rdparty.authServer.supportOAuth"
+                              )}
+                            </Text>
+                            <Button
+                              colorScheme={primaryColor}
+                              onClick={() => handleLogin(true)}
+                              isLoading={isLoading}
+                            >
+                              {t("AddPlayerModal.button.beginOAuth")}
+                            </Button>
+                          </VStack>
+                        </Card>
+                      ))}
                   </>
                 )}
               </>
@@ -323,33 +380,54 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             </HStack>
           )}
           {playerType === "3rdparty" &&
-            authServer?.features.openidConfigurationUrl && (
-              <Button
-                variant="outline"
-                colorScheme={primaryColor}
-                leftIcon={<LuKeyRound />}
-              >
-                {t("AddPlayerModal.button.loginOAuth")}
-              </Button>
-            )}
+            authServer?.features.openidConfigurationUrl &&
+            (showOAuth ? (
+              <HStack spacing={2}>
+                <LuKeyRound />
+                <Button
+                  variant="link"
+                  colorScheme={primaryColor}
+                  onClick={() => {
+                    setShowOAuth(false);
+                  }}
+                >
+                  {t("AddPlayerModal.button.usePasswordLogin")}
+                </Button>
+              </HStack>
+            ) : (
+              <HStack spacing={2}>
+                <LuSquareUserRound />
+                <Button
+                  variant="link"
+                  colorScheme={primaryColor}
+                  onClick={() => {
+                    setShowOAuth(true);
+                  }}
+                >
+                  {t("AddPlayerModal.button.useOAuthLogin")}
+                </Button>
+              </HStack>
+            ))}
           <HStack spacing={3} ml="auto">
             <Button variant="ghost" onClick={modalProps.onClose}>
               {t("General.cancel")}
             </Button>
-            <Button
-              colorScheme={primaryColor}
-              onClick={handleLogin}
-              isLoading={isLoading}
-              isDisabled={
-                !playername ||
-                (playerType === "offline" && !isOfflinePlayernameValid) ||
-                (playerType === "3rdparty" &&
-                  authServerList.length > 0 &&
-                  (!authServer || !password))
-              }
-            >
-              {t("General.confirm")}
-            </Button>
+            {!showOAuth && (
+              <Button
+                colorScheme={primaryColor}
+                onClick={() => handleLogin()}
+                isLoading={isLoading}
+                isDisabled={
+                  !playername ||
+                  (playerType === "offline" && !isOfflinePlayernameValid) ||
+                  (playerType === "3rdparty" &&
+                    authServerList.length > 0 &&
+                    (!authServer || !password))
+                }
+              >
+                {t("General.confirm")}
+              </Button>
+            )}
           </HStack>
         </ModalFooter>
       </ModalContent>

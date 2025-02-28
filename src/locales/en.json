@@ -24,6 +24,10 @@
           "title": "BMCLAPI",
           "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
         },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "Some design and code implementation are referenced from this open-source project"
+        },
         "littleskin": {
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
@@ -50,7 +54,7 @@
         },
         "openSourceLicense": {
           "title": "Open Source License",
-          "description": "Licensed under the GNU General Public License v3.0"
+          "description": "Licensed under the GNU General Public License v3.0, with additional terms."
         }
       }
     }
@@ -131,7 +135,7 @@
       "playerName": {
         "label": "Player Name",
         "placeholder": "Player name",
-        "errorMessage": "Can only contain letters, numbers, and underscores, within 16 characters."
+        "errorMessage": "Can only contain letters, numbers and underscores, within 16 characters."
       }
     },
     "3rdparty": {
@@ -139,7 +143,8 @@
         "label": "Auth Source",
         "selectSource": "Select Auth Source",
         "noSource": "No auth source added.",
-        "addSource": "Add one"
+        "addSource": "Add one",
+        "supportOAuth": "This auth source supports the Yggdrasil Connect Proposal"
       },
       "email": {
         "label": "Email",
@@ -147,7 +152,7 @@
       },
       "emailOrPlayerName": {
         "label": "Email or Player Name",
-        "placeholder": "Email or player name"
+        "placeholder": "Email or Player Name"
       },
       "password": {
         "label": "Password",
@@ -156,7 +161,9 @@
     },
     "button": {
       "buyMinecraft": "Buy Minecraft",
-      "loginOAuth": "Login with OAuth"
+      "beginOAuth": "Start OAuth Login",
+      "useOAuthLogin": "OAuth Login",
+      "usePasswordLogin": "Account & Password Login"
     }
   },
   "AllGamesPage": {
@@ -243,6 +250,29 @@
       "mascot": "Team Mascot"
     }
   },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "Copy or Move Resource"
+    },
+    "operation": {
+      "copy": "Copy",
+      "move": "Move"
+    },
+    "tag": {
+      "source": "Source"
+    },
+    "body": "to",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "Resource Packs",
+      "Saves": "World",
+      "Schematics": "Schematic",
+      "ShaderPacks": "Shader Packs"
+    },
+    "error": {
+      "lackOfArguments": "Missing necessary parameters. Please have the developer check the code"
+    }
+  },
   "CreateInstanceModal": {
     "header": {
       "title": "Create New Instance"
@@ -254,22 +284,26 @@
       "info": "Basic Settings"
     }
   },
-  "DeleteGameAlertDialog": {
+  "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
-      "content": "Are you sure you want to delete the game instance \"{{gameName}}\" ?"
+      "content": "Confirm delete the game instance \"{{gameName}}\" ? It will be lost forever! (A long time!)",
+      "warning": {
+        "withVerIso": "Please note that since version isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
+        "woVerIso": "Please note that if version isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
+      }
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Delete Player",
-      "content": "Are you sure you want to delete the player \"{{name}}\" ?"
+      "content": "Confirm delete the player \"{{name}}\" ? This cannot be undone!"
     }
   },
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "Delete Authentication Server",
-      "content": "Are you sure you want to delete the authentication server \"{{name}}\" ?"
+      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
   "DiscoverPage": {
@@ -289,6 +323,11 @@
   },
   "DownloadFloatButton": {
     "tooltip": "Downloading"
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "Download Modpack"
+    }
   },
   "DownloadResourceModal": {
     "header": {
@@ -356,6 +395,19 @@
           "title": "Port"
         }
       }
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "Downloading Tasks",
+    "button": {
+      "settings": "Download Settings",
+      "pause": "Pause",
+      "begin": "Start",
+      "retry": "Retry"
+    },
+    "label": {
+      "paused": "Paused",
+      "error": "Error"
     }
   },
   "Editable": {
@@ -438,6 +490,73 @@
       "windows": "File Explorer"
     }
   },
+  "GameAdvancedSettingsModal": {
+    "header": {
+      "title": "Advanced Settings"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "customCommands": {
+      "title": "Custom Commands",
+      "settings": {
+        "minecraftArgument": {
+          "title": "Launcher Argument",
+          "placeholder": "Default"
+        },
+        "precallCommand": {
+          "title": "Pre-launch Command",
+          "placeholder": "Commands to execute before the game launches"
+        },
+        "wrapperLauncher": {
+          "title": "Wrapper Command",
+          "placeholder": "Allows launching using an extra wrapper program like \"optirun\" on Linux"
+        },
+        "postExitCommand": {
+          "title": "Post-exit Command",
+          "placeholder": "Commands to execute after game exits"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Java VM Options",
+      "settings": {
+        "args": {
+          "title": "JVM VM Argument"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "PermGen Space",
+          "placeholder": "in MB"
+        },
+        "environmentVariable": {
+          "title": "Environment Variables"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Workaround",
+      "settings": {
+        "noJvmArgs": "Do not add default Java VM arguments",
+        "gameCompletnessCheckPolicy": {
+          "title": "Game File Integrity Check Policy",
+          "disable": "Disable Check",
+          "normal":"Normal Check",
+          "full":"Full Check"
+        },
+        "dontCheckJvmValidity": {
+          "title": "Do not check Java VM compatibility"
+        },
+        "dontPatchNatives": {
+          "title": "Do not attempt to automatically replace native libraries"
+        },
+        "useNativeGlfw": {
+          "title": "Use System GLFW(Linux Only)"
+        },
+        "useNativeOpenal": {
+          "title": "Use System OpenAL(Linux Only)"
+        }
+      }
+    }
+  },
   "GameErrorPage": {
     "title": "Game exited unexpectedly. Check the logs or seek assistance.",
     "basicInfo": {
@@ -459,7 +578,7 @@
       "gameLogs": "Game Logs",
       "help": "Help"
     },
-    "bottomAlert": "Export and send the crash report instead of a screenshot for help."
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
@@ -551,7 +670,7 @@
       },
       "deleteDialog": {
         "title": "Delete Game Directory",
-        "content": "Are you sure you want to delete the game directory {{dirName}} ? (only from the launcher, not the actual directory files)"
+        "content": "Confirm the removal of game directory {{dirName}} ? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
       }
     },
     "gameJava": {
@@ -577,7 +696,7 @@
         },
         "customInfo": {
           "title": "Custom Information",
-          "description": "It is displayed in the bottom right corner of the game's main screen and top left corner of the F3 debugging page."
+          "description": "It is displayed in the bottom right corner of the game's main screen and the top left corner of the F3 debugging page."
         }
       }
     },
@@ -626,7 +745,8 @@
           "title": "Display Game Logs"
         },
         "enableAdvancedOptions": {
-          "title": "Enable Advanced Options"
+          "title": "Enable Advanced Options",
+          "button": "Edit Advanced Settings"
         }
       }
     }
@@ -681,7 +801,7 @@
     }
   },
   "InstanceBasicSettings": {
-    "selectDirectory": "Select Game Diretory"
+    "selectDirectory": "Select Game Directory"
   },
   "InstanceLayout": {
     "secMenu": {
@@ -707,10 +827,12 @@
     },
     "modList": {
       "title": "Mods",
+      "warning": "Mod loader not found, these mods may not work properly",
       "menu": {
         "alert": "Potentially incompatible",
         "info": "Mod Info",
-        "update": "Update"
+        "update": "Update",
+        "search": "Search"
       }
     }
   },
@@ -828,6 +950,9 @@
     "steve": "Steve",
     "alex": "Alex"
   },
+  "ViewSkinModal": {
+    "skinView": "View Skin"
+  },
   "MemoryStatusProgress": {
     "title": "Memory Status",
     "info": "{{used}} / {{total}} GB used",
@@ -852,7 +977,8 @@
   },
   "PlayerMenu": {
     "label": {
-      "skin": "Manage Skin",
+      "manageSkin": "Manage Skin",
+      "viewSkin": "View Skin",
       "delete": "Delete"
     }
   },
@@ -1018,11 +1144,46 @@
         "Shadows": "Shadows"
       }
     },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Adventure and RPG": "Adventure RPG",
+        "Combat / PvP": "Combat PvP",
+        "Exploration": "Exploration",
+        "Extra Large": "Extra Large",
+        "FTB Official Pack": "FTB",
+        "Hardcore": "Hardcore",
+        "Horror": "Horror",
+        "Magic": "Magic",
+        "Map Based": "Map Based",
+        "Mini Game": "Mini Game",
+        "Multiplayer": "Multiplayer",
+        "Quests": "Quests",
+        "Sci-Fi": "Sci-Fi",
+        "Skyblock": "Skyblock",
+        "Small / Light": "Small Light",
+        "Tech": "Tech",
+        "Vanilla+": "Vanilla+"
+      },
+      "Modrinth": {
+        "All": "All",
+        "Adventure": "Adventure",
+        "Challenging": "Challenging",
+        "Combat": "Combat",
+        "Kitchen Sink": "Kitchen Sink",
+        "Lightweight": "Lightweight",
+        "Magic": "Magic",
+        "Multiplayer": "Multiplayer",
+        "Optimization": "Optimization",
+        "Quests": "Quests",
+        "Technology": "Technology"
+      }
+    },
     "sortByList": {
       "CurseForge": {
         "Relevancy": "Relevancy",
         "Popularity": "Popularity",
-        "Lastest update": "Lastest update",
+        "Latest update": "Latest update",
         "Creation date": "Creation date",
         "Total downloads": "Total downloads",
         "A-Z": "A-Z"
@@ -1050,7 +1211,7 @@
   },
   "Services": {
     "config": {
-      "retriveLauncherConfig": {
+      "retrieveLauncherConfig": {
         "error": {
           "title": "Failed to get launcher settings"
         }
@@ -1087,7 +1248,7 @@
           }
         }
       },
-      "retriveCustomBackgroundList": {
+      "retrieveCustomBackgroundList": {
         "success": "Successfully retrieved custom background list",
         "error": {
           "title": "Failed to retrieve custom background list"
@@ -1105,21 +1266,56 @@
           "title": "Failed to delete custom background"
         }
       },
-      "retriveJavaList": {
+      "retrieveJavaList": {
         "error": {
           "title": "Failed to retrieve installed Java list"
         }
       }
     },
     "account": {
-      "addPlayer": {
-        "success": "Successfully added player",
+      "addPlayerOffline": {
+        "success": "Successfully added offline player",
         "error": {
-          "title": "Failed to add player",
+          "title": "Failed to add offline player",
           "description": {
-            "invalid": "Invalid player type",
-            "textureError": "Failed to get player texture",
-            "authServerError": "Failed to get player authentication information"
+            "duplicate": "Player already exists",
+            "textureError": "Unable to get player texture"
+          }
+        }
+      },
+      "addPlayer3rdPartyOAuth": {
+        "success": "Successfully added player using OAuth",
+        "error": {
+          "title": "Failed to add player using OAuth",
+          "description": {
+            "duplicate": "Player already exists",
+            "authServerError": "Unable to connect to authentication server, or OAuth is not enabled",
+            "notFound": "The authentication server does not exist",
+            "textureError": "Unable to get player texture",
+            "cancelled": "OAuth login cancelled"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "Successfully added player using password",
+        "error": {
+          "title": "Failed to add player using password",
+          "description": {
+            "duplicate": "Player already exists",
+            "authServerError": "Unable to connect to authentication server",
+            "textureError": "Unable to get player texture",
+            "invalid": "Wrong account or password"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "Successfully updated player skin",
+        "error": {
+          "title": "Failed to update player skin",
+          "description": {
+            "notFound": "The player does not exist",
+            "invalid": "The player type is invalid",
+            "textureError": "Unable to get player texture"
           }
         }
       },
@@ -1162,7 +1358,7 @@
       }
     },
     "resource": {
-      "retriveGameVersionList": {
+      "retrieveGameVersionList": {
         "error": {
           "title": "Failed to retrieve game version list",
           "description": {
@@ -1173,7 +1369,7 @@
       }
     },
     "instance": {
-      "retriveInstanceList": {
+      "retrieveInstanceList": {
         "error": {
           "title": "Failed to retrieve instance list"
         }
@@ -1187,42 +1383,83 @@
           }
         }
       },
-      "retriveWorldList": {
+      "deleteInstance": {
+        "success": "Successfully deleted instance",
         "error": {
-          "title": "Failed to retrive world list"
+          "title": "Failed to delete instance",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist"
+          }
         }
       },
-      "retriveGameServerList": {
+      "retrieveWorldList": {
         "error": {
-          "title": "Failed to retraive game server list",
+          "title": "Failed to retrieve world list"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "Failed to retrieve game server list",
           "description": {
             "serverNbtReadError": "server.dat may have been corrupted"
           }
         }
       },
-      "retriveResourcePackList": {
+      "retrieveResourcePackList": {
         "error": {
-          "title": "Failed to retrive resource pack list"
+          "title": "Failed to retrieve resource pack list"
         }
       },
-      "retriveServerResourcePackList": {
+      "retrieveServerResourcePackList": {
         "error": {
-          "title": "Failed to retrive resource pack list from servers"
+          "title": "Failed to retrieve resource pack list from servers"
         }
       },
-      "retriveSchematicList": {
+      "retrieveSchematicList": {
         "error": {
-          "title": "Failed to retrive schematic list"
+          "title": "Failed to retrieve schematic list"
         }
       },
-      "retriveShaderPackList": {
+      "retrieveShaderPackList": {
         "error": {
-          "title": "Failed to retrive shader pack list"
+          "title": "Failed to retrieve shader pack list"
         }
       },
-      "retriveScreenshotList": {
+      "retrieveScreenshotList": {
         "error": {
-          "title": "Failed to retrive screenshot list"
+          "title": "Failed to retrieve screenshot list"
+        }
+      },
+      "copyAcrossInstances": {
+        "success": "Successfully copied resource",
+        "error": {
+          "title": "Failed to copy resource",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
+            "invalidSourcePath": "Invalid source path",
+            "fileCopyFailed": "File copy failed",
+            "folderCreationFailed": "Destination folder creation failed"
+          }
+        }
+      },
+      "moveAcrossInstances": {
+        "success": "Successfully moved resource",
+        "error": {
+          "title": "Failed to move resource",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist or has a type error",
+            "invalidSourcePath": "Invalid source path",
+            "fileMoveFailed": "File move failed",
+            "folderCreationFailed": "Destination folder creation failed"
+          }
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "Mod state toggle failed",
+          "description": {
+            "fileNotFoundError": "The mod file does not exist, it may have been renamed, moved, or deleted"
+          }
         }
       }
     }
@@ -1295,7 +1532,7 @@
     "label": {
       "token": "Token"
     },
-    "helper": "Enter the token above into the device to be synced",
+    "helper": "Enter the token above into the device to export to",
     "countdown": "{{seconds}} seconds until refresh"
   },
   "SyncConfigImportModal": {
@@ -1305,7 +1542,7 @@
     "label": {
       "token": "Token"
     },
-    "helper": "Enter the token generated by the device to be synced"
+    "helper": "Enter the token generated by the device to import from"
   },
   "Utils": {
     "datetime": {

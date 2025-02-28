@@ -48,6 +48,11 @@ jobs:
               exit 1
             fi
             echo "✅ Git tag version matches package version: $TAG_VERSION"
+          else
+            COMMIT_HASH=$(git rev-parse HEAD)
+            COMMIT_HASH=${COMMIT_HASH:0:6}
+            PKG_VERSION="$PKG_VERSION"-"$COMMIT_HASH"
+            echo "Not a tag, using package version with commit hash: $PKG_VERSION"
           fi
           
           # Set the version as output
@@ -63,17 +68,20 @@ jobs:
             target: x86_64-pc-windows-msvc
             platform: windows
             arch: x86_64
-          # macos-large just doesn't start; job fails so it's disabled currently.
-          # - os: macos-latest-large
-          #   target: x86_64-apple-darwin
-          #   platform: macos
-          #   arch: x86_64
+          - os: windows-latest
+            target: i686-pc-windows-msvc
+            platform: windows
+            arch: i686
           - os: macos-latest
             target: aarch64-apple-darwin
             platform: macos
             arch: aarch64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            platform: macos
+            arch: x86_64
           - os: ubuntu-latest
-            target: x86_64-linux-gnu
+            target: x86_64-unknown-linux-gnu
             platform: linux
             arch: x86_64
 
@@ -87,12 +95,11 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
+      # See https://github.com/tauri-apps/tauri-action
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
+          targets: ${{ matrix.platform == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Install Linux dependencies
         if: matrix.platform == 'linux'
@@ -103,7 +110,9 @@ jobs:
           sudo apt-get install -y rpm
 
       - name: Install frontend dependencies
-        run: npm install
+        run: |
+          npm install -g pnpm
+          pnpm install
 
       - name: Remove Font files (MacOS)
         if: matrix.platform == 'macos'
@@ -111,11 +120,14 @@ jobs:
           rm -r public/fonts/Sinter/
           rm src/styles/fonts.css
           touch src/styles/fonts.css
+      
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          key: ${{ matrix.platform }}-${{ matrix.target }}
 
       - name: Build the app
-        run: npm run tauri build
-        env:
-          RUST_TARGET: ${{ matrix.target }}
+        run: pnpm run tauri build --target ${{ matrix.target }}
 
       - name: Prepare release artifact
         shell: bash
@@ -124,52 +136,31 @@ jobs:
         run: |
           ARTIFACT_NAME="SJMCL_${{ env.VERSION }}_${{ matrix.platform }}_${{ matrix.arch }}"
           echo "Artifact Name: $ARTIFACT_NAME"
+          mkdir artifacts
           if [ "${{ matrix.platform }}" = "windows" ]; then
             # For Windows, copy the portable exe
-            cp "src-tauri/target/release/SJMCL.exe" "$ARTIFACT_NAME".exe
+            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
+            mv "src-tauri/target/${{ matrix.target }}/release/bundle/msi/"*.msi artifacts/"$ARTIFACT_NAME".msi
+            ls -la artifacts
           elif [ "${{ matrix.platform }}" = "macos" ]; then
             # For MacOS, compress the .app folder
-            cd "src-tauri/target/release/bundle/macos"
-            tar -cvzf "../../../../../$ARTIFACT_NAME.tar.gz" "SJMCL.app"
-            cd "../../../../../"
-            ls -la
+            tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "SJMCL.app"
+            ls -la artifacts
           elif [ "${{ matrix.platform }}" = "linux" ]; then
-                mv "src-tauri/target/release/bundle/appimage/"*.AppImage "$ARTIFACT_NAME".AppImage
-                mv "src-tauri/target/release/bundle/deb/"*.deb "$ARTIFACT_NAME".deb
-                mv "src-tauri/target/release/bundle/rpm/"*.rpm "$ARTIFACT_NAME".rpm
-                cd "src-tauri/target/release"
-                tar -cvzf "../../../$ARTIFACT_NAME.tar.gz" "SJMCL"
-                cd "../../../"
+            mv "src-tauri/target/${{ matrix.target }}/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
+            mv "src-tauri/target/${{ matrix.target }}/release/bundle/deb/"*.deb artifacts/"$ARTIFACT_NAME".deb
+            mv "src-tauri/target/${{ matrix.target }}/release/bundle/rpm/"*.rpm artifacts/"$ARTIFACT_NAME".rpm
+            tar -cvzf artifacts/"$ARTIFACT_NAME".tar.gz -C "src-tauri/target/${{ matrix.target }}/release" "SJMCL"
+            ls -la artifacts
           fi
           
-          echo "ARTIFACT_PATH=$ARTIFACT_NAME" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
 
-      - name: Upload artifact (Windows/exe)
-        if: matrix.platform == 'windows'
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_PATH }}
-          path: SJMCL_*.exe
-          if-no-files-found: error
-
-      - name: Upload artifact (MacOS/app)
-        if: matrix.platform == 'macos'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_PATH }}
-          path: SJMCL_*.tar.gz
-          if-no-files-found: error
-
-      - name: Upload artifact (Linux/deb, rpm, AppImage)
-        if: matrix.platform == 'linux'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_PATH }}
-          path: |
-            SJMCL_*.deb
-            SJMCL_*.rpm
-            SJMCL_*.AppImage
-            SJMCL_*.tar.gz
+          name: ${{ env.ARTIFACT_NAME }}
+          path: "artifacts/*"
           if-no-files-found: error
 
   Create-Release:
@@ -178,10 +169,12 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
-        
+        with:
+          path: artifacts
+
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -189,11 +182,11 @@ jobs:
         run: |
           RELEASE_TAG="${{ env.VERSION }}"
 
-          ls -la
+          ls -la ./artifacts/*/*
           
           # Create the release
           gh release create "$GITHUB_REF_NAME" \
             --title "SJMCL ${{ env.VERSION }}" \
             --draft \
             $PRERELEASE \
-            ./**/*{.AppImage,.deb,.exe,.rpm,.tar.gz}
+            ./artifacts/*/*

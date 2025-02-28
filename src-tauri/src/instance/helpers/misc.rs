@@ -1,12 +1,26 @@
 use super::super::models::{Instance, InstanceSubdirType, ModLoader};
+use super::client::load_client_info_from_json;
 use crate::{
-  instance::models::ModLoaderType,
+  instance::helpers::client::patchs_to_info,
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
-use serde_json::Value;
 use std::{fs, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
+
+pub fn get_instance_client_json_path(app: &AppHandle, instance_id: usize) -> Option<PathBuf> {
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let state = binding.lock().unwrap();
+  let instance = state.get(instance_id)?;
+
+  let version_path = &instance.version_path;
+  let game_name = version_path
+    .file_name()
+    .unwrap()
+    .to_string_lossy()
+    .to_string();
+  let json_path = version_path.join(format!("{}.json", game_name));
+  Some(json_path)
+}
 
 // if instance_id not exists, return None
 pub fn get_instance_subdir_path(
@@ -16,16 +30,13 @@ pub fn get_instance_subdir_path(
 ) -> Option<PathBuf> {
   let binding = app.state::<Mutex<Vec<Instance>>>();
   let state = binding.lock().unwrap();
-  let instance = match state.get(instance_id) {
-    Some(v) => v,
-    None => return None,
-  };
+  let instance = state.get(instance_id)?;
 
   let version_path = &instance.version_path;
   let game_dir = version_path.parent().unwrap().parent().unwrap(); // TODO: remove unwrap
 
   // TODO: function to extract config
-  let version_isolation = match &instance.game_config {
+  let version_isolation = match &instance.spec_game_config {
     Some(v) => v.version_isolation,
     None => {
       app
@@ -89,22 +100,25 @@ pub async fn refresh_instances(
     }
 
     // TODO: read the config file if exists, else create one
-    // TODO: determine the version isolation strategy
 
-    instances.push(Instance {
-      id: 0, // not decided yet
-      name,
-      description: "mock desc".to_string(), // TODO: fix these mock fields
-      icon_src: "/images/icons/GrassBlock.png".to_string(),
-      version: "1.20.1".to_string(), // TODO: may read from name.json["patches"]["version"]?
-      version_path,
-      mod_loader: ModLoader {
-        loader_type: ModLoaderType::Unknown,
-        version: "".to_string(),
-      },
-      has_schem_folder: true, // TODO: if exists schematics folder, return true
-      game_config: None,
-    });
+    // TODO: determine the version isolation strategy
+    if let Ok(client_data) = load_client_info_from_json(&json_path).await {
+      let (game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
+      instances.push(Instance {
+        id: 0, // not assigned yet
+        name: client_data.id,
+        description: "mock desc".to_string(), // TODO: fix these mock fields
+        icon_src: "/images/icons/GrassBlock.png".to_string(),
+        version: game_version.unwrap_or_default(),
+        version_path,
+        is_version_isolated: false, // TODO
+        mod_loader: ModLoader {
+          loader_type,
+          version: mod_version.unwrap_or_default(),
+        },
+        spec_game_config: None,
+      });
+    }
   }
 
   Ok(instances)
@@ -137,20 +151,4 @@ pub async fn refresh_and_update_instances(app: &AppHandle) {
   let binding = app.state::<Mutex<Vec<Instance>>>();
   let mut state = binding.lock().unwrap();
   *state = instances;
-}
-
-pub async fn fetch_url(url: &String) -> Option<Value> {
-  match reqwest::get(url).await {
-    Ok(response) => {
-      if response.status().is_success() {
-        match response.json::<Value>().await {
-          Ok(val) => Some(val),
-          Err(_) => None,
-        }
-      } else {
-        None
-      }
-    }
-    Err(_) => None, // request error
-  }
 }

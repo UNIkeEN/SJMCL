@@ -1,5 +1,6 @@
 import { t } from "i18next";
 import { InvokeResponse } from "@/models/response";
+import { isDev } from "@/utils/env";
 
 export function responseHandler(
   serviceDomain: string,
@@ -31,6 +32,18 @@ export function responseHandler(
               `Services.${serviceDomain}.${String(propertyKey)}.error.description.${detailsKey}`
             )
           : "";
+
+        if (isDev) {
+          const errorSet = {
+            Key: String(error),
+            "Service Domain": serviceDomain,
+            "Property Key": String(propertyKey),
+            "Localized Message": message,
+            "Localized Details": details,
+          };
+          console.table(errorSet);
+        }
+
         return { status: "error", message, details, raw_error: error };
       }
     };

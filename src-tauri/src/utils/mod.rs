@@ -1,3 +1,4 @@
+pub mod fs;
 pub mod image;
 pub mod nbt;
 pub mod path;

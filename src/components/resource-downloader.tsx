@@ -27,6 +27,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import {
   modTagList,
+  modpackTagList,
   resourcePackTagList,
   shaderPackTagList,
   sortByList,
@@ -211,7 +212,9 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
         ? worldTagList
         : resourceType === "resourcepack"
           ? resourcePackTagList
-          : shaderPackTagList;
+          : resourceType === "shaderpack"
+            ? shaderPackTagList
+            : modpackTagList;
 
   const finalTagList = tagList[downloadSource];
   const finalSortByList = sortByList[downloadSource];

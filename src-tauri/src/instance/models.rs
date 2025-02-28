@@ -1,6 +1,11 @@
 use crate::launcher_config::models::GameConfig;
 use serde::{Deserialize, Serialize};
-use std::{fmt, path::PathBuf};
+use std::{
+  cmp::{Ord, Ordering, PartialOrd},
+  fmt,
+  path::PathBuf,
+  str::FromStr,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstanceSubdirType {
@@ -16,8 +21,9 @@ pub enum InstanceSubdirType {
   ShaderPacks,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 pub enum ModLoaderType {
+  #[default]
   Unknown,
   Fabric,
   Forge,
@@ -26,13 +32,22 @@ pub enum ModLoaderType {
   LiteLoader,
   Quilt,
 }
+impl FromStr for ModLoaderType {
+  type Err = String; // 定义错误类型
 
-impl Default for ModLoaderType {
-  fn default() -> Self {
-    ModLoaderType::Unknown
+  fn from_str(input: &str) -> Result<Self, Self::Err> {
+    match input.to_lowercase().as_str() {
+      "unknown" => Ok(ModLoaderType::Unknown),
+      "fabric" => Ok(ModLoaderType::Fabric),
+      "forge" => Ok(ModLoaderType::Forge),
+      "forgeold" => Ok(ModLoaderType::ForgeOld),
+      "neoforge" => Ok(ModLoaderType::NeoForge),
+      "liteloader" => Ok(ModLoaderType::LiteLoader),
+      "quilt" => Ok(ModLoaderType::Quilt),
+      _ => Err(format!("Unsupported ModLoaderType: {}", input)),
+    }
   }
 }
-
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
@@ -43,12 +58,12 @@ structstruck::strike! {
     pub icon_src: String,
     pub version: String,
     pub version_path: PathBuf,
+    pub is_version_isolated: bool,
     pub mod_loader: struct {
       pub loader_type: ModLoaderType,
       pub version: String,
     },
-    pub has_schem_folder: bool,
-    pub game_config: Option<GameConfig>, // TODO: any sub-config can be None?
+    pub spec_game_config: Option<GameConfig>, // TODO: any sub-config can be None?
   }
 }
 
@@ -75,7 +90,7 @@ pub struct GameServerInfo {
   pub online: bool, // if false, it may be offline in the query result or failed in the query.
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct LocalModInfo {
   pub icon_src: String,
@@ -83,10 +98,33 @@ pub struct LocalModInfo {
   pub name: String,
   pub translated_name: Option<String>,
   pub version: String,
+  pub loader_type: ModLoaderType,
   pub file_name: String,
+  pub file_path: PathBuf,
   pub description: String,
   pub potential_incompatibility: bool,
-  pub loader_type: ModLoaderType,
+}
+
+impl PartialEq for LocalModInfo {
+  fn eq(&self, other: &Self) -> bool {
+    self.name.to_lowercase() == other.name.to_lowercase() && self.version == other.version
+  }
+}
+
+impl Eq for LocalModInfo {}
+
+impl PartialOrd for LocalModInfo {
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    Some(self.cmp(other))
+  }
+}
+impl Ord for LocalModInfo {
+  fn cmp(&self, other: &Self) -> Ordering {
+    match self.name.to_lowercase().cmp(&other.name.to_lowercase()) {
+      Ordering::Equal => self.version.cmp(&other.version),
+      order => order,
+    }
+  }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -125,6 +163,11 @@ pub enum InstanceError {
   InstanceNotFoundByID,
   ExecOpenDirError,
   ServerNbtReadError,
+  FileNotFoundError,
+  InvalidSourcePath,
+  FileCopyFailed,
+  FileMoveFailed,
+  FolderCreationFailed,
 }
 
 impl fmt::Display for InstanceError {
@@ -133,6 +176,11 @@ impl fmt::Display for InstanceError {
       InstanceError::InstanceNotFoundByID => write!(f, "INSTANCE_NOT_FOUND_BY_ID"),
       InstanceError::ExecOpenDirError => write!(f, "EXEC_OPEN_DIR_ERROR"),
       InstanceError::ServerNbtReadError => write!(f, "SERVER_NBT_READ_ERROR"),
+      InstanceError::FileNotFoundError => write!(f, "FILE_NOT_FOUND_ERROR"),
+      InstanceError::InvalidSourcePath => write!(f, "INVALID_SOURCE_PATH"),
+      InstanceError::FileCopyFailed => write!(f, "FILE_COPY_FAILED"),
+      InstanceError::FileMoveFailed => write!(f, "FILE_MOVE_FAILED"),
+      InstanceError::FolderCreationFailed => write!(f, "FOLDER_CREATION_FAILED"),
     }
   }
 }

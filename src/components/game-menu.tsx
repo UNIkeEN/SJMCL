@@ -7,7 +7,6 @@ import {
   MenuList,
   Portal,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-shell";
 import { useRouter } from "next/router";
@@ -20,8 +19,8 @@ import {
   LuTrash,
 } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
-import { GameInstanceSummary } from "@/models/game-instance";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { GameInstanceSummary } from "@/models/instance";
 
 interface GameMenuProps {
   game: GameInstanceSummary;
@@ -34,16 +33,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
-
-  const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
-  } = useDisclosure();
-
-  const handleDelete = () => {
-    onDeleteClose();
-  };
+  const { openSharedModal } = useSharedModals();
 
   const gameMenuOperations = [
     {
@@ -65,7 +55,7 @@ export const GameMenu: React.FC<GameMenuProps> = ({
       label: t("GameMenu.label.delete"),
       danger: true,
       onClick: () => {
-        onDeleteOpen();
+        openSharedModal("delete-game-instance-alert", { game });
       },
     },
   ];
@@ -112,18 +102,6 @@ export const GameMenu: React.FC<GameMenuProps> = ({
           ))}
         </HStack>
       )}
-      <GenericConfirmDialog
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-        title={t("DeleteGameAlertDialog.dialog.title")}
-        body={t("DeleteGameAlertDialog.dialog.content", {
-          gameName: game.name,
-        })}
-        btnOK={t("General.delete")}
-        btnCancel={t("General.cancel")}
-        onOKCallback={handleDelete}
-        isAlert
-      />
     </>
   );
 };

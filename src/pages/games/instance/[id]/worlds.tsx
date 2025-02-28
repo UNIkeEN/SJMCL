@@ -1,8 +1,7 @@
-import { Image } from "@chakra-ui/react";
-import { HStack, Tag, TagLabel, Text } from "@chakra-ui/react";
+import { HStack, Image, Tag, TagLabel, Text } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuX } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -12,9 +11,10 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
-import { GameServerInfo, WorldInfo } from "@/models/game-instance";
+import { GameServerInfo, WorldInfo } from "@/models/instance";
 import { InstanceService } from "@/services/instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
@@ -25,6 +25,7 @@ const InstanceWorldsPage = () => {
   const { summary, openSubdir, getWorldList } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
+  const { openSharedModal } = useSharedModals();
 
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
@@ -33,10 +34,10 @@ const InstanceWorldsPage = () => {
     setWorlds(getWorldList() || []);
   }, [getWorldList]);
 
-  const handleRetriveGameServerList = useCallback(
+  const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
       if (summary?.id !== undefined) {
-        InstanceService.retriveGameServerList(summary.id, queryOnline).then(
+        InstanceService.retrieveGameServerList(summary.id, queryOnline).then(
           (response) => {
             if (response.status === "success") {
               setGameServers(response.data);
@@ -55,15 +56,15 @@ const InstanceWorldsPage = () => {
   );
 
   useEffect(() => {
-    handleRetriveGameServerList(false);
-    handleRetriveGameServerList(true);
+    handleRetrieveGameServerList(false);
+    handleRetrieveGameServerList(true);
 
     // refresh every minute to query server info
     const intervalId = setInterval(async () => {
-      handleRetriveGameServerList(true);
+      handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [summary?.id, handleRetriveGameServerList]);
+  }, [summary?.id, handleRetrieveGameServerList]);
 
   const worldSecMenuOperations = [
     {
@@ -78,7 +79,11 @@ const InstanceWorldsPage = () => {
     },
     {
       icon: "download",
-      onClick: () => {},
+      onClick: () => {
+        openSharedModal("download-resource", {
+          initialResourceType: "world",
+        });
+      },
     },
     {
       icon: "refresh",
@@ -92,7 +97,12 @@ const InstanceWorldsPage = () => {
     {
       label: "",
       icon: "copyOrMove",
-      onClick: () => {},
+      onClick: () => {
+        openSharedModal("copy-or-move", {
+          srcResName: save.name,
+          srcFilePath: save.dirPath,
+        });
+      },
     },
     {
       label: "",
@@ -190,8 +200,8 @@ const InstanceWorldsPage = () => {
           <CommonIconButton
             icon="refresh"
             onClick={() => {
-              handleRetriveGameServerList(false);
-              handleRetriveGameServerList(true);
+              handleRetrieveGameServerList(false);
+              handleRetrieveGameServerList(true);
             }}
             size="xs"
             fontSize="sm"

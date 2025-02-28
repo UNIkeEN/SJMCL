@@ -2,8 +2,7 @@ import React, { createContext, useCallback, useContext, useState } from "react";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
-import { GameInstanceSummary } from "@/models/game-instance";
-import { mockGameInstanceList } from "@/models/mock/game-instance";
+import { GameInstanceSummary } from "@/models/instance";
 import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
 
@@ -42,8 +41,8 @@ export const DataContextProvider: React.FC<{
     useState<GameInstanceSummary>();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>();
 
-  const handleRetrivePlayerList = useCallback(() => {
-    AccountService.retrivePlayerList().then((response) => {
+  const handleRetrievePlayerList = useCallback(() => {
+    AccountService.retrievePlayerList().then((response) => {
       if (response.status === "success") {
         setPlayerList(response.data);
         if (response.data.length > 0) {
@@ -59,15 +58,15 @@ export const DataContextProvider: React.FC<{
     });
   }, [toast]);
 
-  const handleRetriveSelectedPlayer = useCallback(() => {
-    AccountService.retriveSelectedPlayer().then((response) => {
+  const handleRetrieveSelectedPlayer = useCallback(() => {
+    AccountService.retrieveSelectedPlayer().then((response) => {
       if (response.status === "success") setSelectedPlayer(response.data);
       else setSelectedPlayer(undefined);
     });
   }, [setSelectedPlayer]);
 
-  const handleRetriveAuthServerList = useCallback(() => {
-    AccountService.retriveAuthServerList().then((response) => {
+  const handleRetrieveAuthServerList = useCallback(() => {
+    AccountService.retrieveAuthServerList().then((response) => {
       if (response.status === "success") setAuthServerList(response.data);
       else
         toast({
@@ -78,8 +77,8 @@ export const DataContextProvider: React.FC<{
     });
   }, [setAuthServerList, toast]);
 
-  const handleRetriveInstanceList = useCallback(() => {
-    InstanceService.retriveInstanceList().then((response) => {
+  const handleRetrieveInstanceList = useCallback(() => {
+    InstanceService.retrieveInstanceList().then((response) => {
       if (response.status === "success") setGameInstanceList(response.data);
       else
         toast({
@@ -90,25 +89,25 @@ export const DataContextProvider: React.FC<{
     });
   }, [setGameInstanceList, toast]);
 
-  const getPlayerList = useGetState(playerList, handleRetrivePlayerList);
+  const getPlayerList = useGetState(playerList, handleRetrievePlayerList);
 
   const getSelectedPlayer = useGetState(
     selectedPlayer,
-    handleRetriveSelectedPlayer
+    handleRetrieveSelectedPlayer
   );
 
   const getGameInstanceList = useGetState(
     gameInstanceList,
-    handleRetriveInstanceList
+    handleRetrieveInstanceList
   );
 
   const getSelectedGameInstance = useGetState(selectedGameInstance, () =>
-    setSelectedGameInstance(mockGameInstanceList[0])
+    setSelectedGameInstance(undefined)
   );
 
   const getAuthServerList = useGetState(
     authServerList,
-    handleRetriveAuthServerList
+    handleRetrieveAuthServerList
   );
 
   return (

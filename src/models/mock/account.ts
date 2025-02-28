@@ -1,5 +1,3 @@
-import { AuthServer, Player } from "@/models/account";
-
 /*
 export const mockAuthServerList: AuthServer[] = [
   { name: "SJMC 用户中心", authUrl: "https://skin.mc.sjtu.cn/api/yggdrasil" },

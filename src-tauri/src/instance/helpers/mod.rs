@@ -1,3 +1,4 @@
+pub mod client;
 pub mod misc;
 pub mod mods;
 pub mod resourcepack;

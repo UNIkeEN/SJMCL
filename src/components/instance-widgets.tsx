@@ -36,8 +36,8 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { LocalModInfo, WorldInfo } from "@/models/game-instance";
-import { ScreenshotInfo } from "@/models/game-instance";
+import { LocalModInfo, WorldInfo } from "@/models/instance";
+import { ScreenshotInfo } from "@/models/instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
@@ -141,21 +141,33 @@ export const InstanceScreenshotsWidget = () => {
   const { getScreenshotList } = useInstanceSharedData();
 
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
+  const router = useRouter();
+  const { id } = router.query;
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     setScreenshots(getScreenshotList() || []);
   }, [getScreenshotList]);
+  const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
-    }, 10000); // carousel (TODO: transition)
-    return () => clearInterval(interval);
-  }, [screenshots]);
+    if (screenshots.length >= 2) {
+      const interval = setInterval(() => {
+        setIsFading(true);
+        setTimeout(() => {
+          setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
+          setIsFading(false);
+        }, 800);
+      }, 10000);
 
+      return () => clearInterval(interval);
+    }
+  }, [screenshots]);
   return (
-    <InstanceWidgetBase title={t("InstanceWidgets.screenshots.title")}>
+    <InstanceWidgetBase
+      title={t("InstanceWidgets.screenshots.title")}
+      style={{ cursor: "pointer" }}
+    >
       {screenshots && screenshots.length ? (
         <Image
           src={convertFileSrc(screenshots[currentIndex].filePath)}
@@ -167,6 +179,20 @@ export const InstanceScreenshotsWidget = () => {
           h="100%"
           ml={-3}
           mt={-3}
+          opacity={isFading ? 0 : 1}
+          transition="opacity 0.8s ease-in-out"
+          onClick={() => {
+            router.push(
+              {
+                pathname: `/games/instance/${id}/screenshots`,
+                query: {
+                  screenshotIndex: currentIndex.toString(),
+                },
+              },
+              undefined,
+              { shallow: true }
+            );
+          }}
         />
       ) : (
         <Empty withIcon={false} size="sm" />
@@ -174,7 +200,6 @@ export const InstanceScreenshotsWidget = () => {
     </InstanceWidgetBase>
   );
 };
-
 export const InstanceModsWidget = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -197,39 +222,46 @@ export const InstanceModsWidget = () => {
       title={t("InstanceWidgets.mods.title")}
       icon={LuSquareLibrary}
     >
-      <HStack spacing={4}>
-        <VStack align="flex-start" spacing={3}>
-          <AvatarGroup size="sm" max={5} spacing={-2.5}>
-            {localMods.map((mod, index) => (
-              <Avatar
-                key={index}
-                name={mod.name}
-                src={base64ImgSrc(mod.iconSrc)}
-              />
-            ))}
-          </AvatarGroup>
-          <Text fontSize="xs" color="gray.500">
-            {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
-          </Text>
-          <Button
-            size="xs"
-            variant="ghost"
-            position="absolute"
-            left={2}
-            bottom={2}
-            justifyContent="flex-start"
-            colorScheme={primaryColor}
-            onClick={() => {
-              router.push(`/games/instance/${id}/mods`);
-            }}
-          >
-            <HStack spacing={1.5}>
-              <Icon as={LuArrowRight} />
-              <Text>{t("InstanceWidgets.mods.manage")}</Text>
-            </HStack>
-          </Button>
-        </VStack>
-      </HStack>
+      <VStack align="stretch" w="100%" spacing={3}>
+        {localMods.length > 0 ? (
+          <>
+            <AvatarGroup size="sm" max={5} spacing={-2.5}>
+              {localMods.map((mod, index) => (
+                <Avatar
+                  key={index}
+                  name={mod.name || mod.fileName}
+                  src={base64ImgSrc(mod.iconSrc)}
+                  style={{
+                    filter: mod.enabled ? "none" : "grayscale(90%)",
+                  }}
+                />
+              ))}
+            </AvatarGroup>
+            <Text fontSize="xs" color="gray.500">
+              {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
+            </Text>
+          </>
+        ) : (
+          <Empty withIcon={false} size="sm" />
+        )}
+        <Button
+          size="xs"
+          variant="ghost"
+          position="absolute"
+          left={2}
+          bottom={2}
+          justifyContent="flex-start"
+          colorScheme={primaryColor}
+          onClick={() => {
+            router.push(`/games/instance/${id}/mods`);
+          }}
+        >
+          <HStack spacing={1.5}>
+            <Icon as={LuArrowRight} />
+            <Text>{t("InstanceWidgets.mods.manage")}</Text>
+          </HStack>
+        </Button>
+      </VStack>
     </InstanceWidgetBase>
   );
 };
@@ -328,7 +360,7 @@ export const InstanceMoreWidget = () => {
   const features: Record<string, IconType> = {
     worlds: LuEarth,
     resourcepacks: LuPackage,
-    ...(summary?.hasSchemFolder ? { schematics: LuBookDashed } : {}),
+    schematics: LuBookDashed,
     shaderpacks: LuHaze,
     settings: LuSettings,
   };

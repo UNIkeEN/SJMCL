@@ -9,7 +9,7 @@ import SegmentedControl from "@/components/common/segmented";
 import GamesView from "@/components/games-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
-import { GameInstanceSummary } from "@/models/game-instance";
+import { GameInstanceSummary } from "@/models/instance";
 
 const AllGamesPage = () => {
   const router = useRouter();

@@ -22,7 +22,7 @@ interface DownloadResourceModalProps extends Omit<ModalProps, "children"> {
   initialResourceType?: string;
 }
 
-export const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
+const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
   initialResourceType = "mod",
   ...modalProps
 }) => {

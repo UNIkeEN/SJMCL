@@ -20,7 +20,7 @@ export const SharedModalContextProvider: React.FC<{
   const openSharedModal = (key: string, params: any = {}) => {
     setModalStates((prev) => ({
       ...prev,
-      [key]: { isOpen: true, params },
+      [key]: { isOpen: true, ...params },
     }));
   };
 

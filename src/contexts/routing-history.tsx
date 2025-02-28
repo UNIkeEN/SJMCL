@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 type RoutingHistoryContextType = {
   history: string[];
+  removeHistory: (prefix: string) => void;
 };
 
 const RoutingHistoryContext = createContext<
@@ -33,8 +34,12 @@ export const RoutingHistoryContextProvider: React.FC<{
     };
   }, [router.events]);
 
+  const removeHistory = (prefix: string) => {
+    setHistory((prev) => prev.filter((route) => !route.startsWith(prefix)));
+  };
+
   return (
-    <RoutingHistoryContext.Provider value={{ history }}>
+    <RoutingHistoryContext.Provider value={{ history, removeHistory }}>
       {children}
     </RoutingHistoryContext.Provider>
   );

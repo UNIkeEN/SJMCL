@@ -18,7 +18,7 @@ import { LuArrowLeftRight } from "react-icons/lu";
 import { useData } from "@/contexts/data";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
-import { GameInstanceSummary } from "@/models/game-instance";
+import { GameInstanceSummary } from "@/models/instance";
 import styles from "@/styles/launch.module.css";
 import { base64ImgSrc } from "@/utils/string";
 

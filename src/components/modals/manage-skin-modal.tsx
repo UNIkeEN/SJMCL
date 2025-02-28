@@ -19,41 +19,69 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SkinPreview from "@/components/skin-preview";
 import { useLauncherConfig } from "@/contexts/config";
+import { useData } from "@/contexts/data";
+import { useToast } from "@/contexts/toast";
+import { Texture } from "@/models/account";
+import { AccountService } from "@/services/account";
+import { base64ImgSrc } from "@/utils/string";
 
-export type SkinType = "default" | "steve" | "alex";
+type SkinType = "default" | "steve" | "alex";
 
 interface ManageSkinModalProps extends Omit<ModalProps, "children"> {
-  skin?: SkinType;
-  onSelectSkin?: (skin: SkinType) => void;
+  playerId: string;
+  skin?: Texture;
+  cape?: Texture;
 }
 
 const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
+  playerId,
   isOpen,
   onClose,
-  skin = "default",
-  onSelectSkin,
+  skin,
+  cape,
   ...modalProps
 }) => {
-  const [selectedSkin, setSelectedSkin] = useState<SkinType>(skin);
+  const [selectedSkin, setSelectedSkin] = useState<SkinType>("default");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const { getPlayerList } = useData();
+  const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const skinOptions = {
-    default: "/images/skins/unicorn_isla.png",
+    default: base64ImgSrc(skin?.image || ""),
     steve: "/images/skins/steve.png",
     alex: "/images/skins/alex.png",
   };
 
   useEffect(() => {
-    setSelectedSkin(skin);
+    setSelectedSkin("default");
   }, [skin]);
-
   const handleSave = () => {
-    if (onSelectSkin) {
-      onSelectSkin(selectedSkin);
+    if (selectedSkin !== "default") {
+      setIsLoading(true);
+      AccountService.updatePlayerSkinOfflinePreset(playerId, selectedSkin)
+        .then((response) => {
+          if (response.status === "success") {
+            toast({
+              title: response.message,
+              status: "success",
+            });
+            getPlayerList(true);
+            onClose();
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
-    onClose();
   };
 
   return (
@@ -72,6 +100,11 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
             <Flex justify="center" align="center" width="100%" height="100%">
               <SkinPreview
                 skinSrc={skinOptions[selectedSkin]}
+                capeSrc={
+                  selectedSkin === "default" && cape
+                    ? base64ImgSrc(cape.image)
+                    : undefined
+                }
                 width={270}
                 height={310}
                 showControlBar
@@ -101,6 +134,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
             variant="solid"
             colorScheme={primaryColor}
             onClick={handleSave}
+            isLoading={isLoading}
           >
             {t("General.confirm")}
           </Button>

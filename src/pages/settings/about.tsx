@@ -5,7 +5,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
-import { TitleFull } from "@/components/logo-title";
+import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { CoreContributorsList } from "./contributors";
 
@@ -17,7 +17,7 @@ const AboutSettingsPage = () => {
     {
       title: t("AboutSettingsPage.about.title"),
       items: [
-        <TitleFull my={1} key={0} />,
+        <TitleFullWithLogo key={0} />,
         {
           title: t("AboutSettingsPage.about.settings.version.title"),
           children: config.version,
@@ -98,6 +98,18 @@ const AboutSettingsPage = () => {
           ),
         },
         {
+          title: t("AboutSettingsPage.ack.settings.hmcl.title"),
+          description: t("AboutSettingsPage.ack.settings.hmcl.description"),
+          children: (
+            <LinkIconButton
+              url="https://hmcl.huangyuhui.net/"
+              aria-label="hmcl"
+              isExternal
+              withTooltip
+            />
+          ),
+        },
+        {
           title: t("AboutSettingsPage.ack.settings.littleskin.title"),
           description: t(
             "AboutSettingsPage.ack.settings.littleskin.description"
@@ -156,7 +168,7 @@ const AboutSettingsPage = () => {
           ),
           children: (
             <LinkIconButton
-              url="https://github.com/UNIkeEN/SJMCL?tab=GPL-3.0-1-ov-file#readme"
+              url="https://github.com/UNIkeEN/SJMCL?tab=readme-ov-file#copyright"
               aria-label="openSourceLicense"
               isExternal
               withTooltip

@@ -24,6 +24,10 @@
           "title": "BMCLAPI",
           "description": "感谢 @bangbang93 提供的高速下载源"
         },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "部分设计与代码实现参考此开源项目"
+        },
         "littleskin": {
           "title": "LittleSkin",
           "description": "感谢 LittleSkin 和 @tnqzh123 对登录流程设计的帮助"
@@ -50,7 +54,7 @@
         },
         "openSourceLicense": {
           "title": "开源协议",
-          "description": "本项目遵循 GNU General Public License v3.0 协议"
+          "description": "本项目遵循 GNU General Public License v3.0 协议（包含附加条款）"
         }
       }
     }
@@ -139,7 +143,8 @@
         "label": "认证源",
         "selectSource": "请选择认证源",
         "noSource": "未添加可用认证源服务器",
-        "addSource": "添加认证源"
+        "addSource": "添加认证源",
+        "supportOAuth": "此认证源支持 Yggdrasil Connect 规范提案"
       },
       "email": {
         "label": "邮箱",
@@ -156,7 +161,9 @@
     },
     "button": {
       "buyMinecraft": "购买 Minecraft",
-      "loginOAuth": "使用 OAuth 登录"
+      "beginOAuth": "开始 OAuth 登录",
+      "useOAuthLogin": "OAuth 登录",
+      "usePasswordLogin": "账号密码登录"
     }
   },
   "AllGamesPage": {
@@ -243,6 +250,29 @@
       "mascot": "吉祥物"
     }
   },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "复制或移动资源"
+    },
+    "operation": {
+      "copy": "复制",
+      "move": "移动"
+    },
+    "tag": {
+      "source": "源"
+    },
+    "body": "到",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "资源包",
+      "Saves": "地图",
+      "Schematics": "原理图",
+      "ShaderPacks": "光影"
+    },
+    "error": {
+      "lackOfArguments": "缺少必要参数，请开发者检查代码"
+    }
+  },
   "CreateInstanceModal": {
     "header": {
       "title": "创建新实例"
@@ -254,22 +284,26 @@
       "info": "基本设置"
     }
   },
-  "DeleteGameAlertDialog": {
+  "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{gameName}}” 吗？"
+      "content": "确定要删除游戏实例 “{{gameName}}” 吗？它将会永久消失！（真的很久！）",
+      "warning": {
+        "withVerIso": "请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
+        "woVerIso": "请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
+      }
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
-      "content": "确定要删除角色 “{{name}}” 吗？"
+      "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
     }
   },
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？"
+      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
   "DiscoverPage": {
@@ -289,6 +323,11 @@
   },
   "DownloadFloatButton": {
     "tooltip": "正在下载"
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "下载整合包"
+    }
   },
   "DownloadResourceModal": {
     "header": {
@@ -356,6 +395,19 @@
           "title": "端口"
         }
       }
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "下载中任务",
+    "button": {
+      "settings": "下载设置",
+      "pause": "暂停",
+      "begin": "开始",
+      "retry": "重试"
+    },
+    "label": {
+      "paused": "已暂停",
+      "error": "错误"
     }
   },
   "Editable": {
@@ -436,6 +488,73 @@
       "linux": "文件管理器",
       "macos": "访达",
       "windows": "文件资源管理器"
+    }
+  },
+  "GameAdvancedSettingsModal": {
+    "header": {
+      "title": "高级设置"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "customCommands": {
+      "title": "自定义命令",
+      "settings": {
+        "minecraftArgument": {
+          "title": "游戏参数",
+          "placeholder": "默认"
+        },
+        "precallCommand": {
+          "title": "游戏启动前执行命令",
+          "placeholder": "将在游戏启动前调用"
+        },
+        "wrapperLauncher": {
+          "title": "包装命令",
+          "placeholder": "如填写\"optirun\"后，启动命令将从\"java ...\"变为\"optirun java ...\""
+        },
+        "postExitCommand": {
+          "title": "游戏结束后执行命令",
+          "placeholder": "将在游戏结束后调用"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Java 虚拟机设置",
+      "settings": {
+        "args": {
+          "title": "JVM 虚拟机参数"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "内存永久保存区域",
+          "placeholder": "内存 MB"
+        },
+        "environmentVariable": {
+          "title": "环境变量"
+        }
+      }
+    },
+    "workaround": {
+      "title": "调试选项",
+      "settings": {
+        "noJvmArgs": "不添加默认的 JVM 参数",
+        "gameCompletnessCheckPolicy": {
+          "title": "游戏文件完整性检查策略",
+          "disable": "不检查",
+          "normal":"普通检查",
+          "full":"增强检查"
+        },
+        "dontCheckJvmValidity": {
+          "title": "不检查 JVM 与游戏的兼容性"
+        },
+        "dontPatchNatives": {
+          "title": "不尝试自动替换本地库"
+        },
+        "useNativeGlfw": {
+          "title": "使用系统 GLFW(仅 Linux)"
+        },
+        "useNativeOpenal": {
+          "title": "使用系统 OpenAL(仅 Linux)"
+        }
+      }
     }
   },
   "GameErrorPage": {
@@ -551,7 +670,7 @@
       },
       "deleteDialog": {
         "title": "删除游戏目录",
-        "content": "确定要删除游戏目录 {{dirName}} 吗？（仅从启动器删除，不会删除实际目录文件）"
+        "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL将不会扫描此目录，但不会删除硬盘上的文件）"
       }
     },
     "gameJava": {
@@ -626,7 +745,8 @@
           "title": "显示游戏日志"
         },
         "enableAdvancedOptions": {
-          "title": "启用高级选项"
+          "title": "启用高级选项",
+          "button": "编辑高级设置"
         }
       }
     }
@@ -707,10 +827,12 @@
     },
     "modList": {
       "title": "模组",
+      "warning": "未发现模组加载器，模组可能无法正常工作",
       "menu": {
         "alert": "可能不兼容",
         "info": "查看信息",
-        "update": "检查更新"
+        "update": "检查更新",
+        "search": "搜索"
       }
     }
   },
@@ -828,6 +950,9 @@
     "steve": "Steve",
     "alex": "Alex"
   },
+  "ViewSkinModal": {
+    "skinView": "查看皮肤"
+  },
   "MemoryStatusProgress": {
     "title": "内存状态",
     "info": "{{used}} / {{total}} GB 已使用",
@@ -852,7 +977,8 @@
   },
   "PlayerMenu": {
     "label": {
-      "skin": "管理皮肤",
+      "manageSkin": "管理皮肤",
+      "viewSkin": "查看皮肤",
       "delete": "删除此角色"
     }
   },
@@ -1018,11 +1144,46 @@
         "Shadows": "阴影"
       }
     },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Adventure and RPG": "冒险 RPG",
+        "Combat / PvP": "战斗 PvP",
+        "Exploration": "探索",
+        "Extra Large": "大型整合",
+        "FTB Official Pack": "FTB",
+        "Hardcore": "极限生存",
+        "Horror": "恐怖",
+        "Magic": "魔法",
+        "Map Based": "基于地图",
+        "Mini Game": "小游戏",
+        "Multiplayer": "多人",
+        "Quests": "任务",
+        "Sci-Fi": "科幻",
+        "Skyblock": "空岛",
+        "Small / Light": "轻量整合",
+        "Tech": "科技",
+        "Vanilla+": "原版改良"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Adventure": "冒险",
+        "Challenging": "挑战",
+        "Combat": "战斗",
+        "Kitchen Sink": "大杂烩",
+        "Lightweight": "轻量整合",
+        "Magic": "魔法",
+        "Multiplayer": "多人",
+        "Optimization": "优化",
+        "Quests": "任务",
+        "Technology": "科技"
+      }
+    },
     "sortByList": {
       "CurseForge": {
         "Relevancy": "相关度",
         "Popularity": "热度",
-        "Lastest update": "最近更新",
+        "Latest update": "最近更新",
         "Creation date": "创建日期",
         "Total downloads": "下载量",
         "A-Z": "名称"
@@ -1050,7 +1211,7 @@
   },
   "Services": {
     "config": {
-      "retriveLauncherConfig": {
+      "retrieveLauncherConfig": {
         "error": {
           "title": "获取启动器设置失败"
         }
@@ -1087,7 +1248,7 @@
           }
         }
       },
-      "retriveCustomBackgroundList": {
+      "retrieveCustomBackgroundList": {
         "success": "自定义背景列表获取成功",
         "error": {
           "title": "自定义背景列表获取失败"
@@ -1105,21 +1266,56 @@
           "title": "自定义背景删除失败"
         }
       },
-      "retriveJavaList": {
+      "retrieveJavaList": {
         "error": {
           "title": "Java 列表获取失败"
         }
       }
     },
     "account": {
-      "addPlayer": {
-        "success": "角色添加成功",
+      "addPlayerOffline": {
+        "success": "离线角色添加成功",
         "error": {
-          "title": "角色添加失败",
+          "title": "离线角色添加失败",
           "description": {
-            "invalid": "无效的角色的类型",
+            "duplicate": "角色已存在",
+            "textureError": "角色皮肤获取失败"
+          }
+        }
+      },
+      "addPlayer3rdPartyOAuth": {
+        "success": "OAuth 方式添加角色成功",
+        "error": {
+          "title": "OAuth 方式添加角色失败",
+          "description": {
+            "duplicate": "角色已存在",
+            "authServerError": "无法连接至认证服务器，或服务器不支持该登录方式",
+            "notFound": "认证服务器不存在",
             "textureError": "角色皮肤获取失败",
-            "authServerError": "登录认证服务器失败"
+            "cancelled": "已取消"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "账号密码方式添加角色成功",
+        "error": {
+          "title": "账号密码方式添加角色失败",
+          "description": {
+            "duplicate": "角色已存在",
+            "authServerError": "无法连接至认证服务器",
+            "textureError": "角色皮肤获取失败",
+            "invalid": "账号或密码错误"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "角色皮肤更新成功",
+        "error": {
+          "title": "角色皮肤更新失败",
+          "description": {
+            "notFound": "角色不存在",
+            "invalid": "角色类型错误",
+            "textureError": "角色皮肤获取失败"
           }
         }
       },
@@ -1162,7 +1358,7 @@
       }
     },
     "resource": {
-      "retriveGameVersionList": {
+      "retrieveGameVersionList": {
         "error": {
           "title": "获取游戏版本列表失败",
           "description": {
@@ -1173,7 +1369,7 @@
       }
     },
     "instance": {
-      "retriveInstanceList": {
+      "retrieveInstanceList": {
         "error": {
           "title": "获取实例列表失败"
         }
@@ -1187,12 +1383,21 @@
           }
         }
       },
-      "retriveWorldList": {
+      "deleteInstance": {
+        "success": "实例删除成功",
+        "error": {
+          "title": "实例删除失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在"
+          }
+        }
+      },
+      "retrieveWorldList": {
         "error": {
           "title": "获取世界列表失败"
         }
       },
-      "retriveGameServerList": {
+      "retrieveGameServerList": {
         "error": {
           "title": "获取服务器列表失败",
           "description": {
@@ -1200,29 +1405,61 @@
           }
         }
       },
-      "retriveResourcePackList": {
+      "retrieveResourcePackList": {
         "error": {
           "title": "获取资源包列表失败"
         }
       },
-      "retriveServerResourcePackList": {
+      "retrieveServerResourcePackList": {
         "error": {
           "title": "获取服务器资源包列表失败"
         }
       },
-      "retriveSchematicList": {
+      "retrieveSchematicList": {
         "error": {
           "title": "获取原理图列表失败"
         }
       },
-      "retriveShaderPackList": {
+      "retrieveShaderPackList": {
         "error": {
           "title": "获取着色器包列表失败"
         }
       },
-      "retriveScreenshotList": {
+      "retrieveScreenshotList": {
         "error": {
           "title": "获取截图列表失败"
+        }
+      },
+      "copyAcrossInstances": {
+        "success": "资源复制成功",
+        "error": {
+          "title": "复制资源失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在或类型错误",
+            "invalidSourcePath": "无效的源路径",
+            "fileCopyFailed": "文件复制失败",
+            "folderCreationFailed": "目标文件夹创建失败"
+          }
+        }
+      },
+      "moveAcrossInstances": {
+        "success": "资源移动成功",
+        "error": {
+          "title": "移动资源失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在或类型错误",
+            "invalidSourcePath": "无效的源路径",
+            "fileMoveFailed": "文件移动失败",
+            "folderCreationFailed": "目标文件夹创建失败"
+          }
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "模组状态切换失败",
+          "description": {
+            "fileNotFoundError": "模组文件不存在，可能已更名、移动或删除"
+          }
         }
       }
     }
