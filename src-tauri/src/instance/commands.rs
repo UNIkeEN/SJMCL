@@ -9,11 +9,14 @@ use super::{
     mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::{nbt_to_servers_info, query_server_status},
-    world::nbt_to_world_info,
+    world::{bytes_to_level_data, nbt_to_world_info},
   },
   models::{
-    GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ModLoaderType,
-    ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo, WorldInfo,
+    misc::{
+      GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ModLoaderType,
+      ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo, WorldInfo,
+    },
+    world::level::LevelData,
   },
 };
 use crate::error::SJMCLResult;
@@ -153,7 +156,7 @@ pub async fn retrieve_world_list(
     let name = path.file_name().unwrap().to_str().unwrap();
     let icon_path = path.join("icon.png");
     let nbt_path = path.join("level.dat");
-    if let Ok(nbt) = load_nbt(&nbt_path, Flavor::GzCompressed) {
+    if let Ok(nbt) = load_nbt(&nbt_path, Flavor::GzCompressed).await {
       if let Ok((last_played, difficulty, gamemode)) = nbt_to_world_info(&nbt) {
         world_list.push(WorldInfo {
           name: name.to_string(),
@@ -183,7 +186,7 @@ pub async fn retrieve_game_server_list(
   };
 
   let nbt_path = game_root_dir.join("servers.dat");
-  if let Ok(nbt) = load_nbt(&nbt_path, Flavor::Uncompressed) {
+  if let Ok(nbt) = load_nbt(&nbt_path, Flavor::Uncompressed).await {
     if let Ok(servers) = nbt_to_servers_info(&nbt) {
       for (ip, name, icon) in servers {
         game_servers.push(GameServerInfo {
@@ -438,7 +441,6 @@ pub fn retrieve_shader_pack_list(
     .build()
     .unwrap();
   let mut shaderpack_list = Vec::new();
-  // TODO: async read files
   for path in get_files_with_regex(shaderpacks_dir, &valid_extensions)? {
     shaderpack_list.push(ShaderPackInfo {
       file_name: path.file_stem().unwrap().to_string_lossy().to_string(),
@@ -530,4 +532,33 @@ pub fn toggle_mod_by_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<
   }
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn retrieve_world_detail(
+  app: AppHandle,
+  instance_id: usize,
+  world_name: String,
+) -> SJMCLResult<LevelData> {
+  let worlds_dir = match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Saves) {
+    Some(path) => path,
+    None => return Ok(LevelData::default()),
+  };
+
+  let world_dirs = match get_subdirectories(worlds_dir) {
+    Ok(val) => val,
+    Err(_) => return Ok(LevelData::default()), // if dir not exists, no need to error
+  };
+  for path in world_dirs {
+    let name = path.file_name().unwrap().to_str().unwrap(); // 获取世界名称
+    if name == world_name {
+      let nbt_path = path.join("level.dat"); // 构建 NBT 文件的路径
+      let nbt_bytes = tokio::fs::read(nbt_path).await?;
+
+      if let Ok(level_data) = bytes_to_level_data(&nbt_bytes, Flavor::GzCompressed) {
+        return Ok(level_data);
+      }
+    }
+  }
+  return Err(InstanceError::FileNotFoundError.into());
 }

@@ -1,5 +1,15 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use quartz_nbt::NbtCompound;
+use crate::{
+  error::{SJMCLError, SJMCLResult},
+  instance::models::world::level::{Level, LevelData},
+};
+use quartz_nbt::{io::Flavor, serde::deserialize, NbtCompound};
+
+pub fn bytes_to_level_data(bytes: &[u8], flavor: Flavor) -> SJMCLResult<LevelData> {
+  match deserialize::<Level>(bytes, flavor) {
+    Ok((level, _)) => Ok(level.data), // 忽略返回的 String
+    Err(e) => Err(SJMCLError::from(e)),
+  }
+}
 
 pub fn nbt_to_world_info(nbt: &NbtCompound) -> SJMCLResult<(i64, String, String)> {
   // return (last_played, difficulty, gamemode)

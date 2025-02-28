@@ -3,6 +3,7 @@ import { InstanceSubdirEnums } from "@/enums/instance";
 import {
   GameInstanceSummary,
   GameServerInfo,
+  LevelData,
   LocalModInfo,
   ResourcePackInfo,
   SchematicInfo,
@@ -225,6 +226,23 @@ export class InstanceService {
     return await invoke("toggle_mod_by_extension", {
       filePath,
       enable,
+    });
+  }
+
+  /**
+   * RETRIEVE the level detail for a specific world.
+   * @param {number} instanceId - The instance ID to retrieve the level detail for.
+   * @param {string} worldName - The name of the world to retrieve details for.
+   * @returns {Promise<InvokeResponse<LevelData>>}
+   */
+  @responseHandler("instance", errorToLocaleKey)
+  static async retrieveWorldDetail(
+    instanceId: number,
+    worldName: string
+  ): Promise<InvokeResponse<LevelData>> {
+    return await invoke("retrieve_world_detail", {
+      instanceId,
+      worldName,
     });
   }
 }
