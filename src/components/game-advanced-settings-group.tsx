@@ -25,7 +25,7 @@ interface GameAdvancedSettingsGroupsProps {
 }
 
 const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
-  instanceId = 0,
+  instanceId = undefined,
 }) => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
@@ -69,7 +69,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
 
   const gameCompletnessCheckPolicy = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
-    if (instanceId) return; // TBD
+    if (instanceId !== undefined) return; // TBD
     update(`globalGameConfig.advanced.${key}`, value);
   };
 
