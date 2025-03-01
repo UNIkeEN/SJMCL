@@ -49,6 +49,10 @@ interface InstanceWidgetBaseProps extends Omit<BoxProps, "children"> {
   icon?: IconType;
 }
 
+const truncateString = (str: string, maxLength: number) => {
+  return str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
+};
+
 const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
   title,
   children,
@@ -292,7 +296,7 @@ export const InstanceLastPlayedWidget = () => {
       {lastPlayedWorld ? (
         <>
           <OptionItem
-            title={lastPlayedWorld.name}
+            title={truncateString(lastPlayedWorld.name, 6)}
             description={
               <VStack
                 spacing={0}
