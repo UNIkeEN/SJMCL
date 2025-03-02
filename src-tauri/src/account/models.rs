@@ -1,9 +1,5 @@
-use super::helpers::{
-  authlib_injector::info::{fetch_auth_url, get_client_id},
-  skin::draw_avatar,
-};
+use super::helpers::{authlib_injector::info::get_client_id, skin::draw_avatar};
 use crate::{storage::Storage, utils::image::base64_to_image, EXE_DIR};
-use futures::executor::block_on;
 use serde::{Deserialize, Serialize};
 use std::{fmt, path::PathBuf};
 use uuid::Uuid;
@@ -105,20 +101,13 @@ impl Storage for AccountInfo {
 
 impl Default for AccountInfo {
   fn default() -> Self {
-    let sjmc_auth_url = block_on(fetch_auth_url("https://skin.mc.sjtu.cn".to_string()))
-      .unwrap_or_else(|_| "".to_string());
-    let mua_auth_url = block_on(fetch_auth_url(
-      "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
-    ))
-    .unwrap_or_else(|_| "".to_string());
-
     AccountInfo {
       players: Vec::new(),
       selected_player_id: String::new(),
       auth_servers: vec![
         AuthServer {
           name: "SJMC 用户中心".to_string(),
-          auth_url: sjmc_auth_url,
+          auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
           homepage_url: "https://skin.mc.sjtu.cn".to_string(),
           register_url: "https://skin.mc.sjtu.cn/auth/register".to_string(),
           features: Features {
@@ -130,7 +119,7 @@ impl Default for AccountInfo {
         },
         AuthServer {
           name: "MUA 用户中心".to_string(),
-          auth_url: mua_auth_url,
+          auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
           homepage_url: "https://skin.mualliance.ltd".to_string(),
           register_url: "https://skin.mualliance.ltd/auth/register".to_string(),
           features: Features {
