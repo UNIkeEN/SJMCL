@@ -24,6 +24,7 @@
       "eslint --no-fix --max-warnings=0"
     ],
     "src/locales/*.json": [
+      "npm run locale check",
       "npm run locale diff en",
       "npm run locale diff zh-Hans"
     ]
