@@ -671,7 +671,8 @@
       "deleteDialog": {
         "title": "删除游戏目录",
         "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL将不会扫描此目录，但不会删除硬盘上的文件）"
-      }
+      },
+      "directoryNotExist": "该目录不存在，请删除并重新添加"
     },
     "gameJava": {
       "title": "游戏 Java",
@@ -911,7 +912,8 @@
         "adventure": "冒险模式",
         "spectator": "观察者模式"
       },
-      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）"
+      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）",
+      "viewLevelData": "存档基础数据"
     },
     "serverList": {
       "title": "服务器",
@@ -1578,6 +1580,11 @@
     "button": {
       "exit": "退出",
       "agree": "同意并继续"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "世界基础数据 - {{worldName}}"
     }
   }
 }

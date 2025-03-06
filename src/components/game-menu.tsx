@@ -20,7 +20,7 @@ import {
 } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { GameInstanceSummary } from "@/models/instance";
+import { GameInstanceSummary } from "@/models/instance/misc";
 
 interface GameMenuProps {
   game: GameInstanceSummary;

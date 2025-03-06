@@ -45,7 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
         ["F3", "F5", "F7"].includes(event.key) ||
         (event.altKey && ["ArrowLeft", "ArrowRight"].includes(event.key)) ||
         ((event.ctrlKey || event.metaKey) &&
-          ["F", "G", "H", "J", "P", "Q", "R", "U", "S"].includes(
+          ["F", "G", "H", "J", "P", "Q", "R", "U"].includes(
             event.key.toUpperCase()
           ));
       disabledShortcuts && event.preventDefault();

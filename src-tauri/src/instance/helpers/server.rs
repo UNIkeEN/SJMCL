@@ -1,6 +1,7 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use quartz_nbt::{NbtCompound, NbtList};
+use quartz_nbt::io::Flavor;
 use serde::{self, Deserialize, Serialize};
+use std::path::Path;
 use tauri_plugin_http::reqwest;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -15,29 +16,11 @@ struct NbtServersInfo {
   pub servers: Vec<NbtServerInfo>,
 }
 
-pub fn nbt_to_servers_info(nbt: &NbtCompound) -> SJMCLResult<Vec<(String, String, String)>> {
-  // return vec of (ip, name, icon_src)
-  match nbt.get::<_, &NbtList>("servers") {
-    Ok(servers) => {
-      let mut servers_list = Vec::new();
-      for server_idx in 0..servers.len() {
-        if let Ok(server) = servers.get::<&NbtCompound>(server_idx) {
-          match server.get::<_, &str>("ip") {
-            Ok(ip) => {
-              let icon = server.get::<_, &str>("icon").unwrap_or("");
-              let name = server.get::<_, &str>("name").unwrap_or("unknown");
-              servers_list.push((ip.to_string(), name.to_string(), icon.to_string()));
-            }
-            Err(_) => {
-              continue;
-            }
-          }
-        }
-      }
-      Ok(servers_list)
-    }
-    Err(e) => Err(SJMCLError::from(e)),
-  }
+pub async fn load_servers_info_from_path(path: &Path) -> SJMCLResult<Vec<NbtServerInfo>> {
+  let bytes = tokio::fs::read(path).await?;
+  let (servers_info, _snbt) =
+    quartz_nbt::serde::deserialize::<NbtServersInfo>(&bytes, Flavor::Uncompressed)?;
+  Ok(servers_info.servers)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -54,7 +37,7 @@ pub struct Players {
 }
 
 pub async fn query_server_status(server: &String) -> SJMCLResult<SjmcServerQueryResult> {
-  // 构建请求URL
+  // construct request url
   let url = format!("https://mc.sjtu.cn/custom/serverlist/?query={}", server);
   let response = reqwest::get(&url).await?;
   if !response.status().is_success() {

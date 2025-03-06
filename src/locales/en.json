@@ -671,7 +671,8 @@
       "deleteDialog": {
         "title": "Delete Game Directory",
         "content": "Confirm the removal of game directory {{dirName}} ? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
-      }
+      },
+      "directoryNotExist": "Directory does not exist, please add path again."
     },
     "gameJava": {
       "title": "Game Java",
@@ -911,7 +912,8 @@
         "adventure": "Adventure Mode",
         "spectator": "Spectator Mode"
       },
-      "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})"
+      "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
+      "viewLevelData": "View Level Data"
     },
     "serverList": {
       "title": "Servers",
@@ -1578,6 +1580,11 @@
     "button": {
       "exit": "Exit",
       "agree": "Agree"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "World Level Data - {{worldName}}"
     }
   }
 }

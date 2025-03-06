@@ -26,6 +26,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-dialog",
+ "tauri-plugin-fs",
  "tauri-plugin-http",
  "tauri-plugin-log",
  "tauri-plugin-opener",
@@ -3761,6 +3762,7 @@ dependencies = [
  "cesu8",
  "flate2",
  "quartz_nbt_macros",
+ "serde",
 ]
 
 [[package]]

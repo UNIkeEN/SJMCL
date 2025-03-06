@@ -10,7 +10,7 @@ import { Section } from "@/components/common/section";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirEnums } from "@/enums/instance";
-import { ShaderPackInfo } from "@/models/instance";
+import { ShaderPackInfo } from "@/models/instance/misc";
 
 const InstanceShaderPacksPage = () => {
   const { t } = useTranslation();

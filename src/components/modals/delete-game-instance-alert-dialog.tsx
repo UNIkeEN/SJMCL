@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
-import { GameInstanceSummary } from "@/models/instance";
+import { GameInstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 
 interface DeleteGameInstanceDialogProps

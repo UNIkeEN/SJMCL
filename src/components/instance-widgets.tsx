@@ -1,6 +1,7 @@
 import {
   Avatar,
   AvatarGroup,
+  Box,
   BoxProps,
   Button,
   Center,
@@ -37,8 +38,9 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { LocalModInfo, WorldInfo } from "@/models/instance";
-import { ScreenshotInfo } from "@/models/instance";
+import { LocalModInfo } from "@/models/instance/misc";
+import { ScreenshotInfo } from "@/models/instance/misc";
+import { WorldInfo } from "@/models/instance/world";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
@@ -290,52 +292,49 @@ export const InstanceLastPlayedWidget = () => {
       icon={LuClock4}
     >
       {lastPlayedWorld ? (
-        <>
-          <OptionItem
-            title={lastPlayedWorld.name}
-            description={
-              <VStack
-                spacing={0}
-                fontSize="xs"
-                alignItems="flex-start"
-                className="secondary-text"
-              >
-                <Text>
+        <VStack spacing={3} alignItems="flex-start" w="full">
+          <HStack spacing={3} w="full" alignItems="center">
+            <Image
+              src={convertFileSrc(lastPlayedWorld.iconSrc)}
+              fallbackSrc="/images/icons/UnknownWorld.webp"
+              alt={lastPlayedWorld.name}
+              boxSize="28px"
+              borderRadius="4px"
+            />
+            <Box flex="1" minW={0}>
+              <VStack spacing={0} alignItems="start" w="full">
+                <Text
+                  fontSize="xs-sm"
+                  className="no-select"
+                  w="full"
+                  isTruncated
+                >
+                  {lastPlayedWorld.name}
+                </Text>
+                <Text className="secondary-text" fontSize="xs">
                   {formatRelativeTime(
                     UNIXToISOString(lastPlayedWorld.lastPlayedAt),
                     t
                   ).replace("on", "")}
                 </Text>
-                <Text>
+                <Text className="secondary-text" fontSize="xs">
                   {t(
                     `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode}`
                   )}
                 </Text>
-                <Text>
+                <Text className="secondary-text" fontSize="xs">
                   {t(
                     `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
                   )}
                 </Text>
               </VStack>
-            }
-            prefixElement={
-              <Image
-                src={convertFileSrc(lastPlayedWorld.iconSrc)}
-                fallbackSrc="/images/icons/UnknownWorld.webp"
-                alt={lastPlayedWorld.name}
-                boxSize="28px"
-                style={{ borderRadius: "4px" }}
-              />
-            }
-          />
-          <HStack spacing={1.5}>
+            </Box>
+          </HStack>
+          <HStack spacing={1.5} position="absolute" left={2} bottom={2}>
             <Button
               size="xs"
               variant="ghost"
               colorScheme={primaryColor}
-              position="absolute"
-              left={2}
-              bottom={2}
               justifyContent="flex-start"
             >
               <HStack spacing={1.5}>
@@ -344,7 +343,7 @@ export const InstanceLastPlayedWidget = () => {
               </HStack>
             </Button>
           </HStack>
-        </>
+        </VStack>
       ) : (
         <Empty withIcon={false} size="sm" />
       )}

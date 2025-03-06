@@ -17,8 +17,8 @@ import {
   SchematicInfo,
   ScreenshotInfo,
   ShaderPackInfo,
-  WorldInfo,
-} from "@/models/instance";
+} from "@/models/instance/misc";
+import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
 
 export interface InstanceContextType {

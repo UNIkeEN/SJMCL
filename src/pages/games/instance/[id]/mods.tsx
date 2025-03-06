@@ -20,7 +20,7 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
-import { LocalModInfo } from "@/models/instance";
+import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
 

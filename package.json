@@ -36,6 +36,7 @@
     "@emotion/styled": "^11.11.5",
     "@tauri-apps/api": "^2.1.1",
     "@tauri-apps/plugin-dialog": "^2.0.1",
+    "@tauri-apps/plugin-fs": "^2.0.1",
     "@tauri-apps/plugin-http": "^2.0.1",
     "@tauri-apps/plugin-opener": "^2.2.5",
     "@tauri-apps/plugin-os": "^2.0.0",

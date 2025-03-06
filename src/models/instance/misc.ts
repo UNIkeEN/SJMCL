@@ -14,15 +14,6 @@ export interface GameInstanceSummary {
   };
 }
 
-export interface WorldInfo {
-  name: string;
-  lastPlayedAt: number;
-  difficulty: string;
-  gamemode: string;
-  iconSrc: string;
-  dirPath: string;
-}
-
 export interface GameServerInfo {
   iconSrc: string;
   ip: string;

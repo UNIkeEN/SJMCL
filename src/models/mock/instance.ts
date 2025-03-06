@@ -1,4 +1,4 @@
-import { ResourcePackInfo, SchematicInfo } from "@/models/instance";
+import { ResourcePackInfo, SchematicInfo } from "@/models/instance/misc";
 
 export const mockResourcePacks: ResourcePackInfo[] = [
   {

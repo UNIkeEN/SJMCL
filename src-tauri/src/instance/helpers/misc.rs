@@ -1,4 +1,4 @@
-use super::super::models::{Instance, InstanceSubdirType, ModLoader};
+use super::super::models::misc::{Instance, InstanceSubdirType, ModLoader};
 use super::client::load_client_info_from_json;
 use crate::{
   instance::helpers::client::patchs_to_info,
@@ -105,7 +105,7 @@ pub async fn refresh_instances(
     if let Ok(client_data) = load_client_info_from_json(&json_path).await {
       let (game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
       instances.push(Instance {
-        id: 0, // not assigned yet
+        id: 0, // not decided yet
         name: client_data.id,
         description: "mock desc".to_string(), // TODO: fix these mock fields
         icon_src: "/images/icons/GrassBlock.png".to_string(),

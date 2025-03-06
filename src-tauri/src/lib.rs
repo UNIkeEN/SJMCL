@@ -13,7 +13,7 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 
 use instance::helpers::misc::refresh_and_update_instances;
-use instance::models::Instance;
+use instance::models::misc::Instance;
 use launcher_config::models::LauncherConfig;
 use storage::Storage;
 
@@ -36,6 +36,7 @@ pub async fn run() {
     .plugin(tauri_plugin_window_state::Builder::new().build())
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_os::init())
+    .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_dialog::init())
     .invoke_handler(tauri::generate_handler![
@@ -67,6 +68,7 @@ pub async fn run() {
       instance::commands::copy_across_instances,
       instance::commands::move_across_instances,
       instance::commands::retrieve_world_list,
+      instance::commands::retrieve_world_details,
       instance::commands::retrieve_game_server_list,
       instance::commands::retrieve_local_mod_list,
       instance::commands::retrieve_resource_pack_list,

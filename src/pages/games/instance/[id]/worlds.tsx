@@ -1,4 +1,11 @@
-import { HStack, Image, Tag, TagLabel, Text } from "@chakra-ui/react";
+import {
+  HStack,
+  Image,
+  Tag,
+  TagLabel,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
 import { useCallback, useEffect, useState } from "react";
@@ -9,12 +16,14 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import WorldLevelDataModal from "@/components/modals/world-level-data-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
-import { GameServerInfo, WorldInfo } from "@/models/instance";
+import { GameServerInfo } from "@/models/instance/misc";
+import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
@@ -28,7 +37,14 @@ const InstanceWorldsPage = () => {
   const { openSharedModal } = useSharedModals();
 
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
+  const [selectedWorldName, setSelectedWorldName] = useState<string>();
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
+
+  const {
+    isOpen: isWorldLevelDataModalOpen,
+    onOpen: onWorldLevelDataModallOpen,
+    onClose: onWorldLevelDataModalClose,
+  } = useDisclosure();
 
   useEffect(() => {
     setWorlds(getWorldList() || []);
@@ -89,6 +105,7 @@ const InstanceWorldsPage = () => {
       icon: "refresh",
       onClick: () => {
         setWorlds(getWorldList(true) || []);
+        setSelectedWorldName("");
       },
     },
   ];
@@ -108,6 +125,14 @@ const InstanceWorldsPage = () => {
       label: "",
       icon: "revealFile",
       onClick: () => open(save.dirPath),
+    },
+    {
+      label: t("InstanceWorldsPage.worldList.viewLevelData"),
+      icon: "info",
+      onClick: () => {
+        setSelectedWorldName(save.name);
+        onWorldLevelDataModallOpen();
+      },
     },
   ];
 
@@ -184,6 +209,13 @@ const InstanceWorldsPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
+
+      <WorldLevelDataModal
+        instanceId={summary?.id}
+        worldName={selectedWorldName || ""}
+        isOpen={isWorldLevelDataModalOpen}
+        onClose={onWorldLevelDataModalClose}
+      />
 
       <Section
         isAccordion

@@ -1,6 +1,6 @@
 use super::{fabric, forge, liteloader, neoforge, oldforge, quilt};
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::models::{LocalModInfo, ModLoaderType};
+use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use tokio;

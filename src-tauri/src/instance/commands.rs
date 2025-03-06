@@ -1,24 +1,25 @@
 use super::{
   super::utils::{
     fs::{copy_whole_dir, generate_unique_filename},
-    nbt::load_nbt,
     path::{get_files_with_regex, get_subdirectories},
   },
   helpers::{
     misc::{get_instance_subdir_path, refresh_and_update_instances},
     mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
-    server::{nbt_to_servers_info, query_server_status},
-    world::nbt_to_world_info,
+    server::{load_servers_info_from_path, query_server_status},
+    world::{level_data_to_world_info, load_level_data_from_path},
   },
   models::{
-    GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ModLoaderType,
-    ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo, WorldInfo,
+    misc::{
+      GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ModLoaderType,
+      ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
+    },
+    world::{base::WorldInfo, level::LevelData},
   },
 };
 use crate::error::SJMCLResult;
 use lazy_static::lazy_static;
-use quartz_nbt::io::Flavor;
 use regex::{Regex, RegexBuilder};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -173,17 +174,16 @@ pub async fn retrieve_world_list(
     let name = path.file_name().unwrap().to_str().unwrap();
     let icon_path = path.join("icon.png");
     let nbt_path = path.join("level.dat");
-    if let Ok(nbt) = load_nbt(&nbt_path, Flavor::GzCompressed) {
-      if let Ok((last_played, difficulty, gamemode)) = nbt_to_world_info(&nbt) {
-        world_list.push(WorldInfo {
-          name: name.to_string(),
-          last_played_at: last_played,
-          difficulty: difficulty.to_string(),
-          gamemode: gamemode.to_string(),
-          icon_src: icon_path,
-          dir_path: path,
-        });
-      }
+    if let Ok(level_data) = load_level_data_from_path(&nbt_path).await {
+      let (last_played, difficulty, gamemode) = level_data_to_world_info(&level_data)?;
+      world_list.push(WorldInfo {
+        name: name.to_string(),
+        last_played_at: last_played,
+        difficulty: difficulty.to_string(),
+        gamemode: gamemode.to_string(),
+        icon_src: icon_path,
+        dir_path: path,
+      });
     }
   }
   Ok(world_list)
@@ -203,21 +203,17 @@ pub async fn retrieve_game_server_list(
   };
 
   let nbt_path = game_root_dir.join("servers.dat");
-  if let Ok(nbt) = load_nbt(&nbt_path, Flavor::Uncompressed) {
-    if let Ok(servers) = nbt_to_servers_info(&nbt) {
-      for (ip, name, icon) in servers {
-        game_servers.push(GameServerInfo {
-          ip,
-          name,
-          icon_src: icon,
-          is_queried: false,
-          players_max: 0,
-          players_online: 0,
-          online: false,
-        });
-      }
-    } else {
-      return Err(InstanceError::ServerNbtReadError.into());
+  if let Ok(servers) = load_servers_info_from_path(&nbt_path).await {
+    for server in servers {
+      game_servers.push(GameServerInfo {
+        ip: server.ip,
+        name: server.name,
+        icon_src: server.icon,
+        is_queried: false,
+        players_max: 0,
+        players_online: 0,
+        online: false,
+      });
     }
 
     // query_online is true, amend query and return player count and online status
@@ -458,7 +454,6 @@ pub fn retrieve_shader_pack_list(
     .build()
     .unwrap();
   let mut shaderpack_list = Vec::new();
-  // TODO: async read files
   for path in get_files_with_regex(shaderpacks_dir, &valid_extensions)? {
     shaderpack_list.push(ShaderPackInfo {
       file_name: path.file_stem().unwrap().to_string_lossy().to_string(),
@@ -550,4 +545,22 @@ pub fn toggle_mod_by_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<
   }
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn retrieve_world_details(
+  app: AppHandle,
+  instance_id: usize,
+  world_name: String,
+) -> SJMCLResult<LevelData> {
+  let worlds_dir = match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Saves) {
+    Some(path) => path,
+    None => return Err(InstanceError::WorldExistError.into()),
+  };
+  let level_path = worlds_dir.join(world_name).join("level.dat");
+  if let Ok(level_data) = load_level_data_from_path(&level_path).await {
+    Ok(level_data)
+  } else {
+    Err(InstanceError::LevelParseError.into())
+  }
 }

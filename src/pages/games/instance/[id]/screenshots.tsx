@@ -9,7 +9,7 @@ import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import ScreenshotPreviewModal from "@/components/modals/screenshot-preview-modal";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { ScreenshotInfo } from "@/models/instance";
+import { ScreenshotInfo } from "@/models/instance/misc";
 
 const InstanceScreenshotsPage: React.FC = () => {
   const { t } = useTranslation();

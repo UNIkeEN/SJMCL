@@ -15,7 +15,7 @@ import { LuBox, LuBoxes, LuCirclePlus, LuSettings } from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
 import SelectableButton from "@/components/common/selectable-button";
 import { useData } from "@/contexts/data";
-import { GameInstanceSummary } from "@/models/instance";
+import { GameInstanceSummary } from "@/models/instance/misc";
 
 interface GamesLayoutProps {
   children: React.ReactNode;

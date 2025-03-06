@@ -19,7 +19,7 @@ import { LuCalendarDays, LuImagePlay } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { ScreenshotInfo } from "@/models/instance";
+import { ScreenshotInfo } from "@/models/instance/misc";
 import { ConfigService } from "@/services/config";
 import { UNIXToDatetime } from "@/utils/datetime";
 import { extractFileName } from "@/utils/string";
