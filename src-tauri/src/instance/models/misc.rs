@@ -157,8 +157,9 @@ pub enum InstanceError {
   FileCopyFailed,
   FileMoveFailed,
   FolderCreationFailed,
-  WorldExistError,
+  WorldNotExistError,
   LevelParseError,
+  LevelNotExistError,
 }
 
 impl fmt::Display for InstanceError {
@@ -172,8 +173,9 @@ impl fmt::Display for InstanceError {
       InstanceError::FileCopyFailed => write!(f, "FILE_COPY_FAILED"),
       InstanceError::FileMoveFailed => write!(f, "FILE_MOVE_FAILED"),
       InstanceError::FolderCreationFailed => write!(f, "FOLDER_CREATION_FAILED"),
-      InstanceError::WorldExistError => write!(f, "WORLD_EXIST_ERROR"),
+      InstanceError::WorldNotExistError => write!(f, "WORLD_NOT_EXIST_ERROR"),
       InstanceError::LevelParseError => write!(f, "LEVEL_PARSE_ERROR"),
+      InstanceError::LevelNotExistError => write!(f, "LEVEL_NOT_EXIST_ERROR"),
     }
   }
 }
