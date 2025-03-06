@@ -35,10 +35,8 @@ pub enum SourceType {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct GameResourceInfo {
   pub id: String,
-  #[serde(rename = "type")]
   pub game_type: String,
   pub release_time: String,
-  pub time: String,
   pub url: String,
 }
 

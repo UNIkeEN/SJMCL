@@ -1,6 +1,6 @@
 use crate::{
   error::SJMCLResult,
-  instance::helpers::client::{DownloadsArtifact, IsAllowed, McClientInfo},
+  instance::helpers::client::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
 };
 use futures;
 use hex;
@@ -11,8 +11,9 @@ use tokio::io::{AsyncReadExt, BufReader};
 
 pub fn convert_client_to_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
+  let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
-    if !library.is_allowed().unwrap_or(false) {
+    if !library.is_allowed(&feature).unwrap_or(false) {
       continue;
     }
     if let Some(ref downloads) = &library.downloads {
@@ -23,7 +24,7 @@ pub fn convert_client_to_artifacts(client_info: &McClientInfo) -> Vec<DownloadsA
   }
   for patch in &client_info.patches {
     for library in &patch.libraries {
-      if !library.is_allowed().unwrap_or(false) {
+      if !library.is_allowed(&feature).unwrap_or(false) {
         continue;
       }
       if let Some(ref downloads) = &library.downloads {
@@ -100,4 +101,16 @@ pub async fn validate_library_files(
     }
   }
   Ok(bad_artifacts)
+}
+
+pub fn get_class_paths(client_info: &McClientInfo, library_path: &PathBuf) -> Vec<String> {
+  convert_client_to_artifacts(client_info)
+    .into_iter()
+    .map(|artifact| {
+      library_path
+        .join(artifact.path)
+        .to_string_lossy()
+        .to_string()
+    })
+    .collect()
 }

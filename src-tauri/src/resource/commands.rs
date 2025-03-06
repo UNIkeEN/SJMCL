@@ -2,7 +2,7 @@ use super::{
   helpers::{
     fabric_meta::get_fabric_meta_by_game_version, forge_meta::get_forge_meta_by_game_version,
     misc::get_source_priority_list, neoforge_meta::get_neoforge_meta_by_game_version,
-    version_manifest::get_latest_version,
+    version_manifest::get_game_version_list,
   },
   models::{GameResourceInfo, ModLoaderResourceInfo, ResourceError},
 };
@@ -21,7 +21,7 @@ pub async fn fetch_game_version_list(
     let state = state.lock()?;
     get_source_priority_list(&state)
   };
-  get_latest_version(&priority_list).await
+  get_game_version_list(&priority_list).await
 }
 
 #[tauri::command]
@@ -36,13 +36,13 @@ pub async fn fetch_mod_loader_version_list(
   };
   match mod_loader_type {
     ModLoaderType::Forge | ModLoaderType::ForgeOld => {
-      return Ok(get_forge_meta_by_game_version(&priority_list, &game_version).await?);
+      return get_forge_meta_by_game_version(&priority_list, &game_version).await;
     }
     ModLoaderType::Fabric => {
-      return Ok(get_fabric_meta_by_game_version(&priority_list, &game_version).await?);
+      return get_fabric_meta_by_game_version(&priority_list, &game_version).await;
     }
     ModLoaderType::NeoForge => {
-      return Ok(get_neoforge_meta_by_game_version(&priority_list, &game_version).await?);
+      return get_neoforge_meta_by_game_version(&priority_list, &game_version).await;
     }
     // TODO here
     _ => Err(ResourceError::NoDownloadApi.into()),

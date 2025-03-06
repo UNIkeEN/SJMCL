@@ -7,7 +7,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use std::{collections::HashMap, path::PathBuf, str::FromStr};
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct McClientInfo {
   pub id: String,
@@ -27,11 +27,11 @@ pub struct McClientInfo {
 
   // old version
   pub minecraft_arguments: Option<String>,
-  pub main_class: Option<String>,
+  pub main_class: String,
   pub jar: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct PatchesInfo {
   pub id: String,
@@ -52,35 +52,35 @@ pub struct PatchesInfo {
   pub minimum_launcher_version: i64,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct JavaVersion {
   pub component: String,
   pub major_version: i64,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct LaunchArgumentTemplate {
   pub game: Vec<ArgumentsItem>,
   pub jvm: Vec<ArgumentsItem>,
 }
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct ArgumentsItem {
   pub value: Vec<String>,
   pub rules: Vec<InstructionRule>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct ArgumentsItemDefault {
   pub value: Vec<String>,
   pub rules: Vec<InstructionRule>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct InstructionRule {
   pub action: String,
@@ -89,7 +89,7 @@ pub struct InstructionRule {
 }
 
 impl InstructionRule {
-  pub fn is_allowed(&self) -> SJMCLResult<(bool, bool)> {
+  pub fn is_allowed(&self, target_feature: &FeaturesInfo) -> SJMCLResult<(bool, bool)> {
     let mut positive = match self.action.to_lowercase().as_str() {
       "allow" => true,
       "disallow" => false,
@@ -124,6 +124,45 @@ impl InstructionRule {
         }
       }
     }
+    if let Some(ref self_feature) = self.features {
+      strong = true;
+      if self_feature.is_demo_user.is_some() {
+        if self_feature.is_demo_user != target_feature.is_demo_user {
+          positive = !positive;
+        }
+        return Ok((positive, strong));
+      }
+      if self_feature.is_quick_play_multiplayer.is_some() {
+        if self_feature.is_quick_play_multiplayer != target_feature.is_quick_play_multiplayer {
+          positive = !positive;
+        }
+        return Ok((positive, strong));
+      }
+      if self_feature.is_quick_play_realms.is_some() {
+        if self_feature.is_quick_play_realms != target_feature.is_quick_play_realms {
+          positive = !positive;
+        }
+        return Ok((positive, strong));
+      }
+      if self_feature.is_quick_play_singleplayer.is_some() {
+        if self_feature.is_quick_play_singleplayer != target_feature.is_quick_play_singleplayer {
+          positive = !positive;
+        }
+        return Ok((positive, strong));
+      }
+      if self_feature.has_custom_resolution.is_some() {
+        if self_feature.has_custom_resolution != target_feature.has_custom_resolution {
+          positive = !positive;
+        }
+        return Ok((positive, strong));
+      }
+      if self_feature.has_quick_plays_support.is_some() {
+        if self_feature.has_quick_plays_support != target_feature.has_quick_plays_support {
+          positive = !positive;
+        }
+        return Ok((positive, strong));
+      }
+    }
     Ok((positive, strong))
   }
 }
@@ -149,7 +188,7 @@ impl<'de> Deserialize<'de> for ArgumentsItem {
   }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct OsInfo {
   pub name: String,
@@ -157,7 +196,7 @@ pub struct OsInfo {
   pub arch: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
 pub struct FeaturesInfo {
   pub is_demo_user: Option<bool>,
@@ -168,7 +207,7 @@ pub struct FeaturesInfo {
   pub is_quick_play_realms: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct AssetIndex {
   pub id: String,
@@ -178,7 +217,7 @@ pub struct AssetIndex {
   pub url: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct DownloadsValue {
   pub sha1: String,
@@ -187,7 +226,7 @@ pub struct DownloadsValue {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Debug, Deserialize, Serialize, Default)]]
+  #[strikethrough[derive(Debug, Deserialize, Serialize, Default, Clone)]]
   #[strikethrough[serde(rename_all="camelCase", default)]]
   pub struct LibrariesValue {
     pub name: String,
@@ -211,7 +250,7 @@ pub struct DownloadsArtifact {
   pub size: i64,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "snake_case", default)]
 pub struct Classifiers {
   pub natives_linux: Option<Value>,
@@ -223,7 +262,7 @@ pub struct Classifiers {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Debug, Deserialize, Serialize, Default)]]
+  #[strikethrough[derive(Debug, Deserialize, Serialize, Default, Clone)]]
   #[strikethrough[serde(rename_all="camelCase", default)]]
   pub struct Logging {
     pub client:
@@ -269,10 +308,10 @@ pub fn patchs_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String
   (game_version, mod_version, mod_loader_type)
 }
 
-fn rules_is_allowed(rules: &Vec<InstructionRule>) -> SJMCLResult<bool> {
+fn rules_is_allowed(rules: &Vec<InstructionRule>, feature: &FeaturesInfo) -> SJMCLResult<bool> {
   let mut weak_allowed = true;
   for rule in rules {
-    let (allow, strong) = rule.is_allowed()?;
+    let (allow, strong) = rule.is_allowed(feature)?;
     if strong {
       return Ok(allow);
     }
@@ -282,31 +321,36 @@ fn rules_is_allowed(rules: &Vec<InstructionRule>) -> SJMCLResult<bool> {
 }
 
 pub trait IsAllowed {
-  fn is_allowed(&self) -> SJMCLResult<bool>;
+  fn is_allowed(&self, feature: &FeaturesInfo) -> SJMCLResult<bool>;
 }
 
 impl IsAllowed for ArgumentsItem {
-  fn is_allowed(&self) -> SJMCLResult<bool> {
-    rules_is_allowed(&self.rules)
+  fn is_allowed(&self, feature: &FeaturesInfo) -> SJMCLResult<bool> {
+    rules_is_allowed(&self.rules, feature)
   }
 }
 
 impl IsAllowed for LibrariesValue {
-  fn is_allowed(&self) -> SJMCLResult<bool> {
-    rules_is_allowed(&self.rules)
+  fn is_allowed(&self, feature: &FeaturesInfo) -> SJMCLResult<bool> {
+    rules_is_allowed(&self.rules, feature)
   }
 }
 
 impl LaunchArgumentTemplate {
-  pub fn to_arguments(&self) -> SJMCLResult<Vec<String>> {
+  pub fn to_arguments(
+    &self,
+    feature: &FeaturesInfo,
+    main_class: String,
+  ) -> SJMCLResult<Vec<String>> {
     let mut arguments = Vec::new();
-    for argument in &self.game {
-      if argument.is_allowed().unwrap_or_default() {
+    for argument in &self.jvm {
+      if argument.is_allowed(feature).unwrap_or_default() {
         arguments.extend(argument.value.clone());
       }
     }
-    for argument in &self.jvm {
-      if argument.is_allowed().unwrap_or_default() {
+    arguments.push(main_class);
+    for argument in &self.game {
+      if argument.is_allowed(feature).unwrap_or_default() {
         arguments.extend(argument.value.clone());
       }
     }

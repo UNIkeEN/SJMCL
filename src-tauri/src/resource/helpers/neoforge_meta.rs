@@ -20,7 +20,7 @@ pub async fn get_neoforge_meta_by_game_version(
   for source_type in priority_list.iter() {
     let url = get_download_api(*source_type, ResourceType::NeoforgeMeta)?
       .join("list")?
-      .join(&game_version)?;
+      .join(game_version)?;
     match reqwest::get(url).await {
       Ok(response) => {
         if response.status().is_success() {

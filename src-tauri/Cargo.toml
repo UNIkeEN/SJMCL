@@ -53,6 +53,7 @@ java-properties = "2.0.0"
 sha1 = "0.10.1"
 hex = "0.4.3"
 url = "2.5.4"
+shlex = "0.1.1"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

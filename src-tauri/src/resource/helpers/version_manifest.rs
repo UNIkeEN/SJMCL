@@ -9,7 +9,18 @@ use super::misc::get_download_api;
 #[derive(Serialize, Deserialize, Default)]
 struct VersionManifest {
   pub latest: LatestVersion,
-  pub versions: Vec<GameResourceInfo>,
+  pub versions: Vec<GameResource>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct GameResource {
+  pub id: String,
+  #[serde(rename = "type")]
+  pub game_type: String,
+  pub release_time: String,
+  pub time: String,
+  pub url: String,
 }
 
 #[derive(Serialize, Deserialize, Default)]
@@ -18,18 +29,45 @@ struct LatestVersion {
   pub snapshot: String,
 }
 
-pub async fn get_latest_version(
+pub async fn get_game_version_list(
   priority_list: &Vec<SourceType>,
 ) -> SJMCLResult<Vec<GameResourceInfo>> {
+  println!("INTO get_game_version_list");
   for source_type in priority_list.iter() {
     let url = get_download_api(*source_type, ResourceType::VersionManifest)?;
+    println!("{}", url);
     match reqwest::get(url).await {
       Ok(response) => {
+        println!("Ok response");
         if response.status().is_success() {
-          if let Ok(manifest) = response.json::<VersionManifest>().await {
-            return Ok(manifest.versions);
-          } else {
-            return Err(ResourceError::ParseError.into());
+          println!("is_success");
+          match response.json::<VersionManifest>().await {
+            Ok(manifest) => {
+              println!("{:?}", manifest.versions);
+              return Ok(
+                manifest
+                  .versions
+                  .into_iter()
+                  .map(|info| {
+                    let april_fool = info.release_time.contains("04-01");
+                    GameResourceInfo {
+                      id: info.id,
+                      game_type: if april_fool {
+                        "april_fools".to_string()
+                      } else {
+                        info.game_type
+                      },
+                      release_time: info.release_time,
+                      url: info.url,
+                    }
+                  })
+                  .collect(),
+              );
+            }
+            Err(e) => {
+              println!("parse error, {:?}", e);
+              return Err(ResourceError::ParseError.into());
+            }
           }
         } else {
           continue;

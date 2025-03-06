@@ -1,5 +1,5 @@
 use super::helpers::{
-  cmd_builder::{generate_launch_params, LaunchParams},
+  cmd_builder::{collect_launch_params, generate_launch_cmd},
   file_validator::validate_library_files,
 };
 use crate::{
@@ -35,19 +35,34 @@ pub async fn validate_game_files(
 
 #[tauri::command]
 pub async fn launch_game(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
+  println!("instance id: {}", instance_id);
   let client_info = if let Some(path) = get_instance_client_json_path(&app, instance_id) {
     load_client_info_from_json(&path).await?
   } else {
     return Err(InstanceError::FileNotFoundError.into());
   };
-  let argument_template = if let Some(arguments) = client_info.arguments {
-    arguments
+  let argument_template = if let Some(ref arguments) = &client_info.arguments {
+    arguments.clone()
   } else {
-    return Err(SJMCLError(format!("")));
+    return Err(SJMCLError(String::new()));
   };
-  println!(
-    "{:?}",
-    generate_launch_params(&LaunchParams::default(), &argument_template)?
-  );
+  let main_class = client_info.main_class.clone();
+  if let Ok((launch_params, launch_feature)) =
+    collect_launch_params(&app, &instance_id, client_info)
+  {
+    println!(
+      "{}",
+      generate_launch_cmd(
+        &launch_params,
+        &argument_template,
+        main_class,
+        &launch_feature
+      )?
+      .join(" ")
+    );
+  } else {
+    println!("COLLECT LAUNCH PARAMS ERROR");
+  }
+
   Ok(())
 }
