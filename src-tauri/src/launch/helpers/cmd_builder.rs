@@ -2,12 +2,15 @@
 
 use super::file_validator::get_class_paths;
 use crate::account::models::AccountInfo;
-use crate::instance::{helpers::client::McClientInfo, models::misc::Instance};
+use crate::instance::{
+  helpers::client_json::{FeaturesInfo, McClientInfo},
+  models::misc::Instance,
+};
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
 use crate::{
   error::{SJMCLError, SJMCLResult},
-  instance::helpers::client::{FeaturesInfo, LaunchArgumentTemplate},
+  instance::helpers::client_json::LaunchArgumentTemplate,
 };
 use regex::Regex;
 use serde::{self, Deserialize, Serialize};

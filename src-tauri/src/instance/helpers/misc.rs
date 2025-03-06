@@ -1,7 +1,7 @@
 use super::super::models::misc::{Instance, InstanceSubdirType, ModLoader};
-use super::client::load_client_info_from_json;
+use super::client_json::load_client_info_from_json;
 use crate::{
-  instance::helpers::client::patchs_to_info,
+  instance::helpers::client_json::patchs_to_info,
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
 use std::{fs, path::PathBuf, sync::Mutex};

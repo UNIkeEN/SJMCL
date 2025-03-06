@@ -6,7 +6,7 @@ use crate::{
   error::{SJMCLError, SJMCLResult},
   instance::{
     helpers::{
-      client::{load_client_info_from_json, DownloadsArtifact},
+      client_json::{load_client_info_from_json, DownloadsArtifact},
       misc::{get_instance_client_json_path, get_instance_subdir_path},
     },
     models::misc::{InstanceError, InstanceSubdirType},

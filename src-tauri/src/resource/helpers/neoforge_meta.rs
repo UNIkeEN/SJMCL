@@ -14,8 +14,8 @@ struct NeoforgeMetaItem {
 }
 
 pub async fn get_neoforge_meta_by_game_version(
-  priority_list: &Vec<SourceType>,
-  game_version: &String,
+  priority_list: &[SourceType],
+  game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   for source_type in priority_list.iter() {
     let url = get_download_api(*source_type, ResourceType::NeoforgeMeta)?

@@ -169,7 +169,6 @@ pub async fn retrieve_world_list(
   };
 
   let mut world_list: Vec<WorldInfo> = Vec::new();
-  // TODO: async read
   for path in world_dirs {
     let name = path.file_name().unwrap().to_str().unwrap();
     let icon_path = path.join("icon.png");
@@ -555,9 +554,12 @@ pub async fn retrieve_world_details(
 ) -> SJMCLResult<LevelData> {
   let worlds_dir = match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Saves) {
     Some(path) => path,
-    None => return Err(InstanceError::WorldExistError.into()),
+    None => return Err(InstanceError::WorldNotExistError.into()),
   };
   let level_path = worlds_dir.join(world_name).join("level.dat");
+  if tokio::fs::metadata(&level_path).await.is_err() {
+    return Err(InstanceError::LevelNotExistError.into());
+  }
   if let Ok(level_data) = load_level_data_from_path(&level_path).await {
     Ok(level_data)
   } else {

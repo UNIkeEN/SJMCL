@@ -29,8 +29,8 @@ struct LatestVersion {
   pub snapshot: String,
 }
 
-pub async fn get_game_version_list(
-  priority_list: &Vec<SourceType>,
+pub async fn get_game_version_manifest(
+  priority_list: &[SourceType],
 ) -> SJMCLResult<Vec<GameResourceInfo>> {
   println!("INTO get_game_version_list");
   for source_type in priority_list.iter() {

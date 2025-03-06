@@ -1,6 +1,6 @@
 use crate::{
   error::SJMCLResult,
-  instance::helpers::client::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
+  instance::helpers::client_json::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
 };
 use futures;
 use hex;
