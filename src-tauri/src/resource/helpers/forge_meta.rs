@@ -1,8 +1,7 @@
 use super::misc::get_download_api;
-use crate::error::SJMCLError;
-use crate::instance::models::ModLoaderType;
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::models::misc::ModLoaderType;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
-use crate::{error::SJMCLResult, resource::models::GameResourceInfo};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri_plugin_http::reqwest;
@@ -24,7 +23,7 @@ pub async fn get_forge_meta_by_game_version(
   for source_type in priority_list.iter() {
     let url = get_download_api(*source_type, ResourceType::ForgeMeta)?
       .join("minecraft")?
-      .join(&game_version)?;
+      .join(game_version)?;
     match reqwest::get(url).await {
       Ok(response) => {
         if response.status().is_success() {

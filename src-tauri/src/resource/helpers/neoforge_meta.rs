@@ -1,6 +1,6 @@
 use super::misc::get_download_api;
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::models::ModLoaderType;
+use crate::instance::models::misc::ModLoaderType;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use serde::{Deserialize, Serialize};
 use tauri_plugin_http::reqwest;

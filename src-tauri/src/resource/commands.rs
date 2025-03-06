@@ -7,7 +7,8 @@ use super::{
   models::{GameResourceInfo, ModLoaderResourceInfo, ResourceError},
 };
 use crate::{
-  error::SJMCLResult, instance::models::ModLoaderType, launcher_config::models::LauncherConfig,
+  error::SJMCLResult, instance::models::misc::ModLoaderType,
+  launcher_config::models::LauncherConfig,
 };
 use std::sync::Mutex;
 use tauri::State;

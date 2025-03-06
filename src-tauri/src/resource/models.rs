@@ -1,4 +1,4 @@
-use crate::instance::models::ModLoaderType;
+use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
