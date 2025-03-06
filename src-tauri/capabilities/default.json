@@ -12,6 +12,10 @@
     "http:default",
     "os:default",
     "fs:default",
+    {
+      "identifier": "fs:allow-exists",
+      "allow": ["**"]
+    },
     "opener:default",
     "process:default",
     "shell:default"
