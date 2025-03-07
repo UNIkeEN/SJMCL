@@ -50,7 +50,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to delete.
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async deleteInstance(
     instanceId: number
   ): Promise<InvokeResponse<void>> {
@@ -237,7 +237,7 @@ export class InstanceService {
    * @param {string} worldName - The name of the world to retrieve details for.
    * @returns {Promise<InvokeResponse<LevelData>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveWorldDetails(
     instanceId: number,
     worldName: string
