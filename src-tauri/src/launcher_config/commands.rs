@@ -3,7 +3,7 @@ use super::{
     get_java_info_from_command, get_java_info_from_release_file, get_java_paths,
     parse_java_major_version,
   },
-  models::{JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
+  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
 };
 use crate::{
   error::SJMCLResult, instance::helpers::misc::refresh_instances, partial::PartialUpdate,
@@ -276,37 +276,36 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
   if !directory.exists() {
     return Err(LauncherConfigError::GameDirNotExist.into());
   }
-  let sub_dirs = get_subdirectories(&directory).unwrap_or_default();
-  let cur_dir_instance = match refresh_instances(&crate::launcher_config::models::GameDirectory {
+
+  if !refresh_instances(&GameDirectory {
     dir: directory.clone(),
     name: "".to_string(),
   })
   .await
+  .unwrap_or_default()
+  .is_empty()
   {
-    Ok(v) => v,
-    Err(_) => vec![],
-  };
-  if !cur_dir_instance.is_empty() {
     return Ok("".to_string());
   }
-  if let Some(valid_sub_dir) = sub_dirs.iter().find(|d| {
+
+  let sub_dirs = get_subdirectories(&directory).unwrap_or_default();
+  for sub_dir in sub_dirs.into_iter().filter(|d| {
     matches!(
       d.file_name().and_then(|n| n.to_str()),
       Some(".minecraft") | Some("minecraft")
     )
   }) {
-    let sub_dir_instance = match refresh_instances(&crate::launcher_config::models::GameDirectory {
-      dir: valid_sub_dir.clone(),
+    if !refresh_instances(&GameDirectory {
+      dir: sub_dir.clone(),
       name: "".to_string(),
     })
     .await
+    .unwrap_or_default()
+    .is_empty()
     {
-      Ok(v) => v,
-      Err(_) => vec![],
-    };
-    if !sub_dir_instance.is_empty() {
-      return Ok(valid_sub_dir.to_str().unwrap().to_string());
+      return Ok(sub_dir.to_str().unwrap().to_string());
     }
   }
+
   Ok("".to_string())
 }

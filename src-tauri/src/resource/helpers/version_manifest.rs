@@ -32,18 +32,13 @@ struct LatestVersion {
 pub async fn get_game_version_manifest(
   priority_list: &[SourceType],
 ) -> SJMCLResult<Vec<GameResourceInfo>> {
-  println!("INTO get_game_version_list");
   for source_type in priority_list.iter() {
     let url = get_download_api(*source_type, ResourceType::VersionManifest)?;
-    println!("{}", url);
     match reqwest::get(url).await {
       Ok(response) => {
-        println!("Ok response");
         if response.status().is_success() {
-          println!("is_success");
           match response.json::<VersionManifest>().await {
             Ok(manifest) => {
-              println!("{:?}", manifest.versions);
               return Ok(
                 manifest
                   .versions
@@ -64,8 +59,7 @@ pub async fn get_game_version_manifest(
                   .collect(),
               );
             }
-            Err(e) => {
-              println!("parse error, {:?}", e);
+            Err(_) => {
               return Err(ResourceError::ParseError.into());
             }
           }

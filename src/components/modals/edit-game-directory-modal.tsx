@@ -58,10 +58,10 @@ export const ActionSelectDialog: React.FC<ActionSelectDialogProps> = ({
   onSecondOption,
   ...modalProps
 }) => {
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { t } = useTranslation();
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
     <AlertDialog
@@ -323,6 +323,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                     <Button
                       h={6}
                       size="sm"
+                      variant="ghost"
                       onClick={handleBrowseGameDir}
                       colorScheme={primaryColor}
                     >
