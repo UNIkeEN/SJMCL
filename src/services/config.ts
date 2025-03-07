@@ -110,4 +110,16 @@ export class ConfigService {
   static async retrieveJavaList(): Promise<InvokeResponse<JavaInfo[]>> {
     return await invoke("retrieve_java_list");
   }
+
+  /**
+   * CHECK whether the game directory is valid.
+   * @param {string} dir The game directory to check.
+   * @returns {Promise<InvokeResponse<string>>} The sub directory if a sub game directory is valid.
+   */
+  @responseHandler("config")
+  static async checkGameDirectory(
+    dir: string
+  ): Promise<InvokeResponse<string>> {
+    return await invoke("check_game_directory", { dir });
+  }
 }

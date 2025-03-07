@@ -1,9 +1,17 @@
-import { HStack, Icon, Switch, useDisclosure } from "@chakra-ui/react";
+import {
+  HStack,
+  Icon,
+  Switch,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { exists } from "@tauri-apps/plugin-fs";
 import { open } from "@tauri-apps/plugin-shell";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuFolder } from "react-icons/lu";
+import { LuFolder, LuFolderX } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import {
   OptionItemGroup,
@@ -33,6 +41,10 @@ const GlobalGameSettingsPage = () => {
     dir: "",
   });
 
+  const [directoryExistence, setDirectoryExistence] = useState<
+    Record<string, boolean>
+  >({});
+
   const {
     isOpen: isDeleteDirDialogOpen,
     onOpen: onDeleteDirDialogOpen,
@@ -50,6 +62,27 @@ const GlobalGameSettingsPage = () => {
     onOpen: onEditDirModalOpen,
     onClose: onEditDirModalClose,
   } = useDisclosure();
+
+  useEffect(() => {
+    const checkDirectories = async () => {
+      const existence: Record<string, boolean> = {};
+      for (const directory of config.localGameDirectories) {
+        if (["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name)) {
+          existence[directory.dir] = true;
+          continue;
+        }
+        try {
+          const dirExistence = await exists(directory.dir);
+          existence[directory.dir] = dirExistence;
+        } catch (error) {
+          existence[directory.dir] = false;
+        }
+      }
+      setDirectoryExistence(existence);
+    };
+
+    checkDirectories();
+  }, [config.localGameDirectories]);
 
   const handleDeleteDir = () => {
     update(
@@ -111,8 +144,31 @@ const GlobalGameSettingsPage = () => {
                     `GlobalGameSettingsPage.directories.settings.directories.special.${directory.name}`
                   )
                 : directory.name,
-              description: directory.dir,
-              prefixElement: <Icon as={LuFolder} boxSize={3.5} mx={1} />,
+              description: (
+                <VStack spacing={0} align="start" fontSize="xs">
+                  <Text className="secondary-text">{directory.dir}</Text>
+                  {!["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) &&
+                    directoryExistence[directory.dir] === false && (
+                      <Text color="red.600">
+                        {t(
+                          "GlobalGameSettingsPage.directories.directoryNotExist"
+                        )}
+                      </Text>
+                    )}
+                </VStack>
+              ),
+              prefixElement: (
+                <Icon
+                  as={
+                    ["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) ||
+                    directoryExistence[directory.dir]
+                      ? LuFolder
+                      : LuFolderX
+                  }
+                  boxSize={3.5}
+                  mx={1}
+                />
+              ),
               children: (
                 <HStack spacing={0}>
                   {dirItemMenuOperations(directory).map((item, index) => (

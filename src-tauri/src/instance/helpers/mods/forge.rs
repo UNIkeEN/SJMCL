@@ -6,7 +6,7 @@ use java_properties;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::{Cursor, Read, Seek};
-use std::path::PathBuf;
+use std::path::Path;
 use tokio;
 use toml;
 use zip::ZipArchive;
@@ -34,7 +34,7 @@ pub struct NewforgeModSubItem {
   pub logo_file: Option<String>,
 }
 
-pub fn load_newforge_from_jar<R: Read + Seek>(
+pub fn get_mod_metadata_from_jar<R: Read + Seek>(
   jar: &mut ZipArchive<R>,
 ) -> SJMCLResult<NewforgeModMetadata> {
   let meta = match jar.by_name("META-INF/mods.toml") {
@@ -50,9 +50,9 @@ pub fn load_newforge_from_jar<R: Read + Seek>(
   let mut meta = match meta {
     Ok(val) => val,
     Err(e) => {
-      if let Ok(_) = jar.by_name("META-INF/MANIFEST.MF") {
+      if jar.by_name("META-INF/MANIFEST.MF").is_ok() {
         return Ok(NewforgeModMetadata {
-          mod_loader: format!("javafml"),
+          mod_loader: "javafml".to_string(),
           loader_version: String::new(),
           license: String::new(),
           mods: vec![NewforgeModSubItem::default()],
@@ -66,7 +66,7 @@ pub fn load_newforge_from_jar<R: Read + Seek>(
     return Err(SJMCLError("new forge mod len(mods) == 0".to_string()));
   }
   if let Some(ref logo_file) = meta.mods[0].logo_file {
-    if let Ok(mut img_file) = jar.by_name(&logo_file) {
+    if let Ok(mut img_file) = jar.by_name(logo_file) {
       // Use `image` crate to decode the image
       let mut buffer = Vec::new();
       if img_file.read_to_end(&mut buffer).is_ok() {
@@ -94,7 +94,7 @@ pub fn load_newforge_from_jar<R: Read + Seek>(
   Ok(meta)
 }
 
-pub async fn load_newforge_from_dir(dir_path: &PathBuf) -> SJMCLResult<NewforgeModMetadata> {
+pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<NewforgeModMetadata> {
   let newforge_file_path = dir_path.join("META-INF/mods.toml");
   let mut meta: NewforgeModMetadata = match tokio::fs::read_to_string(newforge_file_path).await {
     Ok(val) => match serde_json::from_str(val.as_str()) {
@@ -106,7 +106,7 @@ pub async fn load_newforge_from_dir(dir_path: &PathBuf) -> SJMCLResult<NewforgeM
   if meta.mods.is_empty() {
     return Err(SJMCLError("newforge mod len(mods) == 0".to_string()));
   }
-  let ref mut mods = meta.mods[0];
+  let mods = &mut meta.mods[0];
 
   if let Some(ref logo_file) = mods.logo_file {
     if let Ok(buffer) = tokio::fs::read(&logo_file).await {

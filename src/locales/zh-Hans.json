@@ -24,6 +24,10 @@
           "title": "BMCLAPI",
           "description": "感谢 @bangbang93 提供的高速下载源"
         },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "部分设计与代码实现参考此开源项目"
+        },
         "littleskin": {
           "title": "LittleSkin",
           "description": "感谢 LittleSkin 和 @tnqzh123 对登录流程设计的帮助"
@@ -280,22 +284,26 @@
       "info": "基本设置"
     }
   },
-  "DeleteGameAlertDialog": {
+  "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{gameName}}” 吗？"
+      "content": "确定要删除游戏实例 “{{gameName}}” 吗？它将会永久消失！（真的很久！）",
+      "warning": {
+        "withVerIso": "请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
+        "woVerIso": "请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
+      }
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
-      "content": "确定要删除角色 “{{name}}” 吗？"
+      "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
     }
   },
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？"
+      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
   "DiscoverPage": {
@@ -426,7 +434,15 @@
       "browse": "浏览"
     },
     "dialog": {
-      "title": "选择目录"
+      "browse": {
+        "title": "选择目录"
+      },
+      "addSubDir": {
+        "title": "添加子目录",
+        "body": "发现包含实例的 minecraft 子目录，是否添加子目录？",
+        "addOriginDir": "添加原始目录",
+        "addSubDir": "添加子目录"
+      }
     },
     "toast": {
       "error": {
@@ -480,6 +496,73 @@
       "linux": "文件管理器",
       "macos": "访达",
       "windows": "文件资源管理器"
+    }
+  },
+  "GameAdvancedSettingsModal": {
+    "header": {
+      "title": "高级设置"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "customCommands": {
+      "title": "自定义命令",
+      "settings": {
+        "minecraftArgument": {
+          "title": "游戏参数",
+          "placeholder": "默认"
+        },
+        "precallCommand": {
+          "title": "游戏启动前执行命令",
+          "placeholder": "将在游戏启动前调用"
+        },
+        "wrapperLauncher": {
+          "title": "包装命令",
+          "placeholder": "如填写\"optirun\"后，启动命令将从\"java ...\"变为\"optirun java ...\""
+        },
+        "postExitCommand": {
+          "title": "游戏结束后执行命令",
+          "placeholder": "将在游戏结束后调用"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Java 虚拟机设置",
+      "settings": {
+        "args": {
+          "title": "JVM 虚拟机参数"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "内存永久保存区域",
+          "placeholder": "单位 MB"
+        },
+        "environmentVariable": {
+          "title": "环境变量"
+        }
+      }
+    },
+    "workaround": {
+      "title": "调试选项",
+      "settings": {
+        "noJvmArgs": "不添加默认的 JVM 参数",
+        "gameCompletnessCheckPolicy": {
+          "title": "游戏文件完整性检查策略",
+          "disable": "不检查",
+          "normal": "普通检查",
+          "full": "增强检查"
+        },
+        "dontCheckJvmValidity": {
+          "title": "不检查 JVM 与游戏的兼容性"
+        },
+        "dontPatchNatives": {
+          "title": "不尝试自动替换本地库"
+        },
+        "useNativeGlfw": {
+          "title": "使用系统 GLFW(仅 Linux)"
+        },
+        "useNativeOpenal": {
+          "title": "使用系统 OpenAL(仅 Linux)"
+        }
+      }
     }
   },
   "GameErrorPage": {
@@ -595,8 +678,9 @@
       },
       "deleteDialog": {
         "title": "删除游戏目录",
-        "content": "确定要删除游戏目录 {{dirName}} 吗？（仅从启动器删除，不会删除实际目录文件）"
-      }
+        "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL将不会扫描此目录，但不会删除硬盘上的文件）"
+      },
+      "directoryNotExist": "该目录不存在，请删除并重新添加"
     },
     "gameJava": {
       "title": "游戏 Java",
@@ -670,7 +754,8 @@
           "title": "显示游戏日志"
         },
         "enableAdvancedOptions": {
-          "title": "启用高级选项"
+          "title": "启用高级选项",
+          "button": "编辑高级设置"
         }
       }
     }
@@ -751,6 +836,7 @@
     },
     "modList": {
       "title": "模组",
+      "warning": "未发现模组加载器，模组可能无法正常工作",
       "menu": {
         "alert": "可能不兼容",
         "info": "查看信息",
@@ -834,7 +920,8 @@
         "adventure": "冒险模式",
         "spectator": "观察者模式"
       },
-      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）"
+      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）",
+      "viewLevelData": "存档基础数据"
     },
     "serverList": {
       "title": "服务器",
@@ -1193,6 +1280,15 @@
         "error": {
           "title": "Java 列表获取失败"
         }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "游戏目录无效",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "游戏目录已添加",
+            "GAME_DIR_NOT_EXIST": "游戏目录不存在"
+          }
+        }
       }
     },
     "account": {
@@ -1213,6 +1309,7 @@
           "description": {
             "DUPLICATE": "角色已存在",
             "AUTH_SERVER_ERROR": "无法连接至认证服务器，或服务器不支持该登录方式",
+            "NOT_FOUND": "认证服务器不存在",
             "TEXTURE_ERROR": "角色皮肤获取失败",
             "CANCELLED": "已取消"
           }
@@ -1302,6 +1399,15 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
             "EXEC_OPEN_DIR_ERROR": "命令执行失败"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "实例删除成功",
+        "error": {
+          "title": "实例删除失败",
+          "description": {
+            "instanceNotFoundByID": "实例 ID 不存在"
           }
         }
       },
@@ -1491,6 +1597,11 @@
     "button": {
       "exit": "退出",
       "agree": "同意并继续"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "世界基础数据 - {{worldName}}"
     }
   }
 }

@@ -58,24 +58,13 @@ structstruck::strike! {
     pub icon_src: String,
     pub version: String,
     pub version_path: PathBuf,
+    pub is_version_isolated: bool,
     pub mod_loader: struct {
       pub loader_type: ModLoaderType,
       pub version: String,
     },
-    pub has_schem_folder: bool,
-    pub game_config: Option<GameConfig>, // TODO: any sub-config can be None?
+    pub spec_game_config: Option<GameConfig>, // TODO: any sub-config can be None?
   }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct WorldInfo {
-  pub name: String,
-  pub last_played_at: i64,
-  pub difficulty: String,
-  pub gamemode: String,
-  pub icon_src: PathBuf,
-  pub dir_path: PathBuf,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -168,6 +157,9 @@ pub enum InstanceError {
   FileCopyFailed,
   FileMoveFailed,
   FolderCreationFailed,
+  WorldNotExistError,
+  LevelParseError,
+  LevelNotExistError,
 }
 
 impl fmt::Display for InstanceError {
@@ -181,6 +173,9 @@ impl fmt::Display for InstanceError {
       InstanceError::FileCopyFailed => write!(f, "FILE_COPY_FAILED"),
       InstanceError::FileMoveFailed => write!(f, "FILE_MOVE_FAILED"),
       InstanceError::FolderCreationFailed => write!(f, "FOLDER_CREATION_FAILED"),
+      InstanceError::WorldNotExistError => write!(f, "WORLD_NOT_EXIST_ERROR"),
+      InstanceError::LevelParseError => write!(f, "LEVEL_PARSE_ERROR"),
+      InstanceError::LevelNotExistError => write!(f, "LEVEL_NOT_EXIST_ERROR"),
     }
   }
 }

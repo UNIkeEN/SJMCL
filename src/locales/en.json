@@ -24,6 +24,10 @@
           "title": "BMCLAPI",
           "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
         },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "Some design and code implementation are referenced from this open-source project"
+        },
         "littleskin": {
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
@@ -131,7 +135,7 @@
       "playerName": {
         "label": "Player Name",
         "placeholder": "Player name",
-        "errorMessage": "Can only contain letters, numbers, and underscores, within 16 characters."
+        "errorMessage": "Can only contain letters, numbers and underscores, within 16 characters."
       }
     },
     "3rdparty": {
@@ -148,7 +152,7 @@
       },
       "emailOrPlayerName": {
         "label": "Email or Player Name",
-        "placeholder": "Email or player name"
+        "placeholder": "Email or Player Name"
       },
       "password": {
         "label": "Password",
@@ -159,7 +163,7 @@
       "buyMinecraft": "Buy Minecraft",
       "beginOAuth": "Start OAuth Login",
       "useOAuthLogin": "OAuth Login",
-      "usePasswordLogin": "Account Password Login"
+      "usePasswordLogin": "Account & Password Login"
     }
   },
   "AllGamesPage": {
@@ -260,10 +264,10 @@
     "body": "to",
     "resourceType": {
       "Root": "",
-      "ResourcePacks": "ResourcePack",
+      "ResourcePacks": "Resource Packs",
       "Saves": "World",
       "Schematics": "Schematic",
-      "ShaderPacks": "ShaderPack"
+      "ShaderPacks": "Shader Packs"
     },
     "error": {
       "lackOfArguments": "Missing necessary parameters. Please have the developer check the code"
@@ -280,22 +284,26 @@
       "info": "Basic Settings"
     }
   },
-  "DeleteGameAlertDialog": {
+  "DeleteGameInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
-      "content": "Are you sure you want to delete the game instance \"{{gameName}}\" ?"
+      "content": "Confirm delete the game instance \"{{gameName}}\" ? It will be lost forever! (A long time!)",
+      "warning": {
+        "withVerIso": "Please note that since version isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
+        "woVerIso": "Please note that if version isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
+      }
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Delete Player",
-      "content": "Are you sure you want to delete the player \"{{name}}\" ?"
+      "content": "Confirm delete the player \"{{name}}\" ? This cannot be undone!"
     }
   },
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "Delete Authentication Server",
-      "content": "Are you sure you want to delete the authentication server \"{{name}}\" ?"
+      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
   "DiscoverPage": {
@@ -426,7 +434,15 @@
       "browse": "Browse"
     },
     "dialog": {
-      "title": "Select Directory"
+      "browse": {
+        "title": "Select Directory"
+      },
+      "addSubDir": {
+        "title": "Add Subdirectory",
+        "body": "An instance-containing Minecraft subdirectory has been found. Do you want to add the subdirectory?",
+        "addOriginDir": "Add Origin Directory",
+        "addSubDir": "Add Subdirectory"
+      }
     },
     "toast": {
       "error": {
@@ -482,6 +498,73 @@
       "windows": "File Explorer"
     }
   },
+  "GameAdvancedSettingsModal": {
+    "header": {
+      "title": "Advanced Settings"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "customCommands": {
+      "title": "Custom Commands",
+      "settings": {
+        "minecraftArgument": {
+          "title": "Launcher Argument",
+          "placeholder": "Default"
+        },
+        "precallCommand": {
+          "title": "Pre-launch Command",
+          "placeholder": "Commands to execute before the game launches"
+        },
+        "wrapperLauncher": {
+          "title": "Wrapper Command",
+          "placeholder": "Allows launching using an extra wrapper program like \"optirun\" on Linux"
+        },
+        "postExitCommand": {
+          "title": "Post-exit Command",
+          "placeholder": "Commands to execute after game exits"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Java VM Options",
+      "settings": {
+        "args": {
+          "title": "JVM VM Argument"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "PermGen Space",
+          "placeholder": "in MB"
+        },
+        "environmentVariable": {
+          "title": "Environment Variables"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Workaround",
+      "settings": {
+        "noJvmArgs": "Do not add default Java VM arguments",
+        "gameCompletnessCheckPolicy": {
+          "title": "Game File Integrity Check Policy",
+          "disable": "Disable Check",
+          "normal":"Normal Check",
+          "full":"Full Check"
+        },
+        "dontCheckJvmValidity": {
+          "title": "Do not check Java VM compatibility"
+        },
+        "dontPatchNatives": {
+          "title": "Do not attempt to automatically replace native libraries"
+        },
+        "useNativeGlfw": {
+          "title": "Use System GLFW(Linux Only)"
+        },
+        "useNativeOpenal": {
+          "title": "Use System OpenAL(Linux Only)"
+        }
+      }
+    }
+  },
   "GameErrorPage": {
     "title": "Game exited unexpectedly. Check the logs or seek assistance.",
     "basicInfo": {
@@ -503,7 +586,7 @@
       "gameLogs": "Game Logs",
       "help": "Help"
     },
-    "bottomAlert": "Export and send the crash report instead of a screenshot for help."
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
@@ -595,8 +678,9 @@
       },
       "deleteDialog": {
         "title": "Delete Game Directory",
-        "content": "Are you sure you want to delete the game directory {{dirName}} ? (only from the launcher, not the actual directory files)"
-      }
+        "content": "Confirm the removal of game directory {{dirName}} ? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
+      },
+      "directoryNotExist": "Directory does not exist, please add path again."
     },
     "gameJava": {
       "title": "Game Java",
@@ -621,7 +705,7 @@
         },
         "customInfo": {
           "title": "Custom Information",
-          "description": "It is displayed in the bottom right corner of the game's main screen and top left corner of the F3 debugging page."
+          "description": "It is displayed in the bottom right corner of the game's main screen and the top left corner of the F3 debugging page."
         }
       }
     },
@@ -670,7 +754,8 @@
           "title": "Display Game Logs"
         },
         "enableAdvancedOptions": {
-          "title": "Enable Advanced Options"
+          "title": "Enable Advanced Options",
+          "button": "Edit Advanced Settings"
         }
       }
     }
@@ -751,6 +836,7 @@
     },
     "modList": {
       "title": "Mods",
+      "warning": "Mod loader not found, these mods may not work properly",
       "menu": {
         "alert": "Potentially incompatible",
         "info": "Mod Info",
@@ -834,7 +920,8 @@
         "adventure": "Adventure Mode",
         "spectator": "Spectator Mode"
       },
-      "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})"
+      "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
+      "viewLevelData": "View Level Data"
     },
     "serverList": {
       "title": "Servers",
@@ -1193,6 +1280,15 @@
         "error": {
           "title": "Failed to retrieve installed Java list"
         }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "Invalid game directory",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "The directory has already been added",
+            "GAME_DIR_NOT_EXIST": "The directory does not exist"
+          }
+        }
       }
     },
     "account": {
@@ -1213,6 +1309,7 @@
           "description": {
             "DUPLICATE": "Player already exists",
             "AUTH_SERVER_ERROR": "Unable to connect to authentication server, or OAuth is not enabled",
+            "NOT_FOUND": "The authentication server does not exist",
             "TEXTURE_ERROR": "Unable to get player texture",
             "CANCELLED": "OAuth login cancelled"
           }
@@ -1302,6 +1399,15 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
             "EXEC_OPEN_DIR_ERROR": "Unable to execute command for the non-existent subdirectory type"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "Successfully deleted instance",
+        "error": {
+          "title": "Failed to delete instance",
+          "description": {
+            "instanceNotFoundByID": "Instance ID does not exist"
           }
         }
       },
@@ -1445,7 +1551,7 @@
     "label": {
       "token": "Token"
     },
-    "helper": "Enter the token above into the device to be synced",
+    "helper": "Enter the token above into the device to export to",
     "countdown": "{{seconds}} seconds until refresh"
   },
   "SyncConfigImportModal": {
@@ -1455,7 +1561,7 @@
     "label": {
       "token": "Token"
     },
-    "helper": "Enter the token generated by the device to be synced"
+    "helper": "Enter the token generated by the device to import from"
   },
   "Utils": {
     "datetime": {
@@ -1491,6 +1597,11 @@
     "button": {
       "exit": "Exit",
       "agree": "Agree"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "World Level Data - {{worldName}}"
     }
   }
 }

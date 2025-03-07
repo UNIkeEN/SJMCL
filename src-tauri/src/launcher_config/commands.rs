@@ -3,10 +3,12 @@ use super::{
     get_java_info_from_command, get_java_info_from_release_file, get_java_paths,
     parse_java_major_version,
   },
-  models::{JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
+  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
 };
-use crate::storage::Storage;
-use crate::{error::SJMCLResult, partial::PartialUpdate};
+use crate::{
+  error::SJMCLResult, instance::helpers::misc::refresh_instances, partial::PartialUpdate,
+};
+use crate::{storage::Storage, utils::path::get_subdirectories};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
@@ -256,4 +258,54 @@ pub fn retrieve_java_list() -> SJMCLResult<Vec<JavaInfo>> {
   });
 
   Ok(java_list)
+}
+
+#[tauri::command]
+pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<String> {
+  let local_game_directories: Vec<_>;
+  {
+    let binding = app.state::<Mutex<LauncherConfig>>();
+    let state = binding.lock()?;
+    local_game_directories = state.local_game_directories.clone();
+  }
+  let directory = PathBuf::from(&dir);
+
+  if local_game_directories.iter().any(|d| d.dir == directory) {
+    return Err(LauncherConfigError::GameDirAlreadyAdded.into());
+  }
+  if !directory.exists() {
+    return Err(LauncherConfigError::GameDirNotExist.into());
+  }
+
+  if !refresh_instances(&GameDirectory {
+    dir: directory.clone(),
+    name: "".to_string(),
+  })
+  .await
+  .unwrap_or_default()
+  .is_empty()
+  {
+    return Ok("".to_string());
+  }
+
+  let sub_dirs = get_subdirectories(&directory).unwrap_or_default();
+  for sub_dir in sub_dirs.into_iter().filter(|d| {
+    matches!(
+      d.file_name().and_then(|n| n.to_str()),
+      Some(".minecraft") | Some("minecraft")
+    )
+  }) {
+    if !refresh_instances(&GameDirectory {
+      dir: sub_dir.clone(),
+      name: "".to_string(),
+    })
+    .await
+    .unwrap_or_default()
+    .is_empty()
+    {
+      return Ok(sub_dir.to_str().unwrap().to_string());
+    }
+  }
+
+  Ok("".to_string())
 }

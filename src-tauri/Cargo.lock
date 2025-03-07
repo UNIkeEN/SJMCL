@@ -21,11 +21,13 @@ dependencies = [
  "serde",
  "serde_json",
  "sha1",
+ "shlex",
  "structstruck",
  "systemstat",
  "tauri",
  "tauri-build",
  "tauri-plugin-dialog",
+ "tauri-plugin-fs",
  "tauri-plugin-http",
  "tauri-plugin-log",
  "tauri-plugin-opener",
@@ -35,6 +37,7 @@ dependencies = [
  "tauri-plugin-window-state",
  "tokio",
  "toml 0.8.2",
+ "url",
  "uuid",
  "winreg 0.55.0",
  "zip",
@@ -3760,6 +3763,7 @@ dependencies = [
  "cesu8",
  "flate2",
  "quartz_nbt_macros",
+ "serde",
 ]
 
 [[package]]

@@ -9,6 +9,11 @@
     "main"
   ],
   "permissions": [
-    "window-state:default"
+    "window-state:default",
+    "fs:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "**" }]
+    }
   ]
 }

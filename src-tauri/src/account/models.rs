@@ -1,7 +1,7 @@
-use super::helpers::skin::draw_avatar;
-use crate::{storage::Storage, utils::image::base64_to_image};
+use super::helpers::{authlib_injector::info::get_client_id, skin::draw_avatar};
+use crate::{storage::Storage, utils::image::base64_to_image, EXE_DIR};
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{fmt, path::PathBuf};
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -80,7 +80,8 @@ structstruck::strike! {
     pub features: struct {
       pub non_email_login: bool,
       pub openid_configuration_url: String,
-    }
+    },
+    pub client_id: String,
   }
 }
 
@@ -90,7 +91,12 @@ pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
   pub selected_player_id: String, // maybe "" if none of the player was selected
   pub auth_servers: Vec<AuthServer>,
-  pub client_id: Uuid,
+}
+
+impl Storage for AccountInfo {
+  fn file_path() -> PathBuf {
+    EXE_DIR.join("sjmcl.account.json")
+  }
 }
 
 impl Default for AccountInfo {
@@ -109,6 +115,7 @@ impl Default for AccountInfo {
             openid_configuration_url:
               "https://skin.mc.sjtu.cn/open/.well-known/openid-configuration".to_string(),
           },
+          client_id: get_client_id("skin.mc.sjtu.cn".to_string()),
         },
         AuthServer {
           name: "MUA 用户中心".to_string(),
@@ -119,9 +126,9 @@ impl Default for AccountInfo {
             non_email_login: true,
             openid_configuration_url: "".to_string(),
           },
+          client_id: get_client_id("skin.mualliance.ltd".to_string()),
         },
       ],
-      client_id: Uuid::new_v4(),
     }
   }
 }

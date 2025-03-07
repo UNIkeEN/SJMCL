@@ -1,6 +1,7 @@
 import {
   Avatar,
   AvatarGroup,
+  Box,
   BoxProps,
   Button,
   Center,
@@ -26,6 +27,7 @@ import {
   LuCalendarClock,
   LuClock4,
   LuEarth,
+  LuFullscreen,
   LuHaze,
   LuPackage,
   LuSettings,
@@ -36,8 +38,9 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
-import { LocalModInfo, WorldInfo } from "@/models/instance";
-import { ScreenshotInfo } from "@/models/instance";
+import { LocalModInfo } from "@/models/instance/misc";
+import { ScreenshotInfo } from "@/models/instance/misc";
+import { WorldInfo } from "@/models/instance/world";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
@@ -139,11 +142,12 @@ export const InstanceBasicInfoWidget = () => {
 export const InstanceScreenshotsWidget = () => {
   const { t } = useTranslation();
   const { getScreenshotList } = useInstanceSharedData();
-
-  const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
   const router = useRouter();
   const { id } = router.query;
+
+  const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const hasScreenshots = screenshots && screenshots.length;
 
   useEffect(() => {
     setScreenshots(getScreenshotList() || []);
@@ -158,17 +162,19 @@ export const InstanceScreenshotsWidget = () => {
           setCurrentIndex((prevIndex) => (prevIndex + 1) % screenshots.length);
           setIsFading(false);
         }, 800);
-      }, 10000);
+      }, 8000);
 
       return () => clearInterval(interval);
     }
   }, [screenshots]);
+
   return (
     <InstanceWidgetBase
       title={t("InstanceWidgets.screenshots.title")}
       style={{ cursor: "pointer" }}
+      {...(hasScreenshots ? {} : { icon: LuFullscreen })}
     >
-      {screenshots && screenshots.length ? (
+      {hasScreenshots ? (
         <Image
           src={convertFileSrc(screenshots[currentIndex].filePath)}
           alt={screenshots[currentIndex].fileName}
@@ -222,48 +228,46 @@ export const InstanceModsWidget = () => {
       title={t("InstanceWidgets.mods.title")}
       icon={LuSquareLibrary}
     >
-      <HStack spacing={4}>
-        <VStack align="flex-start" spacing={3}>
-          {localMods.length > 0 ? (
-            <>
-              <AvatarGroup size="sm" max={5} spacing={-2.5}>
-                {localMods.map((mod, index) => (
-                  <Avatar
-                    key={index}
-                    name={mod.name || mod.fileName}
-                    src={base64ImgSrc(mod.iconSrc)}
-                    style={{
-                      filter: mod.enabled ? "none" : "grayscale(90%)",
-                    }}
-                  />
-                ))}
-              </AvatarGroup>
-              <Text fontSize="xs" color="gray.500">
-                {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
-              </Text>
-            </>
-          ) : (
-            <Empty withIcon={false} size="sm" />
-          )}
-          <Button
-            size="xs"
-            variant="ghost"
-            position="absolute"
-            left={2}
-            bottom={2}
-            justifyContent="flex-start"
-            colorScheme={primaryColor}
-            onClick={() => {
-              router.push(`/games/instance/${id}/mods`);
-            }}
-          >
-            <HStack spacing={1.5}>
-              <Icon as={LuArrowRight} />
-              <Text>{t("InstanceWidgets.mods.manage")}</Text>
-            </HStack>
-          </Button>
-        </VStack>
-      </HStack>
+      <VStack align="stretch" w="100%" spacing={3}>
+        {localMods.length > 0 ? (
+          <>
+            <AvatarGroup size="sm" max={5} spacing={-2.5}>
+              {localMods.map((mod, index) => (
+                <Avatar
+                  key={index}
+                  name={mod.name || mod.fileName}
+                  src={base64ImgSrc(mod.iconSrc)}
+                  style={{
+                    filter: mod.enabled ? "none" : "grayscale(90%)",
+                  }}
+                />
+              ))}
+            </AvatarGroup>
+            <Text fontSize="xs" color="gray.500">
+              {t("InstanceWidgets.mods.summary", { totalMods, enabledMods })}
+            </Text>
+          </>
+        ) : (
+          <Empty withIcon={false} size="sm" />
+        )}
+        <Button
+          size="xs"
+          variant="ghost"
+          position="absolute"
+          left={2}
+          bottom={2}
+          justifyContent="flex-start"
+          colorScheme={primaryColor}
+          onClick={() => {
+            router.push(`/games/instance/${id}/mods`);
+          }}
+        >
+          <HStack spacing={1.5}>
+            <Icon as={LuArrowRight} />
+            <Text>{t("InstanceWidgets.mods.manage")}</Text>
+          </HStack>
+        </Button>
+      </VStack>
     </InstanceWidgetBase>
   );
 };
@@ -288,52 +292,49 @@ export const InstanceLastPlayedWidget = () => {
       icon={LuClock4}
     >
       {lastPlayedWorld ? (
-        <>
-          <OptionItem
-            title={lastPlayedWorld.name}
-            description={
-              <VStack
-                spacing={0}
-                fontSize="xs"
-                alignItems="flex-start"
-                className="secondary-text"
-              >
-                <Text>
+        <VStack spacing={3} alignItems="flex-start" w="full">
+          <HStack spacing={3} w="full" alignItems="center">
+            <Image
+              src={convertFileSrc(lastPlayedWorld.iconSrc)}
+              fallbackSrc="/images/icons/UnknownWorld.webp"
+              alt={lastPlayedWorld.name}
+              boxSize="28px"
+              borderRadius="4px"
+            />
+            <Box flex="1" minW={0}>
+              <VStack spacing={0} alignItems="start" w="full">
+                <Text
+                  fontSize="xs-sm"
+                  className="no-select"
+                  w="full"
+                  isTruncated
+                >
+                  {lastPlayedWorld.name}
+                </Text>
+                <Text className="secondary-text" fontSize="xs">
                   {formatRelativeTime(
                     UNIXToISOString(lastPlayedWorld.lastPlayedAt),
                     t
                   ).replace("on", "")}
                 </Text>
-                <Text>
+                <Text className="secondary-text" fontSize="xs">
                   {t(
                     `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode}`
                   )}
                 </Text>
-                <Text>
+                <Text className="secondary-text" fontSize="xs">
                   {t(
                     `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
                   )}
                 </Text>
               </VStack>
-            }
-            prefixElement={
-              <Image
-                src={convertFileSrc(lastPlayedWorld.iconSrc)}
-                fallbackSrc="/images/icons/UnknownWorld.webp"
-                alt={lastPlayedWorld.name}
-                boxSize="28px"
-                style={{ borderRadius: "4px" }}
-              />
-            }
-          />
-          <HStack spacing={1.5}>
+            </Box>
+          </HStack>
+          <HStack spacing={1.5} position="absolute" left={2} bottom={2}>
             <Button
               size="xs"
               variant="ghost"
               colorScheme={primaryColor}
-              position="absolute"
-              left={2}
-              bottom={2}
               justifyContent="flex-start"
             >
               <HStack spacing={1.5}>
@@ -342,7 +343,7 @@ export const InstanceLastPlayedWidget = () => {
               </HStack>
             </Button>
           </HStack>
-        </>
+        </VStack>
       ) : (
         <Empty withIcon={false} size="sm" />
       )}
@@ -362,7 +363,7 @@ export const InstanceMoreWidget = () => {
   const features: Record<string, IconType> = {
     worlds: LuEarth,
     resourcepacks: LuPackage,
-    ...(summary?.hasSchemFolder ? { schematics: LuBookDashed } : {}),
+    schematics: LuBookDashed,
     shaderpacks: LuHaze,
     settings: LuSettings,
   };

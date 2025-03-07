@@ -12,7 +12,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirEnums } from "@/enums/instance";
-import { ResourcePackInfo } from "@/models/instance";
+import { ResourcePackInfo } from "@/models/instance/misc";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceResourcePacksPage = () => {

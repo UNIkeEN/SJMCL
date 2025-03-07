@@ -13,7 +13,7 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 
 use instance::helpers::misc::refresh_and_update_instances;
-use instance::models::Instance;
+use instance::models::misc::Instance;
 use launcher_config::models::LauncherConfig;
 use storage::Storage;
 
@@ -36,6 +36,7 @@ pub async fn run() {
     .plugin(tauri_plugin_window_state::Builder::new().build())
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_os::init())
+    .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_dialog::init())
     .invoke_handler(tauri::generate_handler![
@@ -49,6 +50,7 @@ pub async fn run() {
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
+      launcher_config::commands::check_game_directory,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::add_player_3rdparty_oauth,
@@ -63,9 +65,11 @@ pub async fn run() {
       account::commands::fetch_auth_server_info,
       instance::commands::retrieve_instance_list,
       instance::commands::open_instance_subdir,
+      instance::commands::delete_instance,
       instance::commands::copy_across_instances,
       instance::commands::move_across_instances,
       instance::commands::retrieve_world_list,
+      instance::commands::retrieve_world_details,
       instance::commands::retrieve_game_server_list,
       instance::commands::retrieve_local_mod_list,
       instance::commands::retrieve_resource_pack_list,
@@ -75,6 +79,7 @@ pub async fn run() {
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
       launch::commands::validate_game_files,
+      launch::commands::launch_game,
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,

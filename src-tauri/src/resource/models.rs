@@ -1,12 +1,34 @@
+use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
 pub enum ResourceType {
-  Game,
-  Forge,
-  Fabric,
-  NeoForge,
+  VersionManifest,
+  VersionManifestV2,
+  LauncherMeta,
+  Launcher,
+  Assets,
+  Libraries,
+  MojangJava,
+  ForgeMaven,
+  ForgeMeta,
+  Liteloader,
+  Optifine,
+  AuthlibInjector,
+  FabricMeta,
+  FabricMaven,
+  NeoforgeMeta,
+  NeoforgedForge,
+  NeoforgedNeoforge,
+  QuiltMaven,
+  QuiltMeta,
+}
+
+#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
+pub enum SourceType {
+  Official,
+  ChineseMirror,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -21,7 +43,7 @@ pub struct GameResourceInfo {
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ModLoaderResourceInfo {
-  pub loader_type: String,
+  pub loader_type: ModLoaderType,
   pub version: String,
   pub description: String,
   pub stable: bool,

@@ -1,24 +1,25 @@
 use super::{
   super::utils::{
     fs::{copy_whole_dir, generate_unique_filename},
-    nbt::load_nbt,
     path::{get_files_with_regex, get_subdirectories},
   },
   helpers::{
     misc::{get_instance_subdir_path, refresh_and_update_instances},
-    mods::main_loader::{load_mod_from_dir, load_mod_from_file},
+    mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
-    server::{nbt_to_servers_info, query_server_status},
-    world::nbt_to_world_info,
+    server::{load_servers_info_from_path, query_server_status},
+    world::{level_data_to_world_info, load_level_data_from_path},
   },
   models::{
-    GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ResourcePackInfo,
-    SchematicInfo, ScreenshotInfo, ShaderPackInfo, WorldInfo,
+    misc::{
+      GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ModLoaderType,
+      ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
+    },
+    world::{base::WorldInfo, level::LevelData},
   },
 };
 use crate::error::SJMCLResult;
 use lazy_static::lazy_static;
-use quartz_nbt::io::Flavor;
 use regex::{Regex, RegexBuilder};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -50,6 +51,26 @@ pub fn open_instance_subdir(
     Ok(_) => Ok(()),
     Err(_) => Err(InstanceError::ExecOpenDirError.into()),
   }
+}
+
+#[tauri::command]
+pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let state = binding.lock().unwrap();
+  let instance = state
+    .get(instance_id)
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+  let version_path = &instance.version_path;
+  let path = Path::new(version_path);
+
+  if path.exists() {
+    fs::remove_dir_all(path)?;
+  }
+  // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
+
+  // TODO: update selected instance if necessary.
+  Ok(())
 }
 
 #[tauri::command]
@@ -148,22 +169,20 @@ pub async fn retrieve_world_list(
   };
 
   let mut world_list: Vec<WorldInfo> = Vec::new();
-  // TODO: async read
   for path in world_dirs {
     let name = path.file_name().unwrap().to_str().unwrap();
     let icon_path = path.join("icon.png");
     let nbt_path = path.join("level.dat");
-    if let Ok(nbt) = load_nbt(&nbt_path, Flavor::GzCompressed) {
-      if let Ok((last_played, difficulty, gamemode)) = nbt_to_world_info(&nbt) {
-        world_list.push(WorldInfo {
-          name: name.to_string(),
-          last_played_at: last_played,
-          difficulty: difficulty.to_string(),
-          gamemode: gamemode.to_string(),
-          icon_src: icon_path,
-          dir_path: path,
-        });
-      }
+    if let Ok(level_data) = load_level_data_from_path(&nbt_path).await {
+      let (last_played, difficulty, gamemode) = level_data_to_world_info(&level_data)?;
+      world_list.push(WorldInfo {
+        name: name.to_string(),
+        last_played_at: last_played,
+        difficulty: difficulty.to_string(),
+        gamemode: gamemode.to_string(),
+        icon_src: icon_path,
+        dir_path: path,
+      });
     }
   }
   Ok(world_list)
@@ -183,21 +202,17 @@ pub async fn retrieve_game_server_list(
   };
 
   let nbt_path = game_root_dir.join("servers.dat");
-  if let Ok(nbt) = load_nbt(&nbt_path, Flavor::Uncompressed) {
-    if let Ok(servers) = nbt_to_servers_info(&nbt) {
-      for (ip, name, icon) in servers {
-        game_servers.push(GameServerInfo {
-          ip,
-          name,
-          icon_src: icon,
-          is_queried: false,
-          players_max: 0,
-          players_online: 0,
-          online: false,
-        });
-      }
-    } else {
-      return Err(InstanceError::ServerNbtReadError.into());
+  if let Ok(servers) = load_servers_info_from_path(&nbt_path).await {
+    for server in servers {
+      game_servers.push(GameServerInfo {
+        ip: server.ip,
+        name: server.name,
+        icon_src: server.icon,
+        is_queried: false,
+        players_max: 0,
+        players_online: 0,
+        online: false,
+      });
     }
 
     // query_online is true, amend query and return player count and online status
@@ -251,12 +266,12 @@ pub async fn retrieve_local_mod_list(
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
   let mut tasks = Vec::new();
   for path in mod_paths {
-    let task = tokio::spawn(async move { load_mod_from_file(&path).await.ok() });
+    let task = tokio::spawn(async move { get_mod_info_from_jar(&path).await.ok() });
     tasks.push(task);
   }
   let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
   for path in mod_paths {
-    let task = tokio::spawn(async move { load_mod_from_dir(&path).await.ok() });
+    let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
     tasks.push(task);
   }
   let mut mod_infos = Vec::new();
@@ -266,7 +281,19 @@ pub async fn retrieve_local_mod_list(
     }
   }
 
-  // 对模组信息进行排序
+  // check potential incompatibility
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let state = binding.lock().unwrap();
+  let instance = state
+    .get(instance_id)
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+  mod_infos.iter_mut().for_each(|mod_info| {
+    mod_info.potential_incompatibility = instance.mod_loader.loader_type != ModLoaderType::Unknown
+      && mod_info.loader_type != instance.mod_loader.loader_type;
+  });
+
+  // sort by name (and version)
   mod_infos.sort();
 
   Ok(mod_infos)
@@ -426,7 +453,6 @@ pub fn retrieve_shader_pack_list(
     .build()
     .unwrap();
   let mut shaderpack_list = Vec::new();
-  // TODO: async read files
   for path in get_files_with_regex(shaderpacks_dir, &valid_extensions)? {
     shaderpack_list.push(ShaderPackInfo {
       file_name: path.file_stem().unwrap().to_string_lossy().to_string(),
@@ -518,4 +544,25 @@ pub fn toggle_mod_by_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<
   }
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn retrieve_world_details(
+  app: AppHandle,
+  instance_id: usize,
+  world_name: String,
+) -> SJMCLResult<LevelData> {
+  let worlds_dir = match get_instance_subdir_path(&app, instance_id, &InstanceSubdirType::Saves) {
+    Some(path) => path,
+    None => return Err(InstanceError::WorldNotExistError.into()),
+  };
+  let level_path = worlds_dir.join(world_name).join("level.dat");
+  if tokio::fs::metadata(&level_path).await.is_err() {
+    return Err(InstanceError::LevelNotExistError.into());
+  }
+  if let Ok(level_data) = load_level_data_from_path(&level_path).await {
+    Ok(level_data)
+  } else {
+    Err(InstanceError::LevelParseError.into())
+  }
 }

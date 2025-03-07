@@ -1,6 +1,8 @@
+use super::constants::CLIENT_IDS;
 use crate::account::models::{AccountError, AuthServer, Features};
 use crate::error::SJMCLResult;
 use tauri_plugin_http::reqwest;
+use url::Url;
 
 pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
   match reqwest::get(&auth_url).await {
@@ -26,6 +28,25 @@ pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
         .unwrap_or_default()
         .to_string();
 
+      let mut client_id = String::new();
+
+      if !openid_configuration_url.is_empty() {
+        let url = Url::parse(&auth_url).map_err(|_| AccountError::Invalid)?;
+
+        if let Some(domain) = url.domain() {
+          client_id = get_client_id(domain.to_string());
+        }
+
+        if client_id.is_empty() {
+          let response = reqwest::get(&openid_configuration_url).await?;
+          let data: serde_json::Value = response.json().await.map_err(|_| AccountError::Invalid)?;
+          client_id = data["shared_client_id"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string();
+        }
+      }
+
       let new_server = AuthServer {
         name: server_name,
         auth_url,
@@ -35,10 +56,41 @@ pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
           non_email_login,
           openid_configuration_url,
         },
+        client_id,
       };
 
       Ok(new_server)
     }
     Err(_) => Err(AccountError::Invalid.into()),
+  }
+}
+
+pub fn get_client_id(domain: String) -> String {
+  CLIENT_IDS
+    .iter()
+    .find(|(first, _)| first == &domain)
+    .map(|(_, id)| id)
+    .unwrap_or(&"")
+    .to_string()
+}
+
+pub async fn fetch_auth_url(root: String) -> SJMCLResult<String> {
+  let response = reqwest::get(root.clone())
+    .await
+    .map_err(|_| AccountError::Invalid)?;
+
+  if let Some(auth_url) = response.headers().get("X-Authlib-Injector-API-Location") {
+    let auth_url_str = auth_url.to_str().unwrap_or_default();
+    let base_url = Url::parse(&root).map_err(|_| AccountError::Invalid)?;
+
+    // try to parse auth_url_str as a relative URL and append it to the base URL or return it as is
+    let full_url = base_url
+      .join(auth_url_str)
+      .map(|url| url.to_string())
+      .unwrap_or_else(|_| auth_url_str.to_string());
+
+    Ok(full_url)
+  } else {
+    Ok(root)
   }
 }

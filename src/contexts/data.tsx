@@ -2,8 +2,7 @@ import React, { createContext, useCallback, useContext, useState } from "react";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
-import { GameInstanceSummary } from "@/models/instance";
-import { mockGameInstanceList } from "@/models/mock/instance";
+import { GameInstanceSummary } from "@/models/instance/misc";
 import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
 
@@ -103,7 +102,7 @@ export const DataContextProvider: React.FC<{
   );
 
   const getSelectedGameInstance = useGetState(selectedGameInstance, () =>
-    setSelectedGameInstance(mockGameInstanceList[0])
+    setSelectedGameInstance(undefined)
   );
 
   const getAuthServerList = useGetState(

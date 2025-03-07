@@ -11,7 +11,7 @@ import { Section } from "@/components/common/section";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirEnums } from "@/enums/instance";
-import { SchematicInfo } from "@/models/instance";
+import { SchematicInfo } from "@/models/instance/misc";
 
 const InstanceSchematicsPage = () => {
   const { t } = useTranslation();

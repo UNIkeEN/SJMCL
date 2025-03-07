@@ -3,7 +3,7 @@ use crate::error::{SJMCLError, SJMCLResult};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::{Read, Seek};
-use std::path::PathBuf;
+use std::path::Path;
 use tokio;
 use zip::ZipArchive;
 
@@ -22,7 +22,7 @@ pub struct OldforgeModMetadata {
   pub author_list: Option<Vec<Value>>,
 }
 
-pub fn load_oldforge_from_jar<R: Read + Seek>(
+pub fn get_mod_metadata_from_jar<R: Read + Seek>(
   jar: &mut ZipArchive<R>,
 ) -> SJMCLResult<OldforgeModMetadata> {
   let mut meta: Vec<OldforgeModMetadata> = match jar.by_name("mcmod.info") {
@@ -38,7 +38,7 @@ pub fn load_oldforge_from_jar<R: Read + Seek>(
   Ok(meta.remove(0))
 }
 
-pub async fn load_oldforge_from_dir(dir_path: &PathBuf) -> SJMCLResult<OldforgeModMetadata> {
+pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<OldforgeModMetadata> {
   let oldforge_file_path = dir_path.join("mcmod.info");
   let mut meta: Vec<OldforgeModMetadata> = match tokio::fs::read_to_string(oldforge_file_path).await
   {

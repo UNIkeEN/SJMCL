@@ -24,6 +24,7 @@ import {
   InstanceContextProvider,
   useInstanceSharedData,
 } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 
 const InstanceLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -40,6 +41,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { openSharedModal } = useSharedModals();
 
   const { summary } = useInstanceSharedData();
   const { config } = useLauncherConfig();
@@ -63,7 +65,10 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       icon: "delete",
       label: t("GameMenu.label.delete"),
       danger: true,
-      onClick: () => {},
+      onClick: () => {
+        if (summary)
+          openSharedModal("delete-game-instance-alert", { game: summary });
+      },
     },
   ];
 
@@ -72,9 +77,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     { key: "worlds", icon: LuEarth },
     { key: "mods", icon: LuSquareLibrary },
     { key: "resourcepacks", icon: LuPackage },
-    ...(summary?.hasSchemFolder
-      ? [{ key: "schematics", icon: LuBookDashed }]
-      : []),
+    { key: "schematics", icon: LuBookDashed },
     { key: "shaderpacks", icon: LuHaze },
     { key: "screenshots", icon: LuFullscreen },
     { key: "settings", icon: LuSettings },
@@ -120,10 +123,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         size="xs"
         mb={4}
         spacing={
-          config.general.general.language.startsWith("zh") &&
-          summary?.hasSchemFolder
-            ? 0
-            : 1
+          config.general.general.language.startsWith("zh") ? "0.05rem" : 0.5
         }
         items={instanceTabList.map((item) => ({
           value: `/games/instance/${router.query.id}/${item.key}`,

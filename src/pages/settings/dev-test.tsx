@@ -1,4 +1,5 @@
 import { Alert, AlertIcon, Button, VStack } from "@chakra-ui/react";
+import { invoke } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import DownloadResourceModal from "@/components/modals/download-resource-modal";
@@ -51,6 +52,20 @@ const DevTestPage = () => {
         onClose={() => setIsModalOpen(false)}
       />
 
+      <Button
+        onClick={async () => {
+          try {
+            await invoke("launch_game", { instanceId: 2 });
+          } catch (error) {
+            console.error("Error invoking launch_game:", error);
+            alert(
+              "An error occurred while launching the game. Please try again."
+            );
+          }
+        }}
+      >
+        Launch Game
+      </Button>
       {/* Add test components here */}
       <SkinPreview />
     </VStack>

@@ -8,8 +8,8 @@ import {
   SchematicInfo,
   ScreenshotInfo,
   ShaderPackInfo,
-  WorldInfo,
-} from "@/models/instance";
+} from "@/models/instance/misc";
+import { LevelData, WorldInfo } from "@/models/instance/world";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -42,6 +42,20 @@ export class InstanceService {
     return await invoke("open_instance_subdir", {
       instanceId,
       dirType,
+    });
+  }
+
+  /**
+   * DELETE the specified instance's version folder from disk.
+   * @param {number} instanceId - The instance ID to delete.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance", errorToLocaleKey)
+  static async deleteInstance(
+    instanceId: number
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("delete_instance", {
+      instanceId,
     });
   }
 
@@ -214,6 +228,23 @@ export class InstanceService {
     return await invoke("toggle_mod_by_extension", {
       filePath,
       enable,
+    });
+  }
+
+  /**
+   * RETRIEVE the level details for a specific world.
+   * @param {number} instanceId - The instance ID to retrieve the level detail for.
+   * @param {string} worldName - The name of the world to retrieve details for.
+   * @returns {Promise<InvokeResponse<LevelData>>}
+   */
+  @responseHandler("instance", errorToLocaleKey)
+  static async retrieveWorldDetails(
+    instanceId: number,
+    worldName: string
+  ): Promise<InvokeResponse<LevelData>> {
+    return await invoke("retrieve_world_details", {
+      instanceId,
+      worldName,
     });
   }
 }

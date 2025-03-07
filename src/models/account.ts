@@ -25,6 +25,7 @@ export interface AuthServer {
   registerUrl: string;
   mutable: boolean;
   features: AuthServerFeatures;
+  clientId: string;
 }
 
 export interface AuthServerFeatures {
