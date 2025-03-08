@@ -36,6 +36,10 @@ export const CoreContributorsList = [
     contribution: "backendDev",
   },
   {
+    username: "ModistAndrew",
+    contribution: "backendDev",
+  },
+  {
     username: "HsxMark",
     contribution: "frontendDev",
   },
