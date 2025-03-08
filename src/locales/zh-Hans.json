@@ -1497,8 +1497,8 @@
           "title": "获取世界详细信息失败",
           "description": {
             "WORLD_NOT_EXSIT_ERROR": "世界不存在",
-            "LEVEL_NOT_EXSIT_ERROR": "级别不存在",
-            "LEVEL_PARSE_ERROR": "级别解析错误"
+            "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
+            "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
           }
         }
       },
