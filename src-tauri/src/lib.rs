@@ -14,10 +14,10 @@ use std::sync::{LazyLock, Mutex};
 
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
-use launcher_config::models::LauncherConfig;
+use launcher_config::models::{JavaInfo, LauncherConfig};
 use storage::Storage;
 
-use crate::launcher_config::models::JavaInfo;
+use crate::launcher_config::helpers::refresh_and_update_javas;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
 use tauri::Manager;
@@ -107,14 +107,18 @@ pub async fn run() {
       let instances: Vec<Instance> = vec![];
       app.manage(Mutex::new(instances));
 
-      let javas: Vec<JavaInfo> = vec![];
-      app.manage(Mutex::new(javas));
-
       // Refresh all instances
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move {
         refresh_and_update_instances(&app_handle).await;
       });
+
+      let javas: Vec<JavaInfo> = vec![];
+      app.manage(Mutex::new(javas));
+
+      // Refresh all javas
+      let app_handle = app.handle().clone();
+      refresh_and_update_javas(&app_handle);
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458

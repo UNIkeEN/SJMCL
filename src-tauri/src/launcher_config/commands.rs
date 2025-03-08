@@ -1,8 +1,5 @@
 use super::{
-  helpers::{
-    get_java_info_from_command, get_java_info_from_release_file, get_java_paths,
-    parse_java_major_version, refresh_and_update_javas,
-  },
+  helpers::refresh_and_update_javas,
   models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
 };
 use crate::{
