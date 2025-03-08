@@ -17,6 +17,7 @@ use instance::models::misc::Instance;
 use launcher_config::models::LauncherConfig;
 use storage::Storage;
 
+use crate::launcher_config::models::JavaInfo;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
 use tauri::Manager;
@@ -105,6 +106,9 @@ pub async fn run() {
 
       let instances: Vec<Instance> = vec![];
       app.manage(Mutex::new(instances));
+
+      let javas: Vec<JavaInfo> = vec![];
+      app.manage(Mutex::new(javas));
 
       // Refresh all instances
       let app_handle = app.handle().clone();

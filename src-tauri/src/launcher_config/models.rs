@@ -10,7 +10,7 @@ pub struct MemoryInfo {
   pub used: u64,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct JavaInfo {
   pub name: String,       // JDK/JRE + full version
