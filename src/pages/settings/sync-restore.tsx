@@ -18,6 +18,8 @@ const SyncAndRestoreSettingsPage = () => {
   const { t } = useTranslation();
   const { setConfig } = useLauncherConfig();
   const toast = useToast();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   const {
     isOpen: isRestoreConfirmDialogOpen,
@@ -69,6 +71,7 @@ const SyncAndRestoreSettingsPage = () => {
               <Button
                 variant="subtle"
                 size="xs"
+                _focus={{ borderColor: `${primaryColor}.500` }}
                 onClick={onSyncConfigExportModalOpen}
               >
                 {t(
@@ -78,6 +81,7 @@ const SyncAndRestoreSettingsPage = () => {
               <Button
                 variant="subtle"
                 size="xs"
+                _focus={{ borderColor: `${primaryColor}.500` }}
                 onClick={onSyncConfigImportModalOpen}
               >
                 {t(
@@ -98,6 +102,7 @@ const SyncAndRestoreSettingsPage = () => {
             <Button
               colorScheme="red"
               variant="subtle"
+              _focus={{ borderColor: `${primaryColor}.500` }}
               size="xs"
               onClick={onRestoreConfirmDialogOpen}
             >

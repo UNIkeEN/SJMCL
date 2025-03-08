@@ -261,6 +261,7 @@ const DownloadSettingsPage = () => {
               <Button
                 variant="subtle"
                 size="xs"
+                _focus={{ borderColor: `${primaryColor}.500` }}
                 onClick={handleSelectDirectory}
               >
                 {t("DownloadSettingPage.cache.settings.directory.select")}
@@ -268,6 +269,7 @@ const DownloadSettingsPage = () => {
               <Button
                 variant="subtle"
                 size="xs"
+                _focus={{ borderColor: `${primaryColor}.500` }}
                 onClick={() => {
                   openFolder(downloadConfigs.cache.directory);
                 }}
