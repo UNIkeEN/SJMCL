@@ -1497,8 +1497,8 @@
           "title": "Failed to retrieve world details list",
           "description": {
             "WORLD_NOT_EXSIT_ERROR": "World not exist",
-            "LEVEL_NOT_EXSIT_ERROR": "Level not exist",
-            "LEVEL_PARSE_ERROR": "Level parse error"
+            "LEVEL_NOT_EXSIT_ERROR": "Level data not exist",
+            "LEVEL_PARSE_ERROR": "Level data parse error"
           }
         }
       },
