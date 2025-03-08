@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { MemoryInfo } from "@/models/system-info";
 
 /**
- * RETRIVE the memory info of the system.
+ * RETRIEVE the memory info of the system.
  * @returns {Promise<MemoryInfo>} Memory info, in bytes
  * @throws {Error} If the backend call fails.
  */

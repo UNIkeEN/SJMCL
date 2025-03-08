@@ -9,7 +9,7 @@ import { responseHandler } from "@/utils/response";
  */
 export class ConfigService {
   /**
-   * RETRIVE the launcher configs.
+   * RETRIEVE the launcher configs.
    * @returns {Promise<InvokeResponse<LauncherConfig>>}
    */
   @responseHandler("config")
@@ -68,7 +68,7 @@ export class ConfigService {
   }
 
   /**
-   * RETRIVE the list of custom background files.
+   * RETRIEVE the list of custom background files.
    * @returns {Promise<InvokeResponse<string[]>>} A list of background file names.
    */
   @responseHandler("config")

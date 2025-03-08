@@ -146,6 +146,10 @@ structstruck::strike! {
     pub local_game_directories: Vec<GameDirectory>,
     pub discover_source_endpoints: Vec<String>,
     pub states: struct States {
+      pub shared: struct {
+        pub selected_player_id: String,
+        pub selected_instance_id: String,
+      },
       pub accounts_page: struct {
         pub view_type: String
       },
@@ -278,6 +282,10 @@ impl Default for LauncherConfig {
       local_game_directories: vec![],
       discover_source_endpoints: vec!["https://mc.sjtu.cn/api-sjmcl/article".to_string()],
       states: States {
+        shared: Shared {
+          selected_player_id: "".to_string(),
+          selected_instance_id: "".to_string(),
+        },
         accounts_page: AccountsPage {
           view_type: "grid".to_string(),
         },

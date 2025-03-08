@@ -9,9 +9,6 @@ const subtleButtonVariant = (props: any) => ({
   _active: {
     bg: `${props.colorScheme}.300`,
   },
-  _focus: {
-    boxShadow: "none",
-  },
   _disabled: {
     bg: `${props.colorScheme}.100`,
     color: `${props.colorScheme}.500`,

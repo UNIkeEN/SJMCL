@@ -16,6 +16,9 @@ export enum InstanceError {
   FileCopyFailed = "FILE_COPY_FAILED",
   FileMoveFailed = "FILE_MOVE_FAILED",
   FolderCreationFailed = "FOLDER_CREATION_FAILED",
+  WorldNotExistError = "WORLD_NOT_EXSIT_ERROR",
+  LevelNotExistError = "LEVEL_NOT_EXSIT_ERROR",
+  LevelParseError = "LEVEL_PARSE_ERROR",
 }
 
 export enum ConfigServiceError {

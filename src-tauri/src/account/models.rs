@@ -56,7 +56,7 @@ impl From<PlayerInfo> for Player {
 }
 
 // for backend storage, without saving the whole auth server info
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PlayerInfo {
   pub name: String,
@@ -68,6 +68,26 @@ pub struct PlayerInfo {
   pub access_token: String,
   pub textures: Vec<Texture>,
 }
+
+impl PlayerInfo {
+  pub fn gen_player_id(&self) -> String {
+    let mut server_identity = self.auth_server_url.clone();
+    if self.player_type == "offline" {
+      server_identity = "OFFLINE".to_string();
+    } else if self.player_type == "microsoft" {
+      server_identity = "MICROSOFT".to_string();
+    }
+    format!("{}{}", self.name, server_identity)
+  }
+}
+
+impl PartialEq for PlayerInfo {
+  fn eq(&self, another: &PlayerInfo) -> bool {
+    self.name == another.name && self.auth_server_url == another.auth_server_url
+  }
+}
+
+impl Eq for PlayerInfo {}
 
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
@@ -89,7 +109,6 @@ structstruck::strike! {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
-  pub selected_player_id: String, // maybe "" if none of the player was selected
   pub auth_servers: Vec<AuthServer>,
 }
 
@@ -103,7 +122,6 @@ impl Default for AccountInfo {
   fn default() -> Self {
     AccountInfo {
       players: Vec::new(),
-      selected_player_id: String::new(),
       auth_servers: vec![
         AuthServer {
           name: "SJMC 用户中心".to_string(),

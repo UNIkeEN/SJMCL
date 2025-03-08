@@ -8,7 +8,7 @@ import { responseHandler } from "@/utils/response";
  */
 export class AccountService {
   /**
-   * RETRIVE the list of players.
+   * RETRIEVE the list of players.
    * @returns {Promise<InvokeResponse<Player[]>>}
    */
   @responseHandler("account")
@@ -66,33 +66,33 @@ export class AccountService {
 
   /**
    * UPDATE the skin of an offline player within preset roles (Steve, Alex).
-   * @param {string} uuid - The UUID of the player to be updated.
+   * @param {string} playerId - The player ID of the player to be updated.
    * @param {string} presetRole - The preset role that the player's skin will be.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
   static async updatePlayerSkinOfflinePreset(
-    uuid: string,
+    playerId: string,
     presetRole: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("update_player_skin_offline_preset", {
-      uuid,
+      playerId,
       presetRole,
     });
   }
 
   /**
-   * DELETE a player by UUID.
-   * @param {string} uuid - The UUID of the player to be deleted.
+   * DELETE a player by player ID.
+   * @param {string} playerId - The player ID of the player to be deleted.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
-  static async deletePlayer(uuid: string): Promise<InvokeResponse<void>> {
-    return await invoke("delete_player", { uuid });
+  static async deletePlayer(playerId: string): Promise<InvokeResponse<void>> {
+    return await invoke("delete_player", { playerId });
   }
 
   /**
-   * RETRIVE the selected player by UUID.
+   * RETRIEVE the selected player by player ID.
    * @returns {Promise<InvokeResponse<Player>>}
    */
   @responseHandler("account")
@@ -101,19 +101,19 @@ export class AccountService {
   }
 
   /**
-   * UPDATE the selected player by UUID.
-   * @param {string} uuid - The UUID of the player to be posted as selected.
+   * UPDATE the selected player by player ID.
+   * @param {string} playerId - The player ID of the player to be posted as selected.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
   static async updateSelectedPlayer(
-    uuid: string
+    playerId: string
   ): Promise<InvokeResponse<void>> {
-    return await invoke("update_selected_player", { uuid });
+    return await invoke("update_selected_player", { playerId });
   }
 
   /**
-   * RETRIVE the list of authentication servers.
+   * RETRIEVE the list of authentication servers.
    * @returns {Promise<InvokeResponse<AuthServer[]>>}
    */
   @responseHandler("account")

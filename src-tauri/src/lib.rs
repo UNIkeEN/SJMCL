@@ -12,6 +12,7 @@ mod utils;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 
+use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
 use launcher_config::models::LauncherConfig;
@@ -105,6 +106,9 @@ pub async fn run() {
 
       let instances: Vec<Instance> = vec![];
       app.manage(Mutex::new(instances));
+
+      let account_info: AccountInfo = AccountInfo::load().unwrap_or_default();
+      app.manage(Mutex::new(account_info));
 
       // Refresh all instances
       let app_handle = app.handle().clone();

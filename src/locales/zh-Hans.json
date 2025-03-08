@@ -1374,12 +1374,47 @@
             "NOT_FOUND": "认证服务器不存在"
           }
         }
+      },
+      "retrievePlayerList": {
+        "error": {
+          "title": "获取角色列表失败"
+        }
+      },
+      "retrieveSelectedPlayer": {
+        "error": {
+          "title": "获取所选角色失败",
+          "description": {
+            "NOT_FOUND": "所选角色不存在"
+          }
+        }
+      },
+      "updateSelectedPlayer": {
+        "error": {
+          "title": "更新所选角色失败",
+          "description": {
+            "NOT_FOUND": "所选角色不存在"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "获取认证服务器列表失败"
+        }
       }
     },
     "resource": {
-      "retrieveGameVersionList": {
+      "fetchGameVersionList": {
         "error": {
           "title": "获取游戏版本列表失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "获取模组加载器列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
@@ -1407,7 +1442,7 @@
         "error": {
           "title": "实例删除失败",
           "description": {
-            "instanceNotFoundByID": "实例 ID 不存在"
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
           }
         }
       },
@@ -1449,6 +1484,24 @@
           "title": "获取截图列表失败"
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "获取模组列表失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "获取世界详细信息失败",
+          "description": {
+            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
+            "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
+            "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
+          }
+        }
+      },
       "copyAcrossInstances": {
         "success": "资源复制成功",
         "error": {
@@ -1479,6 +1532,13 @@
           "description": {
             "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
           }
+        }
+      }
+    },
+    "discover": {
+      "fetchPostSourcesInfo": {
+        "error": {
+          "title": "获取数据源失败"
         }
       }
     }

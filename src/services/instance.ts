@@ -18,7 +18,7 @@ import { responseHandler } from "@/utils/response";
  */
 export class InstanceService {
   /**
-   * RETRIVE the list of local instances.
+   * RETRIEVE the list of local instances.
    * @returns {Promise<InvokeResponse<GameInstanceSummary[]>>}
    */
   @responseHandler("instance")
@@ -50,7 +50,7 @@ export class InstanceService {
    * @param {number} instanceId - The instance ID to delete.
    * @returns {Promise<InvokeResponse<void>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async deleteInstance(
     instanceId: number
   ): Promise<InvokeResponse<void>> {
@@ -100,7 +100,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of world saves.
+   * RETRIEVE the list of world saves.
    * @param {number} instanceId - The instance ID to retrieve the worlds for.
    * @returns {Promise<InvokeResponse<WorldInfo[]>>}
    */
@@ -114,7 +114,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of game servers.
+   * RETRIEVE the list of game servers.
    * @param {number} instanceId - The instance ID to retrieve the game servers for.
    * @param {boolean} queryOnline - A flag to determine whether to query online server status.
    * @returns {Promise<InvokeResponse<GameServerInfo[]>>}
@@ -131,7 +131,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of local mods.
+   * RETRIEVE the list of local mods.
    * @param {number} instanceId - The instance ID to retrieve the local mods for.
    * @returns {Promise<InvokeResponse<LocalModInfo[]>>}
    */
@@ -145,7 +145,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of server resource packs.
+   * RETRIEVE the list of server resource packs.
    * @param {number} instanceId - The instance ID to retrieve the server resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
    */
@@ -159,7 +159,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of resource packs.
+   * RETRIEVE the list of resource packs.
    * @param {number} instanceId - The instance ID to retrieve the resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
    */
@@ -173,7 +173,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of schematics.
+   * RETRIEVE the list of schematics.
    * @param {number} instanceId - The instance ID to retrieve the schematics for.
    * @returns {Promise<InvokeResponse<SchematicInfo[]>>}
    */
@@ -187,7 +187,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of shaderpacks.
+   * RETRIEVE the list of shaderpacks.
    * @param {number} instanceId - The instance ID to retrieve the shaderpacks for.
    * @returns {Promise<InvokeResponse<ShaderPackInfo[]>>}
    */
@@ -201,7 +201,7 @@ export class InstanceService {
   }
 
   /**
-   * RETRIVE the list of screenshots.
+   * RETRIEVE the list of screenshots.
    * @param {number} instanceId - The instance ID to retrieve the screenshots for.
    * @returns {Promise<InvokeResponse<ScreenshotInfo[]>>}
    */
@@ -237,7 +237,7 @@ export class InstanceService {
    * @param {string} worldName - The name of the world to retrieve details for.
    * @returns {Promise<InvokeResponse<LevelData>>}
    */
-  @responseHandler("instance", errorToLocaleKey)
+  @responseHandler("instance")
   static async retrieveWorldDetails(
     instanceId: number,
     worldName: string

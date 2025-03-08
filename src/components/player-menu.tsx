@@ -19,6 +19,7 @@ import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
+import { genPlayerId } from "@/utils/account";
 import ViewSkinModal from "./modals/view-skin-modal";
 
 interface PlayerMenuProps {
@@ -45,7 +46,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   const { getPlayerList, getSelectedPlayer } = useData();
 
   const handleDeletePlayer = () => {
-    AccountService.deletePlayer(player.uuid).then((response) => {
+    AccountService.deletePlayer(genPlayerId(player)).then((response) => {
       if (response.status === "success") {
         getPlayerList(true);
         getSelectedPlayer(true);

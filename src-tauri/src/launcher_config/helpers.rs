@@ -217,28 +217,37 @@ pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, Strin
 }
 
 pub fn get_java_info_from_command(java_path: &str) -> Option<(String, String)> {
-  // use "java -version" command to get info
-  let output = Command::new(java_path).arg("-version").output().ok()?;
+  // use "java -version -XshowSettings:properties" command to get info
+  #[cfg(target_os = "windows")]
+  let output = Command::new(java_path)
+    .args(&["-XshowSettings:properties", "-version"])
+    .creation_flags(0x08000000) // CREATE_NO_WINDOW
+    .output()
+    .ok()?;
+  #[cfg(any(target_os = "macos", target_os = "linux"))]
+  let output = Command::new(java_path)
+    .args(&["-XshowSettings:properties", "-version"])
+    .output()
+    .ok()?;
 
   if !output.status.success() {
     return None;
   }
 
-  let stderr_bytes = output.stderr;
-  let stderr_str = String::from_utf8_lossy(&stderr_bytes);
-  let lines: Vec<&str> = stderr_str.lines().collect();
+  let mut output_str = String::new();
+  output_str.push_str(&String::from_utf8_lossy(&output.stdout));
+  output_str.push_str(&String::from_utf8_lossy(&output.stderr));
 
-  let vendor = "Unknown".to_string();
+  let mut vendor = "Unknown".to_string();
   let mut full_version = "0".to_string();
 
-  if let Some(first_line) = lines.first() {
-    if first_line.contains("version") {
-      if let Some(v) = first_line.split_whitespace().nth(2) {
-        let cleaned = v.trim_matches('"');
-        full_version = cleaned.to_string();
-      }
+  for line in output_str.lines() {
+    if line.trim().starts_with("java.vendor = ") {
+      vendor = line.split('=').nth(1)?.trim().trim_matches('"').to_string();
     }
-    // TODO: parse vendor from version command output
+    if line.trim().starts_with("java.version = ") {
+      full_version = line.split('=').nth(1)?.trim().trim_matches('"').to_string();
+    }
   }
 
   Some((vendor, full_version))

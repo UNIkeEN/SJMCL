@@ -547,8 +547,8 @@
         "gameCompletnessCheckPolicy": {
           "title": "Game File Integrity Check Policy",
           "disable": "Disable Check",
-          "normal":"Normal Check",
-          "full":"Full Check"
+          "normal": "Normal Check",
+          "full": "Full Check"
         },
         "dontCheckJvmValidity": {
           "title": "Do not check Java VM compatibility"
@@ -1374,12 +1374,47 @@
             "NOT_FOUND": "The authentication server does not exist"
           }
         }
+      },
+      "retrievePlayerList": {
+        "error": {
+          "title": "Failed to retrieve player list"
+        }
+      },
+      "retrieveSelectedPlayer": {
+        "error": {
+          "title": "Failed to retrieve seleted player",
+          "description": {
+            "NOT_FOUND": "The selected player does not exist"
+          }
+        }
+      },
+      "updateSelectedPlayer": {
+        "error": {
+          "title": "Failed to update seleted player",
+          "description": {
+            "NOT_FOUND": "The selected player does not exist"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "Failed to retrieve auth server list"
+        }
       }
     },
     "resource": {
-      "retrieveGameVersionList": {
+      "fetchGameVersionList": {
         "error": {
-          "title": "Failed to retrieve game version list",
+          "title": "Failed to fetch game version list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "Failed to fetch mod loader version list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
@@ -1407,7 +1442,7 @@
         "error": {
           "title": "Failed to delete instance",
           "description": {
-            "instanceNotFoundByID": "Instance ID does not exist"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
       },
@@ -1449,6 +1484,24 @@
           "title": "Failed to retrieve screenshot list"
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Failed to retrieve local mod list",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "Failed to retrieve world details list",
+          "description": {
+            "WORLD_NOT_EXSIT_ERROR": "World not exist",
+            "LEVEL_NOT_EXSIT_ERROR": "Level data not exist",
+            "LEVEL_PARSE_ERROR": "Level data parse error"
+          }
+        }
+      },
       "copyAcrossInstances": {
         "success": "Successfully copied resource",
         "error": {
@@ -1479,6 +1532,13 @@
           "description": {
             "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
           }
+        }
+      }
+    },
+    "discover": {
+      "fetchPostSourcesInfo": {
+        "error": {
+          "title": "Failed to fetch post sources"
         }
       }
     }

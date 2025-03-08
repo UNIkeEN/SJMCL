@@ -16,6 +16,7 @@ import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
+import { genPlayerId } from "@/utils/account";
 import { base64ImgSrc } from "@/utils/string";
 
 interface PlayersViewProps extends BoxProps {
@@ -35,8 +36,8 @@ const PlayersView: React.FC<PlayersViewProps> = ({
   const selectedPlayer = getSelectedPlayer();
   const toast = useToast();
 
-  const handleUpdateSelectedPlayer = (uuid: string) => {
-    AccountService.updateSelectedPlayer(uuid).then((response) => {
+  const handleUpdateSelectedPlayer = (playerId: string) => {
+    AccountService.updateSelectedPlayer(playerId).then((response) => {
       if (response.status === "success") {
         getSelectedPlayer(true);
       } else {
@@ -59,7 +60,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
       <HStack spacing={2.5}>
         <Radio
           value={player.uuid}
-          onClick={() => handleUpdateSelectedPlayer(player.uuid)}
+          onClick={() => handleUpdateSelectedPlayer(genPlayerId(player))}
           colorScheme={primaryColor}
         />
         <Image
@@ -88,7 +89,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
       ),
     },
     isSelected: selectedPlayer?.uuid === player.uuid,
-    onSelect: () => handleUpdateSelectedPlayer(player.uuid),
+    onSelect: () => handleUpdateSelectedPlayer(genPlayerId(player)),
     radioValue: player.uuid,
   }));
 

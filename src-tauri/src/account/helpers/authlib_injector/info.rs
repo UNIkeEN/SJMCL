@@ -74,23 +74,21 @@ pub fn get_client_id(domain: String) -> String {
     .to_string()
 }
 
-pub async fn fetch_auth_url(root: String) -> SJMCLResult<String> {
+pub async fn fetch_auth_url(root: Url) -> SJMCLResult<String> {
   let response = reqwest::get(root.clone())
     .await
     .map_err(|_| AccountError::Invalid)?;
 
   if let Some(auth_url) = response.headers().get("X-Authlib-Injector-API-Location") {
     let auth_url_str = auth_url.to_str().unwrap_or_default();
-    let base_url = Url::parse(&root).map_err(|_| AccountError::Invalid)?;
-
     // try to parse auth_url_str as a relative URL and append it to the base URL or return it as is
-    let full_url = base_url
+    let full_url = root
       .join(auth_url_str)
       .map(|url| url.to_string())
       .unwrap_or_else(|_| auth_url_str.to_string());
 
     Ok(full_url)
   } else {
-    Ok(root)
+    Ok(root.to_string())
   }
 }
