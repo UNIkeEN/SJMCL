@@ -547,8 +547,8 @@
         "gameCompletnessCheckPolicy": {
           "title": "Game File Integrity Check Policy",
           "disable": "Disable Check",
-          "normal":"Normal Check",
-          "full":"Full Check"
+          "normal": "Normal Check",
+          "full": "Full Check"
         },
         "dontCheckJvmValidity": {
           "title": "Do not check Java VM compatibility"
@@ -1382,12 +1382,18 @@
       },
       "retrieveSelectedPlayer": {
         "error": {
-          "title": "Failed to retrieve seleted player"
+          "title": "Failed to retrieve seleted player",
+          "description": {
+            "NOT_FOUND": "The selected player does not exist"
+          }
         }
       },
       "updateSelectedPlayer": {
         "error": {
-          "title": "Failed to update seleted player"
+          "title": "Failed to update seleted player",
+          "description": {
+            "NOT_FOUND": "The selected player does not exist"
+          }
         }
       },
       "retrieveAuthServerList": {
@@ -1436,7 +1442,7 @@
         "error": {
           "title": "Failed to delete instance",
           "description": {
-            "instanceNotFoundByID": "Instance ID does not exist"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
       },
@@ -1480,12 +1486,20 @@
       },
       "retrieveLocalModList": {
         "error": {
-          "title": "Failed to retrieve local mod list"
+          "title": "Failed to retrieve local mod list",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
         }
       },
       "retrieveWorldDetails": {
         "error": {
-          "title": "Failed to retrieve world details list"
+          "title": "Failed to retrieve world details list",
+          "description": {
+            "WORLD_NOT_EXSIT_ERROR": "World not exist",
+            "LEVEL_NOT_EXSIT_ERROR": "Level not exist",
+            "LEVEL_PARSE_ERROR": "Level parse error"
+          }
         }
       },
       "copyAcrossInstances": {
@@ -1524,7 +1538,7 @@
     "discover": {
       "fetchPostSourcesInfo": {
         "error": {
-          "title": "获取发表源失败"
+          "title": "Failed to fetch post sources"
         }
       }
     }

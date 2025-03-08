@@ -1382,12 +1382,18 @@
       },
       "retrieveSelectedPlayer": {
         "error": {
-          "title": "获取所选角色失败"
+          "title": "获取所选角色失败",
+          "description": {
+            "NOT_FOUND": "所选角色不存在"
+          }
         }
       },
       "updateSelectedPlayer": {
         "error": {
-          "title": "更新所选角色失败"
+          "title": "更新所选角色失败",
+          "description": {
+            "NOT_FOUND": "所选角色不存在"
+          }
         }
       },
       "retrieveAuthServerList": {
@@ -1436,7 +1442,7 @@
         "error": {
           "title": "实例删除失败",
           "description": {
-            "instanceNotFoundByID": "实例 ID 不存在"
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
           }
         }
       },
@@ -1480,12 +1486,20 @@
       },
       "retrieveLocalModList": {
         "error": {
-          "title": "获取模组列表失败"
+          "title": "获取模组列表失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
         }
       },
       "retrieveWorldDetails": {
         "error": {
-          "title": "获取世界详细信息失败"
+          "title": "获取世界详细信息失败",
+          "description": {
+            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
+            "LEVEL_NOT_EXSIT_ERROR": "级别不存在",
+            "LEVEL_PARSE_ERROR": "级别解析错误"
+          }
         }
       },
       "copyAcrossInstances": {
@@ -1524,7 +1538,7 @@
     "discover": {
       "fetchPostSourcesInfo": {
         "error": {
-          "title": "获取发表源失败"
+          "title": "获取数据源失败"
         }
       }
     }
