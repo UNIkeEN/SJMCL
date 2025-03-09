@@ -938,6 +938,16 @@
       "download": "Download Java",
       "add": "Add Java",
       "remove": "Remove this Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "Add Java Successfully",
+        "description": "Java has been added successfully"
+      },
+      "addFailed": {
+        "title": "Failed to Add Java",
+        "description": "Not a valid Java executable file"
+      }
     }
   },
   "LaunchPage": {

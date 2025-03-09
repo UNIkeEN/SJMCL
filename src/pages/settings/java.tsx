@@ -1,4 +1,4 @@
-import { Flex, HStack, Tag, Text } from "@chakra-ui/react";
+import { Flex, HStack, Tag, Text, useToast } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { platform } from "@tauri-apps/plugin-os";
@@ -14,6 +14,7 @@ import { JavaInfo } from "@/models/system-info";
 
 const JavaSettingsPage = () => {
   const { t } = useTranslation();
+  const toast = useToast();
   const { config, update, getJavaInfos } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
@@ -40,9 +41,28 @@ const JavaSettingsPage = () => {
         platform() === "windows"
           ? fileName === "java.exe"
           : fileName === "java";
-      if (isValidJava && !config.extraJavaPaths.includes(newJavaPath)) {
+
+      if (!isValidJava) {
+        toast({
+          title: t("JavaSettingsPage.toast.addFailed.title"),
+          description: t("JavaSettingsPage.toast.addFailed.description"),
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      if (!config.extraJavaPaths.includes(newJavaPath)) {
         update("extraJavaPaths", [...config.extraJavaPaths, newJavaPath]);
         setJavaInfos(getJavaInfos(true) || []);
+        toast({
+          title: t("JavaSettingsPage.toast.addSuccess.title"),
+          description: t("JavaSettingsPage.toast.addSuccess.description"),
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     }
   };

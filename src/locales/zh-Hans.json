@@ -938,6 +938,16 @@
       "download": "下载 Java",
       "add": "添加 Java",
       "remove": "移除此 Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "添加 Java 成功",
+        "description": "添加自定义Java路径成功"
+      },
+      "addFailed": {
+        "title": "添加 Java 失败",
+        "description": "不是有效的Java可执行文件"
+      }
     }
   },
   "LaunchPage": {
