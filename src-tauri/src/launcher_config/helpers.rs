@@ -97,7 +97,7 @@ fn get_official_minecraft_directory(app: &AppHandle) -> GameDirectory {
   }
 }
 
-pub fn refresh_and_update_javas(app: &AppHandle) {
+pub async fn refresh_and_update_javas(app: &AppHandle) {
   let java_paths = get_java_paths();
   let mut java_list = Vec::new();
   for java_exec_path in java_paths {

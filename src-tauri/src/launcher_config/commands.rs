@@ -212,8 +212,8 @@ pub fn delete_custom_background(app: AppHandle, file_name: String) -> SJMCLResul
 }
 
 #[tauri::command]
-pub fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
-  refresh_and_update_javas(&app); // firstly refresh and update
+pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
+  refresh_and_update_javas(&app).await; // firstly refresh and update
   let binding = app.state::<Mutex<Vec<JavaInfo>>>();
   let state = binding.lock()?;
   Ok(state.clone())
