@@ -26,7 +26,7 @@ body:
     attributes:
       label: OS
       description: "Please enter the Operating System(s) (and preferrably the version) that you found or tested where this bug occurs."
-      placeholder: "e.g. Windows 11 23H2 / MacOS Sequoia 15.2 / Ubuntu 24.04.1"
+      placeholder: "e.g. Windows 11 23H2 / macOS Sequoia 15.2 / Ubuntu 24.04.1"
     validations:
       required: true
   

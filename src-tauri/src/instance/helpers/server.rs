@@ -7,7 +7,7 @@ use tauri_plugin_http::reqwest;
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct NbtServerInfo {
   pub ip: String,
-  pub icon: String,
+  pub icon: Option<String>,
   pub name: String,
 }
 

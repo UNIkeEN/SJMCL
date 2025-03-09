@@ -207,7 +207,7 @@ pub async fn retrieve_game_server_list(
       game_servers.push(GameServerInfo {
         ip: server.ip,
         name: server.name,
-        icon_src: server.icon,
+        icon_src: server.icon.unwrap_or_default(),
         is_queried: false,
         players_max: 0,
         players_online: 0,
