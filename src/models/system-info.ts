@@ -4,6 +4,7 @@ export interface JavaInfo {
   vendor: string;
   majorVersion: number;
   isLts: boolean;
+  isUserAdded: boolean;
 }
 
 export interface MemoryInfo {

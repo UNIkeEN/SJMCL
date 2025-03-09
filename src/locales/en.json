@@ -936,7 +936,8 @@
     "javaList": {
       "title": "Java Management",
       "download": "Download Java",
-      "add": "Add Java"
+      "add": "Add Java",
+      "remove": "Remove this Java"
     }
   },
   "LaunchPage": {

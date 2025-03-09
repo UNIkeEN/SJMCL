@@ -15,7 +15,10 @@ use std::sync::{LazyLock, Mutex};
 use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
-use launcher_config::models::LauncherConfig;
+use launcher_config::{
+  helpers::refresh_and_update_javas,
+  models::{JavaInfo, LauncherConfig},
+};
 use storage::Storage;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -114,6 +117,15 @@ pub async fn run() {
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move {
         refresh_and_update_instances(&app_handle).await;
+      });
+
+      let javas: Vec<JavaInfo> = vec![];
+      app.manage(Mutex::new(javas));
+
+      // Refresh all javas
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        refresh_and_update_javas(&app_handle).await;
       });
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.

@@ -1,8 +1,5 @@
 use super::{
-  helpers::{
-    get_java_info_from_command, get_java_info_from_release_file, get_java_paths,
-    parse_java_major_version,
-  },
+  helpers::refresh_and_update_javas,
   models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
 };
 use crate::{
@@ -215,49 +212,11 @@ pub fn delete_custom_background(app: AppHandle, file_name: String) -> SJMCLResul
 }
 
 #[tauri::command]
-pub fn retrieve_java_list() -> SJMCLResult<Vec<JavaInfo>> {
-  let java_paths = get_java_paths();
-  let mut java_list = Vec::new();
-
-  for java_exec_path in java_paths {
-    let java_path_buf = PathBuf::from(&java_exec_path);
-
-    let (vendor, full_version) = match get_java_info_from_release_file(&java_exec_path)
-      .or_else(|| get_java_info_from_command(&java_exec_path))
-    {
-      Some(info) => info,
-      None => continue,
-    };
-
-    let java_bin_path = java_path_buf
-      .parent()
-      .unwrap_or_else(|| Path::new(""))
-      .to_path_buf();
-
-    #[cfg(target_os = "windows")]
-    let is_jdk = java_bin_path.join("javac.exe").exists();
-
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
-    let is_jdk = java_bin_path.join("javac").exists();
-
-    let (major_version, is_lts) = parse_java_major_version(&full_version);
-
-    java_list.push(JavaInfo {
-      name: format!("{} {}", if is_jdk { "JDK" } else { "JRE" }, full_version),
-      major_version,
-      is_lts,
-      exec_path: java_exec_path,
-      vendor,
-    });
-  }
-
-  java_list.sort_by(|a, b| {
-    b.major_version
-      .cmp(&a.major_version)
-      .then_with(|| a.exec_path.len().cmp(&b.exec_path.len()))
-  });
-
-  Ok(java_list)
+pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
+  refresh_and_update_javas(&app).await; // firstly refresh and update
+  let binding = app.state::<Mutex<Vec<JavaInfo>>>();
+  let state = binding.lock()?;
+  Ok(state.clone())
 }
 
 #[tauri::command]

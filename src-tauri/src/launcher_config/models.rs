@@ -10,14 +10,15 @@ pub struct MemoryInfo {
   pub used: u64,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct JavaInfo {
-  pub name: String,       // JDK/JRE + full version
-  pub major_version: i32, // major version + LTS flag
-  pub is_lts: bool,
+  pub name: String, // JDK/JRE + full version
   pub exec_path: String,
   pub vendor: String,
+  pub major_version: i32, // major version + LTS flag
+  pub is_lts: bool,
+  pub is_user_added: bool,
 }
 
 // Partial Derive is used for these structs and we can use it for key value storage.
@@ -145,6 +146,7 @@ structstruck::strike! {
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,
     pub discover_source_endpoints: Vec<String>,
+    pub extra_java_paths: Vec<String>,
     pub states: struct States {
       pub shared: struct {
         pub selected_player_id: String,
@@ -281,6 +283,7 @@ impl Default for LauncherConfig {
       global_game_config: GameConfig::default(),
       local_game_directories: vec![],
       discover_source_endpoints: vec!["https://mc.sjtu.cn/api-sjmcl/article".to_string()],
+      extra_java_paths: vec![],
       states: States {
         shared: Shared {
           selected_player_id: "".to_string(),
