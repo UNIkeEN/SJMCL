@@ -942,16 +942,16 @@
     "toast": {
       "addSuccess": {
         "title": "添加 Java 成功",
-        "description": "添加自定义Java路径成功"
+        "description": "添加自定义 Java 路径成功"
       },
       "addFailed": {
         "title": "添加 Java 失败",
-        "description": "不是有效的Java可执行文件"
+        "description": "不是有效的 Java 可执行文件"
       }
     },
     "confirmDelete": {
-      "title": "删除 Java",
-      "description": "确认要删除该版本 Java 吗？（SJMCL 将不会扫描此目录，但不会删除硬盘上的文件）"
+      "title": "移除 Java",
+      "description": "确认要移除此版本 Java 吗？（SJMCL 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
     }
   },
   "LaunchPage": {

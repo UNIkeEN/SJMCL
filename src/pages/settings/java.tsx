@@ -196,10 +196,7 @@ const JavaSettingsPage = () => {
         isOpen={isDeleteDialogOpen}
         onClose={onDeleteDialogClose}
         title={t("JavaSettingsPage.confirmDelete.title")}
-        body={t("JavaSettingsPage.confirmDelete.description", {
-          name: selectedJava?.name || t("General.unknown"),
-          path: selectedJava?.execPath || t("General.unknownPath"),
-        })}
+        body={t("JavaSettingsPage.confirmDelete.description")}
         btnOK={t("General.confirm")}
         btnCancel={t("General.cancel")}
         onOKCallback={handleConfirmDelete}
