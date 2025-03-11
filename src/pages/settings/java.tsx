@@ -111,7 +111,6 @@ const JavaSettingsPage = () => {
             icon: LuX,
             label: t("JavaSettingsPage.javaList.remove"),
             onClick: () => handleRemoveJavaPath(java),
-            danger: true,
           },
         ]
       : []),
@@ -179,7 +178,6 @@ const JavaSettingsPage = () => {
                       key={index}
                       icon={item.icon}
                       label={item.label}
-                      colorScheme={item.danger ? "red" : "gray"}
                       onClick={item.onClick}
                     />
                   ))}
