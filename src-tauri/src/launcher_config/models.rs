@@ -97,7 +97,7 @@ structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct LauncherConfig {
-    pub version: struct {
+    pub basic_info: struct {
       pub launcher_version: String,
       pub platform: String,
       pub arch: String,
@@ -243,7 +243,7 @@ impl Storage for LauncherConfig {
 impl Default for LauncherConfig {
   fn default() -> Self {
     Self {
-      version: Version {
+      basic_info: BasicInfo {
         launcher_version: "dev".to_string(),
         platform: "".to_string(),
         arch: "".to_string(),

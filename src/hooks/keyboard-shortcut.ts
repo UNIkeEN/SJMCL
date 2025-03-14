@@ -19,7 +19,7 @@ const useKeyboardShortcut = (
   const { config } = useLauncherConfig();
   useEffect(() => {
     const activeShortcut =
-      shortcutConditions[config.version.osType] || shortcutConditions.all;
+      shortcutConditions[config.basicInfo.osType] || shortcutConditions.all;
     if (!activeShortcut) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,7 +49,7 @@ const useKeyboardShortcut = (
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [shortcutConditions, callback, config.version.osType]);
+  }, [shortcutConditions, callback, config.basicInfo.osType]);
 };
 
 export default useKeyboardShortcut;

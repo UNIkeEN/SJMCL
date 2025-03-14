@@ -1,10 +1,9 @@
 use crate::{error::SJMCLResult, EXE_DIR};
-use os_info;
 use std::collections::{HashMap, HashSet};
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Mutex;
-use std::{env, fs};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 
@@ -25,11 +24,10 @@ impl LauncherConfig {
     } else {
       app.package_info().version.to_string()
     };
-    let info = os_info::get();
-    let os_type = info.os_type();
-    let os_version = info.version();
-    let platform = os_type.clone();
-    let arch = env::consts::ARCH;
+    let platform = tauri_plugin_os::platform().to_string();
+    let arch = tauri_plugin_os::arch().to_string();
+    let platform_version = tauri_plugin_os::version().to_string();
+    let os_type = tauri_plugin_os::type_().to_string();
 
     // Set default download cache dir if not exists, create dir
     if self.download.cache.directory == PathBuf::default() {
@@ -61,11 +59,11 @@ impl LauncherConfig {
         }
       }
     }
-    self.version.launcher_version = version.clone();
-    self.version.platform = platform.to_string();
-    self.version.arch = arch.to_string();
-    self.version.os_type = os_type.to_string();
-    self.version.platform_version = os_version.to_string();
+    self.basic_info.launcher_version = version.clone();
+    self.basic_info.platform = platform.to_string();
+    self.basic_info.arch = arch.to_string();
+    self.basic_info.os_type = os_type.to_string();
+    self.basic_info.platform_version = platform_version.to_string();
     Ok(())
   }
 }

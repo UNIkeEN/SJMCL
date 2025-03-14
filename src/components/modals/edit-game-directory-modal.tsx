@@ -157,7 +157,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         tempDirPath[tempDirPath.length - 1] === "\\"
       )
         tempDirPath = tempDirPath.slice(0, -1);
-      if (config.version.platform === "windows")
+      if (config.basicInfo.platform === "windows")
         tempDirPath = tempDirPath.replace(/\//g, "\\");
       else tempDirPath = tempDirPath.replace(/\\/g, "/");
       setIsDirPathExist(

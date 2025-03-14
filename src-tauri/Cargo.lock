@@ -15,7 +15,6 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "log",
- "os_info",
  "partial_derive",
  "pin-project",
  "quartz_nbt",

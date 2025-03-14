@@ -53,9 +53,9 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
   };
 
   const specLabels: Record<string, string> = {
-    copyOrMove: t(`General.copyOrMove.${config.version.osType}`),
+    copyOrMove: t(`General.copyOrMove.${config.basicInfo.osType}`),
     revealFile: t("General.revealFile", {
-      opener: t(`Enums.systemFileManager.${config.version.osType}`),
+      opener: t(`Enums.systemFileManager.${config.basicInfo.osType}`),
     }),
   };
 

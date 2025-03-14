@@ -38,14 +38,14 @@ const JavaSettingsPage = () => {
       filters: [
         {
           name: "Java",
-          extensions: config.version.platform === "windows" ? ["exe"] : [""], // TBD: cross platform test
+          extensions: config.basicInfo.platform === "windows" ? ["exe"] : [""], // TBD: cross platform test
         },
       ],
     });
     if (newJavaPath && typeof newJavaPath === "string") {
       const fileName = newJavaPath.split(/[/\\]/).pop();
       const isValidJava =
-        config.version.platform === "windows"
+        config.basicInfo.platform === "windows"
           ? fileName === "java.exe"
           : fileName === "java";
 

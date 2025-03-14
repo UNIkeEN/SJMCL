@@ -31,20 +31,20 @@ const GameErrorPage: React.FC = () => {
   );
 
   const platformName = useCallback(() => {
-    let name = config.version.platform
+    let name = config.basicInfo.platform
       .replace("os", "OS")
       .replace("bsd", "BSD");
     return name.includes("OS") ? name : capitalizeFirstLetter(name);
-  }, [config.version.platform]);
+  }, [config.basicInfo.platform]);
 
   useEffect(() => {
     // construct info maps
     let infoList = new Map<string, string>();
-    infoList.set("launcherVersion", config.version.launcherVersion);
-    infoList.set("os", `${platformName()} ${config.version.platformVersion}`);
-    infoList.set("arch", config.version.arch);
+    infoList.set("launcherVersion", config.basicInfo.launcherVersion);
+    infoList.set("os", `${platformName()} ${config.basicInfo.platformVersion}`);
+    infoList.set("arch", config.basicInfo.arch);
     setBasicInfoParams(infoList);
-  }, [config.version, platformName]);
+  }, [config.basicInfo, platformName]);
 
   const renderStats = ({
     title,

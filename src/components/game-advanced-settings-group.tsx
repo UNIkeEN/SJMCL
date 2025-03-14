@@ -57,8 +57,6 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
   const [environmentVariable, setEnvironmentVariable] = useState<string>(
     gameAdvancedConfigs.advanced.jvm.environmentVariable
   );
-  const [platformName, setPlatformName] = useState<string>("");
-  setPlatformName(config.version.platform);
 
   const gameCompletnessCheckPolicy = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
@@ -329,7 +327,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
             />
           ),
         },
-        ...(platformName === "linux"
+        ...(config.basicInfo.platform === "linux"
           ? [
               {
                 title: t(

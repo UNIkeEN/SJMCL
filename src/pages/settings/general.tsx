@@ -69,7 +69,7 @@ const GeneralSettingsPage = () => {
             )}
             <Kbd>
               {t(
-                `Enums.${config.version.osType === "macos" ? "metaKey" : "ctrlKey"}.${config.version.osType}`
+                `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${config.basicInfo.osType}`
               )}
             </Kbd>
             {" + "}
