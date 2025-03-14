@@ -97,7 +97,13 @@ structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct LauncherConfig {
-    pub version: String,
+    pub version: struct {
+      pub launcher_version: String,
+      pub platform: String,
+      pub arch: String,
+      pub os_type: String,
+      pub platform_version: String,
+    },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,
     pub run_count: usize,
@@ -237,7 +243,13 @@ impl Storage for LauncherConfig {
 impl Default for LauncherConfig {
   fn default() -> Self {
     Self {
-      version: "dev".to_string(),
+      version: Version {
+        launcher_version: "dev".to_string(),
+        platform: "".to_string(),
+        arch: "".to_string(),
+        os_type: "".to_string(),
+        platform_version: "".to_string(),
+      },
       mocked: false,
       run_count: 0,
       appearance: AppearanceConfig {

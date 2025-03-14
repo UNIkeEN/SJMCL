@@ -9,8 +9,7 @@ import {
   Switch,
   VStack,
 } from "@chakra-ui/react";
-import { platform } from "@tauri-apps/plugin-os";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown } from "react-icons/lu";
 import {
@@ -59,14 +58,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
     gameAdvancedConfigs.advanced.jvm.environmentVariable
   );
   const [platformName, setPlatformName] = useState<string>("");
-
-  useEffect(() => {
-    const fetchPlatform = async () => {
-      const name = await platform();
-      setPlatformName(name);
-    };
-    fetchPlatform();
-  }, []);
+  setPlatformName(config.version.platform);
 
   const gameCompletnessCheckPolicy = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {

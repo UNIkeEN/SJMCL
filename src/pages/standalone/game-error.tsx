@@ -15,8 +15,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { arch, platform, version } from "@tauri-apps/plugin-os";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
@@ -31,19 +30,21 @@ const GameErrorPage: React.FC = () => {
     new Map<string, string>()
   );
 
-  const platformName = () => {
-    let name = platform().replace("os", "OS").replace("bsd", "BSD");
+  const platformName = useCallback(() => {
+    let name = config.version.platform
+      .replace("os", "OS")
+      .replace("bsd", "BSD");
     return name.includes("OS") ? name : capitalizeFirstLetter(name);
-  };
+  }, [config.version.platform]);
 
   useEffect(() => {
     // construct info maps
     let infoList = new Map<string, string>();
-    infoList.set("launcherVersion", config.version);
-    infoList.set("os", `${platformName()} ${version()}`);
-    infoList.set("arch", arch());
+    infoList.set("launcherVersion", config.version.launcherVersion);
+    infoList.set("os", `${platformName()} ${config.version.platformVersion}`);
+    infoList.set("arch", config.version.arch);
     setBasicInfoParams(infoList);
-  }, [config.version]);
+  }, [config.version, platformName]);
 
   const renderStats = ({
     title,
