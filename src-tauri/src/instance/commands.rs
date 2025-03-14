@@ -25,7 +25,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::{sync::Mutex, time::SystemTime};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_shell::ShellExt;
+use tauri_plugin_opener::open_path;
 use tokio;
 
 #[tauri::command]
@@ -47,7 +47,7 @@ pub fn open_instance_subdir(
     None => return Err(InstanceError::InstanceNotFoundByID.into()),
   };
 
-  match app.shell().open(subdir_path.to_str().unwrap(), None) {
+  match open_path(subdir_path.to_str().unwrap(), None::<&str>) {
     Ok(_) => Ok(()),
     Err(_) => Err(InstanceError::ExecOpenDirError.into()),
   }

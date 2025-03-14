@@ -7,7 +7,7 @@ use super::{
     },
     offline,
   },
-  models::{AccountError, AccountInfo, AuthServer, Player},
+  models::{AccountError, AccountInfo, AuthServer, Player, PlayerType},
 };
 use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig, storage::Storage};
 use std::sync::Mutex;
@@ -203,7 +203,7 @@ pub fn update_player_skin_offline_preset(
     .find(|player| player.gen_player_id() == player_id)
     .ok_or(AccountError::NotFound)?;
 
-  if player.player_type != "offline" {
+  if player.player_type != PlayerType::Offline {
     return Err(AccountError::Invalid.into());
   }
 

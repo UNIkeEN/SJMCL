@@ -2,10 +2,10 @@ use crate::launcher_config::models::GameConfig;
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::{Ord, Ordering, PartialOrd},
-  fmt,
   path::PathBuf,
   str::FromStr,
 };
+use strum_macros::Display;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstanceSubdirType {
@@ -147,7 +147,8 @@ pub struct ScreenshotInfo {
   pub time: u64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum InstanceError {
   InstanceNotFoundByID,
   ExecOpenDirError,
@@ -160,24 +161,6 @@ pub enum InstanceError {
   WorldNotExistError,
   LevelParseError,
   LevelNotExistError,
-}
-
-impl fmt::Display for InstanceError {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      InstanceError::InstanceNotFoundByID => write!(f, "INSTANCE_NOT_FOUND_BY_ID"),
-      InstanceError::ExecOpenDirError => write!(f, "EXEC_OPEN_DIR_ERROR"),
-      InstanceError::ServerNbtReadError => write!(f, "SERVER_NBT_READ_ERROR"),
-      InstanceError::FileNotFoundError => write!(f, "FILE_NOT_FOUND_ERROR"),
-      InstanceError::InvalidSourcePath => write!(f, "INVALID_SOURCE_PATH"),
-      InstanceError::FileCopyFailed => write!(f, "FILE_COPY_FAILED"),
-      InstanceError::FileMoveFailed => write!(f, "FILE_MOVE_FAILED"),
-      InstanceError::FolderCreationFailed => write!(f, "FOLDER_CREATION_FAILED"),
-      InstanceError::WorldNotExistError => write!(f, "WORLD_NOT_EXIST_ERROR"),
-      InstanceError::LevelParseError => write!(f, "LEVEL_PARSE_ERROR"),
-      InstanceError::LevelNotExistError => write!(f, "LEVEL_NOT_EXIST_ERROR"),
-    }
-  }
 }
 
 impl std::error::Error for InstanceError {}

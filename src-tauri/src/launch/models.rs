@@ -1,15 +1,10 @@
 // https://minecraft.wiki/w/Version_formats
-use std::fmt;
+use strum_macros::Display;
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum LaunchError {
   VersionParseError,
 }
 
-impl fmt::Display for LaunchError {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      LaunchError::VersionParseError => write!(f, "VERSION_PARSE_ERROR"),
-    }
-  }
-}
+impl std::error::Error for LaunchError {}

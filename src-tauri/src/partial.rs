@@ -1,20 +1,12 @@
-use std::error::Error;
-
 use serde::{Deserialize, Serialize};
+use std::error::Error;
+use strum_macros::Display;
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum PartialError {
   NotFound,
   InvalidType,
-}
-
-impl std::fmt::Display for PartialError {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    match self {
-      PartialError::NotFound => write!(f, "Not found"),
-      PartialError::InvalidType => write!(f, "Invalid type"),
-    }
-  }
 }
 
 impl Error for PartialError {}

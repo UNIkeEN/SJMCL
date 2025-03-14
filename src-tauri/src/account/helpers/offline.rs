@@ -1,7 +1,7 @@
 use crate::{
   account::{
     constants::TEXTURE_ROLES,
-    models::{AccountError, PlayerInfo, Texture},
+    models::{AccountError, PlayerInfo, PlayerType, Texture},
   },
   error::SJMCLResult,
   utils::image::image_to_base64,
@@ -43,7 +43,7 @@ pub async fn login(app: AppHandle, username: String) -> SJMCLResult<PlayerInfo> 
   Ok(PlayerInfo {
     name: username,
     uuid,
-    player_type: "offline".to_string(),
+    player_type: PlayerType::Offline,
     auth_account: "".to_string(),
     password: "".to_string(),
     auth_server_url: "".to_string(),

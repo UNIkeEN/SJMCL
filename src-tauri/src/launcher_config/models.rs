@@ -1,7 +1,8 @@
 use crate::{storage::Storage, utils::sys_info, EXE_DIR};
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
-use std::{fmt, path::PathBuf};
+use std::path::PathBuf;
+use strum_macros::Display;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -312,7 +313,8 @@ impl Default for LauncherConfig {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum LauncherConfigError {
   FetchError,
   InvalidCode,
@@ -320,19 +322,6 @@ pub enum LauncherConfigError {
   VersionMismatch,
   GameDirAlreadyAdded,
   GameDirNotExist,
-}
-
-impl fmt::Display for LauncherConfigError {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      LauncherConfigError::FetchError => write!(f, "FETCH_ERROR"),
-      LauncherConfigError::InvalidCode => write!(f, "INVALID_CODE"),
-      LauncherConfigError::CodeExpired => write!(f, "CODE_EXPIRED"),
-      LauncherConfigError::VersionMismatch => write!(f, "VERSION_MISMATCH"),
-      LauncherConfigError::GameDirAlreadyAdded => write!(f, "GAME_DIR_ALREADY_ADDED"),
-      LauncherConfigError::GameDirNotExist => write!(f, "GAME_DIR_NOT_EXIST"),
-    }
-  }
 }
 
 impl std::error::Error for LauncherConfigError {}

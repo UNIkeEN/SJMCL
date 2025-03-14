@@ -2,7 +2,7 @@ use crate::{
   account::{
     constants::TEXTURE_TYPES,
     helpers::offline::load_preset_skin,
-    models::{AccountError, PlayerInfo, Texture},
+    models::{AccountError, PlayerInfo, PlayerType, Texture},
   },
   error::SJMCLResult,
 };
@@ -73,7 +73,7 @@ pub async fn parse_profile(
   Ok(PlayerInfo {
     uuid,
     name: name.to_string(),
-    player_type: "3rdparty".to_string(),
+    player_type: PlayerType::ThirdParty,
     auth_account,
     access_token,
     textures,
