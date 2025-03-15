@@ -12,7 +12,7 @@ use std::error::Error;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use super::models::{GameDirectory, JavaInfo, LauncherConfig};
+use super::models::{BasicInfo, GameDirectory, JavaInfo, LauncherConfig};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -59,11 +59,14 @@ impl LauncherConfig {
         }
       }
     }
-    self.basic_info.launcher_version = version.clone();
-    self.basic_info.platform = platform.to_string();
-    self.basic_info.arch = arch.to_string();
-    self.basic_info.os_type = os_type.to_string();
-    self.basic_info.platform_version = platform_version.to_string();
+    self.basic_info = BasicInfo {
+      launcher_version: version,
+      platform,
+      arch,
+      os_type,
+      platform_version,
+    };
+
     Ok(())
   }
 }
