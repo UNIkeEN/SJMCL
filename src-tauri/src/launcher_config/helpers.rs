@@ -12,7 +12,7 @@ use std::error::Error;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use super::models::{BasicInfo, GameDirectory, JavaInfo, LauncherConfig};
+use super::models::{GameDirectory, JavaInfo, LauncherConfig};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -24,10 +24,6 @@ impl LauncherConfig {
     } else {
       app.package_info().version.to_string()
     };
-    let platform = tauri_plugin_os::platform().to_string();
-    let arch = tauri_plugin_os::arch().to_string();
-    let platform_version = tauri_plugin_os::version().to_string();
-    let os_type = tauri_plugin_os::type_().to_string();
 
     // Set default download cache dir if not exists, create dir
     if self.download.cache.directory == PathBuf::default() {
@@ -59,13 +55,11 @@ impl LauncherConfig {
         }
       }
     }
-    self.basic_info = BasicInfo {
-      launcher_version: version,
-      platform,
-      arch,
-      os_type,
-      platform_version,
-    };
+    self.basic_info.launcher_version = version.clone();
+    self.basic_info.platform = tauri_plugin_os::platform().to_string();
+    self.basic_info.arch = tauri_plugin_os::arch().to_string();
+    self.basic_info.os_type = tauri_plugin_os::type_().to_string();
+    self.basic_info.platform_version = tauri_plugin_os::version().to_string();
 
     Ok(())
   }
