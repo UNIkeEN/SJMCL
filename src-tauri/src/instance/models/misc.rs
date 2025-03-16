@@ -48,6 +48,18 @@ impl FromStr for ModLoaderType {
     }
   }
 }
+impl ModLoaderType {
+  pub fn to_icon_path(&self) -> &str {
+    match self {
+      &ModLoaderType::Unknown => "/images/icons/GrassBlock.png",
+      &ModLoaderType::Fabric => "/images/icons/Fabric.png",
+      &ModLoaderType::Forge | &ModLoaderType::ForgeOld => "/images/icons/Forge.png",
+      &ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
+      &ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
+      &ModLoaderType::Quilt => "/images/icons/Quilt.png",
+    }
+  }
+}
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
@@ -160,6 +172,7 @@ pub enum InstanceError {
   WorldNotExistError,
   LevelParseError,
   LevelNotExistError,
+  ConflictNameError,
 }
 
 impl fmt::Display for InstanceError {
@@ -176,6 +189,7 @@ impl fmt::Display for InstanceError {
       InstanceError::WorldNotExistError => write!(f, "WORLD_NOT_EXIST_ERROR"),
       InstanceError::LevelParseError => write!(f, "LEVEL_PARSE_ERROR"),
       InstanceError::LevelNotExistError => write!(f, "LEVEL_NOT_EXIST_ERROR"),
+      InstanceError::ConflictNameError => write!(f, "CONFLICT_NAME_ERROR"),
     }
   }
 }

@@ -8,6 +8,7 @@ use super::{
     mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::{load_servers_info_from_path, query_server_status},
+    version_dir::rename_game_version_id,
     world::{level_data_to_world_info, load_level_data_from_path},
   },
   models::{
@@ -564,5 +565,27 @@ pub async fn retrieve_world_details(
     Ok(level_data)
   } else {
     Err(InstanceError::LevelParseError.into())
+  }
+}
+
+#[tauri::command]
+pub async fn rename_instance(
+  app: AppHandle,
+  instance_id: usize,
+  new_name: String,
+) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let mut state = binding.lock().unwrap();
+  let instance = match state.get_mut(instance_id) {
+    Some(x) => x,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  match rename_game_version_id(&instance.version_path, &new_name) {
+    Ok(new_path) => {
+      instance.version_path = new_path;
+      instance.name = new_name;
+      Ok(())
+    }
+    Err(_) => Err(InstanceError::ConflictNameError.into()),
   }
 }

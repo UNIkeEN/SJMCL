@@ -84,6 +84,7 @@ pub async fn run() {
       instance::commands::retrieve_shader_pack_list,
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
+      instance::commands::rename_instance,
       launch::commands::validate_game_files,
       launch::commands::launch_game,
       resource::commands::fetch_game_version_list,

@@ -7,6 +7,7 @@ import {
   Switch,
   VStack,
 } from "@chakra-ui/react";
+import { invoke } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -42,7 +43,14 @@ const InstanceSettingsPage = () => {
             <Editable // TBD
               isTextArea={false}
               value={summary?.name || ""}
-              onEditSubmit={(value) => {}}
+              onEditSubmit={(value) => {
+                invoke("rename_instance", {
+                  instanceId: Number(instanceId),
+                  newName: value,
+                }).then(() => {
+                  // TODO Here: 重命名文本框内容为value
+                });
+              }}
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
