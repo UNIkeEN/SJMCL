@@ -162,7 +162,7 @@ const InstanceSettingsPage = () => {
       </VStack>
       <Box h={4} />
       <Collapse in={applySettings} animateOpacity>
-        <GameSettingsGroups instanceId={Number(router.query.id)} />
+        <GameSettingsGroups instanceId={Number(instanceId)} />
       </Collapse>
     </Box>
   );

@@ -39,14 +39,15 @@ interface GameSettingsGroupsProps {
 }
 
 const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
-  instanceId = 0,
+  instanceId,
 }) => {
   const { t } = useTranslation();
   const { config, update, getJavaInfos } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const gameConfigs = instanceId
-    ? defaultGameConfig // TBD
-    : config.globalGameConfig;
+  const gameConfigs =
+    instanceId !== undefined
+      ? defaultGameConfig // TBD
+      : config.globalGameConfig;
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
 
@@ -76,7 +77,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   } = useDisclosure();
 
   const updateGameConfig = (key: string, value: any) => {
-    if (instanceId) return; // TBD
+    if (instanceId !== undefined) return; // TBD
     update(`globalGameConfig.${key}`, value);
   };
 

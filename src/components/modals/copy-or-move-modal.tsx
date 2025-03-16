@@ -43,7 +43,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   srcResName,
   srcFilePath,
   tgtDirType = InstanceSubdirEnums.Root,
-  srcInstanceId = 0,
+  srcInstanceId,
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -63,10 +63,12 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   >([]);
   const [_tgtDirType, _setTgtDirType] =
     useState<InstanceSubdirEnums>(tgtDirType);
-  const [_srcInstanceId, _setSrcInstanceId] = useState<number>(srcInstanceId);
+  const [_srcInstanceId, _setSrcInstanceId] = useState<number | undefined>(
+    srcInstanceId
+  );
 
   useEffect(() => {
-    if (srcInstanceId) return;
+    if (srcInstanceId !== undefined) return;
     if (router === undefined) {
       toast({
         title: t("CopyOrMoveModal.error.lackOfArguments"),
@@ -74,7 +76,9 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
       });
       return;
     }
-    _setSrcInstanceId(Number(router.query.id));
+    const { id } = router.query;
+    const instanceId = Array.isArray(id) ? id[0] : id;
+    _setSrcInstanceId(Number(instanceId));
   }, [router, srcInstanceId, t, toast]);
 
   useEffect(() => {

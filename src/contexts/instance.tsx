@@ -61,13 +61,14 @@ export const InstanceContextProvider: React.FC<{
 
   useEffect(() => {
     const gameInstanceList = getGameInstanceList() || [];
-    const instanceId = router.query.id;
+    const { id } = router.query;
+    const instanceId = Array.isArray(id) ? id[0] : id;
     if (instanceId !== undefined) {
       setInstanceSummary(
         gameInstanceList.find((instance) => instance.id === Number(instanceId))
       );
     }
-  }, [router.query.id, getGameInstanceList]);
+  }, [router.query, getGameInstanceList]);
 
   const updateSummary = (path: string, value: any) => {
     // for frontend-only state update to sync with backend if needed.
