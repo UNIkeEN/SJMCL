@@ -52,7 +52,13 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         {prefixElement && (
           <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
         )}
-        <VStack spacing={0} mr={2} alignItems="start" overflow="hidden">
+        <VStack
+          spacing={0}
+          mr={2}
+          alignItems="start"
+          overflow="hidden"
+          flex="1"
+        >
           <HStack spacing={2} flexWrap="wrap">
             <Skeleton isLoaded={!isLoading}>
               <Text fontSize="xs-sm" className="no-select">

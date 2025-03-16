@@ -73,9 +73,10 @@ export const WrapCard: React.FC<WrapCardProps> = ({
           ))}
         <Text
           fontSize="xs-sm"
-          className="no-select"
+          className="no-select ellipsis-text"
           fontWeight={isSelected ? "bold" : "normal"}
           mt={image ? 2 : 0}
+          overflow="hidden"
         >
           {title}
         </Text>
