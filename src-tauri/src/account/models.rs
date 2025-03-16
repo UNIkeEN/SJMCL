@@ -1,8 +1,19 @@
 use super::helpers::{authlib_injector::info::get_client_id, skin::draw_avatar};
 use crate::{storage::Storage, utils::image::base64_to_image, EXE_DIR};
 use serde::{Deserialize, Serialize};
-use std::{fmt, path::PathBuf};
+use std::path::PathBuf;
+use strum_macros::Display;
 use uuid::Uuid;
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub enum PlayerType {
+  #[serde(rename = "offline")]
+  Offline,
+  #[serde(rename = "3rdparty")]
+  ThirdParty,
+  #[serde(rename = "microsoft")]
+  Microsoft,
+}
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -13,13 +24,13 @@ pub struct Texture {
 }
 
 // only for the client
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Player {
   pub name: String,
   pub uuid: Uuid,
   pub avatar: String, // base64 encoded
-  pub player_type: String,
+  pub player_type: PlayerType,
   #[serde(default)]
   pub auth_account: String,
   #[serde(default)]
@@ -56,12 +67,12 @@ impl From<PlayerInfo> for Player {
 }
 
 // for backend storage, without saving the whole auth server info
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PlayerInfo {
   pub name: String,
   pub uuid: Uuid,
-  pub player_type: String,
+  pub player_type: PlayerType,
   pub auth_account: String,
   pub password: String,
   pub auth_server_url: String,
@@ -72,9 +83,9 @@ pub struct PlayerInfo {
 impl PlayerInfo {
   pub fn gen_player_id(&self) -> String {
     let mut server_identity = self.auth_server_url.clone();
-    if self.player_type == "offline" {
+    if self.player_type == PlayerType::Offline {
       server_identity = "OFFLINE".to_string();
-    } else if self.player_type == "microsoft" {
+    } else if self.player_type == PlayerType::Microsoft {
       server_identity = "MICROSOFT".to_string();
     }
     format!("{}{}", self.name, server_identity)
@@ -151,7 +162,8 @@ impl Default for AccountInfo {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum AccountError {
   Duplicate,
   Invalid,
@@ -159,19 +171,6 @@ pub enum AccountError {
   TextureError,
   AuthServerError,
   Cancelled,
-}
-
-impl fmt::Display for AccountError {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      AccountError::Duplicate => write!(f, "DUPLICATE"),
-      AccountError::Invalid => write!(f, "INVALID"),
-      AccountError::NotFound => write!(f, "NOT_FOUND"),
-      AccountError::TextureError => write!(f, "TEXTURE_ERROR"),
-      AccountError::AuthServerError => write!(f, "AUTH_SERVER_ERROR"),
-      AccountError::Cancelled => write!(f, "CANCELLED"),
-    }
-  }
 }
 
 impl std::error::Error for AccountError {}

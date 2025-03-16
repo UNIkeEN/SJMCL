@@ -151,7 +151,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         <ManageSkinModal
           isOpen={isSkinModalOpen}
           onClose={onSkinModalClose}
-          playerId={player.uuid}
+          playerId={genPlayerId(player)}
           skin={player.textures.find(
             (texture) => texture.textureType === "SKIN"
           )}

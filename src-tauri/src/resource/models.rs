@@ -1,6 +1,6 @@
 use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use strum_macros::Display;
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
 pub enum ResourceType {
@@ -49,19 +49,11 @@ pub struct ModLoaderResourceInfo {
   pub stable: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum ResourceError {
   ParseError,
   NoDownloadApi,
-}
-
-impl fmt::Display for ResourceError {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      ResourceError::ParseError => write!(f, "PARSE_ERROR"),
-      ResourceError::NoDownloadApi => write!(f, "NO_DOWNLOAD_API"),
-    }
-  }
 }
 
 impl std::error::Error for ResourceError {}

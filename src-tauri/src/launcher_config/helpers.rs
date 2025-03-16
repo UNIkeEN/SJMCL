@@ -12,7 +12,7 @@ use std::error::Error;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use super::models::{GameDirectory, JavaInfo, LauncherConfig};
+use super::models::{BasicInfo, GameDirectory, JavaInfo, LauncherConfig};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -55,8 +55,14 @@ impl LauncherConfig {
         }
       }
     }
+    self.basic_info = BasicInfo {
+      launcher_version: version,
+      platform: tauri_plugin_os::platform().to_string(),
+      arch: tauri_plugin_os::arch().to_string(),
+      os_type: tauri_plugin_os::type_().to_string(),
+      platform_version: tauri_plugin_os::version().to_string(),
+    };
 
-    self.version = version.clone();
     Ok(())
   }
 }

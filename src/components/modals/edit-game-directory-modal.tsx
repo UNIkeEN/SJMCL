@@ -26,7 +26,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { platform } from "@tauri-apps/plugin-os";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
@@ -158,7 +157,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         tempDirPath[tempDirPath.length - 1] === "\\"
       )
         tempDirPath = tempDirPath.slice(0, -1);
-      if (platform() === "windows")
+      if (config.basicInfo.platform === "windows")
         tempDirPath = tempDirPath.replace(/\//g, "\\");
       else tempDirPath = tempDirPath.replace(/\\/g, "/");
       setIsDirPathExist(

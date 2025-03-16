@@ -290,8 +290,8 @@ pub fn collect_launch_params(
     version_name: instance.version.clone(),
     version_type: client_info.type_,
     natives_directory: natives_dir.to_string_lossy().to_string(),
-    launcher_name: format!("SJMCL {}", sjmcl_config.version),
-    launcher_version: sjmcl_config.version,
+    launcher_name: format!("SJMCL {}", sjmcl_config.basic_info.launcher_version),
+    launcher_version: sjmcl_config.basic_info.launcher_version,
     classpath: class_paths,
 
     auth_access_token: selected_user.access_token,

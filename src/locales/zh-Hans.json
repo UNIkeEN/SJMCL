@@ -678,7 +678,7 @@
       },
       "deleteDialog": {
         "title": "删除游戏目录",
-        "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL将不会扫描此目录，但不会删除硬盘上的文件）"
+        "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL 将不会扫描此目录，但不会删除硬盘上的文件）"
       },
       "directoryNotExist": "该目录不存在，请删除并重新添加"
     },
@@ -938,6 +938,20 @@
       "download": "下载 Java",
       "add": "添加 Java",
       "remove": "移除此 Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "添加 Java 成功",
+        "description": "添加自定义 Java 路径成功"
+      },
+      "addFailed": {
+        "title": "添加 Java 失败",
+        "description": "不是有效的 Java 可执行文件"
+      }
+    },
+    "confirmDelete": {
+      "title": "移除 Java",
+      "description": "确认要移除此版本 Java 吗？（SJMCL 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
     }
   },
   "LaunchPage": {

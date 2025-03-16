@@ -938,6 +938,20 @@
       "download": "Download Java",
       "add": "Add Java",
       "remove": "Remove this Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "Add Java Successfully",
+        "description": "Java has been added successfully"
+      },
+      "addFailed": {
+        "title": "Failed to Add Java",
+        "description": "Not a valid Java executable file"
+      }
+    },
+    "confirmDelete": {
+      "title": "Delete Java",
+      "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
     }
   },
   "LaunchPage": {

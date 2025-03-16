@@ -1,7 +1,8 @@
 use crate::{storage::Storage, utils::sys_info, EXE_DIR};
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
-use std::{fmt, path::PathBuf};
+use std::path::PathBuf;
+use strum_macros::Display;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -97,7 +98,13 @@ structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct LauncherConfig {
-    pub version: String,
+    pub basic_info: struct {
+      pub launcher_version: String,
+      pub platform: String,
+      pub arch: String,
+      pub os_type: String,
+      pub platform_version: String,
+    },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,
     pub run_count: usize,
@@ -237,7 +244,13 @@ impl Storage for LauncherConfig {
 impl Default for LauncherConfig {
   fn default() -> Self {
     Self {
-      version: "dev".to_string(),
+      basic_info: BasicInfo {
+        launcher_version: "dev".to_string(),
+        platform: "".to_string(),
+        arch: "".to_string(),
+        os_type: "".to_string(),
+        platform_version: "".to_string(),
+      },
       mocked: false,
       run_count: 0,
       appearance: AppearanceConfig {
@@ -312,7 +325,8 @@ impl Default for LauncherConfig {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum LauncherConfigError {
   FetchError,
   InvalidCode,
@@ -320,19 +334,6 @@ pub enum LauncherConfigError {
   VersionMismatch,
   GameDirAlreadyAdded,
   GameDirNotExist,
-}
-
-impl fmt::Display for LauncherConfigError {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      LauncherConfigError::FetchError => write!(f, "FETCH_ERROR"),
-      LauncherConfigError::InvalidCode => write!(f, "INVALID_CODE"),
-      LauncherConfigError::CodeExpired => write!(f, "CODE_EXPIRED"),
-      LauncherConfigError::VersionMismatch => write!(f, "VERSION_MISMATCH"),
-      LauncherConfigError::GameDirAlreadyAdded => write!(f, "GAME_DIR_ALREADY_ADDED"),
-      LauncherConfigError::GameDirNotExist => write!(f, "GAME_DIR_NOT_EXIST"),
-    }
-  }
 }
 
 impl std::error::Error for LauncherConfigError {}

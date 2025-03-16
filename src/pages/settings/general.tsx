@@ -1,5 +1,4 @@
 import { Kbd, Switch, Text, useDisclosure } from "@chakra-ui/react";
-import { type } from "@tauri-apps/plugin-os";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -21,8 +20,6 @@ const GeneralSettingsPage = () => {
     onOpen: onDiscoverNoticeDialogOpen,
     onClose: onDiscoverNoticeDialogClose,
   } = useDisclosure();
-
-  const osType = type();
 
   const generalSettingGroups: OptionItemGroupProps[] = [
     {
@@ -72,7 +69,7 @@ const GeneralSettingsPage = () => {
             )}
             <Kbd>
               {t(
-                `Enums.${osType === "macos" ? "metaKey" : "ctrlKey"}.${osType}`
+                `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${config.basicInfo.osType}`
               )}
             </Kbd>
             {" + "}
