@@ -221,8 +221,16 @@ pub fn get_java_paths() -> Vec<String> {
   // For windows, try to get java path from registry
   #[cfg(target_os = "windows")]
   {
-    if let Ok(java_path) = get_java_path_from_windows_registry() {
-      paths.insert(java_path);
+    let registry_paths = [
+      r"SOFTWARE\JavaSoft\JDK",
+      r"SOFTWARE\JavaSoft\JRE",
+      r"SOFTWARE\JavaSoft\Java Development Kit",
+      r"SOFTWARE\JavaSoft\Java Runtime Environment",
+    ];
+    for registry_path in registry_paths {
+      if let Ok(java_path) = get_java_path_from_windows_registry(registry_path) {
+        paths.insert(java_path);
+      }
     }
   }
 
@@ -266,9 +274,8 @@ pub fn get_java_paths() -> Vec<String> {
 
 // Get canonicalized java path from Windows registry
 #[cfg(target_os = "windows")]
-fn get_java_path_from_windows_registry() -> Result<String, Box<dyn Error>> {
+fn get_java_path_from_windows_registry(base_path: &str) -> Result<String, Box<dyn Error>> {
   let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
-  let base_path = r"SOFTWARE\JavaSoft\Java Runtime Environment";
   let current_version: String = hklm.open_subkey(base_path)?.get_value("CurrentVersion")?;
   let java_home: String = hklm
     .open_subkey(format!(r"{}\{}", base_path, current_version))?
