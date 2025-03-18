@@ -203,49 +203,51 @@ pub async fn retrieve_game_server_list(
   };
 
   let nbt_path = game_root_dir.join("servers.dat");
-  if let Ok(servers) = load_servers_info_from_path(&nbt_path).await {
-    for server in servers {
-      game_servers.push(GameServerInfo {
-        ip: server.ip,
-        name: server.name,
-        icon_src: server.icon.unwrap_or_default(),
-        is_queried: false,
-        players_max: 0,
-        players_online: 0,
-        online: false,
-      });
-    }
+  let servers = match load_servers_info_from_path(&nbt_path).await {
+    Ok(servers) => servers,
+    Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
+  };
+  for server in servers {
+    game_servers.push(GameServerInfo {
+      ip: server.ip,
+      name: server.name,
+      icon_src: server.icon.unwrap_or_default(),
+      is_queried: false,
+      players_max: 0,
+      players_online: 0,
+      online: false,
+    });
+  }
 
-    // query_online is true, amend query and return player count and online status
-    if query_online {
-      let query_tasks = game_servers.clone().into_iter().map(|mut server| {
-        tokio::spawn(async move {
-          match query_server_status(&server.ip).await {
-            Ok(query_result) => {
-              server.is_queried = true;
-              server.players_online = query_result.players.online as usize;
-              server.players_max = query_result.players.max as usize;
-              server.online = query_result.online;
-              server.icon_src = query_result.favicon.unwrap_or_default();
-            }
-            Err(_) => {
-              server.is_queried = false;
-            }
+  // query_online is true, amend query and return player count and online status
+  if query_online {
+    let query_tasks = game_servers.clone().into_iter().map(|mut server| {
+      tokio::spawn(async move {
+        match query_server_status(&server.ip).await {
+          Ok(query_result) => {
+            server.is_queried = true;
+            server.players_online = query_result.players.online as usize;
+            server.players_max = query_result.players.max as usize;
+            server.online = query_result.online;
+            server.icon_src = query_result.favicon.unwrap_or_default();
           }
-          server
-        })
-      });
-      let mut updated_servers = Vec::new();
-      for (prev, query) in game_servers.into_iter().zip(query_tasks) {
-        if let Ok(updated_server) = query.await {
-          updated_servers.push(updated_server);
-        } else {
-          updated_servers.push(prev); // query error, use local data
+          Err(_) => {
+            server.is_queried = false;
+          }
         }
+        server
+      })
+    });
+    let mut updated_servers = Vec::new();
+    for (prev, query) in game_servers.into_iter().zip(query_tasks) {
+      if let Ok(updated_server) = query.await {
+        updated_servers.push(updated_server);
+      } else {
+        updated_servers.push(prev); // query error, use local data
       }
-      game_servers = updated_servers;
     }
-  } // don't report error when missing nbt file
+    game_servers = updated_servers;
+  }
   Ok(game_servers)
 }
 
