@@ -782,10 +782,12 @@
       "settings": {
         "MUA": {
           "title": "Minecraft 高校联盟（MUA）",
-          "description": "和全国各高校的玩家一起游玩"
+          "description": "和全国各高校的玩家一起游玩",
+          "url": "https://www.mualliance.cn"
         },
         "SJMC": {
-          "title": "上海交通大学 Minecraft 社（SJMC）"
+          "title": "上海交通大学 Minecraft 社（SJMC）",
+          "url": "https://mc.sjtu.cn"
         }
       }
     },
