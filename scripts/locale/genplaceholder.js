@@ -55,44 +55,64 @@ function generatePlaceholder(source, target) {
       process.exit(1);
     }
 
-    // Read the target file
-    fs.readFile(targetFile, "utf8", (readErr, targetData) => {
-      if (readErr) {
-        console.error(`Error reading file ${targetFile}:`, readErr);
-        process.exit(1);
-      }
-
-      let targetLocaleData;
-      try {
-        targetLocaleData = JSON.parse(targetData);
-      } catch (parseErr) {
-        console.error(`Error parsing JSON from ${targetFile}:`, parseErr);
-        process.exit(1);
-      }
-
-      // Create a new object to hold the updated locale data
-      const updatedData = { ...targetLocaleData };
-
-      // Process the source data to add placeholders for missing keys
-      for (const key in sourceLocaleData) {
-        if (!(key in targetLocaleData)) {
-          updatedData[key] = addTodoPlaceholder(sourceLocaleData[key]);
-        }
-      }
-
-      // Write the updated JSON to the target file
-      fs.writeFile(
-        targetFile,
-        JSON.stringify(updatedData, null, 2),
-        "utf8",
-        (writeErr) => {
-          if (writeErr) {
-            console.error(`Error writing file ${targetFile}:`, writeErr);
+    // Check if target file exists
+    fs.access(targetFile, fs.constants.F_OK, (err) => {
+      if (err) {
+        // Target file doesn't exist, create it with all placeholders
+        const placeholderData = addTodoPlaceholder(sourceLocaleData);
+        fs.writeFile(
+          targetFile,
+          JSON.stringify(placeholderData, null, 2),
+          "utf8",
+          (writeErr) => {
+            if (writeErr) {
+              console.error(`Error creating file ${targetFile}:`, writeErr);
+              process.exit(1);
+            }
+            console.log(`New placeholder file created: ${targetFile}`);
+          }
+        );
+      } else {
+        // Target file exists, read and update it
+        fs.readFile(targetFile, "utf8", (readErr, targetData) => {
+          if (readErr) {
+            console.error(`Error reading file ${targetFile}:`, readErr);
             process.exit(1);
           }
-          console.log(`Placeholder file generated: ${targetFile}`);
-        }
-      );
+
+          let targetLocaleData;
+          try {
+            targetLocaleData = JSON.parse(targetData);
+          } catch (parseErr) {
+            console.error(`Error parsing JSON from ${targetFile}:`, parseErr);
+            process.exit(1);
+          }
+
+          // Create a new object to hold the updated locale data
+          const updatedData = { ...targetLocaleData };
+
+          // Process the source data to add placeholders for missing keys
+          for (const key in sourceLocaleData) {
+            if (!(key in targetLocaleData)) {
+              updatedData[key] = addTodoPlaceholder(sourceLocaleData[key]);
+            }
+          }
+
+          // Write the updated JSON to the target file
+          fs.writeFile(
+            targetFile,
+            JSON.stringify(updatedData, null, 2),
+            "utf8",
+            (writeErr) => {
+              if (writeErr) {
+                console.error(`Error writing file ${targetFile}:`, writeErr);
+                process.exit(1);
+              }
+              console.log(`Placeholder file updated: ${targetFile}`);
+            }
+          );
+        });
+      }
     });
   });
 }
