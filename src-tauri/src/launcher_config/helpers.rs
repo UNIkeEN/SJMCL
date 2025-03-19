@@ -221,16 +221,8 @@ pub fn get_java_paths() -> Vec<String> {
   // For windows, try to get java path from registry
   #[cfg(target_os = "windows")]
   {
-    let registry_paths = [
-      r"SOFTWARE\JavaSoft\JDK",
-      r"SOFTWARE\JavaSoft\JRE",
-      r"SOFTWARE\JavaSoft\Java Development Kit",
-      r"SOFTWARE\JavaSoft\Java Runtime Environment",
-    ];
-    for registry_path in registry_paths {
-      if let Ok(java_path) = get_java_path_from_windows_registry(registry_path) {
-        paths.insert(java_path);
-      }
+    for java_path in get_java_paths_from_windows_registry() {
+      paths.insert(java_path);
     }
   }
 
@@ -274,14 +266,28 @@ pub fn get_java_paths() -> Vec<String> {
 
 // Get canonicalized java path from Windows registry
 #[cfg(target_os = "windows")]
-fn get_java_path_from_windows_registry(base_path: &str) -> Result<String, Box<dyn Error>> {
+fn get_java_paths_from_windows_registry() -> Vec<String> {
   let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
-  let current_version: String = hklm.open_subkey(base_path)?.get_value("CurrentVersion")?;
-  let java_home: String = hklm
-    .open_subkey(format!(r"{}\{}", base_path, current_version))?
-    .get_value("JavaHome")?;
-  let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
-  Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+  let registry_paths = [
+    r"SOFTWARE\JavaSoft\JDK",
+    r"SOFTWARE\JavaSoft\JRE",
+    r"SOFTWARE\JavaSoft\Java Development Kit",
+    r"SOFTWARE\JavaSoft\Java Runtime Environment",
+  ];
+  let mut java_paths = Vec::new();
+  for base_path in registry_paths {
+    if let Ok(java_path) = (|| {
+      let current_version: String = hklm.open_subkey(base_path)?.get_value("CurrentVersion")?;
+      let java_home: String = hklm
+        .open_subkey(format!(r"{}\{}", base_path, current_version))?
+        .get_value("JavaHome")?;
+      let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
+      Ok::<String, Box<dyn Error>>(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+    })() {
+      java_paths.push(java_path);
+    }
+  }
+  java_paths
 }
 
 pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, String)> {
