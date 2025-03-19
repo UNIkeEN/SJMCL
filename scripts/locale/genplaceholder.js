@@ -41,42 +41,64 @@ function generatePlaceholder(source, target) {
   );
 
   // Read the source file
-  fs.readFile(sourceFile, "utf8", (readErr, data) => {
+  fs.readFile(sourceFile, "utf8", (readErr, sourceData) => {
     if (readErr) {
       console.error(`Error reading file ${sourceFile}:`, readErr);
       process.exit(1);
     }
 
-    let localeData;
+    let sourceLocaleData;
     try {
-      localeData = JSON.parse(data);
+      sourceLocaleData = JSON.parse(sourceData);
     } catch (parseErr) {
       console.error(`Error parsing JSON from ${sourceFile}:`, parseErr);
       process.exit(1);
     }
 
-    // Process the JSON to add placeholders
-    const updatedData = addTodoPlaceholder(localeData);
-
-    // Write the updated JSON to the target file
-    fs.writeFile(
-      targetFile,
-      JSON.stringify(updatedData, null, 2),
-      "utf8",
-      (writeErr) => {
-        if (writeErr) {
-          console.error(`Error writing file ${targetFile}:`, writeErr);
-          process.exit(1);
-        }
-        console.log(`Placeholder file generated: ${targetFile}`);
+    // Read the target file
+    fs.readFile(targetFile, "utf8", (readErr, targetData) => {
+      if (readErr) {
+        console.error(`Error reading file ${targetFile}:`, readErr);
+        process.exit(1);
       }
-    );
+
+      let targetLocaleData;
+      try {
+        targetLocaleData = JSON.parse(targetData);
+      } catch (parseErr) {
+        console.error(`Error parsing JSON from ${targetFile}:`, parseErr);
+        process.exit(1);
+      }
+
+      // Create a new object to hold the updated locale data
+      const updatedData = { ...targetLocaleData };
+
+      // Process the source data to add placeholders for missing keys
+      for (const key in sourceLocaleData) {
+        if (!(key in targetLocaleData)) {
+          updatedData[key] = addTodoPlaceholder(sourceLocaleData[key]);
+        }
+      }
+
+      // Write the updated JSON to the target file
+      fs.writeFile(
+        targetFile,
+        JSON.stringify(updatedData, null, 2),
+        "utf8",
+        (writeErr) => {
+          if (writeErr) {
+            console.error(`Error writing file ${targetFile}:`, writeErr);
+            process.exit(1);
+          }
+          console.log(`Placeholder file generated: ${targetFile}`);
+        }
+      );
+    });
   });
 }
 
 // Parse command-line arguments (skip node and the script path)
 const args = process.argv.slice(3);
-console.log(args);
 if (args.length < 2) {
   console.error("Usage: npm run locale genplaceholder <source> <target>");
   process.exit(1);
