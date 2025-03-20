@@ -55,7 +55,7 @@ const DevTestPage = () => {
       <Button
         onClick={async () => {
           try {
-            await invoke("launch_game", { instanceId: 2 });
+            await invoke("launch_game", { instanceId: 4 });
           } catch (error) {
             console.error("Error invoking launch_game:", error);
             alert(

@@ -337,18 +337,17 @@ impl IsAllowed for LibrariesValue {
 }
 
 impl LaunchArgumentTemplate {
-  pub fn to_arguments(
-    &self,
-    feature: &FeaturesInfo,
-    main_class: String,
-  ) -> SJMCLResult<Vec<String>> {
+  pub fn to_jvm_arguments(&self, feature: &FeaturesInfo) -> SJMCLResult<Vec<String>> {
     let mut arguments = Vec::new();
     for argument in &self.jvm {
       if argument.is_allowed(feature).unwrap_or_default() {
         arguments.extend(argument.value.clone());
       }
     }
-    arguments.push(main_class);
+    Ok(arguments)
+  }
+  pub fn to_game_arguments(&self, feature: &FeaturesInfo) -> SJMCLResult<Vec<String>> {
+    let mut arguments = Vec::new();
     for argument in &self.game {
       if argument.is_allowed(feature).unwrap_or_default() {
         arguments.extend(argument.value.clone());

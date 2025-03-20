@@ -2,6 +2,7 @@
 
 use super::file_validator::get_class_paths;
 use crate::account::models::AccountInfo;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::JavaVersion;
 use crate::instance::{
   helpers::client_json::{FeaturesInfo, McClientInfo},
@@ -12,18 +13,16 @@ use crate::launcher_config::models::{
   GameJava, JavaInfo, LauncherConfig, Performance, ProcessPriority, ProxyConfig, ProxyType,
 };
 use crate::storage::Storage;
-use crate::{
-  error::{SJMCLError, SJMCLResult},
-  instance::helpers::client_json::LaunchArgumentTemplate,
-};
 use regex::Regex;
 use serde::{self, Deserialize, Serialize};
 use shlex;
 use std::collections::HashMap;
 use std::fs;
+use std::process::Stdio;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_os::OsType;
+use tokio::process::Command;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchParams {
@@ -182,43 +181,6 @@ impl LaunchParams {
   }
 }
 
-pub fn generate_launch_cmd(
-  params: &LaunchParams,
-  argument_template: &LaunchArgumentTemplate,
-  main_class: String,
-  launch_feature: &FeaturesInfo,
-) -> SJMCLResult<Vec<String>> {
-  lazy_static::lazy_static!(
-      static ref PARAM_REGEX: Regex = Regex::new(r"\$\{(\S+)\}").unwrap();
-  );
-  let map = params.to_hashmap()?;
-  let mut result = Vec::new();
-  for arg in argument_template.to_arguments(launch_feature, main_class)? {
-    let mut replaced_arg = arg.clone();
-    let mut unknown_arg = false;
-
-    for caps in PARAM_REGEX.captures_iter(&arg) {
-      let arg_name = &caps[1];
-      match map.get(arg_name) {
-        Some(value) => {
-          replaced_arg = replaced_arg.replacen(&caps[0], value, 1);
-        }
-        None => {
-          unknown_arg = true;
-          break;
-        }
-      }
-    }
-    if !unknown_arg {
-      result.push(replaced_arg);
-    } else {
-      result.push(arg);
-    }
-  }
-
-  Ok(result)
-}
-
 fn choose_java_auto(java_list: &Vec<JavaInfo>, version_req: &JavaVersion) -> Option<JavaInfo> {
   let mut match_list = Vec::new();
   for java_info in java_list {
@@ -242,7 +204,7 @@ fn choose_java(
 ) -> SJMCLResult<JavaInfo> {
   if !game_java.auto {
     for java in java_list {
-      if java.exec_path.to_string() == game_java.exec_path {
+      if java.exec_path == game_java.exec_path {
         return Ok(java.clone());
       }
     }
@@ -254,11 +216,12 @@ fn choose_java(
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L69
-pub fn collect_launch_params(
+pub fn generate_launch_cmd(
   app: &AppHandle,
   instance_id: &usize,
   client_info: McClientInfo,
-) -> SJMCLResult<(LaunchParams, FeaturesInfo)> {
+) -> SJMCLResult<Vec<String>> {
+  let mut cmd = Vec::new();
   let sjmcl_config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let java_list = app.state::<Mutex<Vec<JavaInfo>>>().lock()?.clone();
   let mut account_info: AccountInfo = Storage::load().unwrap_or_default();
@@ -304,17 +267,7 @@ pub fn collect_launch_params(
   if fs::create_dir_all(&natives_dir).is_err() {
     println!("create natives dir failed: {:?}", natives_dir);
   }
-  let resolution_height;
-  let resolution_width;
   let resolution = sjmcl_config.global_game_config.game_window.resolution;
-  if resolution.fullscreen {
-    resolution_height = resolution.height;
-    resolution_width = resolution.width;
-    println!("FULL SCREEN CURRENTLY NOT SUPPORT");
-  } else {
-    resolution_height = resolution.height;
-    resolution_width = resolution.width;
-  }
   let launch_feature = FeaturesInfo {
     is_demo_user: Some(false),
     has_custom_resolution: Some(true),
@@ -342,8 +295,8 @@ pub fn collect_launch_params(
     auth_xuid: None, // TODO
     demo: false,
     clientid: None,
-    resolution_height,
-    resolution_width,
+    resolution_height: resolution.height,
+    resolution_width: resolution.width,
     quick_play_path: String::new(),
     quick_play_singleplayer: String::new(),
     quick_play_multiplayer: sjmcl_config.global_game_config.game_server.server_url,
@@ -355,14 +308,19 @@ pub fn collect_launch_params(
     &client_info.java_version,
   )?;
   // collect extra config
-  let mut extra_cmd =
-    generate_process_priority_cmd(&sjmcl_config.global_game_config.performance.process_priority);
-  extra_cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
-  extra_cmd.extend(generate_jvm_memory_cmd(
+  // 1. cmd nice
+  cmd.extend(generate_process_priority_cmd(
+    &sjmcl_config.global_game_config.performance.process_priority,
+  ));
+  // 2. java exec
+  cmd.push(java_info.exec_path.clone());
+  // 3. jvm params
+  cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
+  cmd.extend(generate_jvm_memory_cmd(
     &sjmcl_config.global_game_config.performance,
   ));
   if sjmcl_config.global_game_config.advanced_options.enabled {
-    extra_cmd.extend(generate_jvm_metaspace_size_cmd(
+    cmd.extend(generate_jvm_metaspace_size_cmd(
       &sjmcl_config
         .global_game_config
         .advanced
@@ -371,15 +329,93 @@ pub fn collect_launch_params(
       &java_info,
     ));
   }
-  // TODO Here
-  println!("{:?}", extra_cmd);
-  Ok((launch_params, launch_feature))
+
+  let map = launch_params.to_hashmap()?;
+  let client_args = client_info
+    .arguments
+    .ok_or(LaunchError::LaunchParamsError)?;
+  let client_jvm_args = client_args.to_jvm_arguments(&launch_feature)?;
+  cmd.extend(replace_arguments(client_jvm_args, &map));
+  // 4. main class
+  cmd.push(client_info.main_class);
+
+  // 5. game params
+  let client_game_args = client_args.to_game_arguments(&launch_feature)?;
+  cmd.extend(replace_arguments(client_game_args, &map));
+  if resolution.fullscreen {
+    cmd.push("--fullscreen".to_string());
+  }
+
+  Ok(cmd)
+}
+
+fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Vec<String> {
+  lazy_static::lazy_static!(
+    static ref PARAM_REGEX: Regex = Regex::new(r"\$\{(\S+)\}").unwrap();
+  );
+  let mut cmd = Vec::new();
+  for arg in args {
+    let mut replaced_arg = arg.clone();
+    let mut unknown_arg = false;
+
+    for caps in PARAM_REGEX.captures_iter(&arg) {
+      let arg_name = &caps[1];
+      match map.get(arg_name) {
+        Some(value) => {
+          replaced_arg = replaced_arg.replacen(&caps[0], value, 1);
+        }
+        None => {
+          unknown_arg = true;
+          break;
+        }
+      }
+    }
+    if !unknown_arg {
+      cmd.push(replaced_arg);
+    } else {
+      cmd.push(arg);
+    }
+  }
+  cmd
+}
+
+pub enum ExecuteType {
+  TransferAndExit, // 1. 将控制权转移给 cmd，结束当前进程并隐藏窗口
+  TransferAndHide, // 2. 隐藏窗口，但不立即退出进程
+  NormalExecution, // 3. 正常执行，保留输出
+}
+
+pub async fn execute_cmd(
+  cmd: &Vec<String>,
+  execute_type: &ExecuteType,
+) -> SJMCLResult<std::process::Output> {
+  let mut cmd_base = match tauri_plugin_os::type_() {
+    OsType::Windows => {
+      let mut cmd_base = Command::new("cmd");
+      cmd_base.arg("/c");
+      cmd_base
+    }
+    OsType::Linux | OsType::Android => {
+      let mut cmd_base = Command::new("sh");
+      cmd_base.arg("-c");
+      cmd_base
+    }
+    OsType::Macos | OsType::IOS => {
+      let mut cmd_base = Command::new("zsh");
+      cmd_base.arg("-c");
+      cmd_base
+    }
+  };
+
+  let child = cmd_base.arg(cmd.join(" ")).stdout(Stdio::piped()).spawn()?;
+  let output = child.wait_with_output().await?;
+  Ok(output)
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L72
 fn generate_process_priority_cmd(p: &ProcessPriority) -> Vec<String> {
-  match p {
-    &ProcessPriority::High => {
+  match *p {
+    ProcessPriority::High => {
       match tauri_plugin_os::type_() {
         OsType::Windows => vec!["start".to_string(), "/high".to_string()],
         OsType::Android | OsType::Macos | OsType::Linux => {
@@ -388,28 +424,28 @@ fn generate_process_priority_cmd(p: &ProcessPriority) -> Vec<String> {
         OsType::IOS => Vec::new(), //? TODO
       }
     }
-    &ProcessPriority::AboveNormal => match tauri_plugin_os::type_() {
+    ProcessPriority::AboveNormal => match tauri_plugin_os::type_() {
       OsType::Windows => vec!["start".to_string(), "/abovenormal".to_string()],
       OsType::Android | OsType::Macos | OsType::Linux => {
         vec!["nice".to_string(), "-n".to_string(), "-1".to_string()]
       }
       OsType::IOS => Vec::new(),
     },
-    &ProcessPriority::Normal => match tauri_plugin_os::type_() {
+    ProcessPriority::Normal => match tauri_plugin_os::type_() {
       OsType::Windows => vec!["start".to_string(), "/normal".to_string()],
       OsType::Android | OsType::Macos | OsType::Linux => {
         vec!["nice".to_string(), "-n".to_string(), "0".to_string()]
       }
       OsType::IOS => Vec::new(),
     },
-    &ProcessPriority::BelowNormal => match tauri_plugin_os::type_() {
+    ProcessPriority::BelowNormal => match tauri_plugin_os::type_() {
       OsType::Windows => vec!["start".to_string(), "/belownormal".to_string()],
       OsType::Android | OsType::Macos | OsType::Linux => {
         vec!["nice".to_string(), "-n".to_string(), "1".to_string()]
       }
       OsType::IOS => Vec::new(),
     },
-    &ProcessPriority::Low => match tauri_plugin_os::type_() {
+    ProcessPriority::Low => match tauri_plugin_os::type_() {
       OsType::Windows => vec!["start".to_string(), "/low".to_string()],
       OsType::Android | OsType::Macos | OsType::Linux => {
         vec!["nice".to_string(), "-n".to_string(), "5".to_string()]
@@ -425,8 +461,8 @@ fn generate_proxy_cmd(p: &ProxyConfig) -> Vec<String> {
     return Vec::new();
   }
   let quoter = shlex::Quoter::new();
-  match &p.selected_type {
-    &ProxyType::Http => vec![
+  match p.selected_type {
+    ProxyType::Http => vec![
       format!(
         "-Dhttp.proxyHost={}",
         quoter.quote(p.host.as_str()).unwrap()
@@ -438,7 +474,7 @@ fn generate_proxy_cmd(p: &ProxyConfig) -> Vec<String> {
       ),
       format!("-Dhttps.proxyPort={}", p.port),
     ],
-    &ProxyType::Socks => vec![
+    ProxyType::Socks => vec![
       format!(
         "-DsocksProxyHost={}",
         quoter.quote(p.host.as_str()).unwrap()
@@ -460,11 +496,9 @@ fn generate_jvm_memory_cmd(p: &Performance) -> Vec<String> {
 fn generate_jvm_metaspace_size_cmd(meta_space: &u32, java_info: &JavaInfo) -> Vec<String> {
   if *meta_space == 0 {
     Vec::new()
+  } else if java_info.major_version < 8 {
+    vec![format!("-XX:PermSize={}M", meta_space)]
   } else {
-    if java_info.major_version < 8 {
-      vec![format!("-XX:PermSize={}M", meta_space)]
-    } else {
-      vec![format!("-XX:MetaspaceSize={}M", meta_space)]
-    }
+    vec![format!("-XX:MetaspaceSize={}M", meta_space)]
   }
 }

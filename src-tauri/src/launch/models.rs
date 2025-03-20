@@ -6,6 +6,7 @@ use strum_macros::Display;
 pub enum LaunchError {
   VersionParseError,
   NoSuitableJavaError,
+  LaunchParamsError,
 }
 
 impl std::error::Error for LaunchError {}
