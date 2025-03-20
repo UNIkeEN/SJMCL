@@ -35,8 +35,8 @@ import { ResourceService } from "@/services/resource";
 import { ISOToDatetime } from "@/utils/datetime";
 
 const gameTypesToIcon: Record<string, string> = {
-  release: "GrassBlock.png",
-  snapshot: "CommandBlock.png",
+  release: "JEIcon_Release.png",
+  snapshot: "JEIcon_Snapshot.png",
   old_beta: "StoneOldBeta.png",
   april_fools: "YellowGlazedTerracotta.png",
 };

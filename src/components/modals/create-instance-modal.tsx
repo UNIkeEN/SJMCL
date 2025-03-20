@@ -36,8 +36,8 @@ import {
 } from "@/models/resource";
 
 const gameTypesToIcon: Record<string, string> = {
-  release: "/images/icons/GrassBlock.png",
-  snapshot: "/images/icons/CommandBlock.png",
+  release: "/images/icons/JEIcon_Release.png",
+  snapshot: "/images/icons/JEIcon_Snapshot.png",
   old_beta: "/images/icons/StoneOldBeta.png",
   april_fools: "/images/icons/YellowGlazedTerracotta.png",
 };

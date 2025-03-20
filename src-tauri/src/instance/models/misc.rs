@@ -32,6 +32,7 @@ pub enum ModLoaderType {
   LiteLoader,
   Quilt,
 }
+
 impl FromStr for ModLoaderType {
   type Err = String; // 定义错误类型
 
@@ -48,6 +49,7 @@ impl FromStr for ModLoaderType {
     }
   }
 }
+
 impl ModLoaderType {
   pub fn to_icon_path(&self) -> &str {
     match self {
@@ -60,6 +62,7 @@ impl ModLoaderType {
     }
   }
 }
+
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]

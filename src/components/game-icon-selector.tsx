@@ -24,6 +24,9 @@ export const GameIconSelector: React.FC<GameIconSelectorProps> = ({
   ...stackProps
 }) => {
   const iconList = [
+    "/images/icons/JEIcon_Release.png",
+    "/images/icons/JEIcon_Snapshot.png",
+    "divider",
     "/images/icons/CommandBlock.png",
     "/images/icons/CraftingTable.png",
     "/images/icons/GrassBlock.png",
