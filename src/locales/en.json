@@ -1339,7 +1339,7 @@
           }
         }
       },
-      "retrieveOAuthCode": {
+      "fetchOAuthCode": {
         "error": {
           "title": "Failed to get authentication code",
           "description": {

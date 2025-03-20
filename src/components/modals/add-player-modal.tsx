@@ -126,25 +126,24 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   const isOfflinePlayernameValid = /^[a-zA-Z0-9_]{0,16}$/.test(playername);
 
-  const handleRetrieveOAuthCode = () => {
+  const handleFetchOAuthCode = () => {
     if (playerType === "offline") return;
     setOAuthCodeResponse(undefined);
     setIsLoading(true);
-    AccountService.retrieveOAuthCode(
-      playerType,
-      authServer?.authUrl || ""
-    ).then((response) => {
-      if (response.status === "success") {
-        setOAuthCodeResponse(response.data);
-      } else {
-        toast({
-          title: response.message,
-          description: response.details,
-          status: "error",
-        });
+    AccountService.fetchOAuthCode(playerType, authServer?.authUrl || "").then(
+      (response) => {
+        if (response.status === "success") {
+          setOAuthCodeResponse(response.data);
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        }
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    });
+    );
   };
 
   const handleLogin = (isOAuth = false) => {
@@ -276,9 +275,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 authType="microsoft"
                 authCode={oauthCodeResponse && oauthCodeResponse.userCode}
                 callback={() =>
-                  oauthCodeResponse
-                    ? handleLogin(true)
-                    : handleRetrieveOAuthCode()
+                  oauthCodeResponse ? handleLogin(true) : handleFetchOAuthCode()
                 }
                 isLoading={isLoading}
               />
@@ -381,7 +378,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                           callback={() =>
                             oauthCodeResponse
                               ? handleLogin(true)
-                              : handleRetrieveOAuthCode()
+                              : handleFetchOAuthCode()
                           }
                           isLoading={isLoading}
                         />

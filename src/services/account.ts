@@ -37,11 +37,11 @@ export class AccountService {
    * @returns {Promise<InvokeResponse<OAuthCodeResponse>>}
    */
   @responseHandler("account")
-  static async retrieveOAuthCode(
+  static async fetchOAuthCode(
     serverType: "3rdparty" | "microsoft",
     authServerUrl: string
   ): Promise<InvokeResponse<OAuthCodeResponse>> {
-    return await invoke("retrieve_oauth_code", {
+    return await invoke("fetch_oauth_code", {
       serverType,
       authServerUrl,
     });

@@ -60,7 +60,7 @@ pub async fn run() {
       launcher_config::commands::check_game_directory,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
-      account::commands::retrieve_oauth_code,
+      account::commands::fetch_oauth_code,
       account::commands::add_player_oauth,
       account::commands::add_player_3rdparty_password,
       account::commands::update_player_skin_offline_preset,

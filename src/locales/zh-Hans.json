@@ -1339,7 +1339,7 @@
           }
         }
       },
-      "retrieveOAuthCode": {
+      "fetchOAuthCode": {
         "error": {
           "title": "获取认证代码失败",
           "description": {
