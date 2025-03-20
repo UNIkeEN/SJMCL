@@ -37,6 +37,7 @@ static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
 
 pub async fn run() {
   tauri::Builder::default()
+    .plugin(tauri_plugin_clipboard_manager::init())
     .plugin(tauri_plugin_opener::init())
     .plugin(tauri_plugin_process::init())
     .plugin(tauri_plugin_window_state::Builder::new().build())
@@ -59,7 +60,8 @@ pub async fn run() {
       launcher_config::commands::check_game_directory,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
-      account::commands::add_player_3rdparty_oauth,
+      account::commands::retrieve_oauth_code,
+      account::commands::add_player_oauth,
       account::commands::add_player_3rdparty_password,
       account::commands::update_player_skin_offline_preset,
       account::commands::delete_player,

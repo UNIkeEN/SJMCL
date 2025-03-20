@@ -143,8 +143,7 @@
         "label": "Auth Source",
         "selectSource": "Select Auth Source",
         "noSource": "No auth source added.",
-        "addSource": "Add one",
-        "supportOAuth": "This auth source supports the Yggdrasil Connect Proposal"
+        "addSource": "Add one"
       },
       "email": {
         "label": "Email",
@@ -159,9 +158,24 @@
         "placeholder": "Password"
       }
     },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "This auth source supports the Yggdrasil Connect Proposal",
+          "microsoft": "Supports Microsoft OAuth 2.0 device authorization grant flow"
+        },
+        "next": "Please click the Continue button and paste the code above into the input box below (copied automatically)"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "Start OAuth Login",
+          "microsoft": "Start Microsoft OAuth"
+        },
+        "next": "Continue"
+      }
+    },
     "button": {
       "buyMinecraft": "Buy Minecraft",
-      "beginOAuth": "Start OAuth Login",
       "useOAuthLogin": "OAuth Login",
       "usePasswordLogin": "Account & Password Login"
     }
@@ -1317,7 +1331,16 @@
           }
         }
       },
-      "addPlayer3rdPartyOAuth": {
+      "retrieveOAuthCode": {
+        "error": {
+          "title": "Failed to get authentication code",
+          "description": {
+            "AUTH_SERVER_ERROR": "Unable to connect to authentication server, or OAuth is not enabled",
+            "INVALID": "The player type is invalid"
+          }
+        }
+      },
+      "addPlayerOAuth": {
         "success": "Successfully added player using OAuth",
         "error": {
           "title": "Failed to add player using OAuth",

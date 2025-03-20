@@ -1,11 +1,12 @@
 use super::common::parse_profile;
 use super::constants::SCOPE;
-use crate::account::models::{AccountError, PlayerInfo};
+use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo};
 use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde_json::Value;
 use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, LogicalSize, Size, Url, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest::{self, Client};
 use tokio::time::{sleep, Duration};
 
@@ -31,11 +32,19 @@ async fn fetch_jwks(jwks_uri: String) -> SJMCLResult<Value> {
   Ok(res)
 }
 
-async fn device_authorization(
-  device_authorization_endpoint: String,
+pub async fn device_authorization(
+  app: AppHandle,
+  openid_configuration_url: String,
   client_id: String,
-) -> SJMCLResult<(String, String)> {
+) -> SJMCLResult<OAuthCodeResponse> {
   let client = Client::new();
+
+  let openid_configuration = fetch_openid_configuration(openid_configuration_url).await?;
+
+  let device_authorization_endpoint = openid_configuration["device_authorization_endpoint"]
+    .as_str()
+    .ok_or(AccountError::AuthServerError)?;
+
   let response: Value = client
     .post(device_authorization_endpoint)
     .form(&[("client_id", client_id), ("scope", SCOPE.to_string())])
@@ -46,16 +55,26 @@ async fn device_authorization(
     .await
     .map_err(|_| AccountError::AuthServerError)?;
 
-  Ok((
-    response["device_code"]
+  let user_code = response["user_code"]
+    .as_str()
+    .ok_or(AccountError::AuthServerError)?
+    .to_string();
+
+  let device_code = response["device_code"]
+    .as_str()
+    .ok_or(AccountError::AuthServerError)?
+    .to_string();
+
+  app.clipboard().write_text(user_code.clone())?;
+
+  Ok(OAuthCodeResponse {
+    user_code,
+    device_code,
+    verification_uri: response["verification_uri"]
       .as_str()
       .ok_or(AccountError::AuthServerError)?
       .to_string(),
-    response["verification_uri_complete"]
-      .as_str()
-      .ok_or(AccountError::AuthServerError)?
-      .to_string(),
-  ))
+  })
 }
 
 async fn parse_token(
@@ -99,19 +118,17 @@ async fn parse_token(
   )
   .await
 }
+
 pub async fn login(
   app: AppHandle,
   auth_server_url: String,
   openid_configuration_url: String,
   client_id: String,
+  auth_info: OAuthCodeResponse,
 ) -> SJMCLResult<PlayerInfo> {
   let client = Client::new();
 
   let openid_configuration = fetch_openid_configuration(openid_configuration_url).await?;
-
-  let device_authorization_endpoint = openid_configuration["device_authorization_endpoint"]
-    .as_str()
-    .ok_or(AccountError::AuthServerError)?;
 
   let token_endpoint = openid_configuration["token_endpoint"]
     .as_str()
@@ -123,11 +140,8 @@ pub async fn login(
 
   let jwks = fetch_jwks(jwks_uri.to_string()).await?;
 
-  let (device_code, verification_uri_complete) =
-    device_authorization(device_authorization_endpoint.to_string(), client_id.clone()).await?;
-
   let verification_url =
-    Url::parse(verification_uri_complete.as_str()).map_err(|_| AccountError::AuthServerError)?;
+    Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::AuthServerError)?;
 
   let is_cancelled = Arc::new(Mutex::new(false));
   let cancelled_clone = Arc::clone(&is_cancelled);
@@ -158,7 +172,7 @@ pub async fn login(
       .post(token_endpoint)
       .json(&serde_json::json!({
           "client_id": client_id,
-          "device_code": device_code,
+          "device_code": auth_info.device_code,
           "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
       }))
       .send()

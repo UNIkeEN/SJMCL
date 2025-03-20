@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { AuthServer, Player } from "@/models/account";
+import { AuthServer, OAuthCodeResponse, Player } from "@/models/account";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -31,15 +31,38 @@ export class AccountService {
   }
 
   /**
-   * ADD a new player to the system using new authlib_injector's OAuth.
-   * @param {string} authServerUrl - The authentication server's URL.
+   * RETRIEVE the user code using both OAuth methods (Microsoft and 3rd party).
+   * @param {string} serverType - The type of authentication server (Microsoft or 3rd party).
+   * @param {string} authServerUrl - (Optional) The authentication server's URL.
+   * @returns {Promise<InvokeResponse<OAuthCodeResponse>>}
+   */
+  @responseHandler("account")
+  static async retrieveOAuthCode(
+    serverType: "3rdparty" | "microsoft",
+    authServerUrl: string
+  ): Promise<InvokeResponse<OAuthCodeResponse>> {
+    return await invoke("retrieve_oauth_code", {
+      serverType,
+      authServerUrl,
+    });
+  }
+
+  /**
+   * ADD the player using both OAuth methods (Microsoft and 3rd party).
+   * @param {string} serverType - The type of authentication server (Microsoft or 3rd party).
+   * @param {OAuthCodeResponse} authInfo - The authentication information (code and verification URI).
+   * @param {string} authServerUrl - (Optional) The authentication server's URL.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
-  static async addPlayer3rdPartyOAuth(
+  static async addPlayerOAuth(
+    serverType: "3rdparty" | "microsoft",
+    authInfo: OAuthCodeResponse,
     authServerUrl: string
   ): Promise<InvokeResponse<void>> {
-    return await invoke("add_player_3rdparty_oauth", {
+    return await invoke("add_player_oauth", {
+      serverType,
+      authInfo,
       authServerUrl,
     });
   }

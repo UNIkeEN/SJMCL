@@ -32,3 +32,9 @@ export interface AuthServerFeatures {
   nonEmailLogin: boolean;
   openidConfigurationUrl: string;
 }
+
+export interface OAuthCodeResponse {
+  deviceCode: string;
+  userCode: string;
+  verificationUri: string;
+}

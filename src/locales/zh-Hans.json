@@ -143,8 +143,7 @@
         "label": "认证源",
         "selectSource": "请选择认证源",
         "noSource": "未添加可用认证源服务器",
-        "addSource": "添加认证源",
-        "supportOAuth": "此认证源支持 Yggdrasil Connect 规范提案"
+        "addSource": "添加认证源"
       },
       "email": {
         "label": "邮箱",
@@ -159,9 +158,24 @@
         "placeholder": "请输入密码"
       }
     },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "此认证源支持 Yggdrasil Connect 规范提案",
+          "microsoft": "SJMCL 支持微软 OAuth 2.0 设备权限授予流"
+        },
+        "next": "请点击继续登录按钮打开登录窗口，并输入以上代码(已自动复制)"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "开始 OAuth 登录",
+          "microsoft": "开始微软登录"
+        },
+        "next": "继续登录"
+      }
+    },
     "button": {
       "buyMinecraft": "购买 Minecraft",
-      "beginOAuth": "开始 OAuth 登录",
       "useOAuthLogin": "OAuth 登录",
       "usePasswordLogin": "账号密码登录"
     }
@@ -1317,7 +1331,16 @@
           }
         }
       },
-      "addPlayer3rdPartyOAuth": {
+      "retrieveOAuthCode": {
+        "error": {
+          "title": "获取认证代码失败",
+          "description": {
+            "AUTH_SERVER_ERROR": "无法连接至认证服务器，或服务器不支持该登录方式",
+            "INVALID": "服务器类型错误"
+          }
+        }
+      },
+      "addPlayerOAuth": {
         "success": "OAuth 方式添加角色成功",
         "error": {
           "title": "OAuth 方式添加角色失败",

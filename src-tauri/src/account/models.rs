@@ -100,6 +100,14 @@ impl PartialEq for PlayerInfo {
 
 impl Eq for PlayerInfo {}
 
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct OAuthCodeResponse {
+  pub device_code: String,
+  pub user_code: String,
+  pub verification_uri: String,
+}
+
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]

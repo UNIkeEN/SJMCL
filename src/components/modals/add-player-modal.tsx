@@ -1,6 +1,5 @@
 import {
   Button,
-  Card,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -40,10 +39,11 @@ import {
 } from "react-icons/lu";
 import SegmentedControl from "@/components/common/segmented";
 import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
+import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
-import { AuthServer } from "@/models/account";
+import { AuthServer, OAuthCodeResponse } from "@/models/account";
 import { InvokeResponse } from "@/models/response";
 import { AccountService } from "@/services/account";
 
@@ -72,6 +72,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const [authServer, setAuthServer] = useState<AuthServer>(); // selected auth server
   const [showOAuth, setShowOAuth] = useState<boolean>(false); // show OAuth button instead of username and password input.
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [oauthCodeResponse, setOAuthCodeResponse] =
+    useState<OAuthCodeResponse>();
 
   const initialRef = useRef<HTMLInputElement>(null);
 
@@ -118,15 +120,44 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     initialRef.current?.focus();
   }, [playerType]);
 
+  useEffect(() => {
+    setOAuthCodeResponse(undefined);
+  }, [showOAuth, playerType]);
+
   const isOfflinePlayernameValid = /^[a-zA-Z0-9_]{0,16}$/.test(playername);
+
+  const startOAuth = () => {
+    if (playerType === "offline") return;
+    setOAuthCodeResponse(undefined);
+    setIsLoading(true);
+    AccountService.retrieveOAuthCode(
+      playerType,
+      authServer?.authUrl || ""
+    ).then((response) => {
+      if (response.status === "success") {
+        setOAuthCodeResponse(response.data);
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+      setIsLoading(false);
+    });
+  };
 
   const handleLogin = (isOAuth = false) => {
     let loginServiceFunction: () => Promise<InvokeResponse<void>>;
-    if (isOAuth && authServer) {
-      loginServiceFunction = () =>
-        AccountService.addPlayer3rdPartyOAuth(authServer.authUrl);
-    } else if (playerType === "offline") {
+    if (playerType === "offline") {
       loginServiceFunction = () => AccountService.addPlayerOffline(playername);
+    } else if (isOAuth && oauthCodeResponse) {
+      loginServiceFunction = () =>
+        AccountService.addPlayerOAuth(
+          playerType,
+          oauthCodeResponse,
+          authServer ? authServer.authUrl : ""
+        );
     } else if (playerType === "3rdparty" && authServer) {
       loginServiceFunction = () =>
         AccountService.addPlayer3rdPartyPassword(
@@ -241,8 +272,16 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             )}
 
             {playerType === "microsoft" && (
-              <FormControl>{/*TODO*/}</FormControl>
+              <OAuthLoginPanel
+                authType="microsoft"
+                authCode={oauthCodeResponse && oauthCodeResponse.userCode}
+                callback={() =>
+                  oauthCodeResponse ? handleLogin(true) : startOAuth()
+                }
+                isLoading={isLoading}
+              />
             )}
+
             {playerType === "3rdparty" && (
               <>
                 {authServerList.length === 0 ? (
@@ -332,29 +371,16 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                           </FormControl>
                         </>
                       ) : (
-                        <Card
-                          h="136px" // same as to inputs
-                          w="100%"
-                          display="flex"
-                          flexDirection="column"
-                          alignItems="center"
-                          justifyContent="center"
-                        >
-                          <VStack>
-                            <Text fontSize="sm">
-                              {t(
-                                "AddPlayerModal.3rdparty.authServer.supportOAuth"
-                              )}
-                            </Text>
-                            <Button
-                              colorScheme={primaryColor}
-                              onClick={() => handleLogin(true)}
-                              isLoading={isLoading}
-                            >
-                              {t("AddPlayerModal.button.beginOAuth")}
-                            </Button>
-                          </VStack>
-                        </Card>
+                        <OAuthLoginPanel
+                          authType="3rdparty"
+                          authCode={
+                            oauthCodeResponse && oauthCodeResponse.userCode
+                          }
+                          callback={() =>
+                            oauthCodeResponse ? handleLogin(true) : startOAuth()
+                          }
+                          isLoading={isLoading}
+                        />
                       ))}
                   </>
                 )}
@@ -379,6 +405,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               </Link>
             </HStack>
           )}
+
           {playerType === "3rdparty" &&
             authServer?.features.openidConfigurationUrl &&
             (showOAuth ? (
@@ -408,6 +435,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 </Button>
               </HStack>
             ))}
+
           <HStack spacing={3} ml="auto">
             <Button variant="ghost" onClick={modalProps.onClose}>
               {t("General.cancel")}

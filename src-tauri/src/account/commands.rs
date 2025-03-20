@@ -7,7 +7,7 @@ use super::{
     },
     offline,
   },
-  models::{AccountError, AccountInfo, AuthServer, Player, PlayerType},
+  models::{AccountError, AccountInfo, AuthServer, OAuthCodeResponse, Player, PlayerType},
 };
 use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig, storage::Storage};
 use std::sync::Mutex;
@@ -95,26 +95,70 @@ pub async fn add_player_offline(app: AppHandle, username: String) -> SJMCLResult
 }
 
 #[tauri::command]
-pub async fn add_player_3rdparty_oauth(app: AppHandle, auth_server_url: String) -> SJMCLResult<()> {
+pub async fn retrieve_oauth_code(
+  app: AppHandle,
+  server_type: PlayerType,
+  auth_server_url: String,
+) -> SJMCLResult<OAuthCodeResponse> {
+  if server_type == PlayerType::ThirdParty {
+    let binding = app.state::<Mutex<AccountInfo>>();
+
+    let auth_server = {
+      let state = binding.lock()?;
+      state
+        .auth_servers
+        .iter()
+        .find(|server| server.auth_url == auth_server_url)
+        .ok_or(AccountError::NotFound)?
+        .clone()
+    };
+
+    oauth::device_authorization(
+      app.clone(),
+      auth_server.features.openid_configuration_url,
+      auth_server.client_id,
+    )
+    .await
+  } else if server_type == PlayerType::Microsoft {
+    todo!()
+  } else {
+    Err(AccountError::Invalid.into())
+  }
+}
+
+#[tauri::command]
+pub async fn add_player_oauth(
+  app: AppHandle,
+  server_type: PlayerType,
+  auth_info: OAuthCodeResponse,
+  auth_server_url: String,
+) -> SJMCLResult<()> {
   let binding = app.state::<Mutex<AccountInfo>>();
 
-  let auth_server = {
-    let state = binding.lock()?;
-    state
-      .auth_servers
-      .iter()
-      .find(|server| server.auth_url == auth_server_url)
-      .ok_or(AccountError::NotFound)?
-      .clone()
-  };
+  let new_player = if server_type == PlayerType::ThirdParty {
+    let auth_server = {
+      let state = binding.lock()?;
+      state
+        .auth_servers
+        .iter()
+        .find(|server| server.auth_url == auth_server_url)
+        .ok_or(AccountError::NotFound)?
+        .clone()
+    };
 
-  let new_player = oauth::login(
-    app.clone(),
-    auth_server_url,
-    auth_server.features.openid_configuration_url,
-    auth_server.client_id,
-  )
-  .await?;
+    oauth::login(
+      app.clone(),
+      auth_server_url,
+      auth_server.features.openid_configuration_url,
+      auth_server.client_id,
+      auth_info,
+    )
+    .await?
+  } else if server_type == PlayerType::Microsoft {
+    todo!()
+  } else {
+    return Err(AccountError::Invalid.into());
+  };
 
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
