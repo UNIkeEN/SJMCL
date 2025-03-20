@@ -18,7 +18,8 @@ pub enum ResourceType {
   AuthlibInjector,
   FabricMeta,
   FabricMaven,
-  NeoforgeMeta,
+  NeoforgeMetaForge,    // old version, only for 1.20.1
+  NeoforgeMetaNeoforge, // new version
   NeoforgedForge,
   NeoforgedNeoforge,
   QuiltMaven,
@@ -54,6 +55,7 @@ pub struct ModLoaderResourceInfo {
 pub enum ResourceError {
   ParseError,
   NoDownloadApi,
+  NetworkError,
 }
 
 impl std::error::Error for ResourceError {}

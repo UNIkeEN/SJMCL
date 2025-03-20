@@ -28,8 +28,8 @@ pub async fn get_fabric_meta_by_game_version(
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   for source_type in priority_list.iter() {
-    let url = get_download_api(*source_type, ResourceType::NeoforgeMeta)?
-      .join("v2/versions/loader")?
+    let url = get_download_api(*source_type, ResourceType::FabricMeta)?
+      .join("v2/versions/loader/")?
       .join(game_version)?;
     match reqwest::get(url).await {
       Ok(response) => {

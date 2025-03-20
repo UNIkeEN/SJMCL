@@ -16,37 +16,60 @@ struct ForgeMetaItem {
   pub version: String,
 }
 
+async fn get_forge_meta_by_game_version_bmcl(
+  game_version: &str,
+) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+  let url = get_download_api(SourceType::BMCLAPIMirror, ResourceType::ForgeMeta)?
+    .join("minecraft/")?
+    .join(game_version)?;
+  match reqwest::get(url).await {
+    Ok(response) => {
+      if response.status().is_success() {
+        if let Ok(manifest) = response.json::<Vec<ForgeMetaItem>>().await {
+          Ok(
+            manifest
+              .into_iter()
+              .map(|info| ModLoaderResourceInfo {
+                loader_type: ModLoaderType::Forge,
+                version: info.version,
+                description: info.modified,
+                stable: true,
+              })
+              .collect(),
+          )
+        } else {
+          Err(ResourceError::ParseError.into())
+        }
+      } else {
+        Err(ResourceError::NetworkError.into())
+      }
+    }
+    Err(_) => Err(ResourceError::NetworkError.into()),
+  }
+}
+
+async fn get_forge_meta_by_game_version_official(
+  game_version: &str,
+) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+  Err(ResourceError::NoDownloadApi.into()) // TODO
+}
+
 pub async fn get_forge_meta_by_game_version(
   priority_list: &[SourceType],
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   for source_type in priority_list.iter() {
-    let url = get_download_api(*source_type, ResourceType::ForgeMeta)?
-      .join("minecraft")?
-      .join(game_version)?;
-    match reqwest::get(url).await {
-      Ok(response) => {
-        if response.status().is_success() {
-          if let Ok(manifest) = response.json::<Vec<ForgeMetaItem>>().await {
-            return Ok(
-              manifest
-                .into_iter()
-                .map(|info| ModLoaderResourceInfo {
-                  loader_type: ModLoaderType::Forge,
-                  version: info.version,
-                  description: info.modified,
-                  stable: true,
-                })
-                .collect(),
-            );
-          } else {
-            return Err(ResourceError::ParseError.into());
-          }
-        } else {
-          continue;
+    match *source_type {
+      SourceType::BMCLAPIMirror => {
+        if let Ok(meta) = get_forge_meta_by_game_version_bmcl(game_version).await {
+          return Ok(meta);
         }
       }
-      Err(_) => continue,
+      SourceType::Official => {
+        if let Ok(meta) = get_forge_meta_by_game_version_official(game_version).await {
+          return Ok(meta);
+        }
+      }
     }
   }
   Err(SJMCLError(String::new()))
