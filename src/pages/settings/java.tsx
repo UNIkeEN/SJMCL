@@ -1,7 +1,6 @@
 import { Flex, HStack, Tag, Text, useDisclosure } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { platform } from "@tauri-apps/plugin-os";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
@@ -39,14 +38,14 @@ const JavaSettingsPage = () => {
       filters: [
         {
           name: "Java",
-          extensions: platform() === "windows" ? ["exe"] : [""], // TBD: cross platform test
+          extensions: config.basicInfo.platform === "windows" ? ["exe"] : [""], // TBD: cross platform test
         },
       ],
     });
     if (newJavaPath && typeof newJavaPath === "string") {
       const fileName = newJavaPath.split(/[/\\]/).pop();
       const isValidJava =
-        platform() === "windows"
+        config.basicInfo.platform === "windows"
           ? fileName === "java.exe"
           : fileName === "java";
 

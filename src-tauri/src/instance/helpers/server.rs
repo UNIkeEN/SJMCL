@@ -17,6 +17,9 @@ struct NbtServersInfo {
 }
 
 pub async fn load_servers_info_from_path(path: &Path) -> SJMCLResult<Vec<NbtServerInfo>> {
+  if !path.exists() {
+    return Ok(Vec::new());
+  }
   let bytes = tokio::fs::read(path).await?;
   let (servers_info, _snbt) =
     quartz_nbt::serde::deserialize::<NbtServersInfo>(&bytes, Flavor::Uncompressed)?;

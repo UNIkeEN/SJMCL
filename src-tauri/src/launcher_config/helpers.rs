@@ -1,4 +1,8 @@
-use crate::{error::SJMCLResult, EXE_DIR};
+use crate::{
+  error::SJMCLResult,
+  partial::{PartialAccess, PartialUpdate},
+  EXE_DIR,
+};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -12,7 +16,7 @@ use std::error::Error;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use super::models::{GameDirectory, JavaInfo, LauncherConfig};
+use super::models::{BasicInfo, GameDirectory, JavaInfo, LauncherConfig};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -55,9 +59,31 @@ impl LauncherConfig {
         }
       }
     }
+    self.basic_info = BasicInfo {
+      launcher_version: version,
+      platform: tauri_plugin_os::platform().to_string(),
+      arch: tauri_plugin_os::arch().to_string(),
+      os_type: tauri_plugin_os::type_().to_string(),
+      platform_version: tauri_plugin_os::version().to_string(),
+    };
 
-    self.version = version.clone();
     Ok(())
+  }
+
+  pub fn replace_with_preserved(&mut self, new_config: LauncherConfig, preserved_fields: &[&str]) {
+    // Preserve some fields when restore or import
+    let mut backup_values = Vec::new();
+    for key in preserved_fields {
+      if let Ok(value) = self.access(key) {
+        backup_values.push((key, value));
+      }
+    }
+
+    *self = new_config;
+
+    for (key, value) in backup_values {
+      let _ = self.update(key, &value);
+    }
   }
 }
 
@@ -195,7 +221,7 @@ pub fn get_java_paths() -> Vec<String> {
   // For windows, try to get java path from registry
   #[cfg(target_os = "windows")]
   {
-    if let Ok(java_path) = get_java_path_from_windows_registry() {
+    for java_path in get_java_paths_from_windows_registry() {
       paths.insert(java_path);
     }
   }
@@ -240,15 +266,28 @@ pub fn get_java_paths() -> Vec<String> {
 
 // Get canonicalized java path from Windows registry
 #[cfg(target_os = "windows")]
-fn get_java_path_from_windows_registry() -> Result<String, Box<dyn Error>> {
+fn get_java_paths_from_windows_registry() -> Vec<String> {
   let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
-  let base_path = r"SOFTWARE\JavaSoft\Java Runtime Environment";
-  let current_version: String = hklm.open_subkey(base_path)?.get_value("CurrentVersion")?;
-  let java_home: String = hklm
-    .open_subkey(format!(r"{}\{}", base_path, current_version))?
-    .get_value("JavaHome")?;
-  let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
-  Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+  let registry_paths = [
+    r"SOFTWARE\JavaSoft\JDK",
+    r"SOFTWARE\JavaSoft\JRE",
+    r"SOFTWARE\JavaSoft\Java Development Kit",
+    r"SOFTWARE\JavaSoft\Java Runtime Environment",
+  ];
+  let mut java_paths = Vec::new();
+  for base_path in registry_paths {
+    if let Ok(java_path) = (|| {
+      let current_version: String = hklm.open_subkey(base_path)?.get_value("CurrentVersion")?;
+      let java_home: String = hklm
+        .open_subkey(format!(r"{}\{}", base_path, current_version))?
+        .get_value("JavaHome")?;
+      let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
+      Ok::<String, Box<dyn Error>>(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+    })() {
+      java_paths.push(java_path);
+    }
+  }
+  java_paths
 }
 
 pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, String)> {

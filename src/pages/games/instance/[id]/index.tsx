@@ -8,7 +8,7 @@ const InstanceDetailIndexPage = () => {
   const { history } = useRoutingHistory();
 
   useEffect(() => {
-    if (!id) {
+    if (id === undefined) {
       router.push("/games/all");
       return;
     }

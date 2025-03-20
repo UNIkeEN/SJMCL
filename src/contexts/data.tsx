@@ -14,6 +14,7 @@ interface DataContextType {
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
 }
 
+// for frontend-only state update
 interface DataDispatchContextType {
   setPlayerList: React.Dispatch<Player[]>;
   setSelectedPlayer: React.Dispatch<Player | undefined>;

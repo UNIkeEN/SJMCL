@@ -40,10 +40,11 @@ const InstanceScreenshotsPage: React.FC = () => {
   const handleModalClose = () => {
     onScreenshotPreviewModalClose();
     const { id } = router.query;
-    if (id) {
+    if (id !== undefined) {
+      const instanceId = Array.isArray(id) ? id[0] : id;
       router.replace(
         {
-          pathname: `/games/instance/${id}/screenshots`,
+          pathname: `/games/instance/${instanceId}/screenshots`,
           query: {},
         },
         undefined,

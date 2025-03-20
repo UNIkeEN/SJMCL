@@ -12,6 +12,7 @@ import { useGetState } from "@/hooks/get-state";
 import { LauncherConfig, defaultConfig } from "@/models/config";
 import { JavaInfo } from "@/models/system-info";
 import { ConfigService } from "@/services/config";
+import { updateByKeyPath } from "@/utils/partial";
 
 interface LauncherConfigContextType {
   config: LauncherConfig;
@@ -63,19 +64,6 @@ export const LauncherConfigContextProvider: React.FC<{
       }
     }
   }, [colorMode, config.appearance.theme.colorMode, toggleColorMode]);
-
-  const updateByKeyPath = (obj: any, path: string, value: any): void => {
-    const keys = path.split(".");
-    let current = obj;
-    for (let i = 0; i < keys.length - 1; i++) {
-      const key = keys[i];
-      if (!(key in current)) {
-        current[key] = {};
-      }
-      current = current[key];
-    }
-    current[keys[keys.length - 1]] = value;
-  };
 
   const handleUpdateLauncherConfig = (path: string, value: any) => {
     const newConfig = { ...config };

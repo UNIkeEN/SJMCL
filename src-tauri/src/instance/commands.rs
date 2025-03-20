@@ -8,6 +8,7 @@ use super::{
     mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::{load_servers_info_from_path, query_server_status},
+    version_dir::rename_game_version_id,
     world::{level_data_to_world_info, load_level_data_from_path},
   },
   models::{
@@ -202,49 +203,51 @@ pub async fn retrieve_game_server_list(
   };
 
   let nbt_path = game_root_dir.join("servers.dat");
-  if let Ok(servers) = load_servers_info_from_path(&nbt_path).await {
-    for server in servers {
-      game_servers.push(GameServerInfo {
-        ip: server.ip,
-        name: server.name,
-        icon_src: server.icon.unwrap_or_default(),
-        is_queried: false,
-        players_max: 0,
-        players_online: 0,
-        online: false,
-      });
-    }
+  let servers = match load_servers_info_from_path(&nbt_path).await {
+    Ok(servers) => servers,
+    Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
+  };
+  for server in servers {
+    game_servers.push(GameServerInfo {
+      ip: server.ip,
+      name: server.name,
+      icon_src: server.icon.unwrap_or_default(),
+      is_queried: false,
+      players_max: 0,
+      players_online: 0,
+      online: false,
+    });
+  }
 
-    // query_online is true, amend query and return player count and online status
-    if query_online {
-      let query_tasks = game_servers.clone().into_iter().map(|mut server| {
-        tokio::spawn(async move {
-          match query_server_status(&server.ip).await {
-            Ok(query_result) => {
-              server.is_queried = true;
-              server.players_online = query_result.players.online as usize;
-              server.players_max = query_result.players.max as usize;
-              server.online = query_result.online;
-              server.icon_src = query_result.favicon.unwrap_or_default();
-            }
-            Err(_) => {
-              server.is_queried = false;
-            }
+  // query_online is true, amend query and return player count and online status
+  if query_online {
+    let query_tasks = game_servers.clone().into_iter().map(|mut server| {
+      tokio::spawn(async move {
+        match query_server_status(&server.ip).await {
+          Ok(query_result) => {
+            server.is_queried = true;
+            server.players_online = query_result.players.online as usize;
+            server.players_max = query_result.players.max as usize;
+            server.online = query_result.online;
+            server.icon_src = query_result.favicon.unwrap_or_default();
           }
-          server
-        })
-      });
-      let mut updated_servers = Vec::new();
-      for (prev, query) in game_servers.into_iter().zip(query_tasks) {
-        if let Ok(updated_server) = query.await {
-          updated_servers.push(updated_server);
-        } else {
-          updated_servers.push(prev); // query error, use local data
+          Err(_) => {
+            server.is_queried = false;
+          }
         }
+        server
+      })
+    });
+    let mut updated_servers = Vec::new();
+    for (prev, query) in game_servers.into_iter().zip(query_tasks) {
+      if let Ok(updated_server) = query.await {
+        updated_servers.push(updated_server);
+      } else {
+        updated_servers.push(prev); // query error, use local data
       }
-      game_servers = updated_servers;
     }
-  } // don't report error when missing nbt file
+    game_servers = updated_servers;
+  }
   Ok(game_servers)
 }
 
@@ -564,5 +567,27 @@ pub async fn retrieve_world_details(
     Ok(level_data)
   } else {
     Err(InstanceError::LevelParseError.into())
+  }
+}
+
+#[tauri::command]
+pub async fn rename_instance(
+  app: AppHandle,
+  instance_id: usize,
+  new_name: String,
+) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let mut state = binding.lock().unwrap();
+  let instance = match state.get_mut(instance_id) {
+    Some(x) => x,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  match rename_game_version_id(&instance.version_path, &new_name) {
+    Ok(new_path) => {
+      instance.version_path = new_path;
+      instance.name = new_name;
+      Ok(())
+    }
+    Err(_) => Err(InstanceError::ConflictNameError.into()),
   }
 }

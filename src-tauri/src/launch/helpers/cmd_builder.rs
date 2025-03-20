@@ -2,11 +2,15 @@
 
 use super::file_validator::get_class_paths;
 use crate::account::models::AccountInfo;
+use crate::instance::helpers::client_json::JavaVersion;
 use crate::instance::{
   helpers::client_json::{FeaturesInfo, McClientInfo},
   models::misc::Instance,
 };
-use crate::launcher_config::models::LauncherConfig;
+use crate::launch::models::LaunchError;
+use crate::launcher_config::models::{
+  GameJava, JavaInfo, LauncherConfig, Performance, ProcessPriority, ProxyConfig, ProxyType,
+};
 use crate::storage::Storage;
 use crate::{
   error::{SJMCLError, SJMCLResult},
@@ -19,6 +23,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+use tauri_plugin_os::OsType;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchParams {
@@ -76,76 +81,72 @@ pub struct LaunchParams {
 }
 
 impl LaunchParams {
-  pub fn to_hashmap(&self) -> HashMap<String, String> {
+  pub fn to_hashmap(&self) -> SJMCLResult<HashMap<String, String>> {
     let mut map: HashMap<String, String> = HashMap::new();
+    let quoter = shlex::Quoter::new();
     map.insert(
       "assets_root".to_string(),
-      shlex::quote(self.assets_root.as_str()).to_string(),
+      quoter.quote(self.assets_root.as_str())?.to_string(),
     );
     map.insert(
       "assets_index_name".to_string(),
-      shlex::quote(self.assets_index_name.as_str()).to_string(),
+      quoter.quote(self.assets_index_name.as_str())?.to_string(),
     );
     map.insert(
       "game_directory".to_string(),
-      shlex::quote(self.game_directory.as_str()).to_string(),
+      quoter.quote(self.game_directory.as_str())?.to_string(),
     );
     map.insert(
       "version_name".to_string(),
-      shlex::quote(self.version_name.as_str()).to_string(),
+      quoter.quote(self.version_name.as_str())?.to_string(),
     );
     map.insert(
       "version_type".to_string(),
-      shlex::quote(self.version_type.as_str()).to_string(),
+      quoter.quote(self.version_type.as_str())?.to_string(),
     );
     map.insert(
       "natives_directory".to_string(),
-      shlex::quote(self.natives_directory.as_str()).to_string(),
+      quoter.quote(self.natives_directory.as_str())?.to_string(),
     );
     map.insert(
       "launcher_name".to_string(),
-      shlex::quote(self.launcher_name.as_str()).to_string(),
+      quoter.quote(self.launcher_name.as_str())?.to_string(),
     );
     map.insert(
       "launcher_version".to_string(),
-      shlex::quote(self.launcher_version.as_str()).to_string(),
+      quoter.quote(self.launcher_version.as_str())?.to_string(),
     );
-    map.insert(
-      "classpath".to_string(),
-      self
-        .classpath
-        .iter()
-        .map(|f| shlex::quote(f.as_str()).to_string())
-        .collect::<Vec<String>>()
-        .join(":")
-        .to_string(),
-    );
+    let mut classpaths = Vec::new();
+    for classpath in &self.classpath {
+      classpaths.push(quoter.quote(&classpath.as_str())?.to_string());
+    }
+    map.insert("classpath".to_string(), classpaths.join(":").to_string());
     map.insert(
       "auth_access_token".to_string(),
-      shlex::quote(self.auth_access_token.as_str()).to_string(),
+      quoter.quote(self.auth_access_token.as_str())?.to_string(),
     );
     map.insert(
       "auth_player_name".to_string(),
-      shlex::quote(self.auth_player_name.as_str()).to_string(),
+      quoter.quote(self.auth_player_name.as_str())?.to_string(),
     );
     map.insert(
       "user_type".to_string(),
-      shlex::quote(self.user_type.as_str()).to_string(),
+      quoter.quote(self.user_type.as_str())?.to_string(),
     );
     map.insert(
       "auth_uuid".to_string(),
-      shlex::quote(self.auth_uuid.as_str()).to_string(),
+      quoter.quote(self.auth_uuid.as_str())?.to_string(),
     );
     if let Some(ref clientid) = &self.clientid {
       map.insert(
         "clientid".to_string(),
-        shlex::quote(clientid.as_str()).to_string(),
+        quoter.quote(clientid.as_str())?.to_string(),
       );
     }
     if let Some(ref auth_xuid) = &self.auth_xuid {
       map.insert(
         "auth_xuid".to_string(),
-        shlex::quote(auth_xuid.as_str()).to_string(),
+        quoter.quote(auth_xuid.as_str())?.to_string(),
       );
     }
     map.insert("demo".to_string(), self.demo.to_string());
@@ -159,21 +160,25 @@ impl LaunchParams {
     );
     map.insert(
       "quickPlayPath".to_string(),
-      shlex::quote(self.quick_play_path.as_str()).to_string(),
+      quoter.quote(self.quick_play_path.as_str())?.to_string(),
     );
     map.insert(
       "quickPlaySingleplayer".to_string(),
-      shlex::quote(self.quick_play_singleplayer.as_str()).to_string(),
+      quoter
+        .quote(self.quick_play_singleplayer.as_str())?
+        .to_string(),
     );
     map.insert(
       "quickPlayMultiplayer".to_string(),
-      shlex::quote(self.quick_play_multiplayer.as_str()).to_string(),
+      quoter
+        .quote(self.quick_play_multiplayer.as_str())?
+        .to_string(),
     );
     map.insert(
       "quickPlayRealms".to_string(),
-      shlex::quote(self.quick_play_realms.as_str()).to_string(),
+      quoter.quote(self.quick_play_realms.as_str())?.to_string(),
     );
-    map
+    Ok(map)
   }
 }
 
@@ -186,7 +191,7 @@ pub fn generate_launch_cmd(
   lazy_static::lazy_static!(
       static ref PARAM_REGEX: Regex = Regex::new(r"\$\{(\S+)\}").unwrap();
   );
-  let map = params.to_hashmap();
+  let map = params.to_hashmap()?;
   let mut result = Vec::new();
   for arg in argument_template.to_arguments(launch_feature, main_class)? {
     let mut replaced_arg = arg.clone();
@@ -214,12 +219,48 @@ pub fn generate_launch_cmd(
   Ok(result)
 }
 
+fn choose_java_auto(java_list: &Vec<JavaInfo>, version_req: &JavaVersion) -> Option<JavaInfo> {
+  let mut match_list = Vec::new();
+  for java_info in java_list {
+    if java_info.major_version == version_req.major_version {
+      return Some(java_info.clone());
+    } else if java_info.major_version > version_req.major_version {
+      match_list.push(java_info);
+    }
+  }
+  if match_list.is_empty() {
+    return None;
+  }
+  match_list.sort_by(|a, b| a.major_version.cmp(&b.major_version));
+  Some(match_list[0].clone())
+}
+
+fn choose_java(
+  game_java: &GameJava,
+  java_list: &Vec<JavaInfo>,
+  version_req: &JavaVersion,
+) -> SJMCLResult<JavaInfo> {
+  if !game_java.auto {
+    for java in java_list {
+      if java.exec_path.to_string() == game_java.exec_path {
+        return Ok(java.clone());
+      }
+    }
+  }
+  match choose_java_auto(java_list, version_req) {
+    Some(java) => Ok(java),
+    None => Err(LaunchError::NoSuitableJavaError.into()),
+  }
+}
+
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L69
 pub fn collect_launch_params(
   app: &AppHandle,
   instance_id: &usize,
   client_info: McClientInfo,
 ) -> SJMCLResult<(LaunchParams, FeaturesInfo)> {
   let sjmcl_config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
+  let java_list = app.state::<Mutex<Vec<JavaInfo>>>().lock()?.clone();
   let mut account_info: AccountInfo = Storage::load().unwrap_or_default();
   // TODO: select user
   let selected_user = account_info
@@ -290,8 +331,8 @@ pub fn collect_launch_params(
     version_name: instance.version.clone(),
     version_type: client_info.type_,
     natives_directory: natives_dir.to_string_lossy().to_string(),
-    launcher_name: format!("SJMCL {}", sjmcl_config.version),
-    launcher_version: sjmcl_config.version,
+    launcher_name: format!("SJMCL {}", sjmcl_config.basic_info.launcher_version),
+    launcher_version: sjmcl_config.basic_info.launcher_version,
     classpath: class_paths,
 
     auth_access_token: selected_user.access_token,
@@ -308,5 +349,122 @@ pub fn collect_launch_params(
     quick_play_multiplayer: sjmcl_config.global_game_config.game_server.server_url,
     quick_play_realms: String::new(),
   };
+  let java_info = choose_java(
+    &sjmcl_config.global_game_config.game_java,
+    &java_list,
+    &client_info.java_version,
+  )?;
+  // collect extra config
+  let mut extra_cmd =
+    generate_process_priority_cmd(&sjmcl_config.global_game_config.performance.process_priority);
+  extra_cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
+  extra_cmd.extend(generate_jvm_memory_cmd(
+    &sjmcl_config.global_game_config.performance,
+  ));
+  if sjmcl_config.global_game_config.advanced_options.enabled {
+    extra_cmd.extend(generate_jvm_metaspace_size_cmd(
+      &sjmcl_config
+        .global_game_config
+        .advanced
+        .jvm
+        .java_permanent_generation_space,
+      &java_info,
+    ));
+  }
+  // TODO Here
+  println!("{:?}", extra_cmd);
   Ok((launch_params, launch_feature))
+}
+
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L72
+fn generate_process_priority_cmd(p: &ProcessPriority) -> Vec<String> {
+  match p {
+    &ProcessPriority::High => {
+      match tauri_plugin_os::type_() {
+        OsType::Windows => vec!["start".to_string(), "/high".to_string()],
+        OsType::Android | OsType::Macos | OsType::Linux => {
+          vec!["nice".to_string(), "-n".to_string(), "-5".to_string()]
+        }
+        OsType::IOS => Vec::new(), //? TODO
+      }
+    }
+    &ProcessPriority::AboveNormal => match tauri_plugin_os::type_() {
+      OsType::Windows => vec!["start".to_string(), "/abovenormal".to_string()],
+      OsType::Android | OsType::Macos | OsType::Linux => {
+        vec!["nice".to_string(), "-n".to_string(), "-1".to_string()]
+      }
+      OsType::IOS => Vec::new(),
+    },
+    &ProcessPriority::Normal => match tauri_plugin_os::type_() {
+      OsType::Windows => vec!["start".to_string(), "/normal".to_string()],
+      OsType::Android | OsType::Macos | OsType::Linux => {
+        vec!["nice".to_string(), "-n".to_string(), "0".to_string()]
+      }
+      OsType::IOS => Vec::new(),
+    },
+    &ProcessPriority::BelowNormal => match tauri_plugin_os::type_() {
+      OsType::Windows => vec!["start".to_string(), "/belownormal".to_string()],
+      OsType::Android | OsType::Macos | OsType::Linux => {
+        vec!["nice".to_string(), "-n".to_string(), "1".to_string()]
+      }
+      OsType::IOS => Vec::new(),
+    },
+    &ProcessPriority::Low => match tauri_plugin_os::type_() {
+      OsType::Windows => vec!["start".to_string(), "/low".to_string()],
+      OsType::Android | OsType::Macos | OsType::Linux => {
+        vec!["nice".to_string(), "-n".to_string(), "5".to_string()]
+      }
+      OsType::IOS => Vec::new(),
+    },
+  }
+}
+
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
+fn generate_proxy_cmd(p: &ProxyConfig) -> Vec<String> {
+  if !p.enabled {
+    return Vec::new();
+  }
+  let quoter = shlex::Quoter::new();
+  match &p.selected_type {
+    &ProxyType::Http => vec![
+      format!(
+        "-Dhttp.proxyHost={}",
+        quoter.quote(p.host.as_str()).unwrap()
+      ),
+      format!("-Dhttp.proxyPort={}", p.port),
+      format!(
+        "-Dhttps.proxyHost={}",
+        quoter.quote(p.host.as_str()).unwrap()
+      ),
+      format!("-Dhttps.proxyPort={}", p.port),
+    ],
+    &ProxyType::Socks => vec![
+      format!(
+        "-DsocksProxyHost={}",
+        quoter.quote(p.host.as_str()).unwrap()
+      ),
+      format!("-DsocksProxyPort={}", p.port),
+    ],
+  }
+}
+
+fn generate_jvm_memory_cmd(p: &Performance) -> Vec<String> {
+  if p.auto_mem_allocation {
+    return Vec::new();
+  }
+  vec!["-Xms".to_string(), p.min_mem_allocation.to_string()]
+  // TODO: max memory
+}
+
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L139
+fn generate_jvm_metaspace_size_cmd(meta_space: &u32, java_info: &JavaInfo) -> Vec<String> {
+  if *meta_space == 0 {
+    Vec::new()
+  } else {
+    if java_info.major_version < 8 {
+      vec![format!("-XX:PermSize={}M", meta_space)]
+    } else {
+      vec![format!("-XX:MetaspaceSize={}M", meta_space)]
+    }
+  }
 }

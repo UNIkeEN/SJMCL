@@ -74,13 +74,48 @@ function loadLocaleFile(filePath) {
   const content = fs.readFileSync(filePath, "utf-8");
   return JSON.parse(content);
 }
-
 function compareKeys(baseKeys, targetKeys) {
   const baseSet = new Set(baseKeys);
   const targetSet = new Set(targetKeys);
   const missing = [...baseSet].filter((k) => !targetSet.has(k)).sort();
   const extra = [...targetSet].filter((k) => !baseSet.has(k)).sort();
   return [missing, extra];
+}
+function checkTodoValues(locale, localeName) {
+  const todoValues = [];
+
+  function recursiveCheck(obj, parentKey = "") {
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const value = obj[key];
+        const fullKey = parentKey ? `${parentKey}.${key}` : key;
+
+        if (typeof value === "string" && value.startsWith("%TODO")) {
+          todoValues.push(fullKey);
+        } else if (
+          typeof value === "object" &&
+          value !== null &&
+          !Array.isArray(value)
+        ) {
+          recursiveCheck(value, fullKey);
+        }
+      }
+    }
+  }
+
+  recursiveCheck(locale);
+
+  if (todoValues.length > 0) {
+    console.log(
+      chalk.hex("#FFA500")(
+        `⚠️ Warning: '${localeName}.json' contains %TODO values:`
+      )
+    );
+    todoValues.forEach((key) => {
+      console.log(chalk.yellow(`  %TODO found: ${key}`));
+    });
+    throw new Error("  %TODO values detected");
+  }
 }
 
 function compareLocales(base, target) {
@@ -117,6 +152,9 @@ function compareLocales(base, target) {
 
     throw new Error("  Inconsistent locales detected");
   }
+
+  checkTodoValues(targetLocale, target);
+
   console.log("-".repeat(40));
 }
 

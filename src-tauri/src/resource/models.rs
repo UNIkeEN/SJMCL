@@ -28,7 +28,7 @@ pub enum ResourceType {
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
 pub enum SourceType {
   Official,
-  ChineseMirror,
+  BMCLAPIMirror,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

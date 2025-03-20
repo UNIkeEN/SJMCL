@@ -24,9 +24,11 @@ export function responseHandler(serviceDomain: string): MethodDecorator {
           `Services.${serviceDomain}.${String(propertyKey)}.error.title`
         );
 
-        const details = t(
-          `Services.${serviceDomain}.${String(propertyKey)}.error.description.${String(error)}`
-        );
+        const details = String(error)
+          ? t(
+              `Services.${serviceDomain}.${String(propertyKey)}.error.description.${String(error)}`
+            )
+          : "";
 
         if (isDev) {
           const errorSet = {

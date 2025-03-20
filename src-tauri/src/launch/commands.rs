@@ -47,10 +47,8 @@ pub async fn launch_game(app: AppHandle, instance_id: usize) -> SJMCLResult<()> 
     return Err(SJMCLError(String::new()));
   };
   let main_class = client_info.main_class.clone();
-  if let Ok((launch_params, launch_feature)) =
-    collect_launch_params(&app, &instance_id, client_info)
-  {
-    println!(
+  match collect_launch_params(&app, &instance_id, client_info) {
+    Ok((launch_params, launch_feature)) => println!(
       "{}",
       generate_launch_cmd(
         &launch_params,
@@ -59,9 +57,8 @@ pub async fn launch_game(app: AppHandle, instance_id: usize) -> SJMCLResult<()> 
         &launch_feature
       )?
       .join(" ")
-    );
-  } else {
-    println!("COLLECT LAUNCH PARAMS ERROR");
+    ),
+    Err(e) => println!("COLLECT LAUNCH PARAMS ERROR: {:?}", e),
   }
 
   Ok(())

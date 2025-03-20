@@ -48,7 +48,7 @@ tauri-plugin-opener = "2"
 base64 = "0.22.1"
 image = { version = "0.25.5", features = ["serde"] }
 rand = "0.9.0"
-zip = "2.2"
+zip = "2.3"
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
 regex = "1.11"
 toml = "0.8"
@@ -64,6 +64,7 @@ futures = "0.3.31"
 governor = { version = "0.8.1", features = ["std"] }
 strum = "0.27.1"
 strum_macros = "0.27.1"
+smart-default = "0.7.1"
 tauri-plugin-clipboard-manager = "2.2.2"
 
 [target."cfg(windows)".dependencies]

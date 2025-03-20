@@ -44,7 +44,9 @@ pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
 
   let binding = app.state::<Mutex<LauncherConfig>>();
   let mut state = binding.lock()?;
-  *state = default_config;
+
+  let preserved_fields = &["run_count"];
+  state.replace_with_preserved(default_config, preserved_fields);
   state.save()?;
   Ok(state.clone())
 }
@@ -111,9 +113,13 @@ pub async fn import_launcher_config(app: AppHandle, code: String) -> SJMCLResult
         .await
         .map_err(|_| LauncherConfigError::FetchError)?;
       if status.is_success() {
+        let new_config: LauncherConfig =
+          serde_json::from_value(json).map_err(|_| LauncherConfigError::FetchError)?;
         let binding = app.state::<Mutex<LauncherConfig>>();
         let mut state = binding.lock()?;
-        *state = serde_json::from_value(json).map_err(|_| LauncherConfigError::FetchError)?;
+
+        let preserved_fields = &["run_count", "local_game_directories", "extra_java_paths"];
+        state.replace_with_preserved(new_config, preserved_fields);
         state.save()?;
 
         Ok(state.clone())

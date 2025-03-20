@@ -74,6 +74,7 @@ pub async fn run() {
       instance::commands::retrieve_instance_list,
       instance::commands::open_instance_subdir,
       instance::commands::delete_instance,
+      instance::commands::rename_instance,
       instance::commands::copy_across_instances,
       instance::commands::move_across_instances,
       instance::commands::retrieve_world_list,

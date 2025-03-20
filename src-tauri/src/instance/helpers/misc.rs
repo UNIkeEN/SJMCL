@@ -1,5 +1,6 @@
 use super::super::models::misc::{Instance, InstanceSubdirType, ModLoader};
 use super::client_json::load_client_info_from_json;
+use super::version_dir::rename_game_version_id;
 use crate::{
   instance::helpers::client_json::patchs_to_info,
   launcher_config::models::{GameDirectory, LauncherConfig},
@@ -86,7 +87,7 @@ pub async fn refresh_instances(
       Ok(v) => v,
       Err(_) => continue,
     };
-    let version_path = entry.path();
+    let mut version_path = entry.path();
     if !version_path.is_dir() {
       continue;
     }
@@ -103,12 +104,19 @@ pub async fn refresh_instances(
 
     // TODO: determine the version isolation strategy
     if let Ok(client_data) = load_client_info_from_json(&json_path).await {
+      if client_data.id != name {
+        if let Ok(dst_dir) = rename_game_version_id(&version_path, &client_data.id) {
+          version_path = dst_dir;
+        } else {
+          continue;
+        }
+      }
       let (game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
       instances.push(Instance {
         id: 0, // not decided yet
         name: client_data.id,
         description: "mock desc".to_string(), // TODO: fix these mock fields
-        icon_src: "/images/icons/GrassBlock.png".to_string(),
+        icon_src: loader_type.to_icon_path().to_string(),
         version: game_version.unwrap_or_default(),
         version_path,
         is_version_isolated: false, // TODO

@@ -36,7 +36,7 @@ export interface GameConfig {
     };
     jvm: {
       args: string;
-      javaPermanentGenerationSpace: string;
+      javaPermanentGenerationSpace: number;
       environmentVariable: string;
     };
     workaround: {
@@ -56,7 +56,13 @@ export interface GameDirectory {
 }
 
 export interface LauncherConfig {
-  version: string;
+  basicInfo: {
+    launcherVersion: string;
+    platform: string;
+    arch: string;
+    osType: string;
+    platformVersion: string;
+  };
   mocked: boolean;
   runCount: number;
   appearance: {
@@ -148,7 +154,7 @@ export const defaultGameConfig: GameConfig = {
   performance: {
     autoMemAllocation: true,
     minMemAllocation: 1024,
-    processPriority: "middle",
+    processPriority: "normal",
   },
   versionIsolation: true,
   launcherVisibility: "start-close",
@@ -165,7 +171,7 @@ export const defaultGameConfig: GameConfig = {
     },
     jvm: {
       args: "",
-      javaPermanentGenerationSpace: "",
+      javaPermanentGenerationSpace: 0,
       environmentVariable: "",
     },
     workaround: {
@@ -180,7 +186,13 @@ export const defaultGameConfig: GameConfig = {
 };
 
 export const defaultConfig: LauncherConfig = {
-  version: "dev",
+  basicInfo: {
+    launcherVersion: "dev",
+    platform: "",
+    arch: "",
+    osType: "",
+    platformVersion: "",
+  },
   mocked: true,
   runCount: -1,
   appearance: {

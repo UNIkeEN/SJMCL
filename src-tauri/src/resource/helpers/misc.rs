@@ -4,9 +4,9 @@ use url::Url;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {
-    "official" => vec![SourceType::Official, SourceType::ChineseMirror],
-    "mirror" => vec![SourceType::ChineseMirror, SourceType::Official],
-    _ => vec![SourceType::ChineseMirror, SourceType::Official],
+    "official" => vec![SourceType::Official, SourceType::BMCLAPIMirror],
+    "mirror" => vec![SourceType::BMCLAPIMirror, SourceType::Official],
+    _ => vec![SourceType::BMCLAPIMirror, SourceType::Official],
   }
 }
 
@@ -34,7 +34,7 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
           ResourceType::QuiltMaven => Ok(Url::parse("https://maven.quiltmc.org/repository/release")?),
           ResourceType::QuiltMeta => Ok(Url::parse("https://meta.quiltmc.org")?),
       },
-      SourceType::ChineseMirror => match resource_type {
+      SourceType::BMCLAPIMirror => match resource_type {
           ResourceType::VersionManifest => Ok(Url::parse("https://bmclapi2.bangbang93.com/mc/game/version_manifest.json")?),
           ResourceType::VersionManifestV2 => Ok(Url::parse("https://bmclapi2.bangbang93.com/mc/game/version_manifest_v2.json")?),
           ResourceType::LauncherMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com")?),
