@@ -21,6 +21,28 @@ function addTodoPlaceholder(value) {
   return value;
 }
 
+function mergeWithPlaceholder(source, target) {
+  const result = { ...target };
+  for (const key in source) {
+    // If key doesn't exist in target, add it with placeholder
+    if (!(key in target)) {
+      result[key] = addTodoPlaceholder(source[key]);
+    }
+    // If both are objects, recursively merge them
+    else if (
+      typeof source[key] === "object" &&
+      source[key] !== null &&
+      !Array.isArray(source[key]) &&
+      typeof target[key] === "object" &&
+      target[key] !== null &&
+      !Array.isArray(target[key])
+    ) {
+      result[key] = mergeWithPlaceholder(source[key], target[key]);
+    }
+  }
+  return result;
+}
+
 function generatePlaceholder(source, target) {
   // Define paths for source and target locale files
   const sourceFile = path.join(
@@ -88,15 +110,10 @@ function generatePlaceholder(source, target) {
             process.exit(1);
           }
 
-          // Create a new object to hold the updated locale data
-          const updatedData = { ...targetLocaleData };
-
-          // Process the source data to add placeholders for missing keys
-          for (const key in sourceLocaleData) {
-            if (!(key in targetLocaleData)) {
-              updatedData[key] = addTodoPlaceholder(sourceLocaleData[key]);
-            }
-          }
+          const updatedData = mergeWithPlaceholder(
+            sourceLocaleData,
+            targetLocaleData
+          );
 
           // Write the updated JSON to the target file
           fs.writeFile(
