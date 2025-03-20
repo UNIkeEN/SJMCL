@@ -67,13 +67,19 @@ pub async fn device_authorization(
 
   app.clipboard().write_text(user_code.clone())?;
 
+  let verification_uri = response["verification_uri_complete"]
+    .as_str()
+    .unwrap_or(
+      response["verification_uri"]
+        .as_str()
+        .ok_or(AccountError::AuthServerError)?,
+    )
+    .to_string();
+
   Ok(OAuthCodeResponse {
     user_code,
     device_code,
-    verification_uri: response["verification_uri"]
-      .as_str()
-      .ok_or(AccountError::AuthServerError)?
-      .to_string(),
+    verification_uri,
   })
 }
 
