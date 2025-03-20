@@ -31,7 +31,7 @@ export class AccountService {
   }
 
   /**
-   * RETRIEVE the user code using both OAuth methods (Microsoft and 3rd party).
+   * FETCH the user code using both OAuth methods (Microsoft and 3rd party).
    * @param {string} serverType - The type of authentication server (Microsoft or 3rd party).
    * @param {string} authServerUrl - (Optional) The authentication server's URL.
    * @returns {Promise<InvokeResponse<OAuthCodeResponse>>}
