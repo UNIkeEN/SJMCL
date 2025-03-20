@@ -126,7 +126,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   const isOfflinePlayernameValid = /^[a-zA-Z0-9_]{0,16}$/.test(playername);
 
-  const startOAuth = () => {
+  const handleRetrieveOAuthCode = () => {
     if (playerType === "offline") return;
     setOAuthCodeResponse(undefined);
     setIsLoading(true);
@@ -276,7 +276,9 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 authType="microsoft"
                 authCode={oauthCodeResponse && oauthCodeResponse.userCode}
                 callback={() =>
-                  oauthCodeResponse ? handleLogin(true) : startOAuth()
+                  oauthCodeResponse
+                    ? handleLogin(true)
+                    : handleRetrieveOAuthCode()
                 }
                 isLoading={isLoading}
               />
@@ -377,7 +379,9 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             oauthCodeResponse && oauthCodeResponse.userCode
                           }
                           callback={() =>
-                            oauthCodeResponse ? handleLogin(true) : startOAuth()
+                            oauthCodeResponse
+                              ? handleLogin(true)
+                              : handleRetrieveOAuthCode()
                           }
                           isLoading={isLoading}
                         />
