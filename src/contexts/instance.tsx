@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useData } from "@/contexts/data";
+import { useData, useDataDispatch } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
 import { useGetState } from "@/hooks/get-state";
@@ -20,9 +20,11 @@ import {
 } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
+import { updateByKeyPath } from "@/utils/partial";
 
 export interface InstanceContextType {
   summary: GameInstanceSummary | undefined;
+  updateSummary: (path: string, value: any) => void;
   openSubdir: (dirType: InstanceSubdirEnums) => void;
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
   getLocalModList: (sync?: boolean) => LocalModInfo[] | undefined;
@@ -43,6 +45,7 @@ export const InstanceContextProvider: React.FC<{
   const router = useRouter();
   const toast = useToast();
   const { getGameInstanceList } = useData();
+  const { setGameInstanceList } = useDataDispatch();
 
   const [instanceSummary, setInstanceSummary] = useState<
     GameInstanceSummary | undefined
@@ -58,13 +61,31 @@ export const InstanceContextProvider: React.FC<{
 
   useEffect(() => {
     const gameInstanceList = getGameInstanceList() || [];
-    const instanceId = router.query.id;
+    const { id } = router.query;
+    const instanceId = Array.isArray(id) ? id[0] : id;
     if (instanceId !== undefined) {
       setInstanceSummary(
         gameInstanceList.find((instance) => instance.id === Number(instanceId))
       );
     }
-  }, [router.query.id, getGameInstanceList]);
+  }, [router.query, getGameInstanceList]);
+
+  const updateSummary = (path: string, value: any) => {
+    // for frontend-only state update to sync with backend if needed.
+    if (path === "id") return; // forbid update id here
+
+    const newSummary = { ...instanceSummary };
+    updateByKeyPath(newSummary, path, value);
+    setInstanceSummary(newSummary as GameInstanceSummary);
+
+    const gameInstanceList = getGameInstanceList() || [];
+    const updatedList = gameInstanceList.map((instance) =>
+      instance.id === newSummary.id
+        ? (newSummary as GameInstanceSummary)
+        : instance
+    );
+    setGameInstanceList(updatedList);
+  };
 
   const handleOpenInstanceSubdir = useCallback(
     (dirType: InstanceSubdirEnums) => {
@@ -228,6 +249,7 @@ export const InstanceContextProvider: React.FC<{
     <InstanceContext.Provider
       value={{
         summary: instanceSummary,
+        updateSummary,
         openSubdir: handleOpenInstanceSubdir,
         getWorldList,
         getLocalModList,

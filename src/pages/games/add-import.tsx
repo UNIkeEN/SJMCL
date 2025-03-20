@@ -1,13 +1,25 @@
-import { IconButton, VStack, useDisclosure } from "@chakra-ui/react";
+import {
+  HStack,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Portal,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import { LuArrowRight } from "react-icons/lu";
+import { LuArrowRight, LuCloudDownload, LuFolderPlus } from "react-icons/lu";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import { CreateInstanceModal } from "@/components/modals/create-instance-modal";
 import { DownloadGameServerModal } from "@/components/modals/download-game-server-modal";
+import DownloadModpackModal from "@/components/modals/download-modpack-modal";
 
 const AddAndImportInstancePage = () => {
   const { t } = useTranslation();
@@ -17,6 +29,11 @@ const AddAndImportInstancePage = () => {
     isOpen: isCreateInstanceModalOpen,
     onOpen: onOpenCreateInstanceModal,
     onClose: onCloseCreateInstanceModal,
+  } = useDisclosure();
+  const {
+    isOpen: isDownloadModpackModalOpen,
+    onOpen: onOpenDownloadModpackModal,
+    onClose: onCloseDownloadModpackModal,
   } = useDisclosure();
   const {
     isOpen: isDownloadGameServerModalOpen,
@@ -34,6 +51,47 @@ const AddAndImportInstancePage = () => {
     server: onOpenDownloadGameServerModal,
   };
 
+  const modpackOperations = [
+    {
+      icon: LuFolderPlus,
+      label: t("AddAndImportInstancePage.modpackOperations.fromdisk"),
+      onClick: () => {},
+    },
+    {
+      icon: LuCloudDownload,
+      label: t("AddAndImportInstancePage.modpackOperations.download"),
+      onClick: () => {
+        onOpenDownloadModpackModal();
+      },
+    },
+  ];
+
+  const ModpackMenu = () => {
+    return (
+      <Menu>
+        <MenuButton
+          as={IconButton}
+          size="sm"
+          variant="ghost"
+          aria-label="operations"
+          icon={<LuArrowRight />}
+        />
+        <Portal>
+          <MenuList>
+            {modpackOperations.map((item) => (
+              <MenuItem key={item.label} fontSize="xs" onClick={item.onClick}>
+                <HStack>
+                  <item.icon />
+                  <Text>{item.label}</Text>
+                </HStack>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Portal>
+      </Menu>
+    );
+  };
+
   const optionGroups: OptionItemGroupProps[] = [
     {
       title: t("AllGamesPage.button.addAndImport"),
@@ -42,15 +100,18 @@ const AddAndImportInstancePage = () => {
         description: t(
           `AddAndImportInstancePage.addAndImportOptions.${key}.description`
         ),
-        children: (
-          <IconButton
-            aria-label={key}
-            onClick={addAndImportOptions[key]}
-            variant="ghost"
-            size="sm"
-            icon={<LuArrowRight />}
-          />
-        ),
+        children:
+          key === "modpack" ? (
+            <ModpackMenu />
+          ) : (
+            <IconButton
+              aria-label={key}
+              onClick={addAndImportOptions[key]}
+              variant="ghost"
+              size="sm"
+              icon={<LuArrowRight />}
+            />
+          ),
       })),
     },
     {
@@ -83,6 +144,10 @@ const AddAndImportInstancePage = () => {
       <CreateInstanceModal
         isOpen={isCreateInstanceModalOpen}
         onClose={onCloseCreateInstanceModal}
+      />
+      <DownloadModpackModal
+        isOpen={isDownloadModpackModalOpen}
+        onClose={onCloseDownloadModpackModal}
       />
       <DownloadGameServerModal
         isOpen={isDownloadGameServerModalOpen}

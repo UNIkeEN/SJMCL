@@ -27,7 +27,10 @@
       "csp": null,
       "assetProtocol": {
         "enable": true,
-        "scope": ["**", "**/.minecraft/**"]
+        "scope": [
+          "**",
+          "**/.minecraft/**"
+        ]
       }
     }
   },
@@ -58,7 +61,7 @@
     ]
   },
   "plugins": {
-    "fs":{
+    "fs": {
       "requireLiteralLeadingDot": false
     }
   }

@@ -89,6 +89,10 @@
         "description": "Manage local game storage directories to add installed instances"
       }
     },
+    "modpackOperations": {
+      "fromdisk": "Import from Disk",
+      "download": "Download Modpack"
+    },
     "moreOptions": {
       "title": "More",
       "server": {
@@ -739,7 +743,9 @@
         "processPriority": {
           "title": "Process Priority",
           "low": "Low",
-          "middle": "Medium",
+          "belowNormal": "Below Normal",
+          "normal": "Normal",
+          "aboveNormal": "Above Normal",
           "high": "High"
         }
       }
@@ -790,10 +796,12 @@
       "settings": {
         "MUA": {
           "title": "Minecraft University Alliance (MUA)",
-          "description": "Play with university players across China"
+          "description": "Play with university players across China",
+          "url": " https://www.mualliance.cn/en"
         },
         "SJMC": {
-          "title": "SJTU Minecraft Club (SJMC)"
+          "title": "SJTU Minecraft Club (SJMC)",
+          "url": "https://mc.sjtu.cn/en/"
         }
       }
     },
@@ -1484,6 +1492,15 @@
           }
         }
       },
+      "renameInstance": {
+        "error": {
+          "title": "Failed to rename instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "CONFLICT_NAME_ERROR": "A duplicate instance name exists"
+          }
+        }
+      },
       "retrieveWorldList": {
         "error": {
           "title": "Failed to retrieve world list"
@@ -1493,7 +1510,7 @@
         "error": {
           "title": "Failed to retrieve game server list",
           "description": {
-            "SERVER_NBT_READ_ERROR": "server.dat may have been corrupted"
+            "SERVER_NBT_READ_ERROR": "servers.dat may have been corrupted"
           }
         }
       },

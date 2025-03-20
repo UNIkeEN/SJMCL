@@ -80,7 +80,7 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
         >
           {displayText}
         </MenuButton>
-        <MenuList maxH="40vh" w={width} overflow="auto">
+        <MenuList maxH="40vh" minW={width} overflow="auto">
           <MenuOptionGroup
             defaultValue={defaultValue}
             type="radio"
@@ -185,7 +185,9 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const toast = useToast();
 
-  const [gameVersionList, setGameVersionList] = useState<string[]>([]);
+  const [gameVersionList, setGameVersionList] = useState<string[] | undefined>(
+    undefined
+  );
 
   const [resourceList, setResourceList] = useState<OtherResourceInfo[]>([]);
   const [isLoadingResourceList, setIsLoadingResourceList] =
@@ -298,11 +300,21 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           }
           onChange={setGameVersion}
           defaultValue={"All"}
-          options={gameVersionList.map((item, key) => (
-            <MenuItemOption key={key} value={item} fontSize="xs">
-              {item === "All" ? t("ResourceDownloader.versionList.All") : item}
-            </MenuItemOption>
-          ))}
+          options={
+            gameVersionList ? (
+              gameVersionList.map((item, key) => (
+                <MenuItemOption key={key} value={item} fontSize="xs">
+                  {item === "All"
+                    ? t("ResourceDownloader.versionList.All")
+                    : item}
+                </MenuItemOption>
+              ))
+            ) : (
+              <MenuItemOption isDisabled px={0}>
+                <BeatLoader size={8} />
+              </MenuItemOption>
+            )
+          }
           width={20}
         />
 

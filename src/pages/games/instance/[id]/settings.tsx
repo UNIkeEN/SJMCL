@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Editable from "@/components/common/editable";
 import {
@@ -19,19 +19,40 @@ import { GameIconSelectorPopover } from "@/components/game-icon-selector";
 import GameSettingsGroups from "@/components/game-settings-groups";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useToast } from "@/contexts/toast";
+import { InstanceService } from "@/services/instance";
 
 const InstanceSettingsPage = () => {
   const router = useRouter();
+  const toast = useToast();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const globalGameConfigs = config.globalGameConfig;
-  const { summary } = useInstanceSharedData();
+  const { summary, updateSummary } = useInstanceSharedData();
 
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
 
   const [applySettings, setApplySettings] = useState<boolean>(false);
+
+  const handleRenameInstance = useCallback(
+    (name: string) => {
+      InstanceService.renameInstance(Number(instanceId), name).then(
+        (response) => {
+          if (response.status === "success") {
+            updateSummary("name", name);
+          } else
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+        }
+      );
+    },
+    [instanceId, toast, updateSummary]
+  );
 
   const instanceSpecSettingsGroups: OptionItemGroupProps[] = [
     {
@@ -42,7 +63,9 @@ const InstanceSettingsPage = () => {
             <Editable // TBD
               isTextArea={false}
               value={summary?.name || ""}
-              onEditSubmit={(value) => {}}
+              onEditSubmit={(value) => {
+                handleRenameInstance(value);
+              }}
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
@@ -139,7 +162,7 @@ const InstanceSettingsPage = () => {
       </VStack>
       <Box h={4} />
       <Collapse in={applySettings} animateOpacity>
-        <GameSettingsGroups instanceId={Number(router.query.id)} />
+        <GameSettingsGroups instanceId={Number(instanceId)} />
       </Collapse>
     </Box>
   );

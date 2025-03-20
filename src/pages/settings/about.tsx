@@ -20,7 +20,7 @@ const AboutSettingsPage = () => {
         <TitleFullWithLogo key={0} />,
         {
           title: t("AboutSettingsPage.about.settings.version.title"),
-          children: config.version,
+          children: config.basicInfo.launcherVersion,
         },
         {
           title: t("AboutSettingsPage.about.settings.contributors.title"),

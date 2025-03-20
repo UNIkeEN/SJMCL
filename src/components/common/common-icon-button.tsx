@@ -5,7 +5,6 @@ import {
   PlacementWithLogical,
   Tooltip,
 } from "@chakra-ui/react";
-import { type } from "@tauri-apps/plugin-os";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -20,6 +19,7 @@ import {
   LuRefreshCcw,
   LuTrash,
 } from "react-icons/lu";
+import { useLauncherConfig } from "@/contexts/config";
 
 interface CommonIconButtonProps
   extends Omit<IconButtonProps, "icon" | "aria-label"> {
@@ -37,6 +37,7 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
   ...props
 }) => {
   const { t } = useTranslation();
+  const { config } = useLauncherConfig();
 
   const supportIcons: Record<string, JSX.Element> = {
     add: <LuPlus />,
@@ -52,9 +53,9 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
   };
 
   const specLabels: Record<string, string> = {
-    copyOrMove: t(`General.copyOrMove.${type()}`),
+    copyOrMove: t(`General.copyOrMove.${config.basicInfo.osType}`),
     revealFile: t("General.revealFile", {
-      opener: t(`Enums.systemFileManager.${type()}`),
+      opener: t(`Enums.systemFileManager.${config.basicInfo.osType}`),
     }),
   };
 

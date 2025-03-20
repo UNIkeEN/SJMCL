@@ -1,5 +1,5 @@
-import { type } from "@tauri-apps/plugin-os";
 import { useEffect } from "react";
+import { useLauncherConfig } from "@/contexts/config";
 
 interface ShortcutCondition {
   metaKey?: boolean;
@@ -16,10 +16,10 @@ const useKeyboardShortcut = (
   },
   callback: () => void
 ) => {
+  const { config } = useLauncherConfig();
   useEffect(() => {
-    const osType = type() as string;
-
-    const activeShortcut = shortcutConditions[osType] || shortcutConditions.all;
+    const activeShortcut =
+      shortcutConditions[config.basicInfo.osType] || shortcutConditions.all;
     if (!activeShortcut) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,7 +49,7 @@ const useKeyboardShortcut = (
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [shortcutConditions, callback]);
+  }, [shortcutConditions, callback, config.basicInfo.osType]);
 };
 
 export default useKeyboardShortcut;

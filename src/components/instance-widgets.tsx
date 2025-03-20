@@ -144,6 +144,7 @@ export const InstanceScreenshotsWidget = () => {
   const { getScreenshotList } = useInstanceSharedData();
   const router = useRouter();
   const { id } = router.query;
+  const instanceId = Array.isArray(id) ? id[0] : id;
 
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -190,7 +191,7 @@ export const InstanceScreenshotsWidget = () => {
           onClick={() => {
             router.push(
               {
-                pathname: `/games/instance/${id}/screenshots`,
+                pathname: `/games/instance/${instanceId}/screenshots`,
                 query: {
                   screenshotIndex: currentIndex.toString(),
                 },
@@ -210,6 +211,7 @@ export const InstanceModsWidget = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
+  const instanceId = Array.isArray(id) ? id[0] : id;
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { getLocalModList } = useInstanceSharedData();
@@ -259,7 +261,7 @@ export const InstanceModsWidget = () => {
           justifyContent="flex-start"
           colorScheme={primaryColor}
           onClick={() => {
-            router.push(`/games/instance/${id}/mods`);
+            router.push(`/games/instance/${instanceId}/mods`);
           }}
         >
           <HStack spacing={1.5}>
@@ -358,6 +360,7 @@ export const InstanceMoreWidget = () => {
   const language = config.general.general.language;
   const router = useRouter();
   const { id } = router.query;
+  const instanceId = Array.isArray(id) ? id[0] : id;
   const { summary } = useInstanceSharedData();
 
   const features: Record<string, IconType> = {
@@ -378,7 +381,9 @@ export const InstanceMoreWidget = () => {
               variant="ghost"
               size="lg"
               colorScheme={primaryColor}
-              onClick={() => router.push(`/games/instance/${id}/${key}`)}
+              onClick={() =>
+                router.push(`/games/instance/${instanceId}/${key}`)
+              }
             >
               <VStack spacing={1} align="center">
                 <Icon as={icon} boxSize="24px" />
@@ -397,7 +402,9 @@ export const InstanceMoreWidget = () => {
                 variant="ghost"
                 size="lg"
                 colorScheme={primaryColor}
-                onClick={() => router.push(`/games/instance/${id}/${key}`)}
+                onClick={() =>
+                  router.push(`/games/instance/${instanceId}/${key}`)
+                }
                 aria-label={t(`InstanceLayout.instanceTabList.${key}`)}
               />
             </Tooltip>

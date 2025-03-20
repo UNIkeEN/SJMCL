@@ -42,6 +42,8 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const { t } = useTranslation();
   const { openSharedModal } = useSharedModals();
+  const { id } = router.query;
+  const instanceId = Array.isArray(id) ? id[0] : id;
 
   const { summary } = useInstanceSharedData();
   const { config } = useLauncherConfig();
@@ -126,7 +128,7 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           config.general.general.language.startsWith("zh") ? "0.05rem" : 0.5
         }
         items={instanceTabList.map((item) => ({
-          value: `/games/instance/${router.query.id}/${item.key}`,
+          value: `/games/instance/${instanceId}/${item.key}`,
           label: (
             <HStack spacing={1.5}>
               <Icon as={item.icon} />

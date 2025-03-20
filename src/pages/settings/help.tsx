@@ -79,7 +79,7 @@ const HelpSettingsPage = () => {
           description: t("HelpSettingsPage.community.settings.MUA.description"),
           children: (
             <LinkIconButton
-              url="https://www.mualliance.cn/"
+              url={t("HelpSettingsPage.community.settings.MUA.url")}
               aria-label="MUA"
               isExternal
               withTooltip
@@ -90,7 +90,7 @@ const HelpSettingsPage = () => {
           title: t("HelpSettingsPage.community.settings.SJMC.title"),
           children: (
             <LinkIconButton
-              url="https://mc.sjtu.cn/"
+              url={t("HelpSettingsPage.community.settings.SJMC.url")}
               aria-label="SJMC"
               isExternal
               withTooltip

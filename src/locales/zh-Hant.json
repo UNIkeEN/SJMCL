@@ -725,7 +725,9 @@
         "processPriority": {
           "title": "程序優先順序",
           "low": "低",
-          "middle": "中",
+          "belowNormal": "較低",
+          "normal": "中",
+          "aboveNormal": "較高",
           "high": "高"
         }
       }
@@ -1461,6 +1463,15 @@
           }
         }
       },
+      "renameInstance": {
+        "error": {
+          "title": "重命名例項失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
+            "CONFLICT_NAME_ERROR": "重複的例項名稱已存在"
+          }
+        }
+      },
       "retrieveWorldList": {
         "error": {
           "title": "獲取世界列表失敗"
@@ -1470,7 +1481,7 @@
         "error": {
           "title": "獲取伺服器列表失敗",
           "description": {
-            "SERVER_NBT_READ_ERROR": "server.dat 可能已損壞"
+            "SERVER_NBT_READ_ERROR": "servers.dat 可能已損壞"
           }
         }
       },

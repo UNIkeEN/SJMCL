@@ -60,6 +60,23 @@ export class InstanceService {
   }
 
   /**
+   * RENAME the specified instance (will update version folder name and field in version JSON).
+   * @param {number} instanceId - The instance ID to rename.
+   * @param {string} newName - New name
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async renameInstance(
+    instanceId: number,
+    newName: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("rename_instance", {
+      instanceId,
+      newName,
+    });
+  }
+
+  /**
    * COPY the specified resource to the target instance(s).
    * @param {string} srcFilePath - The path of the file to copy.
    * @param {number} tgtInstIds - ID of the target instance(s).
