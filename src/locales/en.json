@@ -168,7 +168,7 @@
           "3rdparty": "This auth source supports the Yggdrasil Connect Proposal",
           "microsoft": "Supports Microsoft OAuth 2.0 device authorization grant flow"
         },
-        "next": "Please click the Continue button and paste the code above into the input box below (copied automatically)"
+        "next": "Please click the Continue button and input the code above (already copied)"
       },
       "button": {
         "start": {
