@@ -194,8 +194,12 @@ structstruck::strike! {
         #[default(sys_info::get_mapped_locale())]
         pub language: String,
       },
-      pub optional_functions: struct {
-        pub discover: bool,
+      pub functionality: struct {
+        pub discover_page: bool,
+        #[default = "instance"]
+        pub instances_nav_type: String,
+        #[default = true]
+        pub launch_page_quick_switch: bool,
       }
     },
     pub global_game_config: GameConfig,

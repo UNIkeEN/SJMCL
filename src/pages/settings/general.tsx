@@ -1,10 +1,11 @@
-import { Kbd, Switch, Text, useDisclosure } from "@chakra-ui/react";
+import { Badge, Kbd, Switch, Text, useDisclosure } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import SegmentedControl from "@/components/common/segmented";
 import LanguageMenu from "@/components/language-menu";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
@@ -21,12 +22,17 @@ const GeneralSettingsPage = () => {
     onClose: onDiscoverNoticeDialogClose,
   } = useDisclosure();
 
+  const instancesNavTypes = ["instance", "directory"];
+
   const generalSettingGroups: OptionItemGroupProps[] = [
     {
       title: t("GeneralSettingsPage.general.title"),
       items: [
         {
           title: t("GeneralSettingsPage.general.settings.language.title"),
+          description: t(
+            "GeneralSettingsPage.general.settings.language.communityAck"
+          ),
           children: <LanguageMenu />,
         },
       ],
@@ -35,16 +41,61 @@ const GeneralSettingsPage = () => {
       title: t("GeneralSettingsPage.functions.title"),
       items: [
         {
-          title: t("GeneralSettingsPage.functions.settings.discover.title"),
+          title: t("GeneralSettingsPage.functions.settings.discoverPage.title"),
+          titleExtra: <Badge colorScheme="purple">Beta</Badge>,
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={generalConfigs.optionalFunctions.discover}
+              isChecked={generalConfigs.functionality.discoverPage}
               onChange={(e) => {
-                update("general.optionalFunctions.discover", e.target.checked);
+                update("general.functionality.discoverPage", e.target.checked);
                 if (e.target.checked) {
                   onDiscoverNoticeDialogOpen();
                 }
+              }}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      items: [
+        {
+          title: t(
+            "GeneralSettingsPage.functions.settings.instancesNavType.title"
+          ),
+          children: (
+            <SegmentedControl
+              selected={generalConfigs.functionality.instancesNavType}
+              onSelectItem={(s) => {
+                update("general.functionality.instancesNavType", s as string);
+              }}
+              size="xs"
+              items={instancesNavTypes.map((s) => ({
+                label: t(
+                  `GeneralSettingsPage.functions.settings.instancesNavType.${s}`
+                ),
+                value: s,
+              }))}
+            />
+          ),
+        },
+        {
+          title: t(
+            "GeneralSettingsPage.functions.settings.launchPageQuickSwitch.title"
+          ),
+          description: t(
+            "GeneralSettingsPage.functions.settings.launchPageQuickSwitch.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={generalConfigs.functionality.launchPageQuickSwitch}
+              onChange={(e) => {
+                update(
+                  "general.functionality.launchPageQuickSwitch",
+                  e.target.checked
+                );
               }}
             />
           ),
@@ -65,7 +116,7 @@ const GeneralSettingsPage = () => {
         body={
           <Text>
             {t(
-              "GeneralSettingsPage.functions.settings.discover.openNotice.part-1"
+              "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-1"
             )}
             <Kbd>
               {t(
@@ -75,7 +126,7 @@ const GeneralSettingsPage = () => {
             {" + "}
             <Kbd>S</Kbd>
             {t(
-              "GeneralSettingsPage.functions.settings.discover.openNotice.part-2"
+              "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-2"
             )}
           </Text>
         }

@@ -18,11 +18,15 @@ import { GameInstanceSummary } from "@/models/instance/misc";
 interface GamesViewProps extends BoxProps {
   games: GameInstanceSummary[];
   viewType: string;
+  onSelectCallback?: () => void;
+  withMenu?: boolean;
 }
 
 const GamesView: React.FC<GamesViewProps> = ({
   games,
   viewType,
+  onSelectCallback = () => {},
+  withMenu = true,
   ...boxProps
 }) => {
   const { config } = useLauncherConfig();
@@ -44,6 +48,12 @@ const GamesView: React.FC<GamesViewProps> = ({
     return `${game.version}, ${game.modLoader.loaderType} ${game.modLoader.version}`;
   };
 
+  const handleUpdateSelectedGameInstance = (game: GameInstanceSummary) => {
+    // TODO: add service logic
+    setSelectedGameInstance(game);
+    onSelectCallback();
+  };
+
   const listItems = games.map((game) => ({
     title: game.name,
     description:
@@ -52,7 +62,7 @@ const GamesView: React.FC<GamesViewProps> = ({
       <HStack spacing={2.5}>
         <Radio
           value={game.id.toString()}
-          onClick={() => setSelectedGameInstance(game)}
+          onClick={() => handleUpdateSelectedGameInstance(game)}
           colorScheme={primaryColor}
         />
         <Image
@@ -63,7 +73,7 @@ const GamesView: React.FC<GamesViewProps> = ({
         />
       </HStack>
     ),
-    children: <GameMenu game={game} variant="buttonGroup" />,
+    children: withMenu ? <GameMenu game={game} variant="buttonGroup" /> : <></>,
   }));
 
   const gridItems = games.map((game) => ({
@@ -71,15 +81,19 @@ const GamesView: React.FC<GamesViewProps> = ({
       title: game.name,
       description: generateDesc(game),
       image: game.iconSrc,
-      extraContent: (
-        <Box position="absolute" top={0.5} right={1}>
-          <GameMenu game={game} />
-        </Box>
-      ),
+      ...(withMenu
+        ? {
+            extraContent: (
+              <Box position="absolute" top={0.5} right={1}>
+                <GameMenu game={game} />
+              </Box>
+            ),
+          }
+        : {}),
     },
     isSelected: selectedGameInstance?.id === game.id,
     radioValue: game.id.toString(),
-    onSelect: () => setSelectedGameInstance(game),
+    onSelect: () => handleUpdateSelectedGameInstance(game),
   }));
 
   return (

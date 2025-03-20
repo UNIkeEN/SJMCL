@@ -7,15 +7,23 @@ import {
   IconButton,
   IconButtonProps,
   Image,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Text,
   Tooltip,
   VStack,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { cloneElement, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeftRight } from "react-icons/lu";
+import GamesView from "@/components/games-view";
+import PlayersView from "@/components/players-view";
+import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
@@ -23,34 +31,94 @@ import { GameInstanceSummary } from "@/models/instance/misc";
 import styles from "@/styles/launch.module.css";
 import { base64ImgSrc } from "@/utils/string";
 
-interface SwitchButtonProps extends IconButtonProps {
+interface SwitchButtonProps extends Omit<IconButtonProps, "onClick"> {
   tooltip: string;
+  onClick: () => void;
+  popoverContent: React.ReactElement;
 }
 
-const SwitchButton: React.FC<SwitchButtonProps> = ({ tooltip, ...props }) => {
+const SwitchButton: React.FC<SwitchButtonProps> = ({
+  tooltip,
+  popoverContent,
+  onClick,
+  ...props
+}) => {
+  const { config } = useLauncherConfig();
+  const quickSwitch = config.general.functionality.launchPageQuickSwitch;
+  const { isOpen, onToggle, onClose } = useDisclosure();
+
+  const [tooltipDisabled, setTooltipDisabled] = useState(false);
+
+  // To use Popover and Tooltip together, refer to: https://github.com/chakra-ui/chakra-ui/issues/2843
+  // However, when the Popover is closed, the Tooltip will wrongly show again.
+  // To prevent this, we temporarily disable the Tooltip using a timeout.
+  const handleClose = () => {
+    setTooltipDisabled(true);
+    onClose();
+    setTimeout(() => setTooltipDisabled(false), 200);
+  };
+
   return (
-    <Tooltip label={tooltip} placement="top-end">
-      <IconButton
-        size="xs"
-        position="absolute"
-        top={1}
-        right={1}
-        icon={<LuArrowLeftRight />}
-        {...props}
-      />
-    </Tooltip>
+    <Popover
+      isOpen={isOpen}
+      onClose={handleClose}
+      placement="top-end"
+      gutter={12} // add more gutter to show clear space from the launch button's shadow
+    >
+      <Tooltip label={tooltip} placement="top-end" isDisabled={tooltipDisabled}>
+        <Box position="absolute" top={1} right={1}>
+          <PopoverTrigger>
+            <IconButton
+              size="xs"
+              icon={<LuArrowLeftRight />}
+              {...props}
+              onClick={() => {
+                quickSwitch ? onToggle() : onClick();
+              }}
+            />
+          </PopoverTrigger>
+        </Box>
+      </Tooltip>
+      <PopoverContent maxH="2xs" overflow="auto">
+        <PopoverBody p={0}>
+          {cloneElement(popoverContent, {
+            // Delay close after selecting an item for better UX.
+            onSelectCallback: () => setTimeout(handleClose, 100),
+          })}
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
   );
 };
 
 const LaunchPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { getSelectedPlayer, getSelectedGameInstance } = useData();
   const themedStyles = useThemedCSSStyle();
+
+  const {
+    getPlayerList,
+    getSelectedPlayer,
+    getGameInstanceList,
+    getSelectedGameInstance,
+  } = useData();
+
+  const [playerList, setPlayerList] = useState<Player[]>([]);
+  const [gameInstanceList, setGameInstanceList] = useState<
+    GameInstanceSummary[]
+  >([]);
 
   const [selectedPlayer, setSelectedPlayer] = useState<Player>();
   const [selectedGameInstance, setSelectedGameInstance] =
     useState<GameInstanceSummary>();
+
+  useEffect(() => {
+    setPlayerList(getPlayerList() || []);
+  }, [getPlayerList]);
+
+  useEffect(() => {
+    setGameInstanceList(getGameInstanceList() || []);
+  }, [getGameInstanceList]);
 
   useEffect(() => {
     setSelectedPlayer(getSelectedPlayer());
@@ -71,6 +139,13 @@ const LaunchPage = () => {
           tooltip={t("LaunchPage.SwitchButton.tooltip.switchPlayer")}
           aria-label="switch-player"
           variant="subtle"
+          popoverContent={
+            <PlayersView
+              players={playerList}
+              viewType="list"
+              withMenu={false}
+            />
+          }
           onClick={() => router.push("/accounts")}
         />
         <HStack spacing={2.5} h="100%" w="100%">
@@ -130,6 +205,13 @@ const LaunchPage = () => {
           tooltip={t("LaunchPage.SwitchButton.tooltip.switchGame")}
           aria-label="switch-game"
           colorScheme={useColorModeValue("blackAlpha", "gray")}
+          popoverContent={
+            <GamesView
+              games={gameInstanceList}
+              viewType="list"
+              withMenu={false}
+            />
+          }
           onClick={() => router.push("/games/all")}
         />
       </Box>

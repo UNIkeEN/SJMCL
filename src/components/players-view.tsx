@@ -22,11 +22,15 @@ import { base64ImgSrc } from "@/utils/string";
 interface PlayersViewProps extends BoxProps {
   players: Player[];
   viewType: string;
+  onSelectCallback?: () => void;
+  withMenu?: boolean;
 }
 
 const PlayersView: React.FC<PlayersViewProps> = ({
   players,
   viewType,
+  onSelectCallback = () => {},
+  withMenu = true,
   ...boxProps
 }) => {
   const { t } = useTranslation();
@@ -48,6 +52,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         });
       }
     });
+    onSelectCallback();
   };
 
   const listItems = players.map((player) => ({
@@ -71,7 +76,11 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         />
       </HStack>
     ),
-    children: <PlayerMenu player={player} variant="buttonGroup" />,
+    children: withMenu ? (
+      <PlayerMenu player={player} variant="buttonGroup" />
+    ) : (
+      <></>
+    ),
   }));
 
   const gridItems = players.map((player) => ({
@@ -82,11 +91,15 @@ const PlayersView: React.FC<PlayersViewProps> = ({
           ? t(`Enums.playerTypes.${player.playerType}`)
           : player.authServer?.name || "",
       image: base64ImgSrc(player.avatar),
-      extraContent: (
-        <Box position="absolute" top={0.5} right={1}>
-          <PlayerMenu player={player} />
-        </Box>
-      ),
+      ...(withMenu
+        ? {
+            extraContent: (
+              <Box position="absolute" top={0.5} right={1}>
+                <PlayerMenu player={player} />
+              </Box>
+            ),
+          }
+        : {}),
     },
     isSelected: selectedPlayer?.uuid === player.uuid,
     onSelect: () => handleUpdateSelectedPlayer(genPlayerId(player)),

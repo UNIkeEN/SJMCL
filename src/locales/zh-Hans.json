@@ -652,19 +652,29 @@
       "title": "通用设置",
       "settings": {
         "language": {
-          "title": "语言（Language）"
+          "title": "语言（Language）",
+          "communityAck": ""
         }
       }
     },
     "functions": {
       "title": "功能",
       "settings": {
-        "discover": {
+        "discoverPage": {
           "title": "发现页",
           "openNotice": {
             "part-1": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 ",
             "part-2": " 继续使用 “聚合搜索”。"
           }
+        },
+        "instancesNavType": {
+          "title": "实例导航栏分组方式",
+          "instance": "按实例",
+          "directory": "按目录"
+        },
+        "launchPageQuickSwitch": {
+          "title": "快捷切换实例与账户",
+          "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
         }
       }
     }

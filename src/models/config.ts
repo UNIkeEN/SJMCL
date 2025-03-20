@@ -103,8 +103,10 @@ export interface LauncherConfig {
     general: {
       language: string;
     };
-    optionalFunctions: {
-      discover: boolean;
+    functionality: {
+      discoverPage: boolean;
+      instancesNavType: string;
+      launchPageQuickSwitch: boolean;
     };
   };
   localGameDirectories: GameDirectory[];
@@ -233,8 +235,10 @@ export const defaultConfig: LauncherConfig = {
     general: {
       language: "zh-Hans",
     },
-    optionalFunctions: {
-      discover: false,
+    functionality: {
+      discoverPage: false,
+      instancesNavType: "instance",
+      launchPageQuickSwitch: false,
     },
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],

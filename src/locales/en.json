@@ -652,19 +652,29 @@
       "title": "General Settings",
       "settings": {
         "language": {
-          "title": "Language"
+          "title": "Language",
+          "communityAck": ""
         }
       }
     },
     "functions": {
       "title": "Functionality",
       "settings": {
-        "discover": {
+        "discoverPage": {
           "title": "Discover Page",
           "openNotice": {
             "part-1": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut ",
             "part-2": "."
           }
+        },
+        "instancesNavType": {
+          "title": "Instance Navigation Menu Grouping",
+          "instance": "By Instance",
+          "directory": "By Directory"
+        },
+        "launchPageQuickSwitch": {
+          "title": "Quick Switch for Accounts & Instances",
+          "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
         }
       }
     }
