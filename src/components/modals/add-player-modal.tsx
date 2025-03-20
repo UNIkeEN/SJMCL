@@ -122,7 +122,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   useEffect(() => {
     setOAuthCodeResponse(undefined);
-  }, [showOAuth, playerType]);
+  }, [showOAuth, playerType, modalProps.isOpen]);
 
   const isOfflinePlayernameValid = /^[a-zA-Z0-9_]{0,16}$/.test(playername);
 
