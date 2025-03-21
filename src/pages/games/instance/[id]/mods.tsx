@@ -48,17 +48,19 @@ const InstanceModsPage = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
-    setFilteredMods(getLocalModList() || []);
+    const mods = getLocalModList() || [];
+    setLocalMods(mods);
+    setFilteredMods(mods);
   }, [getLocalModList]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleSearchChange = (value: string) => {
     setQuery(value);
 
     const lowerCaseQuery = value.toLowerCase();
-    const filtered = localMods.filter((mod) =>
-      mod.name?.toLowerCase().includes(lowerCaseQuery)
+    const filtered = localMods.filter(
+      (mod) =>
+        mod.name?.toLowerCase().includes(lowerCaseQuery) ||
+        mod.fileName?.toLowerCase().includes(lowerCaseQuery)
     );
     setFilteredMods(filtered);
   };
@@ -226,7 +228,7 @@ const InstanceModsPage = () => {
               <HStack>
                 <Input
                   value={query}
-                  onChange={handleSearchChange}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   size="xs"
                   fontSize="sm"
                   placeholder={t("InstanceModsPage.modList.menu.placeholder")}
