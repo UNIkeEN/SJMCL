@@ -5,7 +5,8 @@ use crate::{
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
-use std::{collections::HashMap, path::PathBuf, str::FromStr};
+use serde_with::{formats::PreferMany, serde_as, OneOrMany};
+use std::{collections::HashMap, str::FromStr};
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
@@ -66,16 +67,20 @@ pub struct LaunchArgumentTemplate {
   pub jvm: Vec<ArgumentsItem>,
 }
 
+#[serde_as]
 #[derive(Debug, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct ArgumentsItem {
+  #[serde_as(as = "OneOrMany<_, PreferMany>")]
   pub value: Vec<String>,
   pub rules: Vec<InstructionRule>,
 }
 
+#[serde_as]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct ArgumentsItemDefault {
+  #[serde_as(as = "OneOrMany<_, PreferMany>")]
   pub value: Vec<String>,
   pub rules: Vec<InstructionRule>,
 }
@@ -287,18 +292,6 @@ structstruck::strike! {
         pub type_: String,
       },
   }
-}
-
-pub async fn load_client_info_from_json(path: &PathBuf) -> SJMCLResult<McClientInfo> {
-  let client_string = tokio::fs::read_to_string(&path).await?;
-  let meta = match serde_json::from_str::<McClientInfo>(&client_string) {
-    Ok(val) => val,
-    Err(e) => {
-      println!("DESERIALIZE ERROR: {:?}", e);
-      return Err(SJMCLError::from(e));
-    }
-  };
-  Ok(meta)
 }
 
 pub fn patchs_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String>, ModLoaderType) {

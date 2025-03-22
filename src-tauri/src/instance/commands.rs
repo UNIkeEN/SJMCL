@@ -13,13 +13,13 @@ use super::{
   },
   models::{
     misc::{
-      GameServerInfo, Instance, InstanceError, InstanceSubdirType, LocalModInfo, ModLoaderType,
-      ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
+      GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
+      ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
     },
     world::{base::WorldInfo, level::LevelData},
   },
 };
-use crate::error::SJMCLResult;
+use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig};
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use std::fs;
@@ -30,11 +30,42 @@ use tauri_plugin_opener::open_path;
 use tokio;
 
 #[tauri::command]
-pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<Instance>> {
+pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
   refresh_and_update_instances(&app).await; // firstly refresh and update
   let binding = app.state::<Mutex<Vec<Instance>>>();
   let state = binding.lock()?;
-  Ok(state.clone())
+  let mut summary_list = Vec::new();
+  let global_version_isolation = app
+    .state::<Mutex<LauncherConfig>>()
+    .lock()
+    .unwrap()
+    .global_game_config
+    .version_isolation;
+  for instance in state.iter() {
+    // same as get_game_config(), but mannually here
+    let is_version_isolated =
+      if instance.use_spec_game_config && instance.spec_game_config.is_some() {
+        instance
+          .spec_game_config
+          .as_ref()
+          .unwrap()
+          .version_isolation
+      } else {
+        global_version_isolation
+      };
+
+    summary_list.push(InstanceSummary {
+      id: instance.id,
+      name: instance.name.clone(),
+      description: instance.description.clone(),
+      icon_src: instance.icon_src.clone(),
+      version: instance.version.clone(),
+      version_path: instance.version_path.clone(),
+      mod_loader: instance.mod_loader.clone(),
+      is_version_isolated,
+    });
+  }
+  Ok(summary_list)
 }
 
 #[tauri::command]

@@ -65,7 +65,7 @@ impl ModLoaderType {
 
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
-  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
+  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields, default)]]
   pub struct Instance {
     pub id: usize,
     pub name: String,
@@ -73,13 +73,28 @@ structstruck::strike! {
     pub icon_src: String,
     pub version: String,
     pub version_path: PathBuf,
-    pub is_version_isolated: bool,
     pub mod_loader: struct {
       pub loader_type: ModLoaderType,
       pub version: String,
     },
-    pub spec_game_config: Option<GameConfig>, // TODO: any sub-config can be None?
+    // if true, use the spec_game_config, else use the global game config
+    pub use_spec_game_config: bool,
+    // if use_spec_game_config is false, this field is ignored
+    pub spec_game_config: Option<GameConfig>,
   }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct InstanceSummary {
+  pub id: usize,
+  pub name: String,
+  pub description: String,
+  pub icon_src: String,
+  pub version: String,
+  pub version_path: PathBuf,
+  pub mod_loader: ModLoader,
+  pub is_version_isolated: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

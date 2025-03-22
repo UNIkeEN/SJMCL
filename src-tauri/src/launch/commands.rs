@@ -3,12 +3,13 @@ use crate::{
   error::SJMCLResult,
   instance::{
     helpers::{
-      client_json::{load_client_info_from_json, DownloadsArtifact},
+      client_json::{DownloadsArtifact, McClientInfo},
       misc::{get_instance_client_json_path, get_instance_subdir_path},
     },
     models::misc::{InstanceError, InstanceSubdirType},
   },
   launch::helpers::cmd_builder::{execute_cmd, ExecuteType},
+  storage::load_json_async,
 };
 use tauri::AppHandle;
 
@@ -23,7 +24,7 @@ pub async fn validate_game_files(
       None => return Err(InstanceError::InstanceNotFoundByID.into()),
     };
   let client_info = if let Some(path) = get_instance_client_json_path(&app, instance_id) {
-    load_client_info_from_json(&path).await?
+    load_json_async::<McClientInfo>(&path).await?
   } else {
     return Err(InstanceError::FileNotFoundError.into());
   };
@@ -35,7 +36,7 @@ pub async fn validate_game_files(
 pub async fn launch_game(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
   println!("instance id: {}", instance_id);
   let client_info = if let Some(path) = get_instance_client_json_path(&app, instance_id) {
-    load_client_info_from_json(&path).await?
+    load_json_async::<McClientInfo>(&path).await?
   } else {
     return Err(InstanceError::FileNotFoundError.into());
   };

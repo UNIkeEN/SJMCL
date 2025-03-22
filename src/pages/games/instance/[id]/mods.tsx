@@ -1,4 +1,12 @@
-import { Avatar, AvatarBadge, HStack, Icon, Tag, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  AvatarBadge,
+  HStack,
+  Icon,
+  Input,
+  Tag,
+  Text,
+} from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +16,7 @@ import {
   LuClockArrowUp,
   LuSearch,
   LuTriangleAlert,
+  LuX,
 } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
@@ -34,10 +43,33 @@ const InstanceModsPage = () => {
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
+  const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>(localMods);
+  const [query, setQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
+    const mods = getLocalModList() || [];
+    setLocalMods(mods);
+    setFilteredMods(mods);
   }, [getLocalModList]);
+
+  const handleSearchChange = (value: string) => {
+    setQuery(value);
+
+    const lowerCaseQuery = value.toLowerCase();
+    const filtered = localMods.filter(
+      (mod) =>
+        mod.name?.toLowerCase().includes(lowerCaseQuery) ||
+        mod.fileName?.toLowerCase().includes(lowerCaseQuery)
+    );
+    setFilteredMods(filtered);
+  };
+
+  const handleClearSearch = () => {
+    setQuery("");
+    setIsSearching(false);
+    setFilteredMods(localMods);
+  };
 
   const handleToggleModByExtension = useCallback(
     (filePath: string, enable: boolean) => {
@@ -106,11 +138,6 @@ const InstanceModsPage = () => {
       onClick: () => {},
     },
     {
-      icon: LuSearch,
-      label: t("InstanceModsPage.modList.menu.search"),
-      onClick: () => {},
-    },
-    {
       icon: "refresh",
       onClick: () => {
         setLocalMods(getLocalModList(true) || []);
@@ -176,7 +203,7 @@ const InstanceModsPage = () => {
         title={t("InstanceModsPage.modList.title")}
         isAccordion
         initialIsOpen={accordionStates[1]}
-        titleExtra={<CountTag count={localMods.length} />}
+        titleExtra={<CountTag count={filteredMods.length} />}
         onAccordionToggle={(isOpen) => {
           update(
             "states.instanceModsPage.accordionStates",
@@ -196,19 +223,47 @@ const InstanceModsPage = () => {
                 h={21}
               />
             ))}
+
+            {isSearching ? (
+              <HStack>
+                <Input
+                  value={query}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  size="xs"
+                  fontSize="sm"
+                  placeholder={t("InstanceModsPage.modList.menu.placeholder")}
+                  focusBorderColor={`${primaryColor}.500`}
+                />
+                <CommonIconButton
+                  icon={LuX}
+                  onClick={handleClearSearch}
+                  size="xs"
+                  fontSize="sm"
+                  label={t("General.cancel")}
+                />
+              </HStack>
+            ) : (
+              <CommonIconButton
+                icon={LuSearch}
+                onClick={() => setIsSearching(true)}
+                size="xs"
+                fontSize="sm"
+                label={t("InstanceModsPage.modList.menu.search")}
+              />
+            )}
           </HStack>
         }
       >
         {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
-          localMods.length > 0 && (
+          filteredMods.length > 0 && (
             <HStack fontSize="xs" color="red.500" mt={-0.5} ml={1.5} mb={2}>
               <Icon as={LuTriangleAlert} />
               <Text>{t("InstanceModsPage.modList.warning")}</Text>
             </HStack>
           )}
-        {localMods.length > 0 ? (
+        {filteredMods.length > 0 ? (
           <OptionItemGroup
-            items={localMods.map((mod) => (
+            items={filteredMods.map((mod) => (
               <OptionItem
                 key={mod.fileName} // unique
                 childrenOnHover

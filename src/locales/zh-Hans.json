@@ -873,7 +873,8 @@
         "alert": "可能不兼容",
         "info": "查看信息",
         "update": "检查更新",
-        "search": "搜索"
+        "search": "搜索",
+        "placeholder": "搜索模组..."
       }
     }
   },

@@ -873,7 +873,8 @@
         "alert": "Potentially incompatible",
         "info": "Mod Info",
         "update": "Update",
-        "search": "Search"
+        "search": "Search",
+        "placeholder": " Search mods..."
       }
     }
   },
