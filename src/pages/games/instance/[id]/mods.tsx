@@ -2,13 +2,14 @@ import {
   Avatar,
   AvatarBadge,
   HStack,
+  Highlight,
   Icon,
   Input,
   Tag,
   Text,
 } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuCircleCheck,
@@ -46,6 +47,7 @@ const InstanceModsPage = () => {
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>(localMods);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const mods = getLocalModList() || [];
@@ -56,14 +58,24 @@ const InstanceModsPage = () => {
   const handleSearchChange = (value: string) => {
     setQuery(value);
 
-    const lowerCaseQuery = value.toLowerCase();
-    const filtered = localMods.filter(
-      (mod) =>
-        mod.name?.toLowerCase().includes(lowerCaseQuery) ||
-        mod.fileName?.toLowerCase().includes(lowerCaseQuery)
-    );
+    const keywords = value.trim().toLowerCase().split(/\s+/);
+    if (keywords.length === 0 || keywords[0] === "") {
+      setFilteredMods(localMods);
+      return;
+    }
+
+    const filtered = localMods.filter((mod) => {
+      const name = mod.name?.toLowerCase() || "";
+      const fileName = mod.fileName?.toLowerCase() || "";
+      return keywords.some((kw) => name.includes(kw) || fileName.includes(kw));
+    });
+
     setFilteredMods(filtered);
   };
+
+  useEffect(() => {
+    if (isSearching) searchInputRef.current?.focus();
+  }, [isSearching]);
 
   const handleClearSearch = () => {
     setQuery("");
@@ -203,7 +215,11 @@ const InstanceModsPage = () => {
         title={t("InstanceModsPage.modList.title")}
         isAccordion
         initialIsOpen={accordionStates[1]}
-        titleExtra={<CountTag count={filteredMods.length} />}
+        titleExtra={
+          <CountTag
+            count={`${filteredMods.length === localMods.length ? "" : `${filteredMods.length} / `}${localMods.length}`}
+          />
+        }
         onAccordionToggle={(isOpen) => {
           update(
             "states.instanceModsPage.accordionStates",
@@ -227,9 +243,11 @@ const InstanceModsPage = () => {
             {isSearching ? (
               <HStack>
                 <Input
+                  ref={searchInputRef}
                   value={query}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   size="xs"
+                  w={140}
                   fontSize="sm"
                   placeholder={t("InstanceModsPage.modList.menu.placeholder")}
                   focusBorderColor={`${primaryColor}.500`}
@@ -268,9 +286,16 @@ const InstanceModsPage = () => {
                 key={mod.fileName} // unique
                 childrenOnHover
                 title={
-                  mod.translatedName
-                    ? `${mod.translatedName}｜${mod.name}`
-                    : mod.name || mod.fileName
+                  <Text fontSize="xs-sm" className="no-select">
+                    <Highlight
+                      query={query.trim().toLowerCase().split(/\s+/)}
+                      styles={{ bg: "yello.200" }}
+                    >
+                      {mod.translatedName
+                        ? `${mod.translatedName}｜${mod.name}`
+                        : mod.name || mod.fileName}
+                    </Highlight>
+                  </Text>
                 }
                 titleExtra={
                   <HStack>
@@ -292,7 +317,12 @@ const InstanceModsPage = () => {
                     overflow="hidden"
                     className="secondary-text no-select ellipsis-text" // only show one line
                   >
-                    {mod.fileName}
+                    <Highlight
+                      query={query.trim().toLowerCase().split(/\s+/)}
+                      styles={{ bg: "yello.200" }}
+                    >
+                      {mod.fileName}
+                    </Highlight>
                     {mod.description ? `: ${mod.description}` : ""}
                   </Text>
                 }

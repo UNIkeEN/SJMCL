@@ -1,7 +1,7 @@
 import { Tag, TagLabel, TagProps, useColorModeValue } from "@chakra-ui/react";
 
 interface CountTagProps extends TagProps {
-  count?: number;
+  count?: number | string;
   children?: React.ReactNode;
 }
 

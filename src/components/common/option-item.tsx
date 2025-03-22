@@ -13,9 +13,9 @@ import React, { useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 
-export interface OptionItemProps extends BoxProps {
+export interface OptionItemProps extends Omit<BoxProps, "title"> {
   prefixElement?: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   titleExtra?: React.ReactNode;
   description?: React.ReactNode;
   isLoading?: boolean;
@@ -60,11 +60,15 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           flex="1"
         >
           <HStack spacing={2} flexWrap="wrap">
-            <Skeleton isLoaded={!isLoading}>
-              <Text fontSize="xs-sm" className="no-select">
-                {title}
-              </Text>
-            </Skeleton>
+            {typeof title === "string" ? (
+              <Skeleton isLoaded={!isLoading}>
+                <Text fontSize="xs-sm" className="no-select">
+                  {title}
+                </Text>
+              </Skeleton>
+            ) : (
+              title
+            )}
             {titleExtra &&
               (isLoading ? (
                 <Skeleton isLoaded={!isLoading}>
