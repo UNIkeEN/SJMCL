@@ -8,7 +8,7 @@ use tauri::AppHandle;
 use tauri_plugin_http::reqwest;
 
 async fn get_profile(
-  app: AppHandle,
+  app: &AppHandle,
   auth_server_url: String,
   access_token: String,
   id: String,
@@ -20,10 +20,10 @@ async fn get_profile(
     auth_server_url, id
   ))
   .await
-  .map_err(|_| AccountError::AuthServerError)?
+  .map_err(|_| AccountError::NetworkError)?
   .json::<Value>()
   .await
-  .map_err(|_| AccountError::AuthServerError)?;
+  .map_err(|_| AccountError::ParseError)?;
 
   parse_profile(
     app,
@@ -37,7 +37,7 @@ async fn get_profile(
 }
 
 pub async fn login(
-  app: AppHandle,
+  app: &AppHandle,
   auth_server_url: String,
   username: String,
   password: String,
@@ -60,7 +60,7 @@ pub async fn login(
     )
     .send()
     .await
-    .map_err(|_| AccountError::AuthServerError)?;
+    .map_err(|_| AccountError::NetworkError)?;
 
   if !response.status().is_success() {
     return Err(AccountError::Invalid.into());
@@ -69,7 +69,7 @@ pub async fn login(
   let content = response
     .json::<Value>()
     .await
-    .map_err(|_| AccountError::AuthServerError)?;
+    .map_err(|_| AccountError::ParseError)?;
 
   let available_profiles: Vec<Value> = match content["availableProfiles"].as_array() {
     Some(arr) => arr.clone(),
@@ -86,11 +86,11 @@ pub async fn login(
   for profile in available_profiles {
     let id = profile["id"]
       .as_str()
-      .ok_or(AccountError::AuthServerError)?
+      .ok_or(AccountError::ParseError)?
       .to_string();
 
     let player = get_profile(
-      app.clone(),
+      app,
       auth_server_url.clone(),
       access_token.clone(),
       id,

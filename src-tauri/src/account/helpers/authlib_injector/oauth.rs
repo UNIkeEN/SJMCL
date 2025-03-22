@@ -1,22 +1,23 @@
 use super::common::parse_profile;
 use super::constants::SCOPE;
+use crate::account::helpers::oauth::create_auth_webview;
 use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo};
 use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde_json::Value;
-use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, LogicalSize, Size, Url, WebviewUrl, WebviewWindowBuilder};
+use tauri::AppHandle;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest::{self, Client};
 use tokio::time::{sleep, Duration};
+use url::Url;
 
 async fn fetch_openid_configuration(openid_configuration_url: String) -> SJMCLResult<Value> {
   let res = reqwest::get(&openid_configuration_url)
     .await
-    .map_err(|_| AccountError::AuthServerError)?
+    .map_err(|_| AccountError::NetworkError)?
     .json::<Value>()
     .await
-    .map_err(|_| AccountError::AuthServerError)?;
+    .map_err(|_| AccountError::ParseError)?;
 
   Ok(res)
 }
@@ -24,16 +25,16 @@ async fn fetch_openid_configuration(openid_configuration_url: String) -> SJMCLRe
 async fn fetch_jwks(jwks_uri: String) -> SJMCLResult<Value> {
   let res = reqwest::get(&jwks_uri)
     .await
-    .map_err(|_| AccountError::AuthServerError)?
+    .map_err(|_| AccountError::NetworkError)?
     .json::<Value>()
     .await
-    .map_err(|_| AccountError::AuthServerError)?;
+    .map_err(|_| AccountError::ParseError)?;
 
   Ok(res)
 }
 
 pub async fn device_authorization(
-  app: AppHandle,
+  app: &AppHandle,
   openid_configuration_url: String,
   client_id: String,
 ) -> SJMCLResult<OAuthCodeResponse> {
@@ -43,26 +44,26 @@ pub async fn device_authorization(
 
   let device_authorization_endpoint = openid_configuration["device_authorization_endpoint"]
     .as_str()
-    .ok_or(AccountError::AuthServerError)?;
+    .ok_or(AccountError::ParseError)?;
 
   let response: Value = client
     .post(device_authorization_endpoint)
     .form(&[("client_id", client_id), ("scope", SCOPE.to_string())])
     .send()
     .await
-    .map_err(|_| AccountError::AuthServerError)?
+    .map_err(|_| AccountError::NetworkError)?
     .json::<Value>()
     .await
-    .map_err(|_| AccountError::AuthServerError)?;
+    .map_err(|_| AccountError::ParseError)?;
 
   let user_code = response["user_code"]
     .as_str()
-    .ok_or(AccountError::AuthServerError)?
+    .ok_or(AccountError::ParseError)?
     .to_string();
 
   let device_code = response["device_code"]
     .as_str()
-    .ok_or(AccountError::AuthServerError)?
+    .ok_or(AccountError::ParseError)?
     .to_string();
 
   app.clipboard().write_text(user_code.clone())?;
@@ -72,46 +73,49 @@ pub async fn device_authorization(
     .unwrap_or(
       response["verification_uri"]
         .as_str()
-        .ok_or(AccountError::AuthServerError)?,
+        .ok_or(AccountError::ParseError)?,
     )
     .to_string();
+
+  let interval = response["interval"]
+    .as_u64()
+    .ok_or(AccountError::ParseError)?;
 
   Ok(OAuthCodeResponse {
     user_code,
     device_code,
     verification_uri,
+    interval,
   })
 }
 
 async fn parse_token(
-  app: AppHandle,
+  app: &AppHandle,
   jwks: Value,
   id_token: String,
   access_token: String,
   auth_server_url: String,
   client_id: String,
 ) -> SJMCLResult<PlayerInfo> {
-  let key = &jwks["keys"]
-    .as_array()
-    .ok_or(AccountError::AuthServerError)?[0];
+  let key = &jwks["keys"].as_array().ok_or(AccountError::ParseError)?[0];
 
   let e = key["e"].as_str().unwrap_or_default();
   let n = key["n"].as_str().unwrap_or_default();
 
   let decoding_key =
-    DecodingKey::from_rsa_components(n, e).map_err(|_| AccountError::AuthServerError)?;
+    DecodingKey::from_rsa_components(n, e).map_err(|_| AccountError::ParseError)?;
 
   let mut validation = Validation::new(Algorithm::RS256);
   validation.set_audience(&[client_id]);
 
   let token_data = decode::<Value>(id_token.as_str(), &decoding_key, &validation)
-    .map_err(|_| AccountError::AuthServerError)?;
+    .map_err(|_| AccountError::ParseError)?;
 
   let selected_profile = token_data.claims["selectedProfile"].clone();
 
   let auth_account = selected_profile["name"]
     .as_str()
-    .ok_or(AccountError::AuthServerError)?
+    .ok_or(AccountError::ParseError)?
     .to_string();
 
   parse_profile(
@@ -126,7 +130,7 @@ async fn parse_token(
 }
 
 pub async fn login(
-  app: AppHandle,
+  app: &AppHandle,
   auth_server_url: String,
   openid_configuration_url: String,
   client_id: String,
@@ -138,33 +142,18 @@ pub async fn login(
 
   let token_endpoint = openid_configuration["token_endpoint"]
     .as_str()
-    .ok_or(AccountError::AuthServerError)?;
+    .ok_or(AccountError::ParseError)?;
 
   let jwks_uri = openid_configuration["jwks_uri"]
     .as_str()
-    .ok_or(AccountError::AuthServerError)?;
+    .ok_or(AccountError::ParseError)?;
 
   let jwks = fetch_jwks(jwks_uri.to_string()).await?;
 
   let verification_url =
-    Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::AuthServerError)?;
+    Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::ParseError)?;
 
-  let is_cancelled = Arc::new(Mutex::new(false));
-  let cancelled_clone = Arc::clone(&is_cancelled);
-
-  let auth_webview_window =
-    WebviewWindowBuilder::new(&app, "", WebviewUrl::External(verification_url))
-      .title("")
-      .build()
-      .map_err(|_| AccountError::AuthServerError)?;
-
-  auth_webview_window.set_size(Size::Logical(LogicalSize::new(650.0, 500.0)))?;
-  auth_webview_window.center()?;
-  auth_webview_window.on_window_event(move |event| {
-    if let tauri::WindowEvent::Destroyed = event {
-      *cancelled_clone.lock().unwrap() = true;
-    }
-  });
+  let (auth_webview, is_cancelled) = create_auth_webview(&app, verification_url).await?;
 
   let access_token: String;
   let id_token: String;
@@ -189,18 +178,18 @@ pub async fn login(
 
       access_token = token["access_token"]
         .as_str()
-        .ok_or(AccountError::AuthServerError)?
+        .ok_or(AccountError::ParseError)?
         .to_string();
       id_token = token["id_token"]
         .as_str()
-        .ok_or(AccountError::AuthServerError)?
+        .ok_or(AccountError::ParseError)?
         .to_string();
 
-      auth_webview_window.close()?;
+      auth_webview.close()?;
       break;
     }
 
-    sleep(Duration::from_secs(1)).await;
+    sleep(Duration::from_secs(auth_info.interval)).await;
   }
 
   parse_token(

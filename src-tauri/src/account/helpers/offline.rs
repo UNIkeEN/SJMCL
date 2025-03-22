@@ -11,7 +11,7 @@ use std::fs;
 use tauri::{path::BaseDirectory, AppHandle, Manager};
 use uuid::Uuid;
 
-pub fn load_preset_skin(app: AppHandle, preset_role: String) -> SJMCLResult<Vec<Texture>> {
+pub fn load_preset_skin(app: &AppHandle, preset_role: String) -> SJMCLResult<Vec<Texture>> {
   let texture_path = app
     .path()
     .resolve(
@@ -34,7 +34,7 @@ pub fn load_preset_skin(app: AppHandle, preset_role: String) -> SJMCLResult<Vec<
   }])
 }
 
-pub async fn login(app: AppHandle, username: String) -> SJMCLResult<PlayerInfo> {
+pub async fn login(app: &AppHandle, username: String) -> SJMCLResult<PlayerInfo> {
   let name_with_prefix = format!("OfflinePlayer:{}", username);
   let uuid = Uuid::new_v5(&Uuid::NAMESPACE_URL, name_with_prefix.as_bytes());
 

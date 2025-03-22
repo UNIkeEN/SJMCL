@@ -1354,7 +1354,8 @@
         "error": {
           "title": "Failed to get authentication code",
           "description": {
-            "AUTH_SERVER_ERROR": "Unable to connect to authentication server, or OAuth is not enabled",
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
             "INVALID": "The player type is invalid"
           }
         }
@@ -1365,7 +1366,8 @@
           "title": "Failed to add player using OAuth",
           "description": {
             "DUPLICATE": "Player already exists",
-            "AUTH_SERVER_ERROR": "Unable to connect to authentication server, or OAuth is not enabled",
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
             "NOT_FOUND": "The authentication server does not exist",
             "TEXTURE_ERROR": "Unable to get player texture",
             "CANCELLED": "OAuth login cancelled"
@@ -1378,7 +1380,8 @@
           "title": "Failed to add player using password",
           "description": {
             "DUPLICATE": "Player already exists",
-            "AUTH_SERVER_ERROR": "Unable to connect to authentication server",
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
             "TEXTURE_ERROR": "Unable to get player texture",
             "INVALID": "Wrong account or password"
           }

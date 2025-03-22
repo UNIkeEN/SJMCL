@@ -1354,7 +1354,8 @@
         "error": {
           "title": "获取认证代码失败",
           "description": {
-            "AUTH_SERVER_ERROR": "无法连接至认证服务器，或服务器不支持该登录方式",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "PARSE_ERROR": "服务器返回数据格式错误",
             "INVALID": "服务器类型错误"
           }
         }
@@ -1365,7 +1366,8 @@
           "title": "OAuth 方式添加角色失败",
           "description": {
             "DUPLICATE": "角色已存在",
-            "AUTH_SERVER_ERROR": "无法连接至认证服务器，或服务器不支持该登录方式",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "PARSE_ERROR": "服务器返回数据格式错误",
             "NOT_FOUND": "认证服务器不存在",
             "TEXTURE_ERROR": "角色皮肤获取失败",
             "CANCELLED": "已取消"
@@ -1378,7 +1380,8 @@
           "title": "账号密码方式添加角色失败",
           "description": {
             "DUPLICATE": "角色已存在",
-            "AUTH_SERVER_ERROR": "无法连接至认证服务器",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "PARSE_ERROR": "服务器返回数据格式错误",
             "TEXTURE_ERROR": "角色皮肤获取失败",
             "INVALID": "账号或密码错误"
           }

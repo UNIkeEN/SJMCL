@@ -2,10 +2,10 @@ use super::{
   constants::TEXTURE_ROLES,
   helpers::{
     authlib_injector::{
+      self,
       info::{fetch_auth_server, fetch_auth_url},
-      oauth, password,
     },
-    offline,
+    microsoft, offline,
   },
   models::{AccountError, AccountInfo, AuthServer, OAuthCodeResponse, Player, PlayerType},
 };
@@ -71,7 +71,7 @@ pub fn update_selected_player(app: AppHandle, player_id: String) -> SJMCLResult<
 
 #[tauri::command]
 pub async fn add_player_offline(app: AppHandle, username: String) -> SJMCLResult<()> {
-  let new_player = offline::login(app.clone(), username).await?;
+  let new_player = offline::login(&app, username).await?;
 
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
@@ -113,14 +113,14 @@ pub async fn fetch_oauth_code(
         .clone()
     };
 
-    oauth::device_authorization(
-      app.clone(),
+    authlib_injector::oauth::device_authorization(
+      &app,
       auth_server.features.openid_configuration_url,
       auth_server.client_id,
     )
     .await
   } else if server_type == PlayerType::Microsoft {
-    todo!()
+    microsoft::oauth::device_authorization(&app).await
   } else {
     Err(AccountError::Invalid.into())
   }
@@ -146,8 +146,8 @@ pub async fn add_player_oauth(
         .clone()
     };
 
-    oauth::login(
-      app.clone(),
+    authlib_injector::oauth::login(
+      &app,
       auth_server_url,
       auth_server.features.openid_configuration_url,
       auth_server.client_id,
@@ -155,7 +155,7 @@ pub async fn add_player_oauth(
     )
     .await?
   } else if server_type == PlayerType::Microsoft {
-    todo!()
+    microsoft::oauth::login(&app, auth_info).await?
   } else {
     return Err(AccountError::Invalid.into());
   };
@@ -188,7 +188,8 @@ pub async fn add_player_3rdparty_password(
   username: String,
   password: String,
 ) -> SJMCLResult<()> {
-  let new_players = password::login(app.clone(), auth_server_url, username, password).await?;
+  let new_players =
+    authlib_injector::password::login(&app, auth_server_url, username, password).await?;
 
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
@@ -252,7 +253,7 @@ pub fn update_player_skin_offline_preset(
   }
 
   if TEXTURE_ROLES.contains(&preset_role.as_str()) {
-    player.textures = offline::load_preset_skin(app.clone(), preset_role)?;
+    player.textures = offline::load_preset_skin(&app, preset_role)?;
   } else {
     return Err(AccountError::TextureError.into());
   }

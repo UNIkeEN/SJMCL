@@ -1,6 +1,5 @@
 use crate::{
   account::{
-    constants::TEXTURE_TYPES,
     helpers::offline::load_preset_skin,
     models::{AccountError, PlayerInfo, PlayerType, Texture},
   },
@@ -13,7 +12,7 @@ use tauri_plugin_http::reqwest;
 use uuid::Uuid;
 
 pub async fn parse_profile(
-  app: AppHandle,
+  app: &AppHandle,
   profile: Value,
   access_token: String,
   auth_server_url: String,
@@ -21,13 +20,13 @@ pub async fn parse_profile(
   password: String,
 ) -> SJMCLResult<PlayerInfo> {
   let uuid = Uuid::parse_str(profile["id"].as_str().unwrap_or_default())
-    .map_err(|_| AccountError::AuthServerError)?;
+    .map_err(|_| AccountError::ParseError)?;
 
   let name = profile["name"].as_str().unwrap_or_default();
 
   let properties = profile["properties"]
     .as_array()
-    .ok_or(AccountError::AuthServerError)?;
+    .ok_or(AccountError::ParseError)?;
 
   let mut textures: Vec<Texture> = vec![];
 
@@ -37,23 +36,25 @@ pub async fn parse_profile(
   {
     let texture_info = general_purpose::STANDARD
       .decode(texture_info_base64["value"].as_str().unwrap_or_default())
-      .map_err(|_| AccountError::AuthServerError)?
+      .map_err(|_| AccountError::ParseError)?
       .into_iter()
       .map(|b| b as char)
       .collect::<String>();
 
     let texture_info_value: Value =
-      serde_json::from_str(&texture_info).map_err(|_| AccountError::AuthServerError)?;
+      serde_json::from_str(&texture_info).map_err(|_| AccountError::ParseError)?;
+
+    const TEXTURE_TYPES: [&str; 2] = ["SKIN", "CAPE"];
 
     for texture_type in TEXTURE_TYPES {
       if let Some(skin) = texture_info_value["textures"].get(texture_type) {
         let img_url = skin["url"].as_str().unwrap_or_default();
         let img_bytes = reqwest::get(img_url)
           .await
-          .map_err(|_| AccountError::AuthServerError)?
+          .map_err(|_| AccountError::NetworkError)?
           .bytes()
           .await
-          .map_err(|_| AccountError::AuthServerError)?;
+          .map_err(|_| AccountError::ParseError)?;
 
         textures.push(Texture {
           image: general_purpose::STANDARD.encode(img_bytes),
