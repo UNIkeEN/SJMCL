@@ -1,6 +1,6 @@
 use super::helpers::{cmd_builder::generate_launch_cmd, file_validator::validate_library_files};
 use crate::{
-  error::{SJMCLError, SJMCLResult},
+  error::SJMCLResult,
   instance::{
     helpers::{
       client_json::{load_client_info_from_json, DownloadsArtifact},
@@ -39,7 +39,14 @@ pub async fn launch_game(app: AppHandle, instance_id: usize) -> SJMCLResult<()> 
   } else {
     return Err(InstanceError::FileNotFoundError.into());
   };
-  let cmd = generate_launch_cmd(&app, &instance_id, client_info)?;
+  println!("{}:{}", std::file!(), std::line!());
+  let cmd = match generate_launch_cmd(&app, &instance_id, client_info).await {
+    Ok(cmd) => cmd,
+    Err(e) => {
+      println!("generate_launch_cmd {:?}", e);
+      return Err(e);
+    }
+  };
   println!("{}", cmd.join(" "));
   let output = execute_cmd(&cmd, &ExecuteType::NormalExecution).await?;
   println!("{}", String::from_utf8_lossy(&output.stdout));

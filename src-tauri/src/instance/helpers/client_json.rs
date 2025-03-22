@@ -11,7 +11,10 @@ use std::{collections::HashMap, path::PathBuf, str::FromStr};
 #[serde(rename_all = "camelCase", default)]
 pub struct McClientInfo {
   pub id: String,
+
   pub arguments: Option<LaunchArgumentTemplate>, // new version
+  pub minecraft_arguments: Option<String>,       // old version
+
   pub asset_index: AssetIndex,
   pub assets: String,
   pub downloads: HashMap<String, DownloadsValue>,
@@ -24,9 +27,6 @@ pub struct McClientInfo {
   pub release_time: String,
   pub minimum_launcher_version: i64,
   pub patches: Vec<PatchesInfo>,
-
-  // old version
-  pub minecraft_arguments: Option<String>,
   pub main_class: String,
   pub jar: Option<String>,
 }
@@ -233,7 +233,11 @@ structstruck::strike! {
     pub downloads: Option<
       pub struct{
         pub artifact: Option<DownloadsArtifact>,
-        pub classifiers: Option<Classifiers>
+        pub classifiers: Option<Classifiers>,
+        pub natives: Option<Natives>,
+        pub extract: Option<pub struct{
+          exclude: Option<Vec<String>>,
+        }>
       }>,
     pub natives: Option<Value>,
     pub extract: Option<Value>,
@@ -251,14 +255,19 @@ pub struct DownloadsArtifact {
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
-#[serde(rename_all = "snake_case", default)]
+#[serde(rename_all = "kebab-case", default)]
 pub struct Classifiers {
-  pub natives_linux: Option<Value>,
-  pub natives_macos: Option<Value>,
-  pub natives_osx: Option<Value>,
-  pub natives_windows: Option<Value>,
-  pub javadoc: Option<Value>,
-  pub sources: Option<Value>,
+  pub natives_linux: DownloadsArtifact,
+  pub natives_osx: DownloadsArtifact,
+  pub natives_windows: DownloadsArtifact,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(default)]
+pub struct Natives {
+  pub linux: String,
+  pub osx: String,
+  pub windows: String,
 }
 
 structstruck::strike! {

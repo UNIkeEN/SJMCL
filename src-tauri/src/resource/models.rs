@@ -56,6 +56,7 @@ pub enum ResourceError {
   ParseError,
   NoDownloadApi,
   NetworkError,
+  InvalidClientInfo,
 }
 
 impl std::error::Error for ResourceError {}

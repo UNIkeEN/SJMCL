@@ -8,10 +8,12 @@ use crate::instance::{
   helpers::client_json::{FeaturesInfo, McClientInfo},
   models::misc::Instance,
 };
+use crate::launch::helpers::file_validator::extract_classifiers_to_natives_dir;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{
   GameJava, JavaInfo, LauncherConfig, Performance, ProcessPriority, ProxyConfig, ProxyType,
 };
+use crate::resource::models::ResourceError;
 use crate::storage::Storage;
 use regex::Regex;
 use serde::{self, Deserialize, Serialize};
@@ -216,7 +218,7 @@ fn choose_java(
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L69
-pub fn generate_launch_cmd(
+pub async fn generate_launch_cmd(
   app: &AppHandle,
   instance_id: &usize,
   client_info: McClientInfo,
@@ -252,21 +254,19 @@ pub fn generate_launch_cmd(
     .unwrap()
     .to_string_lossy()
     .to_string();
-  class_paths.push(
-    version_dir
-      .join(format!("{}.jar", game_name))
-      .to_string_lossy()
-      .to_string(),
-  );
+  let version_jar = version_dir
+    .join(format!("{}.jar", game_name))
+    .to_string_lossy()
+    .to_string();
+  class_paths.push(version_jar.clone());
   // https://github.com/HMCL-dev/HMCL/blob/main/HMCLCore/src/main/java/org/jackhuang/hmcl/game/DefaultGameRepository.java#L147
   let natives_dir = version_dir.join(format!(
     "natives-{}-{}",
     tauri_plugin_os::platform(),
     tauri_plugin_os::arch()
   ));
-  if fs::create_dir_all(&natives_dir).is_err() {
-    println!("create natives dir failed: {:?}", natives_dir);
-  }
+  extract_classifiers_to_natives_dir(&client_info, &libraries_dir, &natives_dir).await?;
+  println!("{}:{}", std::file!(), std::line!());
   let resolution = sjmcl_config.global_game_config.game_window.resolution;
   let launch_feature = FeaturesInfo {
     is_demo_user: Some(false),
@@ -276,13 +276,14 @@ pub fn generate_launch_cmd(
     is_quick_play_singleplayer: Some(false), // TODO
     is_quick_play_realms: Some(false),       // TODO
   };
+  println!("{}:{}", std::file!(), std::line!());
   let launch_params = LaunchParams {
     assets_root: assets_dir.to_string_lossy().to_string(),
     assets_index_name: client_info.asset_index.id,
     game_directory: game_dir.to_string_lossy().to_string(),
 
     version_name: instance.version.clone(),
-    version_type: client_info.type_,
+    version_type: format!("SJMCL {}", sjmcl_config.basic_info.launcher_version),
     natives_directory: natives_dir.to_string_lossy().to_string(),
     launcher_name: format!("SJMCL {}", sjmcl_config.basic_info.launcher_version),
     launcher_version: sjmcl_config.basic_info.launcher_version,
@@ -309,12 +310,15 @@ pub fn generate_launch_cmd(
   )?;
   // collect extra config
   // 1. cmd nice
+  println!("{}:{}", std::file!(), std::line!());
   cmd.extend(generate_process_priority_cmd(
     &sjmcl_config.global_game_config.performance.process_priority,
   ));
   // 2. java exec
+  println!("{}:{}", std::file!(), std::line!());
   cmd.push(java_info.exec_path.clone());
   // 3. jvm params
+  println!("{}:{}", std::file!(), std::line!());
   cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
   cmd.extend(generate_jvm_memory_cmd(
     &sjmcl_config.global_game_config.performance,
@@ -330,18 +334,53 @@ pub fn generate_launch_cmd(
     ));
   }
 
+  println!("{}:{}", std::file!(), std::line!());
   let map = launch_params.to_hashmap()?;
-  let client_args = client_info
-    .arguments
-    .ok_or(LaunchError::LaunchParamsError)?;
-  let client_jvm_args = client_args.to_jvm_arguments(&launch_feature)?;
-  cmd.extend(replace_arguments(client_jvm_args, &map));
+  if let Some(client_args) = &client_info.arguments {
+    // specified jvm params
+    let client_jvm_args = client_args.to_jvm_arguments(&launch_feature)?;
+    println!("{}:{}", std::file!(), std::line!());
+    cmd.extend(replace_arguments(client_jvm_args, &map));
+  } else {
+    // https://github.com/HMCL-dev/HMCL/blob/e8ff42c4b29d0b0a5a417c9d470390311c6d9a72/HMCLCore/src/main/java/org/jackhuang/hmcl/game/Arguments.java#L113
+    let client_jvm_args = vec![
+      "-Djava.library.path=${natives_directory}".to_string(),
+      "-Dminecraft.launcher.brand=${launcher_name}".to_string(),
+      "-Dminecraft.launcher.version=${launcher_version}".to_string(),
+      "-cp".to_string(),
+      "${classpath}".to_string(),
+    ];
+    cmd.extend(replace_arguments(client_jvm_args, &map));
+  }
+
+  // https://github.com/HMCL-dev/HMCL/blob/e8ff42c4b29d0b0a5a417c9d470390311c6d9a72/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L147
+  let file_encoding = "utf-8"; // TODO Here
+  cmd.push(format!("-Dfile.encoding={}", file_encoding));
+  if java_info.major_version < 19 {
+    cmd.push(format!("-Dsun.stdout.encoding={}", file_encoding));
+    cmd.push(format!("-Dsun.stderr.encoding={}", file_encoding));
+  } else {
+    cmd.push(format!("-Dstdout.encoding={}", file_encoding));
+    cmd.push(format!("-Dstderr.encoding={}", file_encoding));
+  }
+  cmd.push("-Djava.rmi.server.useCodebaseOnly=true".to_string());
+  cmd.push("-Dcom.sun.jndi.rmi.object.trustURLCodebase=false".to_string());
+  cmd.push("-Dcom.sun.jndi.cosnaming.object.trustURLCodebase=false".to_string());
   // 4. main class
+  println!("{}:{}", std::file!(), std::line!());
   cmd.push(client_info.main_class);
 
+  println!("{}:{}", std::file!(), std::line!());
   // 5. game params
-  let client_game_args = client_args.to_game_arguments(&launch_feature)?;
-  cmd.extend(replace_arguments(client_game_args, &map));
+  if let Some(client_args) = &client_info.arguments {
+    let client_game_args = client_args.to_game_arguments(&launch_feature)?;
+    cmd.extend(replace_arguments(client_game_args, &map));
+  } else if let Some(client_args_str) = client_info.minecraft_arguments {
+    let client_game_args = client_args_str.split(' ').map(|s| s.to_string()).collect();
+    cmd.extend(replace_arguments(client_game_args, &map));
+  } else {
+    return Err(ResourceError::InvalidClientInfo.into());
+  }
   if resolution.fullscreen {
     cmd.push("--fullscreen".to_string());
   }
