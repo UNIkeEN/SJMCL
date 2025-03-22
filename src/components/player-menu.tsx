@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
+import { LuCopy, LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
@@ -20,6 +20,7 @@ import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 import { genPlayerId } from "@/utils/account";
+import { copyText } from "@/utils/copy";
 import ViewSkinModal from "./modals/view-skin-modal";
 
 interface PlayerMenuProps {
@@ -81,6 +82,11 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         `PlayerMenu.label.${player.playerType === "offline" ? "manageSkin" : "viewSkin"}`
       ),
       onClick: onSkinModalOpen,
+    },
+    {
+      icon: LuCopy,
+      label: t("PlayerMenu.label.copyUUID"),
+      onClick: () => copyText(genPlayerId(player), { toast }),
     },
     {
       icon: LuTrash,

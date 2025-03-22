@@ -635,6 +635,12 @@
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
+    "copy":{
+      "toast": {
+        "success": "Copied to clipboard",
+        "error": "Failed to copy to clipboard"
+      }
+    },
     "copyOrMove": {
       "linux": "Copy / Move",
       "macos": "Copy / Move",
@@ -1037,7 +1043,8 @@
     "label": {
       "manageSkin": "Manage Skin",
       "viewSkin": "View Skin",
-      "delete": "Delete"
+      "delete": "Delete",
+      "copyUUID": "Copy UUID"
     }
   },
   "ReLogin3rdPartyPlayerModal": {

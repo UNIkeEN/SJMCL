@@ -635,6 +635,12 @@
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
+    "copy":{
+      "toast": {
+        "success": "已成功复制到剪贴板",
+        "error": "写入剪贴板失败"
+      }
+    },
     "copyOrMove": {
       "linux": "复制或移动",
       "macos": "拷贝或移动",
@@ -1037,7 +1043,8 @@
     "label": {
       "manageSkin": "管理皮肤",
       "viewSkin": "查看皮肤",
-      "delete": "删除此角色"
+      "delete": "删除此角色",
+      "copyUUID": "复制 UUID"
     }
   },
   "ReLogin3rdPartyPlayerModal": {
