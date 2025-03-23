@@ -182,6 +182,7 @@ pub enum AccountError {
   NetworkError,
   ParseError,
   Cancelled,
+  CreateWebviewError,
 }
 
 impl std::error::Error for AccountError {}

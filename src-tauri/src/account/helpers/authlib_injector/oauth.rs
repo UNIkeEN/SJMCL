@@ -1,8 +1,10 @@
+use std::sync::{Arc, Mutex};
+
 use super::common::parse_profile;
 use super::constants::SCOPE;
-use crate::account::helpers::oauth::create_auth_webview;
 use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo};
 use crate::error::SJMCLResult;
+use crate::utils::window::create_webview_window;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde_json::Value;
 use tauri::AppHandle;
@@ -153,7 +155,18 @@ pub async fn login(
   let verification_url =
     Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::ParseError)?;
 
-  let (auth_webview, is_cancelled) = create_auth_webview(&app, verification_url).await?;
+  let is_cancelled = Arc::new(Mutex::new(false));
+  let cancelled_clone = Arc::clone(&is_cancelled);
+
+  let auth_webview = create_webview_window(app, verification_url, 650.0, 500.0, true)
+    .await
+    .map_err(|_| AccountError::CreateWebviewError)?;
+
+  auth_webview.on_window_event(move |event| {
+    if let tauri::WindowEvent::Destroyed = event {
+      *cancelled_clone.lock().unwrap() = true;
+    }
+  });
 
   let access_token: String;
   let id_token: String;

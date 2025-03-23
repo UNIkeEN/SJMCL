@@ -1,7 +1,9 @@
+use std::sync::{Arc, Mutex};
+
 use super::constants::{CLIENT_ID, SCOPE};
-use crate::account::helpers::oauth::create_auth_webview;
 use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo, PlayerType, Texture};
 use crate::error::SJMCLResult;
+use crate::utils::window::create_webview_window;
 use base64::engine::general_purpose;
 use base64::Engine;
 use serde_json::{json, Value};
@@ -219,7 +221,19 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
   let verification_url =
     Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::ParseError)?;
 
-  let (auth_webview, is_cancelled) = create_auth_webview(app, verification_url).await?;
+  let is_cancelled = Arc::new(Mutex::new(false));
+  let cancelled_clone = Arc::clone(&is_cancelled);
+
+  let auth_webview = create_webview_window(app, verification_url, 650.0, 500.0, true)
+    .await
+    .map_err(|_| AccountError::CreateWebviewError)?;
+
+  auth_webview.on_window_event(move |event| {
+    if let tauri::WindowEvent::Destroyed = event {
+      *cancelled_clone.lock().unwrap() = true;
+    }
+  });
+
   let mut interval = auth_info.interval;
   let microsoft_token: String;
   let microsoft_refresh_token: String;
@@ -234,7 +248,7 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
       .form(&[
         ("client_id", CLIENT_ID),
         ("device_code", &auth_info.device_code),
-        ("client_secret", SJMCL_CLIENT_SECRET),
+        ("client_secret", SJMCL_MICROSOFT_CLIENT_SECRET),
         ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
       ])
       .send()

@@ -1370,7 +1370,8 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NOT_FOUND": "认证服务器不存在",
             "TEXTURE_ERROR": "角色皮肤获取失败",
-            "CANCELLED": "已取消"
+            "CANCELLED": "已取消",
+            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败"
           }
         }
       },
