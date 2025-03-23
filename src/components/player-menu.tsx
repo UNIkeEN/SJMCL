@@ -86,7 +86,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     {
       icon: LuCopy,
       label: t("PlayerMenu.label.copyUUID"),
-      onClick: () => copyText(genPlayerId(player), { toast }),
+      onClick: () => copyText(player.uuid, { toast }),
     },
     {
       icon: LuTrash,
