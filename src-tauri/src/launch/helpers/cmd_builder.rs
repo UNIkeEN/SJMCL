@@ -1,29 +1,26 @@
 // https://zh.minecraft.wiki/w/%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%A0%B8%E5%BF%83%E6%96%87%E4%BB%B6
 
 use super::file_validator::get_class_paths;
-use crate::account::models::AccountInfo;
+use crate::account::helpers::authlib_injector::common::get_authlib_injector_jar_path;
+use crate::account::models::{AccountInfo, PlayerType};
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::client_json::JavaVersion;
 use crate::instance::{
-  helpers::client_json::{FeaturesInfo, McClientInfo},
+  helpers::client_json::{FeaturesInfo, JavaVersion, McClientInfo},
   models::misc::Instance,
 };
 use crate::launch::helpers::file_validator::extract_classifiers_to_natives_dir;
 use crate::launch::models::{CommandContent, LaunchError};
 use crate::launcher_config::models::{
-  GameJava, JavaInfo, LauncherConfig, Performance, ProcessPriority, ProxyConfig, ProxyType,
+  GameJava, JavaInfo, LauncherConfig, Performance, ProxyConfig, ProxyType,
 };
 use crate::resource::models::ResourceError;
 use crate::storage::Storage;
 use regex::Regex;
 use serde::{self, Deserialize, Serialize};
-use shell_escape;
-use shlex;
 use std::collections::HashMap;
 use std::process::{Command, Stdio};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
-use tauri_plugin_os::OsType;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchParams {
@@ -91,12 +88,10 @@ impl LaunchParams {
     map.insert("natives_directory".to_string(), self.natives_directory);
     map.insert("launcher_name".to_string(), self.launcher_name);
     map.insert("launcher_version".to_string(), self.launcher_version);
-    // TODO Here
-    let mut classpaths = Vec::new();
-    for classpath in self.classpath {
-      classpaths.push(classpath);
-    }
-    map.insert("classpath".to_string(), classpaths.join(":").to_string());
+    map.insert(
+      "classpath".to_string(),
+      quote_java_classpaths(&self.classpath)?,
+    );
     map.insert("auth_access_token".to_string(), self.auth_access_token);
     map.insert("auth_player_name".to_string(), self.auth_player_name);
     map.insert("user_type".to_string(), self.user_type);
@@ -259,6 +254,19 @@ pub async fn generate_launch_cmd(
   // 1. cmd nice
   // 2. java exec
   // 3. jvm params
+  // login user
+  if selected_user.player_type == PlayerType::ThirdParty {
+    cmd.push(format!(
+      "-javaagent:{}={}",
+      get_authlib_injector_jar_path()?.to_string_lossy(),
+      selected_user.auth_server_url
+    )); // TODO
+    cmd.push("-Dauthlibinjector.side=client".to_string());
+    cmd.push(format!(
+      "-Dauthlibinjector.yggdrasil.prefetched={}",
+      "BASE64TODO"
+    ));
+  }
   println!("{}:{}", std::file!(), std::line!());
   cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
   cmd.extend(generate_jvm_memory_cmd(
@@ -383,59 +391,11 @@ pub async fn execute_cmd(
   Ok(output)
 }
 
-fn try_cmd_join(cmd: &Vec<String>) -> SJMCLResult<String> {
+fn quote_java_classpaths(cp: &Vec<String>) -> SJMCLResult<String> {
   #[cfg(any(target_os = "linux", target_os = "macos"))]
-  return Ok(shlex::try_join(cmd.iter().map(|s| s.as_str()))?);
-  #[cfg(target_os = "windows")]
-  {
-    let mut escaped = Vec::new();
-    for arg in cmd {
-      escaped.push(shell_escape::windows::escape(std::borrow::Cow::Borrowed(&arg)).to_string());
-    }
-    return Ok(escaped.join(" "));
-  }
-}
-// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L72
-fn generate_process_priority_cmd(p: &ProcessPriority) -> Vec<String> {
-  match *p {
-    ProcessPriority::High => {
-      match tauri_plugin_os::type_() {
-        OsType::Windows => vec!["start".to_string(), "/high".to_string()],
-        OsType::Android | OsType::Macos | OsType::Linux => {
-          vec!["nice".to_string(), "-n".to_string(), "-5".to_string()]
-        }
-        OsType::IOS => Vec::new(), //? TODO
-      }
-    }
-    ProcessPriority::AboveNormal => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/abovenormal".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "-1".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-    ProcessPriority::Normal => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/normal".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "0".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-    ProcessPriority::BelowNormal => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/belownormal".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "1".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-    ProcessPriority::Low => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/low".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "5".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-  }
+  return Ok(cp.join(":"));
+  #[cfg(any(target_os = "windows"))]
+  return Ok(cp.join(";")); // TODO Here: check ';' in origin paths
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114

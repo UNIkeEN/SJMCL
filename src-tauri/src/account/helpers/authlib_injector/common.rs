@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::{
   account::{
     helpers::offline::load_preset_skin,
@@ -10,6 +12,10 @@ use serde_json::Value;
 use tauri::AppHandle;
 use tauri_plugin_http::reqwest;
 use uuid::Uuid;
+
+pub fn get_authlib_injector_jar_path() -> SJMCLResult<PathBuf> {
+  todo!()
+}
 
 pub async fn parse_profile(
   app: &AppHandle,
