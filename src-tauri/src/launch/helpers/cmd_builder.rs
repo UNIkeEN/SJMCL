@@ -17,14 +17,13 @@ use crate::resource::models::ResourceError;
 use crate::storage::Storage;
 use regex::Regex;
 use serde::{self, Deserialize, Serialize};
+use shell_escape;
 use shlex;
 use std::collections::HashMap;
-use std::fs;
-use std::process::Stdio;
+use std::process::{Command, Stdio};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_os::OsType;
-use tokio::process::Command;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchParams {
@@ -82,73 +81,31 @@ pub struct LaunchParams {
 }
 
 impl LaunchParams {
-  pub fn to_hashmap(&self) -> SJMCLResult<HashMap<String, String>> {
+  pub fn to_hashmap(self) -> SJMCLResult<HashMap<String, String>> {
     let mut map: HashMap<String, String> = HashMap::new();
-    let quoter = shlex::Quoter::new();
-    map.insert(
-      "assets_root".to_string(),
-      quoter.quote(self.assets_root.as_str())?.to_string(),
-    );
-    map.insert(
-      "assets_index_name".to_string(),
-      quoter.quote(self.assets_index_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "game_directory".to_string(),
-      quoter.quote(self.game_directory.as_str())?.to_string(),
-    );
-    map.insert(
-      "version_name".to_string(),
-      quoter.quote(self.version_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "version_type".to_string(),
-      quoter.quote(self.version_type.as_str())?.to_string(),
-    );
-    map.insert(
-      "natives_directory".to_string(),
-      quoter.quote(self.natives_directory.as_str())?.to_string(),
-    );
-    map.insert(
-      "launcher_name".to_string(),
-      quoter.quote(self.launcher_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "launcher_version".to_string(),
-      quoter.quote(self.launcher_version.as_str())?.to_string(),
-    );
+    map.insert("assets_root".to_string(), self.assets_root);
+    map.insert("assets_index_name".to_string(), self.assets_index_name);
+    map.insert("game_directory".to_string(), self.game_directory);
+    map.insert("version_name".to_string(), self.version_name);
+    map.insert("version_type".to_string(), self.version_type);
+    map.insert("natives_directory".to_string(), self.natives_directory);
+    map.insert("launcher_name".to_string(), self.launcher_name);
+    map.insert("launcher_version".to_string(), self.launcher_version);
+    // TODO Here
     let mut classpaths = Vec::new();
-    for classpath in &self.classpath {
-      classpaths.push(quoter.quote(&classpath.as_str())?.to_string());
+    for classpath in self.classpath {
+      classpaths.push(classpath);
     }
     map.insert("classpath".to_string(), classpaths.join(":").to_string());
-    map.insert(
-      "auth_access_token".to_string(),
-      quoter.quote(self.auth_access_token.as_str())?.to_string(),
-    );
-    map.insert(
-      "auth_player_name".to_string(),
-      quoter.quote(self.auth_player_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "user_type".to_string(),
-      quoter.quote(self.user_type.as_str())?.to_string(),
-    );
-    map.insert(
-      "auth_uuid".to_string(),
-      quoter.quote(self.auth_uuid.as_str())?.to_string(),
-    );
+    map.insert("auth_access_token".to_string(), self.auth_access_token);
+    map.insert("auth_player_name".to_string(), self.auth_player_name);
+    map.insert("user_type".to_string(), self.user_type);
+    map.insert("auth_uuid".to_string(), self.auth_uuid);
     if let Some(ref clientid) = &self.clientid {
-      map.insert(
-        "clientid".to_string(),
-        quoter.quote(clientid.as_str())?.to_string(),
-      );
+      map.insert("clientid".to_string(), clientid.to_owned());
     }
     if let Some(ref auth_xuid) = &self.auth_xuid {
-      map.insert(
-        "auth_xuid".to_string(),
-        quoter.quote(auth_xuid.as_str())?.to_string(),
-      );
+      map.insert("auth_xuid".to_string(), auth_xuid.to_owned());
     }
     map.insert("demo".to_string(), self.demo.to_string());
     map.insert(
@@ -159,26 +116,16 @@ impl LaunchParams {
       "resolution_width".to_string(),
       self.resolution_width.to_string(),
     );
-    map.insert(
-      "quickPlayPath".to_string(),
-      quoter.quote(self.quick_play_path.as_str())?.to_string(),
-    );
+    map.insert("quickPlayPath".to_string(), self.quick_play_path);
     map.insert(
       "quickPlaySingleplayer".to_string(),
-      quoter
-        .quote(self.quick_play_singleplayer.as_str())?
-        .to_string(),
+      self.quick_play_singleplayer,
     );
     map.insert(
       "quickPlayMultiplayer".to_string(),
-      quoter
-        .quote(self.quick_play_multiplayer.as_str())?
-        .to_string(),
+      self.quick_play_multiplayer,
     );
-    map.insert(
-      "quickPlayRealms".to_string(),
-      quoter.quote(self.quick_play_realms.as_str())?.to_string(),
-    );
+    map.insert("quickPlayRealms".to_string(), self.quick_play_realms);
     Ok(map)
   }
 }
@@ -445,12 +392,24 @@ pub async fn execute_cmd(
       cmd_base
     }
   };
-
-  let child = cmd_base.arg(cmd.join(" ")).stdout(Stdio::piped()).spawn()?;
-  let output = child.wait_with_output().await?;
+  let cmd_str = try_cmd_join(cmd)?;
+  let child = cmd_base.arg(cmd_str).stdout(Stdio::piped()).spawn()?;
+  let output = child.wait_with_output()?;
   Ok(output)
 }
 
+fn try_cmd_join(cmd: &Vec<String>) -> SJMCLResult<String> {
+  #[cfg(any(target_os = "linux", target_os = "macos"))]
+  return Ok(shlex::try_join(cmd.iter().map(|s| s.as_str()))?);
+  #[cfg(target_os = "windows")]
+  {
+    let mut escaped = Vec::new();
+    for arg in cmd {
+      escaped.push(shell_escape::windows::escape(std::borrow::Cow::Borrowed(&arg)).to_string());
+    }
+    return Ok(escaped.join(" "));
+  }
+}
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L72
 fn generate_process_priority_cmd(p: &ProcessPriority) -> Vec<String> {
   match *p {
@@ -499,25 +458,15 @@ fn generate_proxy_cmd(p: &ProxyConfig) -> Vec<String> {
   if !p.enabled {
     return Vec::new();
   }
-  let quoter = shlex::Quoter::new();
   match p.selected_type {
     ProxyType::Http => vec![
-      format!(
-        "-Dhttp.proxyHost={}",
-        quoter.quote(p.host.as_str()).unwrap()
-      ),
+      format!("-Dhttp.proxyHost={}", p.host),
       format!("-Dhttp.proxyPort={}", p.port),
-      format!(
-        "-Dhttps.proxyHost={}",
-        quoter.quote(p.host.as_str()).unwrap()
-      ),
+      format!("-Dhttps.proxyHost={}", p.host),
       format!("-Dhttps.proxyPort={}", p.port),
     ],
     ProxyType::Socks => vec![
-      format!(
-        "-DsocksProxyHost={}",
-        quoter.quote(p.host.as_str()).unwrap()
-      ),
+      format!("-DsocksProxyHost={}", p.host),
       format!("-DsocksProxyPort={}", p.port),
     ],
   }

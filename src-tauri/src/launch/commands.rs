@@ -29,6 +29,7 @@ pub async fn validate_game_files(
     return Err(InstanceError::FileNotFoundError.into());
   };
   let bad_artifacts = validate_library_files(&library_dir, &client_info).await?;
+  println!("{:?}", bad_artifacts);
   Ok(bad_artifacts)
 }
 
