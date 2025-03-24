@@ -9,7 +9,7 @@ use crate::instance::{
   models::misc::Instance,
 };
 use crate::launch::helpers::file_validator::extract_classifiers_to_natives_dir;
-use crate::launch::models::LaunchError;
+use crate::launch::models::{CommandContent, LaunchError};
 use crate::launcher_config::models::{
   GameJava, JavaInfo, LauncherConfig, Performance, ProcessPriority, ProxyConfig, ProxyType,
 };
@@ -169,7 +169,7 @@ pub async fn generate_launch_cmd(
   app: &AppHandle,
   instance_id: &usize,
   client_info: McClientInfo,
-) -> SJMCLResult<Vec<String>> {
+) -> SJMCLResult<CommandContent> {
   let mut cmd = Vec::new();
   let sjmcl_config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let java_list = app.state::<Mutex<Vec<JavaInfo>>>().lock()?.clone();
@@ -257,13 +257,7 @@ pub async fn generate_launch_cmd(
   )?;
   // collect extra config
   // 1. cmd nice
-  println!("{}:{}", std::file!(), std::line!());
-  cmd.extend(generate_process_priority_cmd(
-    &sjmcl_config.global_game_config.performance.process_priority,
-  ));
   // 2. java exec
-  println!("{}:{}", std::file!(), std::line!());
-  cmd.push(java_info.exec_path.clone());
   // 3. jvm params
   println!("{}:{}", std::file!(), std::line!());
   cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
@@ -332,7 +326,15 @@ pub async fn generate_launch_cmd(
     cmd.push("--fullscreen".to_string());
   }
 
-  Ok(cmd)
+  Ok(CommandContent {
+    exe: java_info.exec_path.clone(),
+    args: cmd,
+    nice: sjmcl_config
+      .global_game_config
+      .performance
+      .process_priority
+      .to_nice_value(),
+  })
 }
 
 fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Vec<String> {
@@ -372,28 +374,11 @@ pub enum ExecuteType {
 }
 
 pub async fn execute_cmd(
-  cmd: &Vec<String>,
+  cmd: CommandContent,
   execute_type: &ExecuteType,
 ) -> SJMCLResult<std::process::Output> {
-  let mut cmd_base = match tauri_plugin_os::type_() {
-    OsType::Windows => {
-      let mut cmd_base = Command::new("cmd");
-      cmd_base.arg("/c");
-      cmd_base
-    }
-    OsType::Linux | OsType::Android => {
-      let mut cmd_base = Command::new("sh");
-      cmd_base.arg("-c");
-      cmd_base
-    }
-    OsType::Macos | OsType::IOS => {
-      let mut cmd_base = Command::new("zsh");
-      cmd_base.arg("-c");
-      cmd_base
-    }
-  };
-  let cmd_str = try_cmd_join(cmd)?;
-  let child = cmd_base.arg(cmd_str).stdout(Stdio::piped()).spawn()?;
+  let mut cmd_base = Command::new(cmd.exe);
+  let child = cmd_base.args(cmd.args).stdout(Stdio::piped()).spawn()?;
   let output = child.wait_with_output()?;
   Ok(output)
 }
