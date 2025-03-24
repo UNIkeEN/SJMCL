@@ -1,30 +1,27 @@
 // https://zh.minecraft.wiki/w/%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%A0%B8%E5%BF%83%E6%96%87%E4%BB%B6
 
 use super::file_validator::get_class_paths;
-use crate::account::models::AccountInfo;
+use crate::account::helpers::authlib_injector::jar::get_authlib_injector_jar_path;
+use crate::account::models::{AccountInfo, PlayerType};
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::client_json::JavaVersion;
 use crate::instance::{
-  helpers::client_json::{FeaturesInfo, McClientInfo},
+  helpers::client_json::{FeaturesInfo, JavaVersion, McClientInfo},
   models::misc::Instance,
 };
 use crate::launch::helpers::file_validator::extract_classifiers_to_natives_dir;
-use crate::launch::models::LaunchError;
+use crate::launch::models::{CommandContent, LaunchError};
 use crate::launcher_config::models::{
-  GameJava, JavaInfo, LauncherConfig, Performance, ProcessPriority, ProxyConfig, ProxyType,
+  GameJava, JavaInfo, LauncherConfig, Performance, ProxyConfig, ProxyType,
 };
 use crate::resource::models::ResourceError;
 use crate::storage::Storage;
 use regex::Regex;
 use serde::{self, Deserialize, Serialize};
-use shlex;
+use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::fs;
-use std::process::Stdio;
+use std::process::{Command, Stdio};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
-use tauri_plugin_os::OsType;
-use tokio::process::Command;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchParams {
@@ -82,73 +79,29 @@ pub struct LaunchParams {
 }
 
 impl LaunchParams {
-  pub fn to_hashmap(&self) -> SJMCLResult<HashMap<String, String>> {
+  pub fn into_hashmap(self) -> SJMCLResult<HashMap<String, String>> {
     let mut map: HashMap<String, String> = HashMap::new();
-    let quoter = shlex::Quoter::new();
+    map.insert("assets_root".to_string(), self.assets_root);
+    map.insert("assets_index_name".to_string(), self.assets_index_name);
+    map.insert("game_directory".to_string(), self.game_directory);
+    map.insert("version_name".to_string(), self.version_name);
+    map.insert("version_type".to_string(), self.version_type);
+    map.insert("natives_directory".to_string(), self.natives_directory);
+    map.insert("launcher_name".to_string(), self.launcher_name);
+    map.insert("launcher_version".to_string(), self.launcher_version);
     map.insert(
-      "assets_root".to_string(),
-      quoter.quote(self.assets_root.as_str())?.to_string(),
+      "classpath".to_string(),
+      quote_java_classpaths(&self.classpath)?,
     );
-    map.insert(
-      "assets_index_name".to_string(),
-      quoter.quote(self.assets_index_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "game_directory".to_string(),
-      quoter.quote(self.game_directory.as_str())?.to_string(),
-    );
-    map.insert(
-      "version_name".to_string(),
-      quoter.quote(self.version_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "version_type".to_string(),
-      quoter.quote(self.version_type.as_str())?.to_string(),
-    );
-    map.insert(
-      "natives_directory".to_string(),
-      quoter.quote(self.natives_directory.as_str())?.to_string(),
-    );
-    map.insert(
-      "launcher_name".to_string(),
-      quoter.quote(self.launcher_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "launcher_version".to_string(),
-      quoter.quote(self.launcher_version.as_str())?.to_string(),
-    );
-    let mut classpaths = Vec::new();
-    for classpath in &self.classpath {
-      classpaths.push(quoter.quote(&classpath.as_str())?.to_string());
-    }
-    map.insert("classpath".to_string(), classpaths.join(":").to_string());
-    map.insert(
-      "auth_access_token".to_string(),
-      quoter.quote(self.auth_access_token.as_str())?.to_string(),
-    );
-    map.insert(
-      "auth_player_name".to_string(),
-      quoter.quote(self.auth_player_name.as_str())?.to_string(),
-    );
-    map.insert(
-      "user_type".to_string(),
-      quoter.quote(self.user_type.as_str())?.to_string(),
-    );
-    map.insert(
-      "auth_uuid".to_string(),
-      quoter.quote(self.auth_uuid.as_str())?.to_string(),
-    );
+    map.insert("auth_access_token".to_string(), self.auth_access_token);
+    map.insert("auth_player_name".to_string(), self.auth_player_name);
+    map.insert("user_type".to_string(), self.user_type);
+    map.insert("auth_uuid".to_string(), self.auth_uuid);
     if let Some(ref clientid) = &self.clientid {
-      map.insert(
-        "clientid".to_string(),
-        quoter.quote(clientid.as_str())?.to_string(),
-      );
+      map.insert("clientid".to_string(), clientid.to_owned());
     }
     if let Some(ref auth_xuid) = &self.auth_xuid {
-      map.insert(
-        "auth_xuid".to_string(),
-        quoter.quote(auth_xuid.as_str())?.to_string(),
-      );
+      map.insert("auth_xuid".to_string(), auth_xuid.to_owned());
     }
     map.insert("demo".to_string(), self.demo.to_string());
     map.insert(
@@ -159,26 +112,16 @@ impl LaunchParams {
       "resolution_width".to_string(),
       self.resolution_width.to_string(),
     );
-    map.insert(
-      "quickPlayPath".to_string(),
-      quoter.quote(self.quick_play_path.as_str())?.to_string(),
-    );
+    map.insert("quickPlayPath".to_string(), self.quick_play_path);
     map.insert(
       "quickPlaySingleplayer".to_string(),
-      quoter
-        .quote(self.quick_play_singleplayer.as_str())?
-        .to_string(),
+      self.quick_play_singleplayer,
     );
     map.insert(
       "quickPlayMultiplayer".to_string(),
-      quoter
-        .quote(self.quick_play_multiplayer.as_str())?
-        .to_string(),
+      self.quick_play_multiplayer,
     );
-    map.insert(
-      "quickPlayRealms".to_string(),
-      quoter.quote(self.quick_play_realms.as_str())?.to_string(),
-    );
+    map.insert("quickPlayRealms".to_string(), self.quick_play_realms);
     Ok(map)
   }
 }
@@ -186,10 +129,10 @@ impl LaunchParams {
 fn choose_java_auto(java_list: &Vec<JavaInfo>, version_req: &JavaVersion) -> Option<JavaInfo> {
   let mut match_list = Vec::new();
   for java_info in java_list {
-    if java_info.major_version == version_req.major_version {
-      return Some(java_info.clone());
-    } else if java_info.major_version > version_req.major_version {
-      match_list.push(java_info);
+    match java_info.major_version.cmp(&version_req.major_version) {
+      Ordering::Equal => return Some(java_info.clone()),
+      Ordering::Greater => match_list.push(java_info),
+      _ => {}
     }
   }
   if match_list.is_empty() {
@@ -222,7 +165,7 @@ pub async fn generate_launch_cmd(
   app: &AppHandle,
   instance_id: &usize,
   client_info: McClientInfo,
-) -> SJMCLResult<Vec<String>> {
+) -> SJMCLResult<CommandContent> {
   let mut cmd = Vec::new();
   let sjmcl_config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let java_list = app.state::<Mutex<Vec<JavaInfo>>>().lock()?.clone();
@@ -310,14 +253,21 @@ pub async fn generate_launch_cmd(
   )?;
   // collect extra config
   // 1. cmd nice
-  println!("{}:{}", std::file!(), std::line!());
-  cmd.extend(generate_process_priority_cmd(
-    &sjmcl_config.global_game_config.performance.process_priority,
-  ));
   // 2. java exec
-  println!("{}:{}", std::file!(), std::line!());
-  cmd.push(java_info.exec_path.clone());
   // 3. jvm params
+  // login user
+  if selected_user.player_type == PlayerType::ThirdParty {
+    cmd.push(format!(
+      "-javaagent:{}={}",
+      get_authlib_injector_jar_path(app)?.to_string_lossy(),
+      selected_user.auth_server_url
+    )); // TODO
+    cmd.push("-Dauthlibinjector.side=client".to_string());
+    cmd.push(format!(
+      "-Dauthlibinjector.yggdrasil.prefetched={}",
+      "BASE64TODO"
+    ));
+  }
   println!("{}:{}", std::file!(), std::line!());
   cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
   cmd.extend(generate_jvm_memory_cmd(
@@ -335,7 +285,7 @@ pub async fn generate_launch_cmd(
   }
 
   println!("{}:{}", std::file!(), std::line!());
-  let map = launch_params.to_hashmap()?;
+  let map = launch_params.into_hashmap()?;
   if let Some(client_args) = &client_info.arguments {
     // specified jvm params
     let client_jvm_args = client_args.to_jvm_arguments(&launch_feature)?;
@@ -385,7 +335,15 @@ pub async fn generate_launch_cmd(
     cmd.push("--fullscreen".to_string());
   }
 
-  Ok(cmd)
+  Ok(CommandContent {
+    exec: java_info.exec_path.clone(),
+    args: cmd,
+    nice: sjmcl_config
+      .global_game_config
+      .performance
+      .process_priority
+      .to_nice_value(),
+  })
 }
 
 fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Vec<String> {
@@ -425,73 +383,20 @@ pub enum ExecuteType {
 }
 
 pub async fn execute_cmd(
-  cmd: &Vec<String>,
+  cmd: CommandContent,
   execute_type: &ExecuteType,
 ) -> SJMCLResult<std::process::Output> {
-  let mut cmd_base = match tauri_plugin_os::type_() {
-    OsType::Windows => {
-      let mut cmd_base = Command::new("cmd");
-      cmd_base.arg("/c");
-      cmd_base
-    }
-    OsType::Linux | OsType::Android => {
-      let mut cmd_base = Command::new("sh");
-      cmd_base.arg("-c");
-      cmd_base
-    }
-    OsType::Macos | OsType::IOS => {
-      let mut cmd_base = Command::new("zsh");
-      cmd_base.arg("-c");
-      cmd_base
-    }
-  };
-
-  let child = cmd_base.arg(cmd.join(" ")).stdout(Stdio::piped()).spawn()?;
-  let output = child.wait_with_output().await?;
+  let mut cmd_base = Command::new(cmd.exec);
+  let child = cmd_base.args(cmd.args).stdout(Stdio::piped()).spawn()?;
+  let output = child.wait_with_output()?;
   Ok(output)
 }
 
-// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L72
-fn generate_process_priority_cmd(p: &ProcessPriority) -> Vec<String> {
-  match *p {
-    ProcessPriority::High => {
-      match tauri_plugin_os::type_() {
-        OsType::Windows => vec!["start".to_string(), "/high".to_string()],
-        OsType::Android | OsType::Macos | OsType::Linux => {
-          vec!["nice".to_string(), "-n".to_string(), "-5".to_string()]
-        }
-        OsType::IOS => Vec::new(), //? TODO
-      }
-    }
-    ProcessPriority::AboveNormal => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/abovenormal".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "-1".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-    ProcessPriority::Normal => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/normal".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "0".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-    ProcessPriority::BelowNormal => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/belownormal".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "1".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-    ProcessPriority::Low => match tauri_plugin_os::type_() {
-      OsType::Windows => vec!["start".to_string(), "/low".to_string()],
-      OsType::Android | OsType::Macos | OsType::Linux => {
-        vec!["nice".to_string(), "-n".to_string(), "5".to_string()]
-      }
-      OsType::IOS => Vec::new(),
-    },
-  }
+fn quote_java_classpaths(cp: &[String]) -> SJMCLResult<String> {
+  #[cfg(any(target_os = "linux", target_os = "macos"))]
+  return Ok(cp.join(":"));
+  #[cfg(target_os = "windows")]
+  return Ok(cp.join(";")); // TODO Here: check ';' in origin paths
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
@@ -499,25 +404,15 @@ fn generate_proxy_cmd(p: &ProxyConfig) -> Vec<String> {
   if !p.enabled {
     return Vec::new();
   }
-  let quoter = shlex::Quoter::new();
   match p.selected_type {
     ProxyType::Http => vec![
-      format!(
-        "-Dhttp.proxyHost={}",
-        quoter.quote(p.host.as_str()).unwrap()
-      ),
+      format!("-Dhttp.proxyHost={}", p.host),
       format!("-Dhttp.proxyPort={}", p.port),
-      format!(
-        "-Dhttps.proxyHost={}",
-        quoter.quote(p.host.as_str()).unwrap()
-      ),
+      format!("-Dhttps.proxyHost={}", p.host),
       format!("-Dhttps.proxyPort={}", p.port),
     ],
     ProxyType::Socks => vec![
-      format!(
-        "-DsocksProxyHost={}",
-        quoter.quote(p.host.as_str()).unwrap()
-      ),
+      format!("-DsocksProxyHost={}", p.host),
       format!("-DsocksProxyPort={}", p.port),
     ],
   }

@@ -1009,6 +1009,15 @@
       "noSelectedGame": "No game instance selected"
     }
   },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "Launch Game - {{name}}"
+    },
+    "step": {
+      "validateGameFiles": "Validate Game and Dependency Files",
+      "launchGame": "Waiting for Game to Launch"
+    }
+  },
   "ManageSkinModal": {
     "skinManage": "Manage Skin",
     "default": "Default",

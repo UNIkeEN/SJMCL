@@ -110,7 +110,9 @@ const InstanceLayoutContent: React.FC<{ children: React.ReactNode }> = ({
             size="xs"
             ml={1}
             colorScheme={primaryColor}
-            onClick={() => {}} // todo
+            onClick={() => {
+              openSharedModal("launch", { instanceId: summary?.id });
+            }}
           >
             {t("InstanceLayout.button.launch")}
           </Button>

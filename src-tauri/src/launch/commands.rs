@@ -29,6 +29,7 @@ pub async fn validate_game_files(
     return Err(InstanceError::FileNotFoundError.into());
   };
   let bad_artifacts = validate_library_files(&library_dir, &client_info).await?;
+  println!("{:?}", bad_artifacts);
   Ok(bad_artifacts)
 }
 
@@ -48,8 +49,8 @@ pub async fn launch_game(app: AppHandle, instance_id: usize) -> SJMCLResult<()> 
       return Err(e);
     }
   };
-  println!("{}", cmd.join(" "));
-  let output = execute_cmd(&cmd, &ExecuteType::NormalExecution).await?;
+  println!("{}", cmd.args.join(" "));
+  let output = execute_cmd(cmd, &ExecuteType::NormalExecution).await?;
   println!("{}", String::from_utf8_lossy(&output.stdout));
   println!("{}", String::from_utf8_lossy(&output.stderr));
   Ok(())

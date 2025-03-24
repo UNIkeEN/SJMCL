@@ -1009,6 +1009,15 @@
       "noSelectedGame": "尚未选择游戏实例"
     }
   },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "启动游戏 - {{name}}"
+    },
+    "step": {
+      "validateGameFiles": "验证游戏与依赖文件完整性",
+      "launchGame": "等待游戏启动"
+    }
+  },
   "ManageSkinModal": {
     "skinManage": "管理皮肤",
     "default": "默认",

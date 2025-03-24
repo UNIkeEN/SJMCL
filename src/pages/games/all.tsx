@@ -9,6 +9,7 @@ import SegmentedControl from "@/components/common/segmented";
 import GamesView from "@/components/games-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { GameInstanceSummary } from "@/models/instance/misc";
 
 const AllGamesPage = () => {
@@ -17,6 +18,7 @@ const AllGamesPage = () => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.allGamesPage.viewType;
+  const { openSharedModal } = useSharedModals();
 
   const { getSelectedGameInstance, getGameInstanceList } = useData();
   const [selectedGameInstance, setSelectedGameInstance] =
@@ -92,7 +94,13 @@ const AllGamesPage = () => {
             size="xs"
             colorScheme={primaryColor}
             isDisabled={!selectedGameInstance}
-            onClick={() => {}} // TODO
+            onClick={() => {
+              if (selectedGameInstance) {
+                openSharedModal("launch", {
+                  instanceId: selectedGameInstance.id,
+                });
+              }
+            }}
           >
             {t("AllGamesPage.button.launch")}
           </Button>

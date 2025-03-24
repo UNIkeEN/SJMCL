@@ -35,6 +35,18 @@ pub enum ProcessPriority {
   Normal,
 }
 
+impl ProcessPriority {
+  pub fn to_nice_value(&self) -> i32 {
+    match self {
+      ProcessPriority::Low => 5,
+      ProcessPriority::BelowNormal => 1,
+      ProcessPriority::Normal => 0,
+      ProcessPriority::AboveNormal => -1,
+      ProcessPriority::High => -5,
+    }
+  }
+}
+
 // see java.net.proxy
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]

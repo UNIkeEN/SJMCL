@@ -25,7 +25,6 @@ dependencies = [
  "serde_json",
  "serde_with",
  "sha1",
- "shlex",
  "smart-default",
  "structstruck",
  "strum",

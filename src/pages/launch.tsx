@@ -25,6 +25,7 @@ import GamesView from "@/components/games-view";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
 import { GameInstanceSummary } from "@/models/instance/misc";
@@ -95,6 +96,7 @@ const LaunchPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const themedStyles = useThemedCSSStyle();
+  const { openSharedModal } = useSharedModals();
 
   const {
     getPlayerList,
@@ -188,7 +190,17 @@ const LaunchPage = () => {
         </HStack>
       </Card>
       <Box position="relative">
-        <Button colorScheme="blackAlpha" className={styles["launch-button"]}>
+        <Button
+          colorScheme="blackAlpha"
+          className={styles["launch-button"]}
+          onClick={() => {
+            if (selectedGameInstance) {
+              openSharedModal("launch", {
+                instanceId: selectedGameInstance.id,
+              });
+            }
+          }}
+        >
           <VStack spacing={1.5} w="100%" color="white">
             <Text fontSize="lg" fontWeight="bold">
               {t("LaunchPage.button.launch")}

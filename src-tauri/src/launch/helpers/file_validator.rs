@@ -6,8 +6,9 @@ use futures;
 use hex;
 use image::EncodableLayout;
 use sha1::{Digest, Sha1};
+use std::collections::HashSet;
 use std::io::Cursor;
-use std::{collections::HashSet, path::PathBuf};
+use std::path::{Path, PathBuf};
 use tokio::{
   fs,
   io::{AsyncReadExt, BufReader},
@@ -83,7 +84,7 @@ pub fn convert_client_classifiers_to_artifacts(
 }
 
 pub async fn validate_artifact(
-  root_path: &PathBuf,
+  root_path: &Path,
   artifacts: &DownloadsArtifact,
 ) -> SJMCLResult<bool> {
   let file_path = root_path.join(&artifacts.path);

@@ -10,3 +10,10 @@ pub enum LaunchError {
 }
 
 impl std::error::Error for LaunchError {}
+
+#[derive(Debug, Clone)]
+pub struct CommandContent {
+  pub exec: String,
+  pub args: Vec<String>,
+  pub nice: i32,
+}

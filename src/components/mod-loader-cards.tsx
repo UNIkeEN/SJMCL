@@ -37,11 +37,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
 
-  const baseTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
-  const loaderTypes =
-    currentType === "Unknown" || displayMode === "selector"
-      ? baseTypes
-      : [currentType, ...baseTypes.filter((type) => type !== currentType)];
+  const loaderTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
 
   const renderCard = (type: ModLoaderType) => {
     const isSelected = type === currentType && currentType !== "Unknown";
@@ -109,15 +105,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   };
 
   return (
-    <Grid
-      templateColumns={
-        displayMode === "entry" && currentType !== "Unknown"
-          ? "1.35fr 1fr 1fr"
-          : "repeat(3, 1fr)"
-      }
-      gap={3.5}
-      {...boxProps}
-    >
+    <Grid templateColumns="repeat(3, 1fr)" gap={3.5} {...boxProps}>
       {loaderTypes.map(renderCard)}
     </Grid>
   );
