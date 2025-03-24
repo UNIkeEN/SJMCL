@@ -290,6 +290,68 @@ fn get_java_paths_from_windows_registry() -> Vec<String> {
   java_paths
 }
 
+fn scan_java_paths_in_common_directories() -> Vec<String> {
+  let mut java_paths = Vec::new();
+  #[cfg(target_os = "windows")]
+  {
+    let common_vendors = [
+      "Java",
+      "BellSoft",
+      "AdoptOpenJDK",
+      "Zulu",
+      "Microsoft",
+      "Eclipse Foundation",
+      "Semeru",
+    ];
+    for vendor in &common_vendors {
+      java_paths.extend(search_java_homes_in_directory(
+        Path::new(r"C:\Program Files").join(vendor).as_path(),
+      ));
+      java_paths.extend(search_java_homes_in_directory(
+        Path::new(r"C:\Program Files (x86)").join(vendor).as_path(),
+      ));
+    }
+  }
+  #[cfg(target_os = "linux")]
+  {
+    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/java")));
+    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib/jvm")));
+    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib32/jvm")));
+    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib64/jvm")));
+    if let Ok(home_dir) = std::env::var("HOME") {
+      java_paths.extend(search_java_homes_in_directory(
+        Path::new(&home_dir)
+          .join(".sdkman/candidates/java")
+          .as_path(),
+      ));
+    }
+  }
+  java_paths
+}
+
+fn search_java_homes_in_directory(dir: &Path) -> Vec<String> {
+  let mut java_paths = Vec::new();
+  if let Ok(entries) = fs::read_dir(dir) {
+    for entry in entries {
+      if let Ok(entry) = entry {
+        let java_home = entry.path();
+        if let Ok(java_path) = resolve_java_home(&java_home) {
+          java_paths.push(java_path);
+        }
+      }
+    }
+  }
+  java_paths
+}
+
+fn resolve_java_home(path: &Path) -> Result<String, Box<dyn Error>> {
+  #[cfg(target_os = "windows")]
+  let java_bin = path.join(r"bin\java.exe");
+  #[cfg(not(target_os = "windows"))]
+  let java_bin = path.join("bin/java");
+  Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+}
+
 pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, String)> {
   // Typically, executable files are located in .../Home/bin/java, release file and bin folder are at the same level.
   let java_path_buf = PathBuf::from(java_path);
