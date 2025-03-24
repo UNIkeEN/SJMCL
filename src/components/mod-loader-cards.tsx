@@ -37,8 +37,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
 
-  const baseTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
-  const loaderTypes = baseTypes;
+  const loaderTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
 
   const renderCard = (type: ModLoaderType) => {
     const isSelected = type === currentType && currentType !== "Unknown";
