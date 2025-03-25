@@ -1589,19 +1589,20 @@
           }
         }
       },
-      "copyAcrossInstances": {
+      "copyResourceToInstances": {
         "success": "资源复制成功",
         "error": {
           "title": "复制资源失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
             "INVALID_SOURCE_PATH": "无效的源路径",
+            "ZIP_FILE_PROCESS_FAILED": "压缩文件读取或解压失败",
             "FILE_COPY_FAILED": "文件复制失败",
             "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
           }
         }
       },
-      "moveAcrossInstances": {
+      "moveResourceToInstance": {
         "success": "资源移动成功",
         "error": {
           "title": "移动资源失败",

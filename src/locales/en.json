@@ -1589,19 +1589,20 @@
           }
         }
       },
-      "copyAcrossInstances": {
+      "copyResourceToInstances": {
         "success": "Successfully copied resource",
         "error": {
           "title": "Failed to copy resource",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
             "INVALID_SOURCE_PATH": "Invalid source path",
+            "ZIP_FILE_PROCESS_FAILED": "Zip File load or extract failed",
             "FILE_COPY_FAILED": "File copy failed",
             "FOLDER_CREATION_FAILED": "Destination folder creation failed"
           }
         }
       },
-      "moveAcrossInstances": {
+      "moveResourceToInstance": {
         "success": "Successfully moved resource",
         "error": {
           "title": "Failed to move resource",
