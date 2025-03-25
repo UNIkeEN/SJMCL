@@ -119,7 +119,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     },
   ];
 
-  const handleCopyAcrossInstances = useCallback(
+  const handleCopyResourceToInstances = useCallback(
     (
       srcFilePath: string,
       tgtInstId: number[],
@@ -130,7 +130,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
         tgtInstId &&
         tgtDirType !== InstanceSubdirEnums.Root
       ) {
-        InstanceService.copyAcrossInstances(
+        InstanceService.copyResourceToInstances(
           srcFilePath,
           tgtInstId,
           tgtDirType
@@ -158,7 +158,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     [toast, router]
   );
 
-  const handleMoveAcrossInstances = useCallback(
+  const handleMoveResourceToInstance = useCallback(
     (
       srcFilePath: string,
       tgtInstId: number,
@@ -169,7 +169,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
         tgtInstId &&
         tgtDirType !== InstanceSubdirEnums.Root
       ) {
-        InstanceService.moveAcrossInstances(
+        InstanceService.moveResourceToInstance(
           srcFilePath,
           tgtInstId,
           tgtDirType
@@ -194,13 +194,13 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   const handleCopyOrMove = async () => {
     setIsLoading(true);
     if (operation === "copy") {
-      handleCopyAcrossInstances(
+      handleCopyResourceToInstances(
         srcFilePath,
         selectedGameInstances.map((instance) => instance.id),
         _tgtDirType
       );
     } else {
-      handleMoveAcrossInstances(
+      handleMoveResourceToInstance(
         srcFilePath,
         selectedGameInstances[0].id,
         _tgtDirType

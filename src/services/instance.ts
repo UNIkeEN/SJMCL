@@ -78,38 +78,41 @@ export class InstanceService {
 
   /**
    * COPY the specified resource to the target instance(s).
-   * @param {string} srcFilePath - The path of the file to copy.
-   * @param {number} tgtInstIds - ID of the target instance(s).
+   * @param {string} srcFilePath - The path of the file (or the directory) to copy.
+   * @param {number[]} tgtInstIds - ID of the target instance(s).
    * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
+   * @param {boolean} [decompress=false] - Whether to decompress as a zip file
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async copyAcrossInstances(
+  static async copyResourceToInstances(
     srcFilePath: string,
     tgtInstIds: number[],
-    tgtDirType: InstanceSubdirEnums
+    tgtDirType: InstanceSubdirEnums,
+    decompress: boolean = false
   ): Promise<InvokeResponse<void>> {
-    return await invoke("copy_across_instances", {
+    return await invoke("copy_resource_to_instances", {
       srcFilePath,
       tgtInstIds,
       tgtDirType,
+      decompress,
     });
   }
 
   /**
    * MOVE the specified resource to the target instance.
-   * @param {string} srcFilePath - The path of the file to move.
+   * @param {string} srcFilePath - The path of the file (or the directory) to move.
    * @param {number} tgtInstId - The target instance ID.
    * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async moveAcrossInstances(
+  static async moveResourceToInstance(
     srcFilePath: string,
     tgtInstId: number,
     tgtDirType: InstanceSubdirEnums
   ): Promise<InvokeResponse<void>> {
-    return await invoke("move_across_instances", {
+    return await invoke("move_resource_to_instance", {
       srcFilePath,
       tgtInstId,
       tgtDirType,

@@ -1,3 +1,4 @@
+import { open } from "@tauri-apps/plugin-dialog";
 import { useRouter } from "next/router";
 import React, {
   createContext,
@@ -25,7 +26,6 @@ import { updateByKeyPath } from "@/utils/partial";
 export interface InstanceContextType {
   summary: GameInstanceSummary | undefined;
   updateSummary: (path: string, value: any) => void;
-  openSubdir: (dirType: InstanceSubdirEnums) => void;
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
   getLocalModList: (sync?: boolean) => LocalModInfo[] | undefined;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
@@ -33,6 +33,9 @@ export interface InstanceContextType {
   getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
   getShaderPackList: (sync?: boolean) => ShaderPackInfo[] | undefined;
   getScreenshotList: (sync?: boolean) => ScreenshotInfo[] | undefined;
+  // shared service handler
+  handleOpenInstanceSubdir: (dirType: InstanceSubdirEnums) => void;
+  handleImportResource: (option: any) => void;
 }
 
 export const InstanceContext = createContext<InstanceContextType | undefined>(
@@ -100,6 +103,60 @@ export const InstanceContextProvider: React.FC<{
               });
           }
         );
+      }
+    },
+    [instanceSummary?.id, toast]
+  );
+
+  type ImportResourceOptions = {
+    filterName: string;
+    filterExt: string[];
+    tgtDirType: InstanceSubdirEnums;
+    decompress?: boolean;
+    onSuccessCallback: () => void;
+  };
+
+  const handleImportResource = useCallback(
+    (options: ImportResourceOptions) => {
+      const {
+        filterName,
+        filterExt,
+        tgtDirType,
+        decompress = false,
+        onSuccessCallback,
+      } = options;
+      if (instanceSummary?.id !== undefined) {
+        open({
+          multiple: false,
+          filters: [
+            {
+              name: filterName,
+              extensions: filterExt,
+            },
+          ],
+        }).then((selectedPath) => {
+          if (!selectedPath) return;
+          InstanceService.copyResourceToInstances(
+            selectedPath,
+            [instanceSummary.id],
+            tgtDirType,
+            decompress
+          ).then((response) => {
+            if (response.status === "success") {
+              toast({
+                title: response.message,
+                status: "success",
+              });
+              onSuccessCallback();
+              // KNOWN ISSUE: When the successfully copied file cannot be loaded as world/mod etc. But this handler will still toast success.
+            } else
+              toast({
+                title: response.message,
+                description: response.details,
+                status: "error",
+              });
+          });
+        });
       }
     },
     [instanceSummary?.id, toast]
@@ -250,7 +307,6 @@ export const InstanceContextProvider: React.FC<{
       value={{
         summary: instanceSummary,
         updateSummary,
-        openSubdir: handleOpenInstanceSubdir,
         getWorldList,
         getLocalModList,
         getResourcePackList,
@@ -258,6 +314,8 @@ export const InstanceContextProvider: React.FC<{
         getSchematicList,
         getShaderPackList,
         getScreenshotList,
+        handleOpenInstanceSubdir,
+        handleImportResource,
       }}
     >
       {children}

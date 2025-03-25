@@ -19,8 +19,8 @@ const InstanceResourcePacksPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const {
-    summary,
-    openSubdir,
+    handleOpenInstanceSubdir,
+    handleImportResource,
     getResourcePackList,
     getServerResourcePackList,
   } = useInstanceSharedData();
@@ -46,12 +46,22 @@ const InstanceResourcePacksPage = () => {
         {
           icon: "openFolder",
           onClick: () => {
-            openSubdir(InstanceSubdirEnums.ResourcePacks);
+            handleOpenInstanceSubdir(InstanceSubdirEnums.ResourcePacks);
           },
         },
         {
           icon: "add",
-          onClick: () => {},
+          onClick: () => {
+            handleImportResource({
+              filterName: t("InstanceLayout.instanceTabList.resourcepacks"),
+              filterExt: ["zip"],
+              tgtDirType: InstanceSubdirEnums.ResourcePacks,
+              decompress: false,
+              onSuccessCallback: () => {
+                setResourcePacks(getResourcePackList(true) || []);
+              },
+            });
+          },
         },
         {
           icon: "download",

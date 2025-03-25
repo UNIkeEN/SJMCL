@@ -28,6 +28,7 @@ use std::{sync::Mutex, time::SystemTime};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_opener::open_path;
 use tokio;
+use zip::read::ZipArchive;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
@@ -106,19 +107,41 @@ pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
-pub fn copy_across_instances(
+pub async fn rename_instance(
+  app: AppHandle,
+  instance_id: usize,
+  new_name: String,
+) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let mut state = binding.lock().unwrap();
+  let instance = match state.get_mut(instance_id) {
+    Some(x) => x,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  match rename_game_version_id(&instance.version_path, &new_name) {
+    Ok(new_path) => {
+      instance.version_path = new_path;
+      instance.name = new_name;
+      Ok(())
+    }
+    Err(_) => Err(InstanceError::ConflictNameError.into()),
+  }
+}
+
+#[tauri::command]
+pub fn copy_resource_to_instances(
   app: AppHandle,
   src_file_path: String,
   tgt_inst_ids: Vec<usize>,
   tgt_dir_type: InstanceSubdirType,
+  decompress: bool,
 ) -> SJMCLResult<()> {
   let src_path = Path::new(&src_file_path);
 
   if src_path.is_file() {
-    let filename = match src_path.file_name() {
-      Some(name) => name.to_os_string(),
-      None => return Err(InstanceError::InvalidSourcePath.into()),
-    };
+    let file_name = src_path
+      .file_name()
+      .ok_or(InstanceError::InvalidSourcePath)?;
 
     for tgt_inst_id in tgt_inst_ids {
       let tgt_path = match get_instance_subdir_path(&app, tgt_inst_id, &tgt_dir_type) {
@@ -130,8 +153,27 @@ pub fn copy_across_instances(
         fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
       }
 
-      let dest_path = generate_unique_filename(&tgt_path, &filename);
-      fs::copy(&src_file_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+      if decompress {
+        let base_name = src_path
+          .extension()
+          .and_then(|ext| if ext == "zip" { Some(()) } else { None })
+          .and_then(|_| Path::new(file_name).file_stem())
+          .unwrap_or(file_name);
+        let dest_path = generate_unique_filename(&tgt_path, base_name);
+
+        // extract zip
+        let file = fs::File::open(src_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+        let mut archive = ZipArchive::new(file).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+
+        fs::create_dir_all(&dest_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+
+        archive
+          .extract(&dest_path)
+          .map_err(|_| InstanceError::ZipFileProcessFailed)?;
+      } else {
+        let dest_path = generate_unique_filename(&tgt_path, file_name);
+        fs::copy(&src_file_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+      }
     }
   } else if src_path.is_dir() {
     for tgt_inst_id in tgt_inst_ids {
@@ -154,7 +196,7 @@ pub fn copy_across_instances(
 }
 
 #[tauri::command]
-pub fn move_across_instances(
+pub fn move_resource_to_instance(
   app: AppHandle,
   src_file_path: String,
   tgt_inst_id: usize,
@@ -166,21 +208,19 @@ pub fn move_across_instances(
   };
 
   let src_path = Path::new(&src_file_path);
-
   if !src_path.is_dir() && !src_path.is_file() {
     return Err(InstanceError::InvalidSourcePath.into());
   }
 
-  let filename = match src_path.file_name() {
-    Some(name) => name.to_os_string(),
-    None => return Err(InstanceError::InvalidSourcePath.into()),
-  };
+  let file_name = src_path
+    .file_name()
+    .ok_or(InstanceError::InvalidSourcePath)?;
 
   if !tgt_path.exists() {
     fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
   }
 
-  let dest_path = generate_unique_filename(&tgt_path, &filename);
+  let dest_path = generate_unique_filename(&tgt_path, file_name);
   fs::rename(&src_file_path, &dest_path).map_err(|_| InstanceError::FileMoveFailed)?;
   Ok(())
 }
@@ -598,27 +638,5 @@ pub async fn retrieve_world_details(
     Ok(level_data)
   } else {
     Err(InstanceError::LevelParseError.into())
-  }
-}
-
-#[tauri::command]
-pub async fn rename_instance(
-  app: AppHandle,
-  instance_id: usize,
-  new_name: String,
-) -> SJMCLResult<()> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
-  let mut state = binding.lock().unwrap();
-  let instance = match state.get_mut(instance_id) {
-    Some(x) => x,
-    None => return Err(InstanceError::InstanceNotFoundByID.into()),
-  };
-  match rename_game_version_id(&instance.version_path, &new_name) {
-    Ok(new_path) => {
-      instance.version_path = new_path;
-      instance.name = new_name;
-      Ok(())
-    }
-    Err(_) => Err(InstanceError::ConflictNameError.into()),
   }
 }

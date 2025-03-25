@@ -31,7 +31,12 @@ import { base64ImgSrc } from "@/utils/string";
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const { summary, openSubdir, getWorldList } = useInstanceSharedData();
+  const {
+    summary,
+    handleOpenInstanceSubdir,
+    handleImportResource,
+    getWorldList,
+  } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
   const { openSharedModal } = useSharedModals();
@@ -86,12 +91,22 @@ const InstanceWorldsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        openSubdir(InstanceSubdirEnums.Saves);
+        handleOpenInstanceSubdir(InstanceSubdirEnums.Saves);
       },
     },
     {
       icon: "add",
-      onClick: () => {},
+      onClick: () => {
+        handleImportResource({
+          filterName: t("InstanceLayout.instanceTabList.worlds"),
+          filterExt: ["zip"],
+          tgtDirType: InstanceSubdirEnums.Saves,
+          decompress: true,
+          onSuccessCallback: () => {
+            setWorlds(getWorldList(true) || []);
+          },
+        });
+      },
     },
     {
       icon: "download",

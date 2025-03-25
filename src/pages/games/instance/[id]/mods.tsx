@@ -37,7 +37,12 @@ import { base64ImgSrc } from "@/utils/string";
 const InstanceModsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
-  const { summary, openSubdir, getLocalModList } = useInstanceSharedData();
+  const {
+    summary,
+    handleOpenInstanceSubdir,
+    handleImportResource,
+    getLocalModList,
+  } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
   const { openSharedModal } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -129,12 +134,22 @@ const InstanceModsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        openSubdir(InstanceSubdirEnums.Mods);
+        handleOpenInstanceSubdir(InstanceSubdirEnums.Mods);
       },
     },
     {
       icon: "add",
-      onClick: () => {},
+      onClick: () => {
+        handleImportResource({
+          filterName: t("InstanceLayout.instanceTabList.mods"),
+          filterExt: ["zip", "jar", "disabled"],
+          tgtDirType: InstanceSubdirEnums.Mods,
+          decompress: false,
+          onSuccessCallback: () => {
+            setLocalMods(getLocalModList(true) || []);
+          },
+        });
+      },
     },
     {
       icon: "download",

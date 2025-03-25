@@ -188,6 +188,7 @@ pub enum InstanceError {
   FileCopyFailed,
   FileMoveFailed,
   FolderCreationFailed,
+  ZipFileProcessFailed,
   WorldNotExistError,
   LevelParseError,
   LevelNotExistError,
