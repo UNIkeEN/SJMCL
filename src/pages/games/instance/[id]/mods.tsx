@@ -44,34 +44,31 @@ const InstanceModsPage = () => {
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
-  const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>(localMods);
+  const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const mods = getLocalModList() || [];
-    setLocalMods(mods);
-    setFilteredMods(mods);
+    setLocalMods(getLocalModList() || []);
   }, [getLocalModList]);
 
-  const handleSearchChange = (value: string) => {
-    setQuery(value);
-
-    const keywords = value.trim().toLowerCase().split(/\s+/);
+  useEffect(() => {
+    const keywords = query.trim().toLowerCase().split(/\s+/);
     if (keywords.length === 0 || keywords[0] === "") {
       setFilteredMods(localMods);
-      return;
+    } else {
+      const filtered = localMods.filter((mod) => {
+        const name = mod.name?.toLowerCase() || "";
+        const fileName = mod.fileName?.toLowerCase() || "";
+        return keywords.some(
+          (kw) => name.includes(kw) || fileName.includes(kw)
+        );
+      });
+
+      setFilteredMods(filtered);
     }
-
-    const filtered = localMods.filter((mod) => {
-      const name = mod.name?.toLowerCase() || "";
-      const fileName = mod.fileName?.toLowerCase() || "";
-      return keywords.some((kw) => name.includes(kw) || fileName.includes(kw));
-    });
-
-    setFilteredMods(filtered);
-  };
+  }, [query, localMods]);
 
   useEffect(() => {
     if (isSearching) searchInputRef.current?.focus();
@@ -80,7 +77,6 @@ const InstanceModsPage = () => {
   const handleClearSearch = () => {
     setQuery("");
     setIsSearching(false);
-    setFilteredMods(localMods);
   };
 
   const handleToggleModByExtension = useCallback(
@@ -245,7 +241,9 @@ const InstanceModsPage = () => {
                 <Input
                   ref={searchInputRef}
                   value={query}
-                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                  }}
                   size="xs"
                   w={140}
                   fontSize="sm"
