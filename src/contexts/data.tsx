@@ -5,6 +5,7 @@ import { AuthServer, Player } from "@/models/account";
 import { GameInstanceSummary } from "@/models/instance/misc";
 import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
+import { useLauncherConfig } from "./config";
 
 interface DataContextType {
   getPlayerList: (sync?: boolean) => Player[] | undefined;
@@ -32,6 +33,7 @@ const DataDispatchContext = createContext<DataDispatchContextType | undefined>(
 export const DataContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const { config } = useLauncherConfig();
   const toast = useToast();
 
   const [playerList, setPlayerList] = useState<Player[]>();
@@ -46,9 +48,6 @@ export const DataContextProvider: React.FC<{
     AccountService.retrievePlayerList().then((response) => {
       if (response.status === "success") {
         setPlayerList(response.data);
-        if (response.data.length > 0) {
-          setSelectedPlayer(response.data[0]);
-        }
       } else {
         toast({
           title: response.message,
@@ -58,13 +57,6 @@ export const DataContextProvider: React.FC<{
       }
     });
   }, [toast]);
-
-  const handleRetrieveSelectedPlayer = useCallback(() => {
-    AccountService.retrieveSelectedPlayer().then((response) => {
-      if (response.status === "success") setSelectedPlayer(response.data);
-      else setSelectedPlayer(undefined);
-    });
-  }, [setSelectedPlayer]);
 
   const handleRetrieveAuthServerList = useCallback(() => {
     AccountService.retrieveAuthServerList().then((response) => {
@@ -92,9 +84,21 @@ export const DataContextProvider: React.FC<{
 
   const getPlayerList = useGetState(playerList, handleRetrievePlayerList);
 
-  const getSelectedPlayer = useGetState(
-    selectedPlayer,
-    handleRetrieveSelectedPlayer
+  const getSelectedPlayer = useCallback(
+    (sync = false) => {
+      if (sync) {
+        let selectedPlayerId = config.states.shared.selectedPlayerId;
+        console.log("selectedPlayerId:", selectedPlayerId);
+        let _selectedPlayer = playerList?.find(
+          (player) => player.id === selectedPlayerId
+        );
+        setSelectedPlayer(_selectedPlayer);
+        return _selectedPlayer;
+      } else {
+        return selectedPlayer;
+      }
+    },
+    [config.states.shared.selectedPlayerId, playerList, selectedPlayer]
   );
 
   const getGameInstanceList = useGetState(

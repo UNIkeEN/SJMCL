@@ -29,47 +29,6 @@ pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {
 }
 
 #[tauri::command]
-pub fn retrieve_selected_player(app: AppHandle) -> SJMCLResult<Player> {
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let account_state = account_binding.lock()?;
-
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let config_state = config_binding.lock()?;
-
-  if config_state.states.shared.selected_player_id.is_empty() {
-    return Err(AccountError::NotFound.into());
-  }
-  let player_info = account_state
-    .players
-    .iter()
-    .find(|player| player.gen_player_id() == config_state.states.shared.selected_player_id)
-    .cloned()
-    .ok_or(AccountError::NotFound)?;
-  Ok(Player::from(player_info))
-}
-
-#[tauri::command]
-pub fn update_selected_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let account_state = account_binding.lock()?;
-
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
-
-  if account_state
-    .players
-    .iter()
-    .any(|player| player.gen_player_id() == player_id)
-  {
-    config_state.states.shared.selected_player_id = player_id;
-    config_state.save()?;
-    Ok(())
-  } else {
-    Err(AccountError::NotFound.into())
-  }
-}
-
-#[tauri::command]
 pub async fn add_player_offline(app: AppHandle, username: String, uuid: String) -> SJMCLResult<()> {
   let new_player = offline::login(&app, username, uuid).await?;
 
@@ -82,12 +41,12 @@ pub async fn add_player_offline(app: AppHandle, username: String, uuid: String) 
   if account_state
     .players
     .iter()
-    .any(|player| player.gen_player_id() == new_player.gen_player_id())
+    .any(|player| player.id == new_player.id)
   {
     return Err(AccountError::Duplicate.into());
   }
 
-  config_state.states.shared.selected_player_id = new_player.gen_player_id();
+  config_state.states.shared.selected_player_id = new_player.id.clone();
 
   account_state.players.push(new_player);
   account_state.save()?;
@@ -169,12 +128,12 @@ pub async fn add_player_oauth(
   if account_state
     .players
     .iter()
-    .any(|player| player.gen_player_id() == new_player.gen_player_id())
+    .any(|player| player.id == new_player.id)
   {
     return Err(AccountError::Duplicate.into());
   }
 
-  config_state.states.shared.selected_player_id = new_player.gen_player_id();
+  config_state.states.shared.selected_player_id = new_player.id.clone();
 
   account_state.players.push(new_player);
   account_state.save()?;
@@ -211,7 +170,7 @@ pub async fn add_player_3rdparty_password(
     if account_state
       .players
       .iter()
-      .any(|player| player.gen_player_id() == new_player.gen_player_id())
+      .any(|player| player.id == new_player.id)
     {
       // if some of the players have already been added, skip and try others
       continue;
@@ -239,13 +198,10 @@ pub fn update_player_skin_offline_preset(
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
 
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
-
   let player = account_state
     .players
     .iter_mut()
-    .find(|player| player.gen_player_id() == player_id)
+    .find(|player| player.id == player_id)
     .ok_or(AccountError::NotFound)?;
 
   if player.player_type != PlayerType::Offline {
@@ -258,10 +214,7 @@ pub fn update_player_skin_offline_preset(
     return Err(AccountError::TextureError.into());
   }
 
-  config_state.states.shared.selected_player_id = player_id;
-
   account_state.save()?;
-  config_state.save()?;
 
   Ok(())
 }
@@ -275,9 +228,7 @@ pub fn delete_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
   let mut config_state = config_binding.lock()?;
 
   let initial_len = account_state.players.len();
-  account_state
-    .players
-    .retain(|s| s.gen_player_id() != player_id);
+  account_state.players.retain(|s| s.id != player_id);
   if account_state.players.len() == initial_len {
     return Err(AccountError::NotFound.into());
   }
@@ -286,7 +237,7 @@ pub fn delete_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
     config_state.states.shared.selected_player_id = account_state
       .players
       .first()
-      .map_or("".to_string(), |player| player.gen_player_id());
+      .map_or("".to_string(), |player| player.id.clone());
   }
 
   account_state.save()?;
@@ -370,7 +321,7 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
 
   account_state.players.retain(|player| {
     let should_remove = player.auth_server_url == url;
-    if should_remove && player.gen_player_id() == selected_id {
+    if should_remove && player.id == selected_id {
       need_reset = true;
     }
     !should_remove

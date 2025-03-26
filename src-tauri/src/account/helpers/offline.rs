@@ -39,7 +39,7 @@ pub async fn login(app: &AppHandle, username: String, raw_uuid: String) -> SJMCL
   let uuid = if let Ok(id) = Uuid::parse_str(&raw_uuid) {
     id
   } else {
-    if raw_uuid.len() > 0 {
+    if !raw_uuid.is_empty() {
       // user uses custom UUID, but it's invalid
       return Err(AccountError::Invalid)?;
     }
@@ -47,14 +47,14 @@ pub async fn login(app: &AppHandle, username: String, raw_uuid: String) -> SJMCL
   };
   let texture_role = TEXTURE_ROLES.choose(&mut rand::rng()).unwrap_or(&"steve");
 
-  Ok(PlayerInfo {
-    name: username,
+  Ok(PlayerInfo::new(
+    username.clone(),
     uuid,
-    player_type: PlayerType::Offline,
-    auth_account: "".to_string(),
-    password: "".to_string(),
-    auth_server_url: "".to_string(),
-    access_token: "".to_string(),
-    textures: load_preset_skin(app, texture_role.to_string())?,
-  })
+    PlayerType::Offline,
+    "".to_string(),
+    "".to_string(),
+    "".to_string(),
+    "".to_string(),
+    load_preset_skin(app, texture_role.to_string())?,
+  ))
 }

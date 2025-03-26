@@ -114,6 +114,10 @@ export interface LauncherConfig {
   discoverSourceEndpoints: string[];
   extraJavaPaths: string[];
   states: {
+    shared: {
+      selectedPlayerId: string;
+      selectedInstanceId: string;
+    };
     accountsPage: {
       viewType: string;
     };
@@ -246,6 +250,10 @@ export const defaultConfig: LauncherConfig = {
   discoverSourceEndpoints: ["https://mc.sjtu.cn/api-sjmcl/article"],
   extraJavaPaths: [],
   states: {
+    shared: {
+      selectedPlayerId: "",
+      selectedInstanceId: "",
+    },
     accountsPage: {
       viewType: "grid",
     },

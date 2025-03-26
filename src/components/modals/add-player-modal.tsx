@@ -61,7 +61,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const toast = useToast();
-  const { config } = useLauncherConfig();
+  const { config, refreshConfig } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const { getAuthServerList, getPlayerList, getSelectedPlayer } = useData();
@@ -180,8 +180,11 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     loginServiceFunction()
       .then((response) => {
         if (response.status === "success") {
-          getPlayerList(true);
-          getSelectedPlayer(true);
+          Promise.all([
+            refreshConfig(),
+            getPlayerList(true),
+            getSelectedPlayer(true),
+          ]);
           toast({
             title: response.message,
             status: "success",

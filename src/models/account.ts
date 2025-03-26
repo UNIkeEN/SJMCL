@@ -6,6 +6,7 @@ export interface Texture {
 
 // player
 export interface Player {
+  id: string;
   name: string;
   uuid: string;
   avatar: string;

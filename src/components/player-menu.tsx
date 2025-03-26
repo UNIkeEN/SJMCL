@@ -15,11 +15,11 @@ import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
+import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
-import { genPlayerId } from "@/utils/account";
 import { copyText } from "@/utils/copy";
 import ViewSkinModal from "./modals/view-skin-modal";
 
@@ -33,6 +33,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   variant = "dropdown",
 }) => {
   const { t } = useTranslation();
+  const { refreshConfig } = useLauncherConfig();
   const toast = useToast();
   const {
     isOpen: isDeleteOpen,
@@ -47,10 +48,13 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   const { getPlayerList, getSelectedPlayer } = useData();
 
   const handleDeletePlayer = () => {
-    AccountService.deletePlayer(genPlayerId(player)).then((response) => {
+    AccountService.deletePlayer(player.id).then((response) => {
       if (response.status === "success") {
-        getPlayerList(true);
-        getSelectedPlayer(true);
+        Promise.all([
+          refreshConfig(),
+          getPlayerList(true),
+          getSelectedPlayer(true),
+        ]);
         toast({
           title: response.message,
           status: "success",
@@ -157,7 +161,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         <ManageSkinModal
           isOpen={isSkinModalOpen}
           onClose={onSkinModalClose}
-          playerId={genPlayerId(player)}
+          playerId={player.id}
           skin={player.textures.find(
             (texture) => texture.textureType === "SKIN"
           )}

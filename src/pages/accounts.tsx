@@ -49,12 +49,17 @@ const AccountsPage = () => {
 
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const [playerList, setPlayerList] = useState<Player[]>([]);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player>();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
   const { getPlayerList, getAuthServerList, getSelectedPlayer } = useData();
 
   useEffect(() => {
     setPlayerList(getPlayerList() || []);
   }, [getPlayerList]);
+
+  useEffect(() => {
+    setSelectedPlayer(getSelectedPlayer(true));
+  }, [getSelectedPlayer]);
 
   useEffect(() => {
     setAuthServerList(getAuthServerList() || []);
@@ -270,6 +275,7 @@ const AccountsPage = () => {
           >
             <Box overflow="auto" flexGrow={1} rounded="md">
               <PlayersView
+                selectedPlayer={selectedPlayer}
                 players={filterPlayersByType(selectedPlayerType)}
                 viewType={selectedViewType}
               />

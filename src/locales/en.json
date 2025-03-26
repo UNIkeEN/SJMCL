@@ -1474,14 +1474,6 @@
           }
         }
       },
-      "updateSelectedPlayer": {
-        "error": {
-          "title": "Failed to update seleted player",
-          "description": {
-            "NOT_FOUND": "The selected player does not exist"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "Failed to retrieve auth server list"

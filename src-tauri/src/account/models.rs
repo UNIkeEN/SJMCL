@@ -27,6 +27,7 @@ pub struct Texture {
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Player {
+  pub id: String,
   pub name: String,
   pub uuid: Uuid,
   pub avatar: String, // base64 encoded
@@ -50,6 +51,7 @@ impl From<PlayerInfo> for Player {
       .cloned()
       .unwrap_or_default();
     Player {
+      id: player_info.id,
       name: player_info.name,
       uuid: player_info.uuid,
       avatar: draw_avatar(
@@ -70,6 +72,7 @@ impl From<PlayerInfo> for Player {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PlayerInfo {
+  pub id: String,
   pub name: String,
   pub uuid: Uuid,
   pub player_type: PlayerType,
@@ -80,15 +83,37 @@ pub struct PlayerInfo {
   pub textures: Vec<Texture>,
 }
 
+#[allow(clippy::too_many_arguments)]
 impl PlayerInfo {
-  pub fn gen_player_id(&self) -> String {
-    let mut server_identity = self.auth_server_url.clone();
-    if self.player_type == PlayerType::Offline {
+  pub fn new(
+    name: String,
+    uuid: Uuid,
+    player_type: PlayerType,
+    auth_server_url: String,
+    auth_account: String,
+    password: String,
+    access_token: String,
+    textures: Vec<Texture>,
+  ) -> Self {
+    let mut server_identity = auth_server_url.clone();
+    if player_type == PlayerType::Offline {
       server_identity = "OFFLINE".to_string();
-    } else if self.player_type == PlayerType::Microsoft {
+    } else if player_type == PlayerType::Microsoft {
       server_identity = "MICROSOFT".to_string();
     }
-    format!("{}:{}:{}", self.name, server_identity, self.uuid)
+    let player_id = format!("{}:{}:{}", name, server_identity, uuid);
+
+    PlayerInfo {
+      id: player_id,
+      name,
+      uuid,
+      player_type,
+      auth_account,
+      password,
+      auth_server_url,
+      access_token,
+      textures,
+    }
   }
 }
 
@@ -130,6 +155,12 @@ structstruck::strike! {
 pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
   pub auth_servers: Vec<AuthServer>,
+}
+
+impl AccountInfo {
+  pub fn get_player_by_id(&self, id: String) -> Option<&PlayerInfo> {
+    self.players.iter().find(|player| player.id == id)
+  }
 }
 
 impl Storage for AccountInfo {

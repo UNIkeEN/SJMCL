@@ -118,27 +118,6 @@ export class AccountService {
   }
 
   /**
-   * RETRIEVE the selected player by player ID.
-   * @returns {Promise<InvokeResponse<Player>>}
-   */
-  @responseHandler("account")
-  static async retrieveSelectedPlayer(): Promise<InvokeResponse<Player>> {
-    return await invoke("retrieve_selected_player");
-  }
-
-  /**
-   * UPDATE the selected player by player ID.
-   * @param {string} playerId - The player ID of the player to be posted as selected.
-   * @returns {Promise<InvokeResponse<void>>}
-   */
-  @responseHandler("account")
-  static async updateSelectedPlayer(
-    playerId: string
-  ): Promise<InvokeResponse<void>> {
-    return await invoke("update_selected_player", { playerId });
-  }
-
-  /**
    * RETRIEVE the list of authentication servers.
    * @returns {Promise<InvokeResponse<AuthServer[]>>}
    */

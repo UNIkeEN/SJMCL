@@ -18,6 +18,7 @@ interface LauncherConfigContextType {
   config: LauncherConfig;
   setConfig: React.Dispatch<React.SetStateAction<LauncherConfig>>;
   update: (path: string, value: any) => void;
+  refreshConfig: () => void;
   // other shared data associated with the launcher config.
   getJavaInfos: (sync?: boolean) => JavaInfo[] | undefined;
 }
@@ -106,6 +107,7 @@ export const LauncherConfigContextProvider: React.FC<{
         config,
         setConfig,
         update: handleUpdateLauncherConfig,
+        refreshConfig: handleRetrieveLauncherConfig,
         getJavaInfos,
       }}
     >

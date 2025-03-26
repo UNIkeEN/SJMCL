@@ -1474,14 +1474,6 @@
           }
         }
       },
-      "updateSelectedPlayer": {
-        "error": {
-          "title": "更新所选角色失败",
-          "description": {
-            "NOT_FOUND": "所选角色不存在"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "获取认证服务器列表失败"
