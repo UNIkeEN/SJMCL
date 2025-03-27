@@ -95,29 +95,33 @@ pub async fn add_player_oauth(
 ) -> SJMCLResult<()> {
   let binding = app.state::<Mutex<AccountInfo>>();
 
-  let new_player = if server_type == PlayerType::ThirdParty {
-    let auth_server = {
-      let state = binding.lock()?;
-      state
-        .auth_servers
-        .iter()
-        .find(|server| server.auth_url == auth_server_url)
-        .ok_or(AccountError::NotFound)?
-        .clone()
-    };
+  let new_player = match server_type {
+    PlayerType::ThirdParty => {
+      let auth_server = {
+        let state = binding.lock()?;
+        state
+          .auth_servers
+          .iter()
+          .find(|server| server.auth_url == auth_server_url)
+          .ok_or(AccountError::NotFound)?
+          .clone()
+      };
 
-    authlib_injector::oauth::login(
-      &app,
-      auth_server_url,
-      auth_server.features.openid_configuration_url,
-      auth_server.client_id,
-      auth_info,
-    )
-    .await?
-  } else if server_type == PlayerType::Microsoft {
-    microsoft::oauth::login(&app, auth_info).await?
-  } else {
-    return Err(AccountError::Invalid.into());
+      authlib_injector::oauth::login(
+        &app,
+        auth_server_url,
+        auth_server.features.openid_configuration_url,
+        auth_server.client_id,
+        auth_info,
+      )
+      .await?
+    }
+
+    PlayerType::Microsoft => microsoft::oauth::login(&app, auth_info).await?,
+
+    PlayerType::Offline => {
+      return Err(AccountError::Invalid.into());
+    }
   };
 
   let account_binding = app.state::<Mutex<AccountInfo>>();
@@ -245,6 +249,61 @@ pub fn delete_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
   }
 
   account_state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+
+  let cloned_account_state = account_binding.lock()?.clone();
+
+  let player = cloned_account_state
+    .players
+    .iter()
+    .find(|player| player.id == player_id)
+    .ok_or(AccountError::NotFound)?;
+
+  let refreshed_player = match player.player_type {
+    PlayerType::ThirdParty => {
+      let auth_server = cloned_account_state
+        .auth_servers
+        .iter()
+        .find(|server| server.auth_url == player.auth_server_url)
+        .ok_or(AccountError::NotFound)?
+        .clone();
+
+      if player.refresh_token.is_empty() {
+        authlib_injector::password::refresh(&app, player.clone()).await?
+      } else {
+        authlib_injector::oauth::refresh(
+          &app,
+          player.clone(),
+          auth_server.client_id,
+          auth_server.features.openid_configuration_url,
+        )
+        .await?
+      }
+    }
+
+    PlayerType::Microsoft => microsoft::oauth::refresh(player.clone()).await?,
+
+    PlayerType::Offline => {
+      return Err(AccountError::Invalid.into());
+    }
+  };
+
+  let mut account_state = account_binding.lock()?;
+
+  if let Some(player) = account_state
+    .players
+    .iter_mut()
+    .find(|player| player.id == player_id)
+  {
+    *player = refreshed_player;
+    account_state.save()?;
+  }
+
   Ok(())
 }
 

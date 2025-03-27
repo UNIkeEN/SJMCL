@@ -118,6 +118,16 @@ export class AccountService {
   }
 
   /**
+   * REFRESH a player (3rd-party or Microsoft) by player ID.
+   * @param {string} playerId - The player ID of the player to be refreshed.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async refreshPlayer(playerId: string): Promise<InvokeResponse<void>> {
+    return await invoke("refresh_player", { playerId });
+  }
+
+  /**
    * RETRIEVE the list of authentication servers.
    * @returns {Promise<InvokeResponse<AuthServer[]>>}
    */

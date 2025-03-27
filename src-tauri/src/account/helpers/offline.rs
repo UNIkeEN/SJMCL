@@ -57,6 +57,7 @@ pub async fn login(app: &AppHandle, username: String, raw_uuid: String) -> SJMCL
       password: "".to_string(),
       auth_server_url: "".to_string(),
       access_token: "".to_string(),
+      refresh_token: "".to_string(),
       textures: load_preset_skin(app, texture_role.to_string())?,
     }
     .with_generated_id(),

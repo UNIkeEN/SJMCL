@@ -640,7 +640,7 @@
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
-    "copy":{
+    "copy": {
       "text": "复制",
       "toast": {
         "success": "已成功复制到剪贴板",
@@ -1427,6 +1427,19 @@
           "title": "角色删除失败",
           "description": {
             "NOT_FOUND": "角色不存在"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "角色信息更新成功",
+        "error": {
+          "title": "角色信息更新失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "TEXTURE_ERROR": "角色皮肤获取失败"
           }
         }
       },

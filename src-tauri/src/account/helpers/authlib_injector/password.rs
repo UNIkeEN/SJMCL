@@ -29,6 +29,7 @@ async fn get_profile(
     app,
     profile,
     access_token,
+    "".to_string(),
     auth_server_url,
     auth_account,
     password,
@@ -103,4 +104,57 @@ pub async fn login(
   }
 
   Ok(players)
+}
+
+pub async fn refresh(app: &AppHandle, player: PlayerInfo) -> SJMCLResult<PlayerInfo> {
+  let client = reqwest::Client::new();
+
+  let response = client
+    .post(format!("{}/authserver/refresh", player.auth_server_url))
+    .header("Content-Type", "application/json")
+    .body(
+      json!({
+         "accessToken": player.access_token,
+         "selectedProfile": {
+           "id": player.uuid.as_simple(),
+           "name": player.name,
+         },
+
+      })
+      .to_string(),
+    )
+    .send()
+    .await
+    .map_err(|_| AccountError::NetworkError)?;
+
+  if !response.status().is_success() {
+    return Err(AccountError::Expired)?;
+  }
+
+  let content = response
+    .json::<Value>()
+    .await
+    .map_err(|_| AccountError::ParseError)?;
+
+  let access_token = content["accessToken"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+
+  let profile = content["selectedProfile"].clone();
+
+  let id = profile["id"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+
+  get_profile(
+    app,
+    player.auth_server_url,
+    access_token,
+    id,
+    player.auth_account,
+    player.password,
+  )
+  .await
 }

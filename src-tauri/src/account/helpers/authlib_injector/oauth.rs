@@ -96,6 +96,7 @@ async fn parse_token(
   jwks: Value,
   id_token: String,
   access_token: String,
+  refresh_token: String,
   auth_server_url: String,
   client_id: String,
 ) -> SJMCLResult<PlayerInfo> {
@@ -124,6 +125,7 @@ async fn parse_token(
     app,
     selected_profile,
     access_token,
+    refresh_token,
     auth_server_url,
     auth_account,
     "".to_string(),
@@ -170,6 +172,7 @@ pub async fn login(
 
   let access_token: String;
   let id_token: String;
+  let refresh_token: String;
 
   loop {
     if *is_cancelled.lock().unwrap() {
@@ -197,6 +200,10 @@ pub async fn login(
         .as_str()
         .ok_or(AccountError::ParseError)?
         .to_string();
+      refresh_token = token["refresh_token"]
+        .as_str()
+        .ok_or(AccountError::ParseError)?
+        .to_string();
 
       auth_webview.close()?;
       break;
@@ -210,7 +217,67 @@ pub async fn login(
     jwks,
     id_token,
     access_token,
+    refresh_token,
     auth_server_url,
+    client_id,
+  )
+  .await
+}
+
+pub async fn refresh(
+  app: &AppHandle,
+  player: PlayerInfo,
+  client_id: String,
+  openid_configuration_url: String,
+) -> SJMCLResult<PlayerInfo> {
+  let openid_configuration = fetch_openid_configuration(openid_configuration_url).await?;
+
+  let token_endpoint = openid_configuration["token_endpoint"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?;
+
+  let jwks_uri = openid_configuration["jwks_uri"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?;
+
+  let jwks = fetch_jwks(jwks_uri.to_string()).await?;
+
+  let client = Client::new();
+
+  let token_response = client
+    .post(token_endpoint)
+    .json(&serde_json::json!({
+        "client_id": client_id,
+        "refresh_token": player.refresh_token,
+        "grant_type": "refresh_token",
+    }))
+    .send()
+    .await?;
+  if !token_response.status().is_success() {
+    return Err(AccountError::Expired)?;
+  }
+  let token: serde_json::Value = token_response.json().await?;
+
+  let access_token = token["access_token"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+  let id_token = token["id_token"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+  let refresh_token = token["refresh_token"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+
+  parse_token(
+    app,
+    jwks,
+    id_token,
+    access_token,
+    refresh_token,
+    player.auth_server_url,
     client_id,
   )
   .await

@@ -80,6 +80,7 @@ pub struct PlayerInfo {
   pub password: String,
   pub auth_server_url: String,
   pub access_token: String,
+  pub refresh_token: String,
   pub textures: Vec<Texture>,
 }
 

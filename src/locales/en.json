@@ -640,7 +640,7 @@
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
-    "copy":{
+    "copy": {
       "text": "Copy",
       "toast": {
         "success": "Copied to clipboard",
@@ -1427,6 +1427,19 @@
           "title": "Failed to delete player",
           "description": {
             "NOT_FOUND": "The player does not exist"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "Successfully refreshed player info",
+        "error": {
+          "title": "Failed to refresh player info",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "TEXTURE_ERROR": "Failed to get player texture"
           }
         }
       },

@@ -1,4 +1,4 @@
-use super::constants::{CLIENT_ID, SCOPE};
+use super::constants::{CLIENT_ID, SCOPE, TOKEN_ENDPOINT};
 use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo, PlayerType, Texture};
 use crate::error::SJMCLResult;
 use crate::utils::window::create_webview_window;
@@ -210,6 +210,7 @@ async fn parse_profile(
       player_type: PlayerType::Microsoft,
       auth_account: name,
       access_token: minecraft_token,
+      refresh_token: microsoft_refresh_token,
       textures,
       auth_server_url: "".to_string(),
       password: "".to_string(),
@@ -247,7 +248,7 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
     }
 
     let token_response = client
-      .post("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")
+      .post(TOKEN_ENDPOINT)
       .form(&[
         ("client_id", CLIENT_ID),
         ("device_code", &auth_info.device_code),
@@ -302,6 +303,42 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
 
     sleep(Duration::from_secs(interval)).await;
   }
+
+  parse_profile(microsoft_token, microsoft_refresh_token).await
+}
+
+pub async fn refresh(player: PlayerInfo) -> SJMCLResult<PlayerInfo> {
+  let client = Client::new();
+
+  let token_response = client
+    .post(TOKEN_ENDPOINT)
+    .form(&[
+      ("client_id", CLIENT_ID),
+      ("refresh_token", player.refresh_token.as_str()),
+      ("grant_type", "refresh_token"),
+    ])
+    .send()
+    .await
+    .map_err(|_| AccountError::NetworkError)?;
+
+  if !token_response.status().is_success() {
+    return Err(AccountError::Expired)?;
+  }
+
+  let token_data: Value = token_response
+    .json::<Value>()
+    .await
+    .map_err(|_| AccountError::ParseError)?;
+
+  let microsoft_token = token_data["access_token"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+
+  let microsoft_refresh_token = token_data["refresh_token"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
 
   parse_profile(microsoft_token, microsoft_refresh_token).await
 }
