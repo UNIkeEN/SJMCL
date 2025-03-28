@@ -168,7 +168,7 @@ structstruck::strike! {
       },
       pub font: struct {
         #[default = 100]
-        pub font_size: usize, // as precent
+        pub font_size: usize, // as percent
       },
       pub background: struct {
         #[default = "%built-in:Jokull"]
