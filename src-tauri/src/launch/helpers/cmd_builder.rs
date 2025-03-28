@@ -3,6 +3,7 @@
 use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
 use crate::account::models::{AccountInfo, PlayerType};
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::{
   helpers::client_json::{FeaturesInfo, JavaVersion, McClientInfo},
   models::misc::Instance,
@@ -188,6 +189,7 @@ pub async fn generate_launch_cmd(
     .ok_or(SJMCLError("PATH NOT FOUND".to_string()))?
     .parent()
     .ok_or(SJMCLError("PATH NOT FOUND".to_string()))?;
+  let game_config = get_instance_game_config(&app, &instance);
   let assets_dir = game_dir.join("assets");
   let libraries_dir = game_dir.join("libraries");
   let version_dir = game_dir.join("versions").join(&instance.name);
@@ -214,12 +216,12 @@ pub async fn generate_launch_cmd(
   ));
   extract_native_libraries(&client_info, &libraries_dir, &natives_dir).await?;
   println!("{}:{}", std::file!(), std::line!());
-  let resolution = sjmcl_config.global_game_config.game_window.resolution;
+  let resolution = game_config.game_window.resolution;
   let launch_feature = FeaturesInfo {
     is_demo_user: Some(false),
     has_custom_resolution: Some(true),
     has_quick_plays_support: Some(false), // TODO
-    is_quick_play_multiplayer: Some(sjmcl_config.global_game_config.game_server.auto_join),
+    is_quick_play_multiplayer: Some(game_config.game_server.auto_join),
     is_quick_play_singleplayer: Some(false), // TODO
     is_quick_play_realms: Some(false),       // TODO
   };
@@ -247,11 +249,11 @@ pub async fn generate_launch_cmd(
     resolution_width: resolution.width,
     quick_play_path: String::new(),
     quick_play_singleplayer: String::new(),
-    quick_play_multiplayer: sjmcl_config.global_game_config.game_server.server_url,
+    quick_play_multiplayer: game_config.game_server.server_url,
     quick_play_realms: String::new(),
   };
   let java_info = choose_java(
-    &sjmcl_config.global_game_config.game_java,
+    &game_config.game_java,
     &java_list,
     &client_info.java_version,
   )?;
@@ -274,16 +276,10 @@ pub async fn generate_launch_cmd(
   }
   println!("{}:{}", std::file!(), std::line!());
   cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
-  cmd.extend(generate_jvm_memory_cmd(
-    &sjmcl_config.global_game_config.performance,
-  ));
-  if sjmcl_config.global_game_config.advanced_options.enabled {
+  cmd.extend(generate_jvm_memory_cmd(&game_config.performance));
+  if game_config.advanced_options.enabled {
     cmd.extend(generate_jvm_metaspace_size_cmd(
-      &sjmcl_config
-        .global_game_config
-        .advanced
-        .jvm
-        .java_permanent_generation_space,
+      &game_config.advanced.jvm.java_permanent_generation_space,
       &java_info,
     ));
   }
@@ -342,11 +338,7 @@ pub async fn generate_launch_cmd(
   Ok(CommandContent {
     exec: java_info.exec_path.clone(),
     args: cmd,
-    nice: sjmcl_config
-      .global_game_config
-      .performance
-      .process_priority
-      .to_nice_value(),
+    nice: game_config.performance.process_priority.to_nice_value(),
   })
 }
 

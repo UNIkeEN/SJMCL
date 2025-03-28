@@ -1,5 +1,9 @@
 pub mod alpha;
+pub mod april_fool;
 pub mod beta;
+pub mod classic;
+pub mod infdev;
 pub mod misc;
+pub mod preclassic;
 pub mod release;
 pub mod snapshot;

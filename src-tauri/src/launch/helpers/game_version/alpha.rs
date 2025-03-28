@@ -1,8 +1,11 @@
 // https://minecraft.wiki/w/Version_formats
 
+use super::misc::{MinecraftVersion, VersionType};
 use crate::launch::models::LaunchError;
 use lazy_static;
 use regex::Regex;
+use std::any::Any;
+use std::cmp::Ordering;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -44,6 +47,39 @@ impl FromStr for AlphaVersion {
       })
     } else {
       Err(LaunchError::VersionParseError)
+    }
+  }
+}
+
+impl MinecraftVersion for AlphaVersion {
+  fn version_type(&self) -> VersionType {
+    VersionType::Alpha
+  }
+
+  fn as_any(&self) -> &dyn Any {
+    self
+  }
+
+  fn to_version_string(&self) -> String {
+    format!(
+      "a{}.{}.{}{}{}",
+      self.major,
+      self.minor,
+      self.patch,
+      self.build.map(|b| format!("_{:02}", b)).unwrap_or_default(),
+      self.v.map(|c| c.to_string()).unwrap_or_default()
+    )
+  }
+
+  fn dynamic_cmp(&self, other: &dyn MinecraftVersion) -> Option<Ordering> {
+    if let Some(type_order) = self.version_type().partial_cmp(&other.version_type()) {
+      if type_order != Ordering::Equal {
+        Some(type_order)
+      } else {
+        Some(self.cmp(other.as_any().downcast_ref::<AlphaVersion>().unwrap()))
+      }
+    } else {
+      None
     }
   }
 }

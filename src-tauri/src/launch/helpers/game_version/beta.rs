@@ -1,8 +1,11 @@
 // https://minecraft.wiki/w/Version_formats
 
+use super::misc::{MinecraftVersion, VersionType};
 use crate::launch::models::LaunchError;
 use lazy_static;
 use regex::Regex;
+use std::any::Any;
+use std::cmp::Ordering;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -46,6 +49,36 @@ impl FromStr for BetaVersion {
       })
     } else {
       Err(LaunchError::VersionParseError)
+    }
+  }
+}
+
+impl MinecraftVersion for BetaVersion {
+  fn version_type(&self) -> VersionType {
+    VersionType::Beta
+  }
+
+  fn as_any(&self) -> &dyn Any {
+    self
+  }
+
+  fn to_version_string(&self) -> String {
+    let base = format!("b{}.{}", self.major, self.minor);
+    let patch_str = self.patch.map(|p| format!(".{}", p)).unwrap_or_default();
+    let build_str = self.build.map(|b| format!("_{:02}", b)).unwrap_or_default();
+    let v_str = self.v.map(|c| c.to_string()).unwrap_or_default();
+    format!("{}{}{}{}", base, patch_str, build_str, v_str)
+  }
+
+  fn dynamic_cmp(&self, other: &dyn MinecraftVersion) -> Option<Ordering> {
+    if let Some(type_order) = self.version_type().partial_cmp(&other.version_type()) {
+      if type_order != Ordering::Equal {
+        Some(type_order)
+      } else {
+        Some(self.cmp(other.as_any().downcast_ref::<BetaVersion>().unwrap()))
+      }
+    } else {
+      None
     }
   }
 }
