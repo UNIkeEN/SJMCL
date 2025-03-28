@@ -227,6 +227,16 @@
         }
       }
     },
+    "font": {
+      "title": "Font",
+      "settings": {
+        "fontSize": {
+          "title": "Font Size",
+          "small": "T",
+          "large": "T"
+        }
+      }
+    },
     "background": {
       "title": "Background",
       "settings": {

@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Center,
+  HStack,
   Icon,
   IconButton,
   Image,
@@ -14,6 +15,10 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
   Switch,
   Text,
   Tooltip,
@@ -388,6 +393,44 @@ const AppearanceSettingsPage = () => {
         {
           title: t("AppearanceSettingsPage.theme.settings.headNavStyle.title"),
           children: <HeadNavStyleMenu />,
+        },
+      ],
+    },
+    {
+      title: t("AppearanceSettingsPage.font.title"),
+      items: [
+        {
+          title: t("AppearanceSettingsPage.font.settings.fontSize.title"),
+          children: (
+            <HStack spacing={2}>
+              <Text fontSize="10.88px">
+                {" "}
+                {/* 85% */}
+                {t("AppearanceSettingsPage.font.settings.fontSize.small")}
+              </Text>
+              <Slider
+                value={appearanceConfigs.font.fontSize}
+                min={85}
+                max={115}
+                step={5}
+                w={32}
+                colorScheme={primaryColor}
+                onChange={(value) => {
+                  update("appearance.font.fontSize", value);
+                }}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+              <Text fontSize="14.72px">
+                {" "}
+                {/* 115% */}
+                {t("AppearanceSettingsPage.font.settings.fontSize.large")}
+              </Text>
+            </HStack>
+          ),
         },
       ],
     },

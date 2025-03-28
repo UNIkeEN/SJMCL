@@ -166,6 +166,10 @@ structstruck::strike! {
         #[default = "standard"]
         pub head_nav_style: String,
       },
+      pub font: struct {
+        #[default = 100]
+        pub font_size: usize, // as precent
+      },
       pub background: struct {
         #[default = "%built-in:Jokull"]
         pub choice: String,

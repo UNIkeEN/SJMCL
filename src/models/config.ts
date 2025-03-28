@@ -71,6 +71,9 @@ export interface LauncherConfig {
       colorMode: "light" | "dark" | "system";
       headNavStyle: string;
     };
+    font: {
+      fontSize: number;
+    };
     background: {
       choice: string;
     };
@@ -206,6 +209,9 @@ export const defaultConfig: LauncherConfig = {
       primaryColor: "blue",
       colorMode: "light",
       headNavStyle: "standard",
+    },
+    font: {
+      fontSize: 100,
     },
     background: {
       choice: "%built-in:Jokull",

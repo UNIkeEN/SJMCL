@@ -227,6 +227,16 @@
         }
       }
     },
+    "font": {
+      "title": "字体",
+      "settings": {
+        "fontSize": {
+          "title": "字体大小",
+          "small": "小",
+          "large": "大"
+        }
+      }
+    },
     "background": {
       "title": "背景",
       "settings": {
