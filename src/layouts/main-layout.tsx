@@ -42,6 +42,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onClose: onStarUsModalClose,
   } = useDisclosure();
 
+  // update run count, conditionally show some modals.
   useEffect(() => {
     if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
       if (!config.runCount) {
@@ -68,6 +69,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     update,
   ]);
 
+  // construct background img src url from config.
   useEffect(() => {
     const constructBgImgSrc = async () => {
       const bgKey = config.appearance.background.choice;
@@ -85,6 +87,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
     constructBgImgSrc();
   }, [config.appearance.background.choice]);
+
+  // update font size to body CSS by config.
   useEffect(() => {
     const root = document.documentElement;
     const prevMd =
