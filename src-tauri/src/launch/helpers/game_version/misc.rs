@@ -1,39 +1,70 @@
+use super::alpha::AlphaVersion;
+use super::beta::BetaVersion;
+use crate::error::SJMCLResult;
+use crate::launch::models::LaunchError;
+use std::any::Any;
 use std::cmp::Ordering;
+use std::fmt::Debug;
+use std::str::FromStr;
 
-#[derive(PartialEq, Eq)]
-pub enum VersionEdition {
+#[derive(PartialEq, Eq, Debug)]
+pub enum VersionType {
+  PreClassic,
+  Classic,
+  InfDev,
   Alpha,
   Beta,
   Release,
   Snapshot,
+  AprilFool,
 }
 
-impl VersionEdition {
-  pub fn is_release(&self) -> bool {
-    matches!(self, VersionEdition::Release | VersionEdition::Snapshot)
-  }
-  fn to_u8(&self) -> u8 {
+impl VersionType {
+  fn rank(&self) -> Option<u8> {
     match self {
-      // Self::PreClassic => 10,
-      // Self::Classic => 20,
-      // Self::Indev => 30,
-      Self::Alpha => 40,
-      Self::Beta => 50,
-      _ => 100,
+      VersionType::PreClassic => Some(0),
+      VersionType::Classic => Some(1),
+      VersionType::InfDev => Some(2),
+      VersionType::Alpha => Some(3),
+      VersionType::Beta => Some(4),
+      _ => None,
     }
   }
 }
 
-impl PartialOrd for VersionEdition {
+impl PartialOrd for VersionType {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    let self_major = self.to_u8();
-    let other_major = other.to_u8();
-    if self_major == other_major {
-      if self.is_release() {
-        return None;
+    match (self.rank(), other.rank()) {
+      (Some(a), Some(b)) => a.partial_cmp(&b),
+      (Some(_), None) => Some(Ordering::Less),
+      (None, Some(_)) => Some(Ordering::Greater),
+      (None, None) => {
+        if self == other {
+          Some(Ordering::Equal)
+        } else {
+          None
+        }
       }
-      return Some(Ordering::Equal);
     }
-    Some(self_major.cmp(&other_major))
   }
+}
+
+pub trait MinecraftVersion: Debug + Any + 'static {
+  fn version_type(&self) -> VersionType;
+  fn as_any(&self) -> &dyn Any;
+  fn to_version_string(&self) -> String;
+  fn dynamic_cmp(&self, other: &dyn MinecraftVersion) -> Option<Ordering>;
+}
+
+pub fn parse_version(s: &str) -> SJMCLResult<Box<dyn MinecraftVersion>> {
+  if let Ok(alpha) = AlphaVersion::from_str(s) {
+    return Ok(Box::new(alpha));
+  }
+  if let Ok(beta) = BetaVersion::from_str(s) {
+    return Ok(Box::new(beta));
+  }
+
+  // 其他版本解析逻辑...
+
+  Err(LaunchError::VersionParseError.into())
 }
