@@ -91,22 +91,53 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   // update font size to body CSS by config.
   useEffect(() => {
     const root = document.documentElement;
-    const prevMd =
-      parseFloat(getComputedStyle(root).getPropertyValue("font-size")) || 1;
-    const ratio =
-      Math.min(115, Math.max(85, config.appearance.font.fontSize)) /
-      100 /
-      prevMd;
-    const computedStyle = getComputedStyle(root);
-    for (let i = 0; i < computedStyle.length; i++) {
-      const key = computedStyle[i];
-      if (key.startsWith("font-size")) {
-        const originalValue =
-          parseFloat(computedStyle.getPropertyValue(key)) || 1;
-        root.style.setProperty(key, `${originalValue * ratio}rem`, "important");
+    const body = document.body;
+    if (config.basicInfo.platform != "windows") {
+      const prevMd =
+        parseFloat(
+          getComputedStyle(root).getPropertyValue("--chakra-fontSizes-md")
+        ) || 1;
+      const ratio =
+        Math.min(115, Math.max(85, config.appearance.font.fontSize)) /
+        100 /
+        prevMd;
+
+      const computedStyle = getComputedStyle(root);
+      for (let i = 0; i < computedStyle.length; i++) {
+        const key = computedStyle[i];
+        if (key.startsWith("--chakra-fontSizes-")) {
+          const originalValue =
+            parseFloat(computedStyle.getPropertyValue(key)) || 1;
+          body.style.setProperty(
+            key,
+            `${originalValue * ratio}rem`,
+            "important"
+          );
+        }
+      }
+    } else {
+      console.log(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--chakra-fontSizes-md"
+        )
+      );
+      const prevMd =
+        parseFloat(getComputedStyle(root).getPropertyValue("font-size")) || 1;
+      const ratio =
+        Math.min(115, Math.max(85, config.appearance.font.fontSize)) /
+        100 /
+        prevMd;
+      const computedStyle = getComputedStyle(root);
+      for (let i = 0; i < computedStyle.length; i++) {
+        const key = computedStyle[i];
+        if (key === "font-size") {
+          const originalValue =
+            parseFloat(computedStyle.getPropertyValue(key)) || 1;
+          root.style.setProperty(key, `${originalValue * ratio}rem`);
+        }
       }
     }
-  }, [config.appearance.font.fontSize]);
+  }, [config.appearance.font.fontSize, config.basicInfo.platform]);
 
   const getGlobalExtraStyle = (config: any) => {
     const isInvertColors = config.appearance.accessibility.invertColors;
