@@ -1,10 +1,18 @@
 // https://zh.minecraft.wiki/w/%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%A0%B8%E5%BF%83%E6%96%87%E4%BB%B6
 
-use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
-use crate::account::models::{AccountInfo, PlayerType};
+use crate::account::{
+  helpers::{
+    authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path,
+    misc::get_selected_player_info,
+  },
+  models::PlayerType,
+};
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::{
-  helpers::client_json::{FeaturesInfo, JavaVersion, McClientInfo},
+  helpers::{
+    client_json::{FeaturesInfo, JavaVersion, McClientInfo},
+    misc::get_instance_game_config,
+  },
   models::misc::Instance,
 };
 use crate::launch::helpers::file_validator::{
@@ -16,8 +24,8 @@ use crate::launcher_config::models::{
   GameJava, JavaInfo, LauncherConfig, Performance, ProxyConfig, ProxyType,
 };
 use crate::resource::models::ResourceError;
-use crate::storage::Storage;
 use serde::{self, Deserialize, Serialize};
+use serde_json::Value;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::process::{Command, Stdio};
@@ -81,51 +89,89 @@ pub struct LaunchParams {
 
 impl LaunchParams {
   pub fn into_hashmap(self) -> SJMCLResult<HashMap<String, String>> {
-    let mut map: HashMap<String, String> = HashMap::new();
-    map.insert("assets_root".to_string(), self.assets_root);
-    map.insert("assets_index_name".to_string(), self.assets_index_name);
-    map.insert("game_directory".to_string(), self.game_directory);
-    map.insert("version_name".to_string(), self.version_name);
-    map.insert("version_type".to_string(), self.version_type);
-    map.insert("natives_directory".to_string(), self.natives_directory);
-    map.insert("launcher_name".to_string(), self.launcher_name);
-    map.insert("launcher_version".to_string(), self.launcher_version);
+    let classpath_clone = self.classpath.clone();
+
+    let value =
+      serde_json::to_value(self).map_err(|e| SJMCLError(format!("Serialization error: {}", e)))?;
+    let obj = value
+      .as_object()
+      .ok_or_else(|| SJMCLError("Failed to convert LaunchParams to HashMap".to_string()))?;
+
+    let mut map = HashMap::new();
+
     map.insert(
       "classpath".to_string(),
-      quote_java_classpaths(&self.classpath)?,
+      quote_java_classpaths(&classpath_clone)?,
     );
-    map.insert("auth_access_token".to_string(), self.auth_access_token);
-    map.insert("auth_player_name".to_string(), self.auth_player_name);
-    map.insert("user_type".to_string(), self.user_type);
-    map.insert("auth_uuid".to_string(), self.auth_uuid);
-    if let Some(ref clientid) = &self.clientid {
-      map.insert("clientid".to_string(), clientid.to_owned());
+
+    for (k, v) in obj.iter() {
+      match k.as_str() {
+        "classpath" => {} // skip, altrady handled manually
+        _ => {
+          match v {
+            Value::Null => {} // skip null or none
+            Value::String(s) => {
+              map.insert(k.clone(), s.clone());
+            }
+            _ => {
+              map.insert(k.clone(), v.to_string());
+            }
+          }
+        }
+      }
     }
-    if let Some(ref auth_xuid) = &self.auth_xuid {
-      map.insert("auth_xuid".to_string(), auth_xuid.to_owned());
-    }
-    map.insert("demo".to_string(), self.demo.to_string());
-    map.insert(
-      "resolution_height".to_string(),
-      self.resolution_height.to_string(),
-    );
-    map.insert(
-      "resolution_width".to_string(),
-      self.resolution_width.to_string(),
-    );
-    map.insert("quickPlayPath".to_string(), self.quick_play_path);
-    map.insert(
-      "quickPlaySingleplayer".to_string(),
-      self.quick_play_singleplayer,
-    );
-    map.insert(
-      "quickPlayMultiplayer".to_string(),
-      self.quick_play_multiplayer,
-    );
-    map.insert("quickPlayRealms".to_string(), self.quick_play_realms);
+
     Ok(map)
   }
 }
+
+// impl LaunchParams {
+//   pub fn into_hashmap(self) -> SJMCLResult<HashMap<String, String>> {
+//     let mut map: HashMap<String, String> = HashMap::new();
+//     map.insert("assets_root".to_string(), self.assets_root);
+//     map.insert("assets_index_name".to_string(), self.assets_index_name);
+//     map.insert("game_directory".to_string(), self.game_directory);
+//     map.insert("version_name".to_string(), self.version_name);
+//     map.insert("version_type".to_string(), self.version_type);
+//     map.insert("natives_directory".to_string(), self.natives_directory);
+//     map.insert("launcher_name".to_string(), self.launcher_name);
+//     map.insert("launcher_version".to_string(), self.launcher_version);
+//     map.insert(
+//       "classpath".to_string(),
+//       quote_java_classpaths(&self.classpath)?,
+//     );
+//     map.insert("auth_access_token".to_string(), self.auth_access_token);
+//     map.insert("auth_player_name".to_string(), self.auth_player_name);
+//     map.insert("user_type".to_string(), self.user_type);
+//     map.insert("auth_uuid".to_string(), self.auth_uuid);
+//     if let Some(ref clientid) = &self.clientid {
+//       map.insert("clientid".to_string(), clientid.to_owned());
+//     }
+//     if let Some(ref auth_xuid) = &self.auth_xuid {
+//       map.insert("auth_xuid".to_string(), auth_xuid.to_owned());
+//     }
+//     map.insert("demo".to_string(), self.demo.to_string());
+//     map.insert(
+//       "resolution_height".to_string(),
+//       self.resolution_height.to_string(),
+//     );
+//     map.insert(
+//       "resolution_width".to_string(),
+//       self.resolution_width.to_string(),
+//     );
+//     map.insert("quickPlayPath".to_string(), self.quick_play_path);
+//     map.insert(
+//       "quickPlaySingleplayer".to_string(),
+//       self.quick_play_singleplayer,
+//     );
+//     map.insert(
+//       "quickPlayMultiplayer".to_string(),
+//       self.quick_play_multiplayer,
+//     );
+//     map.insert("quickPlayRealms".to_string(), self.quick_play_realms);
+//     Ok(map)
+//   }
+// }
 
 fn choose_java_auto(java_list: &Vec<JavaInfo>, version_req: &JavaVersion) -> Option<JavaInfo> {
   let mut match_list = Vec::new();
@@ -170,18 +216,16 @@ pub async fn generate_launch_cmd(
   let mut cmd = Vec::new();
   let sjmcl_config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let java_list = app.state::<Mutex<Vec<JavaInfo>>>().lock()?.clone();
-  let mut account_info: AccountInfo = Storage::load().unwrap_or_default();
-  // TODO: select user
-  let selected_user = account_info
-    .players
-    .pop()
-    .ok_or(SJMCLError("empty users".to_string()))?;
+  let selected_player =
+    get_selected_player_info(app).map_err(|_| SJMCLError("no selected player".to_string()))?;
   let instance = app
     .state::<Mutex<Vec<Instance>>>()
     .lock()?
     .get(*instance_id)
     .ok_or(SJMCLError("instance not found".to_string()))?
     .clone();
+  let game_config = get_instance_game_config(app, &instance);
+
   let game_dir = instance
     .version_path
     .parent()
@@ -214,12 +258,12 @@ pub async fn generate_launch_cmd(
   ));
   extract_native_libraries(&client_info, &libraries_dir, &natives_dir).await?;
   println!("{}:{}", std::file!(), std::line!());
-  let resolution = sjmcl_config.global_game_config.game_window.resolution;
+  let resolution = game_config.game_window.resolution;
   let launch_feature = FeaturesInfo {
     is_demo_user: Some(false),
     has_custom_resolution: Some(true),
     has_quick_plays_support: Some(false), // TODO
-    is_quick_play_multiplayer: Some(sjmcl_config.global_game_config.game_server.auto_join),
+    is_quick_play_multiplayer: Some(game_config.game_server.auto_join),
     is_quick_play_singleplayer: Some(false), // TODO
     is_quick_play_realms: Some(false),       // TODO
   };
@@ -230,16 +274,20 @@ pub async fn generate_launch_cmd(
     game_directory: game_dir.to_string_lossy().to_string(),
 
     version_name: instance.version.clone(),
-    version_type: format!("SJMCL {}", sjmcl_config.basic_info.launcher_version),
+    version_type: if !game_config.game_window.custom_info.is_empty() {
+      game_config.game_window.custom_info.clone()
+    } else {
+      format!("SJMCL {}", sjmcl_config.basic_info.launcher_version)
+    },
     natives_directory: natives_dir.to_string_lossy().to_string(),
     launcher_name: format!("SJMCL {}", sjmcl_config.basic_info.launcher_version),
     launcher_version: sjmcl_config.basic_info.launcher_version,
     classpath: class_paths,
 
-    auth_access_token: selected_user.access_token,
-    auth_player_name: selected_user.name,
+    auth_access_token: selected_player.access_token,
+    auth_player_name: selected_player.name,
     user_type: "msa".to_string(), // TODO
-    auth_uuid: selected_user.uuid.to_string(),
+    auth_uuid: selected_player.uuid.to_string(),
     auth_xuid: None, // TODO
     demo: false,
     clientid: None,
@@ -247,11 +295,11 @@ pub async fn generate_launch_cmd(
     resolution_width: resolution.width,
     quick_play_path: String::new(),
     quick_play_singleplayer: String::new(),
-    quick_play_multiplayer: sjmcl_config.global_game_config.game_server.server_url,
+    quick_play_multiplayer: game_config.game_server.server_url,
     quick_play_realms: String::new(),
   };
   let java_info = choose_java(
-    &sjmcl_config.global_game_config.game_java,
+    &game_config.game_java,
     &java_list,
     &client_info.java_version,
   )?;
@@ -260,11 +308,11 @@ pub async fn generate_launch_cmd(
   // 2. java exec
   // 3. jvm params
   // login user
-  if selected_user.player_type == PlayerType::ThirdParty {
+  if selected_player.player_type == PlayerType::ThirdParty {
     cmd.push(format!(
       "-javaagent:{}={}",
       get_authlib_injector_jar_path(app)?.to_string_lossy(),
-      selected_user.auth_server_url
+      selected_player.auth_server_url
     )); // TODO
     cmd.push("-Dauthlibinjector.side=client".to_string());
     cmd.push(format!(
@@ -274,10 +322,8 @@ pub async fn generate_launch_cmd(
   }
   println!("{}:{}", std::file!(), std::line!());
   cmd.extend(generate_proxy_cmd(&sjmcl_config.download.proxy)); // TODO: 分离下载proxy和多人游戏proxy
-  cmd.extend(generate_jvm_memory_cmd(
-    &sjmcl_config.global_game_config.performance,
-  ));
-  if sjmcl_config.global_game_config.advanced_options.enabled {
+  cmd.extend(generate_jvm_memory_cmd(&game_config.performance));
+  if game_config.advanced_options.enabled {
     cmd.extend(generate_jvm_metaspace_size_cmd(
       &sjmcl_config
         .global_game_config

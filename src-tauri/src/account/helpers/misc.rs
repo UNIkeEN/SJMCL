@@ -6,7 +6,7 @@ use crate::{
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 
-pub fn get_selected_player_info(app: AppHandle) -> SJMCLResult<PlayerInfo> {
+pub fn get_selected_player_info(app: &AppHandle) -> SJMCLResult<PlayerInfo> {
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
 

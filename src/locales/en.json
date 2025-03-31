@@ -755,7 +755,7 @@
         },
         "customInfo": {
           "title": "Custom Information",
-          "description": "It is displayed in the bottom right corner of the game's main screen and the top left corner of the F3 debugging page."
+          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page."
         }
       }
     },
