@@ -1345,6 +1345,11 @@
           }
         }
       },
+      "retrieveMemoryInfo": {
+        "error": {
+          "title": "Failed to retrieve memory information"
+        }
+      },
       "retrieveCustomBackgroundList": {
         "success": "Successfully retrieved custom background list",
         "error": {
@@ -1379,13 +1384,17 @@
       }
     },
     "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "Failed to retrieve player list"
+        }
+      },
       "addPlayerOffline": {
         "success": "Successfully added offline player",
         "error": {
           "title": "Failed to add offline player",
           "description": {
-            "DUPLICATE": "Player already exists",
-            "TEXTURE_ERROR": "Unable to get player texture"
+            "DUPLICATE": "Player already exists"
           }
         }
       },
@@ -1395,7 +1404,8 @@
           "description": {
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "INVALID": "The player type is invalid"
+            "INVALID": "The player type is invalid",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
@@ -1408,9 +1418,9 @@
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NOT_FOUND": "The authentication server does not exist",
-            "TEXTURE_ERROR": "Unable to get player texture",
             "CANCELLED": "OAuth login cancelled",
-            "CREATE_WEBVIEW_ERROR": "Failed to create webview"
+            "CREATE_WEBVIEW_ERROR": "Failed to create webview",
+            "INVALID": "The server type is invalid"
           }
         }
       },
@@ -1422,8 +1432,8 @@
             "DUPLICATE": "Player already exists",
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "TEXTURE_ERROR": "Unable to get player texture",
-            "INVALID": "Wrong account or password"
+            "INVALID": "Wrong account or password",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
@@ -1465,8 +1475,13 @@
             "EXPIRED": "The access token has expired, please re-login",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
-            "TEXTURE_ERROR": "Failed to get player texture"
+            "INVALID": "The player type is invalid"
           }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "Failed to retrieve server list"
         }
       },
       "fetchAuthServerInfo": {
@@ -1496,24 +1511,6 @@
             "NOT_FOUND": "The authentication server does not exist"
           }
         }
-      },
-      "retrievePlayerList": {
-        "error": {
-          "title": "Failed to retrieve player list"
-        }
-      },
-      "retrieveSelectedPlayer": {
-        "error": {
-          "title": "Failed to retrieve seleted player",
-          "description": {
-            "NOT_FOUND": "The selected player does not exist"
-          }
-        }
-      },
-      "retrieveAuthServerList": {
-        "error": {
-          "title": "Failed to retrieve auth server list"
-        }
       }
     },
     "resource": {
@@ -1521,8 +1518,7 @@
         "error": {
           "title": "Failed to fetch game version list",
           "description": {
-            "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+            "PARSE_ERROR": "The server returned data in an incorrect format"
           }
         }
       },
@@ -1540,6 +1536,33 @@
       "retrieveInstanceList": {
         "error": {
           "title": "Failed to retrieve instance list"
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "Failed to update instance settings",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "NOT_FOUND": "Instance not found"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "Failed to retrieve instance game settings",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "Successfully reset instance game settings",
+        "error": {
+          "title": "Failed to reset instance game settings",
+          "description": {
+            "INSTANCE_NOT_FOUND": "Instance ID does not exist",
+            "SAVE_ERROR": "Failed to save instance settings"
+          }
         }
       },
       "openInstanceSubdir": {
@@ -1566,6 +1589,31 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "CONFLICT_NAME_ERROR": "A duplicate instance name exists"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "Resource copied successfully",
+        "error": {
+          "title": "Copy resource failed",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "ZIP_FILE_PROCESS_FAILED": "Failed to process zip file",
+            "FILE_COPY_FAILED": "File copy failed",
+            "FOLDER_CREATION_FAILED": "Failed to create target folder"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "Resource moved successfully",
+        "error": {
+          "title": "Move resource failed",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_MOVE_FAILED": "File move failed",
+            "FOLDER_CREATION_FAILED": "Failed to create target folder"
           }
         }
       },
@@ -1625,31 +1673,6 @@
           }
         }
       },
-      "copyResourceToInstances": {
-        "success": "Successfully copied resource",
-        "error": {
-          "title": "Failed to copy resource",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
-            "INVALID_SOURCE_PATH": "Invalid source path",
-            "ZIP_FILE_PROCESS_FAILED": "Zip File load or extract failed",
-            "FILE_COPY_FAILED": "File copy failed",
-            "FOLDER_CREATION_FAILED": "Destination folder creation failed"
-          }
-        }
-      },
-      "moveResourceToInstance": {
-        "success": "Successfully moved resource",
-        "error": {
-          "title": "Failed to move resource",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
-            "INVALID_SOURCE_PATH": "Invalid source path",
-            "FILE_MOVE_FAILED": "File move failed",
-            "FOLDER_CREATION_FAILED": "Destination folder creation failed"
-          }
-        }
-      },
       "toggleModByExtension": {
         "error": {
           "title": "Mod state toggle failed",
@@ -1662,7 +1685,52 @@
     "discover": {
       "fetchPostSourcesInfo": {
         "error": {
-          "title": "Failed to fetch post sources"
+          "title": "Failed to get post source information"
+        }
+      }
+    },
+    "launch": {
+      "validateGameFiles": {
+        "error": {
+          "title": "Game file validation failed",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "Game launch failed",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "The game file does not exist"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleTaskGroup": {
+        "error": {
+          "title": "Failed to schedule task group"
+        }
+      },
+      "cancelTask": {
+        "error": {
+          "title": "Failed to cancel task group"
+        }
+      },
+      "resumeTask": {
+        "error": {
+          "title": "Failed to resume task group"
+        }
+      },
+      "stopTask": {
+        "error": {
+          "title": "Failed to stop task group"
+        }
+      },
+      "retrieveTaskList": {
+        "error": {
+          "title": "Failed to retrieve task list"
         }
       }
     }

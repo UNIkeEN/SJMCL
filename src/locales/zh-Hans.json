@@ -1345,6 +1345,11 @@
           }
         }
       },
+      "retrieveMemoryInfo": {
+        "error": {
+          "title": "内存信息获取失败"
+        }
+      },
       "retrieveCustomBackgroundList": {
         "success": "自定义背景列表获取成功",
         "error": {
@@ -1379,13 +1384,17 @@
       }
     },
     "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "获取角色列表失败"
+        }
+      },
       "addPlayerOffline": {
         "success": "离线角色添加成功",
         "error": {
           "title": "离线角色添加失败",
           "description": {
-            "DUPLICATE": "角色已存在",
-            "TEXTURE_ERROR": "角色皮肤获取失败"
+            "DUPLICATE": "角色已存在"
           }
         }
       },
@@ -1395,7 +1404,8 @@
           "description": {
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "INVALID": "服务器类型错误"
+            "INVALID": "服务器类型错误",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
@@ -1408,9 +1418,9 @@
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NOT_FOUND": "认证服务器不存在",
-            "TEXTURE_ERROR": "角色皮肤获取失败",
             "CANCELLED": "已取消",
-            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败"
+            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败",
+            "INVALID": "无效的认证服务器地址"
           }
         }
       },
@@ -1422,8 +1432,8 @@
             "DUPLICATE": "角色已存在",
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "TEXTURE_ERROR": "角色皮肤获取失败",
-            "INVALID": "账号或密码错误"
+            "INVALID": "账号或密码错误",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
@@ -1465,8 +1475,13 @@
             "EXPIRED": "令牌已过期，请重新登录",
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NETWORK_ERROR": "无法连接至认证服务器",
-            "TEXTURE_ERROR": "角色皮肤获取失败"
+            "INVALID": "不支持离线角色刷新"
           }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "获取认证服务器列表失败"
         }
       },
       "fetchAuthServerInfo": {
@@ -1496,24 +1511,6 @@
             "NOT_FOUND": "认证服务器不存在"
           }
         }
-      },
-      "retrievePlayerList": {
-        "error": {
-          "title": "获取角色列表失败"
-        }
-      },
-      "retrieveSelectedPlayer": {
-        "error": {
-          "title": "获取所选角色失败",
-          "description": {
-            "NOT_FOUND": "所选角色不存在"
-          }
-        }
-      },
-      "retrieveAuthServerList": {
-        "error": {
-          "title": "获取认证服务器列表失败"
-        }
       }
     },
     "resource": {
@@ -1521,8 +1518,7 @@
         "error": {
           "title": "获取游戏版本列表失败",
           "description": {
-            "PARSE_ERROR": "服务器返回数据格式错误",
-            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+            "PARSE_ERROR": "服务器返回数据格式错误"
           }
         }
       },
@@ -1540,6 +1536,33 @@
       "retrieveInstanceList": {
         "error": {
           "title": "获取实例列表失败"
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "实例设置更新失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "NOT_FOUND": "实例不存在"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "实例游戏设置获取失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "实例游戏设置已重置",
+        "error": {
+          "title": "实例游戏设置重置失败",
+          "description": {
+            "INSTANCE_NOT_FOUND": "未找到指定 ID 的实例",
+            "SAVE_ERROR": "保存实例设置文件失败"
+          }
         }
       },
       "openInstanceSubdir": {
@@ -1566,6 +1589,31 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "资源复制成功",
+        "error": {
+          "title": "复制资源失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
+            "INVALID_SOURCE_PATH": "无效的源路径",
+            "ZIP_FILE_PROCESS_FAILED": "压缩文件读取或解压失败",
+            "FILE_COPY_FAILED": "文件复制失败",
+            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "资源移动成功",
+        "error": {
+          "title": "移动资源失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
+            "INVALID_SOURCE_PATH": "无效的源路径",
+            "FILE_MOVE_FAILED": "文件移动失败",
+            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
           }
         }
       },
@@ -1625,31 +1673,6 @@
           }
         }
       },
-      "copyResourceToInstances": {
-        "success": "资源复制成功",
-        "error": {
-          "title": "复制资源失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "INVALID_SOURCE_PATH": "无效的源路径",
-            "ZIP_FILE_PROCESS_FAILED": "压缩文件读取或解压失败",
-            "FILE_COPY_FAILED": "文件复制失败",
-            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
-          }
-        }
-      },
-      "moveResourceToInstance": {
-        "success": "资源移动成功",
-        "error": {
-          "title": "移动资源失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "INVALID_SOURCE_PATH": "无效的源路径",
-            "FILE_MOVE_FAILED": "文件移动失败",
-            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
-          }
-        }
-      },
       "toggleModByExtension": {
         "error": {
           "title": "模组状态切换失败",
@@ -1663,6 +1686,51 @@
       "fetchPostSourcesInfo": {
         "error": {
           "title": "获取数据源失败"
+        }
+      }
+    },
+    "launch": {
+      "validateGameFiles": {
+        "error": {
+          "title": "游戏文件验证失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 无效"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "游戏启动失败",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "游戏文件不存在"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleTaskGroup": {
+        "error": {
+          "title": "定时任务组调度失败"
+        }
+      },
+      "cancelTask": {
+        "error": {
+          "title": "定时任务取消失败"
+        }
+      },
+      "resumeTask": {
+        "error": {
+          "title": "定时任务恢复失败"
+        }
+      },
+      "stopTask": {
+        "error": {
+          "title": "定时任务停止失败"
+        }
+      },
+      "retrieveTaskList": {
+        "error": {
+          "title": "获取定时任务列表失败"
         }
       }
     }
