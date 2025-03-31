@@ -142,8 +142,8 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
               status: "error",
             });
             if (
-              response.raw_error === "INVALID_SOURCE_PATH" ||
-              response.raw_error === "INSTANCE_NOT_FOUND_BY_ID"
+              response.raw_error === "InvalidSourcePath" ||
+              response.raw_error === "InstanceNotFoundById"
             ) {
               router.push(router.asPath); // meet error, refresh page to get new instance and file list.
             }

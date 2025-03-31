@@ -115,7 +115,7 @@ const InstanceModsPage = () => {
               description: response.details,
               status: "error",
             });
-            if (response.raw_error === "FILE_NOT_FOUND_ERROR") {
+            if (response.raw_error === "FileNotFoundError") {
               setLocalMods(getLocalModList(true) || []);
             }
           }
