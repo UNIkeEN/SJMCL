@@ -86,6 +86,12 @@ const GamesView: React.FC<GamesViewProps> = ({
         />
       </HStack>
     ),
+    ...(withMenu
+      ? {}
+      : {
+          isFullClickZone: true,
+          onClick: () => handleUpdateSelectedGameInstance(game),
+        }),
     children: withMenu ? <GameMenu game={game} variant="buttonGroup" /> : <></>,
   }));
 

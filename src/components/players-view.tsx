@@ -61,6 +61,12 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         />
       </HStack>
     ),
+    ...(withMenu
+      ? {}
+      : {
+          isFullClickZone: true,
+          onClick: () => handleUpdateSelectedPlayer(player.id),
+        }),
     children: withMenu ? (
       <PlayerMenu player={player} variant="buttonGroup" />
     ) : (

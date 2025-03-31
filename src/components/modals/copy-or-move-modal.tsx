@@ -212,9 +212,14 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
 
   const generateDesc = (game: GameInstanceSummary) => {
     if (game.modLoader.loaderType === "Unknown") {
-      return game.version;
+      return game.version || "";
     }
-    return `${game.version}, ${game.modLoader.loaderType} ${game.modLoader.version}`;
+    return [
+      game.version,
+      `${game.modLoader.loaderType} ${game.modLoader.version}`,
+    ]
+      .filter(Boolean)
+      .join(", ");
   };
 
   const buildOptionItems = (instance: GameInstanceSummary) => ({
@@ -224,9 +229,9 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
         {t("CopyOrMoveModal.tag.source")}
       </Tag>
     ),
-    description:
-      generateDesc(instance) +
-      (instance.description ? `, ${instance.description}` : ""),
+    description: [generateDesc(instance), instance.description]
+      .filter(Boolean)
+      .join(", "),
     prefixElement: (
       <HStack spacing={2.5}>
         {operation === "move" ? (
@@ -300,7 +305,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                     selected={operation}
                     onSelectItem={(s) => setOperation(s as "copy" | "move")}
                     size="xs"
-                    mr={5}
+                    mr={3}
                     items={operationList.map((item) => ({
                       value: item.key,
                       label: (
