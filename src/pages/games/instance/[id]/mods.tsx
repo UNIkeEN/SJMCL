@@ -30,6 +30,7 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
+import { InstanceError } from "@/enums/service-error";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -115,7 +116,7 @@ const InstanceModsPage = () => {
               description: response.details,
               status: "error",
             });
-            if (response.raw_error === "FileNotFoundError") {
+            if (response.raw_error === InstanceError.FileNotFoundError) {
               setLocalMods(getLocalModList(true) || []);
             }
           }

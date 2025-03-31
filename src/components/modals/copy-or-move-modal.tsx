@@ -29,6 +29,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceError } from "@/enums/service-error";
 import { GameInstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 
@@ -142,8 +143,8 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
               status: "error",
             });
             if (
-              response.raw_error === "InvalidSourcePath" ||
-              response.raw_error === "InstanceNotFoundById"
+              response.raw_error === InstanceError.InvalidSourcePath ||
+              response.raw_error === InstanceError.InstanceNotFoundById
             ) {
               router.push(router.asPath); // meet error, refresh page to get new instance and file list.
             }
