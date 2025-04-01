@@ -5,11 +5,13 @@ use super::{
   },
   constants::INSTANCE_CFG_FILE_NAME,
   helpers::{
-    misc::{get_instance_game_config, get_instance_subdir_path, refresh_and_update_instances},
+    misc::{
+      get_instance_game_config, get_instance_subdir_path, refresh_and_update_instances,
+      unify_instance_name,
+    },
     mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::{load_servers_info_from_path, query_server_status},
-    version_dir::rename_game_version_id,
     world::{level_data_to_world_info, load_level_data_from_path},
   },
   models::{
@@ -207,14 +209,11 @@ pub async fn rename_instance(
     Some(x) => x,
     None => return Err(InstanceError::InstanceNotFoundByID.into()),
   };
-  match rename_game_version_id(&instance.version_path, &new_name) {
-    Ok(new_path) => {
-      instance.version_path = new_path;
-      instance.name = new_name;
-      Ok(())
-    }
-    Err(_) => Err(InstanceError::ConflictNameError.into()),
-  }
+  let new_path = unify_instance_name(&instance.version_path, &new_name)?;
+
+  instance.version_path = new_path;
+  instance.name = new_name;
+  Ok(())
 }
 
 #[tauri::command]
