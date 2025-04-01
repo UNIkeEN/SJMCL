@@ -67,6 +67,7 @@ pub async fn run() {
       account::commands::update_player_skin_offline_preset,
       account::commands::delete_player,
       account::commands::refresh_player,
+      account::commands::validate_player,
       account::commands::retrieve_auth_server_list,
       account::commands::add_auth_server,
       account::commands::delete_auth_server,

@@ -29,6 +29,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { GameInstanceSummary } from "@/models/instance/misc";
 import { ResponseError } from "@/models/response";
+import { AccountService } from "@/services/account";
 import { LaunchService } from "@/services/launch";
 
 // This modal will use shared-modal-context
@@ -57,31 +58,44 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
 
   const launchProcessSteps: Array<{
     label: string;
-    function: (...args: any) => Promise<any>;
+    function: () => Promise<any>;
     isOK: (data: any) => boolean;
     onResCallback: (data: any) => void; // TODO: change return type to bool? so we can back to process after some operations.
     onErrCallback: (error: ResponseError) => void;
   }> = useMemo(
     () => [
-      // TODO: check player login status
+      {
+        label: "validatePlayer",
+        function: () => AccountService.validatePlayer(selectedPlayer?.id!),
+        isOK: (data: any) => true,
+        onResCallback: (data: any) => {},
+        onErrCallback: (error: ResponseError) => {
+          AccountService.refreshPlayer(selectedPlayer?.id!).then((response) => {
+            if (response.status !== "success") {
+              // todo: show re-login modal
+              setErrorPaused(true);
+            }
+          });
+        },
+      },
       // TODO: check java version
       {
         label: "validateGameFiles",
-        function: LaunchService.validateGameFiles,
+        function: () => LaunchService.validateGameFiles(instanceId),
         isOK: (data: any) => data && data.length === 0,
         onResCallback: (data: any) => {}, // TODO
         onErrCallback: (error: ResponseError) => {}, // TODO
       },
       {
         label: "launchGame",
-        function: LaunchService.launchGame,
+        function: () => LaunchService.launchGame(instanceId),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {}, // TODO
         onErrCallback: (error: ResponseError) => {}, // TODO
       },
       // TODO: progress bar in last step, and cancel logic
     ],
-    []
+    [instanceId, selectedPlayer?.id]
   );
 
   const { activeStep, setActiveStep } = useSteps({
@@ -95,7 +109,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       // TODO
     }
     const currentStep = launchProcessSteps[activeStep];
-    currentStep.function(instanceId).then((response) => {
+    currentStep.function().then((response) => {
       if (response.status === "success") {
         if (currentStep.isOK(response.data)) {
           setActiveStep(activeStep + 1);
@@ -107,7 +121,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         currentStep.onErrCallback(response.error);
       }
     });
-  }, [activeStep, instanceId, setActiveStep, launchProcessSteps]);
+  }, [activeStep, setActiveStep, launchProcessSteps]);
 
   return (
     <Modal size="sm" closeOnEsc={false} closeOnOverlayClick={false} {...props}>

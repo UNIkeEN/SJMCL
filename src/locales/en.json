@@ -1031,6 +1031,7 @@
       "title": "Launch Game - {{name}}"
     },
     "step": {
+      "validatePlayer": "Validate Player's Credentials",
       "validateGameFiles": "Validate Game and Dependency Files",
       "launchGame": "Waiting for Game to Launch"
     }

@@ -149,6 +149,22 @@ async fn fetch_minecraft_token(xsts_userhash: String, xsts_token: String) -> SJM
   )
 }
 
+async fn fetch_minecraft_profile(minecraft_token: String) -> SJMCLResult<Value> {
+  let client = Client::new();
+
+  Ok(
+    client
+      .get("https://api.minecraftservices.com/minecraft/profile")
+      .header("Authorization", format!("Bearer {}", minecraft_token))
+      .send()
+      .await
+      .map_err(|_| AccountError::NetworkError)?
+      .json::<Value>()
+      .await
+      .map_err(|_| AccountError::ParseError)?,
+  )
+}
+
 async fn parse_profile(
   microsoft_token: String,
   microsoft_refresh_token: String,
@@ -159,29 +175,19 @@ async fn parse_profile(
 
   let minecraft_token = fetch_minecraft_token(xsts_userhash, xsts_token).await?;
 
-  let client = reqwest::Client::new();
+  let profile = fetch_minecraft_profile(minecraft_token.clone()).await?;
 
-  let response = client
-    .get("https://api.minecraftservices.com/minecraft/profile")
-    .header("Authorization", format!("Bearer {}", minecraft_token))
-    .send()
-    .await
-    .map_err(|_| AccountError::NetworkError)?
-    .json::<Value>()
-    .await
+  let uuid = Uuid::parse_str(profile["id"].as_str().unwrap_or_default())
     .map_err(|_| AccountError::ParseError)?;
 
-  let uuid = Uuid::parse_str(response["id"].as_str().unwrap_or_default())
-    .map_err(|_| AccountError::ParseError)?;
-
-  let name = response["name"].as_str().unwrap_or_default().to_string();
+  let name = profile["name"].as_str().unwrap_or_default().to_string();
 
   let mut textures: Vec<Texture> = vec![];
 
   const TEXTURE_MAP: [(&str, &str); 2] = [("skins", "SKIN"), ("capes", "CAPE")];
 
   for (key, val) in TEXTURE_MAP {
-    if let Some(skin) = response[key]
+    if let Some(skin) = profile[key]
       .as_array()
       .ok_or(AccountError::ParseError)?
       .iter()
@@ -342,4 +348,12 @@ pub async fn refresh(player: PlayerInfo) -> SJMCLResult<PlayerInfo> {
     .to_string();
 
   parse_profile(microsoft_token, microsoft_refresh_token).await
+}
+
+pub async fn validate(player: PlayerInfo) -> SJMCLResult<()> {
+  if (fetch_minecraft_profile(player.access_token.clone()).await).is_ok() {
+    Ok(())
+  } else {
+    Err(AccountError::Expired)?
+  }
 }

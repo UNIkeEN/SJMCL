@@ -88,3 +88,20 @@ pub async fn parse_profile(
     .with_generated_id(),
   )
 }
+
+pub async fn validate(player: PlayerInfo) -> SJMCLResult<()> {
+  let client = reqwest::Client::new();
+
+  let response = client
+    .post(format!("{}/authserver/validate", player.auth_server_url))
+    .form(&[("accessToken", player.access_token)])
+    .send()
+    .await
+    .map_err(|_| AccountError::NetworkError)?;
+
+  if !response.status().is_success() {
+    return Err(AccountError::Expired)?;
+  }
+
+  Ok(())
+}

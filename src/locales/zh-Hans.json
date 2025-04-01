@@ -1031,6 +1031,7 @@
       "title": "启动游戏 - {{name}}"
     },
     "step": {
+      "validatePlayer": "验证账户凭证",
       "validateGameFiles": "验证游戏与依赖文件完整性",
       "launchGame": "等待游戏启动"
     }
