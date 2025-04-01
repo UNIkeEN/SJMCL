@@ -1345,11 +1345,6 @@
           }
         }
       },
-      "retrieveMemoryInfo": {
-        "error": {
-          "title": "Failed to retrieve memory information"
-        }
-      },
       "retrieveCustomBackgroundList": {
         "success": "Successfully retrieved custom background list",
         "error": {
@@ -1595,7 +1590,7 @@
       "copyResourceToInstances": {
         "success": "Resource copied successfully",
         "error": {
-          "title": "Copy resource failed",
+          "title": "Failed to copy resource",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
             "INVALID_SOURCE_PATH": "Invalid source path",
@@ -1679,58 +1674,6 @@
           "description": {
             "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
           }
-        }
-      }
-    },
-    "discover": {
-      "fetchPostSourcesInfo": {
-        "error": {
-          "title": "Failed to get post source information"
-        }
-      }
-    },
-    "launch": {
-      "validateGameFiles": {
-        "error": {
-          "title": "Game file validation failed",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
-          }
-        }
-      },
-      "launchGame": {
-        "error": {
-          "title": "Game launch failed",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "The game file does not exist"
-          }
-        }
-      }
-    },
-    "task": {
-      "scheduleTaskGroup": {
-        "error": {
-          "title": "Failed to schedule task group"
-        }
-      },
-      "cancelTask": {
-        "error": {
-          "title": "Failed to cancel task group"
-        }
-      },
-      "resumeTask": {
-        "error": {
-          "title": "Failed to resume task group"
-        }
-      },
-      "stopTask": {
-        "error": {
-          "title": "Failed to stop task group"
-        }
-      },
-      "retrieveTaskList": {
-        "error": {
-          "title": "Failed to retrieve task list"
         }
       }
     }

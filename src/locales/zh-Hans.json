@@ -1345,11 +1345,6 @@
           }
         }
       },
-      "retrieveMemoryInfo": {
-        "error": {
-          "title": "内存信息获取失败"
-        }
-      },
       "retrieveCustomBackgroundList": {
         "success": "自定义背景列表获取成功",
         "error": {
@@ -1679,58 +1674,6 @@
           "description": {
             "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
           }
-        }
-      }
-    },
-    "discover": {
-      "fetchPostSourcesInfo": {
-        "error": {
-          "title": "获取数据源失败"
-        }
-      }
-    },
-    "launch": {
-      "validateGameFiles": {
-        "error": {
-          "title": "游戏文件验证失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 无效"
-          }
-        }
-      },
-      "launchGame": {
-        "error": {
-          "title": "游戏启动失败",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "游戏文件不存在"
-          }
-        }
-      }
-    },
-    "task": {
-      "scheduleTaskGroup": {
-        "error": {
-          "title": "定时任务组调度失败"
-        }
-      },
-      "cancelTask": {
-        "error": {
-          "title": "定时任务取消失败"
-        }
-      },
-      "resumeTask": {
-        "error": {
-          "title": "定时任务恢复失败"
-        }
-      },
-      "stopTask": {
-        "error": {
-          "title": "定时任务停止失败"
-        }
-      },
-      "retrieveTaskList": {
-        "error": {
-          "title": "获取定时任务列表失败"
         }
       }
     }
