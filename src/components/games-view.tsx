@@ -7,7 +7,6 @@ import {
   Radio,
   RadioGroup,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa6";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
@@ -33,15 +32,9 @@ const GamesView: React.FC<GamesViewProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { getSelectedGameInstance } = useData();
-  const [selectedGameInstance, _setSelectedGameInstance] =
-    useState<GameInstanceSummary>();
+  const { selectedGameInstance } = useData();
 
   const { setSelectedGameInstance } = useDataDispatch(); // TODO：remove global state setter here after replace mock logic
-
-  useEffect(() => {
-    _setSelectedGameInstance(getSelectedGameInstance());
-  }, [getSelectedGameInstance]);
 
   const generateDesc = (game: GameInstanceSummary) => {
     if (game.modLoader.loaderType === "Unknown") {

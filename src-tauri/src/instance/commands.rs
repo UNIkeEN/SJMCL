@@ -22,9 +22,12 @@ use super::{
 };
 use crate::{
   error::SJMCLResult,
-  launcher_config::{helpers::get_global_game_config, models::GameConfig},
+  launcher_config::{
+    helpers::get_global_game_config,
+    models::{GameConfig, LauncherConfig},
+  },
   partial::{PartialError, PartialUpdate},
-  storage::save_json_async,
+  storage::{save_json_async, Storage},
 };
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
@@ -177,9 +180,13 @@ pub fn open_instance_subdir(
 
 #[tauri::command]
 pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state
+  let instance_binding = app.state::<Mutex<Vec<Instance>>>();
+  let instance_state = instance_binding.lock().unwrap();
+
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let mut config_state = config_binding.lock()?;
+
+  let instance = instance_state
     .get(instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
@@ -191,7 +198,12 @@ pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
   }
   // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
 
-  // TODO: update selected instance if necessary.
+  if config_state.states.shared.selected_instance_id == instance_id.to_string() {
+    config_state.states.shared.selected_instance_id = instance_state
+      .first()
+      .map_or("".to_string(), |i| i.id.to_string());
+    config_state.save()?;
+  }
   Ok(())
 }
 

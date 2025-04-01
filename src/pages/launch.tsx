@@ -102,16 +102,13 @@ const LaunchPage = () => {
     selectedPlayer,
     getPlayerList,
     getGameInstanceList,
-    getSelectedGameInstance,
+    selectedGameInstance,
   } = useData();
 
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [gameInstanceList, setGameInstanceList] = useState<
     GameInstanceSummary[]
   >([]);
-
-  const [selectedGameInstance, setSelectedGameInstance] =
-    useState<GameInstanceSummary>();
 
   useEffect(() => {
     setPlayerList(getPlayerList() || []);
@@ -120,10 +117,6 @@ const LaunchPage = () => {
   useEffect(() => {
     setGameInstanceList(getGameInstanceList() || []);
   }, [getGameInstanceList]);
-
-  useEffect(() => {
-    setSelectedGameInstance(getSelectedGameInstance());
-  }, [getSelectedGameInstance]);
 
   return (
     <HStack position="absolute" bottom={7} right={7} spacing={4}>

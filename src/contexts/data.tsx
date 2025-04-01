@@ -15,9 +15,9 @@ import { useLauncherConfig } from "./config";
 
 interface DataContextType {
   selectedPlayer: Player | undefined;
+  selectedGameInstance: GameInstanceSummary | undefined;
   getPlayerList: (sync?: boolean) => Player[] | undefined;
   getGameInstanceList: (sync?: boolean) => GameInstanceSummary[] | undefined;
-  getSelectedGameInstance: (sync?: boolean) => GameInstanceSummary | undefined;
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
 }
 
@@ -56,6 +56,15 @@ export const DataContextProvider: React.FC<{
       playerList?.find((player) => player.id === selectedPlayerId)
     );
   }, [playerList, config.states.shared.selectedPlayerId]);
+
+  useEffect(() => {
+    const selectedInstanceId = config.states.shared.selectedInstanceId;
+    setSelectedGameInstance(
+      gameInstanceList?.find(
+        (instance) => instance.id === Number(selectedInstanceId)
+      )
+    );
+  }, [gameInstanceList, config.states.shared.selectedInstanceId]);
 
   const handleRetrievePlayerList = useCallback(() => {
     AccountService.retrievePlayerList().then((response) => {
@@ -107,10 +116,6 @@ export const DataContextProvider: React.FC<{
     handleRetrieveInstanceList
   );
 
-  const getSelectedGameInstance = useGetState(selectedGameInstance, () =>
-    setSelectedGameInstance(undefined)
-  );
-
   const getAuthServerList = useGetState(
     authServerList,
     handleRetrieveAuthServerList
@@ -120,9 +125,9 @@ export const DataContextProvider: React.FC<{
     <DataContext.Provider
       value={{
         selectedPlayer,
+        selectedGameInstance,
         getPlayerList,
         getGameInstanceList,
-        getSelectedGameInstance,
         getAuthServerList,
       }}
     >
