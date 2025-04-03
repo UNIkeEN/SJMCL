@@ -1607,7 +1607,7 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
             "INVALID_SOURCE_PATH": "Invalid source path",
-            "FILE_MOVE_FAILED": "Failed to execute the copy file command",
+            "FILE_MOVE_FAILED": "Failed to execute the move file command",
             "FOLDER_CREATION_FAILED": "Failed to create target folder"
           }
         }
