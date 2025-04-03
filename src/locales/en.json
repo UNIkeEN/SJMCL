@@ -1595,7 +1595,7 @@
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
             "INVALID_SOURCE_PATH": "Invalid source path",
             "ZIP_FILE_PROCESS_FAILED": "Failed to process zip file",
-            "FILE_COPY_FAILED": "File copy failed",
+            "FILE_COPY_FAILED": "Failed to execute the copy file command",
             "FOLDER_CREATION_FAILED": "Failed to create target folder"
           }
         }
@@ -1607,7 +1607,7 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
             "INVALID_SOURCE_PATH": "Invalid source path",
-            "FILE_MOVE_FAILED": "File move failed",
+            "FILE_MOVE_FAILED": "Failed to execute the copy file command",
             "FOLDER_CREATION_FAILED": "Failed to create target folder"
           }
         }
