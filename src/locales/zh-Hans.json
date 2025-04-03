@@ -1480,7 +1480,7 @@
           "title": "获取认证服务器列表失败"
         }
       },
-      "fetchAuthServerInfo": {
+      "fetchAuthServer": {
         "error": {
           "title": "获取认证服务器信息失败",
           "description": {

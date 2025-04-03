@@ -1480,7 +1480,7 @@
           "title": "Failed to retrieve server list"
         }
       },
-      "fetchAuthServerInfo": {
+      "fetchAuthServer": {
         "error": {
           "title": "Failed to get authentication server information",
           "description": {
