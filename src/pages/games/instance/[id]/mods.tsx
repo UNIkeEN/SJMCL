@@ -228,7 +228,7 @@ const InstanceModsPage = () => {
         initialIsOpen={accordionStates[1]}
         titleExtra={
           <CountTag
-            count={`${filteredMods.length === localMods.length ? "" : `${filteredMods.length} / `}${localMods.length}`}
+            count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
           />
         }
         onAccordionToggle={(isOpen) => {

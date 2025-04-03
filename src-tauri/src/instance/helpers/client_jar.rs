@@ -15,7 +15,7 @@ pub struct GameVersionData {
   pub java_version: Option<i64>,
   pub name: String,                    // y
   pub pack_version: serde_json::Value, // Union int or (int, int)
-  pub protocol_versoin: i64,           // y
+  pub protocol_version: i64,           // y
   pub series_id: Option<String>,
   pub stable: bool,       // y
   pub world_version: i64, // y

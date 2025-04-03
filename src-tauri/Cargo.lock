@@ -7,6 +7,7 @@ name = "SJMCL"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "chrono",
  "dotenvy",
  "futures",
  "governor",
@@ -21,6 +22,7 @@ dependencies = [
  "quartz_nbt",
  "rand 0.9.0",
  "regex",
+ "sanitize-filename",
  "serde",
  "serde_json",
  "serde_with",
@@ -801,8 +803,10 @@ checksum = "1a7964611d71df112cb1730f2ee67324fcf4d0fc6606acbbe9bfe06df124637c"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-link",
 ]
 
@@ -4596,6 +4600,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
 dependencies = [
  "winapi-util",
+]
+
+[[package]]
+name = "sanitize-filename"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc984f4f9ceb736a7bb755c3e3bd17dc56370af2600c9780dcc48c66453da34d"
+dependencies = [
+ "regex",
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
-use super::helpers::{authlib_injector::info::get_client_id, skin::draw_avatar};
+use super::helpers::{authlib_injector::constants::PRESET_AUTH_SERVERS, skin::draw_avatar};
 use crate::{storage::Storage, utils::image::base64_to_image, EXE_DIR};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::path::PathBuf;
 use strum_macros::Display;
 use uuid::Uuid;
@@ -49,12 +50,14 @@ impl From<PlayerInfo> for Player {
   fn from(player_info: PlayerInfo) -> Self {
     let state: AccountInfo = Storage::load().unwrap_or_default();
 
-    let auth_server = state
-      .auth_servers
-      .iter()
-      .find(|server| server.auth_url == player_info.auth_server_url)
-      .cloned()
-      .unwrap_or_default();
+    let auth_server = AuthServer::from(
+      state
+        .auth_servers
+        .iter()
+        .find(|server| server.auth_url == player_info.auth_server_url)
+        .cloned()
+        .unwrap_or_default(),
+    );
 
     Player {
       id: player_info.id,
@@ -155,11 +158,67 @@ structstruck::strike! {
   }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AuthServerInfo {
+  pub auth_url: String,
+  pub client_id: String,
+  pub metadata: Value,
+  pub timestamp: u64,
+}
+
+impl From<AuthServerInfo> for AuthServer {
+  fn from(info: AuthServerInfo) -> Self {
+    AuthServer {
+      name: info.metadata["meta"]["serverName"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string(),
+      auth_url: info.auth_url,
+      homepage_url: info.metadata["meta"]["links"]["homepage"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string(),
+      register_url: info.metadata["meta"]["links"]["register"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string(),
+      features: Features {
+        non_email_login: info.metadata["meta"]["feature.non_email_login"]
+          .as_bool()
+          .unwrap_or(false),
+        openid_configuration_url: info.metadata["meta"]["feature.openid_configuration_url"]
+          .as_str()
+          .unwrap_or_default()
+          .to_string(),
+      },
+      client_id: info.client_id,
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
-  pub auth_servers: Vec<AuthServer>,
+  pub auth_servers: Vec<AuthServerInfo>,
+}
+
+impl Default for AccountInfo {
+  fn default() -> Self {
+    AccountInfo {
+      players: vec![],
+      auth_servers: PRESET_AUTH_SERVERS
+        .iter()
+        .map(|url| AuthServerInfo {
+          auth_url: url.to_string(),
+          client_id: "".to_string(),
+          metadata: Value::Null,
+          timestamp: 0,
+        })
+        .collect(),
+    }
+  }
 }
 
 impl AccountInfo {
@@ -171,39 +230,6 @@ impl AccountInfo {
 impl Storage for AccountInfo {
   fn file_path() -> PathBuf {
     EXE_DIR.join("sjmcl.account.json")
-  }
-}
-
-impl Default for AccountInfo {
-  fn default() -> Self {
-    AccountInfo {
-      players: Vec::new(),
-      auth_servers: vec![
-        AuthServer {
-          name: "SJMC 用户中心".to_string(),
-          auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
-          homepage_url: "https://skin.mc.sjtu.cn".to_string(),
-          register_url: "https://skin.mc.sjtu.cn/auth/register".to_string(),
-          features: Features {
-            non_email_login: true,
-            openid_configuration_url:
-              "https://skin.mc.sjtu.cn/open/.well-known/openid-configuration".to_string(),
-          },
-          client_id: get_client_id("skin.mc.sjtu.cn".to_string()),
-        },
-        AuthServer {
-          name: "MUA 用户中心".to_string(),
-          auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
-          homepage_url: "https://skin.mualliance.ltd".to_string(),
-          register_url: "https://skin.mualliance.ltd/auth/register".to_string(),
-          features: Features {
-            non_email_login: true,
-            openid_configuration_url: "".to_string(),
-          },
-          client_id: get_client_id("skin.mualliance.ltd".to_string()),
-        },
-      ],
-    }
   }
 }
 

@@ -1,15 +1,17 @@
 use super::super::{
   constants::INSTANCE_CFG_FILE_NAME,
-  models::misc::{Instance, InstanceSubdirType, ModLoader},
+  models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
 };
 use super::client_json::McClientInfo;
-use super::version_dir::rename_game_version_id;
+use crate::error::SJMCLResult;
 use crate::launcher_config::{helpers::get_global_game_config, models::GameConfig};
 use crate::storage::{load_json_async, save_json_async};
 use crate::{
   instance::helpers::client_json::patchs_to_info,
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
+use sanitize_filename;
+use serde_json::Value;
 use std::{fs, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
 
@@ -74,6 +76,44 @@ pub fn get_instance_subdir_path(
   }
 }
 
+pub fn unify_instance_name(src_version_path: &PathBuf, tgt_name: &String) -> SJMCLResult<PathBuf> {
+  if !sanitize_filename::is_sanitized(tgt_name) {
+    return Err(InstanceError::InvalidNameError.into());
+  }
+  let src_name = src_version_path
+    .file_name()
+    .ok_or(InstanceError::InvalidSourcePath)?
+    .to_string_lossy()
+    .to_string();
+  let version_root = src_version_path.parent().unwrap();
+  // rename version directory (if already exists, return conflict error)
+  let dst_dir = version_root.join(tgt_name);
+  if dst_dir.exists() {
+    let mut entries = fs::read_dir(&dst_dir)?;
+    if entries.next().is_some() {
+      return Err(InstanceError::ConflictNameError.into());
+    }
+  }
+  fs::rename(src_version_path, &dst_dir).map_err(|_| InstanceError::FileMoveFailed)?;
+
+  // rename client jar
+  let old_jar = dst_dir.join(format!("{}.jar", src_name));
+  let new_jar = dst_dir.join(format!("{}.jar", tgt_name));
+  fs::rename(old_jar, new_jar).map_err(|_| InstanceError::FileMoveFailed)?;
+
+  // rewrite client json, update "id" field and filename
+  let old_json = dst_dir.join(format!("{}.json", src_name));
+  let new_json = dst_dir.join(format!("{}.json", tgt_name));
+  let mut json_value: Value = serde_json::from_reader(fs::File::open(&old_json)?)?;
+  if let Some(obj) = json_value.as_object_mut() {
+    obj.insert("id".to_string(), Value::String(tgt_name.clone()));
+  }
+  fs::write(&new_json, json_value.to_string())?;
+  fs::remove_file(old_json)?;
+
+  Ok(dst_dir)
+}
+
 pub async fn refresh_instances(
   game_directory: &GameDirectory,
 ) -> Result<Vec<Instance>, std::io::Error> {
@@ -103,7 +143,7 @@ pub async fn refresh_instances(
       Err(_) => continue,
     };
     if client_data.id != name {
-      if let Ok(dst_dir) = rename_game_version_id(&version_path, &client_data.id) {
+      if let Ok(dst_dir) = unify_instance_name(&version_path, &client_data.id) {
         version_path = dst_dir;
       } else {
         continue;

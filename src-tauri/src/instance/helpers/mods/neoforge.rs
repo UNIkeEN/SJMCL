@@ -1,8 +1,7 @@
 // https://docs.neoforged.net/docs/gettingstarted/modfiles/#neoforgemodstoml
 
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::utils::image::image_to_base64;
-use image::ImageReader;
+use crate::utils::image::{load_image_base64_from_dir, load_image_base64_from_jar};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::{Cursor, Read, Seek};
@@ -18,6 +17,8 @@ pub struct NeoforgeModMetadata {
   pub loader_version: String,
   pub license: String,
   pub mods: Vec<NeoforgeModSubItem>,
+  // used for base64 result.
+  pub logo_file: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]
@@ -27,11 +28,11 @@ pub struct NeoforgeModSubItem {
   pub namespace: Option<String>,
   pub version: Option<String>,
   pub display_name: Option<String>,
+  pub display_url: Option<String>,
+  pub credits: Option<String>,
+  pub authors: Option<Value>,
   pub description: Option<String>,
   pub logo_file: Option<String>,
-  pub credits: Option<String>,
-  pub display_url: Option<String>,
-  pub authors: Option<Value>,
 }
 
 pub fn get_mod_metadata_from_jar<R: Read + Seek>(
@@ -53,18 +54,29 @@ pub fn get_mod_metadata_from_jar<R: Read + Seek>(
   if meta.mods.is_empty() {
     return Err(SJMCLError("neoforge mod len(mods) == 0".to_string()));
   }
-  let mods = &mut meta.mods[0];
-
-  if let Some(ref logo_file) = mods.logo_file {
-    if let Ok(mut img_file) = jar.by_name(logo_file) {
-      // Use `image` crate to decode the image
-      let mut buffer = Vec::new();
-      if img_file.read_to_end(&mut buffer).is_ok() {
-        if let Ok(image_reader) = ImageReader::new(Cursor::new(buffer)).with_guessed_format() {
-          if let Ok(img) = image_reader.decode() {
-            if let Ok(b64) = image_to_base64(img.to_rgba8()) {
-              mods.logo_file = Some(b64);
-            }
+  // seek logo (in standard implementation, logo field should in mods[0], but some mod's logo field is in toml meta. TODO: try serde flatten?)
+  let mut logo_candidates = vec![];
+  if let Some(path) = &meta.logo_file {
+    logo_candidates.push(path.clone());
+  }
+  for m in &meta.mods {
+    if let Some(path) = &m.logo_file {
+      logo_candidates.push(path.clone());
+    }
+  }
+  for path in logo_candidates {
+    if let Some(b64) = load_image_base64_from_jar(jar, &path) {
+      meta.logo_file = Some(b64);
+      break;
+    }
+  }
+  // fallback to get version
+  if let Some(ref mut version) = meta.mods[0].version {
+    if version == "${file.jarVersion}" {
+      if let Ok(mf_file) = jar.by_name("META-INF/MANIFEST.MF") {
+        if let Ok(mf) = java_properties::read(mf_file) {
+          if let Some(jar_version) = mf.get("Implementation-Version") {
+            *version = jar_version.clone();
           }
         }
       }
@@ -85,14 +97,30 @@ pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<NeoforgeM
   if meta.mods.is_empty() {
     return Err(SJMCLError("neoforge mod len(mods) == 0".to_string()));
   }
-  let mods = &mut meta.mods[0];
-
-  if let Some(ref logo_file) = mods.logo_file {
-    if let Ok(buffer) = tokio::fs::read(&logo_file).await {
-      if let Ok(image_reader) = ImageReader::new(Cursor::new(buffer)).with_guessed_format() {
-        if let Ok(img) = image_reader.decode() {
-          if let Ok(b64) = image_to_base64(img.to_rgba8()) {
-            mods.logo_file = Some(b64);
+  // seek logo
+  let mut logo_candidates = vec![];
+  if let Some(path) = &meta.logo_file {
+    logo_candidates.push(dir_path.join(path));
+  }
+  for m in &meta.mods {
+    if let Some(path) = &m.logo_file {
+      logo_candidates.push(dir_path.join(path));
+    }
+  }
+  for path in logo_candidates {
+    if let Some(b64) = load_image_base64_from_dir(&path).await {
+      meta.logo_file = Some(b64);
+      break;
+    }
+  }
+  // fallback to get version
+  if let Some(ref mut version) = meta.mods[0].version {
+    if version == "${file.jarVersion}" {
+      if let Ok(mf_string) = tokio::fs::read_to_string(dir_path.join("META-INF/MANIFEST.MF")).await
+      {
+        if let Ok(mf) = java_properties::read(Cursor::new(mf_string)) {
+          if let Some(jar_version) = mf.get("Implementation-Version") {
+            *version = jar_version.clone();
           }
         }
       }

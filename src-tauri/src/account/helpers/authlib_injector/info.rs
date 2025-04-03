@@ -1,34 +1,22 @@
 use super::constants::CLIENT_IDS;
-use crate::account::models::{AccountError, AuthServer, Features};
+use crate::account::models::{AccountError, AccountInfo, AuthServerInfo};
 use crate::error::SJMCLResult;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
+pub async fn fetch_auth_server_info(auth_url: String) -> SJMCLResult<AuthServerInfo> {
   match reqwest::get(&auth_url).await {
     Ok(response) => {
       let json: serde_json::Value = response.json().await.map_err(|_| AccountError::Invalid)?;
-      let server_name = json["meta"]["serverName"]
-        .as_str()
-        .ok_or(AccountError::Invalid)?
-        .to_string();
-      let homepage_url = json["meta"]["links"]["homepage"]
-        .as_str()
-        .ok_or(AccountError::Invalid)?
-        .to_string();
-      let register_url = json["meta"]["links"]["register"]
-        .as_str()
-        .ok_or(AccountError::Invalid)?
-        .to_string();
-      let non_email_login = json["meta"]["feature.non_email_login"]
-        .as_bool()
-        .unwrap_or(false);
+
+      let mut client_id = String::new();
+
       let openid_configuration_url = json["meta"]["feature.openid_configuration_url"]
         .as_str()
         .unwrap_or_default()
         .to_string();
-
-      let mut client_id = String::new();
 
       if !openid_configuration_url.is_empty() {
         let url = Url::parse(&auth_url).map_err(|_| AccountError::Invalid)?;
@@ -47,19 +35,12 @@ pub async fn fetch_auth_server(auth_url: String) -> SJMCLResult<AuthServer> {
         }
       }
 
-      let new_server = AuthServer {
-        name: server_name,
-        auth_url,
-        homepage_url,
-        register_url,
-        features: Features {
-          non_email_login,
-          openid_configuration_url,
-        },
+      Ok(AuthServerInfo {
+        auth_url: auth_url.clone(),
         client_id,
-      };
-
-      Ok(new_server)
+        metadata: json,
+        timestamp: chrono::Utc::now().timestamp_millis() as u64,
+      })
     }
     Err(_) => Err(AccountError::Invalid.into()),
   }
@@ -91,4 +72,26 @@ pub async fn fetch_auth_url(root: Url) -> SJMCLResult<String> {
   } else {
     Ok(root.to_string())
   }
+}
+
+pub async fn refresh_and_update_auth_servers(app: &AppHandle) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let cloned_account_state = account_binding.lock()?.clone();
+
+  let mut refreshed_auth_server_info_list =
+    futures::future::join_all(cloned_account_state.auth_servers.iter().map(|info| async {
+      if let Ok(refreshed_info) = fetch_auth_server_info(info.auth_url.clone()).await {
+        refreshed_info
+      } else {
+        info.clone()
+      }
+    }))
+    .await;
+
+  refreshed_auth_server_info_list.retain(|info| !info.metadata.is_null()); // remove invalid servers
+
+  let mut account_state = account_binding.lock()?;
+  account_state.auth_servers = refreshed_auth_server_info_list;
+
+  Ok(())
 }

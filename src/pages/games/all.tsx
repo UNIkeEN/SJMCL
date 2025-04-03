@@ -20,16 +20,10 @@ const AllGamesPage = () => {
   const selectedViewType = config.states.allGamesPage.viewType;
   const { openSharedModal } = useSharedModals();
 
-  const { getSelectedGameInstance, getGameInstanceList } = useData();
-  const [selectedGameInstance, setSelectedGameInstance] =
-    useState<GameInstanceSummary>();
+  const { selectedGameInstance, getGameInstanceList } = useData();
   const [gameInstanceList, setGameInstanceList] = useState<
     GameInstanceSummary[]
   >([]);
-
-  useEffect(() => {
-    setSelectedGameInstance(getSelectedGameInstance());
-  }, [getSelectedGameInstance]);
 
   useEffect(() => {
     setGameInstanceList(getGameInstanceList() || []);

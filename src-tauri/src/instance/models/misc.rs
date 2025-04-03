@@ -196,6 +196,7 @@ pub enum InstanceError {
   LevelParseError,
   LevelNotExistError,
   ConflictNameError,
+  InvalidNameError,
   ClientJsonParseError,
 }
 

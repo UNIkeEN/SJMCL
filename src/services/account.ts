@@ -140,6 +140,16 @@ export class AccountService {
   }
 
   /**
+   * VALIDATE a player (3rd-party or Microsoft) by player ID.
+   * @param {string} playerId - The player ID of the player to be refreshed.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async validatePlayer(playerId: string): Promise<InvokeResponse<void>> {
+    return await invoke("validate_player", { playerId });
+  }
+
+  /**
    * RETRIEVE the list of authentication servers.
    * @returns {Promise<InvokeResponse<AuthServer[]>>}
    */
@@ -149,15 +159,15 @@ export class AccountService {
   }
 
   /**
-   * FETCH the information of a new authentication server.
+   * FETCH the new authentication server.
    * @param {string} url - The URL of the authentication server to be added.
    * @returns {Promise<InvokeResponse<AuthServer>>}
    */
   @responseHandler("account")
-  static async fetchAuthServerInfo(
+  static async fetchAuthServer(
     url: string
   ): Promise<InvokeResponse<AuthServer>> {
-    return await invoke("fetch_auth_server_info", { url });
+    return await invoke("fetch_auth_server", { url });
   }
 
   /**

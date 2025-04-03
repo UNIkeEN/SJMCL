@@ -3,7 +3,7 @@ use super::{
   helpers::{
     authlib_injector::{
       self,
-      info::{fetch_auth_server, fetch_auth_url},
+      info::{fetch_auth_server_info, fetch_auth_url},
     },
     microsoft, offline,
   },
@@ -63,7 +63,7 @@ pub async fn fetch_oauth_code(
   if server_type == PlayerType::ThirdParty {
     let binding = app.state::<Mutex<AccountInfo>>();
 
-    let auth_server = {
+    let auth_server = AuthServer::from({
       let state = binding.lock()?;
       state
         .auth_servers
@@ -71,7 +71,7 @@ pub async fn fetch_oauth_code(
         .find(|server| server.auth_url == auth_server_url)
         .ok_or(AccountError::NotFound)?
         .clone()
-    };
+    });
 
     authlib_injector::oauth::device_authorization(
       &app,
@@ -97,7 +97,7 @@ pub async fn add_player_oauth(
 
   let new_player = match server_type {
     PlayerType::ThirdParty => {
-      let auth_server = {
+      let auth_server = AuthServer::from({
         let state = binding.lock()?;
         state
           .auth_servers
@@ -105,7 +105,7 @@ pub async fn add_player_oauth(
           .find(|server| server.auth_url == auth_server_url)
           .ok_or(AccountError::NotFound)?
           .clone()
-      };
+      });
 
       authlib_injector::oauth::login(
         &app,
@@ -288,12 +288,14 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
 
   let refreshed_player = match player.player_type {
     PlayerType::ThirdParty => {
-      let auth_server = cloned_account_state
-        .auth_servers
-        .iter()
-        .find(|server| server.auth_url == player.auth_server_url)
-        .ok_or(AccountError::NotFound)?
-        .clone();
+      let auth_server = AuthServer::from(
+        cloned_account_state
+          .auth_servers
+          .iter()
+          .find(|server| server.auth_url == player.auth_server_url)
+          .ok_or(AccountError::NotFound)?
+          .clone(),
+      );
 
       if player.refresh_token.is_empty() {
         authlib_injector::password::refresh(&app, player.clone()).await?
@@ -330,14 +332,40 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
 }
 
 #[tauri::command]
-pub fn retrieve_auth_server_list(app: AppHandle) -> SJMCLResult<Vec<AuthServer>> {
-  let binding = app.state::<Mutex<AccountInfo>>();
-  let state = binding.lock()?;
-  Ok(state.auth_servers.clone())
+pub async fn validate_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+
+  let cloned_account_state = account_binding.lock()?.clone();
+
+  let player = cloned_account_state
+    .players
+    .iter()
+    .find(|player| player.id == player_id)
+    .ok_or(AccountError::NotFound)?;
+
+  match player.player_type {
+    PlayerType::ThirdParty => authlib_injector::common::validate(player.clone()).await,
+
+    PlayerType::Microsoft => microsoft::oauth::validate(player.clone()).await,
+
+    PlayerType::Offline => Ok(()),
+  }
 }
 
 #[tauri::command]
-pub async fn fetch_auth_server_info(app: AppHandle, url: String) -> SJMCLResult<AuthServer> {
+pub fn retrieve_auth_server_list(app: AppHandle) -> SJMCLResult<Vec<AuthServer>> {
+  let binding = app.state::<Mutex<AccountInfo>>();
+  let state = binding.lock()?;
+  let auth_servers = state
+    .auth_servers
+    .iter()
+    .map(|server| AuthServer::from(server.clone()))
+    .collect();
+  Ok(auth_servers)
+}
+
+#[tauri::command]
+pub async fn fetch_auth_server(app: AppHandle, url: String) -> SJMCLResult<AuthServer> {
   // check the url integrity following the standard
   // https://github.com/yushijinhun/authlib-injector/wiki/%E5%90%AF%E5%8A%A8%E5%99%A8%E6%8A%80%E6%9C%AF%E8%A7%84%E8%8C%83#%E5%9C%A8%E5%90%AF%E5%8A%A8%E5%99%A8%E4%B8%AD%E8%BE%93%E5%85%A5%E5%9C%B0%E5%9D%80
   let parsed_url = Url::parse(&url)
@@ -359,7 +387,7 @@ pub async fn fetch_auth_server_info(app: AppHandle, url: String) -> SJMCLResult<
     }
   }
 
-  fetch_auth_server(auth_url).await
+  Ok(AuthServer::from(fetch_auth_server_info(auth_url).await?))
 }
 
 #[tauri::command]
@@ -374,7 +402,7 @@ pub async fn add_auth_server(app: AppHandle, auth_url: String) -> SJMCLResult<()
     }
   }
 
-  let server = fetch_auth_server(auth_url).await?;
+  let server = fetch_auth_server_info(auth_url).await?;
   let mut state = binding.lock()?;
   state.auth_servers.push(server);
   state.save()?;

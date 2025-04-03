@@ -5,11 +5,13 @@ use super::{
   },
   constants::INSTANCE_CFG_FILE_NAME,
   helpers::{
-    misc::{get_instance_game_config, get_instance_subdir_path, refresh_and_update_instances},
+    misc::{
+      get_instance_game_config, get_instance_subdir_path, refresh_and_update_instances,
+      unify_instance_name,
+    },
     mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::{load_servers_info_from_path, query_server_status},
-    version_dir::rename_game_version_id,
     world::{level_data_to_world_info, load_level_data_from_path},
   },
   models::{
@@ -22,9 +24,12 @@ use super::{
 };
 use crate::{
   error::SJMCLResult,
-  launcher_config::{helpers::get_global_game_config, models::GameConfig},
+  launcher_config::{
+    helpers::get_global_game_config,
+    models::{GameConfig, LauncherConfig},
+  },
   partial::{PartialError, PartialUpdate},
-  storage::save_json_async,
+  storage::{save_json_async, Storage},
 };
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
@@ -177,9 +182,13 @@ pub fn open_instance_subdir(
 
 #[tauri::command]
 pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state
+  let instance_binding = app.state::<Mutex<Vec<Instance>>>();
+  let instance_state = instance_binding.lock().unwrap();
+
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let mut config_state = config_binding.lock()?;
+
+  let instance = instance_state
     .get(instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
@@ -191,7 +200,12 @@ pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
   }
   // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
 
-  // TODO: update selected instance if necessary.
+  if config_state.states.shared.selected_instance_id == instance_id.to_string() {
+    config_state.states.shared.selected_instance_id = instance_state
+      .first()
+      .map_or("".to_string(), |i| i.id.to_string());
+    config_state.save()?;
+  }
   Ok(())
 }
 
@@ -207,14 +221,11 @@ pub async fn rename_instance(
     Some(x) => x,
     None => return Err(InstanceError::InstanceNotFoundByID.into()),
   };
-  match rename_game_version_id(&instance.version_path, &new_name) {
-    Ok(new_path) => {
-      instance.version_path = new_path;
-      instance.name = new_name;
-      Ok(())
-    }
-    Err(_) => Err(InstanceError::ConflictNameError.into()),
-  }
+  let new_path = unify_instance_name(&instance.version_path, &new_name)?;
+
+  instance.version_path = new_path;
+  instance.name = new_name;
+  Ok(())
 }
 
 #[tauri::command]

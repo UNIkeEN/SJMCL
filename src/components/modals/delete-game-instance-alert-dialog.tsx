@@ -2,6 +2,7 @@ import { AlertDialogProps, Text, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
+import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { GameInstanceSummary } from "@/models/instance/misc";
@@ -21,9 +22,11 @@ const DeleteGameInstanceDialog: React.FC<DeleteGameInstanceDialogProps> = ({
   const toast = useToast();
   const router = useRouter();
   const { getGameInstanceList } = useData();
+  const { refreshConfig } = useLauncherConfig();
 
   const handleDeleteInstance = (instanceId: number) => {
     InstanceService.deleteInstance(instanceId).then((response) => {
+      Promise.all([getGameInstanceList(true), refreshConfig()]);
       if (response.status === "success") {
         toast({
           title: response.message,
