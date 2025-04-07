@@ -17,6 +17,7 @@ pub struct NeoforgeModMetadata {
   pub loader_version: String,
   pub license: String,
   pub mods: Vec<NeoforgeModSubItem>,
+  // some non-standard mods write logo_file field in toml meta section.
   pub logo_file: Option<String>,
   // not in file, added by sjmcl
   pub valid_logo_file: Option<ImageWrapper>,

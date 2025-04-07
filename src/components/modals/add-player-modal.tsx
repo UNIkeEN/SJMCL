@@ -135,11 +135,15 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   useEffect(() => {
     setPassword("");
     initialRef.current?.focus();
+    setShowAdvancedOptions(false);
+    setUuid("");
   }, [playerType]);
 
   useEffect(() => {
     setPlayername("");
     setPassword("");
+    setShowAdvancedOptions(false);
+    setUuid("");
   }, [modalProps.isOpen]);
 
   useEffect(() => {
@@ -539,7 +543,9 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 isLoading={isLoading}
                 isDisabled={
                   !playername ||
-                  (playerType === "offline" && !isOfflinePlayernameValid) ||
+                  (playerType === "offline" &&
+                    !isOfflinePlayernameValid(playername)) ||
+                  (uuid && !isUuidValid(uuid)) ||
                   (playerType === "3rdparty" &&
                     authServerList.length > 0 &&
                     (!authServer || !password))
