@@ -16,16 +16,19 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { AccountService } from "@/services/account";
 
-interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {}
+interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {
+  presetUrl?: string;
+}
 
 const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
+  presetUrl = "",
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -47,12 +50,12 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setIsNextStep(false);
-      setServerUrl("");
+      setServerUrl(presetUrl);
       setIsServerUrlTouched(false);
     }
-  }, [isOpen]);
+  }, [isOpen, presetUrl]);
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     setIsLoading(true);
     // test the server url in backend & get the server name (without saving)
     AccountService.fetchAuthServer(serverUrl)
@@ -72,7 +75,13 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       .finally(() => {
         setIsLoading(false);
       });
-  };
+  }, [serverUrl, toast]);
+
+  useEffect(() => {
+    if (isOpen && serverUrl === presetUrl && presetUrl) {
+      handleNextStep();
+    }
+  }, [isOpen, presetUrl, serverUrl, handleNextStep]);
 
   const handleFinish = () => {
     setIsLoading(true);

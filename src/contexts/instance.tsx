@@ -296,7 +296,8 @@ export const InstanceContextProvider: React.FC<{
     if (instanceSummary?.id !== undefined) {
       InstanceService.retrieveScreenshotList(instanceSummary.id).then(
         (response) => {
-          if (response.status === "success") setScreenshots(response.data);
+          if (response.status === "success")
+            setScreenshots([...response.data].sort((a, b) => b.time - a.time));
           else
             toast({
               title: response.message,

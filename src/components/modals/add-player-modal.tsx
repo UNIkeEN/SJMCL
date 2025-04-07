@@ -39,11 +39,11 @@ import {
 } from "react-icons/lu";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
-import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { AuthServer, OAuthCodeResponse, Player } from "@/models/account";
 import {
@@ -68,6 +68,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const toast = useToast();
   const { config, refreshConfig } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const { openSharedModal } = useSharedModals();
 
   const { getAuthServerList, getPlayerList } = useData();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
@@ -87,12 +88,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const [candidatePlayers, setCandidatePlayers] = useState<Player[]>([]);
 
   const initialRef = useRef<HTMLInputElement>(null);
-
-  const {
-    isOpen: isAddAuthServerModalOpen,
-    onOpen: onAddAuthServerModalOpen,
-    onClose: onAddAuthServerModalClose,
-  } = useDisclosure();
 
   const {
     isOpen: isSelectPlayerModalOpen,
@@ -382,7 +377,9 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                     <Button
                       variant="ghost"
                       colorScheme={primaryColor}
-                      onClick={onAddAuthServerModalOpen}
+                      onClick={() => {
+                        openSharedModal("add-auth-server", {});
+                      }}
                     >
                       <LuPlus />
                       <Text ml={1}>
@@ -551,10 +548,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
           </HStack>
         </ModalFooter>
       </ModalContent>
-      <AddAuthServerModal
-        isOpen={isAddAuthServerModalOpen}
-        onClose={onAddAuthServerModalClose}
-      />
       <SelectPlayerModal
         candidatePlayers={candidatePlayers}
         onPlayerSelected={handlePlayerSelect}

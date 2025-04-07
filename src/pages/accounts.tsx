@@ -30,12 +30,12 @@ import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import SelectableButton from "@/components/common/selectable-button";
-import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
 import AddPlayerModal from "@/components/modals/add-player-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
@@ -46,6 +46,7 @@ const AccountsPage = () => {
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.accountsPage.viewType;
+  const { openSharedModal } = useSharedModals();
 
   const { getPlayerList, getAuthServerList, selectedPlayer } = useData();
 
@@ -60,12 +61,6 @@ const AccountsPage = () => {
   useEffect(() => {
     setAuthServerList(getAuthServerList() || []);
   }, [getAuthServerList]);
-
-  const {
-    isOpen: isAddAuthServerModalOpen,
-    onOpen: onAddAuthServerModalOpen,
-    onClose: onAddAuthServerModalClose,
-  } = useDisclosure();
 
   const {
     isOpen: isDeleteAuthServerDialogOpen,
@@ -183,7 +178,9 @@ const AccountsPage = () => {
             <SelectableButton
               mt="auto"
               size="sm"
-              onClick={onAddAuthServerModalOpen}
+              onClick={() => {
+                openSharedModal("add-auth-server", {});
+              }}
             >
               <HStack spacing={2}>
                 <Icon as={LuCirclePlus} />
@@ -281,10 +278,6 @@ const AccountsPage = () => {
           </Section>
         </GridItem>
       </Grid>
-      <AddAuthServerModal
-        isOpen={isAddAuthServerModalOpen}
-        onClose={onAddAuthServerModalClose}
-      />
       <GenericConfirmDialog
         isAlert
         isOpen={isDeleteAuthServerDialogOpen}
