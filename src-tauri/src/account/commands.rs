@@ -314,30 +314,6 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
 }
 
 #[tauri::command]
-pub async fn validate_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
-  let player = {
-    let account_binding = app.state::<Mutex<AccountInfo>>();
-    let account_state = account_binding.lock()?;
-
-    account_state
-      .get_player_by_id(player_id.clone())
-      .ok_or(AccountError::NotFound)?
-      .clone()
-  };
-
-  match player.player_type {
-    PlayerType::ThirdParty => {
-      check_authlib_jar(&app).await?;
-      authlib_injector::common::validate(&player).await
-    }
-
-    PlayerType::Microsoft => microsoft::oauth::validate(&player).await,
-
-    PlayerType::Offline => Ok(()),
-  }
-}
-
-#[tauri::command]
 pub fn retrieve_auth_server_list(app: AppHandle) -> SJMCLResult<Vec<AuthServer>> {
   let binding = app.state::<Mutex<AccountInfo>>();
   let state = binding.lock()?;

@@ -128,54 +128,7 @@ impl LaunchParams {
   }
 }
 
-// impl LaunchParams {
-//   pub fn into_hashmap(self) -> SJMCLResult<HashMap<String, String>> {
-//     let mut map: HashMap<String, String> = HashMap::new();
-//     map.insert("assets_root".to_string(), self.assets_root);
-//     map.insert("assets_index_name".to_string(), self.assets_index_name);
-//     map.insert("game_directory".to_string(), self.game_directory);
-//     map.insert("version_name".to_string(), self.version_name);
-//     map.insert("version_type".to_string(), self.version_type);
-//     map.insert("natives_directory".to_string(), self.natives_directory);
-//     map.insert("launcher_name".to_string(), self.launcher_name);
-//     map.insert("launcher_version".to_string(), self.launcher_version);
-//     map.insert(
-//       "classpath".to_string(),
-//       quote_java_classpaths(&self.classpath)?,
-//     );
-//     map.insert("auth_access_token".to_string(), self.auth_access_token);
-//     map.insert("auth_player_name".to_string(), self.auth_player_name);
-//     map.insert("user_type".to_string(), self.user_type);
-//     map.insert("auth_uuid".to_string(), self.auth_uuid);
-//     if let Some(ref clientid) = &self.clientid {
-//       map.insert("clientid".to_string(), clientid.to_owned());
-//     }
-//     if let Some(ref auth_xuid) = &self.auth_xuid {
-//       map.insert("auth_xuid".to_string(), auth_xuid.to_owned());
-//     }
-//     map.insert("demo".to_string(), self.demo.to_string());
-//     map.insert(
-//       "resolution_height".to_string(),
-//       self.resolution_height.to_string(),
-//     );
-//     map.insert(
-//       "resolution_width".to_string(),
-//       self.resolution_width.to_string(),
-//     );
-//     map.insert("quickPlayPath".to_string(), self.quick_play_path);
-//     map.insert(
-//       "quickPlaySingleplayer".to_string(),
-//       self.quick_play_singleplayer,
-//     );
-//     map.insert(
-//       "quickPlayMultiplayer".to_string(),
-//       self.quick_play_multiplayer,
-//     );
-//     map.insert("quickPlayRealms".to_string(), self.quick_play_realms);
-//     Ok(map)
-//   }
-// }
-
+// TODO: remove
 fn choose_java_auto(java_list: &Vec<JavaInfo>, version_req: &JavaVersion) -> Option<JavaInfo> {
   let mut match_list = Vec::new();
   for java_info in java_list {
@@ -192,6 +145,7 @@ fn choose_java_auto(java_list: &Vec<JavaInfo>, version_req: &JavaVersion) -> Opt
   Some(match_list[0].clone())
 }
 
+// TODO: remove
 fn choose_java(
   game_java: &GameJava,
   java_list: &Vec<JavaInfo>,
@@ -206,7 +160,7 @@ fn choose_java(
   }
   match choose_java_auto(java_list, version_req) {
     Some(java) => Ok(java),
-    None => Err(LaunchError::NoSuitableJavaError.into()),
+    None => Err(LaunchError::NoSuitableJava.into()),
   }
 }
 
@@ -301,6 +255,7 @@ pub async fn generate_launch_cmd(
     quick_play_multiplayer: game_config.game_server.server_url,
     quick_play_realms: String::new(),
   };
+  // TODO: use launching state
   let java_info = choose_java(
     &game_config.game_java,
     &java_list,
@@ -311,6 +266,8 @@ pub async fn generate_launch_cmd(
   // 2. java exec
   // 3. jvm params
   // login user
+
+  // TODO: use launching state
   if selected_player.player_type == PlayerType::ThirdParty {
     let metadata =
       get_auth_server_info_by_url(app, selected_player.auth_server_url.clone())?.metadata;

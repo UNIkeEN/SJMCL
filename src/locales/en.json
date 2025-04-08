@@ -1031,8 +1031,9 @@
       "title": "Launch Game - {{name}}"
     },
     "step": {
-      "validatePlayer": "Validate Player's Credentials",
+      "selectSuitableJRE": "Select Suitable Java Runtime",
       "validateGameFiles": "Validate Game and Dependency Files",
+      "validateSelectedPlayer": "Validate Player's Credentials",
       "launchGame": "Waiting for Game to Launch"
     }
   },

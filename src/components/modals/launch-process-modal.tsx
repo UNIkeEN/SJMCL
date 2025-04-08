@@ -59,6 +59,13 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
     );
   }, [getGameInstanceList, instanceId]);
 
+  const handleCloseModal = () => {
+    LaunchService.cancelLaunchProcess();
+    setActiveStep(0);
+    setErrorPaused(false);
+    props.onClose();
+  };
+
   const launchProcessSteps: Array<{
     label: string;
     function: () => Promise<any>;
@@ -68,8 +75,23 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   }> = useMemo(
     () => [
       {
-        label: "validatePlayer",
-        function: () => AccountService.validatePlayer(selectedPlayer?.id!),
+        label: "selectSuitableJRE",
+        function: () => LaunchService.selectSuitableJRE(instanceId),
+        isOK: (data: any) => true,
+        onResCallback: (data: any) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {}, // TODO
+      },
+      {
+        label: "validateGameFiles",
+        function: () => LaunchService.validateGameFiles(instanceId),
+        isOK: (data: any) => data && data.length === 0,
+        onResCallback: (data: any) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {}, // TODO
+      },
+      {
+        label: "validateSelectedPlayer",
+        function: () =>
+          LaunchService.validateSelectedPlayer(selectedPlayer?.id!),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
         onErrCallback: (error: ResponseError) => {
@@ -79,14 +101,6 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
             }
           });
         },
-      },
-      // TODO: check java version
-      {
-        label: "validateGameFiles",
-        function: () => LaunchService.validateGameFiles(instanceId),
-        isOK: (data: any) => data && data.length === 0,
-        onResCallback: (data: any) => {}, // TODO
-        onErrCallback: (error: ResponseError) => {}, // TODO
       },
       {
         label: "launchGame",
@@ -122,12 +136,19 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         setErrorPaused(true);
         setErrorDesc(response.details);
         currentStep.onErrCallback(response.error);
+        console.error(response.details);
       }
     });
   }, [activeStep, setActiveStep, launchProcessSteps]);
 
   return (
-    <Modal size="sm" closeOnEsc={false} closeOnOverlayClick={false} {...props}>
+    <Modal
+      size="sm"
+      closeOnEsc={false}
+      closeOnOverlayClick={false}
+      {...props}
+      onClose={handleCloseModal}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -181,7 +202,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
           </Stepper>
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" onClick={props.onClose}>
+          <Button variant="ghost" onClick={handleCloseModal}>
             {t("General.cancel")}
           </Button>
         </ModalFooter>

@@ -1031,8 +1031,9 @@
       "title": "启动游戏 - {{name}}"
     },
     "step": {
-      "validatePlayer": "验证账户凭证",
+      "selectSuitableJRE": "选择合适 Java 运行时",
       "validateGameFiles": "验证游戏与依赖文件完整性",
+      "validateSelectedPlayer": "验证账户状态",
       "launchGame": "等待游戏启动"
     }
   },

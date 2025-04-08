@@ -19,16 +19,6 @@ use std::{fs, io::Cursor, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
-pub fn get_instance_client_json_path(app: &AppHandle, instance_id: usize) -> Option<PathBuf> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state.get(instance_id)?;
-
-  let version_path = &instance.version_path;
-  let json_path = version_path.join(format!("{}.json", instance.name));
-  Some(json_path)
-}
-
 pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
   if instance.use_spec_game_config {
     if let Some(v) = &instance.spec_game_config {

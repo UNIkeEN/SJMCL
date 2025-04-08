@@ -15,6 +15,7 @@ use account::{
 };
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
+use launch::models::LaunchingState;
 use launcher_config::{
   helpers::refresh_and_update_javas,
   models::{JavaInfo, LauncherConfig},
@@ -71,7 +72,6 @@ pub async fn run() {
       account::commands::update_player_skin_offline_preset,
       account::commands::delete_player,
       account::commands::refresh_player,
-      account::commands::validate_player,
       account::commands::retrieve_auth_server_list,
       account::commands::add_auth_server,
       account::commands::delete_auth_server,
@@ -95,8 +95,11 @@ pub async fn run() {
       instance::commands::retrieve_shader_pack_list,
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
+      launch::commands::select_suitable_jre,
       launch::commands::validate_game_files,
+      launch::commands::validate_selected_player,
       launch::commands::launch_game,
+      launch::commands::cancel_launch_process,
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,
@@ -138,6 +141,9 @@ pub async fn run() {
 
       let client = build_sjmcl_client(app.handle(), true, false);
       app.manage(client);
+
+      let launching = LaunchingState::default();
+      app.manage(Mutex::new(launching));
 
       // Refresh all auth servers
       let app_handle = app.handle().clone();
