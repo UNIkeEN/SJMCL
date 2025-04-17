@@ -218,6 +218,10 @@ pub fn get_java_paths() -> Vec<String> {
     }
   }
 
+  for java_path in scan_java_paths_in_common_directories() {
+    paths.insert(java_path);
+  }
+
   // For windows, try to get java path from registry
   #[cfg(target_os = "windows")]
   {
@@ -318,13 +322,12 @@ fn scan_java_paths_in_common_directories() -> Vec<String> {
     java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib/jvm")));
     java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib32/jvm")));
     java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib64/jvm")));
-    if let Ok(home_dir) = std::env::var("HOME") {
-      java_paths.extend(search_java_homes_in_directory(
-        Path::new(&home_dir)
-          .join(".sdkman/candidates/java")
-          .as_path(),
-      ));
-    }
+  }
+  #[cfg(target_os = "macos")]
+  {
+    java_paths.extend(search_java_homes_in_directory(Path::new(
+      "/opt/homebrew/Cellar/openjdk",
+    )));
   }
   java_paths
 }
