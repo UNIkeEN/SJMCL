@@ -41,7 +41,7 @@ export interface GameConfig {
     };
     workaround: {
       noJvmArgs: boolean;
-      gameCompletnessCheckPolicy: string;
+      gameFileValidatePolicy: string;
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useNativeGlfw: boolean;
@@ -185,7 +185,7 @@ export const defaultGameConfig: GameConfig = {
     },
     workaround: {
       noJvmArgs: false,
-      gameCompletnessCheckPolicy: "full",
+      gameFileValidatePolicy: "full",
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useNativeGlfw: false,

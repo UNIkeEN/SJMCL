@@ -19,7 +19,7 @@ use crate::{
     },
     models::misc::{Instance, InstanceError, InstanceSubdirType},
   },
-  launcher_config::models::JavaInfo,
+  launcher_config::models::{FileValidatePolicy, JavaInfo},
   storage::load_json_async,
 };
 use std::process::{Command, Stdio};
@@ -69,12 +69,18 @@ pub async fn validate_game_files(
   app: AppHandle,
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<Vec<DownloadsArtifact>> {
-  let (instance, client_info) = {
+  let (instance, client_info, validate_policy) = {
     let mut launching = launching_state.lock().unwrap();
     launching.current_step = 2;
     (
       launching.selected_instance.clone(),
       launching.client_info.clone(),
+      launching
+        .game_config
+        .advanced
+        .workaround
+        .game_file_validate_policy
+        .clone(),
     )
   };
 
@@ -93,8 +99,15 @@ pub async fn validate_game_files(
   };
   extract_native_libraries(&client_info, libraries_dir, natives_dir).await?;
 
-  // validate files (TODO: validate strategy in game config)
-  let bad_artifacts = validate_library_files(libraries_dir, &client_info).await?;
+  // validate game files
+  let bad_artifacts = match validate_policy {
+    FileValidatePolicy::Disable => return Ok(vec![]), // skip
+    FileValidatePolicy::Normal => {
+      validate_library_files(libraries_dir, &client_info, false).await?
+    }
+    FileValidatePolicy::Full => validate_library_files(libraries_dir, &client_info, true).await?,
+  };
+  // TODO: validate not only libraries? also assets?
   Ok(bad_artifacts)
 }
 
@@ -132,7 +145,7 @@ pub async fn validate_selected_player(
 }
 
 #[tauri::command]
-pub fn launch_game(
+pub async fn launch_game(
   app: AppHandle,
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<()> {

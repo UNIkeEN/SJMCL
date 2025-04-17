@@ -577,7 +577,7 @@
       "title": "调试选项",
       "settings": {
         "noJvmArgs": "不添加默认的 JVM 参数",
-        "gameCompletnessCheckPolicy": {
+        "gameFileValidatePolicy": {
           "title": "游戏文件完整性检查策略",
           "disable": "不检查",
           "normal": "普通检查",

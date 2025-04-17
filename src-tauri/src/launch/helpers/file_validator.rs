@@ -67,33 +67,42 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
 pub async fn validate_artifact(
   root_path: &Path,
   artifacts: &DownloadsArtifact,
+  check_hash: bool,
 ) -> SJMCLResult<bool> {
   let file_path = root_path.join(&artifacts.path);
-  let file = if let Ok(f) = tokio::fs::File::open(&file_path).await {
-    f
-  } else {
-    return Ok(false); // return false if file not exists
-  };
-  let mut reader = BufReader::new(file);
-  let mut hasher = Sha1::new();
-  let mut buffer = [0; 4096];
-  loop {
-    let bytes_read = reader.read(&mut buffer).await?;
-    if bytes_read != 0 {
-      hasher.update(&buffer[..bytes_read]);
-    } else {
-      break;
+
+  match tokio::fs::File::open(&file_path).await {
+    Ok(file) => {
+      if !check_hash {
+        return Ok(true);
+      }
+
+      // validate hash
+      let mut reader = BufReader::new(file);
+      let mut hasher = Sha1::new();
+      let mut buffer = [0; 4096];
+      loop {
+        let bytes_read = reader.read(&mut buffer).await?;
+        if bytes_read != 0 {
+          hasher.update(&buffer[..bytes_read]);
+        } else {
+          break;
+        }
+      }
+      let sha1 = hasher.finalize();
+      let result = sha1.as_bytes();
+      let expected = hex::decode(&artifacts.sha1)?;
+      Ok(result == expected)
     }
+
+    Err(_) => Ok(false), // not exist
   }
-  let sha1 = hasher.finalize();
-  let result = sha1.as_bytes();
-  let expected = hex::decode(&artifacts.sha1)?;
-  Ok(result == expected)
 }
 
 pub async fn validate_library_files(
   library_path: &Path,
   client_info: &McClientInfo,
+  check_hash: bool,
 ) -> SJMCLResult<Vec<DownloadsArtifact>> {
   let mut artifacts = Vec::new();
   artifacts.extend(get_native_library_artifacts(client_info));
@@ -103,7 +112,7 @@ pub async fn validate_library_files(
     .map(|artifact| {
       let library_path_clone = library_path.to_path_buf();
       tokio::spawn(async move {
-        match validate_artifact(&library_path_clone, &artifact).await {
+        match validate_artifact(&library_path_clone, &artifact, check_hash).await {
           Ok(succ) => {
             if !succ {
               Some(artifact)

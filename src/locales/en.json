@@ -577,8 +577,8 @@
       "title": "Workaround",
       "settings": {
         "noJvmArgs": "Do not add default Java VM arguments",
-        "gameCompletnessCheckPolicy": {
-          "title": "Game File Integrity Check Policy",
+        "gameFileValidatePolicy": {
+          "title": "Game File Validation Policy",
           "disable": "Disable Check",
           "normal": "Normal Check",
           "full": "Full Check"

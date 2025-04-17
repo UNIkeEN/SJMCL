@@ -47,14 +47,13 @@ impl ProcessPriority {
   }
 }
 
-// see java.net.proxy
-// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
-pub enum ProxyType {
-  Socks,
+pub enum FileValidatePolicy {
+  Disable,
+  Normal,
   #[serde(other)]
-  Http,
+  Full,
 }
 
 // Partial Derive is used for these structs and we can use it for key value storage.
@@ -122,8 +121,8 @@ structstruck::strike! {
       },
       pub workaround: struct {
         pub no_jvm_args: bool,
-        #[default = "full"]
-        pub game_completness_check_policy: String,
+        #[default(FileValidatePolicy::Full)]
+        pub game_file_validate_policy: FileValidatePolicy,
         pub dont_check_jvm_validity: bool,
         pub dont_patch_natives: bool,
         pub use_native_glfw: bool,
@@ -138,6 +137,16 @@ structstruck::strike! {
 pub struct GameDirectory {
   pub name: String,
   pub dir: PathBuf,
+}
+
+// see java.net.proxy
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum ProxyType {
+  Socks,
+  #[serde(other)]
+  Http,
 }
 
 structstruck::strike! {
