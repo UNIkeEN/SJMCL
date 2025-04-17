@@ -401,7 +401,7 @@ fn search_java_homes_in_mac_java_virtual_machines(dir: PathBuf) -> Vec<String> {
   java_paths
 }
 
-fn resolve_java_home(path: PathBuf) -> Result<String, Box<dyn Error>> {
+fn resolve_java_home(path: PathBuf) -> SJMCLResult<String> {
   #[cfg(target_os = "windows")]
   let java_bin = path.join(r"bin\java.exe");
   #[cfg(not(target_os = "windows"))]
