@@ -125,7 +125,7 @@ fn get_official_minecraft_directory(app: &AppHandle) -> GameDirectory {
 
 pub async fn refresh_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.
-  let mut java_paths = get_java_paths();
+  let mut java_paths = get_java_paths(app);
 
   // add user-added paths from config state.
   let config_binding = app.state::<Mutex<LauncherConfig>>();
@@ -189,7 +189,7 @@ pub async fn refresh_and_update_javas(app: &AppHandle) {
   *javas_state = java_list;
 }
 
-pub fn get_java_paths() -> Vec<String> {
+pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   let mut paths = HashSet::new();
 
   // List java paths from System PATH variable
@@ -218,7 +218,7 @@ pub fn get_java_paths() -> Vec<String> {
     }
   }
 
-  for java_path in scan_java_paths_in_common_directories() {
+  for java_path in scan_java_paths_in_common_directories(app) {
     paths.insert(java_path);
   }
 
@@ -294,8 +294,21 @@ fn get_java_paths_from_windows_registry() -> Vec<String> {
   java_paths
 }
 
-fn scan_java_paths_in_common_directories() -> Vec<String> {
+fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   let mut java_paths = Vec::new();
+  if let Ok(home) = app.path().home_dir() {
+    java_paths.extend(search_java_homes_in_directory(home.join(".jdks")));
+  }
+  if let Ok(path_var) = std::env::var("PATH") {
+    for path in std::env::split_paths(&path_var) {
+      java_paths.extend(resolve_java_executable(PathBuf::from(path)));
+    }
+  }
+  if let Ok(path_var) = std::env::var("HMCL_JRES") {
+    for path in std::env::split_paths(&path_var) {
+      java_paths.extend(resolve_java_home(PathBuf::from(path)));
+    }
+  }
   #[cfg(target_os = "windows")]
   {
     let common_vendors = [
@@ -307,38 +320,75 @@ fn scan_java_paths_in_common_directories() -> Vec<String> {
       "Eclipse Foundation",
       "Semeru",
     ];
-    for vendor in &common_vendors {
+    for vendor in common_vendors {
       java_paths.extend(search_java_homes_in_directory(
-        Path::new(r"C:\Program Files").join(vendor).as_path(),
+        PathBuf::from(r"C:\Program Files").join(vendor),
       ));
       java_paths.extend(search_java_homes_in_directory(
-        Path::new(r"C:\Program Files (x86)").join(vendor).as_path(),
+        PathBuf::from(r"C:\Program Files (x86)").join(vendor),
       ));
     }
   }
   #[cfg(target_os = "linux")]
   {
-    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/java")));
-    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib/jvm")));
-    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib32/jvm")));
-    java_paths.extend(search_java_homes_in_directory(Path::new("/usr/lib64/jvm")));
+    java_paths.extend(search_java_homes_in_directory(PathBuf::from("/usr/java")));
+    java_paths.extend(search_java_homes_in_directory(PathBuf::from(
+      "/usr/lib/jvm",
+    )));
+    java_paths.extend(search_java_homes_in_directory(PathBuf::from(
+      "/usr/lib32/jvm",
+    )));
+    java_paths.extend(search_java_homes_in_directory(PathBuf::from(
+      "/usr/lib64/jvm",
+    )));
+    if let Ok(home) = app.path().home_dir() {
+      java_paths.extend(search_java_homes_in_directory(
+        home.join(".sdkman/candidates/java"),
+      ));
+    }
   }
   #[cfg(target_os = "macos")]
   {
-    java_paths.extend(search_java_homes_in_directory(Path::new(
-      "/opt/homebrew/Cellar/openjdk",
+    java_paths.extend(search_java_homes_in_mac_java_virtual_machines(
+      PathBuf::from("/Library/Java/JavaVirtualMachines"),
+    ));
+    if let Ok(home) = app.path().home_dir() {
+      java_paths.extend(search_java_homes_in_mac_java_virtual_machines(
+        home.join("Library/Java/JavaVirtualMachines"),
+      ));
+    }
+    java_paths.extend(resolve_java_home(PathBuf::from(
+      "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java",
     )));
+    java_paths.extend(resolve_java_home(PathBuf::from(
+      "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/MacOS/itms/java/bin/java",
+    )));
+    java_paths.extend(resolve_java_home(PathBuf::from(
+      "/opt/homebrew/opt/java/bin/java",
+    )));
+    if let Ok(entries) = fs::read_dir(PathBuf::from("/opt/homebrew/Cellar")) {
+      for entry in entries {
+        if let Ok(entry) = entry {
+          let path = entry.path();
+          if let Some(name) = path.file_name() {
+            if name.to_string_lossy().starts_with("openjdk") {
+              java_paths.extend(search_java_homes_in_directory(path));
+            }
+          }
+        }
+      }
+    }
   }
   java_paths
 }
 
-fn search_java_homes_in_directory(dir: &Path) -> Vec<String> {
+fn search_java_homes_in_directory(dir: PathBuf) -> Vec<String> {
   let mut java_paths = Vec::new();
   if let Ok(entries) = fs::read_dir(dir) {
     for entry in entries {
       if let Ok(entry) = entry {
         let java_home = entry.path();
-        if let Ok(java_path) = resolve_java_home(&java_home) {
+        if let Ok(java_path) = resolve_java_home(java_home) {
           java_paths.push(java_path);
         }
       }
@@ -347,11 +397,30 @@ fn search_java_homes_in_directory(dir: &Path) -> Vec<String> {
   java_paths
 }
 
-fn resolve_java_home(path: &Path) -> Result<String, Box<dyn Error>> {
+fn search_java_homes_in_mac_java_virtual_machines(dir: PathBuf) -> Vec<String> {
+  let mut java_paths = Vec::new();
+  if let Ok(entries) = fs::read_dir(dir) {
+    for entry in entries {
+      if let Ok(entry) = entry {
+        let java_home = entry.path().join("Contents/Home");
+        if let Ok(java_path) = resolve_java_home(java_home) {
+          java_paths.push(java_path);
+        }
+      }
+    }
+  }
+  java_paths
+}
+
+fn resolve_java_home(path: PathBuf) -> Result<String, Box<dyn Error>> {
+  resolve_java_executable(path.join("bin"))
+}
+
+fn resolve_java_executable(path: PathBuf) -> Result<String, Box<dyn Error>> {
   #[cfg(target_os = "windows")]
-  let java_bin = path.join(r"bin\java.exe");
+  let java_bin = path.join("java.exe");
   #[cfg(not(target_os = "windows"))]
-  let java_bin = path.join("bin/java");
+  let java_bin = path.join("java");
   Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
 }
 
