@@ -1,0 +1,1832 @@
+{
+    "AboutSettingsPage": {
+      "about": {
+        "title": "SJMCLについて",
+        "settings": {
+          "version": {
+            "title": "バージョン"
+          },
+          "contributors": {
+            "title": "開発チーム"
+          },
+          "reportIssue": {
+            "title": "問題報告"
+          },
+          "aboutSJMC": {
+            "title": "上海交通大学 Minecraft クラブ (SJMC) について"
+          }
+        }
+      },
+      "ack": {
+        "title": "クレジット",
+        "settings": {
+          "bmclapi": {
+            "title": "BMCLAPI",
+            "description": "@bangbang93 による高速ダウンロードミラーの提供に感謝します。"
+          },
+          "hmcl": {
+            "title": "Hello Minecraft! Launcher",
+            "description": "一部の設計及びコード実装において、このオープンソースプロジェクトに参考しています。"
+          },
+          "littleskin": {
+            "title": "LittleSkin",
+            "description": "ログインフローの設計について LittleSkin 及び @tnqzh123 のご協力に感謝します。"
+          },
+          "sinter": {
+            "title": "Sinter",
+            "description": "Windows及びLinuxプラットフォームにおいて、ランチャーUIフォントとして SIL に準拠して利用しています。"
+          },
+          "skinview3d": {
+            "title": "bs-community / skinview3d",
+            "description": "スキンプレビューコンポーネントのコード実装において、このオープンソースプロジェクトに参考しており、 MIT に準拠して利用しています。"
+          }
+        }
+      },
+      "legalInfo": {
+        "title": "法的情報",
+        "settings": {
+          "copyright": {
+            "title": "コピーライト",
+            "description": "© 2024-2025 SJMCL 開発チーム"
+          },
+          "userAgreement": {
+            "title": "利用規約"
+          },
+          "openSourceLicense": {
+            "title": "オープンソースライセンス",
+            "description": "このプロジェクトは GNU General Public License v3.0 （追加条項が適用）に準拠しています。"
+          }
+        }
+      }
+    },
+    "AccountsPage": {
+      "button": {
+        "addPlayer": "キャラクタ追加",
+        "add3rdPartyServer": "認証サーバー追加",
+        "sourceHomepage": "ホームページへ",
+        "deleteServer": "サーバー削除"
+      },
+      "playerTypeList": {
+        "all": "すべてのソース"
+      },
+      "viewTypeList": {
+        "grid": "グリッドビュー",
+        "list": "リストビュー"
+      }
+    },
+    "AddAndImportInstancePage": {
+      "addAndImportOptions": {
+        "new": {
+          "title": "インスタンスをインストール",
+          "description": "ゲームバージョン、ローダーまたはMODを選択しインストールします。"
+        },
+        "modpack": {
+          "title": "モッドパックをインポート",
+          "description": "ローカルファイルあるいはインタネットからモッドパックをインポートします。（ CurseForge、 Modrinth あるいは HMCL フォーマット）"
+        },
+        "manageDirs": {
+          "title": "ゲームディレクトリ管理",
+          "description": "ローカルゲーム保存ディレクトリを設定し、インストール済のインスタンスを追加します。"
+        }
+      },
+      "modpackOperations": {
+        "fromdisk": "ローカルファイルからインポート",
+        "download": "モッドパックをダウンロード"
+      },
+      "moreOptions": {
+        "title": "その他",
+        "server": {
+          "title": "サーバーをダウンロード",
+          "description": "各バージョンのヴァニラサーバーファイルをダウンロードします"
+        }
+      }
+    },
+    "AddAuthServerModal": {
+      "header": {
+        "title": "認証サーバー追加"
+      },
+      "placeholder": {
+        "inputServerUrl": "サーバーアドレスを入力してください"
+      },
+      "page1": {
+        "serverUrl": "サーバーアドレス",
+        "serverUrlRequired": "必須項目"
+      },
+      "page2": {
+        "name": "サーバー名",
+        "serverUrl": "サーバーアドレス"
+      }
+    },
+    "AddDiscoverSourceModal": {
+      "modal": {
+        "header": "データソースを追加"
+      },
+      "label": {
+        "endpointUrl": "元アドレス"
+      },
+      "placeholder": {
+        "endpointUrl": "元アドレス"
+      }
+    },
+    "AddPlayerModal": {
+      "modal": {
+        "header": "キャラクタ追加"
+      },
+      "label": {
+        "playerType": "キャラクタタイプ"
+      },
+      "offline": {
+        "playerName": {
+          "label": "キャラクタ名",
+          "placeholder": "キャラクタの名前を入力してください",
+          "errorMessage": "半角英数字と_のみ使用可能（16文字以内）"
+        },
+        "advancedOptions": {
+          "title": "詳細設定",
+          "uuid": {
+            "label": "UUID",
+            "placeholder": "（ SJMCL による自動生成）",
+            "errorMessage": "フォーマットエラー"
+          }
+        }
+      },
+      "3rdparty": {
+        "authServer": {
+          "label": "認証ソース",
+          "selectSource": "認証ソースを選択してく",
+          "noSource": "有効な認証ソースサーバーが設定されていません",
+          "addSource": "認証ソースを追加"
+        },
+        "email": {
+          "label": "メールアドレス",
+          "placeholder": "メールアドレスを入力してください"
+        },
+        "emailOrPlayerName": {
+          "label": "メールアドレスあるいはキャラクタ名",
+          "placeholder": "メールアドレスあるいはキャラクタ名を入力してください"
+        },
+        "password": {
+          "label": "パスワード",
+          "placeholder": "パスワードを入力してください"
+        }
+      },
+      "oauthCommon": {
+        "description": {
+          "start": {
+            "3rdparty": "この認証ソースは Yggdrasil Connect 仕様提案をサポートします。",
+            "microsoft": " SJMCL は Microsoft OAuth 2.0 デバイス認証フローをサポートします。"
+          },
+          "next": "次へ進むボタンをクリックして、ログインウィンドウに上記のコードを入力してください。（アウトコピー済）"
+        },
+        "button": {
+          "start": {
+            "3rdparty": " OAuth ログインスタート",
+            "microsoft": " Microsoft ログインスタート"
+          },
+          "next": "次へ進む"
+        }
+      },
+      "button": {
+        "buyMinecraft": " Minecraft を購入します",
+        "useOAuthLogin": " OAuth ログイン",
+        "usePasswordLogin": "アカウントとパスワードでログイン"
+      }
+    },
+    "AllGamesPage": {
+      "button": {
+        "addAndImport": "追加とインポート",
+        "globalSettings": "グローバルゲーム設定",
+        "launch": "ゲームスタート"
+      },
+      "viewTypeList": {
+        "grid": "グリッドビュー",
+        "list": "リストビュー"
+      },
+      "title": "すべてのインスタンス"
+    },
+    "AppearanceSettingsPage": {
+      "theme": {
+        "title": "テーマ",
+        "settings": {
+          "primaryColor": {
+            "title": "ランチャーのアクセントカラー"
+          },
+          "colorMode": {
+            "title": "カラーモード",
+            "type": {
+              "light": "ライト",
+              "dark": "ダーク"
+            }
+          },
+          "headNavStyle": {
+            "title": "上部ナビゲーションバーのスタイル",
+            "type": {
+              "standard": "スタンダード",
+              "simplified": "ミニマル"
+            }
+          }
+        }
+      },
+      "font": {
+        "title": "フォント",
+        "settings": {
+          "fontSize": {
+            "title": "フォントサイズ",
+            "small": "小さい",
+            "large": "大きい"
+          }
+        }
+      },
+      "background": {
+        "title": "バックグラウンド",
+        "settings": {
+          "preset": {
+            "title": "プリセット画像"
+          },
+          "custom": {
+            "title": "カスタム画像",
+            "add": "追加"
+          }
+        },
+        "presetBgList": {
+          "Jokull": {
+            "name": "雪原の秘境"
+          },
+          "SJTU-eastgate": {
+            "name": "紫気東来（ SJTU 東門）"
+          }
+        }
+      },
+      "accessibility": {
+        "title": "アクセシビリティ表示",
+        "settings": {
+          "invertColors": {
+            "title": "色反転"
+          },
+          "enhanceContrast": {
+            "title": "コントラスト強化"
+          }
+        }
+      }
+    },
+    "ComingSoonSign": {
+      "text": "このページは今準備中で、しばらくお待ちしてください。"
+    },
+    "ContributorsPage": {
+      "all": "開発チームリスト",
+      "core": "メイン開発者",
+      "contribution": {
+        "fullStackDev": "フルスタック開発",
+        "frontendDev": "フロントエンド開発",
+        "backendDev": "バックエンド開発",
+        "externalAPI": "外部API",
+        "doc": "ドキュメント",
+        "cicd": " CI / CD",
+        "design": "ビジュアルデザイン",
+        "mascot": "マスコット"
+      }
+    },
+    "CopyOrMoveModal": {
+      "modal": {
+        "header": "リソースをコピーあるいは移動"
+      },
+      "operation": {
+        "copy": "コピー",
+        "move": "移動"
+      },
+      "tag": {
+        "source": "ソース"
+      },
+      "body": "の移動先を選択してください",
+      "resourceType": {
+        "Root": "%TODO ",
+        "ResourcePacks": "リソースパック",
+        "Saves": "マップ",
+        "Schematics": "%TODO 原理图",
+        "ShaderPacks": "%TODO 光影"
+      },
+      "error": {
+        "lackOfArguments": "%TODO 缺少必要参数，请开发者检查代码"
+      }
+    },
+    "CreateInstanceModal": {
+      "header": {
+        "title": "%TODO 创建新实例"
+      },
+      "stepper": {
+        "game": "%TODO 选择游戏版本",
+        "loader": "%TODO 选择加载器",
+        "skipped": "%TODO 不安装",
+        "info": "%TODO 基本设置"
+      }
+    },
+    "DeleteGameInstanceAlertDialog": {
+      "dialog": {
+        "title": "%TODO 删除游戏实例",
+        "content": "%TODO 确定要删除游戏实例 “{{gameName}}” 吗？它将会永久消失！（真的很久！）",
+        "warning": {
+          "withVerIso": "%TODO 请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
+          "woVerIso": "%TODO 请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
+        }
+      }
+    },
+    "DeletePlayerAlertDialog": {
+      "dialog": {
+        "title": "%TODO 删除角色",
+        "content": "%TODO 确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
+      }
+    },
+    "DeleteAuthServerAlertDialog": {
+      "dialog": {
+        "title": "%TODO 删除认证服务器",
+        "content": "%TODO 确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
+      }
+    },
+    "DiscoverPage": {
+      "title": "%TODO 发现",
+      "button": {
+        "sources": "%TODO 管理数据源"
+      }
+    },
+    "DiscoverSourcesPage": {
+      "button": {
+        "addSource": "%TODO 添加数据源",
+        "deleteSource": "%TODO 删除数据源"
+      },
+      "tag": {
+        "online": "%TODO 在线"
+      }
+    },
+    "DownloadFloatButton": {
+      "tooltip": "%TODO 正在下载"
+    },
+    "DownloadModpackModal": {
+      "header": {
+        "title": "%TODO 下载整合包"
+      }
+    },
+    "DownloadResourceModal": {
+      "header": {
+        "title": "%TODO 下载资源"
+      },
+      "resourceTypeList": {
+        "world": "%TODO 世界",
+        "mod": "%TODO 模组",
+        "resourcepack": "%TODO 资源包",
+        "shaderpack": "%TODO 光影"
+      }
+    },
+    "DownloadSettingPage": {
+      "source": {
+        "title": "%TODO 源",
+        "settings": {
+          "strategy": {
+            "title": "%TODO 下载源选择策略",
+            "auto": "%TODO 自动选择",
+            "official": "%TODO 官方源优先",
+            "mirror": "%TODO 镜像源优先"
+          }
+        }
+      },
+      "download": {
+        "title": "%TODO 下载",
+        "settings": {
+          "autoConcurrent": {
+            "title": "%TODO 自动选择并发数"
+          },
+          "concurrentCount": {
+            "title": "%TODO 并发数"
+          },
+          "enableSpeedLimit": {
+            "title": "%TODO 限制下载速度"
+          },
+          "speedLimitValue": {
+            "title": "%TODO 限速设置"
+          }
+        }
+      },
+      "cache": {
+        "title": "%TODO 缓存",
+        "settings": {
+          "directory": {
+            "title": "%TODO 下载缓存目录",
+            "select": "%TODO 修改",
+            "open": "%TODO 打开"
+          }
+        }
+      },
+      "proxy": {
+        "title": "%TODO 代理",
+        "settings": {
+          "enabled": {
+            "title": "%TODO 启用代理"
+          },
+          "type": {
+            "title": "%TODO 代理类型"
+          },
+          "host": {
+            "title": "%TODO 服务器"
+          },
+          "port": {
+            "title": "%TODO 端口"
+          }
+        }
+      }
+    },
+    "DownloadTasksPage": {
+      "title": "%TODO 下载中任务",
+      "button": {
+        "settings": "%TODO 下载设置",
+        "pause": "%TODO 暂停",
+        "begin": "%TODO 开始",
+        "retry": "%TODO 重试"
+      },
+      "label": {
+        "paused": "%TODO 已暂停",
+        "error": "%TODO 错误"
+      }
+    },
+    "Editable": {
+      "edit": "%TODO 编辑",
+      "save": "%TODO 保存",
+      "cancel": "%TODO 取消"
+    },
+    "EditGameDirectoryModal": {
+      "header": {
+        "title": {
+          "add": "%TODO 添加游戏目录",
+          "edit": "%TODO 编辑游戏目录"
+        }
+      },
+      "label": {
+        "dirName": "%TODO 名称",
+        "dirPath": "%TODO 游戏目录路径"
+      },
+      "placeholder": {
+        "dirName": "%TODO 请输入名称",
+        "dirPath": "%TODO 请选择游戏目录"
+      },
+      "button": {
+        "browse": "%TODO 浏览"
+      },
+      "dialog": {
+        "browse": {
+          "title": "%TODO 选择目录"
+        },
+        "addSubDir": {
+          "title": "%TODO 添加子目录",
+          "body": "%TODO 发现包含实例的 minecraft 子目录，是否添加子目录？",
+          "addOriginDir": "%TODO 添加原始目录",
+          "addSubDir": "%TODO 添加子目录"
+        }
+      },
+      "toast": {
+        "error": {
+          "title": "%TODO 添加游戏目录失败"
+        }
+      },
+      "errorMessage": {
+        "dirName": {
+          "empty": "%TODO 目录名称不能为空",
+          "tooLong": "%TODO 目录名称不能超过 20 个字符",
+          "exist": "%TODO 目录名称已存在"
+        },
+        "dirPath": {
+          "exist": "%TODO 目录路径已存在"
+        }
+      }
+    },
+    "Empty": {
+      "noData": "%TODO 无数据"
+    },
+    "Enums": {
+      "chakraColors": {
+        "gray": "%TODO 灰色",
+        "red": "%TODO 红色",
+        "orange": "%TODO 橙色",
+        "yellow": "%TODO 黄色",
+        "green": "%TODO 绿色",
+        "teal": "%TODO 蓝绿色",
+        "blue": "%TODO 蓝色",
+        "cyan": "%TODO 青色",
+        "purple": "%TODO 紫色",
+        "pink": "%TODO 粉色"
+      },
+      "ctrlKey": {
+        "linux": "%TODO Ctrl",
+        "macos": "%TODO Control(⌃)",
+        "windows": "%TODO Ctrl"
+      },
+      "metaKey": {
+        "linux": "%TODO Meta",
+        "macos": "%TODO Command(⌘)",
+        "windows": "%TODO Win"
+      },
+      "playerTypes": {
+        "microsoft": "%TODO 微软账户",
+        "offline": "%TODO 离线模式",
+        "3rdparty": "%TODO 第三方认证",
+        "3rdpartyShort": "%TODO 第三方认证"
+      },
+      "systemFileManager": {
+        "linux": "%TODO 文件管理器",
+        "macos": "%TODO 访达",
+        "windows": "%TODO 文件资源管理器"
+      }
+    },
+    "GameAdvancedSettingsPage": {
+      "title": "%TODO 高级游戏设置",
+      "topWarning": "%TODO 高级游戏设置仅提供给专业玩家使用。修改以下选项可能导致游戏无法启动。除非您充分了解其中的意义，否则请不要修改这些选项！",
+      "customCommands": {
+        "title": "%TODO 自定义命令",
+        "settings": {
+          "minecraftArgument": {
+            "title": "%TODO 游戏参数",
+            "placeholder": "%TODO 默认"
+          },
+          "precallCommand": {
+            "title": "%TODO 游戏启动前执行命令",
+            "placeholder": "%TODO 将在游戏启动前调用"
+          },
+          "wrapperLauncher": {
+            "title": "%TODO 包装命令",
+            "placeholder": "%TODO 如填写\"optirun\"后，启动命令将从\"java ...\"变为\"optirun java ...\""
+          },
+          "postExitCommand": {
+            "title": "%TODO 游戏结束后执行命令",
+            "placeholder": "%TODO 将在游戏结束后调用"
+          }
+        }
+      },
+      "jvm": {
+        "title": "%TODO Java 虚拟机设置",
+        "settings": {
+          "args": {
+            "title": "%TODO JVM 虚拟机参数"
+          },
+          "javaPermanentGenerationSpace": {
+            "title": "%TODO 内存永久保存区域",
+            "placeholder": "%TODO 单位 MB"
+          },
+          "environmentVariable": {
+            "title": "%TODO 环境变量"
+          }
+        }
+      },
+      "workaround": {
+        "title": "%TODO 调试选项",
+        "settings": {
+          "noJvmArgs": "%TODO 不添加默认的 JVM 参数",
+          "gameCompletnessCheckPolicy": {
+            "title": "%TODO 游戏文件完整性检查策略",
+            "disable": "%TODO 不检查",
+            "normal": "%TODO 普通检查",
+            "full": "%TODO 增强检查"
+          },
+          "dontCheckJvmValidity": {
+            "title": "%TODO 不检查 JVM 与游戏的兼容性"
+          },
+          "dontPatchNatives": {
+            "title": "%TODO 不尝试自动替换本地库"
+          },
+          "useNativeGlfw": {
+            "title": "%TODO 使用系统 GLFW（仅 Linux）"
+          },
+          "useNativeOpenal": {
+            "title": "%TODO 使用系统 OpenAL（仅 Linux）"
+          }
+        }
+      }
+    },
+    "GameErrorPage": {
+      "title": "%TODO 游戏非正常退出，请查看日志，或寻求他人帮助",
+      "basicInfo": {
+        "arch": "%TODO 架构",
+        "launcherVersion": "%TODO 启动器版本",
+        "os": "%TODO 操作系统"
+      },
+      "gameInfo": {
+        "gameVersion": "%TODO 游戏版本"
+      },
+      "javaInfo": {
+        "javaVersion": "%TODO Java 版本"
+      },
+      "crashDetails": {
+        "title": "%TODO 崩溃信息"
+      },
+      "button": {
+        "exportGameInfo": "%TODO 导出游戏崩溃报告",
+        "gameLogs": "%TODO 游戏日志",
+        "help": "%TODO 帮助"
+      },
+      "bottomAlert": "%TODO 如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图"
+    },
+    "GameLogPage": {
+      "placeholder": "%TODO 输入关键词筛选",
+      "exportLogs": "%TODO 导出日志",
+      "clearLogs": "%TODO 清除所有日志"
+    },
+    "GameMenu": {
+      "label": {
+        "details": "%TODO 实例详情",
+        "delete": "%TODO 删除实例"
+      }
+    },
+    "GameVersionSelector": {
+      "old_beta": "%TODO 远古版",
+      "release": "%TODO 正式版",
+      "snapshot": "%TODO 测试版",
+      "april_fools": "%TODO 愚人节版",
+      "searchPlaceholder": "%TODO 搜索版本",
+      "wikiKey": {
+        "release": "%TODO Java版",
+        "snapshot": "%TODO ",
+        "old_beta": "%TODO Java版Beta_",
+        "april_fools": "%TODO "
+      }
+    },
+    "General": {
+      "add": "%TODO 添加",
+      "cancel": "%TODO 取消",
+      "close": "%TODO 关闭",
+      "confirm": "%TODO 确定",
+      "copy": {
+        "text": "%TODO 复制",
+        "toast": {
+          "success": "%TODO 已成功复制到剪贴板",
+          "error": "%TODO 写入剪贴板失败"
+        }
+      },
+      "copyOrMove": {
+        "linux": "%TODO 复制或移动",
+        "macos": "%TODO 拷贝或移动",
+        "windows": "%TODO 复制或移动"
+      },
+      "delete": "%TODO 删除",
+      "dialog": {
+        "filterName": {
+          "image": "%TODO 图片文件"
+        }
+      },
+      "disable": "%TODO 禁用",
+      "download": "%TODO 下载",
+      "edit": "%TODO 编辑",
+      "enable": "%TODO 启用",
+      "finish": "%TODO 完成",
+      "next": "%TODO 下一步",
+      "notice": "%TODO 提示",
+      "open": "%TODO 打开",
+      "openFolder": "%TODO 打开文件夹",
+      "previous": "%TODO 上一步",
+      "refresh": "%TODO 刷新",
+      "revealFile": "%TODO 在{{opener}}中显示",
+      "search": "%TODO 搜索",
+      "viewOnWiki": "%TODO 在 Minecraft Wiki 中查看"
+    },
+    "GeneralSettingsPage": {
+      "general": {
+        "title": "%TODO 通用设置",
+        "settings": {
+          "language": {
+            "title": "%TODO 语言（Language）",
+            "communityAck": "%TODO "
+          }
+        }
+      },
+      "functions": {
+        "title": "%TODO 功能",
+        "settings": {
+          "discoverPage": {
+            "title": "%TODO 发现页",
+            "openNotice": {
+              "part-1": "%TODO 顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 ",
+              "part-2": "%TODO  继续使用 “聚合搜索”。"
+            }
+          },
+          "instancesNavType": {
+            "title": "%TODO 实例导航栏分组方式",
+            "instance": "%TODO 按实例",
+            "directory": "%TODO 按目录"
+          },
+          "launchPageQuickSwitch": {
+            "title": "%TODO 快捷切换实例与账户",
+            "description": "%TODO 启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
+          }
+        }
+      }
+    },
+    "GlobalGameSettingsPage": {
+      "directories": {
+        "title": "%TODO 游戏目录",
+        "settings": {
+          "directories": {
+            "special": {
+              "CURRENT_DIR": "%TODO 当前文件夹",
+              "OFFICIAL_DIR": "%TODO 官方启动器文件夹"
+            }
+          }
+        },
+        "deleteDialog": {
+          "title": "%TODO 删除游戏目录",
+          "content": "%TODO 确定要删除游戏目录 {{dirName}} 吗？（SJMCL 将不会扫描此目录，但不会删除硬盘上的文件）"
+        },
+        "directoryNotExist": "%TODO 该目录不存在，请删除并重新添加"
+      },
+      "gameJava": {
+        "title": "%TODO 游戏 Java",
+        "settings": {
+          "autoSelect": {
+            "title": "%TODO 自动选择合适 Java"
+          },
+          "execPath": {
+            "title": "%TODO 指定 Java 版本"
+          }
+        }
+      },
+      "gameWindow": {
+        "title": "%TODO 窗口",
+        "settings": {
+          "resolution": {
+            "title": "%TODO 游戏分辨率",
+            "switch": "%TODO 全屏"
+          },
+          "customTitle": {
+            "title": "%TODO 自定义窗口标题"
+          },
+          "customInfo": {
+            "title": "%TODO 自定义信息",
+            "description": "%TODO 将显示在游戏主界面左下角与 F3 调试页面左上角"
+          }
+        }
+      },
+      "performance": {
+        "title": "%TODO 性能",
+        "settings": {
+          "autoMemAllocation": {
+            "title": "%TODO 自动分配内存"
+          },
+          "minMemAllocation": {
+            "title": "%TODO 最小内存分配"
+          },
+          "memoryUsage": {
+            "title": "%TODO 内存占用情况",
+            "description": "%TODO 已用内存{{usedMemory}}GB；游戏分配{{allocatedMemory}}GB；总内存{{totalMemory}}GB"
+          },
+          "processPriority": {
+            "title": "%TODO 进程优先级",
+            "low": "%TODO 低",
+            "belowNormal": "%TODO 较低",
+            "normal": "%TODO 中",
+            "aboveNormal": "%TODO 较高",
+            "high": "%TODO 高"
+          }
+        }
+      },
+      "versionIsolation": {
+        "settings": {
+          "title": "%TODO 启用版本隔离"
+        }
+      },
+      "moreOptions": {
+        "title": "%TODO 更多选项",
+        "settings": {
+          "launcherVisibility": {
+            "title": "%TODO 启动器可见性",
+            "start-close": "%TODO 游戏启动后结束启动器",
+            "running-hidden": "%TODO 游戏运行时隐藏启动器",
+            "always": "%TODO 启动器始终可见"
+          },
+          "autoJoinGameServer": {
+            "title": "%TODO 自动加入服务器"
+          },
+          "serverUrl": {
+            "title": "%TODO 服务器地址"
+          },
+          "displayGameLog": {
+            "title": "%TODO 显示游戏日志"
+          },
+          "advancedOptions": {
+            "title": "%TODO 高级启动设置",
+            "button": "%TODO 编辑高级设置"
+          }
+        }
+      }
+    },
+    "HeadNavBar": {
+      "navList": {
+        "launch": "%TODO 启动",
+        "games": "%TODO 游戏",
+        "accounts": "%TODO 账户",
+        "discover": "%TODO 发现",
+        "search": "%TODO 搜索",
+        "settings": "%TODO 设置"
+      }
+    },
+    "HelpSettingsPage": {
+      "community": {
+        "title": "%TODO 高校玩家社区",
+        "settings": {
+          "MUA": {
+            "title": "%TODO Minecraft 高校联盟（MUA）",
+            "description": "%TODO 和全国各高校的玩家一起游玩",
+            "url": "%TODO https://www.mualliance.cn"
+          },
+          "SJMC": {
+            "title": "%TODO 上海交通大学 Minecraft 社（SJMC）",
+            "url": "%TODO https://mc.sjtu.cn"
+          }
+        }
+      },
+      "minecraft": {
+        "title": "%TODO Minecraft",
+        "settings": {
+          "mcWiki": {
+            "title": "%TODO 中文 Minecraft Wiki",
+            "description": "%TODO 最详细的 Minecraft 百科全书",
+            "url": "%TODO https://zh.minecraft.wiki/"
+          },
+          "mcMod": {
+            "title": "%TODO MCMod",
+            "description": "%TODO Minecraft 模组中文百科"
+          },
+          "curseforge": {
+            "title": "%TODO CurseForge",
+            "description": "%TODO 探索世界上最大的 Minecraft 模组存储库"
+          }
+        }
+      },
+      "top": {
+        "settings": {
+          "LauncherDocs": {
+            "title": "%TODO SJMC Launcher 文档"
+          }
+        }
+      }
+    },
+    "InstanceBasicSettings": {
+      "selectDirectory": "%TODO 选择游戏目录"
+    },
+    "InstanceLayout": {
+      "secMenu": {
+        "exportModPack": "%TODO 导出为整合包",
+        "star": "%TODO 星标此实例",
+        "unstar": "%TODO 取消星标"
+      },
+      "instanceTabList": {
+        "overview": "%TODO 概览",
+        "worlds": "%TODO 世界",
+        "mods": "%TODO 模组",
+        "resourcepacks": "%TODO 资源包",
+        "schematics": "%TODO 原理图",
+        "shaderpacks": "%TODO 光影",
+        "screenshots": "%TODO 截图",
+        "settings": "%TODO 设置"
+      },
+      "button": {
+        "launch": "%TODO 启动实例"
+      }
+    },
+    "InstanceModsPage": {
+      "modLoaderList": {
+        "title": "%TODO 加载器"
+      },
+      "modList": {
+        "title": "%TODO 模组",
+        "warning": "%TODO 未发现模组加载器，模组可能无法正常工作",
+        "menu": {
+          "alert": "%TODO 可能不兼容",
+          "info": "%TODO 查看信息",
+          "update": "%TODO 检查更新",
+          "search": "%TODO 搜索",
+          "placeholder": "%TODO 搜索模组..."
+        }
+      }
+    },
+    "InstanceResourcePacksPage": {
+      "resourcePackList": {
+        "title": "%TODO 全局资源包"
+      },
+      "serverResPackList": {
+        "title": "%TODO 服务器资源包"
+      }
+    },
+    "InstanceScreenshotsPage": {
+      "button": {
+        "details": "%TODO 详情"
+      }
+    },
+    "InstanceSettingsPage": {
+      "name": "%TODO 实例名称",
+      "description": "%TODO 实例描述",
+      "icon": "%TODO 实例图标",
+      "applySettings": "%TODO 启用特定游戏设置",
+      "restoreSettings": "%TODO 重置以下特定设置",
+      "restoreSettingsDesc": "%TODO 将以下特定设置重置为全局游戏设置",
+      "restore": "%TODO 重置",
+      "errorMessage": {
+        "error-1": "%TODO 实例名称不能为空"
+      }
+    },
+    "InstanceShaderPacksPage": {
+      "shaderPackList": {
+        "title": "%TODO 光影包"
+      }
+    },
+    "InstanceSchematicsPage": {
+      "schematicList": {
+        "title": "%TODO 原理图",
+        "preview": "%TODO 预览"
+      }
+    },
+    "InstanceWidgets": {
+      "basicInfo": {
+        "title": "%TODO 基本信息",
+        "gameVersion": "%TODO 游戏版本",
+        "playTime": "%TODO 游戏时长"
+      },
+      "screenshots": {
+        "title": "%TODO 截图"
+      },
+      "mods": {
+        "title": "%TODO 模组",
+        "summary": "%TODO {{totalMods}} 个模组, {{enabledMods}} 个已启用",
+        "manage": "%TODO 前往管理"
+      },
+      "lastPlayed": {
+        "title": "%TODO 上次游玩",
+        "continuePlaying": "%TODO 继续游玩"
+      },
+      "more": {
+        "title": "%TODO 更多"
+      }
+    },
+    "InstanceWorldsPage": {
+      "worldList": {
+        "title": "%TODO 本地世界",
+        "lastPlayedAt": "%TODO 上次游玩于",
+        "difficulty": {
+          "peaceful": "%TODO 和平",
+          "easy": "%TODO 简单",
+          "normal": "%TODO 普通",
+          "hard": "%TODO 困难",
+          "hardcore": "%TODO 极限生存"
+        },
+        "gamemode": {
+          "survival": "%TODO 生存模式",
+          "creative": "%TODO 创造模式",
+          "adventure": "%TODO 冒险模式",
+          "spectator": "%TODO 观察者模式"
+        },
+        "moreDesc": "%TODO ，{{gamemode}}（难度：{{difficulty}}）",
+        "viewLevelData": "%TODO 存档基础数据"
+      },
+      "serverList": {
+        "title": "%TODO 服务器",
+        "players": "%TODO 玩家",
+        "tag": {
+          "online": "%TODO 在线",
+          "offline": "%TODO 离线"
+        }
+      }
+    },
+    "JavaSettingsPage": {
+      "javaList": {
+        "title": "%TODO Java 管理",
+        "download": "%TODO 下载 Java",
+        "add": "%TODO 添加 Java",
+        "remove": "%TODO 移除此 Java"
+      },
+      "toast": {
+        "addSuccess": {
+          "title": "%TODO 添加 Java 成功",
+          "description": "%TODO 添加自定义 Java 路径成功"
+        },
+        "addFailed": {
+          "title": "%TODO 添加 Java 失败",
+          "description": "%TODO 不是有效的 Java 可执行文件"
+        }
+      },
+      "confirmDelete": {
+        "title": "%TODO 移除 Java",
+        "description": "%TODO 确认要移除此版本 Java 吗？（SJMCL 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
+      }
+    },
+    "LaunchPage": {
+      "button": {
+        "launch": "%TODO 启动游戏"
+      },
+      "SwitchButton": {
+        "tooltip": {
+          "switchPlayer": "%TODO 切换角色",
+          "switchGame": "%TODO 切换游戏实例"
+        }
+      },
+      "Text": {
+        "noSelectedPlayer": "%TODO 尚未选择角色",
+        "noSelectedGame": "%TODO 尚未选择游戏实例"
+      }
+    },
+    "LaunchProcessModal": {
+      "header": {
+        "title": "%TODO 启动游戏 - {{name}}"
+      },
+      "step": {
+        "selectSuitableJRE": "%TODO 选择合适 Java 运行时",
+        "validateGameFiles": "%TODO 验证游戏与依赖文件完整性",
+        "validateSelectedPlayer": "%TODO 验证账户状态",
+        "launchGame": "%TODO 等待游戏启动"
+      },
+      "toast": {
+        "noSelectedPlayer": "%TODO 请先添加并选择游戏角色"
+      }
+    },
+    "ManageSkinModal": {
+      "skinManage": "%TODO 管理皮肤",
+      "default": "%TODO 默认",
+      "steve": "%TODO Steve",
+      "alex": "%TODO Alex"
+    },
+    "ViewSkinModal": {
+      "skinView": "%TODO 查看皮肤"
+    },
+    "MemoryStatusProgress": {
+      "title": "%TODO 内存状态",
+      "info": "%TODO {{used}} / {{total}} GB 已使用",
+      "label": {
+        "now": "%TODO 正在使用",
+        "minAllocation": "%TODO 为 Minecraft 分配的最小值"
+      }
+    },
+    "ModLoaderCards": {
+      "installed": "%TODO 已安装",
+      "unInstalled": "%TODO 未安装",
+      "notCompatibleWith": "%TODO 与 {{modLoader}} 不兼容",
+      "versionNotSelected": "%TODO 未选择版本"
+    },
+    "ModLoaderSelector": {
+      "stable": "%TODO 正式版",
+      "beta": "%TODO 测试版",
+      "releaseDate": "%TODO 发布于 {{date}}"
+    },
+    "NotFoundPage": {
+      "text": "%TODO 页面不存在，即将在 {{seconds}} 秒后跳转"
+    },
+    "PlayerMenu": {
+      "label": {
+        "manageSkin": "%TODO 管理皮肤",
+        "viewSkin": "%TODO 查看皮肤",
+        "delete": "%TODO 删除此角色",
+        "copyUUID": "%TODO 复制 UUID"
+      }
+    },
+    "PingTestPage": {
+      "PingServerList": {
+        "title": "%TODO 服务连通性测试",
+        "offline": "%TODO 离线",
+        "bmclapi": "%TODO BMCLAPI",
+        "curseforge": "%TODO CurseForge",
+        "modrinth": "%TODO Modrinth",
+        "mojang": "%TODO Mojang",
+        "github": "%TODO GitHub",
+        "sjmclapi": "%TODO SJMC Launcher API"
+      }
+    },
+    "ReLogin3rdPartyPlayerModal": {
+      "modal": {
+        "title": "%TODO 重新登录"
+      },
+      "label": {
+        "user": "%TODO 用户名",
+        "password": "%TODO 密码"
+      },
+      "placeholder": {
+        "password": "%TODO 请输入密码"
+      },
+      "button": {
+        "login": "%TODO 登录"
+      }
+    },
+    "ResourceDownloader": {
+      "label": {
+        "source": "%TODO 下载源",
+        "gameVer": "%TODO 游戏版本",
+        "tag": "%TODO 类型",
+        "sortBy": "%TODO 排序",
+        "name": "%TODO 名称"
+      },
+      "button": {
+        "search": "%TODO 搜索"
+      },
+      "modTagList": {
+        "CurseForge": {
+          "All": "%TODO 全部",
+          "Addons": "%TODO 插件",
+          "Adventure and RPG": "%TODO 冒险 RPG",
+          "API and Library": "%TODO 支持库",
+          "Armor, Tools, and Weapons": "%TODO 装备 武器",
+          "Bug Fixes": "%TODO 错误修复",
+          "Cosmetic": "%TODO 装饰",
+          "Education": "%TODO 教育",
+          "Food": "%TODO 食物",
+          "Magic": "%TODO 魔法",
+          "Map and Information": "%TODO 地图 信息",
+          "MCreator": "%TODO MCreator",
+          "Miscellaneous": "%TODO 杂项",
+          "Performance": "%TODO 性能",
+          "Redstone": "%TODO 红石",
+          "Server Utility": "%TODO 服务器",
+          "Storage": "%TODO 存储",
+          "Technology": "%TODO 科技",
+          "Twitch Integration": "%TODO Twitch",
+          "Utility & QoL": "%TODO 实用 QoL",
+          "World Gen": "%TODO 世界生成"
+        },
+        "Modrinth": {
+          "All": "%TODO 全部",
+          "Adventure": "%TODO 冒险",
+          "Cursed": "%TODO 诅咒",
+          "Decoration": "%TODO 装饰",
+          "Economy": "%TODO 经济",
+          "Equipment": "%TODO 装备",
+          "Food": "%TODO 食物",
+          "Game Mechanics": "%TODO 游戏机制",
+          "Library": "%TODO 支持库",
+          "Magic": "%TODO 魔法",
+          "Management": "%TODO 管理",
+          "Minigame": "%TODO 小游戏",
+          "Mobs": "%TODO 生物",
+          "Optimization": "%TODO 优化",
+          "Social": "%TODO 社交",
+          "Storage": "%TODO 存储",
+          "Technology": "%TODO 科技",
+          "Transportation": "%TODO 交通运输",
+          "Utility": "%TODO 实用",
+          "World Generation": "%TODO 世界生成"
+        }
+      },
+      "worldTagList": {
+        "CurseForge": {
+          "All": "%TODO 全部",
+          "Adventure": "%TODO 冒险模式",
+          "Creation": "%TODO 创造模式",
+          "Game Map": "%TODO 游戏挑战",
+          "Modded World": "%TODO 模组",
+          "Parkour": "%TODO 跑酷",
+          "Puzzle": "%TODO 解谜地图",
+          "Survival": "%TODO 生存模式"
+        }
+      },
+      "resourcepackTagList": {
+        "CurseForge": {
+          "All": "%TODO 全部",
+          "16x": "%TODO 16x",
+          "32x": "%TODO 32x",
+          "64x": "%TODO 64x",
+          "128x": "%TODO 128x",
+          "256x": "%TODO 256x",
+          "512x and Higher": "%TODO 512x 及以上",
+          "Animated": "%TODO 动画",
+          "Data Packs": "%TODO 数据包",
+          "Font Packs": "%TODO 字体包",
+          "Medieval": "%TODO 中世纪",
+          "Miscellaneous": "%TODO 杂项",
+          "Mod Support": "%TODO 模组支持",
+          "Modern": "%TODO 现代",
+          "Photo Realistic": "%TODO 影视级",
+          "Steampunk": "%TODO 蒸汽朋克",
+          "Traditional": "%TODO 传统"
+        },
+        "Modrinth": {
+          "All": "%TODO 全部",
+          "8x or lower": "%TODO 8x 或更低",
+          "16x": "%TODO 16x",
+          "32x": "%TODO 32x",
+          "64x": "%TODO 64x",
+          "128x": "%TODO 128x",
+          "256x": "%TODO 256x",
+          "512x or higher": "%TODO 512x 或更高",
+          "Audio": "%TODO 音频",
+          "Blocks": "%TODO 方块",
+          "Core Shaders": "%TODO 核心着色器",
+          "Entities": "%TODO 实体",
+          "Environment": "%TODO 环境",
+          "Equipment": "%TODO 装备",
+          "Fonts": "%TODO 字体",
+          "GUI": "%TODO 用户界面",
+          "Items": "%TODO 物品",
+          "Locale": "%TODO 本地化",
+          "Models": "%TODO 模型",
+          "Combat": "%TODO 战斗",
+          "Cursed": "%TODO 诅咒",
+          "Decoration": "%TODO 装饰",
+          "Modded": "%TODO 模组",
+          "Realistic": "%TODO 写实",
+          "Simplistic": "%TODO 简约",
+          "Themed": "%TODO 主题",
+          "Tweaks": "%TODO 优化",
+          "Utility": "%TODO 实用",
+          "Vanilla-like": "%TODO 原版风格"
+        }
+      },
+      "shaderpackTagList": {
+        "CurseForge": {
+          "All": "%TODO 全部",
+          "Fantasy": "%TODO 奇幻",
+          "Realistic": "%TODO 写实",
+          "Vanilla": "%TODO 原版"
+        },
+        "Modrinth": {
+          "All": "%TODO 全部",
+          "Cartoon": "%TODO 卡通",
+          "Cursed": "%TODO 诅咒",
+          "Fantasy": "%TODO 奇幻",
+          "Realistic": "%TODO 写实",
+          "Semi-Realistic": "%TODO 半写实",
+          "Vanilla-like": "%TODO 原版风格",
+          "Atmosphere": "%TODO 大气",
+          "Bloom": "%TODO 泛光",
+          "Colored Lighting": "%TODO 彩色光照",
+          "Foliage": "%TODO 植被",
+          "Path Tracing": "%TODO 路径追踪",
+          "PBR": "%TODO PBR",
+          "Reflections": "%TODO 反射",
+          "Shadows": "%TODO 阴影"
+        }
+      },
+      "modpackTagList": {
+        "CurseForge": {
+          "All": "%TODO 全部",
+          "Adventure and RPG": "%TODO 冒险 RPG",
+          "Combat / PvP": "%TODO 战斗 PvP",
+          "Exploration": "%TODO 探索",
+          "Extra Large": "%TODO 大型整合",
+          "FTB Official Pack": "%TODO FTB",
+          "Hardcore": "%TODO 极限生存",
+          "Horror": "%TODO 恐怖",
+          "Magic": "%TODO 魔法",
+          "Map Based": "%TODO 基于地图",
+          "Mini Game": "%TODO 小游戏",
+          "Multiplayer": "%TODO 多人",
+          "Quests": "%TODO 任务",
+          "Sci-Fi": "%TODO 科幻",
+          "Skyblock": "%TODO 空岛",
+          "Small / Light": "%TODO 轻量整合",
+          "Tech": "%TODO 科技",
+          "Vanilla+": "%TODO 原版改良"
+        },
+        "Modrinth": {
+          "All": "%TODO 全部",
+          "Adventure": "%TODO 冒险",
+          "Challenging": "%TODO 挑战",
+          "Combat": "%TODO 战斗",
+          "Kitchen Sink": "%TODO 大杂烩",
+          "Lightweight": "%TODO 轻量整合",
+          "Magic": "%TODO 魔法",
+          "Multiplayer": "%TODO 多人",
+          "Optimization": "%TODO 优化",
+          "Quests": "%TODO 任务",
+          "Technology": "%TODO 科技"
+        }
+      },
+      "sortByList": {
+        "CurseForge": {
+          "Relevancy": "%TODO 相关度",
+          "Popularity": "%TODO 热度",
+          "Latest update": "%TODO 最近更新",
+          "Creation date": "%TODO 创建日期",
+          "Total downloads": "%TODO 下载量",
+          "A-Z": "%TODO 名称"
+        },
+        "Modrinth": {
+          "Relevance": "%TODO 相关度",
+          "Downloads": "%TODO 下载量",
+          "Followers": "%TODO 关注量",
+          "Date published": "%TODO 发布日期",
+          "Date updated": "%TODO 更新日期"
+        }
+      },
+      "versionList": {
+        "All": "%TODO 全部"
+      }
+    },
+    "RestoreConfigConfirmDialog": {
+      "title": "%TODO 还原启动器设置",
+      "body": "%TODO 此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
+    },
+    "ScreenshotPreviewModal": {
+      "menu": {
+        "setAsBg": "%TODO 设置为启动器背景"
+      }
+    },
+    "SelectPlayerModal": {
+      "header": {
+        "title": "%TODO 请选择想要添加的角色"
+      }
+    },
+    "Services": {
+      "config": {
+        "retrieveLauncherConfig": {
+          "error": {
+            "title": "%TODO 获取启动器设置失败"
+          }
+        },
+        "updateLauncherConfig": {
+          "error": {
+            "title": "%TODO 更新启动器设置失败"
+          }
+        },
+        "restoreLauncherConfig": {
+          "success": "%TODO 设置已成功还原",
+          "error": {
+            "title": "%TODO 还原设置失败，请重试"
+          }
+        },
+        "exportLauncherConfig": {
+          "success": "%TODO 启动器设置导出成功",
+          "error": {
+            "title": "%TODO 启动器设置导出失败",
+            "description": {
+              "FETCH_ERROR": "%TODO 与服务器通信失败"
+            }
+          }
+        },
+        "importLauncherConfig": {
+          "success": "%TODO 启动器设置导入成功",
+          "error": {
+            "title": "%TODO 启动器设置导入失败",
+            "description": {
+              "FETCH_ERROR": "%TODO 与服务器通信失败",
+              "INVALID_CODE": "%TODO 无效的代码",
+              "CODE_EXPIRED": "%TODO 代码已过期",
+              "VERSION_MISMATCH": "%TODO 启动器版本不匹配"
+            }
+          }
+        },
+        "retrieveCustomBackgroundList": {
+          "success": "%TODO 自定义背景列表获取成功",
+          "error": {
+            "title": "%TODO 自定义背景列表获取失败"
+          }
+        },
+        "addCustomBackground": {
+          "success": "%TODO 自定义背景添加成功",
+          "error": {
+            "title": "%TODO 自定义背景添加失败"
+          }
+        },
+        "deleteCustomBackground": {
+          "success": "%TODO 自定义背景删除成功",
+          "error": {
+            "title": "%TODO 自定义背景删除失败"
+          }
+        },
+        "retrieveJavaList": {
+          "error": {
+            "title": "%TODO Java 列表获取失败"
+          }
+        },
+        "checkGameDirectory": {
+          "error": {
+            "title": "%TODO 游戏目录无效",
+            "description": {
+              "GAME_DIR_ALREADY_ADDED": "%TODO 游戏目录已添加",
+              "GAME_DIR_NOT_EXIST": "%TODO 游戏目录不存在"
+            }
+          }
+        }
+      },
+      "account": {
+        "retrievePlayerList": {
+          "error": {
+            "title": "%TODO 获取角色列表失败"
+          }
+        },
+        "addPlayerOffline": {
+          "success": "%TODO 离线角色添加成功",
+          "error": {
+            "title": "%TODO 离线角色添加失败",
+            "description": {
+              "DUPLICATE": "%TODO 角色已存在"
+            }
+          }
+        },
+        "fetchOAuthCode": {
+          "error": {
+            "title": "%TODO 获取认证代码失败",
+            "description": {
+              "NETWORK_ERROR": "%TODO 无法连接至认证服务器",
+              "PARSE_ERROR": "%TODO 服务器返回数据格式错误",
+              "INVALID": "%TODO 服务器类型错误",
+              "NOT_FOUND": "%TODO 认证服务器不存在"
+            }
+          }
+        },
+        "addPlayerOAuth": {
+          "success": "%TODO 角色添加成功",
+          "error": {
+            "title": "%TODO 角色添加失败",
+            "description": {
+              "DUPLICATE": "%TODO 角色已存在",
+              "NETWORK_ERROR": "%TODO 无法连接至认证服务器",
+              "PARSE_ERROR": "%TODO 服务器返回数据格式错误",
+              "NOT_FOUND": "%TODO 认证服务器不存在",
+              "CANCELLED": "%TODO 已取消",
+              "CREATE_WEBVIEW_ERROR": "%TODO 创建 WebView 失败",
+              "INVALID": "%TODO 无效的认证服务器地址"
+            }
+          }
+        },
+        "addPlayer3rdPartyPassword": {
+          "success": "%TODO 角色添加成功",
+          "error": {
+            "title": "%TODO 角色添加失败",
+            "description": {
+              "DUPLICATE": "%TODO 角色已存在",
+              "NETWORK_ERROR": "%TODO 无法连接至认证服务器",
+              "PARSE_ERROR": "%TODO 服务器返回数据格式错误",
+              "INVALID": "%TODO 账号或密码错误",
+              "NOT_FOUND": "%TODO 认证服务器不存在"
+            }
+          }
+        },
+        "addPlayerFromSelection": {
+          "success": "%TODO 角色添加成功",
+          "error": {
+            "title": "%TODO 角色添加失败",
+            "description": {
+              "DUPLICATE": "%TODO 角色已存在"
+            }
+          }
+        },
+        "updatePlayerSkinOfflinePreset": {
+          "success": "%TODO 角色皮肤更新成功",
+          "error": {
+            "title": "%TODO 角色皮肤更新失败",
+            "description": {
+              "NOT_FOUND": "%TODO 角色不存在",
+              "INVALID": "%TODO 角色类型错误",
+              "TEXTURE_ERROR": "%TODO 角色皮肤获取失败"
+            }
+          }
+        },
+        "deletePlayer": {
+          "success": "%TODO 角色删除成功",
+          "error": {
+            "title": "%TODO 角色删除失败",
+            "description": {
+              "NOT_FOUND": "%TODO 角色不存在"
+            }
+          }
+        },
+        "refreshPlayer": {
+          "success": "%TODO 角色信息更新成功",
+          "error": {
+            "title": "%TODO 角色信息更新失败",
+            "description": {
+              "NOT_FOUND": "%TODO 角色不存在",
+              "EXPIRED": "%TODO 令牌已过期，请重新登录",
+              "PARSE_ERROR": "%TODO 服务器返回数据格式错误",
+              "NETWORK_ERROR": "%TODO 无法连接至认证服务器",
+              "INVALID": "%TODO 不支持离线角色刷新"
+            }
+          }
+        },
+        "validatePlayer": {
+          "error": {
+            "title": "%TODO 验证角色失败",
+            "description": {
+              "NOT_FOUND": "%TODO 角色不存在",
+              "EXPIRED": "%TODO 访问令牌已过期，请重新登录",
+              "NETWORK_ERROR": "%TODO 无法连接到服务器",
+              "PARSE_ERROR": "%TODO 服务器返回的数据格式错误",
+              "NO_DOWNLOAD_API": "%TODO 下载 Authlib-Injector 失败，请检查网络连接",
+              "SAVE_ERROR": "%TODO 保存 Authlib-Injector 失败"
+            }
+          }
+        },
+        "retrieveAuthServerList": {
+          "error": {
+            "title": "%TODO 获取认证服务器列表失败"
+          }
+        },
+        "fetchAuthServer": {
+          "error": {
+            "title": "%TODO 获取认证服务器信息失败",
+            "description": {
+              "DUPLICATE": "%TODO 认证服务器已存在",
+              "INVALID": "%TODO 无效的认证服务器地址"
+            }
+          }
+        },
+        "addAuthServer": {
+          "success": "%TODO 认证服务器添加成功",
+          "error": {
+            "title": "%TODO 认证服务器添加失败",
+            "description": {
+              "DUPLICATE": "%TODO 认证服务器已存在",
+              "INVALID": "%TODO 无效的认证服务器地址"
+            }
+          }
+        },
+        "deleteAuthServer": {
+          "success": "%TODO 认证服务器删除成功",
+          "error": {
+            "title": "%TODO 认证服务器删除失败",
+            "description": {
+              "NOT_FOUND": "%TODO 认证服务器不存在"
+            }
+          }
+        }
+      },
+      "resource": {
+        "fetchGameVersionList": {
+          "error": {
+            "title": "%TODO 获取游戏版本列表失败",
+            "description": {
+              "PARSE_ERROR": "%TODO 服务器返回数据格式错误"
+            }
+          }
+        },
+        "fetchModLoaderVersionList": {
+          "error": {
+            "title": "%TODO 获取模组加载器列表失败",
+            "description": {
+              "PARSE_ERROR": "%TODO 服务器返回数据格式错误",
+              "NO_DOWNLOAD_API": "%TODO 无可用的下载策略，请检查网络连接"
+            }
+          }
+        }
+      },
+      "instance": {
+        "retrieveInstanceList": {
+          "error": {
+            "title": "%TODO 获取实例列表失败"
+          }
+        },
+        "updateInstanceConfig": {
+          "error": {
+            "title": "%TODO 实例设置更新失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在",
+              "NOT_FOUND": "%TODO 实例不存在"
+            }
+          }
+        },
+        "retrieveInstanceGameConfig": {
+          "error": {
+            "title": "%TODO 实例游戏设置获取失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在"
+            }
+          }
+        },
+        "resetInstanceGameConfig": {
+          "success": "%TODO 实例游戏设置已重置",
+          "error": {
+            "title": "%TODO 实例游戏设置重置失败",
+            "description": {
+              "INSTANCE_NOT_FOUND": "%TODO 未找到指定 ID 的实例",
+              "SAVE_ERROR": "%TODO 保存实例设置文件失败"
+            }
+          }
+        },
+        "openInstanceSubdir": {
+          "error": {
+            "title": "%TODO 打开实例目录失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在或类型错误",
+              "EXEC_OPEN_DIR_ERROR": "%TODO 命令执行失败"
+            }
+          }
+        },
+        "deleteInstance": {
+          "success": "%TODO 实例删除成功",
+          "error": {
+            "title": "%TODO 实例删除失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在"
+            }
+          }
+        },
+        "renameInstance": {
+          "error": {
+            "title": "%TODO 实例重命名失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在",
+              "CONFLICT_NAME_ERROR": "%TODO 当前游戏目录存在重名实例"
+            }
+          }
+        },
+        "copyResourceToInstances": {
+          "success": "%TODO 资源复制成功",
+          "error": {
+            "title": "%TODO 复制资源失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在或类型错误",
+              "INVALID_SOURCE_PATH": "%TODO 无效的源路径",
+              "ZIP_FILE_PROCESS_FAILED": "%TODO 压缩文件读取或解压失败",
+              "FILE_COPY_FAILED": "%TODO 复制文件命令执行失败",
+              "FOLDER_CREATION_FAILED": "%TODO 目标文件夹创建失败"
+            }
+          }
+        },
+        "moveResourceToInstance": {
+          "success": "%TODO 资源移动成功",
+          "error": {
+            "title": "%TODO 移动资源失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在或类型错误",
+              "INVALID_SOURCE_PATH": "%TODO 无效的源路径",
+              "FILE_MOVE_FAILED": "%TODO 移动文件命令执行失败",
+              "FOLDER_CREATION_FAILED": "%TODO 目标文件夹创建失败"
+            }
+          }
+        },
+        "retrieveWorldList": {
+          "error": {
+            "title": "%TODO 获取世界列表失败"
+          }
+        },
+        "retrieveGameServerList": {
+          "error": {
+            "title": "%TODO 获取服务器列表失败",
+            "description": {
+              "SERVER_NBT_READ_ERROR": "%TODO servers.dat 可能已损坏"
+            }
+          }
+        },
+        "retrieveResourcePackList": {
+          "error": {
+            "title": "%TODO 获取资源包列表失败"
+          }
+        },
+        "retrieveServerResourcePackList": {
+          "error": {
+            "title": "%TODO 获取服务器资源包列表失败"
+          }
+        },
+        "retrieveSchematicList": {
+          "error": {
+            "title": "%TODO 获取原理图列表失败"
+          }
+        },
+        "retrieveShaderPackList": {
+          "error": {
+            "title": "%TODO 获取着色器包列表失败"
+          }
+        },
+        "retrieveScreenshotList": {
+          "error": {
+            "title": "%TODO 获取截图列表失败"
+          }
+        },
+        "retrieveLocalModList": {
+          "error": {
+            "title": "%TODO 获取模组列表失败",
+            "description": {
+              "INSTANCE_NOT_FOUND_BY_ID": "%TODO 实例 ID 不存在"
+            }
+          }
+        },
+        "retrieveWorldDetails": {
+          "error": {
+            "title": "%TODO 获取世界详细信息失败",
+            "description": {
+              "WORLD_NOT_EXSIT_ERROR": "%TODO 世界不存在",
+              "LEVEL_NOT_EXSIT_ERROR": "%TODO 存档数据文件不存在",
+              "LEVEL_PARSE_ERROR": "%TODO 存档数据文件解析错误"
+            }
+          }
+        },
+        "toggleModByExtension": {
+          "error": {
+            "title": "%TODO 模组状态切换失败",
+            "description": {
+              "FILE_NOT_FOUND_ERROR": "%TODO 模组文件不存在，可能已更名、移动或删除"
+            }
+          }
+        }
+      }
+    },
+    "SettingsLayout": {
+      "settingsDomainList": {
+        "global-game": "%TODO 全局游戏设置",
+        "java": "%TODO Java",
+        "general": "%TODO 通用",
+        "appearance": "%TODO 外观",
+        "download": "%TODO 下载资源",
+        "sync-restore": "%TODO 同步与还原",
+        "help": "%TODO 文档与帮助",
+        "about": "%TODO 关于",
+        "dev-test": "%TODO 开发 - 测试页"
+      }
+    },
+    "SkinPreview": {
+      "cape": "%TODO 披风",
+      "animation": {
+        "idle": "%TODO 空闲",
+        "walk": "%TODO 步行 ",
+        "run": "%TODO 跑步",
+        "wave": "%TODO 挥手"
+      },
+      "button": {
+        "enableRotation": "%TODO 启用旋转",
+        "disableRotation": "%TODO 禁用旋转",
+        "play": "%TODO 播放",
+        "pause": "%TODO 暂停"
+      }
+    },
+    "SpotlightSearchModal": {
+      "input": {
+        "placeholder": "%TODO 聚合搜索"
+      },
+      "tip": "%TODO 集中一处搜索本地内容与线上游戏资源"
+    },
+    "StarUsModal": {
+      "header": {
+        "title": "%TODO 在 GitHub 为我们点亮星标"
+      },
+      "body": "%TODO 如果您喜爱 SJMCL，并希望支持我们，可以在 GitHub 为我们点一颗星吗？这个小小的动作对我们来说意义重大，能激励我们为您持续提供特性体验。",
+      "button": {
+        "later": "%TODO 稍后",
+        "starUs": "%TODO 点亮星标"
+      }
+    },
+    "SyncAndRestoreSettingsPage": {
+      "launcherConfig": {
+        "title": "%TODO 启动器设置",
+        "settings": {
+          "internetSync": {
+            "title": "%TODO 联网同步",
+            "import": "%TODO 导入",
+            "export": "%TODO 导出"
+          },
+          "restoreAll": {
+            "title": "%TODO 还原所有设置",
+            "description": "%TODO 将所有启动器设置还原为默认值",
+            "restore": "%TODO 还原"
+          }
+        }
+      }
+    },
+    "SyncConfigExportModal": {
+      "header": {
+        "title": "%TODO 同步设置 - 导出"
+      },
+      "label": {
+        "token": "%TODO 令牌"
+      },
+      "helper": "%TODO 将上述令牌输入至待同步的设备以完成同步",
+      "countdown": "%TODO {{seconds}} 秒后刷新"
+    },
+    "SyncConfigImportModal": {
+      "header": {
+        "title": "%TODO 同步设置 - 导入"
+      },
+      "label": {
+        "token": "%TODO 令牌"
+      },
+      "helper": "%TODO 请输入需同步设备生成的令牌"
+    },
+    "Utils": {
+      "datetime": {
+        "formatRelativeTime": {
+          "now": "%TODO 现在",
+          "minutes-ago": "%TODO {{count}} 分钟前",
+          "last-hour": "%TODO 1 小时前",
+          "hours-ago": "%TODO {{count}} 小时前",
+          "yesterday": "%TODO 昨天",
+          "others": "%TODO {{time}}"
+        }
+      },
+      "env": {
+        "checkFrontendCompatibility": {
+          "warning": {
+            "title": "%TODO 系统 WebView 版本低，部分界面元素可能无法正常显示"
+          }
+        }
+      },
+      "wiki": {
+        "baseUrl": "%TODO https://zh.minecraft.wiki/w/"
+      }
+    },
+    "WelcomeAndTermsModal": {
+      "header": {
+        "title": "%TODO 欢迎！"
+      },
+      "body": {
+        "part1": "%TODO 欢迎使用 SJMCL！在开始使用之前，请务必阅读并同意我们的",
+        "terms": "%TODO 用户协议",
+        "periods": "%TODO 。"
+      },
+      "button": {
+        "exit": "%TODO 退出",
+        "agree": "%TODO 同意并继续"
+      }
+    },
+    "WorldLevelDataModal": {
+      "header": {
+        "title": "%TODO 世界基础数据 - {{worldName}}"
+      }
+    }
+  }
