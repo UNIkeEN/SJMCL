@@ -10,9 +10,12 @@ mod storage;
 mod tasks;
 mod utils;
 
-use account::models::AccountInfo;
+use account::{
+  helpers::authlib_injector::info::refresh_and_update_auth_servers, models::AccountInfo,
+};
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
+use launch::models::LaunchingState;
 use launcher_config::{
   helpers::refresh_and_update_javas,
   models::{JavaInfo, LauncherConfig},
@@ -22,6 +25,7 @@ use std::sync::{Arc, LazyLock, Mutex};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use tokio::sync::Notify;
+use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
@@ -44,7 +48,6 @@ pub async fn run() {
     .plugin(tauri_plugin_opener::init())
     .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_process::init())
-    .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_window_state::Builder::new().build())
     .invoke_handler(tauri::generate_handler![
       launcher_config::commands::retrieve_launcher_config,
@@ -52,31 +55,35 @@ pub async fn run() {
       launcher_config::commands::restore_launcher_config,
       launcher_config::commands::export_launcher_config,
       launcher_config::commands::import_launcher_config,
-      launcher_config::commands::retrieve_memory_info,
       launcher_config::commands::retrieve_custom_background_list,
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
       launcher_config::commands::check_game_directory,
+      launcher_config::commands::retrieve_memory_info,
+      launcher_config::commands::check_service_availability,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,
       account::commands::add_player_oauth,
       account::commands::add_player_3rdparty_password,
+      account::commands::add_player_from_selection,
       account::commands::update_player_skin_offline_preset,
       account::commands::delete_player,
-      account::commands::retrieve_selected_player,
-      account::commands::update_selected_player,
+      account::commands::refresh_player,
       account::commands::retrieve_auth_server_list,
       account::commands::add_auth_server,
       account::commands::delete_auth_server,
-      account::commands::fetch_auth_server_info,
+      account::commands::fetch_auth_server,
       instance::commands::retrieve_instance_list,
+      instance::commands::update_instance_config,
+      instance::commands::retrieve_instance_game_config,
+      instance::commands::reset_instance_game_config,
       instance::commands::open_instance_subdir,
       instance::commands::delete_instance,
       instance::commands::rename_instance,
-      instance::commands::copy_across_instances,
-      instance::commands::move_across_instances,
+      instance::commands::copy_resource_to_instances,
+      instance::commands::move_resource_to_instance,
       instance::commands::retrieve_world_list,
       instance::commands::retrieve_world_details,
       instance::commands::retrieve_game_server_list,
@@ -87,8 +94,11 @@ pub async fn run() {
       instance::commands::retrieve_shader_pack_list,
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
+      launch::commands::select_suitable_jre,
       launch::commands::validate_game_files,
+      launch::commands::validate_selected_player,
       launch::commands::launch_game,
+      launch::commands::cancel_launch_process,
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,
@@ -114,24 +124,39 @@ pub async fn run() {
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
-
       app.manage(Mutex::new(launcher_config));
+
+      let account_info = AccountInfo::load().unwrap_or_default();
+      app.manage(Mutex::new(account_info));
+
       let instances: Vec<Instance> = vec![];
       app.manage(Mutex::new(instances));
 
-      let account_info: AccountInfo = AccountInfo::load().unwrap_or_default();
-      app.manage(Mutex::new(account_info));
+      let javas: Vec<JavaInfo> = vec![];
+      app.manage(Mutex::new(javas));
+
       let notify = Arc::new(Notify::new());
       app.manage(Box::pin(TaskMonitor::new(app.handle().clone(), notify)));
+
+      let client = build_sjmcl_client(app.handle(), true, false);
+      app.manage(client);
+
+      let launching = LaunchingState::default();
+      app.manage(Mutex::new(launching));
+
+      // Refresh all auth servers
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        refresh_and_update_auth_servers(&app_handle)
+          .await
+          .unwrap_or_default();
+      });
 
       // Refresh all instances
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move {
         refresh_and_update_instances(&app_handle).await;
       });
-
-      let javas: Vec<JavaInfo> = vec![];
-      app.manage(Mutex::new(javas));
 
       // Refresh all javas
       let app_handle = app.handle().clone();

@@ -12,7 +12,7 @@ pub struct MemoryInfo {
   pub used: u64,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct JavaInfo {
   pub name: String, // JDK/JRE + full version
@@ -165,6 +165,10 @@ structstruck::strike! {
         pub color_mode: String,
         #[default = "standard"]
         pub head_nav_style: String,
+      },
+      pub font: struct {
+        #[default = 100]
+        pub font_size: usize, // as percent
       },
       pub background: struct {
         #[default = "%built-in:Jokull"]

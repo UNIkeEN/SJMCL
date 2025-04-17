@@ -15,7 +15,12 @@ import { SchematicInfo } from "@/models/instance/misc";
 
 const InstanceSchematicsPage = () => {
   const { t } = useTranslation();
-  const { summary, openSubdir, getSchematicList } = useInstanceSharedData();
+  const {
+    summary,
+    handleOpenInstanceSubdir,
+    handleImportResource,
+    getSchematicList,
+  } = useInstanceSharedData();
   const { openSharedModal } = useSharedModals();
 
   const [schematics, setSchematics] = useState<SchematicInfo[]>([]);
@@ -28,7 +33,21 @@ const InstanceSchematicsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        openSubdir(InstanceSubdirEnums.Schematics);
+        handleOpenInstanceSubdir(InstanceSubdirEnums.Schematics);
+      },
+    },
+    {
+      icon: "add",
+      onClick: () => {
+        handleImportResource({
+          filterName: t("InstanceLayout.instanceTabList.schematics"),
+          filterExt: ["schematic", "litematic"],
+          tgtDirType: InstanceSubdirEnums.Schematics,
+          decompress: false,
+          onSuccessCallback: () => {
+            setSchematics(getSchematicList(true) || []);
+          },
+        });
       },
     },
     {

@@ -37,6 +37,10 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
 
+  const borderWidth = "1px";
+  const basePadding = boxProps.padding || "12px";
+  const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
+
   const loaderTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
 
   const renderCard = (type: ModLoaderType) => {
@@ -48,6 +52,8 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
         pr={1.5}
         variant={isSelected ? "outline" : "elevated"}
         borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
+        borderWidth={isSelected ? borderWidth : 0}
+        p={isSelected ? selectedPadding : basePadding}
       >
         <Flex justify="space-between" alignItems="center">
           <HStack spacing={2}>

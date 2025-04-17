@@ -3,12 +3,13 @@ use url::Url;
 
 pub async fn create_webview_window(
   app: &AppHandle,
+  label: &str,
   url: Url,
   width: f64,
   height: f64,
   center: bool,
 ) -> Result<WebviewWindow, Error> {
-  let window = WebviewWindowBuilder::new(app, "", WebviewUrl::External(url))
+  let window = WebviewWindowBuilder::new(app, label, WebviewUrl::External(url))
     .title("")
     .build()?;
 

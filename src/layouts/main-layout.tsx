@@ -42,6 +42,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onClose: onStarUsModalClose,
   } = useDisclosure();
 
+  // update run count, conditionally show some modals.
   useEffect(() => {
     if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
       if (!config.runCount) {
@@ -68,6 +69,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     update,
   ]);
 
+  // construct background img src url from config.
   useEffect(() => {
     const constructBgImgSrc = async () => {
       const bgKey = config.appearance.background.choice;
@@ -85,6 +87,30 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
     constructBgImgSrc();
   }, [config.appearance.background.choice]);
+
+  // update font size to body CSS by config.
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    const prevMd =
+      parseFloat(
+        getComputedStyle(root).getPropertyValue("--chakra-fontSizes-md")
+      ) || 1;
+    const ratio =
+      Math.min(115, Math.max(85, config.appearance.font.fontSize)) /
+      100 /
+      prevMd;
+
+    const computedStyle = getComputedStyle(root);
+    for (let i = 0; i < computedStyle.length; i++) {
+      const key = computedStyle[i];
+      if (key.startsWith("--chakra-fontSizes-")) {
+        const originalValue =
+          parseFloat(computedStyle.getPropertyValue(key)) || 1;
+        body.style.setProperty(key, `${originalValue * ratio}rem`, "important");
+      }
+    }
+  }, [config.appearance.font.fontSize]);
 
   const getGlobalExtraStyle = (config: any) => {
     const isInvertColors = config.appearance.accessibility.invertColors;

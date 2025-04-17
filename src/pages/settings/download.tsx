@@ -20,10 +20,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { open as openFolder } from "@tauri-apps/plugin-shell";
+import { openPath } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
+import LinkIconButton from "@/components/common/link-icon-button";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -38,6 +39,9 @@ const DownloadSettingsPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [concurrentCount, setConcurrentCount] = useState<number>(
+    downloadConfigs.transmission.concurrentCount
+  );
+  const [sliderConcurrentCount, setSliderConcurrentCount] = useState<number>(
     downloadConfigs.transmission.concurrentCount
   );
   const [speedLimitValue, setSpeedLimitValue] = useState<number>(
@@ -115,6 +119,12 @@ const DownloadSettingsPage = () => {
             </Menu>
           ),
         },
+        {
+          title: t("PingTestPage.PingServerList.title"),
+          children: (
+            <LinkIconButton aria-label="ping-test" url="/settings/ping-test" />
+          ),
+        },
       ],
     },
     {
@@ -152,8 +162,9 @@ const DownloadSettingsPage = () => {
                       step={1}
                       w={32}
                       colorScheme={primaryColor}
-                      value={concurrentCount}
+                      value={sliderConcurrentCount}
                       onChange={(value) => {
+                        setSliderConcurrentCount(value);
                         setConcurrentCount(value);
                       }}
                       onBlur={() => {
@@ -176,10 +187,13 @@ const DownloadSettingsPage = () => {
                       focusBorderColor={`${primaryColor}.500`}
                       value={concurrentCount}
                       onChange={(value) => {
+                        if (!/^\d*$/.test(value)) return;
                         setConcurrentCount(Number(value));
                       }}
                       onBlur={() => {
-                        setConcurrentCount(
+                        setSliderConcurrentCount(concurrentCount);
+                        update(
+                          "download.transmission.concurrentCount",
                           Math.max(1, Math.min(concurrentCount, 128))
                         );
                       }}
@@ -230,6 +244,7 @@ const DownloadSettingsPage = () => {
                       focusBorderColor={`${primaryColor}.500`}
                       value={speedLimitValue}
                       onChange={(value) => {
+                        if (!/^\d*$/.test(value)) return;
                         setSpeedLimitValue(Number(value));
                       }}
                       onBlur={() => {
@@ -269,7 +284,7 @@ const DownloadSettingsPage = () => {
                 variant="subtle"
                 size="xs"
                 onClick={() => {
-                  openFolder(downloadConfigs.cache.directory);
+                  openPath(downloadConfigs.cache.directory);
                 }}
               >
                 {t("DownloadSettingPage.cache.settings.directory.open")}
@@ -339,6 +354,7 @@ const DownloadSettingsPage = () => {
                     focusBorderColor={`${primaryColor}.500`}
                     value={proxyPort || 80}
                     onChange={(value) => {
+                      if (!/^\d*$/.test(value)) return;
                       setProxyPort(Number(value));
                     }}
                     onBlur={() => {

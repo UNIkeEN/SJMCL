@@ -14,7 +14,12 @@ import { ShaderPackInfo } from "@/models/instance/misc";
 
 const InstanceShaderPacksPage = () => {
   const { t } = useTranslation();
-  const { summary, openSubdir, getShaderPackList } = useInstanceSharedData();
+  const {
+    summary,
+    handleOpenInstanceSubdir,
+    handleImportResource,
+    getShaderPackList,
+  } = useInstanceSharedData();
   const { openSharedModal } = useSharedModals();
 
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>([]);
@@ -27,12 +32,22 @@ const InstanceShaderPacksPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        openSubdir(InstanceSubdirEnums.ShaderPacks);
+        handleOpenInstanceSubdir(InstanceSubdirEnums.ShaderPacks);
       },
     },
     {
       icon: "add",
-      onClick: () => {},
+      onClick: () => {
+        handleImportResource({
+          filterName: t("InstanceLayout.instanceTabList.shaderpacks"),
+          filterExt: ["zip"],
+          tgtDirType: InstanceSubdirEnums.ShaderPacks,
+          decompress: false,
+          onSuccessCallback: () => {
+            setShaderPacks(getShaderPackList(true) || []);
+          },
+        });
+      },
     },
     {
       icon: "download",

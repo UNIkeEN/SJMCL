@@ -45,6 +45,12 @@ We use `npm` as the preferred package manager for the frontend. After cloning th
 npm install
 ```
 
+#### Configure environment variables
+
+Copy the `.env.template` file to `.env`, and fill in the required environment variables based on the comments in the template.
+
+These values will be embedded into the Rust backend as compile-time constants.
+
 #### Run locally
 
 Run the project in development mode.
@@ -69,8 +75,11 @@ npx eslint "src/**/*.{js,jsx,ts,tsx}" --no-fix     # check
 npx eslint "src/**/*.{js,jsx,ts,tsx}" --fix        # fix
 
 # For backend part
-rustfmt --check src-tauri/src/**/*.rs
+rustfmt --check src-tauri/src/**/*.rs              # check
+rustfmt src-tauri/src/**/*.rs                      # fix
 ```
+
+If you use VS Code for developing this project, we recommend setting `rust-analyzer.check.command` to `clippy` in your workspace settings for stricter code checking.
 
 #### Build
 

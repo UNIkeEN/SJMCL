@@ -1,12 +1,10 @@
-use std::sync::{Arc, Mutex};
-
-use super::constants::{CLIENT_ID, SCOPE};
+use super::constants::{CLIENT_ID, SCOPE, TOKEN_ENDPOINT};
 use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo, PlayerType, Texture};
 use crate::error::SJMCLResult;
+use crate::utils::image::decode_image;
 use crate::utils::window::create_webview_window;
-use base64::engine::general_purpose;
-use base64::Engine;
 use serde_json::{json, Value};
+use std::sync::{Arc, Mutex};
 use tauri::AppHandle;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest::{self, Client};
@@ -150,6 +148,22 @@ async fn fetch_minecraft_token(xsts_userhash: String, xsts_token: String) -> SJM
   )
 }
 
+async fn fetch_minecraft_profile(minecraft_token: String) -> SJMCLResult<Value> {
+  let client = Client::new();
+
+  Ok(
+    client
+      .get("https://api.minecraftservices.com/minecraft/profile")
+      .header("Authorization", format!("Bearer {}", minecraft_token))
+      .send()
+      .await
+      .map_err(|_| AccountError::NetworkError)?
+      .json::<Value>()
+      .await
+      .map_err(|_| AccountError::ParseError)?,
+  )
+}
+
 async fn parse_profile(
   microsoft_token: String,
   microsoft_refresh_token: String,
@@ -160,29 +174,19 @@ async fn parse_profile(
 
   let minecraft_token = fetch_minecraft_token(xsts_userhash, xsts_token).await?;
 
-  let client = reqwest::Client::new();
+  let profile = fetch_minecraft_profile(minecraft_token.clone()).await?;
 
-  let response = client
-    .get("https://api.minecraftservices.com/minecraft/profile")
-    .header("Authorization", format!("Bearer {}", minecraft_token))
-    .send()
-    .await
-    .map_err(|_| AccountError::NetworkError)?
-    .json::<Value>()
-    .await
+  let uuid = Uuid::parse_str(profile["id"].as_str().unwrap_or_default())
     .map_err(|_| AccountError::ParseError)?;
 
-  let uuid = Uuid::parse_str(response["id"].as_str().unwrap_or_default())
-    .map_err(|_| AccountError::ParseError)?;
-
-  let name = response["name"].as_str().unwrap_or_default().to_string();
+  let name = profile["name"].as_str().unwrap_or_default().to_string();
 
   let mut textures: Vec<Texture> = vec![];
 
   const TEXTURE_MAP: [(&str, &str); 2] = [("skins", "SKIN"), ("capes", "CAPE")];
 
   for (key, val) in TEXTURE_MAP {
-    if let Some(skin) = response[key]
+    if let Some(skin) = profile[key]
       .as_array()
       .ok_or(AccountError::ParseError)?
       .iter()
@@ -193,26 +197,35 @@ async fn parse_profile(
       if img_url.is_empty() {
         continue;
       }
-      let img_bytes = reqwest::get(img_url).await?.bytes().await?.to_vec();
-      let img_base64 = general_purpose::STANDARD.encode(img_bytes);
+      let img_bytes = reqwest::get(img_url)
+        .await
+        .map_err(|_| AccountError::NetworkError)?
+        .bytes()
+        .await
+        .map_err(|_| AccountError::ParseError)?;
       textures.push(Texture {
         texture_type: val.to_string(),
-        image: img_base64,
+        image: decode_image(img_bytes.to_vec())?.into(),
         model,
       });
     }
   }
 
-  Ok(PlayerInfo {
-    uuid,
-    name: name.clone(),
-    player_type: PlayerType::Microsoft,
-    auth_account: name,
-    access_token: minecraft_token,
-    textures,
-    auth_server_url: "".to_string(),
-    password: "".to_string(),
-  })
+  Ok(
+    PlayerInfo {
+      id: "".to_string(),
+      uuid,
+      name: name.clone(),
+      player_type: PlayerType::Microsoft,
+      auth_account: name,
+      access_token: minecraft_token,
+      refresh_token: microsoft_refresh_token,
+      textures,
+      auth_server_url: "".to_string(),
+      password: "".to_string(),
+    }
+    .with_generated_id(),
+  )
 }
 
 pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult<PlayerInfo> {
@@ -224,7 +237,7 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
   let is_cancelled = Arc::new(Mutex::new(false));
   let cancelled_clone = Arc::clone(&is_cancelled);
 
-  let auth_webview = create_webview_window(app, verification_url, 650.0, 500.0, true)
+  let auth_webview = create_webview_window(app, "oauth", verification_url, 650.0, 500.0, true)
     .await
     .map_err(|_| AccountError::CreateWebviewError)?;
 
@@ -239,12 +252,8 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
   let microsoft_refresh_token: String;
 
   loop {
-    if *is_cancelled.lock().unwrap() {
-      return Err(AccountError::Cancelled)?;
-    }
-
     let token_response = client
-      .post("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")
+      .post(TOKEN_ENDPOINT)
       .form(&[
         ("client_id", CLIENT_ID),
         ("device_code", &auth_info.device_code),
@@ -297,8 +306,57 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
       }
     }
 
+    if *is_cancelled.lock().unwrap() {
+      // if user closed the webview
+      return Err(AccountError::Cancelled)?;
+    }
+
     sleep(Duration::from_secs(interval)).await;
   }
 
   parse_profile(microsoft_token, microsoft_refresh_token).await
+}
+
+pub async fn refresh(player: PlayerInfo) -> SJMCLResult<PlayerInfo> {
+  let client = Client::new();
+
+  let token_response = client
+    .post(TOKEN_ENDPOINT)
+    .form(&[
+      ("client_id", CLIENT_ID),
+      ("refresh_token", player.refresh_token.as_str()),
+      ("grant_type", "refresh_token"),
+    ])
+    .send()
+    .await
+    .map_err(|_| AccountError::NetworkError)?;
+
+  if !token_response.status().is_success() {
+    return Err(AccountError::Expired)?;
+  }
+
+  let token_data: Value = token_response
+    .json::<Value>()
+    .await
+    .map_err(|_| AccountError::ParseError)?;
+
+  let microsoft_token = token_data["access_token"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+
+  let microsoft_refresh_token = token_data["refresh_token"]
+    .as_str()
+    .ok_or(AccountError::ParseError)?
+    .to_string();
+
+  parse_profile(microsoft_token, microsoft_refresh_token).await
+}
+
+pub async fn validate(player: &PlayerInfo) -> SJMCLResult<()> {
+  if (fetch_minecraft_profile(player.access_token.clone()).await).is_ok() {
+    Ok(())
+  } else {
+    Err(AccountError::Expired)?
+  }
 }

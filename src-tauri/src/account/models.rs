@@ -1,6 +1,7 @@
-use super::helpers::{authlib_injector::info::get_client_id, skin::draw_avatar};
-use crate::{storage::Storage, utils::image::base64_to_image, EXE_DIR};
+use super::helpers::{authlib_injector::constants::PRESET_AUTH_SERVERS, skin::draw_avatar};
+use crate::{storage::Storage, utils::image::ImageWrapper, EXE_DIR};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::path::PathBuf;
 use strum_macros::Display;
 use uuid::Uuid;
@@ -19,7 +20,7 @@ pub enum PlayerType {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Texture {
   pub texture_type: String,
-  pub image: String, // base64 encoded
+  pub image: ImageWrapper,
   pub model: String,
 }
 
@@ -27,9 +28,10 @@ pub struct Texture {
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Player {
+  pub id: String,
   pub name: String,
   pub uuid: Uuid,
-  pub avatar: String, // base64 encoded
+  pub avatar: ImageWrapper,
   pub player_type: PlayerType,
   #[serde(default)]
   pub auth_account: String,
@@ -37,29 +39,36 @@ pub struct Player {
   pub password: String,
   #[serde(default)]
   pub auth_server: AuthServer,
+  #[serde(default)]
+  pub access_token: String,
+  #[serde(default)]
+  pub refresh_token: String,
   pub textures: Vec<Texture>,
 }
 
 impl From<PlayerInfo> for Player {
   fn from(player_info: PlayerInfo) -> Self {
     let state: AccountInfo = Storage::load().unwrap_or_default();
-    let auth_server = state
-      .auth_servers
-      .iter()
-      .find(|server| server.auth_url == player_info.auth_server_url)
-      .cloned()
-      .unwrap_or_default();
+
+    let auth_server = AuthServer::from(
+      state
+        .auth_servers
+        .iter()
+        .find(|server| server.auth_url == player_info.auth_server_url)
+        .cloned()
+        .unwrap_or_default(),
+    );
+
     Player {
+      id: player_info.id,
       name: player_info.name,
       uuid: player_info.uuid,
-      avatar: draw_avatar(
-        36,
-        base64_to_image(player_info.textures[0].image.clone()).unwrap_or_default(),
-      )
-      .unwrap_or_default(),
+      avatar: draw_avatar(36, &player_info.textures[0].image.image).into(),
       player_type: player_info.player_type,
       auth_account: player_info.auth_account,
       password: player_info.password,
+      access_token: player_info.access_token,
+      refresh_token: player_info.refresh_token,
       auth_server,
       textures: player_info.textures,
     }
@@ -70,6 +79,7 @@ impl From<PlayerInfo> for Player {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PlayerInfo {
+  pub id: String,
   pub name: String,
   pub uuid: Uuid,
   pub player_type: PlayerType,
@@ -77,18 +87,37 @@ pub struct PlayerInfo {
   pub password: String,
   pub auth_server_url: String,
   pub access_token: String,
+  pub refresh_token: String,
   pub textures: Vec<Texture>,
 }
 
 impl PlayerInfo {
-  pub fn gen_player_id(&self) -> String {
-    let mut server_identity = self.auth_server_url.clone();
-    if self.player_type == PlayerType::Offline {
-      server_identity = "OFFLINE".to_string();
-    } else if self.player_type == PlayerType::Microsoft {
-      server_identity = "MICROSOFT".to_string();
+  /// Generate ID from existing fields and return updated struct
+  pub fn with_generated_id(mut self) -> Self {
+    let server_identity = match self.player_type {
+      PlayerType::Offline => "OFFLINE".to_string(),
+      PlayerType::Microsoft => "MICROSOFT".to_string(),
+      _ => self.auth_server_url.clone(),
+    };
+    self.id = format!("{}:{}:{}", self.name, server_identity, self.uuid);
+    self
+  }
+}
+
+impl From<Player> for PlayerInfo {
+  fn from(player: Player) -> Self {
+    PlayerInfo {
+      id: player.id,
+      name: player.name,
+      uuid: player.uuid,
+      player_type: player.player_type,
+      auth_account: player.auth_account,
+      password: player.password,
+      textures: player.textures,
+      access_token: player.access_token,
+      refresh_token: player.refresh_token,
+      auth_server_url: player.auth_server.auth_url,
     }
-    format!("{}{}", self.name, server_identity)
   }
 }
 
@@ -125,49 +154,81 @@ structstruck::strike! {
   }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AuthServerInfo {
+  pub auth_url: String,
+  pub client_id: String,
+  pub metadata: Value,
+  pub timestamp: u64,
+}
+
+impl From<AuthServerInfo> for AuthServer {
+  fn from(info: AuthServerInfo) -> Self {
+    AuthServer {
+      name: info.metadata["meta"]["serverName"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string(),
+      auth_url: info.auth_url,
+      homepage_url: info.metadata["meta"]["links"]["homepage"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string(),
+      register_url: info.metadata["meta"]["links"]["register"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string(),
+      features: Features {
+        non_email_login: info.metadata["meta"]["feature.non_email_login"]
+          .as_bool()
+          .unwrap_or(false),
+        openid_configuration_url: info.metadata["meta"]["feature.openid_configuration_url"]
+          .as_str()
+          .unwrap_or_default()
+          .to_string(),
+      },
+      client_id: info.client_id,
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
-  pub auth_servers: Vec<AuthServer>,
-}
-
-impl Storage for AccountInfo {
-  fn file_path() -> PathBuf {
-    EXE_DIR.join("sjmcl.account.json")
-  }
+  pub auth_servers: Vec<AuthServerInfo>,
 }
 
 impl Default for AccountInfo {
   fn default() -> Self {
     AccountInfo {
-      players: Vec::new(),
-      auth_servers: vec![
-        AuthServer {
-          name: "SJMC 用户中心".to_string(),
-          auth_url: "https://skin.mc.sjtu.cn/api/yggdrasil".to_string(),
-          homepage_url: "https://skin.mc.sjtu.cn".to_string(),
-          register_url: "https://skin.mc.sjtu.cn/auth/register".to_string(),
-          features: Features {
-            non_email_login: true,
-            openid_configuration_url:
-              "https://skin.mc.sjtu.cn/open/.well-known/openid-configuration".to_string(),
-          },
-          client_id: get_client_id("skin.mc.sjtu.cn".to_string()),
-        },
-        AuthServer {
-          name: "MUA 用户中心".to_string(),
-          auth_url: "https://skin.mualliance.ltd/api/yggdrasil".to_string(),
-          homepage_url: "https://skin.mualliance.ltd".to_string(),
-          register_url: "https://skin.mualliance.ltd/auth/register".to_string(),
-          features: Features {
-            non_email_login: true,
-            openid_configuration_url: "".to_string(),
-          },
-          client_id: get_client_id("skin.mualliance.ltd".to_string()),
-        },
-      ],
+      players: vec![],
+      auth_servers: PRESET_AUTH_SERVERS
+        .iter()
+        .map(|url| AuthServerInfo {
+          auth_url: url.to_string(),
+          client_id: "".to_string(),
+          metadata: Value::Null,
+          timestamp: 0,
+        })
+        .collect(),
     }
+  }
+}
+
+impl AccountInfo {
+  pub fn get_player_by_id(&self, id: String) -> Option<&PlayerInfo> {
+    self.players.iter().find(|player| player.id == id)
+  }
+  pub fn get_player_by_id_mut(&mut self, id: String) -> Option<&mut PlayerInfo> {
+    self.players.iter_mut().find(|player| player.id == id)
+  }
+}
+
+impl Storage for AccountInfo {
+  fn file_path() -> PathBuf {
+    EXE_DIR.join("sjmcl.account.json")
   }
 }
 
@@ -183,6 +244,8 @@ pub enum AccountError {
   ParseError,
   Cancelled,
   CreateWebviewError,
+  NoDownloadApi,
+  SaveError,
 }
 
 impl std::error::Error for AccountError {}

@@ -19,31 +19,34 @@ export class AccountService {
   /**
    * ADD a new player to the system using offline login.
    * @param {string} username - The username of the player to be added.
+   * @param {string} [uuid] - (Optional) The UUID of the player to be added.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
   static async addPlayerOffline(
-    username: string
+    username: string,
+    uuid?: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("add_player_offline", {
       username,
+      uuid: uuid || "",
     });
   }
 
   /**
    * FETCH the user code using both OAuth methods (Microsoft and 3rd party).
    * @param {string} serverType - The type of authentication server (Microsoft or 3rd party).
-   * @param {string} authServerUrl - (Optional) The authentication server's URL.
+   * @param {string} [authServerUrl] - (Optional) The authentication server's URL.
    * @returns {Promise<InvokeResponse<OAuthCodeResponse>>}
    */
   @responseHandler("account")
   static async fetchOAuthCode(
     serverType: "3rdparty" | "microsoft",
-    authServerUrl: string
+    authServerUrl?: string
   ): Promise<InvokeResponse<OAuthCodeResponse>> {
     return await invoke("fetch_oauth_code", {
       serverType,
-      authServerUrl,
+      authServerUrl: authServerUrl || "",
     });
   }
 
@@ -51,19 +54,19 @@ export class AccountService {
    * ADD the player using both OAuth methods (Microsoft and 3rd party).
    * @param {string} serverType - The type of authentication server (Microsoft or 3rd party).
    * @param {OAuthCodeResponse} authInfo - The authentication information (code and verification URI).
-   * @param {string} authServerUrl - (Optional) The authentication server's URL.
+   * @param {string} [authServerUrl] - (Optional) The authentication server's URL.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
   static async addPlayerOAuth(
     serverType: "3rdparty" | "microsoft",
     authInfo: OAuthCodeResponse,
-    authServerUrl: string
+    authServerUrl?: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("add_player_oauth", {
       serverType,
       authInfo,
-      authServerUrl,
+      authServerUrl: authServerUrl || "",
     });
   }
 
@@ -72,19 +75,31 @@ export class AccountService {
    * @param {string} authServerUrl - The authentication server's URL.
    * @param {string} username - The username of the player to be added.
    * @param {string} password - The password of the player to be added.
-   * @returns {Promise<InvokeResponse<void>>}
+   * @returns {Promise<InvokeResponse<Player[]>>} - The array of players within the account. If it's not empty, should trigger the selection interface.
    */
   @responseHandler("account")
   static async addPlayer3rdPartyPassword(
     authServerUrl: string,
     username: string,
     password: string
-  ): Promise<InvokeResponse<void>> {
+  ): Promise<InvokeResponse<Player[]>> {
     return await invoke("add_player_3rdparty_password", {
       authServerUrl,
       username,
       password,
     });
+  }
+
+  /**
+   * ADD a new player to the system from selection interface.
+   * @param {Player} player - The player object to be added.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async addPlayerFromSelection(
+    player: Player
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_player_from_selection", { player });
   }
 
   /**
@@ -115,24 +130,13 @@ export class AccountService {
   }
 
   /**
-   * RETRIEVE the selected player by player ID.
-   * @returns {Promise<InvokeResponse<Player>>}
-   */
-  @responseHandler("account")
-  static async retrieveSelectedPlayer(): Promise<InvokeResponse<Player>> {
-    return await invoke("retrieve_selected_player");
-  }
-
-  /**
-   * UPDATE the selected player by player ID.
-   * @param {string} playerId - The player ID of the player to be posted as selected.
+   * REFRESH a player (3rd-party or Microsoft) by player ID.
+   * @param {string} playerId - The player ID of the player to be refreshed.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
-  static async updateSelectedPlayer(
-    playerId: string
-  ): Promise<InvokeResponse<void>> {
-    return await invoke("update_selected_player", { playerId });
+  static async refreshPlayer(playerId: string): Promise<InvokeResponse<void>> {
+    return await invoke("refresh_player", { playerId });
   }
 
   /**
@@ -145,15 +149,15 @@ export class AccountService {
   }
 
   /**
-   * FETCH the information of a new authentication server.
+   * FETCH the new authentication server.
    * @param {string} url - The URL of the authentication server to be added.
    * @returns {Promise<InvokeResponse<AuthServer>>}
    */
   @responseHandler("account")
-  static async fetchAuthServerInfo(
+  static async fetchAuthServer(
     url: string
   ): Promise<InvokeResponse<AuthServer>> {
-    return await invoke("fetch_auth_server_info", { url });
+    return await invoke("fetch_auth_server", { url });
   }
 
   /**

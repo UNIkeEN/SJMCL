@@ -1,12 +1,12 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::utils::image::image_to_base64;
-use image::ImageReader;
+use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
+use image::RgbaImage;
 use std::fs;
-use std::io::{Cursor, Read};
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use zip::ZipArchive;
 
-pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option<String>)> {
+pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option<RgbaImage>)> {
   let file = match fs::File::open(path) {
     Ok(val) => val,
     Err(e) => return Err(SJMCLError::from(e)),
@@ -16,7 +16,6 @@ pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option
     Err(e) => return Err(SJMCLError::from(e)),
   };
   let mut description = String::new();
-  let mut icon_src = None;
 
   if let Ok(mut file) = zip.by_name("pack.mcmeta") {
     let mut contents = String::new();
@@ -51,25 +50,14 @@ pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option
     )));
   }
 
-  if let Ok(mut file) = zip.by_name("pack.png") {
-    let mut buffer = Vec::new();
-    file.read_to_end(&mut buffer)?;
-    // Use `image` crate to decode the image
-    let img = ImageReader::new(Cursor::new(buffer))
-      .with_guessed_format()?
-      .decode()?;
-    if let Ok(b64) = image_to_base64(img.to_rgba8()) {
-      icon_src = Some(b64);
-    }
-  }
+  let icon_src = load_image_from_jar(&mut zip, "pack.png");
   Ok((description, icon_src))
 }
 
-pub fn load_resourcepack_from_dir(path: &Path) -> SJMCLResult<(String, Option<String>)> {
+pub async fn load_resourcepack_from_dir(path: &Path) -> SJMCLResult<(String, Option<RgbaImage>)> {
   let mut description = String::new();
-  let mut icon_src = None;
 
-  if let Ok(mut contents) = fs::read_to_string(path.join("pack.mcmeta")) {
+  if let Ok(mut contents) = tokio::fs::read_to_string(path.join("pack.mcmeta")).await {
     // Check for and remove the UTF-8 BOM if present
     if contents.starts_with('\u{FEFF}') {
       contents = contents.strip_prefix('\u{FEFF}').unwrap().to_string();
@@ -94,14 +82,6 @@ pub fn load_resourcepack_from_dir(path: &Path) -> SJMCLResult<(String, Option<St
     return Err(SJMCLError("pack.mcmeta not found in ''".to_string()));
   }
 
-  if let Ok(buffer) = fs::read(path.join("pack.png")) {
-    // Use `image` crate to decode the image
-    let img = ImageReader::new(Cursor::new(buffer))
-      .with_guessed_format()?
-      .decode()?;
-    if let Ok(b64) = image_to_base64(img.to_rgba8()) {
-      icon_src = Some(b64);
-    }
-  }
+  let icon_src = load_image_from_dir_async(&path.join("pack.png")).await;
   Ok((description, icon_src))
 }

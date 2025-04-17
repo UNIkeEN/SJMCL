@@ -8,6 +8,7 @@ import {
   Skeleton,
   Text,
   VStack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
@@ -19,6 +20,7 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   titleExtra?: React.ReactNode;
   description?: React.ReactNode;
   isLoading?: boolean;
+  isFullClickZone?: boolean;
   children?: React.ReactNode;
   childrenOnHover?: boolean;
 }
@@ -34,11 +36,14 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   titleExtra,
   description,
   isLoading = false,
+  isFullClickZone = false,
   children,
   childrenOnHover = false,
   ...boxProps
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
 
   return (
     <Flex
@@ -46,6 +51,16 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       alignItems="center"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      borderRadius="md"
+      _hover={{
+        bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
+        transition: "background-color 0.2s ease-in-out",
+      }}
+      _active={{
+        bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
+        transition: "background-color 0.1s ease-in-out",
+      }}
+      cursor={isFullClickZone ? "pointer" : "default"}
       {...boxProps}
     >
       <HStack spacing={2.5} overflowY="hidden">
@@ -126,18 +141,7 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
         <Card className={themedStyles.card["card-front"]}>
           {items.map((item, index) => (
             <React.Fragment key={index}>
-              {isOptionItemProps(item) ? (
-                <OptionItem
-                  title={item.title}
-                  description={item.description}
-                  titleExtra={item.titleExtra}
-                  prefixElement={item.prefixElement}
-                >
-                  {item.children}
-                </OptionItem>
-              ) : (
-                item
-              )}
+              {isOptionItemProps(item) ? <OptionItem {...item} /> : item}
               {index !== items.length - 1 &&
                 (withDivider ? <Divider my={2} /> : <Box h={2} />)}
             </React.Fragment>

@@ -5,7 +5,7 @@ use super::{
 use crate::{
   error::SJMCLResult, instance::helpers::misc::refresh_instances, partial::PartialUpdate,
 };
-use crate::{storage::Storage, utils::path::get_subdirectories};
+use crate::{storage::Storage, utils::fs::get_subdirectories};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
@@ -13,6 +13,8 @@ use systemstat::{saturating_sub_bytes, Platform};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use tokio::time::Instant;
+use url::Url;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -25,14 +27,17 @@ pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
 pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -> SJMCLResult<()> {
   let binding = app.state::<Mutex<LauncherConfig>>();
   let mut state = binding.lock()?;
-  let mut snake = String::new();
-  for (i, ch) in key_path.char_indices() {
-    if i > 0 && ch.is_uppercase() {
-      snake.push('_');
+  let key_path = {
+    let mut snake = String::new();
+    for (i, ch) in key_path.char_indices() {
+      if i > 0 && ch.is_uppercase() {
+        snake.push('_');
+      }
+      snake.push(ch.to_ascii_lowercase());
     }
-    snake.push(ch.to_ascii_lowercase());
-  }
-  state.update(&snake, &value)?;
+    snake
+  };
+  state.update(&key_path, &value)?;
   state.save()?;
   Ok(())
 }
@@ -137,16 +142,6 @@ pub async fn import_launcher_config(app: AppHandle, code: String) -> SJMCLResult
     }
     Err(_err) => Err(LauncherConfigError::FetchError.into()),
   }
-}
-
-#[tauri::command]
-pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
-  let sys = systemstat::System::new();
-  let mem = sys.memory()?;
-  Ok(MemoryInfo {
-    total: mem.total.as_u64(),
-    used: saturating_sub_bytes(mem.total, mem.free).as_u64(),
-  })
 }
 
 #[tauri::command]
@@ -273,4 +268,39 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
   }
 
   Ok("".to_string())
+}
+
+// Below are some system info commands (In frontend, see services/utils.ts)
+#[tauri::command]
+pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
+  let sys = systemstat::System::new();
+  let mem = sys.memory()?;
+  Ok(MemoryInfo {
+    total: mem.total.as_u64(),
+    used: saturating_sub_bytes(mem.total, mem.free).as_u64(),
+  })
+}
+
+#[tauri::command]
+pub async fn check_service_availability(
+  client: tauri::State<'_, reqwest::Client>,
+  url: String,
+) -> SJMCLResult<u128> {
+  let parsed_url = Url::parse(&url)
+    .or_else(|_| Url::parse(&format!("https://{}", url)))
+    .map_err(|_| LauncherConfigError::FetchError)?;
+
+  let start = Instant::now();
+  let res = client.get(parsed_url).send().await;
+
+  match res {
+    Ok(response) => {
+      if response.status().is_success() || response.status().is_client_error() {
+        Ok(start.elapsed().as_millis())
+      } else {
+        Err(LauncherConfigError::FetchError.into())
+      }
+    }
+    Err(_) => Err(LauncherConfigError::FetchError.into()),
+  }
 }

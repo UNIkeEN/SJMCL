@@ -1,16 +1,23 @@
-import React, { createContext, useCallback, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
 import { GameInstanceSummary } from "@/models/instance/misc";
 import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
+import { useLauncherConfig } from "./config";
 
 interface DataContextType {
+  selectedPlayer: Player | undefined;
+  selectedGameInstance: GameInstanceSummary | undefined;
   getPlayerList: (sync?: boolean) => Player[] | undefined;
-  getSelectedPlayer: (sync?: boolean) => Player | undefined;
   getGameInstanceList: (sync?: boolean) => GameInstanceSummary[] | undefined;
-  getSelectedGameInstance: (sync?: boolean) => GameInstanceSummary | undefined;
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
 }
 
@@ -32,6 +39,7 @@ const DataDispatchContext = createContext<DataDispatchContextType | undefined>(
 export const DataContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const { config } = useLauncherConfig();
   const toast = useToast();
 
   const [playerList, setPlayerList] = useState<Player[]>();
@@ -42,13 +50,26 @@ export const DataContextProvider: React.FC<{
     useState<GameInstanceSummary>();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>();
 
+  useEffect(() => {
+    const selectedPlayerId = config.states.shared.selectedPlayerId;
+    setSelectedPlayer(
+      playerList?.find((player) => player.id === selectedPlayerId)
+    );
+  }, [playerList, config.states.shared.selectedPlayerId]);
+
+  useEffect(() => {
+    const selectedInstanceId = config.states.shared.selectedInstanceId;
+    setSelectedGameInstance(
+      gameInstanceList?.find(
+        (instance) => instance.id === Number(selectedInstanceId)
+      )
+    );
+  }, [gameInstanceList, config.states.shared.selectedInstanceId]);
+
   const handleRetrievePlayerList = useCallback(() => {
     AccountService.retrievePlayerList().then((response) => {
       if (response.status === "success") {
         setPlayerList(response.data);
-        if (response.data.length > 0) {
-          setSelectedPlayer(response.data[0]);
-        }
       } else {
         toast({
           title: response.message,
@@ -58,13 +79,6 @@ export const DataContextProvider: React.FC<{
       }
     });
   }, [toast]);
-
-  const handleRetrieveSelectedPlayer = useCallback(() => {
-    AccountService.retrieveSelectedPlayer().then((response) => {
-      if (response.status === "success") setSelectedPlayer(response.data);
-      else setSelectedPlayer(undefined);
-    });
-  }, [setSelectedPlayer]);
 
   const handleRetrieveAuthServerList = useCallback(() => {
     AccountService.retrieveAuthServerList().then((response) => {
@@ -92,18 +106,14 @@ export const DataContextProvider: React.FC<{
 
   const getPlayerList = useGetState(playerList, handleRetrievePlayerList);
 
-  const getSelectedPlayer = useGetState(
-    selectedPlayer,
-    handleRetrieveSelectedPlayer
-  );
-
   const getGameInstanceList = useGetState(
-    gameInstanceList,
+    // put starred instances at the top
+    gameInstanceList
+      ? [...gameInstanceList].sort(
+          (a, b) => Number(b.starred) - Number(a.starred)
+        )
+      : undefined,
     handleRetrieveInstanceList
-  );
-
-  const getSelectedGameInstance = useGetState(selectedGameInstance, () =>
-    setSelectedGameInstance(undefined)
   );
 
   const getAuthServerList = useGetState(
@@ -114,10 +124,10 @@ export const DataContextProvider: React.FC<{
   return (
     <DataContext.Provider
       value={{
+        selectedPlayer,
+        selectedGameInstance,
         getPlayerList,
-        getSelectedPlayer,
         getGameInstanceList,
-        getSelectedGameInstance,
         getAuthServerList,
       }}
     >

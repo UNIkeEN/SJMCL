@@ -125,7 +125,16 @@ async fn get_neoforge_meta_by_game_version_bmcl(
   match reqwest::get(url).await {
     Ok(response) => {
       if response.status().is_success() {
-        if let Ok(manifest) = response.json::<Vec<NeoforgeMetaItem>>().await {
+        if let Ok(mut manifest) = response.json::<Vec<NeoforgeMetaItem>>().await {
+          manifest.sort_by(|a, b| {
+            let parse_version = |v: &str| {
+              v.split('.')
+                .flat_map(|part| part.split('-'))
+                .map(|s| s.parse::<i32>().unwrap_or(0))
+                .collect::<Vec<_>>()
+            };
+            parse_version(&b.version).cmp(&parse_version(&a.version))
+          });
           Ok(
             manifest
               .into_iter()

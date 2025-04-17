@@ -30,7 +30,7 @@ Copyright © 2024-2025 SJMCL Team.
 
 The software is distributed under [GNU General Public License v3.0](/LICENSE).
 
-By GNUv3 License term 7, we require that when you distribute a modified version of the software, you must obey GNUv3 License as well as the following [additional terms](/LICENSE.EXTRA): 
+By GPLv3 License term 7, we require that when you distribute a modified version of the software, you must obey GPLv3 License as well as the following [additional terms](/LICENSE.EXTRA): 
 
 1. Use a different software name than SJMCL or SJMC Launcher;
 2. Do not remove the function of sending user statisitics to our statisitics server (`src-tauri/src/utils/sys_info.rs`), and send only version numbers with prefix (more than two letters, e.g. `XX-0.0.1`).

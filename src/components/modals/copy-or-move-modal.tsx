@@ -29,6 +29,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceError } from "@/enums/service-error";
 import { GameInstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 
@@ -119,7 +120,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     },
   ];
 
-  const handleCopyAcrossInstances = useCallback(
+  const handleCopyResourceToInstances = useCallback(
     (
       srcFilePath: string,
       tgtInstId: number[],
@@ -130,7 +131,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
         tgtInstId &&
         tgtDirType !== InstanceSubdirEnums.Root
       ) {
-        InstanceService.copyAcrossInstances(
+        InstanceService.copyResourceToInstances(
           srcFilePath,
           tgtInstId,
           tgtDirType
@@ -142,8 +143,8 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
               status: "error",
             });
             if (
-              response.raw_error === "INVALID_SOURCE_PATH" ||
-              response.raw_error === "INSTANCE_NOT_FOUND_BY_ID"
+              response.raw_error === InstanceError.InvalidSourcePath ||
+              response.raw_error === InstanceError.InstanceNotFoundById
             ) {
               router.push(router.asPath); // meet error, refresh page to get new instance and file list.
             }
@@ -158,7 +159,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     [toast, router]
   );
 
-  const handleMoveAcrossInstances = useCallback(
+  const handleMoveResourceToInstance = useCallback(
     (
       srcFilePath: string,
       tgtInstId: number,
@@ -169,7 +170,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
         tgtInstId &&
         tgtDirType !== InstanceSubdirEnums.Root
       ) {
-        InstanceService.moveAcrossInstances(
+        InstanceService.moveResourceToInstance(
           srcFilePath,
           tgtInstId,
           tgtDirType
@@ -194,13 +195,13 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   const handleCopyOrMove = async () => {
     setIsLoading(true);
     if (operation === "copy") {
-      handleCopyAcrossInstances(
+      handleCopyResourceToInstances(
         srcFilePath,
         selectedGameInstances.map((instance) => instance.id),
         _tgtDirType
       );
     } else {
-      handleMoveAcrossInstances(
+      handleMoveResourceToInstance(
         srcFilePath,
         selectedGameInstances[0].id,
         _tgtDirType
@@ -212,9 +213,14 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
 
   const generateDesc = (game: GameInstanceSummary) => {
     if (game.modLoader.loaderType === "Unknown") {
-      return game.version;
+      return game.version || "";
     }
-    return `${game.version}, ${game.modLoader.loaderType} ${game.modLoader.version}`;
+    return [
+      game.version,
+      `${game.modLoader.loaderType} ${game.modLoader.version}`,
+    ]
+      .filter(Boolean)
+      .join(", ");
   };
 
   const buildOptionItems = (instance: GameInstanceSummary) => ({
@@ -224,9 +230,9 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
         {t("CopyOrMoveModal.tag.source")}
       </Tag>
     ),
-    description:
-      generateDesc(instance) +
-      (instance.description ? `, ${instance.description}` : ""),
+    description: [generateDesc(instance), instance.description]
+      .filter(Boolean)
+      .join(", "),
     prefixElement: (
       <HStack spacing={2.5}>
         {operation === "move" ? (
@@ -300,7 +306,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                     selected={operation}
                     onSelectItem={(s) => setOperation(s as "copy" | "move")}
                     size="xs"
-                    mr={5}
+                    mr={3}
                     items={operationList.map((item) => ({
                       value: item.key,
                       label: (

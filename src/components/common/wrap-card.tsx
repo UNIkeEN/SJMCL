@@ -53,6 +53,10 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
 
+  const borderWidth = "1px";
+  const basePadding = cardProps.padding || "12px";
+  const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
+
   const renderContent = () => {
     if (!cardContent) return null;
 
@@ -94,6 +98,8 @@ export const WrapCard: React.FC<WrapCardProps> = ({
       borderColor={`${primaryColor}.500`}
       variant={isSelected ? "outline" : "elevated"}
       position="relative"
+      borderWidth={isSelected ? borderWidth : 0}
+      p={isSelected ? selectedPadding : basePadding}
       {...cardProps}
     >
       {variant === "radio" && (

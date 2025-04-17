@@ -1,41 +1,76 @@
-use super::super::models::misc::{Instance, InstanceSubdirType, ModLoader};
 use super::client_json::McClientInfo;
-use super::version_dir::rename_game_version_id;
-use crate::launcher_config::models::GameConfig;
+use super::{
+  super::{
+    constants::INSTANCE_CFG_FILE_NAME,
+    models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
+  },
+  client_jar::load_game_version_from_jar,
+};
+use crate::error::SJMCLResult;
+use crate::launcher_config::{helpers::get_global_game_config, models::GameConfig};
 use crate::storage::{load_json_async, save_json_async};
 use crate::{
   instance::helpers::client_json::patchs_to_info,
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
-use std::{fs, path::PathBuf, sync::Mutex};
+use sanitize_filename;
+use serde_json::Value;
+use std::{fs, io::Cursor, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
+use zip::ZipArchive;
 
-pub fn get_instance_client_json_path(app: &AppHandle, instance_id: usize) -> Option<PathBuf> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state.get(instance_id)?;
-
-  let version_path = &instance.version_path;
-  let json_path = version_path.join(format!("{}.json", instance.name));
-  Some(json_path)
-}
-
-pub fn get_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
+pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
   if instance.use_spec_game_config {
     if let Some(v) = &instance.spec_game_config {
       return v.clone();
     }
   }
-  app
-    .state::<Mutex<LauncherConfig>>()
-    .lock()
-    .unwrap()
-    .global_game_config
-    .clone()
+  get_global_game_config(app)
 }
 
-// if instance_id not exists, return None
-pub fn get_instance_subdir_path(
+pub fn get_instance_subdir_paths(
+  app: &AppHandle,
+  instance: &Instance,
+  directory_types: &[&InstanceSubdirType],
+) -> Option<Vec<PathBuf>> {
+  let version_path = &instance.version_path;
+  let game_dir = version_path.parent()?.parent()?; // safe unwrap to `?`
+
+  let version_isolation = get_instance_game_config(app, instance).version_isolation;
+  let path = if version_isolation {
+    version_path
+  } else {
+    game_dir
+  };
+
+  let paths = directory_types
+    .iter()
+    .map(|directory_type| {
+      match directory_type {
+        InstanceSubdirType::Assets => game_dir.join("assets"),
+        InstanceSubdirType::Libraries => game_dir.join("libraries"),
+        InstanceSubdirType::Mods => path.join("mods"),
+        InstanceSubdirType::ResourcePacks => path.join("resourcepacks"),
+        InstanceSubdirType::Root => path.to_path_buf(),
+        InstanceSubdirType::Saves => path.join("saves"),
+        InstanceSubdirType::Schematics => path.join("schematics"),
+        InstanceSubdirType::Screenshots => path.join("screenshots"),
+        InstanceSubdirType::ServerResourcePacks => path.join("server-resource-packs"),
+        InstanceSubdirType::ShaderPacks => path.join("shaderpacks"),
+        // native libraries extracted by SJMCL
+        InstanceSubdirType::NativeLibraries => version_path.join(format!(
+          "natives-{}-{}",
+          tauri_plugin_os::platform(),
+          tauri_plugin_os::arch()
+        )),
+      }
+    })
+    .collect();
+
+  Some(paths) // if instance_id not exists, return None
+}
+
+pub fn get_instance_subdir_path_by_id(
   app: &AppHandle,
   instance_id: usize,
   directory_type: &InstanceSubdirType,
@@ -44,39 +79,46 @@ pub fn get_instance_subdir_path(
   let state = binding.lock().unwrap();
   let instance = state.get(instance_id)?;
 
-  let version_path = &instance.version_path;
-  let game_dir = version_path.parent().unwrap().parent().unwrap(); // TODO: remove unwrap
-
-  let version_isolation = get_game_config(app, instance).version_isolation;
-
-  let path = match directory_type {
-    InstanceSubdirType::Assets | InstanceSubdirType::Libraries => game_dir, // no version isolation
-    _ => {
-      // others
-      if version_isolation {
-        version_path
-      } else {
-        game_dir
-      }
-    }
-  };
-
-  match directory_type {
-    // enum to string
-    InstanceSubdirType::Assets => Some(path.join("assets")),
-    InstanceSubdirType::Libraries => Some(path.join("libraries")),
-    InstanceSubdirType::Mods => Some(path.join("mods")),
-    InstanceSubdirType::ResourcePacks => Some(path.join("resourcepacks")),
-    InstanceSubdirType::Root => Some(path.to_path_buf()),
-    InstanceSubdirType::Saves => Some(path.join("saves")),
-    InstanceSubdirType::Schematics => Some(path.join("schematics")),
-    InstanceSubdirType::Screenshots => Some(path.join("screenshots")),
-    InstanceSubdirType::ServerResourcePacks => Some(path.join("server-resource-packs")),
-    InstanceSubdirType::ShaderPacks => Some(path.join("shaderpacks")),
-  }
+  get_instance_subdir_paths(app, instance, &[directory_type]).and_then(|mut paths| paths.pop())
 }
 
-const CFG_FILE_NAME: &str = "sjmclcfg.json";
+pub fn unify_instance_name(src_version_path: &PathBuf, tgt_name: &String) -> SJMCLResult<PathBuf> {
+  if !sanitize_filename::is_sanitized(tgt_name) {
+    return Err(InstanceError::InvalidNameError.into());
+  }
+  let src_name = src_version_path
+    .file_name()
+    .ok_or(InstanceError::InvalidSourcePath)?
+    .to_string_lossy()
+    .to_string();
+  let version_root = src_version_path.parent().unwrap();
+  // rename version directory (if already exists, return conflict error)
+  let dst_dir = version_root.join(tgt_name);
+  if dst_dir.exists() {
+    let mut entries = fs::read_dir(&dst_dir)?;
+    if entries.next().is_some() {
+      return Err(InstanceError::ConflictNameError.into());
+    }
+  }
+  fs::rename(src_version_path, &dst_dir).map_err(|_| InstanceError::FileMoveFailed)?;
+
+  // rename client jar
+  let old_jar = dst_dir.join(format!("{}.jar", src_name));
+  let new_jar = dst_dir.join(format!("{}.jar", tgt_name));
+  fs::rename(old_jar, new_jar).map_err(|_| InstanceError::FileMoveFailed)?;
+
+  // rewrite client json, update "id" field and filename
+  let old_json = dst_dir.join(format!("{}.json", src_name));
+  let new_json = dst_dir.join(format!("{}.json", tgt_name));
+  let mut json_value: Value = serde_json::from_reader(fs::File::open(&old_json)?)?;
+  if let Some(obj) = json_value.as_object_mut() {
+    obj.insert("id".to_string(), Value::String(tgt_name.clone()));
+  }
+  fs::write(&new_json, json_value.to_string())?;
+  fs::remove_file(old_json)?;
+
+  Ok(dst_dir)
+}
 
 pub async fn refresh_instances(
   game_directory: &GameDirectory,
@@ -107,19 +149,27 @@ pub async fn refresh_instances(
       Err(_) => continue,
     };
     if client_data.id != name {
-      if let Ok(dst_dir) = rename_game_version_id(&version_path, &client_data.id) {
+      if let Ok(dst_dir) = unify_instance_name(&version_path, &client_data.id) {
         version_path = dst_dir;
       } else {
         continue;
       }
     }
     let name = client_data.id.clone();
-    let cfg_path = version_path.join(CFG_FILE_NAME);
+    let cfg_path = version_path.join(INSTANCE_CFG_FILE_NAME);
     let mut cfg_read = load_json_async::<Instance>(&cfg_path)
       .await
       .unwrap_or_default();
 
-    let (game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
+    let (mut game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
+    // TODO: patches related logic
+    if game_version.is_none() {
+      let file = Cursor::new(tokio::fs::read(jar_path).await?);
+      if let Ok(mut jar) = ZipArchive::new(file) {
+        game_version = load_game_version_from_jar(&mut jar);
+      }
+    }
+
     if cfg_read.icon_src.is_empty() {
       cfg_read.icon_src = loader_type.to_icon_path().to_string();
     }

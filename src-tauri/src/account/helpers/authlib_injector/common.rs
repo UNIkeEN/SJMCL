@@ -4,6 +4,7 @@ use crate::{
     models::{AccountError, PlayerInfo, PlayerType, Texture},
   },
   error::SJMCLResult,
+  utils::image::decode_image,
 };
 use base64::{engine::general_purpose, Engine};
 use serde_json::Value;
@@ -15,6 +16,7 @@ pub async fn parse_profile(
   app: &AppHandle,
   profile: Value,
   access_token: String,
+  refresh_token: String,
   auth_server_url: String,
   auth_account: String,
   password: String,
@@ -49,6 +51,9 @@ pub async fn parse_profile(
     for texture_type in TEXTURE_TYPES {
       if let Some(skin) = texture_info_value["textures"].get(texture_type) {
         let img_url = skin["url"].as_str().unwrap_or_default();
+        if img_url.is_empty() {
+          continue;
+        }
         let img_bytes = reqwest::get(img_url)
           .await
           .map_err(|_| AccountError::NetworkError)?
@@ -57,7 +62,7 @@ pub async fn parse_profile(
           .map_err(|_| AccountError::ParseError)?;
 
         textures.push(Texture {
-          image: general_purpose::STANDARD.encode(img_bytes),
+          image: decode_image(img_bytes.to_vec())?.into(),
           texture_type: texture_type.to_string(),
           model: skin["metadata"]["model"]
             .as_str()
@@ -71,14 +76,39 @@ pub async fn parse_profile(
     textures = load_preset_skin(app, "steve".to_string())?;
   }
 
-  Ok(PlayerInfo {
-    uuid,
-    name: name.to_string(),
-    player_type: PlayerType::ThirdParty,
-    auth_account,
-    access_token,
-    textures,
-    password,
-    auth_server_url,
-  })
+  Ok(
+    PlayerInfo {
+      id: "".to_string(),
+      uuid,
+      name: name.to_string(),
+      player_type: PlayerType::ThirdParty,
+      auth_account,
+      access_token,
+      refresh_token,
+      textures,
+      password,
+      auth_server_url,
+    }
+    .with_generated_id(),
+  )
+}
+
+pub async fn validate(player: &PlayerInfo) -> SJMCLResult<()> {
+  let client = reqwest::Client::new();
+
+  let response = client
+    .post(format!(
+      "{}/authserver/validate",
+      player.auth_server_url.clone()
+    ))
+    .form(&[("accessToken", player.access_token.clone())])
+    .send()
+    .await
+    .map_err(|_| AccountError::NetworkError)?;
+
+  if !response.status().is_success() {
+    return Err(AccountError::Expired)?;
+  }
+
+  Ok(())
 }

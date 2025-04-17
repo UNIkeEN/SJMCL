@@ -7,10 +7,12 @@ const SettingsPage = () => {
   const { history } = useRoutingHistory();
 
   useEffect(() => {
-    router.replace(
+    let lastRecord =
       [...history].reverse().find((route) => route.startsWith("/settings/")) ||
-        "/settings/general"
-    );
+      "/settings/general";
+    if (lastRecord.endsWith("/advanced"))
+      lastRecord = lastRecord.replace("/advanced", "");
+    router.replace(lastRecord);
   }, [history, router]);
 
   return null;

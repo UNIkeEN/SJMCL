@@ -10,11 +10,10 @@
     "clipboard-manager:allow-write-image",
     "core:default",
     "core:webview:allow-create-webview-window",
+    "core:window:allow-start-dragging",
     "dialog:default",
     "http:default",
     "os:default",
-    "opener:default",
-    "process:default",
-    "shell:default"
+    "process:default"
   ]
 }

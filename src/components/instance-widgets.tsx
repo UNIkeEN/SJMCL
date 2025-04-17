@@ -113,10 +113,11 @@ export const InstanceBasicInfoWidget = () => {
             alignItems="flex-start"
             className="secondary-text"
           >
-            <Text>{summary?.version}</Text>
-            {summary?.modLoader.loaderType !== "Unknown" && (
-              <Text>{`${summary?.modLoader.loaderType} ${summary?.modLoader.version}`}</Text>
-            )}
+            {summary?.version && <Text>{summary.version}</Text>}
+            {summary?.modLoader.loaderType &&
+              summary?.modLoader.loaderType !== "Unknown" && (
+                <Text>{`${summary?.modLoader.loaderType} ${summary?.modLoader.version}`}</Text>
+              )}
           </VStack>
         }
         prefixElement={

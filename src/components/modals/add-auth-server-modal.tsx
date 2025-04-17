@@ -16,16 +16,19 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
 import { useToast } from "@/contexts/toast";
 import { AccountService } from "@/services/account";
 
-interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {}
+interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {
+  presetUrl?: string;
+}
 
 const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
+  presetUrl = "",
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -35,6 +38,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const { isOpen, onClose } = modalProps;
   const initialRef = useRef(null);
+  const hasAutoPresetRef = useRef(false);
 
   const [serverUrl, setServerUrl] = useState<string>("");
   const [serverName, setServerName] = useState<string>("");
@@ -46,16 +50,17 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      hasAutoPresetRef.current = false;
       setIsNextStep(false);
-      setServerUrl("");
+      setServerUrl(presetUrl);
       setIsServerUrlTouched(false);
     }
-  }, [isOpen]);
+  }, [isOpen, presetUrl]);
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     setIsLoading(true);
     // test the server url in backend & get the server name (without saving)
-    AccountService.fetchAuthServerInfo(serverUrl)
+    AccountService.fetchAuthServer(serverUrl)
       .then((response) => {
         if (response.status === "success") {
           setServerName(response.data.name);
@@ -72,7 +77,19 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       .finally(() => {
         setIsLoading(false);
       });
-  };
+  }, [serverUrl, toast]);
+
+  useEffect(() => {
+    if (
+      isOpen &&
+      presetUrl &&
+      serverUrl === presetUrl &&
+      !hasAutoPresetRef.current
+    ) {
+      handleNextStep();
+      hasAutoPresetRef.current = true;
+    }
+  }, [isOpen, presetUrl, serverUrl, handleNextStep]);
 
   const handleFinish = () => {
     setIsLoading(true);
@@ -111,12 +128,9 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           {!isNextStep ? (
-            <FormControl isInvalid={isServerUrlInvalid}>
+            <FormControl isInvalid={isServerUrlInvalid} isRequired>
               <FormLabel htmlFor="serverUrl">
-                {t("AddAuthServerModal.page1.serverUrl")}{" "}
-                <Text as="span" color="red.500">
-                  *
-                </Text>
+                {t("AddAuthServerModal.page1.serverUrl")}
               </FormLabel>
               <Input
                 id="serverUrl"

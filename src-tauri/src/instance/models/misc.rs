@@ -1,4 +1,4 @@
-use crate::launcher_config::models::GameConfig;
+use crate::{launcher_config::models::GameConfig, utils::image::ImageWrapper};
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::{Ord, Ordering, PartialOrd},
@@ -12,6 +12,7 @@ pub enum InstanceSubdirType {
   Assets,
   Libraries,
   Mods,
+  NativeLibraries,
   ResourcePacks,
   Root,
   Saves,
@@ -71,6 +72,7 @@ structstruck::strike! {
     pub name: String,
     pub description: String,
     pub icon_src: String,
+    pub starred: bool,
     pub version: String,
     pub version_path: PathBuf,
     pub mod_loader: struct {
@@ -84,16 +86,18 @@ structstruck::strike! {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct InstanceSummary {
   pub id: usize,
   pub name: String,
   pub description: String,
   pub icon_src: String,
+  pub starred: bool,
   pub version: String,
   pub version_path: PathBuf,
   pub mod_loader: ModLoader,
+  pub use_spec_game_config: bool,
   pub is_version_isolated: bool,
 }
 
@@ -112,7 +116,7 @@ pub struct GameServerInfo {
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct LocalModInfo {
-  pub icon_src: String,
+  pub icon_src: ImageWrapper,
   pub enabled: bool,
   pub name: String,
   pub translated_name: Option<String>,
@@ -151,7 +155,8 @@ impl Ord for LocalModInfo {
 pub struct ResourcePackInfo {
   pub name: String,
   pub description: String,
-  pub icon_src: Option<String>,
+  // TODO: is Option necessary?
+  pub icon_src: Option<ImageWrapper>,
   pub file_path: PathBuf,
 }
 
@@ -188,10 +193,13 @@ pub enum InstanceError {
   FileCopyFailed,
   FileMoveFailed,
   FolderCreationFailed,
+  ZipFileProcessFailed,
   WorldNotExistError,
   LevelParseError,
   LevelNotExistError,
   ConflictNameError,
+  InvalidNameError,
+  ClientJsonParseError,
 }
 
 impl std::error::Error for InstanceError {}

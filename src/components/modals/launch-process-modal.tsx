@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   HStack,
   Icon,
@@ -11,6 +12,7 @@ import {
   ModalOverlay,
   ModalProps,
   Step,
+  StepDescription,
   StepIcon,
   StepIndicator,
   StepNumber,
@@ -21,15 +23,17 @@ import {
   Text,
   useSteps,
 } from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { useLauncherConfig } from "@/contexts/config";
 import { useData } from "@/contexts/data";
-import { Player } from "@/models/account";
+import { useToast } from "@/contexts/toast";
+import { AccountServiceError } from "@/enums/service-error";
 import { GameInstanceSummary } from "@/models/instance/misc";
 import { ResponseError } from "@/models/response";
+import { AccountService } from "@/services/account";
 import { LaunchService } from "@/services/launch";
 
 // This modal will use shared-modal-context
@@ -42,18 +46,15 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   ...props
 }) => {
   const { t } = useTranslation();
+  const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { getSelectedPlayer, getGameInstanceList } = useData();
+  const { selectedPlayer, getGameInstanceList } = useData();
 
-  const [selectedPlayer, setSelectedPlayer] = useState<Player>();
   const [launchingInstance, setLaunchingInstance] =
     useState<GameInstanceSummary>();
   const [errorPaused, setErrorPaused] = useState<boolean>(false);
-
-  useEffect(() => {
-    setSelectedPlayer(getSelectedPlayer());
-  }, [getSelectedPlayer]);
+  const [errorDesc, setErrorDesc] = useState<string>("");
 
   useEffect(() => {
     setLaunchingInstance(
@@ -61,33 +62,60 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
     );
   }, [getGameInstanceList, instanceId]);
 
+  const handleCloseModal = useCallback(() => {
+    LaunchService.cancelLaunchProcess();
+    setErrorPaused(false);
+    props.onClose();
+  }, [props]);
+
   const launchProcessSteps: Array<{
     label: string;
-    function: (...args: any) => Promise<any>;
+    function: () => Promise<any>;
     isOK: (data: any) => boolean;
     onResCallback: (data: any) => void; // TODO: change return type to bool? so we can back to process after some operations.
     onErrCallback: (error: ResponseError) => void;
   }> = useMemo(
     () => [
-      // TODO: check player login status
-      // TODO: check java version
+      {
+        label: "selectSuitableJRE",
+        function: () => LaunchService.selectSuitableJRE(instanceId),
+        isOK: (data: any) => true,
+        onResCallback: (data: any) => {},
+        onErrCallback: (error: ResponseError) => {}, // TODO
+      },
       {
         label: "validateGameFiles",
-        function: LaunchService.validateGameFiles,
+        function: () => LaunchService.validateGameFiles(),
         isOK: (data: any) => data && data.length === 0,
         onResCallback: (data: any) => {}, // TODO
         onErrCallback: (error: ResponseError) => {}, // TODO
       },
       {
-        label: "launchGame",
-        function: LaunchService.launchGame,
+        label: "validateSelectedPlayer",
+        function: () => LaunchService.validateSelectedPlayer(),
         isOK: (data: any) => true,
-        onResCallback: (data: any) => {}, // TODO
+        onResCallback: (data: any) => {},
+        onErrCallback: (error: ResponseError) => {
+          if (error.raw_error === AccountServiceError.Expired)
+            AccountService.refreshPlayer(selectedPlayer?.id || "").then(
+              (response) => {
+                if (response.status !== "success") {
+                  // todo: show re-login modal
+                }
+              }
+            );
+        },
+      },
+      {
+        label: "launchGame",
+        function: () => LaunchService.launchGame(),
+        isOK: (data: any) => true,
+        onResCallback: (data: any) => {},
         onErrCallback: (error: ResponseError) => {}, // TODO
       },
       // TODO: progress bar in last step, and cancel logic
     ],
-    []
+    [instanceId, selectedPlayer?.id]
   );
 
   const { activeStep, setActiveStep } = useSteps({
@@ -96,12 +124,21 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   });
 
   useEffect(() => {
+    if (!selectedPlayer) {
+      toast({
+        title: t("LaunchProcessModal.toast.noSelectedPlayer"),
+        status: "warning",
+      });
+      handleCloseModal();
+      return;
+    }
     if (activeStep >= launchProcessSteps.length) {
+      handleCloseModal();
       return;
       // TODO
     }
     const currentStep = launchProcessSteps[activeStep];
-    currentStep.function(instanceId).then((response) => {
+    currentStep.function().then((response) => {
       if (response.status === "success") {
         if (currentStep.isOK(response.data)) {
           setActiveStep(activeStep + 1);
@@ -110,13 +147,29 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         }
       } else {
         setErrorPaused(true);
-        currentStep.onErrCallback(response.error);
+        setErrorDesc(response.details);
+        currentStep.onErrCallback(response);
+        console.error(response.details);
       }
     });
-  }, [activeStep, instanceId, setActiveStep, launchProcessSteps]);
+  }, [
+    activeStep,
+    setActiveStep,
+    launchProcessSteps,
+    handleCloseModal,
+    selectedPlayer,
+    t,
+    toast,
+  ]);
 
   return (
-    <Modal size="sm" closeOnEsc={false} closeOnOverlayClick={false} {...props}>
+    <Modal
+      size="sm"
+      closeOnEsc={false}
+      closeOnOverlayClick={false}
+      {...props}
+      onClose={handleCloseModal}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -125,11 +178,11 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
           })}
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody minH="8rem">
+        <ModalBody minH="12rem">
           <Stepper
             index={activeStep}
             orientation="vertical"
-            h="6rem"
+            h="12rem"
             gap="0"
             size="sm"
             colorScheme={errorPaused ? "red" : primaryColor}
@@ -149,21 +202,28 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
                     }
                   />
                 </StepIndicator>
-                <StepTitle>
-                  <HStack>
-                    <Text>{t(`LaunchProcessModal.step.${step.label}`)}</Text>
-                    {index === activeStep && !errorPaused && (
-                      <BeatLoader size={12} color="gray" />
-                    )}
-                  </HStack>
-                </StepTitle>
+                <Box flexShrink="0">
+                  <StepTitle>
+                    <HStack>
+                      <Text>{t(`LaunchProcessModal.step.${step.label}`)}</Text>
+                      {index === activeStep && !errorPaused && (
+                        <BeatLoader size={12} color="gray" />
+                      )}
+                    </HStack>
+                  </StepTitle>
+                  {errorPaused && errorDesc && index === activeStep && (
+                    <StepDescription color="red.600">
+                      {errorDesc}
+                    </StepDescription>
+                  )}
+                </Box>
                 <StepSeparator />
               </Step>
             ))}
           </Stepper>
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" onClick={props.onClose}>
+          <Button variant="ghost" onClick={handleCloseModal}>
             {t("General.cancel")}
           </Button>
         </ModalFooter>

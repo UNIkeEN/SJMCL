@@ -80,7 +80,7 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
           </PopoverTrigger>
         </Box>
       </Tooltip>
-      <PopoverContent maxH="2xs" overflow="auto">
+      <PopoverContent maxH="3xs" overflow="auto">
         <PopoverBody p={0}>
           {cloneElement(popoverContent, {
             // Delay close after selecting an item for better UX.
@@ -99,20 +99,16 @@ const LaunchPage = () => {
   const { openSharedModal } = useSharedModals();
 
   const {
+    selectedPlayer,
     getPlayerList,
-    getSelectedPlayer,
     getGameInstanceList,
-    getSelectedGameInstance,
+    selectedGameInstance,
   } = useData();
 
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [gameInstanceList, setGameInstanceList] = useState<
     GameInstanceSummary[]
   >([]);
-
-  const [selectedPlayer, setSelectedPlayer] = useState<Player>();
-  const [selectedGameInstance, setSelectedGameInstance] =
-    useState<GameInstanceSummary>();
 
   useEffect(() => {
     setPlayerList(getPlayerList() || []);
@@ -121,14 +117,6 @@ const LaunchPage = () => {
   useEffect(() => {
     setGameInstanceList(getGameInstanceList() || []);
   }, [getGameInstanceList]);
-
-  useEffect(() => {
-    setSelectedPlayer(getSelectedPlayer());
-  }, [getSelectedPlayer]);
-
-  useEffect(() => {
-    setSelectedGameInstance(getSelectedGameInstance());
-  }, [getSelectedGameInstance]);
 
   return (
     <HStack position="absolute" bottom={7} right={7} spacing={4}>
@@ -144,6 +132,7 @@ const LaunchPage = () => {
           popoverContent={
             <PlayersView
               players={playerList}
+              selectedPlayer={selectedPlayer}
               viewType="list"
               withMenu={false}
             />

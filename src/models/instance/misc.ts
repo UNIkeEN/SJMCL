@@ -5,6 +5,7 @@ export interface GameInstanceSummary {
   iconSrc: string;
   name: string;
   description?: string;
+  starred: boolean;
   versionPath: string;
   version: string;
   isVersionIsolated: boolean;
@@ -12,6 +13,7 @@ export interface GameInstanceSummary {
     loaderType: ModLoaderType;
     version?: string;
   };
+  useSpecGameConfig: boolean;
 }
 
 export interface GameServerInfo {

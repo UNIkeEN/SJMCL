@@ -1,17 +1,15 @@
-use crate::{account::models::AccountError, error::SJMCLResult, utils::image::image_to_base64};
-use image::{DynamicImage, ImageBuffer, Rgba, RgbaImage};
+use image::RgbaImage;
 
-pub fn draw_avatar(size: u32, img: ImageBuffer<Rgba<u8>, Vec<u8>>) -> SJMCLResult<String> {
+pub fn draw_avatar(size: u32, img: &RgbaImage) -> RgbaImage {
   let (skin_width, _) = img.dimensions();
 
   let scale = skin_width as f32 / 64.0;
   let face_offset = ((size as f32 / 18.0).round()) as u32;
 
-  let mut avatar_img = DynamicImage::new_rgba8(size, size).to_rgba8(); // Create a new RGBA image with the same size
-
+  let mut avatar_img = RgbaImage::new(size, size);
   // Draw face
   draw_image_section(
-    &img,
+    img,
     &[8.0 * scale, 8.0 * scale, 8.0 * scale, 8.0 * scale],
     &[
       face_offset,
@@ -24,13 +22,13 @@ pub fn draw_avatar(size: u32, img: ImageBuffer<Rgba<u8>, Vec<u8>>) -> SJMCLResul
 
   // Draw hat
   draw_image_section(
-    &img,
+    img,
     &[40.0 * scale, 8.0 * scale, 8.0 * scale, 8.0 * scale],
     &[0, 0, size, size],
     &mut avatar_img,
   );
 
-  Ok(image_to_base64(avatar_img).map_err(|_| AccountError::TextureError)?)
+  avatar_img
 }
 
 fn draw_image_section(

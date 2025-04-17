@@ -30,6 +30,7 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
+import { InstanceError } from "@/enums/service-error";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -37,41 +38,43 @@ import { base64ImgSrc } from "@/utils/string";
 const InstanceModsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
-  const { summary, openSubdir, getLocalModList } = useInstanceSharedData();
+  const {
+    summary,
+    handleOpenInstanceSubdir,
+    handleImportResource,
+    getLocalModList,
+  } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
   const { openSharedModal } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
-  const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>(localMods);
+  const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const mods = getLocalModList() || [];
-    setLocalMods(mods);
-    setFilteredMods(mods);
+    setLocalMods(getLocalModList() || []);
   }, [getLocalModList]);
 
-  const handleSearchChange = (value: string) => {
-    setQuery(value);
-
-    const keywords = value.trim().toLowerCase().split(/\s+/);
+  useEffect(() => {
+    const keywords = query.trim().toLowerCase().split(/\s+/);
     if (keywords.length === 0 || keywords[0] === "") {
       setFilteredMods(localMods);
-      return;
+    } else {
+      const filtered = localMods.filter((mod) => {
+        const name = mod.name?.toLowerCase() || "";
+        const fileName = mod.fileName?.toLowerCase() || "";
+        return keywords.some(
+          (kw) => name.includes(kw) || fileName.includes(kw)
+        );
+      });
+
+      setFilteredMods(filtered);
     }
-
-    const filtered = localMods.filter((mod) => {
-      const name = mod.name?.toLowerCase() || "";
-      const fileName = mod.fileName?.toLowerCase() || "";
-      return keywords.some((kw) => name.includes(kw) || fileName.includes(kw));
-    });
-
-    setFilteredMods(filtered);
-  };
+  }, [query, localMods]);
 
   useEffect(() => {
     if (isSearching) searchInputRef.current?.focus();
@@ -80,12 +83,10 @@ const InstanceModsPage = () => {
   const handleClearSearch = () => {
     setQuery("");
     setIsSearching(false);
-    setFilteredMods(localMods);
   };
 
   const handleToggleModByExtension = useCallback(
     (filePath: string, enable: boolean) => {
-      console.warn(filePath, enable);
       InstanceService.toggleModByExtension(filePath, enable).then(
         (response) => {
           if (response.status === "success") {
@@ -115,7 +116,7 @@ const InstanceModsPage = () => {
               description: response.details,
               status: "error",
             });
-            if (response.raw_error === "FILE_NOT_FOUND_ERROR") {
+            if (response.raw_error === InstanceError.FileNotFoundError) {
               setLocalMods(getLocalModList(true) || []);
             }
           }
@@ -129,12 +130,22 @@ const InstanceModsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        openSubdir(InstanceSubdirEnums.Mods);
+        handleOpenInstanceSubdir(InstanceSubdirEnums.Mods);
       },
     },
     {
       icon: "add",
-      onClick: () => {},
+      onClick: () => {
+        handleImportResource({
+          filterName: t("InstanceLayout.instanceTabList.mods"),
+          filterExt: ["zip", "jar", "disabled"],
+          tgtDirType: InstanceSubdirEnums.Mods,
+          decompress: false,
+          onSuccessCallback: () => {
+            setLocalMods(getLocalModList(true) || []);
+          },
+        });
+      },
     },
     {
       icon: "download",
@@ -217,7 +228,7 @@ const InstanceModsPage = () => {
         initialIsOpen={accordionStates[1]}
         titleExtra={
           <CountTag
-            count={`${filteredMods.length === localMods.length ? "" : `${filteredMods.length} / `}${localMods.length}`}
+            count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
           />
         }
         onAccordionToggle={(isOpen) => {
@@ -245,7 +256,9 @@ const InstanceModsPage = () => {
                 <Input
                   ref={searchInputRef}
                   value={query}
-                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                  }}
                   size="xs"
                   w={140}
                   fontSize="sm"
@@ -274,7 +287,7 @@ const InstanceModsPage = () => {
       >
         {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
           filteredMods.length > 0 && (
-            <HStack fontSize="xs" color="red.500" mt={-0.5} ml={1.5} mb={2}>
+            <HStack fontSize="xs" color="red.600" mt={-0.5} ml={1.5} mb={2}>
               <Icon as={LuTriangleAlert} />
               <Text>{t("InstanceModsPage.modList.warning")}</Text>
             </HStack>

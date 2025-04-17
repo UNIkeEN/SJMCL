@@ -7,10 +7,12 @@ const GamesPage = () => {
   const { history } = useRoutingHistory();
 
   useEffect(() => {
-    router.replace(
+    let lastRecord =
       [...history].reverse().find((route) => route.startsWith("/games/")) ||
-        "/games/all"
-    );
+      "/games/all";
+    if (lastRecord.endsWith("settings/advanced"))
+      lastRecord = lastRecord.replace("settings/advanced", "settings");
+    router.replace(lastRecord);
   }, [history, router]);
 
   return null;

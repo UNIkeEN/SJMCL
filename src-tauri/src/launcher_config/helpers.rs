@@ -16,7 +16,7 @@ use std::error::Error;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use super::models::{BasicInfo, GameDirectory, JavaInfo, LauncherConfig};
+use super::models::{BasicInfo, GameConfig, GameDirectory, JavaInfo, LauncherConfig};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -442,4 +442,13 @@ pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
 
   let is_lts = [8, 11, 17, 21, 25].contains(&major_version);
   (major_version, is_lts)
+}
+
+pub fn get_global_game_config(app: &AppHandle) -> GameConfig {
+  app
+    .state::<Mutex<LauncherConfig>>()
+    .lock()
+    .unwrap()
+    .global_game_config
+    .clone()
 }

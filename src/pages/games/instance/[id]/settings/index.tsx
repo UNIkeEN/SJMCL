@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Editable from "@/components/common/editable";
 import {
@@ -26,22 +26,27 @@ const InstanceSettingsPage = () => {
   const router = useRouter();
   const toast = useToast();
   const { t } = useTranslation();
-  const { config, update } = useLauncherConfig();
+  const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const globalGameConfigs = config.globalGameConfig;
-  const { summary, updateSummary } = useInstanceSharedData();
 
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
 
-  const [applySettings, setApplySettings] = useState<boolean>(false);
+  const {
+    summary,
+    updateSummaryInContext,
+    gameConfig: instanceGameConfig,
+    handleUpdateInstanceConfig,
+    handleResetInstanceGameConfig,
+  } = useInstanceSharedData();
+  const useSpecGameConfig = summary?.useSpecGameConfig || false;
 
   const handleRenameInstance = useCallback(
     (name: string) => {
       InstanceService.renameInstance(Number(instanceId), name).then(
         (response) => {
           if (response.status === "success") {
-            updateSummary("name", name);
+            updateSummaryInContext("name", name);
           } else
             toast({
               title: response.message,
@@ -51,7 +56,7 @@ const InstanceSettingsPage = () => {
         }
       );
     },
-    [instanceId, toast, updateSummary]
+    [instanceId, toast, updateSummaryInContext]
   );
 
   const instanceSpecSettingsGroups: OptionItemGroupProps[] = [
@@ -80,7 +85,9 @@ const InstanceSettingsPage = () => {
             <Editable // TBD
               isTextArea={true}
               value={summary?.description || ""}
-              onEditSubmit={(value) => {}}
+              onEditSubmit={(value) => {
+                handleUpdateInstanceConfig("description", value);
+              }}
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
             />
@@ -96,9 +103,11 @@ const InstanceSettingsPage = () => {
                 boxSize="28px"
                 objectFit="cover"
               />
-              <GameIconSelectorPopover // TBD
+              <GameIconSelectorPopover
                 value={summary?.iconSrc}
-                onIconSelect={(value) => {}}
+                onIconSelect={(value) => {
+                  handleUpdateInstanceConfig("iconSrc", value);
+                }}
               />
             </HStack>
           ),
@@ -108,14 +117,17 @@ const InstanceSettingsPage = () => {
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={applySettings}
+              isChecked={useSpecGameConfig}
               onChange={(event) => {
-                setApplySettings(event.target.checked);
+                handleUpdateInstanceConfig(
+                  "useSpecGameConfig",
+                  event.target.checked
+                );
               }}
             />
           ),
         },
-        ...(applySettings
+        ...(useSpecGameConfig && instanceGameConfig
           ? [
               {
                 title: t("InstanceSettingsPage.restoreSettings"),
@@ -125,7 +137,9 @@ const InstanceSettingsPage = () => {
                     colorScheme="red"
                     variant="subtle"
                     size="xs"
-                    onClick={() => {}} // TBD
+                    onClick={() => {
+                      handleResetInstanceGameConfig();
+                    }}
                   >
                     {t("InstanceSettingsPage.restore")}
                   </Button>
@@ -138,8 +152,14 @@ const InstanceSettingsPage = () => {
                 children: (
                   <Switch
                     colorScheme={primaryColor}
-                    isChecked={globalGameConfigs.versionIsolation}
-                    onChange={(event) => {}} // TBD
+                    isChecked={instanceGameConfig.versionIsolation}
+                    onChange={(event) => {
+                      handleUpdateInstanceConfig(
+                        "specGameConfig.versionIsolation",
+                        event.target.checked
+                      );
+                      // updateSummaryInContext("isVersionIsolated", event.target.checked)
+                    }}
                   />
                 ),
               },
@@ -161,8 +181,15 @@ const InstanceSettingsPage = () => {
         ))}
       </VStack>
       <Box h={4} />
-      <Collapse in={applySettings} animateOpacity>
-        <GameSettingsGroups instanceId={Number(instanceId)} />
+      <Collapse in={useSpecGameConfig} animateOpacity>
+        {useSpecGameConfig && instanceGameConfig && (
+          <GameSettingsGroups
+            gameConfig={instanceGameConfig}
+            updateGameConfig={(key: string, value: any) => {
+              handleUpdateInstanceConfig(`specGameConfig.${key}`, value);
+            }}
+          />
+        )}
       </Collapse>
     </Box>
   );

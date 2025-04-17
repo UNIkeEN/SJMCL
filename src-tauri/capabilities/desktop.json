@@ -13,7 +13,26 @@
     "fs:default",
     {
       "identifier": "fs:scope",
-      "allow": [{ "path": "**" }]
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
+    },
+    "opener:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "**"
+        },
+        {
+          "path": "**/.minecraft"
+        },
+        {
+          "path": "**/.minecraft/**"
+        }
+      ]
     }
   ]
 }

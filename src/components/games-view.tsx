@@ -2,17 +2,18 @@ import {
   Box,
   BoxProps,
   HStack,
+  Icon,
   Image,
   Radio,
   RadioGroup,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { FaStar } from "react-icons/fa6";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import GameMenu from "@/components/game-menu";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData, useDataDispatch } from "@/contexts/data";
+import { useData } from "@/contexts/data";
 import { GameInstanceSummary } from "@/models/instance/misc";
 
 interface GamesViewProps extends BoxProps {
@@ -29,35 +30,37 @@ const GamesView: React.FC<GamesViewProps> = ({
   withMenu = true,
   ...boxProps
 }) => {
-  const { config } = useLauncherConfig();
+  const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { getSelectedGameInstance } = useData();
-  const [selectedGameInstance, _setSelectedGameInstance] =
-    useState<GameInstanceSummary>();
-
-  const { setSelectedGameInstance } = useDataDispatch(); // TODO：remove global state setter here after replace mock logic
-
-  useEffect(() => {
-    _setSelectedGameInstance(getSelectedGameInstance());
-  }, [getSelectedGameInstance]);
+  const { selectedGameInstance } = useData();
 
   const generateDesc = (game: GameInstanceSummary) => {
     if (game.modLoader.loaderType === "Unknown") {
-      return game.version;
+      return game.version || "";
     }
-    return `${game.version}, ${game.modLoader.loaderType} ${game.modLoader.version}`;
+    return [
+      game.version,
+      `${game.modLoader.loaderType} ${game.modLoader.version}`,
+    ]
+      .filter(Boolean)
+      .join(", ");
   };
 
   const handleUpdateSelectedGameInstance = (game: GameInstanceSummary) => {
-    // TODO: add service logic
-    setSelectedGameInstance(game);
+    update("states.shared.selectedInstanceId", game.id.toString());
     onSelectCallback();
   };
 
   const listItems = games.map((game) => ({
     title: game.name,
-    description:
-      generateDesc(game) + (game.description ? `, ${game.description}` : ""),
+    description: [generateDesc(game), game.description]
+      .filter(Boolean)
+      .join(", "),
+    ...{
+      titleExtra: game.starred && (
+        <Icon as={FaStar} mt={-1} color="yellow.500" />
+      ),
+    },
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio
@@ -73,23 +76,26 @@ const GamesView: React.FC<GamesViewProps> = ({
         />
       </HStack>
     ),
+    ...(withMenu
+      ? {}
+      : {
+          isFullClickZone: true,
+          onClick: () => handleUpdateSelectedGameInstance(game),
+        }),
     children: withMenu ? <GameMenu game={game} variant="buttonGroup" /> : <></>,
   }));
 
   const gridItems = games.map((game) => ({
     cardContent: {
       title: game.name,
-      description: generateDesc(game),
+      description: generateDesc(game) || String.fromCharCode(160),
       image: game.iconSrc,
-      ...(withMenu
-        ? {
-            extraContent: (
-              <Box position="absolute" top={0.5} right={1}>
-                <GameMenu game={game} />
-              </Box>
-            ),
-          }
-        : {}),
+      extraContent: (
+        <HStack spacing={1} position="absolute" top={0.5} right={1}>
+          {game.starred && <Icon as={FaStar} color="yellow.500" />}
+          {withMenu && <GameMenu game={game} />}
+        </HStack>
+      ),
     },
     isSelected: selectedGameInstance?.id === game.id,
     radioValue: game.id.toString(),

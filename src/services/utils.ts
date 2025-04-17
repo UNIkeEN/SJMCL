@@ -14,3 +14,20 @@ export const retrieveMemoryInfo = async (): Promise<MemoryInfo> => {
     throw error;
   }
 };
+
+/**
+ * CHECK the availability of a given service URL.
+ * @param url The URL to test.
+ * @returns {Promise<number>} Round-trip time in milliseconds.
+ * @throws {Error} If the service is unreachable or backend call fails.
+ */
+export const checkServiceAvailability = async (
+  url: string
+): Promise<number> => {
+  try {
+    return await invoke<number>("check_service_availability", { url });
+  } catch (error) {
+    console.error("Error in check_service_availability:", error);
+    throw error;
+  }
+};

@@ -140,6 +140,14 @@
         "label": "角色名称",
         "placeholder": "请输入角色名称",
         "errorMessage": "只能包含英文字母、数字和下划线，不超过16个字符。"
+      },
+      "advancedOptions": {
+        "title": "高级选项",
+        "uuid": {
+          "label": "UUID",
+          "placeholder": "（由 SJMCL 自动生成）",
+          "errorMessage": "UUID 格式不正确"
+        }
       }
     },
     "3rdparty": {
@@ -216,6 +224,16 @@
             "standard": "标准",
             "simplified": "简约"
           }
+        }
+      }
+    },
+    "font": {
+      "title": "字体",
+      "settings": {
+        "fontSize": {
+          "title": "字体大小",
+          "small": "小",
+          "large": "大"
         }
       }
     },
@@ -516,12 +534,9 @@
       "windows": "文件资源管理器"
     }
   },
-  "GameAdvancedSettingsModal": {
-    "header": {
-      "title": "高级设置"
-    }
-  },
   "GameAdvancedSettingsPage": {
+    "title": "高级游戏设置",
+    "topWarning": "高级游戏设置仅提供给专业玩家使用。修改以下选项可能导致游戏无法启动。除非您充分了解其中的意义，否则请不要修改这些选项！",
     "customCommands": {
       "title": "自定义命令",
       "settings": {
@@ -635,7 +650,7 @@
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
-    "copy":{
+    "copy": {
       "text": "复制",
       "toast": {
         "success": "已成功复制到剪贴板",
@@ -740,7 +755,7 @@
         },
         "customInfo": {
           "title": "自定义信息",
-          "description": "将显示在游戏主界面右下角与 F3 调试页面左上角"
+          "description": "将显示在游戏主界面左下角与 F3 调试页面左上角"
         }
       }
     },
@@ -853,7 +868,9 @@
   },
   "InstanceLayout": {
     "secMenu": {
-      "exportModPack": "导出为整合包"
+      "exportModPack": "导出为整合包",
+      "star": "星标此实例",
+      "unstar": "取消星标"
     },
     "instanceTabList": {
       "overview": "概览",
@@ -1014,8 +1031,13 @@
       "title": "启动游戏 - {{name}}"
     },
     "step": {
+      "selectSuitableJRE": "选择合适 Java 运行时",
       "validateGameFiles": "验证游戏与依赖文件完整性",
+      "validateSelectedPlayer": "验证账户状态",
       "launchGame": "等待游戏启动"
+    },
+    "toast": {
+      "noSelectedPlayer": "请先添加并选择游戏角色"
     }
   },
   "ManageSkinModal": {
@@ -1042,7 +1064,7 @@
     "versionNotSelected": "未选择版本"
   },
   "ModLoaderSelector": {
-    "stable": "稳定版",
+    "stable": "正式版",
     "beta": "测试版",
     "releaseDate": "发布于 {{date}}"
   },
@@ -1055,6 +1077,22 @@
       "viewSkin": "查看皮肤",
       "delete": "删除此角色",
       "copyUUID": "复制 UUID"
+    }
+  },
+  "PingTestPage":{
+    "PingServerList":{
+      "title": "服务连通性测试",
+      "offline": "离线",
+      "bmclapi" : "BMCLAPI",
+      "curseforge" : "CurseForge",
+      "modrinth" : "Modrinth",
+      "mojang" : "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github" : "GitHub",
+      "sjmclapi" : "SJMC Launcher API"
     }
   },
   "ReLogin3rdPartyPlayerModal": {
@@ -1284,6 +1322,11 @@
       "setAsBg": "设置为启动器背景"
     }
   },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "请选择想要添加的角色"
+    }
+  },
   "Services": {
     "config": {
       "retrieveLauncherConfig": {
@@ -1357,13 +1400,17 @@
       }
     },
     "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "获取角色列表失败"
+        }
+      },
       "addPlayerOffline": {
         "success": "离线角色添加成功",
         "error": {
           "title": "离线角色添加失败",
           "description": {
-            "DUPLICATE": "角色已存在",
-            "TEXTURE_ERROR": "角色皮肤获取失败"
+            "DUPLICATE": "角色已存在"
           }
         }
       },
@@ -1373,35 +1420,45 @@
           "description": {
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "INVALID": "服务器类型错误"
+            "INVALID": "服务器类型错误",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
       "addPlayerOAuth": {
-        "success": "OAuth 方式添加角色成功",
+        "success": "角色添加成功",
         "error": {
-          "title": "OAuth 方式添加角色失败",
+          "title": "角色添加失败",
           "description": {
             "DUPLICATE": "角色已存在",
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NOT_FOUND": "认证服务器不存在",
-            "TEXTURE_ERROR": "角色皮肤获取失败",
             "CANCELLED": "已取消",
-            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败"
+            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败",
+            "INVALID": "无效的认证服务器地址"
           }
         }
       },
       "addPlayer3rdPartyPassword": {
-        "success": "账号密码方式添加角色成功",
+        "success": "角色添加成功",
         "error": {
-          "title": "账号密码方式添加角色失败",
+          "title": "角色添加失败",
           "description": {
             "DUPLICATE": "角色已存在",
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "TEXTURE_ERROR": "角色皮肤获取失败",
-            "INVALID": "账号或密码错误"
+            "INVALID": "账号或密码错误",
+            "NOT_FOUND": "认证服务器不存在"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "角色添加成功",
+        "error": {
+          "title": "角色添加失败",
+          "description": {
+            "DUPLICATE": "角色已存在"
           }
         }
       },
@@ -1425,7 +1482,38 @@
           }
         }
       },
-      "fetchAuthServerInfo": {
+      "refreshPlayer": {
+        "success": "角色信息更新成功",
+        "error": {
+          "title": "角色信息更新失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "INVALID": "不支持离线角色刷新"
+          }
+        }
+      },
+      "validatePlayer": {
+        "error": {
+          "title": "验证角色失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "访问令牌已过期，请重新登录",
+            "NETWORK_ERROR": "无法连接到服务器",
+            "PARSE_ERROR": "服务器返回的数据格式错误",
+            "NO_DOWNLOAD_API": "下载 Authlib-Injector 失败，请检查网络连接",
+            "SAVE_ERROR": "保存 Authlib-Injector 失败"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "获取认证服务器列表失败"
+        }
+      },
+      "fetchAuthServer": {
         "error": {
           "title": "获取认证服务器信息失败",
           "description": {
@@ -1452,32 +1540,6 @@
             "NOT_FOUND": "认证服务器不存在"
           }
         }
-      },
-      "retrievePlayerList": {
-        "error": {
-          "title": "获取角色列表失败"
-        }
-      },
-      "retrieveSelectedPlayer": {
-        "error": {
-          "title": "获取所选角色失败",
-          "description": {
-            "NOT_FOUND": "所选角色不存在"
-          }
-        }
-      },
-      "updateSelectedPlayer": {
-        "error": {
-          "title": "更新所选角色失败",
-          "description": {
-            "NOT_FOUND": "所选角色不存在"
-          }
-        }
-      },
-      "retrieveAuthServerList": {
-        "error": {
-          "title": "获取认证服务器列表失败"
-        }
       }
     },
     "resource": {
@@ -1485,8 +1547,7 @@
         "error": {
           "title": "获取游戏版本列表失败",
           "description": {
-            "PARSE_ERROR": "服务器返回数据格式错误",
-            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+            "PARSE_ERROR": "服务器返回数据格式错误"
           }
         }
       },
@@ -1504,6 +1565,33 @@
       "retrieveInstanceList": {
         "error": {
           "title": "获取实例列表失败"
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "实例设置更新失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "NOT_FOUND": "实例不存在"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "实例游戏设置获取失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "实例游戏设置已重置",
+        "error": {
+          "title": "实例游戏设置重置失败",
+          "description": {
+            "INSTANCE_NOT_FOUND": "未找到指定 ID 的实例",
+            "SAVE_ERROR": "保存实例设置文件失败"
+          }
         }
       },
       "openInstanceSubdir": {
@@ -1530,6 +1618,31 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "资源复制成功",
+        "error": {
+          "title": "复制资源失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
+            "INVALID_SOURCE_PATH": "无效的源路径",
+            "ZIP_FILE_PROCESS_FAILED": "压缩文件读取或解压失败",
+            "FILE_COPY_FAILED": "复制文件命令执行失败",
+            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "资源移动成功",
+        "error": {
+          "title": "移动资源失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
+            "INVALID_SOURCE_PATH": "无效的源路径",
+            "FILE_MOVE_FAILED": "移动文件命令执行失败",
+            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
           }
         }
       },
@@ -1589,43 +1702,12 @@
           }
         }
       },
-      "copyAcrossInstances": {
-        "success": "资源复制成功",
-        "error": {
-          "title": "复制资源失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "INVALID_SOURCE_PATH": "无效的源路径",
-            "FILE_COPY_FAILED": "文件复制失败",
-            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
-          }
-        }
-      },
-      "moveAcrossInstances": {
-        "success": "资源移动成功",
-        "error": {
-          "title": "移动资源失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "INVALID_SOURCE_PATH": "无效的源路径",
-            "FILE_MOVE_FAILED": "文件移动失败",
-            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
-          }
-        }
-      },
       "toggleModByExtension": {
         "error": {
           "title": "模组状态切换失败",
           "description": {
             "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
           }
-        }
-      }
-    },
-    "discover": {
-      "fetchPostSourcesInfo": {
-        "error": {
-          "title": "获取数据源失败"
         }
       }
     }

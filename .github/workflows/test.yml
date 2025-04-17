@@ -81,3 +81,5 @@ jobs:
 
       - name: Test Build
         run: npx tauri build ${{ matrix.args }}
+        env:
+          SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}

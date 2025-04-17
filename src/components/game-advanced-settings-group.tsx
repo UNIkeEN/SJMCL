@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertIcon,
   Button,
   Input,
   Menu,
@@ -6,6 +8,8 @@ import {
   MenuItemOption,
   MenuList,
   MenuOptionGroup,
+  NumberInput,
+  NumberInputField,
   Switch,
   VStack,
 } from "@chakra-ui/react";
@@ -16,52 +20,41 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import { Section } from "@/components/common/section";
+import { GameSettingsGroupsProps } from "@/components/game-settings-groups";
 import { useLauncherConfig } from "@/contexts/config";
-import { defaultGameConfig } from "@/models/config";
 
-interface GameAdvancedSettingsGroupsProps {
-  instanceId?: number;
-}
-
-const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
-  instanceId,
+const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
+  gameConfig,
+  updateGameConfig,
 }) => {
   const { t } = useTranslation();
-  const { config, update } = useLauncherConfig();
+  const { config } = useLauncherConfig();
   const appearanceConfigs = config.appearance;
   const primaryColor = appearanceConfigs.theme.primaryColor;
-  const gameAdvancedConfigs =
-    instanceId !== undefined
-      ? defaultGameConfig // TBD
-      : config.globalGameConfig;
 
   const [minecraftArgument, setMinecraftArgument] = useState<string>(
-    gameAdvancedConfigs.advanced.customCommands.minecraftArgument
+    gameConfig.advanced.customCommands.minecraftArgument
   );
   const [precallCommand, setPrecallCommand] = useState<string>(
-    gameAdvancedConfigs.advanced.customCommands.precallCommand
+    gameConfig.advanced.customCommands.precallCommand
   );
   const [wrapperLauncher, setWrapperLauncher] = useState<string>(
-    gameAdvancedConfigs.advanced.customCommands.wrapperLauncher
+    gameConfig.advanced.customCommands.wrapperLauncher
   );
   const [postExitCommand, setPostExitCommand] = useState<string>(
-    gameAdvancedConfigs.advanced.customCommands.postExitCommand
+    gameConfig.advanced.customCommands.postExitCommand
   );
-  const [args, setArgs] = useState<string>(
-    gameAdvancedConfigs.advanced.jvm.args
-  );
+  const [args, setArgs] = useState<string>(gameConfig.advanced.jvm.args);
   const [javaPermanentGenerationSpace, setJavaPermanentGenerationSpace] =
-    useState<number>(
-      gameAdvancedConfigs.advanced.jvm.javaPermanentGenerationSpace
-    );
+    useState<number>(gameConfig.advanced.jvm.javaPermanentGenerationSpace);
   const [environmentVariable, setEnvironmentVariable] = useState<string>(
-    gameAdvancedConfigs.advanced.jvm.environmentVariable
+    gameConfig.advanced.jvm.environmentVariable
   );
 
   const gameCompletnessCheckPolicy = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
-    if (instanceId !== undefined) return; // TBD
-    update(`globalGameConfig.advanced.${key}`, value);
+    updateGameConfig(`advanced.${key}`, value);
   };
 
   const settingGroups: OptionItemGroupProps[] = [
@@ -185,25 +178,24 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
             "GameAdvancedSettingsPage.jvm.settings.javaPermanentGenerationSpace.title"
           ),
           children: (
-            <Input
+            <NumberInput
               size="xs"
-              maxW={380}
+              w={380}
               value={javaPermanentGenerationSpace}
-              onChange={(event) =>
-                // TODO: convert string to number may failed
-                setJavaPermanentGenerationSpace(Number(event.target.value))
-              }
+              onChange={(value) => {
+                if (!/^\d*$/.test(value)) return;
+                setJavaPermanentGenerationSpace(Number(value));
+              }}
               onBlur={() => {
                 updateGameAdvancedConfig(
                   "jvm.javaPermanentGenerationSpace",
-                  javaPermanentGenerationSpace
+                  Math.min(javaPermanentGenerationSpace, 2 ** 32 - 1)
                 );
               }}
               focusBorderColor={`${primaryColor}.500`}
-              placeholder={t(
-                "GameAdvancedSettingsPage.jvm.settings.javaPermanentGenerationSpace.placeholder"
-              )}
-            />
+            >
+              <NumberInputField pr={0} />
+            </NumberInput>
           ),
         },
         {
@@ -246,15 +238,14 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
                 textAlign="left"
               >
                 {t(
-                  `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${gameAdvancedConfigs.advanced.workaround.gameCompletnessCheckPolicy}`
+                  `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${gameConfig.advanced.workaround.gameCompletnessCheckPolicy}`
                 )}
               </MenuButton>
               <MenuList>
                 <MenuOptionGroup
                   type="radio"
                   value={
-                    gameAdvancedConfigs.advanced.workaround
-                      .gameCompletnessCheckPolicy
+                    gameConfig.advanced.workaround.gameCompletnessCheckPolicy
                   }
                   onChange={(value) => {
                     updateGameAdvancedConfig(
@@ -280,7 +271,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={gameAdvancedConfigs.advanced.workaround.noJvmArgs}
+              isChecked={gameConfig.advanced.workaround.noJvmArgs}
               onChange={(event) => {
                 updateGameAdvancedConfig(
                   "workaround.noJvmArgs",
@@ -297,9 +288,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={
-                gameAdvancedConfigs.advanced.workaround.dontCheckJvmValidity
-              }
+              isChecked={gameConfig.advanced.workaround.dontCheckJvmValidity}
               onChange={(event) => {
                 updateGameAdvancedConfig(
                   "workaround.dontCheckJvmValidity",
@@ -316,9 +305,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
           children: (
             <Switch
               colorScheme={primaryColor}
-              isChecked={
-                gameAdvancedConfigs.advanced.workaround.dontPatchNatives
-              }
+              isChecked={gameConfig.advanced.workaround.dontPatchNatives}
               onChange={(event) => {
                 updateGameAdvancedConfig(
                   "workaround.dontPatchNatives",
@@ -337,9 +324,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
                 children: (
                   <Switch
                     colorScheme={primaryColor}
-                    isChecked={
-                      gameAdvancedConfigs.advanced.workaround.useNativeGlfw
-                    }
+                    isChecked={gameConfig.advanced.workaround.useNativeGlfw}
                     onChange={(event) => {
                       updateGameAdvancedConfig(
                         "workaround.useNativeGlfw",
@@ -356,9 +341,7 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
                 children: (
                   <Switch
                     colorScheme={primaryColor}
-                    isChecked={
-                      gameAdvancedConfigs.advanced.workaround.useNativeOpenal
-                    }
+                    isChecked={gameConfig.advanced.workaround.useNativeOpenal}
                     onChange={(event) => {
                       updateGameAdvancedConfig(
                         "workaround.useNativeOpenal",
@@ -375,11 +358,25 @@ const GameAdvancedSettingsGroups: React.FC<GameAdvancedSettingsGroupsProps> = ({
   ];
 
   return (
-    <VStack overflow="auto" align="stretch" spacing={4} flex="1">
-      {settingGroups.map((group, index) => (
-        <OptionItemGroup title={group.title} items={group.items} key={index} />
-      ))}
-    </VStack>
+    <Section
+      // className="content-full-y"
+      title={t("GameAdvancedSettingsPage.title")}
+      withBackButton
+    >
+      <VStack overflow="auto" align="stretch" spacing={4} flex="1">
+        <Alert status="warning" fontSize="xs-sm" variant="left-accent">
+          <AlertIcon />
+          {t("GameAdvancedSettingsPage.topWarning")}
+        </Alert>
+        {settingGroups.map((group, index) => (
+          <OptionItemGroup
+            title={group.title}
+            items={group.items}
+            key={index}
+          />
+        ))}
+      </VStack>
+    </Section>
   );
 };
 
