@@ -299,16 +299,6 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   if let Ok(home) = app.path().home_dir() {
     java_paths.extend(search_java_homes_in_directory(home.join(".jdks")));
   }
-  if let Ok(path_var) = std::env::var("PATH") {
-    for path in std::env::split_paths(&path_var) {
-      java_paths.extend(resolve_java_executable(PathBuf::from(path)));
-    }
-  }
-  if let Ok(path_var) = std::env::var("HMCL_JRES") {
-    for path in std::env::split_paths(&path_var) {
-      java_paths.extend(resolve_java_home(PathBuf::from(path)));
-    }
-  }
   #[cfg(target_os = "windows")]
   {
     let common_vendors = [
@@ -331,16 +321,15 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   }
   #[cfg(target_os = "linux")]
   {
-    java_paths.extend(search_java_homes_in_directory(PathBuf::from("/usr/java")));
-    java_paths.extend(search_java_homes_in_directory(PathBuf::from(
+    let common_dirs = [
+      "/usr/java",
       "/usr/lib/jvm",
-    )));
-    java_paths.extend(search_java_homes_in_directory(PathBuf::from(
       "/usr/lib32/jvm",
-    )));
-    java_paths.extend(search_java_homes_in_directory(PathBuf::from(
       "/usr/lib64/jvm",
-    )));
+    ];
+    for dir in common_dirs {
+      java_paths.extend(search_java_homes_in_directory(PathBuf::from(dir)));
+    }
     if let Ok(home) = app.path().home_dir() {
       java_paths.extend(search_java_homes_in_directory(
         home.join(".sdkman/candidates/java"),
@@ -349,6 +338,14 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   }
   #[cfg(target_os = "macos")]
   {
+    let common_javas = [
+      "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home",
+      "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/MacOS/itms/java",
+      "/opt/homebrew/opt/java",
+    ];
+    for java in common_javas {
+      java_paths.extend(resolve_java_home(PathBuf::from(java)));
+    }
     java_paths.extend(search_java_homes_in_mac_java_virtual_machines(
       PathBuf::from("/Library/Java/JavaVirtualMachines"),
     ));
@@ -357,15 +354,6 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
         home.join("Library/Java/JavaVirtualMachines"),
       ));
     }
-    java_paths.extend(resolve_java_home(PathBuf::from(
-      "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java",
-    )));
-    java_paths.extend(resolve_java_home(PathBuf::from(
-      "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/MacOS/itms/java/bin/java",
-    )));
-    java_paths.extend(resolve_java_home(PathBuf::from(
-      "/opt/homebrew/opt/java/bin/java",
-    )));
     if let Ok(entries) = fs::read_dir(PathBuf::from("/opt/homebrew/Cellar")) {
       for entry in entries {
         if let Ok(entry) = entry {
@@ -397,6 +385,7 @@ fn search_java_homes_in_directory(dir: PathBuf) -> Vec<String> {
   java_paths
 }
 
+#[cfg(target_os = "macos")]
 fn search_java_homes_in_mac_java_virtual_machines(dir: PathBuf) -> Vec<String> {
   let mut java_paths = Vec::new();
   if let Ok(entries) = fs::read_dir(dir) {
@@ -413,14 +402,10 @@ fn search_java_homes_in_mac_java_virtual_machines(dir: PathBuf) -> Vec<String> {
 }
 
 fn resolve_java_home(path: PathBuf) -> Result<String, Box<dyn Error>> {
-  resolve_java_executable(path.join("bin"))
-}
-
-fn resolve_java_executable(path: PathBuf) -> Result<String, Box<dyn Error>> {
   #[cfg(target_os = "windows")]
-  let java_bin = path.join("java.exe");
+  let java_bin = path.join(r"bin\java.exe");
   #[cfg(not(target_os = "windows"))]
-  let java_bin = path.join("java");
+  let java_bin = path.join("bin/java");
   Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
 }
 
