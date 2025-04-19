@@ -89,6 +89,10 @@
         "description": "管理本地遊戲儲存目錄，以新增已安裝例項"
       }
     },
+    "modpackOperations": {
+      "fromdisk": "從本地檔案匯入",
+      "download": "下載整合包"
+    },
     "moreOptions": {
       "title": "更多",
       "server": {
@@ -136,6 +140,14 @@
         "label": "角色名稱",
         "placeholder": "請輸入角色名稱",
         "errorMessage": "只能包含英文字母、數字和下劃線，不超過16個字元。"
+      },
+      "advancedOptions": {
+        "title": "高階選項",
+        "uuid": {
+          "label": "UUID",
+          "placeholder": "（由 SJMCL 自動生成）",
+          "errorMessage": "UUID 格式不正確"
+        }
       }
     },
     "3rdparty": {
@@ -143,8 +155,7 @@
         "label": "認證源",
         "selectSource": "請選擇認證源",
         "noSource": "未新增可用認證源伺服器",
-        "addSource": "新增認證源",
-        "supportOAuth": "此認證源支援 Yggdrasil Connect 規範提案"
+        "addSource": "新增認證源"
       },
       "email": {
         "label": "郵箱",
@@ -159,9 +170,24 @@
         "placeholder": "請輸入密碼"
       }
     },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "此認證源支援 Yggdrasil Connect 規範提案",
+          "microsoft": "SJMCL 支援微軟 OAuth 2.0 裝置許可權授予流"
+        },
+        "next": "請點選繼續登入按鈕開啟登入視窗，輸入以上程式碼（已自動複製）"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "開始 OAuth 登入",
+          "microsoft": "開始微軟登入"
+        },
+        "next": "繼續登入"
+      }
+    },
     "button": {
       "buyMinecraft": "購買 Minecraft",
-      "beginOAuth": "開始 OAuth 登入",
       "useOAuthLogin": "OAuth 登入",
       "usePasswordLogin": "賬號密碼登入"
     }
@@ -198,6 +224,16 @@
             "standard": "標準",
             "simplified": "簡約"
           }
+        }
+      }
+    },
+    "font": {
+      "title": "字型",
+      "settings": {
+        "fontSize": {
+          "title": "字型大小",
+          "small": "小",
+          "large": "大"
         }
       }
     },
@@ -498,12 +534,9 @@
       "windows": "檔案資源管理器"
     }
   },
-  "GameAdvancedSettingsModal": {
-    "header": {
-      "title": "高階設定"
-    }
-  },
   "GameAdvancedSettingsPage": {
+    "title": "高階遊戲設定",
+    "topWarning": "高階遊戲設定僅提供給專業玩家使用。修改以下選項可能導致遊戲無法啟動。除非您充分了解其中的意義，否則請不要修改這些選項！",
     "customCommands": {
       "title": "自定義命令",
       "settings": {
@@ -544,7 +577,7 @@
       "title": "除錯選項",
       "settings": {
         "noJvmArgs": "不新增預設的 JVM 引數",
-        "gameCompletnessCheckPolicy": {
+        "gameFileValidatePolicy": {
           "title": "遊戲檔案完整性檢查策略",
           "disable": "不檢查",
           "normal": "普通檢查",
@@ -557,10 +590,10 @@
           "title": "不嘗試自動替換本地庫"
         },
         "useNativeGlfw": {
-          "title": "使用系統 GLFW(僅 Linux)"
+          "title": "使用系統 GLFW（僅 Linux）"
         },
         "useNativeOpenal": {
-          "title": "使用系統 OpenAL(僅 Linux)"
+          "title": "使用系統 OpenAL（僅 Linux）"
         }
       }
     }
@@ -617,6 +650,13 @@
     "cancel": "取消",
     "close": "關閉",
     "confirm": "確定",
+    "copy": {
+      "text": "複製",
+      "toast": {
+        "success": "已成功複製到剪貼簿",
+        "error": "寫入剪貼簿失敗"
+      }
+    },
     "copyOrMove": {
       "linux": "複製或移動",
       "macos": "複製或移動",
@@ -648,19 +688,29 @@
       "title": "通用設定",
       "settings": {
         "language": {
-          "title": "語言（Language）"
+          "title": "語言（Language）",
+          "communityAck": ""
         }
       }
     },
     "functions": {
       "title": "功能",
       "settings": {
-        "discover": {
+        "discoverPage": {
           "title": "發現頁",
           "openNotice": {
             "part-1": "頂部導航欄的 “搜尋” 已替換為 “發現”，您可以透過鍵盤快捷鍵 ",
             "part-2": " 繼續使用 “聚合搜尋”。"
           }
+        },
+        "instancesNavType": {
+          "title": "例項導航欄分組方式",
+          "instance": "按例項",
+          "directory": "按目錄"
+        },
+        "launchPageQuickSwitch": {
+          "title": "快捷切換例項與賬戶",
+          "description": "啟用後，點選啟動頁的切換按鈕可直接選擇賬戶或例項，而無需跳轉頁面"
         }
       }
     }
@@ -705,7 +755,7 @@
         },
         "customInfo": {
           "title": "自定義資訊",
-          "description": "將顯示在遊戲主介面右下角與 F3 除錯頁面左上角"
+          "description": "將顯示在遊戲主介面左下角與 F3 除錯頁面左上角"
         }
       }
     },
@@ -778,10 +828,12 @@
       "settings": {
         "MUA": {
           "title": "Minecraft 高校聯盟（MUA）",
-          "description": "和全國各高校的玩家一起遊玩"
+          "description": "和全國各高校的玩家一起遊玩",
+          "url": "https://www.mualliance.cn"
         },
         "SJMC": {
-          "title": "上海交通大學 Minecraft 社（SJMC）"
+          "title": "上海交通大學 Minecraft 社（SJMC）",
+          "url": "https://mc.sjtu.cn"
         }
       }
     },
@@ -816,7 +868,9 @@
   },
   "InstanceLayout": {
     "secMenu": {
-      "exportModPack": "匯出為整合包"
+      "exportModPack": "匯出為整合包",
+      "star": "星標此例項",
+      "unstar": "取消星標"
     },
     "instanceTabList": {
       "overview": "概覽",
@@ -843,7 +897,8 @@
         "alert": "可能不相容",
         "info": "檢視資訊",
         "update": "檢查更新",
-        "search": "搜尋"
+        "search": "搜尋",
+        "placeholder": "搜尋模組..."
       }
     }
   },
@@ -971,6 +1026,20 @@
       "noSelectedGame": "尚未選擇遊戲例項"
     }
   },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "啟動遊戲 - {{name}}"
+    },
+    "step": {
+      "selectSuitableJRE": "選擇合適 Java 執行時",
+      "validateGameFiles": "驗證遊戲與依賴檔案完整性",
+      "validateSelectedPlayer": "驗證賬戶狀態",
+      "launchGame": "等待遊戲啟動"
+    },
+    "toast": {
+      "noSelectedPlayer": "請先新增並選擇遊戲角色"
+    }
+  },
   "ManageSkinModal": {
     "skinManage": "管理皮膚",
     "default": "預設",
@@ -995,7 +1064,7 @@
     "versionNotSelected": "未選擇版本"
   },
   "ModLoaderSelector": {
-    "stable": "穩定版",
+    "stable": "正式版",
     "beta": "測試版",
     "releaseDate": "釋出於 {{date}}"
   },
@@ -1006,7 +1075,24 @@
     "label": {
       "manageSkin": "管理皮膚",
       "viewSkin": "檢視皮膚",
-      "delete": "刪除此角色"
+      "delete": "刪除此角色",
+      "copyUUID": "複製 UUID"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "服務連通性測試",
+      "offline": "離線",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC Launcher API"
     }
   },
   "ReLogin3rdPartyPlayerModal": {
@@ -1236,6 +1322,11 @@
       "setAsBg": "設定為啟動器背景"
     }
   },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "請選擇想要新增的角色"
+    }
+  },
   "Services": {
     "config": {
       "retrieveLauncherConfig": {
@@ -1309,38 +1400,65 @@
       }
     },
     "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "獲取角色列表失敗"
+        }
+      },
       "addPlayerOffline": {
         "success": "離線角色新增成功",
         "error": {
           "title": "離線角色新增失敗",
           "description": {
-            "DUPLICATE": "角色已存在",
-            "TEXTURE_ERROR": "角色皮膚獲取失敗"
+            "DUPLICATE": "角色已存在"
           }
         }
       },
-      "addPlayer3rdPartyOAuth": {
-        "success": "OAuth 方式新增角色成功",
+      "fetchOAuthCode": {
         "error": {
-          "title": "OAuth 方式新增角色失敗",
+          "title": "獲取認證程式碼失敗",
+          "description": {
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "INVALID": "伺服器型別錯誤",
+            "NOT_FOUND": "認證伺服器不存在"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "角色新增成功",
+        "error": {
+          "title": "角色新增失敗",
           "description": {
             "DUPLICATE": "角色已存在",
-            "AUTH_SERVER_ERROR": "無法連線至認證伺服器，或伺服器不支援該登入方式",
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NOT_FOUND": "認證伺服器不存在",
-            "TEXTURE_ERROR": "角色皮膚獲取失敗",
-            "CANCELLED": "已取消"
+            "CANCELLED": "已取消",
+            "CREATE_WEBVIEW_ERROR": "建立 WebView 失敗",
+            "INVALID": "無效的認證伺服器地址"
           }
         }
       },
       "addPlayer3rdPartyPassword": {
-        "success": "賬號密碼方式新增角色成功",
+        "success": "角色新增成功",
         "error": {
-          "title": "賬號密碼方式新增角色失敗",
+          "title": "角色新增失敗",
           "description": {
             "DUPLICATE": "角色已存在",
-            "AUTH_SERVER_ERROR": "無法連線至認證伺服器",
-            "TEXTURE_ERROR": "角色皮膚獲取失敗",
-            "INVALID": "賬號或密碼錯誤"
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "INVALID": "賬號或密碼錯誤",
+            "NOT_FOUND": "認證伺服器不存在"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "角色新增成功",
+        "error": {
+          "title": "角色新增失敗",
+          "description": {
+            "DUPLICATE": "角色已存在"
           }
         }
       },
@@ -1364,7 +1482,38 @@
           }
         }
       },
-      "fetchAuthServerInfo": {
+      "refreshPlayer": {
+        "success": "角色資訊更新成功",
+        "error": {
+          "title": "角色資訊更新失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已過期，請重新登入",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "INVALID": "不支援離線角色重新整理"
+          }
+        }
+      },
+      "validatePlayer": {
+        "error": {
+          "title": "驗證角色失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "訪問令牌已過期，請重新登入",
+            "NETWORK_ERROR": "無法連線到伺服器",
+            "PARSE_ERROR": "伺服器返回的資料格式錯誤",
+            "NO_DOWNLOAD_API": "下載 Authlib-Injector 失敗，請檢查網路連線",
+            "SAVE_ERROR": "儲存 Authlib-Injector 失敗"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "獲取認證伺服器列表失敗"
+        }
+      },
+      "fetchAuthServer": {
         "error": {
           "title": "獲取認證伺服器資訊失敗",
           "description": {
@@ -1391,32 +1540,6 @@
             "NOT_FOUND": "認證伺服器不存在"
           }
         }
-      },
-      "retrievePlayerList": {
-        "error": {
-          "title": "獲取角色列表失敗"
-        }
-      },
-      "retrieveSelectedPlayer": {
-        "error": {
-          "title": "獲取所選角色失敗",
-          "description": {
-            "NOT_FOUND": "所選角色不存在"
-          }
-        }
-      },
-      "updateSelectedPlayer": {
-        "error": {
-          "title": "更新所選角色失敗",
-          "description": {
-            "NOT_FOUND": "所選角色不存在"
-          }
-        }
-      },
-      "retrieveAuthServerList": {
-        "error": {
-          "title": "獲取認證伺服器列表失敗"
-        }
       }
     },
     "resource": {
@@ -1424,8 +1547,7 @@
         "error": {
           "title": "獲取遊戲版本列表失敗",
           "description": {
-            "PARSE_ERROR": "伺服器返回資料格式錯誤",
-            "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
+            "PARSE_ERROR": "伺服器返回資料格式錯誤"
           }
         }
       },
@@ -1443,6 +1565,33 @@
       "retrieveInstanceList": {
         "error": {
           "title": "獲取例項列表失敗"
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "例項設定更新失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
+            "NOT_FOUND": "例項不存在"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "例項遊戲設定獲取失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "例項遊戲設定已重置",
+        "error": {
+          "title": "例項遊戲設定重置失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND": "未找到指定 ID 的例項",
+            "SAVE_ERROR": "儲存例項設定檔案失敗"
+          }
         }
       },
       "openInstanceSubdir": {
@@ -1465,10 +1614,35 @@
       },
       "renameInstance": {
         "error": {
-          "title": "重命名例項失败",
+          "title": "例項重新命名失敗",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
-            "CONFLICT_NAME_ERROR": "重複的例項名稱已存在"
+            "CONFLICT_NAME_ERROR": "當前遊戲目錄存在重名例項"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "資源複製成功",
+        "error": {
+          "title": "複製資源失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤",
+            "INVALID_SOURCE_PATH": "無效的源路徑",
+            "ZIP_FILE_PROCESS_FAILED": "壓縮檔案讀取或解壓失敗",
+            "FILE_COPY_FAILED": "複製檔案命令執行失敗",
+            "FOLDER_CREATION_FAILED": "目標資料夾建立失敗"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "資源移動成功",
+        "error": {
+          "title": "移動資源失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤",
+            "INVALID_SOURCE_PATH": "無效的源路徑",
+            "FILE_MOVE_FAILED": "移動檔案命令執行失敗",
+            "FOLDER_CREATION_FAILED": "目標資料夾建立失敗"
           }
         }
       },
@@ -1528,43 +1702,12 @@
           }
         }
       },
-      "copyAcrossInstances": {
-        "success": "資源複製成功",
-        "error": {
-          "title": "複製資源失敗",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤",
-            "INVALID_SOURCE_PATH": "無效的源路徑",
-            "FILE_COPY_FAILED": "檔案複製失敗",
-            "FOLDER_CREATION_FAILED": "目標資料夾建立失敗"
-          }
-        }
-      },
-      "moveAcrossInstances": {
-        "success": "資源移動成功",
-        "error": {
-          "title": "移動資源失敗",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤",
-            "INVALID_SOURCE_PATH": "無效的源路徑",
-            "FILE_MOVE_FAILED": "檔案移動失敗",
-            "FOLDER_CREATION_FAILED": "目標資料夾建立失敗"
-          }
-        }
-      },
       "toggleModByExtension": {
         "error": {
           "title": "模組狀態切換失敗",
           "description": {
             "FILE_NOT_FOUND_ERROR": "模組檔案不存在，可能已更名、移動或刪除"
           }
-        }
-      }
-    },
-    "discover": {
-      "fetchPostSourcesInfo": {
-        "error": {
-          "title": "獲取資料來源失敗"
         }
       }
     }
