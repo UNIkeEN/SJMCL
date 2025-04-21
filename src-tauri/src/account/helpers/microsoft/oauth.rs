@@ -12,8 +12,6 @@ use tokio::time::{sleep, Duration};
 use url::Url;
 use uuid::Uuid;
 
-include!(concat!(env!("OUT_DIR"), "/secrets.rs"));
-
 pub async fn device_authorization(app: &AppHandle) -> SJMCLResult<OAuthCodeResponse> {
   let client = app.state::<reqwest::Client>();
   let response: Value = client
@@ -261,7 +259,7 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
       .form(&[
         ("client_id", CLIENT_ID),
         ("device_code", &auth_info.device_code),
-        ("client_secret", SJMCL_MICROSOFT_CLIENT_SECRET),
+        ("client_secret", env!("SJMCL_MICROSOFT_CLIENT_SECRET")),
         ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
       ])
       .send()
