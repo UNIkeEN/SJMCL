@@ -22,8 +22,8 @@ fn main() {
   }
 
   // Notify Cargo to auto re-run the build script if .env changes
-  println!("cargo::rerun-if-changed=.env");
-  println!("cargo::rerun-if-changed=.env.template");
+  println!("cargo:rerun-if-changed=.env");
+  println!("cargo:rerun-if-changed=.env.template");
 
   tauri_build::build()
 }
