@@ -381,6 +381,12 @@ const InstanceModsPage = () => {
             count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
           />
         }
+        onAccordionToggle={(isOpen) => {
+          update(
+            "states.instanceModsPage.accordionStates",
+            accordionStates.toSpliced(1, 1, isOpen)
+          );
+        }}
         headExtra={
           <HStack spacing={2}>
             {modSecMenuOperations.map((btn, index) => (
