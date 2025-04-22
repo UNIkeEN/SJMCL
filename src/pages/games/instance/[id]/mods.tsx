@@ -1,9 +1,10 @@
 import {
   Avatar,
   AvatarBadge,
+  Box,
+  Card,
   HStack,
   Highlight,
-  Icon,
   Input,
   Tag,
   Text,
@@ -19,10 +20,11 @@ import {
   LuTriangleAlert,
   LuX,
 } from "react-icons/lu";
+import { AutoSizer, List } from "react-virtualized";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
-import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
+import { OptionItem } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
 import { useLauncherConfig } from "@/contexts/config";
@@ -31,6 +33,7 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -48,16 +51,65 @@ const InstanceModsPage = () => {
   const { openSharedModal } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
+  const themedStyles = useThemedCSSStyle();
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const [listHeight, setListHeight] = useState(360);
 
   useEffect(() => {
     setLocalMods(getLocalModList() || []);
   }, [getLocalModList]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const modListRef = useRef<HTMLDivElement>(null);
+
+  const calculateListHeight = useCallback(() => {
+    if (modListRef.current) {
+      const rect = modListRef.current.getBoundingClientRect();
+      const y = rect.top + window.scrollY;
+      const newHeight = Math.min(
+        window.innerHeight - y - 90,
+        filteredMods.length * 50
+      );
+      setListHeight(newHeight);
+    }
+  }, [filteredMods.length]);
+
+  useEffect(() => {
+    calculateListHeight();
+    const resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(calculateListHeight);
+    });
+    if (modListRef.current) {
+      resizeObserver.observe(modListRef.current);
+    }
+
+    const mutationObserver = new MutationObserver(() => {
+      requestAnimationFrame(calculateListHeight);
+    });
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
+
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [calculateListHeight]);
 
   useEffect(() => {
     const keywords = query.trim().toLowerCase().split(/\s+/);
@@ -203,8 +255,102 @@ const InstanceModsPage = () => {
     },
   ];
 
+  const rowRenderer = ({ index, key, style }: any) => {
+    const mod = filteredMods[index];
+    return (
+      <OptionItem
+        key={mod.fileName}
+        style={style}
+        childrenOnHover
+        title={
+          <Text fontSize="xs-sm" className="no-select">
+            <Highlight
+              query={query.trim().toLowerCase().split(/\s+/)}
+              styles={{ bg: "yellow.200" }}
+            >
+              {mod.translatedName
+                ? `${mod.translatedName}｜${mod.name}`
+                : mod.name || mod.fileName}
+            </Highlight>
+          </Text>
+        }
+        titleExtra={
+          <HStack>
+            {mod.version && (
+              <Text fontSize="xs" className="secondary-text no-select">
+                {mod.version}
+              </Text>
+            )}
+            {mod.loaderType !== ModLoaderEnums.Unknown && (
+              <Tag colorScheme={primaryColor} className="tag-xs">
+                {mod.loaderType}
+              </Tag>
+            )}
+          </HStack>
+        }
+        description={
+          <Text
+            fontSize="xs"
+            overflow="hidden"
+            className="secondary-text no-select ellipsis-text"
+          >
+            <Highlight
+              query={query.trim().toLowerCase().split(/\s+/)}
+              styles={{ bg: "yellow.200" }}
+            >
+              {mod.fileName}
+            </Highlight>
+            {mod.description ? `: ${mod.description}` : ""}
+          </Text>
+        }
+        prefixElement={
+          <Avatar
+            src={base64ImgSrc(mod.iconSrc)}
+            name={mod.name || mod.fileName}
+            boxSize="28px"
+            borderRadius="4px"
+            style={{
+              filter: mod.enabled ? "none" : "grayscale(90%)",
+              opacity: mod.enabled ? 1 : 0.5,
+            }}
+          >
+            <AvatarBadge
+              bg={
+                mod.enabled
+                  ? mod.potentialIncompatibility
+                    ? "orange"
+                    : "green"
+                  : "black"
+              }
+              boxSize="0.75em"
+              borderWidth={2}
+            />
+          </Avatar>
+        }
+      >
+        <HStack spacing={0}>
+          {modItemMenuOperations(mod).map((item, index) => (
+            <CommonIconButton
+              key={index}
+              icon={item.icon}
+              label={item.label}
+              colorScheme={item.danger ? "red" : "gray"}
+              onClick={item.onClick}
+            />
+          ))}
+        </HStack>
+      </OptionItem>
+    );
+  };
+
   return (
-    <>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height={window.innerHeight - 169}
+      overflow="hidden"
+      gap={2}
+    >
       <Section
         title={t("InstanceModsPage.modLoaderList.title")}
         isAccordion
@@ -222,6 +368,9 @@ const InstanceModsPage = () => {
           displayMode="entry"
         />
       </Section>
+
+      <Box ref={modListRef}></Box>
+
       <Section
         title={t("InstanceModsPage.modList.title")}
         isAccordion
@@ -231,12 +380,6 @@ const InstanceModsPage = () => {
             count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
           />
         }
-        onAccordionToggle={(isOpen) => {
-          update(
-            "states.instanceModsPage.accordionStates",
-            accordionStates.toSpliced(1, 1, isOpen)
-          );
-        }}
         headExtra={
           <HStack spacing={2}>
             {modSecMenuOperations.map((btn, index) => (
@@ -256,9 +399,7 @@ const InstanceModsPage = () => {
                 <Input
                   ref={searchInputRef}
                   value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                  }}
+                  onChange={(e) => setQuery(e.target.value)}
                   size="xs"
                   w={140}
                   fontSize="sm"
@@ -285,104 +426,27 @@ const InstanceModsPage = () => {
           </HStack>
         }
       >
-        {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
-          filteredMods.length > 0 && (
-            <HStack fontSize="xs" color="red.600" mt={-0.5} ml={1.5} mb={2}>
-              <Icon as={LuTriangleAlert} />
-              <Text>{t("InstanceModsPage.modList.warning")}</Text>
-            </HStack>
-          )}
         {filteredMods.length > 0 ? (
-          <OptionItemGroup
-            items={filteredMods.map((mod) => (
-              <OptionItem
-                key={mod.fileName} // unique
-                childrenOnHover
-                title={
-                  <Text fontSize="xs-sm" className="no-select">
-                    <Highlight
-                      query={query.trim().toLowerCase().split(/\s+/)}
-                      styles={{ bg: "yello.200" }}
-                    >
-                      {mod.translatedName
-                        ? `${mod.translatedName}｜${mod.name}`
-                        : mod.name || mod.fileName}
-                    </Highlight>
-                  </Text>
-                }
-                titleExtra={
-                  <HStack>
-                    {mod.version && (
-                      <Text fontSize="xs" className="secondary-text no-select">
-                        {mod.version}
-                      </Text>
-                    )}
-                    {mod.loaderType !== ModLoaderEnums.Unknown && (
-                      <Tag colorScheme={primaryColor} className="tag-xs">
-                        {mod.loaderType}
-                      </Tag>
-                    )}
-                  </HStack>
-                }
-                description={
-                  <Text
-                    fontSize="xs"
-                    overflow="hidden"
-                    className="secondary-text no-select ellipsis-text" // only show one line
-                  >
-                    <Highlight
-                      query={query.trim().toLowerCase().split(/\s+/)}
-                      styles={{ bg: "yello.200" }}
-                    >
-                      {mod.fileName}
-                    </Highlight>
-                    {mod.description ? `: ${mod.description}` : ""}
-                  </Text>
-                }
-                prefixElement={
-                  <Avatar
-                    src={base64ImgSrc(mod.iconSrc)}
-                    name={mod.name || mod.fileName}
-                    boxSize="28px"
-                    borderRadius="4px"
-                    style={{
-                      filter: mod.enabled ? "none" : "grayscale(90%)",
-                      opacity: mod.enabled ? 1 : 0.5,
-                    }}
-                  >
-                    <AvatarBadge
-                      bg={
-                        mod.enabled
-                          ? mod.potentialIncompatibility
-                            ? "orange"
-                            : "green"
-                          : "black" // black with 0.5 opacity looks like gray.
-                      }
-                      boxSize="0.75em"
-                      borderWidth={2}
-                    />
-                  </Avatar>
-                }
-              >
-                <HStack spacing={0}>
-                  {modItemMenuOperations(mod).map((item, index) => (
-                    <CommonIconButton
-                      key={index}
-                      icon={item.icon}
-                      label={item.label}
-                      colorScheme={item.danger ? "red" : "gray"}
-                      onClick={item.onClick}
-                    />
-                  ))}
-                </HStack>
-              </OptionItem>
-            ))}
-          />
+          <Card className={themedStyles.card["card-front"]} h="100%">
+            <Box flex="1" overflowY="auto" overflowX="hidden">
+              <AutoSizer disableHeight>
+                {({ width }) => (
+                  <List
+                    width={width}
+                    height={listHeight}
+                    rowCount={filteredMods.length}
+                    rowHeight={50}
+                    rowRenderer={rowRenderer}
+                  />
+                )}
+              </AutoSizer>
+            </Box>
+          </Card>
         ) : (
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
-    </>
+    </Box>
   );
 };
 
