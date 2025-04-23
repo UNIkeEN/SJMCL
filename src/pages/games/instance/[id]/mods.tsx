@@ -3,6 +3,7 @@ import {
   AvatarBadge,
   Box,
   Card,
+  Divider,
   HStack,
   Highlight,
   Icon,
@@ -259,88 +260,89 @@ const InstanceModsPage = () => {
   const rowRenderer = ({ index, key, style }: any) => {
     const mod = filteredMods[index];
     return (
-      <OptionItem
-        key={mod.fileName}
-        style={style}
-        childrenOnHover
-        title={
-          <Text fontSize="xs-sm" className="no-select">
-            <Highlight
-              query={query.trim().toLowerCase().split(/\s+/)}
-              styles={{ bg: "yellow.200" }}
+      <Box key={key} style={style}>
+        <OptionItem
+          childrenOnHover
+          title={
+            <Text fontSize="xs-sm" className="no-select">
+              <Highlight
+                query={query.trim().toLowerCase().split(/\s+/)}
+                styles={{ bg: "yellow.200" }}
+              >
+                {mod.translatedName
+                  ? `${mod.translatedName}｜${mod.name}`
+                  : mod.name || mod.fileName}
+              </Highlight>
+            </Text>
+          }
+          titleExtra={
+            <HStack>
+              {mod.version && (
+                <Text fontSize="xs" className="secondary-text no-select">
+                  {mod.version}
+                </Text>
+              )}
+              {mod.loaderType !== ModLoaderEnums.Unknown && (
+                <Tag colorScheme={primaryColor} className="tag-xs">
+                  {mod.loaderType}
+                </Tag>
+              )}
+            </HStack>
+          }
+          description={
+            <Text
+              fontSize="xs"
+              overflow="hidden"
+              className="secondary-text no-select ellipsis-text"
             >
-              {mod.translatedName
-                ? `${mod.translatedName}｜${mod.name}`
-                : mod.name || mod.fileName}
-            </Highlight>
-          </Text>
-        }
-        titleExtra={
-          <HStack>
-            {mod.version && (
-              <Text fontSize="xs" className="secondary-text no-select">
-                {mod.version}
-              </Text>
-            )}
-            {mod.loaderType !== ModLoaderEnums.Unknown && (
-              <Tag colorScheme={primaryColor} className="tag-xs">
-                {mod.loaderType}
-              </Tag>
-            )}
+              <Highlight
+                query={query.trim().toLowerCase().split(/\s+/)}
+                styles={{ bg: "yellow.200" }}
+              >
+                {mod.fileName}
+              </Highlight>
+              {mod.description ? `: ${mod.description}` : ""}
+            </Text>
+          }
+          prefixElement={
+            <Avatar
+              src={base64ImgSrc(mod.iconSrc)}
+              name={mod.name || mod.fileName}
+              boxSize="28px"
+              borderRadius="4px"
+              style={{
+                filter: mod.enabled ? "none" : "grayscale(90%)",
+                opacity: mod.enabled ? 1 : 0.5,
+              }}
+            >
+              <AvatarBadge
+                bg={
+                  mod.enabled
+                    ? mod.potentialIncompatibility
+                      ? "orange"
+                      : "green"
+                    : "black"
+                }
+                boxSize="0.75em"
+                borderWidth={2}
+              />
+            </Avatar>
+          }
+        >
+          <HStack spacing={0}>
+            {modItemMenuOperations(mod).map((item, index) => (
+              <CommonIconButton
+                key={index}
+                icon={item.icon}
+                label={item.label}
+                colorScheme={item.danger ? "red" : "gray"}
+                onClick={item.onClick}
+              />
+            ))}
           </HStack>
-        }
-        description={
-          <Text
-            fontSize="xs"
-            overflow="hidden"
-            className="secondary-text no-select ellipsis-text"
-          >
-            <Highlight
-              query={query.trim().toLowerCase().split(/\s+/)}
-              styles={{ bg: "yellow.200" }}
-            >
-              {mod.fileName}
-            </Highlight>
-            {mod.description ? `: ${mod.description}` : ""}
-          </Text>
-        }
-        prefixElement={
-          <Avatar
-            src={base64ImgSrc(mod.iconSrc)}
-            name={mod.name || mod.fileName}
-            boxSize="28px"
-            borderRadius="4px"
-            style={{
-              filter: mod.enabled ? "none" : "grayscale(90%)",
-              opacity: mod.enabled ? 1 : 0.5,
-            }}
-          >
-            <AvatarBadge
-              bg={
-                mod.enabled
-                  ? mod.potentialIncompatibility
-                    ? "orange"
-                    : "green"
-                  : "black"
-              }
-              boxSize="0.75em"
-              borderWidth={2}
-            />
-          </Avatar>
-        }
-      >
-        <HStack spacing={0}>
-          {modItemMenuOperations(mod).map((item, index) => (
-            <CommonIconButton
-              key={index}
-              icon={item.icon}
-              label={item.label}
-              colorScheme={item.danger ? "red" : "gray"}
-              onClick={item.onClick}
-            />
-          ))}
-        </HStack>
-      </OptionItem>
+        </OptionItem>
+        {index < filteredMods.length - 1 && <Divider my={2} />}
+      </Box>
     );
   };
 
@@ -348,7 +350,7 @@ const InstanceModsPage = () => {
     <Box
       display="flex"
       flexDirection="column"
-      height={window.innerHeight - 169}
+      height={windowHeight - 169}
       overflow="hidden"
       gap={2}
     >
