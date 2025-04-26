@@ -7,7 +7,7 @@ const url = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
 // Resolve output path relative to the script location
 const outputPath = path.resolve(
   __dirname,
-  "../../src-tauri/assets/game/version.txt"
+  "../../src-tauri/assets/game/versions.txt"
 );
 
 https

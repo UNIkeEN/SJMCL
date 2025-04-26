@@ -24,7 +24,7 @@ jobs:
         run: |
           # Extract added lines, but never fail if grep finds nothing
           ADDED_LINES=$(
-            git diff src-tauri/assets/game/version.txt \
+            git diff src-tauri/assets/game/versions.txt \
               | grep '^+[^+]' \
               | cut -c2- \
               || true
