@@ -14,6 +14,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -23,12 +24,40 @@ jobs:
       - name: Run version fetch script
         run: node scripts/game/fetch_version_list.js
 
-      - name: Create Pull Request if changes exist
+      - name: Generate PR metadata
+        id: meta
+        run: |
+          # Extract added lines from the diff
+          ADDED_LINES=$(git diff src-tauri/assets/game/version.txt \
+            | grep '^+' \
+            | grep -v '^+++' \
+            | cut -c2-)
+
+          # Count non-empty lines
+          COUNT=$(echo "$ADDED_LINES" | grep -c .)
+
+          if [ "$COUNT" -eq 1 ]; then
+            FIRST=$(echo "$ADDED_LINES" | head -n1)
+            TITLE="chore: auto update Minecraft version list, add $FIRST"
+          elif [ "$COUNT" -gt 1 ]; then
+            FIRST=$(echo "$ADDED_LINES" | head -n1)
+            LAST=$(echo "$ADDED_LINES" | tail -n1)
+            TITLE="chore: auto update Minecraft version list, add $FIRST-$LAST"
+          else
+            TITLE="chore: auto update Minecraft version list"
+          fi
+
+          # Set outputs for the next step
+          echo "pr_title=$TITLE" >> $GITHUB_OUTPUT
+          echo "pr_body=$TITLE"  >> $GITHUB_OUTPUT
+
+      - name: Create or update Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: auto update Minecraft version list"
-          title: "chore: auto update Minecraft version list"
-          body: "This pull request updates the Minecraft version list from Mojang's API."
-          branch: auto/update-minecraft-version-list
-          base: main
+          commit-message: ${{ steps.meta.outputs.pr_title }}
+          title:          ${{ steps.meta.outputs.pr_title }}
+          body:           ${{ steps.meta.outputs.pr_body }}
+          branch:         auto/update-minecraft-version-list
+          base:           main
+          delete-branch:  true

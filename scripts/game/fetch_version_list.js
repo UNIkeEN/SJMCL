@@ -26,7 +26,7 @@ https
       try {
         const json = JSON.parse(data);
         const versionIds = json.versions.map((v) => v.id).reverse(); // Oldest to newest
-        const text = versionIds.join("\n");
+        const text = versionIds.join("\n") + '\n';
 
         // Ensure the directory exists
         fs.mkdirSync(path.dirname(outputPath), { recursive: true });
