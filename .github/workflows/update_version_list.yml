@@ -16,25 +16,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: main
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
       - name: Run version fetch script
         run: node scripts/game/fetch_version_list.js
 
       - name: Generate PR metadata
         id: meta
         run: |
-          # Extract added lines from the diff
-          ADDED_LINES=$(git diff src-tauri/assets/game/version.txt \
-            | grep '^+' \
-            | grep -v '^+++' \
-            | cut -c2-)
+          # Extract added lines, but never fail if grep finds nothing
+          ADDED_LINES=$(
+            git diff src-tauri/assets/game/version.txt \
+              | grep '^+[^+]' \
+              | cut -c2- \
+              || true
+          )
 
-          # Count non-empty lines
-          COUNT=$(echo "$ADDED_LINES" | grep -c .)
+          # Count non-empty lines; grep -c returns 1 if zero matches, so ignore error
+          COUNT=$(echo "$ADDED_LINES" | grep -c . || true)
 
           if [ "$COUNT" -eq 1 ]; then
             FIRST=$(echo "$ADDED_LINES" | head -n1)
@@ -47,9 +44,9 @@ jobs:
             TITLE="chore: auto update Minecraft version list"
           fi
 
-          # Set outputs for the next step
           echo "pr_title=$TITLE" >> $GITHUB_OUTPUT
           echo "pr_body=$TITLE"  >> $GITHUB_OUTPUT
+
 
       - name: Create or update Pull Request
         uses: peter-evans/create-pull-request@v7
