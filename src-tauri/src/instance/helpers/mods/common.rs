@@ -10,7 +10,11 @@ use zip::ZipArchive;
 pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> {
   let file = Cursor::new(tokio::fs::read(path).await?);
   let file_name = path.file_name().unwrap().to_string_lossy().to_string();
-  let file_stem = path.file_stem().unwrap().to_string_lossy().to_string();
+  let file_stem = PathBuf::from(file_name.strip_suffix(".disabled").unwrap_or(&file_name))
+    .file_stem()
+    .unwrap()
+    .to_string_lossy()
+    .to_string();
   let file_path = path.clone();
   let enabled = !file_name.ends_with(".disabled");
   let mut jar = ZipArchive::new(file)?;
@@ -110,9 +114,13 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
 }
 
 pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
-  let file_name = path.file_name().unwrap().to_string_lossy().to_string();
-  let file_stem = path.file_stem().unwrap().to_string_lossy().to_string();
-  let enabled = !file_name.ends_with(".disabled");
+  let dir_name = path.file_name().unwrap().to_string_lossy().to_string();
+  // only remove .disabled suffix if exists, not consider other extension-like suffix in dir name.
+  let dir_stem = dir_name
+    .strip_suffix(".disabled")
+    .unwrap_or(&dir_name)
+    .to_string();
+  let enabled = !dir_name.ends_with(".disabled");
   if let Ok(meta) = fabric::get_mod_metadata_from_dir(path).await {
     let icon_src = if let Some(icon) = meta.icon {
       load_image_from_dir_async(&path.join(icon))
@@ -128,7 +136,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       name: meta.name.unwrap_or_default(),
       translated_name: None,
       version: meta.version,
-      file_name: file_stem,
+      file_name: dir_stem,
       description: meta.description.unwrap_or_default(),
       potential_incompatibility: false,
       loader_type: ModLoaderType::Fabric,
@@ -143,7 +151,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       name: first_mod.display_name.unwrap_or_default(),
       translated_name: None,
       version: first_mod.version.unwrap_or_default(),
-      file_name: file_stem,
+      file_name: dir_stem,
       description: first_mod.description.unwrap_or_default(),
       potential_incompatibility: false,
       loader_type: meta.loader_type, // Forge or NeoForge
@@ -165,7 +173,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       name: meta.name.unwrap_or_default(),
       translated_name: None,
       version: meta.version.unwrap_or_default(),
-      file_name: file_stem,
+      file_name: dir_stem,
       description: meta.description.unwrap_or_default(),
       potential_incompatibility: false,
       loader_type: ModLoaderType::Forge,
@@ -179,7 +187,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       name: meta.name.unwrap_or_default(),
       translated_name: None,
       version: meta.version.unwrap_or_default(),
-      file_name: file_stem,
+      file_name: dir_stem,
       description: meta.description.unwrap_or_default(),
       potential_incompatibility: false,
       loader_type: ModLoaderType::LiteLoader,
@@ -201,7 +209,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       name: meta.metadata.name.unwrap_or_default(),
       translated_name: None,
       version: meta.version,
-      file_name: file_stem,
+      file_name: dir_stem,
       description: meta.metadata.description.unwrap_or_default(),
       potential_incompatibility: false,
       loader_type: ModLoaderType::Quilt,
@@ -211,6 +219,6 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
 
   Err(SJMCLError(format!(
     "{} cannot be recognized as known",
-    file_name
+    dir_name
   )))
 }
