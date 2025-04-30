@@ -1,6 +1,7 @@
 import {
   Avatar,
   AvatarBadge,
+  Flex,
   HStack,
   Highlight,
   Icon,
@@ -19,6 +20,7 @@ import {
   LuTriangleAlert,
   LuX,
 } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -46,6 +48,23 @@ const InstanceModsPage = () => {
   } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
   const { openSharedModal } = useSharedModals();
+  const [isLoading, setIsLoading] = useState(true);
+  const checkMods = useCallback(
+    async (forceReload = false) => {
+      try {
+        setIsLoading(true);
+        const [mods] = await Promise.all([
+          getLocalModList(forceReload),
+          new Promise((resolve) => setTimeout(resolve, 800)),
+        ]);
+
+        setLocalMods(mods || []);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [getLocalModList]
+  );
   const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
@@ -57,6 +76,23 @@ const InstanceModsPage = () => {
 
   useEffect(() => {
     setLocalMods(getLocalModList() || []);
+  }, [getLocalModList]);
+
+  useEffect(() => {
+    const loadMods = async () => {
+      const startTime = Date.now();
+      setIsLoading(true);
+      try {
+        const [mods] = await Promise.all([
+          getLocalModList(),
+          new Promise((resolve) => setTimeout(resolve, 2000)),
+        ]);
+        setLocalMods(mods || []);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadMods();
   }, [getLocalModList]);
 
   useEffect(() => {
@@ -162,9 +198,7 @@ const InstanceModsPage = () => {
     },
     {
       icon: "refresh",
-      onClick: () => {
-        setLocalMods(getLocalModList(true) || []);
-      },
+      onClick: () => checkMods(true),
     },
   ];
 
@@ -227,9 +261,11 @@ const InstanceModsPage = () => {
         isAccordion
         initialIsOpen={accordionStates[1]}
         titleExtra={
-          <CountTag
-            count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
-          />
+          !isLoading && (
+            <CountTag
+              count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
+            />
+          )
         }
         onAccordionToggle={(isOpen) => {
           update(
@@ -285,101 +321,113 @@ const InstanceModsPage = () => {
           </HStack>
         }
       >
-        {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
-          filteredMods.length > 0 && (
-            <HStack fontSize="xs" color="red.600" mt={-0.5} ml={1.5} mb={2}>
-              <Icon as={LuTriangleAlert} />
-              <Text>{t("InstanceModsPage.modList.warning")}</Text>
-            </HStack>
-          )}
-        {filteredMods.length > 0 ? (
-          <OptionItemGroup
-            items={filteredMods.map((mod) => (
-              <OptionItem
-                key={mod.fileName} // unique
-                childrenOnHover
-                title={
-                  <Text fontSize="xs-sm" className="no-select">
-                    <Highlight
-                      query={query.trim().toLowerCase().split(/\s+/)}
-                      styles={{ bg: "yello.200" }}
-                    >
-                      {mod.translatedName
-                        ? `${mod.translatedName}｜${mod.name}`
-                        : mod.name || mod.fileName}
-                    </Highlight>
-                  </Text>
-                }
-                titleExtra={
-                  <HStack>
-                    {mod.version && (
-                      <Text fontSize="xs" className="secondary-text no-select">
-                        {mod.version}
-                      </Text>
-                    )}
-                    {mod.loaderType !== ModLoaderEnums.Unknown && (
-                      <Tag colorScheme={primaryColor} className="tag-xs">
-                        {mod.loaderType}
-                      </Tag>
-                    )}
-                  </HStack>
-                }
-                description={
-                  <Text
-                    fontSize="xs"
-                    overflow="hidden"
-                    className="secondary-text no-select ellipsis-text" // only show one line
-                  >
-                    <Highlight
-                      query={query.trim().toLowerCase().split(/\s+/)}
-                      styles={{ bg: "yello.200" }}
-                    >
-                      {mod.fileName}
-                    </Highlight>
-                    {mod.description ? `: ${mod.description}` : ""}
-                  </Text>
-                }
-                prefixElement={
-                  <Avatar
-                    src={base64ImgSrc(mod.iconSrc)}
-                    name={mod.name || mod.fileName}
-                    boxSize="28px"
-                    borderRadius="4px"
-                    style={{
-                      filter: mod.enabled ? "none" : "grayscale(90%)",
-                      opacity: mod.enabled ? 1 : 0.5,
-                    }}
-                  >
-                    <AvatarBadge
-                      bg={
-                        mod.enabled
-                          ? mod.potentialIncompatibility
-                            ? "orange"
-                            : "green"
-                          : "black" // black with 0.5 opacity looks like gray.
-                      }
-                      boxSize="0.75em"
-                      borderWidth={2}
-                    />
-                  </Avatar>
-                }
-              >
-                <HStack spacing={0}>
-                  {modItemMenuOperations(mod).map((item, index) => (
-                    <CommonIconButton
-                      key={index}
-                      icon={item.icon}
-                      label={item.label}
-                      colorScheme={item.danger ? "red" : "gray"}
-                      onClick={item.onClick}
-                    />
-                  ))}
-                </HStack>
-              </OptionItem>
-            ))}
-          />
+        {isLoading ? (
+          <Flex justify="center" py={4}>
+            <BeatLoader size={8} color="grey" />
+          </Flex>
         ) : (
-          <Empty withIcon={false} size="sm" />
+          <>
+            {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
+              filteredMods.length > 0 && (
+                <HStack fontSize="xs" color="red.600" mt={-0.5} ml={1.5} mb={2}>
+                  <Icon as={LuTriangleAlert} />
+                  <Text>{t("InstanceModsPage.modList.warning")}</Text>
+                </HStack>
+              )}
+
+            {filteredMods.length > 0 ? (
+              <OptionItemGroup
+                items={filteredMods.map((mod) => (
+                  <OptionItem
+                    key={mod.fileName}
+                    childrenOnHover
+                    title={
+                      <Text fontSize="xs-sm" className="no-select">
+                        <Highlight
+                          query={query.trim().toLowerCase().split(/\s+/)}
+                          styles={{ bg: "yellow.200" }}
+                        >
+                          {mod.translatedName
+                            ? `${mod.translatedName}｜${mod.name}`
+                            : mod.name || mod.fileName}
+                        </Highlight>
+                      </Text>
+                    }
+                    titleExtra={
+                      <HStack>
+                        {mod.version && (
+                          <Text
+                            fontSize="xs"
+                            className="secondary-text no-select"
+                          >
+                            {mod.version}
+                          </Text>
+                        )}
+                        {mod.loaderType !== ModLoaderEnums.Unknown && (
+                          <Tag colorScheme={primaryColor} className="tag-xs">
+                            {mod.loaderType}
+                          </Tag>
+                        )}
+                      </HStack>
+                    }
+                    description={
+                      <Text
+                        fontSize="xs"
+                        overflow="hidden"
+                        className="secondary-text no-select ellipsis-text"
+                      >
+                        <Highlight
+                          query={query.trim().toLowerCase().split(/\s+/)}
+                          styles={{ bg: "yellow.200" }}
+                        >
+                          {mod.fileName}
+                        </Highlight>
+                        {mod.description ? `: ${mod.description}` : ""}
+                      </Text>
+                    }
+                    prefixElement={
+                      <Avatar
+                        src={base64ImgSrc(mod.iconSrc)}
+                        name={mod.name || mod.fileName}
+                        boxSize="28px"
+                        borderRadius="4px"
+                        style={{
+                          filter: mod.enabled ? "none" : "grayscale(90%)",
+                          opacity: mod.enabled ? 1 : 0.5,
+                        }}
+                      >
+                        <AvatarBadge
+                          bg={
+                            mod.enabled
+                              ? mod.potentialIncompatibility
+                                ? "orange"
+                                : "green"
+                              : "gray.500"
+                          }
+                          boxSize="0.75em"
+                          borderWidth={2}
+                        />
+                      </Avatar>
+                    }
+                  >
+                    <HStack spacing={0}>
+                      {modItemMenuOperations(mod).map((item, index) => (
+                        <CommonIconButton
+                          key={index}
+                          icon={item.icon}
+                          label={item.label}
+                          colorScheme={item.danger ? "red" : "gray"}
+                          onClick={item.onClick}
+                        />
+                      ))}
+                    </HStack>
+                  </OptionItem>
+                ))}
+              />
+            ) : (
+              <Empty withIcon={false} size="sm" />
+            )}
+          </>
         )}
       </Section>
     </>
