@@ -7,7 +7,10 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useData, useDataDispatch } from "@/contexts/data";
+import {
+  useGlobalSharedData,
+  useGlobalSharedDataDispatch,
+} from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
 import { useGetState } from "@/hooks/get-state";
@@ -52,8 +55,8 @@ export const InstanceContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
   const toast = useToast();
-  const { getGameInstanceList } = useData();
-  const { setGameInstanceList } = useDataDispatch();
+  const { getGameInstanceList } = useGlobalSharedData();
+  const { setGameInstanceList } = useGlobalSharedDataDispatch();
 
   const [instanceSummary, setInstanceSummary] = useState<
     GameInstanceSummary | undefined

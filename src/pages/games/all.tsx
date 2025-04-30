@@ -8,7 +8,7 @@ import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import GamesView from "@/components/games-view";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { GameInstanceSummary } from "@/models/instance/misc";
 
@@ -20,7 +20,7 @@ const AllGamesPage = () => {
   const selectedViewType = config.states.allGamesPage.viewType;
   const { openSharedModal } = useSharedModals();
 
-  const { selectedGameInstance, getGameInstanceList } = useData();
+  const { selectedGameInstance, getGameInstanceList } = useGlobalSharedData();
   const [gameInstanceList, setGameInstanceList] = useState<
     GameInstanceSummary[]
   >([]);

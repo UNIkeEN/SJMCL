@@ -8,7 +8,7 @@ import { Fade } from "@/components/common/transition";
 import GlobalEventHandler from "@/components/special/global-event-handler";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
-import { DataContextProvider } from "@/contexts/data";
+import { DataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { ToastContextProvider } from "@/contexts/toast";
 import GamesLayout from "@/layouts/games-layout";

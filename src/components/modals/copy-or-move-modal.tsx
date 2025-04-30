@@ -26,7 +26,7 @@ import { LuCopy, LuScissors } from "react-icons/lu";
 import { OptionItemGroup } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
@@ -48,7 +48,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   ...modalProps
 }) => {
   const { t } = useTranslation();
-  const { getGameInstanceList } = useData();
+  const { getGameInstanceList } = useGlobalSharedData();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();

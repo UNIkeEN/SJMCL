@@ -26,7 +26,7 @@ import Empty from "@/components/common/empty";
 import { OptionItemProps } from "@/components/common/option-item";
 import { VirtualOptionItemGroup } from "@/components/common/option-item-virtual";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import {
   modTagList,
@@ -109,7 +109,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();
-  const { getGameInstanceList } = useData();
+  const { getGameInstanceList } = useGlobalSharedData();
 
   const [selectedItem, setSelectedItem] = useState<OtherResourceInfo | null>(
     null

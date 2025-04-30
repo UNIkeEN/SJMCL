@@ -13,7 +13,7 @@ import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
 import { useLauncherConfig } from "./config";
 
-interface DataContextType {
+interface GlobalDataContextType {
   selectedPlayer: Player | undefined;
   selectedGameInstance: GameInstanceSummary | undefined;
   getPlayerList: (sync?: boolean) => Player[] | undefined;
@@ -30,7 +30,7 @@ interface DataDispatchContextType {
   setAuthServerList: React.Dispatch<AuthServer[]>;
 }
 
-const DataContext = createContext<DataContextType | undefined>(undefined);
+const DataContext = createContext<GlobalDataContextType | undefined>(undefined);
 
 const DataDispatchContext = createContext<DataDispatchContextType | undefined>(
   undefined
@@ -146,19 +146,21 @@ export const DataContextProvider: React.FC<{
   );
 };
 
-export const useData = (): DataContextType => {
+export const useGlobalSharedData = (): GlobalDataContextType => {
   const context = useContext(DataContext);
   if (!context) {
-    throw new Error("useData must be used within a DataContextProvider");
+    throw new Error(
+      "useGlobalSharedData must be used within a DataContextProvider"
+    );
   }
   return context;
 };
 
-export const useDataDispatch = (): DataDispatchContextType => {
+export const useGlobalSharedDataDispatch = (): DataDispatchContextType => {
   const context = useContext(DataDispatchContext);
   if (!context) {
     throw new Error(
-      "useDataDispatch must be used within a DataContextProvider"
+      "useGlobalSharedDataDispatch must be used within a DataContextProvider"
     );
   }
   return context;

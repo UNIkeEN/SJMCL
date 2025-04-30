@@ -15,7 +15,7 @@ import { FaStar } from "react-icons/fa6";
 import { LuBox, LuBoxes, LuCirclePlus, LuSettings } from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
 import SelectableButton from "@/components/common/selectable-button";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 
 interface GamesLayoutProps {
   children: React.ReactNode;
@@ -24,7 +24,7 @@ interface GamesLayoutProps {
 const GamesLayout: React.FC<GamesLayoutProps> = ({ children }) => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { getGameInstanceList } = useData();
+  const { getGameInstanceList } = useGlobalSharedData();
   const gameInstanceList = getGameInstanceList() || [];
 
   const gameInstanceItems: { key: string; icon: IconType; label: string }[] = [

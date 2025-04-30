@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { GameInstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
@@ -21,7 +21,7 @@ const DeleteGameInstanceDialog: React.FC<DeleteGameInstanceDialogProps> = ({
   const { t } = useTranslation();
   const toast = useToast();
   const router = useRouter();
-  const { getGameInstanceList } = useData();
+  const { getGameInstanceList } = useGlobalSharedData();
   const { refreshConfig } = useLauncherConfig();
 
   const handleDeleteInstance = (instanceId: number) => {

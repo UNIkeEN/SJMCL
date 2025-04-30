@@ -13,7 +13,7 @@ import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import GameMenu from "@/components/game-menu";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { GameInstanceSummary } from "@/models/instance/misc";
 
 interface GamesViewProps extends BoxProps {
@@ -32,7 +32,7 @@ const GamesView: React.FC<GamesViewProps> = ({
 }) => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { selectedGameInstance } = useData();
+  const { selectedGameInstance } = useGlobalSharedData();
 
   const generateDesc = (game: GameInstanceSummary) => {
     if (game.modLoader.loaderType === "Unknown") {

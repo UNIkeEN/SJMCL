@@ -24,7 +24,7 @@ import { LuArrowLeftRight } from "react-icons/lu";
 import GamesView from "@/components/games-view";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
@@ -103,7 +103,7 @@ const LaunchPage = () => {
     getPlayerList,
     getGameInstanceList,
     selectedGameInstance,
-  } = useData();
+  } = useGlobalSharedData();
 
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [gameInstanceList, setGameInstanceList] = useState<

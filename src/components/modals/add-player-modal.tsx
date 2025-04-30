@@ -42,7 +42,7 @@ import SegmentedControl from "@/components/common/segmented";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { AuthServer, OAuthCodeResponse, Player } from "@/models/account";
@@ -70,7 +70,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const { openSharedModal } = useSharedModals();
 
-  const { getAuthServerList, getPlayerList } = useData();
+  const { getAuthServerList, getPlayerList } = useGlobalSharedData();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
   const [playerType, setPlayerType] = useState<
     "offline" | "microsoft" | "3rdparty"

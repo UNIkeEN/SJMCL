@@ -21,7 +21,7 @@ import GameSettingsGroups from "@/components/game-settings-groups";
 import EditGameDirectoryModal from "@/components/modals/edit-game-directory-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalSharedData } from "@/contexts/global-data";
 import { GameDirectory } from "@/models/config";
 
 const GlobalGameSettingsPage = () => {
@@ -29,7 +29,7 @@ const GlobalGameSettingsPage = () => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const globalGameConfigs = config.globalGameConfig;
-  const { getGameInstanceList } = useData();
+  const { getGameInstanceList } = useGlobalSharedData();
 
   const [selectedDir, setSelectedDir] = useState<GameDirectory>({
     name: "",
