@@ -75,19 +75,19 @@ const InstanceModsPage = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
-  }, [getLocalModList]);
-
-  useEffect(() => {
     const loadMods = async () => {
-      const startTime = Date.now();
       setIsLoading(true);
       try {
-        const [mods] = await Promise.all([
-          getLocalModList(),
-          new Promise((resolve) => setTimeout(resolve, 2000)),
-        ]);
-        setLocalMods(mods || []);
+        const mods = getLocalModList();
+        if (mods) {
+          setLocalMods(mods);
+        } else {
+          const [modsFromBackend] = await Promise.all([
+            getLocalModList(true),
+            new Promise((resolve) => setTimeout(resolve, 2000)),
+          ]);
+          setLocalMods(modsFromBackend || []);
+        }
       } finally {
         setIsLoading(false);
       }
