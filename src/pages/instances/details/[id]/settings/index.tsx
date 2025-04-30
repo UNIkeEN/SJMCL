@@ -46,6 +46,7 @@ const InstanceSettingsPage = () => {
       InstanceService.renameInstance(Number(instanceId), name).then(
         (response) => {
           if (response.status === "success") {
+            updateSummaryInContext("versionPath", response.data);
             updateSummaryInContext("name", name);
           } else
             toast({

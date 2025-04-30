@@ -214,7 +214,7 @@ pub async fn rename_instance(
   app: AppHandle,
   instance_id: usize,
   new_name: String,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<PathBuf> {
   let binding = app.state::<Mutex<Vec<Instance>>>();
   let mut state = binding.lock().unwrap();
   let instance = match state.get_mut(instance_id) {
@@ -223,9 +223,9 @@ pub async fn rename_instance(
   };
   let new_path = unify_instance_name(&instance.version_path, &new_name)?;
 
-  instance.version_path = new_path;
+  instance.version_path = new_path.clone();
   instance.name = new_name;
-  Ok(())
+  Ok(new_path)
 }
 
 #[tauri::command]

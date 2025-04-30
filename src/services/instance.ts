@@ -113,13 +113,13 @@ export class InstanceService {
    * RENAME the specified instance (will update version folder name and field in version JSON).
    * @param {number} instanceId - The instance ID to rename.
    * @param {string} newName - New name
-   * @returns {Promise<InvokeResponse<void>>}
+   * @returns {Promise<InvokeResponse<string>>} - New version path, for the frontend to sync update.
    */
   @responseHandler("instance")
   static async renameInstance(
     instanceId: number,
     newName: string
-  ): Promise<InvokeResponse<void>> {
+  ): Promise<InvokeResponse<string>> {
     return await invoke("rename_instance", {
       instanceId,
       newName,

@@ -76,19 +76,22 @@ export const InstanceContextProvider: React.FC<{
       // for frontend-only state update to sync with backend if needed.
       if (path === "id") return; // forbid update id here
 
-      const newSummary = { ...instanceSummary };
-      updateByKeyPath(newSummary, path, value);
-      setInstanceSummary(newSummary as InstanceSummary);
+      setInstanceSummary((prevSummary) => {
+        if (!prevSummary) return prevSummary;
 
-      const instanceList = getInstanceList() || [];
-      const updatedList = instanceList.map((instance) =>
-        instance.id === newSummary.id
-          ? (newSummary as InstanceSummary)
-          : instance
-      );
-      setInstanceList(updatedList);
+        const newSummary = { ...prevSummary };
+        updateByKeyPath(newSummary, path, value);
+
+        const instanceList = getInstanceList() || [];
+        const updatedList = instanceList.map((instance) =>
+          instance.id === newSummary.id ? newSummary : instance
+        );
+        setInstanceList(updatedList as InstanceSummary[]);
+
+        return newSummary;
+      });
     },
-    [getInstanceList, instanceSummary, setInstanceList]
+    [getInstanceList, setInstanceList]
   );
 
   const handleRetrieveInstanceGameConfig = useCallback(
