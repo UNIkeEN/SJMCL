@@ -35,6 +35,11 @@ pub async fn select_suitable_jre(
   javas_state: State<'_, Mutex<Vec<JavaInfo>>>,
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<()> {
+  {
+    let mut launching = launching_state.lock().unwrap();
+    launching.current_step = 1;
+  }
+
   let instance = instances_state
     .lock()
     .unwrap()
@@ -48,13 +53,17 @@ pub async fn select_suitable_jre(
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
-  let mut launching = launching_state.lock().unwrap();
-  launching.current_step = 1;
-
   let javas = javas_state.lock().unwrap().clone();
-  let selected_java =
-    select_java_runtime(&game_config.game_java, &javas, &client_info.java_version)?;
+  let selected_java = select_java_runtime(
+    &app,
+    &game_config.game_java,
+    &javas,
+    &instance,
+    client_info.java_version.major_version,
+  )
+  .await?;
 
+  let mut launching = launching_state.lock().unwrap();
   launching.game_config = game_config;
   launching.client_info = client_info;
   launching.selected_java = selected_java;

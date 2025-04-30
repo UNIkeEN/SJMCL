@@ -210,7 +210,6 @@ pub async fn extract_native_libraries(
     fs::create_dir(natives_dir).await?;
   }
   let native_libraries = get_native_library_paths(client_info, library_path)?;
-  println!("native lib: {:?}", native_libraries);
   let tasks: Vec<tokio::task::JoinHandle<SJMCLResult<()>>> = native_libraries
     .into_iter()
     .map(|library_path| {

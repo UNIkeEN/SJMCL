@@ -1,13 +1,16 @@
 use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::JavaVersion;
+use crate::instance::{helpers::game_version::compare_game_versions, models::misc::Instance};
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{GameJava, JavaInfo};
 use std::cmp::Ordering;
+use tauri::AppHandle;
 
-pub fn select_java_runtime(
+pub async fn select_java_runtime(
+  app: &AppHandle,
   game_java: &GameJava,
   java_list: &[JavaInfo],
-  version_req: &JavaVersion,
+  instance: &Instance,
+  client_json_req: i32,
   // TODO: pass client and mod loader info to calculate version with more rules, instead of passing require version
   // ref: https://github.com/Hex-Dragon/PCL2/blob/16e09c792ce8c13435fc6827e6da54170aaa3bc0/Plain%20Craft%20Launcher%202/Modules/Minecraft/ModLaunch.vb#L1130
 ) -> SJMCLResult<JavaInfo> {
@@ -19,19 +22,47 @@ pub fn select_java_runtime(
       .ok_or_else(|| LaunchError::NoSuitableJava.into());
   }
 
-  let mut higher_candidates = Vec::new();
+  let mut min_version_req = get_minimum_java_version_by_game(app, instance).await;
+
+  if client_json_req > min_version_req {
+    min_version_req = client_json_req;
+  }
+
+  let mut suitable_candidates = Vec::new();
   for java in java_list {
-    match java.major_version.cmp(&version_req.major_version) {
+    match java.major_version.cmp(&min_version_req) {
       Ordering::Equal => return Ok(java.clone()),
-      Ordering::Greater => higher_candidates.push(java.clone()),
+      Ordering::Greater => suitable_candidates.push(java.clone()),
       _ => {}
     }
   }
 
-  if higher_candidates.is_empty() {
+  if suitable_candidates.is_empty() {
     Err(LaunchError::NoSuitableJava.into())
   } else {
-    higher_candidates.sort_by_key(|j| j.major_version);
-    Ok(higher_candidates[0].clone())
+    suitable_candidates.sort_by_key(|j| j.major_version);
+    Ok(suitable_candidates[0].clone())
   }
+}
+
+/// Get minimum java version requirement by game client version
+/// ref: https://zh.minecraft.wiki/w/Java%E7%89%88?variant=zh-cn#%E8%BD%AF%E4%BB%B6%E9%9C%80%E6%B1%82
+async fn get_minimum_java_version_by_game(app: &AppHandle, instance: &Instance) -> i32 {
+  // 1.20.5(24w14a)+
+  if compare_game_versions(app, &instance.version, "24w14a").await >= Ordering::Equal {
+    return 21;
+  }
+  // 1.18(1.18-pre2)+
+  if compare_game_versions(app, &instance.version, "1.18-pre2").await >= Ordering::Equal {
+    return 17;
+  }
+  // 1.17(21w19a)+
+  if compare_game_versions(app, &instance.version, "21w19a").await >= Ordering::Equal {
+    return 16;
+  }
+  // 1.12(17w13a)+
+  if compare_game_versions(app, &instance.version, "17w13a").await >= Ordering::Equal {
+    return 8;
+  }
+  0
 }
