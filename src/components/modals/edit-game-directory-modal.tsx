@@ -29,7 +29,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
 

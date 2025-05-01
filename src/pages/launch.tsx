@@ -24,7 +24,7 @@ import { LuArrowLeftRight } from "react-icons/lu";
 import InstancesView from "@/components/instances-view";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";

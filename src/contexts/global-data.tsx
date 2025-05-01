@@ -13,7 +13,7 @@ import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
 import { useLauncherConfig } from "./config";
 
-interface DataContextType {
+interface GlobalDataContextType {
   selectedPlayer: Player | undefined;
   selectedInstance: InstanceSummary | undefined;
   getPlayerList: (sync?: boolean) => Player[] | undefined;
@@ -22,7 +22,7 @@ interface DataContextType {
 }
 
 // for frontend-only state update
-interface DataDispatchContextType {
+interface GlobalDataDispatchContextType {
   setPlayerList: React.Dispatch<Player[]>;
   setSelectedPlayer: React.Dispatch<Player | undefined>;
   setInstanceList: React.Dispatch<InstanceSummary[]>;
@@ -30,13 +30,15 @@ interface DataDispatchContextType {
   setAuthServerList: React.Dispatch<AuthServer[]>;
 }
 
-const DataContext = createContext<DataContextType | undefined>(undefined);
-
-const DataDispatchContext = createContext<DataDispatchContextType | undefined>(
+const GlobalDataContext = createContext<GlobalDataContextType | undefined>(
   undefined
 );
 
-export const DataContextProvider: React.FC<{
+const GlobalDataDispatchContext = createContext<
+  GlobalDataDispatchContextType | undefined
+>(undefined);
+
+export const GlobalDataContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const { config } = useLauncherConfig();
@@ -118,7 +120,7 @@ export const DataContextProvider: React.FC<{
   );
 
   return (
-    <DataContext.Provider
+    <GlobalDataContext.Provider
       value={{
         selectedPlayer,
         selectedInstance,
@@ -127,7 +129,7 @@ export const DataContextProvider: React.FC<{
         getAuthServerList,
       }}
     >
-      <DataDispatchContext.Provider
+      <GlobalDataDispatchContext.Provider
         value={{
           setPlayerList,
           setSelectedPlayer,
@@ -137,24 +139,24 @@ export const DataContextProvider: React.FC<{
         }}
       >
         {children}
-      </DataDispatchContext.Provider>
-    </DataContext.Provider>
+      </GlobalDataDispatchContext.Provider>
+    </GlobalDataContext.Provider>
   );
 };
 
-export const useData = (): DataContextType => {
-  const context = useContext(DataContext);
+export const useData = (): GlobalDataContextType => {
+  const context = useContext(GlobalDataContext);
   if (!context) {
-    throw new Error("useData must be used within a DataContextProvider");
+    throw new Error("useData must be used within a GlobalDataContextProvider");
   }
   return context;
 };
 
-export const useDataDispatch = (): DataDispatchContextType => {
-  const context = useContext(DataDispatchContext);
+export const useDataDispatch = (): GlobalDataDispatchContextType => {
+  const context = useContext(GlobalDataDispatchContext);
   if (!context) {
     throw new Error(
-      "useDataDispatch must be used within a DataContextProvider"
+      "useDataDispatch must be used within a GlobalDataContextProvider"
     );
   }
   return context;

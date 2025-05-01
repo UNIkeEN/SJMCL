@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SkinPreview from "@/components/skin-preview";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { Texture } from "@/models/account";
 import { AccountService } from "@/services/account";

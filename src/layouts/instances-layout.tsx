@@ -22,7 +22,7 @@ import {
 import NavMenu from "@/components/common/nav-menu";
 import SelectableButton from "@/components/common/selectable-button";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useData } from "@/contexts/global-data";
 import { getGameDirName } from "@/utils/instance";
 
 interface InstancesLayoutProps {

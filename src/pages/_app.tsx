@@ -8,7 +8,7 @@ import { Fade } from "@/components/common/transition";
 import GlobalEventHandler from "@/components/special/global-event-handler";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
-import { DataContextProvider } from "@/contexts/data";
+import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { ToastContextProvider } from "@/contexts/toast";
 import InstanceDetailsLayout from "@/layouts/instance-details-layout";
@@ -85,7 +85,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <ToastContextProvider>
         <RoutingHistoryContextProvider>
           <LauncherConfigContextProvider>
-            <DataContextProvider>
+            <GlobalDataContextProvider>
               <SharedModalsProvider>
                 <GlobalEventHandler>
                   <MainLayout>
@@ -97,7 +97,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   </MainLayout>
                 </GlobalEventHandler>
               </SharedModalsProvider>
-            </DataContextProvider>
+            </GlobalDataContextProvider>
           </LauncherConfigContextProvider>
         </RoutingHistoryContextProvider>
       </ToastContextProvider>
