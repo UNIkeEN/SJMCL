@@ -29,7 +29,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
 
@@ -107,7 +107,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const initialRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
-  const { getInstanceList } = useData();
+  const { getInstanceList } = useGlobalData();
 
   const [dirName, setDirName] = useState<string>("");
   const [dirPath, setDirPath] = useState<string>("");

@@ -34,7 +34,7 @@ import AddPlayerModal from "@/components/modals/add-player-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { AuthServer, Player } from "@/models/account";
@@ -48,7 +48,7 @@ const AccountsPage = () => {
   const selectedViewType = config.states.accountsPage.viewType;
   const { openSharedModal } = useSharedModals();
 
-  const { getPlayerList, getAuthServerList, selectedPlayer } = useData();
+  const { getPlayerList, getAuthServerList, selectedPlayer } = useGlobalData();
 
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const [playerList, setPlayerList] = useState<Player[]>([]);

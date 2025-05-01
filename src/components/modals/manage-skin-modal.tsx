@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SkinPreview from "@/components/skin-preview";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { Texture } from "@/models/account";
 import { AccountService } from "@/services/account";
@@ -45,7 +45,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
-  const { getPlayerList } = useData();
+  const { getPlayerList } = useGlobalData();
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
 

@@ -13,7 +13,7 @@ import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import InstanceMenu from "@/components/instance-menu";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { InstanceSummary } from "@/models/instance/misc";
 import { generateInstanceDesc } from "@/utils/instance";
 
@@ -33,7 +33,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
 }) => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { selectedInstance } = useData();
+  const { selectedInstance } = useGlobalData();
 
   const handleUpdateSelectedInstance = (instance: InstanceSummary) => {
     update("states.shared.selectedInstanceId", instance.id.toString());

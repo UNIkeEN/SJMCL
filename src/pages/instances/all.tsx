@@ -8,7 +8,7 @@ import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import InstancesView from "@/components/instances-view";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSummary } from "@/models/instance/misc";
 
@@ -20,7 +20,7 @@ const AllInstancesPage = () => {
   const selectedViewType = config.states.allInstancesPage.viewType;
   const { openSharedModal } = useSharedModals();
 
-  const { selectedInstance, getInstanceList } = useData();
+  const { selectedInstance, getInstanceList } = useGlobalData();
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>([]);
 
   useEffect(() => {

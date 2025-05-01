@@ -19,7 +19,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { AccountService } from "@/services/account";
 
@@ -32,7 +32,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   ...modalProps
 }) => {
   const { t } = useTranslation();
-  const { getAuthServerList } = useData();
+  const { getAuthServerList } = useGlobalData();
   const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;

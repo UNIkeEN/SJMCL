@@ -144,19 +144,21 @@ export const GlobalDataContextProvider: React.FC<{
   );
 };
 
-export const useData = (): GlobalDataContextType => {
+export const useGlobalData = (): GlobalDataContextType => {
   const context = useContext(GlobalDataContext);
   if (!context) {
-    throw new Error("useData must be used within a GlobalDataContextProvider");
+    throw new Error(
+      "useGlobalData must be used within a GlobalDataContextProvider"
+    );
   }
   return context;
 };
 
-export const useDataDispatch = (): GlobalDataDispatchContextType => {
+export const useGlobalDataDispatch = (): GlobalDataDispatchContextType => {
   const context = useContext(GlobalDataDispatchContext);
   if (!context) {
     throw new Error(
-      "useDataDispatch must be used within a GlobalDataContextProvider"
+      "useGlobalDataDispatch must be used within a GlobalDataContextProvider"
     );
   }
   return context;

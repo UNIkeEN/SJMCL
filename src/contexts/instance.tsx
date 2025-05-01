@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useData, useDataDispatch } from "@/contexts/global-data";
+import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
 import { useGetState } from "@/hooks/get-state";
@@ -52,8 +52,8 @@ export const InstanceContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
   const toast = useToast();
-  const { getInstanceList } = useData();
-  const { setInstanceList } = useDataDispatch();
+  const { getInstanceList } = useGlobalData();
+  const { setInstanceList } = useGlobalDataDispatch();
 
   const [instanceSummary, setInstanceSummary] = useState<
     InstanceSummary | undefined

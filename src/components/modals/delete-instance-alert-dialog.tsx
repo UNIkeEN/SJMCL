@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
@@ -20,7 +20,7 @@ const DeleteInstanceDialog: React.FC<DeleteInstanceDialogProps> = ({
   const { t } = useTranslation();
   const toast = useToast();
   const router = useRouter();
-  const { getInstanceList } = useData();
+  const { getInstanceList } = useGlobalData();
   const { refreshConfig } = useLauncherConfig();
 
   const handleDeleteInstance = (instanceId: number) => {

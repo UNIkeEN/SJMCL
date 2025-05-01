@@ -22,7 +22,7 @@ import {
 import NavMenu from "@/components/common/nav-menu";
 import SelectableButton from "@/components/common/selectable-button";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { getGameDirName } from "@/utils/instance";
 
 interface InstancesLayoutProps {
@@ -32,7 +32,7 @@ interface InstancesLayoutProps {
 const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { getInstanceList } = useData();
+  const { getInstanceList } = useGlobalData();
   const instanceList = getInstanceList() || [];
   const { config } = useLauncherConfig();
   const navBarType = config.general.functionality.instancesNavType;

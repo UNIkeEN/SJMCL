@@ -27,7 +27,7 @@ import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/global-data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSummary } from "@/models/instance/misc";
@@ -48,7 +48,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { selectedPlayer, getInstanceList } = useData();
+  const { selectedPlayer, getInstanceList } = useGlobalData();
   const { openSharedModal } = useSharedModals();
 
   const [launchingInstance, setLaunchingInstance] = useState<InstanceSummary>();
