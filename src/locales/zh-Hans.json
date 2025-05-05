@@ -1412,19 +1412,6 @@
             "GAME_DIR_NOT_EXIST": "游戏目录不存在"
           }
         }
-      },
-      "retrieveMemoryInfo": {
-        "error": {
-          "title": "获取内存信息失败"
-        }
-      },
-      "checkServiceAvailability": {
-        "error:": {
-          "title": "服务不可用",
-          "description": {
-            "FETCH_ERROR": "与服务器通信失败"
-          }
-        }
       }
     },
     "account": {
@@ -1629,16 +1616,15 @@
         "error": {
           "title": "启动游戏失败",
           "description": {
-            "NOT_FOUND": "实例不存在"
+            "NOT_FOUND": "实例不存在",
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "CLIENT_JSON_PARSE_ERROR": "客户端 JSON 解析失败"
           }
         }
       },
       "cancelLaunchProcess": {
         "error": {
-          "title": "取消启动失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
-          }
+          "title": "取消启动失败"
         }
       }
     },

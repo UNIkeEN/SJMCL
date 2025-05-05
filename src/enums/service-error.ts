@@ -10,6 +10,8 @@ export enum AccountServiceError {
 
 export enum InstanceError {
   InstanceNotFoundById = "INSTANCE_NOT_FOUND_BY_ID",
+  ConflictNameError = "CONFLICT_NAME_ERROR",
+  ClientJsonParseError = "CLIENT_JSON_PARSE_ERROR",
   ExecOpenDirError = "EXEC_OPEN_DIR_ERROR",
   ServerNbtReadError = "SERVER_NBT_READ_ERROR",
   FileNotFoundError = "FILE_NOT_FOUND_ERROR",

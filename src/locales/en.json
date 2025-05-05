@@ -1412,19 +1412,6 @@
             "GAME_DIR_NOT_EXIST": "The directory does not exist"
           }
         }
-      },
-      "retrieveMemoryInfo": {
-        "error": {
-          "title": "Failed to retrieve memory information"
-        }
-      },
-      "checkServiceAvailability": {
-        "error:": {
-          "title": "Failed to check service availability",
-          "description": {
-            "FETCH_ERROR": "Failed to fetch the meta server"
-          }
-        }
       }
     },
     "account": {
@@ -1629,16 +1616,15 @@
         "error": {
           "title": "Failed to launch game",
           "description": {
-            "NOT_FOUND": "The instance does not exist"
+            "NOT_FOUND": "The player does not exist",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "CLIENT_JSON_PARSE_ERROR": "Failed to parse client.json"
           }
         }
       },
       "cancelLaunchProcess": {
         "error": {
-          "title": "Failed to cancel launch process",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
-          }
+          "title": "Failed to cancel launch process"
         }
       }
     },
