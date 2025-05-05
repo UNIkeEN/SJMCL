@@ -188,13 +188,17 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
   // -----------------------------------------
 
   if game_config.performance.auto_mem_allocation {
-    // TODO: auto mem allocation (auto set min mem allocation?)
+    // leave as default
   } else {
-    cmd.extend(vec![
-      "-Xms".to_string(),
-      game_config.performance.min_mem_allocation.to_string(),
-    ])
-    // TODO: max mem allocation (HMCL DefaultLauncher.java#L132)
+    cmd.push(format!(
+      "-Xmx{}m",
+      game_config.performance.min_mem_allocation
+    ));
+    cmd.push(format!(
+      "-Xms{}m",
+      game_config.performance.min_mem_allocation
+    ));
+    // set Xmx and Xms to the same value
   }
 
   let jvm = &game_config.advanced.jvm;
