@@ -131,6 +131,12 @@ jobs:
         env:
           SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
 
+      - name: Build DMG image
+        if: matrix.platform == 'macos'
+        run: pnpm run tauri build --bundles dmg --target ${{ matrix.target }}
+        env:
+          SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
+
       - name: Prepare release artifact
         shell: bash
         env:
@@ -147,6 +153,8 @@ jobs:
           elif [ "${{ matrix.platform }}" = "macos" ]; then
             # For MacOS, compress the .app folder
             tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "SJMCL.app"
+            # And copy the DMG files
+            mv "src-tauri/target/${{ matrix.target }}/release/bundle/dmg"/*.dmg artifacts/"$ARTIFACT_NAME".dmg
             ls -la artifacts
           elif [ "${{ matrix.platform }}" = "linux" ]; then
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
