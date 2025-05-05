@@ -1412,6 +1412,19 @@
             "GAME_DIR_NOT_EXIST": "The directory does not exist"
           }
         }
+      },
+      "retrieveMemoryInfo": {
+        "error": {
+          "title": "Failed to retrieve memory information"
+        }
+      },
+      "checkServiceAvailability": {
+        "error:": {
+          "title": "Failed to check service availability",
+          "description": {
+            "FETCH_ERROR": "Failed to fetch the meta server"
+          }
+        }
       }
     },
     "account": {
@@ -1451,7 +1464,24 @@
             "NOT_FOUND": "The authentication server does not exist",
             "CANCELLED": "OAuth login cancelled",
             "CREATE_WEBVIEW_ERROR": "Failed to create webview",
-            "INVALID": "The server type is invalid"
+            "INVALID": "The server type is invalid",
+            "EXPIRED": "The access token has expired, please re-login"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "DUPLICATE": "Player already exists",
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NOT_FOUND": "The authentication server does not exist",
+            "CANCELLED": "Cancelled",
+            "CREATE_WEBVIEW_ERROR": "Failed to create webview",
+            "INVALID": "The server type is invalid",
+            "EXPIRED": "The access token has expired, please re-login"
           }
         }
       },
@@ -1463,8 +1493,24 @@
             "DUPLICATE": "Player already exists",
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "INVALID": "Wrong account or password",
-            "NOT_FOUND": "The server does not exist"
+            "NOT_FOUND": "The authentication server does not exist",
+            "CANCELLED": "Cancelled",
+            "CREATE_WEBVIEW_ERROR": "Failed to create webview",
+            "INVALID": "The server type is invalid",
+            "EXPIRED": "The access token has expired, please re-login"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "Wrong account or password"
           }
         }
       },
@@ -1473,7 +1519,10 @@
         "error": {
           "title": "Failed to add player",
           "description": {
-            "DUPLICATE": "Player already exists"
+            "DUPLICATE": "Player already exists",
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format"
           }
         }
       },
@@ -1515,38 +1564,13 @@
           "title": "Failed to retrieve server list"
         }
       },
-      "reloginPlayerOAuth": {
-        "success": "Successfully re-logged in",
-        "error": {
-          "title": "Failed to re-login",
-          "description": {
-            "NOT_FOUND": "The player does not exist",
-            "EXPIRED": "The access token has expired, please re-login",
-            "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NETWORK_ERROR": "Failed to connect to the server",
-            "INVALID": "The player type is invalid"
-          }
-        }
-      },
-      "reloginPlayer3rdPartyPassword": {
-        "success": "Successfully re-logged in",
-        "error": {
-          "title": "Failed to re-login",
-          "description": {
-            "NOT_FOUND": "The player does not exist",
-            "EXPIRED": "The access token has expired, please re-login",
-            "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NETWORK_ERROR": "Failed to connect to the server",
-            "INVALID": "Wrong account or password"
-          }
-        }
-      },
       "fetchAuthServer": {
         "error": {
           "title": "Failed to get authentication server information",
           "description": {
             "DUPLICATE": "The server has already been added",
-            "INVALID": "Invalid server URL"
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
@@ -1600,6 +1624,22 @@
             "SAVE_ERROR": "Failed to save Authlib-Injector"
           }
         }
+      },
+      "launchGame": {
+        "error": {
+          "title": "Failed to launch game",
+          "description": {
+            "NOT_FOUND": "The instance does not exist"
+          }
+        }
+      },
+      "cancelLaunchProcess": {
+        "error": {
+          "title": "Failed to cancel launch process",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
       }
     },
     "resource": {
@@ -1617,7 +1657,8 @@
           "title": "Failed to fetch mod loader version list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection",
+            "NETWORK_ERROR": "Failed to connect to the server"
           }
         }
       }
@@ -1678,7 +1719,10 @@
           "title": "Failed to rename instance",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
-            "CONFLICT_NAME_ERROR": "A duplicate instance name exists"
+            "CONFLICT_NAME_ERROR": "A duplicate instance name exists",
+            "INVALID_NAME_ERROR": "Invalid instance name",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_MOVE_FAILED": "Failed to execute the move file command"
           }
         }
       },
@@ -1689,9 +1733,12 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
             "INVALID_SOURCE_PATH": "Invalid source path",
+            "INVALID_NAME_ERROR": "Invalid instance name",
             "ZIP_FILE_PROCESS_FAILED": "Failed to process zip file",
             "FILE_COPY_FAILED": "Failed to execute the copy file command",
-            "FOLDER_CREATION_FAILED": "Failed to create target folder"
+           "FOLDER_CREATION_FAILED": "Failed to create target folder",
+            "CONFLICT_NAME_ERROR": "A duplicate instance name exists",
+            "FILE_MOVE_FAILED": "Failed to execute the move file command"
           }
         }
       },
@@ -1720,6 +1767,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Failed to retrieve local mod list",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "Failed to retrieve resource pack list"
@@ -1745,11 +1800,11 @@
           "title": "Failed to retrieve screenshot list"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "Failed to retrieve local mod list",
+          "title": "Mod state toggle failed",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
           }
         }
       },
@@ -1760,14 +1815,6 @@
             "WORLD_NOT_EXSIT_ERROR": "World not exist",
             "LEVEL_NOT_EXSIT_ERROR": "Level data not exist",
             "LEVEL_PARSE_ERROR": "Level data parse error"
-          }
-        }
-      },
-      "toggleModByExtension": {
-        "error": {
-          "title": "Mod state toggle failed",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
           }
         }
       }

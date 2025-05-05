@@ -1412,6 +1412,19 @@
             "GAME_DIR_NOT_EXIST": "游戏目录不存在"
           }
         }
+      },
+      "retrieveMemoryInfo": {
+        "error": {
+          "title": "获取内存信息失败"
+        }
+      },
+      "checkServiceAvailability": {
+        "error:": {
+          "title": "服务不可用",
+          "description": {
+            "FETCH_ERROR": "与服务器通信失败"
+          }
+        }
       }
     },
     "account": {
@@ -1451,7 +1464,24 @@
             "NOT_FOUND": "认证服务器不存在",
             "CANCELLED": "已取消",
             "CREATE_WEBVIEW_ERROR": "创建 WebView 失败",
-            "INVALID": "无效的认证服务器地址"
+            "INVALID": "无效的认证服务器地址",
+            "EXPIRED": "令牌已过期，请重新登录"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "角色重新登录成功",
+        "error": {
+          "title": "角色重新登录失败",
+          "description": {
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NOT_FOUND": "认证服务器不存在",
+            "CANCELLED": "已取消",
+            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败",
+            "INVALID": "无效的认证服务器地址",
+            "EXPIRED": "令牌已过期，请重新登录"
           }
         }
       },
@@ -1463,8 +1493,24 @@
             "DUPLICATE": "角色已存在",
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "INVALID": "账号或密码错误",
-            "NOT_FOUND": "认证服务器不存在"
+            "NOT_FOUND": "认证服务器不存在",
+            "CANCELLED": "已取消",
+            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败",
+            "INVALID": "无效的认证服务器地址",
+            "EXPIRED": "令牌已过期，请重新登录"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "角色重新登录成功",
+        "error": {
+          "title": "角色重新登录失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "INVALID": "账号或密码错误"
           }
         }
       },
@@ -1473,7 +1519,10 @@
         "error": {
           "title": "角色添加失败",
           "description": {
-            "DUPLICATE": "角色已存在"
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误"
           }
         }
       },
@@ -1510,32 +1559,6 @@
           }
         }
       },
-      "reloginPlayerOAuth": {
-        "success": "角色重新登录成功",
-        "error": {
-          "title": "角色重新登录失败",
-          "description": {
-            "NOT_FOUND": "角色不存在",
-            "EXPIRED": "令牌已过期，请重新登录",
-            "PARSE_ERROR": "服务器返回数据格式错误",
-            "NETWORK_ERROR": "无法连接至认证服务器",
-            "INVALID": "不支持离线角色刷新"
-          }
-        }
-      },
-      "reloginPlayer3rdPartyPassword": {
-        "success": "角色重新登录成功",
-        "error": {
-          "title": "角色重新登录失败",
-          "description": {
-            "NOT_FOUND": "角色不存在",
-            "EXPIRED": "令牌已过期，请重新登录",
-            "PARSE_ERROR": "服务器返回数据格式错误",
-            "NETWORK_ERROR": "无法连接至认证服务器",
-            "INVALID": "账号或密码错误"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "获取认证服务器列表失败"
@@ -1546,7 +1569,8 @@
           "title": "获取认证服务器信息失败",
           "description": {
             "DUPLICATE": "认证服务器已存在",
-            "INVALID": "无效的认证服务器地址"
+            "INVALID": "无效的认证服务器地址",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
@@ -1600,6 +1624,22 @@
             "SAVE_ERROR": "保存 Authlib-Injector 失败"
           }
         }
+      },
+      "launchGame": {
+        "error": {
+          "title": "启动游戏失败",
+          "description": {
+            "NOT_FOUND": "实例不存在"
+          }
+        }
+      },
+      "cancelLaunchProcess": {
+        "error": {
+          "title": "取消启动失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
       }
     },
     "resource": {
@@ -1617,7 +1657,8 @@
           "title": "获取模组加载器列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接",
+            "NETWORK_ERROR": "无法连接到服务器"
           }
         }
       }
@@ -1678,7 +1719,10 @@
           "title": "实例重命名失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例"
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "INVALID_NAME_ERROR": "实例名称不合法",
+            "INVALID_SOURCE_PATH": "无效的源路径",
+            "FILE_MOVE_FAILED": "移动文件命令执行失败"
           }
         }
       },
@@ -1689,9 +1733,12 @@
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
             "INVALID_SOURCE_PATH": "无效的源路径",
+            "INVALID_NAME_ERROR": "实例名称不合法",
             "ZIP_FILE_PROCESS_FAILED": "压缩文件读取或解压失败",
             "FILE_COPY_FAILED": "复制文件命令执行失败",
-            "FOLDER_CREATION_FAILED": "目标文件夹创建失败"
+            "FOLDER_CREATION_FAILED": "目标文件夹创建失败",
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "FILE_MOVE_FAILED": "移动文件命令执行失败"
           }
         }
       },
@@ -1720,6 +1767,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "获取模组列表失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "获取资源包列表失败"
@@ -1745,11 +1800,11 @@
           "title": "获取截图列表失败"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "获取模组列表失败",
+          "title": "模组状态切换失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
           }
         }
       },
@@ -1760,14 +1815,6 @@
             "WORLD_NOT_EXSIT_ERROR": "世界不存在",
             "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
             "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
-          }
-        }
-      },
-      "toggleModByExtension": {
-        "error": {
-          "title": "模组状态切换失败",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
           }
         }
       }
