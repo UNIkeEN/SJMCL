@@ -38,7 +38,7 @@ interface CopyOrMoveModalProps extends Omit<ModalProps, "children"> {
   srcResName: string;
   srcFilePath: string;
   tgtDirType?: InstanceSubdirEnums;
-  srcInstanceId?: number;
+  srcInstanceId?: string;
 }
 
 const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
@@ -63,7 +63,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   );
   const [_tgtDirType, _setTgtDirType] =
     useState<InstanceSubdirEnums>(tgtDirType);
-  const [_srcInstanceId, _setSrcInstanceId] = useState<number | undefined>(
+  const [_srcInstanceId, _setSrcInstanceId] = useState<string | undefined>(
     srcInstanceId
   );
 
@@ -78,7 +78,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     }
     const { id } = router.query;
     const instanceId = Array.isArray(id) ? id[0] : id;
-    _setSrcInstanceId(Number(instanceId));
+    _setSrcInstanceId(instanceId);
   }, [router, srcInstanceId, t, toast]);
 
   useEffect(() => {
@@ -122,7 +122,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   const handleCopyResourceToInstances = useCallback(
     (
       srcFilePath: string,
-      tgtInstId: number[],
+      tgtInstId: string[],
       tgtDirType: InstanceSubdirEnums
     ) => {
       if (
@@ -161,7 +161,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   const handleMoveResourceToInstance = useCallback(
     (
       srcFilePath: string,
-      tgtInstId: number,
+      tgtInstId: string,
       tgtDirType: InstanceSubdirEnums
     ) => {
       if (
@@ -224,7 +224,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
       <HStack spacing={2.5}>
         {operation === "move" ? (
           <Radio
-            value={instance.id.toString()}
+            value={instance.id}
             colorScheme={primaryColor}
             isDisabled={instance.id === _srcInstanceId}
             onClick={() => {
@@ -234,7 +234,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
           />
         ) : (
           <Checkbox
-            key={instance.id.toString()}
+            key={instance.id}
             isChecked={selectedInstances.some(
               (selected) => selected.id === instance.id
             )}
@@ -313,7 +313,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                 </Text>
               </VStack>
               <RadioGroup
-                value={selectedInstances[0]?.id.toString()}
+                value={selectedInstances[0]?.id}
                 flexGrow="1"
                 h="100%"
                 overflow="auto"

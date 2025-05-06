@@ -31,14 +31,14 @@ export class InstanceService {
 
   /**
    * UPDATE a specific key of the instance's config (include basic info and game config).
-   * @param {number} instanceId - The ID of the instance.
+   * @param {string} instanceId - The ID of the instance.
    * @param {string} keyPath - Path to the key to update, e.g., "spec_game_config.javaPath".
    * @param {string} value - New value (as string) to be set.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async updateInstanceConfig(
-    instanceId: number,
+    instanceId: string,
     keyPath: string,
     value: any
   ): Promise<InvokeResponse<void>> {
@@ -51,13 +51,13 @@ export class InstanceService {
 
   /**
    * RETRIEVE the game config for a given instance.
-   * @param {number} instanceId - The ID of the instance.
+   * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<GameConfig>>}
    * * return specific game configs if the specific configuration is enabled; otherwise, return the global game configs.
    */
   @responseHandler("instance")
   static async retrieveInstanceGameConfig(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<GameConfig>> {
     return await invoke("retrieve_instance_game_config", {
       instanceId,
@@ -66,12 +66,12 @@ export class InstanceService {
 
   /**
    * RESET the instance game config to use global default game config.
-   * @param {number} instanceId - The ID of the instance.
+   * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async resetInstanceGameConfig(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("reset_instance_game_config", {
       instanceId,
@@ -80,13 +80,13 @@ export class InstanceService {
 
   /**
    * OPEN the specified instance subdir using system default fs manager.
-   * @param {number} instanceId - The instance ID to open the subdir for.
+   * @param {string} instanceId - The instance ID to open the subdir for.
    * @param {InstanceSubdirEnums} dirType - The instance subdir type to open.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async openInstanceSubdir(
-    instanceId: number,
+    instanceId: string,
     dirType: InstanceSubdirEnums
   ): Promise<InvokeResponse<void>> {
     return await invoke("open_instance_subdir", {
@@ -97,12 +97,12 @@ export class InstanceService {
 
   /**
    * DELETE the specified instance's version folder from disk.
-   * @param {number} instanceId - The instance ID to delete.
+   * @param {string} instanceId - The instance ID to delete.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async deleteInstance(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("delete_instance", {
       instanceId,
@@ -111,13 +111,13 @@ export class InstanceService {
 
   /**
    * RENAME the specified instance (will update version folder name and field in version JSON).
-   * @param {number} instanceId - The instance ID to rename.
+   * @param {string} instanceId - The instance ID to rename.
    * @param {string} newName - New name
    * @returns {Promise<InvokeResponse<string>>} - New version path, for the frontend to sync update.
    */
   @responseHandler("instance")
   static async renameInstance(
-    instanceId: number,
+    instanceId: string,
     newName: string
   ): Promise<InvokeResponse<string>> {
     return await invoke("rename_instance", {
@@ -129,7 +129,7 @@ export class InstanceService {
   /**
    * COPY the specified resource to the target instance(s).
    * @param {string} srcFilePath - The path of the file (or the directory) to copy.
-   * @param {number[]} tgtInstIds - ID of the target instance(s).
+   * @param {string[]} tgtInstIds - ID of the target instance(s).
    * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
    * @param {boolean} [decompress=false] - Whether to decompress as a zip file
    * @returns {Promise<InvokeResponse<void>>}
@@ -137,7 +137,7 @@ export class InstanceService {
   @responseHandler("instance")
   static async copyResourceToInstances(
     srcFilePath: string,
-    tgtInstIds: number[],
+    tgtInstIds: string[],
     tgtDirType: InstanceSubdirEnums,
     decompress: boolean = false
   ): Promise<InvokeResponse<void>> {
@@ -152,14 +152,14 @@ export class InstanceService {
   /**
    * MOVE the specified resource to the target instance.
    * @param {string} srcFilePath - The path of the file (or the directory) to move.
-   * @param {number} tgtInstId - The target instance ID.
+   * @param {string} tgtInstId - The target instance ID.
    * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async moveResourceToInstance(
     srcFilePath: string,
-    tgtInstId: number,
+    tgtInstId: string,
     tgtDirType: InstanceSubdirEnums
   ): Promise<InvokeResponse<void>> {
     return await invoke("move_resource_to_instance", {
@@ -171,12 +171,12 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of world saves.
-   * @param {number} instanceId - The instance ID to retrieve the worlds for.
+   * @param {string} instanceId - The instance ID to retrieve the worlds for.
    * @returns {Promise<InvokeResponse<WorldInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveWorldList(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<WorldInfo[]>> {
     return await invoke("retrieve_world_list", {
       instanceId,
@@ -185,13 +185,13 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of game servers.
-   * @param {number} instanceId - The instance ID to retrieve the game servers for.
+   * @param {string} instanceId - The instance ID to retrieve the game servers for.
    * @param {boolean} queryOnline - A flag to determine whether to query online server status.
    * @returns {Promise<InvokeResponse<GameServerInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveGameServerList(
-    instanceId: number,
+    instanceId: string,
     queryOnline: boolean
   ): Promise<InvokeResponse<GameServerInfo[]>> {
     return await invoke("retrieve_game_server_list", {
@@ -202,12 +202,12 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of local mods.
-   * @param {number} instanceId - The instance ID to retrieve the local mods for.
+   * @param {string} instanceId - The instance ID to retrieve the local mods for.
    * @returns {Promise<InvokeResponse<LocalModInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveLocalModList(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<LocalModInfo[]>> {
     return await invoke("retrieve_local_mod_list", {
       instanceId,
@@ -216,12 +216,12 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of server resource packs.
-   * @param {number} instanceId - The instance ID to retrieve the server resource packs for.
+   * @param {string} instanceId - The instance ID to retrieve the server resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveServerResourcePackList(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<ResourcePackInfo[]>> {
     return await invoke("retrieve_server_resource_pack_list", {
       instanceId,
@@ -230,12 +230,12 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of resource packs.
-   * @param {number} instanceId - The instance ID to retrieve the resource packs for.
+   * @param {string} instanceId - The instance ID to retrieve the resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveResourcePackList(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<ResourcePackInfo[]>> {
     return await invoke("retrieve_resource_pack_list", {
       instanceId,
@@ -244,12 +244,12 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of schematics.
-   * @param {number} instanceId - The instance ID to retrieve the schematics for.
+   * @param {string} instanceId - The instance ID to retrieve the schematics for.
    * @returns {Promise<InvokeResponse<SchematicInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveSchematicList(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<SchematicInfo[]>> {
     return await invoke("retrieve_schematic_list", {
       instanceId,
@@ -258,12 +258,12 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of shaderpacks.
-   * @param {number} instanceId - The instance ID to retrieve the shaderpacks for.
+   * @param {string} instanceId - The instance ID to retrieve the shaderpacks for.
    * @returns {Promise<InvokeResponse<ShaderPackInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveShaderPackList(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<ShaderPackInfo[]>> {
     return await invoke("retrieve_shader_pack_list", {
       instanceId,
@@ -272,12 +272,12 @@ export class InstanceService {
 
   /**
    * RETRIEVE the list of screenshots.
-   * @param {number} instanceId - The instance ID to retrieve the screenshots for.
+   * @param {string} instanceId - The instance ID to retrieve the screenshots for.
    * @returns {Promise<InvokeResponse<ScreenshotInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveScreenshotList(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<ScreenshotInfo[]>> {
     return await invoke("retrieve_screenshot_list", {
       instanceId,
@@ -303,18 +303,32 @@ export class InstanceService {
 
   /**
    * RETRIEVE the level details for a specific world.
-   * @param {number} instanceId - The instance ID to retrieve the level detail for.
+   * @param {string} instanceId - The instance ID to retrieve the level detail for.
    * @param {string} worldName - The name of the world to retrieve details for.
    * @returns {Promise<InvokeResponse<LevelData>>}
    */
   @responseHandler("instance")
   static async retrieveWorldDetails(
-    instanceId: number,
+    instanceId: string,
     worldName: string
   ): Promise<InvokeResponse<LevelData>> {
     return await invoke("retrieve_world_details", {
       instanceId,
       worldName,
+    });
+  }
+
+  /**
+   * CREATE a desktop shortcut for launching a specific instance.
+   * @param {string} instanceId - The instance ID for which to create the shortcut.
+   * @returns {Promise<InvokeResponse<null>>}
+   */
+  @responseHandler("instance")
+  static async createLaunchDesktopShortcut(
+    instanceId: string
+  ): Promise<InvokeResponse<null>> {
+    return await invoke("create_launch_desktop_shortcut", {
+      instanceId,
     });
   }
 }

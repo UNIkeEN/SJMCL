@@ -1,7 +1,7 @@
 import { Button, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import { FaRegStar, FaStar } from "react-icons/fa6";
@@ -12,11 +12,12 @@ import {
   LuHaze,
   LuHouse,
   LuPackage,
+  LuPackagePlus,
   LuPlay,
   LuSettings,
   LuSquareLibrary,
+  LuSquarePlus,
 } from "react-icons/lu";
-import { LuPackagePlus } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
@@ -26,6 +27,8 @@ import {
   useInstanceSharedData,
 } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { useToast } from "@/contexts/toast";
+import { InstanceService } from "@/services/instance";
 
 const InstanceDetailsLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -41,6 +44,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
+  const toast = useToast();
   const { t } = useTranslation();
   const { openSharedModal } = useSharedModals();
   const { id } = router.query;
@@ -57,12 +61,42 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   //   }
   // }, [summary])
 
+  const handleCreateLaunchDesktopShortcut = useCallback(
+    (instanceId: string) => {
+      InstanceService.createLaunchDesktopShortcut(instanceId).then(
+        (response) => {
+          if (response.status === "success") {
+            toast({
+              title: response.message,
+              status: "success",
+            });
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
+        }
+      );
+    },
+    [toast]
+  );
+
   const instanceSecMenuOperations = [
     {
       icon: "openFolder",
       danger: false,
       onClick: () => {
         openPath(summary?.versionPath || "");
+      },
+    },
+    {
+      icon: LuSquarePlus,
+      label: t("InstanceDetailsLayout.secMenu.createShortcut"),
+      danger: false,
+      onClick: () => {
+        if (instanceId) handleCreateLaunchDesktopShortcut(instanceId);
       },
     },
     {
@@ -100,7 +134,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       height="100%"
       title={summary?.name}
       withBackButton={navBarType !== "instance"}
-      backRoutePath="/instances/all"
+      backRoutePath="/instances/list"
       titleExtra={
         <CommonIconButton
           icon={summary?.starred ? FaStar : FaRegStar}

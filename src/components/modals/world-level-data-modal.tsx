@@ -21,7 +21,7 @@ import { LevelData } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
 
 interface WorldLevelDataModalProps extends Omit<ModalProps, "children"> {
-  instanceId: number | undefined;
+  instanceId: string | undefined;
   worldName: string;
 }
 
@@ -37,7 +37,7 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
   const { isOpen, onClose } = props;
 
   const handleRetrieveWorldDetails = useCallback(
-    (instanceId: number, worldName: string) => {
+    (instanceId: string, worldName: string) => {
       setIsLoading(true);
       InstanceService.retrieveWorldDetails(instanceId, worldName).then(
         (response) => {

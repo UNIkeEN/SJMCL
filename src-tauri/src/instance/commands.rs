@@ -29,10 +29,11 @@ use crate::{
   },
   partial::{PartialError, PartialUpdate},
   storage::{save_json_async, Storage},
-  utils::image::ImageWrapper,
+  utils::{fs::create_url_shortcut, image::ImageWrapper},
 };
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::{sync::Mutex, time::SystemTime};
@@ -44,11 +45,11 @@ use zip::read::ZipArchive;
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
   refresh_and_update_instances(&app).await; // firstly refresh and update
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let state = binding.lock()?;
   let mut summary_list = Vec::new();
   let global_version_isolation = get_global_game_config(&app).version_isolation;
-  for instance in state.iter() {
+  for (id, instance) in state.iter() {
     // same as get_game_config(), but mannually here
     let is_version_isolated =
       if instance.use_spec_game_config && instance.spec_game_config.is_some() {
@@ -62,7 +63,7 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
       };
 
     summary_list.push(InstanceSummary {
-      id: instance.id,
+      id: id.clone(),
       name: instance.name.clone(),
       description: instance.description.clone(),
       icon_src: instance.icon_src.clone(),
@@ -80,15 +81,15 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
 #[tauri::command]
 pub async fn update_instance_config(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
   key_path: String,
   value: String,
 ) -> SJMCLResult<()> {
   let instance = {
-    let binding = app.state::<Mutex<Vec<Instance>>>();
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let mut state = binding.lock().unwrap();
     let instance = state
-      .get_mut(instance_id)
+      .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
     let key_path = {
       let mut snake = String::new();
@@ -133,24 +134,24 @@ pub async fn update_instance_config(
 #[tauri::command]
 pub fn retrieve_instance_game_config(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<GameConfig> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let state = binding.lock().unwrap();
   let instance = state
-    .get(instance_id)
+    .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
   Ok(get_instance_game_config(&app, instance))
 }
 
 #[tauri::command]
-pub async fn reset_instance_game_config(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
+pub async fn reset_instance_game_config(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
   let instance = {
-    let binding = app.state::<Mutex<Vec<Instance>>>();
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let mut state = binding.lock().unwrap();
     let instance = state
-      .get_mut(instance_id)
+      .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
     instance.spec_game_config = Some(get_global_game_config(&app));
     instance.clone()
@@ -166,10 +167,10 @@ pub async fn reset_instance_game_config(app: AppHandle, instance_id: usize) -> S
 #[tauri::command]
 pub fn open_instance_subdir(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
   dir_type: InstanceSubdirType,
 ) -> SJMCLResult<()> {
-  let subdir_path = match get_instance_subdir_path_by_id(&app, instance_id, &dir_type) {
+  let subdir_path = match get_instance_subdir_path_by_id(&app, &instance_id, &dir_type) {
     Some(path) => path,
     None => return Err(InstanceError::InstanceNotFoundByID.into()),
   };
@@ -181,15 +182,15 @@ pub fn open_instance_subdir(
 }
 
 #[tauri::command]
-pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
-  let instance_binding = app.state::<Mutex<Vec<Instance>>>();
+pub fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+  let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let instance_state = instance_binding.lock().unwrap();
 
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   let mut config_state = config_binding.lock()?;
 
   let instance = instance_state
-    .get(instance_id)
+    .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
   let version_path = &instance.version_path;
@@ -200,10 +201,12 @@ pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
   }
   // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
 
-  if config_state.states.shared.selected_instance_id == instance_id.to_string() {
+  if config_state.states.shared.selected_instance_id == instance_id {
     config_state.states.shared.selected_instance_id = instance_state
-      .first()
-      .map_or("".to_string(), |i| i.id.to_string());
+      .keys()
+      .next()
+      .cloned()
+      .unwrap_or_else(|| "".to_string());
     config_state.save()?;
   }
   Ok(())
@@ -212,12 +215,12 @@ pub fn delete_instance(app: AppHandle, instance_id: usize) -> SJMCLResult<()> {
 #[tauri::command]
 pub async fn rename_instance(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
   new_name: String,
 ) -> SJMCLResult<PathBuf> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();
-  let instance = match state.get_mut(instance_id) {
+  let instance = match state.get_mut(&instance_id) {
     Some(x) => x,
     None => return Err(InstanceError::InstanceNotFoundByID.into()),
   };
@@ -232,7 +235,7 @@ pub async fn rename_instance(
 pub fn copy_resource_to_instances(
   app: AppHandle,
   src_file_path: String,
-  tgt_inst_ids: Vec<usize>,
+  tgt_inst_ids: Vec<String>,
   tgt_dir_type: InstanceSubdirType,
   decompress: bool,
 ) -> SJMCLResult<()> {
@@ -244,7 +247,7 @@ pub fn copy_resource_to_instances(
       .ok_or(InstanceError::InvalidSourcePath)?;
 
     for tgt_inst_id in tgt_inst_ids {
-      let tgt_path = match get_instance_subdir_path_by_id(&app, tgt_inst_id, &tgt_dir_type) {
+      let tgt_path = match get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type) {
         Some(path) => path,
         None => return Err(InstanceError::InstanceNotFoundByID.into()),
       };
@@ -277,7 +280,7 @@ pub fn copy_resource_to_instances(
     }
   } else if src_path.is_dir() {
     for tgt_inst_id in tgt_inst_ids {
-      let tgt_path = match get_instance_subdir_path_by_id(&app, tgt_inst_id, &tgt_dir_type) {
+      let tgt_path = match get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type) {
         Some(path) => path,
         None => return Err(InstanceError::InstanceNotFoundByID.into()),
       };
@@ -299,10 +302,10 @@ pub fn copy_resource_to_instances(
 pub fn move_resource_to_instance(
   app: AppHandle,
   src_file_path: String,
-  tgt_inst_id: usize,
+  tgt_inst_id: String,
   tgt_dir_type: InstanceSubdirType,
 ) -> SJMCLResult<()> {
-  let tgt_path = match get_instance_subdir_path_by_id(&app, tgt_inst_id, &tgt_dir_type) {
+  let tgt_path = match get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type) {
     Some(path) => path,
     None => return Err(InstanceError::InstanceNotFoundByID.into()),
   };
@@ -328,10 +331,10 @@ pub fn move_resource_to_instance(
 #[tauri::command]
 pub async fn retrieve_world_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<Vec<WorldInfo>> {
   let worlds_dir =
-    match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::Saves) {
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Saves) {
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
@@ -364,13 +367,13 @@ pub async fn retrieve_world_list(
 #[tauri::command]
 pub async fn retrieve_game_server_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
   query_online: bool,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   // query_online is false, return local data from nbt (servers.dat)
   let mut game_servers: Vec<GameServerInfo> = Vec::new();
   let game_root_dir =
-    match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::Root) {
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
@@ -429,9 +432,9 @@ pub async fn retrieve_game_server_list(
 #[tauri::command]
 pub async fn retrieve_local_mod_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
-  let mods_dir = match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::Mods)
+  let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
     Some(path) => path,
     None => return Ok(Vec::new()),
@@ -461,10 +464,10 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let state = binding.lock().unwrap();
   let instance = state
-    .get(instance_id)
+    .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
   mod_infos.iter_mut().for_each(|mod_info| {
@@ -481,11 +484,11 @@ pub async fn retrieve_local_mod_list(
 #[tauri::command]
 pub async fn retrieve_resource_pack_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<Vec<ResourcePackInfo>> {
   // Get the resource packs list based on the instance
   let resource_packs_dir =
-    match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::ResourcePacks) {
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::ResourcePacks) {
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
@@ -531,11 +534,11 @@ pub async fn retrieve_resource_pack_list(
 #[tauri::command]
 pub async fn retrieve_server_resource_pack_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<Vec<ResourcePackInfo>> {
   let resource_packs_dir = match get_instance_subdir_path_by_id(
     &app,
-    instance_id,
+    &instance_id,
     &InstanceSubdirType::ServerResourcePacks,
   ) {
     Some(path) => path,
@@ -584,10 +587,10 @@ pub async fn retrieve_server_resource_pack_list(
 #[tauri::command]
 pub fn retrieve_schematic_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<Vec<SchematicInfo>> {
   let schematics_dir =
-    match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::Schematics) {
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Schematics) {
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
@@ -617,11 +620,11 @@ pub fn retrieve_schematic_list(
 #[tauri::command]
 pub fn retrieve_shader_pack_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<Vec<ShaderPackInfo>> {
   // Get the shaderpacks directory based on the instance
   let shaderpacks_dir =
-    match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::ShaderPacks) {
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::ShaderPacks) {
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
@@ -648,10 +651,10 @@ pub fn retrieve_shader_pack_list(
 #[tauri::command]
 pub fn retrieve_screenshot_list(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
 ) -> SJMCLResult<Vec<ScreenshotInfo>> {
   let screenshots_dir =
-    match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::Screenshots) {
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Screenshots) {
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
@@ -731,11 +734,11 @@ pub fn toggle_mod_by_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<
 #[tauri::command]
 pub async fn retrieve_world_details(
   app: AppHandle,
-  instance_id: usize,
+  instance_id: String,
   world_name: String,
 ) -> SJMCLResult<LevelData> {
   let worlds_dir =
-    match get_instance_subdir_path_by_id(&app, instance_id, &InstanceSubdirType::Saves) {
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Saves) {
       Some(path) => path,
       None => return Err(InstanceError::WorldNotExistError.into()),
     };
@@ -748,4 +751,22 @@ pub async fn retrieve_world_details(
   } else {
     Err(InstanceError::LevelParseError.into())
   }
+}
+
+#[tauri::command]
+pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+  let state = binding
+    .lock()
+    .map_err(|_| InstanceError::InstanceNotFoundByID)?;
+  let instance = state
+    .get(&instance_id)
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+  let name = instance.name.clone();
+  let url = format!("sjmcl://launch?id={}", instance.id);
+
+  create_url_shortcut(&app, name, url, None).map_err(|_| InstanceError::ShortcutCreationFailed)?;
+
+  Ok(())
 }

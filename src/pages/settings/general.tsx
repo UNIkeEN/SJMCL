@@ -21,12 +21,14 @@ import {
 import LanguageMenu from "@/components/language-menu";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
+import { useRoutingHistory } from "@/contexts/routing-history";
 
 const GeneralSettingsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
+  const { removeHistory } = useRoutingHistory();
 
   const {
     isOpen: isDiscoverNoticeDialogOpen,
@@ -99,6 +101,7 @@ const GeneralSettingsPage = () => {
                   type="radio"
                   onChange={(value) => {
                     update("general.functionality.instancesNavType", value);
+                    removeHistory("/instances");
                   }}
                 >
                   {instancesNavTypes.map((type) => (

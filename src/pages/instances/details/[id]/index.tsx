@@ -9,7 +9,7 @@ const InstanceDetailIndexPage = () => {
 
   useEffect(() => {
     if (id === undefined) {
-      router.push("/instances/all");
+      router.push("/instances/list");
       return;
     }
 

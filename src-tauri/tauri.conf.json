@@ -59,7 +59,9 @@
     },
     "resources": [
       "assets/skins/*",
-      "assets/game/*"
+      "assets/game/*",
+      "assets/icons/icon.ico",
+      "assets/icons/icon.png"
     ]
   },
   "plugins": {

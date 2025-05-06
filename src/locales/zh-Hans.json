@@ -502,7 +502,8 @@
       "dirName": {
         "empty": "目录名称不能为空",
         "tooLong": "目录名称不能超过 20 个字符",
-        "exist": "目录名称已存在"
+        "exist": "目录名称已存在",
+        "hasInvalidChar": "目录名称存在非法字符"
       },
       "dirPath": {
         "exist": "目录路径已存在"
@@ -877,6 +878,7 @@
   },
   "InstanceDetailsLayout": {
     "secMenu": {
+      "createShortcut": "创建启动快捷方式",
       "exportModPack": "导出为整合包",
       "star": "星标此实例",
       "unstar": "取消星标"
@@ -1801,6 +1803,23 @@
             "WORLD_NOT_EXSIT_ERROR": "世界不存在",
             "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
             "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
+          }
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "模组状态切换失败",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "启动快捷方式已添加到桌面",
+        "error": {
+          "title": "启动快捷方式创建失败",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "命令执行失败"
           }
         }
       }

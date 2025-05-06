@@ -9,7 +9,7 @@ const InstancesPage = () => {
   useEffect(() => {
     let lastRecord =
       [...history].reverse().find((route) => route.startsWith("/instances/")) ||
-      "/instances/all";
+      "/instances/list";
     if (lastRecord.endsWith("settings/advanced"))
       lastRecord = lastRecord.replace("settings/advanced", "settings");
     router.replace(lastRecord);

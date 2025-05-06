@@ -11,9 +11,11 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSummary } from "@/models/instance/misc";
+import { getGameDirName } from "@/utils/instance";
 
-const AllInstancesPage = () => {
+const InstanceListPage = () => {
   const router = useRouter();
+  const { dir } = router.query;
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -24,8 +26,15 @@ const AllInstancesPage = () => {
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>([]);
 
   useEffect(() => {
-    setInstanceList(getInstanceList() || []);
-  }, [getInstanceList]);
+    if (!router.isReady) return;
+
+    setInstanceList(() => {
+      const all = getInstanceList() || [];
+      if (!dir) return all; // /instances/list, show all
+      const dirPrefix = Array.isArray(dir) ? dir.join("/") : dir;
+      return all.filter((inst) => inst.id.startsWith(`${dirPrefix}:`));
+    });
+  }, [dir, router.isReady, getInstanceList]);
 
   const viewTypeList = [
     {
@@ -45,7 +54,9 @@ const AllInstancesPage = () => {
       display="flex"
       flexDirection="column"
       height="100%"
-      title={t("AllInstancesPage.title")}
+      title={getGameDirName(
+        Array.isArray(dir) ? dir.join("/") : dir || t("AllInstancesPage.title")
+      )}
       headExtra={
         <HStack spacing={2}>
           <CommonIconButton
@@ -106,4 +117,4 @@ const AllInstancesPage = () => {
   );
 };
 
-export default AllInstancesPage;
+export default InstanceListPage;

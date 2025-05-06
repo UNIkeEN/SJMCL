@@ -1,8 +1,9 @@
-use crate::error::SJMCLError;
+use crate::error::{SJMCLError, SJMCLResult};
 use regex::Regex;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
+use tauri::{AppHandle, Manager};
 
 /// Recursively copies the contents of a source directory to a destination directory.
 ///
@@ -31,6 +32,9 @@ pub fn copy_whole_dir(src: &Path, dst: &Path) -> std::io::Result<()> {
 }
 
 /// Generates a unique filename in the specified directory.
+///
+/// If a file with the same name already exists, appends `" copy"`, `" copy 2"`, `" copy 3"`
+/// and so on until a non-conflicting name is found.
 ///
 /// # Examples
 ///
@@ -91,7 +95,7 @@ pub fn split_filename(filename: &OsStr) -> (String, String) {
 /// ```rust
 /// let sub_dirs = get_subdirectories(&directory).unwrap_or_default();
 /// ```
-pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> Result<Vec<PathBuf>, SJMCLError> {
+pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> SJMCLResult<Vec<PathBuf>> {
   fs::read_dir(path)?
     .filter_map(|entry| match entry {
       Ok(entry) => {
@@ -114,10 +118,7 @@ pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> Result<Vec<PathBuf>, SJMCL
 /// ```rust
 /// let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
 /// ```
-pub fn get_files_with_regex<P: AsRef<Path>>(
-  path: P,
-  pattern: &Regex,
-) -> Result<Vec<PathBuf>, SJMCLError> {
+pub fn get_files_with_regex<P: AsRef<Path>>(path: P, pattern: &Regex) -> SJMCLResult<Vec<PathBuf>> {
   let dir_entries = fs::read_dir(&path).map_err(|e| {
     let error_message = match e.kind() {
       io::ErrorKind::NotFound => "Path does not exist".to_string(),
@@ -142,4 +143,173 @@ pub fn get_files_with_regex<P: AsRef<Path>>(
   }
 
   Ok(matching_files)
+}
+
+/// Creates a cross-platform desktop shortcut that points to a URL (include deeplink).
+///
+/// Supports:
+/// - Windows (`.url`) with `.ico` icon
+/// - Linux (`.desktop`) with `.png` icon
+/// - macOS (`.webloc`), icon not supported
+///
+/// If `icon_path` is `None`, a default icon is copied from the app's resources to `AppData`,
+/// and used in the shortcut (except on macOS).
+///
+/// # Arguments
+///
+/// - `app`: Tauri AppHandle
+/// - `name`: File name (without extension)
+/// - `url`: Target deeplink or custom URL (e.g. `sjmcl://...`)
+/// - `icon_path`: Optional icon override
+///
+/// # Examples
+///
+/// ```rust
+/// create_url_shortcut(
+///     app,
+///     "Add Auth Server".to_string(),
+///     "sjmcl://add-auth-server?url=https%3A%2F%2Fexample.com".to_string(),
+///     None,
+/// )?;
+///
+/// create_url_shortcut(
+///     app,
+///     "Launch".to_string(),
+///     "sjmcl://launch?id=OFFICIAL_DIR:1.20.1".to_string(),
+///     Some(PathBuf::from("/path/to/custom/icon.png")),
+/// )?;
+/// ```
+pub fn create_url_shortcut(
+  app: &AppHandle,
+  name: String,
+  url: String,
+  icon_path: Option<PathBuf>,
+) -> SJMCLResult<()> {
+  let desktop = app
+    .path()
+    .desktop_dir()
+    .map_err(|e| SJMCLError(format!("Failed to get desktop path: {}", e)))?;
+
+  #[cfg(target_os = "windows")]
+  let shortcut_ext = "url";
+  #[cfg(target_os = "macos")]
+  let shortcut_ext = "command";
+  // let shortcut_ext = "webloc";
+  #[cfg(target_os = "linux")]
+  let shortcut_ext = "desktop";
+
+  let path = desktop.join(format!("{}.{}", name, shortcut_ext));
+
+  // process icon, use SJMCL icon as default (macOS webloc does not support icon)
+  #[cfg(target_os = "macos")]
+  {
+    let _ = icon_path; // suppress unused warning of params
+  }
+  #[cfg(any(target_os = "windows", target_os = "linux"))]
+  let final_icon_path: PathBuf = match icon_path {
+    Some(path) => path,
+    None => {
+      use tauri::path::BaseDirectory;
+      // Use default icon from resources
+      #[cfg(target_os = "windows")]
+      let icon_name = "icon.ico";
+      #[cfg(target_os = "linux")]
+      let icon_name = "icon.png";
+
+      let resource_icon = app
+        .path()
+        .resolve(
+          format!("assets/icons/{}", icon_name),
+          BaseDirectory::Resource,
+        )
+        .map_err(|e| SJMCLError(format!("Failed to resolve resource icon: {}", e)))?;
+
+      let appdata_icon = app
+        .path()
+        .resolve(icon_name, BaseDirectory::AppData)
+        .map_err(|e| SJMCLError(format!("Failed to resolve appdata icon path: {}", e)))?;
+
+      fs::copy(&resource_icon, &appdata_icon)
+        .map_err(|e| SJMCLError(format!("Failed to copy default icon: {}", e)))?;
+
+      appdata_icon
+    }
+  };
+
+  // Platform-specific shortcut creation
+  #[cfg(target_os = "windows")]
+  {
+    let icon_line = format!("IconFile={}", final_icon_path.to_string_lossy());
+    let content = format!(
+      "[InternetShortcut]\nURL={}\n{}\nIconIndex=0\n",
+      url, icon_line
+    );
+
+    fs::write(&path, content).map_err(|e| SJMCLError(e.to_string()))?;
+  }
+
+  // #[cfg(target_os = "macos")]
+  // {
+  //   use plist::{Dictionary, Value};
+
+  //   let mut dict = Dictionary::new();
+  //   dict.insert("URL".to_string(), Value::String(url.to_string()));
+  //   let plist_value = Value::Dictionary(dict);
+
+  //   let file = fs::File::create(&path).map_err(|e| SJMCLError(e.to_string()))?;
+  //   plist_value.to_writer_xml(file).map_err(|e| SJMCLError(e.to_string()))?;
+  // }
+
+  #[cfg(target_os = "macos")]
+  {
+    use std::io::Write;
+    use std::os::unix::fs::PermissionsExt;
+
+    let content = format!("#!/bin/bash\nopen \"{}\"\n", url);
+
+    let mut file = fs::File::create(&path).map_err(|e| SJMCLError(e.to_string()))?;
+    file
+      .write_all(content.as_bytes())
+      .map_err(|e| SJMCLError(e.to_string()))?;
+
+    let mut perms = file
+      .metadata()
+      .map_err(|e| SJMCLError(e.to_string()))?
+      .permissions();
+    perms.set_mode(0o755);
+    fs::set_permissions(&path, perms).map_err(|e| SJMCLError(e.to_string()))?;
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    use std::io::Write;
+    use std::os::unix::fs::PermissionsExt;
+
+    let icon_line = format!("Icon={}", final_icon_path.to_string_lossy());
+
+    let content = format!(
+      "[Desktop Entry]
+Type=Application
+Name={}
+Exec=xdg-open {}
+{}
+Terminal=false
+",
+      name, url, icon_line
+    );
+
+    let mut file = fs::File::create(&path).map_err(|e| SJMCLError(e.to_string()))?;
+    file
+      .write_all(content.as_bytes())
+      .map_err(|e| SJMCLError(e.to_string()))?;
+
+    let mut perms = file
+      .metadata()
+      .map_err(|e| SJMCLError(e.to_string()))?
+      .permissions();
+    perms.set_mode(0o755);
+    fs::set_permissions(&path, perms).map_err(|e| SJMCLError(e.to_string()))?;
+  }
+
+  Ok(())
 }

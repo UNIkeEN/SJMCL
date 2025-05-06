@@ -43,19 +43,18 @@ const InstanceSettingsPage = () => {
 
   const handleRenameInstance = useCallback(
     (name: string) => {
-      InstanceService.renameInstance(Number(instanceId), name).then(
-        (response) => {
-          if (response.status === "success") {
-            updateSummaryInContext("versionPath", response.data);
-            updateSummaryInContext("name", name);
-          } else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
-      );
+      if (!instanceId) return;
+      InstanceService.renameInstance(instanceId, name).then((response) => {
+        if (response.status === "success") {
+          updateSummaryInContext("versionPath", response.data);
+          updateSummaryInContext("name", name);
+        } else
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+      });
     },
     [instanceId, toast, updateSummaryInContext]
   );

@@ -60,9 +60,7 @@ export const GlobalDataContextProvider: React.FC<{
   useEffect(() => {
     const selectedInstanceId = config.states.shared.selectedInstanceId;
     setSelectedInstance(
-      instanceList?.find(
-        (instance) => instance.id === Number(selectedInstanceId)
-      )
+      instanceList?.find((instance) => instance.id === selectedInstanceId)
     );
   }, [instanceList, config.states.shared.selectedInstanceId]);
 

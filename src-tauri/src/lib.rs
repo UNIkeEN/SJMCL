@@ -20,6 +20,7 @@ use launcher_config::{
   helpers::java::refresh_and_update_javas,
   models::{JavaInfo, LauncherConfig},
 };
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex};
 use storage::Storage;
@@ -103,6 +104,7 @@ pub async fn run() {
       instance::commands::retrieve_shader_pack_list,
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
+      instance::commands::create_launch_desktop_shortcut,
       launch::commands::select_suitable_jre,
       launch::commands::validate_game_files,
       launch::commands::validate_selected_player,
@@ -137,7 +139,7 @@ pub async fn run() {
       let account_info = AccountInfo::load().unwrap_or_default();
       app.manage(Mutex::new(account_info));
 
-      let instances: Vec<Instance> = vec![];
+      let instances: HashMap<String, Instance> = HashMap::new();
       app.manage(Mutex::new(instances));
 
       let javas: Vec<JavaInfo> = vec![];

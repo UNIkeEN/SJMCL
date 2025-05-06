@@ -15,7 +15,7 @@ use crate::{
 };
 use sanitize_filename;
 use serde_json::Value;
-use std::{fs, io::Cursor, path::PathBuf, sync::Mutex};
+use std::{collections::HashMap, fs, io::Cursor, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
@@ -72,10 +72,10 @@ pub fn get_instance_subdir_paths(
 
 pub fn get_instance_subdir_path_by_id(
   app: &AppHandle,
-  instance_id: usize,
+  instance_id: &String,
   directory_type: &InstanceSubdirType,
 ) -> Option<PathBuf> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let state = binding.lock().unwrap();
   let instance = state.get(instance_id)?;
 
@@ -192,19 +192,26 @@ pub async fn refresh_instances(
   Ok(instances)
 }
 
-pub async fn refresh_all_instances(game_directories: &[GameDirectory]) -> Vec<Instance> {
-  let mut instances = vec![];
+pub async fn refresh_all_instances(
+  game_directories: &[GameDirectory],
+) -> HashMap<String, Instance> {
+  let mut instance_map = HashMap::new();
+
   for game_directory in game_directories {
+    let dir_name = game_directory.name.clone();
     match refresh_instances(game_directory).await {
-      Ok(mut v) => instances.append(&mut v),
+      Ok(vs) => {
+        for mut instance in vs {
+          let composed_id = format!("{}:{}", dir_name, instance.name);
+          instance.id = composed_id.clone();
+          instance_map.insert(composed_id, instance);
+        }
+      }
       Err(_) => continue,
     }
   }
-  // assign id
-  for (i, instance) in instances.iter_mut().enumerate() {
-    instance.id = i;
-  }
-  instances
+
+  instance_map
 }
 
 pub async fn refresh_and_update_instances(app: &AppHandle) {
@@ -216,7 +223,7 @@ pub async fn refresh_and_update_instances(app: &AppHandle) {
   };
   let instances = refresh_all_instances(&local_game_directories).await;
   // update the instances in the app state
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();
   *state = instances;
 }

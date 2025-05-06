@@ -122,7 +122,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     const { id } = router.query;
     const instanceId = Array.isArray(id) ? id[0] : id;
     const currentInstance = instanceList.find(
-      (instance) => instance.id === Number(instanceId)
+      (instance) => instance.id === instanceId
     );
     setCurInstance(currentInstance);
   }, [getInstanceList, router.query]);

@@ -115,6 +115,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   const [isDirNameEmpty, setIsDirNameEmpty] = useState<boolean>(false);
   const [isDirNameTooLong, setIsDirNameTooLong] = useState<boolean>(false);
   const [isDirNameExist, setIsDirNameExist] = useState<boolean>(false);
+  const [isDirNameInvalid, setIsDirNameInvalid] = useState<boolean>(false);
   const [isDirPathExist, setIsDirPathExist] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -261,7 +262,10 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
             <FormControl
               isRequired
               isInvalid={
-                isDirNameTooLong || isDirNameEmpty || (isDirNameExist && add)
+                isDirNameTooLong ||
+                isDirNameEmpty ||
+                isDirNameInvalid ||
+                (isDirNameExist && add)
               }
             >
               <FormLabel>{t("EditGameDirectoryModal.label.dirName")}</FormLabel>
@@ -277,11 +281,13 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                       .map((dir) => dir.name)
                       .includes(dirName)
                   );
+                  setIsDirNameInvalid(/[\/:\\?#&%]/.test(dirName));
                 }}
                 onFocus={() => {
                   setIsDirNameEmpty(false);
                   setIsDirNameTooLong(false);
                   setIsDirNameExist(false);
+                  setIsDirNameInvalid(false);
                 }}
                 required
                 ref={initialRef}
@@ -295,6 +301,13 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
               {isDirNameEmpty && (
                 <FormErrorMessage>
                   {t("EditGameDirectoryModal.errorMessage.dirName.empty")}
+                </FormErrorMessage>
+              )}
+              {isDirNameInvalid && (
+                <FormErrorMessage>
+                  {t(
+                    "EditGameDirectoryModal.errorMessage.dirName.hasInvalidChar"
+                  )}
                 </FormErrorMessage>
               )}
               {isDirNameExist && add && (
@@ -349,6 +362,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
               !dirPath ||
               isDirNameEmpty ||
               isDirNameTooLong ||
+              isDirNameInvalid ||
               (isDirNameExist && add) ||
               (isDirPathExist && add)
             }

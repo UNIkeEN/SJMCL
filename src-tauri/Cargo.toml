@@ -74,6 +74,9 @@ tauri-plugin-deep-link = "2"
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"
 
+[target."cfg(target_os = \"macos\")".dependencies]
+plist = "1"
+
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
 tauri-plugin-single-instance = { version = "2.0.0", features = ["deep-link"] }
 

@@ -22,6 +22,7 @@ use crate::{
   launcher_config::models::{FileValidatePolicy, JavaInfo},
   storage::load_json_async,
 };
+use std::collections::HashMap;
 use std::process::{Command, Stdio};
 use std::sync::Mutex;
 use tauri::{AppHandle, State};
@@ -30,8 +31,8 @@ use tauri::{AppHandle, State};
 #[tauri::command]
 pub async fn select_suitable_jre(
   app: AppHandle,
-  instance_id: usize,
-  instances_state: State<'_, Mutex<Vec<Instance>>>,
+  instance_id: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
   javas_state: State<'_, Mutex<Vec<JavaInfo>>>,
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<()> {
@@ -43,7 +44,7 @@ pub async fn select_suitable_jre(
   let instance = instances_state
     .lock()
     .unwrap()
-    .get(instance_id)
+    .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?
     .clone();
   let game_config = get_instance_game_config(&app, &instance);

@@ -36,7 +36,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
   const { selectedInstance } = useGlobalData();
 
   const handleUpdateSelectedInstance = (instance: InstanceSummary) => {
-    update("states.shared.selectedInstanceId", instance.id.toString());
+    update("states.shared.selectedInstanceId", instance.id);
     onSelectCallback();
   };
 
@@ -53,7 +53,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio
-          value={instance.id.toString()}
+          value={instance.id}
           onClick={() => handleUpdateSelectedInstance(instance)}
           colorScheme={primaryColor}
         />
@@ -91,14 +91,14 @@ const InstancesView: React.FC<InstancesViewProps> = ({
       ),
     },
     isSelected: selectedInstance?.id === instance.id,
-    radioValue: instance.id.toString(),
+    radioValue: instance.id,
     onSelect: () => handleUpdateSelectedInstance(instance),
   }));
 
   return (
     <Box {...boxProps}>
       {instances.length > 0 ? (
-        <RadioGroup value={selectedInstance?.id.toString()}>
+        <RadioGroup value={selectedInstance?.id}>
           {viewType === "list" ? (
             <OptionItemGroup items={listItems} />
           ) : (

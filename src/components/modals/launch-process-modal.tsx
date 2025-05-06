@@ -37,7 +37,7 @@ import { LaunchService } from "@/services/launch";
 
 // This modal will use shared-modal-context
 interface LaunchProcessModal extends Omit<ModalProps, "children"> {
-  instanceId: number; // may not be select instance id
+  instanceId: string; // may not be select instance id
 }
 
 const LaunchProcessModal: React.FC<LaunchProcessModal> = ({

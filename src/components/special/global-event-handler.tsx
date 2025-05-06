@@ -37,12 +37,28 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
   });
 
   useDeepLink({
-    trigger: "add-auth-server*",
+    trigger: /^add-auth-server\/?(?:\?.*)?$/,
     onCall: (path, _) => {
       const url = new URL(path).searchParams.get("url") || "";
       const decodeUrl = decodeURIComponent(url);
       if (!isStandAlone && decodeUrl) {
         openSharedModal("add-auth-server", { presetUrl: decodeUrl });
+      }
+    },
+  });
+
+  useDeepLink({
+    trigger: /^launch\/?(?:\?.*)?$/,
+    onCall: (path, _) => {
+      const id = new URL(path).searchParams.get("id") || "";
+      const decodeId = decodeURIComponent(id);
+      if (!isStandAlone && decodeId) {
+        // Delay the modal opening to ensure required app state/data (e.g. selected player in global-data context) is ready.
+        // This is important when the app is opened via deeplink.
+        // FIXME: find a better way to handle this.
+        setTimeout(() => {
+          openSharedModal("launch", { instanceId: decodeId });
+        }, 500);
       }
     },
   });

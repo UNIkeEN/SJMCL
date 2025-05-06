@@ -9,12 +9,12 @@ export class LaunchService {
   /**
    * Launching Step 1: select suitable Java runtime environment for the specified instance.
    * At this step, pass the ID of the instance to be launched (which may not be the same as the selected instance ID), and no further input is required afterwards.
-   * @param {number} instanceId - The ID of the instance.
+   * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("launch")
   static async selectSuitableJRE(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("select_suitable_jre", { instanceId });
   }

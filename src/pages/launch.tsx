@@ -207,7 +207,7 @@ const LaunchPage = () => {
               withMenu={false}
             />
           }
-          onClick={() => router.push("/instances/all")}
+          onClick={() => router.push("/instances/list")}
         />
       </Box>
     </HStack>

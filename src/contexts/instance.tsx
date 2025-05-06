@@ -95,8 +95,8 @@ export const InstanceContextProvider: React.FC<{
   );
 
   const handleRetrieveInstanceGameConfig = useCallback(
-    (id: number) => {
-      if (!isNaN(id)) {
+    (id: string) => {
+      if (id !== undefined && id) {
         InstanceService.retrieveInstanceGameConfig(id).then((response) => {
           if (response.status === "success") {
             setInstanceGameConfig(response.data);
@@ -120,10 +120,10 @@ export const InstanceContextProvider: React.FC<{
     // get summary
     if (instanceId !== undefined) {
       const summary = instanceList.find(
-        (instance) => instance.id === Number(instanceId)
+        (instance) => instance.id === instanceId
       );
       setInstanceSummary(summary);
-      handleRetrieveInstanceGameConfig(Number(instanceId));
+      handleRetrieveInstanceGameConfig(instanceId);
     }
   }, [router.query.id, getInstanceList, handleRetrieveInstanceGameConfig]);
 
