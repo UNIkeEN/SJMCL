@@ -187,19 +187,11 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
   // ref: https://github.com/HMCL-dev/HMCL/blob/c33ef5170b2cc726f01674fe6fca28035b1eef8b/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L106
   // -----------------------------------------
 
-  if game_config.performance.auto_mem_allocation {
-    // leave as default
-  } else {
-    cmd.push(format!(
-      "-Xmx{}m",
-      game_config.performance.max_mem_allocation
-    ));
-    cmd.push(format!(
-      "-Xms{}m",
-      game_config.performance.max_mem_allocation
-    ));
-    // set Xmx and Xms to the same value
-  }
+  // set maximum memory allocation
+  cmd.push(format!(
+    "-Xmx{}m",
+    game_config.performance.max_mem_allocation
+  ));
 
   let jvm = &game_config.advanced.jvm;
   {

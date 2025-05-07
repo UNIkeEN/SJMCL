@@ -12,6 +12,7 @@ use tauri::{AppHandle, Manager};
 
 #[cfg(target_os = "windows")]
 use std::error::Error;
+use systemstat::Platform;
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -63,7 +64,31 @@ impl LauncherConfig {
       platform_version: tauri_plugin_os::version().to_string(),
     };
 
+    // auto set max_memory
+    if self.global_game_config.performance.auto_mem_allocation {
+      if let Ok(suggested_mem) = Self::get_suggested_memory() {
+        self.global_game_config.performance.max_mem_allocation =
+          (suggested_mem / 1024 / 1024) as u32;
+      }
+    }
+
     Ok(())
+  }
+
+  pub fn get_suggested_memory() -> SJMCLResult<u64> {
+    let sys = systemstat::System::new();
+    let mem = sys.memory()?;
+    let free = mem.free.as_u64();
+    let available = free.saturating_sub(512 * 1024 * 1024); // Reserve 512 MB memory
+    const THRESHOLD: u64 = 8 * 1024 * 1024 * 1024; // 8 GB
+    Ok(
+      if available <= THRESHOLD {
+        available * 4 / 5
+      } else {
+        THRESHOLD * 4 / 5 + (available - THRESHOLD) * 1 / 5
+      }
+      .min(16 * 1024 * 1024 * 1024), // max 16 GB
+    )
   }
 
   pub fn replace_with_preserved(&mut self, new_config: LauncherConfig, preserved_fields: &[&str]) {
