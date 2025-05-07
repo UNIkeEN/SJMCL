@@ -18,7 +18,7 @@ export const generateInstanceDesc = (instance: InstanceSummary) => {
 export const getGameDirName = (dir: string | GameDirectory) => {
   const name = typeof dir === "string" ? dir : dir.name;
 
-  return ["CURRENT_DIR", "OFFICIAL_DIR"].includes(name)
+  return ["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(name)
     ? t(
         `GlobalGameSettingsPage.directories.settings.directories.special.${name}`
       )

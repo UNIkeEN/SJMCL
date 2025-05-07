@@ -732,7 +732,8 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "Current",
-            "OFFICIAL_DIR": "Minecraft Launcher"
+            "APP_DATA_SUBDIR": "SJMCL Data",
+            "OFFICIAL_DIR": "Official Launcher"
           }
         }
       },

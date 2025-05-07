@@ -732,6 +732,7 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "当前文件夹",
+            "APP_DATA_SUBDIR": "SJMCL 数据文件夹",
             "OFFICIAL_DIR": "官方启动器文件夹"
           }
         }
