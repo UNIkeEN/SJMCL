@@ -62,7 +62,16 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
   const backIconColor = `${primaryColor}.${useColorModeValue(100, 900)}`;
 
   return (
-    <VStack align="stretch" spacing={2} {...props}>
+    <VStack
+      align="stretch"
+      spacing={2}
+      sx={{
+        "*": {
+          userSelect: "none !important",
+        },
+      }}
+      {...props}
+    >
       {title && (
         <Text
           className="no-select"
@@ -81,6 +90,7 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
       {children}
       {icon && (
         <Icon
+          className="no-select"
           as={icon}
           position="absolute"
           color={backIconColor}

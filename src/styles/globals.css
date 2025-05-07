@@ -12,9 +12,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
-  user-select: none;
+  user-select: none !important;
 }
-
 
 /* scrollbar */
 ::-webkit-scrollbar {
