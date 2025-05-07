@@ -10,6 +10,7 @@ use strum_macros::Display;
 pub struct MemoryInfo {
   pub total: u64,
   pub used: u64,
+  pub suggested: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
