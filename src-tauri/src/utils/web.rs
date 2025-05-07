@@ -5,6 +5,23 @@ use tauri_plugin_http::reqwest::{header::HeaderMap, Client, ClientBuilder, Proxy
 
 use crate::launcher_config::models::{LauncherConfig, ProxyType};
 
+///  Builds a reqwest client with SJMCL version header and proxy support.
+///
+/// # Arguments
+///
+/// * `app` - The Tauri AppHandle.
+/// * `use_version_header` - Whether to include the SJMCL version header.
+/// * `use_proxy` - Whether to use the proxy settings from the config.
+///
+/// # Returns
+///
+/// A reqwest client instance.
+///
+/// # Example
+///
+/// ```rust
+/// let client = build_sjmcl_client(&app, true, true);
+/// ```
 pub fn build_sjmcl_client(
   app: &AppHandle,
   use_version_header: bool,
