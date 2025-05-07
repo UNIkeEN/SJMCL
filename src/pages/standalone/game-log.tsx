@@ -31,7 +31,6 @@ const GameLogPage: React.FC = () => {
     "16:14:55.628 [DEBUG] Debugging log",
     "16:14:55.628 [WARN] Warning log",
     "16:14:55.628 [ERROR] Error log",
-    "16:14:55.628 [FATAL] Fatal error occurred",
   ]);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -73,7 +72,7 @@ const GameLogPage: React.FC = () => {
   );
 
   return (
-    <Box p={4} minH="100vh" display="flex" flexDirection="column">
+    <Box p={4} h="100vh" display="flex" flexDirection="column">
       <Flex alignItems="center" mb={4}>
         <Input
           type="text"
