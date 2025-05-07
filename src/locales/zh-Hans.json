@@ -1437,8 +1437,7 @@
           "description": {
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "INVALID": "服务器类型错误",
-            "NOT_FOUND": "认证服务器不存在"
+            "INVALID": "服务器类型错误"
           }
         }
       },

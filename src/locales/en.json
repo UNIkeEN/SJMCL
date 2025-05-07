@@ -1437,8 +1437,7 @@
           "description": {
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "INVALID": "The player type is invalid",
-            "NOT_FOUND": "The server does not exist"
+            "INVALID": "The player type is invalid"
           }
         }
       },
