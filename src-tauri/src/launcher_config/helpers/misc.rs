@@ -12,7 +12,6 @@ use tauri::{AppHandle, Manager};
 
 #[cfg(target_os = "windows")]
 use std::error::Error;
-use systemstat::Platform;
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {

@@ -280,22 +280,21 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
   let sys = systemstat::System::new();
   let mem = sys.memory()?;
-  Ok(MemoryInfo {
-    total: mem.total.as_u64(),
-    used: saturating_sub_bytes(mem.total, mem.free).as_u64(),
-    suggested: get_suggested_memory(mem.free.as_u64()),
-  })
-}
-
-fn get_suggested_memory(free: u64) -> u64 {
-  let available = free.saturating_sub(512 * 1024 * 1024); // Reserve 512 MB memory
+  let total = mem.total.as_u64();
+  let used = saturating_sub_bytes(mem.total, mem.free).as_u64();
+  let available = mem.free.as_u64().saturating_sub(512 * 1024 * 1024); // Reserve 512 MB memory
   const THRESHOLD: u64 = 8 * 1024 * 1024 * 1024; // 8 GB
-  if available <= THRESHOLD {
+  let suggested = if available <= THRESHOLD {
     available * 4 / 5
   } else {
     THRESHOLD * 4 / 5 + (available - THRESHOLD) * 1 / 5
   }
-  .min(16 * 1024 * 1024 * 1024) // max 16 GB
+  .min(16 * 1024 * 1024 * 1024); // max 16 GB
+  Ok(MemoryInfo {
+    total,
+    used,
+    suggested,
+  })
 }
 
 #[tauri::command]
