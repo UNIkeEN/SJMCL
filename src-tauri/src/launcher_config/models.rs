@@ -91,7 +91,7 @@ structstruck::strike! {
       #[default = true]
       pub auto_mem_allocation: bool,
       #[default = 1024]
-      pub min_mem_allocation: u32,
+      pub max_mem_allocation: u32,
       #[default(ProcessPriority::Normal)]
       pub process_priority: ProcessPriority,
     },

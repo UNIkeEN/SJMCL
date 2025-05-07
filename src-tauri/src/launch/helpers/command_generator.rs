@@ -192,11 +192,11 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
   } else {
     cmd.push(format!(
       "-Xmx{}m",
-      game_config.performance.min_mem_allocation
+      game_config.performance.max_mem_allocation
     ));
     cmd.push(format!(
       "-Xms{}m",
-      game_config.performance.min_mem_allocation
+      game_config.performance.max_mem_allocation
     ));
     // set Xmx and Xms to the same value
   }

@@ -18,7 +18,7 @@ export interface GameConfig {
   };
   performance: {
     autoMemAllocation: boolean;
-    minMemAllocation: number;
+    maxMemAllocation: number;
     processPriority: string;
   };
   versionIsolation: boolean;
@@ -162,7 +162,7 @@ export const defaultGameConfig: GameConfig = {
   },
   performance: {
     autoMemAllocation: true,
-    minMemAllocation: 1024,
+    maxMemAllocation: 1024,
     processPriority: "normal",
   },
   versionIsolation: true,

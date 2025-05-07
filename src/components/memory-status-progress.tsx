@@ -59,7 +59,7 @@ const MemoryStatusProgress: React.FC<MemoryStatusProgressProps> = ({
           borderRadius="full"
         />
         <Text fontSize="xs" className="no-select secondary-text">
-          {t("MemoryStatusProgress.label.minAllocation")}
+          {t("MemoryStatusProgress.label.maxAllocation")}
         </Text>
       </HStack>
     </VStack>

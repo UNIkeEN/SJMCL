@@ -775,8 +775,8 @@
         "autoMemAllocation": {
           "title": "Allocate Memory Automatically"
         },
-        "minMemAllocation": {
-          "title": "Minimum Memory Allocation"
+        "maxMemAllocation": {
+          "title": "Maximum Memory Allocation"
         },
         "memoryUsage": {
           "title": "Memory Usage",
@@ -1071,7 +1071,7 @@
     "info": "{{used}} / {{total}} GB used",
     "label": {
       "now": "In use",
-      "minAllocation": "Minimum allocated for Minecraft"
+      "maxAllocation": "Maximum allocated for Minecraft"
     }
   },
   "ModLoaderCards": {
