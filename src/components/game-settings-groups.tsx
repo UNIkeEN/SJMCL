@@ -311,18 +311,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                   "performance.autoMemAllocation",
                   event.target.checked
                 );
-                if (event.target.checked) {
-                  setSliderMaxMemAllocation(
-                    Math.floor(memoryInfo.suggested / 1024 / 1024)
-                  );
-                  setMaxMemAllocation(
-                    Math.floor(memoryInfo.suggested / 1024 / 1024)
-                  );
-                  updateGameConfig(
-                    "performance.maxMemAllocation",
-                    maxMemAllocation
-                  );
-                }
               }}
             />
           ),
@@ -394,7 +382,11 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
         <MemoryStatusProgress
           key="mem"
           memoryInfo={memoryInfo}
-          allocatedMemory={maxMemAllocation}
+          allocatedMemory={
+            gameConfig.performance.autoMemAllocation
+              ? memoryInfo.suggested / 1024 / 1024
+              : maxMemAllocation
+          }
         />,
         {
           title: t(

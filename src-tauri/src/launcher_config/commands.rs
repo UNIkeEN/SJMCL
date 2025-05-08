@@ -1,5 +1,6 @@
 use super::{
   helpers::java::refresh_and_update_javas,
+  helpers::misc::get_suggested_memory,
   models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
 };
 use crate::{
@@ -280,20 +281,10 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
   let sys = systemstat::System::new();
   let mem = sys.memory()?;
-  let total = mem.total.as_u64();
-  let used = saturating_sub_bytes(mem.total, mem.free).as_u64();
-  let available = mem.free.as_u64().saturating_sub(512 * 1024 * 1024); // Reserve 512 MB memory
-  const THRESHOLD: u64 = 8 * 1024 * 1024 * 1024; // 8 GB
-  let suggested = if available <= THRESHOLD {
-    available * 4 / 5
-  } else {
-    THRESHOLD * 4 / 5 + (available - THRESHOLD) * 1 / 5
-  }
-  .min(16 * 1024 * 1024 * 1024); // max 16 GB
   Ok(MemoryInfo {
-    total,
-    used,
-    suggested,
+    total: mem.total.as_u64(),
+    used: saturating_sub_bytes(mem.total, mem.free).as_u64(),
+    suggested: get_suggested_memory(),
   })
 }
 
