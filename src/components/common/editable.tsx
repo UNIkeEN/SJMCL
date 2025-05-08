@@ -116,7 +116,7 @@ const Editable: React.FC<EditableProps> = ({
   }, [isEditing]);
 
   return (
-    <Box {...boxProps}>
+    <Box {...boxProps} overflow="hidden">
       {isEditing ? (
         isTextArea ? (
           <FormControl pb={5} isInvalid={isInvalid && isEditing}>
@@ -189,7 +189,14 @@ const Editable: React.FC<EditableProps> = ({
         </Text>
       ) : (
         <HStack spacing={0}>
-          <Text w="100%" {...textProps}>
+          <Text
+            w="100%"
+            whiteSpace="nowrap"
+            overflow="hidden"
+            textOverflow="ellipsis"
+            wordWarp="normal"
+            {...textProps}
+          >
             {value}
           </Text>
           {EditButtons()}
