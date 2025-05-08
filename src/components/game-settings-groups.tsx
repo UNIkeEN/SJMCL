@@ -94,7 +94,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const [memoryInfo, setMemoryInfo] = useState<MemoryInfo>({
     total: 0,
     used: 0,
-    suggested: 0,
+    suggestedMaxAlloc: 0,
   });
   const maxMemCanAllocated = Math.floor(memoryInfo.total / 1024 / 1024);
 
@@ -384,7 +384,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           memoryInfo={memoryInfo}
           allocatedMemory={
             gameConfig.performance.autoMemAllocation
-              ? memoryInfo.suggested / 1024 / 1024
+              ? memoryInfo.suggestedMaxAlloc / 1024 / 1024
               : maxMemAllocation
           }
         />,

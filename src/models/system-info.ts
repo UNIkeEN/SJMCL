@@ -10,5 +10,5 @@ export interface JavaInfo {
 export interface MemoryInfo {
   total: number;
   used: number;
-  suggested: number;
+  suggestedMaxAlloc: number;
 }

@@ -284,7 +284,7 @@ pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
   Ok(MemoryInfo {
     total: mem.total.as_u64(),
     used: saturating_sub_bytes(mem.total, mem.free).as_u64(),
-    suggested: get_suggested_memory(),
+    suggested_max_alloc: get_suggested_memory(),
   })
 }
 
