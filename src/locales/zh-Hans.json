@@ -1787,14 +1787,6 @@
           "title": "获取截图列表失败"
         }
       },
-      "toggleModByExtension": {
-        "error": {
-          "title": "模组状态切换失败",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
-          }
-        }
-      },
       "retrieveWorldDetails": {
         "error": {
           "title": "获取世界详细信息失败",
