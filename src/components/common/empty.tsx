@@ -36,7 +36,11 @@ const Empty: React.FC<EmptyProps> = ({
       {isLargeSize ? (
         <VStack spacing={4} justifyContent="center" alignItems="center">
           {withIcon && <HiOutlineInbox size={iconSize} />}
-          <Text fontSize={textSize} color={`${colorScheme}.500`}>
+          <Text
+            className="no-select"
+            fontSize={textSize}
+            color={`${colorScheme}.500`}
+          >
             {description ? description : t("Empty.noData")}
           </Text>
           {children}
@@ -45,7 +49,11 @@ const Empty: React.FC<EmptyProps> = ({
         <VStack spacing={4}>
           <HStack spacing={3} justifyContent="center" alignItems="center">
             {withIcon && <HiOutlineInbox size={iconSize} />}
-            <Text fontSize={textSize} color={`${colorScheme}.500`}>
+            <Text
+              className="no-select"
+              fontSize={textSize}
+              color={`${colorScheme}.500`}
+            >
               {description ? description : t("Empty.noData")}
             </Text>
           </HStack>

@@ -288,7 +288,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
           <ModalBody>
             <Flex flexDirection="column" overflow="hidden" h="100%">
               <VStack>
-                <Text flexWrap="wrap">
+                <Text className="no-select" flexWrap="wrap">
                   <SegmentedControl
                     selected={operation}
                     onSelectItem={(s) => setOperation(s as "copy" | "move")}
@@ -319,7 +319,10 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                 overflow="auto"
                 mt={2}
               >
-                <OptionItemGroup items={instanceList.map(buildOptionItems)} />
+                <OptionItemGroup
+                  className="no-select"
+                  items={instanceList.map(buildOptionItems)}
+                />
               </RadioGroup>
             </Flex>
           </ModalBody>

@@ -283,7 +283,9 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
         <ModalBody>
           <VStack spacing={3.5}>
             <FormControl>
-              <FormLabel>{t("AddPlayerModal.label.playerType")}</FormLabel>
+              <FormLabel className="no-select">
+                {t("AddPlayerModal.label.playerType")}
+              </FormLabel>
               <SegmentedControl
                 selected={playerType}
                 onSelectItem={(s) =>
@@ -311,10 +313,11 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                     !!playername.length && !isOfflinePlayernameValid(playername)
                   }
                 >
-                  <FormLabel>
+                  <FormLabel className="no-select">
                     {t("AddPlayerModal.offline.playerName.label")}
                   </FormLabel>
                   <Input
+                    className="no-select"
                     placeholder={t(
                       "AddPlayerModal.offline.playerName.placeholder"
                     )}
@@ -339,10 +342,11 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 />
                 {showAdvancedOptions && (
                   <FormControl isInvalid={!!uuid.length && !isUuidValid(uuid)}>
-                    <FormLabel>
+                    <FormLabel className="no-select">
                       {t("AddPlayerModal.offline.advancedOptions.uuid.label")}
                     </FormLabel>
                     <Input
+                      className="no-select"
                       placeholder={t(
                         "AddPlayerModal.offline.advancedOptions.uuid.placeholder"
                       )}
@@ -350,7 +354,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                       onChange={(e) => setUuid(e.target.value)}
                       focusBorderColor={`${primaryColor}.500`}
                     />
-                    <FormErrorMessage>
+                    <FormErrorMessage className="no-select">
                       {t(
                         "AddPlayerModal.offline.advancedOptions.uuid.errorMessage"
                       )}
@@ -375,7 +379,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               <>
                 {authServerList.length === 0 ? (
                   <HStack>
-                    <Text>
+                    <Text className="no-select">
                       {t("AddPlayerModal.3rdparty.authServer.noSource")}
                     </Text>
                     <Button
@@ -386,7 +390,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                       }}
                     >
                       <LuPlus />
-                      <Text ml={1}>
+                      <Text className="no-select" ml={1}>
                         {t("AddPlayerModal.3rdparty.authServer.addSource")}
                       </Text>
                     </Button>
@@ -394,7 +398,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 ) : (
                   <>
                     <FormControl>
-                      <FormLabel>
+                      <FormLabel className="no-select">
                         {t("AddPlayerModal.3rdparty.authServer.label")}
                       </FormLabel>
                       <HStack>
@@ -420,7 +424,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             ))}
                           </MenuList>
                         </Menu>
-                        <Text className="secondary-text ellipsis-text">
+                        <Text className="secondary-text ellipsis-text no-select">
                           {authServer?.authUrl}
                         </Text>
                       </HStack>
@@ -429,12 +433,13 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                       (!showOAuth ? (
                         <>
                           <FormControl isRequired>
-                            <FormLabel>
+                            <FormLabel className="no-select">
                               {t(
                                 `AddPlayerModal.3rdparty.${authServer.features.nonEmailLogin ? "emailOrPlayerName" : "email"}.label`
                               )}
                             </FormLabel>
                             <Input
+                              className="no-select"
                               placeholder={t(
                                 `AddPlayerModal.3rdparty.${authServer.features.nonEmailLogin ? "emailOrPlayerName" : "email"}.placeholder`
                               )}
@@ -446,10 +451,11 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             />
                           </FormControl>
                           <FormControl isRequired>
-                            <FormLabel>
+                            <FormLabel className="no-select">
                               {t("AddPlayerModal.3rdparty.password.label")}
                             </FormLabel>
                             <Input
+                              className="no-select"
                               placeholder={t(
                                 "AddPlayerModal.3rdparty.password.placeholder"
                               )}
@@ -484,7 +490,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
         <ModalFooter w="100%">
           {(playerType === "offline" || playerType === "microsoft") && (
-            <HStack spacing={2}>
+            <HStack spacing={2} className="no-select">
               <LuExternalLink />
               <Link
                 color={`${primaryColor}.500`}

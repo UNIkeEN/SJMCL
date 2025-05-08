@@ -200,7 +200,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
           >
             {launchProcessSteps.map((step, index) => (
               <Step key={index}>
-                <StepIndicator>
+                <StepIndicator className="no-select">
                   <StepStatus
                     complete={<StepIcon />}
                     incomplete={<StepNumber />}
@@ -216,7 +216,9 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
                 <Box flexShrink="0">
                   <StepTitle>
                     <HStack>
-                      <Text>{t(`LaunchProcessModal.step.${step.label}`)}</Text>
+                      <Text className="no-select">
+                        {t(`LaunchProcessModal.step.${step.label}`)}
+                      </Text>
                       {index === activeStep && !errorPaused && (
                         <BeatLoader size={12} color="gray" />
                       )}

@@ -239,6 +239,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalCloseButton />
         <Center>
           <Stepper
+            className="no-select"
             colorScheme={primaryColor}
             index={activeStep}
             w="80%"

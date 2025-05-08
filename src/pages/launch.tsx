@@ -137,6 +137,7 @@ const LaunchPage = () => {
           {selectedPlayer ? (
             <>
               <Image
+                className="no-select"
                 boxSize="32px"
                 objectFit="cover"
                 src={base64ImgSrc(selectedPlayer.avatar)}

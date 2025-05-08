@@ -119,6 +119,7 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
   return (
     <VStack {...props} w="100%" h="100%" spacing={4}>
       <ModLoaderCards
+        className="no-select"
         currentType={selectedModLoader.loaderType}
         currentVersion={selectedModLoader.version}
         displayMode="selector"
@@ -151,6 +152,7 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
             h="100%"
           >
             <VirtualOptionItemGroup
+              className="no-select"
               h="100%"
               items={modLoaders.map(buildOptionItems)}
             />

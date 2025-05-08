@@ -74,6 +74,7 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <Image
+          className="no-select"
           src={convertFileSrc(screenshot.filePath)}
           alt={screenshot.fileName}
           borderRadius="md"
@@ -82,12 +83,12 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           <Flex justify="space-between" align="center">
-            <Text fontSize="sm" fontWeight="bold">
+            <Text fontSize="sm" fontWeight="bold" className="no-select">
               {extractFileName(screenshot.fileName)}
             </Text>
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />
-              <Text fontSize="xs" className="secondary-text">
+              <Text fontSize="xs" className="secondary-text no-select">
                 {UNIXToDatetime(screenshot.time)}
               </Text>
               <HStack spacing={0}>

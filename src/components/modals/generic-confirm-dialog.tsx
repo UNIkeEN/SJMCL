@@ -48,7 +48,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
         <AlertDialogContent>
           <AlertDialogHeader>{title}</AlertDialogHeader>
           <AlertDialogCloseButton />
-          <AlertDialogBody>{body}</AlertDialogBody>
+          <AlertDialogBody className="no-select">{body}</AlertDialogBody>
           <AlertDialogFooter>
             {btnCancel && (
               <Button ref={cancelRef} onClick={onClose} variant="ghost">
