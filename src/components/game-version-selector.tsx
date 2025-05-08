@@ -210,7 +210,6 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
             <LuSearch />
           </InputLeftElement>
           <Input
-            className="no-select"
             focusBorderColor={`${primaryColor}.500`}
             borderRadius="md"
             placeholder={t("GameVersionSelector.searchPlaceholder")}
@@ -240,7 +239,6 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
             h="100%"
           >
             <VirtualOptionItemGroup
-              className="no-select"
               h="100%"
               items={filteredVersions.map(buildOptionItems)}
             />

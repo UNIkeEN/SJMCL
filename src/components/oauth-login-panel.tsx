@@ -34,7 +34,7 @@ const OAuthLoginPanel: React.FC<OAuthLoginPanelProps> = ({
             {authCode}
           </Heading>
         )}
-        <Text className="no-select" fontSize="sm">
+        <Text fontSize="sm">
           {t(`AddPlayerModal.oauthCommon.description.${localeSuffix}`)}
         </Text>
         <Button

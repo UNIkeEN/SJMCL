@@ -141,17 +141,14 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
             ) : (
               <>
                 <FormControl>
-                  <FormLabel className="no-select">
-                    {t("ReLoginPlayerModal.label.user")}
-                  </FormLabel>
-                  <Text className="no-select">{player.name}</Text>
+                  <FormLabel>{t("ReLoginPlayerModal.label.user")}</FormLabel>
+                  <Text>{player.name}</Text>
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel className="no-select">
+                  <FormLabel>
                     {t("ReLoginPlayerModal.label.password")}
                   </FormLabel>
                   <Input
-                    className="no-select"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

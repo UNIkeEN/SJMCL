@@ -38,11 +38,10 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalCloseButton />
         <ModalBody>
           <FormControl isRequired>
-            <FormLabel className="no-select">
+            <FormLabel>
               {t("AddDiscoverSourceModal.label.endpointUrl")}
             </FormLabel>
             <Input
-              className="no-select"
               value={endpointUrl}
               onChange={(e) => setEndpointUrl(e.target.value)}
               placeholder={t("AddDiscoverSourceModal.placeholder.endpointUrl")}

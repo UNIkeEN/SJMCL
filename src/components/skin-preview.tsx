@@ -276,9 +276,7 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
             </Tooltip>
           </HStack>
           <HStack>
-            <Text className="no-select" fontSize="sm">
-              {t("SkinPreview.cape")}
-            </Text>
+            <Text fontSize="sm">{t("SkinPreview.cape")}</Text>
             <Switch
               isChecked={isCapeVisible}
               onChange={(e) => setIsCapeVisible(e.target.checked)}

@@ -268,11 +268,8 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                 (isDirNameExist && add)
               }
             >
-              <FormLabel className="no-select">
-                {t("EditGameDirectoryModal.label.dirName")}
-              </FormLabel>
+              <FormLabel>{t("EditGameDirectoryModal.label.dirName")}</FormLabel>
               <Input
-                className="no-select"
                 placeholder={t("EditGameDirectoryModal.placeholder.dirName")}
                 value={dirName}
                 onChange={(e) => setDirName(e.target.value)}
@@ -297,37 +294,34 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                 focusBorderColor={`${primaryColor}.500`}
               />
               {isDirNameTooLong && (
-                <FormErrorMessage className="no-select">
+                <FormErrorMessage>
                   {t("EditGameDirectoryModal.errorMessage.dirName.tooLong")}
                 </FormErrorMessage>
               )}
               {isDirNameEmpty && (
-                <FormErrorMessage className="no-select">
+                <FormErrorMessage>
                   {t("EditGameDirectoryModal.errorMessage.dirName.empty")}
                 </FormErrorMessage>
               )}
               {isDirNameInvalid && (
-                <FormErrorMessage className="no-select">
+                <FormErrorMessage>
                   {t(
                     "EditGameDirectoryModal.errorMessage.dirName.hasInvalidChar"
                   )}
                 </FormErrorMessage>
               )}
               {isDirNameExist && add && (
-                <FormErrorMessage className="no-select">
+                <FormErrorMessage>
                   {t("EditGameDirectoryModal.errorMessage.dirName.exist")}
                 </FormErrorMessage>
               )}
             </FormControl>
 
             <FormControl isRequired isInvalid={isDirPathExist && add}>
-              <FormLabel className="no-select">
-                {t("EditGameDirectoryModal.label.dirPath")}
-              </FormLabel>
+              <FormLabel>{t("EditGameDirectoryModal.label.dirPath")}</FormLabel>
               <Flex direction="row" align="center">
                 <InputGroup size="sm">
                   <Input
-                    className="no-select"
                     pr={12}
                     value={dirPath}
                     onChange={(e) => setDirPath(e.target.value)}

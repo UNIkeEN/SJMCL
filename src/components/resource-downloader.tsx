@@ -72,7 +72,7 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
 }) => {
   return (
     <HStack>
-      <Text className="no-select">{label}</Text>
+      <Text>{label}</Text>
       <Menu>
         <MenuButton
           as={Button}
@@ -193,7 +193,6 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     <>
       {list.length > 0 ? (
         <VirtualOptionItemGroup
-          className="no-select"
           h="100%"
           items={list.map(buildOptionItems)}
           useInfiniteScroll
@@ -394,11 +393,8 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
       </HStack>
 
       <HStack gap={3}>
-        <Text className="no-select" whiteSpace="nowrap">
-          {t("ResourceDownloader.label.name")}
-        </Text>
+        <Text whiteSpace="nowrap">{t("ResourceDownloader.label.name")}</Text>
         <Input
-          className="no-select"
           placeholder={t("ResourceDownloader.label.name")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

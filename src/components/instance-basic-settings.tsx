@@ -120,7 +120,6 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
       <VStack w="100%" spacing={4}>
         {instanceSpecSettingsGroups.map((group, index) => (
           <OptionItemGroup
-            className="no-select"
             title={group.title}
             items={group.items}
             key={index}

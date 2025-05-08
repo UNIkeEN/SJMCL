@@ -83,12 +83,12 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           <Flex justify="space-between" align="center">
-            <Text fontSize="sm" fontWeight="bold" className="no-select">
+            <Text fontSize="sm" fontWeight="bold">
               {extractFileName(screenshot.fileName)}
             </Text>
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />
-              <Text fontSize="xs" className="secondary-text no-select">
+              <Text fontSize="xs" className="secondary-text">
                 {UNIXToDatetime(screenshot.time)}
               </Text>
               <HStack spacing={0}>

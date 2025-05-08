@@ -136,6 +136,7 @@ const chakraExtendTheme = extendTheme({
         body: {
           fontSize: "sm",
           paddingX: 4,
+          userSelect: "none",
         },
       },
       defaultProps: {
@@ -154,6 +155,7 @@ const chakraExtendTheme = extendTheme({
     },
     Tooltip: {
       baseStyle: {
+        userSelect: "none",
         fontSize: "xs-sm",
       },
     },

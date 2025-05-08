@@ -129,11 +129,10 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
         <ModalBody>
           {!isNextStep ? (
             <FormControl isInvalid={isServerUrlInvalid} isRequired>
-              <FormLabel className="no-select" htmlFor="serverUrl">
+              <FormLabel htmlFor="serverUrl">
                 {t("AddAuthServerModal.page1.serverUrl")}
               </FormLabel>
               <Input
-                className="no-select"
                 id="serverUrl"
                 type="url"
                 placeholder={t("AddAuthServerModal.placeholder.inputServerUrl")}
@@ -144,7 +143,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
                 focusBorderColor={`${primaryColor}.500`}
               />
               {isServerUrlInvalid && (
-                <FormErrorMessage className="no-select">
+                <FormErrorMessage>
                   {t("AddAuthServerModal.page1.serverUrlRequired")}
                 </FormErrorMessage>
               )}
@@ -152,16 +151,16 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
           ) : (
             <VStack spacing={3.5} align="flex-start">
               <HStack spacing={2}>
-                <Text className="no-select" fontWeight={500}>
+                <Text fontWeight={500}>
                   {t("AddAuthServerModal.page2.name")}
                 </Text>
-                <Text className="no-select">{serverName}</Text>
+                <Text>{serverName}</Text>
               </HStack>
               <HStack spacing={2}>
-                <Text className="no-select" fontWeight={500}>
+                <Text fontWeight={500}>
                   {t("AddAuthServerModal.page2.serverUrl")}
                 </Text>
-                <Text className="no-select">{serverUrl}</Text>
+                <Text>{serverUrl}</Text>
               </HStack>
             </VStack>
           )}
