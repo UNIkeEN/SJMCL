@@ -84,6 +84,7 @@ impl LauncherConfig {
   }
 }
 
+// ref: https://github.com/HMCL-dev/HMCL/blob/4eee79da17140804bdef5995df27a33241bdd328/HMCL/src/main/java/org/jackhuang/hmcl/game/HMCLGameRepository.java#L510
 pub fn get_suggested_memory() -> u64 {
   let sys = systemstat::System::new();
   let free = if let Ok(mem) = sys.memory() {
