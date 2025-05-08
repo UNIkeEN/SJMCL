@@ -47,7 +47,7 @@ export const Section: React.FC<SectionProps> = ({
     <Box {...props}>
       {(isAccordion || title || description || titleExtra || headExtra) && (
         <Flex alignItems="flex-start" flexShrink={0} mb={isOpen ? 2.5 : 0}>
-          <HStack spacing={1}>
+          <HStack spacing={1} overflow="hidden">
             {withBackButton && (
               <IconButton
                 aria-label="back"
@@ -85,8 +85,8 @@ export const Section: React.FC<SectionProps> = ({
                 }}
               />
             )}
-            <VStack spacing={0} align="start">
-              <HStack spacing={2}>
+            <VStack spacing={0} align="start" overflow="hidden">
+              <HStack spacing={2} w="100%">
                 {title && (
                   <Text fontWeight="bold" fontSize="sm" className="no-select">
                     {title}
