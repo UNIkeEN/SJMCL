@@ -71,7 +71,13 @@ export const WrapCard: React.FC<WrapCardProps> = ({
       <VStack spacing={0}>
         {image &&
           (typeof image === "string" ? (
-            <Image boxSize="36px" objectFit="cover" src={image} alt={title} />
+            <Image
+              className="no-select"
+              boxSize="36px"
+              objectFit="cover"
+              src={image}
+              alt={title}
+            />
           ) : (
             image
           ))}

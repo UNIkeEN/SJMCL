@@ -98,14 +98,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
   }));
 
   return (
-    <Box
-      sx={{
-        "*": {
-          userSelect: "none !important",
-        },
-      }}
-      {...boxProps}
-    >
+    <Box {...boxProps}>
       {players.length > 0 ? (
         <RadioGroup value={selectedPlayer?.id}>
           {viewType === "list" ? (
