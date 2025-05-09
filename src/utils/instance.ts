@@ -21,14 +21,15 @@ const SPECIAL_GAME_DIR_NAMES = [
   "OFFICIAL_DIR",
 ];
 
-export function isSpecialGameDirName(name: string): boolean {
+export const isSpecialGameDir = (dir: string | GameDirectory): boolean => {
+  const name = typeof dir === "string" ? dir : dir.name;
   return SPECIAL_GAME_DIR_NAMES.includes(name);
-}
+};
 
 export const getGameDirName = (dir: string | GameDirectory) => {
   const name = typeof dir === "string" ? dir : dir.name;
 
-  return isSpecialGameDirName(name)
+  return isSpecialGameDir(name)
     ? t(
         `GlobalGameSettingsPage.directories.settings.directories.special.${name}`
       )

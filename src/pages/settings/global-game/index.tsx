@@ -23,7 +23,7 @@ import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { GameDirectory } from "@/models/config";
-import { getGameDirName, isSpecialGameDirName } from "@/utils/instance";
+import { getGameDirName, isSpecialGameDir } from "@/utils/instance";
 
 const GlobalGameSettingsPage = () => {
   const { t } = useTranslation();
@@ -63,7 +63,7 @@ const GlobalGameSettingsPage = () => {
     const checkDirectories = async () => {
       const existence: Record<string, boolean> = {};
       for (const directory of config.localGameDirectories) {
-        if (isSpecialGameDirName(directory.name)) {
+        if (isSpecialGameDir(directory.name)) {
           existence[directory.dir] = true;
           continue;
         }
@@ -139,7 +139,7 @@ const GlobalGameSettingsPage = () => {
               description: (
                 <VStack spacing={0} align="start" fontSize="xs">
                   <Text className="secondary-text">{directory.dir}</Text>
-                  {!isSpecialGameDirName(directory.name) &&
+                  {!isSpecialGameDir(directory.name) &&
                     directoryExistence[directory.dir] === false && (
                       <Text color="red.600">
                         {t(
@@ -152,7 +152,7 @@ const GlobalGameSettingsPage = () => {
               prefixElement: (
                 <Icon
                   as={
-                    isSpecialGameDirName(directory.name) ||
+                    isSpecialGameDir(directory.name) ||
                     directoryExistence[directory.dir]
                       ? LuFolder
                       : LuFolderX
@@ -218,12 +218,7 @@ const GlobalGameSettingsPage = () => {
         onClose={onDeleteDirDialogClose}
         title={t("GlobalGameSettingsPage.directories.deleteDialog.title")}
         body={t("GlobalGameSettingsPage.directories.deleteDialog.content", {
-          dirName:
-            selectedDir.name === "OFFICIAL_DIR"
-              ? t(
-                  "GlobalGameSettingsPage.directories.settings.directories.special.OFFICIAL_DIR"
-                )
-              : selectedDir.name,
+          dirName: getGameDirName(selectedDir.name),
         })}
         btnOK={t("General.delete")}
         btnCancel={t("General.cancel")}
