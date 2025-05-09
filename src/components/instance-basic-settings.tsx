@@ -10,7 +10,7 @@ import {
 import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { GameDirectory } from "@/models/config";
-import { getGameDirName } from "@/utils/instance";
+import { isSpecialGameDirName } from "@/utils/instance";
 
 interface InstanceBasicSettingsProps {
   name: string;
@@ -95,7 +95,11 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
       items: [
         ...config.localGameDirectories.map(
           (directory): OptionItemProps => ({
-            title: getGameDirName(directory),
+            title: isSpecialGameDirName(directory.name)
+              ? t(
+                  `GlobalGameSettingsPage.directories.settings.directories.special.${directory.name}`
+                )
+              : directory.name,
             description: directory.dir,
             prefixElement: (
               <Radio

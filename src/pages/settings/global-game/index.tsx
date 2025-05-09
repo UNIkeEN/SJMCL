@@ -23,7 +23,7 @@ import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { GameDirectory } from "@/models/config";
-import { getGameDirName } from "@/utils/instance";
+import { getGameDirName, isSpecialGameDirName } from "@/utils/instance";
 
 const GlobalGameSettingsPage = () => {
   const { t } = useTranslation();
@@ -63,11 +63,7 @@ const GlobalGameSettingsPage = () => {
     const checkDirectories = async () => {
       const existence: Record<string, boolean> = {};
       for (const directory of config.localGameDirectories) {
-        if (
-          ["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(
-            directory.name
-          )
-        ) {
+        if (isSpecialGameDirName(directory.name)) {
           existence[directory.dir] = true;
           continue;
         }
@@ -143,9 +139,7 @@ const GlobalGameSettingsPage = () => {
               description: (
                 <VStack spacing={0} align="start" fontSize="xs">
                   <Text className="secondary-text">{directory.dir}</Text>
-                  {!["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(
-                    directory.name
-                  ) &&
+                  {!isSpecialGameDirName(directory.name) &&
                     directoryExistence[directory.dir] === false && (
                       <Text color="red.600">
                         {t(
@@ -158,9 +152,8 @@ const GlobalGameSettingsPage = () => {
               prefixElement: (
                 <Icon
                   as={
-                    ["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(
-                      directory.name
-                    ) || directoryExistence[directory.dir]
+                    isSpecialGameDirName(directory.name) ||
+                    directoryExistence[directory.dir]
                       ? LuFolder
                       : LuFolderX
                   }
