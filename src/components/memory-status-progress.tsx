@@ -30,10 +30,8 @@ const MemoryStatusProgress: React.FC<MemoryStatusProgressProps> = ({
   return (
     <VStack align="stretch" spacing={2}>
       <Flex align="baseline">
-        <Text fontSize="xs-sm" className="no-select">
-          {t("MemoryStatusProgress.title")}
-        </Text>
-        <Text fontSize="xs-sm" ml="auto" className="no-select secondary-text">
+        <Text fontSize="xs-sm">{t("MemoryStatusProgress.title")}</Text>
+        <Text fontSize="xs-sm" ml="auto" className="secondary-text">
           {t("MemoryStatusProgress.info", {
             total: totalInGB,
             used: usedInGB,
@@ -48,7 +46,7 @@ const MemoryStatusProgress: React.FC<MemoryStatusProgressProps> = ({
       />
       <HStack spacing={1}>
         <Box bgColor={`${primaryColor}.500`} w={2} h={2} borderRadius="full" />
-        <Text fontSize="xs" className="no-select secondary-text">
+        <Text fontSize="xs" className="secondary-text">
           {t("MemoryStatusProgress.label.now")}
         </Text>
         <Box
@@ -58,7 +56,7 @@ const MemoryStatusProgress: React.FC<MemoryStatusProgressProps> = ({
           ml={1}
           borderRadius="full"
         />
-        <Text fontSize="xs" className="no-select secondary-text">
+        <Text fontSize="xs" className="secondary-text">
           {t("MemoryStatusProgress.label.minAllocation")}
         </Text>
       </HStack>

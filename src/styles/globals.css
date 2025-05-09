@@ -52,7 +52,7 @@ body {
   user-select: none !important;
 }
 
-.allow-select{
+.allow-select {
   user-select: initial !important;
 }
 

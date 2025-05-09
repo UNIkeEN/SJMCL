@@ -124,6 +124,7 @@ const chakraExtendTheme = extendTheme({
             paddingX: 4,
             paddingTop: 2,
             paddingBottom: 4,
+            userSelect: "none",
           },
         },
         closeButton: {

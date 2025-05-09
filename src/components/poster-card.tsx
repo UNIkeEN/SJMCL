@@ -49,9 +49,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
       {imageSrc && <Image objectFit="cover" src={imageSrc} alt={title} />}
       <CardBody p={3}>
         <VStack spacing={1} alignItems="start" overflow="hidden">
-          <Text fontSize="xs-sm" className="no-select">
-            {title}
-          </Text>
+          <Text fontSize="xs-sm">{title}</Text>
           {keywords && keywords.trim() && (
             <Wrap spacing={1}>
               {keywords.split(",").map((keyword, index) => (
@@ -62,7 +60,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
             </Wrap>
           )}
           {abstracts && (
-            <Text fontSize="xs" className="secondary-text no-select">
+            <Text fontSize="xs" className="secondary-text">
               {abstracts}
             </Text>
           )}

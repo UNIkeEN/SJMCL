@@ -77,9 +77,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           <HStack spacing={2} flexWrap="wrap">
             {typeof title === "string" ? (
               <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs-sm" className="no-select">
-                  {title}
-                </Text>
+                <Text fontSize="xs-sm">{title}</Text>
               </Skeleton>
             ) : (
               title
@@ -98,7 +96,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           {description &&
             (typeof description === "string" ? (
               <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs" className="secondary-text no-select">
+                <Text fontSize="xs" className="secondary-text">
                   {description}
                 </Text>
               </Skeleton>

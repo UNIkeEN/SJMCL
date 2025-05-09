@@ -146,7 +146,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     description: (
       <VStack
         fontSize="xs"
-        className="secondary-text no-select"
+        className="secondary-text"
         spacing={1}
         align="flex-start"
         w="100%"

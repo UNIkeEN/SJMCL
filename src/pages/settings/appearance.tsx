@@ -273,7 +273,7 @@ const AppearanceSettingsPage = () => {
         <Text
           maxW="6rem"
           fontSize="xs"
-          className={`no-select ${!selected ? "secondary-text" : ""}`}
+          className={!selected ? "secondary-text" : ""}
           mt={selected ? "-1px" : 0} // compensate for the offset caused by selected card's border
           noOfLines={1}
         >

@@ -148,7 +148,7 @@ const JavaSettingsPage = () => {
                 description={
                   <Text
                     fontSize="xs"
-                    className="secondary-text no-select"
+                    className="secondary-text"
                     wordBreak="break-all"
                   >
                     {java.execPath}

@@ -66,14 +66,13 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
             <VStack spacing={0} alignItems="start">
               <Text
                 fontSize="xs-sm"
-                className="no-select"
                 fontWeight={isSelected ? "bold" : "normal"}
                 color={isSelected ? `${primaryColor}.600` : "inherit"}
                 mt={displayMode === "entry" && isSelected ? -0.5 : 0}
               >
                 {type}
               </Text>
-              <Text fontSize="xs" className="secondary-text no-select">
+              <Text fontSize="xs" className="secondary-text">
                 {displayMode === "entry"
                   ? isSelected
                     ? `${t("ModLoaderCards.installed")} ${currentVersion}`

@@ -31,9 +31,7 @@ const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
         <ModalHeader>🌟&nbsp;&nbsp;{t("StarUsModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody mt={-1}>
-          <Text color="gray.500" className="no-select">
-            {t("StarUsModal.body")}
-          </Text>
+          <Text color="gray.500">{t("StarUsModal.body")}</Text>
         </ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={props.onClose}>
