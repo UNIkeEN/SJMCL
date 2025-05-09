@@ -47,6 +47,7 @@ dependencies = [
  "tauri-plugin-process",
  "tauri-plugin-single-instance",
  "tauri-plugin-window-state",
+ "tauri-utils",
  "tokio",
  "tokio-util",
  "toml",

@@ -70,6 +70,7 @@ chrono = "0.4.40"
 sanitize-filename = "0.6.0"
 cafebabe = "0.8.1"
 tauri-plugin-deep-link = "2"
+tauri-utils = "2.2.0"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

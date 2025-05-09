@@ -12,6 +12,7 @@ use crate::launch::{
   helpers::file_validator::get_nonnative_library_paths, helpers::misc::replace_arguments,
   models::LaunchingState,
 };
+use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::*;
 use base64::{engine::general_purpose, Engine};
 use serde::{self, Deserialize, Serialize};
@@ -187,15 +188,16 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
   // ref: https://github.com/HMCL-dev/HMCL/blob/c33ef5170b2cc726f01674fe6fca28035b1eef8b/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L106
   // -----------------------------------------
 
-  if game_config.performance.auto_mem_allocation {
-    // TODO: auto mem allocation (auto set min mem allocation?)
-  } else {
-    cmd.extend(vec![
-      "-Xms".to_string(),
-      game_config.performance.min_mem_allocation.to_string(),
-    ])
-    // TODO: max mem allocation (HMCL DefaultLauncher.java#L132)
-  }
+  // set maximum memory allocation
+  cmd.push(format!(
+    "-Xmx{}m",
+    if game_config.performance.auto_mem_allocation {
+      let memory_info = get_memory_info();
+      (memory_info.suggested_max_alloc / 1024 / 1024) as u32
+    } else {
+      game_config.performance.max_mem_allocation
+    }
+  ));
 
   let jvm = &game_config.advanced.jvm;
   {

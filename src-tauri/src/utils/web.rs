@@ -5,17 +5,30 @@ use tauri_plugin_http::reqwest::{header::HeaderMap, Client, ClientBuilder, Proxy
 
 use crate::launcher_config::models::{LauncherConfig, ProxyType};
 
-pub fn build_sjmcl_client(
-  app: &AppHandle,
-  use_version_header: bool,
-  use_proxy: bool,
-  // TODO: support more custom config from reqwest::Config
-) -> Client {
-  // default builder (with 10s timeout)
+/// Builds a reqwest client with SJMCL version header and proxy support.
+/// Defaults to 10s timeout.
+///
+/// # Arguments
+///
+/// * `app` - The Tauri AppHandle.
+/// * `use_version_header` - Whether to include the SJMCL version header.
+/// * `use_proxy` - Whether to use the proxy settings from the config.
+///
+/// TODO: support more custom config from reqwest::Config
+///
+/// # Returns
+///
+/// A reqwest::Client instance.
+///
+/// # Example
+///
+/// ```rust
+/// let client = build_sjmcl_client(&app, true, true);
+/// ```
+pub fn build_sjmcl_client(app: &AppHandle, use_version_header: bool, use_proxy: bool) -> Client {
   let mut builder = ClientBuilder::new().timeout(Duration::from_secs(10));
 
   if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
-    // SJMCL version header
     if use_version_header {
       if let Ok(header_value) = format!("SJMCL {}", &config.basic_info.launcher_version).parse() {
         let mut headers = HeaderMap::new();
@@ -24,7 +37,6 @@ pub fn build_sjmcl_client(
       }
     }
 
-    // add proxy params
     if use_proxy && config.download.proxy.enabled {
       let proxy_cfg = &config.download.proxy;
       let proxy_url = match proxy_cfg.selected_type {

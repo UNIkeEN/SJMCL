@@ -63,7 +63,11 @@ const GlobalGameSettingsPage = () => {
     const checkDirectories = async () => {
       const existence: Record<string, boolean> = {};
       for (const directory of config.localGameDirectories) {
-        if (["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name)) {
+        if (
+          ["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(
+            directory.name
+          )
+        ) {
           existence[directory.dir] = true;
           continue;
         }
@@ -97,7 +101,7 @@ const GlobalGameSettingsPage = () => {
         openPath(directory.dir);
       },
     },
-    ...(directory.name !== "CURRENT_DIR"
+    ...(directory.name !== "CURRENT_DIR" && directory.name !== "APP_DATA_SUBDIR"
       ? [
           {
             icon: "edit",
@@ -139,7 +143,9 @@ const GlobalGameSettingsPage = () => {
               description: (
                 <VStack spacing={0} align="start" fontSize="xs">
                   <Text className="secondary-text">{directory.dir}</Text>
-                  {!["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) &&
+                  {!["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(
+                    directory.name
+                  ) &&
                     directoryExistence[directory.dir] === false && (
                       <Text color="red.600">
                         {t(
@@ -152,8 +158,9 @@ const GlobalGameSettingsPage = () => {
               prefixElement: (
                 <Icon
                   as={
-                    ["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) ||
-                    directoryExistence[directory.dir]
+                    ["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(
+                      directory.name
+                    ) || directoryExistence[directory.dir]
                       ? LuFolder
                       : LuFolderX
                   }

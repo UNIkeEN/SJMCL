@@ -10,6 +10,7 @@ use strum_macros::Display;
 pub struct MemoryInfo {
   pub total: u64,
   pub used: u64,
+  pub suggested_max_alloc: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -91,7 +92,7 @@ structstruck::strike! {
       #[default = true]
       pub auto_mem_allocation: bool,
       #[default = 1024]
-      pub min_mem_allocation: u32,
+      pub max_mem_allocation: u32,
       #[default(ProcessPriority::Normal)]
       pub process_priority: ProcessPriority,
     },

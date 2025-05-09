@@ -36,22 +36,36 @@ impl LauncherConfig {
 
     // Set default local game directories
     if self.local_game_directories.is_empty() {
-      self.local_game_directories = vec![
-        GameDirectory {
+      let mut dirs = Vec::new();
+
+      #[cfg(target_os = "macos")]
+      {
+        if let Ok(app_data_dir) = app.path().resolve("minecraft", BaseDirectory::AppData) {
+          dirs.push(GameDirectory {
+            name: "APP_DATA_SUBDIR".to_string(),
+            dir: app_data_dir,
+          });
+        }
+      }
+
+      #[cfg(not(target_os = "macos"))]
+      {
+        let current_dir = EXE_DIR.join(".minecraft");
+        dirs.push(GameDirectory {
           name: "CURRENT_DIR".to_string(),
-          dir: PathBuf::default(),
-        },
-        get_official_minecraft_directory(app),
-      ];
+          dir: current_dir,
+        });
+      }
+
+      dirs.push(get_official_minecraft_directory(app));
+      self.local_game_directories = dirs;
     }
 
-    // Update CURRENT_DIR
     for game_dir in &mut self.local_game_directories {
-      if game_dir.name == "CURRENT_DIR" {
-        game_dir.dir = EXE_DIR.join(".minecraft");
-        if !game_dir.dir.exists() {
-          fs::create_dir(&game_dir.dir)?;
-        }
+      if (game_dir.name == "CURRENT_DIR" || game_dir.name == "APP_DATA_SUBDIR")
+        && !game_dir.dir.exists()
+      {
+        let _ = fs::create_dir(&game_dir.dir);
       }
     }
 

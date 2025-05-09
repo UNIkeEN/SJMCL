@@ -14,12 +14,46 @@
       {
         "label": "main",
         "title": "",
+        "url": "/",
         "width": 800,
         "height": 550,
         "minWidth": 800,
         "minHeight": 550,
-        "resizable": true,
-        "fullscreen": false,
+        "center": true,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "oauth",
+        "create": false,
+        "title": "OAuth Login",
+        "width": 640,
+        "height": 520,
+        "minWidth": 640,
+        "minHeight": 440,
+        "center": true,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "game_error",
+        "create": false,
+        "title": "Game Error",
+        "url": "/standalone/game-error",
+        "width": 800,
+        "height": 550,
+        "minWidth": 640,
+        "minHeight": 440,
+        "center": true,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "game_log",
+        "create": false,
+        "title": "Game Log",
+        "url": "/standalone/game-log",
+        "width": 800,
+        "height": 550,
+        "minWidth": 640,
+        "minHeight": 440,
         "center": true,
         "dragDropEnabled": false
       }

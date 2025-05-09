@@ -193,7 +193,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   };
 
   const handleAddSubDir = async () => {
-    handleUpdateDir(subDirPath, true);
+    handleUpdateDir(subDirPath);
     onAddSubDirDialogClose();
   };
 
@@ -206,13 +206,13 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
     _dirPath: string,
     skipCheck: boolean = false
   ) => {
-    if (!add && currentPath === _dirPath) {
+    if (currentPath === _dirPath && currentName === dirName) {
       setDirName("");
       setDirPath("");
       modalProps.onClose();
       return;
     }
-    if (!skipCheck) {
+    if (!skipCheck && _dirPath !== currentPath) {
       const isValid = await handleCheckGameDirectory(_dirPath);
       if (!isValid) return;
     }
@@ -240,8 +240,8 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   };
 
   useEffect(() => {
-    setDirName(currentName);
-    setDirPath(currentPath);
+    if (currentName) setDirName(currentName);
+    if (currentPath) setDirPath(currentPath);
   }, [currentName, currentPath, modalProps.isOpen]);
 
   return (
