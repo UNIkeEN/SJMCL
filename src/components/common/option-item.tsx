@@ -63,7 +63,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       cursor={isFullClickZone ? "pointer" : "default"}
       {...boxProps}
     >
-      <HStack spacing={2.5} overflowY="hidden">
+      <HStack spacing={2.5} overflowY="hidden" flexShrink={0}>
         {prefixElement && (
           <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
         )}
@@ -74,10 +74,10 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           overflow="hidden"
           flex="1"
         >
-          <HStack spacing={2} flexWrap="wrap">
+          <HStack spacing={2} flexWrap="wrap" w="100%">
             {typeof title === "string" ? (
-              <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs-sm" className="no-select">
+              <Skeleton isLoaded={!isLoading} overflow="hidden">
+                <Text fontSize="xs-sm" className="no-select ellipsis-text">
                   {title}
                 </Text>
               </Skeleton>
@@ -97,8 +97,11 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           </HStack>
           {description &&
             (typeof description === "string" ? (
-              <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs" className="secondary-text no-select">
+              <Skeleton isLoaded={!isLoading} w="100%">
+                <Text
+                  fontSize="xs"
+                  className="secondary-text no-select ellipsis-text"
+                >
                   {description}
                 </Text>
               </Skeleton>

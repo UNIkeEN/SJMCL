@@ -132,36 +132,20 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       display="flex"
       flexDirection="column"
       height="100%"
-      title=""
+      title={summary?.name}
       withBackButton={navBarType !== "instance"}
       backRoutePath="/instances/list"
-      titleExtra={
-        <HStack flex="1" minW="0" spacing={2}>
-          <Text
-            flex="1"
-            minW="0"
-            overflow="hidden"
-            textOverflow="ellipsis"
-            whiteSpace="nowrap"
-            fontWeight="bold"
-            fontSize="sm"
-            pr={2}
-          >
-            {summary?.name}
-          </Text>
-        </HStack>
-      }
       headExtra={
-        <HStack spacing={2} flexShrink={0}>
+        <HStack spacing={2}>
           <CommonIconButton
             icon={summary?.starred ? FaStar : FaRegStar}
             label={t(
               `InstanceDetailsLayout.secMenu.${summary?.starred ? "unstar" : "star"}`
             )}
             color={summary?.starred ? "yellow.500" : "inherit"}
-            onClick={() =>
-              handleUpdateInstanceConfig("starred", !summary?.starred)
-            }
+            onClick={() => {
+              handleUpdateInstanceConfig("starred", !summary?.starred);
+            }}
             size="xs"
             fontSize="sm"
             h={21}

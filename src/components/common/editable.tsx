@@ -189,14 +189,7 @@ const Editable: React.FC<EditableProps> = ({
         </Text>
       ) : (
         <HStack spacing={0}>
-          <Text
-            w="100%"
-            whiteSpace="nowrap"
-            overflow="hidden"
-            textOverflow="ellipsis"
-            wordWarp="normal"
-            {...textProps}
-          >
+          <Text w="100%" {...textProps}>
             {value}
           </Text>
           {EditButtons()}
