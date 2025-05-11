@@ -759,8 +759,8 @@
         "autoMemAllocation": {
           "title": "自動分配記憶體"
         },
-        "minMemAllocation": {
-          "title": "最小記憶體分配"
+        "maxMemAllocation": {
+          "title": "最大記憶體分配"
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
@@ -1054,7 +1054,7 @@
     "info": "{{used}} / {{total}} GB 已使用",
     "label": {
       "now": "正在使用",
-      "minAllocation": "為 Minecraft 分配的最小值"
+      "maxAllocation": "為 Minecraft 分配的最大值"
     }
   },
   "ModLoaderCards": {
