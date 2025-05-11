@@ -63,7 +63,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       cursor={isFullClickZone ? "pointer" : "default"}
       {...boxProps}
     >
-      <HStack spacing={2.5} overflowY="hidden" flexShrink={0}>
+      <HStack spacing={2.5} overflowY="hidden">
         {prefixElement && (
           <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
         )}

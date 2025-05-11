@@ -86,15 +86,12 @@ export const Section: React.FC<SectionProps> = ({
               />
             )}
             <VStack spacing={0} align="start" overflow="hidden">
-              <HStack spacing={2} w="100%">
+              <HStack spacing={2} w="99%">
                 {title && (
                   <Text
                     fontWeight="bold"
                     fontSize="sm"
-                    className="no-select"
-                    overflow="hidden"
-                    whiteSpace="nowrap"
-                    textOverflow="ellipsis"
+                    className="no-select ellipsis-text"
                   >
                     {title}
                   </Text>
