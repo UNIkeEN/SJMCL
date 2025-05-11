@@ -6,31 +6,39 @@ import io
 import sys
 import struct
 import zipfile
+import argparse
 
-basepath = sys.argv[1] if len(sys.argv) > 1 else "."
+def bundle_assets(basepath, executable_name):
+    assets_path = os.path.join(basepath, "assets")
+    executable_path = os.path.join(basepath, executable_name)
+    output_executable_path = os.path.join(basepath, f"{os.path.splitext(executable_name)[0]}-patched{os.path.splitext(executable_name)[1]}")
 
-assets_path = os.path.join(basepath, "assets")
-executable_path = os.path.join(basepath, "SJMCL.exe")
-output_executable_path = os.path.join(basepath, "SJMCL-patched.exe")
+    zip_stream = io.BytesIO()
 
-zip_stream = io.BytesIO()
+    with zipfile.ZipFile(zip_stream, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(assets_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, basepath)
+                zipf.write(file_path, arcname)
+    zip_stream.seek(0)
 
-with zipfile.ZipFile(zip_stream, 'w', zipfile.ZIP_DEFLATED) as zipf:
-    for root, dirs, files in os.walk(assets_path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            arcname = os.path.relpath(file_path, basepath)
-            zipf.write(file_path, arcname)
-zip_stream.seek(0)
+    with open(executable_path,'rb') as f:
+        exe_file = f.read()
+    assets_file = zip_stream.read()
 
-with open(executable_path,'rb') as f:
-    exe_file = f.read()
-assets_file = zip_stream.read()
+    assets_offset = struct.pack("<I", len(exe_file))
+    assets_length = struct.pack("<I", len(assets_file))
 
-assets_offset = struct.pack("<I", len(exe_file))
-assets_length = struct.pack("<I", len(assets_file))
+    with open(output_executable_path,'wb') as f:
+        f.write(exe_file + assets_file + b"PORT" + assets_offset + assets_length)
 
-with open(output_executable_path,'wb') as f:
-    f.write(exe_file + assets_file + b"PORT" + assets_offset + assets_length)
+    print(f"Patched executable created at: {output_executable_path}")
 
-print(f"Patched executable created at: {output_executable_path}")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Bundle assets into executable")
+    parser.add_argument("executable_name", help="Name of the executable to patch")
+    parser.add_argument("-p", "--path", default=".", help="Path to the executable and assets")
+    args = parser.parse_args()
+
+    bundle_assets(args.path, args.executable_name)
