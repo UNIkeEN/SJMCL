@@ -11,7 +11,8 @@ import argparse
 def bundle_assets(basepath, executable_name):
     assets_path = os.path.join(basepath, "assets")
     executable_path = os.path.join(basepath, executable_name)
-    output_executable_path = os.path.join(basepath, f"{os.path.splitext(executable_name)[0]}-patched{os.path.splitext(executable_name)[1]}")
+    name, ext = os.path.splitext(executable_name)
+    output_executable_path = os.path.join(basepath, f"{name}-patched{ext}")
 
     zip_stream = io.BytesIO()
 
