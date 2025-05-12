@@ -12,6 +12,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
+  user-select: none;
 }
 
 
@@ -45,11 +46,6 @@ body {
 .secondary-text {
   color: var(--chakra-colors-gray-500);
   line-height: var(--chakra-lineHeights-4);
-}
-
-.no-select {
-  cursor: default;
-  user-select: none !important;
 }
 
 .allow-select {

@@ -74,7 +74,6 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <Image
-          className="no-select"
           src={convertFileSrc(screenshot.filePath)}
           alt={screenshot.fileName}
           borderRadius="md"

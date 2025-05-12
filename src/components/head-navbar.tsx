@@ -85,9 +85,7 @@ const HeadNavBar = () => {
                     <HStack spacing={2}>
                       <Icon as={item.icon} />
                       {(!isSimplified || selectedIndex === index) && (
-                        <Text className="no-select">
-                          {t(`HeadNavBar.navList.${item.label}`)}
-                        </Text>
+                        <Text>{t(`HeadNavBar.navList.${item.label}`)}</Text>
                       )}
                     </HStack>
                   </Tab>

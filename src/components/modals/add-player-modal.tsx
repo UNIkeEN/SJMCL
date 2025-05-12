@@ -487,7 +487,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             <HStack spacing={2}>
               <LuExternalLink />
               <Link
-                className="no-select"
                 color={`${primaryColor}.500`}
                 onClick={() => {
                   openUrl(
