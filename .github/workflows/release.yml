@@ -164,7 +164,7 @@ jobs:
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/deb/"*.deb artifacts/"$ARTIFACT_NAME".deb
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/rpm/"*.rpm artifacts/"$ARTIFACT_NAME".rpm
-            tar -cvzf artifacts/"$ARTIFACT_NAME".tar.gz -C "src-tauri/target/${{ matrix.target }}/release" "SJMCL-patched"
+            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched" artifacts/"$ARTIFACT_NAME"
             ls -la artifacts
           fi
           
