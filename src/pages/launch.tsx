@@ -145,19 +145,19 @@ const LaunchPage = () => {
               <VStack spacing={0} align="left" mt={-2}>
                 <Text
                   fontSize="xs-sm"
-                  className="no-select ellipsis-text"
+                  className="ellipsis-text"
                   fontWeight="bold"
                   w="100%"
                   mt={2}
                 >
                   {selectedPlayer.name}
                 </Text>
-                <Text fontSize="2xs" className="secondary-text no-select">
+                <Text fontSize="2xs" className="secondary-text">
                   {t(
                     `Enums.playerTypes.${selectedPlayer.playerType === "3rdparty" ? "3rdpartyShort" : selectedPlayer.playerType}`
                   )}
                 </Text>
-                <Text fontSize="2xs" className="secondary-text no-select">
+                <Text fontSize="2xs" className="secondary-text">
                   {selectedPlayer.playerType === "3rdparty" &&
                     selectedPlayer.authServer?.name}
                 </Text>
@@ -165,7 +165,7 @@ const LaunchPage = () => {
             </>
           ) : (
             <Center w="100%" h="100%">
-              <Text fontSize="sm" className="secondary-text no-select">
+              <Text fontSize="sm" className="secondary-text">
                 {t("LaunchPage.Text.noSelectedPlayer")}
               </Text>
             </Center>

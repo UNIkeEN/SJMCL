@@ -1,4 +1,7 @@
-use crate::{launcher_config::models::GameConfig, utils::image::ImageWrapper};
+use crate::{
+  instance::constants::INSTANCE_CFG_FILE_NAME, launcher_config::models::GameConfig,
+  storage::save_json_async, utils::image::ImageWrapper,
+};
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::{Ord, Ordering, PartialOrd},
@@ -73,6 +76,7 @@ structstruck::strike! {
     pub description: String,
     pub icon_src: String,
     pub starred: bool,
+    pub play_time: u128,
     pub version: String,
     pub version_path: PathBuf,
     pub mod_loader: struct {
@@ -86,6 +90,13 @@ structstruck::strike! {
   }
 }
 
+impl Instance {
+  pub async fn save_json_cfg(&self) -> Result<(), std::io::Error> {
+    let file_path = self.version_path.join(INSTANCE_CFG_FILE_NAME);
+    save_json_async(self, &file_path).await
+  }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct InstanceSummary {
@@ -94,6 +105,7 @@ pub struct InstanceSummary {
   pub description: String,
   pub icon_src: String,
   pub starred: bool,
+  pub play_time: u128,
   pub version: String,
   pub version_path: PathBuf,
   pub mod_loader: ModLoader,

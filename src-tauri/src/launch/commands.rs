@@ -3,6 +3,9 @@ use super::{
     command_generator::generate_launch_command,
     file_validator::{extract_native_libraries, validate_library_files},
     jre_selector::select_java_runtime,
+    process_monitor::{
+      change_process_window_title, kill_process, monitor_process, set_process_priority,
+    },
   },
   models::LaunchingState,
 };
@@ -19,13 +22,16 @@ use crate::{
     },
     models::misc::{Instance, InstanceError, InstanceSubdirType},
   },
-  launcher_config::models::{FileValidatePolicy, JavaInfo},
+  launcher_config::models::{FileValidatePolicy, JavaInfo, LauncherVisiablity},
   storage::load_json_async,
 };
 use std::collections::HashMap;
 use std::process::{Command, Stdio};
-use std::sync::Mutex;
-use tauri::{AppHandle, State};
+use std::sync::{mpsc, Mutex};
+use tauri::{AppHandle, Manager, State};
+
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 // Step 1: select suitable java runtime environment.
 #[tauri::command]
@@ -160,22 +166,56 @@ pub async fn launch_game(
   app: AppHandle,
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<()> {
-  let selected_java = {
+  let (selected_java, game_config, instance_id) = {
     let mut launching = launching_state.lock().unwrap();
     launching.current_step = 4;
-    launching.selected_java.clone()
+    (
+      launching.selected_java.clone(),
+      launching.game_config.clone(),
+      launching.selected_instance.id.clone(),
+    )
   };
 
+  // generate and execute launch command
   let cmd_args = generate_launch_command(&app)?;
-  println!("{}", cmd_args.join(" "));
-
-  // TODO: make a command executor to handle exec (in different mode), set nice and pipe output
   let mut cmd_base = Command::new(selected_java.exec_path);
-  let child = cmd_base.args(cmd_args).stdout(Stdio::piped()).spawn()?;
-  let output = child.wait_with_output()?;
+  #[cfg(target_os = "windows")]
+  cmd_base.creation_flags(0x08000000);
+  let mut child = cmd_base
+    .args(cmd_args)
+    .stdout(Stdio::piped())
+    .stderr(Stdio::piped())
+    .spawn()?;
+  let pid = child.id();
+  {
+    let mut launching = launching_state.lock().unwrap();
+    launching.pid = pid;
+  }
 
-  println!("{}", String::from_utf8_lossy(&output.stdout));
-  println!("{}", String::from_utf8_lossy(&output.stderr));
+  // wait for the game window, create log window if needed
+  let (tx, rx) = mpsc::channel();
+  monitor_process(
+    app.clone(),
+    &mut child,
+    instance_id,
+    game_config.display_game_log,
+    game_config.launcher_visibility.clone(),
+    tx,
+  )
+  .await?;
+  let _ = rx.recv();
+
+  // set process priority and window title (if error, keep slient)
+  let _ = set_process_priority(pid, &game_config.performance.process_priority);
+  let _ = !game_config.game_window.custom_title.trim().is_empty()
+    && change_process_window_title(pid, &game_config.game_window.custom_title).is_err();
+
+  if game_config.launcher_visibility != LauncherVisiablity::Always {
+    let _ = app
+      .get_webview_window("main")
+      .expect("no main window")
+      .hide();
+  }
 
   // clear launching state
   *launching_state.lock().unwrap() = LaunchingState::default();
@@ -185,7 +225,15 @@ pub async fn launch_game(
 
 #[tauri::command]
 pub fn cancel_launch_process(launching_state: State<'_, Mutex<LaunchingState>>) -> SJMCLResult<()> {
-  *launching_state.lock().unwrap() = LaunchingState::default();
-  // TODO: stop game process if step 4 has started.
+  let mut launching = launching_state.lock().unwrap();
+
+  // kill process if step 4 has been reached
+  if launching.pid != 0 {
+    kill_process(launching.pid)?;
+  }
+
+  // clear launching state
+  *launching = LaunchingState::default();
+
   Ok(())
 }

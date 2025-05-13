@@ -52,8 +52,8 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   // use state and useEffect to track and render
   const [gameWindowWidth, setGameWindowWidth] = useState<number>(0);
   const [gameWindowHeight, setGameWindowHeight] = useState<number>(0);
-  const [minMemAllocation, setMinMemAllocation] = useState<number>(0);
-  const [sliderMinMemAllocation, setSliderMinMemAllocation] =
+  const [maxMemAllocation, setMaxMemAllocation] = useState<number>(0);
+  const [sliderMaxMemAllocation, setSliderMaxMemAllocation] =
     useState<number>(0);
   const [customTitle, setCustomTitle] = useState<string>("");
   const [customInfo, setCustomInfo] = useState<string>("");
@@ -62,8 +62,8 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   useEffect(() => {
     setGameWindowWidth(gameConfig.gameWindow.resolution.width);
     setGameWindowHeight(gameConfig.gameWindow.resolution.height);
-    setMinMemAllocation(gameConfig.performance.minMemAllocation);
-    setSliderMinMemAllocation(gameConfig.performance.minMemAllocation);
+    setMaxMemAllocation(gameConfig.performance.maxMemAllocation);
+    setSliderMaxMemAllocation(gameConfig.performance.maxMemAllocation);
     setCustomTitle(gameConfig.gameWindow.customTitle);
     setCustomInfo(gameConfig.gameWindow.customInfo);
     setServerUrl(gameConfig.gameServer.serverUrl);
@@ -78,11 +78,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     setJavaInfos(getJavaInfos() || []);
   }, [getJavaInfos]);
 
-  const launcherVisibilityStrategy = [
-    "start-close",
-    "running-hidden",
-    "always",
-  ];
+  const launcherVisibilityStrategy = ["startHidden", "runningHidden", "always"];
   const processPriority = [
     "low",
     "belowNormal",
@@ -94,6 +90,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const [memoryInfo, setMemoryInfo] = useState<MemoryInfo>({
     total: 0,
     used: 0,
+    suggestedMaxAlloc: 0,
   });
   const maxMemCanAllocated = Math.floor(memoryInfo.total / 1024 / 1024);
 
@@ -319,7 +316,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           : [
               {
                 title: t(
-                  "GlobalGameSettingsPage.performance.settings.minMemAllocation.title"
+                  "GlobalGameSettingsPage.performance.settings.maxMemAllocation.title"
                 ),
                 children: (
                   <HStack spacing={2}>
@@ -329,15 +326,15 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                       step={16}
                       w={32}
                       colorScheme={primaryColor}
-                      value={sliderMinMemAllocation}
+                      value={sliderMaxMemAllocation}
                       onChange={(value) => {
-                        setSliderMinMemAllocation(value);
-                        setMinMemAllocation(value);
+                        setSliderMaxMemAllocation(value);
+                        setMaxMemAllocation(value);
                       }}
                       onBlur={() => {
                         updateGameConfig(
-                          "performance.minMemAllocation",
-                          minMemAllocation
+                          "performance.maxMemAllocation",
+                          maxMemAllocation
                         );
                       }}
                     >
@@ -352,19 +349,19 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                       size="xs"
                       maxW={16}
                       focusBorderColor={`${primaryColor}.500`}
-                      value={minMemAllocation}
+                      value={maxMemAllocation}
                       onChange={(value) => {
                         if (!/^\d*$/.test(value)) return;
-                        setMinMemAllocation(Number(value));
+                        setMaxMemAllocation(Number(value));
                       }}
                       onBlur={() => {
-                        setSliderMinMemAllocation(minMemAllocation);
+                        setSliderMaxMemAllocation(maxMemAllocation);
                         updateGameConfig(
-                          "performance.minMemAllocation",
+                          "performance.maxMemAllocation",
                           Math.max(
                             256,
                             Math.min(
-                              minMemAllocation,
+                              maxMemAllocation,
                               maxMemCanAllocated || 8192
                             )
                           )
@@ -381,7 +378,11 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
         <MemoryStatusProgress
           key="mem"
           memoryInfo={memoryInfo}
-          allocatedMemory={minMemAllocation}
+          allocatedMemory={
+            gameConfig.performance.autoMemAllocation
+              ? memoryInfo.suggestedMaxAlloc / 1024 / 1024
+              : maxMemAllocation
+          }
         />,
         {
           title: t(

@@ -6,6 +6,7 @@ export interface InstanceSummary {
   name: string;
   description?: string;
   starred: boolean;
+  playTime: number;
   versionPath: string;
   version: string;
   isVersionIsolated: boolean;

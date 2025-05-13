@@ -147,8 +147,9 @@ jobs:
           echo "Artifact Name: $ARTIFACT_NAME"
           mkdir artifacts
           if [ "${{ matrix.platform }}" = "windows" ]; then
+            python scripts/portable/bundle_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL.exe"
             # For Windows, copy the portable exe
-            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
+            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/msi/"*.msi artifacts/"$ARTIFACT_NAME".msi
             ls -la artifacts
           elif [ "${{ matrix.platform }}" = "macos" ]; then
@@ -159,10 +160,11 @@ jobs:
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/dmg"/*.dmg artifacts/"$ARTIFACT_NAME".dmg
             ls -la artifacts
           elif [ "${{ matrix.platform }}" = "linux" ]; then
+            python scripts/portable/bundle_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL"
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/deb/"*.deb artifacts/"$ARTIFACT_NAME".deb
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/rpm/"*.rpm artifacts/"$ARTIFACT_NAME".rpm
-            tar -cvzf artifacts/"$ARTIFACT_NAME".tar.gz -C "src-tauri/target/${{ matrix.target }}/release" "SJMCL"
+            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched" artifacts/"$ARTIFACT_NAME"_portable
             ls -la artifacts
           fi
           

@@ -83,7 +83,7 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
 
-        <ModalBody>
+        <ModalBody className="allow-select">
           {levelData && <StructDataTree data={levelData} />}
           {!levelData && !isLoading && <Empty withIcon={false} size="sm" />}
           {isLoading && (

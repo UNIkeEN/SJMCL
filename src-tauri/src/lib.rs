@@ -22,7 +22,7 @@ use launcher_config::{
 };
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{Arc, LazyLock, Mutex};
+use std::sync::{LazyLock, Mutex};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use tokio::sync::Notify;
@@ -51,10 +51,11 @@ pub async fn run() {
     .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_process::init())
     .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-      let _ = app
-        .get_webview_window("main")
-        .expect("no main window")
-        .set_focus(); // Focus the running instance
+      let main_window = app.get_webview_window("main").expect("no main window");
+
+      let _ = main_window.show(); // may hide by launcher_visibility settings
+                                  // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
+      let _ = main_window.set_focus();
     }))
     .plugin(tauri_plugin_window_state::Builder::new().build())
     .invoke_handler(tauri::generate_handler![
@@ -113,11 +114,15 @@ pub async fn run() {
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       discover::commands::fetch_post_sources_info,
-      tasks::commands::schedule_task_group,
-      tasks::commands::cancel_task,
-      tasks::commands::resume_task,
-      tasks::commands::stop_task,
-      tasks::commands::retrieve_task_list,
+      tasks::commands::schedule_progressive_task_group,
+      tasks::commands::cancel_progressive_task,
+      tasks::commands::resume_progressive_task,
+      tasks::commands::stop_progressive_task,
+      tasks::commands::retrieve_progressive_task_list,
+      tasks::commands::create_transient_task,
+      tasks::commands::get_transient_task,
+      tasks::commands::set_transient_task_state,
+      tasks::commands::cancel_transient_task,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
@@ -131,6 +136,7 @@ pub async fn run() {
       let os = tauri_plugin_os::platform().to_string();
 
       // Set the launcher config and other states
+      // Also extract assets in `setup_with_app()` if the application is portable
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
@@ -145,8 +151,7 @@ pub async fn run() {
       let javas: Vec<JavaInfo> = vec![];
       app.manage(Mutex::new(javas));
 
-      let notify = Arc::new(Notify::new());
-      app.manage(Box::pin(TaskMonitor::new(app.handle().clone(), notify)));
+      app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
       let client = build_sjmcl_client(app.handle(), true, false);
       app.manage(client);
@@ -207,6 +212,7 @@ pub async fn run() {
             .build(),
         )?;
       }
+
       Ok(())
     })
     .run(tauri::generate_context!())

@@ -20,10 +20,6 @@ export const CoreContributorsList = [
     contribution: "fullStackDev",
   },
   {
-    username: "fangtiancheng",
-    contribution: "backendDev",
-  },
-  {
     username: "w1049",
     contribution: "backendDev",
   },
@@ -32,7 +28,7 @@ export const CoreContributorsList = [
     contribution: "backendDev",
   },
   {
-    username: "VhahahaV",
+    username: "fangtiancheng",
     contribution: "backendDev",
   },
   {
@@ -56,15 +52,15 @@ export const CoreContributorsList = [
     contribution: "externalAPI",
   },
   {
-    username: "Minecrafter-Pythoner",
-    contribution: "doc",
-  },
-  {
     username: "ff98sha",
     contribution: "doc",
   },
   {
     username: "pangbo13",
+    contribution: "cicd",
+  },
+  {
+    username: "Minecrafter-Pythoner",
     contribution: "cicd",
   },
   {

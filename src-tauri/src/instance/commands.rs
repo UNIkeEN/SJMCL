@@ -2,7 +2,6 @@ use super::{
   super::utils::fs::{
     copy_whole_dir, generate_unique_filename, get_files_with_regex, get_subdirectories,
   },
-  constants::INSTANCE_CFG_FILE_NAME,
   helpers::{
     misc::{
       get_instance_game_config, get_instance_subdir_path_by_id, refresh_and_update_instances,
@@ -28,7 +27,7 @@ use crate::{
     models::{GameConfig, LauncherConfig},
   },
   partial::{PartialError, PartialUpdate},
-  storage::{save_json_async, Storage},
+  storage::Storage,
   utils::{fs::create_url_shortcut, image::ImageWrapper},
 };
 use lazy_static::lazy_static;
@@ -68,6 +67,7 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
       description: instance.description.clone(),
       icon_src: instance.icon_src.clone(),
       starred: instance.starred,
+      play_time: instance.play_time,
       version: instance.version.clone(),
       version_path: instance.version_path.clone(),
       mod_loader: instance.mod_loader.clone(),
@@ -123,11 +123,7 @@ pub async fn update_instance_config(
     }
     instance.clone()
   };
-  save_json_async::<Instance>(
-    &instance,
-    &instance.version_path.join(INSTANCE_CFG_FILE_NAME),
-  )
-  .await?;
+  instance.save_json_cfg().await?;
   Ok(())
 }
 
@@ -156,11 +152,7 @@ pub async fn reset_instance_game_config(app: AppHandle, instance_id: String) -> 
     instance.spec_game_config = Some(get_global_game_config(&app));
     instance.clone()
   };
-  save_json_async::<Instance>(
-    &instance,
-    &instance.version_path.join(INSTANCE_CFG_FILE_NAME),
-  )
-  .await?;
+  instance.save_json_cfg().await?;
   Ok(())
 }
 

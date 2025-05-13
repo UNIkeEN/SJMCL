@@ -12,6 +12,7 @@ import { CoreContributorsList } from "./contributors";
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const basicInfo = config.basicInfo;
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -20,7 +21,7 @@ const AboutSettingsPage = () => {
         <TitleFullWithLogo key={0} />,
         {
           title: t("AboutSettingsPage.about.settings.version.title"),
-          children: config.basicInfo.launcherVersion,
+          children: `${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`,
         },
         {
           title: t("AboutSettingsPage.about.settings.contributors.title"),

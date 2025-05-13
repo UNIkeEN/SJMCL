@@ -45,7 +45,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalBody minH="8rem">
           {!queryText && (
             <Center h="6rem">
-              <Text className="secondary-text no-select">
+              <Text className="secondary-text">
                 ✨&nbsp;{t("SpotlightSearchModal.tip")}
               </Text>
             </Center>

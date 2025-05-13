@@ -5,7 +5,7 @@ interface LogoTitleProps extends BoxProps {}
 
 export const TitleShort: React.FC<LogoTitleProps> = (props) => {
   return (
-    <Heading size="md" className={styles.title + " no-select"} {...props}>
+    <Heading size="md" className={styles.title} {...props}>
       <Highlight query="L" styles={{ color: "blue.600", userSelect: "none" }}>
         SJMCL
       </Highlight>
@@ -15,7 +15,7 @@ export const TitleShort: React.FC<LogoTitleProps> = (props) => {
 
 export const TitleFull: React.FC<LogoTitleProps> = (props) => {
   return (
-    <Heading size="md" className={styles.title + " no-select"} {...props}>
+    <Heading size="md" className={styles.title} {...props}>
       <Highlight query="L" styles={{ color: "blue.600", userSelect: "none" }}>
         SJMC Launcher
       </Highlight>

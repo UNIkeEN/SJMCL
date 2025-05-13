@@ -45,7 +45,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
           🎉&nbsp;&nbsp;{t("WelcomeAndTermsModal.header.title")}
         </ModalHeader>
         <ModalBody mt={-1}>
-          <Text color="gray.500" className="no-select">
+          <Text color="gray.500">
             {t("WelcomeAndTermsModal.body.part1")}
             <Link
               color={`${primaryColor}.500`}

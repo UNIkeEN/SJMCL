@@ -18,7 +18,7 @@ export interface GameConfig {
   };
   performance: {
     autoMemAllocation: boolean;
-    minMemAllocation: number;
+    maxMemAllocation: number;
     processPriority: string;
   };
   versionIsolation: boolean;
@@ -62,6 +62,7 @@ export interface LauncherConfig {
     arch: string;
     osType: string;
     platformVersion: string;
+    isPortable: boolean;
   };
   mocked: boolean;
   runCount: number;
@@ -162,11 +163,11 @@ export const defaultGameConfig: GameConfig = {
   },
   performance: {
     autoMemAllocation: true,
-    minMemAllocation: 1024,
+    maxMemAllocation: 1024,
     processPriority: "normal",
   },
   versionIsolation: true,
-  launcherVisibility: "start-close",
+  launcherVisibility: "startHidden",
   displayGameLog: false,
   advancedOptions: {
     enabled: false,
@@ -201,6 +202,7 @@ export const defaultConfig: LauncherConfig = {
     arch: "",
     osType: "",
     platformVersion: "",
+    isPortable: false,
   },
   mocked: true,
   runCount: -1,

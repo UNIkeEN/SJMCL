@@ -10,6 +10,7 @@ use strum_macros::Display;
 pub struct MemoryInfo {
   pub total: u64,
   pub used: u64,
+  pub suggested_max_alloc: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -35,18 +36,6 @@ pub enum ProcessPriority {
   Normal,
 }
 
-impl ProcessPriority {
-  pub fn to_nice_value(&self) -> i32 {
-    match self {
-      ProcessPriority::Low => 5,
-      ProcessPriority::BelowNormal => 1,
-      ProcessPriority::Normal => 0,
-      ProcessPriority::AboveNormal => -1,
-      ProcessPriority::High => -5,
-    }
-  }
-}
-
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum FileValidatePolicy {
@@ -54,6 +43,14 @@ pub enum FileValidatePolicy {
   Normal,
   #[serde(other)]
   Full,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum LauncherVisiablity {
+  StartHidden,
+  RunningHidden,
+  Always,
 }
 
 // Partial Derive is used for these structs and we can use it for key value storage.
@@ -91,7 +88,7 @@ structstruck::strike! {
       #[default = true]
       pub auto_mem_allocation: bool,
       #[default = 1024]
-      pub min_mem_allocation: u32,
+      pub max_mem_allocation: u32,
       #[default(ProcessPriority::Normal)]
       pub process_priority: ProcessPriority,
     },
@@ -101,8 +98,8 @@ structstruck::strike! {
     },
     #[default = true]
     pub version_isolation: bool,
-    #[default = "start-close"]
-    pub launcher_visibility: String,
+    #[default(LauncherVisiablity::Always)]
+    pub launcher_visibility: LauncherVisiablity,
     pub display_game_log: bool,
     pub advanced_options: struct {
       pub enabled: bool,
@@ -162,6 +159,7 @@ structstruck::strike! {
       pub arch: String,
       pub os_type: String,
       pub platform_version: String,
+      pub is_portable: bool,
     },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,

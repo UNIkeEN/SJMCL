@@ -638,7 +638,8 @@
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
     "exportLogs": "导出日志",
-    "clearLogs": "清除所有日志"
+    "clearLogs": "清除所有日志",
+    "scrollToBottom": "滚动到底部"
   },
   "GameVersionSelector": {
     "old_beta": "远古版",
@@ -776,8 +777,8 @@
         "autoMemAllocation": {
           "title": "自动分配内存"
         },
-        "minMemAllocation": {
-          "title": "最小内存分配"
+        "maxMemAllocation": {
+          "title": "最大内存分配"
         },
         "memoryUsage": {
           "title": "内存占用情况",
@@ -803,8 +804,8 @@
       "settings": {
         "launcherVisibility": {
           "title": "启动器可见性",
-          "start-close": "游戏启动后结束启动器",
-          "running-hidden": "游戏运行时隐藏启动器",
+          "startHidden": "游戏启动后隐藏启动器",
+          "runningHidden": "游戏运行时隐藏启动器",
           "always": "启动器始终可见"
         },
         "autoJoinGameServer": {
@@ -1072,7 +1073,7 @@
     "info": "{{used}} / {{total}} GB 已使用",
     "label": {
       "now": "正在使用",
-      "minAllocation": "为 Minecraft 分配的最小值"
+      "maxAllocation": "为 Minecraft 分配的最大值"
     }
   },
   "ModLoaderCards": {

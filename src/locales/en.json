@@ -638,7 +638,8 @@
   "GameLogPage": {
     "placeholder": "Filter by Text",
     "exportLogs": "Export Logs",
-    "clearLogs": "Clear All Logs"
+    "clearLogs": "Clear All Logs",
+    "scrollToBottom": "Scroll to Bottom"
   },
   "GameVersionSelector": {
     "old_beta": "Old Beta",
@@ -776,8 +777,8 @@
         "autoMemAllocation": {
           "title": "Allocate Memory Automatically"
         },
-        "minMemAllocation": {
-          "title": "Minimum Memory Allocation"
+        "maxMemAllocation": {
+          "title": "Maximum Memory Allocation"
         },
         "memoryUsage": {
           "title": "Memory Usage",
@@ -803,8 +804,8 @@
       "settings": {
         "launcherVisibility": {
           "title": "Launcher Visibility",
-          "start-close": "Close Launcher after Game Starts",
-          "running-hidden": "Hide Launcher while Game is Running",
+          "startHidden": "Hide Launcher after Game Starts",
+          "runningHidden": "Hide Launcher while Game is Running",
           "always": "Launcher Always Visible"
         },
         "autoJoinGameServer": {
@@ -1072,7 +1073,7 @@
     "info": "{{used}} / {{total}} GB used",
     "label": {
       "now": "In use",
-      "minAllocation": "Minimum allocated for Minecraft"
+      "maxAllocation": "Maximum allocated for Minecraft"
     }
   },
   "ModLoaderCards": {

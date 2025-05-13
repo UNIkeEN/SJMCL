@@ -282,7 +282,7 @@ const DownloadSpecificResourceModal: React.FC<
                     description={
                       <HStack
                         fontSize="xs"
-                        className="secondary-text no-select"
+                        className="secondary-text"
                         spacing={6}
                         align="flex-start"
                         w="100%"

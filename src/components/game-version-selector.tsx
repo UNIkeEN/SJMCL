@@ -176,7 +176,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
             borderColor="gray.400"
           >
             <HStack spacing={1} alignItems="center" w="max-content">
-              <Text fontWeight="bold" fontSize="sm" className="no-select">
+              <Text fontWeight="bold" fontSize="sm">
                 {t(`GameVersionSelector.${gameType}`)}
               </Text>
               <CountTag count={counts ? counts.get(gameType) || 0 : 0} />

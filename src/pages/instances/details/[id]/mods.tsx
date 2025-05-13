@@ -299,7 +299,7 @@ const InstanceModsPage = () => {
                 key={mod.fileName} // unique
                 childrenOnHover
                 title={
-                  <Text fontSize="xs-sm" className="no-select">
+                  <Text fontSize="xs-sm">
                     <Highlight
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yello.200" }}
@@ -313,7 +313,7 @@ const InstanceModsPage = () => {
                 titleExtra={
                   <HStack>
                     {mod.version && (
-                      <Text fontSize="xs" className="secondary-text no-select">
+                      <Text fontSize="xs" className="secondary-text">
                         {mod.version}
                       </Text>
                     )}
@@ -328,7 +328,7 @@ const InstanceModsPage = () => {
                   <Text
                     fontSize="xs"
                     overflow="hidden"
-                    className="secondary-text no-select ellipsis-text" // only show one line
+                    className="secondary-text ellipsis-text" // only show one line
                   >
                     <Highlight
                       query={query.trim().toLowerCase().split(/\s+/)}

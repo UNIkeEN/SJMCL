@@ -41,7 +41,11 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
-import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
+import {
+  UNIXToISOString,
+  formatRelativeTime,
+  formatTimeInterval,
+} from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
@@ -65,7 +69,6 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
     <VStack align="stretch" spacing={2} {...props}>
       {title && (
         <Text
-          className="no-select"
           fontSize="md"
           fontWeight="bold"
           lineHeight="16px" // the same as fontSize 'md'
@@ -126,7 +129,7 @@ export const InstanceBasicInfoWidget = () => {
       />
       <OptionItem
         title={t("InstanceWidgets.basicInfo.playTime")}
-        description={"12.1 小时"}
+        description={formatTimeInterval(summary?.playTime || 0)}
         prefixElement={
           <Center
             boxSize={7}
@@ -307,12 +310,7 @@ export const InstanceLastPlayedWidget = () => {
             />
             <Box flex="1" minW={0}>
               <VStack spacing={0} alignItems="start" w="full">
-                <Text
-                  fontSize="xs-sm"
-                  className="no-select"
-                  w="full"
-                  isTruncated
-                >
+                <Text fontSize="xs-sm" w="full" isTruncated>
                   {lastPlayedWorld.name}
                 </Text>
                 <Text className="secondary-text" fontSize="xs">

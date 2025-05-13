@@ -15,10 +15,21 @@ export const generateInstanceDesc = (instance: InstanceSummary) => {
     .join(", ");
 };
 
+const SPECIAL_GAME_DIR_NAMES = [
+  "CURRENT_DIR",
+  "APP_DATA_SUBDIR",
+  "OFFICIAL_DIR",
+];
+
+export const isSpecialGameDir = (dir: string | GameDirectory): boolean => {
+  const name = typeof dir === "string" ? dir : dir.name;
+  return SPECIAL_GAME_DIR_NAMES.includes(name);
+};
+
 export const getGameDirName = (dir: string | GameDirectory) => {
   const name = typeof dir === "string" ? dir : dir.name;
 
-  return ["CURRENT_DIR", "APP_DATA_SUBDIR", "OFFICIAL_DIR"].includes(name)
+  return isSpecialGameDir(name)
     ? t(
         `GlobalGameSettingsPage.directories.settings.directories.special.${name}`
       )

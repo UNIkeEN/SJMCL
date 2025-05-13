@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -54,5 +55,22 @@ export class LaunchService {
   @responseHandler("launch")
   static async cancelLaunchProcess(): Promise<InvokeResponse<void>> {
     return await invoke("cancel_launch_process");
+  }
+
+  /**
+   * LISTEN to the game log output line by line.
+   * @param callback The callback function to be called when the game log is output.
+   */
+  static onGameProcessOutput(callback: (payload: string) => void) {
+    const unlisten = getCurrentWebview().listen<string>(
+      "launch://game-process-output",
+      (event) => {
+        callback(event.payload);
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

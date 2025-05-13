@@ -2,7 +2,8 @@ use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::{
   misc::get_source_priority_list, version_manifest::get_game_version_manifest,
 };
-use std::{cmp::Ordering, fs, sync::Mutex};
+use crate::utils::fs::get_app_resource_filepath;
+use std::{cmp::Ordering, fs, path::PathBuf, sync::Mutex};
 use tauri::{path::BaseDirectory, AppHandle, Manager};
 
 /// Compare two Minecraft version IDs.
@@ -30,23 +31,27 @@ pub async fn compare_game_versions(app: &AppHandle, version_a: &str, version_b: 
     )
   };
 
-  let load_versions = |path: &str, dir| -> Vec<String> {
-    app
-      .path()
-      .resolve(path, dir)
-      .ok()
-      .and_then(|path| fs::read_to_string(path).ok())
+  fn load_versions(app: &AppHandle, path: &str, from_cache: bool) -> Vec<String> {
+    let list_file_path: Option<PathBuf> = if from_cache {
+      app.path().resolve(path, BaseDirectory::AppCache).ok()
+    } else {
+      get_app_resource_filepath(app, path).ok()
+    };
+
+    // read & split lines, or return empty vec
+    list_file_path
+      .and_then(|p| fs::read_to_string(p).ok())
       .map(|content| content.lines().map(|l| l.trim().to_string()).collect())
-      .unwrap_or_else(std::vec::Vec::new)
-  };
+      .unwrap_or_default()
+  }
 
   // Try to search version ids in built-in version list.
-  let mut versions = load_versions("assets/game/versions.txt", BaseDirectory::Resource);
+  let mut versions = load_versions(app, "assets/game/versions.txt", false);
   let (mut idx_a, mut idx_b) = try_find(&versions);
 
   // Fallback to search in cache version list saved by `get_game_version_manifest()`.
   if idx_a.is_none() || idx_b.is_none() {
-    versions = load_versions("game_versions.txt", BaseDirectory::AppCache);
+    versions = load_versions(app, "game_versions.txt", true);
     (idx_a, idx_b) = try_find(&versions);
   }
 
@@ -58,7 +63,7 @@ pub async fn compare_game_versions(app: &AppHandle, version_a: &str, version_b: 
         get_source_priority_list(&locked)
       };
       let _ = get_game_version_manifest(app, &priority_list).await;
-      versions = load_versions("game_versions.txt", BaseDirectory::AppCache);
+      versions = load_versions(app, "game_versions.txt", true);
       (idx_a, idx_b) = try_find(&versions);
     }
   }

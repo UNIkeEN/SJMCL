@@ -8,7 +8,7 @@ use super::{
 };
 use crate::error::SJMCLResult;
 use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
-use crate::storage::{load_json_async, save_json_async};
+use crate::storage::load_json_async;
 use crate::{
   instance::helpers::client_json::patchs_to_info,
   launcher_config::models::{GameDirectory, LauncherConfig},
@@ -185,7 +185,7 @@ pub async fn refresh_instances(
       ..cfg_read
     };
     // ignore error here, for now
-    save_json_async::<Instance>(&instance, &cfg_path).await.ok();
+    instance.save_json_cfg().await.ok();
     instances.push(instance);
   }
 

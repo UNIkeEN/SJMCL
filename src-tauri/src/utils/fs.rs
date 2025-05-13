@@ -1,8 +1,10 @@
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::utils::portable::is_portable;
 use regex::Regex;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
+use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 
 /// Recursively copies the contents of a source directory to a destination directory.
@@ -145,6 +147,39 @@ pub fn get_files_with_regex<P: AsRef<Path>>(path: P, pattern: &Regex) -> SJMCLRe
   Ok(matching_files)
 }
 
+/// Retrieves the full filesystem path to an application resource, choosing between
+/// the embedded `Resource` directory or the extracted `AppData` directory based on
+/// whether the app is running in “portable” mode.
+///
+/// # Arguments
+///
+/// * `app`: Tauri AppHandle
+/// * `relative_path`: The resource’s relative path
+///
+/// # Example
+///
+/// ```rust
+/// let texture_path = get_app_resource(&app, "assets/skins/player.png")?;
+/// println!("Texture will be loaded from: {:?}", texture_path);
+/// ```
+pub fn get_app_resource_filepath(
+  app: &AppHandle,
+  relative_path: &str,
+) -> Result<PathBuf, io::Error> {
+  let portable = is_portable().unwrap_or(false);
+
+  let dir = if portable {
+    BaseDirectory::AppData
+  } else {
+    BaseDirectory::Resource
+  };
+
+  app
+    .path()
+    .resolve(relative_path, dir)
+    .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
+}
+
 /// Creates a cross-platform desktop shortcut that points to a URL (include deeplink).
 ///
 /// Supports:
@@ -209,19 +244,13 @@ pub fn create_url_shortcut(
   let final_icon_path: PathBuf = match icon_path {
     Some(path) => path,
     None => {
-      use tauri::path::BaseDirectory;
       // Use default icon from resources
       #[cfg(target_os = "windows")]
       let icon_name = "icon.ico";
       #[cfg(target_os = "linux")]
       let icon_name = "icon.png";
 
-      let resource_icon = app
-        .path()
-        .resolve(
-          format!("assets/icons/{}", icon_name),
-          BaseDirectory::Resource,
-        )
+      let resource_icon = get_app_resource_filepath(app, &format!("assets/icons/{}", icon_name))
         .map_err(|e| SJMCLError(format!("Failed to resolve resource icon: {}", e)))?;
 
       let appdata_icon = app
