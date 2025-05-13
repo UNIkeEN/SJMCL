@@ -86,12 +86,12 @@ export const Section: React.FC<SectionProps> = ({
               />
             )}
             <VStack spacing={0} align="start" overflow="hidden">
-              <HStack spacing={2} w="99%">
+              <HStack spacing={2} className="ellipsis-text">
                 {title && (
                   <Text
                     fontWeight="bold"
                     fontSize="sm"
-                    className="no-select ellipsis-text"
+                    className="ellipsis-text"
                   >
                     {title}
                   </Text>
@@ -99,7 +99,7 @@ export const Section: React.FC<SectionProps> = ({
                 {titleExtra}
               </HStack>
               {description && (
-                <Text fontSize="xs" className="secondary-text no-select">
+                <Text fontSize="xs" className="secondary-text">
                   {description}
                 </Text>
               )}
