@@ -10,6 +10,8 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
+import { invoke } from "@tauri-apps/api/core";
+import { save } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
@@ -52,7 +54,27 @@ export const DownloadGameServerModal: React.FC<
             <Button
               disabled={!selectedGameVersion}
               colorScheme={primaryColor}
-              onClick={modalProps.onClose}
+              onClick={async () => {
+                if (!selectedGameVersion) return;
+                const savepath = await save({
+                  title: t("ChooseSaveLocation"),
+                  defaultPath: `${selectedGameVersion.id}-server.jar`,
+                });
+                if (!savepath || !selectedGameVersion?.url) return;
+
+                await invoke("schedule_progressive_task_group", {
+                  taskGroup: "game-server-download",
+                  params: [
+                    {
+                      task_type: "Download",
+                      src: selectedGameVersion.url,
+                      dest: savepath,
+                      sha1: "d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2", // 非空字符串！
+                    },
+                  ],
+                });
+                modalProps.onClose?.();
+              }}
             >
               {t("General.finish")}
             </Button>
