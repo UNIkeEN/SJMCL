@@ -2,14 +2,12 @@ export const modTagList = {
   CurseForge: {
     All: ["All"],
     "Adventure and RPG": [
-      "Adventure and RPG",
       "Armor, Tools, and Weapons",
       "Mobs",
       "Twilight Forest",
     ],
-    Farming: ["Farming", "Food", "Forestry"],
+    Farming: ["Food", "Forestry"],
     Technology: [
-      "Technology",
       "Create",
       "Applied Energistics 2",
       "Automation",
@@ -44,17 +42,14 @@ export const modTagList = {
       "Twitch Integration",
       "Utility & QoL",
     ],
-    Addons: ["Addons", "KubeJS"],
-    Miscellaneous: ["Miscellaneous"],
-    MCreator: ["MCreator"],
-    Cosmetic: ["Cosmetic"],
+    Addons: ["KubeJS"],
+    Miscellaneous: ["MCreator", "Cosmetic"],
     Magic: ["Magic", "Blood Magic", "Structures", "Thaumcraft"],
   },
   Modrinth: {
     All: ["All"],
-    adventure: ["adventure", "equipment", "cursed", "mobs"],
+    adventure: ["equipment", "cursed", "mobs", "magic"],
     utility: [
-      "utility",
       "decoration",
       "economy",
       "food",
@@ -65,8 +60,7 @@ export const modTagList = {
       "optimization",
       "social",
     ],
-    magic: ["magic"],
-    technology: ["technology", "worldgen", "storage", "transportation"],
+    technology: ["worldgen", "storage", "transportation"],
   },
 };
 

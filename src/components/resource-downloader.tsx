@@ -445,28 +445,55 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const renderTagMenuOptions = () => {
     if (typeof tagList === "object" && tagList !== null) {
       return Object.entries(tagList).flatMap(([group, tags]) => [
-        <MenuItemOption
-          key={`group-${group}`}
-          isDisabled
-          fontWeight="bold"
-          color="gray.500"
-          fontSize="xs"
-          pl={0}
-          cursor="default"
-          _disabled={{ bg: "transparent", cursor: "default" }}
-        >
-          {t(
-            `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
-          ) || group}
-        </MenuItemOption>,
+        group === "All" ? (
+          <MenuItemOption
+            key={`group-${group}`}
+            value={group}
+            fontWeight="bold"
+            color="gray.700"
+            fontSize="xs"
+          >
+            {t(
+              `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
+            ) || group}
+          </MenuItemOption>
+        ) : resourceType === "mod" ? (
+          <MenuItemOption
+            key={`group-${group}`}
+            value={group}
+            fontWeight="bold"
+            color="gray.700"
+            fontSize="xs"
+          >
+            {t(
+              `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
+            ) || group}
+          </MenuItemOption>
+        ) : (
+          <MenuItemOption
+            key={`group-${group}`}
+            isDisabled
+            fontWeight="bold"
+            color="gray.500"
+            fontSize="xs"
+            cursor="default"
+            _disabled={{ bg: "transparent", cursor: "default" }}
+          >
+            {t(
+              `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
+            ) || group}
+          </MenuItemOption>
+        ),
         ...(Array.isArray(tags)
-          ? tags.map((item: string) => (
-              <MenuItemOption key={item} value={item} fontSize="xs" pl={6}>
-                {t(
-                  `ResourceDownloader.${resourceType}TagList.${downloadSource}.${item}`
-                ) || item}
-              </MenuItemOption>
-            ))
+          ? tags
+              .filter((item: string) => item !== "All")
+              .map((item: string) => (
+                <MenuItemOption key={item} value={item} fontSize="xs" pl={6}>
+                  {t(
+                    `ResourceDownloader.${resourceType}TagList.${downloadSource}.${item}`
+                  ) || item}
+                </MenuItemOption>
+              ))
           : []),
       ]);
     }
