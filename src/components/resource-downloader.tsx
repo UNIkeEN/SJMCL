@@ -66,6 +66,7 @@ const tagLists: Record<string, any> = {
   world: worldTagList,
   resourcepack: resourcePackTagList,
   shader: shaderPackTagList,
+  modpack: modpackTagList,
 };
 
 const downloadSourceLists: Record<string, string[]> = {
@@ -145,7 +146,11 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
       const tagList = (tagLists[resourceType] || modpackTagList)[
         downloadSource
       ];
-      if (!tagList.includes(tag)) return tag;
+      let allTags: string[] = [];
+      if (typeof tagList === "object" && tagList !== null) {
+        allTags = Object.values(tagList).flat() as string[];
+      }
+      if (!allTags.includes(tag)) return tag;
       return t(
         `ResourceDownloader.${resourceType}TagList.${downloadSource}.${tag}`
       );
@@ -278,8 +283,8 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const [resourceList, setResourceList] = useState<OtherResourceInfo[]>([]);
   const [isLoadingResourceList, setIsLoadingResourceList] =
     useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true); // use for infinite scroll
-  const [pageSize, setPageSize] = useState<number>(10); // default page size
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [gameVersion, setGameVersion] = useState<string>("All");
@@ -292,9 +297,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const searchQueryRef = useRef(searchQuery);
   const pageRef = useRef(0);
 
-  const tagList = (tagLists[resourceType] || modpackTagList)[
-    downloadSource
-  ] as string[];
+  const tagList = (tagLists[resourceType] || modpackTagList)[downloadSource];
   const sortByList = sortByLists[downloadSource];
 
   const onDownloadSourceChange = (e: string) => {
@@ -399,7 +402,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
 
     handleFetchResourceListByName(
       resourceType,
-      searchQueryRef.current, // useRef to avoid unnecessary re-fetch
+      searchQueryRef.current,
       gameVersion,
       selectedTag,
       sortBy,
@@ -439,6 +442,37 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
     setSelectedTag("All");
   }, [resourceType, downloadSource]);
 
+  const renderTagMenuOptions = () => {
+    if (typeof tagList === "object" && tagList !== null) {
+      return Object.entries(tagList).flatMap(([group, tags]) => [
+        <MenuItemOption
+          key={`group-${group}`}
+          isDisabled
+          fontWeight="bold"
+          color="gray.500"
+          fontSize="xs"
+          pl={0}
+          cursor="default"
+          _disabled={{ bg: "transparent", cursor: "default" }}
+        >
+          {t(
+            `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
+          ) || group}
+        </MenuItemOption>,
+        ...(Array.isArray(tags)
+          ? tags.map((item: string) => (
+              <MenuItemOption key={item} value={item} fontSize="xs" pl={6}>
+                {t(
+                  `ResourceDownloader.${resourceType}TagList.${downloadSource}.${item}`
+                ) || item}
+              </MenuItemOption>
+            ))
+          : []),
+      ]);
+    }
+    return [];
+  };
+
   return (
     <VStack fontSize="xs" h="100%">
       <HStack gap={3}>
@@ -450,13 +484,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           onChange={setSelectedTag}
           value={selectedTag}
           defaultValue={"All"}
-          options={tagList.map((item, key) => (
-            <MenuItemOption key={key} value={item} fontSize="xs">
-              {t(
-                `ResourceDownloader.${resourceType}TagList.${downloadSource}.${item}`
-              )}
-            </MenuItemOption>
-          ))}
+          options={renderTagMenuOptions()}
         />
 
         <ResourceDownloaderMenu
@@ -471,8 +499,8 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           defaultValue={"All"}
           options={
             gameVersionList ? (
-              gameVersionList.map((item, key) => (
-                <MenuItemOption key={key} value={item} fontSize="xs">
+              gameVersionList.map((item) => (
+                <MenuItemOption key={item} value={item} fontSize="xs">
                   {item === "All"
                     ? t("ResourceDownloader.versionList.All")
                     : item}
@@ -493,8 +521,8 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           onChange={onDownloadSourceChange}
           value={downloadSource}
           defaultValue={"CurseForge"}
-          options={downloadSourceLists[resourceType].map((item, key) => (
-            <MenuItemOption key={key} value={item} fontSize="xs">
+          options={downloadSourceLists[resourceType].map((item) => (
+            <MenuItemOption key={item} value={item} fontSize="xs">
               {item}
             </MenuItemOption>
           ))}
@@ -511,8 +539,8 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           defaultValue={
             downloadSource === "CurseForge" ? "Popularity" : "relevance"
           }
-          options={sortByList.map((item, key) => (
-            <MenuItemOption key={key} value={item} fontSize="xs">
+          options={sortByList.map((item) => (
+            <MenuItemOption key={item} value={item} fontSize="xs">
               {t(`ResourceDownloader.sortByList.${downloadSource}.${item}`)}
             </MenuItemOption>
           ))}

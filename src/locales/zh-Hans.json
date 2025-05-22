@@ -1189,7 +1189,9 @@
         "Twilight Forest": "暮色森林",
         "Twitch Integration": "Twitch集成",
         "Utility & QoL": "实用功能与优化",
-        "World Gen": "世界生成"
+        "World Gen": "世界生成",
+        "Auxiliary": "辅助模组",
+        "World": "世界"
       },
       "Modrinth": {
         "All": "全部",
@@ -1217,6 +1219,7 @@
     "worldTagList": {
       "CurseForge": {
         "All": "全部",
+        "Types": "类型",
         "Adventure": "冒险模式",
         "Creation": "创造模式",
         "Game Map": "游戏挑战",
@@ -1229,13 +1232,16 @@
     "resourcepackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Resolution": "分辨率",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x 及以上",
+        "Styles": "风格",
         "Animated": "动画",
+        "Special": "特殊",
         "Data Packs": "数据包",
         "Font Packs": "字体包",
         "Medieval": "中世纪",
@@ -1248,6 +1254,7 @@
       },
       "Modrinth": {
         "All": "全部",
+        "Resolution": "分辨率",
         "8x-": "8x 或更低",
         "16x": "16x",
         "32x": "32x",
@@ -1255,6 +1262,7 @@
         "128x": "128x",
         "256x": "256x",
         "512x+": "512x 或更高",
+        "Styles": "风格",
         "audio": "音频",
         "blocks": "方块",
         "core-shaders": "核心着色器",
@@ -1281,12 +1289,14 @@
     "shaderTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "风格",
         "Fantasy": "奇幻",
         "Realistic": "写实",
         "Vanilla": "原版"
       },
       "Modrinth": {
         "All": "全部",
+        "styles": "风格",
         "cartoon": "卡通",
         "cursed": "诅咒",
         "fantasy": "奇幻",
@@ -1302,6 +1312,7 @@
         "reflections": "反射",
         "shadows": "阴影",
         "potato": "极低",
+        "performance": "性能",
         "low": "低",
         "medium": "中",
         "high": "高",
@@ -1311,6 +1322,7 @@
     "modpackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "风格",
         "Adventure and RPG": "冒险 RPG",
         "Combat / PvP": "战斗 PvP",
         "Exploration": "探索",
@@ -1331,6 +1343,7 @@
       },
       "Modrinth": {
         "All": "全部",
+        "styles": "风格",
         "adventure": "冒险",
         "challenging": "挑战",
         "combat": "战斗",

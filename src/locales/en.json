@@ -1189,7 +1189,9 @@
         "Twilight Forest": "Twilight Forest",
         "Twitch Integration": "Twitch",
         "Utility & QoL": "Utility QoL",
-        "World Gen": "World Gen"
+        "World Gen": "World Gen",
+        "Auxiliary": "Auxiliary",
+        "World": "World"
       },
       "Modrinth": {
         "All": "All",
@@ -1217,6 +1219,7 @@
     "worldTagList": {
       "CurseForge": {
         "All": "All",
+        "Types": "Types",
         "Adventure": "Adventure",
         "Creation": "Creation",
         "Game Map": "Game Map",
@@ -1229,13 +1232,16 @@
     "resourcepackTagList": {
       "CurseForge": {
         "All": "All",
+        "Resolution": "Resolution",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x and Higher",
+        "Styles": "Styles",
         "Animated": "Animated",
+        "Special": "Special",
         "Data Packs": "Data Packs",
         "Font Packs": "Font Packs",
         "Medieval": "Medieval",
@@ -1248,6 +1254,7 @@
       },
       "Modrinth": {
         "All": "All",
+        "Resolution": "Resolution",
         "8x-": "8x or Lower",
         "16x": "16x",
         "32x": "32x",
@@ -1255,6 +1262,7 @@
         "128x": "128x",
         "256x": "256x",
         "512x+": "512x or Higher",
+        "Styles": "Styles",
         "audio": "Audio",
         "blocks": "Blocks",
         "core-shaders": "Core Shaders",
@@ -1281,12 +1289,14 @@
     "shaderTagList": {
       "CurseForge": {
         "All": "All",
+        "Styles": "Styles",
         "Fantasy": "Fantasy",
         "Realistic": "Realistic",
         "Vanilla": "Vanilla"
       },
       "Modrinth": {
         "All": "All",
+        "styles": "Styles",
         "cartoon": "Cartoon",
         "cursed": "Cursed",
         "fantasy": "Fantasy",
@@ -1302,6 +1312,7 @@
         "reflections": "Reflections",
         "shadows": "Shadows",
         "potato": "Potato",
+        "performance": "Performance",
         "low": "Low",
         "medium": "Medium",
         "high": "High",
@@ -1311,6 +1322,7 @@
     "modpackTagList": {
       "CurseForge": {
         "All": "All",
+        "Styles": "Styles",
         "Adventure and RPG": "Adventure RPG",
         "Combat / PvP": "Combat PvP",
         "Exploration": "Exploration",
@@ -1331,6 +1343,7 @@
       },
       "Modrinth": {
         "All": "All",
+        "styles": "Styles",
         "adventure": "Adventure",
         "challenging": "Challenging",
         "combat": "Combat",
