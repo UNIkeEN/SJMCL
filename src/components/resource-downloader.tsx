@@ -385,7 +385,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
     const currentPage = pageRef.current;
     handleFetchResourceListByName(
       resourceType,
-      searchQueryRef.current, // useRef to avoid unnecessary re-fetch
+      searchQueryRef.current,
       gameVersion,
       selectedTag,
       sortBy,
@@ -402,7 +402,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
 
     handleFetchResourceListByName(
       resourceType,
-      searchQueryRef.current,
+      searchQueryRef.current, // useRef to avoid unnecessary re-fetch
       gameVersion,
       selectedTag,
       sortBy,

@@ -14,6 +14,7 @@ export const modTagList = {
       "Redstone",
       "Storage",
     ],
+    Magic: ["Blood Magic"],
     World: [
       "Biomes",
       "Dimensions",
@@ -46,7 +47,6 @@ export const modTagList = {
       "Tinker's Construct",
       "Thaumcraft",
     ],
-    Magic: ["Blood Magic"],
   },
   Modrinth: {
     All: ["All"],
