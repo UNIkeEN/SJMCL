@@ -1,27 +1,18 @@
 export const modTagList = {
   CurseForge: {
     All: ["All"],
-    "Adventure and RPG": [
-      "Armor, Tools, and Weapons",
-      "Mobs",
-      "Twilight Forest",
-    ],
+    "Adventure and RPG": ["Armor, Tools, and Weapons", "Mobs"],
     Farming: ["Food", "Forestry"],
     Technology: [
-      "Create",
-      "Applied Energistics 2",
       "Automation",
       "Buildcraft",
       "Energy",
       "Energy, Fluid, and Item Transport",
       "Genetics",
-      "Industrial Craft",
       "Integrated Dynamics",
       "Processing",
       "Redstone",
       "Storage",
-      "Thermal Expansion",
-      "Tinker's Construct",
     ],
     World: [
       "Biomes",
@@ -31,6 +22,7 @@ export const modTagList = {
       "Player Transport",
       "Skyblock",
       "World Gen",
+      "Structures",
     ],
     Auxiliary: [
       "Performance",
@@ -43,8 +35,18 @@ export const modTagList = {
       "Utility & QoL",
     ],
     Addons: ["KubeJS"],
-    Miscellaneous: ["MCreator", "Cosmetic"],
-    Magic: ["Magic", "Blood Magic", "Structures", "Thaumcraft"],
+    Miscellaneous: [
+      "MCreator",
+      "Cosmetic",
+      "Twilight Forest",
+      "Create",
+      "Applied Energistics 2",
+      "Industrial Craft",
+      "Thermal Expansion",
+      "Tinker's Construct",
+      "Thaumcraft",
+    ],
+    Magic: ["Blood Magic"],
   },
   Modrinth: {
     All: ["All"],

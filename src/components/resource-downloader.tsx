@@ -385,7 +385,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
     const currentPage = pageRef.current;
     handleFetchResourceListByName(
       resourceType,
-      searchQueryRef.current,
+      searchQueryRef.current, // useRef to avoid unnecessary re-fetch
       gameVersion,
       selectedTag,
       sortBy,
@@ -445,26 +445,8 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const renderTagMenuOptions = () => {
     if (typeof tagList === "object" && tagList !== null) {
       return Object.entries(tagList).flatMap(([group, tags]) => [
-        group === "All" ? (
-          <MenuItemOption
-            key={`group-${group}`}
-            value={group}
-            fontWeight="bold"
-            color="gray.700"
-            fontSize="xs"
-          >
-            {t(
-              `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
-            ) || group}
-          </MenuItemOption>
-        ) : resourceType === "mod" ? (
-          <MenuItemOption
-            key={`group-${group}`}
-            value={group}
-            fontWeight="bold"
-            color="gray.700"
-            fontSize="xs"
-          >
+        group === "All" || resourceType === "mod" ? (
+          <MenuItemOption key={`group-${group}`} value={group} fontSize="xs">
             {t(
               `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
             ) || group}

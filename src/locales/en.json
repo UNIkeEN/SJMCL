@@ -1149,6 +1149,7 @@
         "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
         "Automation": "Automation",
+        "Auxiliary": "Auxiliary",        
         "Biomes": "Biomes",
         "Blood Magic": "Blood Magic",
         "Buildcraft": "Buildcraft",
@@ -1171,7 +1172,7 @@
         "Magic": "Magic",
         "Map and Information": "Map Information",
         "MCreator": "MCreator",
-        "Miscellaneous": "Miscellaneous",
+        "Miscellaneous": "Misc.",
         "Mobs": "Mobs",
         "Ores and Resources": "Ores Resources",
         "Performance": "Performance",
@@ -1190,7 +1191,6 @@
         "Twitch Integration": "Twitch",
         "Utility & QoL": "Utility QoL",
         "World Gen": "World Gen",
-        "Auxiliary": "Auxiliary",
         "World": "World"
       },
       "Modrinth": {
@@ -1219,20 +1219,19 @@
     "worldTagList": {
       "CurseForge": {
         "All": "All",
-        "Types": "Types",
         "Adventure": "Adventure",
         "Creation": "Creation",
         "Game Map": "Game Map",
         "Modded World": "Modded World",
         "Parkour": "Parkour",
         "Puzzle": "Puzzle",
-        "Survival": "Survival"
+        "Survival": "Survival",
+        "Types": "Types"
       }
     },
     "resourcepackTagList": {
       "CurseForge": {
         "All": "All",
-        "Resolution": "Resolution",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
@@ -1245,16 +1244,16 @@
         "Data Packs": "Data Packs",
         "Font Packs": "Font Packs",
         "Medieval": "Medieval",
-        "Miscellaneous": "Miscellaneous",
+        "Miscellaneous": "Misc.",
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
+        "Resolution": "Resolution",        
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
       "Modrinth": {
         "All": "All",
-        "Resolution": "Resolution",
         "8x-": "8x or Lower",
         "16x": "16x",
         "32x": "32x",
@@ -1279,6 +1278,7 @@
         "decoration": "Decoration",
         "modded": "Modded",
         "realistic": "Realistic",
+        "Resolution": "Resolution",        
         "simplistic": "Simplistic",
         "themed": "Themed",
         "tweaks": "Tweaks",
@@ -1296,7 +1296,7 @@
       },
       "Modrinth": {
         "All": "All",
-        "styles": "Styles",
+        "Styles": "Styles",
         "cartoon": "Cartoon",
         "cursed": "Cursed",
         "fantasy": "Fantasy",
