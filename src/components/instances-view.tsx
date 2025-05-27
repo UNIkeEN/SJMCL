@@ -46,9 +46,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
       .filter(Boolean)
       .join(", "),
     ...{
-      titleExtra: instance.starred && (
-        <Icon as={FaStar} mt={-1} color="yellow.500" />
-      ),
+      titleExtra: instance.starred && <Icon as={FaStar} color="yellow.500" />,
     },
     prefixElement: (
       <HStack spacing={2.5}>

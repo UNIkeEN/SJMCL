@@ -3,6 +3,7 @@ use super::{
     copy_whole_dir, generate_unique_filename, get_files_with_regex, get_subdirectories,
   },
   helpers::{
+    game_version::get_major_game_version,
     misc::{
       get_instance_game_config, get_instance_subdir_path_by_id, refresh_and_update_instances,
       unify_instance_name,
@@ -45,10 +46,10 @@ use zip::read::ZipArchive;
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
   refresh_and_update_instances(&app).await; // firstly refresh and update
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let state = binding.lock()?;
+  let instances = binding.lock().unwrap().clone();
   let mut summary_list = Vec::new();
   let global_version_isolation = get_global_game_config(&app).version_isolation;
-  for (id, instance) in state.iter() {
+  for (id, instance) in instances.iter() {
     // same as get_game_config(), but mannually here
     let is_version_isolated =
       if instance.use_spec_game_config && instance.spec_game_config.is_some() {
@@ -69,6 +70,7 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
       starred: instance.starred,
       play_time: instance.play_time,
       version: instance.version.clone(),
+      major_version: get_major_game_version(&app, &instance.version).await,
       version_path: instance.version_path.clone(),
       mod_loader: instance.mod_loader.clone(),
       use_spec_game_config: instance.use_spec_game_config,

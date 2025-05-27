@@ -1,8 +1,42 @@
-## SJMC Launcher
+# SJMC Launcher
+
+[![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
+![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)
 
 SJMCL is an open-source Minecraft launcher from [Shanghai Jiao Tong University Minecraft Club (SJMC)](https://mc.sjtu.cn/welcome/content/3/).
 
-### Development and Contributing
+## Features
+
+* **Cross Platform**: Supports Windows 10/11, macOS and Linux.
+* **Efficient Instance Management**: Supports multiple game directories and instances, allowing the management of all instance resources (such as saves, mods, resource packs, shaders, screenshots, etc.) and settings in one place.
+* **Convenient Resource Download**: Supports downloading game clients, mod loaders, various game resources and modpacks from CurseForge and Modrinth.
+*	**Multi-Account System Support**: Built-in Microsoft login and third-party authentication server support, compatible with the OAuth login process proposed by the Yggdrasil Connect proposal.
+* **Deeplink Integration**: Integrates with external websites and tool collections, providing convenient features such as desktop shortcuts for launching instances through system deeplinks.
+
+### Built with
+
+[![Tauri](https://img.shields.io/badge/Tauri-v2-FFC131?style=for-the-badge&logo=tauri&logoColor=white&labelColor=24C8DB)](https://tauri.app/)
+[![Next JS](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![Chakra UI](https://img.shields.io/badge/chakra_ui-v2-38B2AC?style=for-the-badge&logo=chakraui&logoColor=white&labelColor=319795)](https://v2.chakra-ui.com/)
+
+## Download
+
+Getting started with SJMCL is simple, just download the latest release from the [official website]().
+
+You can also find all the releases in [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases).
+
+SJMCL currently supports the following platforms:
+
+| Platform  | Versions            | Architectures           | Provided Bundles                        |
+|-----------|---------------------|-------------------------|-----------------------------------------|
+| Windows   | 10 and above        | `i686`, `x86_64`        | `.msi`, portable `.exe`                 |
+| macOS     | 10.15 and above     | `aarch64`, `x86_64`     | `.app`, `.dmg`                          |
+| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `x86_64`| `.AppImage`, `.deb`, `.rpm`, portable binary |
+
+Note: some features are only available on specific platforms or specific bundle types.
+
+## Development and Contributing
 
 To get started, clone the repository and install the required dependencies:
 
@@ -22,7 +56,11 @@ We warmly invite contributions from everyone.
 * Before you get started, please take a moment to review our [Contributing Guide](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md) (includes more details on the development workflow). 
 * Feel free to share your ideas through [Pull Requests](https://github.com/UNIkeEN/SJMCL/pulls) or [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues).
 
-### Copyright
+### Repo Activity
+
+TBD
+
+## Copyright
 
 Copyright © 2024-2025 SJMCL Team.
 

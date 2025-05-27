@@ -9,6 +9,7 @@ export interface InstanceSummary {
   playTime: number;
   versionPath: string;
   version: string;
+  majorVersion: string;
   isVersionIsolated: boolean;
   modLoader: {
     loaderType: ModLoaderType;

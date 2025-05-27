@@ -152,6 +152,7 @@ const chakraExtendTheme = extendTheme({
     Tag: {
       defaultProps: {
         size: "sm",
+        whiteSpace: "nowrap",
       },
     },
     Tooltip: {

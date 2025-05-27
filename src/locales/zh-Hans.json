@@ -373,7 +373,7 @@
       "world": "世界",
       "mod": "模组",
       "resourcepack": "资源包",
-      "shaderpack": "光影"
+      "shader": "光影"
     }
   },
   "DownloadSettingPage": {
@@ -435,15 +435,15 @@
   },
   "DownloadSpecificResourceModal": {
     "title": "资源下载 - {{name}}",
-    "goTo": {
-      "curseforge": "CurseForge",
-      "modrinth": "Modrinth",
-      "mcmod": "MC 百科"
-    },
     "label": {
       "all": "全部",
-      "currentVersion": "当前版本",
+      "recommendedVersion": "推荐版本",
       "currentModLoader": "当前加载器"
+    },
+    "releaseType": {
+      "alpha": "内测版",
+      "beta": "公测版",
+      "release": "正式版"
     }
   },
   "DownloadTasksPage": {
@@ -1143,53 +1143,83 @@
     "modTagList": {
       "CurseForge": {
         "All": "全部",
-        "Addons": "插件",
+        "Addons": "附属模组",
         "Adventure and RPG": "冒险 RPG",
         "API and Library": "支持库",
+        "Applied Energistics 2": "应用能源2",
         "Armor, Tools, and Weapons": "装备 武器",
+        "Automation": "自动化",
+        "Biomes": "生物群系",
+        "Blood Magic": "血魔法",
+        "Buildcraft": "建筑",
         "Bug Fixes": "错误修复",
         "Cosmetic": "装饰",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "机械动力",
+        "Dimensions": "维度",
         "Education": "教育",
+        "Energy": "能源",
+        "Energy, Fluid, and Item Transport": "能源 流体 物品运输",
+        "Farming": "农业",
         "Food": "食物",
+        "Forestry": "林业",
+        "Galacticraft": "星系",
+        "Genetics": "遗传学",
+        "Industrial Craft": "工业时代2",
+        "Integrated Dynamics": "集成动力",
+        "KubeJS": "KubeJS",
         "Magic": "魔法",
         "Map and Information": "地图 信息",
         "MCreator": "MCreator",
         "Miscellaneous": "杂项",
+        "Mobs": "生物",
+        "Ores and Resources": "矿石 资源",
         "Performance": "性能",
+        "Player Transport": "玩家运输",
+        "Processing": "加工处理",
         "Redstone": "红石",
         "Server Utility": "服务器",
-        "Storage": "存储",
+        "Skyblock": "空岛",
+        "Storage": "存储系统",
+        "Structures": "结构",
         "Technology": "科技",
-        "Twitch Integration": "Twitch",
-        "Utility & QoL": "实用 QoL",
-        "World Gen": "世界生成"
+        "Thaumcraft": "神秘时代",
+        "Thermal Expansion": "热力膨胀",
+        "Tinker's Construct": "匠魂",
+        "Twilight Forest": "暮色森林",
+        "Twitch Integration": "Twitch集成",
+        "Utility & QoL": "实用功能与优化",
+        "World Gen": "世界生成",
+        "Auxiliary": "辅助模组",
+        "World": "世界"
       },
       "Modrinth": {
         "All": "全部",
-        "Adventure": "冒险",
-        "Cursed": "诅咒",
-        "Decoration": "装饰",
-        "Economy": "经济",
-        "Equipment": "装备",
-        "Food": "食物",
-        "Game Mechanics": "游戏机制",
-        "Library": "支持库",
-        "Magic": "魔法",
-        "Management": "管理",
-        "Minigame": "小游戏",
-        "Mobs": "生物",
-        "Optimization": "优化",
-        "Social": "社交",
-        "Storage": "存储",
-        "Technology": "科技",
-        "Transportation": "交通运输",
-        "Utility": "实用",
-        "World Generation": "世界生成"
+        "adventure": "冒险",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "economy": "经济",
+        "equipment": "装备",
+        "food": "食物",
+        "game-mechanics": "游戏机制",
+        "library": "支持库",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "小游戏",
+        "mobs": "生物",
+        "optimization": "优化",
+        "social": "社交",
+        "storage": "存储",
+        "technology": "科技",
+        "transportation": "交通运输",
+        "utility": "实用",
+        "worldgen": "世界生成"
       }
     },
     "worldTagList": {
       "CurseForge": {
         "All": "全部",
+        "Types": "类型",
         "Adventure": "冒险模式",
         "Creation": "创造模式",
         "Game Map": "游戏挑战",
@@ -1202,13 +1232,16 @@
     "resourcepackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Resolution": "分辨率",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x 及以上",
+        "Styles": "风格",
         "Animated": "动画",
+        "Special": "特殊",
         "Data Packs": "数据包",
         "Font Packs": "字体包",
         "Medieval": "中世纪",
@@ -1221,64 +1254,75 @@
       },
       "Modrinth": {
         "All": "全部",
-        "8x or lower": "8x 或更低",
+        "Resolution": "分辨率",
+        "8x-": "8x 或更低",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
-        "512x or higher": "512x 或更高",
-        "Audio": "音频",
-        "Blocks": "方块",
-        "Core Shaders": "核心着色器",
-        "Entities": "实体",
-        "Environment": "环境",
-        "Equipment": "装备",
-        "Fonts": "字体",
-        "GUI": "用户界面",
-        "Items": "物品",
-        "Locale": "本地化",
-        "Models": "模型",
-        "Combat": "战斗",
-        "Cursed": "诅咒",
-        "Decoration": "装饰",
-        "Modded": "模组",
-        "Realistic": "写实",
-        "Simplistic": "简约",
-        "Themed": "主题",
-        "Tweaks": "优化",
-        "Utility": "实用",
-        "Vanilla-like": "原版风格"
+        "512x+": "512x 或更高",
+        "Styles": "风格",
+        "audio": "音频",
+        "blocks": "方块",
+        "core-shaders": "核心着色器",
+        "entities": "实体",
+        "environment": "环境",
+        "equipment": "装备",
+        "fonts": "字体",
+        "gui": "用户界面",
+        "items": "物品",
+        "locale": "本地化",
+        "models": "模型",
+        "combat": "战斗",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "modded": "模组",
+        "realistic": "写实",
+        "simplistic": "简约",
+        "themed": "主题",
+        "tweaks": "优化",
+        "utility": "实用",
+        "vanilla-like": "原版风格"
       }
     },
-    "shaderpackTagList": {
+    "shaderTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "风格",
         "Fantasy": "奇幻",
         "Realistic": "写实",
         "Vanilla": "原版"
       },
       "Modrinth": {
         "All": "全部",
-        "Cartoon": "卡通",
-        "Cursed": "诅咒",
-        "Fantasy": "奇幻",
-        "Realistic": "写实",
-        "Semi-Realistic": "半写实",
-        "Vanilla-like": "原版风格",
-        "Atmosphere": "大气",
-        "Bloom": "泛光",
-        "Colored Lighting": "彩色光照",
-        "Foliage": "植被",
-        "Path Tracing": "路径追踪",
-        "PBR": "PBR",
-        "Reflections": "反射",
-        "Shadows": "阴影"
+        "Styles": "风格",
+        "cartoon": "卡通",
+        "cursed": "诅咒",
+        "fantasy": "奇幻",
+        "realistic": "写实",
+        "semi-realistic": "半写实",
+        "vanilla-like": "原版风格",
+        "atmosphere": "大气",
+        "bloom": "泛光",
+        "colored-lighting": "彩色光照",
+        "foliage": "植被",
+        "path-tracing": "路径追踪",
+        "pbr": "PBR",
+        "reflections": "反射",
+        "shadows": "阴影",
+        "potato": "极低",
+        "performance": "性能",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "screenshot": "影视级"
       }
     },
     "modpackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "风格",
         "Adventure and RPG": "冒险 RPG",
         "Combat / PvP": "战斗 PvP",
         "Exploration": "探索",
@@ -1299,21 +1343,21 @@
       },
       "Modrinth": {
         "All": "全部",
-        "Adventure": "冒险",
-        "Challenging": "挑战",
-        "Combat": "战斗",
-        "Kitchen Sink": "大杂烩",
-        "Lightweight": "轻量整合",
-        "Magic": "魔法",
-        "Multiplayer": "多人",
-        "Optimization": "优化",
-        "Quests": "任务",
-        "Technology": "科技"
+        "styles": "风格",
+        "adventure": "冒险",
+        "challenging": "挑战",
+        "combat": "战斗",
+        "kitchen-sink": "大杂烩",
+        "lightweight": "轻量整合",
+        "magic": "魔法",
+        "multiplayer": "多人",
+        "optimization": "优化",
+        "quests": "任务",
+        "technology": "科技"
       }
     },
     "sortByList": {
       "CurseForge": {
-        "Relevancy": "相关度",
         "Popularity": "热度",
         "Latest update": "最近更新",
         "Creation date": "创建日期",
@@ -1321,11 +1365,11 @@
         "A-Z": "名称"
       },
       "Modrinth": {
-        "Relevance": "相关度",
-        "Downloads": "下载量",
-        "Followers": "关注量",
-        "Date published": "发布日期",
-        "Date updated": "更新日期"
+        "relevance": "相关度",
+        "downloads": "下载量",
+        "follows": "关注量",
+        "newest": "发布日期",
+        "updated": "更新日期"
       }
     },
     "versionList": {
@@ -1619,6 +1663,24 @@
       "fetchModLoaderVersionList": {
         "error": {
           "title": "获取模组加载器列表失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "获取资源列表失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "获取资源版本列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"

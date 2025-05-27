@@ -1,6 +1,6 @@
-## Security Policy
+# Security Policy
 
-### Supported Versions
+## Supported Versions
 
 The following releases of SJMCL are currently supported.
 
@@ -9,7 +9,7 @@ The following releases of SJMCL are currently supported.
 | 0.x     | ✅        |
 | Other   | ❌        |
 
-### Reporting a Vulnerability
+## Reporting a Vulnerability
 
 If you believe you have found a security vulnerability in our launcher, please report it to us through the following steps:
 
@@ -18,11 +18,11 @@ If you believe you have found a security vulnerability in our launcher, please r
    - Start your email subject with `[SJMCL Security]`
    - Provide as much information as possible about the vulnerability
 
-### Response Time
+## Response Time
 
 We regularly monitor our security mailbox during China working days. You can typically expect an initial response within 2-3 working days.
 
-### What to Expect
+## What to Expect
 
 - We will acknowledge receipt of your vulnerability report
 - We will investigate and provide updates on our findings

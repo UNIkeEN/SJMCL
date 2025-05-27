@@ -43,7 +43,8 @@
         "minWidth": 640,
         "minHeight": 440,
         "center": true,
-        "dragDropEnabled": false
+        "dragDropEnabled": false,
+        "contentProtected": true
       },
       {
         "label": "game_log",
