@@ -133,6 +133,8 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       flexDirection="column"
       height="100%"
       title={summary?.name}
+      withBackButton={navBarType !== "instance"}
+      backRoutePath="/instances/list"
       titleExtra={
         <CommonIconButton
           icon={summary?.starred ? FaStar : FaRegStar}
@@ -148,8 +150,6 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           h={21}
         />
       }
-      withBackButton={navBarType !== "instance"}
-      backRoutePath="/instances/list"
       headExtra={
         <HStack spacing={2}>
           {instanceSecMenuOperations.map((btn, index) => (
