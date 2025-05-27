@@ -373,7 +373,7 @@
       "world": "Worlds",
       "mod": "Mods",
       "resourcepack": "Resourcepacks",
-      "shaderpack": "Shaderpacks"
+      "shader": "Shaderpacks"
     }
   },
   "DownloadSettingPage": {
@@ -435,15 +435,15 @@
   },
   "DownloadSpecificResourceModal": {
     "title": "Download Resource - {{name}}",
-    "goTo": {
-      "curseforge": "CurseForge",
-      "modrinth": "Modrinth",
-      "mcmod": "MCMod"
-    },
     "label": {
       "all": "All",
-      "currentVersion": "Current Version",
+      "recommendedVersion": "Recommended Ver.",
       "currentModLoader": "Current Loader"
+    },
+    "releaseType": {
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "release": "Release"
     }
   },
   "DownloadTasksPage": {
@@ -1146,45 +1146,74 @@
         "Addons": "Addons",
         "Adventure and RPG": "Adventure RPG",
         "API and Library": "API Library",
+        "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
+        "Automation": "Automation",
+        "Auxiliary": "Auxiliary",        
+        "Biomes": "Biomes",
+        "Blood Magic": "Blood Magic",
+        "Buildcraft": "Buildcraft",
         "Bug Fixes": "Bug Fixes",
         "Cosmetic": "Cosmetic",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "Create",
+        "Dimensions": "Dimensions",
         "Education": "Education",
+        "Energy": "Energy",
+        "Energy, Fluid, and Item Transport": "Energy Fluid Item Transport",
+        "Farming": "Farming",
         "Food": "Food",
+        "Forestry": "Forestry",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "Genetics",
+        "Industrial Craft": "Industrial Craft",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
         "Magic": "Magic",
         "Map and Information": "Map Information",
         "MCreator": "MCreator",
-        "Miscellaneous": "Miscellaneous",
+        "Miscellaneous": "Misc.",
+        "Mobs": "Mobs",
+        "Ores and Resources": "Ores Resources",
         "Performance": "Performance",
+        "Player Transport": "Player Transport",
+        "Processing": "Processing",
         "Redstone": "Redstone",
         "Server Utility": "Server",
+        "Skyblock": "Skyblock",
         "Storage": "Storage",
+        "Structures": "Structures",
         "Technology": "Technology",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's Construct",
+        "Twilight Forest": "Twilight Forest",
         "Twitch Integration": "Twitch",
         "Utility & QoL": "Utility QoL",
-        "World Gen": "World Gen"
+        "World Gen": "World Gen",
+        "World": "World"
       },
       "Modrinth": {
         "All": "All",
-        "Adventure": "Adventure",
-        "Cursed": "Cursed",
-        "Decoration": "Decoration",
-        "Economy": "Economy",
-        "Equipment": "Equipment",
-        "Food": "Food",
-        "Game Mechanics": "Game Mechanics",
-        "Library": "Library",
-        "Magic": "Magic",
-        "Management": "Management",
-        "Minigame": "Minigame",
-        "Mobs": "Mobs",
-        "Optimization": "Optimization",
-        "Social": "Social",
-        "Storage": "Storage",
-        "Technology": "Technology",
-        "Transportation": "Transportation",
-        "Utility": "Utility",
-        "World Generation": "World Gen"
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "Equipment",
+        "food": "Food",
+        "game-mechanics": "Game Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "Technology",
+        "transportation": "Transportation",
+        "utility": "Utility",
+        "worldgen": "World Gen"
       }
     },
     "worldTagList": {
@@ -1196,7 +1225,8 @@
         "Modded World": "Modded World",
         "Parkour": "Parkour",
         "Puzzle": "Puzzle",
-        "Survival": "Survival"
+        "Survival": "Survival",
+        "Types": "Types"
       }
     },
     "resourcepackTagList": {
@@ -1208,77 +1238,91 @@
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x and Higher",
+        "Styles": "Styles",
         "Animated": "Animated",
+        "Special": "Special",
         "Data Packs": "Data Packs",
         "Font Packs": "Font Packs",
         "Medieval": "Medieval",
-        "Miscellaneous": "Miscellaneous",
+        "Miscellaneous": "Misc.",
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
+        "Resolution": "Resolution",        
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
       "Modrinth": {
         "All": "All",
-        "8x or lower": "8x or Lower",
+        "8x-": "8x or Lower",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
-        "512x or higher": "512x or Higher",
-        "Audio": "Audio",
-        "Blocks": "Blocks",
-        "Core Shaders": "Core Shaders",
-        "Entities": "Entities",
-        "Environment": "Environment",
-        "Equipment": "Equipment",
-        "Fonts": "Fonts",
-        "GUI": "GUI",
-        "Items": "Items",
-        "Locale": "Locale",
-        "Models": "Models",
-        "Combat": "Combat",
-        "Cursed": "Cursed",
-        "Decoration": "Decoration",
-        "Modded": "Modded",
-        "Realistic": "Realistic",
-        "Simplistic": "Simplistic",
-        "Themed": "Themed",
-        "Tweaks": "Tweaks",
-        "Utility": "Utility",
-        "Vanilla-like": "Vanilla-like"
+        "512x+": "512x or Higher",
+        "Styles": "Styles",
+        "audio": "Audio",
+        "blocks": "Blocks",
+        "core-shaders": "Core Shaders",
+        "entities": "Entities",
+        "environment": "Environment",
+        "equipment": "Equipment",
+        "fonts": "Fonts",
+        "gui": "GUI",
+        "items": "Items",
+        "locale": "Locale",
+        "models": "Models",
+        "combat": "Combat",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "modded": "Modded",
+        "realistic": "Realistic",
+        "Resolution": "Resolution",        
+        "simplistic": "Simplistic",
+        "themed": "Themed",
+        "tweaks": "Tweaks",
+        "utility": "Utility",
+        "vanilla-like": "Vanilla-like"
       }
     },
-    "shaderpackTagList": {
+    "shaderTagList": {
       "CurseForge": {
         "All": "All",
+        "Styles": "Styles",
         "Fantasy": "Fantasy",
         "Realistic": "Realistic",
         "Vanilla": "Vanilla"
       },
       "Modrinth": {
         "All": "All",
-        "Cartoon": "Cartoon",
-        "Cursed": "Cursed",
-        "Fantasy": "Fantasy",
-        "Realistic": "Realistic",
-        "Semi-Realistic": "Semi-Realistic",
-        "Vanilla-like": "Vanilla-like",
-        "Atmosphere": "Atmosphere",
-        "Bloom": "Bloom",
-        "Colored Lighting": "Colored Lighting",
-        "Foliage": "Foliage",
-        "Path Tracing": "Path Tracing",
-        "PBR": "PBR",
-        "Reflections": "Reflections",
-        "Shadows": "Shadows"
+        "Styles": "Styles",
+        "cartoon": "Cartoon",
+        "cursed": "Cursed",
+        "fantasy": "Fantasy",
+        "realistic": "Realistic",
+        "semi-realistic": "Semi-Realistic",
+        "vanilla-like": "Vanilla-like",
+        "atmosphere": "Atmosphere",
+        "bloom": "Bloom",
+        "colored-lighting": "Colored Lighting",
+        "foliage": "Foliage",
+        "path-tracing": "Path Tracing",
+        "pbr": "PBR",
+        "reflections": "Reflections",
+        "shadows": "Shadows",
+        "potato": "Potato",
+        "performance": "Performance",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "screenshot": "Screenshot"
       }
     },
     "modpackTagList": {
       "CurseForge": {
         "All": "All",
+        "Styles": "Styles",
         "Adventure and RPG": "Adventure RPG",
         "Combat / PvP": "Combat PvP",
         "Exploration": "Exploration",
@@ -1299,21 +1343,21 @@
       },
       "Modrinth": {
         "All": "All",
-        "Adventure": "Adventure",
-        "Challenging": "Challenging",
-        "Combat": "Combat",
-        "Kitchen Sink": "Kitchen Sink",
-        "Lightweight": "Lightweight",
-        "Magic": "Magic",
-        "Multiplayer": "Multiplayer",
-        "Optimization": "Optimization",
-        "Quests": "Quests",
-        "Technology": "Technology"
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "challenging": "Challenging",
+        "combat": "Combat",
+        "kitchen-sink": "Kitchen Sink",
+        "lightweight": "Lightweight",
+        "magic": "Magic",
+        "multiplayer": "Multiplayer",
+        "optimization": "Optimization",
+        "quests": "Quests",
+        "technology": "Technology"
       }
     },
     "sortByList": {
       "CurseForge": {
-        "Relevancy": "Relevancy",
         "Popularity": "Popularity",
         "Latest update": "Latest update",
         "Creation date": "Creation date",
@@ -1321,11 +1365,11 @@
         "A-Z": "A-Z"
       },
       "Modrinth": {
-        "Relevance": "Relevance",
-        "Downloads": "Downloads",
-        "Followers": "Followers",
-        "Date published": "Date published",
-        "Date updated": "Date updated"
+        "relevance": "Relevance",
+        "downloads": "Downloads",
+        "follows": "Followers",
+        "newest": "Date published",
+        "updated": "Date updated"
       }
     },
     "versionList": {
@@ -1619,6 +1663,24 @@
       "fetchModLoaderVersionList": {
         "error": {
           "title": "Failed to fetch mod loader version list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "Failed to fetch resource list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "Failed to fetch resource version list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"

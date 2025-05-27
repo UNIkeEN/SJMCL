@@ -25,3 +25,19 @@ export const formatByteSize = (bytes: number) => {
     return `${bytes} B`;
   }
 };
+
+export const formatDisplayCount = (count: number): string => {
+  count = Math.max(0, count);
+  const units = ["K", "M", "B"]; // K: thousand, M: million, B: billion
+  let unitIndex = 0;
+  let formattedCount = count;
+
+  if (count < 10000) return `${count}`;
+
+  while (formattedCount >= 1000 && unitIndex < units.length) {
+    formattedCount /= 1000;
+    unitIndex++;
+  }
+
+  return `${formattedCount.toFixed(2)} ${units[unitIndex - 1]}`;
+};

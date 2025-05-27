@@ -83,3 +83,4 @@ jobs:
         run: npx tauri build ${{ matrix.args }}
         env:
           SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
+          SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}

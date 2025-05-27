@@ -21,7 +21,7 @@ use url::Url;
 /// # Example
 ///
 /// ```rust
-/// let _ = create_webview_window(app, "game_output", "game_log").await?;
+/// let _ = create_webview_window(app, "game_output", "game_log", None).await?;
 /// ```
 pub async fn create_webview_window(
   app: &AppHandle,
@@ -44,10 +44,7 @@ pub async fn create_webview_window(
     window_config.url = WebviewUrl::External(custom_url);
   }
 
-  let builder = WebviewWindowBuilder::from_config(app, &window_config).map_err(SJMCLError::from)?;
-  let window = builder.build().map_err(SJMCLError::from)?;
-
-  Ok(window)
+  create_webview_window_with_config(app, &window_config).await
 }
 
 /// Creates a new webview window using the provided `WindowConfig`.

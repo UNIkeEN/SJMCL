@@ -1,5 +1,4 @@
-import { ModLoaderEnums } from "@/enums/instance";
-import { OtherResourceInfo, ResourceVersionPack } from "../resource";
+import { OtherResourceInfo } from "../resource";
 
 // from https://bmclapi2.bangbang93.com/forge/minecraft/1.21
 export const mockForgeVersions: any[] = [
@@ -506,7 +505,7 @@ export const mockNeoForgeVersions: any[] = [
 
 export const mockDownloadResourceList: OtherResourceInfo[] = [
   {
-    type: "mods",
+    type: "mod",
     name: "Just Enough Items",
     translatedName: "JEI物品管理器",
     description:
@@ -519,7 +518,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "resourcepacks",
+    type: "resourcepack",
     name: "Faithful",
     translatedName: "Faithful 32x32",
     description:
@@ -530,7 +529,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     downloads: 20,
   },
   {
-    type: "mods",
+    type: "mod",
     name: "Xaero's Minimap",
     translatedName: "Xaero 的小地图",
     description: "Displays the world nearby terrain, players, mobs",
@@ -542,7 +541,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "mods",
+    type: "mod",
     name: "Optifine",
     description: "A Minecraft mod that optimizes Minecraft's graphics.",
     iconSrc: "/images/icons/GrassBlock.png",
@@ -552,7 +551,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "mods",
+    type: "mod",
     name: "Just Enough Items",
     translatedName: "JEI物品管理器",
     description:
@@ -565,7 +564,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "resourcepacks",
+    type: "resourcepack",
     name: "Faithful",
     translatedName: "Faithful 32x32",
     description:
@@ -576,7 +575,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     downloads: 20,
   },
   {
-    type: "mods",
+    type: "mod",
     name: "Xaero's Minimap",
     translatedName: "Xaero 的小地图",
     description: "Displays the world nearby terrain, players, mobs",
@@ -588,7 +587,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "mods",
+    type: "mod",
     name: "Optifine",
     description: "A Minecraft mod that optimizes Minecraft's graphics.",
     iconSrc: "/images/icons/GrassBlock.png",
@@ -596,49 +595,5 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     lastUpdated: "2022-02-17T00:00:00Z",
     downloads: 14,
     source: "CurseForge",
-  },
-];
-
-export const mockResourceVersionPacks: ResourceVersionPack[] = [
-  {
-    name: "NeoForge 1.21.1",
-    items: [
-      {
-        type: "mods",
-        name: "19.21.0.247 for NeoForge 1.21.1",
-        description: "jei-1.21.1-neoforge-19.21.0.247",
-        iconSrc: "/images/icons/NeoForge.png",
-        tags: [],
-        lastUpdated: "2024-11-01",
-        downloads: 100000,
-      },
-      {
-        type: "mods",
-        name: "19.21.0.246 for NeoForge 1.21.1",
-        description: "jei-1.21.1-neoforge-19.21.0.246",
-        iconSrc: "/images/icons/NeoForge.png",
-        tags: [],
-        lastUpdated: "2024-10-01",
-        downloads: 100000,
-      },
-    ],
-    versionLabel: "1.21",
-    modLoader: ModLoaderEnums.NeoForge,
-  },
-  {
-    name: "Forge 1.20.4",
-    items: [
-      {
-        type: "mods",
-        name: "jei-1.20.4-forge-17.3.1.5.jar",
-        description: "jei-1.20.4-forge-17.3.1.5",
-        iconSrc: "/images/icons/Forge.png",
-        tags: [],
-        lastUpdated: "2024-11-01",
-        downloads: 100000,
-      },
-    ],
-    versionLabel: "1.20",
-    modLoader: ModLoaderEnums.Forge,
   },
 ];

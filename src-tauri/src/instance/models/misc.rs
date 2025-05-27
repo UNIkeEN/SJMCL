@@ -107,6 +107,7 @@ pub struct InstanceSummary {
   pub starred: bool,
   pub play_time: u128,
   pub version: String,
+  pub major_version: String,
   pub version_path: PathBuf,
   pub mod_loader: ModLoader,
   pub use_spec_game_config: bool,

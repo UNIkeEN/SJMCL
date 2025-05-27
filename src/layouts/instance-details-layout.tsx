@@ -180,7 +180,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     >
       <NavMenu
         flexWrap="wrap"
-        selectedKeys={[router.asPath]}
+        selectedKeys={[decodeURIComponent(router.asPath)]}
         onClick={(value) => router.push(value)}
         direction="row"
         size="xs"

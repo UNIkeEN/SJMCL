@@ -8,7 +8,9 @@ export interface GameResourceInfo {
 }
 
 export interface OtherResourceInfo {
-  type: "mods" | "worlds" | "resourcepacks" | "shaderpacks";
+  id?: string; // got from API
+  websiteUrl?: string;
+  type: "mod" | "world" | "resourcepack" | "shader" | "modpack" | "datapack";
   name: string;
   translatedName?: string;
   description: string;
@@ -19,18 +21,32 @@ export interface OtherResourceInfo {
   source?: string; // CurseForge, Modrinth, etc.
 }
 
+export interface OtherResourceSearchRes {
+  list: OtherResourceInfo[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface ResourceFileInfo {
+  name: string;
+  releaseType: string;
+  downloads: number;
+  fileDate: string;
+  downloadUrl: string;
+  fileName: string;
+}
+
+export interface ResourceVersionPack {
+  name: string;
+  items: ResourceFileInfo[];
+}
+
 export interface ModLoaderResourceInfo {
   loaderType: ModLoaderType;
   version: string;
   description?: string;
   stable: boolean;
-}
-
-export interface ResourceVersionPack {
-  name: string;
-  items: OtherResourceInfo[];
-  versionLabel: string;
-  modLoader?: ModLoaderType;
 }
 
 export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {

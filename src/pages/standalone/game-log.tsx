@@ -96,7 +96,7 @@ const GameLogPage: React.FC = () => {
   const isAtBottom = () => {
     if (logContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = logContainerRef.current;
-      return scrollHeight - scrollTop === clientHeight;
+      return scrollHeight - scrollTop - clientHeight < 1;
     }
     return false;
   };

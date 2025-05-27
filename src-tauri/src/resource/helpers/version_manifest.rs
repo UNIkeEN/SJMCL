@@ -1,5 +1,5 @@
 use crate::resource::models::{ResourceError, ResourceType, SourceType};
-use crate::{error::SJMCLResult, resource::models::GameResourceInfo};
+use crate::{error::SJMCLResult, resource::models::GameClientResourceInfo};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::{AppHandle, Manager};
@@ -33,7 +33,7 @@ struct LatestVersion {
 pub async fn get_game_version_manifest(
   app: &AppHandle,
   priority_list: &[SourceType],
-) -> SJMCLResult<Vec<GameResourceInfo>> {
+) -> SJMCLResult<Vec<GameClientResourceInfo>> {
   let client = app.state::<reqwest::Client>();
 
   for source_type in priority_list.iter() {
@@ -56,7 +56,7 @@ pub async fn get_game_version_manifest(
       .into_iter()
       .map(|info| {
         let april_fool = info.release_time.contains("04-01");
-        GameResourceInfo {
+        GameClientResourceInfo {
           id: info.id,
           game_type: if april_fool {
             "april_fools".to_string()

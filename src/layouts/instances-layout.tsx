@@ -74,7 +74,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                   if (isInstancePage(router.asPath) && isInstancePage(value)) {
                     router.push(
                       // across instances, not change subpath
-                      `${value}${router.asPath.replace(prefixAsPathPart, "")}`
+                      `${value}${decodeURIComponent(router.asPath).replace(prefixAsPathPart, "")}`
                     );
                   } else router.push(value);
                 }}
