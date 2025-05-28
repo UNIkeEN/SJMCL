@@ -269,10 +269,6 @@
       }
     }
   },
-  "CreateRenamedInstShortcutAlertDialog": {
-    "title": "启动快捷方式",
-    "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
-  },
   "ComingSoonSign": {
     "text": "该页面暂未开放，敬请期待"
   },
@@ -323,6 +319,10 @@
       "skipped": "不安装",
       "info": "基本设置"
     }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "title": "启动快捷方式",
+    "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {

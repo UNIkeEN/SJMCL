@@ -269,10 +269,6 @@
       }
     }
   },
-  "CreateRenamedInstShortcutAlertDialog": {
-    "title": "Launch Shortcut",
-    "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
-  },
   "ComingSoonSign": {
     "text": "This page is not available yet, coming soon!"
   },
@@ -323,6 +319,10 @@
       "skipped": "Skipped",
       "info": "Basic Settings"
     }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "title": "Launch Shortcut",
+    "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {

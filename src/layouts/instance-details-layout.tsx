@@ -64,9 +64,9 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const navBarType = config.general.functionality.instancesNavType;
 
   const {
-    isOpen: isCreateShortCutDialogOpen,
-    onOpen: onCreateShortCutDialogOpen,
-    onClose: onCreateShortCutDialogClose,
+    isOpen: isCreateShortcutDialogOpen,
+    onOpen: onCreateShortcutDialogOpen,
+    onClose: onCreateShortcutDialogClose,
   } = useDisclosure();
 
   // useEffect(() => {
@@ -86,7 +86,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         colonIndex !== -1 ? routerId.slice(colonIndex + 1) : routerId;
 
       if (nameFromRouter && summary.name && nameFromRouter !== summary.name) {
-        onCreateShortCutDialogOpen();
+        onCreateShortcutDialogOpen();
         return;
       } else {
         InstanceService.createLaunchDesktopShortcut(instanceId).then(
@@ -107,7 +107,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         );
       }
     },
-    [id, summary, toast, onCreateShortCutDialogOpen]
+    [id, summary, toast, onCreateShortcutDialogOpen]
   );
 
   const instanceSecMenuOperations = [
@@ -232,14 +232,14 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       </VStack>
 
       <GenericConfirmDialog
-        isOpen={isCreateShortCutDialogOpen}
-        onClose={onCreateShortCutDialogClose}
+        isOpen={isCreateShortcutDialogOpen}
+        onClose={onCreateShortcutDialogClose}
         title={t("CreateRenamedInstShortcutAlertDialog.title")}
         body={t("CreateRenamedInstShortcutAlertDialog.content")}
         btnOK={t("General.confirm")}
         btnCancel={""}
         onOKCallback={() => {
-          onCreateShortCutDialogClose();
+          onCreateShortcutDialogClose();
         }}
       />
     </Section>
