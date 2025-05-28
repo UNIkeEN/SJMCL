@@ -272,6 +272,10 @@
   "ComingSoonSign": {
     "text": "This page is not available yet, coming soon!"
   },
+  "confirmCreateLaunchDesktopShortcut": {
+    "title": "Launch Shortcut",
+    "content": "The instance name has been changed. Please refresh the instance list or restart the launcher before attempting to add a launch shortcut again."
+  },
   "ContributorsPage": {
     "all": "All Contributors List",
     "core": "Main Contributors",
@@ -1149,7 +1153,7 @@
         "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
         "Automation": "Automation",
-        "Auxiliary": "Auxiliary",        
+        "Auxiliary": "Auxiliary",
         "Biomes": "Biomes",
         "Blood Magic": "Blood Magic",
         "Buildcraft": "Buildcraft",
@@ -1248,7 +1252,7 @@
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
-        "Resolution": "Resolution",        
+        "Resolution": "Resolution",
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
@@ -1278,7 +1282,7 @@
         "decoration": "Decoration",
         "modded": "Modded",
         "realistic": "Realistic",
-        "Resolution": "Resolution",        
+        "Resolution": "Resolution",
         "simplistic": "Simplistic",
         "themed": "Themed",
         "tweaks": "Tweaks",

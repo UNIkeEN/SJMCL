@@ -1,4 +1,11 @@
-import { Button, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, { useCallback } from "react";
@@ -21,6 +28,7 @@ import {
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
+import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import {
   InstanceContextProvider,
@@ -55,6 +63,12 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const navBarType = config.general.functionality.instancesNavType;
 
+  const {
+    isOpen: isCreateShortCutOpen,
+    onOpen: onCreateShortCutOpen,
+    onClose: onCreateShortCutClose,
+  } = useDisclosure();
+
   // useEffect(() => {
   //   if (summary === undefined) {
   //     router.push("/instances/all");
@@ -83,6 +97,20 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     [toast]
   );
 
+  const handleCreateShortcutWrapper = () => {
+    if (!instanceId || !summary) return;
+
+    const rawId = Array.isArray(id) ? id[0] : id || "";
+    const decodedId = decodeURIComponent(rawId);
+    const routerName = decodedId.includes(":") ? decodedId.split(":")[1] : "";
+    const actualName = summary.name;
+    console.log(routerName, actualName);
+    if (routerName && actualName && routerName !== actualName) {
+      onCreateShortCutOpen();
+    } else {
+      handleCreateLaunchDesktopShortcut(instanceId);
+    }
+  };
   const instanceSecMenuOperations = [
     {
       icon: "openFolder",
@@ -96,7 +124,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       label: t("InstanceDetailsLayout.secMenu.createShortcut"),
       danger: false,
       onClick: () => {
-        if (instanceId) handleCreateLaunchDesktopShortcut(instanceId);
+        if (instanceId) handleCreateShortcutWrapper();
       },
     },
     {
@@ -203,6 +231,18 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       <VStack overflow="auto" align="strench" spacing={4} flex="1">
         {children}
       </VStack>
+
+      <GenericConfirmDialog
+        isOpen={isCreateShortCutOpen}
+        onClose={onCreateShortCutClose}
+        title={t("confirmCreateLaunchDesktopShortcut.title")}
+        body={t("confirmCreateLaunchDesktopShortcut.content")}
+        btnOK={t("General.confirm")}
+        btnCancel={""}
+        onOKCallback={() => {
+          onCreateShortCutClose();
+        }}
+      />
     </Section>
   );
 };
