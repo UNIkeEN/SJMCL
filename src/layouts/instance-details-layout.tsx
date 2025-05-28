@@ -64,9 +64,9 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const navBarType = config.general.functionality.instancesNavType;
 
   const {
-    isOpen: isCreateRenamedInstShortcutAlertDialogOpen,
-    onOpen: onCreateRenamedInstShortcutAlertDialogOpen,
-    onClose: onCreateRenamedInstShortcutAlertDialogClose,
+    isOpen: isCreateShortcutAlertDialogOpen,
+    onOpen: onCreateShortcutAlertDialogOpen,
+    onClose: onCreateShortcutAlertDialogClose,
   } = useDisclosure();
 
   // useEffect(() => {
@@ -79,35 +79,33 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     (instanceId: string) => {
       if (!instanceId || !summary) return;
 
-      const rawId = Array.isArray(id) ? id[0] : id || "";
-      const routerId = decodeURIComponent(rawId);
-      const colonIndex = routerId.indexOf(":");
+      const colonIndex = instanceId.indexOf(":");
       const nameFromRouter =
-        colonIndex !== -1 ? routerId.slice(colonIndex + 1) : routerId;
+        colonIndex !== -1 ? instanceId.slice(colonIndex + 1) : instanceId;
 
       if (nameFromRouter && summary.name && nameFromRouter !== summary.name) {
-        onCreateRenamedInstShortcutAlertDialogOpen();
+        onCreateShortcutAlertDialogOpen();
         return;
-      } else {
-        InstanceService.createLaunchDesktopShortcut(instanceId).then(
-          (response) => {
-            if (response.status === "success") {
-              toast({
-                title: response.message,
-                status: "success",
-              });
-            } else {
-              toast({
-                title: response.message,
-                description: response.details,
-                status: "error",
-              });
-            }
-          }
-        );
       }
+
+      InstanceService.createLaunchDesktopShortcut(instanceId).then(
+        (response) => {
+          if (response.status === "success") {
+            toast({
+              title: response.message,
+              status: "success",
+            });
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
+        }
+      );
     },
-    [id, summary, toast, onCreateRenamedInstShortcutAlertDialogOpen]
+    [summary, toast, onCreateShortcutAlertDialogOpen]
   );
 
   const instanceSecMenuOperations = [
@@ -232,14 +230,14 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       </VStack>
 
       <GenericConfirmDialog
-        isOpen={isCreateRenamedInstShortcutAlertDialogOpen}
-        onClose={onCreateRenamedInstShortcutAlertDialogClose}
+        isOpen={isCreateShortcutAlertDialogOpen}
+        onClose={onCreateShortcutAlertDialogClose}
         title={t("CreateRenamedInstShortcutAlertDialog.title")}
         body={t("CreateRenamedInstShortcutAlertDialog.content")}
         btnOK={t("General.confirm")}
         btnCancel={""}
         onOKCallback={() => {
-          onCreateRenamedInstShortcutAlertDialogClose();
+          onCreateShortcutAlertDialogClose();
         }}
       />
     </Section>
