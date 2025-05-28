@@ -269,12 +269,12 @@
       }
     }
   },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "title": "启动快捷方式",
+    "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
+  },
   "ComingSoonSign": {
     "text": "该页面暂未开放，敬请期待"
-  },
-  "confirmCreateLaunchDesktopShortcut": {
-    "title": "启动快捷方式",
-    "content": "检测到实例名称已被更改。请刷新实例列表或重启启动器后，重新尝试添加启动快捷方式。"
   },
   "ContributorsPage": {
     "all": "全部开发者名单",

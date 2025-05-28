@@ -269,12 +269,12 @@
       }
     }
   },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "title": "Launch Shortcut",
+    "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
+  },
   "ComingSoonSign": {
     "text": "This page is not available yet, coming soon!"
-  },
-  "confirmCreateLaunchDesktopShortcut": {
-    "title": "Launch Shortcut",
-    "content": "The instance name has been changed. Please refresh the instance list or restart the launcher before attempting to add a launch shortcut again."
   },
   "ContributorsPage": {
     "all": "All Contributors List",
