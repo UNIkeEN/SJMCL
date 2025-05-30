@@ -160,6 +160,7 @@ pub enum ProgressiveTaskType {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ProgressiveTaskDescriptor {
   pub task_id: u32,
   pub task_group: Option<String>,

@@ -7,6 +7,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
+import { invoke } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,8 +23,7 @@ import { CommonIconButton } from "@/components/common/common-icon-button";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { mockDownloadTasks } from "@/models/mock/task";
-import { DownloadTask } from "@/models/task";
+import { MonitorState, TaskState } from "@/models/task";
 import { formatTimeInterval } from "@/utils/datetime";
 import { formatByteSize } from "@/utils/string";
 
@@ -33,16 +33,37 @@ export const DownloadTasksPage = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const [tasks, setTasks] = useState<[DownloadTask, boolean][]>([]); // boolean is used to record accordion state.
+  const [tasks, setTasks] = useState<[TaskState, boolean][]>([]); // boolean is used to record accordion state.
 
-  // only for mock
   useEffect(() => {
-    setTasks(mockDownloadTasks.map((task) => [task, true]));
+    const fetchTasks = async () => {
+      const result: TaskState[] = await invoke(
+        "retrieve_progressive_task_list"
+      );
+      const enhanced = result.map(
+        (task) =>
+          [
+            {
+              ...task,
+              progress: task.total > 0 ? (task.current / task.total) * 100 : 0,
+              isDownloading: task.state === MonitorState.InProgress,
+              isWaiting: task.state === MonitorState.Stopped,
+              isError: task.state === MonitorState.Cancelled,
+            },
+            true,
+          ] as [TaskState, boolean]
+      );
+      setTasks(enhanced);
+    };
+
+    fetchTasks();
   }, []);
 
   const toggleTaskExpansion = (id: number) => {
     setTasks((prevTasks) =>
-      prevTasks.map((task) => (task[0].id === id ? [task[0], !task[1]] : task))
+      prevTasks.map((task) =>
+        task[0].taskId === id ? [task[0], !task[1]] : task
+      )
     );
   };
 
@@ -65,45 +86,46 @@ export const DownloadTasksPage = () => {
       }
     >
       <VStack align="stretch" px="10%" spacing={4}>
-        {tasks.map((task) => (
+        {tasks.map(([task, expanded]) => (
           <OptionItemGroup
-            key={task[0].id}
+            key={task.taskId}
             items={[
-              <VStack align="stretch" key={task[0].id}>
+              <VStack align="stretch" key={task.taskId}>
                 <Flex justify="space-between" alignItems="center">
                   <Text fontSize="xs-sm" fontWeight="bold">
-                    {task[0].name}
+                    {task.taskGroup ?? `任务-${task.taskId}`}
                   </Text>
+
                   <HStack alignItems="center">
-                    {task[0].isDownloading &&
-                      !task[0].isError &&
-                      !task[0].isWaiting && (
-                        <Text fontSize="xs" className="secondary-text">
-                          {`${formatByteSize(task[0].speed)}/s, ${formatTimeInterval(task[0].elapsedTime)}`}
-                        </Text>
-                      )}
-                    {!task[0].isDownloading && !task[0].isError && (
+                    {task.isDownloading && !task.isError && !task.isWaiting && (
+                      <Text fontSize="xs" className="secondary-text">
+                        {`${formatByteSize(0)}/s, ${formatTimeInterval(0)}`}
+                      </Text>
+                    )}
+
+                    {!task.isDownloading && !task.isError && (
                       <Text fontSize="xs" className="secondary-text">
                         {t("DownloadTasksPage.label.paused")}
                       </Text>
                     )}
-                    {task[0].isError && (
+
+                    {task.isError && (
                       <Text fontSize="xs" color="red.600">
                         {t("DownloadTasksPage.label.error")}
                       </Text>
                     )}
 
-                    {!task[0].isError && (
+                    {!task.isError && (
                       <Tooltip
                         label={t(
-                          `DownloadTasksPage.button.${task[0].isDownloading ? "pause" : "begin"}`
+                          `DownloadTasksPage.button.${
+                            task.isDownloading ? "pause" : "begin"
+                          }`
                         )}
                       >
                         <IconButton
                           aria-label="pause / download"
-                          icon={
-                            task[0].isDownloading ? <LuPause /> : <LuPlay />
-                          }
+                          icon={task.isDownloading ? <LuPause /> : <LuPlay />}
                           size="xs"
                           fontSize="sm"
                           h={21}
@@ -113,7 +135,8 @@ export const DownloadTasksPage = () => {
                         />
                       </Tooltip>
                     )}
-                    {task[0].isError && (
+
+                    {task.isError && (
                       <Tooltip label={t("DownloadTasksPage.button.retry")}>
                         <IconButton
                           aria-label="retry"
@@ -127,6 +150,7 @@ export const DownloadTasksPage = () => {
                         />
                       </Tooltip>
                     )}
+
                     <Tooltip label={t("General.cancel")}>
                       <IconButton
                         aria-label="cancel"
@@ -138,56 +162,49 @@ export const DownloadTasksPage = () => {
                         onClick={() => {}}
                       />
                     </Tooltip>
+
                     <IconButton
                       aria-label="toggle expansion"
-                      icon={task[1] ? <LuChevronDown /> : <LuChevronRight />}
+                      icon={expanded ? <LuChevronDown /> : <LuChevronRight />}
                       size="xs"
                       fontSize="sm"
                       h={21}
                       variant="ghost"
-                      onClick={() => toggleTaskExpansion(task[0].id)}
+                      onClick={() => toggleTaskExpansion(task.taskId)}
                     />
                   </HStack>
                 </Flex>
+
                 <Progress
-                  value={task[0].progress}
+                  value={task.progress}
                   colorScheme={primaryColor}
                   borderRadius="sm"
                 />
               </VStack>,
-              ...(task[1]
+
+              ...(expanded
                 ? [
-                    ...task[0].items.map((item) => (
-                      <OptionItem
-                        key={item.src}
-                        title={item.fileName || item.src}
-                        titleExtra={
-                          task[0].isDownloading &&
-                          !item.isWaiting && (
-                            <Text fontSize="xs" className="secondary-text">
-                              {`${formatByteSize(item.finishedSize)} / ${formatByteSize(item.totalSize)}`}
-                            </Text>
-                          )
-                        }
-                      >
-                        <HStack>
-                          {task[0].isDownloading &&
-                            !task[0].isError &&
-                            !item.isWaiting && (
-                              <Text fontSize="xs" className="secondary-text">
-                                {`${formatByteSize(item.speed)}/s`}
-                              </Text>
-                            )}
-                          <Progress
-                            w={36}
-                            size="sm"
-                            value={(100 * item.finishedSize) / item.totalSize}
-                            colorScheme={primaryColor}
-                            borderRadius="sm"
-                          />
-                        </HStack>
-                      </OptionItem>
-                    )),
+                    <OptionItem
+                      key={`${task.taskId}-detail`}
+                      title={`${task.storePath} → ${task.taskParam.dest}  → ${task.taskParam.src}`}
+                      titleExtra={
+                        task.isDownloading && (
+                          <Text fontSize="xs" className="secondary-text">
+                            {`${formatByteSize(task.current)} / ${formatByteSize(
+                              task.total
+                            )}`}
+                          </Text>
+                        )
+                      }
+                    >
+                      <Progress
+                        w={36}
+                        size="sm"
+                        value={task.progress}
+                        colorScheme={primaryColor}
+                        borderRadius="sm"
+                      />
+                    </OptionItem>,
                   ]
                 : []),
             ]}

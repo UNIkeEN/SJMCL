@@ -55,11 +55,11 @@ export class TaskService {
   }
 
   /**
-   * Retrieve the list of tasks.
+   * Retrieve the list of progressive tasks.
    * @returns {Promise<InvokeResponse<TaskState[]>>}
    */
   @responseHandler("task")
   static async retrieveTaskList(): Promise<InvokeResponse<TaskState[]>> {
-    return await invoke("retrieve_task_list");
+    return await invoke("retrieve_progressive_task_list");
   }
 }

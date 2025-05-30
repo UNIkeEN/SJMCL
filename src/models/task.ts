@@ -1,6 +1,7 @@
 export interface DownloadTaskParam {
   src: string;
   dest: string;
+  sha1?: string;
 }
 
 export type TaskParam = DownloadTaskParam;
@@ -10,15 +11,31 @@ export interface TaskResult {
   taskGroup: string;
 }
 
+export enum TaskType {
+  Download = 0,
+  // Future: Add other types here
+}
+
+export enum MonitorState {
+  InProgress = 0,
+  Stopped = 1,
+  Completed = 2,
+  Cancelled = 3,
+}
+
 export interface TaskState {
   taskId: number;
-  taskGroup: string;
-  taskType: number; // TODO: enum
+  taskGroup: string | null;
+  taskType: TaskType;
   current: number;
   total: number;
-  path: string;
+  storePath: string;
   taskParam: TaskParam;
-  monitorState: number; // TODO: enum
+  state: MonitorState;
+  progress?: number;
+  isDownloading?: boolean;
+  isError?: boolean;
+  isWaiting?: boolean;
 }
 
 // TODO: refactor frontend mock type below

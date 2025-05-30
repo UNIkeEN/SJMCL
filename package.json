@@ -44,6 +44,7 @@
     "@tauri-apps/plugin-opener": "^2.2.5",
     "@tauri-apps/plugin-os": "^2.0.0",
     "@tauri-apps/plugin-process": "^2.2.0",
+    "@tauri-apps/plugin-window": "^2.0.0-alpha.1",
     "@tauri-apps/plugin-window-state": "^2.2.0",
     "i18next": "^24.0.0",
     "lodash": "^4.17.21",
