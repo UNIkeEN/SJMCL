@@ -10,7 +10,7 @@ import React, {
 import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirEnums } from "@/enums/instance";
-import { useGetState } from "@/hooks/get-state";
+import { useGetState, usePromisedGetState } from "@/hooks/get-state";
 import { GameConfig } from "@/models/config";
 import {
   InstanceSummary,
@@ -29,7 +29,7 @@ export interface InstanceContextType {
   updateSummaryInContext: (path: string, value: any) => void;
   gameConfig: GameConfig | undefined;
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
-  getLocalModList: (sync?: boolean) => LocalModInfo[] | undefined;
+  getLocalModList: (sync?: boolean) => Promise<LocalModInfo[] | undefined>;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getServerResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
@@ -216,19 +216,23 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setWorlds, toast]);
 
-  const handleRetrieveLocalModList = useCallback(() => {
+  const handleRetrieveLocalModList = useCallback(async () => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveLocalModList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success") setLocalMods(response.data);
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
+      const response = await InstanceService.retrieveLocalModList(
+        instanceSummary.id
       );
+      if (response.status === "success") {
+        setLocalMods(response.data);
+        return response.data;
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+        setLocalMods([]);
+        return [];
+      }
     }
   }, [instanceSummary?.id, setLocalMods, toast]);
 
@@ -383,7 +387,10 @@ export const InstanceContextProvider: React.FC<{
 
   const getWorldList = useGetState(worlds, handleRetrieveWorldList);
 
-  const getLocalModList = useGetState(localMods, handleRetrieveLocalModList);
+  const getLocalModList = usePromisedGetState(
+    localMods,
+    handleRetrieveLocalModList
+  );
 
   const getResourcePackList = useGetState(
     resourcePacks,

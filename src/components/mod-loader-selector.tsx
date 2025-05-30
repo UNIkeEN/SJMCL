@@ -139,7 +139,7 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
 
       <Section overflow="auto" flexGrow={1} w="100%" h="100%">
         {loading ? (
-          <Center>
+          <Center mt={8}>
             <BeatLoader size={16} color="gray" />
           </Center>
         ) : modLoaders.length === 0 ? (

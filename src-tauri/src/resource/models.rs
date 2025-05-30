@@ -32,9 +32,73 @@ pub enum SourceType {
   BMCLAPIMirror,
 }
 
+// mod, save, resourcepack and shader
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct GameResourceInfo {
+pub struct ExtraResourceInfo {
+  pub id: String,
+  pub _type: String,
+  pub name: String,
+  pub description: String,
+  pub icon_src: String,
+  pub tags: Vec<String>,
+  pub last_updated: String,
+  pub downloads: u32,
+  pub source: String,
+  pub website_url: String,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ExtraResourceSearchRes {
+  pub list: Vec<ExtraResourceInfo>,
+  pub total: u32,
+  pub page: u32,
+  pub page_size: u32,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ExtraResourceSearchQuery {
+  pub resource_type: String,
+  pub search_query: String,
+  pub game_version: String,
+  pub selected_tag: String,
+  pub sort_by: String,
+  pub page: u32,
+  pub page_size: u32,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ResourceVersionPackQuery {
+  pub resource_id: String,
+  pub mod_loader: String,
+  pub game_versions: Vec<String>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ResourceFileInfo {
+  pub name: String,
+  pub release_type: String,
+  pub downloads: u32,
+  pub file_date: String,
+  pub download_url: String,
+  pub file_name: String,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ResourceVersionPack {
+  pub name: String,
+  pub items: Vec<ResourceFileInfo>,
+}
+
+// game client itself
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct GameClientResourceInfo {
   pub id: String,
   pub game_type: String,
   pub release_time: String,

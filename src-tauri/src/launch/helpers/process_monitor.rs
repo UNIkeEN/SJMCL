@@ -1,10 +1,8 @@
 use crate::error::SJMCLResult;
-use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
 use crate::instance::models::misc::Instance;
 use crate::launch::constant::*;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
-use crate::storage::save_json_async;
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
@@ -173,13 +171,8 @@ pub async fn monitor_process(
         if let Some(instance) = state.get_mut(&instance_id_clone) {
           instance.play_time += elapsed_time;
           let instance_clone = instance.clone();
-          let version_path = instance.version_path.clone();
           tokio::task::spawn(async move {
-            let _ = save_json_async::<Instance>(
-              &instance_clone,
-              &version_path.join(INSTANCE_CFG_FILE_NAME),
-            )
-            .await;
+            let _ = &instance_clone.save_json_cfg().await;
           });
         }
       }

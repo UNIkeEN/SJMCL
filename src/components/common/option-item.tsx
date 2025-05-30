@@ -8,6 +8,7 @@ import {
   Skeleton,
   Text,
   VStack,
+  Wrap,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
@@ -18,6 +19,7 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   prefixElement?: React.ReactNode;
   title: React.ReactNode;
   titleExtra?: React.ReactNode;
+  titleLineWrap?: boolean;
   description?: React.ReactNode;
   isLoading?: boolean;
   isFullClickZone?: boolean;
@@ -34,6 +36,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   prefixElement,
   title,
   titleExtra,
+  titleLineWrap = true,
   description,
   isLoading = false,
   isFullClickZone = false,
@@ -44,6 +47,27 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
+
+  const _title =
+    typeof title === "string" ? (
+      <Skeleton isLoaded={!isLoading}>
+        <Text fontSize="xs-sm">{title}</Text>
+      </Skeleton>
+    ) : (
+      title
+    );
+
+  const _titleExtra =
+    titleExtra &&
+    (isLoading ? (
+      <Skeleton isLoaded={!isLoading}>
+        <Text fontSize="xs-sm">
+          PLACEHOLDER {/*width holder for skeleton*/}
+        </Text>
+      </Skeleton>
+    ) : (
+      titleExtra
+    ));
 
   return (
     <Flex
@@ -74,25 +98,18 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           overflow="hidden"
           flex="1"
         >
-          <HStack spacing={2} flexWrap="wrap">
-            {typeof title === "string" ? (
-              <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs-sm">{title}</Text>
-              </Skeleton>
-            ) : (
-              title
-            )}
-            {titleExtra &&
-              (isLoading ? (
-                <Skeleton isLoaded={!isLoading}>
-                  <Text fontSize="xs-sm">
-                    PLACEHOLDER {/*width holder for skeleton*/}
-                  </Text>
-                </Skeleton>
-              ) : (
-                titleExtra
-              ))}
-          </HStack>
+          {titleLineWrap ? (
+            <Wrap spacingX={2} spacingY={0.5}>
+              {_title}
+              {titleExtra && _titleExtra}
+            </Wrap>
+          ) : (
+            <HStack spacing={2} flexWrap="nowrap">
+              {_title}
+              {titleExtra && _titleExtra}
+            </HStack>
+          )}
+
           {description &&
             (typeof description === "string" ? (
               <Skeleton isLoaded={!isLoading}>

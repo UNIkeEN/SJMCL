@@ -14,3 +14,20 @@ export function useGetState<T>(
 
   return getState;
 }
+
+export function usePromisedGetState<T>(
+  state: T | undefined,
+  retrieveHandler: () => Promise<any>
+): (sync?: boolean) => Promise<T | undefined> {
+  const getState = useCallback(
+    async (sync = false) => {
+      if (sync || state === undefined) {
+        const data = await retrieveHandler();
+        return data;
+      } else return state;
+    },
+    [state, retrieveHandler]
+  );
+
+  return getState;
+}

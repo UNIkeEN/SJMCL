@@ -1,6 +1,7 @@
 import {
   Avatar,
   AvatarBadge,
+  Center,
   HStack,
   Highlight,
   Icon,
@@ -19,6 +20,7 @@ import {
   LuTriangleAlert,
   LuX,
 } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -53,11 +55,23 @@ const InstanceModsPage = () => {
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const getLocalModListWrapper = useCallback(
+    (sync?: boolean) => {
+      setIsLoading(true);
+      getLocalModList(sync)
+        .then((data) => setLocalMods(data || []))
+        .catch((e) => setLocalMods([] as LocalModInfo[]))
+        .finally(() => setIsLoading(false));
+    },
+    [getLocalModList]
+  );
+
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
-  }, [getLocalModList]);
+    getLocalModListWrapper();
+  }, [getLocalModListWrapper]);
 
   useEffect(() => {
     const keywords = query.trim().toLowerCase().split(/\s+/);
@@ -117,13 +131,13 @@ const InstanceModsPage = () => {
               status: "error",
             });
             if (response.raw_error === InstanceError.FileNotFoundError) {
-              setLocalMods(getLocalModList(true) || []);
+              getLocalModListWrapper(true);
             }
           }
         }
       );
     },
-    [toast, getLocalModList]
+    [toast, getLocalModListWrapper]
   );
 
   const modSecMenuOperations = [
@@ -142,7 +156,7 @@ const InstanceModsPage = () => {
           tgtDirType: InstanceSubdirEnums.Mods,
           decompress: false,
           onSuccessCallback: () => {
-            setLocalMods(getLocalModList(true) || []);
+            getLocalModListWrapper(true);
           },
         });
       },
@@ -163,7 +177,7 @@ const InstanceModsPage = () => {
     {
       icon: "refresh",
       onClick: () => {
-        setLocalMods(getLocalModList(true) || []);
+        getLocalModListWrapper(true);
       },
     },
   ];
@@ -292,7 +306,11 @@ const InstanceModsPage = () => {
               <Text>{t("InstanceModsPage.modList.warning")}</Text>
             </HStack>
           )}
-        {filteredMods.length > 0 ? (
+        {isLoading ? (
+          <Center mt={8}>
+            <BeatLoader size={16} color="gray" />
+          </Center>
+        ) : filteredMods.length > 0 ? (
           <OptionItemGroup
             items={filteredMods.map((mod) => (
               <OptionItem

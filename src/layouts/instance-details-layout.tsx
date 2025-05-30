@@ -1,4 +1,11 @@
-import { Button, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, { useCallback } from "react";
@@ -21,6 +28,7 @@ import {
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
+import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import {
   InstanceContextProvider,
@@ -55,6 +63,12 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const navBarType = config.general.functionality.instancesNavType;
 
+  const {
+    isOpen: isCreateShortcutAlertDialogOpen,
+    onOpen: onCreateShortcutAlertDialogOpen,
+    onClose: onCreateShortcutAlertDialogClose,
+  } = useDisclosure();
+
   // useEffect(() => {
   //   if (summary === undefined) {
   //     router.push("/instances/all");
@@ -63,6 +77,17 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
 
   const handleCreateLaunchDesktopShortcut = useCallback(
     (instanceId: string) => {
+      if (!instanceId || !summary) return;
+
+      const colonIndex = instanceId.indexOf(":");
+      const nameFromRouter =
+        colonIndex !== -1 ? instanceId.slice(colonIndex + 1) : instanceId;
+
+      if (nameFromRouter && summary.name && nameFromRouter !== summary.name) {
+        onCreateShortcutAlertDialogOpen();
+        return;
+      }
+
       InstanceService.createLaunchDesktopShortcut(instanceId).then(
         (response) => {
           if (response.status === "success") {
@@ -80,7 +105,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         }
       );
     },
-    [toast]
+    [summary, toast, onCreateShortcutAlertDialogOpen]
   );
 
   const instanceSecMenuOperations = [
@@ -180,7 +205,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     >
       <NavMenu
         flexWrap="wrap"
-        selectedKeys={[router.asPath]}
+        selectedKeys={[decodeURIComponent(router.asPath)]}
         onClick={(value) => router.push(value)}
         direction="row"
         size="xs"
@@ -203,6 +228,18 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       <VStack overflow="auto" align="strench" spacing={4} flex="1">
         {children}
       </VStack>
+
+      <GenericConfirmDialog
+        isOpen={isCreateShortcutAlertDialogOpen}
+        onClose={onCreateShortcutAlertDialogClose}
+        title={t("CreateRenamedInstShortcutAlertDialog.title")}
+        body={t("CreateRenamedInstShortcutAlertDialog.content")}
+        btnOK={t("General.confirm")}
+        btnCancel={""}
+        onOKCallback={() => {
+          onCreateShortcutAlertDialogClose();
+        }}
+      />
     </Section>
   );
 };

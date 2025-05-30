@@ -5,13 +5,15 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { useGetState } from "@/hooks/get-state";
+import { useGetState, usePromisedGetState } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
+import { GameResourceInfo } from "@/models/resource";
 import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
-import { useLauncherConfig } from "./config";
+import { ResourceService } from "@/services/resource";
 
 interface GlobalDataContextType {
   selectedPlayer: Player | undefined;
@@ -19,6 +21,9 @@ interface GlobalDataContextType {
   getPlayerList: (sync?: boolean) => Player[] | undefined;
   getInstanceList: (sync?: boolean) => InstanceSummary[] | undefined;
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
+  getGameVersionList: (
+    sync?: boolean
+  ) => Promise<GameResourceInfo[] | undefined>;
 }
 
 // for frontend-only state update
@@ -28,6 +33,7 @@ interface GlobalDataDispatchContextType {
   setInstanceList: React.Dispatch<InstanceSummary[]>;
   setSelectedInstance: React.Dispatch<InstanceSummary | undefined>;
   setAuthServerList: React.Dispatch<AuthServer[]>;
+  setGameVersionList: React.Dispatch<GameResourceInfo[]>;
 }
 
 const GlobalDataContext = createContext<GlobalDataContextType | undefined>(
@@ -49,6 +55,7 @@ export const GlobalDataContextProvider: React.FC<{
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>();
   const [selectedInstance, setSelectedInstance] = useState<InstanceSummary>();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>();
+  const [gameVersionList, setGameVersionList] = useState<GameResourceInfo[]>();
 
   useEffect(() => {
     const selectedPlayerId = config.states.shared.selectedPlayerId;
@@ -102,6 +109,22 @@ export const GlobalDataContextProvider: React.FC<{
     });
   }, [setInstanceList, toast]);
 
+  const handleFetchGameVersionList = useCallback(async () => {
+    const response = await ResourceService.fetchGameVersionList();
+    if (response.status === "success") {
+      setGameVersionList(response.data);
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+      setGameVersionList([]);
+      return [];
+    }
+  }, [setGameVersionList, toast]);
+
   const getPlayerList = useGetState(playerList, handleRetrievePlayerList);
 
   const getInstanceList = useGetState(
@@ -117,6 +140,11 @@ export const GlobalDataContextProvider: React.FC<{
     handleRetrieveAuthServerList
   );
 
+  const getGameVersionList = usePromisedGetState(
+    gameVersionList,
+    handleFetchGameVersionList
+  );
+
   return (
     <GlobalDataContext.Provider
       value={{
@@ -125,6 +153,7 @@ export const GlobalDataContextProvider: React.FC<{
         getPlayerList,
         getInstanceList,
         getAuthServerList,
+        getGameVersionList,
       }}
     >
       <GlobalDataDispatchContext.Provider
@@ -134,6 +163,7 @@ export const GlobalDataContextProvider: React.FC<{
           setInstanceList,
           setSelectedInstance,
           setAuthServerList,
+          setGameVersionList,
         }}
       >
         {children}

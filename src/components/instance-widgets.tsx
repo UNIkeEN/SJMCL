@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -34,6 +34,7 @@ import {
   LuShapes,
   LuSquareLibrary,
 } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
@@ -222,10 +223,22 @@ export const InstanceModsWidget = () => {
   const { getLocalModList } = useInstanceSharedData();
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getLocalModListWrapper = useCallback(
+    (sync?: boolean) => {
+      setIsLoading(true);
+      getLocalModList(sync)
+        .then((data) => setLocalMods(data || []))
+        .catch((e) => setLocalMods([] as LocalModInfo[]))
+        .finally(() => setIsLoading(false));
+    },
+    [getLocalModList]
+  );
 
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
-  }, [getLocalModList]);
+    getLocalModListWrapper();
+  }, [getLocalModListWrapper]);
 
   const totalMods = localMods.length;
   const enabledMods = localMods.filter((mod) => mod.enabled).length;
@@ -236,7 +249,11 @@ export const InstanceModsWidget = () => {
       icon={LuSquareLibrary}
     >
       <VStack align="stretch" w="100%" spacing={3}>
-        {localMods.length > 0 ? (
+        {isLoading ? (
+          <Center mt={4}>
+            <BeatLoader size={8} color="gray" />
+          </Center>
+        ) : localMods.length > 0 ? (
           <>
             <AvatarGroup size="sm" max={5} spacing={-2.5}>
               {localMods.map((mod, index) => (
