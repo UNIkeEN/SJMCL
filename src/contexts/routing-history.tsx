@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 type RoutingHistoryContextType = {
   history: string[];
   removeHistory: (prefix: string) => void;
+  replaceHistory: (src: string, tgt: string) => void;
 };
 
 const RoutingHistoryContext = createContext<
@@ -38,8 +39,14 @@ export const RoutingHistoryContextProvider: React.FC<{
     setHistory((prev) => prev.filter((route) => !route.startsWith(prefix)));
   };
 
+  const replaceHistory = (src: string, tgt: string) => {
+    setHistory((prev) => prev.map((route) => route.replaceAll(src, tgt)));
+  };
+
   return (
-    <RoutingHistoryContext.Provider value={{ history, removeHistory }}>
+    <RoutingHistoryContext.Provider
+      value={{ history, removeHistory, replaceHistory }}
+    >
       {children}
     </RoutingHistoryContext.Provider>
   );

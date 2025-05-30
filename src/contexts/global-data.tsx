@@ -105,9 +105,14 @@ export const GlobalDataContextProvider: React.FC<{
   const getPlayerList = useGetState(playerList, handleRetrievePlayerList);
 
   const getInstanceList = useGetState(
-    // put starred instances at the top
     instanceList
-      ? [...instanceList].sort((a, b) => Number(b.starred) - Number(a.starred))
+      ? [...instanceList].sort((a, b) => {
+          // put starred instances at the top
+          if (a.starred !== b.starred) {
+            return Number(b.starred) - Number(a.starred);
+          }
+          return a.id.localeCompare(b.id);
+        })
       : undefined,
     handleRetrieveInstanceList
   );

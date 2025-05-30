@@ -232,7 +232,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       <GenericConfirmDialog
         isOpen={isCreateShortcutAlertDialogOpen}
         onClose={onCreateShortcutAlertDialogClose}
-        title={t("CreateRenamedInstShortcutAlertDialog.title")}
+        title={t("General.notice")}
         body={t("CreateRenamedInstShortcutAlertDialog.content")}
         btnOK={t("General.confirm")}
         btnCancel={""}

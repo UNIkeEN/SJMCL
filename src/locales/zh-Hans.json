@@ -321,7 +321,6 @@
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
-    "title": "启动快捷方式",
     "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
   },
   "DeleteInstanceAlertDialog": {

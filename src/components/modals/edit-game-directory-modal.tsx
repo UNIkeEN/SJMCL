@@ -30,6 +30,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { useRoutingHistory } from "@/contexts/routing-history";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
 
@@ -108,6 +109,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   const initialRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
   const { getInstanceList } = useGlobalData();
+  const { removeHistory, replaceHistory } = useRoutingHistory();
 
   const [dirName, setDirName] = useState<string>("");
   const [dirPath, setDirPath] = useState<string>("");
@@ -230,6 +232,21 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         config.localGameDirectories.map((dir) =>
           dir.dir === currentPath ? { name: dirName, dir: _dirPath } : dir
         )
+      );
+
+      if (currentPath === _dirPath) {
+        // only update dir name, instance not changed
+        replaceHistory(
+          `/instances/details/${currentName}:`,
+          `/instances/details/${dirName}:`
+        );
+      } else {
+        // update dir path, instance may change, remove all route history
+        removeHistory(`/instances/details/${currentName}:`);
+      }
+      replaceHistory(
+        `/instances/list/${currentName}`,
+        `/instances/list/${dirName}`
       );
     }
     getInstanceList(true); // refresh frontend state of instance list

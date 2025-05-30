@@ -22,6 +22,7 @@ import EditGameDirectoryModal from "@/components/modals/edit-game-directory-moda
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { useRoutingHistory } from "@/contexts/routing-history";
 import { GameDirectory } from "@/models/config";
 import { getGameDirName, isSpecialGameDir } from "@/utils/instance";
 
@@ -31,6 +32,7 @@ const GlobalGameSettingsPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const globalGameConfigs = config.globalGameConfig;
   const { getInstanceList } = useGlobalData();
+  const { removeHistory } = useRoutingHistory();
 
   const [selectedDir, setSelectedDir] = useState<GameDirectory>({
     name: "",
@@ -86,6 +88,8 @@ const GlobalGameSettingsPage = () => {
       config.localGameDirectories.filter((dir) => dir.dir !== selectedDir.dir)
     );
     getInstanceList(true); // refresh frontend state of instance list
+    removeHistory(`/instances/details/${selectedDir.name}:`);
+    removeHistory(`/instances/list/${selectedDir.name}`);
     onDeleteDirDialogClose();
   };
 
