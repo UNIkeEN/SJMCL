@@ -2,23 +2,23 @@ use super::models::PostSourceInfo;
 use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig};
 use futures::future;
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::State;
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSourceInfo>> {
+pub async fn fetch_post_sources_info(
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
+  client_state: State<'_, reqwest::Client>,
+) -> SJMCLResult<Vec<PostSourceInfo>> {
   let post_source_urls = {
-    let binding = app.state::<Mutex<LauncherConfig>>();
-    let state = binding.lock().unwrap();
-    state.discover_source_endpoints.clone()
+    let launcher_config = launcher_config_state.lock()?;
+    launcher_config.discover_source_endpoints.clone()
   };
-
-  let client = app.state::<reqwest::Client>();
 
   let tasks: Vec<_> = post_source_urls
     .into_iter()
     .map(|url| {
-      let client = client.clone();
+      let client = client_state.clone();
       async move {
         let mut post_source = PostSourceInfo {
           name: "".to_string(),

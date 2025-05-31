@@ -11,22 +11,25 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 use tokio::time::Instant;
 use url::Url;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
-  let binding = app.state::<Mutex<LauncherConfig>>();
-  let state = binding.lock()?;
-  Ok(state.clone())
+  let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+  let launcher_config = launcher_config_state.lock()?;
+  Ok(launcher_config.clone())
 }
 
 #[tauri::command]
-pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -> SJMCLResult<()> {
-  let binding = app.state::<Mutex<LauncherConfig>>();
-  let mut state = binding.lock()?;
+pub fn update_launcher_config(
+  key_path: String,
+  value: String,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
+) -> SJMCLResult<()> {
+  let mut launcher_config = launcher_config_state.lock()?;
   let key_path = {
     let mut snake = String::new();
     for (i, ch) in key_path.char_indices() {
@@ -37,39 +40,41 @@ pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -
     }
     snake
   };
-  state.update(&key_path, &value)?;
-  state.save()?;
+  launcher_config.update(&key_path, &value)?;
+  launcher_config.save()?;
   Ok(())
 }
 
 #[tauri::command]
-pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
+pub fn restore_launcher_config(
+  app: AppHandle,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
+) -> SJMCLResult<LauncherConfig> {
   let mut default_config = LauncherConfig::default();
   default_config.setup_with_app(&app)?;
 
-  let binding = app.state::<Mutex<LauncherConfig>>();
-  let mut state = binding.lock()?;
+  let mut launcher_config = launcher_config_state.lock()?;
 
   let preserved_fields = &["run_count"];
-  state.replace_with_preserved(default_config, preserved_fields);
-  state.save()?;
-  Ok(state.clone())
+  launcher_config.replace_with_preserved(default_config, preserved_fields);
+  launcher_config.save()?;
+  Ok(launcher_config.clone())
 }
 
 #[tauri::command]
 pub async fn export_launcher_config(
   app: AppHandle,
-  client: tauri::State<'_, reqwest::Client>,
+  client: State<'_, reqwest::Client>,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
 ) -> SJMCLResult<String> {
-  let binding = app.state::<Mutex<LauncherConfig>>();
-  let state = { binding.lock()?.clone() };
+  let launcher_config = { launcher_config_state.lock()?.clone() };
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/settings")
     .header("Content-Type", "application/json")
     .body(
       serde_json::json!({
         "version": app.package_info().version.to_string(),
-        "json_data": state,
+        "json_data": launcher_config,
       })
       .to_string(),
     )
@@ -100,8 +105,9 @@ pub async fn export_launcher_config(
 #[tauri::command]
 pub async fn import_launcher_config(
   app: AppHandle,
-  client: tauri::State<'_, reqwest::Client>,
+  client: State<'_, reqwest::Client>,
   code: String,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
 ) -> SJMCLResult<LauncherConfig> {
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/validate")
@@ -125,14 +131,13 @@ pub async fn import_launcher_config(
       if status.is_success() {
         let new_config: LauncherConfig =
           serde_json::from_value(json).map_err(|_| LauncherConfigError::FetchError)?;
-        let binding = app.state::<Mutex<LauncherConfig>>();
-        let mut state = binding.lock()?;
+        let mut launcher_config = launcher_config_state.lock()?;
 
         let preserved_fields = &["run_count", "local_game_directories", "extra_java_paths"];
-        state.replace_with_preserved(new_config, preserved_fields);
-        state.save()?;
+        launcher_config.replace_with_preserved(new_config, preserved_fields);
+        launcher_config.save()?;
 
-        Ok(state.clone())
+        Ok(launcher_config.clone())
       } else {
         let message = json["message"]
           .as_str()
@@ -218,20 +223,24 @@ pub fn delete_custom_background(app: AppHandle, file_name: String) -> SJMCLResul
 }
 
 #[tauri::command]
-pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
+pub async fn retrieve_java_list(
+  app: AppHandle,
+  javas_state: State<'_, Mutex<Vec<JavaInfo>>>,
+) -> SJMCLResult<Vec<JavaInfo>> {
   refresh_and_update_javas(&app).await; // firstly refresh and update
-  let binding = app.state::<Mutex<Vec<JavaInfo>>>();
-  let state = binding.lock()?;
-  Ok(state.clone())
+  let javas = javas_state.lock()?;
+  Ok(javas.clone())
 }
 
 #[tauri::command]
-pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<String> {
+pub async fn check_game_directory(
+  dir: String,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
+) -> SJMCLResult<String> {
   let local_game_directories: Vec<_>;
   {
-    let binding = app.state::<Mutex<LauncherConfig>>();
-    let state = binding.lock()?;
-    local_game_directories = state.local_game_directories.clone();
+    let launcher_config = launcher_config_state.lock()?;
+    local_game_directories = launcher_config.local_game_directories.clone();
   }
   let directory = PathBuf::from(&dir);
 
@@ -283,7 +292,7 @@ pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
 
 #[tauri::command]
 pub async fn check_service_availability(
-  client: tauri::State<'_, reqwest::Client>,
+  client: State<'_, reqwest::Client>,
   url: String,
 ) -> SJMCLResult<u128> {
   let parsed_url = Url::parse(&url)

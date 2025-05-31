@@ -43,7 +43,7 @@ pub async fn select_suitable_jre(
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<()> {
   {
-    let mut launching = launching_state.lock().unwrap();
+    let mut launching = launching_state.lock()?;
     launching.current_step = 1;
   }
 
@@ -60,7 +60,7 @@ pub async fn select_suitable_jre(
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
-  let javas = javas_state.lock().unwrap().clone();
+  let javas = javas_state.lock()?.clone();
   let selected_java = select_java_runtime(
     &app,
     &game_config.game_java,
@@ -70,7 +70,7 @@ pub async fn select_suitable_jre(
   )
   .await?;
 
-  let mut launching = launching_state.lock().unwrap();
+  let mut launching = launching_state.lock()?;
   launching.game_config = game_config;
   launching.client_info = client_info;
   launching.selected_java = selected_java;
@@ -86,7 +86,7 @@ pub async fn validate_game_files(
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<Vec<DownloadsArtifact>> {
   let (instance, client_info, validate_policy) = {
-    let mut launching = launching_state.lock().unwrap();
+    let mut launching = launching_state.lock()?;
     launching.current_step = 2;
     (
       launching.selected_instance.clone(),
@@ -137,7 +137,7 @@ pub async fn validate_selected_player(
   let player = get_selected_player_info(&app)?;
 
   {
-    let mut launching = launching_state.lock().unwrap();
+    let mut launching = launching_state.lock()?;
     launching.current_step = 3;
     launching.selected_player = Some(player.clone());
 
@@ -167,7 +167,7 @@ pub async fn launch_game(
   launching_state: State<'_, Mutex<LaunchingState>>,
 ) -> SJMCLResult<()> {
   let (selected_java, game_config, instance_id) = {
-    let mut launching = launching_state.lock().unwrap();
+    let mut launching = launching_state.lock()?;
     launching.current_step = 4;
     (
       launching.selected_java.clone(),
@@ -188,7 +188,7 @@ pub async fn launch_game(
     .spawn()?;
   let pid = child.id();
   {
-    let mut launching = launching_state.lock().unwrap();
+    let mut launching = launching_state.lock()?;
     launching.pid = pid;
   }
 
@@ -218,14 +218,14 @@ pub async fn launch_game(
   }
 
   // clear launching state
-  *launching_state.lock().unwrap() = LaunchingState::default();
+  *launching_state.lock()? = LaunchingState::default();
 
   Ok(())
 }
 
 #[tauri::command]
 pub fn cancel_launch_process(launching_state: State<'_, Mutex<LaunchingState>>) -> SJMCLResult<()> {
-  let mut launching = launching_state.lock().unwrap();
+  let mut launching = launching_state.lock()?;
 
   // kill process if step 4 has been reached
   if launching.pid != 0 {

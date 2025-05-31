@@ -23,11 +23,11 @@ use tauri::{AppHandle, State};
 #[tauri::command]
 pub async fn fetch_game_version_list(
   app: AppHandle,
-  state: State<'_, Mutex<LauncherConfig>>,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
 ) -> SJMCLResult<Vec<GameClientResourceInfo>> {
   let priority_list = {
-    let state = state.lock()?;
-    get_source_priority_list(&state)
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
   };
   get_game_version_manifest(&app, &priority_list).await
 }
@@ -37,11 +37,11 @@ pub async fn fetch_mod_loader_version_list(
   app: AppHandle,
   game_version: String,
   mod_loader_type: ModLoaderType,
-  state: State<'_, Mutex<LauncherConfig>>,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   let priority_list = {
-    let state = state.lock()?;
-    get_source_priority_list(&state)
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
   };
   match mod_loader_type {
     ModLoaderType::Forge | ModLoaderType::LegacyForge => {

@@ -37,16 +37,18 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::{sync::Mutex, time::SystemTime};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, State};
 use tauri_plugin_opener::open_path;
 use tokio;
 use zip::read::ZipArchive;
 
 #[tauri::command]
-pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
+pub async fn retrieve_instance_list(
+  app: AppHandle,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
+) -> SJMCLResult<Vec<InstanceSummary>> {
   refresh_and_update_instances(&app).await; // firstly refresh and update
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let instances = binding.lock().unwrap().clone();
+  let instances = instances_state.lock()?.clone();
   let mut summary_list = Vec::new();
   let global_version_isolation = get_global_game_config(&app).version_isolation;
   for (id, instance) in instances.iter() {
@@ -86,11 +88,11 @@ pub async fn update_instance_config(
   instance_id: String,
   key_path: String,
   value: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
 ) -> SJMCLResult<()> {
   let instance = {
-    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let mut state = binding.lock().unwrap();
-    let instance = state
+    let mut instances = instances_state.lock()?;
+    let instance = instances
       .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
     let key_path = {
@@ -133,10 +135,10 @@ pub async fn update_instance_config(
 pub fn retrieve_instance_game_config(
   app: AppHandle,
   instance_id: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
 ) -> SJMCLResult<GameConfig> {
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state
+  let instances = instances_state.lock()?;
+  let instance = instances
     .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
@@ -144,11 +146,14 @@ pub fn retrieve_instance_game_config(
 }
 
 #[tauri::command]
-pub async fn reset_instance_game_config(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+pub async fn reset_instance_game_config(
+  app: AppHandle,
+  instance_id: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
+) -> SJMCLResult<()> {
   let instance = {
-    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let mut state = binding.lock().unwrap();
-    let instance = state
+    let mut instances = instances_state.lock()?;
+    let instance = instances
       .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
     instance.spec_game_config = Some(get_global_game_config(&app));
@@ -176,14 +181,15 @@ pub fn open_instance_subdir(
 }
 
 #[tauri::command]
-pub fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
-  let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let instance_state = instance_binding.lock().unwrap();
+pub fn delete_instance(
+  instance_id: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
+) -> SJMCLResult<()> {
+  let instances = instances_state.lock()?;
+  let mut launcher_config = launcher_config_state.lock()?;
 
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
-
-  let instance = instance_state
+  let instance = instances
     .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
@@ -195,26 +201,25 @@ pub fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
   }
   // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
 
-  if config_state.states.shared.selected_instance_id == instance_id {
-    config_state.states.shared.selected_instance_id = instance_state
+  if launcher_config.states.shared.selected_instance_id == instance_id {
+    launcher_config.states.shared.selected_instance_id = instances
       .keys()
       .next()
       .cloned()
       .unwrap_or_else(|| "".to_string());
-    config_state.save()?;
+    launcher_config.save()?;
   }
   Ok(())
 }
 
 #[tauri::command]
 pub async fn rename_instance(
-  app: AppHandle,
   instance_id: String,
   new_name: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
 ) -> SJMCLResult<PathBuf> {
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let mut state = binding.lock().unwrap();
-  let instance = match state.get_mut(&instance_id) {
+  let mut instances = instances_state.lock()?;
+  let instance = match instances.get_mut(&instance_id) {
     Some(x) => x,
     None => return Err(InstanceError::InstanceNotFoundByID.into()),
   };
@@ -427,6 +432,7 @@ pub async fn retrieve_game_server_list(
 pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
@@ -436,8 +442,7 @@ pub async fn retrieve_local_mod_list(
 
   let valid_extensions = RegexBuilder::new(r"\.(jar|zip)(\.disabled)*$")
     .case_insensitive(true)
-    .build()
-    .unwrap();
+    .build()?;
 
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
   let mut tasks = Vec::new();
@@ -458,9 +463,8 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state
+  let instances = instances_state.lock()?;
+  let instance = instances
     .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
@@ -490,8 +494,7 @@ pub async fn retrieve_resource_pack_list(
 
   let valid_extensions = RegexBuilder::new(r"\.zip$")
     .case_insensitive(true)
-    .build()
-    .unwrap();
+    .build()?;
 
   for path in get_files_with_regex(&resource_packs_dir, &valid_extensions).unwrap_or(vec![]) {
     if let Ok((description, icon_src)) = load_resourcepack_from_zip(&path) {
@@ -540,10 +543,7 @@ pub async fn retrieve_server_resource_pack_list(
   };
   let mut info_list: Vec<ResourcePackInfo> = Vec::new();
 
-  let valid_extensions = RegexBuilder::new(r".*")
-    .case_insensitive(true)
-    .build()
-    .unwrap();
+  let valid_extensions = RegexBuilder::new(r".*").case_insensitive(true).build()?;
 
   for path in get_files_with_regex(&resource_packs_dir, &valid_extensions).unwrap_or(vec![]) {
     if let Ok((description, icon_src)) = load_resourcepack_from_zip(&path) {
@@ -594,8 +594,7 @@ pub fn retrieve_schematic_list(
   }
   let valid_extensions = RegexBuilder::new(r"\.(litematic|schematic)$")
     .case_insensitive(true)
-    .build()
-    .unwrap();
+    .build()?;
   let mut schematic_list = Vec::new();
   for schematic_path in get_files_with_regex(schematics_dir.as_path(), &valid_extensions)? {
     schematic_list.push(SchematicInfo {
@@ -629,8 +628,7 @@ pub fn retrieve_shader_pack_list(
 
   let valid_extensions = RegexBuilder::new(r"\.zip$")
     .case_insensitive(true)
-    .build()
-    .unwrap();
+    .build()?;
   let mut shaderpack_list = Vec::new();
   for path in get_files_with_regex(shaderpacks_dir, &valid_extensions)? {
     shaderpack_list.push(ShaderPackInfo {
@@ -660,15 +658,13 @@ pub fn retrieve_screenshot_list(
   // The default screenshot format in Minecraft is PNG. For broader compatibility, JPG and JPEG formats are also included here.
   let valid_extensions = RegexBuilder::new(r"\.(jpg|jpeg|png)$")
     .case_insensitive(true)
-    .build()
-    .unwrap();
+    .build()?;
   let mut screenshot_list = Vec::new();
   for path in get_files_with_regex(screenshots_dir, &valid_extensions)? {
-    let metadata = path.metadata().unwrap();
-    let modified_time = metadata.modified().unwrap();
+    let metadata = path.metadata()?;
+    let modified_time = metadata.modified()?;
     let timestamp = modified_time
-      .duration_since(SystemTime::UNIX_EPOCH)
-      .unwrap()
+      .duration_since(SystemTime::UNIX_EPOCH)?
       .as_secs();
     screenshot_list.push(ScreenshotInfo {
       file_name: path.file_stem().unwrap().to_string_lossy().to_string(),
@@ -748,12 +744,15 @@ pub async fn retrieve_world_details(
 }
 
 #[tauri::command]
-pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let state = binding
+pub fn create_launch_desktop_shortcut(
+  app: AppHandle,
+  instance_id: String,
+  instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
+) -> SJMCLResult<()> {
+  let instances = instances_state
     .lock()
     .map_err(|_| InstanceError::InstanceNotFoundByID)?;
-  let instance = state
+  let instance = instances
     .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
