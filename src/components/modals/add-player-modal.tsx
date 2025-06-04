@@ -101,7 +101,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   useEffect(() => {
     setPlayerType(initialPlayerType);
-  }, [initialPlayerType]);
+  }, [initialPlayerType, initialAuthServerUrl]);
 
   useEffect(() => {
     let _authServer: AuthServer | undefined = undefined;
