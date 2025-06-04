@@ -220,6 +220,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
           );
       } else {
         if (!oauthCodeResponse) return;
+        openUrl(oauthCodeResponse.verificationUri);
         loginServiceFunction = () =>
           AccountService.addPlayerOAuth(
             playerType,

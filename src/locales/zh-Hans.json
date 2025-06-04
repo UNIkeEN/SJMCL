@@ -177,7 +177,7 @@
           "3rdparty": "此认证源支持 Yggdrasil Connect 规范提案",
           "microsoft": "SJMCL 支持微软 OAuth 2.0 设备权限授予流"
         },
-        "next": "请点击继续登录按钮打开登录窗口，输入以上代码（已自动复制）"
+        "next": "请点击继续登录按钮跳转至系统浏览器页面，输入以上代码（已自动复制）"
       },
       "button": {
         "start": {
