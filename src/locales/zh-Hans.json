@@ -1028,7 +1028,7 @@
       "addFailed": {
         "title": "添加 Java 失败",
         "invalid": "不是有效的 Java 可执行文件或与当前平台不兼容",
-        "duplicated": "目标文件已添加"
+        "duplicated": "目标 Java 路径已添加"
       }
     },
     "confirmDelete": {

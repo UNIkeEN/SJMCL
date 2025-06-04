@@ -58,7 +58,9 @@ const JavaSettingsPage = () => {
         return;
       }
 
-      const isDuplicated = config.extraJavaPaths.includes(newJavaPath);
+      const isDuplicated =
+        config.extraJavaPaths.includes(newJavaPath) ||
+        javaInfos.some((java) => java.execPath === newJavaPath);
       if (isDuplicated) {
         toast({
           title: t("JavaSettingsPage.toast.addFailed.title"),
