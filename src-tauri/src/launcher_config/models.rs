@@ -278,6 +278,7 @@ pub enum LauncherConfigError {
   VersionMismatch,
   GameDirAlreadyAdded,
   GameDirNotExist,
+  JavaExecInvalid,
 }
 
 impl std::error::Error for LauncherConfigError {}

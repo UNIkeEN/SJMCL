@@ -1,5 +1,7 @@
 use super::{
-  helpers::java::refresh_and_update_javas,
+  helpers::java::{
+    get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
+  },
   helpers::memory::get_memory_info,
   models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
 };
@@ -223,6 +225,18 @@ pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
   let binding = app.state::<Mutex<Vec<JavaInfo>>>();
   let state = binding.lock()?;
   Ok(state.clone())
+}
+
+#[tauri::command]
+pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
+  if get_java_info_from_release_file(&java_path)
+    .or_else(|| get_java_info_from_command(&java_path))
+    .is_some()
+  {
+    Ok(())
+  } else {
+    Err(LauncherConfigError::JavaExecInvalid.into())
+  }
 }
 
 #[tauri::command]

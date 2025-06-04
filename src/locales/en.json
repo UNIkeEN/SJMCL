@@ -1027,7 +1027,8 @@
       },
       "addFailed": {
         "title": "Failed to Add Java",
-        "description": "Not a valid Java executable file"
+        "invalid": "Not a valid Java executable or incompatible with the current platform",
+        "duplicated": "The target file has already been added"
       }
     },
     "confirmDelete": {

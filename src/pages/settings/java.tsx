@@ -12,6 +12,7 @@ import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { JavaInfo } from "@/models/system-info";
+import { ConfigService } from "@/services/config";
 
 const JavaSettingsPage = () => {
   const { t } = useTranslation();
@@ -44,29 +45,48 @@ const JavaSettingsPage = () => {
     });
     if (newJavaPath && typeof newJavaPath === "string") {
       const fileName = newJavaPath.split(/[/\\]/).pop();
-      const isValidJava =
+      const isValidFileName =
         config.basicInfo.platform === "windows"
           ? fileName === "java.exe"
           : fileName === "java";
-
-      if (!isValidJava) {
+      if (!isValidFileName) {
         toast({
           title: t("JavaSettingsPage.toast.addFailed.title"),
-          description: t("JavaSettingsPage.toast.addFailed.description"),
+          description: t("JavaSettingsPage.toast.addFailed.invalid"),
           status: "error",
         });
         return;
       }
 
-      if (!config.extraJavaPaths.includes(newJavaPath)) {
-        update("extraJavaPaths", [...config.extraJavaPaths, newJavaPath]);
-        setJavaInfos(getJavaInfos(true) || []);
+      const isDuplicated = config.extraJavaPaths.includes(newJavaPath);
+      if (isDuplicated) {
         toast({
-          title: t("JavaSettingsPage.toast.addSuccess.title"),
-          description: t("JavaSettingsPage.toast.addSuccess.description"),
-          status: "success",
+          title: t("JavaSettingsPage.toast.addFailed.title"),
+          description: t("JavaSettingsPage.toast.addFailed.duplicated"),
+          status: "error",
         });
+        return;
       }
+
+      // check java validity and update config
+      ConfigService.validateJava(newJavaPath).then((response) => {
+        if (response.status !== "success") {
+          toast({
+            title: t("JavaSettingsPage.toast.addFailed.title"),
+            description: t("JavaSettingsPage.toast.addFailed.invalid"),
+            status: "error",
+          });
+          return;
+        } else {
+          update("extraJavaPaths", [...config.extraJavaPaths, newJavaPath]);
+          setJavaInfos(getJavaInfos(true) || []);
+          toast({
+            title: t("JavaSettingsPage.toast.addSuccess.title"),
+            description: t("JavaSettingsPage.toast.addSuccess.description"),
+            status: "success",
+          });
+        }
+      });
     }
   };
 

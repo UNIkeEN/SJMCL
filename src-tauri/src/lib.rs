@@ -68,6 +68,7 @@ pub async fn run() {
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
+      launcher_config::commands::validate_java,
       launcher_config::commands::check_game_directory,
       launcher_config::commands::retrieve_memory_info,
       launcher_config::commands::check_service_availability,
