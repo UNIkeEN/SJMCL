@@ -14,13 +14,14 @@ const InstanceDetailIndexPage = () => {
     }
 
     const instanceId = Array.isArray(id) ? id[0] : id;
+    const encodedId = encodeURIComponent(instanceId);
 
     router.replace(
       [...history]
         .reverse()
         .find((route) =>
-          route.startsWith(`/instances/details/${instanceId}/`)
-        ) || `/instances/details/${instanceId}/overview`
+          route.startsWith(`/instances/details/${encodedId}/`)
+        ) || `/instances/details/${encodedId}/overview`
     );
   }, [history, router, id]);
 

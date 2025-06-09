@@ -196,7 +196,7 @@ export const InstanceScreenshotsWidget = () => {
           onClick={() => {
             router.push(
               {
-                pathname: `/instances/details/${instanceId}/screenshots`,
+                pathname: `/instances/details/${encodeURIComponent(instanceId || "")}/screenshots`,
                 query: {
                   screenshotIndex: currentIndex.toString(),
                 },
@@ -283,7 +283,9 @@ export const InstanceModsWidget = () => {
           justifyContent="flex-start"
           colorScheme={primaryColor}
           onClick={() => {
-            router.push(`/instances/details/${instanceId}/mods`);
+            router.push(
+              `/instances/details/${encodeURIComponent(instanceId || "")}/mods`
+            );
           }}
         >
           <HStack spacing={1.5}>
@@ -399,7 +401,9 @@ export const InstanceMoreWidget = () => {
               size="lg"
               colorScheme={primaryColor}
               onClick={() =>
-                router.push(`/instances/details/${instanceId}/${key}`)
+                router.push(
+                  `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
+                )
               }
             >
               <VStack spacing={1} align="center">
@@ -420,7 +424,9 @@ export const InstanceMoreWidget = () => {
                 size="lg"
                 colorScheme={primaryColor}
                 onClick={() =>
-                  router.push(`/instances/details/${instanceId}/${key}`)
+                  router.push(
+                    `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
+                  )
                 }
                 aria-label={t(`InstanceDetailsLayout.instanceTabList.${key}`)}
               />

@@ -43,22 +43,19 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
     ...(navBarType === "instance"
       ? instanceList.map((item) => ({
           // group by instance
-          key: `details/${item.id}`,
+          key: `details/${encodeURIComponent(item.id)}`,
           icon: item.starred ? FaStar : LuBox,
           label: item.name,
         }))
       : config.localGameDirectories.map((item) => ({
-          key: `list/${item.name}`,
+          key: `list/${encodeURIComponent(item.name)}`,
           icon: LuFolder,
           label: getGameDirName(item),
         }))),
   ];
 
   // Truncate to the ID, excluding subpage routes
-  const prefixAsPathPart = decodeURIComponent(
-    router.asPath.split("/").slice(0, 4).join("/")
-  );
-
+  const prefixAsPathPart = router.asPath.split("/").slice(0, 4).join("/");
   const isInstancePage = (path: String) =>
     path.startsWith("/instances/details/");
 
@@ -74,7 +71,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                   if (isInstancePage(router.asPath) && isInstancePage(value)) {
                     router.push(
                       // across instances, not change subpath
-                      `${value}${decodeURIComponent(router.asPath).replace(prefixAsPathPart, "")}`
+                      `${value}${router.asPath.replace(prefixAsPathPart, "")}`
                     );
                   } else router.push(value);
                 }}

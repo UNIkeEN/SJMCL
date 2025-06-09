@@ -205,7 +205,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     >
       <NavMenu
         flexWrap="wrap"
-        selectedKeys={[decodeURIComponent(router.asPath)]}
+        selectedKeys={[router.asPath]}
         onClick={(value) => router.push(value)}
         direction="row"
         size="xs"
@@ -214,7 +214,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           config.general.general.language.startsWith("zh") ? "0.05rem" : 0.5
         }
         items={instanceTabList.map((item) => ({
-          value: `/instances/details/${instanceId}/${item.key}`,
+          value: `/instances/details/${encodeURIComponent(instanceId || "")}/${item.key}`,
           label: (
             <HStack spacing={1.5}>
               <Icon as={item.icon} />
