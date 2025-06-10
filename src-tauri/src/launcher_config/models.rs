@@ -170,6 +170,7 @@ structstruck::strike! {
         pub primary_color: String,
         #[default = "light"]
         pub color_mode: String,
+        pub use_liquid_glass_design: bool,
         #[default = "standard"]
         pub head_nav_style: String,
       },

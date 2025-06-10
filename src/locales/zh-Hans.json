@@ -219,6 +219,10 @@
             "dark": "深色"
           }
         },
+        "useLiquidGlassDesign": {
+          "title": "液态玻璃效果",
+          "description": "启用后，部分界面将使用「液态玻璃」效果，这可能会影响性能"
+        },
         "headNavStyle": {
           "title": "顶部导航栏样式",
           "type": {

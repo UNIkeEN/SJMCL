@@ -219,6 +219,10 @@
             "dark": "Dark"
           }
         },
+        "useLiquidGlassDesign": {
+          "title": "Liquid Glass Effect",
+          "description": "When enabled, parts of the interface will use the 'Liquid Glass' effect, which may impact performance."
+        },
         "headNavStyle": {
           "title": "Navigation Bar Style",
           "type": {

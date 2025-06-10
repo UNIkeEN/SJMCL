@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Card,
   Center,
@@ -387,6 +388,27 @@ const AppearanceSettingsPage = () => {
                 ),
                 value: item,
               }))}
+            />
+          ),
+        },
+        {
+          title: t(
+            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.title"
+          ),
+          titleExtra: <Badge colorScheme="purple">Beta</Badge>,
+          description: t(
+            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={appearanceConfigs.theme.useLiquidGlassDesign}
+              onChange={(e) => {
+                update(
+                  "appearance.theme.useLiquidGlassDesign",
+                  e.target.checked
+                );
+              }}
             />
           ),
         },
