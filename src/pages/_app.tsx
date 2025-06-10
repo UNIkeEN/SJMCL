@@ -6,6 +6,7 @@ import React, { useEffect, useMemo } from "react";
 import { initReactI18next } from "react-i18next";
 import { Fade } from "@/components/common/transition";
 import GlobalEventHandler from "@/components/special/global-event-handler";
+import LiquidGlassDistortionFilter from "@/components/special/liquid-glass-filter";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
 import { GlobalDataContextProvider } from "@/contexts/global-data";
@@ -121,6 +122,7 @@ export default function App({ Component, pageProps }: AppProps) {
                       </SpecLayout>
                     </Fade>
                   </MainLayout>
+                  <LiquidGlassDistortionFilter />
                 </GlobalEventHandler>
               </SharedModalsProvider>
             </GlobalDataContextProvider>
