@@ -1953,7 +1953,7 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/"
+      "baseUrl": "https://minecraft.wiki/w/"
     }
   },
   "WelcomeAndTermsModal": {

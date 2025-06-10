@@ -42,7 +42,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <Grid templateColumns="1fr 3fr" gap={4} h="100%">
+    <Grid templateColumns="1.1fr 3fr" gap={4} h="100%">
       <GridItem className="content-full-y">
         <VStack align="stretch" spacing={4}>
           {settingsDomainList.map((group, index) => (
@@ -56,7 +56,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
                 label: (
                   <HStack spacing={2} overflow="hidden">
                     <Icon as={item.icon} />
-                    <Text fontSize="sm">
+                    <Text fontSize="sm" className="ellipsis-text">
                       {t(`SettingsLayout.settingsDomainList.${item.key}`)}
                     </Text>
                   </HStack>

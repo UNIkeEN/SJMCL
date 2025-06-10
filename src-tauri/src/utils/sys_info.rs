@@ -40,6 +40,7 @@ pub fn get_mapped_locale() -> String {
     let language_map = [
       ("zh-Hans", vec!["zh-Hans", "wuu-Hans", "yue-Hans"]),
       ("zh-Hant", vec!["zh-Hant", "yue-Hant"]),
+      ("fr", vec!["fr"]),
     ];
 
     matched_locale = language_map
@@ -53,6 +54,7 @@ pub fn get_mapped_locale() -> String {
     let language_map = [
       ("zh-Hans", vec!["zh-CN"]),
       ("zh-Hant", vec!["zh-TW", "zh-HK", "zh-MO"]),
+      ("fr", vec!["fr"]),
     ];
 
     matched_locale = language_map
