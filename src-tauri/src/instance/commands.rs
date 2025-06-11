@@ -758,7 +758,11 @@ pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJ
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
   let name = instance.name.clone();
-  let url = format!("sjmcl://launch?id={}", instance.id);
+  let encoded_id = url::form_urlencoded::Serializer::new(String::new())
+    .append_pair("id", &instance.id)
+    .finish()
+    .replace("+", "%20");
+  let url = format!("sjmcl://launch?{}", encoded_id);
 
   create_url_shortcut(&app, name, url, None).map_err(|_| InstanceError::ShortcutCreationFailed)?;
 
