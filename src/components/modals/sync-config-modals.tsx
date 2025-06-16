@@ -6,6 +6,7 @@ import {
   FormLabel,
   HStack,
   Heading,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuCopy } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
@@ -85,12 +87,34 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
         <ModalBody>
           <FormControl>
             <FormLabel>{t("SyncConfigExportModal.label.token")}</FormLabel>
-            <HStack spacing={4} alignItems="center">
+            <HStack spacing={2} alignItems="center">
               <Fade in={fadeFlag}>
                 <Heading size="lg" color={`${primaryColor}.500`}>
                   {token}
                 </Heading>
               </Fade>
+              <IconButton
+                aria-label="copy"
+                color={"gray.500"}
+                variant="ghost"
+                minW={5}
+                maxH={5}
+                icon={<LuCopy />}
+                onClick={() => {
+                  if (token) {
+                    navigator.clipboard.writeText(token);
+                    toast({
+                      title: t("General.copy.toast.success"),
+                      status: "success",
+                    });
+                  } else {
+                    toast({
+                      title: t("General.copy.toast.error"),
+                      status: "error",
+                    });
+                  }
+                }}
+              />
               <Text size="sm" className="secondary-text">
                 {t("SyncConfigExportModal.countdown", { seconds: countdown })}
               </Text>
