@@ -1,6 +1,8 @@
 import { Button, Card, Heading, Text, VStack } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
+import { copyText } from "@/utils/copy";
 
 interface OAuthLoginPanelProps {
   authType: "microsoft" | "3rdparty";
@@ -16,6 +18,7 @@ const OAuthLoginPanel: React.FC<OAuthLoginPanelProps> = ({
   isLoading,
 }) => {
   const { config } = useLauncherConfig();
+  const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
   const localeSuffix = authCode ? "next" : "start." + authType;
 
@@ -29,11 +32,18 @@ const OAuthLoginPanel: React.FC<OAuthLoginPanelProps> = ({
       justifyContent="center"
     >
       <VStack>
-        {authCode && (
-          <Heading size="lg" color={`${primaryColor}.500`}>
-            {authCode}
-          </Heading>
-        )}
+        <Heading
+          size="lg"
+          color={`${primaryColor}.500`}
+          cursor={authCode ? "pointer" : "default"}
+          onClick={async () => {
+            if (authCode) {
+              await copyText(authCode, { toast });
+            }
+          }}
+        >
+          {authCode}
+        </Heading>
         <Text fontSize="sm">
           {t(`AddPlayerModal.oauthCommon.description.${localeSuffix}`)}
         </Text>
