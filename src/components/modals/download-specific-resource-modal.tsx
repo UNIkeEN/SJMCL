@@ -258,6 +258,28 @@ const DownloadSpecificResourceModal: React.FC<
     );
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const modalBodies = document.querySelectorAll(".chakra-modal__body");
+    const stopScroll = (e: Event) => {
+      if ((e.target as HTMLElement).closest(".chakra-menu__menu-list")) return;
+      e.preventDefault();
+    };
+    if (isMenuOpen) {
+      modalBodies.forEach((el) => {
+        el.addEventListener("wheel", stopScroll, { passive: false });
+        el.addEventListener("touchmove", stopScroll, { passive: false });
+      });
+    }
+    return () => {
+      modalBodies.forEach((el) => {
+        el.removeEventListener("wheel", stopScroll);
+        el.removeEventListener("touchmove", stopScroll);
+      });
+    };
+  }, [isMenuOpen]);
+
   useEffect(() => {
     setSelectedModLoader(curInstanceModLoader || "All");
     setSelectedVersionLabel(curInstanceMajorVersion || "All");
@@ -350,7 +372,11 @@ const DownloadSpecificResourceModal: React.FC<
             </HStack>
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
-            <Menu>
+            <Menu
+              isOpen={isMenuOpen}
+              onOpen={() => setIsMenuOpen(true)}
+              onClose={() => setIsMenuOpen(false)}
+            >
               <MenuButton
                 as={Button}
                 size="xs"
