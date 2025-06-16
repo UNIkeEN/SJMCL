@@ -32,18 +32,18 @@ const OAuthLoginPanel: React.FC<OAuthLoginPanelProps> = ({
       justifyContent="center"
     >
       <VStack>
-        <Heading
-          size="lg"
-          color={`${primaryColor}.500`}
-          cursor={authCode ? "pointer" : "default"}
-          onClick={async () => {
-            if (authCode) {
+        {authCode && (
+          <Heading
+            size="lg"
+            color={`${primaryColor}.500`}
+            cursor="pointer"
+            onClick={async () => {
               await copyText(authCode, { toast });
-            }
-          }}
-        >
-          {authCode}
-        </Heading>
+            }}
+          >
+            {authCode}
+          </Heading>
+        )}
         <Text fontSize="sm">
           {t(`AddPlayerModal.oauthCommon.description.${localeSuffix}`)}
         </Text>
