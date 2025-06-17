@@ -34,9 +34,8 @@ const OAuthLoginPanel: React.FC<OAuthLoginPanelProps> = ({
       <VStack>
         {authCode && (
           <Heading
-            size="lg"
+            className="verify-code"
             color={`${primaryColor}.500`}
-            cursor="pointer"
             onClick={async () => {
               await copyText(authCode, { toast });
             }}

@@ -86,20 +86,19 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
         <ModalBody>
           <FormControl>
             <FormLabel>{t("SyncConfigExportModal.label.token")}</FormLabel>
-            <HStack spacing={2} alignItems="center">
+            <HStack spacing={4} alignItems="center">
               <Fade in={fadeFlag}>
-                <Heading
-                  size="lg"
-                  color={`${primaryColor}.500`}
-                  cursor={token ? "pointer" : "default"}
-                  onClick={async () => {
-                    if (token) {
+                {token && (
+                  <Heading
+                    className="verify-code"
+                    color={`${primaryColor}.500`}
+                    onClick={async () => {
                       await copyText(token, { toast });
-                    }
-                  }}
-                >
-                  {token}
-                </Heading>
+                    }}
+                  >
+                    {token}
+                  </Heading>
+                )}
               </Fade>
               <Text size="sm" className="secondary-text">
                 {t("SyncConfigExportModal.countdown", { seconds: countdown })}
