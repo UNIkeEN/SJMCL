@@ -18,8 +18,8 @@ const OAuthLoginPanel: React.FC<OAuthLoginPanelProps> = ({
   isLoading,
 }) => {
   const { config } = useLauncherConfig();
-  const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
+  const toast = useToast();
   const localeSuffix = authCode ? "next" : "start." + authType;
 
   return (
