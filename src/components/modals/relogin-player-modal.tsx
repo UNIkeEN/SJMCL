@@ -162,7 +162,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
         </ModalBody>
         {!isOAuth && (
           <ModalFooter>
-            <Button variant="ghost" onClick={props.onClose}>
+            <Button variant="ghost" onClick={handleCloseModal}>
               {t("General.cancel")}
             </Button>
             <Button

@@ -384,7 +384,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         </ModalBody>
 
         <ModalFooter mt={1}>
-          <Button variant="ghost" onClick={modalProps.onClose}>
+          <Button variant="ghost" onClick={handleCloseModal}>
             {t("General.cancel")}
           </Button>
           <Button
