@@ -7,6 +7,7 @@ import ReLoginPlayerModal from "@/components/modals/relogin-player-modal";
 import SpotlightSearchModal from "@/components/modals/spotlight-search-modal";
 import { SharedModalContextProvider } from "@/contexts/shared-modal";
 import { useSharedModals } from "@/contexts/shared-modal";
+import GenericConfirmDialog from "../modals/generic-confirm-dialog";
 
 const SharedModalsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -28,6 +29,7 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
     "copy-or-move": CopyOrMoveModal,
     "delete-instance-alert": DeleteInstanceDialog,
     "download-resource": DownloadResourceModal,
+    "generic-confirm": GenericConfirmDialog,
     launch: LaunchProcessModal,
     relogin: ReLoginPlayerModal,
     "spotlight-search": SpotlightSearchModal,

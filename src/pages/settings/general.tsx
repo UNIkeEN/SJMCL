@@ -9,7 +9,6 @@ import {
   MenuOptionGroup,
   Switch,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -19,9 +18,9 @@ import {
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import LanguageMenu from "@/components/language-menu";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import { useRoutingHistory } from "@/contexts/routing-history";
+import { useSharedModals } from "@/contexts/shared-modal";
 
 const GeneralSettingsPage = () => {
   const { t } = useTranslation();
@@ -29,12 +28,7 @@ const GeneralSettingsPage = () => {
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
   const { removeHistory } = useRoutingHistory();
-
-  const {
-    isOpen: isDiscoverNoticeDialogOpen,
-    onOpen: onDiscoverNoticeDialogOpen,
-    onClose: onDiscoverNoticeDialogClose,
-  } = useDisclosure();
+  const { openSharedModal, closeSharedModal } = useSharedModals();
 
   const instancesNavTypes = ["instance", "directory", "hidden"];
 
@@ -64,7 +58,35 @@ const GeneralSettingsPage = () => {
               onChange={(e) => {
                 update("general.functionality.discoverPage", e.target.checked);
                 if (e.target.checked) {
-                  onDiscoverNoticeDialogOpen();
+                  openSharedModal("generic-confirm", {
+                    title: t("General.notice"),
+                    body: (
+                      <Text>
+                        {t(
+                          "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-1"
+                        )}
+                        <Kbd>
+                          {t(
+                            `Enums.${
+                              config.basicInfo.osType === "macos"
+                                ? "metaKey"
+                                : "ctrlKey"
+                            }.${config.basicInfo.osType}`
+                          )}
+                        </Kbd>
+                        {" + "}
+                        <Kbd>S</Kbd>
+                        {t(
+                          "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-2"
+                        )}
+                      </Text>
+                    ),
+                    btnOK: t("General.confirm"),
+                    btnCancel: "",
+                    onOKCallback: () => {
+                      closeSharedModal("generic-confirm");
+                    },
+                  });
                 }
               }}
             />
@@ -145,31 +167,6 @@ const GeneralSettingsPage = () => {
       {generalSettingGroups.map((group, index) => (
         <OptionItemGroup title={group.title} items={group.items} key={index} />
       ))}
-      <GenericConfirmDialog
-        isOpen={isDiscoverNoticeDialogOpen}
-        onClose={onDiscoverNoticeDialogClose}
-        title={t("General.notice")}
-        body={
-          <Text>
-            {t(
-              "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-1"
-            )}
-            <Kbd>
-              {t(
-                `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${config.basicInfo.osType}`
-              )}
-            </Kbd>
-            {" + "}
-            <Kbd>S</Kbd>
-            {t(
-              "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-2"
-            )}
-          </Text>
-        }
-        btnOK={t("General.confirm")}
-        btnCancel=""
-        onOKCallback={onDiscoverNoticeDialogClose}
-      />
     </>
   );
 };

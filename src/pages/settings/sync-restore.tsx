@@ -5,12 +5,12 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import {
   SyncConfigExportModal,
   SyncConfigImportModal,
 } from "@/components/modals/sync-config-modals";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
 
@@ -18,12 +18,7 @@ const SyncAndRestoreSettingsPage = () => {
   const { t } = useTranslation();
   const { setConfig } = useLauncherConfig();
   const toast = useToast();
-
-  const {
-    isOpen: isRestoreConfirmDialogOpen,
-    onOpen: onRestoreConfirmDialogOpen,
-    onClose: onRestoreConfirmDialogClose,
-  } = useDisclosure();
+  const { openSharedModal, closeSharedModal } = useSharedModals();
 
   const {
     isOpen: isSyncConfigExportModalOpen,
@@ -53,8 +48,8 @@ const SyncAndRestoreSettingsPage = () => {
         });
       }
     });
-    onRestoreConfirmDialogClose();
-  }, [setConfig, toast, onRestoreConfirmDialogClose]);
+    closeSharedModal("generic-confirm");
+  }, [setConfig, toast, closeSharedModal]);
 
   const syncAndRestoreSettingGroups: OptionItemGroupProps[] = [
     {
@@ -99,7 +94,16 @@ const SyncAndRestoreSettingsPage = () => {
               colorScheme="red"
               variant="subtle"
               size="xs"
-              onClick={onRestoreConfirmDialogOpen}
+              onClick={() => {
+                openSharedModal("generic-confirm", {
+                  title: t("RestoreConfigConfirmDialog.title"),
+                  body: t("RestoreConfigConfirmDialog.body"),
+                  btnOK: t("General.confirm"),
+                  btnCancel: t("General.cancel"),
+                  isAlert: true,
+                  onOKCallback: handleRestoreLauncherConfig,
+                });
+              }}
             >
               {t(
                 "SyncAndRestoreSettingsPage.launcherConfig.settings.restoreAll.restore"
@@ -124,16 +128,6 @@ const SyncAndRestoreSettingsPage = () => {
       <SyncConfigImportModal
         isOpen={isSyncConfigImportModalOpen}
         onClose={onSyncConfigImportModalClose}
-      />
-      <GenericConfirmDialog
-        isOpen={isRestoreConfirmDialogOpen}
-        onClose={onRestoreConfirmDialogClose}
-        title={t("RestoreConfigConfirmDialog.title")}
-        body={t("RestoreConfigConfirmDialog.body")}
-        btnOK={t("General.confirm")}
-        btnCancel={t("General.cancel")}
-        onOKCallback={handleRestoreLauncherConfig}
-        isAlert
       />
     </>
   );

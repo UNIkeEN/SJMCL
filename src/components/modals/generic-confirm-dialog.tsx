@@ -7,8 +7,12 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  Checkbox,
+  Flex,
+  HStack,
+  Text,
 } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface GenericConfirmDialogProps {
@@ -20,6 +24,8 @@ interface GenericConfirmDialogProps {
   btnCancel: string;
   onOKCallback?: () => void;
   isAlert?: boolean;
+  showDontAskAgain?: boolean; // ✅ 新增参数：是否显示“不再显示此提示”
+  onDontAskAgainChange?: (checked: boolean) => void; // ✅ 新增回调
 }
 
 const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
@@ -31,10 +37,19 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   btnCancel,
   onOKCallback,
   isAlert = false,
+  showDontAskAgain = true,
+  onDontAskAgainChange,
 }) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const [dontAskAgain, setDontAskAgain] = useState(false);
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setDontAskAgain(checked);
+    onDontAskAgainChange?.(checked);
+  };
 
   return (
     <AlertDialog
@@ -50,6 +65,19 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
           <AlertDialogCloseButton />
           <AlertDialogBody>{body}</AlertDialogBody>
           <AlertDialogFooter>
+            <Flex flex="1" align="center">
+              {showDontAskAgain && (
+                <HStack>
+                  <Checkbox
+                    isChecked={dontAskAgain}
+                    onChange={handleCheckboxChange}
+                    mr={0} // HStack 自动处理间距，可去掉
+                  />
+                  <Text fontSize="sm">不再显示此提示</Text>
+                </HStack>
+              )}
+            </Flex>
+
             {btnCancel && (
               <Button ref={cancelRef} onClick={onClose} variant="ghost">
                 {btnCancel}

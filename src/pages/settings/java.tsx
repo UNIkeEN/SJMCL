@@ -1,4 +1,4 @@
-import { Flex, HStack, Tag, Text, useDisclosure } from "@chakra-ui/react";
+import { Flex, HStack, Tag, Text } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React, { useEffect, useState } from "react";
@@ -8,8 +8,8 @@ import { CommonIconButton } from "@/components/common/common-icon-button";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { JavaInfo } from "@/models/system-info";
 import { ConfigService } from "@/services/config";
@@ -19,14 +19,10 @@ const JavaSettingsPage = () => {
   const toast = useToast();
   const { config, update, getJavaInfos } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const { openSharedModal, closeSharedModal } = useSharedModals();
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
   const [selectedJava, setSelectedJava] = useState<JavaInfo | null>(null);
-  const {
-    isOpen: isDeleteDialogOpen,
-    onOpen: onDeleteDialogOpen,
-    onClose: onDeleteDialogClose,
-  } = useDisclosure();
 
   useEffect(() => {
     setJavaInfos(getJavaInfos() || []);
@@ -94,7 +90,14 @@ const JavaSettingsPage = () => {
 
   const handleRemoveJavaPath = (java: JavaInfo) => {
     setSelectedJava(java);
-    onDeleteDialogOpen();
+    openSharedModal("generic-confirm", {
+      title: t("JavaSettingsPage.confirmDelete.title"),
+      body: t("JavaSettingsPage.confirmDelete.description"),
+      btnOK: t("General.confirm"),
+      btnCancel: t("General.cancel"),
+      isAlert: true,
+      onOKCallback: handleConfirmDelete,
+    });
   };
 
   const handleConfirmDelete = () => {
@@ -105,7 +108,7 @@ const JavaSettingsPage = () => {
     );
     update("extraJavaPaths", updatedJavaPaths);
     setJavaInfos(getJavaInfos(true) || []);
-    onDeleteDialogClose();
+    closeSharedModal("generic-confirm");
     setSelectedJava(null);
   };
 
@@ -210,17 +213,6 @@ const JavaSettingsPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
-
-      <GenericConfirmDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={onDeleteDialogClose}
-        title={t("JavaSettingsPage.confirmDelete.title")}
-        body={t("JavaSettingsPage.confirmDelete.description")}
-        btnOK={t("General.confirm")}
-        btnCancel={t("General.cancel")}
-        onOKCallback={handleConfirmDelete}
-        isAlert
-      />
     </>
   );
 };

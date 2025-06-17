@@ -1,11 +1,4 @@
-import {
-  Button,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Button, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, { useCallback } from "react";
@@ -28,7 +21,6 @@ import {
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
 import {
   InstanceContextProvider,
@@ -54,7 +46,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const toast = useToast();
   const { t } = useTranslation();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, closeSharedModal } = useSharedModals();
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
 
@@ -62,18 +54,6 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const navBarType = config.general.functionality.instancesNavType;
-
-  const {
-    isOpen: isCreateShortcutAlertDialogOpen,
-    onOpen: onCreateShortcutAlertDialogOpen,
-    onClose: onCreateShortcutAlertDialogClose,
-  } = useDisclosure();
-
-  // useEffect(() => {
-  //   if (summary === undefined) {
-  //     router.push("/instances/all");
-  //   }
-  // }, [summary])
 
   const handleCreateLaunchDesktopShortcut = useCallback(
     (instanceId: string) => {
@@ -84,7 +64,15 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         colonIndex !== -1 ? instanceId.slice(colonIndex + 1) : instanceId;
 
       if (nameFromRouter && summary.name && nameFromRouter !== summary.name) {
-        onCreateShortcutAlertDialogOpen();
+        openSharedModal("generic-confirm", {
+          title: t("General.notice"),
+          body: t("CreateRenamedInstShortcutAlertDialog.content"),
+          btnOK: t("General.confirm"),
+          btnCancel: "",
+          onOKCallback: () => {
+            closeSharedModal("generic-confirm");
+          },
+        });
         return;
       }
 
@@ -105,7 +93,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         }
       );
     },
-    [summary, toast, onCreateShortcutAlertDialogOpen]
+    [summary, toast, closeSharedModal, openSharedModal, t]
   );
 
   const instanceSecMenuOperations = [
@@ -228,18 +216,6 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       <VStack overflow="auto" align="strench" spacing={4} flex="1">
         {children}
       </VStack>
-
-      <GenericConfirmDialog
-        isOpen={isCreateShortcutAlertDialogOpen}
-        onClose={onCreateShortcutAlertDialogClose}
-        title={t("General.notice")}
-        body={t("CreateRenamedInstShortcutAlertDialog.content")}
-        btnOK={t("General.confirm")}
-        btnCancel={""}
-        onOKCallback={() => {
-          onCreateShortcutAlertDialogClose();
-        }}
-      />
     </Section>
   );
 };
