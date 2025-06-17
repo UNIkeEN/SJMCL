@@ -117,14 +117,13 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const [token, setToken] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const fields = new Array(6).fill(null);
 
   const handleCloseModal = useCallback(() => {
     setToken("");
     setIsLoading(false);
     modalProps.onClose();
   }, [modalProps]);
-
-  const fields = new Array(6).fill(null);
 
   const handleImportLauncherConfig = useCallback(async () => {
     setIsLoading(true);
@@ -142,14 +141,14 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
         description: response.details,
         status: "error",
       });
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [handleCloseModal, setConfig, toast, token]);
 
   return (
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
-      isOpen={modalProps.isOpen}
+      {...modalProps}
       onClose={handleCloseModal}
     >
       <ModalOverlay />
