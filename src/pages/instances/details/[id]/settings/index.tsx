@@ -170,8 +170,8 @@ const InstanceSettingsPage = () => {
   ];
 
   return (
-    <Box height="100%" overflowY="auto">
-      <VStack overflow="auto" align="strench" spacing={4} flex="1">
+    <Box height="100%" overflowY="auto" className="scroll-container">
+      <VStack align="strench" spacing={4} flex="1">
         {instanceSpecSettingsGroups.map((group, index) => (
           <OptionItemGroup
             title={group.title}

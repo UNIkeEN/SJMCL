@@ -225,7 +225,13 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           ),
         }))}
       />
-      <VStack overflow="auto" align="strench" spacing={4} flex="1">
+      <VStack
+        overflow="auto"
+        align="strench"
+        spacing={4}
+        flex="1"
+        className="scroll-container"
+      >
         {children}
       </VStack>
 

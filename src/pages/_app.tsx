@@ -106,6 +106,18 @@ export default function App({ Component, pageProps }: AppProps) {
   // when switching tabs in game instance page
   // see https://github.com/UNIkeEN/SJMCL/pull/491
 
+  useEffect(() => {
+    const containers = document.querySelectorAll(".scroll-container");
+    containers.forEach((container) => {
+      container.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+  }, [router.asPath]);
+  // Reset some specific components' scroll position when router.asPath changes (not use router.pathname because dynamic routes)
+  // see https://github.com/UNIkeEN/SJMCL/issues/526
+
   return (
     <ChakraProvider theme={chakraExtendTheme}>
       <ToastContextProvider>
