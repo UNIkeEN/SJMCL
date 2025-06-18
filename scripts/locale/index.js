@@ -15,7 +15,7 @@ try {
 } catch (error) {
   if (error.code === "MODULE_NOT_FOUND") {
     console.error(`Unknown subcommand: ${subCommand}`);
-    console.error("Available subcommands: diff, rm");
+    console.error("Available subcommands: diff, rm, gen_placeholder");
   } else {
     console.error(error);
   }
