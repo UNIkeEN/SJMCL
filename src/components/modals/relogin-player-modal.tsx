@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
+import { PlayerType } from "@/enums/account";
 import { OAuthCodeResponse, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 
@@ -44,7 +45,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  if (player.playerType === "offline") return null;
+  if (player.playerType === PlayerType.Offline) return null;
 
   const handleCloseModal = () => {
     props.onClose();
@@ -99,7 +100,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
   };
 
   const handleFetchOAuthCode = () => {
-    if (player.playerType === "offline") return;
+    if (player.playerType === PlayerType.Offline) return;
     setOAuthCodeResponse(undefined);
     setIsLoading(true);
     AccountService.fetchOAuthCode(

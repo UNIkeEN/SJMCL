@@ -1,4 +1,5 @@
 import { t } from "i18next";
+import { PlayerType } from "@/enums/account";
 import { Player } from "@/models/account";
 
 export function isUuidValid(uuid: string) {
@@ -12,7 +13,8 @@ export function isOfflinePlayernameValid(name: string) {
 }
 
 export const generatePlayerDesc = (player: Player, detailed: boolean) => {
-  return player.playerType === "offline" || player.playerType === "microsoft"
+  return player.playerType === PlayerType.Offline ||
+    player.playerType === PlayerType.Microsoft
     ? t(`Enums.playerTypes.${player.playerType}`)
     : detailed
       ? `${t("Enums.playerTypes.3rdparty")} - ${player.authServer?.name} (${player.authAccount})`

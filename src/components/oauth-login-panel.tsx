@@ -2,10 +2,11 @@ import { Button, Card, Heading, Text, VStack } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
+import { PlayerType } from "@/enums/account";
 import { copyText } from "@/utils/copy";
 
 interface OAuthLoginPanelProps {
-  authType: "microsoft" | "3rdparty";
+  authType: PlayerType.Microsoft | PlayerType.ThirdParty;
   authCode?: string;
   callback: () => void;
   isLoading: boolean;

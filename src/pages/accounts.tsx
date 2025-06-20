@@ -37,6 +37,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { PlayerType } from "@/enums/account";
 import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 
@@ -110,13 +111,17 @@ const AccountsPage = () => {
     if (type === "all") {
       return playerList;
     } else if (type === "offline") {
-      return playerList.filter((player) => player.playerType === "offline");
+      return playerList.filter(
+        (player) => player.playerType === PlayerType.Offline
+      );
     } else if (type === "microsoft") {
-      return playerList.filter((player) => player.playerType === "microsoft");
+      return playerList.filter(
+        (player) => player.playerType === PlayerType.Microsoft
+      );
     } else {
       return playerList.filter(
         (player) =>
-          player.playerType === "3rdparty" &&
+          player.playerType === PlayerType.ThirdParty &&
           authServerList.find((server) => server.authUrl === type)?.authUrl ===
             player.authServer?.authUrl
       );
@@ -297,10 +302,10 @@ const AccountsPage = () => {
         onClose={onAddPlayerModalClose}
         initialPlayerType={
           selectedPlayerType === "all" || selectedPlayerType === "offline"
-            ? "offline"
+            ? PlayerType.Offline
             : selectedPlayerType === "microsoft"
-              ? "microsoft"
-              : "3rdparty"
+              ? PlayerType.Microsoft
+              : PlayerType.ThirdParty
         }
         initialAuthServerUrl={
           ["all", "offline", "microsoft"].includes(selectedPlayerType)

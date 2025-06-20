@@ -21,6 +21,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { PlayerType } from "@/enums/account";
 import { AccountServiceError } from "@/enums/service-error";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
@@ -104,7 +105,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   };
 
   const playerMenuOperations = [
-    ...(player.playerType === "offline"
+    ...(player.playerType === PlayerType.Offline
       ? []
       : [
           {
@@ -117,7 +118,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     {
       icon: TbHanger,
       label: t(
-        `PlayerMenu.label.${player.playerType === "offline" ? "manageSkin" : "viewSkin"}`
+        `PlayerMenu.label.${player.playerType === PlayerType.Offline ? "manageSkin" : "viewSkin"}`
       ),
       onClick: onSkinModalOpen,
     },
@@ -192,7 +193,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         onOKCallback={handleDeletePlayer}
         isAlert
       />
-      {player.playerType === "offline" ? (
+      {player.playerType === PlayerType.Offline ? (
         <ManageSkinModal
           isOpen={isSkinModalOpen}
           onClose={onSkinModalClose}

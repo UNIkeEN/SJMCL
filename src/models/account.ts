@@ -1,3 +1,5 @@
+import { PlayerType } from "@/enums/account";
+
 export interface Texture {
   textureType: string;
   image: string;
@@ -10,7 +12,7 @@ export interface Player {
   name: string;
   uuid: string;
   avatar: string;
-  playerType: "offline" | "microsoft" | "3rdparty";
+  playerType: PlayerType;
   authServer?: AuthServer; // only from authlib-injector
   authAccount?: string; // only from authlib-injector
   password?: string; // only from authlib-injector

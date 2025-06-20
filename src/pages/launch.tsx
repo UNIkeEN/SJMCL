@@ -26,6 +26,7 @@ import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { PlayerType } from "@/enums/account";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
@@ -154,11 +155,11 @@ const LaunchPage = () => {
                 </Text>
                 <Text fontSize="2xs" className="secondary-text">
                   {t(
-                    `Enums.playerTypes.${selectedPlayer.playerType === "3rdparty" ? "3rdpartyShort" : selectedPlayer.playerType}`
+                    `Enums.playerTypes.${selectedPlayer.playerType === PlayerType.ThirdParty ? "3rdpartyShort" : selectedPlayer.playerType}`
                   )}
                 </Text>
                 <Text fontSize="2xs" className="secondary-text">
-                  {selectedPlayer.playerType === "3rdparty" &&
+                  {selectedPlayer.playerType === PlayerType.ThirdParty &&
                     selectedPlayer.authServer?.name}
                 </Text>
               </VStack>
