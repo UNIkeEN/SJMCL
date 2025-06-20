@@ -28,7 +28,7 @@ import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
 import { InstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
@@ -37,14 +37,14 @@ import { generateInstanceDesc } from "@/utils/instance";
 interface CopyOrMoveModalProps extends Omit<ModalProps, "children"> {
   srcResName: string;
   srcFilePath: string;
-  tgtDirType?: InstanceSubdirEnums;
+  tgtDirType?: InstanceSubdirType;
   srcInstanceId?: string;
 }
 
 const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   srcResName,
   srcFilePath,
-  tgtDirType = InstanceSubdirEnums.Root,
+  tgtDirType = InstanceSubdirType.Root,
   srcInstanceId,
   ...modalProps
 }) => {
@@ -62,7 +62,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     []
   );
   const [_tgtDirType, _setTgtDirType] =
-    useState<InstanceSubdirEnums>(tgtDirType);
+    useState<InstanceSubdirType>(tgtDirType);
   const [_srcInstanceId, _setSrcInstanceId] = useState<string | undefined>(
     srcInstanceId
   );
@@ -82,7 +82,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   }, [router, srcInstanceId, t, toast]);
 
   useEffect(() => {
-    if (tgtDirType !== InstanceSubdirEnums.Root) return;
+    if (tgtDirType !== InstanceSubdirType.Root) return;
     if (router === undefined) {
       toast({
         title: t("CopyOrMoveModal.error.lackOfArguments"),
@@ -92,16 +92,16 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     }
     switch (router.pathname.split("/").pop()) {
       case "resourcepacks":
-        _setTgtDirType(InstanceSubdirEnums.ResourcePacks);
+        _setTgtDirType(InstanceSubdirType.ResourcePacks);
         break;
       case "shaderpacks":
-        _setTgtDirType(InstanceSubdirEnums.ShaderPacks);
+        _setTgtDirType(InstanceSubdirType.ShaderPacks);
         break;
       case "schematics":
-        _setTgtDirType(InstanceSubdirEnums.Schematics);
+        _setTgtDirType(InstanceSubdirType.Schematics);
         break;
       case "worlds":
-        _setTgtDirType(InstanceSubdirEnums.Saves);
+        _setTgtDirType(InstanceSubdirType.Saves);
         break;
     }
   }, [router, tgtDirType, t, toast]);
@@ -123,12 +123,12 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     (
       srcFilePath: string,
       tgtInstId: string[],
-      tgtDirType: InstanceSubdirEnums
+      tgtDirType: InstanceSubdirType
     ) => {
       if (
         srcFilePath !== undefined &&
         tgtInstId &&
-        tgtDirType !== InstanceSubdirEnums.Root
+        tgtDirType !== InstanceSubdirType.Root
       ) {
         InstanceService.copyResourceToInstances(
           srcFilePath,
@@ -162,12 +162,12 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     (
       srcFilePath: string,
       tgtInstId: string,
-      tgtDirType: InstanceSubdirEnums
+      tgtDirType: InstanceSubdirType
     ) => {
       if (
         srcFilePath !== undefined &&
         tgtInstId &&
-        tgtDirType !== InstanceSubdirEnums.Root
+        tgtDirType !== InstanceSubdirType.Root
       ) {
         InstanceService.moveResourceToInstance(
           srcFilePath,

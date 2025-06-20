@@ -11,7 +11,7 @@ import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { ResourcePackInfo } from "@/models/instance/misc";
 import { base64ImgSrc } from "@/utils/string";
 
@@ -46,7 +46,7 @@ const InstanceResourcePacksPage = () => {
         {
           icon: "openFolder",
           onClick: () => {
-            handleOpenInstanceSubdir(InstanceSubdirEnums.ResourcePacks);
+            handleOpenInstanceSubdir(InstanceSubdirType.ResourcePacks);
           },
         },
         {
@@ -57,7 +57,7 @@ const InstanceResourcePacksPage = () => {
                 "InstanceDetailsLayout.instanceTabList.resourcepacks"
               ),
               filterExt: ["zip"],
-              tgtDirType: InstanceSubdirEnums.ResourcePacks,
+              tgtDirType: InstanceSubdirType.ResourcePacks,
               decompress: false,
               onSuccessCallback: () => {
                 setResourcePacks(getResourcePackList(true) || []);

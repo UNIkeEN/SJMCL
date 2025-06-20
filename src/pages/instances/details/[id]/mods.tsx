@@ -31,7 +31,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
+import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
@@ -144,7 +144,7 @@ const InstanceModsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirEnums.Mods);
+        handleOpenInstanceSubdir(InstanceSubdirType.Mods);
       },
     },
     {
@@ -153,7 +153,7 @@ const InstanceModsPage = () => {
         handleImportResource({
           filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
           filterExt: ["zip", "jar", "disabled"],
-          tgtDirType: InstanceSubdirEnums.Mods,
+          tgtDirType: InstanceSubdirType.Mods,
           decompress: false,
           onSuccessCallback: () => {
             getLocalModListWrapper(true);
@@ -231,7 +231,7 @@ const InstanceModsPage = () => {
         }}
       >
         <ModLoaderCards
-          currentType={summary?.modLoader.loaderType || "Unknown"}
+          currentType={summary?.modLoader.loaderType || ModLoaderType.Unknown}
           currentVersion={summary?.modLoader.version}
           displayMode="entry"
         />
@@ -299,7 +299,7 @@ const InstanceModsPage = () => {
           </HStack>
         }
       >
-        {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
+        {summary?.modLoader.loaderType === ModLoaderType.Unknown &&
           filteredMods.length > 0 && (
             <HStack fontSize="xs" color="red.600" mt={-0.5} ml={1.5} mb={2}>
               <Icon as={LuTriangleAlert} />
@@ -335,7 +335,7 @@ const InstanceModsPage = () => {
                         {mod.version}
                       </Text>
                     )}
-                    {mod.loaderType !== ModLoaderEnums.Unknown && (
+                    {mod.loaderType !== ModLoaderType.Unknown && (
                       <Tag colorScheme={primaryColor} className="tag-xs">
                         {mod.loaderType}
                       </Tag>

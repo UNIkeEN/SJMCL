@@ -41,7 +41,7 @@ import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { ModLoaderEnums, ModLoaderType } from "@/enums/instance";
+import { ModLoaderType } from "@/enums/instance";
 import {
   modTagList,
   modpackTagList,
@@ -82,9 +82,9 @@ const DownloadSpecificResourceModal: React.FC<
 
   const modLoaderLabels = [
     "All",
-    ModLoaderEnums.Fabric,
-    ModLoaderEnums.Forge,
-    ModLoaderEnums.NeoForge,
+    ModLoaderType.Fabric,
+    ModLoaderType.Forge,
+    ModLoaderType.NeoForge,
   ];
   const [isLoadingGameVersionList, setIsLoadingGameVersionList] =
     useState<boolean>(true);

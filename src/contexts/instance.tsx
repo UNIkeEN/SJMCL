@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { useGetState, usePromisedGetState } from "@/hooks/get-state";
 import { GameConfig } from "@/models/config";
 import {
@@ -37,7 +37,7 @@ export interface InstanceContextType {
   getScreenshotList: (sync?: boolean) => ScreenshotInfo[] | undefined;
   // getInstanceGameConfig: (sync?: boolean) => GameConfig | undefined;
   // shared service handler
-  handleOpenInstanceSubdir: (dirType: InstanceSubdirEnums) => void;
+  handleOpenInstanceSubdir: (dirType: InstanceSubdirType) => void;
   handleImportResource: (option: any) => void;
   handleUpdateInstanceConfig: (path: string, value: any) => void;
   handleResetInstanceGameConfig: () => void;
@@ -128,7 +128,7 @@ export const InstanceContextProvider: React.FC<{
   }, [router.query.id, getInstanceList, handleRetrieveInstanceGameConfig]);
 
   const handleOpenInstanceSubdir = useCallback(
-    (dirType: InstanceSubdirEnums) => {
+    (dirType: InstanceSubdirType) => {
       if (instanceSummary?.id !== undefined) {
         InstanceService.openInstanceSubdir(instanceSummary.id, dirType).then(
           (response) => {
@@ -148,7 +148,7 @@ export const InstanceContextProvider: React.FC<{
   type ImportResourceOptions = {
     filterName: string;
     filterExt: string[];
-    tgtDirType: InstanceSubdirEnums;
+    tgtDirType: InstanceSubdirType;
     decompress?: boolean;
     onSuccessCallback: () => void;
   };
