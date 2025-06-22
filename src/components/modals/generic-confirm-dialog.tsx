@@ -50,7 +50,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
     if (dontAskAgain && suppressKey) {
       const current = config.suppressedDialogs ?? [];
       if (!current.includes(suppressKey)) {
-        update("confirmSuppress", [...current, suppressKey]);
+        update("suppressedDialogs", [...current, suppressKey]);
       }
     }
     onClose();
@@ -77,7 +77,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
                     isChecked={dontAskAgain}
                     onChange={(e) => setDontAskAgain(e.target.checked)}
                   />
-                  {btnSuppress}
+                  <text>{btnCancel}</text>
                 </HStack>
               )}
             </Flex>
