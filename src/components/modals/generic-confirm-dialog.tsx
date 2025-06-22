@@ -24,6 +24,7 @@ interface GenericConfirmDialogProps {
   btnSuppress: string;
   onOKCallback?: () => void;
   isAlert?: boolean;
+  isLoading?: boolean;
   showSuppressBtn?: boolean;
   suppressKey?: string;
 }
@@ -38,6 +39,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   btnSuppress,
   onOKCallback,
   isAlert = false,
+  isLoading = false,
   showSuppressBtn = false,
   suppressKey,
 }) => {
@@ -93,6 +95,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
                 onOKCallback?.();
                 handleClose();
               }}
+              isLoading={isLoading}
             >
               {btnOK}
             </Button>

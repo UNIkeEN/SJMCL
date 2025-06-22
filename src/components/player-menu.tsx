@@ -50,8 +50,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   } = useDisclosure();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeletePlayer = () => {
+    setIsDeleting(true);
     AccountService.deletePlayer(player.id).then((response) => {
       if (response.status === "success") {
         Promise.all([getPlayerList(true), refreshConfig()]);
@@ -66,6 +68,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           status: "error",
         });
       }
+      setIsDeleting(false);
       closeSharedModal("generic-confirm");
     });
   };
@@ -187,7 +190,6 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           ))}
         </HStack>
       )}
-
       {player.playerType === PlayerType.Offline ? (
         <ManageSkinModal
           isOpen={isSkinModalOpen}

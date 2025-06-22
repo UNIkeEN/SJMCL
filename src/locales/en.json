@@ -671,9 +671,15 @@
   },
   "General": {
     "add": "Add",
+    "alert": {
+      "noFullLogin": {
+        "title": "Player type is not available currently",
+        "description": "Please log in with your Microsoft account before accessing this feature."
+      }
+    },
     "cancel": "Cancel",
     "close": "Close",
-    "confirm": "Confirm",
+    "confirm": "OK",
     "copy": {
       "text": "Copy",
       "toast": {

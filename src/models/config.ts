@@ -63,6 +63,7 @@ export interface LauncherConfig {
     osType: string;
     platformVersion: string;
     isPortable: boolean;
+    allowFullLoginFeature: boolean;
   };
   mocked: boolean;
   runCount: number;
@@ -207,6 +208,7 @@ export const defaultConfig: LauncherConfig = {
     osType: "",
     platformVersion: "",
     isPortable: false,
+    allowFullLoginFeature: false,
   },
   mocked: true,
   runCount: -1,

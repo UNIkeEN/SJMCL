@@ -52,3 +52,19 @@ pub fn build_sjmcl_client(app: &AppHandle, use_version_header: bool, use_proxy: 
 
   builder.build().unwrap_or_else(|_| Client::new())
 }
+
+pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
+  let client = app.state::<Client>();
+
+  // retrieve the real IP
+  let resp = client
+    .get("https://cloudflare.com/cdn-cgi/trace")
+    .send()
+    .await
+    .ok()?;
+  let text = resp.text().await.ok()?;
+  let locale = text.split('\n').find(|line| line.starts_with("loc="))?;
+  let country = locale.split('=').nth(1)?;
+
+  Some(country == "CN")
+}

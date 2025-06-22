@@ -4,8 +4,7 @@ use crate::{
     models::{AccountError, PlayerInfo, PlayerType, Texture},
   },
   error::SJMCLResult,
-  utils::fs::get_app_resource_filepath,
-  utils::image::load_image_from_dir,
+  utils::{fs::get_app_resource_filepath, image::load_image_from_dir},
 };
 use rand::seq::IndexedRandom;
 use tauri::AppHandle;

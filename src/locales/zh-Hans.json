@@ -671,6 +671,12 @@
   },
   "General": {
     "add": "添加",
+    "alert": {
+      "noFullLogin": {
+        "title": "暂不支持添加该类型角色",
+        "description": "请先登录微软账户后使用此功能。"
+      }
+    },
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",

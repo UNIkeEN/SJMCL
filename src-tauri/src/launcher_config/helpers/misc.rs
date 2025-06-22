@@ -5,7 +5,6 @@ use crate::{
     models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig},
   },
   partial::{PartialAccess, PartialUpdate},
-  storage::Storage,
   utils::portable::{extract_assets, is_portable},
 };
 use rand::Rng;
@@ -99,6 +98,7 @@ impl LauncherConfig {
       os_type: tauri_plugin_os::type_().to_string(),
       platform_version: tauri_plugin_os::version().to_string(),
       is_portable: portable,
+      allow_full_login_feature: false, // default to false, will be updated later
     };
 
     Ok(())
