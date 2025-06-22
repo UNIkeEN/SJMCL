@@ -4,7 +4,7 @@ const subCommand = process.argv[2];
 
 if (!subCommand) {
   console.error(
-    "Please specify a subcommand for locale (diff, gen_placeholder)"
+    "Please specify a subcommand for locale (diff, rm, gen_placeholder)"
   );
   process.exit(1);
 }
@@ -15,7 +15,7 @@ try {
 } catch (error) {
   if (error.code === "MODULE_NOT_FOUND") {
     console.error(`Unknown subcommand: ${subCommand}`);
-    console.error("Available subcommands: diff");
+    console.error("Available subcommands: diff, rm, gen_placeholder");
   } else {
     console.error(error);
   }

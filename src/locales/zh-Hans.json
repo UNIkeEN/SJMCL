@@ -235,6 +235,10 @@
     "font": {
       "title": "字体",
       "settings": {
+        "fontFamily": {
+          "title": "界面字体",
+          "default": "默认"
+        },
         "fontSize": {
           "title": "字体大小",
           "small": "小",
@@ -1104,6 +1108,11 @@
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
   },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "显示全部（+{{left}}）"
+    }
+  },
   "PlayerMenu": {
     "label": {
       "manageSkin": "管理皮肤",
@@ -1893,7 +1902,11 @@
     "input": {
       "placeholder": "聚合搜索"
     },
-    "tip": "集中一处搜索本地内容与线上游戏资源"
+    "tip": "集中一处搜索本地内容与线上游戏资源",
+    "result": {
+      "instance": "实例",
+      "player": "角色"
+    }
   },
   "StarUsModal": {
     "header": {

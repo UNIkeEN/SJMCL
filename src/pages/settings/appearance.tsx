@@ -42,6 +42,7 @@ import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
+import { retrieveFontList } from "@/services/utils";
 import { extractFileName } from "@/utils/string";
 
 const AppearanceSettingsPage = () => {
@@ -223,6 +224,94 @@ const AppearanceSettingsPage = () => {
           </MenuOptionGroup>
         </MenuList>
       </Menu>
+    );
+  };
+
+  const FontFamilyMenu = () => {
+    const [fonts, setFonts] = useState<string[]>([]);
+
+    useEffect(() => {
+      const handleRetrieveFontList = async () => {
+        const res = await retrieveFontList();
+        setFonts(["%built-in", ...res]);
+      };
+      handleRetrieveFontList();
+    }, []);
+
+    const buildFontName = (font: string) => {
+      return font === "%built-in"
+        ? t("AppearanceSettingsPage.font.settings.fontFamily.default")
+        : font;
+    };
+
+    return (
+      <Menu>
+        <MenuButton
+          as={Button}
+          size="xs"
+          w="auto"
+          rightIcon={<LuChevronDown />}
+          variant="outline"
+          textAlign="left"
+        >
+          {buildFontName(appearanceConfigs.font.fontFamily)}
+        </MenuButton>
+        <MenuList maxH="40vh" overflow="auto">
+          <MenuOptionGroup
+            value={buildFontName(appearanceConfigs.font.fontFamily)}
+            type="radio"
+            onChange={(value) => {
+              update("appearance.font.fontFamily", value);
+            }}
+          >
+            {fonts.map((font) => (
+              <MenuItemOption
+                value={font}
+                fontSize="xs"
+                fontFamily={
+                  font === "%built-in" ? "-apple-system, Sinter" : font
+                }
+                key={font}
+              >
+                {buildFontName(font)}
+              </MenuItemOption>
+            ))}
+          </MenuOptionGroup>
+        </MenuList>
+      </Menu>
+    );
+  };
+
+  const FontSizeSlider = () => {
+    return (
+      <HStack spacing={2}>
+        <Text fontSize="10.88px">
+          {" "}
+          {/* 85% */}
+          {t("AppearanceSettingsPage.font.settings.fontSize.small")}
+        </Text>
+        <Slider
+          value={appearanceConfigs.font.fontSize}
+          min={85}
+          max={115}
+          step={5}
+          w={32}
+          colorScheme={primaryColor}
+          onChange={(value) => {
+            update("appearance.font.fontSize", value);
+          }}
+        >
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
+          <SliderThumb />
+        </Slider>
+        <Text fontSize="14.72px">
+          {" "}
+          {/* 115% */}
+          {t("AppearanceSettingsPage.font.settings.fontSize.large")}
+        </Text>
+      </HStack>
     );
   };
 
@@ -420,49 +509,25 @@ const AppearanceSettingsPage = () => {
         },
       ],
     },
-    // font size settings cannot work in Windows now: https://github.com/UNIkeEN/SJMCL/issues/376
-    ...(config.basicInfo.osType !== "windows"
-      ? [
-          {
-            title: t("AppearanceSettingsPage.font.title"),
-            items: [
+
+    {
+      title: t("AppearanceSettingsPage.font.title"),
+      items: [
+        {
+          title: t("AppearanceSettingsPage.font.settings.fontFamily.title"),
+          children: <FontFamilyMenu />,
+        },
+        // font size settings cannot work in Windows now: https://github.com/UNIkeEN/SJMCL/issues/376
+        ...(config.basicInfo.osType !== "windows"
+          ? [
               {
                 title: t("AppearanceSettingsPage.font.settings.fontSize.title"),
-                children: (
-                  <HStack spacing={2}>
-                    <Text fontSize="10.88px">
-                      {" "}
-                      {/* 85% */}
-                      {t("AppearanceSettingsPage.font.settings.fontSize.small")}
-                    </Text>
-                    <Slider
-                      value={appearanceConfigs.font.fontSize}
-                      min={85}
-                      max={115}
-                      step={5}
-                      w={32}
-                      colorScheme={primaryColor}
-                      onChange={(value) => {
-                        update("appearance.font.fontSize", value);
-                      }}
-                    >
-                      <SliderTrack>
-                        <SliderFilledTrack />
-                      </SliderTrack>
-                      <SliderThumb />
-                    </Slider>
-                    <Text fontSize="14.72px">
-                      {" "}
-                      {/* 115% */}
-                      {t("AppearanceSettingsPage.font.settings.fontSize.large")}
-                    </Text>
-                  </HStack>
-                ),
+                children: <FontSizeSlider />,
               },
-            ],
-          },
-        ]
-      : []),
+            ]
+          : []),
+      ],
+    },
     {
       title: t("AppearanceSettingsPage.background.title"),
       items: [

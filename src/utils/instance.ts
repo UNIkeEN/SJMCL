@@ -1,10 +1,10 @@
 import { t } from "i18next";
-import { ModLoaderEnums } from "@/enums/instance";
+import { ModLoaderType } from "@/enums/instance";
 import { GameDirectory } from "@/models/config";
 import { InstanceSummary } from "@/models/instance/misc";
 
 export const generateInstanceDesc = (instance: InstanceSummary) => {
-  if (instance.modLoader.loaderType === ModLoaderEnums.Unknown) {
+  if (instance.modLoader.loaderType === ModLoaderType.Unknown) {
     return instance.version || "";
   }
   return [

@@ -50,7 +50,7 @@ export interface ModLoaderResourceInfo {
 }
 
 export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
-  loaderType: "Unknown",
+  loaderType: ModLoaderType.Unknown,
   version: "",
   stable: true,
 };

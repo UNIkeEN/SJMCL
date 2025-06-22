@@ -28,6 +28,11 @@ export const DownloadFloatButton: React.FC = () => {
             // colorScheme="blackAlpha"
             p={1}
             size="auto"
+            borderRadius={
+              config.appearance.theme.useLiquidGlassDesign
+                ? "calc(1rem - var(--chakra-space-1))"
+                : "unset"
+            }
             onClick={() => {
               router.push("/downloads");
             }}

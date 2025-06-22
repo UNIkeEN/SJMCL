@@ -74,6 +74,7 @@ export interface LauncherConfig {
       headNavStyle: string;
     };
     font: {
+      fontFamily: string;
       fontSize: number;
     };
     background: {
@@ -217,6 +218,7 @@ export const defaultConfig: LauncherConfig = {
       headNavStyle: "standard",
     },
     font: {
+      fontFamily: "%built-in",
       fontSize: 100,
     },
     background: {

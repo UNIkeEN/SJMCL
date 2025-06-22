@@ -74,6 +74,7 @@ cafebabe = "0.8.1"
 tauri-plugin-deep-link = "2"
 flume = { version = "0.11.1", features = ["async", "select"] }
 tauri-utils = "2.2.0"
+font-loader = "0.11.0"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

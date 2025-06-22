@@ -9,7 +9,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { ShaderPackInfo } from "@/models/instance/misc";
 
 const InstanceShaderPacksPage = () => {
@@ -32,7 +32,7 @@ const InstanceShaderPacksPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirEnums.ShaderPacks);
+        handleOpenInstanceSubdir(InstanceSubdirType.ShaderPacks);
       },
     },
     {
@@ -41,7 +41,7 @@ const InstanceShaderPacksPage = () => {
         handleImportResource({
           filterName: t("InstanceDetailsLayout.instanceTabList.shaderpacks"),
           filterExt: ["zip"],
-          tgtDirType: InstanceSubdirEnums.ShaderPacks,
+          tgtDirType: InstanceSubdirType.ShaderPacks,
           decompress: false,
           onSuccessCallback: () => {
             setShaderPacks(getShaderPackList(true) || []);

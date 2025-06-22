@@ -9,6 +9,7 @@ use crate::{
   error::SJMCLResult, instance::helpers::misc::refresh_instances, partial::PartialUpdate,
 };
 use crate::{storage::Storage, utils::fs::get_subdirectories};
+use font_loader::system_fonts;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
@@ -293,6 +294,12 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
 #[tauri::command]
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
   Ok(get_memory_info())
+}
+
+#[tauri::command]
+pub fn retrieve_truetype_font_list() -> SJMCLResult<Vec<String>> {
+  let sysfonts = system_fonts::query_all();
+  Ok(sysfonts)
 }
 
 #[tauri::command]

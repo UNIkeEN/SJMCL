@@ -50,7 +50,8 @@
           "description": "版權所有 © 2024-2025 SJMCL 開發團隊."
         },
         "userAgreement": {
-          "title": "使用者協議"
+          "title": "使用者協議",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
         },
         "openSourceLicense": {
           "title": "開源協議",
@@ -176,7 +177,7 @@
           "3rdparty": "此認證源支援 Yggdrasil Connect 規範提案",
           "microsoft": "SJMCL 支援微軟 OAuth 2.0 裝置許可權授予流"
         },
-        "next": "請點選繼續登入按鈕開啟登入視窗，輸入以上程式碼（已自動複製）"
+        "next": "請點選繼續登入按鈕跳轉登入頁面，輸入以上程式碼（已自動複製）"
       },
       "button": {
         "start": {
@@ -218,6 +219,10 @@
             "dark": "深色"
           }
         },
+        "useLiquidGlassDesign": {
+          "title": "液態玻璃效果",
+          "description": "啟用後，部分介面將使用「液態玻璃」效果，這可能會影響效能"
+        },
         "headNavStyle": {
           "title": "頂部導航欄樣式",
           "type": {
@@ -246,6 +251,9 @@
         "custom": {
           "title": "自定義影像",
           "add": "新增"
+        },
+        "randomCustom": {
+          "title": "隨機自定義"
         }
       },
       "presetBgList": {
@@ -320,6 +328,9 @@
       "info": "基本設定"
     }
   },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "您最近更改了此例項的名稱，請重新整理例項列表或重啟啟動器後，再次嘗試新增啟動快捷方式。"
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "刪除遊戲例項",
@@ -373,7 +384,7 @@
       "world": "世界",
       "mod": "模組",
       "resourcepack": "資源包",
-      "shaderpack": "光影"
+      "shader": "光影"
     }
   },
   "DownloadSettingPage": {
@@ -433,6 +444,19 @@
       }
     }
   },
+  "DownloadSpecificResourceModal": {
+    "title": "資源下載 - {{name}}",
+    "label": {
+      "all": "全部",
+      "recommendedVersion": "推薦版本",
+      "currentModLoader": "當前載入器"
+    },
+    "releaseType": {
+      "alpha": "內測版",
+      "beta": "公測版",
+      "release": "正式版"
+    }
+  },
   "DownloadTasksPage": {
     "title": "下載中任務",
     "button": {
@@ -489,7 +513,8 @@
       "dirName": {
         "empty": "目錄名稱不能為空",
         "tooLong": "目錄名稱不能超過 20 個字元",
-        "exist": "目錄名稱已存在"
+        "exist": "目錄名稱已存在",
+        "hasInvalidChar": "目錄名稱存在非法字元"
       },
       "dirPath": {
         "exist": "目錄路徑已存在"
@@ -624,7 +649,8 @@
   "GameLogPage": {
     "placeholder": "輸入關鍵詞篩選",
     "exportLogs": "匯出日誌",
-    "clearLogs": "清除所有日誌"
+    "clearLogs": "清除所有日誌",
+    "scrollToBottom": "滾動到底部"
   },
   "GameVersionSelector": {
     "old_beta": "遠古版",
@@ -698,9 +724,11 @@
           }
         },
         "instancesNavType": {
-          "title": "例項導航欄分組方式",
+          "title": "例項頁導航欄模式",
+          "description": "更改例項頁左側導航欄是否顯示、分組方式",
           "instance": "按例項",
-          "directory": "按目錄"
+          "directory": "按目錄",
+          "hidden": "隱藏"
         },
         "launchPageQuickSwitch": {
           "title": "快捷切換例項與賬戶",
@@ -716,6 +744,7 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "當前資料夾",
+            "APP_DATA_SUBDIR": "SJMCL 資料資料夾",
             "OFFICIAL_DIR": "官方啟動器資料夾"
           }
         }
@@ -786,8 +815,8 @@
       "settings": {
         "launcherVisibility": {
           "title": "啟動器可見性",
-          "start-close": "遊戲啟動後結束啟動器",
-          "running-hidden": "遊戲執行時隱藏啟動器",
+          "startHidden": "遊戲啟動後隱藏啟動器",
+          "runningHidden": "遊戲執行時隱藏啟動器",
           "always": "啟動器始終可見"
         },
         "autoJoinGameServer": {
@@ -809,7 +838,7 @@
   "HeadNavBar": {
     "navList": {
       "launch": "啟動",
-      "instances": "遊戲",
+      "instances": "例項",
       "accounts": "賬戶",
       "discover": "發現",
       "search": "搜尋",
@@ -852,7 +881,8 @@
     "top": {
       "settings": {
         "LauncherDocs": {
-          "title": "SJMC Launcher 文件"
+          "title": "SJMC Launcher 文件",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
         }
       }
     }
@@ -862,6 +892,7 @@
   },
   "InstanceDetailsLayout": {
     "secMenu": {
+      "createShortcut": "建立啟動快捷方式",
       "exportModPack": "匯出為整合包",
       "star": "星標此例項",
       "unstar": "取消星標"
@@ -1003,7 +1034,8 @@
       },
       "addFailed": {
         "title": "新增 Java 失敗",
-        "description": "不是有效的 Java 可執行檔案"
+        "invalid": "不是有效的 Java 可執行檔案或與當前平臺不相容",
+        "duplicated": "目標 Java 路徑已新增"
       }
     },
     "confirmDelete": {
@@ -1095,7 +1127,7 @@
       "sjmclapi": "SJMC Launcher API"
     }
   },
-  "ReLogin3rdPartyPlayerModal": {
+  "ReLoginPlayerModal": {
     "modal": {
       "title": "重新登入"
     },
@@ -1124,53 +1156,83 @@
     "modTagList": {
       "CurseForge": {
         "All": "全部",
-        "Addons": "外掛",
+        "Addons": "附屬模組",
         "Adventure and RPG": "冒險 RPG",
         "API and Library": "支援庫",
+        "Applied Energistics 2": "應用能源2",
         "Armor, Tools, and Weapons": "裝備 武器",
+        "Automation": "自動化",
+        "Biomes": "生物群系",
+        "Blood Magic": "血魔法",
+        "Buildcraft": "建築",
         "Bug Fixes": "錯誤修復",
         "Cosmetic": "裝飾",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "機械動力",
+        "Dimensions": "維度",
         "Education": "教育",
+        "Energy": "能源",
+        "Energy, Fluid, and Item Transport": "能源 流體 物品運輸",
+        "Farming": "農業",
         "Food": "食物",
+        "Forestry": "林業",
+        "Galacticraft": "星系",
+        "Genetics": "遺傳學",
+        "Industrial Craft": "工業時代2",
+        "Integrated Dynamics": "整合動力",
+        "KubeJS": "KubeJS",
         "Magic": "魔法",
         "Map and Information": "地圖 資訊",
         "MCreator": "MCreator",
         "Miscellaneous": "雜項",
+        "Mobs": "生物",
+        "Ores and Resources": "礦石 資源",
         "Performance": "效能",
+        "Player Transport": "玩家運輸",
+        "Processing": "加工處理",
         "Redstone": "紅石",
         "Server Utility": "伺服器",
-        "Storage": "儲存",
+        "Skyblock": "空島",
+        "Storage": "儲存系統",
+        "Structures": "結構",
         "Technology": "科技",
-        "Twitch Integration": "Twitch",
-        "Utility & QoL": "實用 QoL",
-        "World Gen": "世界生成"
+        "Thaumcraft": "神秘時代",
+        "Thermal Expansion": "熱力膨脹",
+        "Tinker's Construct": "匠魂",
+        "Twilight Forest": "暮色森林",
+        "Twitch Integration": "Twitch整合",
+        "Utility & QoL": "實用功能與最佳化",
+        "World Gen": "世界生成",
+        "Auxiliary": "輔助模組",
+        "World": "世界"
       },
       "Modrinth": {
         "All": "全部",
-        "Adventure": "冒險",
-        "Cursed": "詛咒",
-        "Decoration": "裝飾",
-        "Economy": "經濟",
-        "Equipment": "裝備",
-        "Food": "食物",
-        "Game Mechanics": "遊戲機制",
-        "Library": "支援庫",
-        "Magic": "魔法",
-        "Management": "管理",
-        "Minigame": "小遊戲",
-        "Mobs": "生物",
-        "Optimization": "最佳化",
-        "Social": "社交",
-        "Storage": "儲存",
-        "Technology": "科技",
-        "Transportation": "交通運輸",
-        "Utility": "實用",
-        "World Generation": "世界生成"
+        "adventure": "冒險",
+        "cursed": "詛咒",
+        "decoration": "裝飾",
+        "economy": "經濟",
+        "equipment": "裝備",
+        "food": "食物",
+        "game-mechanics": "遊戲機制",
+        "library": "支援庫",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "小遊戲",
+        "mobs": "生物",
+        "optimization": "最佳化",
+        "social": "社交",
+        "storage": "儲存",
+        "technology": "科技",
+        "transportation": "交通運輸",
+        "utility": "實用",
+        "worldgen": "世界生成"
       }
     },
     "worldTagList": {
       "CurseForge": {
         "All": "全部",
+        "Types": "型別",
         "Adventure": "冒險模式",
         "Creation": "創造模式",
         "Game Map": "遊戲挑戰",
@@ -1183,13 +1245,16 @@
     "resourcepackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Resolution": "解析度",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x 及以上",
+        "Styles": "風格",
         "Animated": "動畫",
+        "Special": "特殊",
         "Data Packs": "資料包",
         "Font Packs": "字型包",
         "Medieval": "中世紀",
@@ -1202,64 +1267,75 @@
       },
       "Modrinth": {
         "All": "全部",
-        "8x or lower": "8x 或更低",
+        "Resolution": "解析度",
+        "8x-": "8x 或更低",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
-        "512x or higher": "512x 或更高",
-        "Audio": "音訊",
-        "Blocks": "方塊",
-        "Core Shaders": "核心著色器",
-        "Entities": "實體",
-        "Environment": "環境",
-        "Equipment": "裝備",
-        "Fonts": "字型",
-        "GUI": "使用者介面",
-        "Items": "物品",
-        "Locale": "本地化",
-        "Models": "模型",
-        "Combat": "戰鬥",
-        "Cursed": "詛咒",
-        "Decoration": "裝飾",
-        "Modded": "模組",
-        "Realistic": "寫實",
-        "Simplistic": "簡約",
-        "Themed": "主題",
-        "Tweaks": "最佳化",
-        "Utility": "實用",
-        "Vanilla-like": "原版風格"
+        "512x+": "512x 或更高",
+        "Styles": "風格",
+        "audio": "音訊",
+        "blocks": "方塊",
+        "core-shaders": "核心著色器",
+        "entities": "實體",
+        "environment": "環境",
+        "equipment": "裝備",
+        "fonts": "字型",
+        "gui": "使用者介面",
+        "items": "物品",
+        "locale": "本地化",
+        "models": "模型",
+        "combat": "戰鬥",
+        "cursed": "詛咒",
+        "decoration": "裝飾",
+        "modded": "模組",
+        "realistic": "寫實",
+        "simplistic": "簡約",
+        "themed": "主題",
+        "tweaks": "最佳化",
+        "utility": "實用",
+        "vanilla-like": "原版風格"
       }
     },
-    "shaderpackTagList": {
+    "shaderTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "風格",
         "Fantasy": "奇幻",
         "Realistic": "寫實",
         "Vanilla": "原版"
       },
       "Modrinth": {
         "All": "全部",
-        "Cartoon": "卡通",
-        "Cursed": "詛咒",
-        "Fantasy": "奇幻",
-        "Realistic": "寫實",
-        "Semi-Realistic": "半寫實",
-        "Vanilla-like": "原版風格",
-        "Atmosphere": "大氣",
-        "Bloom": "泛光",
-        "Colored Lighting": "彩色光照",
-        "Foliage": "植被",
-        "Path Tracing": "路徑追蹤",
-        "PBR": "PBR",
-        "Reflections": "反射",
-        "Shadows": "陰影"
+        "Styles": "風格",
+        "cartoon": "卡通",
+        "cursed": "詛咒",
+        "fantasy": "奇幻",
+        "realistic": "寫實",
+        "semi-realistic": "半寫實",
+        "vanilla-like": "原版風格",
+        "atmosphere": "大氣",
+        "bloom": "泛光",
+        "colored-lighting": "彩色光照",
+        "foliage": "植被",
+        "path-tracing": "路徑追蹤",
+        "pbr": "PBR",
+        "reflections": "反射",
+        "shadows": "陰影",
+        "potato": "極低",
+        "performance": "效能",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "screenshot": "影視級"
       }
     },
     "modpackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "風格",
         "Adventure and RPG": "冒險 RPG",
         "Combat / PvP": "戰鬥 PvP",
         "Exploration": "探索",
@@ -1280,21 +1356,21 @@
       },
       "Modrinth": {
         "All": "全部",
-        "Adventure": "冒險",
-        "Challenging": "挑戰",
-        "Combat": "戰鬥",
-        "Kitchen Sink": "大雜燴",
-        "Lightweight": "輕量整合",
-        "Magic": "魔法",
-        "Multiplayer": "多人",
-        "Optimization": "最佳化",
-        "Quests": "任務",
-        "Technology": "科技"
+        "styles": "風格",
+        "adventure": "冒險",
+        "challenging": "挑戰",
+        "combat": "戰鬥",
+        "kitchen-sink": "大雜燴",
+        "lightweight": "輕量整合",
+        "magic": "魔法",
+        "multiplayer": "多人",
+        "optimization": "最佳化",
+        "quests": "任務",
+        "technology": "科技"
       }
     },
     "sortByList": {
       "CurseForge": {
-        "Relevancy": "相關度",
         "Popularity": "熱度",
         "Latest update": "最近更新",
         "Creation date": "建立日期",
@@ -1302,11 +1378,11 @@
         "A-Z": "名稱"
       },
       "Modrinth": {
-        "Relevance": "相關度",
-        "Downloads": "下載量",
-        "Followers": "關注量",
-        "Date published": "釋出日期",
-        "Date updated": "更新日期"
+        "relevance": "相關度",
+        "downloads": "下載量",
+        "follows": "關注量",
+        "newest": "釋出日期",
+        "updated": "更新日期"
       }
     },
     "versionList": {
@@ -1435,7 +1511,6 @@
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NOT_FOUND": "認證伺服器不存在",
             "CANCELLED": "已取消",
-            "CREATE_WEBVIEW_ERROR": "建立 WebView 失敗",
             "INVALID": "無效的認證伺服器地址"
           }
         }
@@ -1495,16 +1570,29 @@
           }
         }
       },
-      "validatePlayer": {
+      "reloginPlayerOAuth": {
+        "success": "角色重新登入成功",
         "error": {
-          "title": "驗證角色失敗",
+          "title": "角色重新登入失敗",
           "description": {
             "NOT_FOUND": "角色不存在",
-            "EXPIRED": "訪問令牌已過期，請重新登入",
-            "NETWORK_ERROR": "無法連線到伺服器",
-            "PARSE_ERROR": "伺服器返回的資料格式錯誤",
-            "NO_DOWNLOAD_API": "下載 Authlib-Injector 失敗，請檢查網路連線",
-            "SAVE_ERROR": "儲存 Authlib-Injector 失敗"
+            "EXPIRED": "令牌已過期，請重新登入",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "INVALID": "不支援離線角色重新整理"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "角色重新登入成功",
+        "error": {
+          "title": "角色重新登入失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已過期，請重新登入",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "INVALID": "賬號或密碼錯誤"
           }
         }
       },
@@ -1542,18 +1630,69 @@
         }
       }
     },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "選擇合適 Java 執行時失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
+            "NO_SUITABLE_JAVA": "沒有合適的 Java 執行時可供選擇"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "驗證遊戲檔案失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "驗證角色失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "訪問令牌已過期，請重新登入",
+            "NETWORK_ERROR": "無法連線到伺服器",
+            "PARSE_ERROR": "伺服器返回的資料格式錯誤",
+            "NO_DOWNLOAD_API": "下載 Authlib-Injector 失敗，請檢查網路連線",
+            "SAVE_ERROR": "儲存 Authlib-Injector 失敗"
+          }
+        }
+      }
+    },
     "resource": {
       "fetchGameVersionList": {
         "error": {
           "title": "獲取遊戲版本列表失敗",
           "description": {
-            "PARSE_ERROR": "伺服器返回資料格式錯誤"
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線到伺服器"
           }
         }
       },
       "fetchModLoaderVersionList": {
         "error": {
           "title": "獲取模組載入器列表失敗",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "獲取資源列表失敗",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "獲取資源版本列表失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
@@ -1707,6 +1846,15 @@
           "title": "模組狀態切換失敗",
           "description": {
             "FILE_NOT_FOUND_ERROR": "模組檔案不存在，可能已更名、移動或刪除"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "啟動快捷方式已新增到桌面",
+        "error": {
+          "title": "啟動快捷方式建立失敗",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "命令執行失敗"
           }
         }
       }

@@ -21,7 +21,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { GameServerInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
@@ -91,7 +91,7 @@ const InstanceWorldsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirEnums.Saves);
+        handleOpenInstanceSubdir(InstanceSubdirType.Saves);
       },
     },
     {
@@ -100,7 +100,7 @@ const InstanceWorldsPage = () => {
         handleImportResource({
           filterName: t("InstanceDetailsLayout.instanceTabList.worlds"),
           filterExt: ["zip"],
-          tgtDirType: InstanceSubdirEnums.Saves,
+          tgtDirType: InstanceSubdirType.Saves,
           decompress: true,
           onSuccessCallback: () => {
             setWorlds(getWorldList(true) || []);

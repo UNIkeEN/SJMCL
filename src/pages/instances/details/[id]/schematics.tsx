@@ -10,7 +10,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { SchematicInfo } from "@/models/instance/misc";
 
 const InstanceSchematicsPage = () => {
@@ -33,7 +33,7 @@ const InstanceSchematicsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirEnums.Schematics);
+        handleOpenInstanceSubdir(InstanceSubdirType.Schematics);
       },
     },
     {
@@ -42,7 +42,7 @@ const InstanceSchematicsPage = () => {
         handleImportResource({
           filterName: t("InstanceDetailsLayout.instanceTabList.schematics"),
           filterExt: ["schematic", "litematic"],
-          tgtDirType: InstanceSubdirEnums.Schematics,
+          tgtDirType: InstanceSubdirType.Schematics,
           decompress: false,
           onSuccessCallback: () => {
             setSchematics(getSchematicList(true) || []);

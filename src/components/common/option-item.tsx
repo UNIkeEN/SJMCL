@@ -1,6 +1,7 @@
 import {
   Box,
   BoxProps,
+  Button,
   Card,
   Divider,
   Flex,
@@ -12,7 +13,9 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Section, SectionProps } from "@/components/common/section";
+import { useLauncherConfig } from "@/contexts/config";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 export interface OptionItemProps extends Omit<BoxProps, "title"> {
@@ -29,7 +32,9 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
 
 export interface OptionItemGroupProps extends SectionProps {
   items: (OptionItemProps | React.ReactNode)[];
+  withInCard?: boolean;
   withDivider?: boolean;
+  maxFirstVisibleItems?: number;
 }
 
 export const OptionItem: React.FC<OptionItemProps> = ({
@@ -85,6 +90,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         transition: "background-color 0.1s ease-in-out",
       }}
       cursor={isFullClickZone ? "pointer" : "default"}
+      p={0.5}
       {...boxProps}
     >
       <HStack spacing={2.5} overflowY="hidden">
@@ -138,10 +144,16 @@ export const OptionItem: React.FC<OptionItemProps> = ({
 
 export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   items,
+  withInCard = true,
   withDivider = true,
+  maxFirstVisibleItems,
   ...props
 }) => {
+  const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
+  const [showAll, setShowAll] = useState(false);
 
   function isOptionItemProps(item: any): item is OptionItemProps {
     return (
@@ -150,19 +162,53 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
     );
   }
 
+  const hasShowAllBtn = !(
+    !maxFirstVisibleItems ||
+    showAll ||
+    items.length <= maxFirstVisibleItems
+  );
+
+  const visibleItems = hasShowAllBtn
+    ? [...items.slice(0, maxFirstVisibleItems)]
+    : items;
+
+  const renderItems = () => (
+    <>
+      {[...visibleItems].map((item, index) => (
+        <React.Fragment key={index}>
+          {isOptionItemProps(item) ? <OptionItem {...item} /> : item}
+          {index !== visibleItems.length - 1 &&
+            (withDivider ? <Divider my={1.5} /> : <Box h={1.5} />)}
+        </React.Fragment>
+      ))}
+      {hasShowAllBtn && (
+        <Button
+          key="show-all"
+          size="xs"
+          colorScheme={primaryColor}
+          variant="ghost"
+          onClick={() => setShowAll(!showAll)}
+          mt={1.5}
+          ml={-1.5}
+        >
+          {t("OptionItemGroup.button.showAll", {
+            left: items.length - maxFirstVisibleItems,
+          })}
+        </Button>
+      )}
+    </>
+  );
+
   return (
     <Section {...props}>
-      {items.length > 0 && (
-        <Card className={themedStyles.card["card-front"]}>
-          {items.map((item, index) => (
-            <React.Fragment key={index}>
-              {isOptionItemProps(item) ? <OptionItem {...item} /> : item}
-              {index !== items.length - 1 &&
-                (withDivider ? <Divider my={2} /> : <Box h={2} />)}
-            </React.Fragment>
-          ))}
-        </Card>
-      )}
+      {items.length > 0 &&
+        (withInCard ? (
+          <Card className={themedStyles.card["card-front"]} py={2.5}>
+            {renderItems()}
+          </Card>
+        ) : (
+          renderItems()
+        ))}
     </Section>
   );
 };

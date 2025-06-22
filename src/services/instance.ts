@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { GameConfig } from "@/models/config";
 import {
   GameServerInfo,
@@ -81,13 +81,13 @@ export class InstanceService {
   /**
    * OPEN the specified instance subdir using system default fs manager.
    * @param {string} instanceId - The instance ID to open the subdir for.
-   * @param {InstanceSubdirEnums} dirType - The instance subdir type to open.
+   * @param {InstanceSubdirType} dirType - The instance subdir type to open.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async openInstanceSubdir(
     instanceId: string,
-    dirType: InstanceSubdirEnums
+    dirType: InstanceSubdirType
   ): Promise<InvokeResponse<void>> {
     return await invoke("open_instance_subdir", {
       instanceId,
@@ -130,7 +130,7 @@ export class InstanceService {
    * COPY the specified resource to the target instance(s).
    * @param {string} srcFilePath - The path of the file (or the directory) to copy.
    * @param {string[]} tgtInstIds - ID of the target instance(s).
-   * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
+   * @param {InstanceSubdirType} tgtDirType - The instance subdir type to operate.
    * @param {boolean} [decompress=false] - Whether to decompress as a zip file
    * @returns {Promise<InvokeResponse<void>>}
    */
@@ -138,7 +138,7 @@ export class InstanceService {
   static async copyResourceToInstances(
     srcFilePath: string,
     tgtInstIds: string[],
-    tgtDirType: InstanceSubdirEnums,
+    tgtDirType: InstanceSubdirType,
     decompress: boolean = false
   ): Promise<InvokeResponse<void>> {
     return await invoke("copy_resource_to_instances", {
@@ -153,14 +153,14 @@ export class InstanceService {
    * MOVE the specified resource to the target instance.
    * @param {string} srcFilePath - The path of the file (or the directory) to move.
    * @param {string} tgtInstId - The target instance ID.
-   * @param {InstanceSubdirEnums} tgtDirType - The instance subdir type to operate.
+   * @param {InstanceSubdirType} tgtDirType - The instance subdir type to operate.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async moveResourceToInstance(
     srcFilePath: string,
     tgtInstId: string,
-    tgtDirType: InstanceSubdirEnums
+    tgtDirType: InstanceSubdirType
   ): Promise<InvokeResponse<void>> {
     return await invoke("move_resource_to_instance", {
       srcFilePath,

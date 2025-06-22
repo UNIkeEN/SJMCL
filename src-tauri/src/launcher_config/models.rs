@@ -175,6 +175,8 @@ structstruck::strike! {
         pub head_nav_style: String,
       },
       pub font: struct {
+        #[default = "%built-in"]
+        pub font_family: String,
         #[default = 100]
         pub font_size: usize, // as percent
       },

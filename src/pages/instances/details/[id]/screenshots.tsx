@@ -37,7 +37,7 @@ const InstanceScreenshotsPage: React.FC = () => {
     }
   }, [screenshots, onScreenshotPreviewModalOpen]);
 
-  const handleModalClose = () => {
+  const handleCloseModal = () => {
     onScreenshotPreviewModalClose();
     const { id } = router.query;
     if (id !== undefined) {
@@ -112,7 +112,7 @@ const InstanceScreenshotsPage: React.FC = () => {
         <PreviewScreenshotModal
           screenshot={currentScreenshot}
           isOpen={isScreenshotPreviewModalOpen}
-          onClose={handleModalClose}
+          onClose={handleCloseModal}
         />
       )}
     </Section>

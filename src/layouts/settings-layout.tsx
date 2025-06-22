@@ -67,7 +67,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
           ))}
         </VStack>
       </GridItem>
-      <GridItem className="content-full-y">
+      <GridItem className="content-full-y" key={router.asPath}>
         <VStack align="stretch" spacing={4}>
           {children}
         </VStack>

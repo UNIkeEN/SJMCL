@@ -89,7 +89,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                 }))}
               />
             </Box>
-            <VStack mt="auto" align="strench" spacing={0.5}>
+            <VStack mt="auto" align="stretch" spacing={0.5}>
               <SelectableButton
                 size="sm"
                 onClick={() => {

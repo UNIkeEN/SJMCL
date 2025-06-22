@@ -1,4 +1,4 @@
-export enum InstanceSubdirEnums {
+export enum InstanceSubdirType {
   Assets = "Assets",
   Libraries = "Libraries",
   Mods = "Mods",
@@ -11,7 +11,7 @@ export enum InstanceSubdirEnums {
   ShaderPacks = "ShaderPacks",
 }
 
-export enum ModLoaderEnums {
+export enum ModLoaderType {
   Unknown = "Unknown",
   Fabric = "Fabric",
   Forge = "Forge",
@@ -20,5 +20,3 @@ export enum ModLoaderEnums {
   LiteLoader = "LiteLoader",
   Quilt = "Quilt",
 }
-
-export type ModLoaderType = `${ModLoaderEnums}`;

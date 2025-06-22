@@ -15,6 +15,10 @@ body {
   user-select: none;
 }
 
+body[use-custom-font] {
+  font-family: var(--custom-global-font-family, inherit) !important;
+}
+
 
 /* scrollbar */
 ::-webkit-scrollbar {
