@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { useLauncherConfig } from "./config";
+import { useLauncherConfig } from "@/contexts/config";
 
 interface SharedModalContextType {
   openSharedModal: (key: string, params?: any) => void;
