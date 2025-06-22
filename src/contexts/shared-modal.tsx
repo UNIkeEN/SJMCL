@@ -35,6 +35,7 @@ export const SharedModalContextProvider: React.FC<{
   };
 
   const openGenericConfirmDialog = (params?: any) => {
+    // If the user has previously selected "Don't show again", skip the dialog and call the OK callback directly
     if (
       params.suppressKey &&
       config.suppressedDialogs?.includes(params.suppressKey)
