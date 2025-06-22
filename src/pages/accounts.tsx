@@ -45,7 +45,8 @@ const AccountsPage = () => {
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.accountsPage.viewType;
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { openSharedModal, closeSharedModal, openGenericConfirmDialog } =
+    useSharedModals();
 
   const { getPlayerList, getAuthServerList, selectedPlayer } = useGlobalData();
 
@@ -233,7 +234,7 @@ const AccountsPage = () => {
                       variant="ghost"
                       icon={<LuServerOff />}
                       onClick={() => {
-                        openSharedModal("generic-confirm", {
+                        openGenericConfirmDialog("authServerAlert", {
                           title: t("DeleteAuthServerAlertDialog.dialog.title"),
                           body: t(
                             "DeleteAuthServerAlertDialog.dialog.content",
@@ -248,6 +249,7 @@ const AccountsPage = () => {
                           btnCancel: t("General.cancel"),
                           isAlert: true,
                           onOKCallback: handleDeleteAuthServer,
+                          keyForSuppress: "authServerAlert",
                         });
                       }}
                     />

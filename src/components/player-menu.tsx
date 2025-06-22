@@ -39,7 +39,8 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   const { refreshConfig } = useLauncherConfig();
   const toast = useToast();
   const { getPlayerList } = useGlobalData();
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { openSharedModal, closeSharedModal, openGenericConfirmDialog } =
+    useSharedModals();
 
   const {
     isOpen: isSkinModalOpen,
@@ -125,7 +126,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
       label: t("PlayerMenu.label.delete"),
       danger: true,
       onClick: () => {
-        openSharedModal("generic-confirm", {
+        openGenericConfirmDialog("playerMenu", {
           title: t("DeletePlayerAlertDialog.dialog.title"),
           body: t("DeletePlayerAlertDialog.dialog.content", {
             name: player.name,
@@ -134,6 +135,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           btnCancel: t("General.cancel"),
           isAlert: true,
           onOKCallback: handleDeletePlayer,
+          keyForSuppress: "playerMenu",
         });
       },
     },

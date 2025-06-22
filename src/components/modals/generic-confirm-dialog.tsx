@@ -13,6 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface GenericConfirmDialogProps {
@@ -24,8 +25,8 @@ interface GenericConfirmDialogProps {
   btnCancel: string;
   onOKCallback?: () => void;
   isAlert?: boolean;
-  showDontAskAgain?: boolean; // ✅ 新增参数：是否显示“不再显示此提示”
-  onDontAskAgainChange?: (checked: boolean) => void; // ✅ 新增回调
+  showDontAskAgain?: boolean;
+  keyForSuppress?: string;
 }
 
 const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
@@ -37,25 +38,30 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   btnCancel,
   onOKCallback,
   isAlert = false,
-  showDontAskAgain = true,
-  onDontAskAgainChange,
+  showDontAskAgain = false,
+  keyForSuppress,
 }) => {
+  const { t } = useTranslation();
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const { config } = useLauncherConfig();
+  const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const [dontAskAgain, setDontAskAgain] = useState(false);
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    setDontAskAgain(checked);
-    onDontAskAgainChange?.(checked);
+  const handleClose = () => {
+    if (dontAskAgain && keyForSuppress) {
+      const current = config.confirmSuppress ?? [];
+      if (!current.includes(keyForSuppress)) {
+        update("confirmSuppress", [...current, keyForSuppress]);
+      }
+    }
+    onClose();
   };
 
   return (
     <AlertDialog
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
-      onClose={onClose}
+      onClose={handleClose}
       autoFocus={false}
       isCentered
     >
@@ -70,22 +76,24 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
                 <HStack>
                   <Checkbox
                     isChecked={dontAskAgain}
-                    onChange={handleCheckboxChange}
-                    mr={0} // HStack 自动处理间距，可去掉
+                    onChange={(e) => setDontAskAgain(e.target.checked)}
                   />
-                  <Text fontSize="sm">不再显示此提示</Text>
+                  <Text>{t("General.dontAskAgain")}</Text>
                 </HStack>
               )}
             </Flex>
 
             {btnCancel && (
-              <Button ref={cancelRef} onClick={onClose} variant="ghost">
+              <Button ref={cancelRef} onClick={handleClose} variant="ghost">
                 {btnCancel}
               </Button>
             )}
             <Button
               colorScheme={isAlert ? "red" : primaryColor}
-              onClick={onOKCallback}
+              onClick={() => {
+                onOKCallback?.();
+                handleClose();
+              }}
             >
               {btnOK}
             </Button>

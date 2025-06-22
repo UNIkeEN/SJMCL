@@ -28,7 +28,7 @@ const GeneralSettingsPage = () => {
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
   const { removeHistory } = useRoutingHistory();
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { closeSharedModal, openGenericConfirmDialog } = useSharedModals();
 
   const instancesNavTypes = ["instance", "directory", "hidden"];
 
@@ -58,7 +58,7 @@ const GeneralSettingsPage = () => {
               onChange={(e) => {
                 update("general.functionality.discoverPage", e.target.checked);
                 if (e.target.checked) {
-                  openSharedModal("generic-confirm", {
+                  openGenericConfirmDialog("discoverPage", {
                     title: t("General.notice"),
                     body: (
                       <Text>
@@ -86,6 +86,7 @@ const GeneralSettingsPage = () => {
                     onOKCallback: () => {
                       closeSharedModal("generic-confirm");
                     },
+                    keyForSuppress: "discoverPage",
                   });
                 }
               }}

@@ -232,6 +232,7 @@ structstruck::strike! {
     #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string()]")]
     pub discover_source_endpoints: Vec<String>,
     pub extra_java_paths: Vec<String>,
+    pub confirm_suppress: Vec<String>,
     pub states: struct States {
       pub shared: struct {
         pub selected_player_id: String,
