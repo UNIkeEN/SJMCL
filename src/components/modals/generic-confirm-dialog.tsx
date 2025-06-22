@@ -10,10 +10,8 @@ import {
   Checkbox,
   Flex,
   HStack,
-  Text,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface GenericConfirmDialogProps {
@@ -23,10 +21,11 @@ interface GenericConfirmDialogProps {
   body: string | React.ReactElement;
   btnOK: string;
   btnCancel: string;
+  btnSuppress: string;
   onOKCallback?: () => void;
   isAlert?: boolean;
-  showDontAskAgain?: boolean;
-  keyForSuppress?: string;
+  showSuppressBtn?: boolean;
+  suppressKey?: string;
 }
 
 const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
@@ -36,22 +35,22 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   body,
   btnOK,
   btnCancel,
+  btnSuppress,
   onOKCallback,
   isAlert = false,
-  showDontAskAgain = false,
-  keyForSuppress,
+  showSuppressBtn = false,
+  suppressKey,
 }) => {
-  const { t } = useTranslation();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const [dontAskAgain, setDontAskAgain] = useState(false);
 
   const handleClose = () => {
-    if (dontAskAgain && keyForSuppress) {
-      const current = config.confirmSuppress ?? [];
-      if (!current.includes(keyForSuppress)) {
-        update("confirmSuppress", [...current, keyForSuppress]);
+    if (dontAskAgain && suppressKey) {
+      const current = config.suppressedDialogs ?? [];
+      if (!current.includes(suppressKey)) {
+        update("confirmSuppress", [...current, suppressKey]);
       }
     }
     onClose();
@@ -72,13 +71,13 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
           <AlertDialogBody>{body}</AlertDialogBody>
           <AlertDialogFooter>
             <Flex flex="1" align="center">
-              {showDontAskAgain && (
+              {showSuppressBtn && (
                 <HStack>
                   <Checkbox
                     isChecked={dontAskAgain}
                     onChange={(e) => setDontAskAgain(e.target.checked)}
                   />
-                  <Text>{t("General.dontAskAgain")}</Text>
+                  {btnSuppress}
                 </HStack>
               )}
             </Flex>

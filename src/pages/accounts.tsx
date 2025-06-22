@@ -239,7 +239,7 @@ const AccountsPage = () => {
                       variant="ghost"
                       icon={<LuServerOff />}
                       onClick={() => {
-                        openGenericConfirmDialog("authServerAlert", {
+                        openGenericConfirmDialog({
                           title: t("DeleteAuthServerAlertDialog.dialog.title"),
                           body: t(
                             "DeleteAuthServerAlertDialog.dialog.content",
@@ -252,9 +252,11 @@ const AccountsPage = () => {
                           ),
                           btnOK: t("General.delete"),
                           btnCancel: t("General.cancel"),
+                          btnSuppress: t("General.dontAskAgain"),
                           isAlert: true,
                           onOKCallback: handleDeleteAuthServer,
-                          keyForSuppress: "authServerAlert",
+                          showSuppressBtn: true,
+                          suppressKey: "deleteAuthServerAlert",
                         });
                       }}
                     />

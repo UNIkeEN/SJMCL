@@ -19,7 +19,7 @@ const JavaSettingsPage = () => {
   const toast = useToast();
   const { config, update, getJavaInfos } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { closeSharedModal, openGenericConfirmDialog } = useSharedModals();
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
   const [selectedJava, setSelectedJava] = useState<JavaInfo | null>(null);
@@ -90,13 +90,16 @@ const JavaSettingsPage = () => {
 
   const handleRemoveJavaPath = (java: JavaInfo) => {
     setSelectedJava(java);
-    openSharedModal("generic-confirm", {
+    openGenericConfirmDialog({
       title: t("JavaSettingsPage.confirmDelete.title"),
       body: t("JavaSettingsPage.confirmDelete.description"),
       btnOK: t("General.confirm"),
       btnCancel: t("General.cancel"),
+      btnSuppress: t("General.dontAskAgain"),
       isAlert: true,
       onOKCallback: handleConfirmDelete,
+      showSuppressBtn: true,
+      suppressKey: "removeJavaPath",
     });
   };
 

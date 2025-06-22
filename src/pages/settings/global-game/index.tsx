@@ -33,7 +33,7 @@ const GlobalGameSettingsPage = () => {
   const globalGameConfigs = config.globalGameConfig;
   const { getInstanceList } = useGlobalData();
   const { removeHistory } = useRoutingHistory();
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { closeSharedModal, openGenericConfirmDialog } = useSharedModals();
 
   const [selectedDir, setSelectedDir] = useState<GameDirectory>({
     name: "",
@@ -111,7 +111,7 @@ const GlobalGameSettingsPage = () => {
             danger: true,
             onClick: () => {
               setSelectedDir(directory);
-              openSharedModal("generic-confirm", {
+              openGenericConfirmDialog({
                 title: t(
                   "GlobalGameSettingsPage.directories.deleteDialog.title"
                 ),
@@ -123,7 +123,10 @@ const GlobalGameSettingsPage = () => {
                 ),
                 btnOK: t("General.delete"),
                 btnCancel: t("General.cancel"),
+                btnSuppress: t("General.dontAskAgain"),
                 onOKCallback: handleDeleteDir,
+                showSuppressBtn: true,
+                suppressKey: "deleteDerectories",
               });
             },
           },

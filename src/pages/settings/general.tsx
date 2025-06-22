@@ -58,7 +58,7 @@ const GeneralSettingsPage = () => {
               onChange={(e) => {
                 update("general.functionality.discoverPage", e.target.checked);
                 if (e.target.checked) {
-                  openGenericConfirmDialog("discoverPage", {
+                  openGenericConfirmDialog({
                     title: t("General.notice"),
                     body: (
                       <Text>
@@ -83,10 +83,12 @@ const GeneralSettingsPage = () => {
                     ),
                     btnOK: t("General.confirm"),
                     btnCancel: "",
+                    btnSuppress: t("General.dontAskAgain"),
                     onOKCallback: () => {
                       closeSharedModal("generic-confirm");
                     },
-                    keyForSuppress: "discoverPage",
+                    showSuppressBtn: true,
+                    suppressKey: "discover",
                   });
                 }
               }}
