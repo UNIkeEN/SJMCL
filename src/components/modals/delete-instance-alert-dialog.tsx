@@ -21,7 +21,7 @@ const DeleteInstanceDialog: React.FC<DeleteInstanceDialogProps> = ({
   const toast = useToast();
   const router = useRouter();
   const { getInstanceList } = useGlobalData();
-  const { refreshConfig } = useLauncherConfig();
+  const { refreshConfig, config } = useLauncherConfig();
 
   const handleDeleteInstance = (instanceId: string) => {
     InstanceService.deleteInstance(instanceId).then((response) => {
@@ -45,6 +45,14 @@ const DeleteInstanceDialog: React.FC<DeleteInstanceDialogProps> = ({
     router.push("/instances/list");
   };
 
+  if (config.suppressedDialogs?.includes("deleteInstanceAlert")) {
+    if (dialogProps.isOpen) {
+      handleDeleteInstance(instance.id);
+      dialogProps.onClose();
+    }
+    return null;
+  }
+
   return (
     <GenericConfirmDialog
       isOpen={dialogProps.isOpen}
@@ -65,12 +73,13 @@ const DeleteInstanceDialog: React.FC<DeleteInstanceDialogProps> = ({
         </VStack>
       }
       btnOK={t("General.delete")}
-      btnCancel={t("General.cancel")}
       onOKCallback={() => {
         handleDeleteInstance(instance.id);
         dialogProps.onClose();
       }}
       isAlert
+      showSuppressBtn
+      suppressKey="deleteInstanceAlert"
     />
   );
 };

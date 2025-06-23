@@ -124,7 +124,7 @@ const GlobalGameSettingsPage = () => {
                 btnOK: t("General.delete"),
                 onOKCallback: handleDeleteDir,
                 showSuppressBtn: true,
-                suppressKey: "deleteDerectories",
+                suppressKey: "deleteGameDir",
               });
             },
           },
