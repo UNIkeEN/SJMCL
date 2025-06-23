@@ -116,7 +116,7 @@ const Editable: React.FC<EditableProps> = ({
   }, [isEditing]);
 
   return (
-    <Box whiteSpace="pre-wrap" wordBreak="break-all" {...boxProps}>
+    <Box className="break-wrap" {...boxProps}>
       {isEditing ? (
         isTextArea ? (
           <FormControl pb={5} isInvalid={isInvalid && isEditing}>
@@ -178,23 +178,13 @@ const Editable: React.FC<EditableProps> = ({
           </FormControl>
         )
       ) : isTextArea ? (
-        <Text
-          w="100%"
-          wordBreak="break-all"
-          whiteSpace="pre-wrap"
-          {...textProps}
-        >
+        <Text w="100%" {...textProps} className="break-wrap secondary-text">
           {value}
           {EditButtons()}
         </Text>
       ) : (
         <HStack spacing={0} w="100%">
-          <Text
-            w="100%"
-            whiteSpace="pre-wrap"
-            wordBreak="break-all"
-            {...textProps}
-          >
+          <Text w="100%" {...textProps} className="break-wrap secondary-text">
             {value}
           </Text>
           {EditButtons()}

@@ -113,7 +113,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           {description &&
             (typeof description === "string" ? (
               <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs" className="secondary-text ellipsis-text">
+                <Text fontSize="xs" className="secondary-text break-wrap">
                   {description}
                 </Text>
               </Skeleton>

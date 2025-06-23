@@ -59,6 +59,11 @@ body {
   text-overflow: ellipsis;
 }
 
+.break-wrap {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 
 /* card-style content container */
 .content-full-y {
