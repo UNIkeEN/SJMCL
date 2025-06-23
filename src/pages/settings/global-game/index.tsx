@@ -121,9 +121,6 @@ const GlobalGameSettingsPage = () => {
                     dirName: getGameDirName(selectedDir.name),
                   }
                 ),
-                btnOK: t("General.delete"),
-                btnCancel: t("General.cancel"),
-                btnSuppress: t("General.dontAskAgain"),
                 onOKCallback: handleDeleteDir,
                 showSuppressBtn: true,
                 suppressKey: "deleteDerectories",

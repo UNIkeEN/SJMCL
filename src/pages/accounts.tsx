@@ -250,9 +250,6 @@ const AccountsPage = () => {
                               )?.name,
                             }
                           ),
-                          btnOK: t("General.delete"),
-                          btnCancel: t("General.cancel"),
-                          btnSuppress: t("General.dontAskAgain"),
                           isAlert: true,
                           onOKCallback: handleDeleteAuthServer,
                           showSuppressBtn: true,

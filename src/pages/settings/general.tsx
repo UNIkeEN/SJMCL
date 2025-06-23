@@ -83,7 +83,6 @@ const GeneralSettingsPage = () => {
                     ),
                     btnOK: t("General.confirm"),
                     btnCancel: "",
-                    btnSuppress: t("General.dontAskAgain"),
                     onOKCallback: () => {
                       closeSharedModal("generic-confirm");
                     },

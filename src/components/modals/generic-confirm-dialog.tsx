@@ -8,10 +8,11 @@ import {
   AlertDialogOverlay,
   Button,
   Checkbox,
-  Flex,
   HStack,
 } from "@chakra-ui/react";
+import { t } from "i18next";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface GenericConfirmDialogProps {
@@ -21,7 +22,6 @@ interface GenericConfirmDialogProps {
   body: string | React.ReactElement;
   btnOK: string;
   btnCancel: string;
-  btnSuppress: string;
   onOKCallback?: () => void;
   isAlert?: boolean;
   isLoading?: boolean;
@@ -34,15 +34,15 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   onClose,
   title,
   body,
-  btnOK,
-  btnCancel,
-  btnSuppress,
+  btnOK = t("General.delete"),
+  btnCancel = t("General.cancel"),
   onOKCallback,
   isAlert = false,
   isLoading = false,
   showSuppressBtn = false,
   suppressKey,
 }) => {
+  const { t } = useTranslation();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -72,33 +72,32 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
           <AlertDialogCloseButton />
           <AlertDialogBody>{body}</AlertDialogBody>
           <AlertDialogFooter>
-            <Flex flex="1" align="center">
-              {showSuppressBtn && (
-                <HStack>
-                  <Checkbox
-                    isChecked={dontAskAgain}
-                    onChange={(e) => setDontAskAgain(e.target.checked)}
-                  />
-                  <text>{btnCancel}</text>
-                </HStack>
-              )}
-            </Flex>
-
-            {btnCancel && (
-              <Button ref={cancelRef} onClick={handleClose} variant="ghost">
-                {btnCancel}
-              </Button>
+            {showSuppressBtn && suppressKey && (
+              <Checkbox
+                isChecked={dontAskAgain}
+                onChange={(e) => setDontAskAgain(e.target.checked)}
+              >
+                {t("General.dontAskAgain")}
+              </Checkbox>
             )}
-            <Button
-              colorScheme={isAlert ? "red" : primaryColor}
-              onClick={() => {
-                onOKCallback?.();
-                handleClose();
-              }}
-              isLoading={isLoading}
-            >
-              {btnOK}
-            </Button>
+
+            <HStack spacing={3} ml="auto">
+              {btnCancel && (
+                <Button ref={cancelRef} onClick={handleClose} variant="ghost">
+                  {btnCancel}
+                </Button>
+              )}
+              <Button
+                colorScheme={isAlert ? "red" : primaryColor}
+                onClick={() => {
+                  onOKCallback?.();
+                  handleClose();
+                }}
+                isLoading={isLoading}
+              >
+                {btnOK}
+              </Button>
+            </HStack>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialogOverlay>

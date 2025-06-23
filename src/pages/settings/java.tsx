@@ -94,8 +94,6 @@ const JavaSettingsPage = () => {
       title: t("JavaSettingsPage.confirmDelete.title"),
       body: t("JavaSettingsPage.confirmDelete.description"),
       btnOK: t("General.confirm"),
-      btnCancel: t("General.cancel"),
-      btnSuppress: t("General.dontAskAgain"),
       isAlert: true,
       onOKCallback: handleConfirmDelete,
       showSuppressBtn: true,
