@@ -93,7 +93,6 @@ const JavaSettingsPage = () => {
     openGenericConfirmDialog({
       title: t("JavaSettingsPage.confirmDelete.title"),
       body: t("JavaSettingsPage.confirmDelete.description"),
-      btnOK: t("General.confirm"),
       isAlert: true,
       onOKCallback: handleConfirmDelete,
       showSuppressBtn: true,

@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface GenericConfirmDialogProps {
@@ -20,8 +19,8 @@ interface GenericConfirmDialogProps {
   onClose: () => void;
   title: string;
   body: string | React.ReactElement;
-  btnOK: string;
-  btnCancel: string;
+  btnOK?: string;
+  btnCancel?: string;
   onOKCallback?: () => void;
   isAlert?: boolean;
   isLoading?: boolean;
@@ -34,7 +33,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   onClose,
   title,
   body,
-  btnOK = t("General.delete"),
+  btnOK = t("General.confirm"),
   btnCancel = t("General.cancel"),
   onOKCallback,
   isAlert = false,
@@ -42,7 +41,6 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   showSuppressBtn = false,
   suppressKey,
 }) => {
-  const { t } = useTranslation();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
