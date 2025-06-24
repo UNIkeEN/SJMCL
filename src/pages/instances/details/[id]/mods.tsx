@@ -45,6 +45,7 @@ const InstanceModsPage = () => {
     handleOpenInstanceSubdir,
     handleImportResource,
     getLocalModList,
+    isLocalModListLoading: isLoading,
   } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
   const { openSharedModal } = useSharedModals();
@@ -55,16 +56,11 @@ const InstanceModsPage = () => {
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const getLocalModListWrapper = useCallback(
     (sync?: boolean) => {
-      setIsLoading(true);
-      getLocalModList(sync)
-        .then((data) => setLocalMods(data || []))
-        .catch((e) => setLocalMods([] as LocalModInfo[]))
-        .finally(() => setIsLoading(false));
+      getLocalModList(sync).then((data) => setLocalMods(data || []));
     },
     [getLocalModList]
   );
@@ -241,9 +237,11 @@ const InstanceModsPage = () => {
         isAccordion
         initialIsOpen={accordionStates[1]}
         titleExtra={
-          <CountTag
-            count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
-          />
+          !isLoading && (
+            <CountTag
+              count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
+            />
+          )
         }
         onAccordionToggle={(isOpen) => {
           update(

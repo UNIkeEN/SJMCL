@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export function useGetState<T>(
   state: T | undefined,
@@ -18,16 +18,24 @@ export function useGetState<T>(
 export function usePromisedGetState<T>(
   state: T | undefined,
   retrieveHandler: () => Promise<any>
-): (sync?: boolean) => Promise<T | undefined> {
+): [(sync?: boolean) => Promise<T | undefined>, boolean] {
+  const [isLoading, setIsLoading] = useState(false);
   const getState = useCallback(
     async (sync = false) => {
       if (sync || state === undefined) {
-        const data = await retrieveHandler();
-        return data;
+        setIsLoading(true);
+        try {
+          const data = await retrieveHandler();
+          return data;
+        } catch (_) {
+          return undefined;
+        } finally {
+          setIsLoading(false);
+        }
       } else return state;
     },
     [state, retrieveHandler]
   );
 
-  return getState;
+  return [getState, isLoading];
 }

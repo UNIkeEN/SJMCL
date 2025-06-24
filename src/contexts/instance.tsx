@@ -30,6 +30,7 @@ export interface InstanceContextType {
   gameConfig: GameConfig | undefined;
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
   getLocalModList: (sync?: boolean) => Promise<LocalModInfo[] | undefined>;
+  isLocalModListLoading: boolean;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getServerResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
@@ -387,10 +388,19 @@ export const InstanceContextProvider: React.FC<{
 
   const getWorldList = useGetState(worlds, handleRetrieveWorldList);
 
-  const getLocalModList = usePromisedGetState(
+  const [getLocalModList, isLocalModListLoading] = usePromisedGetState(
     localMods,
     handleRetrieveLocalModList
   );
+
+  useEffect(() => {
+    if (instanceSummary?.id) {
+      getLocalModList(true).then((mods) => {
+        setLocalMods(mods);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [instanceSummary?.id]);
 
   const getResourcePackList = useGetState(
     resourcePacks,
@@ -427,6 +437,7 @@ export const InstanceContextProvider: React.FC<{
         gameConfig: instanceGameConfig,
         getWorldList,
         getLocalModList,
+        isLocalModListLoading,
         getResourcePackList,
         getServerResourcePackList,
         getSchematicList,
