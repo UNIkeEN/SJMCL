@@ -1910,6 +1910,7 @@
       "placeholder": "聚合搜索"
     },
     "tip": "集中一处搜索本地内容与线上游戏资源",
+    "empty": "无搜索结果",
     "result": {
       "instance": "实例",
       "player": "角色"

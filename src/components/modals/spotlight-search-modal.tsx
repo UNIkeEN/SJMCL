@@ -198,7 +198,11 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
           )}
           {queryText && instantRes.length === 0 && (
             <Center h="6rem">
-              <Empty withIcon={false} size="sm" />
+              <Empty
+                description={t("SpotlightSearchModal.empty")}
+                withIcon={false}
+                size="sm"
+              />
             </Center>
           )}
         </ModalBody>
