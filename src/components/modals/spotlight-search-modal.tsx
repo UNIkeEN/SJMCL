@@ -20,6 +20,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSearch } from "react-icons/lu";
 import CountTag from "@/components/common/count-tag";
+import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { useGlobalData } from "@/contexts/global-data";
 import { generatePlayerDesc } from "@/utils/account";
@@ -194,6 +195,9 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             <VStack spacing={4} align="stretch" my={2}>
               {groupSearchResults()}
             </VStack>
+          )}
+          {queryText && instantRes.length === 0 && (
+            <Empty withIcon={false} size="sm" />
           )}
         </ModalBody>
       </ModalContent>
