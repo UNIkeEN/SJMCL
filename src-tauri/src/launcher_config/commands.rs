@@ -11,7 +11,7 @@ use crate::{
 use crate::{storage::Storage, utils::fs::get_subdirectories};
 use font_loader::system_fonts;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
@@ -249,6 +249,12 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
     local_game_directories = state.local_game_directories.clone();
   }
   let directory = PathBuf::from(&dir);
+  if directory
+    .components()
+    .any(|c| c == Component::ParentDir || c == Component::CurDir)
+  {
+    return Err(LauncherConfigError::GameDirNotExist.into());
+  }
 
   if local_game_directories.iter().any(|d| d.dir == directory) {
     return Err(LauncherConfigError::GameDirAlreadyAdded.into());
