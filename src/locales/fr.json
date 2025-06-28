@@ -13,7 +13,7 @@
           "title": "Signaler un problème ou demander une fonctionnalité"
         },
         "aboutSJMC": {
-          "title": "À propos de SJMC (Shanghai Jiao Tong University Minecraft Club)"
+          "title": "À propos de Minecraft society à l’université jiao tong shanghai (SJMC)"
         }
       }
     },
@@ -25,7 +25,7 @@
           "description": "Merci à @bangbang93 pour la source de téléchargement rapide"
         },
         "hmcl": {
-          "title": "Hello Minecraft! Launcher",
+          "title": "Bonjour Minecraft! Lanceur",
           "description": "Certaines conceptions et implémentations de code sont basées sur ce projet open source"
         },
         "littleskin": {
@@ -215,7 +215,7 @@
         "colorMode": {
           "title": "Mode de couleur",
           "type": {
-            "light": "Clair",
+            "light": "Clairs",
             "dark": "Sombre"
           }
         },
@@ -229,7 +229,7 @@
       }
     },
     "font": {
-      "title": "Police",
+      "title": "Type de caractère",
       "settings": {
         "fontSize": {
           "title": "Taille de la police",
@@ -251,7 +251,7 @@
       },
       "presetBgList": {
         "Jokull": {
-          "name": "Jokull"
+          "name": "La ville de neige"
         },
         "SJTU-eastgate": {
           "name": "Porte Est SJTU"
@@ -298,7 +298,7 @@
     "tag": {
       "source": "Source"
     },
-    "body": "à",
+    "body": "arriver à",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "Packs de ressources",
@@ -544,11 +544,11 @@
       "microsoft": "Compte Microsoft",
       "offline": "Mode hors ligne",
       "3rdparty": "Authentification tierce",
-      "3rdpartyShort": "Authent. tierce"
+      "3rdpartyShort": "Authentification tierce"
     },
     "systemFileManager": {
       "linux": "Gestionnaire de fichiers",
-      "macos": "Finder",
+      "macos": "La visite de",
       "windows": "Explorateur de fichiers"
     }
   },
@@ -584,7 +584,7 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "Espace de génération permanente",
-          "placeholder": "En Mo"
+          "placeholder": "Unités en MB"
         },
         "environmentVariable": {
           "title": "Variable d'environnement"
@@ -602,7 +602,7 @@
           "full": "Vérification renforcée"
         },
         "dontCheckJvmValidity": {
-          "title": "Ne pas vérifier la compatibilité JVM/jeu"
+          "title": "Ne pas vérifier la compatibilité de la JVM avec le jeu"
         },
         "dontPatchNatives": {
           "title": "Ne pas tenter de remplacer automatiquement les bibliothèques natives"
@@ -648,8 +648,8 @@
   "GameVersionSelector": {
     "old_beta": "Ancienne bêta",
     "release": "Version stable",
-    "snapshot": "Instantané",
-    "april_fools": "Poisson d'avril",
+    "snapshot": "Version bêta disponible",
+    "april_fools": "Poisson d’avril édition",
     "searchPlaceholder": "Rechercher une version",
     "wikiKey": {
       "release": "Version Java",
@@ -702,7 +702,7 @@
       "settings": {
         "language": {
           "title": "Langue (Language)",
-          "communityAck": "Traduction en français générée par IA, susceptible d'erreurs de précision."
+          "communityAck": ""
         }
       }
     },
@@ -843,7 +843,7 @@
       "title": "Communauté des joueurs universitaires",
       "settings": {
         "MUA": {
-          "title": "Alliance universitaire Minecraft (MUA)",
+          "title": "Alliance des universitaire Minecraft (MUA)",
           "description": "Jouez avec des joueurs de toutes les universités du pays",
           "url": "https://www.mualliance.cn/en"
         },
@@ -974,7 +974,7 @@
     "mods": {
       "title": "Mods",
       "summary": "{{totalMods}} mods, {{enabledMods}} activés",
-      "manage": "Gérer"
+      "manage": "Aller à management"
     },
     "lastPlayed": {
       "title": "Dernière partie",
@@ -1140,7 +1140,7 @@
       "source": "Source de téléchargement",
       "gameVer": "Version du jeu",
       "tag": "Type",
-      "sortBy": "Trier par",
+      "sortBy": "Ordonner",
       "name": "Nom"
     },
     "button": {
@@ -1229,7 +1229,7 @@
         "Adventure": "Aventure",
         "Creation": "Création",
         "Game Map": "Carte de jeu",
-        "Modded World": "Monde moddé",
+        "Modded World": "Mods",
         "Parkour": "Parcours",
         "Puzzle": "Puzzle",
         "Survival": "Survie"
@@ -1345,7 +1345,7 @@
         "Skyblock": "Skyblock",
         "Small / Light": "Petit / Léger",
         "Tech": "Technologie",
-        "Vanilla+": "Vanilla+"
+        "Vanilla+": "Version améliorée de l’original"
       },
       "Modrinth": {
         "All": "Tous",
@@ -1354,7 +1354,7 @@
         "challenging": "Défi",
         "combat": "Combat",
         "kitchen-sink": "Fourre-tout",
-        "lightweight": "Léger",
+        "lightweight": "Intégration légère",
         "magic": "Magie",
         "multiplayer": "Multijoueur",
         "optimization": "Optimisation",
