@@ -1500,9 +1500,9 @@
       },
       "checkServiceAvailability": {
         "error": {
-          "title": "服务不可用",
+          "title": "服务器不可用",
           "description": {
-            "FETCH_ERROR": "无法连接至服务"
+            "FETCH_ERROR": "服务器侧或未知错误"
           }
         }
       }
@@ -1583,7 +1583,7 @@
             "NOT_FOUND": "角色不存在",
             "EXPIRED": "令牌已过期，请重新登录",
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "NETWORK_ERROR": "无法连接至认证服务器",
+            "NETWORK_ERROR": "连接认证服务器失败",
             "INVALID": "账号或密码错误"
           }
         }

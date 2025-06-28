@@ -1594,7 +1594,7 @@
           "title": "Failed to add player",
           "description": {
             "DUPLICATE": "Player already exists",
-            "NETWORK_ERROR": "Unable to connect to the server",
+            "NETWORK_ERROR": "Failed to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "EXPIRED": "The access token has expired, please re-login"
           }
