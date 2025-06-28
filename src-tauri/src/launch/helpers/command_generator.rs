@@ -41,6 +41,7 @@ pub struct LaunchArguments {
   pub auth_uuid: String,
   pub clientid: Option<String>,
   pub auth_xuid: Option<String>,
+  pub user_properties: String,
 
   pub demo: bool,
   pub resolution_height: u32,
@@ -174,6 +175,7 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
     auth_uuid: selected_player.uuid.to_string(),
     auth_xuid: None, // TODO
     demo: false,
+    user_properties: "{}".to_string(),
     clientid: None,
     resolution_height: game_config.game_window.resolution.height,
     resolution_width: game_config.game_window.resolution.width,
