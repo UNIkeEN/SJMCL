@@ -45,7 +45,7 @@ const LiquidGlassDistortionFilter: React.FC = () => (
       <feDisplacementMap
         in="SourceGraphic"
         in2="softMap"
-        scale="150"
+        scale="30"
         xChannelSelector="R"
         yChannelSelector="G"
       />
