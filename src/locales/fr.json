@@ -1727,7 +1727,7 @@
           }
         }
       },
-      "handleRetrieveInstanceSubdirPath": {
+      "retrieveInstanceSubdirPath": {
         "error": {
           "title": "Échec de la récupération du chemin du sous-répertoire de l'instance",
           "description": {

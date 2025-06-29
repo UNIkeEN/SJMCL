@@ -1751,7 +1751,7 @@
           }
         }
       },
-      "handleRetrieveInstanceSubdirPath": {
+      "retrieveInstanceSubdirPath": {
         "error": {
           "title": "Failed to retrieve instance directory path",
           "description": {

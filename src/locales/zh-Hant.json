@@ -1733,7 +1733,7 @@
           }
         }
       },
-      "handleRetrieveInstanceSubdirPath": {
+      "dirPath": {
         "error": {
           "title": "獲取例項子目錄路徑失敗",
           "description": {

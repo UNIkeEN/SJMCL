@@ -136,7 +136,7 @@ export const InstanceContextProvider: React.FC<{
   const handleRetrieveInstanceSubdirPath = useCallback(
     (dirType: InstanceSubdirType): Promise<string | null> => {
       if (instanceSummary?.id !== undefined) {
-        InstanceService.retrieveInstanceSubdirPath(
+        return InstanceService.retrieveInstanceSubdirPath(
           instanceSummary.id,
           dirType
         ).then((response) => {

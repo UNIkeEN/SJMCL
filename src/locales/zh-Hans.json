@@ -1751,7 +1751,7 @@
           }
         }
       },
-      "handleRetrieveInstanceSubdirPath": {
+      "retrieveInstanceSubdirPath": {
         "error": {
           "title": "获取实例子目录失败",
           "description": {
