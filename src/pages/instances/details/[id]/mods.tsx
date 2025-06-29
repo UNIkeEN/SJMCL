@@ -42,7 +42,7 @@ const InstanceModsPage = () => {
   const toast = useToast();
   const {
     summary,
-    handleOpenInstanceSubdir,
+    openInstanceSubdir,
     handleImportResource,
     getLocalModList,
     isLocalModListLoading: isLoading,
@@ -140,7 +140,7 @@ const InstanceModsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirType.Mods);
+        openInstanceSubdir(InstanceSubdirType.Mods);
       },
     },
     {

@@ -31,12 +31,8 @@ import { base64ImgSrc } from "@/utils/string";
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const {
-    summary,
-    handleOpenInstanceSubdir,
-    handleImportResource,
-    getWorldList,
-  } = useInstanceSharedData();
+  const { summary, openInstanceSubdir, handleImportResource, getWorldList } =
+    useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
   const { openSharedModal } = useSharedModals();
@@ -91,7 +87,7 @@ const InstanceWorldsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirType.Saves);
+        openInstanceSubdir(InstanceSubdirType.Saves);
       },
     },
     {

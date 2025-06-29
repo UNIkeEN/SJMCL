@@ -95,7 +95,7 @@ pub async fn run() {
       instance::commands::update_instance_config,
       instance::commands::retrieve_instance_game_config,
       instance::commands::reset_instance_game_config,
-      instance::commands::open_instance_subdir,
+      instance::commands::retrieve_instance_subdir_path,
       instance::commands::delete_instance,
       instance::commands::rename_instance,
       instance::commands::copy_resource_to_instances,

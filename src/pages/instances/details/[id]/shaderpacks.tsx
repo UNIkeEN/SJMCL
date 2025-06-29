@@ -16,7 +16,7 @@ const InstanceShaderPacksPage = () => {
   const { t } = useTranslation();
   const {
     summary,
-    handleOpenInstanceSubdir,
+    openInstanceSubdir,
     handleImportResource,
     getShaderPackList,
   } = useInstanceSharedData();
@@ -32,7 +32,7 @@ const InstanceShaderPacksPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirType.ShaderPacks);
+        openInstanceSubdir(InstanceSubdirType.ShaderPacks);
       },
     },
     {

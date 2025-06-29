@@ -1,4 +1,5 @@
 import { open } from "@tauri-apps/plugin-dialog";
+import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, {
   createContext,
@@ -28,6 +29,8 @@ export interface InstanceContextType {
   summary: InstanceSummary | undefined;
   updateSummaryInContext: (path: string, value: any) => void;
   gameConfig: GameConfig | undefined;
+  openInstanceSubdir: (dirType: InstanceSubdirType) => void;
+  // retrieve instance resource data with frontend cache
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
   getLocalModList: (sync?: boolean) => Promise<LocalModInfo[] | undefined>;
   isLocalModListLoading: boolean;
@@ -38,7 +41,9 @@ export interface InstanceContextType {
   getScreenshotList: (sync?: boolean) => ScreenshotInfo[] | undefined;
   // getInstanceGameConfig: (sync?: boolean) => GameConfig | undefined;
   // shared service handler
-  handleOpenInstanceSubdir: (dirType: InstanceSubdirType) => void;
+  handleRetrieveInstanceSubdirPath: (
+    dirType: InstanceSubdirType
+  ) => Promise<string | null>;
   handleImportResource: (option: any) => void;
   handleUpdateInstanceConfig: (path: string, value: any) => void;
   handleResetInstanceGameConfig: () => void;
@@ -128,22 +133,37 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [router.query.id, getInstanceList, handleRetrieveInstanceGameConfig]);
 
-  const handleOpenInstanceSubdir = useCallback(
-    (dirType: InstanceSubdirType) => {
+  const handleRetrieveInstanceSubdirPath = useCallback(
+    (dirType: InstanceSubdirType): Promise<string | null> => {
       if (instanceSummary?.id !== undefined) {
-        InstanceService.openInstanceSubdir(instanceSummary.id, dirType).then(
-          (response) => {
-            if (response.status !== "success")
-              toast({
-                title: response.message,
-                description: response.details,
-                status: "error",
-              });
+        InstanceService.retrieveInstanceSubdirPath(
+          instanceSummary.id,
+          dirType
+        ).then((response) => {
+          if (response.status === "success") {
+            return response.data;
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+            return null;
           }
-        );
+        });
       }
+      return Promise.resolve(null);
     },
     [instanceSummary?.id, toast]
+  );
+
+  const openInstanceSubdir = useCallback(
+    (dirType: InstanceSubdirType) => {
+      handleRetrieveInstanceSubdirPath(dirType).then((path) => {
+        if (path) openPath(path);
+      });
+    },
+    [handleRetrieveInstanceSubdirPath]
   );
 
   type ImportResourceOptions = {
@@ -435,6 +455,7 @@ export const InstanceContextProvider: React.FC<{
         summary: instanceSummary,
         updateSummaryInContext,
         gameConfig: instanceGameConfig,
+        openInstanceSubdir,
         getWorldList,
         getLocalModList,
         isLocalModListLoading,
@@ -444,7 +465,7 @@ export const InstanceContextProvider: React.FC<{
         getShaderPackList,
         getScreenshotList,
         // getInstanceGameConfig,
-        handleOpenInstanceSubdir,
+        handleRetrieveInstanceSubdirPath,
         handleImportResource,
         handleUpdateInstanceConfig,
         handleResetInstanceGameConfig,
