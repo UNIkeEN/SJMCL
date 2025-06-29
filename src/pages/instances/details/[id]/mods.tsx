@@ -61,8 +61,8 @@ const InstanceModsPage = () => {
   const getLocalModListWrapper = useCallback(
     (sync?: boolean) => {
       getLocalModList(sync).then((data) => {
-        if (data?.length === 1 && data[0].name === "%CANCELLED%") {
-          // it'a dummy mod, this means the user has cancelled the operation.
+        if (data === "%CANCELLED%") {
+          // this means the user has cancelled the operation.
           return;
         }
         setLocalMods(data || []);

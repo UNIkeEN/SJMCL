@@ -220,18 +220,19 @@ export const InstanceModsWidget = () => {
   const instanceId = Array.isArray(id) ? id[0] : id;
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { getLocalModList } = useInstanceSharedData();
+  const { getLocalModList, isLocalModListLoading: isLoading } =
+    useInstanceSharedData();
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const getLocalModListWrapper = useCallback(
     (sync?: boolean) => {
-      setIsLoading(true);
       getLocalModList(sync)
-        .then((data) => setLocalMods(data || []))
-        .catch((e) => setLocalMods([] as LocalModInfo[]))
-        .finally(() => setIsLoading(false));
+        .then((data) => {
+          if (data === "%CANCELLED%") return; // do not update state if cancelled
+          setLocalMods(data || []);
+        })
+        .catch((e) => setLocalMods([] as LocalModInfo[]));
     },
     [getLocalModList]
   );
