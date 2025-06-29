@@ -44,7 +44,12 @@ export const formatDisplayCount = (count: number): string => {
 
 export const isSanitized = (str: string): boolean => {
   const forbiddenChars = /[\\/:*?"<>|]/;
-  const reservedNames = /^(con|prn|aux|nul|com\d|lpt\d)$/i;
+  const reservedNames = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i;
+  const startsOrEndsWithInvalid = /^\s|\s$|^\.+|^\.+$|.*\.$/;
 
-  return !forbiddenChars.test(str) && !reservedNames.test(str);
+  return (
+    !forbiddenChars.test(str) &&
+    !reservedNames.test(str) &&
+    !startsOrEndsWithInvalid.test(str)
+  );
 };

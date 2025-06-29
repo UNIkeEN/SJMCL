@@ -960,7 +960,8 @@
     "restore": "重置",
     "errorMessage": {
       "error-1": "实例名称不能为空",
-      "error-2": "实例名称存在非法字符"
+      "error-2": "实例名称不合法",
+      "error-3": "实例名称太长"
     }
   },
   "InstanceShaderPacksPage": {

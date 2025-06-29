@@ -42,6 +42,13 @@ const InstanceSettingsPage = () => {
   } = useInstanceSharedData();
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
 
+  const checkDirNameError = (value: string): number => {
+    if (value.trim() === "") return 1;
+    if (!isSanitized(value)) return 2;
+    if (value.length > 255) return 3;
+    return 0;
+  };
+
   const handleRenameInstance = useCallback(
     (name: string) => {
       if (!instanceId) return;
@@ -69,15 +76,11 @@ const InstanceSettingsPage = () => {
             <Editable
               isTextArea={false}
               value={summary?.name || ""}
-              onEditSubmit={(value) => {
-                handleRenameInstance(value);
-              }}
+              onEditSubmit={handleRenameInstance}
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
-              checkError={(value) =>
-                value.trim() === "" ? 1 : isSanitized(value) ? 0 : 2
-              }
+              checkError={checkDirNameError}
               localeKey="InstanceSettingsPage.errorMessage"
             />
           ),

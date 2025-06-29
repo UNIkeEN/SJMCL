@@ -960,7 +960,8 @@
     "restore": "Restore",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
-      "error-2": "Instance name contains invalid characters or system-reserved words"
+      "error-2": "Instance name is invalid",
+      "error-3": "Instance name is too long"
     }
   },
   "InstanceShaderPacksPage": {
