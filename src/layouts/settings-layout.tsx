@@ -42,7 +42,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <Grid templateColumns="1.1fr 3fr" gap={4} h="100%">
+    <Grid templateColumns="1fr 3fr" gap={4} h="100%">
       <GridItem className="content-full-y">
         <VStack align="stretch" spacing={4}>
           {settingsDomainList.map((group, index) => (

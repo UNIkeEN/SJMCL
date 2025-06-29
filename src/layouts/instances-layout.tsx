@@ -63,7 +63,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
     path.startsWith("/instances/details/");
 
   return (
-    <Grid templateColumns={showNavBar ? "1.1fr 3fr" : "3fr"} gap={4} h="100%">
+    <Grid templateColumns={showNavBar ? "1fr 3fr" : "3fr"} gap={4} h="100%">
       {showNavBar && (
         <GridItem className="content-full-y">
           <VStack align="stretch" h="100%" spacing={4}>

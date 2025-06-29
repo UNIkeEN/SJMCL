@@ -1,6 +1,7 @@
 import {
   Button,
   HStack,
+  Image,
   Link,
   Modal,
   ModalBody,
@@ -40,7 +41,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
     >
       <ModalOverlay />
       <ModalContent borderRadius="md" overflow="hidden">
-        {/* TBD: welcome animation video */}
+        <Image alt="banner" src="/images/banner.png" />
         <ModalHeader>
           🎉&nbsp;&nbsp;{t("WelcomeAndTermsModal.header.title")}
         </ModalHeader>
