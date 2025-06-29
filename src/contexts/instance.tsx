@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirType } from "@/enums/instance";
+import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { useGetState, usePromisedGetState } from "@/hooks/get-state";
 import { GameConfig } from "@/models/config";
 import {
@@ -217,11 +217,35 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setWorlds, toast]);
 
+  const summaryIdRef = React.useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (instanceSummary?.id) {
+      summaryIdRef.current = instanceSummary.id;
+    } else {
+      summaryIdRef.current = undefined;
+    }
+  }, [instanceSummary?.id]);
+
   const handleRetrieveLocalModList = useCallback(async () => {
-    if (instanceSummary?.id !== undefined) {
+    if (summaryIdRef.current !== undefined) {
+      let lastSummaryIdRef = summaryIdRef.current;
       const response = await InstanceService.retrieveLocalModList(
-        instanceSummary.id
+        summaryIdRef.current
       );
+      if (lastSummaryIdRef !== summaryIdRef.current) {
+        return [
+          {
+            iconSrc: "",
+            enabled: false,
+            name: "%CANCELLED%",
+            version: "",
+            loaderType: ModLoaderType.Unknown,
+            fileName: "",
+            filePath: "",
+          } as LocalModInfo,
+        ]; // return a dummy mod to avoid state update after unmount
+      }
       if (response.status === "success") {
         setLocalMods(response.data);
         return response.data;
@@ -235,7 +259,7 @@ export const InstanceContextProvider: React.FC<{
         return [];
       }
     }
-  }, [instanceSummary?.id, setLocalMods, toast]);
+  }, [setLocalMods, toast]);
 
   const handleRetrieveResourcePackList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
