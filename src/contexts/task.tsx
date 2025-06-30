@@ -133,7 +133,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const unlisten = TaskService.onProgressiveTaskUpdate(
       (payload: PTaskEventPayload) => {
-        console.log(payload);
         setTasks((prevTasks) => {
           if (payload.event.state === PTaskEventStateEnums.Created) {
             if (
@@ -142,9 +141,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   t.taskGroup === payload.taskGroup && t.taskId === payload.id
               )
             ) {
-              console.log(
-                `Task with ID ${payload.id} already exists, skipping creation.`
-              );
               return prevTasks;
             }
             return [...(prevTasks || []), payload.event.desc];
@@ -198,7 +194,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               }) || []
             );
           } else {
-            console.warn(`Unhandled task event state: ${payload.event.state}`);
             return prevTasks;
           }
         });
@@ -209,10 +204,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       unlisten();
     };
   }, []);
-
-  useEffect(() => {
-    console.log("Tasks updated:", tasks);
-  }, [tasks]);
 
   return (
     <TaskContext.Provider
