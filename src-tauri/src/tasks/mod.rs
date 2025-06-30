@@ -29,7 +29,7 @@ pub struct THandle {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(tag = "task_type")]
+#[serde(tag = "taskType", rename_all = "camelCase")]
 pub enum PTaskParam {
   Download(DownloadParam),
 }

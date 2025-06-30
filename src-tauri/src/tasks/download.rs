@@ -21,6 +21,7 @@ use super::streams::ProgressStream;
 use super::*;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct DownloadParam {
   src: Url,
   dest: PathBuf,

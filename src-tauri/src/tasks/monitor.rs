@@ -1,5 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_launcher_config;
+use crate::tasks::events::PEvent;
 
 use async_speed_limit::Limiter;
 use download::DownloadTask;
@@ -120,6 +121,13 @@ impl TaskMonitor {
     T: Future<Output = SJMCLResult<()>> + Send + 'static,
   {
     self.phs.write().unwrap().insert(id, p_handle.clone());
+
+    PEvent::emit_created(
+      &self.app_handle,
+      id,
+      task_group.clone().as_deref(),
+      p_handle.read().unwrap().desc.clone(),
+    );
 
     let task = Box::pin(async move {
       if p_handle.read().unwrap().desc.state.is_cancelled() {

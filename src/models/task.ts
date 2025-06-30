@@ -1,13 +1,11 @@
-import { Event } from "@tauri-apps/api/event";
-
 export enum TaskTypeEnums {
-  Download = "Download",
+  Download = "download",
 }
 
 export type TaskType = `${TaskTypeEnums}`;
 
 export interface DownloadTaskParam {
-  task_type: TaskTypeEnums.Download;
+  taskType: TaskTypeEnums.Download;
   src: string;
   dest: string;
   sha1?: string;
@@ -21,7 +19,7 @@ export interface TaskResult {
 }
 
 export interface DownloadTaskPayload {
-  task_type: TaskTypeEnums.Download;
+  taskType: TaskTypeEnums.Download;
   src: string;
   dest: string;
   sha1: string;
@@ -52,14 +50,14 @@ export interface TaskDesc {
   reason?: string;
 }
 
-export enum PTaskEventPayloadStateEnums {
-  Created = "Created",
-  Started = "Started",
-  InProgress = "InProgress",
-  Completed = "Completed",
-  Failed = "Failed",
-  Stopped = "Stopped",
-  Cancelled = "Cancelled",
+export enum PTaskEventStateEnums {
+  Created = "created",
+  Started = "started",
+  InProgress = "inProgress",
+  Completed = "completed",
+  Failed = "failed",
+  Stopped = "stopped",
+  Cancelled = "cancelled",
 }
 
 export interface Duration {
@@ -67,52 +65,51 @@ export interface Duration {
   nanos: number; // nanoseconds
 }
 
-export interface InProgressPTaskEventPayload {
-  state: PTaskEventPayloadStateEnums.InProgress;
+export interface InProgressPTaskEventState {
+  state: PTaskEventStateEnums.InProgress;
   percent: number;
   current: number;
   estimatedTime: Duration; // estimated time remaining
 }
 
-export interface StartedPTaskEventPayload {
-  state: PTaskEventPayloadStateEnums.Started;
+export interface StartedPTaskEventState {
+  state: PTaskEventStateEnums.Started;
   total: number; // total size in bytes
 }
 
-export interface CreatedPTaskEventPayload {
-  state: PTaskEventPayloadStateEnums.Created;
+export interface CreatedPTaskEventState {
+  state: PTaskEventStateEnums.Created;
+  desc: TaskDesc; // task description
 }
 
-export interface CompletedPTaskEventPayload {
-  state: PTaskEventPayloadStateEnums.Completed;
+export interface CompletedPTaskEventState {
+  state: PTaskEventStateEnums.Completed;
 }
 
-export interface FailedPTaskEventPayload {
-  state: PTaskEventPayloadStateEnums.Failed;
+export interface FailedPTaskEventState {
+  state: PTaskEventStateEnums.Failed;
   reason: string; // error message
 }
 
-export interface StoppedPTaskEventPayload {
-  state: PTaskEventPayloadStateEnums.Stopped;
+export interface StoppedPTaskEventState {
+  state: PTaskEventStateEnums.Stopped;
 }
 
-export interface CancelledPTaskEventPayload {
-  state: PTaskEventPayloadStateEnums.Cancelled;
+export interface CancelledPTaskEventState {
+  state: PTaskEventStateEnums.Cancelled;
 }
 
 export interface PTaskEventPayload {
   id: number;
-  task_group: string | null;
+  taskGroup: string | null;
   event:
-    | InProgressPTaskEventPayload
-    | StartedPTaskEventPayload
-    | CreatedPTaskEventPayload
-    | CompletedPTaskEventPayload
-    | FailedPTaskEventPayload
-    | StoppedPTaskEventPayload
-    | CancelledPTaskEventPayload;
+    | InProgressPTaskEventState
+    | StartedPTaskEventState
+    | CreatedPTaskEventState
+    | CompletedPTaskEventState
+    | FailedPTaskEventState
+    | StoppedPTaskEventState
+    | CancelledPTaskEventState;
 }
-
-export type PTaskEvent = Event<PTaskEventPayload>;
 
 export const TaskProgressListener = `SJMCL://task-progress`;

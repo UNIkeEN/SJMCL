@@ -37,7 +37,7 @@ export const DownloadTasksPage = () => {
   const [tasks, setTasks] = useState<[TaskDesc, boolean][]>([]); // boolean is used to record accordion state.
 
   useEffect(() => {
-    const list = getTasks(true) || [];
+    const list = getTasks() || [];
     const enhanced = list.map((task) => {
       return [
         {

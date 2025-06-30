@@ -8,9 +8,11 @@ use tokio::time::Duration;
 const TASK_PROGRESS_LISTENER: &str = "SJMCL://task-progress";
 
 #[derive(Serialize, Deserialize, Clone)]
-#[serde(tag = "state")]
-pub enum PEventPayload {
-  Created(PTaskDesc),
+#[serde(tag = "state", rename_all = "camelCase")]
+pub enum PEventState {
+  Created {
+    desc: PTaskDesc,
+  },
   Started {
     total: i64,
   },
@@ -28,32 +30,23 @@ pub enum PEventPayload {
 }
 
 #[derive(Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct PEvent<'a> {
   pub id: u32,
   pub task_group: Option<&'a str>,
-  pub event: PEventPayload,
+  pub event: PEventState,
 }
 
 impl<'a> PEvent<'a> {
   pub fn emit(self, app: &AppHandle) {
-    if let Some(tg) = self.task_group {
-      app.emit_to(TASK_PROGRESS_LISTENER, tg, self).unwrap();
-    } else {
-      app
-        .emit_to(
-          TASK_PROGRESS_LISTENER,
-          std::format!("task-{}", self.id).as_str(),
-          self,
-        )
-        .unwrap();
-    }
+    app.emit_to(TASK_PROGRESS_LISTENER, "update", self).unwrap();
   }
 
   pub fn emit_started(app: &AppHandle, id: u32, task_group: Option<&'a str>, total: i64) {
     Self {
       id,
       task_group,
-      event: PEventPayload::Started { total },
+      event: PEventState::Started { total },
     }
     .emit(app);
   }
@@ -62,7 +55,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventPayload::Failed { reason },
+      event: PEventState::Failed { reason },
     }
     .emit(app);
   }
@@ -71,23 +64,25 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventPayload::Cancelled,
+      event: PEventState::Cancelled,
     }
     .emit(app);
   }
+
   pub fn emit_completed(app: &AppHandle, id: u32, task_group: Option<&'a str>) {
     Self {
       id,
       task_group,
-      event: PEventPayload::Completed,
+      event: PEventState::Completed,
     }
     .emit(app);
   }
+
   pub fn emit_created(app: &AppHandle, id: u32, task_group: Option<&'a str>, desc: PTaskDesc) {
     Self {
       id,
       task_group,
-      event: PEventPayload::Created(desc),
+      event: PEventState::Created { desc },
     }
     .emit(app);
   }
@@ -103,7 +98,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventPayload::InProgress {
+      event: PEventState::InProgress {
         percent,
         current,
         estimated_time,
