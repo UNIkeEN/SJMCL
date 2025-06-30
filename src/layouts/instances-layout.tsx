@@ -55,9 +55,16 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   ];
 
   // Truncate to the ID, excluding subpage routes
-  const prefixAsPathPart = router.asPath.split("/").slice(0, 4).join("/");
-  const isInstancePage = (path: String) =>
+  const isInstancePage = (path: string) =>
     path.startsWith("/instances/details/");
+
+  const selectedKey = (() => {
+    const parts = router.asPath.split("/");
+    if (parts[2] === "details" && parts[3]) {
+      return `/instances/details/${parts[3]}`;
+    }
+    return "/instances/list";
+  })();
 
   return (
     <Grid templateColumns={showNavBar ? "1fr 3fr" : "3fr"} gap={4} h="100%">
@@ -66,14 +73,16 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
           <VStack align="stretch" h="100%" spacing={4}>
             <Box flex="1" overflowY="auto">
               <NavMenu
-                selectedKeys={[prefixAsPathPart]}
+                selectedKeys={[selectedKey]}
                 onClick={(value) => {
-                  if (isInstancePage(router.asPath) && isInstancePage(value)) {
-                    router.push(
-                      // across instances, not change subpath
-                      `${value}${router.asPath.replace(prefixAsPathPart, "")}`
-                    );
-                  } else router.push(value);
+                  const isSameSubRoute =
+                    isInstancePage(router.asPath) && isInstancePage(value);
+                  if (isSameSubRoute) {
+                    const subPath = router.asPath.split("/").slice(4).join("/");
+                    router.push(`${value}/${subPath}`);
+                  } else {
+                    router.push(value);
+                  }
                 }}
                 items={instanceItems.map((item) => ({
                   label: (

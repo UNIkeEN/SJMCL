@@ -13,7 +13,7 @@ export const createWindow = (
   const newWindow = new WebviewWindow(windowLabel, {
     title: "",
     minWidth: 800,
-    minHeight: 550,
+    minHeight: 530,
     width: 800,
     height: 550,
     ...options,
