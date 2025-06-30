@@ -55,7 +55,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   ];
 
   // Truncate to the ID, excluding subpage routes
-  const isInstancePage = (path: string) =>
+  const isInstanceDetailsPage = (path: string) =>
     path.startsWith("/instances/details/");
 
   const selectedKey = (() => {
@@ -75,11 +75,13 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
               <NavMenu
                 selectedKeys={[selectedKey]}
                 onClick={(value) => {
-                  const isSameSubRoute =
-                    isInstancePage(router.asPath) && isInstancePage(value);
-                  if (isSameSubRoute) {
-                    const subPath = router.asPath.split("/").slice(4).join("/");
-                    router.push(`${value}/${subPath}`);
+                  if (
+                    isInstanceDetailsPage(router.asPath) &&
+                    isInstanceDetailsPage(value)
+                  ) {
+                    router.push(
+                      `${value}/${router.asPath.split("/").slice(4).join("/")}`
+                    );
                   } else {
                     router.push(value);
                   }
