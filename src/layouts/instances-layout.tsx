@@ -80,6 +80,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                     isInstanceDetailsPage(value)
                   ) {
                     router.push(
+                      // across instances, not change subpath
                       `${value}/${router.asPath.split("/").slice(4).join("/")}`
                     );
                   } else {
