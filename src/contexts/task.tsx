@@ -10,12 +10,12 @@ import { useTranslation } from "react-i18next";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
 import {
-  FailedPTaskEventState,
-  InProgressPTaskEventState,
+  FailedPTaskEventStatus,
+  InProgressPTaskEventStatus,
   PTaskEventPayload,
-  PTaskEventStateEnums,
+  PTaskEventStatusEnums,
   TaskDesc,
-  TaskDescStateEnums,
+  TaskDescStatusEnums,
   TaskParam,
 } from "@/models/task";
 import { TaskService } from "@/services/task";
@@ -134,7 +134,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     const unlisten = TaskService.onProgressiveTaskUpdate(
       (payload: PTaskEventPayload) => {
         setTasks((prevTasks) => {
-          if (payload.event.state === PTaskEventStateEnums.Created) {
+          if (payload.event.status === PTaskEventStatusEnums.Created) {
             if (
               prevTasks?.some(
                 (t) =>
@@ -144,51 +144,53 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               return prevTasks;
             }
             return [...(prevTasks || []), payload.event.desc];
-          } else if (payload.event.state === PTaskEventStateEnums.Completed) {
+          } else if (payload.event.status === PTaskEventStatusEnums.Completed) {
             return (
               prevTasks?.map((t) => {
                 if (t.taskId === payload.id) {
                   t.current = t.total;
-                  t.state = TaskDescStateEnums.Completed;
+                  t.status = TaskDescStatusEnums.Completed;
                 }
                 return t;
               }) || []
             );
-          } else if (payload.event.state === PTaskEventStateEnums.Stopped) {
+          } else if (payload.event.status === PTaskEventStatusEnums.Stopped) {
             return (
               prevTasks?.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.state = TaskDescStateEnums.Stopped;
+                  t.status = TaskDescStatusEnums.Stopped;
                 }
                 return t;
               }) || []
             );
-          } else if (payload.event.state === PTaskEventStateEnums.Cancelled) {
+          } else if (payload.event.status === PTaskEventStatusEnums.Cancelled) {
             return (
               prevTasks?.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.state = TaskDescStateEnums.Cancelled;
+                  t.status = TaskDescStatusEnums.Cancelled;
                 }
                 return t;
               }) || []
             );
-          } else if (payload.event.state === PTaskEventStateEnums.InProgress) {
+          } else if (
+            payload.event.status === PTaskEventStatusEnums.InProgress
+          ) {
             return (
               prevTasks?.map((t) => {
                 if (t.taskId === payload.id) {
                   t.current = (
-                    payload.event as InProgressPTaskEventState
+                    payload.event as InProgressPTaskEventStatus
                   ).current;
-                  t.state = TaskDescStateEnums.InProgress;
+                  t.status = TaskDescStatusEnums.InProgress;
                 }
                 return t;
               }) || []
             );
-          } else if (payload.event.state === PTaskEventStateEnums.Failed) {
+          } else if (payload.event.status === PTaskEventStatusEnums.Failed) {
             return (
               prevTasks?.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.reason = (payload.event as FailedPTaskEventState).reason;
+                  t.reason = (payload.event as FailedPTaskEventStatus).reason;
                 }
                 return t;
               }) || []

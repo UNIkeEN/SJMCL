@@ -8,8 +8,8 @@ use tokio::time::Duration;
 const TASK_PROGRESS_LISTENER: &str = "SJMCL://task-progress";
 
 #[derive(Serialize, Deserialize, Clone)]
-#[serde(tag = "state", rename_all = "camelCase")]
-pub enum PEventState {
+#[serde(tag = "status", rename_all = "camelCase")]
+pub enum PEventStatus {
   Created {
     desc: PTaskDesc,
   },
@@ -34,7 +34,7 @@ pub enum PEventState {
 pub struct PEvent<'a> {
   pub id: u32,
   pub task_group: Option<&'a str>,
-  pub event: PEventState,
+  pub event: PEventStatus,
 }
 
 impl<'a> PEvent<'a> {
@@ -46,7 +46,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventState::Started { total },
+      event: PEventStatus::Started { total },
     }
     .emit(app);
   }
@@ -55,7 +55,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventState::Failed { reason },
+      event: PEventStatus::Failed { reason },
     }
     .emit(app);
   }
@@ -64,7 +64,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventState::Cancelled,
+      event: PEventStatus::Cancelled,
     }
     .emit(app);
   }
@@ -73,7 +73,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventState::Completed,
+      event: PEventStatus::Completed,
     }
     .emit(app);
   }
@@ -82,7 +82,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventState::Created { desc },
+      event: PEventStatus::Created { desc },
     }
     .emit(app);
   }
@@ -98,7 +98,7 @@ impl<'a> PEvent<'a> {
     Self {
       id,
       task_group,
-      event: PEventState::InProgress {
+      event: PEventStatus::InProgress {
         percent,
         current,
         estimated_time,

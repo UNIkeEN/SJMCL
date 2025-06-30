@@ -23,7 +23,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useTaskContext } from "@/contexts/task";
-import { TaskDesc, TaskDescStateEnums } from "@/models/task";
+import { TaskDesc, TaskDescStatusEnums } from "@/models/task";
 import { formatTimeInterval } from "@/utils/datetime";
 import { formatByteSize } from "@/utils/string";
 
@@ -43,10 +43,10 @@ export const DownloadTasksPage = () => {
         {
           ...task,
           progress: task.total > 0 ? (task.current / task.total) * 100 : 0,
-          isDownloading: task.state === TaskDescStateEnums.InProgress,
-          isWaiting: task.state === TaskDescStateEnums.Stopped,
-          isError: task.state === TaskDescStateEnums.Failed,
-          isCancelled: task.state === TaskDescStateEnums.Cancelled,
+          isDownloading: task.status === TaskDescStatusEnums.InProgress,
+          isWaiting: task.status === TaskDescStatusEnums.Stopped,
+          isError: task.status === TaskDescStatusEnums.Failed,
+          isCancelled: task.status === TaskDescStatusEnums.Cancelled,
         },
         true,
       ] as [TaskDesc, boolean];
