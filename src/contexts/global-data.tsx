@@ -7,7 +7,11 @@ import React, {
 } from "react";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { useGetState, usePromisedGetState } from "@/hooks/get-state";
+import {
+  GetStateFlag,
+  useGetState,
+  usePromisedGetState,
+} from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
 import { GameResourceInfo } from "@/models/resource";
@@ -23,7 +27,8 @@ interface GlobalDataContextType {
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
   getGameVersionList: (
     sync?: boolean
-  ) => Promise<GameResourceInfo[] | undefined>;
+  ) => Promise<GameResourceInfo[] | GetStateFlag | undefined>;
+  isGameVersionListLoading: boolean;
 }
 
 // for frontend-only state update
@@ -145,7 +150,7 @@ export const GlobalDataContextProvider: React.FC<{
     handleRetrieveAuthServerList
   );
 
-  const [getGameVersionList] = usePromisedGetState(
+  const [getGameVersionList, isGameVersionListLoading] = usePromisedGetState(
     gameVersionList,
     handleFetchGameVersionList
   );
@@ -159,6 +164,7 @@ export const GlobalDataContextProvider: React.FC<{
         getInstanceList,
         getAuthServerList,
         getGameVersionList,
+        isGameVersionListLoading,
       }}
     >
       <GlobalDataDispatchContext.Provider

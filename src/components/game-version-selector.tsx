@@ -30,6 +30,7 @@ import {
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { GetStateFlag } from "@/hooks/get-state";
 import { GameResourceInfo } from "@/models/resource";
 import { ISOToDatetime } from "@/utils/datetime";
 
@@ -54,7 +55,8 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const { getGameVersionList } = useGlobalData();
+  const { getGameVersionList, isGameVersionListLoading: isLoading } =
+    useGlobalData();
   const [versions, setVersions] = useState<GameResourceInfo[]>([]);
   const [filteredVersions, setFilteredVersions] = useState<GameResourceInfo[]>(
     []
@@ -64,15 +66,15 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
     new Set(config.states.gameVersionSelector.gameTypes)
   );
   const [searchText, setSearchText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const getGameVersionListWrapper = useCallback(() => {
-    setIsLoading(true);
     getGameVersionList(true)
-      .then((data) => setVersions(data || []))
-      .catch((e) => setVersions([] as GameResourceInfo[]))
-      .finally(() => setIsLoading(false));
+      .then((data) => {
+        if (data === GetStateFlag.Cancelled) return;
+        setVersions(data || []);
+      })
+      .catch((e) => setVersions([] as GameResourceInfo[]));
   }, [getGameVersionList]);
 
   useEffect(() => {

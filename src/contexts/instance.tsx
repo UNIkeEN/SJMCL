@@ -10,10 +10,13 @@ import React, {
 import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType } from "@/enums/instance";
-import { useGetState, usePromisedGetState } from "@/hooks/get-state";
+import {
+  GetStateFlag,
+  useGetState,
+  usePromisedGetState,
+} from "@/hooks/get-state";
 import { GameConfig } from "@/models/config";
 import {
-  GetStateCancelFlag,
   InstanceSummary,
   LocalModInfo,
   ResourcePackInfo,
@@ -32,7 +35,7 @@ export interface InstanceContextType {
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
   getLocalModList: (
     sync?: boolean
-  ) => Promise<LocalModInfo[] | GetStateCancelFlag | undefined>;
+  ) => Promise<LocalModInfo[] | GetStateFlag | undefined>;
   isLocalModListLoading: boolean;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getServerResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
@@ -413,7 +416,7 @@ export const InstanceContextProvider: React.FC<{
   useEffect(() => {
     if (instanceSummary?.id) {
       getLocalModList(true).then((mods) => {
-        if (mods === "%CANCELLED%") return; // do not update state if cancelled
+        if (mods === GetStateFlag.Cancelled) return; // do not update state if cancelled
         setLocalMods(mods);
       });
     }

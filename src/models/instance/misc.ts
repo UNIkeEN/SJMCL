@@ -41,8 +41,6 @@ export interface LocalModInfo {
   potentialIncompatibility: boolean;
 }
 
-export type GetStateCancelFlag = "%CANCELLED%";
-
 export interface ResourcePackInfo {
   name: string;
   description?: string;

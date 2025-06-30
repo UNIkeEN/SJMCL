@@ -49,6 +49,7 @@ import {
   shaderPackTagList,
   worldTagList,
 } from "@/enums/resource";
+import { GetStateFlag } from "@/hooks/get-state";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import {
   GameResourceInfo,
@@ -86,8 +87,6 @@ const DownloadSpecificResourceModal: React.FC<
     ModLoaderType.Forge,
     ModLoaderType.NeoForge,
   ];
-  const [isLoadingGameVersionList, setIsLoadingGameVersionList] =
-    useState<boolean>(true);
   const [gameVersionList, setGameVersionList] = useState<string[]>([]);
   const [versionLabels, setVersionLabels] = useState<string[]>([]);
   const [selectedVersionLabel, setSelectedVersionLabel] =
@@ -95,11 +94,11 @@ const DownloadSpecificResourceModal: React.FC<
   const [selectedModLoader, setSelectedModLoader] = useState<
     ModLoaderType | "All"
   >("All");
-  const [isLoadingVersionPacks, setIsLoadingVersionPacks] =
+  const [isVersionPacksLoading, setIsLoadingVersionPacks] =
     useState<boolean>(true);
   const [versionPacks, setVersionPacks] = useState<ResourceVersionPack[]>([]);
 
-  const { getGameVersionList } = useGlobalData();
+  const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
 
   const tagLists: Record<string, any> = {
     mod: modTagList,
@@ -156,27 +155,22 @@ const DownloadSpecificResourceModal: React.FC<
   };
 
   const fetchVersionLabels = useCallback(() => {
-    setIsLoadingGameVersionList(true);
-    getGameVersionList()
-      .then((list) => {
-        if (list) {
-          const versionList = list
-            .filter(
-              (version: GameResourceInfo) => version.gameType === "release"
-            )
-            .map((version: GameResourceInfo) => version.id);
-          setGameVersionList(versionList);
-          const majorVersions = [
-            ...new Set(
-              versionList.map((v) => v.split(".").slice(0, 2).join("."))
-            ),
-          ];
-          setVersionLabels(["All", ...majorVersions]);
-        } else {
-          setVersionLabels([]);
-        }
-      })
-      .finally(() => setIsLoadingGameVersionList(false));
+    getGameVersionList().then((list) => {
+      if (list && list !== GetStateFlag.Cancelled) {
+        const versionList = list
+          .filter((version: GameResourceInfo) => version.gameType === "release")
+          .map((version: GameResourceInfo) => version.id);
+        setGameVersionList(versionList);
+        const majorVersions = [
+          ...new Set(
+            versionList.map((v) => v.split(".").slice(0, 2).join("."))
+          ),
+        ];
+        setVersionLabels(["All", ...majorVersions]);
+      } else {
+        setVersionLabels([]);
+      }
+    });
   }, [getGameVersionList]);
 
   const handleFetchResourceVersionPacks = useCallback(
@@ -399,7 +393,7 @@ const DownloadSpecificResourceModal: React.FC<
               )}
             </Box>
           </HStack>
-          {isLoadingGameVersionList || isLoadingVersionPacks ? (
+          {isGameVersionListLoading || isVersionPacksLoading ? (
             <VStack mt={8}>
               <BeatLoader size={16} color="gray" />
             </VStack>

@@ -1,5 +1,8 @@
 import { useCallback, useState } from "react";
-import { GetStateCancelFlag } from "@/models/instance/misc";
+
+export enum GetStateFlag {
+  Cancelled = "%CANCELLED%",
+}
 
 export function useGetState<T>(
   state: T | undefined,
@@ -19,7 +22,7 @@ export function useGetState<T>(
 export function usePromisedGetState<T>(
   state: T | undefined,
   retrieveHandler: () => Promise<any>
-): [(sync?: boolean) => Promise<T | GetStateCancelFlag | undefined>, boolean] {
+): [(sync?: boolean) => Promise<T | GetStateFlag | undefined>, boolean] {
   const [isLoading, setIsLoading] = useState(false);
   const getState = useCallback(
     async (sync = false) => {

@@ -39,6 +39,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
@@ -229,7 +230,7 @@ export const InstanceModsWidget = () => {
     (sync?: boolean) => {
       getLocalModList(sync)
         .then((data) => {
-          if (data === "%CANCELLED%") return; // do not update state if cancelled
+          if (data === GetStateFlag.Cancelled) return; // do not update state if cancelled
           setLocalMods(data || []);
         })
         .catch((e) => setLocalMods([] as LocalModInfo[]));

@@ -34,6 +34,7 @@ import {
   sortByLists,
   worldTagList,
 } from "@/enums/resource";
+import { GetStateFlag } from "@/hooks/get-state";
 import { InstanceSummary } from "@/models/instance/misc";
 import { GameResourceInfo, OtherResourceInfo } from "@/models/resource";
 import { ResourceService } from "@/services/resource";
@@ -398,7 +399,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
 
   useEffect(() => {
     getGameVersionList().then((list) => {
-      if (list) {
+      if (list && list !== GetStateFlag.Cancelled) {
         const versionList = list
           .filter((version: GameResourceInfo) => version.gameType === "release")
           .map((version: GameResourceInfo) => version.id);
