@@ -29,6 +29,7 @@ interface TaskContextType {
   handleCancelProgressiveTask: (taskId: number) => void;
   handleResumeProgressiveTask: (taskId: number) => void;
   handleStopProgressiveTask: (taskId: number) => void;
+  generalPercent: number | undefined; // General progress percentage for all tasks
 }
 
 export const TaskContext = createContext<TaskContextType | undefined>(
@@ -41,6 +42,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const toast = useToast();
   const { t } = useTranslation();
   const [tasks, setTasks] = useState<TaskDesc[]>();
+  const [generalPercent, setGeneralPercent] = useState<number>();
 
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
@@ -202,6 +204,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               prevTasks?.map((t) => {
                 if (t.taskId === payload.id) {
                   t.reason = (payload.event as FailedPTaskEventStatus).reason;
+                  t.status = TaskDescStatusEnums.Failed;
                 }
                 return t;
               }) || []
@@ -218,6 +221,27 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (!tasks) return;
+    const generalCurrent = tasks.reduce(
+      (acc, task) =>
+        acc +
+        (task.status === TaskDescStatusEnums.InProgress ? task.current : 0),
+      0
+    );
+    const generalTotal = tasks.reduce(
+      (acc, task) =>
+        acc + (task.status === TaskDescStatusEnums.InProgress ? task.total : 0),
+      0
+    );
+
+    if (generalTotal) {
+      setGeneralPercent((generalCurrent / generalTotal) * 100);
+    } else {
+      setGeneralPercent(0);
+    }
+  }, [tasks]);
+
   return (
     <TaskContext.Provider
       value={{
@@ -226,6 +250,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         handleCancelProgressiveTask,
         handleResumeProgressiveTask,
         handleStopProgressiveTask,
+        generalPercent,
       }}
     >
       {children}
