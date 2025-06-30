@@ -8,14 +8,17 @@ use tokio::time::Duration;
 const TASK_PROGRESS_LISTENER: &str = "SJMCL://task-progress";
 
 #[derive(Serialize, Deserialize, Clone)]
-#[serde(tag = "status", rename_all = "camelCase")]
+#[serde(tag = "status")]
 pub enum PEventStatus {
+  #[serde(rename_all = "camelCase")]
   Created {
     desc: PTaskDesc,
   },
+  #[serde(rename_all = "camelCase")]
   Started {
     total: i64,
   },
+  #[serde(rename_all = "camelCase")]
   InProgress {
     percent: f64,
     current: i64,
@@ -23,6 +26,7 @@ pub enum PEventStatus {
   },
   Completed,
   Stopped,
+  #[serde(rename_all = "camelCase")]
   Failed {
     reason: String,
   },

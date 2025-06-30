@@ -471,7 +471,8 @@
     },
     "label": {
       "paused": "Paused",
-      "error": "Error"
+      "error": "Error",
+      "cancelled": "Cancelled"
     }
   },
   "Editable": {

@@ -33,11 +33,16 @@ export const DownloadTasksPage = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const { getTasks, handleScheduleProgressiveTaskGroup } = useTaskContext();
+  const {
+    getTasks,
+    handleScheduleProgressiveTaskGroup,
+    handleCancelProgressiveTask,
+  } = useTaskContext();
   const [tasks, setTasks] = useState<[TaskDesc, boolean][]>([]); // boolean is used to record accordion state.
 
   useEffect(() => {
     const list = getTasks() || [];
+    console.log("DownloadTasksPage tasks:", list);
     const enhanced = list.map((task) => {
       return [
         {
@@ -45,7 +50,7 @@ export const DownloadTasksPage = () => {
           progress: task.total > 0 ? (task.current / task.total) * 100 : 0,
           isDownloading: task.status === TaskDescStatusEnums.InProgress,
           isWaiting: task.status === TaskDescStatusEnums.Stopped,
-          isError: task.status === TaskDescStatusEnums.Failed,
+          isError: task.status === TaskDescStatusEnums.Failed || !!task.reason,
           isCancelled: task.status === TaskDescStatusEnums.Cancelled,
         },
         true,
@@ -92,11 +97,14 @@ export const DownloadTasksPage = () => {
                   </Text>
 
                   <HStack alignItems="center">
-                    {task.isDownloading && !task.isError && !task.isWaiting && (
-                      <Text fontSize="xs" className="secondary-text">
-                        {`${formatByteSize(0)}/s, ${formatTimeInterval(0)}`}
-                      </Text>
-                    )}
+                    {task.isDownloading &&
+                      task.estimatedTime &&
+                      !task.isError &&
+                      !task.isWaiting && (
+                        <Text fontSize="xs" className="secondary-text">
+                          {`${formatTimeInterval(task.estimatedTime.secs)}`}
+                        </Text>
+                      )}
 
                     {task.isWaiting && (
                       <Text fontSize="xs" className="secondary-text">
@@ -110,7 +118,13 @@ export const DownloadTasksPage = () => {
                       </Text>
                     )}
 
-                    {!task.isError && (
+                    {task.isCancelled && (
+                      <Text fontSize="xs" color="red.600">
+                        {t("DownloadTasksPage.label.cancelled")}
+                      </Text>
+                    )}
+
+                    {!task.isError && !task.isCancelled && (
                       <Tooltip
                         label={t(
                           `DownloadTasksPage.button.${
@@ -151,17 +165,21 @@ export const DownloadTasksPage = () => {
                       </Tooltip>
                     )}
 
-                    <Tooltip label={t("General.cancel")}>
-                      <IconButton
-                        aria-label="cancel"
-                        icon={<LuX />}
-                        size="xs"
-                        fontSize="sm"
-                        h={21}
-                        variant="ghost"
-                        onClick={() => {}}
-                      />
-                    </Tooltip>
+                    {!task.isCancelled && (
+                      <Tooltip label={t("General.cancel")}>
+                        <IconButton
+                          aria-label="cancel"
+                          icon={<LuX />}
+                          size="xs"
+                          fontSize="sm"
+                          h={21}
+                          variant="ghost"
+                          onClick={() =>
+                            handleCancelProgressiveTask(task.taskId)
+                          }
+                        />
+                      </Tooltip>
+                    )}
 
                     <IconButton
                       aria-label="toggle expansion"

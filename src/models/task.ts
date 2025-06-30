@@ -48,16 +48,17 @@ export interface TaskDesc {
   isWaiting?: boolean;
   isCancelled?: boolean;
   reason?: string;
+  estimatedTime?: Duration; // estimated time remaining in seconds
 }
 
 export enum PTaskEventStatusEnums {
-  Created = "created",
-  Started = "started",
-  InProgress = "inProgress",
-  Completed = "completed",
-  Failed = "failed",
-  Stopped = "stopped",
-  Cancelled = "cancelled",
+  Created = "Created",
+  Started = "Started",
+  InProgress = "InProgress",
+  Completed = "Completed",
+  Failed = "Failed",
+  Stopped = "Stopped",
+  Cancelled = "Cancelled",
 }
 
 export interface Duration {

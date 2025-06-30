@@ -471,7 +471,8 @@
     },
     "label": {
       "paused": "已暂停",
-      "error": "错误"
+      "error": "错误",
+      "cancelled": "已取消"
     }
   },
   "Editable": {

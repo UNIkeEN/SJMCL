@@ -185,9 +185,11 @@ impl TaskMonitor {
   }
 
   pub fn cancel_progress(&self, id: u32) {
-    if let Some(handle) = self.phs.read().unwrap().get(&id) {
-      handle.write().unwrap().mark_cancelled();
-      self.tasks.lock().unwrap().remove(&id).unwrap().abort();
+    if let Some(p_handle) = self.phs.read().unwrap().get(&id) {
+      p_handle.write().unwrap().mark_cancelled();
+      if let Some(join_handle) = self.tasks.lock().unwrap().remove(&id) {
+        join_handle.abort();
+      }
     }
   }
 

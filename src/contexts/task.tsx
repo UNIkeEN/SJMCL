@@ -68,11 +68,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               title: response.message,
               status: "success",
             });
-            setTasks((prevTasks) =>
-              prevTasks !== undefined
-                ? [...prevTasks, ...(response.data.taskDescs || [])]
-                : response.data.taskDescs
-            );
           } else {
             toast({
               title: response.message,
@@ -95,6 +90,15 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             description: response.details,
             status: "error",
           });
+        } else {
+          setTasks((prevTasks) =>
+            prevTasks?.map((t) => {
+              if (t.taskId === taskId) {
+                t.status = TaskDescStatusEnums.Cancelled;
+              }
+              return t;
+            })
+          );
         }
       });
     },
@@ -133,6 +137,10 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const unlisten = TaskService.onProgressiveTaskUpdate(
       (payload: PTaskEventPayload) => {
+        info(
+          `Received task update: ${payload.id}, status: ${payload.event.status}`
+        );
+        console.log(payload);
         setTasks((prevTasks) => {
           if (payload.event.status === PTaskEventStatusEnums.Created) {
             if (
@@ -143,7 +151,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             ) {
               return prevTasks;
             }
-            return [...(prevTasks || []), payload.event.desc];
+            return [payload.event.desc, ...(prevTasks || [])];
           } else if (payload.event.status === PTaskEventStatusEnums.Completed) {
             return (
               prevTasks?.map((t) => {
@@ -182,6 +190,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                     payload.event as InProgressPTaskEventStatus
                   ).current;
                   t.status = TaskDescStatusEnums.InProgress;
+                  t.estimatedTime = (
+                    payload.event as InProgressPTaskEventStatus
+                  ).estimatedTime;
                 }
                 return t;
               }) || []
