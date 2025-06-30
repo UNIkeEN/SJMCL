@@ -1755,8 +1755,7 @@
         "error": {
           "title": "Failed to retrieve instance directory path",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
-            "EXEC_OPEN_DIR_ERROR": "Unable to execute command for the non-existent subdirectory type"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error"
           }
         }
       },

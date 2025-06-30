@@ -1755,8 +1755,7 @@
         "error": {
           "title": "获取实例子目录失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "EXEC_OPEN_DIR_ERROR": "命令执行失败"
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误"
           }
         }
       },

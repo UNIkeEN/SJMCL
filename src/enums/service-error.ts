@@ -10,7 +10,6 @@ export enum AccountServiceError {
 
 export enum InstanceError {
   InstanceNotFoundById = "INSTANCE_NOT_FOUND_BY_ID",
-  ExecOpenDirError = "EXEC_OPEN_DIR_ERROR",
   ServerNbtReadError = "SERVER_NBT_READ_ERROR",
   FileNotFoundError = "FILE_NOT_FOUND_ERROR",
   InvalidSourcePath = "INVALID_SOURCE_PATH",
