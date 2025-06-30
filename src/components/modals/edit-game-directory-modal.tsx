@@ -33,6 +33,7 @@ import { useGlobalData } from "@/contexts/global-data";
 import { useRoutingHistory } from "@/contexts/routing-history";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
+import { isPathSanitized } from "@/utils/string";
 
 interface ActionSelectDialogProps extends Omit<ModalProps, "children"> {
   title: string;
@@ -119,6 +120,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   const [isDirNameExist, setIsDirNameExist] = useState<boolean>(false);
   const [isDirNameInvalid, setIsDirNameInvalid] = useState<boolean>(false);
   const [isDirPathExist, setIsDirPathExist] = useState<boolean>(false);
+  const [isDirPathInvalid, setIsDirPathInvalid] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
@@ -210,6 +212,10 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
     _dirPath: string,
     skipCheck: boolean = false
   ) => {
+    if (!isPathSanitized(dirPath)) {
+      setIsDirPathInvalid(true);
+      return;
+    }
     if (currentPath === _dirPath && currentName === dirName) {
       setDirName("");
       setDirPath("");
@@ -269,6 +275,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
     setIsDirNameExist(false);
     setIsDirNameInvalid(false);
     setIsDirPathExist(false);
+    setIsDirPathInvalid(false);
     setIsLoading(false);
     modalProps.onClose();
   };
@@ -347,7 +354,10 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
               )}
             </FormControl>
 
-            <FormControl isRequired isInvalid={isDirPathExist}>
+            <FormControl
+              isRequired
+              isInvalid={isDirPathExist || isDirPathInvalid}
+            >
               <FormLabel>{t("EditGameDirectoryModal.label.dirPath")}</FormLabel>
               <Flex direction="row" align="center">
                 <InputGroup size="sm">
@@ -358,7 +368,10 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                     placeholder={t(
                       "EditGameDirectoryModal.placeholder.dirPath"
                     )}
-                    onFocus={() => setIsDirPathExist(false)}
+                    onFocus={() => {
+                      setIsDirPathExist(false);
+                      setIsDirPathInvalid(false);
+                    }}
                     onBlur={onDirPathBlur}
                   />
                   <InputRightElement w={16}>
@@ -379,6 +392,11 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                   {t("EditGameDirectoryModal.errorMessage.dirPath.exist")}
                 </FormErrorMessage>
               )}
+              {isDirPathInvalid && (
+                <FormErrorMessage>
+                  {t("EditGameDirectoryModal.errorMessage.dirPath.invalid")}
+                </FormErrorMessage>
+              )}
             </FormControl>
           </Stack>
         </ModalBody>
@@ -394,7 +412,8 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
               isDirNameTooLong ||
               isDirNameInvalid ||
               isDirNameExist ||
-              isDirPathExist
+              isDirPathExist ||
+              isDirPathInvalid
             }
             colorScheme={primaryColor}
             onClick={() => handleUpdateDir(dirPath)}

@@ -41,3 +41,56 @@ export const formatDisplayCount = (count: number): string => {
 
   return `${formattedCount.toFixed(2)} ${units[unitIndex - 1]}`;
 };
+
+export const isFileNameSanitized = (str: string): boolean => {
+  const forbiddenChars = /[\\/:*?"<>|]/;
+  const reservedNames = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i;
+  const startsOrEndsWithInvalid = /^[\s.]+|[\s.]+$/;
+
+  return (
+    !forbiddenChars.test(str) &&
+    !reservedNames.test(str) &&
+    !startsOrEndsWithInvalid.test(str)
+  );
+};
+
+export const isPathSanitized = (path: string, maxLength = 255): boolean => {
+  const forbiddenChars = /[<>:"|?*\0]/;
+  const reservedNames = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
+  const startsOrEndsWithInvalid = /^\s+|[\s.]+$/;
+
+  if (path.length === 0 || path.length > maxLength) {
+    return false;
+  }
+
+  if (/\/{2,}|\\{2,}/.test(path)) {
+    return false;
+  }
+
+  if (path === "\\" || path === "/") {
+    return false;
+  }
+
+  const segments = path.split(/[\\/]/).filter((segment) => segment.length > 0);
+
+  if (segments.length > 0 && /^[a-zA-Z]:$/.test(segments[0])) {
+    segments.shift();
+  }
+
+  for (const segment of segments) {
+    if (segment.length > maxLength) {
+      return false;
+    }
+    if (forbiddenChars.test(segment)) {
+      return false;
+    }
+    if (reservedNames.test(segment)) {
+      return false;
+    }
+    if (startsOrEndsWithInvalid.test(segment)) {
+      return false;
+    }
+  }
+
+  return true;
+};

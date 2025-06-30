@@ -39,6 +39,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
@@ -220,18 +221,19 @@ export const InstanceModsWidget = () => {
   const instanceId = Array.isArray(id) ? id[0] : id;
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { getLocalModList } = useInstanceSharedData();
+  const { getLocalModList, isLocalModListLoading: isLoading } =
+    useInstanceSharedData();
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const getLocalModListWrapper = useCallback(
     (sync?: boolean) => {
-      setIsLoading(true);
       getLocalModList(sync)
-        .then((data) => setLocalMods(data || []))
-        .catch((e) => setLocalMods([] as LocalModInfo[]))
-        .finally(() => setIsLoading(false));
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return; // do not update state if cancelled
+          setLocalMods(data || []);
+        })
+        .catch((e) => setLocalMods([] as LocalModInfo[]));
     },
     [getLocalModList]
   );

@@ -97,9 +97,9 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                 }}
                 isSelected={router.asPath === "/instances/add-import"}
               >
-                <HStack spacing={2}>
+                <HStack spacing={2} overflow="hidden">
                   <Icon as={LuCirclePlus} />
-                  <Text fontSize="sm">
+                  <Text fontSize="sm" className="ellipsis-text">
                     {t("AllInstancesPage.button.addAndImport")}
                   </Text>
                 </HStack>
@@ -110,9 +110,9 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                   router.push("/settings/global-game");
                 }}
               >
-                <HStack spacing={2}>
+                <HStack spacing={2} overflow="hidden">
                   <Icon as={LuSettings} />
-                  <Text fontSize="sm">
+                  <Text fontSize="sm" className="ellipsis-text">
                     {t("SettingsLayout.settingsDomainList.global-game")}
                   </Text>
                 </HStack>

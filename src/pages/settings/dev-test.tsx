@@ -1,13 +1,14 @@
 import { Alert, AlertIcon, Button, VStack } from "@chakra-ui/react";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { Event, listen } from "@tauri-apps/api/event";
+import { info } from "@tauri-apps/plugin-log";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import DownloadResourceModal from "@/components/modals/download-resource-modal";
 import SkinPreview from "@/components/skin-preview";
-import { DownloadParam } from "@/models/download";
-import { TaskParam } from "@/models/download";
-import { TaskService } from "@/services/download";
+import { DownloadTaskParam, TaskParam, TaskTypeEnums } from "@/models/task";
+import { PTaskEventPayload } from "@/models/task";
+import { TaskService } from "@/services/task";
 import { isProd } from "@/utils/env";
 import { createWindow } from "@/utils/window";
 
@@ -25,6 +26,7 @@ const DevTestPage = () => {
   }, [router]);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [task_id, setTaskId] = useState<number | null>(null);
 
   return (
     <VStack align="start" spacing={4}>
@@ -73,38 +75,45 @@ const DevTestPage = () => {
       <Button
         onClick={() => {
           console.log("Download button clicked");
-          let dl: DownloadParam[] = [
+          let dl: DownloadTaskParam[] = [
             {
-              src: "https://piston-data.mojang.com/v1/objects/99da672b78a9ff683da6961096e4a6fd6e8db1ca/server.jar",
-              dest: "server.jar",
-              task_type: "Download",
+              src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
+              dest: "1.jar",
+              sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
+              task_type: TaskTypeEnums.Download,
             },
             {
-              src: "https://piston-data.mojang.com/v1/objects/99da672b78a9ff683da6961096e4a6fd6e8db1ca/server.jar",
-              dest: "client.jar",
-              task_type: "Download",
+              src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
+              dest: "2.jar",
+              sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
+              task_type: TaskTypeEnums.Download,
             },
           ];
-          TaskService.schedule_task_group("group1", dl as TaskParam[]).then(
-            (response) => {
-              console.log(response);
-              if (response.status == "success") {
-                listen(
-                  `group1`,
-                  (event) => {
-                    console.log(event);
-                  },
-                  {
-                    target: `SJMCL://task-progress`,
+          TaskService.scheduleProgressiveTaskGroup(
+            "group1",
+            dl as TaskParam[]
+          ).then((response) => {
+            info(JSON.stringify(response));
+            if (response.status == "success") {
+              listen(
+                `group1`,
+                (event: Event<PTaskEventPayload>) => {
+                  if (event.payload.event.state == "InProgress") {
+                    info(event.payload.event.current.toString());
                   }
-                ).then((unlisten) => {
-                  console.log(unlisten);
-                });
-              }
+                  info(JSON.stringify(event));
+                },
+                {
+                  target: `SJMCL://task-progress`,
+                }
+              ).then((unlisten) => {});
             }
-          );
+          });
         }}
-      />
+      >
+        Start Downloading Task
+      </Button>
+      <Button>Transient task</Button>
 
       {/* Add test components here */}
       <SkinPreview />

@@ -25,6 +25,9 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
+use tauri_plugin_log::{Target, TargetKind};
+use tokio::sync::Notify;
+use utils::portable::{extract_assets, is_portable};
 use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -92,7 +95,7 @@ pub async fn run() {
       instance::commands::update_instance_config,
       instance::commands::retrieve_instance_game_config,
       instance::commands::reset_instance_game_config,
-      instance::commands::open_instance_subdir,
+      instance::commands::retrieve_instance_subdir_path,
       instance::commands::delete_instance,
       instance::commands::rename_instance,
       instance::commands::copy_resource_to_instances,
@@ -221,6 +224,10 @@ pub async fn run() {
         app.handle().plugin(
           tauri_plugin_log::Builder::default()
             .level(log::LevelFilter::Info)
+            .targets([
+              Target::new(TargetKind::Stdout),
+              Target::new(TargetKind::Webview),
+            ])
             .build(),
         )?;
       }

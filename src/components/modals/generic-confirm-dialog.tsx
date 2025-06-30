@@ -9,6 +9,7 @@ import {
   Button,
   Checkbox,
   HStack,
+  Text,
 } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useRef, useState } from "react";
@@ -44,15 +45,16 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const [dontAskAgain, setDontAskAgain] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
-  const handleClose = () => {
-    if (dontAskAgain && suppressKey) {
+  const handleOK = () => {
+    if (dontShowAgain && suppressKey) {
       const current = config.suppressedDialogs ?? [];
       if (!current.includes(suppressKey)) {
         update("suppressedDialogs", [...current, suppressKey]);
       }
     }
+    onOKCallback?.();
     onClose();
   };
 
@@ -60,7 +62,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
     <AlertDialog
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
-      onClose={handleClose}
+      onClose={onClose}
       autoFocus={false}
       isCentered
     >
@@ -72,25 +74,23 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
           <AlertDialogFooter>
             {showSuppressBtn && suppressKey && (
               <Checkbox
-                isChecked={dontAskAgain}
-                onChange={(e) => setDontAskAgain(e.target.checked)}
+                colorScheme={primaryColor}
+                isChecked={dontShowAgain}
+                onChange={(e) => setDontShowAgain(e.target.checked)}
               >
-                {t("General.dontAskAgain")}
+                <Text fontSize="sm">{t("General.dontShowAgain")}</Text>
               </Checkbox>
             )}
 
             <HStack spacing={3} ml="auto">
               {btnCancel && (
-                <Button ref={cancelRef} onClick={handleClose} variant="ghost">
+                <Button ref={cancelRef} onClick={onClose} variant="ghost">
                   {btnCancel}
                 </Button>
               )}
               <Button
                 colorScheme={isAlert ? "red" : primaryColor}
-                onClick={() => {
-                  onOKCallback?.();
-                  handleClose();
-                }}
+                onClick={handleOK}
                 isLoading={isLoading}
               >
                 {btnOK}

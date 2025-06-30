@@ -20,12 +20,12 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
 }) => {
   const { t } = useTranslation();
-  const { config, update } = useLauncherConfig();
+  const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [endpointUrl, setEndpointUrl] = useState<string>("");
 
-  const handleReLogin = async () => {
+  const handleCloseModal = async () => {
     setEndpointUrl("");
     props.onClose();
   };
@@ -56,7 +56,7 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
           </Button>
           <Button
             colorScheme={primaryColor}
-            onClick={handleReLogin}
+            onClick={handleCloseModal}
             isDisabled={!endpointUrl.trim()}
           >
             {t("General.confirm")}

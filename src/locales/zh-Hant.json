@@ -1733,12 +1733,11 @@
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "開啟例項目錄失敗",
+          "title": "獲取例項子目錄失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤",
-            "EXEC_OPEN_DIR_ERROR": "命令執行失敗"
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤"
           }
         }
       },

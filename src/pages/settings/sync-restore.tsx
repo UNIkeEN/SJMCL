@@ -98,8 +98,6 @@ const SyncAndRestoreSettingsPage = () => {
                 openSharedModal("generic-confirm", {
                   title: t("RestoreConfigConfirmDialog.title"),
                   body: t("RestoreConfigConfirmDialog.body"),
-                  btnOK: t("General.confirm"),
-                  btnCancel: t("General.cancel"),
                   isAlert: true,
                   onOKCallback: handleRestoreLauncherConfig,
                 });

@@ -19,7 +19,7 @@ const InstanceResourcePacksPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const {
-    handleOpenInstanceSubdir,
+    openInstanceSubdir,
     handleImportResource,
     getResourcePackList,
     getServerResourcePackList,
@@ -46,7 +46,7 @@ const InstanceResourcePacksPage = () => {
         {
           icon: "openFolder",
           onClick: () => {
-            handleOpenInstanceSubdir(InstanceSubdirType.ResourcePacks);
+            openInstanceSubdir(InstanceSubdirType.ResourcePacks);
           },
         },
         {

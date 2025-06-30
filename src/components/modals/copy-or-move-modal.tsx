@@ -288,7 +288,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
           <ModalBody>
             <Flex flexDirection="column" overflow="hidden" h="100%">
               <VStack>
-                <Text flexWrap="wrap">
+                <Flex flexWrap="wrap" direction="row" align="center">
                   <SegmentedControl
                     selected={operation}
                     onSelectItem={(s) => setOperation(s as "copy" | "move")}
@@ -305,12 +305,12 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                     }))}
                     withTooltip={false}
                   />
-                  {t(`CopyOrMoveModal.resourceType.${_tgtDirType}`)}
-                  <Text as="span" fontWeight="bold">
-                    {` ${srcResName} `}
+                  <Text>
+                    {t(`CopyOrMoveModal.resourceType.${_tgtDirType}`)}
                   </Text>
-                  <Text as="span">{t("CopyOrMoveModal.body")}</Text>
-                </Text>
+                  <Text fontWeight="bold" px={1.5}>{` ${srcResName} `}</Text>
+                  <Text>{t("CopyOrMoveModal.body")}</Text>
+                </Flex>
               </VStack>
               <RadioGroup
                 value={selectedInstances[0]?.id}

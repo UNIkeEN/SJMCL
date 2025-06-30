@@ -96,7 +96,7 @@ const JavaSettingsPage = () => {
       isAlert: true,
       onOKCallback: handleConfirmDelete,
       showSuppressBtn: true,
-      suppressKey: "removeJavaPath",
+      suppressKey: "deleteJavaPath",
     });
   };
 

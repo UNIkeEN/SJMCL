@@ -521,7 +521,8 @@
         "hasInvalidChar": "Directory name has invalid characters"
       },
       "dirPath": {
-        "exist": "Directory already exists"
+        "exist": "Directory already exists",
+        "invalid": "Directory path is invalid"
       }
     }
   },
@@ -699,7 +700,7 @@
       }
     },
     "disable": "Disable",
-    "dontAskAgain": "Don't Ask Again",
+    "dontShowAgain": "Don't Show Again",
     "download": "Download",
     "edit": "Edit",
     "enable": "Enable",
@@ -966,7 +967,9 @@
     "restoreSettingsDesc": "Restore the following specific settings to their default values",
     "restore": "Restore",
     "errorMessage": {
-      "error-1": "Instance name cannot be empty"
+      "error-1": "Instance name cannot be empty",
+      "error-2": "Instance name is invalid",
+      "error-3": "Instance name is too long"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1781,12 +1784,11 @@
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "Failed to open instance directory",
+          "title": "Failed to retrieve instance directory path",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
-            "EXEC_OPEN_DIR_ERROR": "Unable to execute command for the non-existent subdirectory type"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error"
           }
         }
       },
@@ -1910,6 +1912,11 @@
           }
         }
       }
+    },
+     "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "Task created successfully"
+      }
     }
   },
   "SettingsLayout": {
@@ -1945,6 +1952,7 @@
       "placeholder": "Global Search"
     },
     "tip": "Search local and online game resources in one place",
+    "empty": "No results found",
     "result": {
       "instance": "Instance",
       "player": "Player"
@@ -2015,7 +2023,7 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/"
+      "baseUrl": "https://minecraft.wiki/w/"
     }
   },
   "WelcomeAndTermsModal": {

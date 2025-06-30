@@ -16,6 +16,7 @@ import { LuCopy, LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
+import ViewSkinModal from "@/components/modals/view-skin-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -25,7 +26,6 @@ import { AccountServiceError } from "@/enums/service-error";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 import { copyText } from "@/utils/copy";
-import ViewSkinModal from "./modals/view-skin-modal";
 
 interface PlayerMenuProps {
   player: Player;

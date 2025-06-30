@@ -6,11 +6,11 @@ import React, { useEffect, useMemo } from "react";
 import { initReactI18next } from "react-i18next";
 import { Fade } from "@/components/common/transition";
 import GlobalEventHandler from "@/components/special/global-event-handler";
-import LiquidGlassDistortionFilter from "@/components/special/liquid-glass-filter";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
 import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
+import { TaskContextProvider } from "@/contexts/task";
 import { ToastContextProvider } from "@/contexts/toast";
 import InstanceDetailsLayout from "@/layouts/instance-details-layout";
 import InstancesLayout from "@/layouts/instances-layout";
@@ -112,20 +112,21 @@ export default function App({ Component, pageProps }: AppProps) {
       <ToastContextProvider>
         <RoutingHistoryContextProvider>
           <LauncherConfigContextProvider>
-            <GlobalDataContextProvider>
-              <SharedModalsProvider>
-                <GlobalEventHandler>
-                  <MainLayout>
-                    <Fade key={router.pathname.split("/")[1] || ""} in>
-                      <SpecLayout>
-                        <Component {...pageProps} />
-                      </SpecLayout>
-                    </Fade>
-                  </MainLayout>
-                  <LiquidGlassDistortionFilter />
-                </GlobalEventHandler>
-              </SharedModalsProvider>
-            </GlobalDataContextProvider>
+            <TaskContextProvider>
+              <GlobalDataContextProvider>
+                <SharedModalsProvider>
+                  <GlobalEventHandler>
+                    <MainLayout>
+                      <Fade key={router.pathname.split("/")[1] || ""} in>
+                        <SpecLayout>
+                          <Component {...pageProps} />
+                        </SpecLayout>
+                      </Fade>
+                    </MainLayout>
+                  </GlobalEventHandler>
+                </SharedModalsProvider>
+              </GlobalDataContextProvider>
+            </TaskContextProvider>
           </LauncherConfigContextProvider>
         </RoutingHistoryContextProvider>
       </ToastContextProvider>

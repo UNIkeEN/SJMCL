@@ -79,17 +79,17 @@ export class InstanceService {
   }
 
   /**
-   * OPEN the specified instance subdir using system default fs manager.
-   * @param {string} instanceId - The instance ID to open the subdir for.
-   * @param {InstanceSubdirType} dirType - The instance subdir type to open.
-   * @returns {Promise<InvokeResponse<void>>}
+   * RETRIEVE the local path to the specified instance subdir.
+   * @param {string} instanceId - The instance ID.
+   * @param {InstanceSubdirType} dirType - The subdir type.
+   * @returns {Promise<InvokeResponse<string>>}
    */
   @responseHandler("instance")
-  static async openInstanceSubdir(
+  static async retrieveInstanceSubdirPath(
     instanceId: string,
     dirType: InstanceSubdirType
-  ): Promise<InvokeResponse<void>> {
-    return await invoke("open_instance_subdir", {
+  ): Promise<InvokeResponse<string>> {
+    return await invoke("retrieve_instance_subdir_path", {
       instanceId,
       dirType,
     });

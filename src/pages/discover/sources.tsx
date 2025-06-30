@@ -15,7 +15,7 @@ import { LuCheck, LuPlus, LuTrash } from "react-icons/lu";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import AddDiscoverSourceModal from "@/components/modals/add-post-source-mocal";
+import AddDiscoverSourceModal from "@/components/modals/add-post-source-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { PostSourceInfo } from "@/models/post";
 import { DiscoverService } from "@/services/discover";

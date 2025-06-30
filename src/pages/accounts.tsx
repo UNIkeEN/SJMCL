@@ -167,7 +167,9 @@ const AccountsPage = () => {
                   label: (
                     <HStack spacing={2} overflow="hidden">
                       <Icon as={item.icon} />
-                      <Text fontSize="sm">{item.label}</Text>
+                      <Text fontSize="sm" className="ellipsis-text">
+                        {item.label}
+                      </Text>
                     </HStack>
                   ),
                   value: item.key,
@@ -181,9 +183,9 @@ const AccountsPage = () => {
                 openSharedModal("add-auth-server", {});
               }}
             >
-              <HStack spacing={2}>
+              <HStack spacing={2} overflow="hidden">
                 <Icon as={LuCirclePlus} />
-                <Text fontSize="sm">
+                <Text fontSize="sm" className="ellipsis-text">
                   {t("AccountsPage.button.add3rdPartyServer")}
                 </Text>
               </HStack>

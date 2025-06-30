@@ -7,7 +7,7 @@ import {
 } from "@/components/common/option-item";
 import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
-import { CoreContributorsList } from "./contributors";
+import { CoreContributorsList } from "@/pages/settings/contributors";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();

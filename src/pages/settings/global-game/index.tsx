@@ -77,7 +77,7 @@ const GlobalGameSettingsPage = () => {
     checkDirectories();
   }, [config.localGameDirectories]);
 
-  const handleDeleteDir = () => {
+  const handleDeleteDir = (selectedDir: GameDirectory) => {
     update(
       "localGameDirectories",
       config.localGameDirectories.filter((dir) => dir.dir !== selectedDir.dir)
@@ -118,13 +118,16 @@ const GlobalGameSettingsPage = () => {
                 body: t(
                   "GlobalGameSettingsPage.directories.deleteDialog.content",
                   {
-                    dirName: getGameDirName(selectedDir.name),
+                    dirName: getGameDirName(directory.name),
                   }
                 ),
                 btnOK: t("General.delete"),
-                onOKCallback: handleDeleteDir,
+                onOKCallback: () => {
+                  handleDeleteDir(directory);
+                },
                 showSuppressBtn: true,
-                suppressKey: "deleteDerectories",
+                suppressKey: "deleteGameDir",
+                isAlert: true,
               });
             },
           },

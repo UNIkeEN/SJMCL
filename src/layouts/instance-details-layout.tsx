@@ -67,7 +67,6 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         openSharedModal("generic-confirm", {
           title: t("General.notice"),
           body: t("CreateRenamedInstShortcutAlertDialog.content"),
-          btnOK: t("General.confirm"),
           btnCancel: "",
           onOKCallback: () => {
             closeSharedModal("generic-confirm");

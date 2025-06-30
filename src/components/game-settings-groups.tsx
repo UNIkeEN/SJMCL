@@ -50,8 +50,8 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
 
   // use state and useEffect to track and render
-  const [gameWindowWidth, setGameWindowWidth] = useState<number>(0);
-  const [gameWindowHeight, setGameWindowHeight] = useState<number>(0);
+  const [gameWindowWidth, setGameWindowWidth] = useState<number>(400);
+  const [gameWindowHeight, setGameWindowHeight] = useState<number>(300);
   const [maxMemAllocation, setMaxMemAllocation] = useState<number>(0);
   const [sliderMaxMemAllocation, setSliderMaxMemAllocation] =
     useState<number>(0);

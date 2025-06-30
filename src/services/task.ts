@@ -1,6 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { InvokeResponse } from "@/models/response";
-import { TaskParam, TaskResult, TaskState } from "@/models/task";
+import {
+  PTaskEvent,
+  TaskDesc,
+  TaskParam,
+  TaskProgressListener,
+  TaskResult,
+} from "@/models/task";
 import { responseHandler } from "@/utils/response";
 
 /**
@@ -8,17 +15,17 @@ import { responseHandler } from "@/utils/response";
  */
 export class TaskService {
   /**
-   * Schedule a group of tasks.
+   * Schedule a group of progressive tasks.
    * @param taskGroup - The name of the task group.
    * @param params - The parameters for the tasks to be scheduled.
    * @returns {Promise<InvokeResponse<TaskResult>>}
    */
   @responseHandler("task")
-  static async scheduleTaskGroup(
+  static async scheduleProgressiveTaskGroup(
     taskGroup: string,
     params: TaskParam[]
   ): Promise<InvokeResponse<TaskResult>> {
-    return await invoke("schedule_task_group", {
+    return await invoke("schedule_progressive_task_group", {
       taskGroup,
       params,
     });
@@ -26,40 +33,58 @@ export class TaskService {
 
   /**
    * Cancel a task.
-   * @param taskId - The ID of the task to be cancelled.
+   * @param taskId - The ID of the progressive task to be cancelled.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("task")
-  static async cancelTask(taskId: number): Promise<InvokeResponse<null>> {
-    return await invoke("cancel_task", { taskId });
+  static async cancelProgressiveTask(
+    taskId: number
+  ): Promise<InvokeResponse<null>> {
+    return await invoke("cancel_progressive_task", { taskId });
   }
 
   /**
    * Resume a task.
-   * @param taskId - The ID of the task to be resumed.
+   * @param taskId - The ID of the progressive task to be resumed.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("task")
-  static async resumeTask(taskId: number): Promise<InvokeResponse<null>> {
-    return await invoke("resume_task", { taskId });
+  static async resumeProgressiveTask(
+    taskId: number
+  ): Promise<InvokeResponse<null>> {
+    return await invoke("resume_progressive_task", { taskId });
   }
 
   /**
    * Stop a task.
-   * @param taskId - The ID of the task to be stopped.
+   * @param taskId - The ID of the progressive task to be stopped.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("task")
-  static async stopTask(taskId: number): Promise<InvokeResponse<null>> {
-    return await invoke("stop_task", { taskId });
+  static async stopProgressiveTask(
+    taskId: number
+  ): Promise<InvokeResponse<null>> {
+    return await invoke("stop_progressive_task", { taskId });
   }
 
   /**
-   * Retrieve the list of tasks.
-   * @returns {Promise<InvokeResponse<TaskState[]>>}
+   * Retrieve the list of progressive tasks.
+   * @returns {Promise<InvokeResponse<TaskDesc[]>>}
    */
   @responseHandler("task")
-  static async retrieveTaskList(): Promise<InvokeResponse<TaskState[]>> {
-    return await invoke("retrieve_task_list");
+  static async retrieveProgressiveTaskList(): Promise<
+    InvokeResponse<TaskDesc[]>
+  > {
+    return await invoke("retrieve_progressive_task_list");
+  }
+
+  static onProgressiveTaskUpdate(callback: (event: PTaskEvent) => void) {
+    const unlisten = listen<PTaskEvent>(TaskProgressListener, (event) => {
+      callback(event.payload);
+    });
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

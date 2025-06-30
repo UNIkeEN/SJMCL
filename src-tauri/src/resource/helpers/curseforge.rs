@@ -143,7 +143,7 @@ pub fn map_curseforge_file_to_version_pack(
         release_type: cvt_id_to_release_type(cf_file.release_type),
         downloads: cf_file.download_count,
         file_date: cf_file.file_date,
-        download_url: cf_file.download_url.unwrap_or_else(|| "".to_string()),
+        download_url: cf_file.download_url.unwrap_or_default(),
         file_name: cf_file.file_name,
       };
       (file_info, cf_file.game_versions)

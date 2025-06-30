@@ -26,10 +26,10 @@ panic = "abort"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.1.0", features = ["protocol-asset"] }
-tauri-plugin-log = "2.0.0-rc"
+tauri = { version = "2.6.2", features = ["protocol-asset"] }
 tauri-plugin-dialog = "2.1.0"
 tauri-plugin-fs = "2.0.1"
+tauri-plugin-log = "2"
 structstruck = "0.4.1"
 tauri-plugin-http = { version = "2", features = ["json", "stream"] }
 tauri-plugin-os = "2"
@@ -62,7 +62,6 @@ shlex = "1.3.0"
 glob = "0.3.2"
 pin-project = "1.1.8"
 futures = "0.3.31"
-governor = { version = "0.8.1", features = ["std"] }
 strum = "0.27.1"
 strum_macros = "0.27.1"
 smart-default = "0.7.1"
@@ -75,6 +74,7 @@ tauri-plugin-deep-link = "2"
 flume = { version = "0.11.1", features = ["async", "select"] }
 tauri-utils = "2.2.0"
 font-loader = "0.11.0"
+async-speed-limit = "0.4.2"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

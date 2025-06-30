@@ -1,4 +1,4 @@
-import { OtherResourceInfo } from "../resource";
+import { OtherResourceInfo } from "@/models/resource";
 
 // from https://bmclapi2.bangbang93.com/forge/minecraft/1.21
 export const mockForgeVersions: any[] = [

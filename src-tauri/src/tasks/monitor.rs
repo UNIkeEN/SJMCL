@@ -1,39 +1,34 @@
 use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_launcher_config;
-use crate::tasks::*;
+
+use async_speed_limit::Limiter;
 use download::DownloadTask;
 use flume::{Receiver as FlumeReceiver, Sender as FlumeSender};
 use glob::glob;
-use governor::{DefaultDirectRateLimiter, Quota, RateLimiter};
 use log::info;
 use std::collections::HashMap;
 use std::future::Future;
-use std::num::NonZero;
-use std::pin::Pin;
 use std::sync::atomic::AtomicU32;
+use std::sync::{Arc, Mutex, RwLock};
 use std::vec::Vec;
 use tauri::AppHandle;
 use tokio::sync::Semaphore;
+use tokio::task::JoinHandle;
 
-#[derive(Serialize, Deserialize, Clone, PartialEq)]
-pub enum ProgressState {
-  Stopped,
-  Completed,
-  Cancelled,
-  InProgress,
-}
-
-type SJMCLBoxedFuture = Pin<Box<dyn Future<Output = SJMCLResult<u32>> + Send>>;
+use super::events::TEvent;
+use super::SJMCLBoxedFuture;
+use super::*;
 
 pub struct TaskMonitor {
   app_handle: AppHandle,
   id_counter: AtomicU32,
-  p_descs: Mutex<HashMap<u32, Arc<Mutex<ProgressiveTaskDescriptor>>>>,
-  t_descs: Mutex<HashMap<u32, TransientTaskDescriptor>>,
+  phs: RwLock<HashMap<u32, Arc<RwLock<PTaskHandle>>>>,
+  ths: RwLock<HashMap<u32, THandle>>,
+  tasks: Arc<Mutex<HashMap<u32, JoinHandle<()>>>>,
   concurrency: Arc<Semaphore>,
-  tx: FlumeSender<SJMCLBoxedFuture>,
-  rx: FlumeReceiver<SJMCLBoxedFuture>,
-  pub download_rate_limiter: Option<DefaultDirectRateLimiter>,
+  tx: FlumeSender<(u32, SJMCLBoxedFuture)>,
+  rx: FlumeReceiver<(u32, SJMCLBoxedFuture)>,
+  pub download_rate_limiter: Option<Limiter>,
 }
 
 impl TaskMonitor {
@@ -43,8 +38,9 @@ impl TaskMonitor {
     TaskMonitor {
       app_handle: app_handle.clone(),
       id_counter: AtomicU32::new(0),
-      p_descs: Mutex::new(HashMap::new()),
-      t_descs: Mutex::new(HashMap::new()),
+      phs: RwLock::new(HashMap::new()),
+      ths: RwLock::new(HashMap::new()),
+      tasks: Arc::new(Mutex::new(HashMap::new())),
       concurrency: Arc::new(Semaphore::new(
         if config.download.transmission.auto_concurrent {
           let parallelism: usize = std::thread::available_parallelism().unwrap().into();
@@ -56,9 +52,9 @@ impl TaskMonitor {
       tx,
       rx,
       download_rate_limiter: if config.download.transmission.enable_speed_limit {
-        Some(RateLimiter::direct(Quota::per_second(
-          NonZero::new(config.download.transmission.speed_limit_value as u32).unwrap(),
-        )))
+        Some(Limiter::new(
+          (config.download.transmission.speed_limit_value as i64 * 1024) as f64,
+        ))
       } else {
         None
       },
@@ -80,26 +76,23 @@ impl TaskMonitor {
     .unwrap()
     {
       if let Ok(task) = entry {
-        match ProgressiveTaskDescriptor::load(task.clone()) {
+        match PTaskDesc::load(&task.clone()) {
           Ok(desc) => {
             let task_id = desc.task_id;
             let task_group = desc.task_group.clone();
-            match desc.task_type {
-              ProgressiveTaskType::Download => {
+            match desc.payload {
+              PTaskParam::Download(_) => {
                 let task = DownloadTask::from_descriptor(
                   self.app_handle.clone(),
-                  &desc,
+                  desc,
                   Duration::from_secs(1),
+                  false,
                 );
-                if let Some(ratelimiter) = &self.download_rate_limiter {
-                  let r: &'static DefaultDirectRateLimiter =
-                    unsafe { std::mem::transmute(ratelimiter) };
-                  let (f, state) = task.future_with_ratelimiter(r).await.unwrap();
-                  self.enqueue_task(task_id, task_group, f, Some(state)).await;
-                } else {
-                  let (f, state) = task.future().await.unwrap();
-                  self.enqueue_task(task_id, task_group, f, Some(state)).await;
-                };
+                let (f, p_handle) = task
+                  .future(self.app_handle.clone(), self.download_rate_limiter.clone())
+                  .await
+                  .unwrap();
+                self.enqueue_task(task_id, task_group, f, p_handle).await;
               }
             }
           }
@@ -122,111 +115,131 @@ impl TaskMonitor {
     id: u32,
     task_group: Option<String>,
     task: T,
-    desc: Option<Arc<Mutex<ProgressiveTaskDescriptor>>>,
+    p_handle: Arc<RwLock<PTaskHandle>>,
   ) where
     T: Future<Output = SJMCLResult<()>> + Send + 'static,
   {
-    let handle = self.app_handle.clone();
-    let state = if let Some(state) = desc {
-      state
-    } else {
-      unimplemented!()
-    };
-
-    self.p_descs.lock().unwrap().insert(id, state.clone());
-    ProgressiveTaskEvent::emit_created(&handle, id, task_group.clone().as_deref());
+    self.phs.write().unwrap().insert(id, p_handle.clone());
 
     let task = Box::pin(async move {
-      if state.lock().unwrap().is_cancelled() {
+      if p_handle.read().unwrap().desc.state.is_cancelled() {
         return Ok(id);
       }
 
       let result = task.await;
-      let state = state.lock().unwrap();
+      let mut p_handle = p_handle.write().unwrap();
 
       if let Err(e) = result {
-        ProgressiveTaskEvent::emit_failed(&handle, id, state.task_group.as_deref(), e.0.clone());
-      }
-
-      if state.is_cancelled() {
-        ProgressiveTaskEvent::emit_cancelled(&handle, id, state.task_group.as_deref());
-      } else if state.is_completed() {
-        ProgressiveTaskEvent::emit_completed(&handle, id, state.task_group.as_deref());
-        state.delete().unwrap();
+        p_handle.mark_failed(e.0);
       }
       Ok(id)
     });
 
-    self.tx.send_async(task).await.unwrap();
+    self.tx.send_async((id, task)).await.unwrap();
   }
 
   pub async fn background_process(&self) {
     loop {
-      let task = self.rx.recv_async().await.unwrap();
+      let (id, task) = self.rx.recv_async().await.unwrap();
+      let tasks = self.tasks.clone();
       if self.concurrency.acquire().await.is_ok() {
         let concurrency = self.concurrency.clone();
-        tokio::spawn(async move {
-          let r = task.await;
-          match r {
-            Ok(id) => {
-              info!("Task {:?} completed", id);
+        self.tasks.lock().unwrap().insert(
+          id,
+          tokio::spawn(async move {
+            let r = task.await;
+            match r {
+              Ok(id) => {
+                info!("Task {:?} completed", id);
+              }
+              Err(e) => {
+                info!("Task failed: {:?}", e);
+              }
             }
-            Err(e) => {
-              info!("Task failed: {:?}", e);
-            }
-          }
-          concurrency.add_permits(1);
-        });
+            tasks.lock().unwrap().remove(&id);
+            concurrency.add_permits(1);
+          }),
+        );
       }
     }
   }
 
   pub fn stop_progress(&self, id: u32) {
-    if let Some(state) = self.p_descs.lock().unwrap().get_mut(&id) {
-      state.lock().unwrap().stop();
+    if let Some(handle) = self.phs.read().unwrap().get(&id) {
+      handle.write().unwrap().mark_stopped();
     }
   }
 
   pub fn resume_progress(&self, id: u32) {
-    if let Some(state) = self.p_descs.lock().unwrap().get_mut(&id) {
-      state.lock().unwrap().resume();
+    if let Some(handle) = self.phs.read().unwrap().get(&id) {
+      handle.write().unwrap().mark_resumed();
     }
   }
 
   pub fn cancel_progress(&self, id: u32) {
-    if let Some(state) = self.p_descs.lock().unwrap().get_mut(&id) {
-      state.lock().unwrap().cancel()
+    if let Some(handle) = self.phs.read().unwrap().get(&id) {
+      handle.write().unwrap().mark_cancelled();
+      self.tasks.lock().unwrap().remove(&id).unwrap().abort();
     }
   }
 
-  pub fn create_transient_task(&self, app: AppHandle, mut desc: TransientTaskDescriptor) {
-    desc.task_id = self.get_new_id();
-    TransientTaskEvent::new(&desc).emit(&app);
-    self.t_descs.lock().unwrap().insert(desc.task_id, desc);
+  pub async fn restart_progress(&self, id: u32) {
+    let handle = self.phs.write().unwrap().remove(&id);
+    if let Some(handle) = handle {
+      let desc = handle.read().unwrap().desc.clone();
+      let task_group = desc.task_group.clone();
+      let task_state = desc.state.clone();
+      let j_handle = self.tasks.lock().unwrap().remove(&id).unwrap();
+      if !task_state.is_completed() {
+        handle.write().unwrap().mark_cancelled();
+        j_handle.abort();
+      }
+      match desc.payload {
+        PTaskParam::Download(_) => {
+          let task = DownloadTask::from_descriptor(
+            self.app_handle.clone(),
+            desc,
+            Duration::from_secs(1),
+            true,
+          );
+          let (f, new_h) = task
+            .future(self.app_handle.clone(), self.download_rate_limiter.clone())
+            .await
+            .unwrap();
+          self.enqueue_task(id, task_group, f, new_h).await;
+        }
+      }
+    }
+  }
+
+  pub fn create_transient_task(&self, app: AppHandle, mut handle: THandle) {
+    handle.task_id = self.get_new_id();
+    TEvent::new(&handle).emit(&app);
+    self.ths.write().unwrap().insert(handle.task_id, handle);
   }
 
   pub fn set_transient_task(&self, app: AppHandle, task_id: u32, state: String) {
-    if let Some(desc) = self.t_descs.lock().unwrap().get_mut(&task_id) {
+    if let Some(desc) = self.ths.write().unwrap().get_mut(&task_id) {
       desc.state = state;
-      TransientTaskEvent::new(desc).emit(&app);
+      TEvent::new(desc).emit(&app);
     }
   }
 
   pub fn cancel_transient_task(&self, task_id: u32) {
-    self.t_descs.lock().unwrap().remove(&task_id);
+    self.ths.write().unwrap().remove(&task_id);
   }
 
-  pub fn get_transient_task(&self, task_id: u32) -> Option<TransientTaskDescriptor> {
-    self.t_descs.lock().unwrap().get(&task_id).cloned()
+  pub fn get_transient_task(&self, task_id: u32) -> Option<THandle> {
+    self.ths.read().unwrap().get(&task_id).cloned()
   }
 
-  pub fn state_list(&self) -> Vec<ProgressiveTaskDescriptor> {
+  pub fn state_list(&self) -> Vec<PTaskDesc> {
     self
-      .p_descs
-      .lock()
+      .phs
+      .read()
       .unwrap()
       .values()
-      .map(|v| v.lock().unwrap().clone())
+      .map(|v| v.read().unwrap().desc.clone())
       .collect()
   }
 }

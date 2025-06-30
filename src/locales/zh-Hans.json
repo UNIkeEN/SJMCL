@@ -518,10 +518,11 @@
         "empty": "目录名称不能为空",
         "tooLong": "目录名称不能超过 20 个字符",
         "exist": "目录名称已存在",
-        "hasInvalidChar": "目录名称存在非法字符"
+        "hasInvalidChar": "目录名称包含特殊字符或使用系统保留字"
       },
       "dirPath": {
-        "exist": "目录路径已存在"
+        "exist": "目录路径已存在",
+        "invalid": "目录路径不合法"
       }
     }
   },
@@ -699,7 +700,7 @@
       }
     },
     "disable": "禁用",
-    "dontAskAgain": "不再显示",
+    "dontShowAgain": "不再显示",
     "download": "下载",
     "edit": "编辑",
     "enable": "启用",
@@ -966,7 +967,9 @@
     "restoreSettingsDesc": "将以下特定设置重置为全局游戏设置",
     "restore": "重置",
     "errorMessage": {
-      "error-1": "实例名称不能为空"
+      "error-1": "实例名称不能为空",
+      "error-2": "实例名称不合法",
+      "error-3": "实例名称太长"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1781,12 +1784,11 @@
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "打开实例目录失败",
+          "title": "获取实例子目录失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "EXEC_OPEN_DIR_ERROR": "命令执行失败"
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误"
           }
         }
       },
@@ -1910,6 +1912,11 @@
           }
         }
       }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "任务创建成功"
+      }
     }
   },
   "SettingsLayout": {
@@ -1945,6 +1952,7 @@
       "placeholder": "聚合搜索"
     },
     "tip": "集中一处搜索本地内容与线上游戏资源",
+    "empty": "无搜索结果",
     "result": {
       "instance": "实例",
       "player": "角色"
