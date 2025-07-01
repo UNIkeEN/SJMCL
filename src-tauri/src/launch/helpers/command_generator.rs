@@ -39,9 +39,11 @@ pub struct LaunchArguments {
   pub auth_player_name: String,
   pub user_type: String,
   pub auth_uuid: String,
-  pub clientid: Option<String>,
-  pub auth_xuid: Option<String>,
+  pub clientid: String,
+  pub auth_xuid: String,
   pub user_properties: String,
+  pub library_directory: String,
+  pub classpath_separator: String,
 
   pub demo: bool,
   pub resolution_height: u32,
@@ -168,15 +170,21 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
     launcher_name: format!("SJMCL {}", basic_info.launcher_version),
     launcher_version: basic_info.launcher_version,
     classpath: class_paths,
+    library_directory: libraries_dir.to_string_lossy().to_string(),
+    classpath_separator: if cfg!(target_os = "windows") {
+      ";".to_string()
+    } else {
+      ":".to_string()
+    },
 
     auth_access_token: selected_player.access_token,
     auth_player_name: selected_player.name,
     user_type: "msa".to_string(), // TODO
     auth_uuid: selected_player.uuid.to_string(),
-    auth_xuid: None, // TODO
+    auth_xuid: "".to_string(), // TODO
     demo: false,
     user_properties: "{}".to_string(),
-    clientid: None,
+    clientid: "".to_string(),
     resolution_height: game_config.game_window.resolution.height,
     resolution_width: game_config.game_window.resolution.width,
     quick_play_path: String::new(),
@@ -328,6 +336,5 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
   if game_config.game_window.resolution.fullscreen {
     cmd.push("--fullscreen".to_string());
   }
-
   Ok(cmd)
 }
