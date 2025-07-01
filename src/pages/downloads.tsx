@@ -23,7 +23,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useTaskContext } from "@/contexts/task";
-import { TaskDesc, TaskDescStateEnums } from "@/models/task";
+import { TaskDesc, TaskDescStatusEnums } from "@/models/task";
 import { formatTimeInterval } from "@/utils/datetime";
 import { formatByteSize } from "@/utils/string";
 
@@ -33,20 +33,25 @@ export const DownloadTasksPage = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const { getTasks, handleScheduleProgressiveTaskGroup } = useTaskContext();
+  const {
+    getTasks,
+    handleScheduleProgressiveTaskGroup,
+    handleCancelProgressiveTask,
+  } = useTaskContext();
   const [tasks, setTasks] = useState<[TaskDesc, boolean][]>([]); // boolean is used to record accordion state.
 
   useEffect(() => {
-    const list = getTasks(true) || [];
+    const list = getTasks() || [];
+    console.log("DownloadTasksPage tasks:", list);
     const enhanced = list.map((task) => {
       return [
         {
           ...task,
           progress: task.total > 0 ? (task.current / task.total) * 100 : 0,
-          isDownloading: task.state === TaskDescStateEnums.InProgress,
-          isWaiting: task.state === TaskDescStateEnums.Stopped,
-          isError: task.state === TaskDescStateEnums.Failed,
-          isCancelled: task.state === TaskDescStateEnums.Cancelled,
+          isDownloading: task.status === TaskDescStatusEnums.InProgress,
+          isWaiting: task.status === TaskDescStatusEnums.Stopped,
+          isError: task.status === TaskDescStatusEnums.Failed || !!task.reason,
+          isCancelled: task.status === TaskDescStatusEnums.Cancelled,
         },
         true,
       ] as [TaskDesc, boolean];
@@ -92,11 +97,14 @@ export const DownloadTasksPage = () => {
                   </Text>
 
                   <HStack alignItems="center">
-                    {task.isDownloading && !task.isError && !task.isWaiting && (
-                      <Text fontSize="xs" className="secondary-text">
-                        {`${formatByteSize(0)}/s, ${formatTimeInterval(0)}`}
-                      </Text>
-                    )}
+                    {task.isDownloading &&
+                      task.estimatedTime &&
+                      !task.isError &&
+                      !task.isWaiting && (
+                        <Text fontSize="xs" className="secondary-text">
+                          {`${formatTimeInterval(task.estimatedTime.secs)}`}
+                        </Text>
+                      )}
 
                     {task.isWaiting && (
                       <Text fontSize="xs" className="secondary-text">
@@ -110,7 +118,13 @@ export const DownloadTasksPage = () => {
                       </Text>
                     )}
 
-                    {!task.isError && (
+                    {task.isCancelled && (
+                      <Text fontSize="xs" color="red.600">
+                        {t("DownloadTasksPage.label.cancelled")}
+                      </Text>
+                    )}
+
+                    {!task.isError && !task.isCancelled && (
                       <Tooltip
                         label={t(
                           `DownloadTasksPage.button.${
@@ -151,17 +165,21 @@ export const DownloadTasksPage = () => {
                       </Tooltip>
                     )}
 
-                    <Tooltip label={t("General.cancel")}>
-                      <IconButton
-                        aria-label="cancel"
-                        icon={<LuX />}
-                        size="xs"
-                        fontSize="sm"
-                        h={21}
-                        variant="ghost"
-                        onClick={() => {}}
-                      />
-                    </Tooltip>
+                    {!task.isCancelled && (
+                      <Tooltip label={t("General.cancel")}>
+                        <IconButton
+                          aria-label="cancel"
+                          icon={<LuX />}
+                          size="xs"
+                          fontSize="sm"
+                          h={21}
+                          variant="ghost"
+                          onClick={() =>
+                            handleCancelProgressiveTask(task.taskId)
+                          }
+                        />
+                      </Tooltip>
+                    )}
 
                     <IconButton
                       aria-label="toggle expansion"
@@ -212,6 +230,7 @@ export const DownloadTasksPage = () => {
                   ]
                 : []),
             ]}
+            maxFirstVisibleItems={4}
           />
         ))}
       </VStack>

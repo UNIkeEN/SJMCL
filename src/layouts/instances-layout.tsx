@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import { FaStar } from "react-icons/fa6";
@@ -55,9 +55,16 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   ];
 
   // Truncate to the ID, excluding subpage routes
-  const prefixAsPathPart = router.asPath.split("/").slice(0, 4).join("/");
-  const isInstancePage = (path: String) =>
+  const isInstanceDetailsPage = (path: string) =>
     path.startsWith("/instances/details/");
+
+  const selectedKey = useMemo(() => {
+    const parts = router.asPath.split("/");
+    if (parts[2] === "details" && parts[3]) {
+      return `/instances/details/${parts[3]}`;
+    }
+    return "/instances/list";
+  }, [router.asPath]);
 
   return (
     <Grid templateColumns={showNavBar ? "1fr 3fr" : "3fr"} gap={4} h="100%">
@@ -66,14 +73,19 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
           <VStack align="stretch" h="100%" spacing={4}>
             <Box flex="1" overflowY="auto">
               <NavMenu
-                selectedKeys={[prefixAsPathPart]}
+                selectedKeys={[selectedKey]}
                 onClick={(value) => {
-                  if (isInstancePage(router.asPath) && isInstancePage(value)) {
+                  if (
+                    isInstanceDetailsPage(router.asPath) &&
+                    isInstanceDetailsPage(value)
+                  ) {
                     router.push(
                       // across instances, not change subpath
-                      `${value}${router.asPath.replace(prefixAsPathPart, "")}`
+                      `${value}/${router.asPath.split("/").slice(4).join("/")}`
                     );
-                  } else router.push(value);
+                  } else {
+                    router.push(value);
+                  }
                 }}
                 items={instanceItems.map((item) => ({
                   label: (
@@ -97,9 +109,9 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                 }}
                 isSelected={router.asPath === "/instances/add-import"}
               >
-                <HStack spacing={2}>
+                <HStack spacing={2} overflow="hidden">
                   <Icon as={LuCirclePlus} />
-                  <Text fontSize="sm">
+                  <Text fontSize="sm" className="ellipsis-text">
                     {t("AllInstancesPage.button.addAndImport")}
                   </Text>
                 </HStack>
@@ -110,9 +122,9 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                   router.push("/settings/global-game");
                 }}
               >
-                <HStack spacing={2}>
+                <HStack spacing={2} overflow="hidden">
                   <Icon as={LuSettings} />
-                  <Text fontSize="sm">
+                  <Text fontSize="sm" className="ellipsis-text">
                     {t("SettingsLayout.settingsDomainList.global-game")}
                   </Text>
                 </HStack>

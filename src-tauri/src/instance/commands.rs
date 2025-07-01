@@ -159,19 +159,14 @@ pub async fn reset_instance_game_config(app: AppHandle, instance_id: String) -> 
 }
 
 #[tauri::command]
-pub fn open_instance_subdir(
+pub fn retrieve_instance_subdir_path(
   app: AppHandle,
   instance_id: String,
   dir_type: InstanceSubdirType,
-) -> SJMCLResult<()> {
-  let subdir_path = match get_instance_subdir_path_by_id(&app, &instance_id, &dir_type) {
-    Some(path) => path,
-    None => return Err(InstanceError::InstanceNotFoundByID.into()),
-  };
-
-  match open_path(subdir_path.to_str().unwrap(), None::<&str>) {
-    Ok(_) => Ok(()),
-    Err(_) => Err(InstanceError::ExecOpenDirError.into()),
+) -> SJMCLResult<PathBuf> {
+  match get_instance_subdir_path_by_id(&app, &instance_id, &dir_type) {
+    Some(path) => Ok(path),
+    None => Err(InstanceError::InstanceNotFoundByID.into()),
   }
 }
 

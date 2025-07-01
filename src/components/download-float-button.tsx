@@ -12,12 +12,16 @@ import { useTranslation } from "react-i18next";
 import { LuArrowDownToLine } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import { useLauncherConfig } from "@/contexts/config";
+import { useTaskContext } from "@/contexts/task";
 
 export const DownloadFloatButton: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const { generalPercent } = useTaskContext();
   const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();
+
+  if (generalPercent === undefined) return null;
 
   return (
     <Box position="absolute" top={4} right={4}>
@@ -40,7 +44,7 @@ export const DownloadFloatButton: React.FC = () => {
             <CircularProgress
               color={`${primaryColor}.500`}
               size="30px"
-              value={80}
+              value={generalPercent}
             >
               <CircularProgressLabel>
                 <Center w="100%">

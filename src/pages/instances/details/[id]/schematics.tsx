@@ -17,7 +17,7 @@ import { SchematicInfo } from "@/models/instance/misc";
 
 const InstanceSchematicsPage = () => {
   const { t } = useTranslation();
-  const { handleOpenInstanceSubdir, handleImportResource, getSchematicList } =
+  const { openInstanceSubdir, handleImportResource, getSchematicList } =
     useInstanceSharedData();
   const { openSharedModal } = useSharedModals();
 
@@ -39,7 +39,7 @@ const InstanceSchematicsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirType.Schematics);
+        openInstanceSubdir(InstanceSubdirType.Schematics);
       },
     },
     {

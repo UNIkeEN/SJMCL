@@ -182,19 +182,21 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
         </React.Fragment>
       ))}
       {hasShowAllBtn && (
-        <Button
-          key="show-all"
-          size="xs"
-          colorScheme={primaryColor}
-          variant="ghost"
-          onClick={() => setShowAll(!showAll)}
-          mt={1.5}
-          ml={-1.5}
-        >
-          {t("OptionItemGroup.button.showAll", {
-            left: items.length - maxFirstVisibleItems,
-          })}
-        </Button>
+        <Box>
+          <Button
+            key="show-all"
+            size="xs"
+            colorScheme={primaryColor}
+            variant="ghost"
+            onClick={() => setShowAll(!showAll)}
+            mt={1.5}
+            ml={-1.5}
+          >
+            {t("OptionItemGroup.button.showAll", {
+              left: items.length - maxFirstVisibleItems,
+            })}
+          </Button>
+        </Box>
       )}
     </>
   );

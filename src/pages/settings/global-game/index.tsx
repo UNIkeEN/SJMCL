@@ -77,7 +77,7 @@ const GlobalGameSettingsPage = () => {
     checkDirectories();
   }, [config.localGameDirectories]);
 
-  const handleDeleteDir = () => {
+  const handleDeleteDir = (selectedDir: GameDirectory) => {
     update(
       "localGameDirectories",
       config.localGameDirectories.filter((dir) => dir.dir !== selectedDir.dir)
@@ -95,6 +95,7 @@ const GlobalGameSettingsPage = () => {
       onClick: () => {
         openPath(directory.dir);
       },
+      disabled: !directoryExistence[directory.dir],
     },
     ...(directory.name !== "CURRENT_DIR" && directory.name !== "APP_DATA_SUBDIR"
       ? [
@@ -118,11 +119,13 @@ const GlobalGameSettingsPage = () => {
                 body: t(
                   "GlobalGameSettingsPage.directories.deleteDialog.content",
                   {
-                    dirName: getGameDirName(selectedDir.name),
+                    dirName: getGameDirName(directory.name),
                   }
                 ),
                 btnOK: t("General.delete"),
-                onOKCallback: handleDeleteDir,
+                onOKCallback: () => {
+                  handleDeleteDir(directory);
+                },
                 showSuppressBtn: true,
                 suppressKey: "deleteGameDir",
                 isAlert: true,
@@ -183,6 +186,7 @@ const GlobalGameSettingsPage = () => {
                       icon={item.icon}
                       colorScheme={item.danger ? "red" : "gray"}
                       onClick={item.onClick}
+                      disabled={item.disabled || false}
                     />
                   ))}
                 </HStack>

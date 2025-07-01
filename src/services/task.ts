@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { InvokeResponse } from "@/models/response";
 import {
-  PTaskEvent,
+  PTaskEventPayload,
   TaskDesc,
   TaskParam,
   TaskProgressListener,
@@ -78,10 +78,18 @@ export class TaskService {
     return await invoke("retrieve_progressive_task_list");
   }
 
-  static onProgressiveTaskUpdate(callback: (event: PTaskEvent) => void) {
-    const unlisten = listen<PTaskEvent>(TaskProgressListener, (event) => {
-      callback(event.payload);
-    });
+  static onProgressiveTaskUpdate(
+    callback: (payload: PTaskEventPayload) => void
+  ) {
+    const unlisten = listen<PTaskEventPayload>(
+      "update",
+      (event) => {
+        callback(event.payload);
+      },
+      {
+        target: TaskProgressListener,
+      }
+    );
 
     return () => {
       unlisten.then((f) => f());

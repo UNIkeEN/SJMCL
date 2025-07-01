@@ -33,6 +33,7 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
+import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -42,7 +43,7 @@ const InstanceModsPage = () => {
   const toast = useToast();
   const {
     summary,
-    handleOpenInstanceSubdir,
+    openInstanceSubdir,
     handleImportResource,
     getLocalModList,
     isLocalModListLoading: isLoading,
@@ -60,7 +61,13 @@ const InstanceModsPage = () => {
 
   const getLocalModListWrapper = useCallback(
     (sync?: boolean) => {
-      getLocalModList(sync).then((data) => setLocalMods(data || []));
+      getLocalModList(sync).then((data) => {
+        if (data === GetStateFlag.Cancelled) {
+          // this means the user has cancelled the operation.
+          return;
+        }
+        setLocalMods(data || []);
+      });
     },
     [getLocalModList]
   );
@@ -140,7 +147,7 @@ const InstanceModsPage = () => {
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirType.Mods);
+        openInstanceSubdir(InstanceSubdirType.Mods);
       },
     },
     {

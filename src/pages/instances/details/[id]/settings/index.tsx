@@ -21,7 +21,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
-import { isSanitized } from "@/utils/string";
+import { isFileNameSanitized } from "@/utils/string";
 
 const InstanceSettingsPage = () => {
   const router = useRouter();
@@ -41,6 +41,13 @@ const InstanceSettingsPage = () => {
     handleResetInstanceGameConfig,
   } = useInstanceSharedData();
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
+
+  const checkDirNameError = (value: string): number => {
+    if (value.trim() === "") return 1;
+    if (!isFileNameSanitized(value)) return 2;
+    if (value.length > 255) return 3;
+    return 0;
+  };
 
   const handleRenameInstance = useCallback(
     (name: string) => {
@@ -69,15 +76,11 @@ const InstanceSettingsPage = () => {
             <Editable
               isTextArea={false}
               value={summary?.name || ""}
-              onEditSubmit={(value) => {
-                handleRenameInstance(value);
-              }}
+              onEditSubmit={handleRenameInstance}
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
-              checkError={(value) =>
-                value.trim() === "" ? 1 : isSanitized(value) ? 0 : 2
-              }
+              checkError={checkDirNameError}
               localeKey="InstanceSettingsPage.errorMessage"
             />
           ),
