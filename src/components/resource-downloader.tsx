@@ -148,7 +148,9 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
       ];
       let allTags: string[] = [];
       if (typeof tagList === "object" && tagList !== null) {
-        allTags = Object.values(tagList).flat() as string[];
+        const keys = Object.keys(tagList);
+        const values = Object.values(tagList).flat() as string[];
+        allTags = [...keys, ...values];
       }
       if (!allTags.includes(tag)) return tag;
       return t(
