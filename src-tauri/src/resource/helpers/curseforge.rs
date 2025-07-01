@@ -70,11 +70,18 @@ pub struct CurseForgeSearchRes {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct CurseForgeFileHash {
+  pub value: String,
+  pub algo: u32,
+}
+
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CurseForgeFileInfo {
   pub display_name: String,
   pub file_name: String,
   pub release_type: u32,
+  pub hashes: Vec<CurseForgeFileHash>,
   pub file_date: String,
   pub download_url: Option<String>,
   pub download_count: u32,
@@ -144,6 +151,11 @@ pub fn map_curseforge_file_to_version_pack(
         downloads: cf_file.download_count,
         file_date: cf_file.file_date,
         download_url: cf_file.download_url.unwrap_or_default(),
+        sha1: cf_file
+          .hashes
+          .into_iter()
+          .find(|h| h.algo == 1)
+          .map_or("".to_string(), |h| h.value),
         file_name: cf_file.file_name,
       };
       (file_info, cf_file.game_versions)

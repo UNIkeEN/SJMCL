@@ -85,6 +85,7 @@ pub struct ResourceFileInfo {
   pub downloads: u32,
   pub file_date: String,
   pub download_url: String,
+  pub sha1: String,
   pub file_name: String,
 }
 
