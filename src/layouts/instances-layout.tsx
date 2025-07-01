@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import { FaStar } from "react-icons/fa6";
@@ -58,13 +58,13 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   const isInstanceDetailsPage = (path: string) =>
     path.startsWith("/instances/details/");
 
-  const selectedKey = (() => {
+  const selectedKey = useMemo(() => {
     const parts = router.asPath.split("/");
     if (parts[2] === "details" && parts[3]) {
       return `/instances/details/${parts[3]}`;
     }
     return "/instances/list";
-  })();
+  }, [router.asPath]);
 
   return (
     <Grid templateColumns={showNavBar ? "1fr 3fr" : "3fr"} gap={4} h="100%">
