@@ -31,19 +31,19 @@ impl PState {
   }
 
   pub fn is_stopped(&self) -> bool {
-    return *self == PState::Stopped;
+    *self == PState::Stopped
   }
 
   pub fn is_completed(&self) -> bool {
-    return *self == PState::Completed;
+    *self == PState::Completed
   }
 
   pub fn is_in_progress(&self) -> bool {
-    return *self == PState::InProgress;
+    *self == PState::InProgress
   }
 
   pub fn is_cancelled(&self) -> bool {
-    return *self == PState::Cancelled;
+    *self == PState::Cancelled
   }
 }
 

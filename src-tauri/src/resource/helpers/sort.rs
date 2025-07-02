@@ -17,7 +17,7 @@ fn parse_string(input: &str) -> (String, Vec<u32>) {
   }
 }
 
-fn compare_versions(v1: &Vec<u32>, v2: &Vec<u32>) -> Ordering {
+fn compare_versions(v1: &[u32], v2: &[u32]) -> Ordering {
   for (a, b) in v1.iter().zip(v2.iter()) {
     match a.cmp(b) {
       Ordering::Equal => continue,

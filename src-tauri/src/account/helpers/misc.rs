@@ -1,5 +1,5 @@
 use crate::{
-  account::models::{AccountError, AccountInfo, PlayerInfo, PlayerType},
+  account::models::{AccountError, AccountInfo, PlayerInfo},
   error::SJMCLResult,
   launcher_config::models::LauncherConfig,
   storage::Storage,

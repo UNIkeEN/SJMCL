@@ -22,7 +22,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { downloadDir } from "@tauri-apps/api/path";
+import { save } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -40,8 +43,9 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { useTaskContext } from "@/contexts/task";
 import { useToast } from "@/contexts/toast";
-import { ModLoaderType } from "@/enums/instance";
+import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import {
   modTagList,
   modpackTagList,
@@ -56,6 +60,8 @@ import {
   OtherResourceInfo,
   ResourceVersionPack,
 } from "@/models/resource";
+import { TaskTypeEnums } from "@/models/task";
+import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
 import { ISOToDate } from "@/utils/datetime";
 import { formatDisplayCount } from "@/utils/string";
@@ -77,6 +83,7 @@ const DownloadSpecificResourceModal: React.FC<
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const router = useRouter();
   const toast = useToast();
   const themedStyles = useThemedCSSStyle();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -99,6 +106,7 @@ const DownloadSpecificResourceModal: React.FC<
   const [versionPacks, setVersionPacks] = useState<ResourceVersionPack[]>([]);
 
   const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
+  const { handleScheduleProgressiveTaskGroup } = useTaskContext();
 
   const tagLists: Record<string, any> = {
     mod: modTagList,
@@ -118,7 +126,9 @@ const DownloadSpecificResourceModal: React.FC<
       ];
       let allTags: string[] = [];
       if (typeof tagList === "object" && tagList !== null) {
-        allTags = Object.values(tagList).flat() as string[];
+        const keys = Object.keys(tagList);
+        const values = Object.values(tagList).flat() as string[];
+        allTags = [...keys, ...values];
       }
       if (!allTags.includes(tag)) return tag;
       return t(
@@ -251,6 +261,41 @@ const DownloadSpecificResourceModal: React.FC<
       t("DownloadSpecificResourceModal.label.all")
     );
   };
+
+  const getDefaultFilePath = useCallback(async (): Promise<string | null> => {
+    const resourceTypeToDirType: Record<string, InstanceSubdirType> = {
+      mod: InstanceSubdirType.Mods,
+      world: InstanceSubdirType.Saves,
+      resourcepack: InstanceSubdirType.ResourcePacks,
+      shader: InstanceSubdirType.ShaderPacks,
+    };
+    const dirType =
+      resourceTypeToDirType[resource.type] ?? InstanceSubdirType.Root;
+
+    let id = router.query.id;
+    const instanceId = Array.isArray(id) ? id[0] : id;
+
+    if (instanceId !== undefined) {
+      return InstanceService.retrieveInstanceSubdirPath(
+        instanceId,
+        dirType
+      ).then((response) => {
+        if (response.status === "success") {
+          return response.data;
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+          return null;
+        }
+      });
+    }
+
+    const defaultDownloadPath = await downloadDir();
+    return defaultDownloadPath;
+  }, [resource.type, router.query.id, toast]);
 
   useEffect(() => {
     setSelectedModLoader(curInstanceModLoader || "All");
@@ -462,9 +507,23 @@ const DownloadSpecificResourceModal: React.FC<
                             />
                           }
                           isFullClickZone
-                          onClick={() => {
-                            console.log("Downloading", item.fileName);
-                            console.log(item.downloadUrl); // TBD
+                          onClick={async () => {
+                            const dir = await getDefaultFilePath();
+                            const savepath = await save({
+                              defaultPath: dir + "/" + item.fileName,
+                            });
+                            if (!savepath) return;
+                            handleScheduleProgressiveTaskGroup(
+                              "game-resource-download",
+                              [
+                                {
+                                  src: item.downloadUrl,
+                                  dest: savepath,
+                                  sha1: item.sha1,
+                                  taskType: TaskTypeEnums.Download,
+                                },
+                              ]
+                            );
                           }}
                         />
                       ))}

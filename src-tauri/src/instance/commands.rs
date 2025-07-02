@@ -38,7 +38,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::{sync::Mutex, time::SystemTime};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_opener::open_path;
 use tokio;
 use zip::read::ZipArchive;
 

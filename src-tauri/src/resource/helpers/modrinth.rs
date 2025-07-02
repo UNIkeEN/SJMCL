@@ -32,9 +32,15 @@ pub struct ModrinthSearchRes {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct ModrinthFileHash {
+  pub sha1: String,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct ModrinthFile {
   pub url: String,
   pub filename: String,
+  pub hashes: ModrinthFileHash,
 }
 
 #[derive(Deserialize, Debug)]
@@ -120,6 +126,7 @@ pub fn map_modrinth_file_to_version_pack(
             downloads: version.downloads,
             file_date: version.date_published.clone(),
             download_url: file.url.clone(),
+            sha1: file.hashes.sha1.clone(),
             file_name: file.filename.clone(),
           })
           .collect::<Vec<_>>();
