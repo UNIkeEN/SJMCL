@@ -58,7 +58,8 @@ pub async fn monitor_process(
 
         // the first time when log contains 'Render thread', send signal to launch command, close frontend modal.
         // TODO: find a better way.
-        if !game_ready_flag.load(atomic::Ordering::SeqCst) && line.contains(GAME_WINDOW_READY_FLAG)
+        if !game_ready_flag.load(atomic::Ordering::SeqCst)
+          && READY_FLAG.iter().any(|p| line.contains(p))
         {
           game_ready_flag.store(true, atomic::Ordering::SeqCst);
 
@@ -89,7 +90,8 @@ pub async fn monitor_process(
           let _ = app_stderr.emit_to(&label_stderr, GAME_PROCESS_OUTPUT_CHANNEL, &line);
         }
 
-        if !game_ready_flag.load(atomic::Ordering::SeqCst) && line.contains(GAME_WINDOW_READY_FLAG)
+        if !game_ready_flag.load(atomic::Ordering::SeqCst)
+          && READY_FLAG.iter().any(|p| line.contains(p))
         {
           game_ready_flag.store(true, atomic::Ordering::SeqCst);
 
