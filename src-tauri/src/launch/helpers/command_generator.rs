@@ -9,8 +9,8 @@ use crate::instance::{
   models::misc::{InstanceError, InstanceSubdirType},
 };
 use crate::launch::{
-  helpers::file_validator::get_nonnative_library_paths, helpers::misc::replace_arguments,
-  models::LaunchingState,
+  helpers::file_validator::get_nonnative_library_paths, helpers::misc::get_separator,
+  helpers::misc::replace_arguments, models::LaunchingState,
 };
 use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::*;
@@ -72,10 +72,7 @@ impl LaunchArguments {
 
     let mut map = HashMap::new();
 
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
-    let classpath_str = classpath_clone.join(":");
-    #[cfg(target_os = "windows")]
-    let classpath_str = classpath_clone.join(";");
+    let classpath_str = classpath_clone.join(get_separator());
 
     map.insert("classpath".to_string(), classpath_str);
 
@@ -171,11 +168,7 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<Vec<String>> {
     launcher_version: basic_info.launcher_version,
     classpath: class_paths,
     library_directory: libraries_dir.to_string_lossy().to_string(),
-    classpath_separator: if cfg!(target_os = "windows") {
-      ";".to_string()
-    } else {
-      ":".to_string()
-    },
+    classpath_separator: get_separator().to_string(),
 
     auth_access_token: selected_player.access_token,
     auth_player_name: selected_player.name,

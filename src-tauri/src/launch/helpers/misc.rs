@@ -51,3 +51,11 @@ pub fn get_natives_string(natives: &HashMap<String, String>) -> Option<String> {
     None
   }
 }
+
+pub fn get_separator() -> &'static str {
+  if cfg!(windows) {
+    ";"
+  } else {
+    ":"
+  }
+}
