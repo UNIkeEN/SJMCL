@@ -6,6 +6,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Kbd,
   Modal,
   ModalBody,
   ModalContent,
@@ -23,12 +24,13 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { useGlobalData } from "@/contexts/global-data";
+import { useRoutingHistory } from "@/contexts/routing-history";
 import { generatePlayerDesc } from "@/utils/account";
 import { generateInstanceDesc } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
 
 interface SearchResult {
-  type: "instance" | "player";
+  type: "page" | "instance" | "player";
   icon: string;
   title: string;
   description: string;
@@ -40,6 +42,8 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { history } = useRoutingHistory();
+
   const [queryText, setQueryText] = useState<string>("");
   const [instantRes, setInstantRes] = useState<SearchResult[]>([]);
 
@@ -49,6 +53,24 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     (query: string): SearchResult[] => {
       const keywords = query.trim().toLowerCase().split(/\s+/);
       if (keywords.length === 0) return [];
+
+      let routingHistoryMatches: SearchResult[] = [];
+      if (query.startsWith("/") && query.length > 1) {
+        let route = [...history]
+          .reverse()
+          .find((r) => r.startsWith(query.trim().toLowerCase()));
+        routingHistoryMatches = route
+          ? [
+              {
+                type: "page",
+                icon: "",
+                title: route,
+                description: t("SpotlightSearchModal.result.recentViewed"),
+                url: route,
+              } as SearchResult,
+            ]
+          : [];
+      }
 
       const playerMatches =
         (getPlayerList() || [])
@@ -94,9 +116,9 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               }) as SearchResult
           ) || [];
 
-      return [...playerMatches, ...instanceMatches];
+      return [...routingHistoryMatches, ...playerMatches, ...instanceMatches];
     },
-    [getPlayerList, getInstanceList]
+    [getPlayerList, getInstanceList, history, t]
   );
 
   useEffect(() => {
@@ -105,6 +127,8 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
 
   const groupSearchResults = () => {
     const groupedMap = new Map<string, React.ReactNode[]>();
+
+    let idx = 0;
 
     for (const res of instantRes) {
       const itemNode = (
@@ -131,12 +155,14 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             </Text>
           }
           prefixElement={
-            <Image
-              boxSize="28px"
-              objectFit="cover"
-              src={res.icon}
-              alt={res.title}
-            />
+            res.icon ? (
+              <Image
+                boxSize="28px"
+                objectFit="cover"
+                src={res.icon}
+                alt={res.title}
+              />
+            ) : null
           }
           isFullClickZone
           onClick={() => {
@@ -144,11 +170,14 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             setQueryText("");
             props.onClose?.();
           }}
-        />
+        >
+          {idx === 0 ? <Kbd>Enter</Kbd> : ""}
+        </OptionItem>
       );
 
       if (!groupedMap.has(res.type)) groupedMap.set(res.type, []);
       groupedMap.get(res.type)!.push(itemNode);
+      idx += 1;
     }
 
     return [...groupedMap.entries()].map(([type, items]) => (
@@ -179,6 +208,13 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               placeholder={t("SpotlightSearchModal.input.placeholder")}
               value={queryText}
               onChange={(e) => setQueryText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && instantRes.length > 0) {
+                  router.push(instantRes[0].url);
+                  setQueryText("");
+                  props.onClose?.();
+                }
+              }}
             />
           </InputGroup>
         </ModalHeader>

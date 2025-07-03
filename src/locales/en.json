@@ -1955,6 +1955,8 @@
     "tip": "Search local and online game resources in one place",
     "empty": "No results found",
     "result": {
+      "page": "Page",
+      "recentViewed": "Recent Viewed",
       "instance": "Instance",
       "player": "Player"
     }

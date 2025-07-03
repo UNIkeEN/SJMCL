@@ -41,7 +41,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
     >
       <ModalOverlay />
       <ModalContent borderRadius="md" overflow="hidden">
-        <Image alt="banner" src="/images/banner.png" />
+        <Image alt="banner" src="/images/banner.jpg" />
         <ModalHeader>
           🎉&nbsp;&nbsp;{t("WelcomeAndTermsModal.header.title")}
         </ModalHeader>

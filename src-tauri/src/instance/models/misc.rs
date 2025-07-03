@@ -199,7 +199,6 @@ pub struct ScreenshotInfo {
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum InstanceError {
   InstanceNotFoundByID,
-  ExecOpenDirError,
   ServerNbtReadError,
   FileNotFoundError,
   InvalidSourcePath,

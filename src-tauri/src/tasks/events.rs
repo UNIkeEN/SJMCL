@@ -151,7 +151,7 @@ impl Sink for TauriEventSink {
       task_group,
       percentage as f64 / 100.0,
       current,
-      estimated_time.map(|et| Duration::from_secs_f64(et)),
+      estimated_time.map(Duration::from_secs_f64),
     );
   }
   fn report_failed(&self, task_id: u32, task_group: Option<&str>, reason: String) {

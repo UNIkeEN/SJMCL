@@ -1955,6 +1955,8 @@
     "tip": "集中一处搜索本地内容与线上游戏资源",
     "empty": "无搜索结果",
     "result": {
+      "page": "页面",
+      "recentViewed": "最近访问过",
       "instance": "实例",
       "player": "角色"
     }

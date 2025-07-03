@@ -34,6 +34,7 @@ export interface ResourceFileInfo {
   downloads: number;
   fileDate: string;
   downloadUrl: string;
+  sha1: string;
   fileName: string;
 }
 
