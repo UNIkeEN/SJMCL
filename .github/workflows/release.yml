@@ -131,6 +131,7 @@ jobs:
         run: pnpm run tauri build --bundles app,dmg --target ${{ matrix.target }}
         env:
           SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
+          SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
       - name: Build the app
         if: matrix.platform != 'macos'
