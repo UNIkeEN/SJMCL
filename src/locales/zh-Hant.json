@@ -235,6 +235,10 @@
     "font": {
       "title": "字型",
       "settings": {
+        "fontFamily": {
+          "title": "介面字型",
+          "default": "預設"
+        },
         "fontSize": {
           "title": "字型大小",
           "small": "小",
@@ -458,7 +462,7 @@
     }
   },
   "DownloadTasksPage": {
-    "title": "下載中任務",
+    "title": "下載任務",
     "button": {
       "settings": "下載設定",
       "pause": "暫停",
@@ -467,7 +471,8 @@
     },
     "label": {
       "paused": "已暫停",
-      "error": "錯誤"
+      "error": "錯誤",
+      "cancelled": "已取消"
     }
   },
   "Editable": {
@@ -514,10 +519,11 @@
         "empty": "目錄名稱不能為空",
         "tooLong": "目錄名稱不能超過 20 個字元",
         "exist": "目錄名稱已存在",
-        "hasInvalidChar": "目錄名稱存在非法字元"
+        "hasInvalidChar": "目錄名稱包含特殊字元或使用系統保留字"
       },
       "dirPath": {
-        "exist": "目錄路徑已存在"
+        "exist": "目錄路徑已存在",
+        "invalid": "目錄路徑不合法"
       }
     }
   },
@@ -667,6 +673,12 @@
   },
   "General": {
     "add": "新增",
+    "alert": {
+      "noFullLogin": {
+        "title": "當前功能暫不可用",
+        "description": "請先登入微軟賬戶後使用此功能。"
+      }
+    },
     "cancel": "取消",
     "close": "關閉",
     "confirm": "確定",
@@ -689,6 +701,7 @@
       }
     },
     "disable": "停用",
+    "dontShowAgain": "不再顯示",
     "download": "下載",
     "edit": "編輯",
     "enable": "啟用",
@@ -955,7 +968,9 @@
     "restoreSettingsDesc": "將以下特定設定重置為全域性遊戲設定",
     "restore": "重置",
     "errorMessage": {
-      "error-1": "例項名稱不能為空"
+      "error-1": "例項名稱不能為空",
+      "error-2": "例項名稱不合法",
+      "error-3": "例項名稱太長"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1102,6 +1117,11 @@
   },
   "NotFoundPage": {
     "text": "頁面不存在，即將在 {{seconds}} 秒後跳轉"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "顯示全部（+{{left}}）"
+    }
   },
   "PlayerMenu": {
     "label": {
@@ -1465,12 +1485,28 @@
           "title": "Java 列表獲取失敗"
         }
       },
+      "validateJava": {
+        "error": {
+          "title": "Java 驗證失敗",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java 可執行檔案無效"
+          }
+        }
+      },
       "checkGameDirectory": {
         "error": {
           "title": "遊戲目錄無效",
           "description": {
             "GAME_DIR_ALREADY_ADDED": "遊戲目錄已新增",
             "GAME_DIR_NOT_EXIST": "遊戲目錄不存在"
+          }
+        }
+      },
+      "checkServiceAvailability": {
+        "error": {
+          "title": "伺服器不可用",
+          "description": {
+            "FETCH_ERROR": "伺服器側或未知錯誤"
           }
         }
       }
@@ -1486,7 +1522,8 @@
         "error": {
           "title": "離線角色新增失敗",
           "description": {
-            "DUPLICATE": "角色已存在"
+            "DUPLICATE": "角色已存在",
+            "INVALID": "UUID 無效"
           }
         }
       },
@@ -1515,6 +1552,20 @@
           }
         }
       },
+      "reloginPlayerOAuth": {
+        "success": "角色重新登入成功",
+        "error": {
+          "title": "角色重新登入失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已過期，請重新登入",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "INVALID": "不支援離線角色重新整理",
+            "CANCELLED": "已取消"
+          }
+        }
+      },
       "addPlayer3rdPartyPassword": {
         "success": "角色新增成功",
         "error": {
@@ -1528,12 +1579,28 @@
           }
         }
       },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "角色重新登入成功",
+        "error": {
+          "title": "角色重新登入失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已過期，請重新登入",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "連線認證伺服器失敗",
+            "INVALID": "賬號或密碼錯誤"
+          }
+        }
+      },
       "addPlayerFromSelection": {
         "success": "角色新增成功",
         "error": {
           "title": "角色新增失敗",
           "description": {
-            "DUPLICATE": "角色已存在"
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "無法連線至認證伺服器",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "EXPIRED": "令牌已過期，請重新登入"
           }
         }
       },
@@ -1570,32 +1637,6 @@
           }
         }
       },
-      "reloginPlayerOAuth": {
-        "success": "角色重新登入成功",
-        "error": {
-          "title": "角色重新登入失敗",
-          "description": {
-            "NOT_FOUND": "角色不存在",
-            "EXPIRED": "令牌已過期，請重新登入",
-            "PARSE_ERROR": "伺服器返回資料格式錯誤",
-            "NETWORK_ERROR": "無法連線至認證伺服器",
-            "INVALID": "不支援離線角色重新整理"
-          }
-        }
-      },
-      "reloginPlayer3rdPartyPassword": {
-        "success": "角色重新登入成功",
-        "error": {
-          "title": "角色重新登入失敗",
-          "description": {
-            "NOT_FOUND": "角色不存在",
-            "EXPIRED": "令牌已過期，請重新登入",
-            "PARSE_ERROR": "伺服器返回資料格式錯誤",
-            "NETWORK_ERROR": "無法連線至認證伺服器",
-            "INVALID": "賬號或密碼錯誤"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "獲取認證伺服器列表失敗"
@@ -1606,7 +1647,8 @@
           "title": "獲取認證伺服器資訊失敗",
           "description": {
             "DUPLICATE": "認證伺服器已存在",
-            "INVALID": "無效的認證伺服器地址"
+            "INVALID": "無效的認證伺服器地址",
+            "NOT_FOUND": "認證伺服器不存在"
           }
         }
       },
@@ -1616,7 +1658,8 @@
           "title": "認證伺服器新增失敗",
           "description": {
             "DUPLICATE": "認證伺服器已存在",
-            "INVALID": "無效的認證伺服器地址"
+            "INVALID": "無效的認證伺服器地址",
+            "NOT_FOUND": "認證伺服器不存在"
           }
         }
       },
@@ -1677,6 +1720,7 @@
           "title": "獲取模組載入器列表失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線到伺服器",
             "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
           }
         }
@@ -1686,6 +1730,7 @@
           "title": "獲取資源列表失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線到伺服器",
             "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
           }
         }
@@ -1695,6 +1740,7 @@
           "title": "獲取資源版本列表失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線到伺服器",
             "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
           }
         }
@@ -1703,7 +1749,13 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "獲取例項列表失敗"
+          "title": "獲取例項列表失敗",
+          "description": {
+            "INVALID_NAME_ERROR": "例項名稱無效",
+            "INVALID_SOURCE_PATH": "例項目錄無效",
+            "CONFLICT_NAME_ERROR": "當前遊戲目錄存在重名例項",
+            "FILE_MOVE_FAILED": "例項目錄移動失敗"
+          }
         }
       },
       "updateInstanceConfig": {
@@ -1728,7 +1780,7 @@
         "error": {
           "title": "例項遊戲設定重置失敗",
           "description": {
-            "INSTANCE_NOT_FOUND": "未找到指定 ID 的例項",
+            "INSTANCE_NOT_FOUND_BY_ID": "未找到指定 ID 的例項",
             "SAVE_ERROR": "儲存例項設定檔案失敗"
           }
         }
@@ -1755,7 +1807,10 @@
           "title": "例項重新命名失敗",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
-            "CONFLICT_NAME_ERROR": "當前遊戲目錄存在重名例項"
+            "CONFLICT_NAME_ERROR": "當前遊戲目錄存在重名例項",
+            "INVALID_NAME_ERROR": "例項名稱無效",
+            "INVALID_SOURCE_PATH": "例項目錄無效",
+            "FILE_MOVE_FAILED": "例項目錄移動失敗"
           }
         }
       },
@@ -1797,6 +1852,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "獲取模組列表失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "獲取資源包列表失敗"
@@ -1822,11 +1885,11 @@
           "title": "獲取截圖列表失敗"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "獲取模組列表失敗",
+          "title": "模組狀態切換失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+            "FILE_NOT_FOUND_ERROR": "模組檔案不存在，可能已更名、移動或刪除"
           }
         }
       },
@@ -1840,22 +1903,20 @@
           }
         }
       },
-      "toggleModByExtension": {
-        "error": {
-          "title": "模組狀態切換失敗",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "模組檔案不存在，可能已更名、移動或刪除"
-          }
-        }
-      },
       "createLaunchDesktopShortcut": {
         "success": "啟動快捷方式已新增到桌面",
         "error": {
           "title": "啟動快捷方式建立失敗",
           "description": {
-            "SHORTCUT_CREATION_FAILED": "命令執行失敗"
+            "SHORTCUT_CREATION_FAILED": "命令執行失敗",
+            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
           }
         }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "任務建立成功"
       }
     }
   },
@@ -1891,7 +1952,14 @@
     "input": {
       "placeholder": "聚合搜尋"
     },
-    "tip": "集中一處搜尋本地內容與線上遊戲資源"
+    "tip": "集中一處搜尋本地內容與線上遊戲資源",
+    "empty": "無搜尋結果",
+    "result": {
+      "page": "頁面",
+      "recentViewed": "最近訪問過",
+      "instance": "例項",
+      "player": "角色"
+    }
   },
   "StarUsModal": {
     "header": {
