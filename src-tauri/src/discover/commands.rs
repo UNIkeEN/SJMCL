@@ -55,7 +55,7 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
 }
 
 #[tauri::command]
-pub async fn fetch_posts_info(app: AppHandle) -> SJMCLResult<Vec<PostSummary>> {
+pub async fn fetch_posts_summaries(app: AppHandle) -> SJMCLResult<Vec<PostSummary>> {
   let post_source_urls = {
     let binding = app.state::<Mutex<LauncherConfig>>();
     let state = binding.lock().unwrap();

@@ -20,7 +20,7 @@ export const DiscoverPage = () => {
   const [posts, setPosts] = useState<PostSummary[]>([]);
 
   const fetchPosts = useCallback(() => {
-    DiscoverService.fetchPostsInfo().then((response) => {
+    DiscoverService.handleFetchPostsInfo().then((response) => {
       if (response.status === "success") setPosts(response.data);
       console.log(response);
       // no toast here, keep slient if no internet connection or etc.

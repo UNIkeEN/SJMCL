@@ -121,7 +121,7 @@ pub async fn run() {
       resource::commands::fetch_resource_list_by_name,
       resource::commands::fetch_resource_version_packs,
       discover::commands::fetch_post_sources_info,
-      discover::commands::fetch_posts_info,
+      discover::commands::fetch_posts_summaries,
       tasks::commands::schedule_progressive_task_group,
       tasks::commands::cancel_progressive_task,
       tasks::commands::resume_progressive_task,

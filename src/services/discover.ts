@@ -18,8 +18,12 @@ export class DiscoverService {
     return await invoke("fetch_post_sources_info");
   }
 
+  /**
+   * FETCH the list of posts' info.
+   * @returns {Promise<InvokeResponse<PostSummary[]>>}
+   */
   @responseHandler("resource")
-  static async fetchPostsInfo(): Promise<InvokeResponse<PostSummary[]>> {
-    return await invoke("fetch_posts_info");
+  static async handleFetchPostsInfo(): Promise<InvokeResponse<PostSummary[]>> {
+    return await invoke("fetch_posts_summaries");
   }
 }
