@@ -38,12 +38,14 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
 
         if let Ok(response) = response {
           let json_data: serde_json::Value = response.json().await.unwrap_or_default();
+
           if let Some(source_info) = json_data.get("sourceInfo") {
             post_source.name = source_info["name"].as_str().unwrap_or("").to_string();
             post_source.full_name = source_info["fullName"].as_str().unwrap_or("").to_string();
             post_source.icon_src = source_info["iconSrc"].as_str().unwrap_or("").to_string();
           }
         }
+
         post_source
       }
     })
