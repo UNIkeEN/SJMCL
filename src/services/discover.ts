@@ -19,7 +19,7 @@ export class DiscoverService {
   }
 
   /**
-   * FETCH the list of posts' info.
+   * FETCH the list of posts' summaries.
    * @returns {Promise<InvokeResponse<PostSummary[]>>}
    */
   @responseHandler("resource")
