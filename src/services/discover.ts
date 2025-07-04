@@ -23,7 +23,7 @@ export class DiscoverService {
    * @returns {Promise<InvokeResponse<PostSummary[]>>}
    */
   @responseHandler("resource")
-  static async handleFetchPostsInfo(): Promise<InvokeResponse<PostSummary[]>> {
+  static async fetchPostSummaries(): Promise<InvokeResponse<PostSummary[]>> {
     return await invoke("fetch_posts_summaries");
   }
 }
