@@ -60,124 +60,13 @@ jobs:
 
   Build-and-Release:
     needs: [Version-Check]
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            platform: windows
-            arch: x86_64
-          - os: windows-latest
-            target: i686-pc-windows-msvc
-            platform: windows
-            arch: i686
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            platform: macos
-            arch: aarch64
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            platform: macos
-            arch: x86_64
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            platform: linux
-            arch: x86_64
-
-    runs-on: ${{ matrix.os }}
-    
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      # See https://github.com/tauri-apps/tauri-action
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: Install Linux dependencies
-        if: matrix.platform == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-          # Additional dependencies for RPM building
-          sudo apt-get install -y rpm
-
-      - name: Install frontend dependencies
-        run: |
-          npm install -g pnpm
-          pnpm install
-
-      - name: Remove Font files (MacOS)
-        if: matrix.platform == 'macos'
-        run: |
-          rm -r public/fonts/Sinter/
-          rm src/styles/fonts.css
-          touch src/styles/fonts.css
-      
-      - uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "./src-tauri -> target"
-          key: ${{ matrix.platform }}-${{ matrix.target }}
-
-      - name: Build the app and the DMG image (MacOS)
-        if: matrix.platform == 'macos'
-        run: pnpm run tauri build --bundles app,dmg --target ${{ matrix.target }}
-        env:
-          SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
-          SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
-
-      - name: Build the app
-        if: matrix.platform != 'macos'
-        run: pnpm run tauri build --target ${{ matrix.target }}
-        env:
-          SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
-          SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
-
-      - name: Prepare release artifact
-        shell: bash
-        env:
-          VERSION: ${{ needs.Version-Check.outputs.version }}
-        run: |
-          ARTIFACT_NAME="SJMCL_${{ env.VERSION }}_${{ matrix.platform }}_${{ matrix.arch }}"
-          echo "Artifact Name: $ARTIFACT_NAME"
-          mkdir artifacts
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            python scripts/portable/bundle_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL.exe"
-            # For Windows, copy the portable exe
-            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
-            mv "src-tauri/target/${{ matrix.target }}/release/bundle/msi/"*.msi artifacts/"$ARTIFACT_NAME".msi
-            ls -la artifacts
-          elif [ "${{ matrix.platform }}" = "macos" ]; then
-            ls src-tauri/target/${{ matrix.target }}/release/bundle/macos
-            # For MacOS, compress the .app folder
-            tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "SJMCL.app"
-            # And copy the DMG files
-            mv "src-tauri/target/${{ matrix.target }}/release/bundle/dmg"/*.dmg artifacts/"$ARTIFACT_NAME".dmg
-            ls -la artifacts
-          elif [ "${{ matrix.platform }}" = "linux" ]; then
-            python scripts/portable/bundle_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL"
-            mv "src-tauri/target/${{ matrix.target }}/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
-            mv "src-tauri/target/${{ matrix.target }}/release/bundle/deb/"*.deb artifacts/"$ARTIFACT_NAME".deb
-            mv "src-tauri/target/${{ matrix.target }}/release/bundle/rpm/"*.rpm artifacts/"$ARTIFACT_NAME".rpm
-            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched" artifacts/"$ARTIFACT_NAME"_portable
-            ls -la artifacts
-          fi
-          
-          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: "artifacts/*"
-          if-no-files-found: error
+    uses: ./.github/workflows/build.yml
+    with:
+      version: ${{ needs.Version-Check.outputs.version }}
+      upload_artifacts: true
+    secrets:
+      SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
+      SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
   Create-Release:
     needs: [Version-Check, Build-and-Release]
