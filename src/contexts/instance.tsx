@@ -83,6 +83,25 @@ export const InstanceContextProvider: React.FC<{
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>();
 
+  const summaryIdRef = React.useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (instanceSummary?.id) {
+      summaryIdRef.current = instanceSummary.id;
+    } else {
+      summaryIdRef.current = undefined;
+    }
+  }, [instanceSummary?.id]);
+
+  const clearAllResState = useCallback(() => {
+    setWorlds(undefined);
+    setLocalMods(undefined);
+    setResourcePacks(undefined);
+    setServerResourcePacks(undefined);
+    setSchematics(undefined);
+    setShaderPacks(undefined);
+    setScreenshots(undefined);
+  }, []);
+
   const updateSummaryInContext = useCallback(
     (path: string, value: any) => {
       // for frontend-only state update to sync with backend if needed.
@@ -243,16 +262,6 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setWorlds, toast]);
 
-  const summaryIdRef = React.useRef<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (instanceSummary?.id) {
-      summaryIdRef.current = instanceSummary.id;
-    } else {
-      summaryIdRef.current = undefined;
-    }
-  }, [instanceSummary?.id]);
-
   const handleRetrieveLocalModList = useCallback(async () => {
     if (summaryIdRef.current !== undefined) {
       let lastSummaryIdRef = summaryIdRef.current;
@@ -385,9 +394,12 @@ export const InstanceContextProvider: React.FC<{
               // version isolation is shared by summary and game config struct.
               if (path === "specGameConfig.versionIsolation")
                 updateSummaryInContext("isVersionIsolated", value);
+              clearAllResState();
             } else if (path === "useSpecGameConfig") {
               updateSummaryInContext(path, value);
               if (value) handleRetrieveInstanceGameConfig(instanceSummary.id);
+              // clear all cached resource state due to version isolation may change.
+              clearAllResState();
             } else {
               updateSummaryInContext(path, value);
             }
@@ -402,6 +414,7 @@ export const InstanceContextProvider: React.FC<{
       setInstanceGameConfig,
       toast,
       updateSummaryInContext,
+      clearAllResState,
     ]
   );
 
