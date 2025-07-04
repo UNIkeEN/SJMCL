@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { PostSourceInfo } from "@/models/post";
+import { PostSourceInfo, PostSummary } from "@/models/post";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -16,5 +16,10 @@ export class DiscoverService {
     InvokeResponse<PostSourceInfo[]>
   > {
     return await invoke("fetch_post_sources_info");
+  }
+
+  @responseHandler("resource")
+  static async fetchPostsInfo(): Promise<InvokeResponse<PostSummary[]>> {
+    return await invoke("fetch_posts_info");
   }
 }

@@ -1,15 +1,15 @@
 import { Button, HStack } from "@chakra-ui/react";
 import { Masonry } from "masonic";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuNewspaper, LuRefreshCcw } from "react-icons/lu";
 import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
 import PosterCard from "@/components/poster-card";
 import { useLauncherConfig } from "@/contexts/config";
-import { mockPosts } from "@/models/mock/post";
 import { PostSummary } from "@/models/post";
+import { DiscoverService } from "@/services/discover";
 
 export const DiscoverPage = () => {
   const { t } = useTranslation();
@@ -19,9 +19,17 @@ export const DiscoverPage = () => {
 
   const [posts, setPosts] = useState<PostSummary[]>([]);
 
+  const fetchPosts = useCallback(() => {
+    DiscoverService.fetchPostsInfo().then((response) => {
+      if (response.status === "success") setPosts(response.data);
+      console.log(response);
+      // no toast here, keep slient if no internet connection or etc.
+    });
+  }, [setPosts]);
+
   useEffect(() => {
-    setPosts(mockPosts);
-  }, []);
+    fetchPosts();
+  }, [fetchPosts]);
 
   return (
     <Section
@@ -44,9 +52,7 @@ export const DiscoverPage = () => {
             leftIcon={<LuRefreshCcw />}
             size="xs"
             colorScheme={primaryColor}
-            onClick={() => {
-              setPosts([]); // TODO
-            }}
+            onClick={fetchPosts}
           >
             {t("General.refresh")}
           </Button>
