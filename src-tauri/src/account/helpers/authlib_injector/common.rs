@@ -73,6 +73,7 @@ pub async fn parse_profile(
             .as_str()
             .unwrap_or("default")
             .to_string(),
+          preset: None,
         });
       }
     }

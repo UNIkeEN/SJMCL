@@ -20,6 +20,7 @@ pub fn load_preset_skin(app: &AppHandle, preset_role: String) -> SJMCLResult<Vec
     texture_type: "SKIN".to_string(),
     image: texture_img.into(),
     model: "default".to_string(),
+    preset: Some(preset_role),
   }])
 }
 

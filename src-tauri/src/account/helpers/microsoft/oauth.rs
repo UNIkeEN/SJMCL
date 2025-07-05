@@ -209,6 +209,7 @@ async fn parse_profile(
         texture_type: val.to_string(),
         image: decode_image(img_bytes.to_vec())?.into(),
         model,
+        preset: None,
       });
     }
   }

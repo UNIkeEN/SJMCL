@@ -1,9 +1,15 @@
 import { PlayerType } from "@/enums/account";
 
+export enum PresetSkinType {
+  Steve = "steve",
+  Alex = "alex",
+}
+
 export interface Texture {
   textureType: string;
   image: string;
   model: "default" | "slim";
+  preset?: PresetSkinType;
 }
 
 // player

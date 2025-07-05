@@ -21,11 +21,11 @@ import SkinPreview from "@/components/skin-preview";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { Texture } from "@/models/account";
+import { PresetSkinType, Texture } from "@/models/account";
 import { AccountService } from "@/services/account";
 import { base64ImgSrc } from "@/utils/string";
 
-type SkinType = "default" | "steve" | "alex";
+type SkinType = PresetSkinType | "default";
 
 interface ManageSkinModalProps extends Omit<ModalProps, "children"> {
   playerId: string;
@@ -56,8 +56,9 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
   };
 
   useEffect(() => {
-    setSelectedSkin("default");
+    setSelectedSkin(skin?.preset || "default");
   }, [skin]);
+
   const handleSave = () => {
     if (selectedSkin !== "default") {
       setIsLoading(true);
@@ -135,7 +136,9 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
             colorScheme={primaryColor}
             onClick={handleSave}
             isLoading={isLoading}
-            disabled={selectedSkin === "default"}
+            disabled={
+              selectedSkin === "default" || skin?.preset === selectedSkin
+            }
           >
             {t("General.confirm")}
           </Button>

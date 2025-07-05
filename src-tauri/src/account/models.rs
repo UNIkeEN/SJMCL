@@ -22,6 +22,7 @@ pub struct Texture {
   pub texture_type: String,
   pub image: ImageWrapper,
   pub model: String,
+  pub preset: Option<String>,
 }
 
 // only for the client
