@@ -1,9 +1,10 @@
 use super::models::PostSourceInfo;
 use crate::{
-  discover::models::PostSummary, error::SJMCLResult, launcher_config::models::LauncherConfig,
+  discover::models::{PostList, PostSummary},
+  error::SJMCLResult,
+  launcher_config::models::LauncherConfig,
 };
 use futures::future;
-use serde_json::Value;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -74,71 +75,9 @@ pub async fn fetch_post_summaries(app: AppHandle) -> SJMCLResult<Vec<PostSummary
         let response = client.get(&url).query(&[("pageSize", "12")]).send().await;
 
         if let Ok(response) = response {
-          if let Ok(json_data) = response.json::<Value>().await {
-            if let Some(posts) = json_data.get("posts").and_then(|p| p.as_array()) {
-              for post_json in posts {
-                let post = PostSummary {
-                  title: post_json
-                    .get("title")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_string(),
-                  abstracts: post_json
-                    .get("abstract")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_string(),
-                  keywords: post_json
-                    .get("keywords")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_string(),
-                  image_src: post_json
-                    .get("imageSrc")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_string(),
-                  update_at: post_json
-                    .get("updateAt")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_string(),
-                  link: post_json
-                    .get("link")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_string(),
-                  source: {
-                    let mut source = PostSourceInfo {
-                      endpoint_url: url.clone(),
-                      name: "".to_string(),
-                      full_name: "".to_string(),
-                      icon_src: "".to_string(),
-                    };
-                    if let Some(source_info) = post_json.get("source") {
-                      source.name = source_info
-                        .get("name")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("")
-                        .to_string();
-                      source.full_name = source_info
-                        .get("fullName")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("")
-                        .to_string();
-                      source.icon_src = source_info
-                        .get("iconSrc")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("")
-                        .to_string();
-                    }
-                    source
-                  },
-                };
-                posts_vec.push(post);
-              }
-              posts_vec.sort_by(|a, b| b.update_at.cmp(&a.update_at));
-            }
+          if let Ok(post_list) = response.json::<PostList>().await {
+            posts_vec = post_list.posts;
+            posts_vec.sort_by(|a, b| b.update_at.cmp(&a.update_at));
           }
         }
 
