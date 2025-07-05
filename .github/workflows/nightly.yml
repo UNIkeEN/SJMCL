@@ -149,7 +149,7 @@ jobs:
     if: needs.Check-and-Prepare.outputs.should_build == 'true'
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ needs.Check-and-Prepare.outputs.nightly_version }}
+      version: "nightly_${{ needs.Check-and-Prepare.outputs.nightly_version }}"
       upload_artifacts: true
     secrets:
       SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
