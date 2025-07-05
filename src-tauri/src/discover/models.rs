@@ -24,6 +24,6 @@ pub struct PostSummary {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct PostList {
+pub struct PostResponse {
   pub posts: Vec<PostSummary>,
 }

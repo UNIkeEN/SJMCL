@@ -1,6 +1,6 @@
 use super::models::PostSourceInfo;
 use crate::{
-  discover::models::{PostList, PostSummary},
+  discover::models::{PostResponse, PostSummary},
   error::SJMCLResult,
   launcher_config::models::LauncherConfig,
 };
@@ -75,7 +75,7 @@ pub async fn fetch_post_summaries(app: AppHandle) -> SJMCLResult<Vec<PostSummary
         let response = client.get(&url).query(&[("pageSize", "12")]).send().await;
 
         if let Ok(response) = response {
-          if let Ok(post_list) = response.json::<PostList>().await {
+          if let Ok(post_list) = response.json::<PostResponse>().await {
             posts_vec = post_list.posts;
             posts_vec.sort_by(|a, b| b.update_at.cmp(&a.update_at));
           }
