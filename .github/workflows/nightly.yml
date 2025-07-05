@@ -86,6 +86,27 @@ jobs:
           
           echo "Nightly branch updated successfully"
 
+      - name: Setup Node.js for version bump
+        if: steps.check-changes.outputs.should_build == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Bump version to nightly
+        if: steps.check-changes.outputs.should_build == 'true'
+        run: |
+          echo "Bumping version to nightly..."
+          npm run version bump nightly
+          
+          # Commit the version change to nightly branch
+          git add .
+          git commit -m "bump: version to nightly for statistics server" || echo "No changes to commit"
+          
+          # Push the updated nightly branch with version bump
+          git push origin refs/heads/nightly:refs/heads/nightly
+          
+          echo "Version bumped to nightly and committed"
+
       - name: Generate nightly version
         id: version
         run: |
@@ -94,10 +115,8 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           
           # Get base version from package.json
-          BASE_VERSION=$(node -p "require('./package.json').version")
-          NIGHTLY_VERSION="${BASE_VERSION}-nightly.${NIGHTLY_DATE}"
+          NIGHTLY_VERSION="${NIGHTLY_DATE}"
           
-          echo "Base version: $BASE_VERSION"
           echo "Nightly version: $NIGHTLY_VERSION"
           echo "Commit hash: $COMMIT_HASH"
           
@@ -171,29 +190,17 @@ jobs:
         run: |
           # Create release notes
           cat > release_notes.md << 'EOF'
-          ## 🌙 Nightly Build
           
           **⚠️ This is a nightly build for developers and testers only!**
           
           Regular users should download the latest stable release instead of this nightly build.
-          
-          ### What's in this build?
-          - Latest changes from the main branch
-          - Built from commit: `${{ env.COMMIT_HASH }}`
-          - Version: `${{ env.NIGHTLY_VERSION }}`
-          - Build date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           
           ### ⚠️ Important Notes:
           - This build may contain unstable features or bugs
           - Not recommended for production use
           - No support provided for nightly builds
           - Features may change or be removed without notice
-          
-          ### 📥 Download Instructions:
-          1. Choose the appropriate file for your operating system
-          2. For Windows: `.msi` for installer, `_portable.exe` for portable version
-          3. For macOS: `.dmg` for installer, `.app.tar.gz` for app bundle
-          4. For Linux: `.AppImage` for portable, `.deb` for Debian/Ubuntu, `.rpm` for Red Hat/Fedora
+
           EOF
           
           echo "Creating nightly pre-release..."
