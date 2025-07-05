@@ -191,7 +191,8 @@ jobs:
           # Create release notes
           cat > release_notes.md << 'EOF'
           
-          **⚠️ This is a nightly build for developers and testers only!**
+          > [!WARNING]
+          > **This is a nightly build for developers and testers only!**
           
           Regular users should download the latest stable release instead of this nightly build.
           
