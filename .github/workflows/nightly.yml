@@ -92,20 +92,20 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Bump version to nightly
+      - name: Bump version to 0.0.0
         if: steps.check-changes.outputs.should_build == 'true'
         run: |
-          echo "Bumping version to nightly..."
-          npm run version bump nightly
+          echo "Bumping version to 0.0.0..."
+          npm run version bump 0.0.0
           
           # Commit the version change to nightly branch
           git add .
-          git commit -m "bump: version to nightly for statistics server" || echo "No changes to commit"
+          git commit -m "bump: version to 0.0.0 for statistics server" || echo "No changes to commit"
           
           # Push the updated nightly branch with version bump
           git push origin refs/heads/nightly:refs/heads/nightly
           
-          echo "Version bumped to nightly and committed"
+          echo "Version bumped to 0.0.0 and committed"
 
       - name: Generate nightly version
         id: version
