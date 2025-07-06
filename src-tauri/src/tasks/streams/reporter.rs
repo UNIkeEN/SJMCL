@@ -16,6 +16,7 @@ pub trait Sink {
   );
   fn report_completion(&self, task_id: u32, task_group: Option<&str>);
   fn report_stopped(&self, task_id: u32, task_group: Option<&str>);
+  fn report_cancelled(&self, task_id: u32, task_group: Option<&str>);
   fn report_resumed(&self, task_id: u32, task_group: Option<&str>);
   fn report_started(&self, task_id: u32, task_group: Option<&str>, total: i64);
   fn report_failed(&self, task_id: u32, task_group: Option<&str>, reason: String);
@@ -69,6 +70,10 @@ where
 
   pub fn report_stopped(&self, task_id: u32, task_group: Option<&str>) {
     self.sink.report_stopped(task_id, task_group);
+  }
+
+  pub fn report_cancelled(&self, task_id: u32, task_group: Option<&str>) {
+    self.sink.report_cancelled(task_id, task_group);
   }
 
   pub fn report_resumed(&self, task_id: u32, task_group: Option<&str>) {

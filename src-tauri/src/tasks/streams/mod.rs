@@ -53,7 +53,7 @@ where
   fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
     {
       let h = self.handle.read().unwrap();
-      let state = h.state();
+      let state = h.status();
       if state.is_stopped() {
         return Poll::Pending;
       }
@@ -85,6 +85,6 @@ where
   P: Clone + Serialize + for<'de> Deserialize<'de>,
 {
   fn is_terminated(&self) -> bool {
-    self.handle.read().unwrap().state().is_terminated()
+    self.handle.read().unwrap().status().is_terminated()
   }
 }

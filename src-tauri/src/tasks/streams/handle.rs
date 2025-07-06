@@ -1,4 +1,4 @@
-use super::desc::{PDesc, PState};
+use super::desc::{PDesc, PStatus};
 use super::reporter::{Reporter, Sink};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -50,7 +50,7 @@ where
     self.desc.save(&self.path).unwrap();
     self
       .reporter
-      .report_stopped(self.desc.task_id, self.desc.task_group.as_deref());
+      .report_cancelled(self.desc.task_id, self.desc.task_group.as_deref());
   }
 
   pub fn mark_completed(&mut self) {
@@ -79,8 +79,8 @@ where
       .report_failed(self.desc.task_id, self.desc.task_group.as_deref(), reason);
   }
 
-  pub fn state(&self) -> &PState {
-    &self.desc.state
+  pub fn status(&self) -> &PStatus {
+    &self.desc.status
   }
 
   pub fn set_total(&mut self, total: i64) {

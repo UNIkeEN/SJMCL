@@ -38,26 +38,30 @@ export const DownloadTasksPage = () => {
     tasks,
     handleScheduleProgressiveTaskGroup,
     handleCancelProgressiveTask,
+    handleStopProgressiveTask,
+    handleResumeProgressiveTask,
   } = useTaskContext();
 
   const [taskList, setTaskList] = useState<[TaskDesc, boolean][]>([]); // boolean is used to record accordion state.
 
   useEffect(() => {
-    const enhanced = tasks.map((task) => {
-      return [
-        {
-          ...task,
-          progress: task.total > 0 ? (task.current / task.total) * 100 : 0,
-          isDownloading: task.status === TaskDescStatusEnums.InProgress,
-          isWaiting: task.status === TaskDescStatusEnums.Stopped,
-          isFailed: task.status === TaskDescStatusEnums.Failed || !!task.reason,
-          isCancelled: task.status === TaskDescStatusEnums.Cancelled,
-        },
-        true,
-      ] as [TaskDesc, boolean];
+    setTaskList((prev) => {
+      return tasks.map((task) => {
+        return [
+          {
+            ...task,
+            progress: task.total > 0 ? (task.current / task.total) * 100 : 0,
+            isDownloading: task.status === TaskDescStatusEnums.InProgress,
+            isWaiting: task.status === TaskDescStatusEnums.Stopped,
+            isFailed:
+              task.status === TaskDescStatusEnums.Failed || !!task.reason,
+            isCancelled: task.status === TaskDescStatusEnums.Cancelled,
+          },
+          prev.find((t) => t[0].taskId === task.taskId)?.[1] ?? true,
+        ] as [TaskDesc, boolean];
+      });
     });
-    setTaskList(enhanced);
-  }, [tasks]);
+  }, [tasks, setTaskList]);
 
   const toggleTaskExpansion = (id: number) => {
     setTaskList((prevTasks) =>
@@ -141,7 +145,11 @@ export const DownloadTasksPage = () => {
                           h={21}
                           ml={1}
                           variant="ghost"
-                          onClick={() => {}}
+                          onClick={() => {
+                            task.isDownloading
+                              ? handleStopProgressiveTask(task.taskId)
+                              : handleResumeProgressiveTask(task.taskId);
+                          }}
                         />
                       </Tooltip>
                     )}

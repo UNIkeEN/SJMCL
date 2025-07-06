@@ -13,11 +13,11 @@ where
   pub total: i64,
   pub current: i64,
   pub payload: T,
-  pub state: PState,
+  pub status: PStatus,
 }
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub enum PState {
+pub enum PStatus {
   Stopped,
   Cancelled,
   Completed,
@@ -25,25 +25,25 @@ pub enum PState {
   Failed,
 }
 
-impl PState {
+impl PStatus {
   pub fn is_terminated(&self) -> bool {
-    matches!(self, PState::Cancelled | PState::Completed)
+    matches!(self, PStatus::Cancelled | PStatus::Completed)
   }
 
   pub fn is_stopped(&self) -> bool {
-    *self == PState::Stopped
+    *self == PStatus::Stopped
   }
 
   pub fn is_completed(&self) -> bool {
-    *self == PState::Completed
+    *self == PStatus::Completed
   }
 
   pub fn is_in_progress(&self) -> bool {
-    *self == PState::InProgress
+    *self == PStatus::InProgress
   }
 
   pub fn is_cancelled(&self) -> bool {
-    *self == PState::Cancelled
+    *self == PStatus::Cancelled
   }
 }
 
@@ -56,7 +56,7 @@ where
     task_group: Option<String>,
     total: i64,
     payload: T,
-    state: PState,
+    status: PStatus,
   ) -> Self {
     Self {
       task_id,
@@ -64,7 +64,7 @@ where
       total,
       current: 0,
       payload,
-      state,
+      status,
     }
   }
   pub fn save(&self, path: &PathBuf) -> std::io::Result<()> {
@@ -80,37 +80,37 @@ where
   }
 
   pub fn increment_progress(&mut self, size: i64) {
-    if self.state != PState::InProgress {
+    if self.status != PStatus::InProgress {
       return;
     }
     self.current += size;
   }
 
   pub fn start(&mut self) {
-    self.state = PState::InProgress
+    self.status = PStatus::InProgress
   }
 
   pub fn stop(&mut self) {
-    if self.state == PState::InProgress {
-      self.state = PState::Stopped
+    if self.status == PStatus::InProgress {
+      self.status = PStatus::Stopped
     }
   }
 
   pub fn cancel(&mut self) {
-    self.state = PState::Cancelled
+    self.status = PStatus::Cancelled
   }
 
   pub fn resume(&mut self) {
-    if self.state == PState::Stopped {
-      self.state = PState::InProgress
+    if self.status == PStatus::Stopped {
+      self.status = PStatus::InProgress
     }
   }
 
   pub fn complete(&mut self) {
-    self.state = PState::Completed;
+    self.status = PStatus::Completed;
   }
 
   pub fn fail(&mut self) {
-    self.state = PState::Failed;
+    self.status = PStatus::Failed;
   }
 }

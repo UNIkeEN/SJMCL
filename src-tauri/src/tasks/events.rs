@@ -64,6 +64,15 @@ impl<'a> PEvent<'a> {
     .emit(app);
   }
 
+  pub fn emit_stopped(app: &AppHandle, id: u32, task_group: Option<&'a str>) {
+    Self {
+      id,
+      task_group,
+      event: PEventStatus::Stopped,
+    }
+    .emit(app);
+  }
+
   pub fn emit_cancelled(app: &AppHandle, id: u32, task_group: Option<&'a str>) {
     Self {
       id,
@@ -127,6 +136,9 @@ impl Sink for TauriEventSink {
     PEvent::emit_started(&self.app, task_id, task_group, total);
   }
   fn report_stopped(&self, task_id: u32, task_group: Option<&str>) {
+    PEvent::emit_stopped(&self.app, task_id, task_group);
+  }
+  fn report_cancelled(&self, task_id: u32, task_group: Option<&str>) {
     PEvent::emit_cancelled(&self.app, task_id, task_group);
   }
   fn report_resumed(&self, task_id: u32, task_group: Option<&str>) {

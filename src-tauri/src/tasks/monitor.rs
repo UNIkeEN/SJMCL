@@ -147,7 +147,7 @@ impl TaskMonitor {
     );
 
     let task = Box::pin(async move {
-      if p_handle.read().unwrap().desc.state.is_cancelled() {
+      if p_handle.read().unwrap().desc.status.is_cancelled() {
         return Ok(id);
       }
 
@@ -204,8 +204,8 @@ impl TaskMonitor {
   pub fn cancel_progress(&self, id: u32) {
     if let Some(p_handle) = self.phs.read().unwrap().get(&id) {
       p_handle.write().unwrap().mark_cancelled();
-      if let Some(join_handle) = self.tasks.lock().unwrap().remove(&id) {
-        join_handle.abort();
+      if let Some(j_handle) = self.tasks.lock().unwrap().remove(&id) {
+        j_handle.abort();
       }
     }
   }
@@ -215,7 +215,7 @@ impl TaskMonitor {
     if let Some(handle) = handle {
       let desc = handle.read().unwrap().desc.clone();
       let task_group = desc.task_group.clone();
-      let task_state = desc.state.clone();
+      let task_state = desc.status.clone();
       let j_handle = self.tasks.lock().unwrap().remove(&id).unwrap();
       if !task_state.is_completed() {
         handle.write().unwrap().mark_cancelled();

@@ -16,7 +16,7 @@ use tauri_plugin_http::reqwest::header::{ACCEPT_ENCODING, RANGE};
 use tokio::io::AsyncSeekExt;
 use tokio_util::{bytes, compat::FuturesAsyncReadCompatExt};
 
-use super::streams::desc::{PDesc, PState};
+use super::streams::desc::{PDesc, PStatus};
 use super::streams::reporter::Reporter;
 use super::streams::ProgressStream;
 use super::*;
@@ -57,7 +57,7 @@ impl DownloadTask {
           task_group.clone(),
           0,
           PTaskParam::Download(param.clone()),
-          PState::InProgress,
+          PStatus::InProgress,
         ),
         Duration::from_secs(1),
         cache_dir.clone().join(format!("task-{}.json", task_id)),
@@ -94,13 +94,13 @@ impl DownloadTask {
       p_handle: PTaskHandle::new(
         if reset {
           PTaskDesc {
-            state: PState::Stopped,
+            status: PStatus::Stopped,
             current: 0,
             ..desc
           }
         } else {
           PTaskDesc {
-            state: PState::Stopped,
+            status: PStatus::Stopped,
             ..desc
           }
         },
@@ -220,7 +220,7 @@ impl DownloadTask {
         }
 
         drop(file);
-        if task_handle.read().unwrap().state().is_cancelled() {
+        if task_handle.read().unwrap().status().is_cancelled() {
           tokio::fs::remove_file(&self.dest_path).await?;
           Ok(())
         } else {
