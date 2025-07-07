@@ -1,3 +1,4 @@
+pub mod commands;
 pub mod fs;
 pub mod image;
 pub mod portable;

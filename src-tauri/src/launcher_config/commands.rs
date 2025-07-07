@@ -2,25 +2,18 @@ use super::{
   helpers::java::{
     get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
   },
-  helpers::memory::get_memory_info,
-  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
+  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError},
 };
 use crate::{
   error::SJMCLResult, instance::helpers::misc::refresh_instances, partial::PartialUpdate,
 };
-use crate::{
-  storage::Storage,
-  utils::fs::{extract_filename as extract_filename_helper, get_subdirectories},
-};
-use font_loader::system_fonts;
+use crate::{storage::Storage, utils::fs::get_subdirectories};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
-use tokio::time::Instant;
-use url::Url;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -291,45 +284,4 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
   }
 
   Ok("".to_string())
-}
-
-// Below are some system info commands (In frontend, see services/utils.ts)
-#[tauri::command]
-pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
-  Ok(get_memory_info())
-}
-
-#[tauri::command]
-pub fn extract_filename(path_str: String, with_ext: bool) -> SJMCLResult<String> {
-  Ok(extract_filename_helper(&path_str, with_ext))
-}
-
-#[tauri::command]
-pub fn retrieve_truetype_font_list() -> SJMCLResult<Vec<String>> {
-  let sysfonts = system_fonts::query_all();
-  Ok(sysfonts)
-}
-
-#[tauri::command]
-pub async fn check_service_availability(
-  client: tauri::State<'_, reqwest::Client>,
-  url: String,
-) -> SJMCLResult<u128> {
-  let parsed_url = Url::parse(&url)
-    .or_else(|_| Url::parse(&format!("https://{}", url)))
-    .map_err(|_| LauncherConfigError::FetchError)?;
-
-  let start = Instant::now();
-  let res = client.get(parsed_url).send().await;
-
-  match res {
-    Ok(response) => {
-      if response.status().is_success() || response.status().is_client_error() {
-        Ok(start.elapsed().as_millis())
-      } else {
-        Err(LauncherConfigError::FetchError.into())
-      }
-    }
-    Err(_) => Err(LauncherConfigError::FetchError.into()),
-  }
 }
