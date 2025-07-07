@@ -72,10 +72,6 @@ pub async fn run() {
       launcher_config::commands::retrieve_java_list,
       launcher_config::commands::validate_java,
       launcher_config::commands::check_game_directory,
-      utils::commands::retrieve_memory_info,
-      utils::commands::extract_filename,
-      utils::commands::retrieve_truetype_font_list,
-      utils::commands::check_service_availability,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,
@@ -135,6 +131,10 @@ pub async fn run() {
       tasks::commands::cancel_progressive_task_group,
       tasks::commands::resume_progressive_task_group,
       tasks::commands::stop_progressive_task_group,
+      utils::commands::retrieve_memory_info,
+      utils::commands::extract_filename,
+      utils::commands::retrieve_truetype_font_list,
+      utils::commands::check_service_availability,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);

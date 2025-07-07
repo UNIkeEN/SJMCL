@@ -7,26 +7,22 @@ use tauri_plugin_http::reqwest;
 use tokio::time::Instant;
 use url::Url;
 
-/// Retrieves system memory information
 #[tauri::command]
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
   Ok(get_memory_info())
 }
 
-/// Extracts filename from a path string
 #[tauri::command]
 pub fn extract_filename(path_str: String, with_ext: bool) -> SJMCLResult<String> {
   Ok(extract_filename_helper(&path_str, with_ext))
 }
 
-/// Retrieves list of installed TrueType fonts
 #[tauri::command]
 pub fn retrieve_truetype_font_list() -> SJMCLResult<Vec<String>> {
   let sysfonts = system_fonts::query_all();
   Ok(sysfonts)
 }
 
-/// Checks service availability by measuring response time
 #[tauri::command]
 pub async fn check_service_availability(
   client: tauri::State<'_, reqwest::Client>,
