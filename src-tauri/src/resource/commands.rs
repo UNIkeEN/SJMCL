@@ -14,11 +14,19 @@ use super::{
   },
 };
 use crate::{
-  error::SJMCLResult, instance::models::misc::ModLoaderType,
+  error::SJMCLResult,
+  instance::models::misc::ModLoaderType,
   launcher_config::models::LauncherConfig,
+  tasks::{
+    commands::schedule_progressive_task_group,
+    download::{DownloadDest, DownloadParam},
+    PTaskParam,
+  },
+  utils::fs::extract_filename,
 };
 use std::sync::Mutex;
 use tauri::{AppHandle, State};
+use tauri_plugin_http::reqwest;
 
 #[tauri::command]
 pub async fn fetch_game_version_list(
@@ -82,4 +90,48 @@ pub async fn fetch_resource_version_packs(
     "Modrinth" => Ok(fetch_resource_version_packs_modrinth(&app, &query).await?),
     _ => Err(ResourceError::NoDownloadApi.into()),
   }
+}
+
+#[tauri::command]
+pub async fn download_game_server(
+  app: AppHandle,
+  client: State<'_, reqwest::Client>,
+  resource_info: GameClientResourceInfo,
+  dest: String,
+) -> SJMCLResult<()> {
+  let version_details = client
+    .get(&resource_info.url)
+    .send()
+    .await
+    .map_err(|_| ResourceError::NetworkError)?
+    .json::<serde_json::Value>()
+    .await
+    .map_err(|_| ResourceError::ParseError)?;
+
+  let src = version_details["downloads"]["server"]["url"]
+    .as_str()
+    .ok_or(ResourceError::ParseError)?
+    .to_string();
+
+  let sha1 = version_details["downloads"]["server"]["sha1"]
+    .as_str()
+    .ok_or(ResourceError::ParseError)?
+    .to_string();
+
+  schedule_progressive_task_group(
+    app,
+    format!("game-sever-download@{}", resource_info.id),
+    vec![PTaskParam::Download(DownloadParam {
+      src: url::Url::parse(&src).map_err(|_| ResourceError::ParseError)?,
+      dest: DownloadDest {
+        path: dest.clone().into(),
+        filename: extract_filename(&dest.clone(), true),
+      },
+      sha1: Some(sha1),
+    })],
+    true,
+  )
+  .await?;
+
+  Ok(())
 }

@@ -321,7 +321,10 @@ const DownloadSpecificResourceModal: React.FC<
     handleScheduleProgressiveTaskGroup("game-resource-download", [
       {
         src: item.downloadUrl,
-        dest: savepath,
+        dest: {
+          path: savepath,
+          filename: item.fileName,
+        },
         sha1: item.sha1,
         taskType: TaskTypeEnums.Download,
       },

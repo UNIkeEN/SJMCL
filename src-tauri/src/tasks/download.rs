@@ -23,10 +23,17 @@ use super::*;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct DownloadDest {
+  pub path: PathBuf,
+  pub filename: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct DownloadParam {
-  src: Url,
-  dest: PathBuf,
-  sha1: Option<String>,
+  pub src: Url,
+  pub dest: DownloadDest,
+  pub sha1: Option<String>,
 }
 
 pub struct DownloadTask {
@@ -68,7 +75,7 @@ impl DownloadTask {
         ),
       ),
       param: param.clone(),
-      dest_path: cache_dir.clone().join(param.dest.clone()),
+      dest_path: cache_dir.clone().join(param.dest.path.clone()),
       report_interval,
     }
   }
@@ -113,7 +120,7 @@ impl DownloadTask {
         ),
       ),
       param: param.clone(),
-      dest_path: cache_dir.clone().join(param.dest.clone()),
+      dest_path: cache_dir.clone().join(param.dest.path.clone()),
       report_interval,
     }
   }

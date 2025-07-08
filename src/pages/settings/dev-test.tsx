@@ -75,13 +75,19 @@ const DevTestPage = () => {
           let dl: DownloadTaskParam[] = [
             {
               src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
-              dest: "1.jar",
+              dest: {
+                path: "1.jar",
+                filename: "1.jar",
+              },
               sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
               taskType: TaskTypeEnums.Download,
             },
             {
               src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
-              dest: "2.jar",
+              dest: {
+                path: "2.jar",
+                filename: "2.jar",
+              },
               sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
               taskType: TaskTypeEnums.Download,
             },

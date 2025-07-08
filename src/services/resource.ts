@@ -88,4 +88,21 @@ export class ResourceService {
       },
     });
   }
+
+  /**
+   * DOWNLOAD a game server.
+   * @param {GameResourceInfo} resourceInfo - The resource information of the game server.
+   * @param {string} dest - The destination path to save the downloaded server file.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("resource")
+  static async downloadGameServer(
+    resourceInfo: GameResourceInfo,
+    dest: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("download_game_server", {
+      resourceInfo,
+      dest,
+    });
+  }
 }

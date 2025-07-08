@@ -224,7 +224,7 @@ export const DownloadTasksPage = () => {
                 ? group.taskDescs.map((task) => (
                     <OptionItem
                       key={`${task.taskId}-detail`}
-                      title={task.payload.dest}
+                      title={task.payload.dest.filename}
                       titleExtra={
                         task.status === TaskDescStatusEnums.InProgress && (
                           <Text
