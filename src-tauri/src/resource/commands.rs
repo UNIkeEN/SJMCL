@@ -17,11 +17,7 @@ use crate::{
   error::SJMCLResult,
   instance::{helpers::client_json::McClientInfo, models::misc::ModLoaderType},
   launcher_config::models::LauncherConfig,
-  tasks::{
-    commands::schedule_progressive_task_group,
-    download::{DownloadDest, DownloadParam},
-    PTaskParam,
-  },
+  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
   utils::fs::extract_filename,
 };
 use std::sync::Mutex;
@@ -118,10 +114,8 @@ pub async fn download_game_server(
     format!("game-server-download:{}", resource_info.id),
     vec![PTaskParam::Download(DownloadParam {
       src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
-      dest: DownloadDest {
-        path: dest.clone().into(),
-        filename: extract_filename(&dest.clone(), true),
-      },
+      dest: dest.clone().into(),
+      filename: Some(extract_filename(&dest.clone(), true)),
       sha1: Some(download_info.sha1.clone()),
     })],
     true,

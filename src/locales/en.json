@@ -479,8 +479,8 @@
       "cancelled": "Cancelled"
     },
     "task": {
-      "game-client-download": "Game Client {{version}}",
-      "game-server-download": "Game Server {{version}}",
+      "game-client-download": "Game Client {{param}}",
+      "game-server-download": "Game Server {{param}}",
       "game-resource-download": "Game Resource"
     }
   },
@@ -1788,6 +1788,15 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "Failed to download game server",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server"
           }
         }
       }

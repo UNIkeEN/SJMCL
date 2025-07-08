@@ -71,17 +71,12 @@ export const DownloadTasksPage = () => {
     return text.join(", ");
   };
 
-  const parseGroupTitle = (
-    taskGroup: string
-  ): [string, { version: string }] => {
+  const parseGroupTitle = (taskGroup: string) => {
     let groupInfo = taskGroup.split("@")[0].split(":");
 
-    return [
-      `DownloadTasksPage.task.${groupInfo[0]}`,
-      {
-        version: groupInfo[1] || "",
-      },
-    ];
+    return t(`DownloadTasksPage.task.${groupInfo[0]}`, {
+      param: groupInfo[1] || "",
+    });
   };
 
   return (
@@ -111,7 +106,7 @@ export const DownloadTasksPage = () => {
               <VStack align="stretch" key={group.taskGroup}>
                 <Flex justify="space-between" alignItems="center">
                   <Text fontSize="xs-sm" fontWeight="bold">
-                    {t(...parseGroupTitle(group.taskGroup))}
+                    {parseGroupTitle(group.taskGroup)}
                   </Text>
 
                   <HStack alignItems="center">
@@ -237,7 +232,7 @@ export const DownloadTasksPage = () => {
                 ? group.taskDescs.map((task) => (
                     <OptionItem
                       key={`${task.taskId}-detail`}
-                      title={task.payload.dest.filename}
+                      title={task.payload.filename}
                       titleExtra={
                         task.status === TaskDescStatusEnums.InProgress && (
                           <Text

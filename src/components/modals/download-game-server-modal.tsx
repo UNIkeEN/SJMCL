@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useTaskContext } from "@/contexts/task";
+import { useToast } from "@/contexts/toast";
 import { GameResourceInfo } from "@/models/resource";
 import { ResourceService } from "@/services/resource";
 
@@ -24,11 +25,27 @@ export const DownloadGameServerModal: React.FC<
 > = ({ ...modalProps }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
   const { handleScheduleProgressiveTaskGroup } = useTaskContext();
 
   const [selectedGameVersion, setSelectedGameVersion] =
     useState<GameResourceInfo>();
+
+  const handleDownloadGameServer = (
+    gameVersion: GameResourceInfo,
+    dest: string
+  ) => {
+    ResourceService.downloadGameServer(gameVersion, dest).then((response) => {
+      if (response.status !== "success") {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    });
+  };
 
   return (
     <Modal
@@ -62,10 +79,7 @@ export const DownloadGameServerModal: React.FC<
                   defaultPath: `${selectedGameVersion.id}-server.jar`,
                 });
                 if (!savepath || !selectedGameVersion?.url) return;
-                ResourceService.downloadGameServer(
-                  selectedGameVersion,
-                  savepath
-                );
+                handleDownloadGameServer(selectedGameVersion, savepath);
                 setSelectedGameVersion(undefined);
                 modalProps.onClose?.();
               }}

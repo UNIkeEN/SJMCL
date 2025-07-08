@@ -479,8 +479,8 @@
       "cancelled": "已取消"
     },
     "task": {
-      "game-client-download": "游戏客户端 {{version}}",
-      "game-server-download": "游戏服务端 {{version}}",
+      "game-client-download": "游戏客户端 {{param}}",
+      "game-server-download": "游戏服务端 {{param}}",
       "game-resource-download": "游戏资源"
     }
   },
@@ -1788,6 +1788,15 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NETWORK_ERROR": "无法连接到服务器",
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "下载游戏服务器失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器"
           }
         }
       }

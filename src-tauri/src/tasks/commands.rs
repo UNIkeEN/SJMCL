@@ -4,6 +4,7 @@ use tauri::{AppHandle, Manager};
 use crate::{
   error::SJMCLResult,
   tasks::{download::DownloadTask, monitor::TaskMonitor},
+  utils::fs::extract_filename,
 };
 
 use super::{PTaskGroupDesc, PTaskParam, THandle};
@@ -30,7 +31,13 @@ pub async fn schedule_progressive_task_group(
   for param in params {
     let task_id = monitor.get_new_id();
     task_descs.push(match param {
-      PTaskParam::Download(param) => {
+      PTaskParam::Download(mut param) => {
+        if param.filename.is_none() {
+          param.filename = Some(extract_filename(
+            param.dest.to_str().unwrap_or_default(),
+            true,
+          ));
+        }
         let task = DownloadTask::new(
           app.clone(),
           task_id,
