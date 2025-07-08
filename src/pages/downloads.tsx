@@ -71,6 +71,19 @@ export const DownloadTasksPage = () => {
     return text.join(", ");
   };
 
+  const parseGroupTitle = (
+    taskGroup: string
+  ): [string, { version: string }] => {
+    let groupInfo = taskGroup.split("@")[0].split(":");
+
+    return [
+      `DownloadTasksPage.task.${groupInfo[0]}`,
+      {
+        version: groupInfo[1] || "",
+      },
+    ];
+  };
+
   return (
     <Section
       className="content-full-y"
@@ -98,7 +111,7 @@ export const DownloadTasksPage = () => {
               <VStack align="stretch" key={group.taskGroup}>
                 <Flex justify="space-between" alignItems="center">
                   <Text fontSize="xs-sm" fontWeight="bold">
-                    {group.taskGroup}
+                    {t(...parseGroupTitle(group.taskGroup))}
                   </Text>
 
                   <HStack alignItems="center">

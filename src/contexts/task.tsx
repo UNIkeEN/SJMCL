@@ -41,7 +41,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
 
-  const updateGroupProgress = (group: TaskGroupDesc) => {
+  const updateGroupInfo = (group: TaskGroupDesc) => {
     group.current = group.taskDescs.reduce((acc, t) => acc + t.current, 0);
     group.total = group.taskDescs.reduce((acc, t) => acc + t.total, 0);
     group.progress = group.total > 0 ? (group.current * 100) / group.total : 0;
@@ -57,9 +57,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       t.progress = t.total ? (t.current * 100) / t.total : 0;
     });
-  };
 
-  const updateGroupStatus = (group: TaskGroupDesc) => {
     if (
       group.taskDescs.every((t) => t.status === TaskDescStatusEnums.Completed)
     ) {
@@ -82,22 +80,24 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       group.status = TaskDescStatusEnums.InProgress;
     }
   };
-
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
       if (response.status === "success") {
         info(JSON.stringify(response.data));
-        setTasks(
-          response.data
-            .map((taskGroup) => {
-              updateGroupProgress(taskGroup);
-              updateGroupStatus(taskGroup);
-              return taskGroup;
-            })
-            .filter(
-              (taskGroup) => taskGroup.status !== TaskDescStatusEnums.Cancelled
-            )
-        );
+        let tasks = response.data
+          .map((taskGroup) => {
+            updateGroupInfo(taskGroup);
+            return taskGroup;
+          })
+          .filter(
+            (taskGroup) => taskGroup.status !== TaskDescStatusEnums.Cancelled
+          );
+        tasks.sort((a, b) => {
+          let aTime = parseInt(a.taskGroup.split("@").pop() || "0");
+          let bTime = parseInt(b.taskGroup.split("@").pop() || "0");
+          return bTime - aTime; // Sort by timestamp descending
+        });
+        setTasks(tasks);
       } else {
         toast({
           title: response.message,
@@ -210,7 +210,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               } else {
                 group.taskDescs.unshift(payload.event.desc);
                 info(`Added task ${payload.id} to group ${payload.taskGroup}`);
-                updateGroupProgress(group);
+                updateGroupInfo(group);
                 return [...prevTasks];
               }
             }
@@ -220,7 +220,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               taskGroup: payload.taskGroup,
               taskDescs: [payload.event.desc],
             };
-            updateGroupProgress(newGroup);
+            updateGroupInfo(newGroup);
 
             return [newGroup, ...(prevTasks || [])];
           } else if (payload.event.status === PTaskEventStatusEnums.Started) {
@@ -246,7 +246,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             });
             info(`Task ${payload.id} completed in group ${payload.taskGroup}`);
 
-            updateGroupProgress(group);
+            updateGroupInfo(group);
 
             if (
               group.taskDescs.every(
@@ -309,7 +309,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               return t;
             });
             group.status = TaskDescStatusEnums.InProgress;
-            updateGroupProgress(group);
+            updateGroupInfo(group);
 
             info(
               `Task ${payload.id} in progress in group ${payload.taskGroup}`

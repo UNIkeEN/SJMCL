@@ -477,6 +477,11 @@
       "paused": "Paused",
       "error": "Error",
       "cancelled": "Cancelled"
+    },
+    "task": {
+      "game-client-download": "Game Client {{version}}",
+      "game-server-download": "Game Server {{version}}",
+      "game-resource-download": "Game Resource"
     }
   },
   "Editable": {

@@ -15,7 +15,7 @@ use super::{
 };
 use crate::{
   error::SJMCLResult,
-  instance::models::misc::ModLoaderType,
+  instance::{helpers::client_json::McClientInfo, models::misc::ModLoaderType},
   launcher_config::models::LauncherConfig,
   tasks::{
     commands::schedule_progressive_task_group,
@@ -104,30 +104,25 @@ pub async fn download_game_server(
     .send()
     .await
     .map_err(|_| ResourceError::NetworkError)?
-    .json::<serde_json::Value>()
+    .json::<McClientInfo>()
     .await
     .map_err(|_| ResourceError::ParseError)?;
 
-  let src = version_details["downloads"]["server"]["url"]
-    .as_str()
-    .ok_or(ResourceError::ParseError)?
-    .to_string();
-
-  let sha1 = version_details["downloads"]["server"]["sha1"]
-    .as_str()
-    .ok_or(ResourceError::ParseError)?
-    .to_string();
+  let download_info = version_details
+    .downloads
+    .get("server")
+    .ok_or(ResourceError::ParseError)?;
 
   schedule_progressive_task_group(
     app,
-    format!("game-sever-download@{}", resource_info.id),
+    format!("game-server-download:{}", resource_info.id),
     vec![PTaskParam::Download(DownloadParam {
-      src: url::Url::parse(&src).map_err(|_| ResourceError::ParseError)?,
+      src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
       dest: DownloadDest {
         path: dest.clone().into(),
         filename: extract_filename(&dest.clone(), true),
       },
-      sha1: Some(sha1),
+      sha1: Some(download_info.sha1.clone()),
     })],
     true,
   )
