@@ -31,20 +31,32 @@ export const DownloadGameServerModal: React.FC<
 
   const [selectedGameVersion, setSelectedGameVersion] =
     useState<GameResourceInfo>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleDownloadGameServer = (
-    gameVersion: GameResourceInfo,
-    dest: string
-  ) => {
-    ResourceService.downloadGameServer(gameVersion, dest).then((response) => {
-      if (response.status !== "success") {
-        toast({
-          title: response.message,
-          description: response.details,
-          status: "error",
-        });
-      }
+  const handleDownloadGameServer = async () => {
+    if (!selectedGameVersion) return;
+
+    const savepath = await save({
+      defaultPath: `${selectedGameVersion.id}-server.jar`,
     });
+    if (!savepath || !selectedGameVersion?.url) return;
+
+    setIsLoading(true);
+    const response = await ResourceService.downloadGameServer(
+      selectedGameVersion,
+      savepath
+    );
+    setIsLoading(false);
+    if (response.status !== "success") {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+    }
+
+    setSelectedGameVersion(undefined);
+    modalProps.onClose?.();
   };
 
   return (
@@ -73,16 +85,8 @@ export const DownloadGameServerModal: React.FC<
             <Button
               disabled={!selectedGameVersion}
               colorScheme={primaryColor}
-              onClick={async () => {
-                if (!selectedGameVersion) return;
-                const savepath = await save({
-                  defaultPath: `${selectedGameVersion.id}-server.jar`,
-                });
-                if (!savepath || !selectedGameVersion?.url) return;
-                handleDownloadGameServer(selectedGameVersion, savepath);
-                setSelectedGameVersion(undefined);
-                modalProps.onClose?.();
-              }}
+              onClick={() => handleDownloadGameServer()}
+              isLoading={isLoading}
             >
               {t("General.finish")}
             </Button>
