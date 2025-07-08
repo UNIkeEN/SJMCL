@@ -1,8 +1,6 @@
 use super::models::PostSourceInfo;
 use crate::{
-  discover::models::{PostResponse, PostSummary},
-  error::SJMCLResult,
-  launcher_config::models::LauncherConfig,
+  discover::models::PostResponse, error::SJMCLResult, launcher_config::models::LauncherConfig,
 };
 use futures::future;
 use std::sync::Mutex;
@@ -56,7 +54,10 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
 }
 
 #[tauri::command]
-pub async fn fetch_post_summaries(app: AppHandle) -> SJMCLResult<Vec<PostSummary>> {
+pub async fn fetch_post_summaries(
+  app: AppHandle,
+  cursor: Option<u64>,
+) -> SJMCLResult<PostResponse> {
   let post_source_urls = {
     let binding = app.state::<Mutex<LauncherConfig>>();
     let state = binding.lock().unwrap();
@@ -65,32 +66,37 @@ pub async fn fetch_post_summaries(app: AppHandle) -> SJMCLResult<Vec<PostSummary
 
   let client = app.state::<reqwest::Client>();
 
-  let tasks: Vec<_> = post_source_urls
-    .into_iter()
-    .map(|url| {
-      let client = client.clone();
-      async move {
-        let mut posts_vec = Vec::new();
+  let Some(url) = post_source_urls.get(0) else {
+    return Ok(PostResponse {
+      posts: vec![],
+      next: None,
+    });
+  };
 
-        let response = client.get(&url).query(&[("pageSize", "12")]).send().await;
+  let mut request = client.get(url).query(&[("pageSize", "12")]);
 
-        if let Ok(response) = response {
-          if let Ok(post_list) = response.json::<PostResponse>().await {
-            posts_vec = post_list.posts;
-            posts_vec.sort_by(|a, b| b.update_at.cmp(&a.update_at));
-          }
-        }
+  if let Some(cursor_val) = cursor {
+    request = request.query(&[("cursor", &cursor_val.to_string())]);
+  }
 
-        posts_vec
-      }
+  let response = request.send().await?;
+
+  if response.status().is_success() {
+    let post_response: PostResponse = response.json().await.unwrap_or(PostResponse {
+      posts: vec![],
+      next: None,
+    });
+
+    let posts = post_response.posts;
+
+    Ok(PostResponse {
+      posts,
+      next: post_response.next,
     })
-    .collect();
-
-  let all_posts = future::join_all(tasks)
-    .await
-    .into_iter()
-    .flatten()
-    .collect();
-
-  Ok(all_posts)
+  } else {
+    Ok(PostResponse {
+      posts: vec![],
+      next: None,
+    })
+  }
 }

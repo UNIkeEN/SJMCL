@@ -22,8 +22,9 @@ pub struct PostSummary {
   pub link: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PostResponse {
   pub posts: Vec<PostSummary>,
+  pub next: Option<u64>,
 }

@@ -1,9 +1,10 @@
-import { Button, HStack } from "@chakra-ui/react";
+import { Button, Center, HStack } from "@chakra-ui/react";
 import { Masonry } from "masonic";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuNewspaper, LuRefreshCcw } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
 import PosterCard from "@/components/poster-card";
@@ -17,19 +18,68 @@ export const DiscoverPage = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const [posts, setPosts] = useState<PostSummary[]>([]);
+  const [allPosts, setAllPosts] = useState<PostSummary[]>([]);
+  const [visiblePosts, setVisiblePosts] = useState<PostSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [masonryKey, setMasonryKey] = useState(0);
 
-  const handleFetchPostSummaries = useCallback(() => {
-    DiscoverService.fetchPostSummaries().then((response) => {
-      if (response.status === "success") setPosts(response.data);
-      console.log(response);
-      // no toast here, keep slient if no internet connection or etc.
-    });
-  }, [setPosts]);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchFirstPage = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await DiscoverService.fetchPostSummaries(undefined);
+      if (response.status === "success") {
+        const posts: PostSummary[] = response.data.posts;
+        const next: number | null = response.data.next ?? null;
+
+        setAllPosts(posts);
+        setVisiblePosts(posts);
+        setNextCursor(next);
+        setMasonryKey((k) => k + 1);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const loadMore = useCallback(async () => {
+    if (isLoading || nextCursor === null) return;
+    setIsLoading(true);
+    try {
+      const response = await DiscoverService.fetchPostSummaries(nextCursor);
+      if (response.status === "success") {
+        const posts: PostSummary[] = response.data.posts;
+        const next: number | null = response.data.next ?? null;
+        console.log(response.data);
+        setAllPosts((prev) => [...prev, ...posts]);
+        setVisiblePosts((prev) => [...prev, ...posts]);
+        setNextCursor(next);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, nextCursor]);
 
   useEffect(() => {
-    handleFetchPostSummaries();
-  }, [handleFetchPostSummaries]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading && nextCursor !== null) {
+          loadMore();
+        }
+      },
+      { threshold: 1.0 }
+    );
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [loadMore, isLoading, nextCursor]);
+
+  useEffect(() => {
+    fetchFirstPage();
+  }, [fetchFirstPage]);
+
+  const hasMore = nextCursor !== null;
 
   return (
     <Section
@@ -42,9 +92,7 @@ export const DiscoverPage = () => {
             size="xs"
             colorScheme={primaryColor}
             variant={primaryColor === "gray" ? "subtle" : "outline"}
-            onClick={() => {
-              router.push("/discover/sources");
-            }}
+            onClick={() => router.push("/discover/sources")}
           >
             {t("DiscoverPage.button.sources")}
           </Button>
@@ -52,17 +100,36 @@ export const DiscoverPage = () => {
             leftIcon={<LuRefreshCcw />}
             size="xs"
             colorScheme={primaryColor}
-            onClick={handleFetchPostSummaries}
+            onClick={fetchFirstPage}
           >
             {t("General.refresh")}
           </Button>
         </HStack>
       }
     >
-      {posts.length > 0 ? (
-        <Masonry items={posts} render={PosterCard} columnGutter={14} />
-      ) : (
+      {isLoading && visiblePosts.length === 0 ? (
+        <Center mt={8}>
+          <BeatLoader size={16} color="gray" />
+        </Center>
+      ) : visiblePosts.length === 0 ? (
         <Empty withIcon={false} size="sm" />
+      ) : (
+        <>
+          <Masonry
+            key={masonryKey}
+            items={visiblePosts}
+            render={({ data }) => <PosterCard data={data} />}
+            columnGutter={14}
+            itemKey={(item) => item.link}
+          />
+          <Center mt={8} ref={loadMoreRef}>
+            {isLoading && visiblePosts.length > 0 ? (
+              <BeatLoader size={16} color="gray" />
+            ) : !hasMore ? (
+              <div>{t("General.noMore")}</div>
+            ) : null}
+          </Center>
+        </>
       )}
     </Section>
   );
