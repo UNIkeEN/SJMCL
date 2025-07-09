@@ -88,7 +88,7 @@ const HeadNavBar = () => {
         py={2}
         className={`animated-card ${isAnimating ? "animate" : ""}`}
       >
-        <HStack spacing={4}>
+        <HStack spacing={4} h="100%">
           <TitleShort />
           <Tabs
             variant="soft-rounded"
