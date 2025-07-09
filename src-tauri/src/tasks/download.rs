@@ -119,45 +119,77 @@ impl DownloadTask {
     }
   }
 
+  async fn create_request(
+    app_handle: &AppHandle,
+    p_handle: &mut PTaskHandle,
+    param: &DownloadParam,
+  ) -> SJMCLResult<reqwest::Response> {
+    let client = app_handle.state::<reqwest::Client>().clone();
+    if p_handle.desc.total == 0 && p_handle.desc.current == 0 {
+      let request = client
+        .get(param.src.clone())
+        .header(ACCEPT_ENCODING, Self::CONTENT_ENCODING_CHOICES);
+
+      let response = request.send().await?;
+      let response = response.error_for_status()?;
+      p_handle.set_total(response.content_length().unwrap_or_default() as i64);
+      Ok(response)
+    } else {
+      let request = client
+        .get(param.src.clone())
+        .header(ACCEPT_ENCODING, Self::CONTENT_ENCODING_CHOICES)
+        .header(RANGE, format!("bytes={}-", p_handle.desc.current));
+
+      let response = request.send().await?;
+      let response = response.error_for_status()?;
+      Ok(response)
+    }
+  }
+
   async fn create_resp(
     app_handle: &AppHandle,
     p_handle: &mut PTaskHandle,
     param: &DownloadParam,
   ) -> SJMCLResult<impl Stream<Item = Result<bytes::Bytes, std::io::Error>> + Send> {
-    let client = app_handle.state::<reqwest::Client>().clone();
-    Ok(
-      if p_handle.desc.total == 0 && p_handle.desc.current == 0 {
-        let r = client
-          .get(param.src.clone())
-          .header(ACCEPT_ENCODING, Self::CONTENT_ENCODING_CHOICES)
-          .send()
-          .await?
-          .error_for_status()?;
-        p_handle.set_total(r.content_length().unwrap_or_default() as i64);
-        r
-      } else {
-        client
-          .get(param.src.clone())
-          .header(ACCEPT_ENCODING, Self::CONTENT_ENCODING_CHOICES)
-          .header(RANGE, format!("bytes={}-", p_handle.desc.current))
-          .send()
-          .await?
-          .error_for_status()?
-      }
-      .bytes_stream()
-      .map(|res| {
-        match res {
-          Ok(bytes) => Ok(bytes),
-          Err(e) => {
-            // Log the error and skip this chunk
-            // eprintln!("Network error during download: {:?}", e);
-            // Return an empty chunk or skip by returning an error that can be filtered out later
-            // Here, we return an empty chunk to continue
-            Ok(bytes::Bytes::new())
-          }
+    let max_retries = 5;
+    let mut retry_count = 0;
+    let mut wait_seconds = 1;
+
+    loop {
+      match Self::create_request(app_handle, p_handle, param).await {
+        Ok(response) => {
+          return Ok(response.bytes_stream().map(|res| {
+            match res {
+              Ok(bytes) => Ok(bytes),
+              Err(e) => {
+                // handle network disconnection during stream
+                Ok(bytes::Bytes::new())
+              }
+            }
+          }));
         }
-      }),
-    )
+        Err(e) if retry_count < max_retries => {
+          retry_count += 1;
+          log::warn!(
+            "Download request failed (attempt {}/{}), retrying in {}s: {:?}",
+            retry_count,
+            max_retries,
+            wait_seconds,
+            e
+          );
+
+          // increase waiting time
+          tokio::time::sleep(Duration::from_secs(wait_seconds)).await;
+          wait_seconds *= 2;
+        }
+        Err(e) => {
+          return Err(SJMCLError(format!(
+            "Download failed after {} attempts: {:?}",
+            max_retries, e
+          )));
+        }
+      }
+    }
   }
 
   fn validate_sha1(dest_path: PathBuf, param: DownloadParam) -> SJMCLResult<()> {

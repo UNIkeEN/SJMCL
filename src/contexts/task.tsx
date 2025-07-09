@@ -83,7 +83,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
       if (response.status === "success") {
-        info(JSON.stringify(response.data));
+        // info(JSON.stringify(response.data));
         let tasks = response.data
           .map((taskGroup) => {
             updateGroupInfo(taskGroup);
@@ -202,18 +202,18 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
             if (group) {
               if (group.taskDescs.some((t) => t.taskId === payload.id)) {
-                info(
-                  `Task ${payload.id} already exists in group ${payload.taskGroup}`
-                );
+                // info(
+                //   `Task ${payload.id} already exists in group ${payload.taskGroup}`
+                // );
                 return prevTasks;
               } else {
                 group.taskDescs.unshift(payload.event.desc);
-                info(`Added task ${payload.id} to group ${payload.taskGroup}`);
+                // info(`Added task ${payload.id} to group ${payload.taskGroup}`);
                 updateGroupInfo(group);
                 return [...prevTasks];
               }
             }
-            info(`Creating new task group ${payload.taskGroup}`);
+            // info(`Creating new task group ${payload.taskGroup}`);
             // Create a new task group if it doesn't exist
             let newGroup: TaskGroupDesc = {
               taskGroup: payload.taskGroup,
@@ -243,7 +243,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               }
               return t;
             });
-            info(`Task ${payload.id} completed in group ${payload.taskGroup}`);
+            // info(`Task ${payload.id} completed in group ${payload.taskGroup}`);
 
             updateGroupInfo(group);
 
@@ -252,7 +252,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 (t) => t.status === TaskDescStatusEnums.Completed
               )
             ) {
-              info(`All tasks completed in group ${payload.taskGroup}`);
+              // info(`All tasks completed in group ${payload.taskGroup}`);
               group.status = TaskDescStatusEnums.Completed;
             }
             return [...prevTasks];
@@ -269,7 +269,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               return t;
             });
             group.status = TaskDescStatusEnums.Stopped;
-            info(`Task ${payload.id} stopped in group ${payload.taskGroup}`);
+            // info(`Task ${payload.id} stopped in group ${payload.taskGroup}`);
             return [...prevTasks];
           } else if (payload.event.status === PTaskEventStatusEnums.Cancelled) {
             let group = prevTasks?.find(
@@ -284,7 +284,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               return t;
             });
             group.status = TaskDescStatusEnums.Cancelled;
-            info(`Task ${payload.id} cancelled in group ${payload.taskGroup}`);
+            // info(`Task ${payload.id} cancelled in group ${payload.taskGroup}`);
             return [...prevTasks];
           } else if (
             payload.event.status === PTaskEventStatusEnums.InProgress
@@ -310,9 +310,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             group.status = TaskDescStatusEnums.InProgress;
             updateGroupInfo(group);
 
-            info(
-              `Task ${payload.id} in progress in group ${payload.taskGroup}`
-            );
+            // info(
+            //   `Task ${payload.id} in progress in group ${payload.taskGroup}`
+            // );
             return [...prevTasks];
           } else if (payload.event.status === PTaskEventStatusEnums.Failed) {
             let group = prevTasks?.find(
@@ -328,7 +328,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               return t;
             });
             group.status = TaskDescStatusEnums.Failed;
-            info(`Task ${payload.id} failed in group ${payload.taskGroup}`);
+            // info(`Task ${payload.id} failed in group ${payload.taskGroup}`);
             return [...prevTasks];
           } else {
             return prevTasks;

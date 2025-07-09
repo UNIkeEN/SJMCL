@@ -863,11 +863,15 @@ pub async fn download_instance(
       .ok_or(InstanceError::ClientJsonParseError)?
       .artifact
       .ok_or(InstanceError::ClientJsonParseError)?;
+    let dest = directory.dir.join(format!("libraries/{}", artifact.path));
+    if dest.exists() {
+      continue;
+    }
     task_params.push(PTaskParam::Download(DownloadParam {
       src: libraries_download_api
         .join(&artifact.path)
         .map_err(|_| InstanceError::ClientJsonParseError)?,
-      dest: directory.dir.join(format!("libraries/{}", artifact.path)),
+      dest,
       filename: None,
       sha1: Some(artifact.sha1),
     }));
@@ -895,15 +899,20 @@ pub async fn download_instance(
   let objects = asset_index["objects"]
     .as_object()
     .ok_or(InstanceError::AssetIndexParseError)?;
-  for (path, value) in objects {
+  for (_, value) in objects {
     let hash = value["hash"]
       .as_str()
       .ok_or(InstanceError::AssetIndexParseError)?;
+    let path = format!("{}/{}", &hash[..2], hash);
+    let dest = directory.dir.join(format!("assets/objects/{}", path));
+    if dest.exists() {
+      continue;
+    }
     task_params.push(PTaskParam::Download(DownloadParam {
       src: assets_download_api
-        .join(&format!("{}/{}", &hash[..2], hash))
+        .join(&path)
         .map_err(|_| InstanceError::ClientJsonParseError)?,
-      dest: directory.dir.join(format!("assets/objects/{}", path)),
+      dest,
       filename: None,
       sha1: Some(hash.to_string()),
     }));
