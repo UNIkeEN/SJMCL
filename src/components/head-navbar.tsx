@@ -84,7 +84,8 @@ const HeadNavBar = () => {
     <Flex justify="center" p={4}>
       <AdvancedCard
         level="back"
-        px={4}
+        pl={8}
+        pr={isDownloadIndicatorShown ? 4 : 8}
         py={2}
         className={`animated-card ${isAnimating ? "animate" : ""}`}
       >
