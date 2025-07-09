@@ -72,6 +72,30 @@ pub fn generate_unique_filename(base_path: &Path, filename: &OsStr) -> PathBuf {
   dest_path
 }
 
+/// Generates a unique directory name in the specified base path.
+///
+/// If a directory with the same name already exists,
+/// appends `"-1"`, `"-2"`, `"-3"`
+/// and so on until a non-conflicting name is found.
+///
+/// # Examples
+/// ```rust
+/// let dest_path = generate_unique_directory_name(&tgt_path, base_name);
+/// ``````
+pub fn generate_unique_directory_name(base_path: &Path, dir_name: &OsStr) -> String {
+  let mut dest_path = base_path.join(dir_name);
+  let mut counter = 1;
+  let mut new_dir_name = dir_name.to_string_lossy().to_string();
+
+  while dest_path.exists() {
+    new_dir_name = format!("{}-{}", dir_name.to_string_lossy(), counter);
+    dest_path = base_path.join(&new_dir_name);
+    counter += 1;
+  }
+
+  new_dir_name
+}
+
 /// Splits a filename into its base name and extension.
 ///
 /// # Examples

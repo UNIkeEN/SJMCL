@@ -194,7 +194,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         info(
           `Received task update: ${payload.id}, status: ${payload.event.status}`
         );
-        console.log(payload);
         setTasks((prevTasks) => {
           if (payload.event.status === PTaskEventStatusEnums.Created) {
             let group = prevTasks?.find(

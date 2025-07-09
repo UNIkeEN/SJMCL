@@ -11,6 +11,7 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { save } from "@tauri-apps/plugin-dialog";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
@@ -26,6 +27,7 @@ export const DownloadGameServerModal: React.FC<
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const toast = useToast();
+  const router = useRouter();
   const primaryColor = config.appearance.theme.primaryColor;
   const { handleScheduleProgressiveTaskGroup } = useTaskContext();
 
@@ -62,6 +64,7 @@ export const DownloadGameServerModal: React.FC<
 
     setSelectedGameVersion(undefined);
     modalProps.onClose?.();
+    router.push("/downloads");
   };
 
   return (

@@ -55,3 +55,8 @@ export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
   version: "",
   stable: true,
 };
+
+export interface ModLoader {
+  loaderType: ModLoaderType;
+  version: string;
+}

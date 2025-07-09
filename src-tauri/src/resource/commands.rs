@@ -18,7 +18,6 @@ use crate::{
   instance::{helpers::client_json::McClientInfo, models::misc::ModLoaderType},
   launcher_config::models::LauncherConfig,
   tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
-  utils::fs::extract_filename,
 };
 use std::sync::Mutex;
 use tauri::{AppHandle, State};
@@ -115,7 +114,7 @@ pub async fn download_game_server(
     vec![PTaskParam::Download(DownloadParam {
       src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
       dest: dest.clone().into(),
-      filename: Some(extract_filename(&dest.clone(), true)),
+      filename: None,
       sha1: Some(download_info.sha1.clone()),
     })],
     true,

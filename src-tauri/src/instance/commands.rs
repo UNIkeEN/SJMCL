@@ -23,22 +23,34 @@ use super::{
 };
 use crate::{
   error::SJMCLResult,
+  instance::{helpers::client_json::McClientInfo, models::misc::ModLoader},
   launcher_config::{
     helpers::misc::get_global_game_config,
-    models::{GameConfig, LauncherConfig},
+    models::{GameConfig, GameDirectory, LauncherConfig},
   },
   partial::{PartialError, PartialUpdate},
+  resource::{
+    helpers::misc::{get_download_api, get_source_priority_list},
+    models::{GameClientResourceInfo, ResourceType},
+  },
   storage::Storage,
-  utils::{fs::create_url_shortcut, image::ImageWrapper},
+  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
+  utils::{
+    fs::{create_url_shortcut, generate_unique_directory_name},
+    image::ImageWrapper,
+  },
 };
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
-use std::collections::HashMap;
+use serde_json::{from_value, Value};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::{collections::HashMap, ffi::OsStr};
 use std::{sync::Mutex, time::SystemTime};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, State};
+use tauri_plugin_http::reqwest;
 use tokio;
+use url::Url;
 use zip::read::ZipArchive;
 
 #[tauri::command]
@@ -760,5 +772,150 @@ pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJ
 
   create_url_shortcut(&app, name, url, None).map_err(|_| InstanceError::ShortcutCreationFailed)?;
 
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn download_instance(
+  app: AppHandle,
+  client: State<'_, reqwest::Client>,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
+  directory: GameDirectory,
+  mut name: String,
+  description: String,
+  icon_src: String,
+  game: GameClientResourceInfo,
+  mod_loader: ModLoader,
+) -> SJMCLResult<()> {
+  // Get priority list
+  let priority_list = {
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
+  };
+
+  // Ensure the instance name is unique
+  name = generate_unique_directory_name(&directory.dir, OsStr::new(&name));
+  let version_path = directory.dir.join("versions").join(&name);
+  fs::create_dir_all(&version_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+
+  // Create instance config
+  let instance = Instance {
+    id: format!("{}:{}", directory.name, name.clone()),
+    name: name.clone(),
+    version: game.id,
+    version_path,
+    mod_loader,
+    description,
+    icon_src,
+    starred: false,
+    play_time: 0,
+    use_spec_game_config: false,
+    spec_game_config: None,
+  };
+  instance
+    .save_json_cfg()
+    .await
+    .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  // Download version info
+  let version_info_raw = client
+    .get(&game.url)
+    .send()
+    .await
+    .map_err(|_| InstanceError::NetworkError)?
+    .json::<Value>()
+    .await
+    .map_err(|_| InstanceError::ClientJsonParseError)?;
+  fs::write(
+    directory
+      .dir
+      .join(format!("versions/{}/{}.json", name, name)),
+    version_info_raw.to_string(),
+  )
+  .map_err(|_| InstanceError::FileCreationFailed)?;
+  let version_info = from_value::<McClientInfo>(version_info_raw)
+    .map_err(|_| InstanceError::ClientJsonParseError)?;
+
+  let mut task_params = Vec::<PTaskParam>::new();
+
+  // Download client (use task)
+  let client_download_info = version_info
+    .downloads
+    .get("client")
+    .ok_or(InstanceError::ClientJsonParseError)?;
+
+  task_params.push(PTaskParam::Download(DownloadParam {
+    src: Url::parse(&client_download_info.url.clone())
+      .map_err(|_| InstanceError::ClientJsonParseError)?,
+    dest: directory
+      .dir
+      .join(format!("versions/{}/{}.jar", name, name)),
+    filename: None,
+    sha1: Some(client_download_info.sha1.clone()),
+  }));
+
+  // Download libraries (use task)
+  let libraries_download_api = get_download_api(priority_list[0], ResourceType::Libraries)?;
+  for library in version_info.libraries {
+    let artifact = library
+      .clone()
+      .downloads
+      .ok_or(InstanceError::ClientJsonParseError)?
+      .artifact
+      .ok_or(InstanceError::ClientJsonParseError)?;
+    task_params.push(PTaskParam::Download(DownloadParam {
+      src: libraries_download_api
+        .join(&artifact.path)
+        .map_err(|_| InstanceError::ClientJsonParseError)?,
+      dest: directory.dir.join(format!("libraries/{}", artifact.path)),
+      filename: None,
+      sha1: Some(artifact.sha1),
+    }));
+  }
+
+  // Download asset index
+  let asset_index = client
+    .get(version_info.asset_index.url)
+    .send()
+    .await
+    .map_err(|_| InstanceError::NetworkError)?
+    .json::<Value>()
+    .await
+    .map_err(|_| InstanceError::AssetIndexParseError)?;
+  let asset_index_path = directory.dir.join("assets/indexes");
+  fs::create_dir_all(&asset_index_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+  fs::write(
+    &asset_index_path.join(format!("{}.json", version_info.asset_index.id)),
+    asset_index.to_string(),
+  )
+  .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  // Download assets (use task)
+  let assets_download_api = get_download_api(priority_list[0], ResourceType::Assets)?;
+  let objects = asset_index["objects"]
+    .as_object()
+    .ok_or(InstanceError::AssetIndexParseError)?;
+  for (path, value) in objects {
+    let hash = value["hash"]
+      .as_str()
+      .ok_or(InstanceError::AssetIndexParseError)?;
+    task_params.push(PTaskParam::Download(DownloadParam {
+      src: assets_download_api
+        .join(&format!("{}/{}", &hash[..2], hash))
+        .map_err(|_| InstanceError::ClientJsonParseError)?,
+      dest: directory.dir.join(format!("assets/objects/{}", path)),
+      filename: None,
+      sha1: Some(hash.to_string()),
+    }));
+  }
+
+  schedule_progressive_task_group(
+    app,
+    format!("game-client-download:{}", name),
+    task_params,
+    true,
+  )
+  .await?;
+  // TODO: install mod loaders
   Ok(())
 }
