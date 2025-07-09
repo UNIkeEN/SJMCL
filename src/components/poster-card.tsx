@@ -32,7 +32,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
 
-  const { title, abstracts, keywords, imageSrc, source, updateAt, link } = data;
+  const { title, abstract, keywords, imageSrc, source, updateAt, link } = data;
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -60,9 +60,9 @@ const PosterCard = ({ data }: PosterCardProps) => {
               ))}
             </Wrap>
           )}
-          {abstracts && (
+          {abstract && (
             <Text fontSize="xs" className="secondary-text">
-              {cleanHtmlText(abstracts)}
+              {cleanHtmlText(abstract)}
             </Text>
           )}
           <HStack className="secondary-text" fontSize="xs" mt={1} spacing={1}>

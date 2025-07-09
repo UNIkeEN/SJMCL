@@ -1,6 +1,6 @@
 export interface PostSummary {
   title: string;
-  abstracts?: string;
+  abstract?: string;
   keywords?: string;
   imageSrc?: string;
   source: PostSourceInfo;

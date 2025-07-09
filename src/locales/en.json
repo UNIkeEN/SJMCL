@@ -362,6 +362,7 @@
   },
   "DiscoverPage": {
     "title": "Discover",
+    "noMore":"no more",
     "button": {
       "sources": "Manage Sources"
     }

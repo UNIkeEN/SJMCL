@@ -1,4 +1,4 @@
-import { Button, Center, HStack } from "@chakra-ui/react";
+import { Button, Center, HStack, Text } from "@chakra-ui/react";
 import { Masonry } from "masonic";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -126,7 +126,7 @@ export const DiscoverPage = () => {
             {isLoading && visiblePosts.length > 0 ? (
               <BeatLoader size={16} color="gray" />
             ) : !hasMore ? (
-              <div>{t("General.noMore")}</div>
+              <Text>{t("DiscoverPage.noMore")}</Text>
             ) : null}
           </Center>
         </>
