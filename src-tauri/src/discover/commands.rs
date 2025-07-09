@@ -82,11 +82,14 @@ pub async fn fetch_post_summaries(
   let response = request.send().await?;
 
   if response.status().is_success() {
-    let post_response: PostResponse = response.json().await.unwrap_or(PostResponse {
+    let mut post_response: PostResponse = response.json().await.unwrap_or(PostResponse {
       posts: vec![],
       next: None,
     });
 
+    post_response
+      .posts
+      .sort_by(|a, b| b.update_at.cmp(&a.update_at));
     let posts = post_response.posts;
 
     Ok(PostResponse {

@@ -33,7 +33,6 @@ export const DiscoverPage = () => {
       if (response.status === "success") {
         const posts: PostSummary[] = response.data.posts;
         const next: number | null = response.data.next ?? null;
-
         setAllPosts(posts);
         setVisiblePosts(posts);
         setNextCursor(next);
@@ -121,12 +120,16 @@ export const DiscoverPage = () => {
             render={({ data }) => <PosterCard data={data} />}
             columnGutter={14}
             itemKey={(item) => item.link}
+            overscanBy={100}
           />
+
           <Center mt={8} ref={loadMoreRef}>
             {isLoading && visiblePosts.length > 0 ? (
               <BeatLoader size={16} color="gray" />
             ) : !hasMore ? (
-              <Text>{t("DiscoverPage.noMore")}</Text>
+              <Text fontSize="xs" className="secondary-text">
+                {t("DiscoverPage.noMore")}
+              </Text>
             ) : null}
           </Center>
         </>
