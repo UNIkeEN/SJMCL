@@ -50,6 +50,7 @@
     "lodash": "^4.17.21",
     "masonic": "^4.0.1",
     "micromatch": "^4.0.8",
+    "mini-virtual-list": "0.3.1",
     "next": "15.2.4",
     "react": "^18",
     "react-dom": "^18",

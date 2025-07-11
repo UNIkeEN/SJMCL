@@ -1,8 +1,10 @@
+export type ImageSrc = [string, number, number];
+
 export interface PostSummary {
   title: string;
   abstract?: string;
   keywords?: string;
-  imageSrc?: string;
+  imageSrc?: ImageSrc;
   source: PostSourceInfo;
   updateAt: string;
   link: string;

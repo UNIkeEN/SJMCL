@@ -1,7 +1,9 @@
 import { Button, Center, HStack, Text } from "@chakra-ui/react";
-import { Masonry } from "masonic";
+import { useMasonry, usePositioner, useResizeObserver } from "masonic";
+import { useScroller, useSize } from "mini-virtual-list";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { LuNewspaper, LuRefreshCcw } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -18,13 +20,25 @@ export const DiscoverPage = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const [allPosts, setAllPosts] = useState<PostSummary[]>([]);
   const [visiblePosts, setVisiblePosts] = useState<PostSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<number | null>(null);
   const [masonryKey, setMasonryKey] = useState(0);
-
+  const hasMore = nextCursor !== null;
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = React.useRef(null);
+  const { width = 734, height = 1332 } = useSize(containerRef) || {};
+  const { scrollTop, isScrolling } = useScroller(containerRef);
+  const positioner = usePositioner(
+    {
+      width: width > 0 ? width : 734,
+      columnWidth: 200,
+      columnGutter: 14,
+    },
+    [width, masonryKey]
+  );
+
+  const resizeObserver = useResizeObserver(positioner);
 
   const fetchFirstPage = useCallback(async () => {
     setIsLoading(true);
@@ -33,7 +47,6 @@ export const DiscoverPage = () => {
       if (response.status === "success") {
         const posts: PostSummary[] = response.data.posts;
         const next: number | null = response.data.next ?? null;
-        setAllPosts(posts);
         setVisiblePosts(posts);
         setNextCursor(next);
         setMasonryKey((k) => k + 1);
@@ -48,18 +61,18 @@ export const DiscoverPage = () => {
     setIsLoading(true);
     try {
       const response = await DiscoverService.fetchPostSummaries(nextCursor);
+      console.log(visiblePosts);
       if (response.status === "success") {
         const posts: PostSummary[] = response.data.posts;
         const next: number | null = response.data.next ?? null;
         console.log(response.data);
-        setAllPosts((prev) => [...prev, ...posts]);
         setVisiblePosts((prev) => [...prev, ...posts]);
         setNextCursor(next);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, nextCursor]);
+  }, [isLoading, nextCursor, visiblePosts]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -78,8 +91,16 @@ export const DiscoverPage = () => {
     fetchFirstPage();
   }, [fetchFirstPage]);
 
-  const hasMore = nextCursor !== null;
-
+  const masonry = useMasonry({
+    positioner,
+    resizeObserver,
+    items: visiblePosts,
+    height,
+    scrollTop,
+    isScrolling,
+    overscanBy: 3,
+    render: PosterCard,
+  });
   return (
     <Section
       className="content-full-y"
@@ -106,34 +127,29 @@ export const DiscoverPage = () => {
         </HStack>
       }
     >
-      {isLoading && visiblePosts.length === 0 ? (
-        <Center mt={8}>
-          <BeatLoader size={16} color="gray" />
-        </Center>
-      ) : visiblePosts.length === 0 ? (
-        <Empty withIcon={false} size="sm" />
-      ) : (
-        <>
-          <Masonry
-            key={masonryKey}
-            items={visiblePosts}
-            render={({ data }) => <PosterCard data={data} />}
-            columnGutter={14}
-            itemKey={(item) => item.link}
-            overscanBy={100}
-          />
-
-          <Center mt={8} ref={loadMoreRef}>
-            {isLoading && visiblePosts.length > 0 ? (
-              <BeatLoader size={16} color="gray" />
-            ) : !hasMore ? (
-              <Text fontSize="xs" className="secondary-text">
-                {t("DiscoverPage.noMore")}
-              </Text>
-            ) : null}
+      <div ref={containerRef}>
+        {isLoading && visiblePosts.length === 0 ? (
+          <Center mt={8}>
+            <BeatLoader size={16} color="gray" />
           </Center>
-        </>
-      )}
+        ) : visiblePosts.length === 0 ? (
+          <Empty withIcon={false} size="sm" />
+        ) : (
+          <>
+            {masonry}
+
+            <Center mt={8} ref={loadMoreRef}>
+              {isLoading && visiblePosts.length > 0 ? (
+                <BeatLoader size={16} color="gray" />
+              ) : !hasMore ? (
+                <Text fontSize="xs" className="secondary-text">
+                  {t("DiscoverPage.noMore")}
+                </Text>
+              ) : null}
+            </Center>
+          </>
+        )}
+      </div>
     </Section>
   );
 };

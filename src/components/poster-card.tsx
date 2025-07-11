@@ -47,7 +47,20 @@ const PosterCard = ({ data }: PosterCardProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {imageSrc && <Image objectFit="cover" src={imageSrc} alt={title} />}
+      {imageSrc?.[0] && (
+        <Image
+          objectFit="cover"
+          src={imageSrc[0]}
+          alt={title}
+          width="100%"
+          aspectRatio={
+            imageSrc[1] && imageSrc[2]
+              ? `${imageSrc[1]} / ${imageSrc[2]}`
+              : undefined
+          }
+        />
+      )}
+
       <CardBody p={3}>
         <VStack spacing={1} alignItems="start" overflow="hidden">
           <Text fontSize="xs-sm">{title}</Text>
