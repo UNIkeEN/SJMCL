@@ -46,7 +46,8 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const toast = useToast();
   const { t } = useTranslation();
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog, closeSharedModal } =
+    useSharedModals();
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
 
@@ -64,7 +65,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         colonIndex !== -1 ? instanceId.slice(colonIndex + 1) : instanceId;
 
       if (nameFromRouter && summary.name && nameFromRouter !== summary.name) {
-        openSharedModal("generic-confirm", {
+        openGenericConfirmDialog({
           title: t("General.notice"),
           body: t("CreateRenamedInstShortcutAlertDialog.content"),
           btnCancel: "",
@@ -92,7 +93,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         }
       );
     },
-    [summary, toast, closeSharedModal, openSharedModal, t]
+    [summary, toast, closeSharedModal, openGenericConfirmDialog, t]
   );
 
   const instanceSecMenuOperations = [
