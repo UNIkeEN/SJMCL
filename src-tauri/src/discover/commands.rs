@@ -66,40 +66,55 @@ pub async fn fetch_post_summaries(
 
   let client = app.state::<reqwest::Client>();
 
-  let Some(url) = post_source_urls.get(0) else {
-    return Ok(PostResponse {
-      posts: vec![],
-      next: None,
-    });
-  };
+  let tasks: Vec<_> = post_source_urls
+    .into_iter()
+    .map(|url| {
+      let client = client.clone();
+      let cursor = cursor.clone();
 
-  let mut request = client.get(url).query(&[("pageSize", "12")]);
+      async move {
+        let mut request = client.get(&url).query(&[("pageSize", "12")]);
 
-  if let Some(cursor_val) = cursor {
-    request = request.query(&[("cursor", &cursor_val.to_string())]);
+        if let Some(cursor_val) = cursor {
+          request = request.query(&[("cursor", &cursor_val.to_string())]);
+        }
+
+        let result = request.send().await;
+
+        match result {
+          Ok(resp) if resp.status().is_success() => {
+            let parsed: Result<PostResponse, _> = resp.json().await;
+            match parsed {
+              Ok(post_response) => Some(post_response),
+              Err(_) => None,
+            }
+          }
+          _ => None,
+        }
+      }
+    })
+    .collect();
+
+  let results = future::join_all(tasks).await;
+
+  let mut all_posts = Vec::new();
+  let mut next_cursors = Vec::new();
+
+  for result in results {
+    if let Some(post_response) = result {
+      all_posts.extend(post_response.posts);
+      if let Some(next) = post_response.next {
+        next_cursors.push(next);
+      }
+    }
   }
 
-  let response = request.send().await?;
+  all_posts.sort_by(|a, b| b.update_at.cmp(&a.update_at));
 
-  if response.status().is_success() {
-    let mut post_response: PostResponse = response.json().await.unwrap_or(PostResponse {
-      posts: vec![],
-      next: None,
-    });
+  let next = next_cursors.into_iter().next();
 
-    post_response
-      .posts
-      .sort_by(|a, b| b.update_at.cmp(&a.update_at));
-    let posts = post_response.posts;
-
-    Ok(PostResponse {
-      posts,
-      next: post_response.next,
-    })
-  } else {
-    Ok(PostResponse {
-      posts: vec![],
-      next: None,
-    })
-  }
+  Ok(PostResponse {
+    posts: all_posts,
+    next,
+  })
 }

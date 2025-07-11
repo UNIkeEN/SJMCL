@@ -1,6 +1,12 @@
 import { Button, Center, HStack, Text } from "@chakra-ui/react";
-import { useMasonry, usePositioner, useResizeObserver } from "masonic";
-import { useScroller, useSize } from "mini-virtual-list";
+import { useWindowSize } from "@react-hook/window-size";
+import {
+  useContainerPosition,
+  useMasonry,
+  usePositioner,
+  useResizeObserver,
+  useScroller,
+} from "masonic";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import React from "react";
@@ -27,12 +33,16 @@ export const DiscoverPage = () => {
   const hasMore = nextCursor !== null;
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const containerRef = React.useRef(null);
-  const { width = 734, height = 1332 } = useSize(containerRef) || {};
-  const { scrollTop, isScrolling } = useScroller(containerRef);
+  const [windowWidth, height] = useWindowSize();
+  const { offset, width } = useContainerPosition(containerRef, [
+    windowWidth,
+    height,
+  ]);
+  const { scrollTop, isScrolling } = useScroller(offset);
+
   const positioner = usePositioner(
     {
       width: width > 0 ? width : 734,
-      columnWidth: 200,
       columnGutter: 14,
     },
     [width, masonryKey]
@@ -98,7 +108,8 @@ export const DiscoverPage = () => {
     height,
     scrollTop,
     isScrolling,
-    overscanBy: 3,
+    overscanBy: 100,
+    itemHeightEstimate: 0,
     render: PosterCard,
   });
   return (

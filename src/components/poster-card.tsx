@@ -52,12 +52,9 @@ const PosterCard = ({ data }: PosterCardProps) => {
           objectFit="cover"
           src={imageSrc[0]}
           alt={title}
-          width="100%"
-          aspectRatio={
-            imageSrc[1] && imageSrc[2]
-              ? `${imageSrc[1]} / ${imageSrc[2]}`
-              : undefined
-          }
+          width={imageSrc[1]}
+          height={imageSrc[2]}
+          style={{ height: "auto" }}
         />
       )}
 
