@@ -1,4 +1,7 @@
-use crate::{launcher_config::models::GameConfig, utils::image::ImageWrapper};
+use crate::{
+  instance::constants::INSTANCE_CFG_FILE_NAME, launcher_config::models::GameConfig,
+  storage::save_json_async, utils::image::ImageWrapper,
+};
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::{Ord, Ordering, PartialOrd},
@@ -28,7 +31,7 @@ pub enum ModLoaderType {
   Unknown,
   Fabric,
   Forge,
-  ForgeOld,
+  LegacyForge,
   NeoForge,
   LiteLoader,
   Quilt,
@@ -42,7 +45,7 @@ impl FromStr for ModLoaderType {
       "unknown" => Ok(ModLoaderType::Unknown),
       "fabric" => Ok(ModLoaderType::Fabric),
       "forge" => Ok(ModLoaderType::Forge),
-      "forgeold" => Ok(ModLoaderType::ForgeOld),
+      "legacyforge" => Ok(ModLoaderType::LegacyForge),
       "neoforge" => Ok(ModLoaderType::NeoForge),
       "liteloader" => Ok(ModLoaderType::LiteLoader),
       "quilt" => Ok(ModLoaderType::Quilt),
@@ -56,7 +59,7 @@ impl ModLoaderType {
     match self {
       &ModLoaderType::Unknown => "/images/icons/GrassBlock.png",
       &ModLoaderType::Fabric => "/images/icons/Fabric.png",
-      &ModLoaderType::Forge | &ModLoaderType::ForgeOld => "/images/icons/Forge.png",
+      &ModLoaderType::Forge | &ModLoaderType::LegacyForge => "/images/icons/Forge.png",
       &ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
       &ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
       &ModLoaderType::Quilt => "/images/icons/Quilt.png",
@@ -68,11 +71,12 @@ structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields, default)]]
   pub struct Instance {
-    pub id: usize,
+    pub id: String,
     pub name: String,
     pub description: String,
     pub icon_src: String,
     pub starred: bool,
+    pub play_time: u128,
     pub version: String,
     pub version_path: PathBuf,
     pub mod_loader: struct {
@@ -86,15 +90,24 @@ structstruck::strike! {
   }
 }
 
+impl Instance {
+  pub async fn save_json_cfg(&self) -> Result<(), std::io::Error> {
+    let file_path = self.version_path.join(INSTANCE_CFG_FILE_NAME);
+    save_json_async(self, &file_path).await
+  }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct InstanceSummary {
-  pub id: usize,
+  pub id: String,
   pub name: String,
   pub description: String,
   pub icon_src: String,
   pub starred: bool,
+  pub play_time: u128,
   pub version: String,
+  pub major_version: String,
   pub version_path: PathBuf,
   pub mod_loader: ModLoader,
   pub use_spec_game_config: bool,
@@ -186,13 +199,13 @@ pub struct ScreenshotInfo {
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum InstanceError {
   InstanceNotFoundByID,
-  ExecOpenDirError,
   ServerNbtReadError,
   FileNotFoundError,
   InvalidSourcePath,
   FileCopyFailed,
   FileMoveFailed,
   FolderCreationFailed,
+  ShortcutCreationFailed,
   ZipFileProcessFailed,
   WorldNotExistError,
   LevelParseError,

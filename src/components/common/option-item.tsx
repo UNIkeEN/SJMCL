@@ -1,6 +1,7 @@
 import {
   Box,
   BoxProps,
+  Button,
   Card,
   Divider,
   Flex,
@@ -8,16 +9,20 @@ import {
   Skeleton,
   Text,
   VStack,
+  Wrap,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Section, SectionProps } from "@/components/common/section";
+import { useLauncherConfig } from "@/contexts/config";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 export interface OptionItemProps extends Omit<BoxProps, "title"> {
   prefixElement?: React.ReactNode;
   title: React.ReactNode;
   titleExtra?: React.ReactNode;
+  titleLineWrap?: boolean;
   description?: React.ReactNode;
   isLoading?: boolean;
   isFullClickZone?: boolean;
@@ -27,13 +32,16 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
 
 export interface OptionItemGroupProps extends SectionProps {
   items: (OptionItemProps | React.ReactNode)[];
+  withInCard?: boolean;
   withDivider?: boolean;
+  maxFirstVisibleItems?: number;
 }
 
 export const OptionItem: React.FC<OptionItemProps> = ({
   prefixElement,
   title,
   titleExtra,
+  titleLineWrap = true,
   description,
   isLoading = false,
   isFullClickZone = false,
@@ -44,6 +52,27 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
+
+  const _title =
+    typeof title === "string" ? (
+      <Skeleton isLoaded={!isLoading}>
+        <Text fontSize="xs-sm">{title}</Text>
+      </Skeleton>
+    ) : (
+      title
+    );
+
+  const _titleExtra =
+    titleExtra &&
+    (isLoading ? (
+      <Skeleton isLoaded={!isLoading}>
+        <Text fontSize="xs-sm">
+          PLACEHOLDER {/*width holder for skeleton*/}
+        </Text>
+      </Skeleton>
+    ) : (
+      titleExtra
+    ));
 
   return (
     <Flex
@@ -61,6 +90,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         transition: "background-color 0.1s ease-in-out",
       }}
       cursor={isFullClickZone ? "pointer" : "default"}
+      p={0.5}
       {...boxProps}
     >
       <HStack spacing={2.5} overflowY="hidden">
@@ -74,31 +104,22 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           overflow="hidden"
           flex="1"
         >
-          <HStack spacing={2} flexWrap="wrap">
-            {typeof title === "string" ? (
-              <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs-sm" className="no-select">
-                  {title}
-                </Text>
-              </Skeleton>
-            ) : (
-              title
-            )}
-            {titleExtra &&
-              (isLoading ? (
-                <Skeleton isLoaded={!isLoading}>
-                  <Text fontSize="xs-sm">
-                    PLACEHOLDER {/*width holder for skeleton*/}
-                  </Text>
-                </Skeleton>
-              ) : (
-                titleExtra
-              ))}
-          </HStack>
+          {titleLineWrap ? (
+            <Wrap spacingX={2} spacingY={0.5}>
+              {_title}
+              {titleExtra && _titleExtra}
+            </Wrap>
+          ) : (
+            <HStack spacing={2} flexWrap="nowrap">
+              {_title}
+              {titleExtra && _titleExtra}
+            </HStack>
+          )}
+
           {description &&
             (typeof description === "string" ? (
               <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs" className="secondary-text no-select">
+                <Text fontSize="xs" className="secondary-text">
                   {description}
                 </Text>
               </Skeleton>
@@ -123,10 +144,16 @@ export const OptionItem: React.FC<OptionItemProps> = ({
 
 export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   items,
+  withInCard = true,
   withDivider = true,
+  maxFirstVisibleItems,
   ...props
 }) => {
+  const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
+  const [showAll, setShowAll] = useState(false);
 
   function isOptionItemProps(item: any): item is OptionItemProps {
     return (
@@ -135,19 +162,55 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
     );
   }
 
+  const hasShowAllBtn = !(
+    !maxFirstVisibleItems ||
+    showAll ||
+    items.length <= maxFirstVisibleItems
+  );
+
+  const visibleItems = hasShowAllBtn
+    ? [...items.slice(0, maxFirstVisibleItems)]
+    : items;
+
+  const renderItems = () => (
+    <>
+      {[...visibleItems].map((item, index) => (
+        <React.Fragment key={index}>
+          {isOptionItemProps(item) ? <OptionItem {...item} /> : item}
+          {index !== visibleItems.length - 1 &&
+            (withDivider ? <Divider my={1.5} /> : <Box h={1.5} />)}
+        </React.Fragment>
+      ))}
+      {hasShowAllBtn && (
+        <Box>
+          <Button
+            key="show-all"
+            size="xs"
+            colorScheme={primaryColor}
+            variant="ghost"
+            onClick={() => setShowAll(!showAll)}
+            mt={1.5}
+            ml={-1.5}
+          >
+            {t("OptionItemGroup.button.showAll", {
+              left: items.length - maxFirstVisibleItems,
+            })}
+          </Button>
+        </Box>
+      )}
+    </>
+  );
+
   return (
     <Section {...props}>
-      {items.length > 0 && (
-        <Card className={themedStyles.card["card-front"]}>
-          {items.map((item, index) => (
-            <React.Fragment key={index}>
-              {isOptionItemProps(item) ? <OptionItem {...item} /> : item}
-              {index !== items.length - 1 &&
-                (withDivider ? <Divider my={2} /> : <Box h={2} />)}
-            </React.Fragment>
-          ))}
-        </Card>
-      )}
+      {items.length > 0 &&
+        (withInCard ? (
+          <Card className={themedStyles.card["card-front"]} py={2.5}>
+            {renderItems()}
+          </Card>
+        ) : (
+          renderItems()
+        ))}
     </Section>
   );
 };

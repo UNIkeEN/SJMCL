@@ -10,8 +10,17 @@ const SettingsPage = () => {
     let lastRecord =
       [...history].reverse().find((route) => route.startsWith("/settings/")) ||
       "/settings/general";
-    if (lastRecord.endsWith("/advanced"))
-      lastRecord = lastRecord.replace("/advanced", "");
+
+    const replacements: [string, string][] = [
+      ["/advanced", "/"],
+      ["/ping-test", "/download"],
+    ];
+    replacements.forEach(([suffix, replacement]) => {
+      if (lastRecord.endsWith(suffix)) {
+        lastRecord = lastRecord.replace(suffix, replacement);
+      }
+    });
+
     router.replace(lastRecord);
   }, [history, router]);
 

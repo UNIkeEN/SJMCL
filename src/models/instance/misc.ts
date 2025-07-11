@@ -1,13 +1,15 @@
 import { ModLoaderType } from "@/enums/instance";
 
-export interface GameInstanceSummary {
-  id: number;
+export interface InstanceSummary {
+  id: string;
   iconSrc: string;
   name: string;
   description?: string;
   starred: boolean;
+  playTime: number;
   versionPath: string;
   version: string;
+  majorVersion: string;
   isVersionIsolated: boolean;
   modLoader: {
     loaderType: ModLoaderType;

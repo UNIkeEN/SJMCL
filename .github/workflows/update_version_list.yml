@@ -1,0 +1,60 @@
+name: Update Minecraft Versions
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Every day at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+
+      - name: Run version fetch script
+        run: node scripts/game/fetch_version_list.js
+
+      - name: Generate PR metadata
+        id: meta
+        run: |
+          # Extract added lines, but never fail if grep finds nothing
+          ADDED_LINES=$(
+            git diff src-tauri/assets/game/versions.txt \
+              | grep '^+[^+]' \
+              | cut -c2- \
+              || true
+          )
+
+          # Count non-empty lines; grep -c returns 1 if zero matches, so ignore error
+          COUNT=$(echo "$ADDED_LINES" | grep -c . || true)
+
+          if [ "$COUNT" -eq 1 ]; then
+            FIRST=$(echo "$ADDED_LINES" | head -n1)
+            TITLE="chore: auto update Minecraft version list, add $FIRST"
+          elif [ "$COUNT" -gt 1 ]; then
+            FIRST=$(echo "$ADDED_LINES" | head -n1)
+            LAST=$(echo "$ADDED_LINES" | tail -n1)
+            TITLE="chore: auto update Minecraft version list, add $FIRST-$LAST"
+          else
+            TITLE="chore: auto update Minecraft version list"
+          fi
+
+          echo "pr_title=$TITLE" >> $GITHUB_OUTPUT
+          echo "pr_body=$TITLE"  >> $GITHUB_OUTPUT
+
+
+      - name: Create or update Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: ${{ steps.meta.outputs.pr_title }}
+          title:          ${{ steps.meta.outputs.pr_title }}
+          body:           ${{ steps.meta.outputs.pr_body }}
+          branch:         auto/update-minecraft-version-list
+          base:           main
+          delete-branch:  true

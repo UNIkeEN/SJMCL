@@ -5,6 +5,7 @@ use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[derive(Serialize, Deserialize, Default)]
@@ -24,6 +25,7 @@ struct NeoforgeVersions {
 
 // https://github.com/HMCL-dev/HMCL/blob/efd088e014bf1c113f7b3fdf73fb983087ae3f5e/HMCLCore/src/main/java/org/jackhuang/hmcl/download/neoforge/NeoForgeOfficialVersionList.java
 async fn get_neoforge_meta_by_game_version_official(
+  app: &AppHandle,
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   lazy_static! {
@@ -35,9 +37,10 @@ async fn get_neoforge_meta_by_game_version_official(
       .build()
       .unwrap();
   };
+  let client = app.state::<reqwest::Client>();
   if game_version == "1.20.1" {
     let old_url = get_download_api(SourceType::Official, ResourceType::NeoforgeMetaForge)?;
-    if let Ok(response) = reqwest::get(old_url).await {
+    if let Ok(response) = client.get(old_url).send().await {
       if response.status().is_success() {
         match response.json::<NeoforgeVersions>().await {
           Ok(versions) => {
@@ -75,7 +78,7 @@ async fn get_neoforge_meta_by_game_version_official(
     }
   } else {
     let new_url = get_download_api(SourceType::Official, ResourceType::NeoforgeMetaNeoforge)?;
-    if let Ok(response) = reqwest::get(new_url).await {
+    if let Ok(response) = client.get(new_url).send().await {
       if response.status().is_success() {
         match response.json::<NeoforgeVersions>().await {
           Ok(versions) => {
@@ -114,15 +117,17 @@ async fn get_neoforge_meta_by_game_version_official(
 }
 
 async fn get_neoforge_meta_by_game_version_bmcl(
+  app: &AppHandle,
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+  let client = app.state::<reqwest::Client>();
   let url = get_download_api(
     SourceType::BMCLAPIMirror,
     ResourceType::NeoforgeMetaNeoforge,
   )?
   .join("list/")?
   .join(game_version)?;
-  match reqwest::get(url).await {
+  match client.get(url).send().await {
     Ok(response) => {
       if response.status().is_success() {
         if let Ok(mut manifest) = response.json::<Vec<NeoforgeMetaItem>>().await {
@@ -161,18 +166,19 @@ async fn get_neoforge_meta_by_game_version_bmcl(
 }
 
 pub async fn get_neoforge_meta_by_game_version(
+  app: &AppHandle,
   priority_list: &[SourceType],
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   for source_type in priority_list.iter() {
     match *source_type {
       SourceType::Official => {
-        if let Ok(meta) = get_neoforge_meta_by_game_version_official(game_version).await {
+        if let Ok(meta) = get_neoforge_meta_by_game_version_official(app, game_version).await {
           return Ok(meta);
         }
       }
       SourceType::BMCLAPIMirror => {
-        if let Ok(meta) = get_neoforge_meta_by_game_version_bmcl(game_version).await {
+        if let Ok(meta) = get_neoforge_meta_by_game_version_bmcl(app, game_version).await {
           return Ok(meta);
         }
       }

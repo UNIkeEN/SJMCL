@@ -112,6 +112,16 @@ export class ConfigService {
   }
 
   /**
+   * VALIDATE a Java executable.
+   * @param {string} javaPath The path to the Java executable.
+   * @returns {Promise<InvokeResponse<void>>} Returns void if valid, otherwise throws an error.
+   */
+  @responseHandler("config")
+  static async validateJava(javaPath: string): Promise<InvokeResponse<void>> {
+    return await invoke("validate_java", { javaPath });
+  }
+
+  /**
    * CHECK whether the game directory is valid.
    * @param {string} dir The game directory to check.
    * @returns {Promise<InvokeResponse<string>>} The sub directory if a sub game directory is valid.

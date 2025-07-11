@@ -6,8 +6,12 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-pub async fn fetch_auth_server_info(auth_url: String) -> SJMCLResult<AuthServerInfo> {
-  match reqwest::get(&auth_url).await {
+pub async fn fetch_auth_server_info(
+  app: &AppHandle,
+  auth_url: String,
+) -> SJMCLResult<AuthServerInfo> {
+  let client = app.state::<reqwest::Client>();
+  match client.get(&auth_url).send().await {
     Ok(response) => {
       let json: serde_json::Value = response.json().await.map_err(|_| AccountError::Invalid)?;
 
@@ -26,7 +30,7 @@ pub async fn fetch_auth_server_info(auth_url: String) -> SJMCLResult<AuthServerI
         }
 
         if client_id.is_empty() {
-          let response = reqwest::get(&openid_configuration_url).await?;
+          let response = client.get(&openid_configuration_url).send().await?;
           let data: serde_json::Value = response.json().await.map_err(|_| AccountError::Invalid)?;
           client_id = data["shared_client_id"]
             .as_str()
@@ -55,8 +59,11 @@ pub fn get_client_id(domain: String) -> String {
     .to_string()
 }
 
-pub async fn fetch_auth_url(root: Url) -> SJMCLResult<String> {
-  let response = reqwest::get(root.clone())
+pub async fn fetch_auth_url(app: &AppHandle, root: Url) -> SJMCLResult<String> {
+  let client = app.state::<reqwest::Client>();
+  let response = client
+    .get(root.clone())
+    .send()
     .await
     .map_err(|_| AccountError::Invalid)?;
 
@@ -80,7 +87,7 @@ pub async fn refresh_and_update_auth_servers(app: &AppHandle) -> SJMCLResult<()>
 
   let mut refreshed_auth_server_info_list =
     futures::future::join_all(cloned_account_state.auth_servers.iter().map(|info| async {
-      if let Ok(refreshed_info) = fetch_auth_server_info(info.auth_url.clone()).await {
+      if let Ok(refreshed_info) = fetch_auth_server_info(app, info.auth_url.clone()).await {
         refreshed_info
       } else {
         info.clone()

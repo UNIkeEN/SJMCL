@@ -1,6 +1,8 @@
 use super::{
-  helpers::refresh_and_update_javas,
-  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
+  helpers::java::{
+    get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
+  },
+  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError},
 };
 use crate::{
   error::SJMCLResult, instance::helpers::misc::refresh_instances, partial::PartialUpdate,
@@ -9,12 +11,9 @@ use crate::{storage::Storage, utils::fs::get_subdirectories};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
-use systemstat::{saturating_sub_bytes, Platform};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
-use tokio::time::Instant;
-use url::Url;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -57,10 +56,12 @@ pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
 }
 
 #[tauri::command]
-pub async fn export_launcher_config(app: AppHandle) -> SJMCLResult<String> {
+pub async fn export_launcher_config(
+  app: AppHandle,
+  client: tauri::State<'_, reqwest::Client>,
+) -> SJMCLResult<String> {
   let binding = app.state::<Mutex<LauncherConfig>>();
   let state = { binding.lock()?.clone() };
-  let client = reqwest::Client::new();
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/settings")
     .header("Content-Type", "application/json")
@@ -96,8 +97,11 @@ pub async fn export_launcher_config(app: AppHandle) -> SJMCLResult<String> {
 }
 
 #[tauri::command]
-pub async fn import_launcher_config(app: AppHandle, code: String) -> SJMCLResult<LauncherConfig> {
-  let client = reqwest::Client::new();
+pub async fn import_launcher_config(
+  app: AppHandle,
+  client: tauri::State<'_, reqwest::Client>,
+  code: String,
+) -> SJMCLResult<LauncherConfig> {
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/validate")
     .header("Content-Type", "application/json")
@@ -221,6 +225,18 @@ pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
 }
 
 #[tauri::command]
+pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
+  if get_java_info_from_release_file(&java_path)
+    .or_else(|| get_java_info_from_command(&java_path))
+    .is_some()
+  {
+    Ok(())
+  } else {
+    Err(LauncherConfigError::JavaExecInvalid.into())
+  }
+}
+
+#[tauri::command]
 pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<String> {
   let local_game_directories: Vec<_>;
   {
@@ -268,39 +284,4 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
   }
 
   Ok("".to_string())
-}
-
-// Below are some system info commands (In frontend, see services/utils.ts)
-#[tauri::command]
-pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
-  let sys = systemstat::System::new();
-  let mem = sys.memory()?;
-  Ok(MemoryInfo {
-    total: mem.total.as_u64(),
-    used: saturating_sub_bytes(mem.total, mem.free).as_u64(),
-  })
-}
-
-#[tauri::command]
-pub async fn check_service_availability(
-  client: tauri::State<'_, reqwest::Client>,
-  url: String,
-) -> SJMCLResult<u128> {
-  let parsed_url = Url::parse(&url)
-    .or_else(|_| Url::parse(&format!("https://{}", url)))
-    .map_err(|_| LauncherConfigError::FetchError)?;
-
-  let start = Instant::now();
-  let res = client.get(parsed_url).send().await;
-
-  match res {
-    Ok(response) => {
-      if response.status().is_success() {
-        Ok(start.elapsed().as_millis())
-      } else {
-        Err(LauncherConfigError::FetchError.into())
-      }
-    }
-    Err(_) => Err(LauncherConfigError::FetchError.into()),
-  }
 }

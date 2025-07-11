@@ -1,5 +1,5 @@
 use super::helpers::{authlib_injector::constants::PRESET_AUTH_SERVERS, skin::draw_avatar};
-use crate::{storage::Storage, utils::image::ImageWrapper, EXE_DIR};
+use crate::{storage::Storage, utils::image::ImageWrapper, APP_DATA_DIR};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
@@ -22,6 +22,7 @@ pub struct Texture {
   pub texture_type: String,
   pub image: ImageWrapper,
   pub model: String,
+  pub preset: Option<String>,
 }
 
 // only for the client
@@ -198,6 +199,7 @@ impl From<AuthServerInfo> for AuthServer {
 pub struct AccountInfo {
   pub players: Vec<PlayerInfo>,
   pub auth_servers: Vec<AuthServerInfo>,
+  pub is_oauth_processing: bool,
 }
 
 impl Default for AccountInfo {
@@ -213,14 +215,12 @@ impl Default for AccountInfo {
           timestamp: 0,
         })
         .collect(),
+      is_oauth_processing: false,
     }
   }
 }
 
 impl AccountInfo {
-  pub fn get_player_by_id(&self, id: String) -> Option<&PlayerInfo> {
-    self.players.iter().find(|player| player.id == id)
-  }
   pub fn get_player_by_id_mut(&mut self, id: String) -> Option<&mut PlayerInfo> {
     self.players.iter_mut().find(|player| player.id == id)
   }
@@ -228,7 +228,7 @@ impl AccountInfo {
 
 impl Storage for AccountInfo {
   fn file_path() -> PathBuf {
-    EXE_DIR.join("sjmcl.account.json")
+    APP_DATA_DIR.get().unwrap().join("sjmcl.account.json")
   }
 }
 
@@ -243,7 +243,6 @@ pub enum AccountError {
   NetworkError,
   ParseError,
   Cancelled,
-  CreateWebviewError,
   NoDownloadApi,
   SaveError,
 }

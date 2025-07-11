@@ -1,5 +1,4 @@
 import {
-  Card,
   Center,
   Flex,
   useColorModeValue,
@@ -10,12 +9,13 @@ import { appDataDir } from "@tauri-apps/api/path";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
-import { DownloadFloatButton } from "@/components/download-float-button";
+import AdvancedCard from "@/components/common/advanced-card";
+import DevToolbar from "@/components/dev/dev-toolbar";
 import HeadNavBar from "@/components/head-navbar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import { isDev } from "@/utils/env";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -24,7 +24,6 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const { config, update } = useLauncherConfig();
-  const themedStyles = useThemedCSSStyle();
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
@@ -87,6 +86,20 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
     constructBgImgSrc();
   }, [config.appearance.background.choice]);
+
+  // update font family to body CSS by config.
+  useEffect(() => {
+    const body = document.body;
+    const fontFamily = config.appearance.font.fontFamily;
+
+    if (fontFamily !== "%built-in") {
+      body.setAttribute("use-custom-font", "true");
+      body.style.setProperty("--custom-global-font-family", fontFamily);
+    } else {
+      body.removeAttribute("use-custom-font");
+      body.style.removeProperty("--custom-global-font-family");
+    }
+  }, [config.appearance.font.fontFamily]);
 
   // update font size to body CSS by config.
   useEffect(() => {
@@ -164,8 +177,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       {router.pathname === "/launch" ? (
         <>{children}</>
       ) : (
-        <Card
-          className={themedStyles.card["card-back"]}
+        <AdvancedCard
+          level="back"
           h="100%"
           overflow="auto"
           mt={1}
@@ -173,16 +186,16 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           mx={4}
         >
           {children}
-        </Card>
+        </AdvancedCard>
       )}
-
-      <DownloadFloatButton />
 
       <WelcomeAndTermsModal
         isOpen={isWelcomeAndTermsModalOpen}
         onClose={onWelcomeAndTermsModalClose}
       />
       <StarUsModal isOpen={isStarUsModalOpen} onClose={onStarUsModalClose} />
+
+      {isDev && <DevToolbar />}
     </Flex>
   );
 };

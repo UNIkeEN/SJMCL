@@ -50,7 +50,8 @@
           "description": "Copyright © 2024-2025 SJMCL Team."
         },
         "userAgreement": {
-          "title": "User Agreement"
+          "title": "User Agreement",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
         },
         "openSourceLicense": {
           "title": "Open Source License",
@@ -192,7 +193,7 @@
       "usePasswordLogin": "Account & Password Login"
     }
   },
-  "AllGamesPage": {
+  "AllInstancesPage": {
     "button": {
       "addAndImport": "Add & Import",
       "globalSettings": "Global Game Settings",
@@ -218,6 +219,10 @@
             "dark": "Dark"
           }
         },
+        "useLiquidGlassDesign": {
+          "title": "Liquid Glass Effect",
+          "description": "When enabled, parts of the interface will use the 'Liquid Glass' effect, which may impact performance."
+        },
         "headNavStyle": {
           "title": "Navigation Bar Style",
           "type": {
@@ -230,6 +235,10 @@
     "font": {
       "title": "Font",
       "settings": {
+        "fontFamily": {
+          "title": "Font Family",
+          "default": "Default"
+        },
         "fontSize": {
           "title": "Font Size",
           "small": "T",
@@ -246,6 +255,9 @@
         "custom": {
           "title": "Custom Images",
           "add": "Add"
+        },
+        "randomCustom": {
+          "title": "Random Custom Image"
         }
       },
       "presetBgList": {
@@ -254,6 +266,9 @@
         },
         "SJTU-eastgate": {
           "name": "SJTU Eastgate"
+        },
+        "GNLXC": {
+          "name": "GNWork City"
         }
       }
     },
@@ -320,10 +335,13 @@
       "info": "Basic Settings"
     }
   },
-  "DeleteGameInstanceAlertDialog": {
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
+  },
+  "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
-      "content": "Confirm delete the game instance \"{{gameName}}\" ? It will be lost forever! (A long time!)",
+      "content": "Confirm delete the game instance \"{{instanceName}}\" ? It will be lost forever! (A long time!)",
       "warning": {
         "withVerIso": "Please note that since version isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
         "woVerIso": "Please note that if version isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
@@ -342,6 +360,9 @@
       "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
+  "DevToolbar": {
+    "tooltip": "Dev Toolbar"
+  },
   "DiscoverPage": {
     "title": "Discover",
     "button": {
@@ -357,9 +378,6 @@
       "online": "Online"
     }
   },
-  "DownloadFloatButton": {
-    "tooltip": "Downloading"
-  },
   "DownloadModpackModal": {
     "header": {
       "title": "Download Modpack"
@@ -373,7 +391,8 @@
       "world": "Worlds",
       "mod": "Mods",
       "resourcepack": "Resourcepacks",
-      "shaderpack": "Shaderpacks"
+      "shader": "Shaderpacks",
+      "datapack": "Datapacks"
     }
   },
   "DownloadSettingPage": {
@@ -433,17 +452,38 @@
       }
     }
   },
+  "DownloadSpecificResourceModal": {
+    "title": "Download Resource - {{name}}",
+    "label": {
+      "all": "All",
+      "recommendedVersion": "Recommended Ver.",
+      "currentModLoader": "Current Loader"
+    },
+    "releaseType": {
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "release": "Release"
+    }
+  },
   "DownloadTasksPage": {
-    "title": "Downloading Tasks",
+    "title": "Download Tasks",
     "button": {
       "settings": "Download Settings",
       "pause": "Pause",
       "begin": "Start",
-      "retry": "Retry"
+      "retry": "Retry",
+      "deleteRecord": "Delete this Record"
     },
     "label": {
       "paused": "Paused",
-      "error": "Error"
+      "completed": "Completed",
+      "error": "Error",
+      "cancelled": "Cancelled"
+    },
+    "task": {
+      "game-client-download": "Game Client {{param}}",
+      "game-server-download": "Game Server {{param}}",
+      "game-resource-download": "Game Resource"
     }
   },
   "Editable": {
@@ -489,10 +529,12 @@
       "dirName": {
         "tooLong": "Directory name cannot be longer than 20 characters",
         "empty": "Directory name cannot be empty",
-        "exist": "Directory name already exists"
+        "exist": "Directory name already exists",
+        "hasInvalidChar": "Directory name has invalid characters"
       },
       "dirPath": {
-        "exist": "Directory already exists"
+        "exist": "Directory already exists",
+        "invalid": "Directory path is invalid"
       }
     }
   },
@@ -577,8 +619,8 @@
       "title": "Workaround",
       "settings": {
         "noJvmArgs": "Do not add default Java VM arguments",
-        "gameCompletnessCheckPolicy": {
-          "title": "Game File Integrity Check Policy",
+        "gameFileValidatePolicy": {
+          "title": "Game File Validation Policy",
           "disable": "Disable Check",
           "normal": "Normal Check",
           "full": "Full Check"
@@ -624,13 +666,8 @@
   "GameLogPage": {
     "placeholder": "Filter by Text",
     "exportLogs": "Export Logs",
-    "clearLogs": "Clear All Logs"
-  },
-  "GameMenu": {
-    "label": {
-      "details": "Instance Details",
-      "delete": "Delete"
-    }
+    "clearLogs": "Clear All Logs",
+    "scrollToBottom": "Scroll to Bottom"
   },
   "GameVersionSelector": {
     "old_beta": "Old Beta",
@@ -647,9 +684,15 @@
   },
   "General": {
     "add": "Add",
+    "alert": {
+      "noFullLogin": {
+        "title": "This Feature is Not Available Currently",
+        "description": "Please log in with your Microsoft account before accessing this feature."
+      }
+    },
     "cancel": "Cancel",
     "close": "Close",
-    "confirm": "Confirm",
+    "confirm": "OK",
     "copy": {
       "text": "Copy",
       "toast": {
@@ -669,6 +712,7 @@
       }
     },
     "disable": "Disable",
+    "dontShowAgain": "Don't Show Again",
     "download": "Download",
     "edit": "Edit",
     "enable": "Enable",
@@ -704,9 +748,11 @@
           }
         },
         "instancesNavType": {
-          "title": "Instance Navigation Menu Grouping",
+          "title": "Instance Page Navigation Mode",
+          "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
           "instance": "By Instance",
-          "directory": "By Directory"
+          "directory": "By Directory",
+          "hidden": "Hidden"
         },
         "launchPageQuickSwitch": {
           "title": "Quick Switch for Accounts & Instances",
@@ -722,7 +768,8 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "Current",
-            "OFFICIAL_DIR": "Minecraft Launcher"
+            "APP_DATA_SUBDIR": "SJMCL Data",
+            "OFFICIAL_DIR": "Official Launcher"
           }
         }
       },
@@ -765,8 +812,8 @@
         "autoMemAllocation": {
           "title": "Allocate Memory Automatically"
         },
-        "minMemAllocation": {
-          "title": "Minimum Memory Allocation"
+        "maxMemAllocation": {
+          "title": "Maximum Memory Allocation"
         },
         "memoryUsage": {
           "title": "Memory Usage",
@@ -792,8 +839,8 @@
       "settings": {
         "launcherVisibility": {
           "title": "Launcher Visibility",
-          "start-close": "Close Launcher after Game Starts",
-          "running-hidden": "Hide Launcher while Game is Running",
+          "startHidden": "Hide Launcher after Game Starts",
+          "runningHidden": "Hide Launcher while Game is Running",
           "always": "Launcher Always Visible"
         },
         "autoJoinGameServer": {
@@ -815,7 +862,7 @@
   "HeadNavBar": {
     "navList": {
       "launch": "Launch",
-      "games": "Games",
+      "instances": "Games",
       "accounts": "Accounts",
       "discover": "Discover",
       "search": "Search",
@@ -858,7 +905,8 @@
     "top": {
       "settings": {
         "LauncherDocs": {
-          "title": "SJMC Launcher Documentation"
+          "title": "SJMC Launcher Documentation",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs"
         }
       }
     }
@@ -866,8 +914,9 @@
   "InstanceBasicSettings": {
     "selectDirectory": "Select Game Directory"
   },
-  "InstanceLayout": {
+  "InstanceDetailsLayout": {
     "secMenu": {
+      "createShortcut": "Create Launch Shortcut",
       "exportModPack": "Export as Modpack",
       "star": "Star this instance",
       "unstar": "Unstar"
@@ -884,6 +933,12 @@
     },
     "button": {
       "launch": "Launch Instance"
+    }
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "Instance Details",
+      "delete": "Delete"
     }
   },
   "InstanceModsPage": {
@@ -924,7 +979,9 @@
     "restoreSettingsDesc": "Restore the following specific settings to their default values",
     "restore": "Restore",
     "errorMessage": {
-      "error-1": "Instance name cannot be empty"
+      "error-1": "Instance name cannot be empty",
+      "error-2": "Instance name is invalid",
+      "error-3": "Instance name is too long"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1003,7 +1060,8 @@
       },
       "addFailed": {
         "title": "Failed to Add Java",
-        "description": "Not a valid Java executable file"
+        "invalid": "Not a valid Java executable or incompatible with the current platform",
+        "duplicated": "The target path has already been added"
       }
     },
     "confirmDelete": {
@@ -1054,7 +1112,7 @@
     "info": "{{used}} / {{total}} GB used",
     "label": {
       "now": "In use",
-      "minAllocation": "Minimum allocated for Minecraft"
+      "maxAllocation": "Maximum allocated for Minecraft"
     }
   },
   "ModLoaderCards": {
@@ -1071,6 +1129,11 @@
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
   },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "Show All (+{{left}})"
+    }
+  },
   "PlayerMenu": {
     "label": {
       "manageSkin": "Manage Skin",
@@ -1079,19 +1142,23 @@
       "copyUUID": "Copy UUID"
     }
   },
-  "PingTestPage":{
-    "PingServerList":{
+  "PingTestPage": {
+    "PingServerList": {
       "title": "Service Connectivity Test",
       "offline": "Offline",
-      "bmclapi" : "BMCLAPI",
-      "curseforge" : "CurseForge",
-      "modrinth" : "Modrinth",
-      "mojang" : "Mojang",
-      "github" : "GitHub",
-      "sjmclapi" : "SJMC Launcher API"
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC Launcher API"
     }
   },
-  "ReLogin3rdPartyPlayerModal": {
+  "ReLoginPlayerModal": {
     "modal": {
       "title": "Re-login"
     },
@@ -1123,45 +1190,74 @@
         "Addons": "Addons",
         "Adventure and RPG": "Adventure RPG",
         "API and Library": "API Library",
+        "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
+        "Automation": "Automation",
+        "Auxiliary": "Auxiliary",
+        "Biomes": "Biomes",
+        "Blood Magic": "Blood Magic",
+        "Buildcraft": "Buildcraft",
         "Bug Fixes": "Bug Fixes",
         "Cosmetic": "Cosmetic",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "Create",
+        "Dimensions": "Dimensions",
         "Education": "Education",
+        "Energy": "Energy",
+        "Energy, Fluid, and Item Transport": "Energy Fluid Item Transport",
+        "Farming": "Farming",
         "Food": "Food",
+        "Forestry": "Forestry",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "Genetics",
+        "Industrial Craft": "Industrial Craft",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
         "Magic": "Magic",
         "Map and Information": "Map Information",
         "MCreator": "MCreator",
-        "Miscellaneous": "Miscellaneous",
+        "Miscellaneous": "Misc.",
+        "Mobs": "Mobs",
+        "Ores and Resources": "Ores Resources",
         "Performance": "Performance",
+        "Player Transport": "Player Transport",
+        "Processing": "Processing",
         "Redstone": "Redstone",
         "Server Utility": "Server",
+        "Skyblock": "Skyblock",
         "Storage": "Storage",
+        "Structures": "Structures",
         "Technology": "Technology",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's Construct",
+        "Twilight Forest": "Twilight Forest",
         "Twitch Integration": "Twitch",
         "Utility & QoL": "Utility QoL",
-        "World Gen": "World Gen"
+        "World Gen": "World Gen",
+        "World": "World"
       },
       "Modrinth": {
         "All": "All",
-        "Adventure": "Adventure",
-        "Cursed": "Cursed",
-        "Decoration": "Decoration",
-        "Economy": "Economy",
-        "Equipment": "Equipment",
-        "Food": "Food",
-        "Game Mechanics": "Game Mechanics",
-        "Library": "Library",
-        "Magic": "Magic",
-        "Management": "Management",
-        "Minigame": "Minigame",
-        "Mobs": "Mobs",
-        "Optimization": "Optimization",
-        "Social": "Social",
-        "Storage": "Storage",
-        "Technology": "Technology",
-        "Transportation": "Transportation",
-        "Utility": "Utility",
-        "World Generation": "World Gen"
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "Equipment",
+        "food": "Food",
+        "game-mechanics": "Game Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "Technology",
+        "transportation": "Transportation",
+        "utility": "Utility",
+        "worldgen": "World Gen"
       }
     },
     "worldTagList": {
@@ -1173,7 +1269,8 @@
         "Modded World": "Modded World",
         "Parkour": "Parkour",
         "Puzzle": "Puzzle",
-        "Survival": "Survival"
+        "Survival": "Survival",
+        "Types": "Types"
       }
     },
     "resourcepackTagList": {
@@ -1185,77 +1282,91 @@
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x and Higher",
+        "Styles": "Styles",
         "Animated": "Animated",
+        "Special": "Special",
         "Data Packs": "Data Packs",
         "Font Packs": "Font Packs",
         "Medieval": "Medieval",
-        "Miscellaneous": "Miscellaneous",
+        "Miscellaneous": "Misc.",
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
+        "Resolution": "Resolution",
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
       "Modrinth": {
         "All": "All",
-        "8x or lower": "8x or Lower",
+        "8x-": "8x or Lower",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
-        "512x or higher": "512x or Higher",
-        "Audio": "Audio",
-        "Blocks": "Blocks",
-        "Core Shaders": "Core Shaders",
-        "Entities": "Entities",
-        "Environment": "Environment",
-        "Equipment": "Equipment",
-        "Fonts": "Fonts",
-        "GUI": "GUI",
-        "Items": "Items",
-        "Locale": "Locale",
-        "Models": "Models",
-        "Combat": "Combat",
-        "Cursed": "Cursed",
-        "Decoration": "Decoration",
-        "Modded": "Modded",
-        "Realistic": "Realistic",
-        "Simplistic": "Simplistic",
-        "Themed": "Themed",
-        "Tweaks": "Tweaks",
-        "Utility": "Utility",
-        "Vanilla-like": "Vanilla-like"
+        "512x+": "512x or Higher",
+        "Styles": "Styles",
+        "audio": "Audio",
+        "blocks": "Blocks",
+        "core-shaders": "Core Shaders",
+        "entities": "Entities",
+        "environment": "Environment",
+        "equipment": "Equipment",
+        "fonts": "Fonts",
+        "gui": "GUI",
+        "items": "Items",
+        "locale": "Locale",
+        "models": "Models",
+        "combat": "Combat",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "modded": "Modded",
+        "realistic": "Realistic",
+        "Resolution": "Resolution",
+        "simplistic": "Simplistic",
+        "themed": "Themed",
+        "tweaks": "Tweaks",
+        "utility": "Utility",
+        "vanilla-like": "Vanilla-like"
       }
     },
-    "shaderpackTagList": {
+    "shaderTagList": {
       "CurseForge": {
         "All": "All",
+        "Styles": "Styles",
         "Fantasy": "Fantasy",
         "Realistic": "Realistic",
         "Vanilla": "Vanilla"
       },
       "Modrinth": {
         "All": "All",
-        "Cartoon": "Cartoon",
-        "Cursed": "Cursed",
-        "Fantasy": "Fantasy",
-        "Realistic": "Realistic",
-        "Semi-Realistic": "Semi-Realistic",
-        "Vanilla-like": "Vanilla-like",
-        "Atmosphere": "Atmosphere",
-        "Bloom": "Bloom",
-        "Colored Lighting": "Colored Lighting",
-        "Foliage": "Foliage",
-        "Path Tracing": "Path Tracing",
-        "PBR": "PBR",
-        "Reflections": "Reflections",
-        "Shadows": "Shadows"
+        "Styles": "Styles",
+        "cartoon": "Cartoon",
+        "cursed": "Cursed",
+        "fantasy": "Fantasy",
+        "realistic": "Realistic",
+        "semi-realistic": "Semi-Realistic",
+        "vanilla-like": "Vanilla-like",
+        "atmosphere": "Atmosphere",
+        "bloom": "Bloom",
+        "colored-lighting": "Colored Lighting",
+        "foliage": "Foliage",
+        "path-tracing": "Path Tracing",
+        "pbr": "PBR",
+        "reflections": "Reflections",
+        "shadows": "Shadows",
+        "potato": "Potato",
+        "performance": "Performance",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "screenshot": "Screenshot"
       }
     },
     "modpackTagList": {
       "CurseForge": {
         "All": "All",
+        "Styles": "Styles",
         "Adventure and RPG": "Adventure RPG",
         "Combat / PvP": "Combat PvP",
         "Exploration": "Exploration",
@@ -1276,21 +1387,58 @@
       },
       "Modrinth": {
         "All": "All",
-        "Adventure": "Adventure",
-        "Challenging": "Challenging",
-        "Combat": "Combat",
-        "Kitchen Sink": "Kitchen Sink",
-        "Lightweight": "Lightweight",
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "challenging": "Challenging",
+        "combat": "Combat",
+        "kitchen-sink": "Kitchen Sink",
+        "lightweight": "Lightweight",
+        "magic": "Magic",
+        "multiplayer": "Multiplayer",
+        "optimization": "Optimization",
+        "quests": "Quests",
+        "technology": "Technology"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Styles": "Styles",
         "Magic": "Magic",
-        "Multiplayer": "Multiplayer",
-        "Optimization": "Optimization",
-        "Quests": "Quests",
-        "Technology": "Technology"
+        "Miscellaneous": "Misc.",
+        "Fantasy": "Fantasy",
+        "Mod Support": "Mod Support",
+        "Tech": "Tech",
+        "Library": "Library",
+        "Utility": "Utility",
+        "Adventure": "Adventure"
+      },
+      "Modrinth": {
+        "All": "All",
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "Equipment",
+        "food": "Food",
+        "game-mechanics": "Game Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "Technology",
+        "transportation": "Transportation",
+        "utility": "Utility",
+        "worldgen": "World Gen"
       }
     },
     "sortByList": {
       "CurseForge": {
-        "Relevancy": "Relevancy",
         "Popularity": "Popularity",
         "Latest update": "Latest update",
         "Creation date": "Creation date",
@@ -1298,11 +1446,11 @@
         "A-Z": "A-Z"
       },
       "Modrinth": {
-        "Relevance": "Relevance",
-        "Downloads": "Downloads",
-        "Followers": "Followers",
-        "Date published": "Date published",
-        "Date updated": "Date updated"
+        "relevance": "Relevance",
+        "downloads": "Downloads",
+        "follows": "Followers",
+        "newest": "Date published",
+        "updated": "Date updated"
       }
     },
     "versionList": {
@@ -1385,12 +1533,28 @@
           "title": "Failed to retrieve installed Java list"
         }
       },
+      "validateJava": {
+        "error": {
+          "title": "Failed to validate Java",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java executable is invalid "
+          }
+        }
+      },
       "checkGameDirectory": {
         "error": {
           "title": "Invalid game directory",
           "description": {
             "GAME_DIR_ALREADY_ADDED": "The directory has already been added",
             "GAME_DIR_NOT_EXIST": "The directory does not exist"
+          }
+        }
+      },
+      "checkServiceAvailability": {
+        "error": {
+          "title": "Service Unavailable",
+          "description": {
+            "FETCH_ERROR": "Failed to fetch the meta server"
           }
         }
       }
@@ -1406,7 +1570,8 @@
         "error": {
           "title": "Failed to add offline player",
           "description": {
-            "DUPLICATE": "Player already exists"
+            "DUPLICATE": "Player already exists",
+            "INVALID": "UUID is invalid"
           }
         }
       },
@@ -1431,8 +1596,21 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NOT_FOUND": "The authentication server does not exist",
             "CANCELLED": "OAuth login cancelled",
-            "CREATE_WEBVIEW_ERROR": "Failed to create webview",
             "INVALID": "The server type is invalid"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "The player type is invalid",
+            "CANCELLED": "OAuth re-login cancelled"
           }
         }
       },
@@ -1449,12 +1627,28 @@
           }
         }
       },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "Wrong account or password"
+          }
+        }
+      },
       "addPlayerFromSelection": {
         "success": "Successfully added player",
         "error": {
           "title": "Failed to add player",
           "description": {
-            "DUPLICATE": "Player already exists"
+            "DUPLICATE": "Player already exists",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "EXPIRED": "The access token has expired, please re-login"
           }
         }
       },
@@ -1491,19 +1685,6 @@
           }
         }
       },
-      "validatePlayer": {
-        "error": {
-          "title": "Failed to validate player",
-          "description": {
-            "NOT_FOUND": "The player does not exist",
-            "EXPIRED": "The access token has expired, please re-login",
-            "NETWORK_ERROR": "Failed to connect to the server",
-            "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NO_DOWNLOAD_API": "Failed to download Authlib-Injector, please check internet connection",
-            "SAVE_ERROR": "Failed to save Authlib-Injector"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "Failed to retrieve server list"
@@ -1514,7 +1695,8 @@
           "title": "Failed to get authentication server information",
           "description": {
             "DUPLICATE": "The server has already been added",
-            "INVALID": "Invalid server URL"
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
@@ -1524,7 +1706,8 @@
           "title": "Failed to add authentication server",
           "description": {
             "DUPLICATE": "The server has already been added",
-            "INVALID": "Invalid server URL"
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
@@ -1538,12 +1721,45 @@
         }
       }
     },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "Failed to select suitable JRE",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "NO_SUITABLE_JAVA": "No suitable Java version found"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "Failed to validate game files",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "Failed to validate player",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NO_DOWNLOAD_API": "Failed to download Authlib-Injector, please check internet connection",
+            "SAVE_ERROR": "Failed to save Authlib-Injector"
+          }
+        }
+      }
+    },
     "resource": {
       "fetchGameVersionList": {
         "error": {
           "title": "Failed to fetch game version list",
           "description": {
-            "PARSE_ERROR": "The server returned data in an incorrect format"
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server"
           }
         }
       },
@@ -1552,7 +1768,38 @@
           "title": "Failed to fetch mod loader version list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "Failed to fetch resource list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "Failed to fetch resource version list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "success": "Download Task created successfully",
+        "error": {
+          "title": "Failed to download game server",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server"
           }
         }
       }
@@ -1560,7 +1807,13 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "Failed to retrieve instance list"
+          "title": "Failed to retrieve game instance list",
+          "description": {
+            "INVALID_NAME_ERROR": "Invalid instance name",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "CONFLICT_NAME_ERROR": "Instance name already exists",
+            "FILE_MOVE_FAILED": "Failed to move instance files"
+          }
         }
       },
       "updateInstanceConfig": {
@@ -1585,17 +1838,16 @@
         "error": {
           "title": "Failed to reset instance game settings",
           "description": {
-            "INSTANCE_NOT_FOUND": "Instance ID does not exist",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "Failed to open instance directory",
+          "title": "Failed to retrieve instance directory path",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
-            "EXEC_OPEN_DIR_ERROR": "Unable to execute command for the non-existent subdirectory type"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error"
           }
         }
       },
@@ -1613,7 +1865,10 @@
           "title": "Failed to rename instance",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
-            "CONFLICT_NAME_ERROR": "A duplicate instance name exists"
+            "CONFLICT_NAME_ERROR": "A duplicate instance name exists",
+            "INVALID_NAME_ERROR": "Invalid instance name",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_MOVE_FAILED": "Failed to move instance files"
           }
         }
       },
@@ -1655,6 +1910,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Failed to retrieve local mod list",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "Failed to retrieve resource pack list"
@@ -1680,11 +1943,11 @@
           "title": "Failed to retrieve screenshot list"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "Failed to retrieve local mod list",
+          "title": "Mod state toggle failed",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
           }
         }
       },
@@ -1698,13 +1961,20 @@
           }
         }
       },
-      "toggleModByExtension": {
+      "createLaunchDesktopShortcut": {
+        "success": "Launch shortcut has been added to the desktop",
         "error": {
-          "title": "Mod state toggle failed",
+          "title": "Failed to create launch shortcut",
           "description": {
-            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
+            "SHORTCUT_CREATION_FAILED": "Command execution failed",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "Task created successfully"
       }
     }
   },
@@ -1740,7 +2010,14 @@
     "input": {
       "placeholder": "Global Search"
     },
-    "tip": "Search local and online game resources in one place"
+    "tip": "Search local and online game resources in one place",
+    "empty": "No results found",
+    "result": {
+      "page": "Page",
+      "recentViewed": "Recent Viewed",
+      "instance": "Instance",
+      "player": "Player"
+    }
   },
   "StarUsModal": {
     "header": {
@@ -1807,7 +2084,7 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/"
+      "baseUrl": "https://minecraft.wiki/w/"
     }
   },
   "WelcomeAndTermsModal": {

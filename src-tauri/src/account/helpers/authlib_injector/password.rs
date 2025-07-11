@@ -4,7 +4,7 @@ use crate::{
   error::SJMCLResult,
 };
 use serde_json::{json, Value};
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 async fn get_profile(
@@ -15,15 +15,18 @@ async fn get_profile(
   auth_account: String,
   password: String,
 ) -> SJMCLResult<PlayerInfo> {
-  let profile = reqwest::get(format!(
-    "{}/sessionserver/session/minecraft/profile/{}",
-    auth_server_url, id
-  ))
-  .await
-  .map_err(|_| AccountError::NetworkError)?
-  .json::<Value>()
-  .await
-  .map_err(|_| AccountError::ParseError)?;
+  let client = app.state::<reqwest::Client>();
+  let profile = client
+    .get(format!(
+      "{}/sessionserver/session/minecraft/profile/{}",
+      auth_server_url, id
+    ))
+    .send()
+    .await
+    .map_err(|_| AccountError::NetworkError)?
+    .json::<Value>()
+    .await
+    .map_err(|_| AccountError::ParseError)?;
 
   parse_profile(
     app,
@@ -43,7 +46,7 @@ pub async fn login(
   username: String,
   password: String,
 ) -> SJMCLResult<Vec<PlayerInfo>> {
-  let client = reqwest::Client::new();
+  let client = app.state::<reqwest::Client>();
 
   let response = client
     .post(format!("{}/authserver/authenticate", auth_server_url))
@@ -128,20 +131,19 @@ pub async fn login(
   }
 }
 
-pub async fn refresh(app: &AppHandle, player: PlayerInfo) -> SJMCLResult<PlayerInfo> {
-  let client = reqwest::Client::new();
+pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<PlayerInfo> {
+  let client = app.state::<reqwest::Client>();
 
   let response = client
     .post(format!("{}/authserver/refresh", player.auth_server_url))
     .header("Content-Type", "application/json")
     .body(
       json!({
-         "accessToken": player.access_token,
-         "selectedProfile": {
-           "id": player.uuid.as_simple(),
-           "name": player.name,
-         },
-
+        "accessToken": player.access_token,
+        "selectedProfile": {
+          "id": player.uuid.as_simple(),
+          "name": player.name
+        }
       })
       .to_string(),
     )
@@ -172,11 +174,11 @@ pub async fn refresh(app: &AppHandle, player: PlayerInfo) -> SJMCLResult<PlayerI
 
   get_profile(
     app,
-    player.auth_server_url,
+    player.auth_server_url.clone(),
     access_token,
     id,
-    player.auth_account,
-    player.password,
+    player.auth_account.clone(),
+    player.password.clone(),
   )
   .await
 }

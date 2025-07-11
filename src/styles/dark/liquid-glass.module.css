@@ -1,0 +1,32 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.83);
+  border-radius: 1rem;
+}
+
+.effect {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+
+  backdrop-filter: blur(6px);
+  filter: url(#glass-distortion);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.shine {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  overflow: hidden;
+  border-radius: 1rem;
+
+  box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.2),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.2);
+}

@@ -31,12 +31,12 @@ import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import SelectableButton from "@/components/common/selectable-button";
 import AddPlayerModal from "@/components/modals/add-player-modal";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { PlayerType } from "@/enums/account";
 import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 
@@ -46,9 +46,10 @@ const AccountsPage = () => {
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.accountsPage.viewType;
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, closeSharedModal, openGenericConfirmDialog } =
+    useSharedModals();
 
-  const { getPlayerList, getAuthServerList, selectedPlayer } = useData();
+  const { getPlayerList, getAuthServerList, selectedPlayer } = useGlobalData();
 
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const [playerList, setPlayerList] = useState<Player[]>([]);
@@ -61,12 +62,6 @@ const AccountsPage = () => {
   useEffect(() => {
     setAuthServerList(getAuthServerList() || []);
   }, [getAuthServerList]);
-
-  const {
-    isOpen: isDeleteAuthServerDialogOpen,
-    onOpen: onDeleteAuthServerDialogOpen,
-    onClose: onDeleteAuthServerDialogClose,
-  } = useDisclosure();
 
   const {
     isOpen: isAddPlayerModalOpen,
@@ -110,13 +105,17 @@ const AccountsPage = () => {
     if (type === "all") {
       return playerList;
     } else if (type === "offline") {
-      return playerList.filter((player) => player.playerType === "offline");
+      return playerList.filter(
+        (player) => player.playerType === PlayerType.Offline
+      );
     } else if (type === "microsoft") {
-      return playerList.filter((player) => player.playerType === "microsoft");
+      return playerList.filter(
+        (player) => player.playerType === PlayerType.Microsoft
+      );
     } else {
       return playerList.filter(
         (player) =>
-          player.playerType === "3rdparty" &&
+          player.playerType === PlayerType.ThirdParty &&
           authServerList.find((server) => server.authUrl === type)?.authUrl ===
             player.authServer?.authUrl
       );
@@ -150,7 +149,7 @@ const AccountsPage = () => {
         }
       });
     }
-    onDeleteAuthServerDialogClose();
+    closeSharedModal("generic-confirm");
   };
 
   return (
@@ -168,7 +167,9 @@ const AccountsPage = () => {
                   label: (
                     <HStack spacing={2} overflow="hidden">
                       <Icon as={item.icon} />
-                      <Text fontSize="sm">{item.label}</Text>
+                      <Text fontSize="sm" className="ellipsis-text">
+                        {item.label}
+                      </Text>
                     </HStack>
                   ),
                   value: item.key,
@@ -182,9 +183,9 @@ const AccountsPage = () => {
                 openSharedModal("add-auth-server", {});
               }}
             >
-              <HStack spacing={2}>
+              <HStack spacing={2} overflow="hidden">
                 <Icon as={LuCirclePlus} />
-                <Text fontSize="sm">
+                <Text fontSize="sm" className="ellipsis-text">
                   {t("AccountsPage.button.add3rdPartyServer")}
                 </Text>
               </HStack>
@@ -239,7 +240,25 @@ const AccountsPage = () => {
                       colorScheme="red"
                       variant="ghost"
                       icon={<LuServerOff />}
-                      onClick={onDeleteAuthServerDialogOpen}
+                      onClick={() => {
+                        openGenericConfirmDialog({
+                          title: t("DeleteAuthServerAlertDialog.dialog.title"),
+                          body: t(
+                            "DeleteAuthServerAlertDialog.dialog.content",
+                            {
+                              name: authServerList.find(
+                                (server) =>
+                                  server.authUrl === selectedPlayerType
+                              )?.name,
+                            }
+                          ),
+                          btnOK: t("General.delete"),
+                          isAlert: true,
+                          onOKCallback: handleDeleteAuthServer,
+                          showSuppressBtn: true,
+                          suppressKey: "deleteAuthServerAlert",
+                        });
+                      }}
                     />
                   </Tooltip>
                 )}
@@ -278,29 +297,15 @@ const AccountsPage = () => {
           </Section>
         </GridItem>
       </Grid>
-      <GenericConfirmDialog
-        isAlert
-        isOpen={isDeleteAuthServerDialogOpen}
-        onClose={onDeleteAuthServerDialogClose}
-        title={t("DeleteAuthServerAlertDialog.dialog.title")}
-        body={t("DeleteAuthServerAlertDialog.dialog.content", {
-          name: authServerList.find(
-            (server) => server.authUrl === selectedPlayerType
-          )?.name,
-        })}
-        btnOK={t("General.delete")}
-        btnCancel={t("General.cancel")}
-        onOKCallback={handleDeleteAuthServer}
-      />
       <AddPlayerModal
         isOpen={isAddPlayerModalOpen}
         onClose={onAddPlayerModalClose}
         initialPlayerType={
           selectedPlayerType === "all" || selectedPlayerType === "offline"
-            ? "offline"
+            ? PlayerType.Offline
             : selectedPlayerType === "microsoft"
-              ? "microsoft"
-              : "3rdparty"
+              ? PlayerType.Microsoft
+              : PlayerType.ThirdParty
         }
         initialAuthServerUrl={
           ["all", "offline", "microsoft"].includes(selectedPlayerType)

@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SJMCL",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "identifier": "SJMCL",
   "build": {
     "frontendDist": "../out",
@@ -14,12 +14,36 @@
       {
         "label": "main",
         "title": "",
+        "url": "/",
         "width": 800,
         "height": 550,
         "minWidth": 800,
         "minHeight": 550,
-        "resizable": true,
-        "fullscreen": false,
+        "center": true,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "game_error",
+        "create": false,
+        "title": "Game Error",
+        "url": "/standalone/game-error",
+        "width": 800,
+        "height": 550,
+        "minWidth": 640,
+        "minHeight": 440,
+        "center": true,
+        "dragDropEnabled": false,
+        "contentProtected": true
+      },
+      {
+        "label": "game_log",
+        "create": false,
+        "title": "Game Log",
+        "url": "/standalone/game-log",
+        "width": 800,
+        "height": 550,
+        "minWidth": 640,
+        "minHeight": 440,
         "center": true,
         "dragDropEnabled": false
       }
@@ -51,6 +75,7 @@
     "license": "GPLv3",
     "macOS": {
       "dmg": {
+        "background": "assets/misc/dmg_bg.png",
         "windowSize": {
           "width": 640,
           "height": 440
@@ -58,10 +83,20 @@
       }
     },
     "resources": [
-      "assets/skins/*"
+      "assets/skins/*",
+      "assets/game/*",
+      "assets/icons/icon.ico",
+      "assets/icons/icon.png"
     ]
   },
   "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": [
+          "sjmcl"
+        ]
+      }
+    },
     "fs": {
       "requireLiteralLeadingDot": false
     }

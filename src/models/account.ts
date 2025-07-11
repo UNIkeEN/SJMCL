@@ -1,7 +1,15 @@
+import { PlayerType } from "@/enums/account";
+
+export enum PresetSkinType {
+  Steve = "steve",
+  Alex = "alex",
+}
+
 export interface Texture {
   textureType: string;
   image: string;
   model: "default" | "slim";
+  preset?: PresetSkinType;
 }
 
 // player
@@ -10,7 +18,7 @@ export interface Player {
   name: string;
   uuid: string;
   avatar: string;
-  playerType: "offline" | "microsoft" | "3rdparty";
+  playerType: PlayerType;
   authServer?: AuthServer; // only from authlib-injector
   authAccount?: string; // only from authlib-injector
   password?: string; // only from authlib-injector

@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -34,14 +34,20 @@ import {
   LuShapes,
   LuSquareLibrary,
 } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
-import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
+import {
+  UNIXToISOString,
+  formatRelativeTime,
+  formatTimeInterval,
+} from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
@@ -65,7 +71,6 @@ const InstanceWidgetBase: React.FC<InstanceWidgetBaseProps> = ({
     <VStack align="stretch" spacing={2} {...props}>
       {title && (
         <Text
-          className="no-select"
           fontSize="md"
           fontWeight="bold"
           lineHeight="16px" // the same as fontSize 'md'
@@ -126,7 +131,7 @@ export const InstanceBasicInfoWidget = () => {
       />
       <OptionItem
         title={t("InstanceWidgets.basicInfo.playTime")}
-        description={"12.1 小时"}
+        description={formatTimeInterval(summary?.playTime || 0)}
         prefixElement={
           <Center
             boxSize={7}
@@ -192,7 +197,7 @@ export const InstanceScreenshotsWidget = () => {
           onClick={() => {
             router.push(
               {
-                pathname: `/games/instance/${instanceId}/screenshots`,
+                pathname: `/instances/details/${encodeURIComponent(instanceId || "")}/screenshots`,
                 query: {
                   screenshotIndex: currentIndex.toString(),
                 },
@@ -208,6 +213,7 @@ export const InstanceScreenshotsWidget = () => {
     </InstanceWidgetBase>
   );
 };
+
 export const InstanceModsWidget = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -215,13 +221,26 @@ export const InstanceModsWidget = () => {
   const instanceId = Array.isArray(id) ? id[0] : id;
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { getLocalModList } = useInstanceSharedData();
+  const { getLocalModList, isLocalModListLoading: isLoading } =
+    useInstanceSharedData();
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
 
+  const getLocalModListWrapper = useCallback(
+    (sync?: boolean) => {
+      getLocalModList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return; // do not update state if cancelled
+          setLocalMods(data || []);
+        })
+        .catch((e) => setLocalMods([] as LocalModInfo[]));
+    },
+    [getLocalModList]
+  );
+
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
-  }, [getLocalModList]);
+    getLocalModListWrapper();
+  }, [getLocalModListWrapper]);
 
   const totalMods = localMods.length;
   const enabledMods = localMods.filter((mod) => mod.enabled).length;
@@ -232,7 +251,11 @@ export const InstanceModsWidget = () => {
       icon={LuSquareLibrary}
     >
       <VStack align="stretch" w="100%" spacing={3}>
-        {localMods.length > 0 ? (
+        {isLoading ? (
+          <Center mt={4}>
+            <BeatLoader size={8} color="gray" />
+          </Center>
+        ) : localMods.length > 0 ? (
           <>
             <AvatarGroup size="sm" max={5} spacing={-2.5}>
               {localMods.map((mod, index) => (
@@ -262,7 +285,9 @@ export const InstanceModsWidget = () => {
           justifyContent="flex-start"
           colorScheme={primaryColor}
           onClick={() => {
-            router.push(`/games/instance/${instanceId}/mods`);
+            router.push(
+              `/instances/details/${encodeURIComponent(instanceId || "")}/mods`
+            );
           }}
         >
           <HStack spacing={1.5}>
@@ -306,12 +331,7 @@ export const InstanceLastPlayedWidget = () => {
             />
             <Box flex="1" minW={0}>
               <VStack spacing={0} alignItems="start" w="full">
-                <Text
-                  fontSize="xs-sm"
-                  className="no-select"
-                  w="full"
-                  isTruncated
-                >
+                <Text fontSize="xs-sm" w="full" isTruncated>
                   {lastPlayedWorld.name}
                 </Text>
                 <Text className="secondary-text" fontSize="xs">
@@ -383,20 +403,22 @@ export const InstanceMoreWidget = () => {
               size="lg"
               colorScheme={primaryColor}
               onClick={() =>
-                router.push(`/games/instance/${instanceId}/${key}`)
+                router.push(
+                  `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
+                )
               }
             >
               <VStack spacing={1} align="center">
                 <Icon as={icon} boxSize="24px" />
                 <Text fontSize="xs">
-                  {t(`InstanceLayout.instanceTabList.${key}`)}
+                  {t(`InstanceDetailsLayout.instanceTabList.${key}`)}
                 </Text>
               </VStack>
             </Button>
           ) : (
             <Tooltip
               key={key}
-              label={t(`InstanceLayout.instanceTabList.${key}`)}
+              label={t(`InstanceDetailsLayout.instanceTabList.${key}`)}
             >
               <IconButton
                 icon={<Icon as={icon} boxSize="32px" />}
@@ -404,9 +426,11 @@ export const InstanceMoreWidget = () => {
                 size="lg"
                 colorScheme={primaryColor}
                 onClick={() =>
-                  router.push(`/games/instance/${instanceId}/${key}`)
+                  router.push(
+                    `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
+                  )
                 }
-                aria-label={t(`InstanceLayout.instanceTabList.${key}`)}
+                aria-label={t(`InstanceDetailsLayout.instanceTabList.${key}`)}
               />
             </Tooltip>
           )

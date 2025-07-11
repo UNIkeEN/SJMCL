@@ -1,20 +1,24 @@
-use std::sync::{Arc, Mutex};
-
 use super::common::parse_profile;
 use super::constants::SCOPE;
-use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo};
+use crate::account::models::{AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo};
 use crate::error::SJMCLResult;
-use crate::utils::window::create_webview_window;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde_json::Value;
-use tauri::AppHandle;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
-use tauri_plugin_http::reqwest::{self, Client};
+use tauri_plugin_http::reqwest;
 use tokio::time::{sleep, Duration};
-use url::Url;
 
-async fn fetch_openid_configuration(openid_configuration_url: String) -> SJMCLResult<Value> {
-  let res = reqwest::get(&openid_configuration_url)
+async fn fetch_openid_configuration(
+  app: &AppHandle,
+  openid_configuration_url: String,
+) -> SJMCLResult<Value> {
+  let client = app.state::<reqwest::Client>();
+
+  let res = client
+    .get(&openid_configuration_url)
+    .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
     .json::<Value>()
@@ -24,8 +28,12 @@ async fn fetch_openid_configuration(openid_configuration_url: String) -> SJMCLRe
   Ok(res)
 }
 
-async fn fetch_jwks(jwks_uri: String) -> SJMCLResult<Value> {
-  let res = reqwest::get(&jwks_uri)
+async fn fetch_jwks(app: &AppHandle, jwks_uri: String) -> SJMCLResult<Value> {
+  let client = app.state::<reqwest::Client>();
+
+  let res = client
+    .get(&jwks_uri)
+    .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
     .json::<Value>()
@@ -40,9 +48,9 @@ pub async fn device_authorization(
   openid_configuration_url: String,
   client_id: String,
 ) -> SJMCLResult<OAuthCodeResponse> {
-  let client = Client::new();
+  let client = app.state::<reqwest::Client>();
 
-  let openid_configuration = fetch_openid_configuration(openid_configuration_url).await?;
+  let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
 
   let device_authorization_endpoint = openid_configuration["device_authorization_endpoint"]
     .as_str()
@@ -140,9 +148,15 @@ pub async fn login(
   client_id: String,
   auth_info: OAuthCodeResponse,
 ) -> SJMCLResult<PlayerInfo> {
-  let client = Client::new();
+  let client = app.state::<reqwest::Client>();
+  let account_binding = app.state::<Mutex<AccountInfo>>();
 
-  let openid_configuration = fetch_openid_configuration(openid_configuration_url).await?;
+  {
+    let mut account_state = account_binding.lock()?;
+    account_state.is_oauth_processing = true;
+  }
+
+  let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
 
   let token_endpoint = openid_configuration["token_endpoint"]
     .as_str()
@@ -152,29 +166,19 @@ pub async fn login(
     .as_str()
     .ok_or(AccountError::ParseError)?;
 
-  let jwks = fetch_jwks(jwks_uri.to_string()).await?;
-
-  let verification_url =
-    Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::ParseError)?;
-
-  let is_cancelled = Arc::new(Mutex::new(false));
-  let cancelled_clone = Arc::clone(&is_cancelled);
-
-  let auth_webview = create_webview_window(app, "oauth", verification_url, 650.0, 500.0, true)
-    .await
-    .map_err(|_| AccountError::CreateWebviewError)?;
-
-  auth_webview.on_window_event(move |event| {
-    if let tauri::WindowEvent::Destroyed = event {
-      *cancelled_clone.lock().unwrap() = true;
-    }
-  });
+  let jwks = fetch_jwks(app, jwks_uri.to_string()).await?;
 
   let access_token: String;
   let id_token: String;
   let refresh_token: String;
-
   loop {
+    {
+      let account_state = account_binding.lock()?;
+      if !account_state.is_oauth_processing {
+        return Err(AccountError::Cancelled)?;
+      }
+    }
+
     let token_response = client
       .post(token_endpoint)
       .json(&serde_json::json!({
@@ -200,14 +204,7 @@ pub async fn login(
         .as_str()
         .ok_or(AccountError::ParseError)?
         .to_string();
-
-      auth_webview.close()?;
       break;
-    }
-
-    if *is_cancelled.lock().unwrap() {
-      // if user closed the webview
-      return Err(AccountError::Cancelled)?;
     }
 
     sleep(Duration::from_secs(auth_info.interval)).await;
@@ -227,11 +224,11 @@ pub async fn login(
 
 pub async fn refresh(
   app: &AppHandle,
-  player: PlayerInfo,
+  player: &PlayerInfo,
   client_id: String,
   openid_configuration_url: String,
 ) -> SJMCLResult<PlayerInfo> {
-  let openid_configuration = fetch_openid_configuration(openid_configuration_url).await?;
+  let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
 
   let token_endpoint = openid_configuration["token_endpoint"]
     .as_str()
@@ -241,16 +238,16 @@ pub async fn refresh(
     .as_str()
     .ok_or(AccountError::ParseError)?;
 
-  let jwks = fetch_jwks(jwks_uri.to_string()).await?;
+  let jwks = fetch_jwks(app, jwks_uri.to_string()).await?;
 
-  let client = Client::new();
+  let client = app.state::<reqwest::Client>();
 
   let token_response = client
     .post(token_endpoint)
     .json(&serde_json::json!({
-        "client_id": client_id,
-        "refresh_token": player.refresh_token,
-        "grant_type": "refresh_token",
+      "client_id": client_id,
+      "refresh_token": player.refresh_token,
+      "grant_type": "refresh_token",
     }))
     .send()
     .await?;
@@ -278,7 +275,7 @@ pub async fn refresh(
     id_token,
     access_token,
     refresh_token,
-    player.auth_server_url,
+    player.auth_server_url.clone(),
     client_id,
   )
   .await

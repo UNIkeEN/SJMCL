@@ -1,4 +1,5 @@
 import { open } from "@tauri-apps/plugin-dialog";
+import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, {
   createContext,
@@ -7,13 +8,17 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useData, useDataDispatch } from "@/contexts/data";
+import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums } from "@/enums/instance";
-import { useGetState } from "@/hooks/get-state";
+import { InstanceSubdirType } from "@/enums/instance";
+import {
+  GetStateFlag,
+  useGetState,
+  usePromisedGetState,
+} from "@/hooks/get-state";
 import { GameConfig } from "@/models/config";
 import {
-  GameInstanceSummary,
+  InstanceSummary,
   LocalModInfo,
   ResourcePackInfo,
   SchematicInfo,
@@ -25,11 +30,16 @@ import { InstanceService } from "@/services/instance";
 import { updateByKeyPath } from "@/utils/partial";
 
 export interface InstanceContextType {
-  summary: GameInstanceSummary | undefined;
+  summary: InstanceSummary | undefined;
   updateSummaryInContext: (path: string, value: any) => void;
   gameConfig: GameConfig | undefined;
+  openInstanceSubdir: (dirType: InstanceSubdirType) => void;
+  // retrieve instance resource data with frontend cache
   getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
-  getLocalModList: (sync?: boolean) => LocalModInfo[] | undefined;
+  getLocalModList: (
+    sync?: boolean
+  ) => Promise<LocalModInfo[] | GetStateFlag | undefined>;
+  isLocalModListLoading: boolean;
   getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getServerResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
   getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
@@ -37,7 +47,9 @@ export interface InstanceContextType {
   getScreenshotList: (sync?: boolean) => ScreenshotInfo[] | undefined;
   // getInstanceGameConfig: (sync?: boolean) => GameConfig | undefined;
   // shared service handler
-  handleOpenInstanceSubdir: (dirType: InstanceSubdirEnums) => void;
+  handleRetrieveInstanceSubdirPath: (
+    dirType: InstanceSubdirType
+  ) => Promise<string | null>;
   handleImportResource: (option: any) => void;
   handleUpdateInstanceConfig: (path: string, value: any) => void;
   handleResetInstanceGameConfig: () => void;
@@ -52,11 +64,11 @@ export const InstanceContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
   const toast = useToast();
-  const { getGameInstanceList } = useData();
-  const { setGameInstanceList } = useDataDispatch();
+  const { getInstanceList } = useGlobalData();
+  const { setInstanceList } = useGlobalDataDispatch();
 
   const [instanceSummary, setInstanceSummary] = useState<
-    GameInstanceSummary | undefined
+    InstanceSummary | undefined
   >(undefined);
   const [instanceGameConfig, setInstanceGameConfig] = useState<
     GameConfig | undefined
@@ -71,79 +83,118 @@ export const InstanceContextProvider: React.FC<{
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>();
 
+  const summaryIdRef = React.useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (instanceSummary?.id) {
+      summaryIdRef.current = instanceSummary.id;
+    } else {
+      summaryIdRef.current = undefined;
+    }
+  }, [instanceSummary?.id]);
+
+  const clearAllResState = useCallback(() => {
+    setWorlds(undefined);
+    setLocalMods(undefined);
+    setResourcePacks(undefined);
+    setServerResourcePacks(undefined);
+    setSchematics(undefined);
+    setShaderPacks(undefined);
+    setScreenshots(undefined);
+  }, []);
+
   const updateSummaryInContext = useCallback(
     (path: string, value: any) => {
       // for frontend-only state update to sync with backend if needed.
       if (path === "id") return; // forbid update id here
 
-      const newSummary = { ...instanceSummary };
-      updateByKeyPath(newSummary, path, value);
-      setInstanceSummary(newSummary as GameInstanceSummary);
+      setInstanceSummary((prevSummary) => {
+        if (!prevSummary) return prevSummary;
 
-      const gameInstanceList = getGameInstanceList() || [];
-      const updatedList = gameInstanceList.map((instance) =>
-        instance.id === newSummary.id
-          ? (newSummary as GameInstanceSummary)
-          : instance
-      );
-      setGameInstanceList(updatedList);
+        const newSummary = { ...prevSummary };
+        updateByKeyPath(newSummary, path, value);
+
+        const instanceList = getInstanceList() || [];
+        const updatedList = instanceList.map((instance) =>
+          instance.id === newSummary.id ? newSummary : instance
+        );
+        setInstanceList(updatedList as InstanceSummary[]);
+
+        return newSummary;
+      });
     },
-    [getGameInstanceList, instanceSummary, setGameInstanceList]
+    [getInstanceList, setInstanceList]
   );
 
-  const handleRetrieveInstanceGameConfig = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveInstanceGameConfig(instanceSummary.id).then(
-        (response) => {
+  const handleRetrieveInstanceGameConfig = useCallback(
+    (id: string) => {
+      if (id !== undefined && id) {
+        InstanceService.retrieveInstanceGameConfig(id).then((response) => {
           if (response.status === "success") {
             setInstanceGameConfig(response.data);
-          } else
+          } else {
             toast({
               title: response.message,
               description: response.details,
               status: "error",
             });
-        }
-      );
-    }
-  }, [instanceSummary?.id, setInstanceGameConfig, toast]);
+          }
+        });
+      }
+    },
+    [setInstanceGameConfig, toast]
+  );
 
   useEffect(() => {
-    const gameInstanceList = getGameInstanceList() || [];
-    const { id } = router.query;
+    const instanceList = getInstanceList() || [];
+    let id = router.query.id;
     const instanceId = Array.isArray(id) ? id[0] : id;
     // get summary
     if (instanceId !== undefined) {
-      const summary = gameInstanceList.find(
-        (instance) => instance.id === Number(instanceId)
+      const summary = instanceList.find(
+        (instance) => instance.id === instanceId
       );
       setInstanceSummary(summary);
-      handleRetrieveInstanceGameConfig();
+      handleRetrieveInstanceGameConfig(instanceId);
     }
-  }, [router.query, getGameInstanceList, handleRetrieveInstanceGameConfig]);
+  }, [router.query.id, getInstanceList, handleRetrieveInstanceGameConfig]);
 
-  const handleOpenInstanceSubdir = useCallback(
-    (dirType: InstanceSubdirEnums) => {
+  const handleRetrieveInstanceSubdirPath = useCallback(
+    (dirType: InstanceSubdirType): Promise<string | null> => {
       if (instanceSummary?.id !== undefined) {
-        InstanceService.openInstanceSubdir(instanceSummary.id, dirType).then(
-          (response) => {
-            if (response.status !== "success")
-              toast({
-                title: response.message,
-                description: response.details,
-                status: "error",
-              });
+        return InstanceService.retrieveInstanceSubdirPath(
+          instanceSummary.id,
+          dirType
+        ).then((response) => {
+          if (response.status === "success") {
+            return response.data;
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+            return null;
           }
-        );
+        });
       }
+      return Promise.resolve(null);
     },
     [instanceSummary?.id, toast]
+  );
+
+  const openInstanceSubdir = useCallback(
+    (dirType: InstanceSubdirType) => {
+      handleRetrieveInstanceSubdirPath(dirType).then((path) => {
+        if (path) openPath(path);
+      });
+    },
+    [handleRetrieveInstanceSubdirPath]
   );
 
   type ImportResourceOptions = {
     filterName: string;
     filterExt: string[];
-    tgtDirType: InstanceSubdirEnums;
+    tgtDirType: InstanceSubdirType;
     decompress?: boolean;
     onSuccessCallback: () => void;
   };
@@ -211,21 +262,29 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, setWorlds, toast]);
 
-  const handleRetrieveLocalModList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveLocalModList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success") setLocalMods(response.data);
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
+  const handleRetrieveLocalModList = useCallback(async () => {
+    if (summaryIdRef.current !== undefined) {
+      let lastSummaryIdRef = summaryIdRef.current;
+      const response = await InstanceService.retrieveLocalModList(
+        summaryIdRef.current
       );
+      if (lastSummaryIdRef !== summaryIdRef.current) {
+        return "%CANCELLED%"; // to avoid state update after unmount
+      }
+      if (response.status === "success") {
+        setLocalMods(response.data);
+        return response.data;
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+        setLocalMods([]);
+        return [];
+      }
     }
-  }, [instanceSummary?.id, setLocalMods, toast]);
+  }, [setLocalMods, toast]);
 
   const handleRetrieveResourcePackList = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
@@ -335,9 +394,12 @@ export const InstanceContextProvider: React.FC<{
               // version isolation is shared by summary and game config struct.
               if (path === "specGameConfig.versionIsolation")
                 updateSummaryInContext("isVersionIsolated", value);
+              clearAllResState();
             } else if (path === "useSpecGameConfig") {
               updateSummaryInContext(path, value);
-              if (value) handleRetrieveInstanceGameConfig();
+              if (value) handleRetrieveInstanceGameConfig(instanceSummary.id);
+              // clear all cached resource state due to version isolation may change.
+              clearAllResState();
             } else {
               updateSummaryInContext(path, value);
             }
@@ -352,19 +414,20 @@ export const InstanceContextProvider: React.FC<{
       setInstanceGameConfig,
       toast,
       updateSummaryInContext,
+      clearAllResState,
     ]
   );
 
   const handleResetInstanceGameConfig = useCallback(() => {
     if (instanceSummary?.id !== undefined) {
-      InstanceService.resetInstanceGameConfig(Number(instanceSummary.id)).then(
+      InstanceService.resetInstanceGameConfig(instanceSummary.id).then(
         (response) => {
           if (response.status === "success") {
             toast({
               title: response.message,
               status: "success",
             });
-            handleRetrieveInstanceGameConfig();
+            handleRetrieveInstanceGameConfig(instanceSummary.id);
           } else
             toast({
               title: response.message,
@@ -378,7 +441,20 @@ export const InstanceContextProvider: React.FC<{
 
   const getWorldList = useGetState(worlds, handleRetrieveWorldList);
 
-  const getLocalModList = useGetState(localMods, handleRetrieveLocalModList);
+  const [getLocalModList, isLocalModListLoading] = usePromisedGetState(
+    localMods,
+    handleRetrieveLocalModList
+  );
+
+  useEffect(() => {
+    if (instanceSummary?.id) {
+      getLocalModList(true).then((mods) => {
+        if (mods === GetStateFlag.Cancelled) return; // do not update state if cancelled
+        setLocalMods(mods);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [instanceSummary?.id]);
 
   const getResourcePackList = useGetState(
     resourcePacks,
@@ -413,15 +489,17 @@ export const InstanceContextProvider: React.FC<{
         summary: instanceSummary,
         updateSummaryInContext,
         gameConfig: instanceGameConfig,
+        openInstanceSubdir,
         getWorldList,
         getLocalModList,
+        isLocalModListLoading,
         getResourcePackList,
         getServerResourcePackList,
         getSchematicList,
         getShaderPackList,
         getScreenshotList,
         // getInstanceGameConfig,
-        handleOpenInstanceSubdir,
+        handleRetrieveInstanceSubdirPath,
         handleImportResource,
         handleUpdateInstanceConfig,
         handleResetInstanceGameConfig,

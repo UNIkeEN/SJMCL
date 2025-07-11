@@ -7,11 +7,12 @@ import {
 } from "@/components/common/option-item";
 import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
-import { CoreContributorsList } from "./contributors";
+import { CoreContributorsList } from "@/pages/settings/contributors";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const basicInfo = config.basicInfo;
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -20,7 +21,7 @@ const AboutSettingsPage = () => {
         <TitleFullWithLogo key={0} />,
         {
           title: t("AboutSettingsPage.about.settings.version.title"),
-          children: config.basicInfo.launcherVersion,
+          children: `${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`,
         },
         {
           title: t("AboutSettingsPage.about.settings.contributors.title"),
@@ -151,7 +152,7 @@ const AboutSettingsPage = () => {
           title: t("AboutSettingsPage.legalInfo.settings.userAgreement.title"),
           children: (
             <LinkIconButton
-              url="https://mc.sjtu.cn/sjmcl-tos/"
+              url={t("AboutSettingsPage.legalInfo.settings.userAgreement.url")}
               aria-label="userAgreement"
               isExternal
               withTooltip

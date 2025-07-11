@@ -7,9 +7,11 @@ import {
   OptionItemGroupProps,
   OptionItemProps,
 } from "@/components/common/option-item";
-import { GameIconSelectorPopover } from "@/components/game-icon-selector";
+import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { GameDirectory } from "@/models/config";
+import { getGameDirName } from "@/utils/instance";
+import { isFileNameSanitized } from "@/utils/string";
 
 interface InstanceBasicSettingsProps {
   name: string;
@@ -40,6 +42,13 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
     }
   }, [config, setGameDirectory]);
 
+  const checkDirNameError = (value: string): number => {
+    if (value.trim() === "") return 1;
+    if (!isFileNameSanitized(value)) return 2;
+    if (value.length > 255) return 3;
+    return 0;
+  };
+
   const instanceSpecSettingsGroups: OptionItemGroupProps[] = [
     {
       items: [
@@ -49,11 +58,11 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
             <Editable
               isTextArea={false}
               value={name}
-              onEditSubmit={(value) => setName(value.trim())}
+              onEditSubmit={setName}
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
-              checkError={(value) => (value.trim() === "" ? 1 : 0)}
+              checkError={checkDirNameError}
               localeKey="InstanceSettingsPage.errorMessage"
             />
           ),
@@ -80,7 +89,7 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
                 boxSize="28px"
                 objectFit="cover"
               />
-              <GameIconSelectorPopover
+              <InstanceIconSelectorPopover
                 value={iconSrc}
                 onIconSelect={setIconSrc}
               />
@@ -94,11 +103,7 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
       items: [
         ...config.localGameDirectories.map(
           (directory): OptionItemProps => ({
-            title: ["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name)
-              ? t(
-                  `GlobalGameSettingsPage.directories.settings.directories.special.${directory.name}`
-                )
-              : directory.name,
+            title: getGameDirName(directory),
             description: directory.dir,
             prefixElement: (
               <Radio

@@ -17,19 +17,20 @@ use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::{
-  helpers::refresh_and_update_javas,
+  helpers::java::refresh_and_update_javas,
   models::{JavaInfo, LauncherConfig},
 };
 use std::path::PathBuf;
-use std::sync::{Arc, LazyLock, Mutex};
+use std::sync::{LazyLock, Mutex};
+use std::{collections::HashMap, sync::OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
-use tokio::sync::Notify;
+use tauri_plugin_log::{Target, TargetKind};
 use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
-use tauri::Manager;
+use tauri::{path::BaseDirectory, Manager};
 
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
   std::env::current_exe()
@@ -39,15 +40,25 @@ static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     .to_path_buf()
 });
 
+static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
+
 pub async fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_clipboard_manager::init())
+    .plugin(tauri_plugin_deep_link::init())
     .plugin(tauri_plugin_dialog::init())
     .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_opener::init())
     .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_process::init())
+    .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+      let main_window = app.get_webview_window("main").expect("no main window");
+
+      let _ = main_window.show(); // may hide by launcher_visibility settings
+                                  // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
+      let _ = main_window.set_focus();
+    }))
     .plugin(tauri_plugin_window_state::Builder::new().build())
     .invoke_handler(tauri::generate_handler![
       launcher_config::commands::retrieve_launcher_config,
@@ -59,14 +70,16 @@ pub async fn run() {
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
+      launcher_config::commands::validate_java,
       launcher_config::commands::check_game_directory,
-      launcher_config::commands::retrieve_memory_info,
-      launcher_config::commands::check_service_availability,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,
       account::commands::add_player_oauth,
+      account::commands::relogin_player_oauth,
+      account::commands::cancel_oauth,
       account::commands::add_player_3rdparty_password,
+      account::commands::relogin_player_3rdparty_password,
       account::commands::add_player_from_selection,
       account::commands::update_player_skin_offline_preset,
       account::commands::delete_player,
@@ -79,7 +92,7 @@ pub async fn run() {
       instance::commands::update_instance_config,
       instance::commands::retrieve_instance_game_config,
       instance::commands::reset_instance_game_config,
-      instance::commands::open_instance_subdir,
+      instance::commands::retrieve_instance_subdir_path,
       instance::commands::delete_instance,
       instance::commands::rename_instance,
       instance::commands::copy_resource_to_instances,
@@ -94,6 +107,7 @@ pub async fn run() {
       instance::commands::retrieve_shader_pack_list,
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
+      instance::commands::create_launch_desktop_shortcut,
       launch::commands::select_suitable_jre,
       launch::commands::validate_game_files,
       launch::commands::validate_selected_player,
@@ -101,26 +115,46 @@ pub async fn run() {
       launch::commands::cancel_launch_process,
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
+      resource::commands::fetch_resource_list_by_name,
+      resource::commands::fetch_resource_version_packs,
+      resource::commands::download_game_server,
       discover::commands::fetch_post_sources_info,
-      tasks::commands::schedule_task_group,
-      tasks::commands::cancel_task,
-      tasks::commands::resume_task,
-      tasks::commands::stop_task,
-      tasks::commands::retrieve_task_list,
+      discover::commands::fetch_post_summaries,
+      tasks::commands::schedule_progressive_task_group,
+      tasks::commands::cancel_progressive_task,
+      tasks::commands::resume_progressive_task,
+      tasks::commands::stop_progressive_task,
+      tasks::commands::retrieve_progressive_task_list,
+      tasks::commands::create_transient_task,
+      tasks::commands::get_transient_task,
+      tasks::commands::set_transient_task_state,
+      tasks::commands::cancel_transient_task,
+      tasks::commands::cancel_progressive_task_group,
+      tasks::commands::resume_progressive_task_group,
+      tasks::commands::stop_progressive_task_group,
+      utils::commands::retrieve_memory_info,
+      utils::commands::extract_filename,
+      utils::commands::retrieve_truetype_font_list,
+      utils::commands::check_service_availability,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
 
-      // get version and os information
-      let version = if is_dev {
-        "dev".to_string()
-      } else {
-        app.package_info().version.to_string()
+      // Get version and os information
+      let version = match (is_dev, app.package_info().version.to_string().as_str()) {
+        (true, _) => "dev".to_string(),
+        (false, "0.0.0") => "nightly".to_string(),
+        (false, v) => v.to_string(),
       };
-
       let os = tauri_plugin_os::platform().to_string();
 
-      // Set the launcher config
+      // init APP_DATA_DIR
+      APP_DATA_DIR
+        .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
+        .expect("APP_DATA_DIR initialization failed");
+
+      // Set the launcher config and other states
+      // Also extract assets in `setup_with_app()` if the application is portable
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
@@ -129,20 +163,27 @@ pub async fn run() {
       let account_info = AccountInfo::load().unwrap_or_default();
       app.manage(Mutex::new(account_info));
 
-      let instances: Vec<Instance> = vec![];
+      let instances: HashMap<String, Instance> = HashMap::new();
       app.manage(Mutex::new(instances));
 
       let javas: Vec<JavaInfo> = vec![];
       app.manage(Mutex::new(javas));
 
-      let notify = Arc::new(Notify::new());
-      app.manage(Box::pin(TaskMonitor::new(app.handle().clone(), notify)));
+      app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
       let client = build_sjmcl_client(app.handle(), true, false);
       app.manage(client);
 
       let launching = LaunchingState::default();
       app.manage(Mutex::new(launching));
+
+      // check if full account feature (offline and 3rd-party login) is available
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        account::helpers::misc::check_full_login_availability(&app_handle)
+          .await
+          .unwrap_or_default();
+      });
 
       // Refresh all auth servers
       let app_handle = app.handle().clone();
@@ -176,19 +217,32 @@ pub async fn run() {
         app.set_menu(menu)?;
       };
 
-      // send statistics
+      // Send statistics
       tokio::spawn(async move {
         utils::sys_info::send_statistics(version, os).await;
       });
+
+      // Registering the deep links at runtime on Linux and Windows
+      // ref: https://v2.tauri.app/plugin/deep-linking/#registering-desktop-deep-links-at-runtime
+      #[cfg(any(target_os = "linux", target_os = "windows"))]
+      {
+        use tauri_plugin_deep_link::DeepLinkExt;
+        app.deep_link().register_all()?;
+      }
 
       // Log in debug mode
       if is_dev {
         app.handle().plugin(
           tauri_plugin_log::Builder::default()
             .level(log::LevelFilter::Info)
+            .targets([
+              Target::new(TargetKind::Stdout),
+              Target::new(TargetKind::Webview),
+            ])
             .build(),
         )?;
       }
+
       Ok(())
     })
     .run(tauri::generate_context!())

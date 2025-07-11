@@ -1,4 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+
+export enum GetStateFlag {
+  Cancelled = "%CANCELLED%",
+}
 
 export function useGetState<T>(
   state: T | undefined,
@@ -13,4 +17,29 @@ export function useGetState<T>(
   );
 
   return getState;
+}
+
+export function usePromisedGetState<T>(
+  state: T | undefined,
+  retrieveHandler: () => Promise<any>
+): [(sync?: boolean) => Promise<T | GetStateFlag | undefined>, boolean] {
+  const [isLoading, setIsLoading] = useState(false);
+  const getState = useCallback(
+    async (sync = false) => {
+      if (sync || state === undefined) {
+        setIsLoading(true);
+        try {
+          const data = await retrieveHandler();
+          return data;
+        } catch (_) {
+          return undefined;
+        } finally {
+          setIsLoading(false);
+        }
+      } else return state;
+    },
+    [state, retrieveHandler]
+  );
+
+  return [getState, isLoading];
 }

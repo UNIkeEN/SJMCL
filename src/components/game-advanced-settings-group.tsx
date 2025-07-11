@@ -52,7 +52,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     gameConfig.advanced.jvm.environmentVariable
   );
 
-  const gameCompletnessCheckPolicy = ["disable", "normal", "full"];
+  const gameFileValidatePolicies = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     updateGameConfig(`advanced.${key}`, value);
   };
@@ -225,7 +225,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       items: [
         {
           title: t(
-            "GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.title"
+            "GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.title"
           ),
           children: (
             <Menu>
@@ -238,26 +238,24 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 textAlign="left"
               >
                 {t(
-                  `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${gameConfig.advanced.workaround.gameCompletnessCheckPolicy}`
+                  `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${gameConfig.advanced.workaround.gameFileValidatePolicy}`
                 )}
               </MenuButton>
               <MenuList>
                 <MenuOptionGroup
                   type="radio"
-                  value={
-                    gameConfig.advanced.workaround.gameCompletnessCheckPolicy
-                  }
+                  value={gameConfig.advanced.workaround.gameFileValidatePolicy}
                   onChange={(value) => {
                     updateGameAdvancedConfig(
-                      "workaround.gameCompletnessCheckPolicy",
+                      "workaround.gameFileValidatePolicy",
                       value
                     );
                   }}
                 >
-                  {gameCompletnessCheckPolicy.map((type) => (
+                  {gameFileValidatePolicies.map((type) => (
                     <MenuItemOption value={type} fontSize="xs" key={type}>
                       {t(
-                        `GameAdvancedSettingsPage.workaround.settings.gameCompletnessCheckPolicy.${type}`
+                        `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}`
                       )}
                     </MenuItemOption>
                   ))}

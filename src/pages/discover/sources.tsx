@@ -12,10 +12,11 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuPlus, LuTrash } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import AddDiscoverSourceModal from "@/components/modals/add-post-source-mocal";
+import AddDiscoverSourceModal from "@/components/modals/add-post-source-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { PostSourceInfo } from "@/models/post";
 import { DiscoverService } from "@/services/discover";
@@ -27,6 +28,7 @@ export const DiscoverSourcesPage = () => {
   const sources = config.discoverSourceEndpoints;
 
   const [sourcesInfo, setSourcesInfo] = useState<PostSourceInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
     isOpen: isAddDiscoverSourceModalOpen,
@@ -36,12 +38,16 @@ export const DiscoverSourcesPage = () => {
 
   const handleFetchPostSourcesInfo = useCallback(() => {
     DiscoverService.fetchPostSourcesInfo().then((response) => {
-      if (response.status === "success") setSourcesInfo(response.data);
+      if (response.status === "success") {
+        setSourcesInfo(response.data);
+        setIsLoading(false);
+      }
       // no toast here, keep slient if no internet connection or etc.
     });
   }, [setSourcesInfo]);
 
   useEffect(() => {
+    if (sources.length === 0) return;
     // iniailly load url from config
     setSourcesInfo(
       sources.map((url) => ({
@@ -85,6 +91,7 @@ export const DiscoverSourcesPage = () => {
                   alt={source.iconSrc}
                   boxSize="28px"
                   style={{ borderRadius: "4px" }}
+                  fallbackSrc="/images/icons/UnknownWorld.webp"
                 />
               }
               description={
@@ -102,6 +109,7 @@ export const DiscoverSourcesPage = () => {
                     </TagLabel>
                   </Tag>
                 )}
+                {isLoading && <BeatLoader size={6} color="grey" />}
                 <Tooltip label={t("DiscoverSourcesPage.button.deleteSource")}>
                   <IconButton
                     size="sm"

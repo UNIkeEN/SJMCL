@@ -29,10 +29,17 @@ pub fn get_jar_path(app: &AppHandle) -> SJMCLResult<PathBuf> {
   )
 }
 
-async fn get_latest_meta(priority_list: &[SourceType]) -> SJMCLResult<AuthlibInjectorMeta> {
+async fn get_latest_meta(
+  app: &AppHandle,
+  priority_list: &[SourceType],
+) -> SJMCLResult<AuthlibInjectorMeta> {
+  let client = app.state::<reqwest::Client>();
+
   for source in priority_list.iter() {
     let url = get_download_api(*source, ResourceType::AuthlibInjector)?;
-    let response = reqwest::get(url.join("artifact/latest.json")?)
+    let response = client
+      .get(url.join("artifact/latest.json")?)
+      .send()
       .await
       .map_err(|_| AccountError::NetworkError)?;
 
@@ -45,6 +52,7 @@ async fn get_latest_meta(priority_list: &[SourceType]) -> SJMCLResult<AuthlibInj
       );
     }
   }
+
   Err(AccountError::NoDownloadApi.into())
 }
 
@@ -78,9 +86,12 @@ fn get_local_version(app: &AppHandle) -> SJMCLResult<String> {
 }
 
 async fn download(app: &AppHandle, url: Url) -> SJMCLResult<()> {
+  let client = app.state::<reqwest::Client>();
   let jar_path = get_jar_path(app)?;
 
-  let response = reqwest::get(url)
+  let response = client
+    .get(url)
+    .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
 
@@ -101,7 +112,7 @@ pub async fn check_authlib_jar(app: &AppHandle) -> SJMCLResult<()> {
   let latest_meta = {
     let config_state = app.state::<Mutex<LauncherConfig>>();
     let launcher_config = config_state.lock()?.clone();
-    get_latest_meta(&get_source_priority_list(&launcher_config)).await?
+    get_latest_meta(app, &get_source_priority_list(&launcher_config)).await?
   };
 
   if let Ok(local_version) = get_local_version(app) {

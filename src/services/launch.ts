@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -9,12 +10,12 @@ export class LaunchService {
   /**
    * Launching Step 1: select suitable Java runtime environment for the specified instance.
    * At this step, pass the ID of the instance to be launched (which may not be the same as the selected instance ID), and no further input is required afterwards.
-   * @param {number} instanceId - The ID of the instance.
+   * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("launch")
   static async selectSuitableJRE(
-    instanceId: number
+    instanceId: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("select_suitable_jre", { instanceId });
   }
@@ -31,10 +32,10 @@ export class LaunchService {
   /**
    * Launching Step 3: validate the selected player, prepare prefetched server meta for authlib-injector.
    * The selected player ID is retrieved by the backend itself from the config state.
-   * @returns {Promise<InvokeResponse<void>>}
+   * @returns {Promise<InvokeResponse<boolean>>} false if the access token is expired.
    */
   @responseHandler("launch")
-  static async validateSelectedPlayer(): Promise<InvokeResponse<void>> {
+  static async validateSelectedPlayer(): Promise<InvokeResponse<boolean>> {
     return await invoke("validate_selected_player");
   }
 
@@ -54,5 +55,22 @@ export class LaunchService {
   @responseHandler("launch")
   static async cancelLaunchProcess(): Promise<InvokeResponse<void>> {
     return await invoke("cancel_launch_process");
+  }
+
+  /**
+   * LISTEN to the game log output line by line.
+   * @param callback The callback function to be called when the game log is output.
+   */
+  static onGameProcessOutput(callback: (payload: string) => void) {
+    const unlisten = getCurrentWebview().listen<string>(
+      "launch://game-process-output",
+      (event) => {
+        callback(event.payload);
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

@@ -15,15 +15,17 @@ import { useTranslation } from "react-i18next";
 import { LuCopy, LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
+import ViewSkinModal from "@/components/modals/view-skin-modal";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalData } from "@/contexts/global-data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { PlayerType } from "@/enums/account";
+import { AccountServiceError } from "@/enums/service-error";
 import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 import { copyText } from "@/utils/copy";
-import ViewSkinModal from "./modals/view-skin-modal";
 
 interface PlayerMenuProps {
   player: Player;
@@ -37,13 +39,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   const { t } = useTranslation();
   const { refreshConfig } = useLauncherConfig();
   const toast = useToast();
-  const { getPlayerList } = useData();
+  const { getPlayerList } = useGlobalData();
+  const { openSharedModal, closeSharedModal, openGenericConfirmDialog } =
+    useSharedModals();
 
-  const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
-  } = useDisclosure();
   const {
     isOpen: isSkinModalOpen,
     onOpen: onSkinModalOpen,
@@ -51,8 +50,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   } = useDisclosure();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeletePlayer = () => {
+    setIsDeleting(true);
     AccountService.deletePlayer(player.id).then((response) => {
       if (response.status === "success") {
         Promise.all([getPlayerList(true), refreshConfig()]);
@@ -67,7 +68,8 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           status: "error",
         });
       }
-      onDeleteClose();
+      setIsDeleting(false);
+      closeSharedModal("generic-confirm");
     });
   };
 
@@ -87,13 +89,21 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
             description: response.details,
             status: "error",
           });
+          if (response.raw_error === AccountServiceError.Expired) {
+            openSharedModal("relogin", {
+              player,
+              onSuccess: () => {
+                Promise.all([getPlayerList(true), refreshConfig()]);
+              },
+            });
+          }
         }
       })
       .finally(() => setIsRefreshing(false));
   };
 
   const playerMenuOperations = [
-    ...(player.playerType === "offline"
+    ...(player.playerType === PlayerType.Offline
       ? []
       : [
           {
@@ -106,7 +116,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     {
       icon: TbHanger,
       label: t(
-        `PlayerMenu.label.${player.playerType === "offline" ? "manageSkin" : "viewSkin"}`
+        `PlayerMenu.label.${player.playerType === PlayerType.Offline ? "manageSkin" : "viewSkin"}`
       ),
       onClick: onSkinModalOpen,
     },
@@ -120,7 +130,17 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
       label: t("PlayerMenu.label.delete"),
       danger: true,
       onClick: () => {
-        onDeleteOpen();
+        openGenericConfirmDialog({
+          title: t("DeletePlayerAlertDialog.dialog.title"),
+          body: t("DeletePlayerAlertDialog.dialog.content", {
+            name: player.name,
+          }),
+          btnOK: t("General.delete"),
+          isAlert: true,
+          onOKCallback: handleDeletePlayer,
+          showSuppressBtn: true,
+          suppressKey: "deletePlayerAlert",
+        });
       },
     },
   ];
@@ -168,20 +188,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           ))}
         </HStack>
       )}
-
-      <GenericConfirmDialog
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-        title={t("DeletePlayerAlertDialog.dialog.title")}
-        body={t("DeletePlayerAlertDialog.dialog.content", {
-          name: player.name,
-        })}
-        btnOK={t("General.delete")}
-        btnCancel={t("General.cancel")}
-        onOKCallback={handleDeletePlayer}
-        isAlert
-      />
-      {player.playerType === "offline" ? (
+      {player.playerType === PlayerType.Offline ? (
         <ManageSkinModal
           isOpen={isSkinModalOpen}
           onClose={onSkinModalClose}

@@ -277,19 +277,19 @@ structstruck::strike! {
 }
 
 pub fn patchs_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String>, ModLoaderType) {
-  let mut mod_loader_type = ModLoaderType::Unknown;
+  let mut loader_type = ModLoaderType::Unknown;
   let mut game_version = None;
-  let mut mod_version = None;
+  let mut loader_version = None;
   if !patches.is_empty() {
     game_version = Some(patches[0].version.clone());
   }
   if patches.len() > 1 {
     if let Ok(val) = ModLoaderType::from_str(&patches[1].id) {
-      mod_loader_type = val;
+      loader_type = val;
     }
-    mod_version = Some(patches[1].version.clone())
+    loader_version = Some(patches[1].version.clone())
   }
-  (game_version, mod_version, mod_loader_type)
+  (game_version, loader_version, loader_type)
 }
 
 fn rules_is_allowed(rules: &Vec<InstructionRule>, feature: &FeaturesInfo) -> SJMCLResult<bool> {

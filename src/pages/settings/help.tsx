@@ -14,7 +14,7 @@ const HelpSettingsPage = () => {
           title: t("HelpSettingsPage.top.settings.LauncherDocs.title"),
           children: (
             <LinkIconButton
-              url="https://mc.sjtu.cn/launcher-faq"
+              url={t("HelpSettingsPage.top.settings.LauncherDocs.url")}
               aria-label="launcherdoc"
               isExternal
               withTooltip

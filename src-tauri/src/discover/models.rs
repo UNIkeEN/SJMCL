@@ -10,13 +10,20 @@ pub struct PostSourceInfo {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct PostSummary {
   pub title: String,
+  #[serde(rename = "abstract")]
   pub abstracts: String,
   pub keywords: String,
   pub image_src: String,
   pub source: PostSourceInfo,
   pub update_at: String, // ISO Datetime String
   pub link: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PostResponse {
+  pub posts: Vec<PostSummary>,
 }

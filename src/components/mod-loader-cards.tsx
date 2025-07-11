@@ -41,10 +41,15 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const basePadding = boxProps.padding || "12px";
   const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
 
-  const loaderTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
+  const loaderTypes: ModLoaderType[] = [
+    ModLoaderType.Fabric,
+    ModLoaderType.Forge,
+    ModLoaderType.NeoForge,
+  ];
 
   const renderCard = (type: ModLoaderType) => {
-    const isSelected = type === currentType && currentType !== "Unknown";
+    const isSelected =
+      type === currentType && currentType !== ModLoaderType.Unknown;
     return (
       <Card
         key={type}
@@ -66,14 +71,13 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
             <VStack spacing={0} alignItems="start">
               <Text
                 fontSize="xs-sm"
-                className="no-select"
                 fontWeight={isSelected ? "bold" : "normal"}
                 color={isSelected ? `${primaryColor}.600` : "inherit"}
                 mt={displayMode === "entry" && isSelected ? -0.5 : 0}
               >
                 {type}
               </Text>
-              <Text fontSize="xs" className="secondary-text no-select">
+              <Text fontSize="xs" className="secondary-text">
                 {displayMode === "entry"
                   ? isSelected
                     ? `${t("ModLoaderCards.installed")} ${currentVersion}`

@@ -18,7 +18,7 @@ export interface GameConfig {
   };
   performance: {
     autoMemAllocation: boolean;
-    minMemAllocation: number;
+    maxMemAllocation: number;
     processPriority: string;
   };
   versionIsolation: boolean;
@@ -41,7 +41,7 @@ export interface GameConfig {
     };
     workaround: {
       noJvmArgs: boolean;
-      gameCompletnessCheckPolicy: string;
+      gameFileValidatePolicy: string;
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useNativeGlfw: boolean;
@@ -62,6 +62,8 @@ export interface LauncherConfig {
     arch: string;
     osType: string;
     platformVersion: string;
+    isPortable: boolean;
+    allowFullLoginFeature: boolean;
   };
   mocked: boolean;
   runCount: number;
@@ -69,13 +71,16 @@ export interface LauncherConfig {
     theme: {
       primaryColor: string;
       colorMode: "light" | "dark" | "system";
+      useLiquidGlassDesign: boolean;
       headNavStyle: string;
     };
     font: {
+      fontFamily: string;
       fontSize: number;
     };
     background: {
       choice: string;
+      randomCustom: boolean;
     };
     accessibility: {
       invertColors: boolean;
@@ -116,6 +121,7 @@ export interface LauncherConfig {
   globalGameConfig: GameConfig;
   discoverSourceEndpoints: string[];
   extraJavaPaths: string[];
+  suppressedDialogs: string[];
   states: {
     shared: {
       selectedPlayerId: string;
@@ -124,7 +130,7 @@ export interface LauncherConfig {
     accountsPage: {
       viewType: string;
     };
-    allGamesPage: {
+    allInstancesPage: {
       viewType: string;
     };
     gameVersionSelector: {
@@ -162,11 +168,11 @@ export const defaultGameConfig: GameConfig = {
   },
   performance: {
     autoMemAllocation: true,
-    minMemAllocation: 1024,
+    maxMemAllocation: 1024,
     processPriority: "normal",
   },
   versionIsolation: true,
-  launcherVisibility: "start-close",
+  launcherVisibility: "startHidden",
   displayGameLog: false,
   advancedOptions: {
     enabled: false,
@@ -185,7 +191,7 @@ export const defaultGameConfig: GameConfig = {
     },
     workaround: {
       noJvmArgs: false,
-      gameCompletnessCheckPolicy: "full",
+      gameFileValidatePolicy: "full",
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useNativeGlfw: false,
@@ -201,6 +207,8 @@ export const defaultConfig: LauncherConfig = {
     arch: "",
     osType: "",
     platformVersion: "",
+    isPortable: false,
+    allowFullLoginFeature: false,
   },
   mocked: true,
   runCount: -1,
@@ -208,13 +216,16 @@ export const defaultConfig: LauncherConfig = {
     theme: {
       primaryColor: "blue",
       colorMode: "light",
+      useLiquidGlassDesign: false,
       headNavStyle: "standard",
     },
     font: {
+      fontFamily: "%built-in",
       fontSize: 100,
     },
     background: {
       choice: "%built-in:Jokull",
+      randomCustom: false,
     },
     accessibility: {
       invertColors: false,
@@ -255,6 +266,7 @@ export const defaultConfig: LauncherConfig = {
   globalGameConfig: defaultGameConfig,
   discoverSourceEndpoints: ["https://mc.sjtu.cn/api-sjmcl/article"],
   extraJavaPaths: [],
+  suppressedDialogs: [],
   states: {
     shared: {
       selectedPlayerId: "",
@@ -263,7 +275,7 @@ export const defaultConfig: LauncherConfig = {
     accountsPage: {
       viewType: "grid",
     },
-    allGamesPage: {
+    allInstancesPage: {
       viewType: "list",
     },
     gameVersionSelector: {

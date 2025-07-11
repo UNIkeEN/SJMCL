@@ -1,4 +1,4 @@
-import { HStack, Tag, TagLabel } from "@chakra-ui/react";
+import { HStack, Tag, TagLabel, VStack } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuX } from "react-icons/lu";
@@ -14,11 +14,6 @@ interface ServiceStatus {
   error: boolean;
 }
 
-interface ServiceConfig {
-  id: string;
-  url: string;
-}
-
 const PingTestPage = () => {
   const { t } = useTranslation();
 
@@ -26,30 +21,40 @@ const PingTestPage = () => {
     Record<string, ServiceStatus>
   >({});
 
-  const services = useMemo<ServiceConfig[]>(
-    () => [
-      { id: "bmclapi", url: "https://bmclapi2.bangbang93.com" },
-      { id: "curseforge", url: "https://api.curseforge.com" },
-      { id: "modrinth", url: "https://api.modrinth.com" },
-      { id: "mojang", url: "https://api.mojang.com" },
-      { id: "github", url: "https://www.github.com" },
-      { id: "sjmclapi", url: "https://mc.sjtu.cn/api-sjmcl" },
-    ],
+  const services = useMemo(
+    () =>
+      [
+        {
+          bmclapi: "https://bmclapi2.bangbang93.com",
+        },
+        {
+          curseforge: "https://www.curseforge.com/minecraft",
+          modrinth: "https://modrinth.com",
+        },
+        {
+          mojang: "https://api.mojang.com",
+          forge: "https://files.minecraftforge.net",
+          fabric: "https://meta.fabricmc.net",
+          neoforge: "https://maven.neoforged.net",
+          authlibInjector: "https://authlib-injector.yushi.moe",
+        },
+        {
+          github: "https://www.github.com",
+          sjmclapi: "https://mc.sjtu.cn/api-sjmcl",
+        },
+      ] as Record<string, string>[],
     []
   );
 
   const handleCheckServiceAvailability = useCallback(
-    async (serviceId: string) => {
-      const service = services.find((s) => s.id === serviceId);
-      if (!service) return;
-
+    async (serviceId: string, url: string) => {
       try {
         setServicesStatus((prev) => ({
           ...prev,
           [serviceId]: { loading: true, error: false },
         }));
 
-        const latency = await checkServiceAvailability(service.url);
+        const latency = await checkServiceAvailability(url);
 
         setServicesStatus((prev) => ({
           ...prev,
@@ -66,21 +71,23 @@ const PingTestPage = () => {
         }));
       }
     },
-    [services]
+    []
   );
 
   const checkAllServices = useCallback(async () => {
+    const allEntries = services.flatMap((group) => Object.entries(group)); // [ [id, url], ... ]
+
     setServicesStatus((prev) => {
       const newStatus = { ...prev };
-      services.forEach((service) => {
-        newStatus[service.id] = { loading: true, error: false };
+      allEntries.forEach(([id]) => {
+        newStatus[id] = { loading: true, error: false };
       });
       return newStatus;
     });
 
     try {
       await Promise.allSettled(
-        services.map((s) => handleCheckServiceAvailability(s.id))
+        allEntries.map(([id, url]) => handleCheckServiceAvailability(id, url))
       );
     } catch (error) {
       console.error(error);
@@ -93,47 +100,6 @@ const PingTestPage = () => {
     };
     initialCheck();
   }, [checkAllServices]);
-
-  const generateItems = () => {
-    return services.map((service) => {
-      const status = servicesStatus[service.id] || { loading: true };
-
-      return {
-        title: t(`PingTestPage.PingServerList.${service.id}`),
-        description: service.url,
-        children: status.loading ? (
-          <BeatLoader size={6} color="grey" />
-        ) : (
-          <Tag
-            colorScheme={
-              status.error
-                ? "red"
-                : (status.latency || 0) < 200
-                  ? "green"
-                  : "yellow"
-            }
-          >
-            <HStack spacing={0.5}>
-              {status.error ? (
-                <>
-                  <LuX />
-                  <TagLabel>
-                    {t("PingTestPage.PingServerList.offline")}
-                  </TagLabel>
-                </>
-              ) : (
-                <>
-                  <LuCheck />
-                  <TagLabel>{status.latency}</TagLabel>
-                  <TagLabel>ms</TagLabel>
-                </>
-              )}
-            </HStack>
-          </Tag>
-        ),
-      };
-    });
-  };
 
   return (
     <Section
@@ -150,7 +116,51 @@ const PingTestPage = () => {
         />
       }
     >
-      <OptionItemGroup items={generateItems()} />
+      <VStack align="stretch" spacing={4}>
+        {services.map((group, groupIdx) => (
+          <OptionItemGroup
+            key={groupIdx}
+            items={Object.entries(group).map(([id, url]) => {
+              const status = servicesStatus[id] || { loading: true };
+
+              return {
+                title: t(`PingTestPage.PingServerList.${id}`),
+                description: url,
+                children: status.loading ? (
+                  <BeatLoader size={6} color="grey" />
+                ) : (
+                  <Tag
+                    colorScheme={
+                      status.error
+                        ? "red"
+                        : (status.latency || 0) < 200
+                          ? "green"
+                          : "yellow"
+                    }
+                  >
+                    <HStack spacing={0.5}>
+                      {status.error ? (
+                        <>
+                          <LuX />
+                          <TagLabel>
+                            {t("PingTestPage.PingServerList.offline")}
+                          </TagLabel>
+                        </>
+                      ) : (
+                        <>
+                          <LuCheck />
+                          <TagLabel>{status.latency}</TagLabel>
+                          <TagLabel>ms</TagLabel>
+                        </>
+                      )}
+                    </HStack>
+                  </Tag>
+                ),
+              };
+            })}
+          />
+        ))}
+      </VStack>
     </Section>
   );
 };

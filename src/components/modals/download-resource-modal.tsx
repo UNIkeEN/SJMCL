@@ -14,7 +14,13 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
-import { LuEarth, LuHaze, LuPackage, LuSquareLibrary } from "react-icons/lu";
+import {
+  LuEarth,
+  LuHaze,
+  LuPackage,
+  LuPuzzle,
+  LuSquareLibrary,
+} from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
 import ResourceDownloader from "@/components/resource-downloader";
 
@@ -35,7 +41,8 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
     { key: "mod", icon: LuSquareLibrary },
     { key: "world", icon: LuEarth },
     { key: "resourcepack", icon: LuPackage },
-    { key: "shaderpack", icon: LuHaze },
+    { key: "shader", icon: LuHaze },
+    { key: "datapack", icon: LuPuzzle },
   ];
 
   return (
@@ -45,7 +52,7 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent h="100%">
+      <ModalContent h="100%" pb={4}>
         <ModalHeader>
           <HStack w="100%" justify="flex-start" align="center">
             <Text>{t("DownloadResourceModal.header.title")}</Text>
@@ -79,7 +86,7 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
             <ResourceDownloader
-              key={selectedResourceType}
+              // key={selectedResourceType}
               resourceType={selectedResourceType}
             />
           </ModalBody>

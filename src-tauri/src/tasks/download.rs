@@ -1,32 +1,44 @@
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::commands::retrieve_launcher_config;
-use crate::tasks::*;
+
+use async_speed_limit::Limiter;
 use futures::stream::TryStreamExt;
-use governor::{prelude::StreamRateLimitExt, DefaultDirectRateLimiter};
+use futures::StreamExt;
 use serde::{Deserialize, Serialize};
+use sha1::{Digest, Sha1};
 use std::future::Future;
 use std::path::PathBuf;
+use std::sync::{Arc, RwLock};
 use std::time::Duration;
-use tauri::{AppHandle, Url};
-use tauri_plugin_http::reqwest::{header::RANGE, Client};
+use tauri::{AppHandle, Manager, Url};
+use tauri_plugin_http::reqwest;
+use tauri_plugin_http::reqwest::header::{ACCEPT_ENCODING, RANGE};
 use tokio::io::AsyncSeekExt;
 use tokio_util::{bytes, compat::FuturesAsyncReadCompatExt};
 
+use super::streams::desc::{PDesc, PStatus};
+use super::streams::reporter::Reporter;
+use super::streams::ProgressStream;
+use super::*;
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct DownloadParam {
-  src: Url,
-  dest: PathBuf,
+  pub src: Url,
+  pub dest: PathBuf,
+  pub filename: Option<String>,
+  pub sha1: Option<String>,
 }
 
 pub struct DownloadTask {
-  app_handle: AppHandle,
-  task_state: TaskState,
-  report_interval: Duration,
+  p_handle: PTaskHandle,
   param: DownloadParam,
-  path: PathBuf,
+  dest_path: PathBuf,
+  report_interval: Duration,
 }
 
 impl DownloadTask {
+  const CONTENT_ENCODING_CHOICES: &'static str = "gzip;q=1.0, br;q=0.8, *;q=0.1";
   pub fn new(
     app_handle: AppHandle,
     task_id: u32,
@@ -39,116 +51,196 @@ impl DownloadTask {
       .download
       .cache
       .directory;
-
     DownloadTask {
-      app_handle,
-      task_state: TaskState::new(
-        task_id,
-        task_group,
-        TaskType::Download,
-        0,
-        cache_dir.clone(),
-        TaskParam::Download(param.clone()),
-        MonitorState::InProgress,
+      p_handle: PTaskHandle::new(
+        PDesc::<PTaskParam>::new(
+          task_id,
+          task_group.clone(),
+          0,
+          PTaskParam::Download(param.clone()),
+          PStatus::InProgress,
+        ),
+        Duration::from_secs(1),
+        cache_dir.clone().join(format!("task-{}.json", task_id)),
+        Reporter::new(
+          0,
+          Duration::from_secs(1),
+          TauriEventSink::new(app_handle.clone()),
+        ),
       ),
       param: param.clone(),
-      path: cache_dir.clone().join(param.dest.clone()),
+      dest_path: cache_dir.clone().join(param.dest.clone()),
+      report_interval,
+    }
+  }
+
+  pub fn from_descriptor(
+    app_handle: AppHandle,
+    desc: PTaskDesc,
+    report_interval: Duration,
+    reset: bool,
+  ) -> Self {
+    let param = match &desc.payload {
+      PTaskParam::Download(param) => param.clone(),
+    };
+
+    let cache_dir = retrieve_launcher_config(app_handle.clone())
+      .unwrap()
+      .download
+      .cache
+      .directory;
+    let task_id = desc.task_id;
+    let path = cache_dir.join(format!("task-{}.json", task_id));
+    DownloadTask {
+      p_handle: PTaskHandle::new(
+        if reset {
+          PTaskDesc {
+            status: PStatus::Stopped,
+            current: 0,
+            ..desc
+          }
+        } else {
+          PTaskDesc {
+            status: PStatus::Stopped,
+            ..desc
+          }
+        },
+        Duration::from_secs(1),
+        path,
+        Reporter::new(
+          desc.total,
+          Duration::from_secs(1),
+          TauriEventSink::new(app_handle.clone()),
+        ),
+      ),
+      param: param.clone(),
+      dest_path: cache_dir.clone().join(param.dest.clone()),
       report_interval,
     }
   }
 
   async fn create_resp(
-    task_state: &mut TaskState,
+    app_handle: &AppHandle,
+    p_handle: &mut PTaskHandle,
     param: &DownloadParam,
-  ) -> SJMCLResult<impl Stream<Item = Result<bytes::Bytes, std::io::Error>>> {
-    let client = Client::new();
+  ) -> SJMCLResult<impl Stream<Item = Result<bytes::Bytes, std::io::Error>> + Send> {
+    let client = app_handle.state::<reqwest::Client>().clone();
     Ok(
-      if task_state.total == 0 && task_state.current == 0 {
+      if p_handle.desc.total == 0 && p_handle.desc.current == 0 {
         let r = client
           .get(param.src.clone())
+          .header(ACCEPT_ENCODING, Self::CONTENT_ENCODING_CHOICES)
           .send()
           .await?
           .error_for_status()?;
-        task_state.total = r.content_length().unwrap_or_default() as i64;
-        task_state.save()?;
+        p_handle.set_total(r.content_length().unwrap_or_default() as i64);
         r
       } else {
         client
           .get(param.src.clone())
-          .header(RANGE, format!("bytes={}-", task_state.current))
+          .header(ACCEPT_ENCODING, Self::CONTENT_ENCODING_CHOICES)
+          .header(RANGE, format!("bytes={}-", p_handle.desc.current))
           .send()
           .await?
           .error_for_status()?
       }
       .bytes_stream()
-      .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e)),
+      .map(|res| {
+        match res {
+          Ok(bytes) => Ok(bytes),
+          Err(e) => {
+            // Log the error and skip this chunk
+            // eprintln!("Network error during download: {:?}", e);
+            // Return an empty chunk or skip by returning an error that can be filtered out later
+            // Here, we return an empty chunk to continue
+            Ok(bytes::Bytes::new())
+          }
+        }
+      }),
     )
+  }
+
+  fn validate_sha1(dest_path: PathBuf, param: DownloadParam) -> SJMCLResult<()> {
+    let mut f = std::fs::File::options()
+      .read(true)
+      .create(false)
+      .write(false)
+      .open(&dest_path)
+      .unwrap();
+    let mut hasher = Sha1::new();
+    std::io::copy(&mut f, &mut hasher).unwrap();
+    match param.sha1 {
+      Some(truth) => {
+        let sha1 = hex::encode(hasher.finalize());
+        if sha1 != truth {
+          Err(SJMCLError(format!(
+            "SHA1 mismatch for {}: expected {}, got {}",
+            dest_path.display(),
+            truth,
+            sha1
+          )))
+        } else {
+          Ok(())
+        }
+      }
+      None => Ok(()),
+    }
   }
 
   async fn future_impl(
     self,
-    resp: impl Stream<Item = Result<bytes::Bytes, std::io::Error>> + Sync + Unpin,
+    resp: impl Stream<Item = Result<bytes::Bytes, std::io::Error>> + Send + Unpin,
+    limiter: Option<Limiter>,
   ) -> SJMCLResult<(
-    impl Future<Output = SJMCLResult<()>> + Sync,
-    Arc<Mutex<TaskState>>,
+    impl Future<Output = SJMCLResult<()>> + Send,
+    Arc<RwLock<PTaskHandle>>,
   )> {
-    let stream = ProgressStream::new(
-      self.app_handle.clone(),
-      resp,
-      self.task_state.clone(),
-      self.report_interval,
-    );
-    let task_state = self.task_state.clone();
-    let monitor_state = stream.state();
-    let stream_state = monitor_state.clone();
+    let desc = self.p_handle.desc.clone();
+    let handle = Arc::new(RwLock::new(self.p_handle));
+    let task_handle = handle.clone();
+    let stream = ProgressStream::new(resp, handle.clone());
+    let param = self.param.clone();
+    let dest_path = self.dest_path.clone();
     Ok((
       async move {
-        let handle = self.app_handle.clone();
-        tokio::fs::create_dir_all(&self.path.parent().unwrap()).await?;
-        let mut file = if task_state.current == 0 {
-          tokio::fs::File::create(&self.path).await?
+        tokio::fs::create_dir_all(&self.dest_path.parent().unwrap()).await?;
+        let mut file = if desc.current == 0 {
+          tokio::fs::File::create(&self.dest_path).await?
         } else {
-          let mut f = tokio::fs::OpenOptions::new().open(&self.path).await?;
-          f.seek(std::io::SeekFrom::Start(task_state.current as u64))
+          let mut f = tokio::fs::OpenOptions::new().open(&self.dest_path).await?;
+          f.seek(std::io::SeekFrom::Start(desc.current as u64))
             .await?;
           f
         };
-        TaskEvent::emit_started(
-          &handle,
-          task_state.task_id,
-          task_state.task_group.as_deref(),
-          task_state.total,
-        );
-        tokio::io::copy(&mut stream.into_async_read().compat(), &mut file).await?;
-        if stream_state.lock().unwrap().is_cancelled() {
-          tokio::fs::remove_file(&self.path).await?;
-        }
-        Ok(())
-      },
-      monitor_state,
-    ))
-  }
 
-  pub async fn future_with_ratelimiter(
-    mut self,
-    lim: &'_ DefaultDirectRateLimiter,
-  ) -> SJMCLResult<(
-    impl Future<Output = SJMCLResult<()>> + Sync + '_,
-    Arc<Mutex<TaskState>>,
-  )> {
-    let resp = Self::create_resp(&mut self.task_state, &self.param)
-      .await?
-      .ratelimit_stream(lim);
-    Self::future_impl(self, resp).await
+        task_handle.write().unwrap().mark_started();
+        if let Some(lim) = limiter {
+          tokio::io::copy(&mut lim.limit(stream.into_async_read()).compat(), &mut file).await?;
+        } else {
+          tokio::io::copy(&mut stream.into_async_read().compat(), &mut file).await?;
+        }
+
+        drop(file);
+        if task_handle.read().unwrap().status().is_cancelled() {
+          tokio::fs::remove_file(&self.dest_path).await?;
+          Ok(())
+        } else {
+          Self::validate_sha1(dest_path, param.clone())
+        }
+      },
+      handle,
+    ))
   }
 
   pub async fn future(
     mut self,
+    app_handle: AppHandle,
+    limiter: Option<Limiter>,
   ) -> SJMCLResult<(
-    impl Future<Output = SJMCLResult<()>> + Sync,
-    Arc<Mutex<TaskState>>,
+    impl Future<Output = SJMCLResult<()>> + Send,
+    Arc<RwLock<PTaskHandle>>,
   )> {
-    let resp = Self::create_resp(&mut self.task_state, &self.param).await?;
-    Self::future_impl(self, resp).await
+    let resp = Self::create_resp(&app_handle, &mut self.p_handle, &self.param).await?;
+    Self::future_impl(self, resp, limiter).await
   }
 }

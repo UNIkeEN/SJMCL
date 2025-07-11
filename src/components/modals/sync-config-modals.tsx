@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
+import { copyText } from "@/utils/copy";
 
 interface SyncConfigModalProps extends Omit<ModalProps, "children"> {}
 
@@ -87,7 +88,12 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
             <FormLabel>{t("SyncConfigExportModal.label.token")}</FormLabel>
             <HStack spacing={4} alignItems="center">
               <Fade in={fadeFlag}>
-                <Heading size="lg" color={`${primaryColor}.500`}>
+                <Heading
+                  size="lg"
+                  color={`${primaryColor}.500`}
+                  cursor="pointer"
+                  onClick={() => copyText(token || "", { toast })}
+                >
                   {token}
                 </Heading>
               </Fade>
@@ -117,8 +123,13 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const [token, setToken] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const fields = new Array(6).fill(null);
+
+  const handleCloseModal = useCallback(() => {
+    setToken("");
+    setIsLoading(false);
+    modalProps.onClose();
+  }, [modalProps]);
 
   const handleImportLauncherConfig = useCallback(async () => {
     setIsLoading(true);
@@ -129,20 +140,23 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
         title: response.message,
         status: "success",
       });
-      setToken("");
-      modalProps.onClose();
+      handleCloseModal();
     } else {
       toast({
         title: response.message,
         description: response.details,
         status: "error",
       });
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  }, [modalProps, setConfig, toast, token]);
+  }, [handleCloseModal, setConfig, toast, token]);
 
   return (
-    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
+    <Modal
+      size={{ base: "md", lg: "lg", xl: "xl" }}
+      {...modalProps}
+      onClose={handleCloseModal}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("SyncConfigImportModal.header.title")}</ModalHeader>
@@ -166,7 +180,7 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" onClick={modalProps.onClose}>
+          <Button variant="ghost" onClick={handleCloseModal}>
             {t("General.cancel")}
           </Button>
           <Button

@@ -81,6 +81,22 @@ const DownloadSettingsPage = () => {
 
   const downloadSettingGroups: OptionItemGroupProps[] = [
     {
+      items: [
+        {
+          title: t("DownloadTasksPage.title"),
+          children: (
+            <LinkIconButton aria-label="download-tasks" url="/downloads" />
+          ),
+        },
+        {
+          title: t("PingTestPage.PingServerList.title"),
+          children: (
+            <LinkIconButton aria-label="ping-test" url="/settings/ping-test" />
+          ),
+        },
+      ],
+    },
+    {
       title: t("DownloadSettingPage.source.title"),
       items: [
         {
@@ -117,12 +133,6 @@ const DownloadSettingsPage = () => {
                 </MenuOptionGroup>
               </MenuList>
             </Menu>
-          ),
-        },
-        {
-          title: t("PingTestPage.PingServerList.title"),
-          children: (
-            <LinkIconButton aria-label="ping-test" url="/settings/ping-test" />
           ),
         },
       ],

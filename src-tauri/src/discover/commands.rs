@@ -1,9 +1,13 @@
 use super::models::PostSourceInfo;
-use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig};
+use crate::{
+  discover::models::{PostResponse, PostSummary},
+  error::SJMCLResult,
+  launcher_config::models::LauncherConfig,
+};
 use futures::future;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest::Client;
+use tauri_plugin_http::reqwest;
 
 #[tauri::command]
 pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSourceInfo>> {
@@ -13,7 +17,7 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
     state.discover_source_endpoints.clone()
   };
 
-  let client = Client::new();
+  let client = app.state::<reqwest::Client>();
 
   let tasks: Vec<_> = post_source_urls
     .into_iter()
@@ -49,4 +53,44 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
     .collect();
 
   Ok(future::join_all(tasks).await)
+}
+
+#[tauri::command]
+pub async fn fetch_post_summaries(app: AppHandle) -> SJMCLResult<Vec<PostSummary>> {
+  let post_source_urls = {
+    let binding = app.state::<Mutex<LauncherConfig>>();
+    let state = binding.lock().unwrap();
+    state.discover_source_endpoints.clone()
+  };
+
+  let client = app.state::<reqwest::Client>();
+
+  let tasks: Vec<_> = post_source_urls
+    .into_iter()
+    .map(|url| {
+      let client = client.clone();
+      async move {
+        let mut posts_vec = Vec::new();
+
+        let response = client.get(&url).query(&[("pageSize", "12")]).send().await;
+
+        if let Ok(response) = response {
+          if let Ok(post_list) = response.json::<PostResponse>().await {
+            posts_vec = post_list.posts;
+            posts_vec.sort_by(|a, b| b.update_at.cmp(&a.update_at));
+          }
+        }
+
+        posts_vec
+      }
+    })
+    .collect();
+
+  let all_posts = future::join_all(tasks)
+    .await
+    .into_iter()
+    .flatten()
+    .collect();
+
+  Ok(all_posts)
 }

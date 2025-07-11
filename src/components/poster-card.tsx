@@ -19,6 +19,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { PostSourceInfo, PostSummary } from "@/models/post";
 import { formatRelativeTime } from "@/utils/datetime";
+import { cleanHtmlText } from "@/utils/string";
 
 interface PosterCardProps extends CardProps {
   data: PostSummary;
@@ -49,9 +50,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
       {imageSrc && <Image objectFit="cover" src={imageSrc} alt={title} />}
       <CardBody p={3}>
         <VStack spacing={1} alignItems="start" overflow="hidden">
-          <Text fontSize="xs-sm" className="no-select">
-            {title}
-          </Text>
+          <Text fontSize="xs-sm">{title}</Text>
           {keywords && keywords.trim() && (
             <Wrap spacing={1}>
               {keywords.split(",").map((keyword, index) => (
@@ -62,8 +61,8 @@ const PosterCard = ({ data }: PosterCardProps) => {
             </Wrap>
           )}
           {abstracts && (
-            <Text fontSize="xs" className="secondary-text no-select">
-              {abstracts}
+            <Text fontSize="xs" className="secondary-text">
+              {cleanHtmlText(abstracts)}
             </Text>
           )}
           <HStack className="secondary-text" fontSize="xs" mt={1} spacing={1}>

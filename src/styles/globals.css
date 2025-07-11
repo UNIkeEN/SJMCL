@@ -1,4 +1,5 @@
 @import 'fonts.css';
+@import 'animations.css';
 
 html {
   /* disable elastic scrolling */
@@ -12,6 +13,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
+  user-select: none;
+}
+
+body[use-custom-font] {
+  font-family: var(--custom-global-font-family, inherit) !important;
 }
 
 
@@ -47,9 +53,8 @@ body {
   line-height: var(--chakra-lineHeights-4);
 }
 
-.no-select {
-  cursor: default;
-  user-select: none !important;
+.allow-select {
+  user-select: initial !important;
 }
 
 .ellipsis-text {
@@ -68,7 +73,7 @@ body {
   user-select: none;
 
   & * {
-    user-select: initial;
+    user-select: none;
   }
 }
 
@@ -96,3 +101,4 @@ body {
   padding-top: var(--chakra-space-2) !important;
   padding-bottom: var(--chakra-space-2) !important;
 } */
+ 

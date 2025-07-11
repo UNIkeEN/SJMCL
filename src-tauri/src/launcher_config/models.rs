@@ -10,6 +10,7 @@ use strum_macros::Display;
 pub struct MemoryInfo {
   pub total: u64,
   pub used: u64,
+  pub suggested_max_alloc: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -35,26 +36,21 @@ pub enum ProcessPriority {
   Normal,
 }
 
-impl ProcessPriority {
-  pub fn to_nice_value(&self) -> i32 {
-    match self {
-      ProcessPriority::Low => 5,
-      ProcessPriority::BelowNormal => 1,
-      ProcessPriority::Normal => 0,
-      ProcessPriority::AboveNormal => -1,
-      ProcessPriority::High => -5,
-    }
-  }
-}
-
-// see java.net.proxy
-// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
-pub enum ProxyType {
-  Socks,
+pub enum FileValidatePolicy {
+  Disable,
+  Normal,
   #[serde(other)]
-  Http,
+  Full,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum LauncherVisiablity {
+  StartHidden,
+  RunningHidden,
+  Always,
 }
 
 // Partial Derive is used for these structs and we can use it for key value storage.
@@ -92,7 +88,7 @@ structstruck::strike! {
       #[default = true]
       pub auto_mem_allocation: bool,
       #[default = 1024]
-      pub min_mem_allocation: u32,
+      pub max_mem_allocation: u32,
       #[default(ProcessPriority::Normal)]
       pub process_priority: ProcessPriority,
     },
@@ -102,8 +98,8 @@ structstruck::strike! {
     },
     #[default = true]
     pub version_isolation: bool,
-    #[default = "start-close"]
-    pub launcher_visibility: String,
+    #[default(LauncherVisiablity::Always)]
+    pub launcher_visibility: LauncherVisiablity,
     pub display_game_log: bool,
     pub advanced_options: struct {
       pub enabled: bool,
@@ -122,8 +118,8 @@ structstruck::strike! {
       },
       pub workaround: struct {
         pub no_jvm_args: bool,
-        #[default = "full"]
-        pub game_completness_check_policy: String,
+        #[default(FileValidatePolicy::Full)]
+        pub game_file_validate_policy: FileValidatePolicy,
         pub dont_check_jvm_validity: bool,
         pub dont_patch_natives: bool,
         pub use_native_glfw: bool,
@@ -140,6 +136,16 @@ pub struct GameDirectory {
   pub dir: PathBuf,
 }
 
+// see java.net.proxy
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum ProxyType {
+  Socks,
+  #[serde(other)]
+  Http,
+}
+
 structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
@@ -153,6 +159,9 @@ structstruck::strike! {
       pub arch: String,
       pub os_type: String,
       pub platform_version: String,
+      pub is_portable: bool,
+      #[default = false]
+      pub allow_full_login_feature: bool,
     },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,
@@ -163,16 +172,20 @@ structstruck::strike! {
         pub primary_color: String,
         #[default = "light"]
         pub color_mode: String,
+        pub use_liquid_glass_design: bool,
         #[default = "standard"]
         pub head_nav_style: String,
       },
       pub font: struct {
+        #[default = "%built-in"]
+        pub font_family: String,
         #[default = 100]
         pub font_size: usize, // as percent
       },
       pub background: struct {
         #[default = "%built-in:Jokull"]
         pub choice: String,
+        pub random_custom: bool,
       },
       pub accessibility: struct {
         pub invert_colors: bool,
@@ -223,6 +236,7 @@ structstruck::strike! {
     #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string()]")]
     pub discover_source_endpoints: Vec<String>,
     pub extra_java_paths: Vec<String>,
+    pub suppressed_dialogs: Vec<String>,
     pub states: struct States {
       pub shared: struct {
         pub selected_player_id: String,
@@ -232,7 +246,7 @@ structstruck::strike! {
         #[default = "grid"]
         pub view_type: String
       },
-      pub all_games_page: struct {
+      pub all_instances_page: struct {
         #[default = "list"]
         pub view_type: String
       },
@@ -271,6 +285,7 @@ pub enum LauncherConfigError {
   VersionMismatch,
   GameDirAlreadyAdded,
   GameDirNotExist,
+  JavaExecInvalid,
 }
 
 impl std::error::Error for LauncherConfigError {}

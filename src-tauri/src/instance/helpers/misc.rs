@@ -7,15 +7,15 @@ use super::{
   client_jar::load_game_version_from_jar,
 };
 use crate::error::SJMCLResult;
-use crate::launcher_config::{helpers::get_global_game_config, models::GameConfig};
-use crate::storage::{load_json_async, save_json_async};
+use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
+use crate::storage::load_json_async;
 use crate::{
   instance::helpers::client_json::patchs_to_info,
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
 use sanitize_filename;
 use serde_json::Value;
-use std::{fs, io::Cursor, path::PathBuf, sync::Mutex};
+use std::{collections::HashMap, fs, io::Cursor, path::PathBuf, sync::Mutex};
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
@@ -46,7 +46,7 @@ pub fn get_instance_subdir_paths(
   let paths = directory_types
     .iter()
     .map(|directory_type| {
-      match directory_type {
+      let path_buf = match directory_type {
         InstanceSubdirType::Assets => game_dir.join("assets"),
         InstanceSubdirType::Libraries => game_dir.join("libraries"),
         InstanceSubdirType::Mods => path.join("mods"),
@@ -63,7 +63,14 @@ pub fn get_instance_subdir_paths(
           tauri_plugin_os::platform(),
           tauri_plugin_os::arch()
         )),
+      };
+
+      // Create directory if it doesn't exist
+      if !path_buf.exists() {
+        let _ = fs::create_dir_all(&path_buf);
       }
+
+      path_buf
     })
     .collect();
 
@@ -72,10 +79,10 @@ pub fn get_instance_subdir_paths(
 
 pub fn get_instance_subdir_path_by_id(
   app: &AppHandle,
-  instance_id: usize,
+  instance_id: &String,
   directory_type: &InstanceSubdirType,
 ) -> Option<PathBuf> {
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let state = binding.lock().unwrap();
   let instance = state.get(instance_id)?;
 
@@ -161,7 +168,7 @@ pub async fn refresh_instances(
       .await
       .unwrap_or_default();
 
-    let (mut game_version, mod_version, loader_type) = patchs_to_info(&client_data.patches);
+    let (mut game_version, loader_version, loader_type) = patchs_to_info(&client_data.patches);
     // TODO: patches related logic
     if game_version.is_none() {
       let file = Cursor::new(tokio::fs::read(jar_path).await?);
@@ -180,31 +187,38 @@ pub async fn refresh_instances(
       version_path,
       mod_loader: ModLoader {
         loader_type,
-        version: mod_version.unwrap_or_default(),
+        version: loader_version.unwrap_or_default(),
       },
       ..cfg_read
     };
     // ignore error here, for now
-    save_json_async::<Instance>(&instance, &cfg_path).await.ok();
+    instance.save_json_cfg().await.ok();
     instances.push(instance);
   }
 
   Ok(instances)
 }
 
-pub async fn refresh_all_instances(game_directories: &[GameDirectory]) -> Vec<Instance> {
-  let mut instances = vec![];
+pub async fn refresh_all_instances(
+  game_directories: &[GameDirectory],
+) -> HashMap<String, Instance> {
+  let mut instance_map = HashMap::new();
+
   for game_directory in game_directories {
+    let dir_name = game_directory.name.clone();
     match refresh_instances(game_directory).await {
-      Ok(mut v) => instances.append(&mut v),
+      Ok(vs) => {
+        for mut instance in vs {
+          let composed_id = format!("{}:{}", dir_name, instance.name);
+          instance.id = composed_id.clone();
+          instance_map.insert(composed_id, instance);
+        }
+      }
       Err(_) => continue,
     }
   }
-  // assign id
-  for (i, instance) in instances.iter_mut().enumerate() {
-    instance.id = i;
-  }
-  instances
+
+  instance_map
 }
 
 pub async fn refresh_and_update_instances(app: &AppHandle) {
@@ -216,7 +230,7 @@ pub async fn refresh_and_update_instances(app: &AppHandle) {
   };
   let instances = refresh_all_instances(&local_game_directories).await;
   // update the instances in the app state
-  let binding = app.state::<Mutex<Vec<Instance>>>();
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();
   *state = instances;
 }

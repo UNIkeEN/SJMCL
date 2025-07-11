@@ -21,24 +21,23 @@ import {
   StepTitle,
   Stepper,
   Text,
-  useSteps,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalData } from "@/contexts/global-data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { AccountServiceError } from "@/enums/service-error";
-import { GameInstanceSummary } from "@/models/instance/misc";
+import { InstanceSummary } from "@/models/instance/misc";
 import { ResponseError } from "@/models/response";
 import { AccountService } from "@/services/account";
 import { LaunchService } from "@/services/launch";
 
 // This modal will use shared-modal-context
 interface LaunchProcessModal extends Omit<ModalProps, "children"> {
-  instanceId: number; // may not be select instance id
+  instanceId: string; // may not be select instance id
 }
 
 const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
@@ -49,18 +48,20 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { selectedPlayer, getGameInstanceList } = useData();
+  const { selectedPlayer, getInstanceList } = useGlobalData();
+  const { openSharedModal } = useSharedModals();
 
-  const [launchingInstance, setLaunchingInstance] =
-    useState<GameInstanceSummary>();
+  const [launchingInstance, setLaunchingInstance] = useState<InstanceSummary>();
   const [errorPaused, setErrorPaused] = useState<boolean>(false);
   const [errorDesc, setErrorDesc] = useState<string>("");
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const previousStep = useRef<number>(-1);
 
   useEffect(() => {
     setLaunchingInstance(
-      getGameInstanceList()?.find((instance) => instance.id === instanceId)
+      getInstanceList()?.find((instance) => instance.id === instanceId)
     );
-  }, [getGameInstanceList, instanceId]);
+  }, [getInstanceList, instanceId]);
 
   const handleCloseModal = useCallback(() => {
     LaunchService.cancelLaunchProcess();
@@ -93,18 +94,29 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       {
         label: "validateSelectedPlayer",
         function: () => LaunchService.validateSelectedPlayer(),
-        isOK: (data: any) => true,
-        onResCallback: (data: any) => {},
-        onErrCallback: (error: ResponseError) => {
-          if (error.raw_error === AccountServiceError.Expired)
-            AccountService.refreshPlayer(selectedPlayer?.id || "").then(
-              (response) => {
-                if (response.status !== "success") {
-                  // todo: show re-login modal
-                }
+        isOK: (data: boolean) => data,
+        onResCallback: (data: boolean) => {
+          AccountService.refreshPlayer(selectedPlayer?.id || "").then(
+            (response) => {
+              if (response.status !== "success") {
+                openSharedModal("relogin", {
+                  player: selectedPlayer,
+                  onSuccess: () => {
+                    setActiveStep(activeStep + 1);
+                  },
+                  onError: () => {
+                    setErrorPaused(true);
+                    setErrorDesc(response.details);
+                    console.error(response.details);
+                  },
+                });
+              } else {
+                setActiveStep(activeStep + 1);
               }
-            );
+            }
+          );
         },
+        onErrCallback: (error: ResponseError) => {},
       },
       {
         label: "launchGame",
@@ -115,13 +127,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       },
       // TODO: progress bar in last step, and cancel logic
     ],
-    [instanceId, selectedPlayer?.id]
+    [activeStep, instanceId, openSharedModal, selectedPlayer, setActiveStep]
   );
-
-  const { activeStep, setActiveStep } = useSteps({
-    index: 0,
-    count: launchProcessSteps.length,
-  });
 
   useEffect(() => {
     if (!selectedPlayer) {
@@ -138,20 +145,24 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       // TODO
     }
     const currentStep = launchProcessSteps[activeStep];
-    currentStep.function().then((response) => {
-      if (response.status === "success") {
-        if (currentStep.isOK(response.data)) {
-          setActiveStep(activeStep + 1);
+
+    if (previousStep.current !== activeStep) {
+      previousStep.current = activeStep;
+      currentStep.function().then((response) => {
+        if (response.status === "success") {
+          if (currentStep.isOK(response.data)) {
+            setActiveStep(activeStep + 1);
+          } else {
+            currentStep.onResCallback(response.data);
+          }
         } else {
-          currentStep.onResCallback(response.data);
+          setErrorPaused(true);
+          setErrorDesc(response.details);
+          currentStep.onErrCallback(response);
+          console.error(response.details);
         }
-      } else {
-        setErrorPaused(true);
-        setErrorDesc(response.details);
-        currentStep.onErrCallback(response);
-        console.error(response.details);
-      }
-    });
+      });
+    }
   }, [
     activeStep,
     setActiveStep,

@@ -22,6 +22,7 @@ export interface SectionProps extends Omit<BoxProps, "children"> {
   initialIsOpen?: boolean;
   onAccordionToggle?: (isOpen: boolean) => void;
   withBackButton?: boolean;
+  backRoutePath?: string;
   children?: React.ReactNode;
 }
 
@@ -34,6 +35,7 @@ export const Section: React.FC<SectionProps> = ({
   initialIsOpen = true,
   onAccordionToggle,
   withBackButton = false,
+  backRoutePath = "",
   children,
   ...props
 }) => {
@@ -55,7 +57,8 @@ export const Section: React.FC<SectionProps> = ({
                 variant="ghost"
                 colorScheme="gray"
                 onClick={() => {
-                  router.back();
+                  if (backRoutePath) router.push(backRoutePath);
+                  else router.back();
                 }}
               />
             )}
@@ -85,14 +88,14 @@ export const Section: React.FC<SectionProps> = ({
             <VStack spacing={0} align="start">
               <HStack spacing={2}>
                 {title && (
-                  <Text fontWeight="bold" fontSize="sm" className="no-select">
+                  <Text fontWeight="bold" fontSize="sm">
                     {title}
                   </Text>
                 )}
                 {titleExtra}
               </HStack>
               {description && (
-                <Text fontSize="xs" className="secondary-text no-select">
+                <Text fontSize="xs" className="secondary-text">
                   {description}
                 </Text>
               )}

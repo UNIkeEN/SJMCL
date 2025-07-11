@@ -71,6 +71,29 @@ export class AccountService {
   }
 
   /**
+   * RE-LOGIN a player using both OAuth methods (Microsoft and 3rd party).
+   * @param {string} playerId - The player ID of the player to be re-logged in.
+   * @param {OAuthCodeResponse} authInfo - The authentication information (code and verification URI).
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async reloginPlayerOAuth(
+    playerId: string,
+    authInfo: OAuthCodeResponse
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("relogin_player_oauth", { playerId, authInfo });
+  }
+
+  /**
+   * CANCEL the OAuth process.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async cancelOAuth(): Promise<InvokeResponse<void>> {
+    return await invoke("cancel_oauth");
+  }
+
+  /**
    * ADD a new player to the system using authlib_injector's password authentication.
    * @param {string} authServerUrl - The authentication server's URL.
    * @param {string} username - The username of the player to be added.
@@ -86,6 +109,23 @@ export class AccountService {
     return await invoke("add_player_3rdparty_password", {
       authServerUrl,
       username,
+      password,
+    });
+  }
+
+  /**
+   * RE-LOGIN a player using authlib_injector's password authentication.
+   * @param {string} playerId - The player ID of the player to be re-logged in.
+   * @param {string} password - The password of the player to be re-logged in.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async reloginPlayer3rdPartyPassword(
+    playerId: string,
+    password: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("relogin_player_3rdparty_password", {
+      playerId,
       password,
     });
   }

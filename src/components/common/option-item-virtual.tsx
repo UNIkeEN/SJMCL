@@ -85,14 +85,7 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
     return (
       <div style={style} key={index}>
         {isOptionItemProps(item) ? (
-          <OptionItem
-            title={item.title}
-            description={item.description}
-            titleExtra={item.titleExtra}
-            prefixElement={item.prefixElement}
-          >
-            {item.children}
-          </OptionItem>
+          <OptionItem {...item}>{item.children}</OptionItem>
         ) : (
           item
         )}
@@ -113,14 +106,7 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
             pointerEvents="none"
           >
             {isOptionItemProps(items[0]) && (
-              <OptionItem
-                title={items[0].title}
-                description={items[0].description}
-                titleExtra={items[0].titleExtra}
-                prefixElement={items[0].prefixElement}
-              >
-                {items[0].children}
-              </OptionItem>
+              <OptionItem {...items[0]}>{items[0].children}</OptionItem>
             )}
             {withDivider ? <Divider my={2} /> : <Box h={2} />}
           </Box>

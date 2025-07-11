@@ -4,6 +4,7 @@ use crate::instance::models::misc::ModLoaderType;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[derive(Serialize, Deserialize, Default)]
@@ -24,14 +25,16 @@ struct FabricLoaderInfo {
 }
 
 pub async fn get_fabric_meta_by_game_version(
+  app: &AppHandle,
   priority_list: &[SourceType],
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+  let client = app.state::<reqwest::Client>();
   for source_type in priority_list.iter() {
     let url = get_download_api(*source_type, ResourceType::FabricMeta)?
       .join("v2/versions/loader/")?
       .join(game_version)?;
-    match reqwest::get(url).await {
+    match client.get(url).send().await {
       Ok(response) => {
         if response.status().is_success() {
           if let Ok(manifest) = response.json::<Vec<FabricMetaItem>>().await {

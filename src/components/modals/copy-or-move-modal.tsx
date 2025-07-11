@@ -26,29 +26,30 @@ import { LuCopy, LuScissors } from "react-icons/lu";
 import { OptionItemGroup } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
-import { GameInstanceSummary } from "@/models/instance/misc";
+import { InstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
+import { generateInstanceDesc } from "@/utils/instance";
 
 interface CopyOrMoveModalProps extends Omit<ModalProps, "children"> {
   srcResName: string;
   srcFilePath: string;
-  tgtDirType?: InstanceSubdirEnums;
-  srcInstanceId?: number;
+  tgtDirType?: InstanceSubdirType;
+  srcInstanceId?: string;
 }
 
 const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   srcResName,
   srcFilePath,
-  tgtDirType = InstanceSubdirEnums.Root,
+  tgtDirType = InstanceSubdirType.Root,
   srcInstanceId,
   ...modalProps
 }) => {
   const { t } = useTranslation();
-  const { getGameInstanceList } = useData();
+  const { getInstanceList } = useGlobalData();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();
@@ -56,15 +57,13 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [operation, setOperation] = useState<"copy" | "move">("copy");
-  const [gameInstanceList, setGameInstanceList] = useState<
-    GameInstanceSummary[]
-  >([]);
-  const [selectedGameInstances, setSelectedGameInstances] = useState<
-    GameInstanceSummary[]
-  >([]);
+  const [instanceList, setInstanceList] = useState<InstanceSummary[]>([]);
+  const [selectedInstances, setSelectedInstances] = useState<InstanceSummary[]>(
+    []
+  );
   const [_tgtDirType, _setTgtDirType] =
-    useState<InstanceSubdirEnums>(tgtDirType);
-  const [_srcInstanceId, _setSrcInstanceId] = useState<number | undefined>(
+    useState<InstanceSubdirType>(tgtDirType);
+  const [_srcInstanceId, _setSrcInstanceId] = useState<string | undefined>(
     srcInstanceId
   );
 
@@ -79,11 +78,11 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     }
     const { id } = router.query;
     const instanceId = Array.isArray(id) ? id[0] : id;
-    _setSrcInstanceId(Number(instanceId));
+    _setSrcInstanceId(instanceId);
   }, [router, srcInstanceId, t, toast]);
 
   useEffect(() => {
-    if (tgtDirType !== InstanceSubdirEnums.Root) return;
+    if (tgtDirType !== InstanceSubdirType.Root) return;
     if (router === undefined) {
       toast({
         title: t("CopyOrMoveModal.error.lackOfArguments"),
@@ -93,16 +92,16 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     }
     switch (router.pathname.split("/").pop()) {
       case "resourcepacks":
-        _setTgtDirType(InstanceSubdirEnums.ResourcePacks);
+        _setTgtDirType(InstanceSubdirType.ResourcePacks);
         break;
       case "shaderpacks":
-        _setTgtDirType(InstanceSubdirEnums.ShaderPacks);
+        _setTgtDirType(InstanceSubdirType.ShaderPacks);
         break;
       case "schematics":
-        _setTgtDirType(InstanceSubdirEnums.Schematics);
+        _setTgtDirType(InstanceSubdirType.Schematics);
         break;
       case "worlds":
-        _setTgtDirType(InstanceSubdirEnums.Saves);
+        _setTgtDirType(InstanceSubdirType.Saves);
         break;
     }
   }, [router, tgtDirType, t, toast]);
@@ -123,13 +122,13 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   const handleCopyResourceToInstances = useCallback(
     (
       srcFilePath: string,
-      tgtInstId: number[],
-      tgtDirType: InstanceSubdirEnums
+      tgtInstId: string[],
+      tgtDirType: InstanceSubdirType
     ) => {
       if (
         srcFilePath !== undefined &&
         tgtInstId &&
-        tgtDirType !== InstanceSubdirEnums.Root
+        tgtDirType !== InstanceSubdirType.Root
       ) {
         InstanceService.copyResourceToInstances(
           srcFilePath,
@@ -162,13 +161,13 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   const handleMoveResourceToInstance = useCallback(
     (
       srcFilePath: string,
-      tgtInstId: number,
-      tgtDirType: InstanceSubdirEnums
+      tgtInstId: string,
+      tgtDirType: InstanceSubdirType
     ) => {
       if (
         srcFilePath !== undefined &&
         tgtInstId &&
-        tgtDirType !== InstanceSubdirEnums.Root
+        tgtDirType !== InstanceSubdirType.Root
       ) {
         InstanceService.moveResourceToInstance(
           srcFilePath,
@@ -197,13 +196,13 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     if (operation === "copy") {
       handleCopyResourceToInstances(
         srcFilePath,
-        selectedGameInstances.map((instance) => instance.id),
+        selectedInstances.map((instance) => instance.id),
         _tgtDirType
       );
     } else {
       handleMoveResourceToInstance(
         srcFilePath,
-        selectedGameInstances[0].id,
+        selectedInstances[0].id,
         _tgtDirType
       );
     }
@@ -211,44 +210,32 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     setIsLoading(false);
   };
 
-  const generateDesc = (game: GameInstanceSummary) => {
-    if (game.modLoader.loaderType === "Unknown") {
-      return game.version || "";
-    }
-    return [
-      game.version,
-      `${game.modLoader.loaderType} ${game.modLoader.version}`,
-    ]
-      .filter(Boolean)
-      .join(", ");
-  };
-
-  const buildOptionItems = (instance: GameInstanceSummary) => ({
+  const buildOptionItems = (instance: InstanceSummary) => ({
     title: instance.name,
     titleExtra: instance.id === _srcInstanceId && (
       <Tag colorScheme={primaryColor} className="tag-xs">
         {t("CopyOrMoveModal.tag.source")}
       </Tag>
     ),
-    description: [generateDesc(instance), instance.description]
+    description: [generateInstanceDesc(instance), instance.description]
       .filter(Boolean)
       .join(", "),
     prefixElement: (
       <HStack spacing={2.5}>
         {operation === "move" ? (
           <Radio
-            value={instance.id.toString()}
+            value={instance.id}
             colorScheme={primaryColor}
             isDisabled={instance.id === _srcInstanceId}
             onClick={() => {
               if (instance.id === _srcInstanceId) return;
-              setSelectedGameInstances([instance]);
+              setSelectedInstances([instance]);
             }}
           />
         ) : (
           <Checkbox
-            key={instance.id.toString()}
-            isChecked={selectedGameInstances.some(
+            key={instance.id}
+            isChecked={selectedInstances.some(
               (selected) => selected.id === instance.id
             )}
             colorScheme={primaryColor}
@@ -256,7 +243,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
             borderColor="gray.400"
             onChange={() => {
               if (instance.id === _srcInstanceId) return;
-              setSelectedGameInstances((prevSelected) => {
+              setSelectedInstances((prevSelected) => {
                 if (prevSelected.includes(instance)) {
                   return prevSelected.filter(
                     (selected) => selected.id !== instance.id
@@ -279,11 +266,11 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   });
 
   useEffect(() => {
-    setGameInstanceList(getGameInstanceList() || []);
-  }, [getGameInstanceList]);
+    setInstanceList(getInstanceList() || []);
+  }, [getInstanceList]);
 
   useEffect(() => {
-    setSelectedGameInstances([]);
+    setSelectedInstances([]);
   }, [operation]);
 
   return (
@@ -301,7 +288,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
           <ModalBody>
             <Flex flexDirection="column" overflow="hidden" h="100%">
               <VStack>
-                <Text flexWrap="wrap">
+                <Flex flexWrap="wrap" direction="row" align="center">
                   <SegmentedControl
                     selected={operation}
                     onSelectItem={(s) => setOperation(s as "copy" | "move")}
@@ -318,23 +305,21 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                     }))}
                     withTooltip={false}
                   />
-                  {t(`CopyOrMoveModal.resourceType.${_tgtDirType}`)}
-                  <Text as="span" fontWeight="bold">
-                    {` ${srcResName} `}
+                  <Text>
+                    {t(`CopyOrMoveModal.resourceType.${_tgtDirType}`)}
                   </Text>
-                  <Text as="span">{t("CopyOrMoveModal.body")}</Text>
-                </Text>
+                  <Text fontWeight="bold" px={1.5}>{` ${srcResName} `}</Text>
+                  <Text>{t("CopyOrMoveModal.body")}</Text>
+                </Flex>
               </VStack>
               <RadioGroup
-                value={selectedGameInstances[0]?.id.toString()}
+                value={selectedInstances[0]?.id}
                 flexGrow="1"
                 h="100%"
                 overflow="auto"
                 mt={2}
               >
-                <OptionItemGroup
-                  items={gameInstanceList.map(buildOptionItems)}
-                />
+                <OptionItemGroup items={instanceList.map(buildOptionItems)} />
               </RadioGroup>
             </Flex>
           </ModalBody>
@@ -349,7 +334,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
               colorScheme={primaryColor}
               onClick={handleCopyOrMove}
               isLoading={isLoading}
-              isDisabled={!selectedGameInstances.length}
+              isDisabled={!selectedInstances.length}
             >
               {t("General.confirm")}
             </Button>

@@ -16,6 +16,20 @@ export const retrieveMemoryInfo = async (): Promise<MemoryInfo> => {
 };
 
 /**
+ * RETRIEVE the list of installed TrueType fonts.
+ * @returns {Promise<string[]>} List of TrueType fonts
+ * @throws {Error} If the backend call fails.
+ */
+export const retrieveFontList = async (): Promise<string[]> => {
+  try {
+    return await invoke("retrieve_truetype_font_list");
+  } catch (error) {
+    console.error("Error in retrieve_font_list:", error);
+    throw error;
+  }
+};
+
+/**
  * CHECK the availability of a given service URL.
  * @param url The URL to test.
  * @returns {Promise<number>} Round-trip time in milliseconds.

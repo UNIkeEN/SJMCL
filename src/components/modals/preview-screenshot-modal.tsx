@@ -22,7 +22,6 @@ import { useToast } from "@/contexts/toast";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { ConfigService } from "@/services/config";
 import { UNIXToDatetime } from "@/utils/datetime";
-import { extractFileName } from "@/utils/string";
 
 interface PreviewScreenshotModalProps extends Omit<ModalProps, "children"> {
   screenshot: ScreenshotInfo;
@@ -83,7 +82,7 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
         <ModalBody>
           <Flex justify="space-between" align="center">
             <Text fontSize="sm" fontWeight="bold">
-              {extractFileName(screenshot.fileName)}
+              {screenshot.fileName}
             </Text>
             <HStack spacing={2}>
               <Icon as={LuCalendarDays} color="gray.500" />

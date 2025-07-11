@@ -3,15 +3,21 @@
   "identifier": "default",
   "description": "enables the default permissions",
   "windows": [
-    "main"
+    "main",
+    "game_log*",
+    "game_error*"
   ],
   "permissions": [
     "clipboard-manager:allow-write-text",
     "clipboard-manager:allow-write-image",
     "core:default",
+    "core:event:default",
     "core:webview:allow-create-webview-window",
+    "core:window:allow-show",
     "core:window:allow-start-dragging",
+    "deep-link:default",
     "dialog:default",
+    "log:default",
     "http:default",
     "os:default",
     "process:default"

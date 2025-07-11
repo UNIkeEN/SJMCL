@@ -19,17 +19,21 @@ import {
 } from "@/components/common/option-item";
 import GameSettingsGroups from "@/components/game-settings-groups";
 import EditGameDirectoryModal from "@/components/modals/edit-game-directory-modal";
-import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import { useLauncherConfig } from "@/contexts/config";
-import { useData } from "@/contexts/data";
+import { useGlobalData } from "@/contexts/global-data";
+import { useRoutingHistory } from "@/contexts/routing-history";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { GameDirectory } from "@/models/config";
+import { getGameDirName, isSpecialGameDir } from "@/utils/instance";
 
 const GlobalGameSettingsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const globalGameConfigs = config.globalGameConfig;
-  const { getGameInstanceList } = useData();
+  const { getInstanceList } = useGlobalData();
+  const { removeHistory } = useRoutingHistory();
+  const { closeSharedModal, openGenericConfirmDialog } = useSharedModals();
 
   const [selectedDir, setSelectedDir] = useState<GameDirectory>({
     name: "",
@@ -39,12 +43,6 @@ const GlobalGameSettingsPage = () => {
   const [directoryExistence, setDirectoryExistence] = useState<
     Record<string, boolean>
   >({});
-
-  const {
-    isOpen: isDeleteDirDialogOpen,
-    onOpen: onDeleteDirDialogOpen,
-    onClose: onDeleteDirDialogClose,
-  } = useDisclosure();
 
   const {
     isOpen: isAddDirModalOpen,
@@ -62,7 +60,7 @@ const GlobalGameSettingsPage = () => {
     const checkDirectories = async () => {
       const existence: Record<string, boolean> = {};
       for (const directory of config.localGameDirectories) {
-        if (["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name)) {
+        if (isSpecialGameDir(directory.name)) {
           existence[directory.dir] = true;
           continue;
         }
@@ -79,13 +77,15 @@ const GlobalGameSettingsPage = () => {
     checkDirectories();
   }, [config.localGameDirectories]);
 
-  const handleDeleteDir = () => {
+  const handleDeleteDir = (selectedDir: GameDirectory) => {
     update(
       "localGameDirectories",
       config.localGameDirectories.filter((dir) => dir.dir !== selectedDir.dir)
     );
-    getGameInstanceList(true); // refresh frontend state of instance list
-    onDeleteDirDialogClose();
+    getInstanceList(true); // refresh frontend state of instance list
+    removeHistory(`/instances/details/${selectedDir.name}:`);
+    removeHistory(`/instances/list/${selectedDir.name}`);
+    closeSharedModal("generic-confirm");
   };
 
   const dirItemMenuOperations = (directory: GameDirectory) => [
@@ -95,8 +95,9 @@ const GlobalGameSettingsPage = () => {
       onClick: () => {
         openPath(directory.dir);
       },
+      disabled: !directoryExistence[directory.dir],
     },
-    ...(directory.name !== "CURRENT_DIR"
+    ...(directory.name !== "CURRENT_DIR" && directory.name !== "APP_DATA_SUBDIR"
       ? [
           {
             icon: "edit",
@@ -111,7 +112,24 @@ const GlobalGameSettingsPage = () => {
             danger: true,
             onClick: () => {
               setSelectedDir(directory);
-              onDeleteDirDialogOpen();
+              openGenericConfirmDialog({
+                title: t(
+                  "GlobalGameSettingsPage.directories.deleteDialog.title"
+                ),
+                body: t(
+                  "GlobalGameSettingsPage.directories.deleteDialog.content",
+                  {
+                    dirName: getGameDirName(directory.name),
+                  }
+                ),
+                btnOK: t("General.delete"),
+                onOKCallback: () => {
+                  handleDeleteDir(directory);
+                },
+                showSuppressBtn: true,
+                suppressKey: "deleteGameDir",
+                isAlert: true,
+              });
             },
           },
         ]
@@ -134,15 +152,11 @@ const GlobalGameSettingsPage = () => {
         ...config.localGameDirectories.map(
           (directory) =>
             ({
-              title: ["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name)
-                ? t(
-                    `GlobalGameSettingsPage.directories.settings.directories.special.${directory.name}`
-                  )
-                : directory.name,
+              title: getGameDirName(directory),
               description: (
                 <VStack spacing={0} align="start" fontSize="xs">
                   <Text className="secondary-text">{directory.dir}</Text>
-                  {!["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) &&
+                  {!isSpecialGameDir(directory.name) &&
                     directoryExistence[directory.dir] === false && (
                       <Text color="red.600">
                         {t(
@@ -155,7 +169,7 @@ const GlobalGameSettingsPage = () => {
               prefixElement: (
                 <Icon
                   as={
-                    ["CURRENT_DIR", "OFFICIAL_DIR"].includes(directory.name) ||
+                    isSpecialGameDir(directory.name) ||
                     directoryExistence[directory.dir]
                       ? LuFolder
                       : LuFolderX
@@ -172,6 +186,7 @@ const GlobalGameSettingsPage = () => {
                       icon={item.icon}
                       colorScheme={item.danger ? "red" : "gray"}
                       onClick={item.onClick}
+                      disabled={item.disabled || false}
                     />
                   ))}
                 </HStack>
@@ -215,24 +230,6 @@ const GlobalGameSettingsPage = () => {
         currentName={selectedDir.name}
         currentPath={selectedDir.dir}
       />
-      <GenericConfirmDialog
-        isAlert
-        isOpen={isDeleteDirDialogOpen}
-        onClose={onDeleteDirDialogClose}
-        title={t("GlobalGameSettingsPage.directories.deleteDialog.title")}
-        body={t("GlobalGameSettingsPage.directories.deleteDialog.content", {
-          dirName:
-            selectedDir.name === "OFFICIAL_DIR"
-              ? t(
-                  "GlobalGameSettingsPage.directories.settings.directories.special.OFFICIAL_DIR"
-                )
-              : selectedDir.name,
-        })}
-        btnOK={t("General.delete")}
-        btnCancel={t("General.cancel")}
-        onOKCallback={handleDeleteDir}
-      />
-
       {/* Game config option-items */}
       <GameSettingsGroups
         gameConfig={globalGameConfigs}

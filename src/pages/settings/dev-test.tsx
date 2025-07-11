@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import DownloadResourceModal from "@/components/modals/download-resource-modal";
 import SkinPreview from "@/components/skin-preview";
+import { DownloadTaskParam, TaskParam, TaskTypeEnums } from "@/models/task";
+import { TaskService } from "@/services/task";
 import { isProd } from "@/utils/env";
 import { createWindow } from "@/utils/window";
 
@@ -21,6 +23,7 @@ const DevTestPage = () => {
   }, [router]);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [task_id, setTaskId] = useState<number | null>(null);
 
   return (
     <VStack align="start" spacing={4}>
@@ -47,7 +50,7 @@ const DevTestPage = () => {
         Download Resource Modal
       </Button>
       <DownloadResourceModal
-        initialResourceType="shaderpack"
+        initialResourceType="shader"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
@@ -66,6 +69,30 @@ const DevTestPage = () => {
       >
         Launch Game
       </Button>
+      <Button
+        onClick={() => {
+          console.log("Download button clicked");
+          let dl: DownloadTaskParam[] = [
+            {
+              src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
+              dest: "1.jar",
+              sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
+              taskType: TaskTypeEnums.Download,
+            },
+            {
+              src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
+              dest: "2.jar",
+              sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
+              taskType: TaskTypeEnums.Download,
+            },
+          ];
+          TaskService.scheduleProgressiveTaskGroup("group1", dl as TaskParam[]);
+        }}
+      >
+        Start Downloading Task
+      </Button>
+      <Button>Transient task</Button>
+
       {/* Add test components here */}
       <SkinPreview />
     </VStack>

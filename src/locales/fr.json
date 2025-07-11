@@ -1,0 +1,2010 @@
+{
+  "AboutSettingsPage": {
+    "about": {
+      "title": "À propos",
+      "settings": {
+        "version": {
+          "title": "Version"
+        },
+        "contributors": {
+          "title": "Liste des développeurs"
+        },
+        "reportIssue": {
+          "title": "Signaler un problème ou demander une fonctionnalité"
+        },
+        "aboutSJMC": {
+          "title": "À propos de Minecraft society à l’université jiao tong shanghai (SJMC)"
+        }
+      }
+    },
+    "ack": {
+      "title": "Remerciements",
+      "settings": {
+        "bmclapi": {
+          "title": "BMCLAPI",
+          "description": "Merci à @bangbang93 pour la source de téléchargement rapide"
+        },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "Certaines conceptions et implémentations de code sont basées sur ce projet open source"
+        },
+        "littleskin": {
+          "title": "LittleSkin",
+          "description": "Merci à LittleSkin et @tnqzh123 pour l'aide sur la conception du processus de connexion"
+        },
+        "sinter": {
+          "title": "Sinter",
+          "description": "Utilisé comme police d'interface sur Windows et Linux, sous licence SIL"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "Le composant d'aperçu de la peau est basé sur ce projet open source, sous licence MIT"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "Informations légales",
+      "settings": {
+        "copyright": {
+          "title": "Droits d'auteur",
+          "description": "Copyright © 2024-2025 Équipe de développement SJMCL."
+        },
+        "userAgreement": {
+          "title": "Accord d'utilisateur",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
+        },
+        "openSourceLicense": {
+          "title": "Licence open source",
+          "description": "Ce projet est sous licence GNU General Public License v3.0 (avec conditions supplémentaires)"
+        }
+      }
+    }
+  },
+  "AccountsPage": {
+    "button": {
+      "addPlayer": "Ajouter un joueur",
+      "add3rdPartyServer": "Ajouter un serveur d'authentification",
+      "sourceHomepage": "Visiter la page d'accueil",
+      "deleteServer": "Supprimer ce serveur"
+    },
+    "playerTypeList": {
+      "all": "Les sources"
+    },
+    "viewTypeList": {
+      "grid": "Vue en grille",
+      "list": "Vue en liste"
+    }
+  },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "Installer une nouvelle instance",
+        "description": "Choisir et installer la version du jeu, le chargeur et les mods"
+      },
+      "modpack": {
+        "title": "Importer un modpack",
+        "description": "Importer un modpack depuis un fichier local ou Internet (formats CurseForge, Modrinth ou HMCL)"
+      },
+      "manageDirs": {
+        "title": "Gérer les répertoires du jeu",
+        "description": "Gérer les répertoires de stockage locaux pour ajouter des instances déjà installées"
+      }
+    },
+    "modpackOperations": {
+      "fromdisk": "Importer depuis un fichier local",
+      "download": "Télécharger le modpack"
+    },
+    "moreOptions": {
+      "title": "Plus",
+      "server": {
+        "title": "Télécharger le serveur",
+        "description": "Télécharger les fichiers serveur de toutes les versions officielles du jeu"
+      }
+    }
+  },
+  "AddAuthServerModal": {
+    "header": {
+      "title": "Ajouter un serveur d'authentification"
+    },
+    "placeholder": {
+      "inputServerUrl": "Veuillez saisir l'adresse du serveur"
+    },
+    "page1": {
+      "serverUrl": "Adresse du serveur",
+      "serverUrlRequired": "Champ obligatoire"
+    },
+    "page2": {
+      "name": "Nom",
+      "serverUrl": "Adresse du serveur"
+    }
+  },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "Ajouter une source de données"
+    },
+    "label": {
+      "endpointUrl": "Adresse de la source"
+    },
+    "placeholder": {
+      "endpointUrl": "Adresse de la source"
+    }
+  },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "Ajouter un joueur"
+    },
+    "label": {
+      "playerType": "Type de joueur"
+    },
+    "offline": {
+      "playerName": {
+        "label": "Nom du joueur",
+        "placeholder": "Veuillez saisir le nom du joueur",
+        "errorMessage": "Seuls les lettres, chiffres et underscores sont autorisés, 16 caractères maximum."
+      },
+      "advancedOptions": {
+        "title": "Options avancées",
+        "uuid": {
+          "label": "UUID",
+          "placeholder": "(Généré automatiquement par SJMCL)",
+          "errorMessage": "Format UUID incorrect"
+        }
+      }
+    },
+    "3rdparty": {
+      "authServer": {
+        "label": "Source d'authentification",
+        "selectSource": "Veuillez sélectionner une source d'authentification",
+        "noSource": "Aucun serveur d'authentification disponible ajouté",
+        "addSource": "Ajouter une source d'authentification"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": "Veuillez saisir l'e-mail"
+      },
+      "emailOrPlayerName": {
+        "label": "E-mail ou nom du joueur",
+        "placeholder": "Veuillez saisir l'e-mail ou le nom du joueur"
+      },
+      "password": {
+        "label": "Mot de passe",
+        "placeholder": "Veuillez saisir le mot de passe"
+      }
+    },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "Cette source d'authentification prend en charge la proposition Yggdrasil Connect",
+          "microsoft": "SJMCL prend en charge le flux d'autorisation d'appareil OAuth 2.0 de Microsoft"
+        },
+        "next": "Veuillez cliquer sur le bouton Continuer la connexion pour ouvrir la fenêtre de connexion et saisir le code ci-dessus (déjà copié)"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "Commencer la connexion OAuth",
+          "microsoft": "Commencer la connexion Microsoft"
+        },
+        "next": "Continuer la connexion"
+      }
+    },
+    "button": {
+      "buyMinecraft": "Acheter Minecraft",
+      "useOAuthLogin": "Connexion OAuth",
+      "usePasswordLogin": "Connexion par mot de passe"
+    }
+  },
+  "AllInstancesPage": {
+    "button": {
+      "addAndImport": "Ajouter et importer",
+      "globalSettings": "Paramètres globaux du jeu",
+      "launch": "Lancer le jeu"
+    },
+    "viewTypeList": {
+      "grid": "Vue en grille",
+      "list": "Vue en liste"
+    },
+    "title": "Toutes les instances"
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "Thème",
+      "settings": {
+        "primaryColor": {
+          "title": "Couleur principale du lanceur"
+        },
+        "colorMode": {
+          "title": "Mode de couleur",
+          "type": {
+            "light": "Clairs",
+            "dark": "Sombre"
+          }
+        },
+        "useLiquidGlassDesign": {
+          "title": "Effet verre liquide",
+          "description": "Une fois activé, certaines interfaces utiliseront l'effet 'Verre liquide', ce qui peut affecter les performances"
+       },
+        "headNavStyle": {
+          "title": "Style de la barre de navigation supérieure",
+          "type": {
+            "standard": "Standard",
+            "simplified": "Simplifié"
+          }
+        }
+      }
+    },
+    "font": {
+      "title": "Type de caractère",
+      "settings": {
+        "fontFamily": {
+          "title": "Polices d'interface",
+          "default": "Par défaut"
+        },
+        "fontSize": {
+          "title": "Taille de la police",
+          "small": "Petit",
+          "large": "Grand"
+        }
+      }
+    },
+    "background": {
+      "title": "Arrière-plan",
+      "settings": {
+        "preset": {
+          "title": "Image prédéfinie"
+        },
+        "custom": {
+          "title": "Image personnalisée",
+          "add": "Ajouter"
+        },
+        "randomCustom": {
+          "title": "Aléatoire et personnalisé"
+        }
+      },
+      "presetBgList": {
+        "Jokull": {
+          "name": "La ville de neige"
+        },
+        "SJTU-eastgate": {
+          "name": "Porte Est SJTU"
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Accessibilité",
+      "settings": {
+        "invertColors": {
+          "title": "Inverser les couleurs"
+        },
+        "enhanceContrast": {
+          "title": "Augmenter le contraste"
+        }
+      }
+    }
+  },
+  "ComingSoonSign": {
+    "text": "Cette page n'est pas encore disponible, restez à l'écoute."
+  },
+  "ContributorsPage": {
+    "all": "Tous les contributeurs",
+    "core": "Contributeurs principaux",
+    "contribution": {
+      "fullStackDev": "Développement full stack",
+      "frontendDev": "Développement front-end",
+      "backendDev": "Développement back-end",
+      "externalAPI": "Services externes",
+      "doc": "Documentation",
+      "cicd": "CI / CD",
+      "design": "Design visuel",
+      "mascot": "Mascotte"
+    }
+  },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "Copier ou déplacer la ressource"
+    },
+    "operation": {
+      "copy": "Copier",
+      "move": "Déplacer"
+    },
+    "tag": {
+      "source": "Source"
+    },
+    "body": "arriver à",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "Packs de ressources",
+      "Saves": "Mondes",
+      "Schematics": "Schémas",
+      "ShaderPacks": "Shaders"
+    },
+    "error": {
+      "lackOfArguments": "Paramètres requis manquants, veuillez vérifier le code."
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "Créer une nouvelle instance"
+    },
+    "stepper": {
+      "game": "La version du jeu",
+      "loader": "Le chargeur",
+      "skipped": "Ne pas installer",
+      "info": "Paramètres de base"
+    }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "Vous avez récemment renommé cette instance. Veuillez actualiser la liste des instances ou redémarrer le lanceur, puis réessayez d'ajouter le raccourci."
+  },
+  "DeleteInstanceAlertDialog": {
+    "dialog": {
+      "title": "Supprimer l'instance du jeu",
+      "content": "Êtes-vous sûr de vouloir supprimer l'instance de jeu « {{instanceName}} » ? Elle sera définitivement supprimée ! (Vraiment pour toujours !)",
+      "warning": {
+        "withVerIso": "Attention : cette instance utilise l'isolation de version, la suppression entraînera la perte des sauvegardes et autres données. Veuillez migrer les données si nécessaire.",
+        "woVerIso": "Attention : si l'isolation de version a déjà été activée, les sauvegardes non migrées seront également supprimées."
+      }
+    }
+  },
+  "DeletePlayerAlertDialog": {
+    "dialog": {
+      "title": "Supprimer le joueur",
+      "content": "Êtes-vous sûr de vouloir supprimer le joueur « {{name}} » ? Cette action est irréversible !"
+    }
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Supprimer le serveur d'authentification",
+      "content": "Êtes-vous sûr de vouloir supprimer le serveur d'authentification « {{name}} » ? Il ne figurera plus dans votre liste de serveurs."
+    }
+  },
+  "DiscoverPage": {
+    "title": "Découvrir",
+    "button": {
+      "sources": "Gérer les sources de données"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "Ajouter une source de données",
+      "deleteSource": "Supprimer la source de données"
+    },
+    "tag": {
+      "online": "En ligne"
+    }
+  },
+  "DownloadFloatButton": {
+    "tooltip": "Téléchargement en cours"
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "Télécharger le modpack"
+    }
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "Télécharger une ressource"
+    },
+    "resourceTypeList": {
+      "world": "Monde",
+      "mod": "Mod",
+      "resourcepack": "Pack de ressources",
+      "shader": "Shader"
+    }
+  },
+  "DownloadSettingPage": {
+    "source": {
+      "title": "Source",
+      "settings": {
+        "strategy": {
+          "title": "Stratégie de sélection de la source de téléchargement",
+          "auto": "Sélection automatique",
+          "official": "Priorité à la source officielle",
+          "mirror": "Priorité au miroir"
+        }
+      }
+    },
+    "download": {
+      "title": "Téléchargement",
+      "settings": {
+        "autoConcurrent": {
+          "title": "Sélection automatique du nombre de téléchargements simultanés"
+        },
+        "concurrentCount": {
+          "title": "Nombre de téléchargements simultanés"
+        },
+        "enableSpeedLimit": {
+          "title": "Limiter la vitesse de téléchargement"
+        },
+        "speedLimitValue": {
+          "title": "Paramètre de limitation de vitesse"
+        }
+      }
+    },
+    "cache": {
+      "title": "Cache",
+      "settings": {
+        "directory": {
+          "title": "Répertoire du cache de téléchargement",
+          "select": "Modifier",
+          "open": "Ouvrir"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Activer le proxy"
+        },
+        "type": {
+          "title": "Type de proxy"
+        },
+        "host": {
+          "title": "Serveur"
+        },
+        "port": {
+          "title": "Port"
+        }
+      }
+    }
+  },
+  "DownloadSpecificResourceModal": {
+    "title": "Téléchargement de ressource - {{name}}",
+    "label": {
+      "all": "Tout",
+      "recommendedVersion": "Version recommandée",
+      "currentModLoader": "Chargeur actuel"
+    },
+    "releaseType": {
+      "alpha": "Alpha",
+      "beta": "Bêta",
+      "release": "Version stable"
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "Tâches de téléchargement en cours",
+    "button": {
+      "settings": "Paramètres de téléchargement",
+      "pause": "Pause",
+      "begin": "Démarrer",
+      "retry": "Réessayer"
+    },
+    "label": {
+      "paused": "En pause",
+      "error": "Erreur"
+    }
+  },
+  "Editable": {
+    "edit": "Éditer",
+    "save": "Enregistrer",
+    "cancel": "Annuler"
+  },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "Ajouter un répertoire de jeu",
+        "edit": "Modifier le répertoire de jeu"
+      }
+    },
+    "label": {
+      "dirName": "Nom",
+      "dirPath": "Chemin du répertoire de jeu"
+    },
+    "placeholder": {
+      "dirName": "Veuillez saisir le nom",
+      "dirPath": "Veuillez sélectionner le répertoire de jeu"
+    },
+    "button": {
+      "browse": "Parcourir"
+    },
+    "dialog": {
+      "browse": {
+        "title": "Sélectionner un répertoire"
+      },
+      "addSubDir": {
+        "title": "Ajouter un sous-répertoire",
+        "body": "Un sous-répertoire Minecraft contenant des instances a été trouvé, souhaitez-vous l'ajouter ?",
+        "addOriginDir": "Ajouter le répertoire d'origine",
+        "addSubDir": "Ajouter le sous-répertoire"
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "Échec de l'ajout du répertoire de jeu"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "empty": "Le nom du répertoire ne peut pas être vide",
+        "tooLong": "Le nom du répertoire ne peut pas dépasser 20 caractères",
+        "exist": "Le nom du répertoire existe déjà",
+        "hasInvalidChar": "Le nom du répertoire contient des caractères non valides"
+      },
+      "dirPath": {
+        "exist": "Le chemin du répertoire existe déjà"
+      }
+    }
+  },
+  "Empty": {
+    "noData": " donnée"
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "Gris",
+      "red": "Rouge",
+      "orange": "Orange",
+      "yellow": "Jaune",
+      "green": "Vert",
+      "teal": "Sarcelle",
+      "blue": "Bleu",
+      "cyan": "Cyan",
+      "purple": "Violet",
+      "pink": "Rose"
+    },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Contrôle(⌃)",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Commande(⌘)",
+      "windows": "Win"
+    },
+    "playerTypes": {
+      "microsoft": "Microsoft",
+      "offline": "Mode hors ligne",
+      "3rdparty": "Tierces parties",
+      "3rdpartyShort": "Tierces parties"
+    },
+    "systemFileManager": {
+      "linux": "Gestionnaire de fichiers",
+      "macos": "La visite de",
+      "windows": "Explorateur de fichiers"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "title": "Paramètres avancés du jeu",
+    "topWarning": "Les paramètres avancés sont réservés aux utilisateurs expérimentés. Modifier ces options peut empêcher le jeu de démarrer. Ne modifiez pas ces options à moins de bien comprendre leur signification !",
+    "customCommands": {
+      "title": "Commandes personnalisées",
+      "settings": {
+        "minecraftArgument": {
+          "title": "Arguments du jeu",
+          "placeholder": "Par défaut"
+        },
+        "precallCommand": {
+          "title": "Commande à exécuter avant le lancement du jeu",
+          "placeholder": "Sera appelée avant le lancement du jeu"
+        },
+        "wrapperLauncher": {
+          "title": "Commande d'enrobage",
+          "placeholder": "Par exemple, si vous saisissez 'optirun', la commande de lancement passera de 'java ...' à 'optirun java ...'"
+        },
+        "postExitCommand": {
+          "title": "Commande à exécuter après la fermeture du jeu",
+          "placeholder": "Sera appelée après la fermeture du jeu"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Paramètres de la machine virtuelle Java",
+      "settings": {
+        "args": {
+          "title": "Arguments JVM"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "Espace de génération permanente",
+          "placeholder": "Unités en MB"
+        },
+        "environmentVariable": {
+          "title": "Variable d'environnement"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Options de débogage",
+      "settings": {
+        "noJvmArgs": "Ne pas ajouter les arguments JVM par défaut",
+        "gameFileValidatePolicy": {
+          "title": "Stratégie de vérification de l'intégrité des fichiers du jeu",
+          "disable": "Ne pas vérifier",
+          "normal": "Vérification normale",
+          "full": "Vérification renforcée"
+        },
+        "dontCheckJvmValidity": {
+          "title": "Ne pas vérifier la compatibilité de la JVM avec le jeu"
+        },
+        "dontPatchNatives": {
+          "title": "Ne pas tenter de remplacer automatiquement les bibliothèques natives"
+        },
+        "useNativeGlfw": {
+          "title": "Utiliser GLFW du système (Linux uniquement)"
+        },
+        "useNativeOpenal": {
+          "title": "Utiliser OpenAL du système (Linux uniquement)"
+        }
+      }
+    }
+  },
+  "GameErrorPage": {
+    "title": "Le jeu s'est arrêté de façon inattendue, veuillez consulter les journaux ou demander de l'aide",
+    "basicInfo": {
+      "arch": "Architecture",
+      "launcherVersion": "Version du lanceur",
+      "os": "Système d'exploitation"
+    },
+    "gameInfo": {
+      "gameVersion": "Version du jeu"
+    },
+    "javaInfo": {
+      "javaVersion": "Version Java"
+    },
+    "crashDetails": {
+      "title": "Détails du crash"
+    },
+    "button": {
+      "exportGameInfo": "Exporter le rapport de crash du jeu",
+      "gameLogs": "Journaux du jeu",
+      "help": "Aide"
+    },
+    "bottomAlert": "Pour obtenir de l'aide, veuillez exporter et envoyer le rapport de crash, et non une capture d'écran de cette fenêtre."
+  },
+  "GameLogPage": {
+    "placeholder": "Filtrer par mot-clé",
+    "exportLogs": "Exporter les journaux",
+    "clearLogs": "Effacer tous les journaux",
+    "scrollToBottom": "Faire défiler vers le bas"
+  },
+  "GameVersionSelector": {
+    "old_beta": "Ancienne bêta",
+    "release": "Stable",
+    "snapshot": "Bêta",
+    "april_fools": "Avril édition",
+    "searchPlaceholder": "Rechercher une version",
+    "wikiKey": {
+      "release": "Version Java",
+      "snapshot": "",
+      "old_beta": "Version Java Beta_",
+      "april_fools": ""
+    }
+  },
+  "General": {
+    "add": "Ajouter",
+    "alert": {
+      "noFullLogin": {
+        "title": "Fonction actuelle n'est pas disponible",
+        "description": "Veuillez utiliser cette fonction avant de vous connecter à votre compte microsoft."
+      }
+    },
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "copy": {
+      "text": "Copier",
+      "toast": {
+        "success": "Copié dans le presse-papiers avec succès",
+        "error": "Échec de la copie dans le presse-papiers"
+      }
+    },
+    "copyOrMove": {
+      "linux": "Copier ou déplacer",
+      "macos": "Copier ou déplacer",
+      "windows": "Copier ou déplacer"
+    },
+    "delete": "Supprimer",
+    "dialog": {
+      "filterName": {
+        "image": "Fichier image"
+      }
+    },
+    "disable": "Désactiver",
+    "dontShowAgain": "Ne plus afficher",
+    "download": "Télécharger",
+    "edit": "Éditer",
+    "enable": "Activer",
+    "finish": "Terminer",
+    "next": "Suivant",
+    "notice": "Remarque",
+    "open": "Ouvrir",
+    "openFolder": "Ouvrir le dossier",
+    "previous": "Précédent",
+    "refresh": "Rafraîchir",
+    "revealFile": "Afficher dans {{opener}}",
+    "search": "Rechercher",
+    "viewOnWiki": "Voir sur Minecraft Wiki"
+  },
+  "GeneralSettingsPage": {
+    "general": {
+      "title": "Paramètres généraux",
+      "settings": {
+        "language": {
+          "title": "Langue (Language)",
+          "communityAck": ""
+        }
+      }
+    },
+    "functions": {
+      "title": "Fonctionnalités",
+      "settings": {
+        "discoverPage": {
+          "title": "Page Découvrir",
+          "openNotice": {
+            "part-1": "La barre de navigation supérieure 'Recherche' a été remplacée par 'Découvrir'. Vous pouvez toujours utiliser le raccourci clavier ",
+            "part-2": " pour continuer à utiliser la 'Recherche globale'."
+          }
+        },
+        "instancesNavType": {
+          "title": "Mode de la barre latérale des instances",
+          "description": "Modifier l'affichage et le mode de regroupement de la barre latérale des instances",
+          "instance": "Par instance",
+          "directory": "Par répertoire",
+          "hidden": "Masqué"
+        },
+        "launchPageQuickSwitch": {
+          "title": "Basculement rapide entre instances et comptes",
+          "description": "Si activé, cliquer sur le bouton de changement de la page de lancement permet de choisir directement un compte ou une instance sans changer de page"
+        }
+      }
+    }
+  },
+  "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "Répertoires du jeu",
+      "settings": {
+        "directories": {
+          "special": {
+            "CURRENT_DIR": "Dossier actuel",
+            "APP_DATA_SUBDIR": "Dossier de données SJMCL",
+            "OFFICIAL_DIR": "Dossier du lanceur officiel"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "Supprimer le répertoire du jeu",
+        "content": "Êtes-vous sûr de vouloir supprimer le répertoire du jeu {{dirName}} ? (SJMCL ne le scannera plus, mais les fichiers ne seront pas supprimés du disque)"
+      },
+      "directoryNotExist": "Ce répertoire n'existe pas, veuillez le supprimer et l'ajouter à nouveau"
+    },
+    "gameJava": {
+      "title": "Java du jeu",
+      "settings": {
+        "autoSelect": {
+          "title": "Sélection automatique de Java approprié"
+        },
+        "execPath": {
+          "title": "Spécifier la version de Java"
+        }
+      }
+    },
+    "gameWindow": {
+      "title": "Fenêtre",
+      "settings": {
+        "resolution": {
+          "title": "Résolution du jeu",
+          "switch": "Plein écran"
+        },
+        "customTitle": {
+          "title": "Titre de la fenêtre personnalisée"
+        },
+        "customInfo": {
+          "title": "Informations personnalisées",
+          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3"
+        }
+      }
+    },
+    "performance": {
+      "title": "Performance",
+      "settings": {
+        "autoMemAllocation": {
+          "title": "Allocation automatique de la mémoire"
+        },
+        "maxMemAllocation": {
+          "title": "Allocation mémoire maximale"
+        },
+        "memoryUsage": {
+          "title": "Utilisation de la mémoire",
+          "description": "Mémoire utilisée {{usedMemory}}GB ; allouée au jeu {{allocatedMemory}}GB ; totale {{totalMemory}}GB"
+        },
+        "processPriority": {
+          "title": "Priorité du processus",
+          "low": "Faible",
+          "belowNormal": "Inférieure à la normale",
+          "normal": "Normale",
+          "aboveNormal": "Supérieure à la normale",
+          "high": "Élevée"
+        }
+      }
+    },
+    "versionIsolation": {
+      "settings": {
+        "title": "Activer l'isolation des versions"
+      }
+    },
+    "moreOptions": {
+      "title": "Plus d'options",
+      "settings": {
+        "launcherVisibility": {
+          "title": "Visibilité du lanceur",
+          "startHidden": "Masquer le lanceur après le démarrage du jeu",
+          "runningHidden": "Masquer le lanceur pendant l'exécution du jeu",
+          "always": "Toujours visible"
+        },
+        "autoJoinGameServer": {
+          "title": "Rejoindre automatiquement le serveur"
+        },
+        "serverUrl": {
+          "title": "Adresse du serveur"
+        },
+        "displayGameLog": {
+          "title": "Afficher les journaux du jeu"
+        },
+        "advancedOptions": {
+          "title": "Paramètres avancés du lancement",
+          "button": "Modifier les paramètres avancés"
+        }
+      }
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "Lancer",
+      "instances": "Instances",
+      "accounts": "Comptes",
+      "discover": "Découvrir",
+      "search": "Recherche",
+      "settings": "Paramètres"
+    }
+  },
+  "HelpSettingsPage": {
+    "community": {
+      "title": "Communauté des joueurs universitaires",
+      "settings": {
+        "MUA": {
+          "title": "Alliance des universitaire Minecraft (MUA)",
+          "description": "Jouez avec des joueurs de toutes les universités du pays",
+          "url": "https://www.mualliance.cn/en"
+        },
+        "SJMC": {
+          "title": "Club Minecraft de l'Université Jiao Tong de Shanghai (SJMC)",
+          "url": "https://mc.sjtu.cn/en/"
+        }
+      }
+    },
+    "minecraft": {
+      "title": "Minecraft",
+      "settings": {
+        "mcWiki": {
+          "title": "Minecraft Wiki chinois",
+          "description": "L'encyclopédie Minecraft la plus complète",
+          "url": "https://fr.minecraft.wiki/"
+        },
+        "mcMod": {
+          "title": "MCMod",
+          "description": "Encyclopédie chinoise des mods Minecraft"
+        },
+        "curseforge": {
+          "title": "CurseForge",
+          "description": "Explorez le plus grand dépôt de mods Minecraft au monde"
+        }
+      }
+    },
+    "top": {
+      "settings": {
+        "LauncherDocs": {
+          "title": "Documentation du lanceur SJMC",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+        }
+      }
+    }
+  },
+  "InstanceBasicSettings": {
+    "selectDirectory": "Sélectionner le répertoire du jeu"
+  },
+  "InstanceDetailsLayout": {
+    "secMenu": {
+      "createShortcut": "Créer un raccourci de lancement",
+      "exportModPack": "Exporter en tant que modpack",
+      "star": "Mettre en favori cette instance",
+      "unstar": "Retirer des favoris"
+    },
+    "instanceTabList": {
+      "overview": "Aperçu",
+      "worlds": "Mondes",
+      "mods": "Mods",
+      "resourcepacks": "Packs de ressources",
+      "schematics": "Schémas",
+      "shaderpacks": "Shaders",
+      "screenshots": "Captures d'écran",
+      "settings": "Paramètres"
+    },
+    "button": {
+      "launch": "Lancer l'instance"
+    }
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "Détails de l'instance",
+      "delete": "Supprimer l'instance"
+    }
+  },
+  "InstanceModsPage": {
+    "modLoaderList": {
+      "title": "Chargeur"
+    },
+    "modList": {
+      "title": "Mods",
+      "warning": "Aucun chargeur de mods détecté, les mods peuvent ne pas fonctionner correctement",
+      "menu": {
+        "alert": "Peut être incompatible",
+        "info": "Voir les informations",
+        "update": "Vérifier les mises à jour",
+        "search": "Rechercher",
+        "placeholder": "Rechercher un mod..."
+      }
+    }
+  },
+  "InstanceResourcePacksPage": {
+    "resourcePackList": {
+      "title": "Packs de ressources globaux"
+    },
+    "serverResPackList": {
+      "title": "Packs de ressources du serveur"
+    }
+  },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "Détails"
+    }
+  },
+  "InstanceSettingsPage": {
+    "name": "Nom de l'instance",
+    "description": "Description de l'instance",
+    "icon": "Icône de l'instance",
+    "applySettings": "Utiliser des paramètres de jeu spécifiques",
+    "restoreSettings": "Réinitialiser les paramètres spécifiques ci-dessous",
+    "restoreSettingsDesc": "Réinitialiser les paramètres spécifiques ci-dessous aux paramètres globaux du jeu",
+    "restore": "Réinitialiser",
+    "errorMessage": {
+      "error-1": "Le nom de l'instance ne peut pas être vide",
+      "error-2": "Le nom de l'instance contient des caractères illégaux"
+    }
+  },
+  "InstanceShaderPacksPage": {
+    "shaderPackList": {
+      "title": "Packs de shaders"
+    }
+  },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "Schémas",
+      "preview": "Aperçu"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "Informations de base",
+      "gameVersion": "Version du jeu",
+      "playTime": "Temps de jeu"
+    },
+    "screenshots": {
+      "title": "Captures d'écran"
+    },
+    "mods": {
+      "title": "Mods",
+      "summary": "{{totalMods}} mods, {{enabledMods}} activés",
+      "manage": "Aller à management"
+    },
+    "lastPlayed": {
+      "title": "Dernière partie",
+      "continuePlaying": "Continuer à jouer"
+    },
+    "more": {
+      "title": "Plus"
+    }
+  },
+  "InstanceWorldsPage": {
+    "worldList": {
+      "title": "Mondes locaux",
+      "lastPlayedAt": "Dernière partie le",
+      "difficulty": {
+        "peaceful": "Paisible",
+        "easy": "Facile",
+        "normal": "Normal",
+        "hard": "Difficile",
+        "hardcore": "Survie extrême"
+      },
+      "gamemode": {
+        "survival": "Mode survie",
+        "creative": "Mode créatif",
+        "adventure": "Mode aventure",
+        "spectator": "Mode spectateur"
+      },
+      "moreDesc": ", {{gamemode}} (difficulté : {{difficulty}})",
+      "viewLevelData": "Données de base de la sauvegarde"
+    },
+    "serverList": {
+      "title": "Serveurs",
+      "players": "Joueurs",
+      "tag": {
+        "online": "En ligne",
+        "offline": "Hors ligne"
+      }
+    }
+  },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Gestion Java",
+      "download": "Télécharger Java",
+      "add": "Ajouter Java",
+      "remove": "Supprimer ce Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "Ajout de Java réussi",
+        "description": "Chemin Java personnalisé ajouté avec succès"
+      },
+      "addFailed": {
+        "title": "Échec de l'ajout de Java",
+        "invalid": "Le chemin Java personnalisé est invalide, veuillez vérifier le chemin saisi",
+        "duplicated": "Le chemin Java personnalisé existe déjà, veuillez vérifier le chemin saisi"
+      }
+    },
+    "confirmDelete": {
+      "title": "Supprimer Java",
+      "description": "Êtes-vous sûr de vouloir supprimer cette version de Java ? (SJMCL ne pourra plus l'utiliser pour lancer le jeu, mais les fichiers ne seront pas supprimés du disque)"
+    }
+  },
+  "LaunchPage": {
+    "button": {
+      "launch": "Lancer le jeu"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchPlayer": "Changer de joueur",
+        "switchGame": "Changer d'instance de jeu"
+      }
+    },
+    "Text": {
+      "noSelectedPlayer": "Aucun joueur sélectionné",
+      "noSelectedGame": "Aucune instance de jeu sélectionnée"
+    }
+  },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "Lancer le jeu - {{name}}"
+    },
+    "step": {
+      "selectSuitableJRE": "Sélectionner un environnement Java approprié",
+      "validateGameFiles": "Vérifier l'intégrité des fichiers du jeu et des dépendances",
+      "validateSelectedPlayer": "Vérifier l'état du compte",
+      "launchGame": "En attente du lancement du jeu"
+    },
+    "toast": {
+      "noSelectedPlayer": "Veuillez d'abord ajouter et sélectionner un joueur"
+    }
+  },
+  "ManageSkinModal": {
+    "skinManage": "Gérer les skins",
+    "default": "Par défaut",
+    "steve": "Steve",
+    "alex": "Alex"
+  },
+  "ViewSkinModal": {
+    "skinView": "Voir le skin"
+  },
+  "MemoryStatusProgress": {
+    "title": "État de la mémoire",
+    "info": "{{used}} / {{total}} Go utilisés",
+    "label": {
+      "now": "En cours d'utilisation",
+      "maxAllocation": "Maximum alloué à Minecraft"
+    }
+  },
+  "ModLoaderCards": {
+    "installed": "Installé",
+    "unInstalled": "Non installé",
+    "notCompatibleWith": "Incompatible avec {{modLoader}}",
+    "versionNotSelected": "Version non sélectionnée"
+  },
+  "ModLoaderSelector": {
+    "stable": "Stable",
+    "beta": "Bêta",
+    "releaseDate": "Publié le {{date}}"
+  },
+  "NotFoundPage": {
+    "text": "Page non trouvée, redirection dans {{seconds}} secondes"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "Tout afficher (+{{left}})"
+    }
+  },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "Gérer les skins",
+      "viewSkin": "Voir le skin",
+      "delete": "Supprimer ce joueur",
+      "copyUUID": "Copier l'UUID"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "Test de connectivité des services",
+      "offline": "Hors ligne",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "API du lanceur SJMC"
+    }
+  },
+  "ReLoginPlayerModal": {
+    "modal": {
+      "title": "Se reconnecter"
+    },
+    "label": {
+      "user": "Nom d'utilisateur",
+      "password": "Mot de passe"
+    },
+    "placeholder": {
+      "password": "Veuillez saisir le mot de passe"
+    },
+    "button": {
+      "login": "Connexion"
+    }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "Source de téléchargement",
+      "gameVer": "Version du jeu",
+      "tag": "Type",
+      "sortBy": "Ordonner",
+      "name": "Nom"
+    },
+    "button": {
+      "search": "Rechercher"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "Tous",
+        "Addons": "Addons",
+        "Adventure and RPG": "Aventure RPG",
+        "API and Library": "API et bibliothèque",
+        "Applied Energistics 2": "Applied Energistics 2",
+        "Armor, Tools, and Weapons": "Armures, outils et armes",
+        "Automation": "Automatisation",
+        "Biomes": "Biomes",
+        "Blood Magic": "Blood Magic",
+        "Buildcraft": "Buildcraft",
+        "Bug Fixes": "Corrections de bugs",
+        "Cosmetic": "Cosmétique",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "Create",
+        "Dimensions": "Dimensions",
+        "Education": "Éducation",
+        "Energy": "Énergie",
+        "Energy, Fluid, and Item Transport": "Transport d'énergie, fluide et objets",
+        "Farming": "Agriculture",
+        "Food": "Nourriture",
+        "Forestry": "Foresterie",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "Génétique",
+        "Industrial Craft": "Industrial Craft 2",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
+        "Magic": "Magie",
+        "Map and Information": "Carte et informations",
+        "MCreator": "MCreator",
+        "Miscellaneous": "Divers",
+        "Mobs": "Mobs",
+        "Ores and Resources": "Minerais et ressources",
+        "Performance": "Performance",
+        "Player Transport": "Transport de joueur",
+        "Processing": "Traitement",
+        "Redstone": "Redstone",
+        "Server Utility": "Utilitaire serveur",
+        "Skyblock": "Skyblock",
+        "Storage": "Stockage",
+        "Structures": "Structures",
+        "Technology": "Technologie",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's Construct",
+        "Twilight Forest": "Twilight Forest",
+        "Twitch Integration": "Intégration Twitch",
+        "Utility & QoL": "Utilitaire & QoL",
+        "World Gen": "Génération du monde",
+        "Auxiliary": "Auxiliaire",
+        "World": "Monde"
+      },
+      "Modrinth": {
+        "All": "Tous",
+        "adventure": "Aventure",
+        "cursed": "Maudit",
+        "decoration": "Décoration",
+        "economy": "Économie",
+        "equipment": "Équipement",
+        "food": "Nourriture",
+        "game-mechanics": "Mécaniques de jeu",
+        "library": "Bibliothèque",
+        "magic": "Magie",
+        "management": "Gestion",
+        "minigame": "Mini-jeu",
+        "mobs": "Mobs",
+        "optimization": "Optimisation",
+        "social": "Social",
+        "storage": "Stockage",
+        "technology": "Technologie",
+        "transportation": "Transport",
+        "utility": "Utilitaire",
+        "worldgen": "Génération du monde"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "Tous",
+        "Types": "Types",
+        "Adventure": "Aventure",
+        "Creation": "Création",
+        "Game Map": "Carte de jeu",
+        "Modded World": "Mods",
+        "Parkour": "Parcours",
+        "Puzzle": "Puzzle",
+        "Survival": "Survie"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "Tous",
+        "Resolution": "Résolution",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x et plus",
+        "Styles": "Styles",
+        "Animated": "Animé",
+        "Special": "Spécial",
+        "Data Packs": "Packs de données",
+        "Font Packs": "Packs de polices",
+        "Medieval": "Médiéval",
+        "Miscellaneous": "Divers",
+        "Mod Support": "Support de mod",
+        "Modern": "Moderne",
+        "Photo Realistic": "Photo réaliste",
+        "Steampunk": "Steampunk",
+        "Traditional": "Traditionnel"
+      },
+      "Modrinth": {
+        "All": "Tous",
+        "Resolution": "Résolution",
+        "8x-": "8x ou moins",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x+": "512x ou plus",
+        "Styles": "Styles",
+        "audio": "Audio",
+        "blocks": "Blocs",
+        "core-shaders": "Shaders principaux",
+        "entities": "Entités",
+        "environment": "Environnement",
+        "equipment": "Équipement",
+        "fonts": "Polices",
+        "gui": "Interface utilisateur",
+        "items": "Objets",
+        "locale": "Localisation",
+        "models": "Modèles",
+        "combat": "Combat",
+        "cursed": "Maudit",
+        "decoration": "Décoration",
+        "modded": "Moddé",
+        "realistic": "Réaliste",
+        "simplistic": "Simpliste",
+        "themed": "Thème",
+        "tweaks": "Ajustements",
+        "utility": "Utilitaire",
+        "vanilla-like": "Style vanilla"
+      }
+    },
+    "shaderTagList": {
+      "CurseForge": {
+        "All": "Tous",
+        "Styles": "Styles",
+        "Fantasy": "Fantaisie",
+        "Realistic": "Réaliste",
+        "Vanilla": "Vanilla"
+      },
+      "Modrinth": {
+        "All": "Tous",
+        "Styles": "Styles",
+        "cartoon": "Cartoon",
+        "cursed": "Maudit",
+        "fantasy": "Fantaisie",
+        "realistic": "Réaliste",
+        "semi-realistic": "Semi-réaliste",
+        "vanilla-like": "Style vanilla",
+        "atmosphere": "Atmosphère",
+        "bloom": "Bloom",
+        "colored-lighting": "Éclairage coloré",
+        "foliage": "Feuillage",
+        "path-tracing": "Path tracing",
+        "pbr": "PBR",
+        "reflections": "Réflexions",
+        "shadows": "Ombres",
+        "potato": "Très faible",
+        "performance": "Performance",
+        "low": "Faible",
+        "medium": "Moyen",
+        "high": "Élevé",
+        "screenshot": "Qualité cinéma"
+      }
+    },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "Tous",
+        "Styles": "Styles",
+        "Adventure and RPG": "Aventure RPG",
+        "Combat / PvP": "Combat / PvP",
+        "Exploration": "Exploration",
+        "Extra Large": "Très grand modpack",
+        "FTB Official Pack": "FTB",
+        "Hardcore": "Hardcore",
+        "Horror": "Horreur",
+        "Magic": "Magie",
+        "Map Based": "Basé sur une carte",
+        "Mini Game": "Mini-jeu",
+        "Multiplayer": "Multijoueur",
+        "Quests": "Quêtes",
+        "Sci-Fi": "Science-fiction",
+        "Skyblock": "Skyblock",
+        "Small / Light": "Petit / Léger",
+        "Tech": "Technologie",
+        "Vanilla+": "Version améliorée de l’original"
+      },
+      "Modrinth": {
+        "All": "Tous",
+        "styles": "Styles",
+        "adventure": "Aventure",
+        "challenging": "Défi",
+        "combat": "Combat",
+        "kitchen-sink": "Fourre-tout",
+        "lightweight": "Intégration légère",
+        "magic": "Magie",
+        "multiplayer": "Multijoueur",
+        "optimization": "Optimisation",
+        "quests": "Quêtes",
+        "technology": "Technologie"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "Popularité",
+        "Latest update": "Dernière mise à jour",
+        "Creation date": "Date de création",
+        "Total downloads": "Téléchargements",
+        "A-Z": "Nom"
+      },
+      "Modrinth": {
+        "relevance": "Pertinence",
+        "downloads": "Téléchargements",
+        "follows": "Abonnés",
+        "newest": "Date de publication",
+        "updated": "Date de mise à jour"
+      }
+    },
+    "versionList": {
+      "All": "Tous"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "Restaurer les paramètres du lanceur",
+    "body": "Cette opération restaurera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
+  },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "Définir comme fond du lanceur"
+    }
+  },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "Veuillez sélectionner le joueur à ajouter"
+    }
+  },
+  "Services": {
+    "config": {
+      "retrieveLauncherConfig": {
+        "error": {
+          "title": "Échec de la récupération des paramètres du lanceur"
+        }
+      },
+      "updateLauncherConfig": {
+        "error": {
+          "title": "Échec de la mise à jour des paramètres du lanceur"
+        }
+      },
+      "restoreLauncherConfig": {
+        "success": "Paramètres restaurés avec succès",
+        "error": {
+          "title": "Échec de la restauration des paramètres, veuillez réessayer"
+        }
+      },
+      "exportLauncherConfig": {
+        "success": "Paramètres du lanceur exportés avec succès",
+        "error": {
+          "title": "Échec de l'exportation des paramètres du lanceur",
+          "description": {
+            "FETCH_ERROR": "Échec de la communication avec le serveur"
+          }
+        }
+      },
+      "importLauncherConfig": {
+        "success": "Paramètres du lanceur importés avec succès",
+        "error": {
+          "title": "Échec de l'importation des paramètres du lanceur",
+          "description": {
+            "FETCH_ERROR": "Échec de la communication avec le serveur",
+            "INVALID_CODE": "Code invalide",
+            "CODE_EXPIRED": "Le code a expiré",
+            "VERSION_MISMATCH": "Version du lanceur incompatible"
+          }
+        }
+      },
+      "retrieveCustomBackgroundList": {
+        "success": "Liste des fonds personnalisés récupérée avec succès",
+        "error": {
+          "title": "Échec de la récupération de la liste des fonds personnalisés"
+        }
+      },
+      "addCustomBackground": {
+        "success": "Fond personnalisé ajouté avec succès",
+        "error": {
+          "title": "Échec de l'ajout du fond personnalisé"
+        }
+      },
+      "deleteCustomBackground": {
+        "success": "Fond personnalisé supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression du fond personnalisé"
+        }
+      },
+      "retrieveJavaList": {
+        "error": {
+          "title": "Échec de la récupération de la liste Java"
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "Répertoire du jeu invalide",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "Le répertoire du jeu a déjà été ajouté",
+            "GAME_DIR_NOT_EXIST": "Le répertoire du jeu n'existe pas"
+          }
+        }
+      }
+    },
+    "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des joueurs"
+        }
+      },
+      "addPlayerOffline": {
+        "success": "Joueur hors ligne ajouté avec succès",
+        "error": {
+          "title": "Échec de l'ajout du joueur hors ligne",
+          "description": {
+            "DUPLICATE": "Le joueur existe déjà"
+          }
+        }
+      },
+      "fetchOAuthCode": {
+        "error": {
+          "title": "Échec de l'obtention du code d'authentification",
+          "description": {
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "INVALID": "Type de serveur incorrect",
+            "NOT_FOUND": "Serveur d'authentification introuvable"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "Joueur ajouté avec succès",
+        "error": {
+          "title": "Échec de l'ajout du joueur",
+          "description": {
+            "DUPLICATE": "Le joueur existe déjà",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NOT_FOUND": "Serveur d'authentification introuvable",
+            "CANCELLED": "Annulé",
+            "INVALID": "Adresse du serveur d'authentification invalide"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "Joueur ajouté avec succès",
+        "error": {
+          "title": "Échec de l'ajout du joueur",
+          "description": {
+            "DUPLICATE": "Le joueur existe déjà",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "INVALID": "Nom d'utilisateur ou mot de passe incorrect",
+            "NOT_FOUND": "Serveur d'authentification introuvable"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "Joueur ajouté avec succès",
+        "error": {
+          "title": "Échec de l'ajout du joueur",
+          "description": {
+            "DUPLICATE": "Le joueur existe déjà"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "Skin du joueur mis à jour avec succès",
+        "error": {
+          "title": "Échec de la mise à jour du skin du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable",
+            "INVALID": "Type de joueur incorrect",
+            "TEXTURE_ERROR": "Échec de la récupération du skin du joueur"
+          }
+        }
+      },
+      "deletePlayer": {
+        "success": "Joueur supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "Informations du joueur mises à jour avec succès",
+        "error": {
+          "title": "Échec de la mise à jour des informations du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable",
+            "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "INVALID": "Impossible d'actualiser un joueur hors ligne"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "Reconnexion du joueur réussie",
+        "error": {
+          "title": "Échec de la reconnexion du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable",
+            "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "INVALID": "Impossible d'actualiser un joueur hors ligne"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Reconnexion du joueur réussie",
+        "error": {
+          "title": "Échec de la reconnexion du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable",
+            "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "INVALID": "Nom d'utilisateur ou mot de passe incorrect"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des serveurs d'authentification"
+        }
+      },
+      "fetchAuthServer": {
+        "error": {
+          "title": "Échec de la récupération des informations du serveur d'authentification",
+          "description": {
+            "DUPLICATE": "Le serveur d'authentification existe déjà",
+            "INVALID": "Adresse du serveur d'authentification invalide"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "Serveur d'authentification ajouté avec succès",
+        "error": {
+          "title": "Échec de l'ajout du serveur d'authentification",
+          "description": {
+            "DUPLICATE": "Le serveur d'authentification existe déjà",
+            "INVALID": "Adresse du serveur d'authentification invalide"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "Serveur d'authentification supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression du serveur d'authentification",
+          "description": {
+            "NOT_FOUND": "Serveur d'authentification introuvable"
+          }
+        }
+      }
+    },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "Échec de la sélection d'un environnement Java approprié",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
+            "NO_SUITABLE_JAVA": "Aucun environnement Java approprié disponible"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "Échec de la vérification des fichiers du jeu",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "Échec de la vérification du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable",
+            "EXPIRED": "Le jeton d'accès a expiré, veuillez vous reconnecter",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NO_DOWNLOAD_API": "Échec du téléchargement d'Authlib-Injector, veuillez vérifier la connexion réseau",
+            "SAVE_ERROR": "Échec de l'enregistrement d'Authlib-Injector"
+          }
+        }
+      }
+    },
+    "resource": {
+      "fetchGameVersionList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des versions du jeu",
+          "description": {
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des chargeurs de mods",
+          "description": {
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "Échec de la récupération de la liste des ressources",
+          "description": {
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "Échec de la récupération de la liste des versions de la ressource",
+          "description": {
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+          }
+        }
+      }
+    },
+    "instance": {
+      "retrieveInstanceList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des instances"
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "Échec de la mise à jour des paramètres de l'instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
+            "NOT_FOUND": "Instance introuvable"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "Échec de la récupération des paramètres du jeu de l'instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "Paramètres du jeu de l'instance réinitialisés",
+        "error": {
+          "title": "Échec de la réinitialisation des paramètres du jeu de l'instance",
+          "description": {
+            "INSTANCE_NOT_FOUND": "Instance avec l'ID spécifié introuvable",
+            "SAVE_ERROR": "Échec de l'enregistrement du fichier de paramètres de l'instance"
+          }
+        }
+      },
+      "retrieveInstanceSubdirPath": {
+        "error": {
+          "title": "Échec de la récupération du chemin du sous-répertoire de l'instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable ou type incorrect"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "Instance supprimée avec succès",
+        "error": {
+          "title": "Échec de la suppression de l'instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable"
+          }
+        }
+      },
+      "renameInstance": {
+        "error": {
+          "title": "Échec du renommage de l'instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
+            "CONFLICT_NAME_ERROR": "Une instance portant le même nom existe déjà dans ce répertoire"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "Ressource copiée avec succès",
+        "error": {
+          "title": "Échec de la copie de la ressource",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable ou type incorrect",
+            "INVALID_SOURCE_PATH": "Chemin source invalide",
+            "ZIP_FILE_PROCESS_FAILED": "Échec de la lecture ou de l'extraction du fichier compressé",
+            "FILE_COPY_FAILED": "Échec de la commande de copie de fichier",
+            "FOLDER_CREATION_FAILED": "Échec de la création du dossier cible"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "Ressource déplacée avec succès",
+        "error": {
+          "title": "Échec du déplacement de la ressource",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable ou type incorrect",
+            "INVALID_SOURCE_PATH": "Chemin source invalide",
+            "FILE_MOVE_FAILED": "Échec de la commande de déplacement de fichier",
+            "FOLDER_CREATION_FAILED": "Échec de la création du dossier cible"
+          }
+        }
+      },
+      "retrieveWorldList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des mondes"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des serveurs",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "Le fichier servers.dat est peut-être corrompu"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des packs de ressources"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des packs de ressources du serveur"
+        }
+      },
+      "retrieveSchematicList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des schémas"
+        }
+      },
+      "retrieveShaderPackList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des packs de shaders"
+        }
+      },
+      "retrieveScreenshotList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des captures d'écran"
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des mods",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "Échec de la récupération des détails du monde",
+          "description": {
+            "WORLD_NOT_EXSIT_ERROR": "Monde introuvable",
+            "LEVEL_NOT_EXSIT_ERROR": "Fichier de données de sauvegarde introuvable",
+            "LEVEL_PARSE_ERROR": "Erreur d'analyse du fichier de données de sauvegarde"
+          }
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "Échec du changement d'état du mod",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "Le fichier du mod est introuvable, il a peut-être été renommé, déplacé ou supprimé"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "Raccourci de lancement ajouté au bureau",
+        "error": {
+          "title": "Échec de la création du raccourci de lancement",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "Échec de l'exécution de la commande"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "Tâche créée avec succès"
+      }
+    }
+  },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "Paramètres globaux du jeu",
+      "java": "Java",
+      "general": "Général",
+      "appearance": "Apparence",
+      "download": "Téléchargement",
+      "sync-restore": "Sync et Resta",
+      "help": "Aide & Doc",
+      "about": "À propos",
+      "dev-test": "Développement - Page de test"
+    }
+  },
+  "SkinPreview": {
+    "cape": "Cape",
+    "animation": {
+      "idle": "Inactif",
+      "walk": "Marche",
+      "run": "Course",
+      "wave": "Saluer"
+    },
+    "button": {
+      "enableRotation": "Activer la rotation",
+      "disableRotation": "Désactiver la rotation",
+      "play": "Lire",
+      "pause": "Pause"
+    }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "Recherche globale"
+    },
+    "tip": "Recherchez du contenu local et des ressources en ligne au même endroit",
+    "empty": "Aucun résultat de recherche",
+    "result": {
+      "instance": "Les exemples",
+      "player": "Les rôles"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "Étoilez-nous sur GitHub !"
+    },
+    "body": "Si vous aimez SJMCL et souhaitez nous soutenir, pouvez-vous nous donner une étoile sur GitHub ? Ce petit geste compte beaucoup pour nous et nous motive à continuer à améliorer l'expérience.",
+    "button": {
+      "later": "Plus tard",
+      "starUs": "Étoiler"
+    }
+  },
+  "SyncAndRestoreSettingsPage": {
+    "launcherConfig": {
+      "title": "Paramètres du lanceur",
+      "settings": {
+        "internetSync": {
+          "title": "Synchronisation en ligne",
+          "import": "Importer",
+          "export": "Exporter"
+        },
+        "restoreAll": {
+          "title": "Restaurer tous les paramètres",
+          "description": "Restaurer tous les paramètres du lanceur à leur valeur par défaut",
+          "restore": "Restaurer"
+        }
+      }
+    }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "Synchronisation des paramètres - Exporter"
+    },
+    "label": {
+      "token": "Jeton"
+    },
+    "helper": "Saisissez ce jeton sur l'appareil à synchroniser pour terminer la synchronisation",
+    "countdown": "Actualisation dans {{seconds}} secondes"
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "Synchronisation des paramètres - Importer"
+    },
+    "label": {
+      "token": "Jeton"
+    },
+    "helper": "Veuillez saisir le jeton généré par l'appareil à synchroniser"
+  },
+  "Utils": {
+    "datetime": {
+      "formatRelativeTime": {
+        "now": "Maintenant",
+        "minutes-ago": "il y a {{count}} minutes",
+        "last-hour": "il y a 1 heure",
+        "hours-ago": "il y a {{count}} heures",
+        "yesterday": "Hier",
+        "others": "{{time}}"
+      }
+    },
+    "env": {
+      "checkFrontendCompatibility": {
+        "warning": {
+          "title": "La version WebView du système est trop ancienne, certains éléments d'interface peuvent ne pas s'afficher correctement"
+        }
+      }
+    },
+    "wiki": {
+      "baseUrl": "https://fr.minecraft.wiki/w/"
+    }
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "Bienvenue !"
+    },
+    "body": {
+      "part1": "Bienvenue sur SJMCL ! Avant de commencer, veuillez lire et accepter notre ",
+      "terms": "Accord d'utilisateur",
+      "periods": "."
+    },
+    "button": {
+      "exit": "Quitter",
+      "agree": "Accepter"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "Données de base du monde - {{worldName}}"
+    }
+  }
+}

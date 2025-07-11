@@ -1,0 +1,45 @@
+.animated-card {
+  transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.animated-card.animate {
+  animation: smooth-scale 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes smooth-scale {
+  0% {
+    transform: scaleX(0.95);
+  }
+  50% {
+    transform: scaleX(1.05);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+div[role="progressbar"] {
+  transition: width 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes dropInElastic {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(5px);
+  }
+  75% {
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.drop-in-elastic {
+  animation: dropInElastic 0.7s ease-out forwards;
+}

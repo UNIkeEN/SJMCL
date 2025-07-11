@@ -50,7 +50,8 @@
           "description": "版权所有 © 2024-2025 SJMCL 开发团队."
         },
         "userAgreement": {
-          "title": "用户协议"
+          "title": "用户协议",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
         },
         "openSourceLicense": {
           "title": "开源协议",
@@ -176,7 +177,7 @@
           "3rdparty": "此认证源支持 Yggdrasil Connect 规范提案",
           "microsoft": "SJMCL 支持微软 OAuth 2.0 设备权限授予流"
         },
-        "next": "请点击继续登录按钮打开登录窗口，输入以上代码（已自动复制）"
+        "next": "请点击继续登录按钮跳转登录页面，输入以上代码（已自动复制）"
       },
       "button": {
         "start": {
@@ -192,7 +193,7 @@
       "usePasswordLogin": "账号密码登录"
     }
   },
-  "AllGamesPage": {
+  "AllInstancesPage": {
     "button": {
       "addAndImport": "添加与导入",
       "globalSettings": "全局游戏设置",
@@ -218,6 +219,10 @@
             "dark": "深色"
           }
         },
+        "useLiquidGlassDesign": {
+          "title": "液态玻璃效果",
+          "description": "启用后，部分界面将使用「液态玻璃」效果，这可能会影响性能"
+        },
         "headNavStyle": {
           "title": "顶部导航栏样式",
           "type": {
@@ -230,6 +235,10 @@
     "font": {
       "title": "字体",
       "settings": {
+        "fontFamily": {
+          "title": "界面字体",
+          "default": "默认"
+        },
         "fontSize": {
           "title": "字体大小",
           "small": "小",
@@ -246,6 +255,9 @@
         "custom": {
           "title": "自定义图像",
           "add": "添加"
+        },
+        "randomCustom": {
+          "title": "随机自定义"
         }
       },
       "presetBgList": {
@@ -254,6 +266,9 @@
         },
         "SJTU-eastgate": {
           "name": "SJTU 紫气东来门"
+        },
+        "GNLXC": {
+          "name": "GNWork 理想城"
         }
       }
     },
@@ -320,10 +335,13 @@
       "info": "基本设置"
     }
   },
-  "DeleteGameInstanceAlertDialog": {
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
+  },
+  "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{gameName}}” 吗？它将会永久消失！（真的很久！）",
+      "content": "确定要删除游戏实例 “{{instanceName}}” 吗？它将会永久消失！（真的很久！）",
       "warning": {
         "withVerIso": "请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
         "woVerIso": "请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
@@ -342,6 +360,9 @@
       "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
+  "DevToolbar": {
+    "tooltip": "开发工具栏"
+  },
   "DiscoverPage": {
     "title": "发现",
     "button": {
@@ -357,9 +378,6 @@
       "online": "在线"
     }
   },
-  "DownloadFloatButton": {
-    "tooltip": "正在下载"
-  },
   "DownloadModpackModal": {
     "header": {
       "title": "下载整合包"
@@ -373,7 +391,8 @@
       "world": "世界",
       "mod": "模组",
       "resourcepack": "资源包",
-      "shaderpack": "光影"
+      "shader": "光影",
+      "datapack": "数据包"
     }
   },
   "DownloadSettingPage": {
@@ -433,17 +452,38 @@
       }
     }
   },
+  "DownloadSpecificResourceModal": {
+    "title": "资源下载 - {{name}}",
+    "label": {
+      "all": "全部",
+      "recommendedVersion": "推荐版本",
+      "currentModLoader": "当前加载器"
+    },
+    "releaseType": {
+      "alpha": "内测版",
+      "beta": "公测版",
+      "release": "正式版"
+    }
+  },
   "DownloadTasksPage": {
-    "title": "下载中任务",
+    "title": "下载任务",
     "button": {
       "settings": "下载设置",
       "pause": "暂停",
       "begin": "开始",
-      "retry": "重试"
+      "retry": "重试",
+      "deleteRecord": "删除此记录"
     },
     "label": {
       "paused": "已暂停",
-      "error": "错误"
+      "completed": "已完成",
+      "error": "错误",
+      "cancelled": "已取消"
+    },
+    "task": {
+      "game-client-download": "游戏客户端 {{param}}",
+      "game-server-download": "游戏服务端 {{param}}",
+      "game-resource-download": "游戏资源"
     }
   },
   "Editable": {
@@ -489,10 +529,12 @@
       "dirName": {
         "empty": "目录名称不能为空",
         "tooLong": "目录名称不能超过 20 个字符",
-        "exist": "目录名称已存在"
+        "exist": "目录名称已存在",
+        "hasInvalidChar": "目录名称包含特殊字符或使用系统保留字"
       },
       "dirPath": {
-        "exist": "目录路径已存在"
+        "exist": "目录路径已存在",
+        "invalid": "目录路径不合法"
       }
     }
   },
@@ -577,7 +619,7 @@
       "title": "调试选项",
       "settings": {
         "noJvmArgs": "不添加默认的 JVM 参数",
-        "gameCompletnessCheckPolicy": {
+        "gameFileValidatePolicy": {
           "title": "游戏文件完整性检查策略",
           "disable": "不检查",
           "normal": "普通检查",
@@ -624,13 +666,8 @@
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
     "exportLogs": "导出日志",
-    "clearLogs": "清除所有日志"
-  },
-  "GameMenu": {
-    "label": {
-      "details": "实例详情",
-      "delete": "删除实例"
-    }
+    "clearLogs": "清除所有日志",
+    "scrollToBottom": "滚动到底部"
   },
   "GameVersionSelector": {
     "old_beta": "远古版",
@@ -647,6 +684,12 @@
   },
   "General": {
     "add": "添加",
+    "alert": {
+      "noFullLogin": {
+        "title": "当前功能暂不可用",
+        "description": "请先登录微软账户后使用此功能。"
+      }
+    },
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
@@ -669,6 +712,7 @@
       }
     },
     "disable": "禁用",
+    "dontShowAgain": "不再显示",
     "download": "下载",
     "edit": "编辑",
     "enable": "启用",
@@ -704,9 +748,11 @@
           }
         },
         "instancesNavType": {
-          "title": "实例导航栏分组方式",
+          "title": "实例页导航栏模式",
+          "description": "更改实例页左侧导航栏是否显示、分组方式",
           "instance": "按实例",
-          "directory": "按目录"
+          "directory": "按目录",
+          "hidden": "隐藏"
         },
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
@@ -722,6 +768,7 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "当前文件夹",
+            "APP_DATA_SUBDIR": "SJMCL 数据文件夹",
             "OFFICIAL_DIR": "官方启动器文件夹"
           }
         }
@@ -765,8 +812,8 @@
         "autoMemAllocation": {
           "title": "自动分配内存"
         },
-        "minMemAllocation": {
-          "title": "最小内存分配"
+        "maxMemAllocation": {
+          "title": "最大内存分配"
         },
         "memoryUsage": {
           "title": "内存占用情况",
@@ -792,8 +839,8 @@
       "settings": {
         "launcherVisibility": {
           "title": "启动器可见性",
-          "start-close": "游戏启动后结束启动器",
-          "running-hidden": "游戏运行时隐藏启动器",
+          "startHidden": "游戏启动后隐藏启动器",
+          "runningHidden": "游戏运行时隐藏启动器",
           "always": "启动器始终可见"
         },
         "autoJoinGameServer": {
@@ -815,7 +862,7 @@
   "HeadNavBar": {
     "navList": {
       "launch": "启动",
-      "games": "游戏",
+      "instances": "实例",
       "accounts": "账户",
       "discover": "发现",
       "search": "搜索",
@@ -858,7 +905,8 @@
     "top": {
       "settings": {
         "LauncherDocs": {
-          "title": "SJMC Launcher 文档"
+          "title": "SJMC Launcher 文档",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
         }
       }
     }
@@ -866,8 +914,9 @@
   "InstanceBasicSettings": {
     "selectDirectory": "选择游戏目录"
   },
-  "InstanceLayout": {
+  "InstanceDetailsLayout": {
     "secMenu": {
+      "createShortcut": "创建启动快捷方式",
       "exportModPack": "导出为整合包",
       "star": "星标此实例",
       "unstar": "取消星标"
@@ -884,6 +933,12 @@
     },
     "button": {
       "launch": "启动实例"
+    }
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "实例详情",
+      "delete": "删除实例"
     }
   },
   "InstanceModsPage": {
@@ -924,7 +979,9 @@
     "restoreSettingsDesc": "将以下特定设置重置为全局游戏设置",
     "restore": "重置",
     "errorMessage": {
-      "error-1": "实例名称不能为空"
+      "error-1": "实例名称不能为空",
+      "error-2": "实例名称不合法",
+      "error-3": "实例名称太长"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1003,7 +1060,8 @@
       },
       "addFailed": {
         "title": "添加 Java 失败",
-        "description": "不是有效的 Java 可执行文件"
+        "invalid": "不是有效的 Java 可执行文件或与当前平台不兼容",
+        "duplicated": "目标 Java 路径已添加"
       }
     },
     "confirmDelete": {
@@ -1054,7 +1112,7 @@
     "info": "{{used}} / {{total}} GB 已使用",
     "label": {
       "now": "正在使用",
-      "minAllocation": "为 Minecraft 分配的最小值"
+      "maxAllocation": "为 Minecraft 分配的最大值"
     }
   },
   "ModLoaderCards": {
@@ -1071,6 +1129,11 @@
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
   },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "显示全部（+{{left}}）"
+    }
+  },
   "PlayerMenu": {
     "label": {
       "manageSkin": "管理皮肤",
@@ -1079,19 +1142,23 @@
       "copyUUID": "复制 UUID"
     }
   },
-  "PingTestPage":{
-    "PingServerList":{
+  "PingTestPage": {
+    "PingServerList": {
       "title": "服务连通性测试",
       "offline": "离线",
-      "bmclapi" : "BMCLAPI",
-      "curseforge" : "CurseForge",
-      "modrinth" : "Modrinth",
-      "mojang" : "Mojang",
-      "github" : "GitHub",
-      "sjmclapi" : "SJMC Launcher API"
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC Launcher API"
     }
   },
-  "ReLogin3rdPartyPlayerModal": {
+  "ReLoginPlayerModal": {
     "modal": {
       "title": "重新登录"
     },
@@ -1120,53 +1187,83 @@
     "modTagList": {
       "CurseForge": {
         "All": "全部",
-        "Addons": "插件",
+        "Addons": "附属模组",
         "Adventure and RPG": "冒险 RPG",
         "API and Library": "支持库",
+        "Applied Energistics 2": "应用能源2",
         "Armor, Tools, and Weapons": "装备 武器",
+        "Automation": "自动化",
+        "Biomes": "生物群系",
+        "Blood Magic": "血魔法",
+        "Buildcraft": "建筑",
         "Bug Fixes": "错误修复",
         "Cosmetic": "装饰",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "机械动力",
+        "Dimensions": "维度",
         "Education": "教育",
+        "Energy": "能源",
+        "Energy, Fluid, and Item Transport": "能源 流体 物品运输",
+        "Farming": "农业",
         "Food": "食物",
+        "Forestry": "林业",
+        "Galacticraft": "星系",
+        "Genetics": "遗传学",
+        "Industrial Craft": "工业时代2",
+        "Integrated Dynamics": "集成动力",
+        "KubeJS": "KubeJS",
         "Magic": "魔法",
         "Map and Information": "地图 信息",
         "MCreator": "MCreator",
         "Miscellaneous": "杂项",
+        "Mobs": "生物",
+        "Ores and Resources": "矿石 资源",
         "Performance": "性能",
+        "Player Transport": "玩家运输",
+        "Processing": "加工处理",
         "Redstone": "红石",
         "Server Utility": "服务器",
-        "Storage": "存储",
+        "Skyblock": "空岛",
+        "Storage": "存储系统",
+        "Structures": "结构",
         "Technology": "科技",
-        "Twitch Integration": "Twitch",
-        "Utility & QoL": "实用 QoL",
-        "World Gen": "世界生成"
+        "Thaumcraft": "神秘时代",
+        "Thermal Expansion": "热力膨胀",
+        "Tinker's Construct": "匠魂",
+        "Twilight Forest": "暮色森林",
+        "Twitch Integration": "Twitch集成",
+        "Utility & QoL": "实用功能与优化",
+        "World Gen": "世界生成",
+        "Auxiliary": "辅助模组",
+        "World": "世界"
       },
       "Modrinth": {
         "All": "全部",
-        "Adventure": "冒险",
-        "Cursed": "诅咒",
-        "Decoration": "装饰",
-        "Economy": "经济",
-        "Equipment": "装备",
-        "Food": "食物",
-        "Game Mechanics": "游戏机制",
-        "Library": "支持库",
-        "Magic": "魔法",
-        "Management": "管理",
-        "Minigame": "小游戏",
-        "Mobs": "生物",
-        "Optimization": "优化",
-        "Social": "社交",
-        "Storage": "存储",
-        "Technology": "科技",
-        "Transportation": "交通运输",
-        "Utility": "实用",
-        "World Generation": "世界生成"
+        "adventure": "冒险",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "economy": "经济",
+        "equipment": "装备",
+        "food": "食物",
+        "game-mechanics": "游戏机制",
+        "library": "支持库",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "小游戏",
+        "mobs": "生物",
+        "optimization": "优化",
+        "social": "社交",
+        "storage": "存储",
+        "technology": "科技",
+        "transportation": "交通运输",
+        "utility": "实用",
+        "worldgen": "世界生成"
       }
     },
     "worldTagList": {
       "CurseForge": {
         "All": "全部",
+        "Types": "类型",
         "Adventure": "冒险模式",
         "Creation": "创造模式",
         "Game Map": "游戏挑战",
@@ -1179,13 +1276,16 @@
     "resourcepackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Resolution": "分辨率",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x 及以上",
+        "Styles": "风格",
         "Animated": "动画",
+        "Special": "特殊",
         "Data Packs": "数据包",
         "Font Packs": "字体包",
         "Medieval": "中世纪",
@@ -1198,64 +1298,75 @@
       },
       "Modrinth": {
         "All": "全部",
-        "8x or lower": "8x 或更低",
+        "Resolution": "分辨率",
+        "8x-": "8x 或更低",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
-        "512x or higher": "512x 或更高",
-        "Audio": "音频",
-        "Blocks": "方块",
-        "Core Shaders": "核心着色器",
-        "Entities": "实体",
-        "Environment": "环境",
-        "Equipment": "装备",
-        "Fonts": "字体",
-        "GUI": "用户界面",
-        "Items": "物品",
-        "Locale": "本地化",
-        "Models": "模型",
-        "Combat": "战斗",
-        "Cursed": "诅咒",
-        "Decoration": "装饰",
-        "Modded": "模组",
-        "Realistic": "写实",
-        "Simplistic": "简约",
-        "Themed": "主题",
-        "Tweaks": "优化",
-        "Utility": "实用",
-        "Vanilla-like": "原版风格"
+        "512x+": "512x 或更高",
+        "Styles": "风格",
+        "audio": "音频",
+        "blocks": "方块",
+        "core-shaders": "核心着色器",
+        "entities": "实体",
+        "environment": "环境",
+        "equipment": "装备",
+        "fonts": "字体",
+        "gui": "用户界面",
+        "items": "物品",
+        "locale": "本地化",
+        "models": "模型",
+        "combat": "战斗",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "modded": "模组",
+        "realistic": "写实",
+        "simplistic": "简约",
+        "themed": "主题",
+        "tweaks": "优化",
+        "utility": "实用",
+        "vanilla-like": "原版风格"
       }
     },
-    "shaderpackTagList": {
+    "shaderTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "风格",
         "Fantasy": "奇幻",
         "Realistic": "写实",
         "Vanilla": "原版"
       },
       "Modrinth": {
         "All": "全部",
-        "Cartoon": "卡通",
-        "Cursed": "诅咒",
-        "Fantasy": "奇幻",
-        "Realistic": "写实",
-        "Semi-Realistic": "半写实",
-        "Vanilla-like": "原版风格",
-        "Atmosphere": "大气",
-        "Bloom": "泛光",
-        "Colored Lighting": "彩色光照",
-        "Foliage": "植被",
-        "Path Tracing": "路径追踪",
-        "PBR": "PBR",
-        "Reflections": "反射",
-        "Shadows": "阴影"
+        "Styles": "风格",
+        "cartoon": "卡通",
+        "cursed": "诅咒",
+        "fantasy": "奇幻",
+        "realistic": "写实",
+        "semi-realistic": "半写实",
+        "vanilla-like": "原版风格",
+        "atmosphere": "大气",
+        "bloom": "泛光",
+        "colored-lighting": "彩色光照",
+        "foliage": "植被",
+        "path-tracing": "路径追踪",
+        "pbr": "PBR",
+        "reflections": "反射",
+        "shadows": "阴影",
+        "potato": "极低",
+        "performance": "性能",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "screenshot": "影视级"
       }
     },
     "modpackTagList": {
       "CurseForge": {
         "All": "全部",
+        "Styles": "风格",
         "Adventure and RPG": "冒险 RPG",
         "Combat / PvP": "战斗 PvP",
         "Exploration": "探索",
@@ -1276,21 +1387,58 @@
       },
       "Modrinth": {
         "All": "全部",
-        "Adventure": "冒险",
-        "Challenging": "挑战",
-        "Combat": "战斗",
-        "Kitchen Sink": "大杂烩",
-        "Lightweight": "轻量整合",
+        "styles": "风格",
+        "adventure": "冒险",
+        "challenging": "挑战",
+        "combat": "战斗",
+        "kitchen-sink": "大杂烩",
+        "lightweight": "轻量整合",
+        "magic": "魔法",
+        "multiplayer": "多人",
+        "optimization": "优化",
+        "quests": "任务",
+        "technology": "科技"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Styles": "风格",
         "Magic": "魔法",
-        "Multiplayer": "多人",
-        "Optimization": "优化",
-        "Quests": "任务",
-        "Technology": "科技"
+        "Miscellaneous": "杂项",
+        "Fantasy": "奇幻",
+        "Mod Support": "模组支持",
+        "Tech": "科技",
+        "Library": "支持库",
+        "Utility": "实用",
+        "Adventure": "冒险"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "styles": "风格",
+        "adventure": "冒险",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "economy": "经济",
+        "equipment": "装备",
+        "food": "食物",
+        "game-mechanics": "游戏机制",
+        "library": "支持库",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "小游戏",
+        "mobs": "生物",
+        "optimization": "优化",
+        "social": "社交",
+        "storage": "存储",
+        "technology": "科技",
+        "transportation": "交通运输",
+        "utility": "实用",
+        "worldgen": "世界生成"
       }
     },
     "sortByList": {
       "CurseForge": {
-        "Relevancy": "相关度",
         "Popularity": "热度",
         "Latest update": "最近更新",
         "Creation date": "创建日期",
@@ -1298,11 +1446,11 @@
         "A-Z": "名称"
       },
       "Modrinth": {
-        "Relevance": "相关度",
-        "Downloads": "下载量",
-        "Followers": "关注量",
-        "Date published": "发布日期",
-        "Date updated": "更新日期"
+        "relevance": "相关度",
+        "downloads": "下载量",
+        "follows": "关注量",
+        "newest": "发布日期",
+        "updated": "更新日期"
       }
     },
     "versionList": {
@@ -1385,12 +1533,28 @@
           "title": "Java 列表获取失败"
         }
       },
+      "validateJava": {
+        "error": {
+          "title": "Java 验证失败",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java 可执行文件无效"
+          }
+        }
+      },
       "checkGameDirectory": {
         "error": {
           "title": "游戏目录无效",
           "description": {
             "GAME_DIR_ALREADY_ADDED": "游戏目录已添加",
             "GAME_DIR_NOT_EXIST": "游戏目录不存在"
+          }
+        }
+      },
+      "checkServiceAvailability": {
+        "error": {
+          "title": "服务器不可用",
+          "description": {
+            "FETCH_ERROR": "服务器侧或未知错误"
           }
         }
       }
@@ -1406,7 +1570,8 @@
         "error": {
           "title": "离线角色添加失败",
           "description": {
-            "DUPLICATE": "角色已存在"
+            "DUPLICATE": "角色已存在",
+            "INVALID": "UUID 无效"
           }
         }
       },
@@ -1431,8 +1596,21 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NOT_FOUND": "认证服务器不存在",
             "CANCELLED": "已取消",
-            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败",
             "INVALID": "无效的认证服务器地址"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "角色重新登录成功",
+        "error": {
+          "title": "角色重新登录失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "INVALID": "不支持离线角色刷新",
+            "CANCELLED": "已取消"
           }
         }
       },
@@ -1449,12 +1627,28 @@
           }
         }
       },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "角色重新登录成功",
+        "error": {
+          "title": "角色重新登录失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "连接认证服务器失败",
+            "INVALID": "账号或密码错误"
+          }
+        }
+      },
       "addPlayerFromSelection": {
         "success": "角色添加成功",
         "error": {
           "title": "角色添加失败",
           "description": {
-            "DUPLICATE": "角色已存在"
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "EXPIRED": "令牌已过期，请重新登录"
           }
         }
       },
@@ -1491,19 +1685,6 @@
           }
         }
       },
-      "validatePlayer": {
-        "error": {
-          "title": "验证角色失败",
-          "description": {
-            "NOT_FOUND": "角色不存在",
-            "EXPIRED": "访问令牌已过期，请重新登录",
-            "NETWORK_ERROR": "无法连接到服务器",
-            "PARSE_ERROR": "服务器返回的数据格式错误",
-            "NO_DOWNLOAD_API": "下载 Authlib-Injector 失败，请检查网络连接",
-            "SAVE_ERROR": "保存 Authlib-Injector 失败"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "获取认证服务器列表失败"
@@ -1514,7 +1695,8 @@
           "title": "获取认证服务器信息失败",
           "description": {
             "DUPLICATE": "认证服务器已存在",
-            "INVALID": "无效的认证服务器地址"
+            "INVALID": "无效的认证服务器地址",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
@@ -1524,7 +1706,8 @@
           "title": "认证服务器添加失败",
           "description": {
             "DUPLICATE": "认证服务器已存在",
-            "INVALID": "无效的认证服务器地址"
+            "INVALID": "无效的认证服务器地址",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
@@ -1538,12 +1721,45 @@
         }
       }
     },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "选择合适 Java 运行时失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "NO_SUITABLE_JAVA": "没有合适的 Java 运行时可供选择"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "验证游戏文件失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "验证角色失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "访问令牌已过期，请重新登录",
+            "NETWORK_ERROR": "无法连接到服务器",
+            "PARSE_ERROR": "服务器返回的数据格式错误",
+            "NO_DOWNLOAD_API": "下载 Authlib-Injector 失败，请检查网络连接",
+            "SAVE_ERROR": "保存 Authlib-Injector 失败"
+          }
+        }
+      }
+    },
     "resource": {
       "fetchGameVersionList": {
         "error": {
           "title": "获取游戏版本列表失败",
           "description": {
-            "PARSE_ERROR": "服务器返回数据格式错误"
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器"
           }
         }
       },
@@ -1552,7 +1768,38 @@
           "title": "获取模组加载器列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器",
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "获取资源列表失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器",
+            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "获取资源版本列表失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器",
+            "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "success": "下载任务创建成功",
+        "error": {
+          "title": "下载游戏服务器失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器"
           }
         }
       }
@@ -1560,7 +1807,13 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "获取实例列表失败"
+          "title": "获取实例列表失败",
+          "description": {
+            "INVALID_NAME_ERROR": "实例名称无效",
+            "INVALID_SOURCE_PATH": "实例目录无效",
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "FILE_MOVE_FAILED": "实例目录移动失败"
+          }
         }
       },
       "updateInstanceConfig": {
@@ -1585,17 +1838,16 @@
         "error": {
           "title": "实例游戏设置重置失败",
           "description": {
-            "INSTANCE_NOT_FOUND": "未找到指定 ID 的实例",
+            "INSTANCE_NOT_FOUND_BY_ID": "未找到指定 ID 的实例",
             "SAVE_ERROR": "保存实例设置文件失败"
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "打开实例目录失败",
+          "title": "获取实例子目录失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "EXEC_OPEN_DIR_ERROR": "命令执行失败"
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误"
           }
         }
       },
@@ -1613,7 +1865,10 @@
           "title": "实例重命名失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例"
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "INVALID_NAME_ERROR": "实例名称无效",
+            "INVALID_SOURCE_PATH": "实例目录无效",
+            "FILE_MOVE_FAILED": "实例目录移动失败"
           }
         }
       },
@@ -1655,6 +1910,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "获取模组列表失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "获取资源包列表失败"
@@ -1680,11 +1943,11 @@
           "title": "获取截图列表失败"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "获取模组列表失败",
+          "title": "模组状态切换失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
           }
         }
       },
@@ -1698,13 +1961,20 @@
           }
         }
       },
-      "toggleModByExtension": {
+      "createLaunchDesktopShortcut": {
+        "success": "启动快捷方式已添加到桌面",
         "error": {
-          "title": "模组状态切换失败",
+          "title": "启动快捷方式创建失败",
           "description": {
-            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
+            "SHORTCUT_CREATION_FAILED": "命令执行失败",
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
           }
         }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "任务创建成功"
       }
     }
   },
@@ -1740,7 +2010,14 @@
     "input": {
       "placeholder": "聚合搜索"
     },
-    "tip": "集中一处搜索本地内容与线上游戏资源"
+    "tip": "集中一处搜索本地内容与线上游戏资源",
+    "empty": "无搜索结果",
+    "result": {
+      "page": "页面",
+      "recentViewed": "最近访问过",
+      "instance": "实例",
+      "player": "角色"
+    }
   },
   "StarUsModal": {
     "header": {

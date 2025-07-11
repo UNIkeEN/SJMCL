@@ -29,6 +29,7 @@ export const ToastContextProvider: React.FC<ToastContextProviderProps> = ({
       isClosable: true,
       containerStyle: {
         minWidth: "2xs",
+        userSelect: "none",
       },
       ...options,
     });
