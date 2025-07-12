@@ -215,6 +215,7 @@
         "colorMode": {
           "title": "颜色模式",
           "type": {
+            "system": "跟随系统",
             "light": "浅色",
             "dark": "深色"
           }

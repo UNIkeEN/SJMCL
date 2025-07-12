@@ -215,7 +215,7 @@ export const defaultConfig: LauncherConfig = {
   appearance: {
     theme: {
       primaryColor: "blue",
-      colorMode: "light",
+      colorMode: "system",
       useLiquidGlassDesign: false,
       headNavStyle: "standard",
     },

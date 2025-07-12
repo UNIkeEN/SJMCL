@@ -170,7 +170,7 @@ structstruck::strike! {
       pub theme: struct {
         #[default = "blue"]
         pub primary_color: String,
-        #[default = "light"]
+        #[default = "system"]
         pub color_mode: String,
         pub use_liquid_glass_design: bool,
         #[default = "standard"]

@@ -34,6 +34,8 @@ export const LauncherConfigContextProvider: React.FC<{
   const { colorMode, toggleColorMode } = useColorMode();
 
   const [config, setConfig] = useState<LauncherConfig>(defaultConfig);
+  const userSelectedColorMode = config.appearance.theme.colorMode;
+
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>();
 
   const handleRetrieveLauncherConfig = useCallback(() => {
@@ -59,12 +61,24 @@ export const LauncherConfigContextProvider: React.FC<{
   }, [config.general.general.language]);
 
   useEffect(() => {
-    if (config.appearance.theme.colorMode !== "system") {
-      if (config.appearance.theme.colorMode !== colorMode) {
-        toggleColorMode();
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyColorMode = () => {
+      let target: "light" | "dark";
+      if (userSelectedColorMode === "system") {
+        target = media.matches ? "dark" : "light";
+      } else {
+        target = userSelectedColorMode;
       }
+      if (target !== colorMode) toggleColorMode();
+    };
+
+    applyColorMode();
+
+    if (userSelectedColorMode === "system") {
+      media.addEventListener("change", applyColorMode);
+      return () => media.removeEventListener("change", applyColorMode);
     }
-  }, [colorMode, config.appearance.theme.colorMode, toggleColorMode]);
+  }, [userSelectedColorMode, colorMode, toggleColorMode]);
 
   const handleUpdateLauncherConfig = (path: string, value: any) => {
     const newConfig = { ...config };
@@ -111,7 +125,11 @@ export const LauncherConfigContextProvider: React.FC<{
         getJavaInfos,
       }}
     >
-      <ColorModeScript initialColorMode={config.appearance.theme.colorMode} />
+      <ColorModeScript
+        initialColorMode={
+          userSelectedColorMode === "system" ? "light" : userSelectedColorMode
+        }
+      />
       {children}
     </LauncherConfigContext.Provider>
   );
