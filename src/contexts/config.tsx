@@ -125,11 +125,7 @@ export const LauncherConfigContextProvider: React.FC<{
         getJavaInfos,
       }}
     >
-      <ColorModeScript
-        initialColorMode={
-          userSelectedColorMode === "system" ? "light" : userSelectedColorMode
-        }
-      />
+      <ColorModeScript initialColorMode={userSelectedColorMode} />
       {children}
     </LauncherConfigContext.Provider>
   );
