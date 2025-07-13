@@ -74,7 +74,7 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
         post_source
       }
     })
-    .buffer_unordered(1) // 单并发避免压垮服务器
+    .buffer_unordered(1)
     .collect::<Vec<_>>()
     .await;
 
