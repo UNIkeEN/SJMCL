@@ -63,7 +63,10 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
     if (parts[2] === "details" && parts[3]) {
       return `/instances/details/${parts[3]}`;
     }
-    return "/instances/list";
+    if (parts[2] === "list") {
+      return `/instances/list`;
+    }
+    return undefined;
   }, [router.asPath]);
 
   return (
@@ -73,7 +76,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
           <VStack align="stretch" h="100%" spacing={4}>
             <Box flex="1" overflowY="auto">
               <NavMenu
-                selectedKeys={[selectedKey]}
+                selectedKeys={selectedKey ? [selectedKey] : []}
                 onClick={(value) => {
                   if (
                     isInstanceDetailsPage(router.asPath) &&
