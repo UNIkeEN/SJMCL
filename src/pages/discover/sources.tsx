@@ -56,10 +56,7 @@ export const DiscoverSourcesPage = () => {
       }))
     );
     // query details use invoke
-    const timeout = setTimeout(() => {
-      handleFetchPostSourcesInfo();
-    }, 200);
-    return () => clearTimeout(timeout);
+    handleFetchPostSourcesInfo();
   }, [sources, handleFetchPostSourcesInfo]);
 
   return (
