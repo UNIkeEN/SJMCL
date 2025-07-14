@@ -74,6 +74,7 @@ pub async fn fetch_post_summaries(app: AppHandle) -> SJMCLResult<Vec<PostSummary
         let mut posts_vec = Vec::new();
 
         let response = client.get(&url).query(&[("pageSize", "12")]).send().await;
+
         if let Ok(response) = response {
           if let Ok(post_list) = response.json::<PostResponse>().await {
             posts_vec = post_list.posts;

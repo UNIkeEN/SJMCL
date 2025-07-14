@@ -39,7 +39,6 @@ export const DiscoverSourcesPage = () => {
   const handleFetchPostSourcesInfo = useCallback(() => {
     DiscoverService.fetchPostSourcesInfo().then((response) => {
       if (response.status === "success") {
-        console.log(response);
         setSourcesInfo(response.data);
         setIsLoading(false);
       }
