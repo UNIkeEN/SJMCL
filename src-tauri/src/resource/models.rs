@@ -35,7 +35,7 @@ pub enum SourceType {
 // mod, save, resourcepack and shader
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ExtraResourceInfo {
+pub struct OtherResourceInfo {
   pub id: String,
   pub _type: String,
   pub name: String,
@@ -50,8 +50,8 @@ pub struct ExtraResourceInfo {
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ExtraResourceSearchRes {
-  pub list: Vec<ExtraResourceInfo>,
+pub struct OtherResourceSearchRes {
+  pub list: Vec<OtherResourceInfo>,
   pub total: u32,
   pub page: u32,
   pub page_size: u32,
@@ -59,7 +59,7 @@ pub struct ExtraResourceSearchRes {
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ExtraResourceSearchQuery {
+pub struct OtherResourceSearchQuery {
   pub resource_type: String,
   pub search_query: String,
   pub game_version: String,
@@ -71,7 +71,7 @@ pub struct ExtraResourceSearchQuery {
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ResourceVersionPackQuery {
+pub struct OtherResourceVersionPackQuery {
   pub resource_id: String,
   pub mod_loader: String,
   pub game_versions: Vec<String>,
@@ -79,7 +79,7 @@ pub struct ResourceVersionPackQuery {
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ResourceFileInfo {
+pub struct OtherResourceFileInfo {
   pub name: String,
   pub release_type: String,
   pub downloads: u32,
@@ -87,13 +87,14 @@ pub struct ResourceFileInfo {
   pub download_url: String,
   pub sha1: String,
   pub file_name: String,
+  pub loader: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ResourceVersionPack {
+pub struct OtherResourceVersionPack {
   pub name: String,
-  pub items: Vec<ResourceFileInfo>,
+  pub items: Vec<OtherResourceFileInfo>,
 }
 
 // game client itself

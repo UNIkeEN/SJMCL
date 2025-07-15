@@ -10,10 +10,12 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import AdvancedCard from "@/components/common/advanced-card";
+import DevToolbar from "@/components/dev/dev-toolbar";
 import HeadNavBar from "@/components/head-navbar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
+import { isDev } from "@/utils/env";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -192,6 +194,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         onClose={onWelcomeAndTermsModalClose}
       />
       <StarUsModal isOpen={isStarUsModalOpen} onClose={onStarUsModalClose} />
+
+      {isDev && <DevToolbar />}
     </Flex>
   );
 };

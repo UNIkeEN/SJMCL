@@ -1,9 +1,10 @@
-import { HStack, useDisclosure } from "@chakra-ui/react";
+import { Center, HStack, useDisclosure } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEye } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -13,12 +14,17 @@ import ViewSchematicModal from "@/components/modals/view-schematic-modal";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirType } from "@/enums/instance";
+import { GetStateFlag } from "@/hooks/get-state";
 import { SchematicInfo } from "@/models/instance/misc";
 
 const InstanceSchematicsPage = () => {
   const { t } = useTranslation();
-  const { openInstanceSubdir, handleImportResource, getSchematicList } =
-    useInstanceSharedData();
+  const {
+    openInstanceSubdir,
+    handleImportResource,
+    getSchematicList,
+    isSchematicListLoading: isLoading,
+  } = useInstanceSharedData();
   const { openSharedModal } = useSharedModals();
 
   const [schematics, setSchematics] = useState<SchematicInfo[]>([]);
@@ -31,9 +37,21 @@ const InstanceSchematicsPage = () => {
     onClose: onViewModalClose,
   } = useDisclosure();
 
+  const getSchematicListWrapper = useCallback(
+    (sync?: boolean) => {
+      getSchematicList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return;
+          setSchematics(data || []);
+        })
+        .catch((e) => setSchematics([]));
+    },
+    [getSchematicList]
+  );
+
   useEffect(() => {
-    setSchematics(getSchematicList() || []);
-  }, [getSchematicList]);
+    getSchematicListWrapper();
+  }, [getSchematicListWrapper]);
 
   const schemSecMenuOperations = [
     {
@@ -50,17 +68,13 @@ const InstanceSchematicsPage = () => {
           filterExt: ["schematic", "litematic"],
           tgtDirType: InstanceSubdirType.Schematics,
           decompress: false,
-          onSuccessCallback: () => {
-            setSchematics(getSchematicList(true) || []);
-          },
+          onSuccessCallback: () => getSchematicListWrapper(true),
         });
       },
     },
     {
       icon: "refresh",
-      onClick: () => {
-        setSchematics(getSchematicList(true) || []);
-      },
+      onClick: () => getSchematicListWrapper(true),
     },
   ];
 
@@ -110,7 +124,11 @@ const InstanceSchematicsPage = () => {
           </HStack>
         }
       >
-        {schematics.length > 0 ? (
+        {isLoading ? (
+          <Center mt={4}>
+            <BeatLoader size={16} color="gray" />
+          </Center>
+        ) : schematics.length > 0 ? (
           <OptionItemGroup
             items={schematics.map((schem) => (
               <OptionItem key={schem.name} title={schem.name}>

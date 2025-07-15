@@ -1,9 +1,16 @@
-use crate::{storage::Storage, utils::sys_info, EXE_DIR};
+use crate::{
+  launcher_config::constants::CONFIG_PARTIAL_UPDATE_EVENT,
+  partial::PartialUpdate,
+  storage::Storage,
+  utils::{string::snake_to_camel_case, sys_info},
+  EXE_DIR,
+};
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
 use std::path::PathBuf;
 use strum_macros::Display;
+use tauri::{AppHandle, Emitter};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -170,7 +177,7 @@ structstruck::strike! {
       pub theme: struct {
         #[default = "blue"]
         pub primary_color: String,
-        #[default = "light"]
+        #[default = "system"]
         pub color_mode: String,
         pub use_liquid_glass_design: bool,
         #[default = "standard"]
@@ -267,6 +274,31 @@ structstruck::strike! {
         pub accordion_states: [bool; 2],
       },
     }
+  }
+}
+
+impl LauncherConfig {
+  pub fn partial_update(
+    &mut self,
+    app: &AppHandle,
+    key_path: &str,
+    value: &str,
+  ) -> Result<(), std::io::Error> {
+    self
+      .update(key_path, value)
+      .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+
+    app
+      .emit(
+        CONFIG_PARTIAL_UPDATE_EVENT,
+        serde_json::json!({
+          "path": snake_to_camel_case(key_path),
+          "value": value,
+        }),
+      )
+      .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+
+    Ok(())
   }
 }
 

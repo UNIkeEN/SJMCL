@@ -215,6 +215,7 @@
         "colorMode": {
           "title": "Color Mode",
           "type": {
+            "system": "System",
             "light": "Light",
             "dark": "Dark"
           }
@@ -360,6 +361,9 @@
       "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
+  "DevToolbar": {
+    "tooltip": "Dev Toolbar"
+  },
   "DiscoverPage": {
     "title": "Discover",
     "noMore":"No more",
@@ -375,9 +379,6 @@
     "tag": {
       "online": "Online"
     }
-  },
-  "DownloadIndicator": {
-    "tooltip": "Downloading"
   },
   "DownloadModpackModal": {
     "header": {
@@ -472,12 +473,20 @@
       "settings": "Download Settings",
       "pause": "Pause",
       "begin": "Start",
-      "retry": "Retry"
+      "retry": "Retry",
+      "deleteRecord": "Delete this Record"
     },
     "label": {
       "paused": "Paused",
+      "completed": "Completed",
       "error": "Error",
       "cancelled": "Cancelled"
+    },
+    "task": {
+      "game-client-download": "Game Client {{param}}",
+      "game-server-download": "Game Server {{param}}",
+      "game-resource-download": "Resource Pack",
+      "retry": "Retry Task"
     }
   },
   "Editable": {
@@ -1786,6 +1795,16 @@
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
           }
         }
+      },
+      "downloadGameServer": {
+        "success": "Download Task created successfully",
+        "error": {
+          "title": "Failed to download game server",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server"
+          }
+        }
       }
     },
     "instance": {
@@ -1797,6 +1816,20 @@
             "INVALID_SOURCE_PATH": "Invalid source path",
             "CONFLICT_NAME_ERROR": "Instance name already exists",
             "FILE_MOVE_FAILED": "Failed to move instance files"
+          }
+        }
+      },
+      "createInstance": {
+        "success": "Instance download task created successfully",
+        "error": {
+          "title": "Failed to create instance download task",
+          "description": {
+            "CONFLICT_NAME_ERROR": "Instance name already exists",
+            "FOLDER_CREATION_FAILED": "Failed to create target folder",
+            "FILE_CREATION_FAILED": "Failed to create target file",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "CLIENT_JSON_PARSE_ERROR": "Failed to parse instance version info",
+            "ASSET_INDEX_PARSE_ERROR": "Failed to parse asset index"
           }
         }
       },
@@ -1959,6 +1992,11 @@
     "task": {
       "scheduleProgressiveTaskGroup": {
         "success": "Task created successfully"
+      },
+      "onProgressiveTaskUpdate": {
+        "error": {
+          "title": "Task {{param}} failed"
+        }
       }
     }
   },

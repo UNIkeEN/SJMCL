@@ -1,6 +1,7 @@
 // https://minecraft.wiki/w/Java_Edition_level_format#level.dat_format
 
 use serde::{self, Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "PascalCase", default)]
@@ -13,7 +14,7 @@ pub struct PlayerData {
   #[serde(rename = "abilities")]
   pub abilities: PlayerAbilityData,
   pub score: Option<i64>,
-  pub dimension: String,
+  pub dimension: Value, // good mojang
   pub on_ground: bool,
   pub fall_distance: f32,
   pub motion: Vec<f64>,   // [f64; 3]

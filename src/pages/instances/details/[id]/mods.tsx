@@ -32,6 +32,7 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
+import { OtherResourceType } from "@/enums/resource";
 import { InstanceError } from "@/enums/service-error";
 import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
@@ -168,7 +169,7 @@ const InstanceModsPage = () => {
       icon: "download",
       onClick: () => {
         openSharedModal("download-resource", {
-          initialResourceType: "mod",
+          initialResourceType: OtherResourceType.Mod,
         });
       },
     },

@@ -1,3 +1,4 @@
+import { OtherResourceType } from "@/enums/resource";
 import { OtherResourceInfo } from "@/models/resource";
 
 // from https://bmclapi2.bangbang93.com/forge/minecraft/1.21
@@ -505,7 +506,7 @@ export const mockNeoForgeVersions: any[] = [
 
 export const mockDownloadResourceList: OtherResourceInfo[] = [
   {
-    type: "mod",
+    type: OtherResourceType.Mod,
     name: "Just Enough Items",
     translatedName: "JEI物品管理器",
     description:
@@ -518,7 +519,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "resourcepack",
+    type: OtherResourceType.ResourcePack,
     name: "Faithful",
     translatedName: "Faithful 32x32",
     description:
@@ -529,7 +530,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     downloads: 20,
   },
   {
-    type: "mod",
+    type: OtherResourceType.Mod,
     name: "Xaero's Minimap",
     translatedName: "Xaero 的小地图",
     description: "Displays the world nearby terrain, players, mobs",
@@ -541,7 +542,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "mod",
+    type: OtherResourceType.Mod,
     name: "Optifine",
     description: "A Minecraft mod that optimizes Minecraft's graphics.",
     iconSrc: "/images/icons/GrassBlock.png",
@@ -551,7 +552,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "mod",
+    type: OtherResourceType.Mod,
     name: "Just Enough Items",
     translatedName: "JEI物品管理器",
     description:
@@ -564,7 +565,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "resourcepack",
+    type: OtherResourceType.ResourcePack,
     name: "Faithful",
     translatedName: "Faithful 32x32",
     description:
@@ -575,7 +576,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     downloads: 20,
   },
   {
-    type: "mod",
+    type: OtherResourceType.Mod,
     name: "Xaero's Minimap",
     translatedName: "Xaero 的小地图",
     description: "Displays the world nearby terrain, players, mobs",
@@ -587,7 +588,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
     source: "CurseForge",
   },
   {
-    type: "mod",
+    type: OtherResourceType.Mod,
     name: "Optifine",
     description: "A Minecraft mod that optimizes Minecraft's graphics.",
     iconSrc: "/images/icons/GrassBlock.png",

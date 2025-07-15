@@ -1,27 +1,48 @@
-import { IconButton, Image, Tooltip, useDisclosure } from "@chakra-ui/react";
+import {
+  Center,
+  IconButton,
+  Image,
+  Tooltip,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import router from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEllipsis } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import PreviewScreenshotModal from "@/components/modals/preview-screenshot-modal";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { GetStateFlag } from "@/hooks/get-state";
 import { ScreenshotInfo } from "@/models/instance/misc";
 
 const InstanceScreenshotsPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const { getScreenshotList } = useInstanceSharedData();
+  const { getScreenshotList, isScreenshotListLoading: isLoading } =
+    useInstanceSharedData();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
   const [currentScreenshot, setCurrentScreenshot] =
     useState<ScreenshotInfo | null>(null);
 
+  const getScreenshotListWrapper = useCallback(
+    (sync?: boolean) => {
+      getScreenshotList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return;
+          setScreenshots(data || []);
+        })
+        .catch((e) => setScreenshots([]));
+    },
+    [getScreenshotList]
+  );
+
   useEffect(() => {
-    setScreenshots(getScreenshotList() || []);
-  }, [getScreenshotList]);
+    getScreenshotListWrapper();
+  }, [getScreenshotListWrapper]);
 
   const {
     isOpen: isScreenshotPreviewModalOpen,
@@ -97,7 +118,11 @@ const InstanceScreenshotsPage: React.FC = () => {
 
   return (
     <Section>
-      {screenshots.length > 0 ? (
+      {isLoading ? (
+        <Center mt={4}>
+          <BeatLoader size={16} color="gray" />
+        </Center>
+      ) : screenshots.length > 0 ? (
         <WrapCardGroup
           cardAspectRatio={16 / 9}
           items={screenshots.map((screenshot) => ({

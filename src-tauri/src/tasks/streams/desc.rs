@@ -18,6 +18,7 @@ where
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum PStatus {
+  Waiting,
   Stopped,
   Cancelled,
   Completed,
@@ -44,6 +45,10 @@ impl PStatus {
 
   pub fn is_cancelled(&self) -> bool {
     *self == PStatus::Cancelled
+  }
+
+  pub fn is_waiting(&self) -> bool {
+    *self == PStatus::Waiting
   }
 }
 

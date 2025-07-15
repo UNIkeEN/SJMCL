@@ -41,12 +41,20 @@ pub async fn check_full_login_availability(app: &AppHandle) -> SJMCLResult<()> {
   match loc_flag {
     Some(true) => {
       // in China (mainland), full account feature (offline and 3rd-party login) is always available
-      config_state.basic_info.allow_full_login_feature = true;
+      config_state.partial_update(
+        app,
+        "basic_info.allow_full_login_feature",
+        &serde_json::to_string(&true)?,
+      )?;
     }
     _ => {
       // not in China (mainland) or cannot determine the IP
       // check if any player has been added (not only microsoft type player, because user may delete it)
-      config_state.basic_info.allow_full_login_feature = !account_state.players.is_empty();
+      config_state.partial_update(
+        app,
+        "basic_info.allow_full_login_feature",
+        &serde_json::to_string(&!account_state.players.is_empty())?,
+      )?;
     }
   }
 

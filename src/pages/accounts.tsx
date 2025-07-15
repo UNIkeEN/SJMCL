@@ -42,7 +42,7 @@ import { AccountService } from "@/services/account";
 
 const AccountsPage = () => {
   const { t } = useTranslation();
-  const { config, update, refreshConfig } = useLauncherConfig();
+  const { config, update } = useLauncherConfig();
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.accountsPage.viewType;
@@ -130,10 +130,7 @@ const AccountsPage = () => {
       AccountService.deleteAuthServer(servers[0].authUrl).then((response) => {
         if (response.status === "success") {
           getAuthServerList(true);
-          Promise.all([
-            getPlayerList(true),
-            refreshConfig(), // sync update selected player id in frontend
-          ]);
+          getPlayerList(true);
           // redirect the selected player type to "all" to avoid display error
           setSelectedPlayerType("all");
           toast({

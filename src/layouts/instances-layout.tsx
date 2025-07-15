@@ -63,7 +63,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
     if (parts[2] === "details" && parts[3]) {
       return `/instances/details/${parts[3]}`;
     }
-    return "/instances/list";
+    return router.asPath;
   }, [router.asPath]);
 
   return (

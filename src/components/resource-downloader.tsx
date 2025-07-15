@@ -27,6 +27,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import {
+  OtherResourceType,
   datapackTagList,
   modTagList,
   modpackTagList,
@@ -43,7 +44,7 @@ import { ISOToDate } from "@/utils/datetime";
 import { formatDisplayCount } from "@/utils/string";
 
 interface ResourceDownloaderProps {
-  resourceType: string;
+  resourceType: OtherResourceType;
 }
 
 interface ResourceDownloaderMenuProps {
@@ -283,7 +284,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
           resource={selectedItem}
           curInstanceMajorVersion={curInstance?.majorVersion}
           curInstanceModLoader={
-            selectedItem.type === "mod" &&
+            selectedItem.type === OtherResourceType.Mod &&
             curInstance?.modLoader.loaderType !== "Unknown"
               ? curInstance?.modLoader.loaderType
               : undefined
@@ -456,7 +457,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const renderTagMenuOptions = () => {
     if (typeof tagList === "object" && tagList !== null) {
       return Object.entries(tagList).flatMap(([group, tags]) => [
-        group === "All" || resourceType === "mod" ? (
+        group === "All" || resourceType === OtherResourceType.Mod ? (
           <MenuItemOption key={`group-${group}`} value={group} fontSize="xs">
             {t(
               `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`

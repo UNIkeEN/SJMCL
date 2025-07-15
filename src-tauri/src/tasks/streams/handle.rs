@@ -85,9 +85,11 @@ where
   }
 
   pub fn set_total(&mut self, total: i64) {
-    self.desc.total = total;
-    self.desc.save(&self.path).unwrap();
-    self.reporter.set_total(total);
+    if total > self.desc.total {
+      self.desc.total = total;
+      self.desc.save(&self.path).unwrap();
+      self.reporter.set_total(total);
+    }
   }
 
   pub fn report_progress(&mut self, cx: &mut Context<'_>, incr: i64) {

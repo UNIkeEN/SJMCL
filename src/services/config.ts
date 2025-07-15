@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { LauncherConfig } from "@/models/config";
 import { InvokeResponse } from "@/models/response";
 import { JavaInfo } from "@/models/system-info";
@@ -131,5 +132,24 @@ export class ConfigService {
     dir: string
   ): Promise<InvokeResponse<string>> {
     return await invoke("check_game_directory", { dir });
+  }
+
+  /**
+   * Listens for backend-initiated changes to the `config` field.
+   * @param callback - Callback function invoked whenever the config is updated by the backend.
+   */
+  static onConfigPartialUpdate(
+    callback: (payload: { path: string; value: any }) => void
+  ) {
+    const unlisten = getCurrentWebview().listen<{ path: string; value: any }>(
+      "config:partial-update",
+      (event) => {
+        callback(event.payload);
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

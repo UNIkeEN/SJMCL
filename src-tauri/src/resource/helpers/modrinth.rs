@@ -1,7 +1,7 @@
 use crate::error::SJMCLResult;
 use crate::resource::models::{
-  ExtraResourceInfo, ExtraResourceSearchQuery, ExtraResourceSearchRes, ResourceError,
-  ResourceFileInfo, ResourceVersionPack, ResourceVersionPackQuery,
+  OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
+  OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
 };
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -54,11 +54,11 @@ pub struct ModrinthVersionPack {
   pub files: Vec<ModrinthFile>,
 }
 
-pub fn map_modrinth_to_resource_info(res: ModrinthSearchRes) -> ExtraResourceSearchRes {
+pub fn map_modrinth_to_resource_info(res: ModrinthSearchRes) -> OtherResourceSearchRes {
   let list = res
     .hits
     .into_iter()
-    .map(|p| ExtraResourceInfo {
+    .map(|p| OtherResourceInfo {
       id: p.project_id,
       _type: p.project_type,
       name: p.title,
@@ -72,7 +72,7 @@ pub fn map_modrinth_to_resource_info(res: ModrinthSearchRes) -> ExtraResourceSea
     })
     .collect();
 
-  ExtraResourceSearchRes {
+  OtherResourceSearchRes {
     list,
     total: res.total_hits,
     page: res.offset / res.limit,
@@ -82,7 +82,7 @@ pub fn map_modrinth_to_resource_info(res: ModrinthSearchRes) -> ExtraResourceSea
 
 pub fn map_modrinth_file_to_version_pack(
   res: Vec<ModrinthVersionPack>,
-) -> Vec<ResourceVersionPack> {
+) -> Vec<OtherResourceVersionPack> {
   let mut version_packs = std::collections::HashMap::new();
 
   for version in res {
@@ -107,20 +107,12 @@ pub fn map_modrinth_file_to_version_pack(
         .collect::<Vec<_>>()
     };
 
-    let loaders = if loaders.is_empty() {
-      vec!["".to_string()]
-    } else {
-      loaders
-    };
-
     for game_version in &game_versions {
       for loader in &loaders {
-        let version_name = format!("{} {}", loader, game_version);
-
         let file_infos = version
           .files
           .iter()
-          .map(|file| ResourceFileInfo {
+          .map(|file| OtherResourceFileInfo {
             name: version.name.clone(),
             release_type: version.version_type.clone(),
             downloads: version.downloads,
@@ -128,13 +120,18 @@ pub fn map_modrinth_file_to_version_pack(
             download_url: file.url.clone(),
             sha1: file.hashes.sha1.clone(),
             file_name: file.filename.clone(),
+            loader: if loader.is_empty() {
+              None
+            } else {
+              Some(loader.to_string())
+            },
           })
           .collect::<Vec<_>>();
 
         version_packs
-          .entry(version_name.clone())
-          .or_insert_with(|| ResourceVersionPack {
-            name: version_name,
+          .entry(game_version.clone())
+          .or_insert_with(|| OtherResourceVersionPack {
+            name: game_version.clone(),
             items: Vec::new(),
           })
           .items
@@ -143,7 +140,7 @@ pub fn map_modrinth_file_to_version_pack(
     }
   }
 
-  let mut list: Vec<ResourceVersionPack> = version_packs.into_values().collect();
+  let mut list: Vec<OtherResourceVersionPack> = version_packs.into_values().collect();
   list.sort_by(version_pack_sort);
 
   list
@@ -151,11 +148,11 @@ pub fn map_modrinth_file_to_version_pack(
 
 pub async fn fetch_resource_list_by_name_modrinth(
   app: &AppHandle,
-  query: &ExtraResourceSearchQuery,
-) -> SJMCLResult<ExtraResourceSearchRes> {
+  query: &OtherResourceSearchQuery,
+) -> SJMCLResult<OtherResourceSearchRes> {
   let url = "https://api.modrinth.com/v2/search";
 
-  let ExtraResourceSearchQuery {
+  let OtherResourceSearchQuery {
     resource_type,
     search_query,
     game_version,
@@ -198,9 +195,9 @@ pub async fn fetch_resource_list_by_name_modrinth(
 
 pub async fn fetch_resource_version_packs_modrinth(
   app: &AppHandle,
-  query: &ResourceVersionPackQuery,
-) -> SJMCLResult<Vec<ResourceVersionPack>> {
-  let ResourceVersionPackQuery {
+  query: &OtherResourceVersionPackQuery,
+) -> SJMCLResult<Vec<OtherResourceVersionPack>> {
+  let OtherResourceVersionPackQuery {
     resource_id,
     mod_loader,
     game_versions,

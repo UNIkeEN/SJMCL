@@ -473,7 +473,7 @@ const AppearanceSettingsPage = () => {
                 update("appearance.theme.colorMode", s as string);
               }}
               size="xs"
-              items={["light", "dark"].map((item) => ({
+              items={["system", "light", "dark"].map((item) => ({
                 label: t(
                   `AppearanceSettingsPage.theme.settings.colorMode.type.${item}`
                 ),

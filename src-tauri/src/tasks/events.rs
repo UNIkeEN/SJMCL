@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
 use tokio::time::Duration;
 
-const TASK_PROGRESS_LISTENER: &str = "SJMCL://task-progress";
+const TASK_PROGRESS_UPDATE_EVENT: &str = "task:progress-update";
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(tag = "status")]
@@ -44,7 +44,9 @@ pub struct PEvent<'a> {
 
 impl<'a> PEvent<'a> {
   pub fn emit(self, app: &AppHandle) {
-    app.emit_to(TASK_PROGRESS_LISTENER, "update", self).unwrap();
+    app
+      .emit_to("main", TASK_PROGRESS_UPDATE_EVENT, self)
+      .unwrap();
   }
 
   pub fn emit_started(app: &AppHandle, id: u32, task_group: Option<&'a str>, total: i64) {
@@ -192,14 +194,10 @@ impl<'a> TEvent<'a> {
   }
   pub fn emit(self, app: &AppHandle) {
     if let Some(tg) = self.task_group {
-      app.emit_to(TASK_PROGRESS_LISTENER, tg, self).unwrap();
+      app.emit_to("main", tg, self).unwrap();
     } else {
       app
-        .emit_to(
-          TASK_PROGRESS_LISTENER,
-          std::format!("task-{}", self.id).as_str(),
-          self,
-        )
+        .emit_to("main", std::format!("task-{}", self.id).as_str(), self)
         .unwrap();
     }
   }

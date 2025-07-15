@@ -18,7 +18,7 @@ const SyncAndRestoreSettingsPage = () => {
   const { t } = useTranslation();
   const { setConfig } = useLauncherConfig();
   const toast = useToast();
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { openGenericConfirmDialog, closeSharedModal } = useSharedModals();
 
   const {
     isOpen: isSyncConfigExportModalOpen,
@@ -95,7 +95,7 @@ const SyncAndRestoreSettingsPage = () => {
               variant="subtle"
               size="xs"
               onClick={() => {
-                openSharedModal("generic-confirm", {
+                openGenericConfirmDialog({
                   title: t("RestoreConfigConfirmDialog.title"),
                   body: t("RestoreConfigConfirmDialog.body"),
                   isAlert: true,

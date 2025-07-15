@@ -11,24 +11,61 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { save } from "@tauri-apps/plugin-dialog";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useTaskContext } from "@/contexts/task";
+import { useToast } from "@/contexts/toast";
 import { GameResourceInfo } from "@/models/resource";
-import { TaskTypeEnums } from "@/models/task";
+import { ResourceService } from "@/services/resource";
 
 export const DownloadGameServerModal: React.FC<
   Omit<ModalProps, "children">
 > = ({ ...modalProps }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const toast = useToast();
+  const router = useRouter();
   const primaryColor = config.appearance.theme.primaryColor;
   const { handleScheduleProgressiveTaskGroup } = useTaskContext();
 
   const [selectedGameVersion, setSelectedGameVersion] =
     useState<GameResourceInfo>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleDownloadGameServer = async () => {
+    if (!selectedGameVersion) return;
+
+    const savepath = await save({
+      defaultPath: `${selectedGameVersion.id}-server.jar`,
+    });
+    if (!savepath || !selectedGameVersion?.url) return;
+
+    setIsLoading(true);
+    const response = await ResourceService.downloadGameServer(
+      selectedGameVersion,
+      savepath
+    );
+    setIsLoading(false);
+    if (response.status === "success") {
+      toast({
+        title: response.message,
+        status: "success",
+      });
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+    }
+
+    setSelectedGameVersion(undefined);
+    modalProps.onClose?.();
+    router.push("/downloads");
+  };
 
   return (
     <Modal
@@ -56,23 +93,8 @@ export const DownloadGameServerModal: React.FC<
             <Button
               disabled={!selectedGameVersion}
               colorScheme={primaryColor}
-              onClick={async () => {
-                if (!selectedGameVersion) return;
-                const savepath = await save({
-                  defaultPath: `${selectedGameVersion.id}-server.jar`,
-                });
-                if (!savepath || !selectedGameVersion?.url) return;
-                handleScheduleProgressiveTaskGroup("game-server-download", [
-                  {
-                    src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
-                    dest: "1.jar",
-                    sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
-                    taskType: TaskTypeEnums.Download,
-                  },
-                ]);
-                setSelectedGameVersion(undefined);
-                modalProps.onClose?.();
-              }}
+              onClick={() => handleDownloadGameServer()}
+              isLoading={isLoading}
             >
               {t("General.finish")}
             </Button>

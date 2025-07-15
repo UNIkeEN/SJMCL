@@ -22,18 +22,21 @@ import {
   Stepper,
   useSteps,
 } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import { ModLoaderSelector } from "@/components/mod-loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
 import { GameDirectory } from "@/models/config";
 import {
   GameResourceInfo,
   ModLoaderResourceInfo,
   defaultModLoaderResourceInfo,
 } from "@/models/resource";
+import { InstanceService } from "@/services/instance";
 
 const gameTypesToIcon: Record<string, string> = {
   release: "/images/icons/JEIcon_Release.png",
@@ -55,6 +58,8 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const toast = useToast();
+  const router = useRouter();
 
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
@@ -69,6 +74,51 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
   const [instanceDescription, setInstanceDescription] = useState("");
   const [instanceIconSrc, setInstanceIconSrc] = useState("");
   const [instanceDirectory, setInstanceDirectory] = useState<GameDirectory>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCreateInstance = useCallback(() => {
+    if (!selectedGameVersion) return;
+    setIsLoading(true);
+    InstanceService.createInstance(
+      instanceDirectory!,
+      instanceName,
+      instanceDescription,
+      instanceIconSrc,
+      selectedGameVersion,
+      {
+        loaderType: selectedModLoader.loaderType,
+        version: selectedModLoader.version,
+      }
+    )
+      .then((res) => {
+        if (res.status === "success") {
+          toast({
+            title: res.message,
+            status: "success",
+          });
+          modalProps.onClose();
+          router.push("/downloads");
+        } else {
+          toast({
+            title: res.message,
+            description: res.details,
+            status: "error",
+          });
+        }
+      })
+      .finally(() => setIsLoading(false));
+  }, [
+    selectedGameVersion,
+    instanceDirectory,
+    instanceName,
+    instanceDescription,
+    instanceIconSrc,
+    selectedModLoader.loaderType,
+    selectedModLoader.version,
+    toast,
+    modalProps,
+    router,
+  ]);
 
   const step1Content = useMemo(() => {
     return (
@@ -175,7 +225,8 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
           <Button
             disabled={!instanceDirectory || instanceName === ""}
             colorScheme={primaryColor}
-            onClick={modalProps.onClose}
+            onClick={() => handleCreateInstance()}
+            isLoading={isLoading}
           >
             {t("General.finish")}
           </Button>
@@ -183,10 +234,12 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       </>
     );
   }, [
+    handleCreateInstance,
     instanceDescription,
     instanceDirectory,
     instanceIconSrc,
     instanceName,
+    isLoading,
     modalProps.onClose,
     primaryColor,
     setActiveStep,

@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuBox,
@@ -26,7 +26,6 @@ import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 
 const HeadNavBar = () => {
   const router = useRouter();
@@ -34,33 +33,23 @@ const HeadNavBar = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const isSimplified = config.appearance.theme.headNavStyle === "simplified";
-  const themedStyles = useThemedCSSStyle();
+
   const { openSharedModal } = useSharedModals();
-  const cardRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const { tasks } = useTaskContext();
+  const isDownloadIndicatorShown = tasks.length > 0;
 
   useEffect(() => {
-    if (!cardRef.current) return;
-
-    let lastWidth = cardRef.current.offsetWidth;
-
-    const observer = new ResizeObserver((entries) => {
-      const currentWidth = entries[0].contentRect.width;
-
-      if (Math.abs(currentWidth - lastWidth) > 1) {
-        // prevent excessive animations
-        setIsAnimating(true);
-        setTimeout(() => setIsAnimating(false), 700);
-        lastWidth = currentWidth;
-      }
-    });
-
-    observer.observe(cardRef.current);
-    return () => observer.disconnect();
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 700);
+  }, [
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.appearance.theme.useLiquidGlassDesign]);
-  // When using liquid glass design, the card ref is not the before one.
+    config.appearance.theme.useLiquidGlassDesign,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isDownloadIndicatorShown,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isSimplified,
+  ]);
 
   const navList = [
     { icon: LuZap, label: "launch", path: "/launch" },
@@ -94,12 +83,12 @@ const HeadNavBar = () => {
     <Flex justify="center" p={4}>
       <AdvancedCard
         level="back"
-        px={4}
+        pl={8}
+        pr={isDownloadIndicatorShown ? 4 : 8}
         py={2}
-        ref={cardRef}
         className={`animated-card ${isAnimating ? "animate" : ""}`}
       >
-        <HStack spacing={4}>
+        <HStack spacing={4} h="100%">
           <TitleShort />
           <Tabs
             variant="soft-rounded"
@@ -128,7 +117,7 @@ const HeadNavBar = () => {
               ))}
             </TabList>
           </Tabs>
-          {tasks.length > 0 && (
+          {isDownloadIndicatorShown && (
             <>
               <Divider
                 orientation="vertical"

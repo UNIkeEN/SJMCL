@@ -4,9 +4,10 @@ use tauri::{AppHandle, Manager};
 use crate::{
   error::SJMCLResult,
   tasks::{download::DownloadTask, monitor::TaskMonitor},
+  utils::fs::extract_filename,
 };
 
-use super::{PTaskGroupDesc, PTaskParam, THandle};
+use super::{PTaskGroupDesc, PTaskParam, SJMCLFutureDesc, THandle};
 
 #[tauri::command]
 pub async fn schedule_progressive_task_group(
@@ -17,20 +18,26 @@ pub async fn schedule_progressive_task_group(
 ) -> SJMCLResult<PTaskGroupDesc> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
   let mut task_descs = Vec::new();
-
+  let mut future_descs = Vec::new();
   let task_group = if with_timestamp {
     // If with_timestamp is true, append a timestamp to the task group name
     // to ensure uniqueness and avoid conflicts.
     let timestamp = chrono::Utc::now().timestamp_millis();
-    format!("{}@{}", task_group, timestamp)
+    format!("{task_group}@{timestamp}")
   } else {
     task_group.clone()
   };
 
   for param in params {
     let task_id = monitor.get_new_id();
-    task_descs.push(match param {
-      PTaskParam::Download(param) => {
+    match param {
+      PTaskParam::Download(mut param) => {
+        if param.filename.is_none() {
+          param.filename = Some(extract_filename(
+            param.dest.to_str().unwrap_or_default(),
+            true,
+          ));
+        }
         let task = DownloadTask::new(
           app.clone(),
           task_id,
@@ -38,17 +45,23 @@ pub async fn schedule_progressive_task_group(
           param,
           Duration::from_secs(1),
         );
-        let (futute, handle) = task
+        let (f, h) = task
           .future(app.clone(), monitor.download_rate_limiter.clone())
           .await?;
-        let task_desc = handle.read().unwrap().desc.clone();
-        monitor
-          .enqueue_task(task_id, Some(task_group.clone()), futute, handle)
-          .await;
-        task_desc
+        let task_desc = h.read().unwrap().desc.clone();
+        let future_desc = SJMCLFutureDesc {
+          task_id,
+          f: Box::pin(f),
+          h: h.clone(),
+        };
+        task_descs.push(task_desc);
+        future_descs.push(future_desc);
       }
-    });
+    }
   }
+  monitor
+    .enqueue_task_group(task_group.clone(), future_descs)
+    .await;
   Ok(PTaskGroupDesc {
     task_group,
     task_descs,

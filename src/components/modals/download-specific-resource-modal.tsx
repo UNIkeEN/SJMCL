@@ -47,6 +47,7 @@ import { useTaskContext } from "@/contexts/task";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import {
+  OtherResourceType,
   datapackTagList,
   modTagList,
   modpackTagList,
@@ -58,9 +59,9 @@ import { GetStateFlag } from "@/hooks/get-state";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import {
   GameResourceInfo,
+  OtherResourceFileInfo,
   OtherResourceInfo,
-  ResourceFileInfo,
-  ResourceVersionPack,
+  OtherResourceVersionPack,
 } from "@/models/resource";
 import { TaskTypeEnums } from "@/models/task";
 import { InstanceService } from "@/services/instance";
@@ -83,6 +84,27 @@ const DownloadSpecificResourceModal: React.FC<
   curInstanceModLoader,
   ...modalProps
 }) => {
+  const modLoaderLabels = [
+    "All",
+    ModLoaderType.Fabric,
+    ModLoaderType.Forge,
+    ModLoaderType.NeoForge,
+  ];
+
+  const tagLists: Record<string, any> = {
+    mod: modTagList,
+    world: worldTagList,
+    resourcepack: resourcePackTagList,
+    shader: shaderPackTagList,
+    datapack: datapackTagList,
+  };
+
+  const iconBackgroundColor: Record<string, string> = {
+    alpha: "yellow.300",
+    beta: "purple.500",
+    release: "green.500",
+  };
+
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const router = useRouter();
@@ -90,12 +112,6 @@ const DownloadSpecificResourceModal: React.FC<
   const themedStyles = useThemedCSSStyle();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const modLoaderLabels = [
-    "All",
-    ModLoaderType.Fabric,
-    ModLoaderType.Forge,
-    ModLoaderType.NeoForge,
-  ];
   const [gameVersionList, setGameVersionList] = useState<string[]>([]);
   const [versionLabels, setVersionLabels] = useState<string[]>([]);
   const [selectedVersionLabel, setSelectedVersionLabel] = useState<string>(
@@ -106,18 +122,12 @@ const DownloadSpecificResourceModal: React.FC<
   >(curInstanceModLoader || "All");
   const [isVersionPacksLoading, setIsLoadingVersionPacks] =
     useState<boolean>(true);
-  const [versionPacks, setVersionPacks] = useState<ResourceVersionPack[]>([]);
+  const [versionPacks, setVersionPacks] = useState<OtherResourceVersionPack[]>(
+    []
+  );
 
   const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
   const { handleScheduleProgressiveTaskGroup } = useTaskContext();
-
-  const tagLists: Record<string, any> = {
-    mod: modTagList,
-    world: worldTagList,
-    resourcepack: resourcePackTagList,
-    shader: shaderPackTagList,
-    datapack: datapackTagList,
-  };
 
   const translateTag = (
     tag: string,
@@ -152,30 +162,124 @@ const DownloadSpecificResourceModal: React.FC<
     [gameVersionList, resource.source]
   );
 
-  const iconBackgroundColor = (releaseType: string) => {
-    switch (releaseType) {
-      case "alpha":
-        return "yellow.300";
-      case "beta":
-        return "purple.500";
-      case "release":
-        return "green.500";
-    }
-  };
-
-  const versionPackFilter = (pack: ResourceVersionPack): boolean => {
-    const loader = pack.name.split(" ")[0];
-    const version = pack.name.split(" ").slice(1).join(" ");
-
-    const matchesModloader =
-      selectedModLoader === "All" ||
-      loader.toLowerCase() === selectedModLoader.toLowerCase();
-
+  const versionPackFilter = (pack: OtherResourceVersionPack): boolean => {
     const matchesVersion =
       selectedVersionLabel === "All" ||
-      new RegExp(`^${selectedVersionLabel}(\\.|$)`).test(version);
+      new RegExp(`^${selectedVersionLabel}(\\.|$)`).test(pack.name);
 
-    return matchesModloader && matchesVersion;
+    return matchesVersion;
+  };
+
+  const buildVersionLabelItem = (version: string) => {
+    return version !== "All"
+      ? version
+      : t("DownloadSpecificResourceModal.label.all");
+  };
+
+  const getDefaultFilePath = useCallback(async (): Promise<string | null> => {
+    const resourceTypeToDirType: Record<string, InstanceSubdirType> = {
+      mod: InstanceSubdirType.Mods,
+      world: InstanceSubdirType.Saves,
+      resourcepack: InstanceSubdirType.ResourcePacks,
+      shader: InstanceSubdirType.ShaderPacks,
+      datapack: InstanceSubdirType.Saves,
+    };
+    const dirType =
+      resourceTypeToDirType[resource.type] ?? InstanceSubdirType.Root;
+
+    let id = router.query.id;
+    const instanceId = Array.isArray(id) ? id[0] : id;
+
+    if (instanceId !== undefined) {
+      return InstanceService.retrieveInstanceSubdirPath(
+        instanceId,
+        dirType
+      ).then((response) => {
+        if (response.status === "success") {
+          return response.data;
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+          return null;
+        }
+      });
+    }
+
+    const defaultDownloadPath = await downloadDir();
+    return defaultDownloadPath;
+  }, [resource.type, router.query.id, toast]);
+
+  const startDownload = async (item: OtherResourceFileInfo) => {
+    const dir = await getDefaultFilePath();
+    const savepath = await save({
+      defaultPath: dir + "/" + item.fileName,
+    });
+    if (!savepath) return;
+    handleScheduleProgressiveTaskGroup("game-resource-download", [
+      {
+        src: item.downloadUrl,
+        dest: savepath,
+        sha1: item.sha1,
+        taskType: TaskTypeEnums.Download,
+      },
+    ]);
+  };
+
+  const getRecommendedFiles = (): OtherResourceFileInfo[] => {
+    if (!curInstanceMajorVersion || !versionPacks.length) return [];
+
+    const matchingPacks = versionPacks.filter(
+      (pack) => pack.name === curInstanceMajorVersion
+    );
+    if (!matchingPacks.length) return [];
+
+    let candidateFiles: OtherResourceFileInfo[] = [];
+    if (
+      resource.type === OtherResourceType.Mod &&
+      !resource.tags.includes("datapack")
+    ) {
+      if (curInstanceModLoader) {
+        for (const pack of matchingPacks) {
+          const matchingFiles = pack.items.filter(
+            (item) =>
+              item.loader &&
+              item.loader.toLowerCase() === curInstanceModLoader.toLowerCase()
+          );
+          candidateFiles.push(...matchingFiles);
+        }
+      }
+    } else {
+      for (const pack of matchingPacks) {
+        candidateFiles.push(...pack.items);
+      }
+    }
+
+    candidateFiles = candidateFiles.filter(
+      (item) => item.releaseType === "beta" || item.releaseType === "release"
+    );
+    if (!candidateFiles.length) return [];
+
+    candidateFiles.sort(
+      (a, b) => new Date(b.fileDate).getTime() - new Date(a.fileDate).getTime()
+    );
+    return [candidateFiles[0]];
+  };
+
+  const shouldShowRecommendedSection = (): boolean => {
+    const recommendedFiles = getRecommendedFiles();
+    if (!recommendedFiles.length) return false;
+
+    const isCorrectVersionFilter =
+      selectedVersionLabel === "All" ||
+      selectedVersionLabel === curInstanceMajorVersion;
+
+    const isCorrectModLoaderFilter =
+      selectedModLoader === "All" || selectedModLoader === curInstanceModLoader;
+
+    return isCorrectVersionFilter && isCorrectModLoaderFilter;
   };
 
   const fetchVersionLabels = useCallback(() => {
@@ -249,14 +353,6 @@ const DownloadSpecificResourceModal: React.FC<
     versionLabelToParam,
   ]);
 
-  const buildVersionLabelItem = (version: string) => {
-    return version !== "All"
-      ? version === curInstanceMajorVersion
-        ? `${version} (${t("DownloadSpecificResourceModal.label.recommendedVersion")})`
-        : version
-      : t("DownloadSpecificResourceModal.label.all");
-  };
-
   const buildModLoaderItem = (modLoader: string) => {
     return modLoader !== "All" ? (
       <HStack spacing={1}>
@@ -276,56 +372,78 @@ const DownloadSpecificResourceModal: React.FC<
     );
   };
 
-  const getDefaultFilePath = useCallback(async (): Promise<string | null> => {
-    const resourceTypeToDirType: Record<string, InstanceSubdirType> = {
-      mod: InstanceSubdirType.Mods,
-      world: InstanceSubdirType.Saves,
-      resourcepack: InstanceSubdirType.ResourcePacks,
-      shader: InstanceSubdirType.ShaderPacks,
-      datapack: InstanceSubdirType.Saves,
-    };
-    const dirType =
-      resourceTypeToDirType[resource.type] ?? InstanceSubdirType.Root;
-
-    let id = router.query.id;
-    const instanceId = Array.isArray(id) ? id[0] : id;
-
-    if (instanceId !== undefined) {
-      return InstanceService.retrieveInstanceSubdirPath(
-        instanceId,
-        dirType
-      ).then((response) => {
-        if (response.status === "success") {
-          return response.data;
-        } else {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-          return null;
-        }
-      });
-    }
-
-    const defaultDownloadPath = await downloadDir();
-    return defaultDownloadPath;
-  }, [resource.type, router.query.id, toast]);
-
-  const startDownload = async (item: ResourceFileInfo) => {
-    const dir = await getDefaultFilePath();
-    const savepath = await save({
-      defaultPath: dir + "/" + item.fileName,
-    });
-    if (!savepath) return;
-    handleScheduleProgressiveTaskGroup("game-resource-download", [
-      {
-        src: item.downloadUrl,
-        dest: savepath,
-        sha1: item.sha1,
-        taskType: TaskTypeEnums.Download,
-      },
-    ]);
+  const renderSection = (pack: OtherResourceVersionPack, index: number) => {
+    return (
+      <Section
+        key={index}
+        isAccordion
+        title={pack.name}
+        initialIsOpen={false}
+        titleExtra={<CountTag count={pack.items.length} />}
+        mb={2}
+      >
+        {pack.items.length > 0 ? (
+          <OptionItemGroup
+            items={pack.items.map((item, index) => (
+              <OptionItem
+                key={index}
+                title={item.name}
+                description={
+                  <HStack
+                    fontSize="xs"
+                    className="secondary-text"
+                    spacing={6}
+                    align="flex-start"
+                    w="100%"
+                  >
+                    <HStack spacing={1}>
+                      <LuDownload />
+                      <Text>{formatDisplayCount(item.downloads)}</Text>
+                    </HStack>
+                    <HStack spacing={1}>
+                      <LuUpload />
+                      <Text>{ISOToDate(item.fileDate)}</Text>
+                    </HStack>
+                    <HStack spacing={1}>
+                      <LuPackage />
+                      <Text>
+                        {t(
+                          `DownloadSpecificResourceModal.releaseType.${item.releaseType}`
+                        )}
+                      </Text>
+                    </HStack>
+                  </HStack>
+                }
+                prefixElement={
+                  <Avatar
+                    src={""}
+                    name={item.releaseType}
+                    boxSize="32px"
+                    borderRadius="4px"
+                    backgroundColor={iconBackgroundColor[item.releaseType]}
+                  />
+                }
+                titleExtra={
+                  item.loader && (
+                    <Tag
+                      key={item.loader}
+                      colorScheme={primaryColor}
+                      className="tag-xs"
+                    >
+                      {item.loader}
+                    </Tag>
+                  )
+                }
+                isFullClickZone
+                onClick={() => startDownload(item)}
+              />
+            ))}
+          />
+        ) : (
+          <Empty withIcon={false} size="sm" />
+        )}
+      </Section>
+    );
   };
 
   useEffect(() => {
@@ -361,13 +479,16 @@ const DownloadSpecificResourceModal: React.FC<
         <ModalBody>
           <Card
             className={themedStyles.card["card-front"]}
-            mb={3}
+            mt={-2}
+            mb={2}
+            py={2}
             fontWeight={400}
+            flexDir="row"
           >
             <OptionItem
               title={
                 resource.translatedName
-                  ? `${resource.translatedName}｜${resource.name}`
+                  ? `${resource.translatedName} | ${resource.name}`
                   : resource.name
               }
               titleExtra={
@@ -402,25 +523,24 @@ const DownloadSpecificResourceModal: React.FC<
                 <Avatar
                   src={resource.iconSrc}
                   name={resource.name}
-                  boxSize="48px"
-                  borderRadius="4px"
+                  boxSize="36px"
+                  borderRadius="2px"
                 />
               }
               fontWeight={400}
+              flex={1}
             />
-            <HStack mt={1.5}>
-              <HStack spacing={1}>
-                <LuExternalLink />
-                <Link
-                  fontSize="xs"
-                  color={`${primaryColor}.500`}
-                  onClick={() => {
-                    resource.websiteUrl && openUrl(resource.websiteUrl);
-                  }}
-                >
-                  {resource.source}
-                </Link>
-              </HStack>
+            <HStack spacing={1}>
+              <LuExternalLink />
+              <Link
+                fontSize="xs"
+                color={`${primaryColor}.500`}
+                onClick={() => {
+                  resource.websiteUrl && openUrl(resource.websiteUrl);
+                }}
+              >
+                {resource.source}
+              </Link>
             </HStack>
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
@@ -428,17 +548,17 @@ const DownloadSpecificResourceModal: React.FC<
               <MenuButton
                 as={Button}
                 size="xs"
-                w={36}
+                w={28}
                 variant="outline"
                 fontSize="xs"
                 textAlign="center"
                 rightIcon={<LuChevronDown />}
               >
-                <Text className="ellipsis-text" maxW={36}>
+                <Text className="ellipsis-text" maxW={28}>
                   {buildVersionLabelItem(selectedVersionLabel)}
                 </Text>
               </MenuButton>
-              <MenuList maxH="40vh" minW={36} overflow="auto">
+              <MenuList maxH="40vh" minW={28} overflow="auto">
                 <MenuOptionGroup
                   value={selectedVersionLabel}
                   type="radio"
@@ -455,93 +575,52 @@ const DownloadSpecificResourceModal: React.FC<
               </MenuList>
             </Menu>
             <Box>
-              {resource.type === "mod" && (
-                <NavMenu
-                  className="no-scrollbar"
-                  selectedKeys={[selectedModLoader]}
-                  onClick={setSelectedModLoader}
-                  direction="row"
-                  size="xs"
-                  spacing={2}
-                  flex={1}
-                  display="flex"
-                  items={modLoaderLabels.map((item) => ({
-                    value: item,
-                    label: buildModLoaderItem(item),
-                  }))}
-                />
-              )}
+              {resource.type === OtherResourceType.Mod &&
+                !resource.tags.includes("datapack") && (
+                  <NavMenu
+                    className="no-scrollbar"
+                    selectedKeys={[selectedModLoader]}
+                    onClick={setSelectedModLoader}
+                    direction="row"
+                    size="xs"
+                    spacing={2}
+                    flex={1}
+                    display="flex"
+                    items={modLoaderLabels.map((item) => ({
+                      value: item,
+                      label: buildModLoaderItem(item),
+                    }))}
+                  />
+                )}
             </Box>
           </HStack>
           {isGameVersionListLoading || isVersionPacksLoading ? (
             <VStack mt={8}>
               <BeatLoader size={16} color="gray" />
             </VStack>
-          ) : versionPacks.length > 0 ? (
-            versionPacks.filter(versionPackFilter).map((pack, index) => (
-              <Section
-                key={index}
-                isAccordion
-                title={pack.name}
-                initialIsOpen={false}
-                titleExtra={<CountTag count={pack.items.length} />}
-                mb={2}
-              >
-                {pack.items.length > 0 ? (
-                  <OptionItemGroup
-                    items={pack.items.map((item, index) => (
-                      <OptionItem
-                        key={index}
-                        title={item.name}
-                        description={
-                          <HStack
-                            fontSize="xs"
-                            className="secondary-text"
-                            spacing={6}
-                            align="flex-start"
-                            w="100%"
-                          >
-                            <HStack spacing={1}>
-                              <LuDownload />
-                              <Text>{formatDisplayCount(item.downloads)}</Text>
-                            </HStack>
-                            <HStack spacing={1}>
-                              <LuUpload />
-                              <Text>{ISOToDate(item.fileDate)}</Text>
-                            </HStack>
-                            <HStack spacing={1}>
-                              <LuPackage />
-                              <Text>
-                                {t(
-                                  `DownloadSpecificResourceModal.releaseType.${item.releaseType}`
-                                )}
-                              </Text>
-                            </HStack>
-                          </HStack>
-                        }
-                        prefixElement={
-                          <Avatar
-                            src={""}
-                            name={item.releaseType}
-                            boxSize="32px"
-                            borderRadius="4px"
-                            backgroundColor={iconBackgroundColor(
-                              item.releaseType
-                            )}
-                          />
-                        }
-                        isFullClickZone
-                        onClick={() => startDownload(item)}
-                      />
-                    ))}
-                  />
-                ) : (
-                  <Empty withIcon={false} size="sm" />
-                )}
-              </Section>
-            ))
           ) : (
-            <Empty withIcon size="sm" />
+            (() => {
+              const normalPacks = versionPacks.filter(versionPackFilter);
+              const recommendedPacks = shouldShowRecommendedSection()
+                ? [
+                    {
+                      name: t(
+                        "DownloadSpecificResourceModal.label.recommendedVersion"
+                      ),
+                      items: getRecommendedFiles(),
+                    },
+                  ]
+                : [];
+              const isEmpty =
+                normalPacks.length === 0 && !shouldShowRecommendedSection();
+              return isEmpty ? (
+                <Empty withIcon size="sm" />
+              ) : (
+                [...recommendedPacks, ...normalPacks].map((pack, index) =>
+                  renderSection(pack, index)
+                )
+              );
+            })()
           )}
         </ModalBody>
       </ModalContent>

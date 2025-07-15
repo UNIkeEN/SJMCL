@@ -17,7 +17,6 @@ import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
 import ViewSkinModal from "@/components/modals/view-skin-modal";
-import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
@@ -37,7 +36,6 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   variant = "dropdown",
 }) => {
   const { t } = useTranslation();
-  const { refreshConfig } = useLauncherConfig();
   const toast = useToast();
   const { getPlayerList } = useGlobalData();
   const { openSharedModal, closeSharedModal, openGenericConfirmDialog } =
@@ -56,7 +54,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     setIsDeleting(true);
     AccountService.deletePlayer(player.id).then((response) => {
       if (response.status === "success") {
-        Promise.all([getPlayerList(true), refreshConfig()]);
+        getPlayerList(true);
         toast({
           title: response.message,
           status: "success",
@@ -78,7 +76,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     AccountService.refreshPlayer(player.id)
       .then((response) => {
         if (response.status === "success") {
-          Promise.all([getPlayerList(true), refreshConfig()]);
+          getPlayerList(true);
           toast({
             title: response.message,
             status: "success",
@@ -92,9 +90,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           if (response.raw_error === AccountServiceError.Expired) {
             openSharedModal("relogin", {
               player,
-              onSuccess: () => {
-                Promise.all([getPlayerList(true), refreshConfig()]);
-              },
+              onSuccess: () => getPlayerList(true),
             });
           }
         }

@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::resource::models::ResourceVersionPack;
+use crate::resource::models::OtherResourceVersionPack;
 
 fn parse_version(version: &str) -> Vec<u32> {
   version
@@ -27,7 +27,7 @@ fn compare_versions(v1: &[u32], v2: &[u32]) -> Ordering {
   v1.len().cmp(&v2.len())
 }
 
-pub fn version_pack_sort(a: &ResourceVersionPack, b: &ResourceVersionPack) -> Ordering {
+pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionPack) -> Ordering {
   let (prefix_a, version_a) = parse_string(&a.name);
   let (prefix_b, version_b) = parse_string(&b.name);
   match compare_versions(&version_a, &version_b) {

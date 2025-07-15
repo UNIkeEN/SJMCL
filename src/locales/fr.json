@@ -720,7 +720,7 @@
       "settings": {
         "language": {
           "title": "Langue (Language)",
-          "communityAck": ""
+          "communityAck": "Cette langue a été traduite par la communauté. Merci à @Liulian pour sa contribution"
         }
       }
     },
@@ -1161,8 +1161,8 @@
   },
   "ResourceDownloader": {
     "label": {
-      "source": "Source de téléchargement",
-      "gameVer": "Version du jeu",
+      "source": "Source",
+      "gameVer": "Version",
       "tag": "Type",
       "sortBy": "Ordonner",
       "name": "Nom"

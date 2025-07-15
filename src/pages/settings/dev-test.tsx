@@ -2,7 +2,6 @@ import { Alert, AlertIcon, Button, VStack } from "@chakra-ui/react";
 import { invoke } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import DownloadResourceModal from "@/components/modals/download-resource-modal";
 import SkinPreview from "@/components/skin-preview";
 import { DownloadTaskParam, TaskParam, TaskTypeEnums } from "@/models/task";
 import { TaskService } from "@/services/task";
@@ -22,7 +21,6 @@ const DevTestPage = () => {
     }
   }, [router]);
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [task_id, setTaskId] = useState<number | null>(null);
 
   return (
@@ -45,15 +43,6 @@ const DevTestPage = () => {
       >
         Create New Window
       </Button>
-
-      <Button onClick={() => setIsModalOpen(true)}>
-        Download Resource Modal
-      </Button>
-      <DownloadResourceModal
-        initialResourceType="shader"
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
 
       <Button
         onClick={async () => {

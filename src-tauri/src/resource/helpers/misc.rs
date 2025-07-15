@@ -14,16 +14,16 @@ pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceT
 pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMCLResult<Url> {
   match source {
       SourceType::Official => match resource_type {
-          ResourceType::VersionManifest => Ok(Url::parse("http://launchermeta.mojang.com/mc/game/version_manifest.json")?),
-          ResourceType::VersionManifestV2 => Ok(Url::parse("http://launchermeta.mojang.com/mc/game/version_manifest_v2.json")?),
+          ResourceType::VersionManifest => Ok(Url::parse("https://launchermeta.mojang.com/mc/game/version_manifest.json")?),
+          ResourceType::VersionManifestV2 => Ok(Url::parse("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json")?),
           ResourceType::LauncherMeta => Ok(Url::parse("https://launchermeta.mojang.com/")?),
           ResourceType::Launcher => Ok(Url::parse("https://launcher.mojang.com/")?),
-          ResourceType::Assets => Ok(Url::parse("http://resources.download.minecraft.net/")?),
+          ResourceType::Assets => Ok(Url::parse("https://resources.download.minecraft.net/")?),
           ResourceType::Libraries => Ok(Url::parse("https://libraries.minecraft.net/")?),
           ResourceType::MojangJava => Ok(Url::parse("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json")?),
           ResourceType::ForgeMaven => Ok(Url::parse("https://files.minecraftforge.net/maven/")?),
           ResourceType::ForgeMeta => Err(ResourceError::NoDownloadApi.into()), // https://github.com/HMCL-dev/HMCL/pull/3259/files
-          ResourceType::Liteloader => Ok(Url::parse("http://dl.liteloader.com/versions/versions.json")?),
+          ResourceType::Liteloader => Ok(Url::parse("https://dl.liteloader.com/versions/versions.json")?),
           ResourceType::Optifine => Err(ResourceError::NoDownloadApi.into()), // 
           ResourceType::AuthlibInjector => Ok(Url::parse("https://authlib-injector.yushi.moe/")?),
           ResourceType::FabricMeta => Ok(Url::parse("https://meta.fabricmc.net/")?),

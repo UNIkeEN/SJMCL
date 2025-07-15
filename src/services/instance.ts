@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { InstanceSubdirType } from "@/enums/instance";
-import { GameConfig } from "@/models/config";
+import { GameConfig, GameDirectory } from "@/models/config";
 import {
   GameServerInfo,
   InstanceSummary,
@@ -11,6 +11,7 @@ import {
   ShaderPackInfo,
 } from "@/models/instance/misc";
 import { LevelData, WorldInfo } from "@/models/instance/world";
+import { GameResourceInfo, ModLoader } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -27,6 +28,35 @@ export class InstanceService {
     InvokeResponse<InstanceSummary[]>
   > {
     return await invoke("retrieve_instance_list");
+  }
+
+  /**
+   * CREATE the new instance (include download client, resource and create config).
+   * @param {GameDirectory} directory - The directory where the instance should be created.
+   * @param {string} name - The name of the instance.
+   * @param {string} description - The description of the instance.
+   * @param {string} iconSrc - The icon source of the instance.
+   * @param {GameResourceInfo} game - The game resource info of the instance.
+   * @param {ModLoader} modLoader - The mod loader info of the instance.
+   * @returns {Promise<InvokeResponse<null>>}
+   */
+  @responseHandler("instance")
+  static async createInstance(
+    directory: GameDirectory,
+    name: string,
+    description: string,
+    iconSrc: string,
+    game: GameResourceInfo,
+    modLoader: ModLoader
+  ): Promise<InvokeResponse<null>> {
+    return await invoke("create_instance", {
+      directory,
+      name,
+      description,
+      iconSrc,
+      game,
+      modLoader,
+    });
   }
 
   /**

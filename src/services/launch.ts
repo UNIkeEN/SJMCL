@@ -63,7 +63,7 @@ export class LaunchService {
    */
   static onGameProcessOutput(callback: (payload: string) => void) {
     const unlisten = getCurrentWebview().listen<string>(
-      "launch://game-process-output",
+      "launch:game-process-output",
       (event) => {
         callback(event.payload);
       }

@@ -202,6 +202,7 @@ pub enum InstanceError {
   ServerNbtReadError,
   FileNotFoundError,
   InvalidSourcePath,
+  FileCreationFailed,
   FileCopyFailed,
   FileMoveFailed,
   FolderCreationFailed,
@@ -213,6 +214,8 @@ pub enum InstanceError {
   ConflictNameError,
   InvalidNameError,
   ClientJsonParseError,
+  AssetIndexParseError,
+  NetworkError,
 }
 
 impl std::error::Error for InstanceError {}

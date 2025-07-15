@@ -215,6 +215,7 @@
         "colorMode": {
           "title": "颜色模式",
           "type": {
+            "system": "跟随系统",
             "light": "浅色",
             "dark": "深色"
           }
@@ -360,6 +361,9 @@
       "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
+  "DevToolbar": {
+    "tooltip": "开发工具栏"
+  },
   "DiscoverPage": {
     "title": "发现",
     "noMore": "无更多内容",
@@ -375,9 +379,6 @@
     "tag": {
       "online": "在线"
     }
-  },
-  "DownloadIndicator": {
-    "tooltip": "正在下载"
   },
   "DownloadModpackModal": {
     "header": {
@@ -472,12 +473,20 @@
       "settings": "下载设置",
       "pause": "暂停",
       "begin": "开始",
-      "retry": "重试"
+      "retry": "重试",
+      "deleteRecord": "删除此记录"
     },
     "label": {
       "paused": "已暂停",
+      "completed": "已完成",
       "error": "错误",
       "cancelled": "已取消"
+    },
+    "task": {
+      "game-client-download": "游戏客户端 {{param}}",
+      "game-server-download": "游戏服务端 {{param}}",
+      "game-resource-download": "资源包",
+      "retry": "重试任务"
     }
   },
   "Editable": {
@@ -1786,6 +1795,16 @@
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
           }
         }
+      },
+      "downloadGameServer": {
+        "success": "下载任务创建成功",
+        "error": {
+          "title": "下载游戏服务器失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器"
+          }
+        }
       }
     },
     "instance": {
@@ -1797,6 +1816,20 @@
             "INVALID_SOURCE_PATH": "实例目录无效",
             "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
             "FILE_MOVE_FAILED": "实例目录移动失败"
+          }
+        }
+      },
+      "createInstance": {
+        "success": "实例下载任务创建成功",
+        "error": {
+          "title": "实例下载任务创建失败",
+          "description": {
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "FOLDER_CREATION_FAILED": "目标文件夹创建失败",
+            "FILE_CREATION_FAILED": "目标文件创建失败",
+            "NETWORK_ERROR": "网络错误",
+            "CLIENT_JSON_PARSE_ERROR": "实例版本信息解析错误",
+            "ASSET_INDEX_PARSE_ERROR": "资源索引文件解析错误"
           }
         }
       },
@@ -1959,6 +1992,11 @@
     "task": {
       "scheduleProgressiveTaskGroup": {
         "success": "任务创建成功"
+      },
+      "onProgressiveTaskUpdate": {
+        "error": {
+          "title": "任务 {{param}} 失败"
+        }
       }
     }
   },

@@ -7,7 +7,8 @@ export type TaskType = `${TaskTypeEnums}`;
 export interface DownloadTaskParam {
   taskType: TaskTypeEnums.Download;
   src: string;
-  dest: string;
+  dest: string; // destination path
+  filename?: string; // destination filename
   sha1?: string;
 }
 
@@ -16,7 +17,8 @@ export type TaskParam = DownloadTaskParam;
 export interface DownloadTaskPayload {
   taskType: TaskTypeEnums.Download;
   src: string;
-  dest: string;
+  dest: string; // destination path
+  filename: string; // destination filename
   sha1: string;
 }
 
@@ -28,6 +30,7 @@ export enum TaskDescStatusEnums {
   Completed = "Completed",
   InProgress = "InProgress",
   Failed = "Failed",
+  Waiting = "Waiting",
 }
 
 export interface TaskDesc {
@@ -116,5 +119,3 @@ export interface PTaskEventPayload {
     | StoppedPTaskEventStatus
     | CancelledPTaskEventStatus;
 }
-
-export const TaskProgressListener = `SJMCL://task-progress`;

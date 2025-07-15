@@ -141,7 +141,7 @@ pub async fn validate_library_files(
   Ok(bad_artifacts)
 }
 
-fn convert_library_name_to_path(name: &String, native: Option<String>) -> SJMCLResult<String> {
+pub fn convert_library_name_to_path(name: &String, native: Option<String>) -> SJMCLResult<String> {
   let mut name_split: Vec<String> = name.split(":").map(|s| s.to_string()).collect();
   if name_split.len() < 3 {
     println!("name = {}", name);

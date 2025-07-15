@@ -4,8 +4,8 @@ use std::env;
 use crate::error::SJMCLResult;
 use crate::resource::helpers::curseforge_convert::cvt_category_to_id;
 use crate::resource::models::{
-  ExtraResourceInfo, ExtraResourceSearchQuery, ExtraResourceSearchRes, ResourceError,
-  ResourceFileInfo, ResourceVersionPack, ResourceVersionPackQuery,
+  OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
+  OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
 };
 use serde::Deserialize;
 use tauri::{AppHandle, Manager};
@@ -94,11 +94,11 @@ pub struct CurseForgeVersionPackSearchRes {
   pub pagination: CurseForgePagination,
 }
 
-pub fn map_curseforge_to_resource_info(res: CurseForgeSearchRes) -> ExtraResourceSearchRes {
+pub fn map_curseforge_to_resource_info(res: CurseForgeSearchRes) -> OtherResourceSearchRes {
   let list = res
     .data
     .into_iter()
-    .map(|p| ExtraResourceInfo {
+    .map(|p| OtherResourceInfo {
       id: p.id.to_string(),
       _type: cvt_class_id_to_type(p.class_id),
       name: p.name,
@@ -112,7 +112,7 @@ pub fn map_curseforge_to_resource_info(res: CurseForgeSearchRes) -> ExtraResourc
     })
     .collect();
 
-  ExtraResourceSearchRes {
+  OtherResourceSearchRes {
     list,
     total: res.pagination.total_count,
     page: res.pagination.index / res.pagination.page_size,
@@ -141,31 +141,11 @@ fn extract_versions_and_loaders(game_versions: &[String]) -> (Vec<String>, Vec<S
 
 pub fn map_curseforge_file_to_version_pack(
   res: Vec<CurseForgeFileInfo>,
-) -> Vec<ResourceVersionPack> {
-  let file_infos: Vec<(ResourceFileInfo, Vec<String>)> = res
-    .into_iter()
-    .map(|cf_file| {
-      let file_info = ResourceFileInfo {
-        name: cf_file.display_name,
-        release_type: cvt_id_to_release_type(cf_file.release_type),
-        downloads: cf_file.download_count,
-        file_date: cf_file.file_date,
-        download_url: cf_file.download_url.unwrap_or_default(),
-        sha1: cf_file
-          .hashes
-          .into_iter()
-          .find(|h| h.algo == 1)
-          .map_or("".to_string(), |h| h.value),
-        file_name: cf_file.file_name,
-      };
-      (file_info, cf_file.game_versions)
-    })
-    .collect();
-
+) -> Vec<OtherResourceVersionPack> {
   let mut version_packs = std::collections::HashMap::new();
 
-  for (file_info, game_versions) in file_infos {
-    let (versions, loaders) = extract_versions_and_loaders(&game_versions);
+  for cf_file in res {
+    let (versions, loaders) = extract_versions_and_loaders(&cf_file.game_versions);
 
     let versions = if versions.is_empty() {
       vec!["".to_string()]
@@ -174,28 +154,45 @@ pub fn map_curseforge_file_to_version_pack(
     };
 
     let loaders = if loaders.is_empty() {
-      vec!["".to_string()]
+      vec![""]
     } else {
-      loaders
+      loaders.iter().map(|s| s.as_str()).collect::<Vec<_>>()
     };
 
     for version in &versions {
       for loader in &loaders {
-        let version_name = format!("{} {}", loader, version);
+        let file_info = OtherResourceFileInfo {
+          name: cf_file.display_name.clone(),
+          release_type: cvt_id_to_release_type(cf_file.release_type),
+          downloads: cf_file.download_count,
+          file_date: cf_file.file_date.clone(),
+          download_url: cf_file.download_url.clone().unwrap_or_default(),
+          sha1: cf_file
+            .hashes
+            .iter()
+            .find(|h| h.algo == 1)
+            .map_or("".to_string(), |h| h.value.clone()),
+          file_name: cf_file.file_name.clone(),
+          loader: if loader.is_empty() {
+            None
+          } else {
+            Some(loader.to_string())
+          },
+        };
 
         version_packs
-          .entry(version_name.clone())
-          .or_insert_with(|| ResourceVersionPack {
-            name: version_name,
+          .entry(version.clone())
+          .or_insert_with(|| OtherResourceVersionPack {
+            name: version.clone(),
             items: Vec::new(),
           })
           .items
-          .push(file_info.clone());
+          .push(file_info);
       }
     }
   }
 
-  let mut list: Vec<ResourceVersionPack> = version_packs.into_values().collect();
+  let mut list: Vec<OtherResourceVersionPack> = version_packs.into_values().collect();
   list.sort_by(version_pack_sort);
 
   list
@@ -203,11 +200,11 @@ pub fn map_curseforge_file_to_version_pack(
 
 pub async fn fetch_resource_list_by_name_curseforge(
   app: &AppHandle,
-  query: &ExtraResourceSearchQuery,
-) -> SJMCLResult<ExtraResourceSearchRes> {
+  query: &OtherResourceSearchQuery,
+) -> SJMCLResult<OtherResourceSearchRes> {
   let url = "https://api.curseforge.com/v1/mods/search";
 
-  let ExtraResourceSearchQuery {
+  let OtherResourceSearchQuery {
     resource_type,
     search_query,
     game_version,
@@ -267,13 +264,13 @@ pub async fn fetch_resource_list_by_name_curseforge(
 
 pub async fn fetch_resource_version_packs_curseforge(
   app: &AppHandle,
-  query: &ResourceVersionPackQuery,
-) -> SJMCLResult<Vec<ResourceVersionPack>> {
+  query: &OtherResourceVersionPackQuery,
+) -> SJMCLResult<Vec<OtherResourceVersionPack>> {
   let mut aggregated_files: Vec<CurseForgeFileInfo> = Vec::new();
   let mut page = 0;
   let page_size = 50;
 
-  let ResourceVersionPackQuery {
+  let OtherResourceVersionPackQuery {
     resource_id,
     mod_loader,
     game_versions,

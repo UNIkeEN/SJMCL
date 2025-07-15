@@ -218,7 +218,7 @@ pub struct AssetIndex {
   pub id: String,
   pub sha1: String,
   pub size: i64,
-  pub total_size: i64,
+  pub total_size: Option<i64>, // Optional for legacy versions
   pub url: String,
 }
 

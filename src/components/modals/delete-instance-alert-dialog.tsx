@@ -21,11 +21,11 @@ const DeleteInstanceDialog: React.FC<DeleteInstanceDialogProps> = ({
   const toast = useToast();
   const router = useRouter();
   const { getInstanceList } = useGlobalData();
-  const { refreshConfig, config } = useLauncherConfig();
+  const { config } = useLauncherConfig();
 
   const handleDeleteInstance = (instanceId: string) => {
     InstanceService.deleteInstance(instanceId).then((response) => {
-      Promise.all([getInstanceList(true), refreshConfig()]);
+      getInstanceList(true);
       if (response.status === "success") {
         toast({
           title: response.message,

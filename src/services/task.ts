@@ -1,12 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { InvokeResponse } from "@/models/response";
-import {
-  PTaskEventPayload,
-  TaskGroupDesc,
-  TaskParam,
-  TaskProgressListener,
-} from "@/models/task";
+import { PTaskEventPayload, TaskGroupDesc, TaskParam } from "@/models/task";
 import { responseHandler } from "@/utils/response";
 
 /**
@@ -119,16 +114,17 @@ export class TaskService {
     return await invoke("retrieve_progressive_task_list");
   }
 
+  /**
+   * Listen for updates to progressive tasks.
+   * @param callback - The callback to be invoked when a task update occurs.
+   */
   static onProgressiveTaskUpdate(
     callback: (payload: PTaskEventPayload) => void
-  ) {
-    const unlisten = listen<PTaskEventPayload>(
-      "update",
+  ): () => void {
+    const unlisten = getCurrentWebview().listen<PTaskEventPayload>(
+      "task:progress-update",
       (event) => {
         callback(event.payload);
-      },
-      {
-        target: TaskProgressListener,
       }
     );
 

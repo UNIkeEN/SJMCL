@@ -71,7 +71,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const toast = useToast();
-  const { config, refreshConfig } = useLauncherConfig();
+  const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { openSharedModal } = useSharedModals();
 
@@ -178,7 +178,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     );
   };
   const afterLogin = (response: ResponseSuccess<any>) => {
-    Promise.all([getPlayerList(true), refreshConfig()]);
+    getPlayerList(true);
+    // selectedPlayer in LauncherConfig will be updated by IPC.
     toast({
       title: response.message,
       status: "success",

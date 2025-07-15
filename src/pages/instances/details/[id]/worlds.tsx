@@ -1,4 +1,5 @@
 import {
+  Center,
   HStack,
   Image,
   Tag,
@@ -11,6 +12,7 @@ import { openPath } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuX } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -22,6 +24,8 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType } from "@/enums/instance";
+import { OtherResourceType } from "@/enums/resource";
+import { GetStateFlag } from "@/hooks/get-state";
 import { GameServerInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
@@ -31,8 +35,13 @@ import { base64ImgSrc } from "@/utils/string";
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const { summary, openInstanceSubdir, handleImportResource, getWorldList } =
-    useInstanceSharedData();
+  const {
+    summary,
+    openInstanceSubdir,
+    handleImportResource,
+    getWorldList,
+    isWorldListLoading: isLoading,
+  } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
   const { openSharedModal } = useSharedModals();
@@ -47,9 +56,21 @@ const InstanceWorldsPage = () => {
     onClose: onWorldLevelDataModalClose,
   } = useDisclosure();
 
+  const getWorldListWrapper = useCallback(
+    (sync?: boolean) => {
+      getWorldList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return;
+          setWorlds(data || []);
+        })
+        .catch((e) => setWorlds([]));
+    },
+    [getWorldList]
+  );
+
   useEffect(() => {
-    setWorlds(getWorldList() || []);
-  }, [getWorldList]);
+    getWorldListWrapper();
+  }, [getWorldListWrapper]);
 
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
@@ -98,9 +119,7 @@ const InstanceWorldsPage = () => {
           filterExt: ["zip"],
           tgtDirType: InstanceSubdirType.Saves,
           decompress: true,
-          onSuccessCallback: () => {
-            setWorlds(getWorldList(true) || []);
-          },
+          onSuccessCallback: () => getWorldListWrapper(true),
         });
       },
     },
@@ -108,14 +127,14 @@ const InstanceWorldsPage = () => {
       icon: "download",
       onClick: () => {
         openSharedModal("download-resource", {
-          initialResourceType: "world",
+          initialResourceType: OtherResourceType.World,
         });
       },
     },
     {
       icon: "refresh",
       onClick: () => {
-        setWorlds(getWorldList(true) || []);
+        getWorldListWrapper(true);
         setSelectedWorldName("");
       },
     },
@@ -175,7 +194,11 @@ const InstanceWorldsPage = () => {
           </HStack>
         }
       >
-        {worlds.length > 0 ? (
+        {isLoading ? (
+          <Center mt={4}>
+            <BeatLoader size={16} color="gray" />
+          </Center>
+        ) : worlds.length > 0 ? (
           <OptionItemGroup
             items={worlds.map((world) => {
               const difficulty = t(

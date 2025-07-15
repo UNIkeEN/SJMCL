@@ -1,6 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::instance::models::misc::Instance;
-use crate::launch::constant::*;
+use crate::launch::constants::*;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
 use crate::utils::window::create_webview_window;
@@ -53,7 +53,7 @@ pub async fn monitor_process(
       let reader = BufReader::new(out);
       for line in reader.lines().map_while(Result::ok) {
         if display_log_window {
-          let _ = app_stdout.emit_to(&label_stdout, GAME_PROCESS_OUTPUT_CHANNEL, &line);
+          let _ = app_stdout.emit_to(&label_stdout, GAME_PROCESS_OUTPUT_EVENT, &line);
         }
 
         // the first time when log contains 'render thread', 'lwjgl version', or 'lwjgl openal', send signal to launch command, close frontend modal.
@@ -86,7 +86,7 @@ pub async fn monitor_process(
       let reader = BufReader::new(err);
       for line in reader.lines().map_while(Result::ok) {
         if display_log_window {
-          let _ = app_stderr.emit_to(&label_stderr, GAME_PROCESS_OUTPUT_CHANNEL, &line);
+          let _ = app_stderr.emit_to(&label_stderr, GAME_PROCESS_OUTPUT_EVENT, &line);
         }
 
         if !game_ready_flag.load(atomic::Ordering::SeqCst)
