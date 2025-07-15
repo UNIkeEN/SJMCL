@@ -5,6 +5,7 @@ import {
   CardProps,
   HStack,
   Image,
+  Skeleton,
   Tag,
   Text,
   VStack,
@@ -49,14 +50,16 @@ const PosterCard = ({ data }: PosterCardProps) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {src && (
-        <Image
-          objectFit="cover"
-          src={src}
-          alt={title}
-          width={width}
-          height={height}
-          style={{ height: "auto" }}
-        />
+        <Skeleton isLoaded={!!src} height="auto">
+          <Image
+            objectFit="cover"
+            src={src}
+            alt={title}
+            width={width}
+            height={height}
+            style={{ height: "auto" }}
+          />
+        </Skeleton>
       )}
 
       <CardBody p={3}>
