@@ -34,6 +34,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
 
   const { title, abstract, keywords, imageSrc, source, updateAt, link } = data;
   const [isHovered, setIsHovered] = useState(false);
+  const [src, width, height] = imageSrc || [];
 
   return (
     <Card
@@ -50,10 +51,10 @@ const PosterCard = ({ data }: PosterCardProps) => {
       {imageSrc?.[0] && (
         <Image
           objectFit="cover"
-          src={imageSrc[0]}
+          src={src}
           alt={title}
-          width={imageSrc[1]}
-          height={imageSrc[2]}
+          width={width}
+          height={height}
           style={{ height: "auto" }}
         />
       )}

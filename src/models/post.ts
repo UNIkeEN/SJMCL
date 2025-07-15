@@ -17,3 +17,8 @@ export interface PostSourceInfo {
   endpointUrl: string; // If it only contains this field, it means the data source is offline or pending.
   iconSrc?: string;
 }
+
+export interface SourceRequest {
+  url: string;
+  cursor: number | null;
+}

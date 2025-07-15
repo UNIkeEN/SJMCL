@@ -1,9 +1,12 @@
+use super::super::utils::web::with_retry;
 use super::models::PostSourceInfo;
 use crate::{
-  discover::models::PostResponse, error::SJMCLResult, launcher_config::models::LauncherConfig,
+  discover::models::{PostResponse, SourceRequest},
+  error::SJMCLResult,
+  launcher_config::models::LauncherConfig,
 };
 use futures::future;
-use std::sync::Mutex;
+use std::{collections::HashMap, sync::Mutex};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
@@ -56,38 +59,30 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
 #[tauri::command]
 pub async fn fetch_post_summaries(
   app: AppHandle,
-  cursor: Option<u64>,
+  requests: Vec<SourceRequest>,
 ) -> SJMCLResult<PostResponse> {
-  let post_source_urls = {
-    let binding = app.state::<Mutex<LauncherConfig>>();
-    let state = binding.lock().unwrap();
-    state.discover_source_endpoints.clone()
-  };
-
-  let client = app.state::<reqwest::Client>();
-
-  let tasks: Vec<_> = post_source_urls
+  let client = with_retry(app.state::<reqwest::Client>().inner().clone());
+  let tasks: Vec<_> = requests
     .into_iter()
-    .map(|url| {
+    .map(|SourceRequest { url, cursor }| {
       let client = client.clone();
-      let cursor = cursor.clone();
-
       async move {
-        let mut request = client.get(&url).query(&[("pageSize", "12")]);
+        let mut req = client.get(&url).query(&[("pageSize", "12")]);
 
-        if let Some(cursor_val) = cursor {
-          request = request.query(&[("cursor", &cursor_val.to_string())]);
+        if let Some(c) = cursor {
+          req = req.query(&[("cursor", &c.to_string())]);
         }
 
-        let result = request.send().await;
-
-        match result {
+        let resp = req.send().await;
+        match resp {
           Ok(resp) if resp.status().is_success() => {
             let parsed: Result<PostResponse, _> = resp.json().await;
-            match parsed {
-              Ok(post_response) => Some(post_response),
-              Err(_) => None,
-            }
+            parsed.ok().map(|mut p| {
+              for post in &mut p.posts {
+                post.source.endpoint_url = url.clone();
+              }
+              (url.clone(), p)
+            })
           }
           _ => None,
         }
@@ -95,26 +90,24 @@ pub async fn fetch_post_summaries(
     })
     .collect();
 
-  let results = future::join_all(tasks).await;
+  let results = futures::future::join_all(tasks).await;
 
   let mut all_posts = Vec::new();
-  let mut next_cursors = Vec::new();
+  let mut cursors_map = HashMap::new();
 
-  for result in results {
-    if let Some(post_response) = result {
-      all_posts.extend(post_response.posts);
-      if let Some(next) = post_response.next {
-        next_cursors.push(next);
-      }
+  for result in results.into_iter().flatten() {
+    let (url, post_response) = result;
+    all_posts.extend(post_response.posts);
+    if let Some(next_cursor) = post_response.next {
+      cursors_map.insert(url, next_cursor);
     }
   }
 
   all_posts.sort_by(|a, b| b.update_at.cmp(&a.update_at));
 
-  let next = next_cursors.into_iter().next();
-
   Ok(PostResponse {
     posts: all_posts,
-    next,
+    next: None,
+    cursors: Some(cursors_map),
   })
 }

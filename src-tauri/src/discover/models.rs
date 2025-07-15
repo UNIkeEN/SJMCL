@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -27,4 +29,12 @@ pub struct PostSummary {
 pub struct PostResponse {
   pub posts: Vec<PostSummary>,
   pub next: Option<u64>,
+  pub cursors: Option<HashMap<String, u64>>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SourceRequest {
+  pub url: String,
+  pub cursor: Option<u64>,
 }

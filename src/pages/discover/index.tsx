@@ -9,7 +9,7 @@ import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
 import PosterCard from "@/components/poster-card";
 import { useLauncherConfig } from "@/contexts/config";
-import { PostSummary } from "@/models/post";
+import { PostSummary, SourceRequest } from "@/models/post";
 import { DiscoverService } from "@/services/discover";
 
 export const DiscoverPage = () => {
@@ -19,50 +19,64 @@ export const DiscoverPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [visiblePosts, setVisiblePosts] = useState<PostSummary[]>([]);
+  const [sourceCursors, setSourceCursors] = useState<
+    Record<string, number | null>
+  >({});
   const [isLoading, setIsLoading] = useState(false);
-  const [nextCursor, setNextCursor] = useState<number | null>(null);
   const [masonryKey, setMasonryKey] = useState(0);
-
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const fetchFirstPage = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await DiscoverService.fetchPostSummaries(undefined);
-      if (response.status === "success") {
-        const posts: PostSummary[] = response.data.posts;
-        const next: number | null = response.data.next ?? null;
+      const sources: SourceRequest[] = config.discoverSourceEndpoints.map(
+        (url) => ({
+          url,
+          cursor: null,
+        })
+      );
 
-        setVisiblePosts(posts);
-        setNextCursor(next);
+      const response = await DiscoverService.fetchPostSummaries(sources);
+      console.log(response);
+      if (response.status === "success") {
+        setVisiblePosts(response.data.posts);
+        setSourceCursors(response.data.cursors ?? {});
         setMasonryKey((k) => k + 1);
       }
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [config.discoverSourceEndpoints]);
 
   const loadMore = useCallback(async () => {
-    if (isLoading || nextCursor === null) return;
+    if (isLoading) return;
+
+    const pendingSources: SourceRequest[] = Object.entries(sourceCursors)
+      .filter(([, cursor]) => cursor !== null)
+      .map(([url, cursor]) => ({ url, cursor }));
+
+    if (pendingSources.length === 0) return;
+
     setIsLoading(true);
     try {
-      const response = await DiscoverService.fetchPostSummaries(nextCursor);
+      const response = await DiscoverService.fetchPostSummaries(pendingSources);
       if (response.status === "success") {
-        const posts: PostSummary[] = response.data.posts;
-        const next: number | null = response.data.next ?? null;
-        console.log(response.data);
-        setVisiblePosts((prev) => [...prev, ...posts]);
-        setNextCursor(next);
+        setVisiblePosts((prev) => [...prev, ...response.data.posts]);
+        setSourceCursors(response.data.cursors ?? {});
       }
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, nextCursor]);
+  }, [isLoading, sourceCursors]);
+
+  useEffect(() => {
+    fetchFirstPage();
+  }, [fetchFirstPage]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !isLoading && nextCursor !== null) {
+        if (entries[0].isIntersecting && !isLoading) {
           loadMore();
         }
       },
@@ -70,13 +84,12 @@ export const DiscoverPage = () => {
     );
     if (loadMoreRef.current) observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
-  }, [loadMore, isLoading, nextCursor]);
+  }, [loadMore, isLoading]);
 
-  useEffect(() => {
-    fetchFirstPage();
-  }, [fetchFirstPage]);
+  const hasMore = Object.values(sourceCursors).some(
+    (cursor) => cursor !== null
+  );
 
-  const hasMore = nextCursor !== null;
   return (
     <Section
       className="content-full-y"
@@ -120,7 +133,7 @@ export const DiscoverPage = () => {
             overscanBy={1000}
           />
 
-          <Center mt={8} ref={loadMoreRef}>
+          <Center mt={8} ref={loadMoreRef} minH="32px">
             {isLoading && visiblePosts.length > 0 ? (
               <BeatLoader size={16} color="gray" />
             ) : !hasMore ? (
@@ -134,4 +147,5 @@ export const DiscoverPage = () => {
     </Section>
   );
 };
+
 export default DiscoverPage;
