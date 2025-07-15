@@ -48,7 +48,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {imageSrc?.[0] && (
+      {src && (
         <Image
           objectFit="cover"
           src={src}

@@ -1,10 +1,10 @@
-export type ImageSrc = [string, number, number];
+type ImageSrcUnion = [string, number, number];
 
 export interface PostSummary {
   title: string;
   abstract?: string;
   keywords?: string;
-  imageSrc?: ImageSrc;
+  imageSrc?: ImageSrcUnion;
   source: PostSourceInfo;
   updateAt: string;
   link: string;
@@ -18,7 +18,7 @@ export interface PostSourceInfo {
   iconSrc?: string;
 }
 
-export interface SourceRequest {
+export interface PostRequest {
   url: string;
   cursor: number | null;
 }

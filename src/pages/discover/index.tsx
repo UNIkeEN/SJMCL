@@ -9,7 +9,7 @@ import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
 import PosterCard from "@/components/poster-card";
 import { useLauncherConfig } from "@/contexts/config";
-import { PostSummary, SourceRequest } from "@/models/post";
+import { PostRequest, PostSummary } from "@/models/post";
 import { DiscoverService } from "@/services/discover";
 
 export const DiscoverPage = () => {
@@ -29,7 +29,7 @@ export const DiscoverPage = () => {
   const fetchFirstPage = useCallback(async () => {
     setIsLoading(true);
     try {
-      const sources: SourceRequest[] = config.discoverSourceEndpoints.map(
+      const sources: PostRequest[] = config.discoverSourceEndpoints.map(
         (url) => ({
           url,
           cursor: null,
@@ -51,7 +51,7 @@ export const DiscoverPage = () => {
   const loadMore = useCallback(async () => {
     if (isLoading) return;
 
-    const pendingSources: SourceRequest[] = Object.entries(sourceCursors)
+    const pendingSources: PostRequest[] = Object.entries(sourceCursors)
       .filter(([, cursor]) => cursor !== null)
       .map(([url, cursor]) => ({ url, cursor }));
 

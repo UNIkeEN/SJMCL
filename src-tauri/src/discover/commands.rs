@@ -1,7 +1,7 @@
 use super::super::utils::web::with_retry;
 use super::models::PostSourceInfo;
 use crate::{
-  discover::models::{PostResponse, SourceRequest},
+  discover::models::{PostRequest, PostResponse},
   error::SJMCLResult,
   launcher_config::models::LauncherConfig,
 };
@@ -59,12 +59,12 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
 #[tauri::command]
 pub async fn fetch_post_summaries(
   app: AppHandle,
-  requests: Vec<SourceRequest>,
+  requests: Vec<PostRequest>,
 ) -> SJMCLResult<PostResponse> {
   let client = with_retry(app.state::<reqwest::Client>().inner().clone());
   let tasks: Vec<_> = requests
     .into_iter()
-    .map(|SourceRequest { url, cursor }| {
+    .map(|PostRequest { url, cursor }| {
       let client = client.clone();
       async move {
         let mut req = client.get(&url).query(&[("pageSize", "12")]);

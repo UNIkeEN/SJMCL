@@ -34,7 +34,7 @@ pub struct PostResponse {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct SourceRequest {
+pub struct PostRequest {
   pub url: String,
   pub cursor: Option<u64>,
 }
