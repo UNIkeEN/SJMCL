@@ -27,6 +27,7 @@ export const DiscoverPage = () => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const fetchFirstPage = useCallback(async () => {
+    setVisiblePosts([]);
     setIsLoading(true);
     try {
       const sources: PostRequest[] = config.discoverSourceEndpoints.map(
