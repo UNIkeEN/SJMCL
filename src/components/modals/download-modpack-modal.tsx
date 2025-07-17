@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import ResourceDownloader from "@/components/resource-downloader";
+import { OtherResourceType } from "@/enums/resource";
 
 export const DownloadModpackModal: React.FC<Omit<ModalProps, "children">> = ({
   ...modalProps
@@ -34,7 +35,7 @@ export const DownloadModpackModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalCloseButton />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
-            <ResourceDownloader resourceType="modpack" />
+            <ResourceDownloader resourceType={OtherResourceType.ModPack} />
           </ModalBody>
         </Flex>
       </ModalContent>

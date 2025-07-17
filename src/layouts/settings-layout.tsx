@@ -56,7 +56,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
                 label: (
                   <HStack spacing={2} overflow="hidden">
                     <Icon as={item.icon} />
-                    <Text fontSize="sm">
+                    <Text fontSize="sm" className="ellipsis-text">
                       {t(`SettingsLayout.settingsDomainList.${item.key}`)}
                     </Text>
                   </HStack>
@@ -67,7 +67,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
           ))}
         </VStack>
       </GridItem>
-      <GridItem className="content-full-y">
+      <GridItem className="content-full-y" key={router.asPath}>
         <VStack align="stretch" spacing={4}>
           {children}
         </VStack>

@@ -1,5 +1,5 @@
 import {
-  Card,
+  Divider,
   Flex,
   HStack,
   Icon,
@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuBox,
@@ -19,10 +20,12 @@ import {
   LuSettings,
   LuZap,
 } from "react-icons/lu";
+import AdvancedCard from "@/components/common/advanced-card";
+import { DownloadIndicator } from "@/components/download-indicator";
 import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import { useTaskContext } from "@/contexts/task";
 
 const HeadNavBar = () => {
   const router = useRouter();
@@ -30,8 +33,23 @@ const HeadNavBar = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const isSimplified = config.appearance.theme.headNavStyle === "simplified";
-  const themedStyles = useThemedCSSStyle();
+
   const { openSharedModal } = useSharedModals();
+  const [isAnimating, setIsAnimating] = useState(false);
+  const { tasks } = useTaskContext();
+  const isDownloadIndicatorShown = tasks.length > 0;
+
+  useEffect(() => {
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 700);
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    config.appearance.theme.useLiquidGlassDesign,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isDownloadIndicatorShown,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isSimplified,
+  ]);
 
   const navList = [
     { icon: LuZap, label: "launch", path: "/launch" },
@@ -63,8 +81,14 @@ const HeadNavBar = () => {
 
   return (
     <Flex justify="center" p={4}>
-      <Card className={themedStyles.card["card-back"]} px={8} py={2}>
-        <HStack spacing={4}>
+      <AdvancedCard
+        level="back"
+        pl={8}
+        pr={isDownloadIndicatorShown ? 4 : 8}
+        py={2}
+        className={`animated-card ${isAnimating ? "animate" : ""}`}
+      >
+        <HStack spacing={4} h="100%">
           <TitleShort />
           <Tabs
             variant="soft-rounded"
@@ -93,8 +117,19 @@ const HeadNavBar = () => {
               ))}
             </TabList>
           </Tabs>
+          {isDownloadIndicatorShown && (
+            <>
+              <Divider
+                orientation="vertical"
+                size="xl"
+                h="100%"
+                borderColor="var(--chakra-colors-chakra-placeholder-color)"
+              />
+              <DownloadIndicator />
+            </>
+          )}
         </HStack>
-      </Card>
+      </AdvancedCard>
     </Flex>
   );
 };

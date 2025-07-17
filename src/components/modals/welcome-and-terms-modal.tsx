@@ -1,6 +1,7 @@
 import {
   Button,
   HStack,
+  Image,
   Link,
   Modal,
   ModalBody,
@@ -40,7 +41,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
     >
       <ModalOverlay />
       <ModalContent borderRadius="md" overflow="hidden">
-        {/* TBD: welcome animation video */}
+        <Image alt="banner" src="/images/banner.png" />
         <ModalHeader>
           🎉&nbsp;&nbsp;{t("WelcomeAndTermsModal.header.title")}
         </ModalHeader>
@@ -50,7 +51,9 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
             <Link
               color={`${primaryColor}.500`}
               onClick={() => {
-                openUrl("https://mc.sjtu.cn/sjmcl-tos/");
+                openUrl(
+                  t("AboutSettingsPage.legalInfo.settings.userAgreement.url")
+                );
               }}
             >
               {t("WelcomeAndTermsModal.body.terms")}

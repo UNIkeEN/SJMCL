@@ -1,9 +1,13 @@
 use crate::{
   error::SJMCLResult,
-  launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig},
+  launcher_config::{
+    commands::retrieve_custom_background_list,
+    models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig},
+  },
   partial::{PartialAccess, PartialUpdate},
   utils::portable::{extract_assets, is_portable},
 };
+use rand::Rng;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -14,10 +18,10 @@ impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
     // same as lib.rs
     let is_dev = cfg!(debug_assertions);
-    let version = if is_dev {
-      "dev".to_string()
-    } else {
-      app.package_info().version.to_string()
+    let version = match (is_dev, app.package_info().version.to_string().as_str()) {
+      (true, _) => "dev".to_string(),
+      (false, "0.0.0") => "nightly".to_string(),
+      (false, v) => v.to_string(),
     };
 
     // Set default download cache dir if not exists, create dir
@@ -28,6 +32,21 @@ impl LauncherConfig {
     }
     if !self.download.cache.directory.exists() {
       fs::create_dir_all(&self.download.cache.directory)?;
+    }
+
+    // Random pick custom background image if enabled
+    if self.appearance.background.random_custom {
+      let app_handle = app.clone();
+      match retrieve_custom_background_list(app_handle) {
+        Ok(backgrounds) if !backgrounds.is_empty() => {
+          let mut rng = rand::rng();
+          let random_index = rng.random_range(0..backgrounds.len());
+          self.appearance.background.choice = backgrounds[random_index].clone();
+        }
+        _ => {
+          self.appearance.background.random_custom = false;
+        }
+      }
     }
 
     // Set default local game directories
@@ -79,6 +98,7 @@ impl LauncherConfig {
       os_type: tauri_plugin_os::type_().to_string(),
       platform_version: tauri_plugin_os::version().to_string(),
       is_portable: portable,
+      allow_full_login_feature: false, // default to false, will be updated later
     };
 
     Ok(())

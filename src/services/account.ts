@@ -85,6 +85,15 @@ export class AccountService {
   }
 
   /**
+   * CANCEL the OAuth process.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async cancelOAuth(): Promise<InvokeResponse<void>> {
+    return await invoke("cancel_oauth");
+  }
+
+  /**
    * ADD a new player to the system using authlib_injector's password authentication.
    * @param {string} authServerUrl - The authentication server's URL.
    * @param {string} username - The username of the player to be added.

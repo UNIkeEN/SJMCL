@@ -15,10 +15,12 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
+import { LaunchService } from "@/services/launch";
 import { capitalizeFirstLetter } from "@/utils/string";
 
 const GameErrorPage: React.FC = () => {
@@ -69,6 +71,14 @@ const GameErrorPage: React.FC = () => {
         )}
       </Stat>
     );
+  };
+
+  const handleOpenLogWindow = async () => {
+    const label = getCurrentWebview()?.label.replace("error", "log");
+    console.warn(label);
+    if (label) {
+      await LaunchService.openGameLogWindow(label);
+    }
   };
 
   return (
@@ -143,7 +153,11 @@ const GameErrorPage: React.FC = () => {
         <Button colorScheme={primaryColor} variant="solid">
           {t("GameErrorPage.button.exportGameInfo")}
         </Button>
-        <Button colorScheme={primaryColor} variant="solid">
+        <Button
+          colorScheme={primaryColor}
+          variant="solid"
+          onClick={handleOpenLogWindow}
+        >
           {t("GameErrorPage.button.gameLogs")}
         </Button>
         <Button colorScheme={primaryColor} variant="solid">

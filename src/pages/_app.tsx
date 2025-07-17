@@ -2,7 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import i18n from "i18next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { initReactI18next } from "react-i18next";
 import { Fade } from "@/components/common/transition";
 import GlobalEventHandler from "@/components/special/global-event-handler";
@@ -10,6 +10,7 @@ import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
 import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
+import { TaskContextProvider } from "@/contexts/task";
 import { ToastContextProvider } from "@/contexts/toast";
 import InstanceDetailsLayout from "@/layouts/instance-details-layout";
 import InstancesLayout from "@/layouts/instances-layout";
@@ -53,32 +54,58 @@ export default function App({ Component, pageProps }: AppProps) {
     });
   }, []);
 
-  const layoutMappings: {
+  const layoutKeyMappings: {
     prefix: string;
-    layouts: React.ComponentType<{ children: React.ReactNode }>[];
-  }[] = [
-    { prefix: "/settings", layouts: [SettingsLayout] },
-    {
-      prefix: "/instances/details",
-      layouts: [InstancesLayout, InstanceDetailsLayout],
-    },
-    { prefix: "/instances", layouts: [InstancesLayout] },
-  ]; // not nest MainLayout to avoid tab flashing
-
-  let SpecLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <>{children}</>
+    key: string;
+  }[] = useMemo(
+    () => [
+      { prefix: "/settings", key: "settings" },
+      {
+        prefix: "/instances/details",
+        key: "instances-details",
+      },
+      { prefix: "/instances", key: "instances" },
+    ],
+    []
   );
 
-  for (const mapping of layoutMappings) {
-    if (router.pathname.startsWith(mapping.prefix)) {
-      SpecLayout = ({ children }) =>
-        mapping.layouts.reduceRight(
+  const layoutMappings: Record<
+    string,
+    React.ComponentType<{ children: React.ReactNode }>[]
+  > = useMemo(
+    () => ({
+      settings: [SettingsLayout],
+      "instances-details": [InstancesLayout, InstanceDetailsLayout],
+      instances: [InstancesLayout],
+    }),
+    []
+  ); // not nest MainLayout to avoid tab flashing
+
+  let layoutKey = useMemo(() => {
+    for (const mapping of layoutKeyMappings) {
+      if (router.pathname.startsWith(mapping.prefix)) {
+        return mapping.key;
+      }
+    }
+    return "default"; // default layout
+  }, [router.pathname, layoutKeyMappings]);
+
+  let SpecLayout: React.FC<{ children: React.ReactNode }> = useMemo(() => {
+    const layout = layoutMappings[layoutKey];
+    if (layout) {
+      return ({ children }) =>
+        layout.reduceRight(
           (nestedChildren, Layout) => <Layout>{nestedChildren}</Layout>,
           children
         );
-      break;
     }
-  }
+    return function defaultLayout({ children }: { children: React.ReactNode }) {
+      return <>{children}</>;
+    }; // default layout
+  }, [layoutKey, layoutMappings]);
+  // use layoutKey as a dependency to ensure SpecLayout remains stable
+  // when switching tabs in game instance page
+  // see https://github.com/UNIkeEN/SJMCL/pull/491
 
   return (
     <ChakraProvider theme={chakraExtendTheme}>
@@ -86,17 +113,19 @@ export default function App({ Component, pageProps }: AppProps) {
         <RoutingHistoryContextProvider>
           <LauncherConfigContextProvider>
             <GlobalDataContextProvider>
-              <SharedModalsProvider>
-                <GlobalEventHandler>
-                  <MainLayout>
-                    <Fade key={router.pathname.split("/")[1] || ""} in>
-                      <SpecLayout>
-                        <Component {...pageProps} />
-                      </SpecLayout>
-                    </Fade>
-                  </MainLayout>
-                </GlobalEventHandler>
-              </SharedModalsProvider>
+              <TaskContextProvider>
+                <SharedModalsProvider>
+                  <GlobalEventHandler>
+                    <MainLayout>
+                      <Fade key={router.pathname.split("/")[1] || ""} in>
+                        <SpecLayout>
+                          <Component {...pageProps} />
+                        </SpecLayout>
+                      </Fade>
+                    </MainLayout>
+                  </GlobalEventHandler>
+                </SharedModalsProvider>
+              </TaskContextProvider>
             </GlobalDataContextProvider>
           </LauncherConfigContextProvider>
         </RoutingHistoryContextProvider>

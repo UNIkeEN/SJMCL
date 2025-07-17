@@ -21,6 +21,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
+import { isFileNameSanitized } from "@/utils/string";
 
 const InstanceSettingsPage = () => {
   const router = useRouter();
@@ -40,6 +41,13 @@ const InstanceSettingsPage = () => {
     handleResetInstanceGameConfig,
   } = useInstanceSharedData();
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
+
+  const checkDirNameError = (value: string): number => {
+    if (value.trim() === "") return 1;
+    if (!isFileNameSanitized(value)) return 2;
+    if (value.length > 255) return 3;
+    return 0;
+  };
 
   const handleRenameInstance = useCallback(
     (name: string) => {
@@ -65,19 +73,14 @@ const InstanceSettingsPage = () => {
         {
           title: t("InstanceSettingsPage.name"),
           children: (
-            <Editable // TBD
+            <Editable
               isTextArea={false}
               value={summary?.name || ""}
-              onEditSubmit={(value) => {
-                handleRenameInstance(value);
-              }}
-              textProps={{
-                className: "secondary-text ellipsis-text",
-                fontSize: "xs-sm",
-              }}
+              onEditSubmit={handleRenameInstance}
+              textProps={{ className: "secondary-text ellipsis-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
-              checkError={(value) => (value.trim() === "" ? 1 : 0)}
+              checkError={checkDirNameError}
               localeKey="InstanceSettingsPage.errorMessage"
             />
           ),
@@ -85,7 +88,7 @@ const InstanceSettingsPage = () => {
         {
           title: t("InstanceSettingsPage.description"),
           children: (
-            <Editable // TBD
+            <Editable
               isTextArea={true}
               value={summary?.description || ""}
               onEditSubmit={(value) => {
@@ -174,7 +177,7 @@ const InstanceSettingsPage = () => {
 
   return (
     <Box height="100%" overflowY="auto">
-      <VStack overflow="auto" align="strench" spacing={4} flex="1">
+      <VStack overflow="auto" align="stretch" spacing={4} flex="1">
         {instanceSpecSettingsGroups.map((group, index) => (
           <OptionItemGroup
             title={group.title}

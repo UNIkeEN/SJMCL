@@ -1,4 +1,4 @@
 pub mod commands;
-pub mod constant;
+pub mod constants;
 pub mod helpers;
 pub mod models;

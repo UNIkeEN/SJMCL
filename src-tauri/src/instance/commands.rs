@@ -23,23 +23,32 @@ use super::{
 };
 use crate::{
   error::SJMCLResult,
+  instance::{
+    helpers::{client_json::McClientInfo, misc::get_instance_subdir_paths},
+    models::misc::{AssetIndex, ModLoader},
+  },
+  launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files},
   launcher_config::{
     helpers::misc::get_global_game_config,
-    models::{GameConfig, LauncherConfig},
+    models::{GameConfig, GameDirectory, LauncherConfig},
   },
   partial::{PartialError, PartialUpdate},
+  resource::{helpers::misc::get_source_priority_list, models::GameClientResourceInfo},
   storage::Storage,
+  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
   utils::{fs::create_url_shortcut, image::ImageWrapper},
 };
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
+use serde_json::{from_value, Value};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::{sync::Mutex, time::SystemTime};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_opener::open_path;
+use tauri_plugin_http::reqwest;
 use tokio;
+use url::Url;
 use zip::read::ZipArchive;
 
 #[tauri::command]
@@ -159,19 +168,14 @@ pub async fn reset_instance_game_config(app: AppHandle, instance_id: String) -> 
 }
 
 #[tauri::command]
-pub fn open_instance_subdir(
+pub fn retrieve_instance_subdir_path(
   app: AppHandle,
   instance_id: String,
   dir_type: InstanceSubdirType,
-) -> SJMCLResult<()> {
-  let subdir_path = match get_instance_subdir_path_by_id(&app, &instance_id, &dir_type) {
-    Some(path) => path,
-    None => return Err(InstanceError::InstanceNotFoundByID.into()),
-  };
-
-  match open_path(subdir_path.to_str().unwrap(), None::<&str>) {
-    Ok(_) => Ok(()),
-    Err(_) => Err(InstanceError::ExecOpenDirError.into()),
+) -> SJMCLResult<PathBuf> {
+  match get_instance_subdir_path_by_id(&app, &instance_id, &dir_type) {
+    Some(path) => Ok(path),
+    None => Err(InstanceError::InstanceNotFoundByID.into()),
   }
 }
 
@@ -196,11 +200,18 @@ pub fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
   // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
 
   if config_state.states.shared.selected_instance_id == instance_id {
-    config_state.states.shared.selected_instance_id = instance_state
-      .keys()
-      .next()
-      .cloned()
-      .unwrap_or_else(|| "".to_string());
+    config_state.partial_update(
+      &app,
+      "states.shared.selected_instance_id",
+      &serde_json::to_string(
+        &instance_state
+          .keys()
+          .next()
+          .cloned()
+          .unwrap_or_else(|| "".to_string()),
+      )
+      .unwrap_or_default(),
+    )?;
     config_state.save()?;
   }
   Ok(())
@@ -758,9 +769,145 @@ pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJ
     .ok_or(InstanceError::InstanceNotFoundByID)?;
 
   let name = instance.name.clone();
-  let url = format!("sjmcl://launch?id={}", instance.id);
+  let encoded_id = url::form_urlencoded::Serializer::new(String::new())
+    .append_pair("id", &instance.id)
+    .finish()
+    .replace("+", "%20");
+  let url = format!("sjmcl://launch?{}", encoded_id);
 
   create_url_shortcut(&app, name, url, None).map_err(|_| InstanceError::ShortcutCreationFailed)?;
 
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn create_instance(
+  app: AppHandle,
+  directory: GameDirectory,
+  name: String,
+  description: String,
+  icon_src: String,
+  game: GameClientResourceInfo,
+  mod_loader: ModLoader,
+) -> SJMCLResult<()> {
+  let client = app.state::<reqwest::Client>();
+  let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+  // Get priority list
+  let priority_list = {
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
+  };
+
+  // Ensure the instance name is unique
+  let version_path = directory.dir.join("versions").join(&name);
+  if version_path.exists() {
+    return Err(InstanceError::ConflictNameError.into());
+  }
+  fs::create_dir_all(&version_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+
+  // Create instance config
+  let instance = Instance {
+    id: format!("{}:{}", directory.name, name.clone()),
+    name: name.clone(),
+    version: game.id.clone(),
+    version_path,
+    mod_loader,
+    description,
+    icon_src,
+    starred: false,
+    play_time: 0,
+    use_spec_game_config: false,
+    spec_game_config: None,
+  };
+  instance
+    .save_json_cfg()
+    .await
+    .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  // Download version info
+  let version_info_raw = client
+    .get(&game.url)
+    .send()
+    .await
+    .map_err(|_| InstanceError::NetworkError)?
+    .json::<Value>()
+    .await
+    .map_err(|_| InstanceError::ClientJsonParseError)?;
+
+  let mut version_info = from_value::<McClientInfo>(version_info_raw.clone())
+    .map_err(|_| InstanceError::ClientJsonParseError)?;
+
+  version_info.id = name.clone();
+
+  let version_info_tosave =
+    serde_json::to_string_pretty(&version_info).map_err(|_| InstanceError::ClientJsonParseError)?;
+
+  fs::write(
+    directory
+      .dir
+      .join(format!("versions/{}/{}.json", name, name)),
+    version_info_tosave,
+  )
+  .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  let mut task_params = Vec::<PTaskParam>::new();
+
+  // Download client (use task)
+  let client_download_info = version_info
+    .downloads
+    .get("client")
+    .ok_or(InstanceError::ClientJsonParseError)?;
+
+  task_params.push(PTaskParam::Download(DownloadParam {
+    src: Url::parse(&client_download_info.url.clone())
+      .map_err(|_| InstanceError::ClientJsonParseError)?,
+    dest: directory
+      .dir
+      .join(format!("versions/{}/{}.jar", name, name)),
+    filename: None,
+    sha1: Some(client_download_info.sha1.clone()),
+  }));
+
+  let subdirs = get_instance_subdir_paths(
+    &app,
+    &instance,
+    &[&InstanceSubdirType::Libraries, &InstanceSubdirType::Assets],
+  )
+  .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let [libraries_dir, assets_dir] = subdirs.as_slice() else {
+    return Err(InstanceError::InstanceNotFoundByID.into());
+  };
+
+  // We only download libraries if they are invalid (not already downloaded)
+  task_params.extend(
+    get_invalid_library_files(priority_list[0], libraries_dir, &version_info, false).await?,
+  );
+
+  // Download asset index
+  let asset_index_raw = client
+    .get(version_info.asset_index.url.clone())
+    .send()
+    .await
+    .map_err(|_| InstanceError::NetworkError)?
+    .json::<serde_json::Value>()
+    .await
+    .map_err(|_| InstanceError::AssetIndexParseError)?;
+
+  let asset_index_path = assets_dir.join("indexes");
+
+  fs::create_dir_all(&asset_index_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+  fs::write(
+    asset_index_path.join(format!("{}.json", version_info.asset_index.id)),
+    asset_index_raw.to_string(),
+  )
+  .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  // We only download assets if they are invalid (not already downloaded)
+  let asset_index: AssetIndex =
+    serde_json::from_value(asset_index_raw).map_err(|_| InstanceError::AssetIndexParseError)?;
+  task_params.extend(get_invalid_assets(priority_list[0], assets_dir, &asset_index, false).await?);
+
+  schedule_progressive_task_group(app, format!("game-client:{}", name), task_params, true).await?;
+  // TODO: install mod loaders
   Ok(())
 }

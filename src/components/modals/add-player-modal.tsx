@@ -1,4 +1,8 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Button,
   Flex,
   FormControl,
@@ -45,6 +49,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { PlayerType } from "@/enums/account";
 import { AuthServer, OAuthCodeResponse, Player } from "@/models/account";
 import {
   InvokeResponse,
@@ -55,26 +60,24 @@ import { AccountService } from "@/services/account";
 import { isOfflinePlayernameValid, isUuidValid } from "@/utils/account";
 
 interface AddPlayerModalProps extends Omit<ModalProps, "children"> {
-  initialPlayerType?: "offline" | "microsoft" | "3rdparty";
+  initialPlayerType?: PlayerType;
   initialAuthServerUrl?: string;
 }
 
 const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
-  initialPlayerType = "offline",
+  initialPlayerType = PlayerType.Offline,
   initialAuthServerUrl = "",
   ...modalProps
 }) => {
   const { t } = useTranslation();
   const toast = useToast();
-  const { config, refreshConfig } = useLauncherConfig();
+  const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { openSharedModal } = useSharedModals();
 
   const { getAuthServerList, getPlayerList } = useGlobalData();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
-  const [playerType, setPlayerType] = useState<
-    "offline" | "microsoft" | "3rdparty"
-  >("offline");
+  const [playerType, setPlayerType] = useState(PlayerType.Offline);
   const [playername, setPlayername] = useState<string>("");
   const [uuid, setUuid] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -101,7 +104,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   useEffect(() => {
     setPlayerType(initialPlayerType);
-  }, [initialPlayerType]);
+  }, [initialPlayerType, modalProps.isOpen]);
 
   useEffect(() => {
     let _authServer: AuthServer | undefined = undefined;
@@ -117,7 +120,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   useEffect(() => {
     if (
-      playerType === "3rdparty" &&
+      playerType === PlayerType.ThirdParty &&
       authServer?.features.openidConfigurationUrl &&
       authServer.clientId
     ) {
@@ -139,6 +142,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     setPassword("");
     setShowAdvancedOptions(false);
     setUuid("");
+
+    AccountService.cancelOAuth();
   }, [modalProps.isOpen]);
 
   useEffect(() => {
@@ -154,7 +159,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   }, [candidatePlayers, onSelectPlayerModalOpen]);
 
   const handleFetchOAuthCode = () => {
-    if (playerType === "offline") return;
+    if (playerType === PlayerType.Offline) return;
     setOAuthCodeResponse(undefined);
     setIsLoading(true);
     AccountService.fetchOAuthCode(playerType, authServer?.authUrl).then(
@@ -173,7 +178,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     );
   };
   const afterLogin = (response: ResponseSuccess<any>) => {
-    Promise.all([getPlayerList(true), refreshConfig()]);
+    getPlayerList(true);
+    // selectedPlayer in LauncherConfig will be updated by IPC.
     toast({
       title: response.message,
       status: "success",
@@ -192,7 +198,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   };
 
   const handleLogin = (isOAuth = false) => {
-    if (playerType === "3rdparty" && !isOAuth) {
+    if (playerType === PlayerType.ThirdParty && !isOAuth) {
       if (!authServer) return;
 
       setIsLoading(true);
@@ -212,7 +218,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
       });
     } else {
       let loginServiceFunction: () => Promise<InvokeResponse<any>>;
-      if (playerType === "offline") {
+      if (playerType === PlayerType.Offline) {
         loginServiceFunction = () =>
           AccountService.addPlayerOffline(
             playername,
@@ -220,6 +226,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
           );
       } else {
         if (!oauthCodeResponse) return;
+        openUrl(oauthCodeResponse.verificationUri);
         loginServiceFunction = () =>
           AccountService.addPlayerOAuth(
             playerType,
@@ -286,9 +293,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               <FormLabel>{t("AddPlayerModal.label.playerType")}</FormLabel>
               <SegmentedControl
                 selected={playerType}
-                onSelectItem={(s) =>
-                  setPlayerType(s as "offline" | "microsoft" | "3rdparty")
-                }
+                onSelectItem={(s) => setPlayerType(s as PlayerType)}
                 size="sm"
                 items={playerTypeList.map((item) => ({
                   value: item.key,
@@ -303,10 +308,26 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               />
             </FormControl>
 
-            {playerType === "offline" && (
+            {playerType !== PlayerType.Microsoft &&
+              !config.basicInfo.allowFullLoginFeature && (
+                <Alert status="error" borderRadius="md">
+                  <AlertIcon />
+                  <VStack spacing={0} align="start">
+                    <AlertTitle>
+                      {t("General.alert.noFullLogin.title")}
+                    </AlertTitle>
+                    <AlertDescription>
+                      {t("General.alert.noFullLogin.description")}
+                    </AlertDescription>
+                  </VStack>
+                </Alert>
+              )}
+
+            {playerType === PlayerType.Offline && (
               <VStack w="100%" spacing={1}>
                 <FormControl
                   isRequired
+                  isDisabled={!config.basicInfo.allowFullLoginFeature}
                   isInvalid={
                     !!playername.length && !isOfflinePlayernameValid(playername)
                   }
@@ -328,15 +349,19 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                     {t("AddPlayerModal.offline.playerName.errorMessage")}
                   </FormErrorMessage>
                 </FormControl>
-                <Section
-                  isAccordion
-                  initialIsOpen={false}
-                  title={t("AddPlayerModal.offline.advancedOptions.title")}
-                  onAccordionToggle={(isOpen) => setShowAdvancedOptions(isOpen)}
-                  w="100%"
-                  mt={2}
-                  mb={-2}
-                />
+                {config.basicInfo.allowFullLoginFeature && (
+                  <Section
+                    isAccordion
+                    initialIsOpen={false}
+                    title={t("AddPlayerModal.offline.advancedOptions.title")}
+                    onAccordionToggle={(isOpen) =>
+                      setShowAdvancedOptions(isOpen)
+                    }
+                    w="100%"
+                    mt={2}
+                    mb={-2}
+                  />
+                )}
                 {showAdvancedOptions && (
                   <FormControl isInvalid={!!uuid.length && !isUuidValid(uuid)}>
                     <FormLabel>
@@ -360,9 +385,9 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               </VStack>
             )}
 
-            {playerType === "microsoft" && (
+            {playerType === PlayerType.Microsoft && (
               <OAuthLoginPanel
-                authType="microsoft"
+                authType={PlayerType.Microsoft}
                 authCode={oauthCodeResponse?.userCode}
                 callback={() =>
                   oauthCodeResponse ? handleLogin(true) : handleFetchOAuthCode()
@@ -371,7 +396,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               />
             )}
 
-            {playerType === "3rdparty" && (
+            {playerType === PlayerType.ThirdParty && (
               <>
                 {authServerList.length === 0 ? (
                   <HStack>
@@ -425,7 +450,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                         </Text>
                       </HStack>
                     </FormControl>
-                    {authServer?.authUrl &&
+                    {config.basicInfo.allowFullLoginFeature &&
+                      authServer?.authUrl &&
                       (!showOAuth ? (
                         <>
                           <FormControl isRequired>
@@ -463,7 +489,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                         </>
                       ) : (
                         <OAuthLoginPanel
-                          authType="3rdparty"
+                          authType={PlayerType.ThirdParty}
                           authCode={
                             oauthCodeResponse && oauthCodeResponse.userCode
                           }
@@ -483,14 +509,15 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
         </ModalBody>
 
         <ModalFooter w="100%">
-          {(playerType === "offline" || playerType === "microsoft") && (
+          {(playerType === PlayerType.Offline ||
+            playerType === PlayerType.Microsoft) && (
             <HStack spacing={2}>
               <LuExternalLink />
               <Link
                 color={`${primaryColor}.500`}
                 onClick={() => {
                   openUrl(
-                    "https://www.microsoft.com/store/productId/9NXP44L49SHJ"
+                    "https://www.xbox.com/games/store/productId/9NXP44L49SHJ"
                   );
                 }}
               >
@@ -499,7 +526,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             </HStack>
           )}
 
-          {playerType === "3rdparty" &&
+          {playerType === PlayerType.ThirdParty &&
+            config.basicInfo.allowFullLoginFeature &&
             authServer?.features.openidConfigurationUrl &&
             (showOAuth ? (
               <HStack spacing={2}>
@@ -533,17 +561,19 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             <Button variant="ghost" onClick={modalProps.onClose}>
               {t("General.cancel")}
             </Button>
-            {!showOAuth && playerType !== "microsoft" && (
+            {!showOAuth && playerType !== PlayerType.Microsoft && (
               <Button
                 colorScheme={primaryColor}
                 onClick={() => handleLogin()}
                 isLoading={isLoading}
                 isDisabled={
                   !playername ||
-                  (playerType === "offline" &&
+                  (playerType === PlayerType.Offline &&
+                    config.basicInfo.allowFullLoginFeature &&
                     !isOfflinePlayernameValid(playername)) ||
                   (uuid && !isUuidValid(uuid)) ||
-                  (playerType === "3rdparty" &&
+                  (playerType === PlayerType.ThirdParty &&
+                    config.basicInfo.allowFullLoginFeature &&
                     authServerList.length > 0 &&
                     (!authServer || !password))
                 }

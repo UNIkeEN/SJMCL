@@ -1,7 +1,7 @@
 use super::{
   helpers::{
     command_generator::generate_launch_command,
-    file_validator::{extract_native_libraries, validate_library_files},
+    file_validator::{extract_native_libraries, get_invalid_library_files},
     jre_selector::select_java_runtime,
     process_monitor::{
       change_process_window_title, kill_process, monitor_process, set_process_priority,
@@ -17,18 +17,25 @@ use crate::{
   error::SJMCLResult,
   instance::{
     helpers::{
-      client_json::{DownloadsArtifact, McClientInfo},
+      client_json::McClientInfo,
       misc::{get_instance_game_config, get_instance_subdir_paths},
     },
-    models::misc::{Instance, InstanceError, InstanceSubdirType},
+    models::misc::{AssetIndex, Instance, InstanceError, InstanceSubdirType},
   },
-  launcher_config::models::{FileValidatePolicy, JavaInfo, LauncherVisiablity},
+  launch::{helpers::file_validator::get_invalid_assets, models::LaunchError},
+  launcher_config::models::{FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity},
+  resource::helpers::misc::get_source_priority_list,
   storage::load_json_async,
+  tasks::commands::schedule_progressive_task_group,
+  utils::window::create_webview_window,
 };
-use std::collections::HashMap;
-use std::process::{Command, Stdio};
 use std::sync::{mpsc, Mutex};
-use tauri::{AppHandle, Manager, State};
+use std::{collections::HashMap, path::PathBuf};
+use std::{
+  io::{prelude::*, BufReader},
+  process::{Command, Stdio},
+};
+use tauri::{path::BaseDirectory, AppHandle, Manager, State};
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
@@ -60,6 +67,11 @@ pub async fn select_suitable_jre(
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
+  let asset_index_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Assets])
+    .ok_or(InstanceError::InstanceNotFoundByID)?[0]
+    .join(format!("indexes/{}.json", client_info.asset_index.id));
+  let asset_index = load_json_async::<AssetIndex>(&asset_index_path).await?;
+
   let javas = javas_state.lock().unwrap().clone();
   let selected_java = select_java_runtime(
     &app,
@@ -73,6 +85,7 @@ pub async fn select_suitable_jre(
   let mut launching = launching_state.lock().unwrap();
   launching.game_config = game_config;
   launching.client_info = client_info;
+  launching.asset_index = asset_index;
   launching.selected_java = selected_java;
   launching.selected_instance = instance;
 
@@ -83,14 +96,16 @@ pub async fn select_suitable_jre(
 #[tauri::command]
 pub async fn validate_game_files(
   app: AppHandle,
+  launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_state: State<'_, Mutex<LaunchingState>>,
-) -> SJMCLResult<Vec<DownloadsArtifact>> {
-  let (instance, client_info, validate_policy) = {
+) -> SJMCLResult<()> {
+  let (instance, client_info, asset_index, validate_policy) = {
     let mut launching = launching_state.lock().unwrap();
     launching.current_step = 2;
     (
       launching.selected_instance.clone(),
       launching.client_info.clone(),
+      launching.asset_index.clone(),
       launching
         .game_config
         .advanced
@@ -107,24 +122,46 @@ pub async fn validate_game_files(
     &[
       &InstanceSubdirType::Libraries,
       &InstanceSubdirType::NativeLibraries,
+      &InstanceSubdirType::Assets,
     ],
   )
   .ok_or(InstanceError::InstanceNotFoundByID)?;
-  let [libraries_dir, natives_dir] = dirs.as_slice() else {
+  let [libraries_dir, natives_dir, assets_dir] = dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
   extract_native_libraries(&client_info, libraries_dir, natives_dir).await?;
 
-  // validate game files
-  let bad_artifacts = match validate_policy {
-    FileValidatePolicy::Disable => return Ok(vec![]), // skip
-    FileValidatePolicy::Normal => {
-      validate_library_files(libraries_dir, &client_info, false).await?
-    }
-    FileValidatePolicy::Full => validate_library_files(libraries_dir, &client_info, true).await?,
+  let priority_list = {
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
   };
-  // TODO: validate not only libraries? also assets?
-  Ok(bad_artifacts)
+
+  // validate game files
+  let incomplete_files = match validate_policy {
+    FileValidatePolicy::Disable => return Ok(()), // skip
+    FileValidatePolicy::Normal => [
+      get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
+      get_invalid_assets(priority_list[0], assets_dir, &asset_index, false).await?,
+    ]
+    .concat(),
+    FileValidatePolicy::Full => [
+      get_invalid_library_files(priority_list[0], libraries_dir, &client_info, true).await?,
+      get_invalid_assets(priority_list[0], assets_dir, &asset_index, true).await?,
+    ]
+    .concat(),
+  };
+  if incomplete_files.is_empty() {
+    Ok(())
+  } else {
+    schedule_progressive_task_group(
+      app,
+      format!("patch-files:{}", client_info.id),
+      incomplete_files,
+      true,
+    )
+    .await?;
+    Err(LaunchError::GameFilesIncomplete.into())
+  }
 }
 
 // Step 3: validate selected player, if its type is 3rd-party, load server meta for authlib.
@@ -176,16 +213,26 @@ pub async fn launch_game(
     )
   };
 
-  // generate and execute launch command
+  // generate launch command
   let cmd_args = generate_launch_command(&app)?;
-  let mut cmd_base = Command::new(selected_java.exec_path);
+  let mut cmd_base = Command::new(selected_java.exec_path.clone());
+
+  // let full_cmd = std::iter::once(selected_java.exec_path.clone())
+  // .chain(cmd_args.iter().cloned())
+  // .collect::<Vec<_>>()
+  // .join(" ");
+  // println!("[Launch Command] {}", full_cmd);
+
+  // execute launch command
   #[cfg(target_os = "windows")]
   cmd_base.creation_flags(0x08000000);
-  let mut child = cmd_base
+
+  let child = cmd_base
     .args(cmd_args)
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())
     .spawn()?;
+
   let pid = child.id();
   {
     let mut launching = launching_state.lock().unwrap();
@@ -196,7 +243,7 @@ pub async fn launch_game(
   let (tx, rx) = mpsc::channel();
   monitor_process(
     app.clone(),
-    &mut child,
+    child,
     instance_id,
     game_config.display_game_log,
     game_config.launcher_visibility.clone(),
@@ -219,6 +266,7 @@ pub async fn launch_game(
 
   // clear launching state
   *launching_state.lock().unwrap() = LaunchingState::default();
+  eprintln!("OK");
 
   Ok(())
 }
@@ -236,4 +284,32 @@ pub fn cancel_launch_process(launching_state: State<'_, Mutex<LaunchingState>>) 
   *launching = LaunchingState::default();
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn open_game_log_window(app: AppHandle, log_label: String) -> SJMCLResult<()> {
+  create_webview_window(&app, &log_label, "game_log", None).await?;
+
+  Ok(())
+}
+
+#[tauri::command]
+pub fn retrieve_game_log(app: AppHandle, log_label: String) -> SJMCLResult<Vec<String>> {
+  let log_file_dir = app
+    .path()
+    .resolve::<PathBuf>(format!("{log_label}.log").into(), BaseDirectory::AppCache)?;
+  Ok(
+    BufReader::new(std::fs::OpenOptions::new().read(true).open(log_file_dir)?)
+      .lines()
+      .map_while(Result::ok)
+      .collect(),
+  )
+}
+
+#[tauri::command]
+pub fn retrieve_game_launching_state(
+  launching_state: State<'_, Mutex<LaunchingState>>,
+) -> SJMCLResult<LaunchingState> {
+  let launching = launching_state.lock()?;
+  Ok(launching.clone())
 }

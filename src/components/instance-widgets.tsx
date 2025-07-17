@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -34,10 +34,12 @@ import {
   LuShapes,
   LuSquareLibrary,
 } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
@@ -145,7 +147,8 @@ export const InstanceBasicInfoWidget = () => {
 
 export const InstanceScreenshotsWidget = () => {
   const { t } = useTranslation();
-  const { getScreenshotList } = useInstanceSharedData();
+  const { getScreenshotList, isScreenshotListLoading: isLoading } =
+    useInstanceSharedData();
   const router = useRouter();
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
@@ -154,9 +157,22 @@ export const InstanceScreenshotsWidget = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const hasScreenshots = screenshots && screenshots.length;
 
+  const getScreenshotListWrapper = useCallback(
+    (sync?: boolean) => {
+      getScreenshotList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return; // do not update state if cancelled
+          setScreenshots(data || []);
+        })
+        .catch((e) => setScreenshots([] as ScreenshotInfo[]));
+    },
+    [getScreenshotList]
+  );
+
   useEffect(() => {
-    setScreenshots(getScreenshotList() || []);
-  }, [getScreenshotList]);
+    getScreenshotListWrapper();
+  }, [getScreenshotListWrapper]);
+
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
@@ -179,7 +195,11 @@ export const InstanceScreenshotsWidget = () => {
       style={{ cursor: "pointer" }}
       {...(hasScreenshots ? {} : { icon: LuFullscreen })}
     >
-      {hasScreenshots ? (
+      {isLoading ? (
+        <Center mt={4}>
+          <BeatLoader size={8} color="gray" />
+        </Center>
+      ) : hasScreenshots ? (
         <Image
           src={convertFileSrc(screenshots[currentIndex].filePath)}
           alt={screenshots[currentIndex].fileName}
@@ -195,7 +215,7 @@ export const InstanceScreenshotsWidget = () => {
           onClick={() => {
             router.push(
               {
-                pathname: `/instances/details/${instanceId}/screenshots`,
+                pathname: `/instances/details/${encodeURIComponent(instanceId || "")}/screenshots`,
                 query: {
                   screenshotIndex: currentIndex.toString(),
                 },
@@ -219,13 +239,26 @@ export const InstanceModsWidget = () => {
   const instanceId = Array.isArray(id) ? id[0] : id;
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { getLocalModList } = useInstanceSharedData();
+  const { getLocalModList, isLocalModListLoading: isLoading } =
+    useInstanceSharedData();
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
 
+  const getLocalModListWrapper = useCallback(
+    (sync?: boolean) => {
+      getLocalModList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return; // do not update state if cancelled
+          setLocalMods(data || []);
+        })
+        .catch((e) => setLocalMods([] as LocalModInfo[]));
+    },
+    [getLocalModList]
+  );
+
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
-  }, [getLocalModList]);
+    getLocalModListWrapper();
+  }, [getLocalModListWrapper]);
 
   const totalMods = localMods.length;
   const enabledMods = localMods.filter((mod) => mod.enabled).length;
@@ -236,7 +269,11 @@ export const InstanceModsWidget = () => {
       icon={LuSquareLibrary}
     >
       <VStack align="stretch" w="100%" spacing={3}>
-        {localMods.length > 0 ? (
+        {isLoading ? (
+          <Center mt={4}>
+            <BeatLoader size={8} color="gray" />
+          </Center>
+        ) : localMods.length > 0 ? (
           <>
             <AvatarGroup size="sm" max={5} spacing={-2.5}>
               {localMods.map((mod, index) => (
@@ -266,7 +303,9 @@ export const InstanceModsWidget = () => {
           justifyContent="flex-start"
           colorScheme={primaryColor}
           onClick={() => {
-            router.push(`/instances/details/${instanceId}/mods`);
+            router.push(
+              `/instances/details/${encodeURIComponent(instanceId || "")}/mods`
+            );
           }}
         >
           <HStack spacing={1.5}>
@@ -282,14 +321,27 @@ export const InstanceModsWidget = () => {
 export const InstanceLastPlayedWidget = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
-  const { getWorldList } = useInstanceSharedData();
+  const { getWorldList, isWorldListLoading: isLoading } =
+    useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [localWorlds, setLocalWorlds] = useState<WorldInfo[]>([]);
 
+  const getWorldListWrapper = useCallback(
+    (sync?: boolean) => {
+      getWorldList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return; // do not update state if cancelled
+          setLocalWorlds(data || []);
+        })
+        .catch((e) => setLocalWorlds([] as WorldInfo[]));
+    },
+    [getWorldList]
+  );
+
   useEffect(() => {
-    setLocalWorlds(getWorldList() || []);
-  }, [getWorldList]);
+    getWorldListWrapper();
+  }, [getWorldListWrapper]);
 
   const lastPlayedWorld = localWorlds[0];
 
@@ -298,7 +350,11 @@ export const InstanceLastPlayedWidget = () => {
       title={t("InstanceWidgets.lastPlayed.title")}
       icon={LuClock4}
     >
-      {lastPlayedWorld ? (
+      {isLoading ? (
+        <Center mt={4}>
+          <BeatLoader size={8} color="gray" />
+        </Center>
+      ) : lastPlayedWorld ? (
         <VStack spacing={3} alignItems="flex-start" w="full">
           <HStack spacing={3} w="full" alignItems="center">
             <Image
@@ -382,7 +438,9 @@ export const InstanceMoreWidget = () => {
               size="lg"
               colorScheme={primaryColor}
               onClick={() =>
-                router.push(`/instances/details/${instanceId}/${key}`)
+                router.push(
+                  `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
+                )
               }
             >
               <VStack spacing={1} align="center">
@@ -403,7 +461,9 @@ export const InstanceMoreWidget = () => {
                 size="lg"
                 colorScheme={primaryColor}
                 onClick={() =>
-                  router.push(`/instances/details/${instanceId}/${key}`)
+                  router.push(
+                    `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
+                  )
                 }
                 aria-label={t(`InstanceDetailsLayout.instanceTabList.${key}`)}
               />

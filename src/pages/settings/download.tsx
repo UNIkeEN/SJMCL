@@ -31,12 +31,29 @@ import {
 } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { useTaskContext } from "@/contexts/task";
+import { useToast } from "@/contexts/toast";
+import { TaskDescStatusEnums } from "@/models/task";
+import { ConfigService } from "@/services/config";
 
 const DownloadSettingsPage = () => {
   const { t } = useTranslation();
+  const toast = useToast();
+  const { openGenericConfirmDialog, closeSharedModal } = useSharedModals();
+
   const { config, update } = useLauncherConfig();
   const downloadConfigs = config.download;
   const primaryColor = config.appearance.theme.primaryColor;
+
+  const { tasks } = useTaskContext();
+  const hasActiveDownloadTasks = tasks.some(
+    (taskGroup) =>
+      !(
+        taskGroup.status === TaskDescStatusEnums.Completed ||
+        taskGroup.status === TaskDescStatusEnums.Failed
+      )
+  );
 
   const [concurrentCount, setConcurrentCount] = useState<number>(
     downloadConfigs.transmission.concurrentCount
@@ -53,6 +70,8 @@ const DownloadSettingsPage = () => {
   const [proxyHost, setProxyHost] = useState<string>(
     downloadConfigs.proxy.host
   );
+  const [isClearingDownloadCache, setIsClearingDownloadCache] =
+    useState<boolean>(false);
 
   const sourceStrategyTypes = ["auto", "official", "mirror"];
   const proxyTypeOptions = [
@@ -79,7 +98,49 @@ const DownloadSettingsPage = () => {
     }
   };
 
+  const handleClearDownloadCache = () => {
+    if (isClearingDownloadCache || hasActiveDownloadTasks) {
+      return;
+    }
+    setIsClearingDownloadCache(true);
+    ConfigService.clearDownloadCache()
+      .then((response) => {
+        if (response.status === "success") {
+          toast({
+            title: response.message,
+            status: "success",
+          });
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        }
+      })
+      .finally(() => {
+        setIsClearingDownloadCache(false);
+      });
+    closeSharedModal("generic-confirm");
+  };
+
   const downloadSettingGroups: OptionItemGroupProps[] = [
+    {
+      items: [
+        {
+          title: t("DownloadTasksPage.title"),
+          children: (
+            <LinkIconButton aria-label="download-tasks" url="/downloads" />
+          ),
+        },
+        {
+          title: t("PingTestPage.PingServerList.title"),
+          children: (
+            <LinkIconButton aria-label="ping-test" url="/settings/ping-test" />
+          ),
+        },
+      ],
+    },
     {
       title: t("DownloadSettingPage.source.title"),
       items: [
@@ -117,12 +178,6 @@ const DownloadSettingsPage = () => {
                 </MenuOptionGroup>
               </MenuList>
             </Menu>
-          ),
-        },
-        {
-          title: t("PingTestPage.PingServerList.title"),
-          children: (
-            <LinkIconButton aria-label="ping-test" url="/settings/ping-test" />
           ),
         },
       ],
@@ -290,6 +345,38 @@ const DownloadSettingsPage = () => {
                 {t("DownloadSettingPage.cache.settings.directory.open")}
               </Button>
             </HStack>
+          ),
+        },
+        {
+          title: t("DownloadSettingPage.cache.settings.clear.title"),
+          description: hasActiveDownloadTasks ? (
+            <Text fontSize="xs" color="red.600">
+              {t(
+                "Services.config.clearDownloadCache.error.description.HAS_ACTIVE_DOWNLOAD_TASKS"
+              )}
+            </Text>
+          ) : (
+            t("DownloadSettingPage.cache.settings.clear.description")
+          ),
+          children: (
+            <Button
+              variant="subtle"
+              size="xs"
+              colorScheme="red"
+              isLoading={isClearingDownloadCache}
+              onClick={() =>
+                openGenericConfirmDialog({
+                  title: t("ClearDownloadCacheAlertDialog.dialog.title"),
+                  body: t("ClearDownloadCacheAlertDialog.dialog.content"),
+                  btnOK: t("General.delete"),
+                  isAlert: true,
+                  onOKCallback: handleClearDownloadCache,
+                })
+              }
+              disabled={hasActiveDownloadTasks}
+            >
+              {t("DownloadSettingPage.cache.settings.clear.button")}
+            </Button>
           ),
         },
       ],

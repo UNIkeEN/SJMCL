@@ -50,7 +50,8 @@
           "description": "Copyright © 2024-2025 SJMCL Team."
         },
         "userAgreement": {
-          "title": "User Agreement"
+          "title": "User Agreement",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
         },
         "openSourceLicense": {
           "title": "Open Source License",
@@ -214,9 +215,14 @@
         "colorMode": {
           "title": "Color Mode",
           "type": {
+            "system": "System",
             "light": "Light",
             "dark": "Dark"
           }
+        },
+        "useLiquidGlassDesign": {
+          "title": "Liquid Glass Effect",
+          "description": "When enabled, parts of the interface will use the 'Liquid Glass' effect, which may impact performance."
         },
         "headNavStyle": {
           "title": "Navigation Bar Style",
@@ -230,6 +236,10 @@
     "font": {
       "title": "Font",
       "settings": {
+        "fontFamily": {
+          "title": "Font Family",
+          "default": "Default"
+        },
         "fontSize": {
           "title": "Font Size",
           "small": "T",
@@ -246,6 +256,9 @@
         "custom": {
           "title": "Custom Images",
           "add": "Add"
+        },
+        "randomCustom": {
+          "title": "Random Custom Image"
         }
       },
       "presetBgList": {
@@ -254,6 +267,9 @@
         },
         "SJTU-eastgate": {
           "name": "SJTU Eastgate"
+        },
+        "GNLXC": {
+          "name": "GNWork City"
         }
       }
     },
@@ -267,6 +283,12 @@
           "title": "Enhance Contrast"
         }
       }
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "Clear Download Cache",
+      "content": "Are you sure you want to clear the download cache? This action cannot be undone."
     }
   },
   "ComingSoonSign": {
@@ -320,6 +342,9 @@
       "info": "Basic Settings"
     }
   },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
@@ -342,8 +367,12 @@
       "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
+  "DevToolbar": {
+    "tooltip": "Dev Toolbar"
+  },
   "DiscoverPage": {
     "title": "Discover",
+    "noMore": "No more",
     "button": {
       "sources": "Manage Sources"
     }
@@ -357,8 +386,16 @@
       "online": "Online"
     }
   },
-  "DownloadFloatButton": {
-    "tooltip": "Downloading"
+  "DownloadJavaModal": {
+    "header": {
+      "title": "Download Java"
+    },
+    "selector": {
+      "vendor": "Vendor",
+      "version": "Version",
+      "type": "Type"
+    },
+    "warning": "Downloading from Oracle may require login."
   },
   "DownloadModpackModal": {
     "header": {
@@ -373,7 +410,8 @@
       "world": "Worlds",
       "mod": "Mods",
       "resourcepack": "Resourcepacks",
-      "shader": "Shaderpacks"
+      "shader": "Shaderpacks",
+      "datapack": "Datapacks"
     }
   },
   "DownloadSettingPage": {
@@ -409,9 +447,14 @@
       "title": "Cache",
       "settings": {
         "directory": {
-          "title": "Download Cache Diretory",
+          "title": "Download Cache Directory",
           "select": "Change",
           "open": "Open"
+        },
+        "clear": {
+          "title": "Clear Download Cache",
+          "description": "Clear all files in the cache directory, which will not affect downloaded resource files.",
+          "button": "Clear"
         }
       }
     },
@@ -447,16 +490,26 @@
     }
   },
   "DownloadTasksPage": {
-    "title": "Downloading Tasks",
+    "title": "Download Tasks",
     "button": {
       "settings": "Download Settings",
       "pause": "Pause",
       "begin": "Start",
-      "retry": "Retry"
+      "retry": "Retry",
+      "deleteRecord": "Delete this Record"
     },
     "label": {
       "paused": "Paused",
-      "error": "Error"
+      "completed": "Completed",
+      "error": "Error",
+      "cancelled": "Cancelled"
+    },
+    "task": {
+      "game-client": "Game Client {{param}}",
+      "game-server": "Game Server {{param}}",
+      "game-resource": "Resource Pack",
+      "patch-files": "Patch Game Files {{param}}",
+      "retry": "Retry Task"
     }
   },
   "Editable": {
@@ -506,7 +559,8 @@
         "hasInvalidChar": "Directory name has invalid characters"
       },
       "dirPath": {
-        "exist": "Directory already exists"
+        "exist": "Directory already exists",
+        "invalid": "Directory path is invalid"
       }
     }
   },
@@ -656,9 +710,15 @@
   },
   "General": {
     "add": "Add",
+    "alert": {
+      "noFullLogin": {
+        "title": "This Feature is Not Available Currently",
+        "description": "Please log in with your Microsoft account before accessing this feature."
+      }
+    },
     "cancel": "Cancel",
     "close": "Close",
-    "confirm": "Confirm",
+    "confirm": "OK",
     "copy": {
       "text": "Copy",
       "toast": {
@@ -678,6 +738,7 @@
       }
     },
     "disable": "Disable",
+    "dontShowAgain": "Don't Show Again",
     "download": "Download",
     "edit": "Edit",
     "enable": "Enable",
@@ -870,7 +931,8 @@
     "top": {
       "settings": {
         "LauncherDocs": {
-          "title": "SJMC Launcher Documentation"
+          "title": "SJMC Launcher Documentation",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs"
         }
       }
     }
@@ -943,7 +1005,9 @@
     "restoreSettingsDesc": "Restore the following specific settings to their default values",
     "restore": "Restore",
     "errorMessage": {
-      "error-1": "Instance name cannot be empty"
+      "error-1": "Instance name cannot be empty",
+      "error-2": "Instance name is invalid",
+      "error-3": "Instance name is too long"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1022,7 +1086,8 @@
       },
       "addFailed": {
         "title": "Failed to Add Java",
-        "description": "Not a valid Java executable file"
+        "invalid": "Not a valid Java executable or incompatible with the current platform",
+        "duplicated": "The target path has already been added"
       }
     },
     "confirmDelete": {
@@ -1090,6 +1155,11 @@
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
   },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "Show All (+{{left}})"
+    }
+  },
   "PlayerMenu": {
     "label": {
       "manageSkin": "Manage Skin",
@@ -1149,7 +1219,7 @@
         "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
         "Automation": "Automation",
-        "Auxiliary": "Auxiliary",        
+        "Auxiliary": "Auxiliary",
         "Biomes": "Biomes",
         "Blood Magic": "Blood Magic",
         "Buildcraft": "Buildcraft",
@@ -1248,7 +1318,7 @@
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
-        "Resolution": "Resolution",        
+        "Resolution": "Resolution",
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
@@ -1278,7 +1348,7 @@
         "decoration": "Decoration",
         "modded": "Modded",
         "realistic": "Realistic",
-        "Resolution": "Resolution",        
+        "Resolution": "Resolution",
         "simplistic": "Simplistic",
         "themed": "Themed",
         "tweaks": "Tweaks",
@@ -1354,6 +1424,43 @@
         "optimization": "Optimization",
         "quests": "Quests",
         "technology": "Technology"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Styles": "Styles",
+        "Magic": "Magic",
+        "Miscellaneous": "Misc.",
+        "Fantasy": "Fantasy",
+        "Mod Support": "Mod Support",
+        "Tech": "Tech",
+        "Library": "Library",
+        "Utility": "Utility",
+        "Adventure": "Adventure"
+      },
+      "Modrinth": {
+        "All": "All",
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "Equipment",
+        "food": "Food",
+        "game-mechanics": "Game Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "Technology",
+        "transportation": "Transportation",
+        "utility": "Utility",
+        "worldgen": "World Gen"
       }
     },
     "sortByList": {
@@ -1452,12 +1559,38 @@
           "title": "Failed to retrieve installed Java list"
         }
       },
+      "validateJava": {
+        "error": {
+          "title": "Failed to validate Java",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java executable is invalid "
+          }
+        }
+      },
       "checkGameDirectory": {
         "error": {
           "title": "Invalid game directory",
           "description": {
             "GAME_DIR_ALREADY_ADDED": "The directory has already been added",
             "GAME_DIR_NOT_EXIST": "The directory does not exist"
+          }
+        }
+      },
+      "checkServiceAvailability": {
+        "error": {
+          "title": "Service Unavailable",
+          "description": {
+            "FETCH_ERROR": "Failed to fetch the meta server"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "Successfully cleared download cache",
+        "error": {
+          "title": "Failed to clear download cache",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "There are active download tasks in progress.",
+            "FILE_DELETION_FAILED": "Failed to delete files, they may be in use."
           }
         }
       }
@@ -1473,7 +1606,8 @@
         "error": {
           "title": "Failed to add offline player",
           "description": {
-            "DUPLICATE": "Player already exists"
+            "DUPLICATE": "Player already exists",
+            "INVALID": "UUID is invalid"
           }
         }
       },
@@ -1498,8 +1632,21 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NOT_FOUND": "The authentication server does not exist",
             "CANCELLED": "OAuth login cancelled",
-            "CREATE_WEBVIEW_ERROR": "Failed to create webview",
             "INVALID": "The server type is invalid"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "The player type is invalid",
+            "CANCELLED": "OAuth re-login cancelled"
           }
         }
       },
@@ -1516,12 +1663,28 @@
           }
         }
       },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "Wrong account or password"
+          }
+        }
+      },
       "addPlayerFromSelection": {
         "success": "Successfully added player",
         "error": {
           "title": "Failed to add player",
           "description": {
-            "DUPLICATE": "Player already exists"
+            "DUPLICATE": "Player already exists",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "EXPIRED": "The access token has expired, please re-login"
           }
         }
       },
@@ -1563,38 +1726,13 @@
           "title": "Failed to retrieve server list"
         }
       },
-      "reloginPlayerOAuth": {
-        "success": "Successfully re-logged in",
-        "error": {
-          "title": "Failed to re-login",
-          "description": {
-            "NOT_FOUND": "The player does not exist",
-            "EXPIRED": "The access token has expired, please re-login",
-            "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NETWORK_ERROR": "Failed to connect to the server",
-            "INVALID": "The player type is invalid"
-          }
-        }
-      },
-      "reloginPlayer3rdPartyPassword": {
-        "success": "Successfully re-logged in",
-        "error": {
-          "title": "Failed to re-login",
-          "description": {
-            "NOT_FOUND": "The player does not exist",
-            "EXPIRED": "The access token has expired, please re-login",
-            "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NETWORK_ERROR": "Failed to connect to the server",
-            "INVALID": "Wrong account or password"
-          }
-        }
-      },
       "fetchAuthServer": {
         "error": {
           "title": "Failed to get authentication server information",
           "description": {
             "DUPLICATE": "The server has already been added",
-            "INVALID": "Invalid server URL"
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
@@ -1604,7 +1742,8 @@
           "title": "Failed to add authentication server",
           "description": {
             "DUPLICATE": "The server has already been added",
-            "INVALID": "Invalid server URL"
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
@@ -1632,7 +1771,8 @@
         "error": {
           "title": "Failed to validate game files",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "GAME_FILES_INCOMPLETE": "Game files are incomplete"
           }
         }
       },
@@ -1665,6 +1805,7 @@
           "title": "Failed to fetch mod loader version list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
           }
         }
@@ -1674,6 +1815,7 @@
           "title": "Failed to fetch resource list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
           }
         }
@@ -1683,7 +1825,18 @@
           "title": "Failed to fetch resource version list",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "success": "Download Task created successfully",
+        "error": {
+          "title": "Failed to download game server",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server"
           }
         }
       }
@@ -1691,7 +1844,27 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "Failed to retrieve instance list"
+          "title": "Failed to retrieve game instance list",
+          "description": {
+            "INVALID_NAME_ERROR": "Invalid instance name",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "CONFLICT_NAME_ERROR": "Instance name already exists",
+            "FILE_MOVE_FAILED": "Failed to move instance files"
+          }
+        }
+      },
+      "createInstance": {
+        "success": "Instance download task created successfully",
+        "error": {
+          "title": "Failed to create instance download task",
+          "description": {
+            "CONFLICT_NAME_ERROR": "Instance name already exists",
+            "FOLDER_CREATION_FAILED": "Failed to create target folder",
+            "FILE_CREATION_FAILED": "Failed to create target file",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "CLIENT_JSON_PARSE_ERROR": "Failed to parse instance version info",
+            "ASSET_INDEX_PARSE_ERROR": "Failed to parse asset index"
+          }
         }
       },
       "updateInstanceConfig": {
@@ -1716,17 +1889,16 @@
         "error": {
           "title": "Failed to reset instance game settings",
           "description": {
-            "INSTANCE_NOT_FOUND": "Instance ID does not exist",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "Failed to open instance directory",
+          "title": "Failed to retrieve instance directory path",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error",
-            "EXEC_OPEN_DIR_ERROR": "Unable to execute command for the non-existent subdirectory type"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error"
           }
         }
       },
@@ -1744,7 +1916,10 @@
           "title": "Failed to rename instance",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
-            "CONFLICT_NAME_ERROR": "A duplicate instance name exists"
+            "CONFLICT_NAME_ERROR": "A duplicate instance name exists",
+            "INVALID_NAME_ERROR": "Invalid instance name",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_MOVE_FAILED": "Failed to move instance files"
           }
         }
       },
@@ -1786,6 +1961,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Failed to retrieve local mod list",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "Failed to retrieve resource pack list"
@@ -1811,11 +1994,11 @@
           "title": "Failed to retrieve screenshot list"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "Failed to retrieve local mod list",
+          "title": "Mod state toggle failed",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
           }
         }
       },
@@ -1829,21 +2012,24 @@
           }
         }
       },
-      "toggleModByExtension": {
-        "error": {
-          "title": "Mod state toggle failed",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
-          }
-        }
-      },
       "createLaunchDesktopShortcut": {
         "success": "Launch shortcut has been added to the desktop",
         "error": {
           "title": "Failed to create launch shortcut",
           "description": {
-            "SHORTCUT_CREATION_FAILED": "Command execution failed"
+            "SHORTCUT_CREATION_FAILED": "Command execution failed",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "Task created successfully"
+      },
+      "onProgressiveTaskUpdate": {
+        "error": {
+          "title": "Task {{param}} failed"
         }
       }
     }
@@ -1880,7 +2066,14 @@
     "input": {
       "placeholder": "Global Search"
     },
-    "tip": "Search local and online game resources in one place"
+    "tip": "Search local and online game resources in one place",
+    "empty": "No results found",
+    "result": {
+      "page": "Page",
+      "recentViewed": "Recent Viewed",
+      "instance": "Instance",
+      "player": "Player"
+    }
   },
   "StarUsModal": {
     "header": {
@@ -1947,7 +2140,7 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/"
+      "baseUrl": "https://minecraft.wiki/w/"
     }
   },
   "WelcomeAndTermsModal": {

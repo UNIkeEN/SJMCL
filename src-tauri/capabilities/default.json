@@ -17,6 +17,7 @@
     "core:window:allow-start-dragging",
     "deep-link:default",
     "dialog:default",
+    "log:default",
     "http:default",
     "os:default",
     "process:default"

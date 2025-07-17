@@ -41,10 +41,15 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const basePadding = boxProps.padding || "12px";
   const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
 
-  const loaderTypes: ModLoaderType[] = ["Fabric", "Forge", "NeoForge"];
+  const loaderTypes: ModLoaderType[] = [
+    ModLoaderType.Fabric,
+    ModLoaderType.Forge,
+    ModLoaderType.NeoForge,
+  ];
 
   const renderCard = (type: ModLoaderType) => {
-    const isSelected = type === currentType && currentType !== "Unknown";
+    const isSelected =
+      type === currentType && currentType !== ModLoaderType.Unknown;
     return (
       <Card
         key={type}

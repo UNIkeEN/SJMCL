@@ -47,7 +47,7 @@ export const InstanceMenu: React.FC<InstanceMenuProps> = ({
       icon: LuLayoutList,
       label: t("InstanceMenu.label.details"),
       onClick: () => {
-        router.push(`/instances/details/${instance.id}`);
+        router.push(`/instances/details/${encodeURIComponent(instance.id)}`);
       },
     },
     {

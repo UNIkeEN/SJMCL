@@ -1,45 +1,43 @@
-use governor::DefaultDirectRateLimiter;
-use serde::{Deserialize, Serialize};
 use std::{pin::Pin, time::Duration};
 use tauri::{AppHandle, Manager};
 
 use crate::{
   error::SJMCLResult,
-  tasks::{
-    download::DownloadTask, monitor::TaskMonitor, ProgressiveTaskDescriptor, ProgressiveTaskParam,
-  },
+  tasks::{download::DownloadTask, monitor::TaskMonitor},
+  utils::fs::extract_filename,
 };
 
-use super::TransientTaskDescriptor;
-
-#[derive(Serialize, Deserialize, Clone)]
-pub struct ScheduleResult {
-  pub task_ids: Vec<u32>,
-  pub task_group: String,
-}
+use super::{PTaskGroupDesc, PTaskParam, SJMCLFutureDesc, THandle};
 
 #[tauri::command]
 pub async fn schedule_progressive_task_group(
   app: AppHandle,
   task_group: String,
-  params: Vec<ProgressiveTaskParam>,
-) -> SJMCLResult<ScheduleResult> {
+  params: Vec<PTaskParam>,
+  with_timestamp: bool,
+) -> SJMCLResult<PTaskGroupDesc> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
-  // SAFETY: THIS IS A SHITTY WORKAROUND CAUSED BY TAURI.
-  // Notably, Task monitor is a STATIC state managed by Tauri Globally.
-  // AppHandle implementation lost track of lifetime of the state reference.
-  // We have to transmute the reference to a static lifetime so that
-  // it can be used in the async block. Plus even though the
-  // ratelimited future is self-referencing the monitor, the
-  // monitor is pinned anyway so it's safe to use it in the async block.
-  let ratelimiter: &'static Option<DefaultDirectRateLimiter> =
-    unsafe { std::mem::transmute(&monitor.download_rate_limiter) };
+  let mut task_descs = Vec::new();
+  let mut future_descs = Vec::new();
+  let task_group = if with_timestamp {
+    // If with_timestamp is true, append a timestamp to the task group name
+    // to ensure uniqueness and avoid conflicts.
+    let timestamp = chrono::Utc::now().timestamp_millis();
+    format!("{task_group}@{timestamp}")
+  } else {
+    task_group.clone()
+  };
 
-  let mut task_ids = Vec::new();
   for param in params {
     let task_id = monitor.get_new_id();
     match param {
-      ProgressiveTaskParam::Download(param) => {
+      PTaskParam::Download(mut param) => {
+        if param.filename.is_none() {
+          param.filename = Some(extract_filename(
+            param.dest.to_str().unwrap_or_default(),
+            true,
+          ));
+        }
         let task = DownloadTask::new(
           app.clone(),
           task_id,
@@ -47,32 +45,31 @@ pub async fn schedule_progressive_task_group(
           param,
           Duration::from_secs(1),
         );
-        if ratelimiter.is_none() {
-          let (futute, state) = task.future().await?;
-          monitor
-            .enqueue_task(task_id, Some(task_group.clone()), futute, Some(state))
-            .await;
-        } else {
-          let (futute, state) = task
-            .future_with_ratelimiter(ratelimiter.as_ref().unwrap())
-            .await?;
-          monitor
-            .enqueue_task(task_id, Some(task_group.clone()), futute, Some(state))
-            .await;
-        }
+        let (f, h) = task
+          .future(app.clone(), monitor.download_rate_limiter.clone())
+          .await?;
+        let task_desc = h.read().unwrap().desc.clone();
+        let future_desc = SJMCLFutureDesc {
+          task_id,
+          f: Box::pin(f),
+          h: h.clone(),
+        };
+        task_descs.push(task_desc);
+        future_descs.push(future_desc);
       }
-    };
-    task_ids.push(task_id);
+    }
   }
-
-  Ok(ScheduleResult {
-    task_ids,
+  monitor
+    .enqueue_task_group(task_group.clone(), future_descs)
+    .await;
+  Ok(PTaskGroupDesc {
     task_group,
+    task_descs,
   })
 }
 
 #[tauri::command]
-pub fn create_transient_task(app: AppHandle, desc: TransientTaskDescriptor) -> SJMCLResult<()> {
+pub fn create_transient_task(app: AppHandle, desc: THandle) -> SJMCLResult<()> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
   monitor.create_transient_task(app.clone(), desc);
   Ok(())
@@ -93,10 +90,7 @@ pub fn cancel_transient_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
-pub fn get_transient_task(
-  app: AppHandle,
-  task_id: u32,
-) -> SJMCLResult<Option<TransientTaskDescriptor>> {
+pub fn get_transient_task(app: AppHandle, task_id: u32) -> SJMCLResult<Option<THandle>> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
   Ok(monitor.get_transient_task(task_id))
 }
@@ -116,6 +110,13 @@ pub fn resume_progressive_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> 
 }
 
 #[tauri::command]
+pub async fn restart_progressive_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> {
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
+  monitor.restart_progress(task_id).await;
+  Ok(())
+}
+
+#[tauri::command]
 pub fn stop_progressive_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
   monitor.stop_progress(task_id);
@@ -123,7 +124,28 @@ pub fn stop_progressive_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
-pub fn retrieve_progressive_task_list(app: AppHandle) -> Vec<ProgressiveTaskDescriptor> {
+pub fn cancel_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
+  monitor.cancel_progressive_task_group(task_group);
+  Ok(())
+}
+
+#[tauri::command]
+pub fn resume_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
+  monitor.resume_progressive_task_group(task_group);
+  Ok(())
+}
+
+#[tauri::command]
+pub fn stop_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
+  monitor.stop_progressive_task_group(task_group);
+  Ok(())
+}
+
+#[tauri::command]
+pub fn retrieve_progressive_task_list(app: AppHandle) -> Vec<PTaskGroupDesc> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
   monitor.state_list()
 }

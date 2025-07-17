@@ -8,6 +8,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
@@ -35,6 +36,20 @@ const GameLogPage: React.FC = () => {
 
   const clearLogs = () => setLogs([]);
 
+  // invoke retrieve on first load
+  useEffect(() => {
+    (async () => {
+      const label = (await getCurrentWebview())?.label;
+      if (label) {
+        const res = await LaunchService.retrieveGameLog(label);
+        if (res.status === "success" && Array.isArray(res.data)) {
+          setLogs(res.data);
+        }
+      }
+    })();
+  }, []);
+
+  // keep listening to game process output
   useEffect(() => {
     const unlisten = LaunchService.onGameProcessOutput((payload) => {
       setLogs((prevLogs) => [...prevLogs, payload]);

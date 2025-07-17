@@ -58,12 +58,37 @@ export class LaunchService {
   }
 
   /**
+   * OPEN the game log window during instance runtime.
+   * @param log_label The label of the game log.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("launch")
+  static async openGameLogWindow(
+    logLabel: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("open_game_log_window", { logLabel });
+  }
+
+  /**
+   * RETRIEVE the game log content according to the specified log label.
+   * Typically used when opening the game log window for the first time during instance runtime.
+   * @param log_label The label of the game log.
+   * @returns {Promise<InvokeResponse<string[]>>}
+   */
+  @responseHandler("launch")
+  static async retrieveGameLog(
+    logLabel: string
+  ): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_game_log", { logLabel });
+  }
+
+  /**
    * LISTEN to the game log output line by line.
    * @param callback The callback function to be called when the game log is output.
    */
   static onGameProcessOutput(callback: (payload: string) => void) {
     const unlisten = getCurrentWebview().listen<string>(
-      "launch://game-process-output",
+      "launch:game-process-output",
       (event) => {
         callback(event.payload);
       }

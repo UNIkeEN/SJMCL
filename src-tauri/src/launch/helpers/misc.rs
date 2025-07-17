@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 pub fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Vec<String> {
   lazy_static::lazy_static!(
-    static ref PARAM_REGEX: Regex = Regex::new(r"\$\{(\S+)\}").unwrap();
+    static ref PARAM_REGEX: Regex = Regex::new(r"\$\{([^}]+)\}").unwrap();
   );
   let mut cmd = Vec::new();
   for arg in args {
@@ -49,5 +49,13 @@ pub fn get_natives_string(natives: &HashMap<String, String>) -> Option<String> {
     replace_arguments(vec![native.clone()], &map).pop()
   } else {
     None
+  }
+}
+
+pub fn get_separator() -> &'static str {
+  if cfg!(windows) {
+    ";"
+  } else {
+    ":"
   }
 }

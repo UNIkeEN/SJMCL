@@ -22,6 +22,7 @@ import {
   Stepper,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
@@ -45,6 +46,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   ...props
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -87,9 +89,17 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       {
         label: "validateGameFiles",
         function: () => LaunchService.validateGameFiles(),
-        isOK: (data: any) => data && data.length === 0,
+        isOK: (data: any) => true,
         onResCallback: (data: any) => {}, // TODO
-        onErrCallback: (error: ResponseError) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {
+          handleCloseModal();
+          toast({
+            title: error.message,
+            description: error.details,
+            status: "error",
+          });
+          router.push("/downloads");
+        }, // TODO
       },
       {
         label: "validateSelectedPlayer",
@@ -127,7 +137,15 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       },
       // TODO: progress bar in last step, and cancel logic
     ],
-    [activeStep, instanceId, openSharedModal, selectedPlayer, setActiveStep]
+    [
+      activeStep,
+      handleCloseModal,
+      instanceId,
+      openSharedModal,
+      router,
+      selectedPlayer,
+      toast,
+    ]
   );
 
   useEffect(() => {

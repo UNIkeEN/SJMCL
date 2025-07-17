@@ -9,5 +9,5 @@
   overflow-y: scroll;
   white-space: pre-wrap;
   word-break: break-all;
-  background: white;
+  user-select: text;
 }

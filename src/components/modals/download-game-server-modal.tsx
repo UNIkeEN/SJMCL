@@ -10,21 +10,60 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
+import { save } from "@tauri-apps/plugin-dialog";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
 import { GameResourceInfo } from "@/models/resource";
+import { ResourceService } from "@/services/resource";
 
 export const DownloadGameServerModal: React.FC<
   Omit<ModalProps, "children">
 > = ({ ...modalProps }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const toast = useToast();
+  const router = useRouter();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [selectedGameVersion, setSelectedGameVersion] =
     useState<GameResourceInfo>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleDownloadGameServer = async () => {
+    if (!selectedGameVersion) return;
+
+    const savepath = await save({
+      defaultPath: `${selectedGameVersion.id}-server.jar`,
+    });
+    if (!savepath || !selectedGameVersion?.url) return;
+
+    setIsLoading(true);
+    const response = await ResourceService.downloadGameServer(
+      selectedGameVersion,
+      savepath
+    );
+    setIsLoading(false);
+    if (response.status === "success") {
+      toast({
+        title: response.message,
+        status: "success",
+      });
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+    }
+
+    setSelectedGameVersion(undefined);
+    modalProps.onClose?.();
+    router.push("/downloads");
+  };
 
   return (
     <Modal
@@ -52,7 +91,8 @@ export const DownloadGameServerModal: React.FC<
             <Button
               disabled={!selectedGameVersion}
               colorScheme={primaryColor}
-              onClick={modalProps.onClose}
+              onClick={() => handleDownloadGameServer()}
+              isLoading={isLoading}
             >
               {t("General.finish")}
             </Button>

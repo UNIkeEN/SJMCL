@@ -10,32 +10,44 @@ import {
   ModalOverlay,
   ModalProps,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
-import { LuEarth, LuHaze, LuPackage, LuSquareLibrary } from "react-icons/lu";
+import {
+  LuEarth,
+  LuHaze,
+  LuPackage,
+  LuPuzzle,
+  LuSquareLibrary,
+} from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
 import ResourceDownloader from "@/components/resource-downloader";
+import { useLauncherConfig } from "@/contexts/config";
+import { OtherResourceType } from "@/enums/resource";
 
 interface DownloadResourceModalProps extends Omit<ModalProps, "children"> {
-  initialResourceType?: string;
+  initialResourceType?: OtherResourceType;
 }
 
 const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
-  initialResourceType = "mod",
+  initialResourceType = OtherResourceType.Mod,
   ...modalProps
 }) => {
   const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const language = config.general.general.language;
 
   const [selectedResourceType, setSelectedResourceType] =
-    useState<string>(initialResourceType);
+    useState<OtherResourceType>(initialResourceType);
 
-  const resourceTypeList: { key: string; icon: IconType }[] = [
-    { key: "mod", icon: LuSquareLibrary },
-    { key: "world", icon: LuEarth },
-    { key: "resourcepack", icon: LuPackage },
-    { key: "shader", icon: LuHaze },
+  const resourceTypeList: { key: OtherResourceType; icon: IconType }[] = [
+    { key: OtherResourceType.Mod, icon: LuSquareLibrary },
+    { key: OtherResourceType.World, icon: LuEarth },
+    { key: OtherResourceType.ResourcePack, icon: LuPackage },
+    { key: OtherResourceType.ShaderPack, icon: LuHaze },
+    { key: OtherResourceType.DataPack, icon: LuPuzzle },
   ];
 
   return (
@@ -64,12 +76,24 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
               items={resourceTypeList.map((item) => ({
                 value: item.key,
                 label: (
-                  <HStack spacing={1.5} fontSize="sm">
-                    <Icon as={item.icon} />
-                    <Text>
-                      {t(`DownloadResourceModal.resourceTypeList.${item.key}`)}
-                    </Text>
-                  </HStack>
+                  <Tooltip
+                    label={t(
+                      `DownloadResourceModal.resourceTypeList.${item.key}`
+                    )}
+                    isDisabled={language.startsWith("zh")}
+                  >
+                    <HStack spacing={1.5} fontSize="sm">
+                      <Icon as={item.icon} />
+                      {(language.startsWith("zh") ||
+                        selectedResourceType === item.key) && (
+                        <Text>
+                          {t(
+                            `DownloadResourceModal.resourceTypeList.${item.key}`
+                          )}
+                        </Text>
+                      )}
+                    </HStack>
+                  </Tooltip>
                 ),
               }))}
             />

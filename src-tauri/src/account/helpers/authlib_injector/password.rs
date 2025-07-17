@@ -137,12 +137,19 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
   let response = client
     .post(format!("{}/authserver/refresh", player.auth_server_url))
     .header("Content-Type", "application/json")
-    .body(json!({"accessToken": player.access_token}).to_string())
+    .body(
+      json!({
+        "accessToken": player.access_token,
+        "selectedProfile": {
+          "id": player.uuid.as_simple(),
+          "name": player.name
+        }
+      })
+      .to_string(),
+    )
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
-
-  println!("Refresh Response: {:?}", response);
 
   if !response.status().is_success() {
     return Err(AccountError::Expired)?;

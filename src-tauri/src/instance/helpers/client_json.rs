@@ -16,7 +16,7 @@ pub struct McClientInfo {
   pub arguments: Option<LaunchArgumentTemplate>, // new version
   pub minecraft_arguments: Option<String>,       // old version
 
-  pub asset_index: AssetIndex,
+  pub asset_index: AssetIndexInfo,
   pub assets: String,
   pub downloads: HashMap<String, DownloadsValue>,
   pub libraries: Vec<LibrariesValue>,
@@ -40,7 +40,7 @@ pub struct PatchesInfo {
   pub priority: i64,
   pub arguments: LaunchArgumentTemplate,
   pub main_class: String,
-  pub asset_index: AssetIndex,
+  pub asset_index: AssetIndexInfo,
   pub assets: String,
   pub downloads: HashMap<String, DownloadsValue>,
   pub libraries: Vec<LibrariesValue>,
@@ -214,7 +214,7 @@ pub struct FeaturesInfo {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
-pub struct AssetIndex {
+pub struct AssetIndexInfo {
   pub id: String,
   pub sha1: String,
   pub size: i64,

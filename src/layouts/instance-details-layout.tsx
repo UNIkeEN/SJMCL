@@ -46,7 +46,8 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const toast = useToast();
   const { t } = useTranslation();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog, closeSharedModal } =
+    useSharedModals();
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
 
@@ -55,14 +56,26 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const primaryColor = config.appearance.theme.primaryColor;
   const navBarType = config.general.functionality.instancesNavType;
 
-  // useEffect(() => {
-  //   if (summary === undefined) {
-  //     router.push("/instances/all");
-  //   }
-  // }, [summary])
-
   const handleCreateLaunchDesktopShortcut = useCallback(
     (instanceId: string) => {
+      if (!instanceId || !summary) return;
+
+      const colonIndex = instanceId.indexOf(":");
+      const nameFromRouter =
+        colonIndex !== -1 ? instanceId.slice(colonIndex + 1) : instanceId;
+
+      if (nameFromRouter && summary.name && nameFromRouter !== summary.name) {
+        openGenericConfirmDialog({
+          title: t("General.notice"),
+          body: t("CreateRenamedInstShortcutAlertDialog.content"),
+          btnCancel: "",
+          onOKCallback: () => {
+            closeSharedModal("generic-confirm");
+          },
+        });
+        return;
+      }
+
       InstanceService.createLaunchDesktopShortcut(instanceId).then(
         (response) => {
           if (response.status === "success") {
@@ -80,7 +93,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         }
       );
     },
-    [toast]
+    [summary, toast, closeSharedModal, openGenericConfirmDialog, t]
   );
 
   const instanceSecMenuOperations = [
@@ -180,7 +193,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     >
       <NavMenu
         flexWrap="wrap"
-        selectedKeys={[decodeURIComponent(router.asPath)]}
+        selectedKeys={[router.asPath]}
         onClick={(value) => router.push(value)}
         direction="row"
         size="xs"
@@ -189,7 +202,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           config.general.general.language.startsWith("zh") ? "0.05rem" : 0.5
         }
         items={instanceTabList.map((item) => ({
-          value: `/instances/details/${instanceId}/${item.key}`,
+          value: `/instances/details/${encodeURIComponent(instanceId || "")}/${item.key}`,
           label: (
             <HStack spacing={1.5}>
               <Icon as={item.icon} />
@@ -200,7 +213,13 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           ),
         }))}
       />
-      <VStack overflow="auto" align="strench" spacing={4} flex="1">
+      <VStack
+        overflow="auto"
+        align="stretch"
+        spacing={4}
+        flex="1"
+        key={router.asPath}
+      >
         {children}
       </VStack>
     </Section>

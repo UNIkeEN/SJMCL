@@ -1,7 +1,8 @@
-import { HStack, Image } from "@chakra-ui/react";
+import { Center, HStack, Image } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -11,7 +12,9 @@ import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { InstanceSubdirEnums } from "@/enums/instance";
+import { InstanceSubdirType } from "@/enums/instance";
+import { OtherResourceType } from "@/enums/resource";
+import { GetStateFlag } from "@/hooks/get-state";
 import { ResourcePackInfo } from "@/models/instance/misc";
 import { base64ImgSrc } from "@/utils/string";
 
@@ -19,10 +22,12 @@ const InstanceResourcePacksPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const {
-    handleOpenInstanceSubdir,
+    openInstanceSubdir,
     handleImportResource,
     getResourcePackList,
+    isResourcePackListLoading,
     getServerResourcePackList,
+    isServerResourcePackListLoading,
   } = useInstanceSharedData();
   const accordionStates =
     config.states.instanceResourcepackPage.accordionStates;
@@ -31,22 +36,50 @@ const InstanceResourcePacksPage = () => {
   const [resourcePacks, setResourcePacks] = useState<ResourcePackInfo[]>([]);
   const [serverResPacks, setServerResPacks] = useState<ResourcePackInfo[]>([]);
 
+  const getResourcePackListWrapper = useCallback(
+    (sync?: boolean) => {
+      getResourcePackList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return;
+          setResourcePacks(data || []);
+        })
+        .catch((e) => setResourcePacks([]));
+    },
+    [getResourcePackList]
+  );
+
   useEffect(() => {
-    setResourcePacks(getResourcePackList() || []);
-    setServerResPacks(getServerResourcePackList() || []);
-  }, [getResourcePackList, getServerResourcePackList]);
+    getResourcePackListWrapper();
+  }, [getResourcePackListWrapper]);
+
+  const getServerResourcePackListWrapper = useCallback(
+    (sync?: boolean) => {
+      getServerResourcePackList(sync)
+        .then((data) => {
+          if (data === GetStateFlag.Cancelled) return;
+          setServerResPacks(data || []);
+        })
+        .catch((e) => setServerResPacks([]));
+    },
+    [getServerResourcePackList]
+  );
+
+  useEffect(() => {
+    getServerResourcePackListWrapper();
+  }, [getServerResourcePackListWrapper]);
 
   const defaultIcon = "/images/icons/DefaultPack.webp";
 
   const renderSections = {
     global: {
       data: resourcePacks,
+      isLoading: isResourcePackListLoading,
       locale: "resourcePackList",
       secMenu: [
         {
           icon: "openFolder",
           onClick: () => {
-            handleOpenInstanceSubdir(InstanceSubdirEnums.ResourcePacks);
+            openInstanceSubdir(InstanceSubdirType.ResourcePacks);
           },
         },
         {
@@ -57,11 +90,9 @@ const InstanceResourcePacksPage = () => {
                 "InstanceDetailsLayout.instanceTabList.resourcepacks"
               ),
               filterExt: ["zip"],
-              tgtDirType: InstanceSubdirEnums.ResourcePacks,
+              tgtDirType: InstanceSubdirType.ResourcePacks,
               decompress: false,
-              onSuccessCallback: () => {
-                setResourcePacks(getResourcePackList(true) || []);
-              },
+              onSuccessCallback: () => getResourcePackListWrapper(true),
             });
           },
         },
@@ -69,27 +100,24 @@ const InstanceResourcePacksPage = () => {
           icon: "download",
           onClick: () => {
             openSharedModal("download-resource", {
-              initialResourceType: "resourcepack",
+              initialResourceType: OtherResourceType.ResourcePack,
             });
           },
         },
         {
           icon: "refresh",
-          onClick: () => {
-            setResourcePacks(getResourcePackList(true) || []);
-          },
+          onClick: () => getResourcePackListWrapper(true),
         },
       ],
     },
     server: {
       data: serverResPacks,
+      isLoading: isServerResourcePackListLoading,
       locale: "serverResPackList",
       secMenu: [
         {
           icon: "refresh",
-          onClick: () => {
-            setServerResPacks(getServerResourcePackList(true) || []);
-          },
+          onClick: () => getServerResourcePackListWrapper(true),
         },
       ],
     },
@@ -126,7 +154,11 @@ const InstanceResourcePacksPage = () => {
               </HStack>
             }
           >
-            {value.data.length > 0 ? (
+            {value.isLoading ? (
+              <Center mt={4}>
+                <BeatLoader size={16} color="gray" />
+              </Center>
+            ) : value.data.length > 0 ? (
               <OptionItemGroup
                 items={value.data.map((pack) => (
                   <OptionItem

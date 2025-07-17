@@ -1,20 +1,20 @@
 use super::{
-  helpers::java::refresh_and_update_javas,
-  helpers::memory::get_memory_info,
-  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, MemoryInfo},
+  helpers::java::{
+    get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
+  },
+  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError},
 };
 use crate::{
-  error::SJMCLResult, instance::helpers::misc::refresh_instances, partial::PartialUpdate,
+  error::SJMCLResult, instance::helpers::misc::refresh_instances, tasks::monitor::TaskMonitor,
+  utils::string::camel_to_snake_case,
 };
 use crate::{storage::Storage, utils::fs::get_subdirectories};
-use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
+use std::{fs, pin::Pin};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
-use tokio::time::Instant;
-use url::Url;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -25,20 +25,11 @@ pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
 
 #[tauri::command]
 pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -> SJMCLResult<()> {
-  let binding = app.state::<Mutex<LauncherConfig>>();
-  let mut state = binding.lock()?;
-  let key_path = {
-    let mut snake = String::new();
-    for (i, ch) in key_path.char_indices() {
-      if i > 0 && ch.is_uppercase() {
-        snake.push('_');
-      }
-      snake.push(ch.to_ascii_lowercase());
-    }
-    snake
-  };
-  state.update(&key_path, &value)?;
-  state.save()?;
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let mut config_state = config_binding.lock()?;
+  let key_path = camel_to_snake_case(key_path.as_str());
+  config_state.partial_update(&app, &key_path, &value)?;
+  config_state.save()?;
   Ok(())
 }
 
@@ -226,6 +217,18 @@ pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
 }
 
 #[tauri::command]
+pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
+  if get_java_info_from_release_file(&java_path)
+    .or_else(|| get_java_info_from_command(&java_path))
+    .is_some()
+  {
+    Ok(())
+  } else {
+    Err(LauncherConfigError::JavaExecInvalid.into())
+  }
+}
+
+#[tauri::command]
 pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<String> {
   let local_game_directories: Vec<_>;
   {
@@ -275,32 +278,23 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
   Ok("".to_string())
 }
 
-// Below are some system info commands (In frontend, see services/utils.ts)
 #[tauri::command]
-pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
-  Ok(get_memory_info())
-}
+pub async fn clear_download_cache(app: AppHandle) -> SJMCLResult<()> {
+  let launcher_config = app.state::<Mutex<LauncherConfig>>();
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
 
-#[tauri::command]
-pub async fn check_service_availability(
-  client: tauri::State<'_, reqwest::Client>,
-  url: String,
-) -> SJMCLResult<u128> {
-  let parsed_url = Url::parse(&url)
-    .or_else(|_| Url::parse(&format!("https://{}", url)))
-    .map_err(|_| LauncherConfigError::FetchError)?;
-
-  let start = Instant::now();
-  let res = client.get(parsed_url).send().await;
-
-  match res {
-    Ok(response) => {
-      if response.status().is_success() || response.status().is_client_error() {
-        Ok(start.elapsed().as_millis())
-      } else {
-        Err(LauncherConfigError::FetchError.into())
-      }
-    }
-    Err(_) => Err(LauncherConfigError::FetchError.into()),
+  if monitor.has_active_download_tasks() {
+    return Err(LauncherConfigError::HasActiveDownloadTasks.into());
   }
+
+  let cache_path = {
+    let config = launcher_config.lock()?;
+    config.download.cache.directory.clone()
+  };
+
+  std::fs::remove_dir_all(&cache_path).map_err(|_| LauncherConfigError::FileDeletionFailed)?;
+  // recreate the cache directory
+  std::fs::create_dir_all(&cache_path).map_err(|_| LauncherConfigError::FileDeletionFailed)?;
+
+  Ok(())
 }

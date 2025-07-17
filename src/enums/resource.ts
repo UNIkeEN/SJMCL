@@ -245,3 +245,12 @@ export const sortByLists = {
   ],
   Modrinth: ["relevance", "downloads", "follows", "updated", "newest"],
 };
+
+export enum OtherResourceType {
+  Mod = "mod",
+  World = "world",
+  ResourcePack = "resourcepack",
+  ShaderPack = "shader",
+  ModPack = "modpack",
+  DataPack = "datapack",
+}

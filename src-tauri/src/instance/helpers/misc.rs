@@ -46,7 +46,7 @@ pub fn get_instance_subdir_paths(
   let paths = directory_types
     .iter()
     .map(|directory_type| {
-      match directory_type {
+      let path_buf = match directory_type {
         InstanceSubdirType::Assets => game_dir.join("assets"),
         InstanceSubdirType::Libraries => game_dir.join("libraries"),
         InstanceSubdirType::Mods => path.join("mods"),
@@ -63,7 +63,14 @@ pub fn get_instance_subdir_paths(
           tauri_plugin_os::platform(),
           tauri_plugin_os::arch()
         )),
+      };
+
+      // Create directory if it doesn't exist
+      if !path_buf.exists() {
+        let _ = fs::create_dir_all(&path_buf);
       }
+
+      path_buf
     })
     .collect();
 

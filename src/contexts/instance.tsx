@@ -1,4 +1,5 @@
 import { open } from "@tauri-apps/plugin-dialog";
+import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, {
   createContext,
@@ -9,8 +10,8 @@ import React, {
 } from "react";
 import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums } from "@/enums/instance";
-import { useGetState } from "@/hooks/get-state";
+import { InstanceSubdirType } from "@/enums/instance";
+import { GetStateFlag, usePromisedGetState } from "@/hooks/get-state";
 import { GameConfig } from "@/models/config";
 import {
   InstanceSummary,
@@ -28,16 +29,41 @@ export interface InstanceContextType {
   summary: InstanceSummary | undefined;
   updateSummaryInContext: (path: string, value: any) => void;
   gameConfig: GameConfig | undefined;
-  getWorldList: (sync?: boolean) => WorldInfo[] | undefined;
-  getLocalModList: (sync?: boolean) => LocalModInfo[] | undefined;
-  getResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
-  getServerResourcePackList: (sync?: boolean) => ResourcePackInfo[] | undefined;
-  getSchematicList: (sync?: boolean) => SchematicInfo[] | undefined;
-  getShaderPackList: (sync?: boolean) => ShaderPackInfo[] | undefined;
-  getScreenshotList: (sync?: boolean) => ScreenshotInfo[] | undefined;
+  openInstanceSubdir: (dirType: InstanceSubdirType) => void;
+  // retrieve instance resource data with frontend cache
+  getWorldList: (
+    sync?: boolean
+  ) => Promise<WorldInfo[] | GetStateFlag | undefined>;
+  isWorldListLoading: boolean;
+  getLocalModList: (
+    sync?: boolean
+  ) => Promise<LocalModInfo[] | GetStateFlag | undefined>;
+  isLocalModListLoading: boolean;
+  getResourcePackList: (
+    sync?: boolean
+  ) => Promise<ResourcePackInfo[] | GetStateFlag | undefined>;
+  isResourcePackListLoading: boolean;
+  getServerResourcePackList: (
+    sync?: boolean
+  ) => Promise<ResourcePackInfo[] | GetStateFlag | undefined>;
+  isServerResourcePackListLoading: boolean;
+  getSchematicList: (
+    sync?: boolean
+  ) => Promise<SchematicInfo[] | GetStateFlag | undefined>;
+  isSchematicListLoading: boolean;
+  getShaderPackList: (
+    sync?: boolean
+  ) => Promise<ShaderPackInfo[] | GetStateFlag | undefined>;
+  isShaderPackListLoading: boolean;
+  getScreenshotList: (
+    sync?: boolean
+  ) => Promise<ScreenshotInfo[] | GetStateFlag | undefined>;
+  isScreenshotListLoading: boolean;
   // getInstanceGameConfig: (sync?: boolean) => GameConfig | undefined;
   // shared service handler
-  handleOpenInstanceSubdir: (dirType: InstanceSubdirEnums) => void;
+  handleRetrieveInstanceSubdirPath: (
+    dirType: InstanceSubdirType
+  ) => Promise<string | null>;
   handleImportResource: (option: any) => void;
   handleUpdateInstanceConfig: (path: string, value: any) => void;
   handleResetInstanceGameConfig: () => void;
@@ -70,6 +96,25 @@ export const InstanceContextProvider: React.FC<{
   const [schematics, setSchematics] = useState<SchematicInfo[]>();
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>();
+
+  const summaryIdRef = React.useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (instanceSummary?.id) {
+      summaryIdRef.current = instanceSummary.id;
+    } else {
+      summaryIdRef.current = undefined;
+    }
+  }, [instanceSummary?.id]);
+
+  const clearAllResState = useCallback(() => {
+    setWorlds(undefined);
+    setLocalMods(undefined);
+    setResourcePacks(undefined);
+    setServerResourcePacks(undefined);
+    setSchematics(undefined);
+    setShaderPacks(undefined);
+    setScreenshots(undefined);
+  }, []);
 
   const updateSummaryInContext = useCallback(
     (path: string, value: any) => {
@@ -127,28 +172,43 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [router.query.id, getInstanceList, handleRetrieveInstanceGameConfig]);
 
-  const handleOpenInstanceSubdir = useCallback(
-    (dirType: InstanceSubdirEnums) => {
+  const handleRetrieveInstanceSubdirPath = useCallback(
+    (dirType: InstanceSubdirType): Promise<string | null> => {
       if (instanceSummary?.id !== undefined) {
-        InstanceService.openInstanceSubdir(instanceSummary.id, dirType).then(
-          (response) => {
-            if (response.status !== "success")
-              toast({
-                title: response.message,
-                description: response.details,
-                status: "error",
-              });
+        return InstanceService.retrieveInstanceSubdirPath(
+          instanceSummary.id,
+          dirType
+        ).then((response) => {
+          if (response.status === "success") {
+            return response.data;
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+            return null;
           }
-        );
+        });
       }
+      return Promise.resolve(null);
     },
     [instanceSummary?.id, toast]
+  );
+
+  const openInstanceSubdir = useCallback(
+    (dirType: InstanceSubdirType) => {
+      handleRetrieveInstanceSubdirPath(dirType).then((path) => {
+        if (path) openPath(path);
+      });
+    },
+    [handleRetrieveInstanceSubdirPath]
   );
 
   type ImportResourceOptions = {
     filterName: string;
     filterExt: string[];
-    tgtDirType: InstanceSubdirEnums;
+    tgtDirType: InstanceSubdirType;
     decompress?: boolean;
     onSuccessCallback: () => void;
   };
@@ -199,120 +259,182 @@ export const InstanceContextProvider: React.FC<{
     [instanceSummary?.id, toast]
   );
 
-  const handleRetrieveWorldList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveWorldList(instanceSummary.id).then((response) => {
-        if (response.status === "success") {
-          setWorlds(
-            [...response.data].sort((a, b) => b.lastPlayedAt - a.lastPlayedAt)
-          );
-        } else
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
+  const handleRetrieveWorldList = useCallback(async () => {
+    if (summaryIdRef.current === undefined) {
+      return;
+    }
+    let lastSummaryIdRef = summaryIdRef.current;
+    const response = await InstanceService.retrieveWorldList(
+      summaryIdRef.current
+    );
+    if (lastSummaryIdRef !== summaryIdRef.current) {
+      return "%CANCELLED%"; // to avoid state update after unmount
+    }
+    if (response.status === "success") {
+      setWorlds(
+        [...response.data].sort((a, b) => b.lastPlayedAt - a.lastPlayedAt)
+      );
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
       });
+      setResourcePacks([]);
+      return [];
     }
-  }, [instanceSummary?.id, setWorlds, toast]);
+  }, [setWorlds, toast]);
 
-  const handleRetrieveLocalModList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveLocalModList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success") setLocalMods(response.data);
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
-      );
+  const handleRetrieveLocalModList = useCallback(async () => {
+    if (summaryIdRef.current === undefined) {
+      return;
     }
-  }, [instanceSummary?.id, setLocalMods, toast]);
+    let lastSummaryIdRef = summaryIdRef.current;
+    const response = await InstanceService.retrieveLocalModList(
+      summaryIdRef.current
+    );
+    if (lastSummaryIdRef !== summaryIdRef.current) {
+      return "%CANCELLED%"; // to avoid state update after unmount
+    }
+    if (response.status === "success") {
+      setLocalMods(response.data);
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+      setLocalMods([]);
+      return [];
+    }
+  }, [setLocalMods, toast]);
 
-  const handleRetrieveResourcePackList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveResourcePackList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success") setResourcePacks(response.data);
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
-      );
+  const handleRetrieveResourcePackList = useCallback(async () => {
+    if (summaryIdRef.current === undefined) {
+      return;
     }
-  }, [instanceSummary?.id, setResourcePacks, toast]);
+    let lastSummaryIdRef = summaryIdRef.current;
+    const response = await InstanceService.retrieveResourcePackList(
+      summaryIdRef.current
+    );
+    if (lastSummaryIdRef !== summaryIdRef.current) {
+      return "%CANCELLED%"; // to avoid state update after unmount
+    }
+    if (response.status === "success") {
+      setResourcePacks(response.data);
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+      setResourcePacks([]);
+      return [];
+    }
+  }, [setResourcePacks, toast]);
 
-  const handleServerRetrieveResourcePackList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveServerResourcePackList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success")
-            setServerResourcePacks(response.data);
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
-      );
+  const handleServerRetrieveResourcePackList = useCallback(async () => {
+    if (summaryIdRef.current === undefined) {
+      return;
     }
-  }, [instanceSummary?.id, setServerResourcePacks, toast]);
+    let lastSummaryIdRef = summaryIdRef.current;
+    const response = await InstanceService.retrieveServerResourcePackList(
+      summaryIdRef.current
+    );
+    if (lastSummaryIdRef !== summaryIdRef.current) {
+      return "%CANCELLED%"; // to avoid state update after unmount
+    }
+    if (response.status === "success") {
+      setServerResourcePacks(response.data);
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+      setServerResourcePacks([]);
+      return [];
+    }
+  }, [setServerResourcePacks, toast]);
 
-  const handleRetrieveSchematicList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveSchematicList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success") setSchematics(response.data);
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
-      );
+  const handleRetrieveSchematicList = useCallback(async () => {
+    if (summaryIdRef.current === undefined) {
+      return;
     }
-  }, [instanceSummary?.id, setSchematics, toast]);
+    let lastSummaryIdRef = summaryIdRef.current;
+    const response = await InstanceService.retrieveSchematicList(
+      summaryIdRef.current
+    );
+    if (lastSummaryIdRef !== summaryIdRef.current) {
+      return "%CANCELLED%"; // to avoid state update after unmount
+    }
+    if (response.status === "success") {
+      setSchematics(response.data);
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+      setSchematics([]);
+      return [];
+    }
+  }, [setSchematics, toast]);
 
-  const handleRetrieveShaderPackList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveShaderPackList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success") setShaderPacks(response.data);
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
-      );
+  const handleRetrieveShaderPackList = useCallback(async () => {
+    if (summaryIdRef.current === undefined) {
+      return;
     }
-  }, [instanceSummary?.id, setShaderPacks, toast]);
+    let lastSummaryIdRef = summaryIdRef.current;
+    const response = await InstanceService.retrieveShaderPackList(
+      summaryIdRef.current
+    );
+    if (lastSummaryIdRef !== summaryIdRef.current) {
+      return "%CANCELLED%"; // to avoid state update after unmount
+    }
+    if (response.status === "success") {
+      setShaderPacks(response.data);
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+      setShaderPacks([]);
+      return [];
+    }
+  }, [setShaderPacks, toast]);
 
-  const handleRetrieveScreenshotList = useCallback(() => {
-    if (instanceSummary?.id !== undefined) {
-      InstanceService.retrieveScreenshotList(instanceSummary.id).then(
-        (response) => {
-          if (response.status === "success")
-            setScreenshots([...response.data].sort((a, b) => b.time - a.time));
-          else
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-        }
-      );
+  const handleRetrieveScreenshotList = useCallback(async () => {
+    if (summaryIdRef.current === undefined) {
+      return;
     }
-  }, [instanceSummary?.id, setScreenshots, toast]);
+    let lastSummaryIdRef = summaryIdRef.current;
+    const response = await InstanceService.retrieveScreenshotList(
+      summaryIdRef.current
+    );
+    if (lastSummaryIdRef !== summaryIdRef.current) {
+      return "%CANCELLED%"; // to avoid state update after unmount
+    }
+    if (response.status === "success") {
+      setScreenshots([...response.data].sort((a, b) => b.time - a.time));
+      return response.data;
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+      setScreenshots([]);
+      return [];
+    }
+  }, [setScreenshots, toast]);
 
   const handleUpdateInstanceConfig = useCallback(
     (path: string, value: any) => {
@@ -340,9 +462,12 @@ export const InstanceContextProvider: React.FC<{
               // version isolation is shared by summary and game config struct.
               if (path === "specGameConfig.versionIsolation")
                 updateSummaryInContext("isVersionIsolated", value);
+              clearAllResState();
             } else if (path === "useSpecGameConfig") {
               updateSummaryInContext(path, value);
               if (value) handleRetrieveInstanceGameConfig(instanceSummary.id);
+              // clear all cached resource state due to version isolation may change.
+              clearAllResState();
             } else {
               updateSummaryInContext(path, value);
             }
@@ -357,6 +482,7 @@ export const InstanceContextProvider: React.FC<{
       setInstanceGameConfig,
       toast,
       updateSummaryInContext,
+      clearAllResState,
     ]
   );
 
@@ -381,31 +507,75 @@ export const InstanceContextProvider: React.FC<{
     }
   }, [instanceSummary?.id, handleRetrieveInstanceGameConfig, toast]);
 
-  const getWorldList = useGetState(worlds, handleRetrieveWorldList);
+  const [getWorldList, isWorldListLoading] = usePromisedGetState(
+    worlds,
+    handleRetrieveWorldList
+  );
 
-  const getLocalModList = useGetState(localMods, handleRetrieveLocalModList);
+  const [getLocalModList, isLocalModListLoading] = usePromisedGetState(
+    localMods,
+    handleRetrieveLocalModList
+  );
 
-  const getResourcePackList = useGetState(
+  const [getResourcePackList, isResourcePackListLoading] = usePromisedGetState(
     resourcePacks,
     handleRetrieveResourcePackList
   );
 
-  const getServerResourcePackList = useGetState(
-    serverResourcePacks,
-    handleServerRetrieveResourcePackList
+  const [getServerResourcePackList, isServerResourcePackListLoading] =
+    usePromisedGetState(
+      serverResourcePacks,
+      handleServerRetrieveResourcePackList
+    );
+
+  const [getSchematicList, isSchematicListLoading] = usePromisedGetState(
+    schematics,
+    handleRetrieveSchematicList
   );
 
-  const getSchematicList = useGetState(schematics, handleRetrieveSchematicList);
-
-  const getShaderPackList = useGetState(
+  const [getShaderPackList, isShaderPackListLoading] = usePromisedGetState(
     shaderPacks,
     handleRetrieveShaderPackList
   );
 
-  const getScreenshotList = useGetState(
+  const [getScreenshotList, isScreenshotListLoading] = usePromisedGetState(
     screenshots,
     handleRetrieveScreenshotList
   );
+
+  useEffect(() => {
+    if (instanceSummary?.id) {
+      getLocalModList(true).then((mods) => {
+        if (mods === GetStateFlag.Cancelled) return;
+        setLocalMods(mods);
+      });
+      getWorldList(true).then((worlds) => {
+        if (worlds === GetStateFlag.Cancelled) return;
+        setWorlds(worlds);
+      });
+      getResourcePackList(true).then((packs) => {
+        if (packs === GetStateFlag.Cancelled) return;
+        setResourcePacks(packs);
+      });
+      getServerResourcePackList(true).then((packs) => {
+        if (packs === GetStateFlag.Cancelled) return;
+        setServerResourcePacks(packs);
+      });
+      getSchematicList(true).then((schematics) => {
+        if (schematics === GetStateFlag.Cancelled) return;
+        setSchematics(schematics);
+      });
+      getShaderPackList(true).then((packs) => {
+        if (packs === GetStateFlag.Cancelled) return;
+        setShaderPacks(packs);
+      });
+      getScreenshotList(true).then((screenshots) => {
+        if (screenshots === GetStateFlag.Cancelled) return;
+        setScreenshots(screenshots);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [instanceSummary?.id]);
 
   // const getInstanceGameConfig = useGetState(
   //   instanceGameConfig,
@@ -418,15 +588,23 @@ export const InstanceContextProvider: React.FC<{
         summary: instanceSummary,
         updateSummaryInContext,
         gameConfig: instanceGameConfig,
+        openInstanceSubdir,
         getWorldList,
+        isWorldListLoading,
         getLocalModList,
+        isLocalModListLoading,
         getResourcePackList,
+        isResourcePackListLoading,
         getServerResourcePackList,
+        isServerResourcePackListLoading,
         getSchematicList,
+        isSchematicListLoading,
         getShaderPackList,
+        isShaderPackListLoading,
         getScreenshotList,
+        isScreenshotListLoading,
         // getInstanceGameConfig,
-        handleOpenInstanceSubdir,
+        handleRetrieveInstanceSubdirPath,
         handleImportResource,
         handleUpdateInstanceConfig,
         handleResetInstanceGameConfig,

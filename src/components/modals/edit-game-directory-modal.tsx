@@ -30,8 +30,10 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { useRoutingHistory } from "@/contexts/routing-history";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
+import { isPathSanitized } from "@/utils/string";
 
 interface ActionSelectDialogProps extends Omit<ModalProps, "children"> {
   title: string;
@@ -108,6 +110,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   const initialRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
   const { getInstanceList } = useGlobalData();
+  const { removeHistory, replaceHistory } = useRoutingHistory();
 
   const [dirName, setDirName] = useState<string>("");
   const [dirPath, setDirPath] = useState<string>("");
@@ -117,6 +120,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
   const [isDirNameExist, setIsDirNameExist] = useState<boolean>(false);
   const [isDirNameInvalid, setIsDirNameInvalid] = useState<boolean>(false);
   const [isDirPathExist, setIsDirPathExist] = useState<boolean>(false);
+  const [isDirPathInvalid, setIsDirPathInvalid] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
@@ -135,11 +139,11 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
 
       if (selected) {
         setDirPath(selected);
-        if (
-          config.localGameDirectories.map((dir) => dir.dir).includes(selected)
-        )
-          setIsDirPathExist(true);
-        else setIsDirPathExist(false);
+        setIsDirPathExist(
+          config.localGameDirectories
+            .map((dir) => dir.dir)
+            .includes(selected) && selected !== currentPath
+        );
       }
     } catch (error) {
       setDirPath("");
@@ -162,7 +166,9 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         tempDirPath = tempDirPath.replace(/\//g, "\\");
       else tempDirPath = tempDirPath.replace(/\\/g, "/");
       setIsDirPathExist(
-        config.localGameDirectories.map((dir) => dir.dir).includes(tempDirPath)
+        config.localGameDirectories
+          .map((dir) => dir.dir)
+          .includes(tempDirPath) && tempDirPath !== currentPath
       );
       return tempDirPath;
     }); // normalize path
@@ -206,6 +212,10 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
     _dirPath: string,
     skipCheck: boolean = false
   ) => {
+    if (!isPathSanitized(_dirPath)) {
+      setIsDirPathInvalid(true);
+      return;
+    }
     if (currentPath === _dirPath && currentName === dirName) {
       setDirName("");
       setDirPath("");
@@ -231,6 +241,21 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
           dir.dir === currentPath ? { name: dirName, dir: _dirPath } : dir
         )
       );
+
+      if (currentPath === _dirPath) {
+        // only update dir name, instance not changed
+        replaceHistory(
+          `/instances/details/${currentName}:`,
+          `/instances/details/${dirName}:`
+        );
+      } else {
+        // update dir path, instance may change, remove all route history
+        removeHistory(`/instances/details/${currentName}:`);
+      }
+      replaceHistory(
+        `/instances/list/${currentName}`,
+        `/instances/list/${dirName}`
+      );
     }
     getInstanceList(true); // refresh frontend state of instance list
     setDirName("");
@@ -244,11 +269,23 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
     if (currentPath) setDirPath(currentPath);
   }, [currentName, currentPath, modalProps.isOpen]);
 
+  const handleCloseModal = () => {
+    setIsDirNameEmpty(false);
+    setIsDirNameTooLong(false);
+    setIsDirNameExist(false);
+    setIsDirNameInvalid(false);
+    setIsDirPathExist(false);
+    setIsDirPathInvalid(false);
+    setIsLoading(false);
+    modalProps.onClose();
+  };
+
   return (
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
       initialFocusRef={initialRef}
       {...modalProps}
+      onClose={handleCloseModal}
     >
       <ModalOverlay />
       <ModalContent>
@@ -265,7 +302,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                 isDirNameTooLong ||
                 isDirNameEmpty ||
                 isDirNameInvalid ||
-                (isDirNameExist && add)
+                isDirNameExist
               }
             >
               <FormLabel>{t("EditGameDirectoryModal.label.dirName")}</FormLabel>
@@ -279,7 +316,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                   setIsDirNameExist(
                     config.localGameDirectories
                       .map((dir) => dir.name)
-                      .includes(dirName)
+                      .includes(dirName) && dirName !== currentName
                   );
                   setIsDirNameInvalid(/[\/:\\?#&%]/.test(dirName));
                 }}
@@ -310,14 +347,17 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                   )}
                 </FormErrorMessage>
               )}
-              {isDirNameExist && add && (
+              {isDirNameExist && (
                 <FormErrorMessage>
                   {t("EditGameDirectoryModal.errorMessage.dirName.exist")}
                 </FormErrorMessage>
               )}
             </FormControl>
 
-            <FormControl isRequired isInvalid={isDirPathExist && add}>
+            <FormControl
+              isRequired
+              isInvalid={isDirPathExist || isDirPathInvalid}
+            >
               <FormLabel>{t("EditGameDirectoryModal.label.dirPath")}</FormLabel>
               <Flex direction="row" align="center">
                 <InputGroup size="sm">
@@ -328,7 +368,10 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                     placeholder={t(
                       "EditGameDirectoryModal.placeholder.dirPath"
                     )}
-                    onFocus={() => setIsDirPathExist(false)}
+                    onFocus={() => {
+                      setIsDirPathExist(false);
+                      setIsDirPathInvalid(false);
+                    }}
                     onBlur={onDirPathBlur}
                   />
                   <InputRightElement w={16}>
@@ -344,9 +387,14 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                   </InputRightElement>
                 </InputGroup>
               </Flex>
-              {isDirPathExist && add && (
+              {isDirPathExist && (
                 <FormErrorMessage>
                   {t("EditGameDirectoryModal.errorMessage.dirPath.exist")}
+                </FormErrorMessage>
+              )}
+              {isDirPathInvalid && (
+                <FormErrorMessage>
+                  {t("EditGameDirectoryModal.errorMessage.dirPath.invalid")}
                 </FormErrorMessage>
               )}
             </FormControl>
@@ -354,7 +402,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         </ModalBody>
 
         <ModalFooter mt={1}>
-          <Button variant="ghost" onClick={modalProps.onClose}>
+          <Button variant="ghost" onClick={handleCloseModal}>
             {t("General.cancel")}
           </Button>
           <Button
@@ -363,8 +411,9 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
               isDirNameEmpty ||
               isDirNameTooLong ||
               isDirNameInvalid ||
-              (isDirNameExist && add) ||
-              (isDirPathExist && add)
+              isDirNameExist ||
+              isDirPathExist ||
+              isDirPathInvalid
             }
             colorScheme={primaryColor}
             onClick={() => handleUpdateDir(dirPath)}

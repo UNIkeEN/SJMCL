@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { LauncherConfig } from "@/models/config";
 import { InvokeResponse } from "@/models/response";
 import { JavaInfo } from "@/models/system-info";
@@ -112,6 +113,16 @@ export class ConfigService {
   }
 
   /**
+   * VALIDATE a Java executable.
+   * @param {string} javaPath The path to the Java executable.
+   * @returns {Promise<InvokeResponse<void>>} Returns void if valid, otherwise throws an error.
+   */
+  @responseHandler("config")
+  static async validateJava(javaPath: string): Promise<InvokeResponse<void>> {
+    return await invoke("validate_java", { javaPath });
+  }
+
+  /**
    * CHECK whether the game directory is valid.
    * @param {string} dir The game directory to check.
    * @returns {Promise<InvokeResponse<string>>} The sub directory if a sub game directory is valid.
@@ -121,5 +132,33 @@ export class ConfigService {
     dir: string
   ): Promise<InvokeResponse<string>> {
     return await invoke("check_game_directory", { dir });
+  }
+
+  /**
+   * CLEAR the download cache directory.
+   * @returns {Promise<InvokeResponse<void>>} Returns void if successful.
+   */
+  @responseHandler("config")
+  static async clearDownloadCache(): Promise<InvokeResponse<void>> {
+    return await invoke("clear_download_cache");
+  }
+
+  /**
+   * Listens for backend-initiated changes to the `config` field.
+   * @param callback - Callback function invoked whenever the config is updated by the backend.
+   */
+  static onConfigPartialUpdate(
+    callback: (payload: { path: string; value: any }) => void
+  ) {
+    const unlisten = getCurrentWebview().listen<{ path: string; value: any }>(
+      "config:partial-update",
+      (event) => {
+        callback(event.payload);
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

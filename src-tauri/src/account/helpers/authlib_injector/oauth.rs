@@ -1,16 +1,14 @@
 use super::common::parse_profile;
 use super::constants::SCOPE;
-use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo};
+use crate::account::models::{AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo};
 use crate::error::SJMCLResult;
-use crate::utils::window::create_webview_window;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde_json::Value;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
 use tokio::time::{sleep, Duration};
-use url::Url;
 
 async fn fetch_openid_configuration(
   app: &AppHandle,
@@ -151,6 +149,12 @@ pub async fn login(
   auth_info: OAuthCodeResponse,
 ) -> SJMCLResult<PlayerInfo> {
   let client = app.state::<reqwest::Client>();
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+
+  {
+    let mut account_state = account_binding.lock()?;
+    account_state.is_oauth_processing = true;
+  }
 
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
 
@@ -164,27 +168,17 @@ pub async fn login(
 
   let jwks = fetch_jwks(app, jwks_uri.to_string()).await?;
 
-  let verification_url =
-    Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::ParseError)?;
-
-  let is_cancelled = Arc::new(Mutex::new(false));
-  let cancelled_clone = Arc::clone(&is_cancelled);
-
-  let auth_webview = create_webview_window(app, "oauth_3rdparty", "oauth", Some(verification_url))
-    .await
-    .map_err(|_| AccountError::CreateWebviewError)?;
-
-  auth_webview.on_window_event(move |event| {
-    if let tauri::WindowEvent::Destroyed = event {
-      *cancelled_clone.lock().unwrap() = true;
-    }
-  });
-
   let access_token: String;
   let id_token: String;
   let refresh_token: String;
-
   loop {
+    {
+      let account_state = account_binding.lock()?;
+      if !account_state.is_oauth_processing {
+        return Err(AccountError::Cancelled)?;
+      }
+    }
+
     let token_response = client
       .post(token_endpoint)
       .json(&serde_json::json!({
@@ -210,14 +204,7 @@ pub async fn login(
         .as_str()
         .ok_or(AccountError::ParseError)?
         .to_string();
-
-      auth_webview.close()?;
       break;
-    }
-
-    if *is_cancelled.lock().unwrap() {
-      // if user closed the webview
-      return Err(AccountError::Cancelled)?;
     }
 
     sleep(Duration::from_secs(auth_info.interval)).await;

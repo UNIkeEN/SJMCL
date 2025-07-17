@@ -4,8 +4,7 @@ use crate::{
     models::{AccountError, PlayerInfo, PlayerType, Texture},
   },
   error::SJMCLResult,
-  utils::fs::get_app_resource_filepath,
-  utils::image::load_image_from_dir,
+  utils::{fs::get_app_resource_filepath, image::load_image_from_dir},
 };
 use rand::seq::IndexedRandom;
 use tauri::AppHandle;
@@ -21,6 +20,7 @@ pub fn load_preset_skin(app: &AppHandle, preset_role: String) -> SJMCLResult<Vec
     texture_type: "SKIN".to_string(),
     image: texture_img.into(),
     model: "default".to_string(),
+    preset: Some(preset_role),
   }])
 }
 

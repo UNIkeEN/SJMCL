@@ -1,8 +1,10 @@
+type ImageSrcUnion = [string, number, number];
+
 export interface PostSummary {
   title: string;
-  abstracts?: string;
+  abstract?: string;
   keywords?: string;
-  imageSrc?: string;
+  imageSrc?: ImageSrcUnion;
   source: PostSourceInfo;
   updateAt: string;
   link: string;
@@ -14,4 +16,9 @@ export interface PostSourceInfo {
   fullName?: string;
   endpointUrl: string; // If it only contains this field, it means the data source is offline or pending.
   iconSrc?: string;
+}
+
+export interface PostRequest {
+  url: string;
+  cursor: number | null;
 }

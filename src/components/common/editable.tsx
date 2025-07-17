@@ -48,7 +48,6 @@ const Editable: React.FC<EditableProps> = ({
   ...boxProps
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [isInvalid, setIsInvalid] = useState(true);
   const [tempValue, setTempValue] = useState(value);
 
   const ref = useRef<HTMLElement | HTMLInputElement | HTMLTextAreaElement>(
@@ -68,8 +67,9 @@ const Editable: React.FC<EditableProps> = ({
             variant="ghost"
             h={18}
             aria-label="submit"
+            isDisabled={checkError(tempValue) !== 0}
             onClick={() => {
-              if (isInvalid) return;
+              if (checkError(tempValue)) return;
               if (tempValue !== value) onEditSubmit(tempValue);
               setIsEditing(false);
             }}
@@ -86,7 +86,6 @@ const Editable: React.FC<EditableProps> = ({
             onClick={() => {
               setTempValue(value);
               setIsEditing(false);
-              setIsInvalid(false);
             }}
           />
         </Tooltip>
@@ -115,31 +114,39 @@ const Editable: React.FC<EditableProps> = ({
     }
   }, [isEditing]);
 
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (checkError(tempValue)) return;
+
+      if (tempValue !== value) onEditSubmit(tempValue);
+      setIsEditing(false);
+    }
+  };
+
   return (
     <Box className="break-wrap" {...boxProps}>
       {isEditing ? (
         isTextArea ? (
-          <FormControl pb={5} isInvalid={isInvalid && isEditing}>
+          <FormControl
+            pb={5}
+            isInvalid={checkError(tempValue) !== 0 && isEditing}
+          >
             <Textarea
               ref={ref as React.RefObject<HTMLTextAreaElement>}
               value={tempValue}
               placeholder={placeholder}
               onChange={(e) => setTempValue(e.target.value)}
-              onBlur={() => {
-                setIsInvalid(checkError(tempValue) !== 0);
-                onBlur();
-              }}
-              onFocus={() => {
-                setIsInvalid(false);
-                onFocus();
-              }}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              onKeyDown={onKeyDown}
               focusBorderColor={`${primaryColor}.500`}
               {...(inputProps as TextareaProps)}
             />
             <HStack>
               <FormErrorMessage {...formErrMsgProps}>
                 {localeKey &&
-                  (isInvalid && isEditing
+                  (checkError(tempValue) && isEditing
                     ? t(`${localeKey}.error-${checkError(tempValue)}`)
                     : "")}
               </FormErrorMessage>
@@ -149,21 +156,16 @@ const Editable: React.FC<EditableProps> = ({
             </HStack>
           </FormControl>
         ) : (
-          <FormControl isInvalid={isInvalid && isEditing}>
+          <FormControl isInvalid={checkError(tempValue) !== 0 && isEditing}>
             <HStack>
               <Input
                 ref={ref as React.RefObject<HTMLInputElement>}
                 value={tempValue}
                 placeholder={placeholder}
                 onChange={(e) => setTempValue(e.target.value)}
-                onBlur={() => {
-                  setIsInvalid(checkError(tempValue) !== 0);
-                  onBlur();
-                }}
-                onFocus={() => {
-                  setIsInvalid(false);
-                  onFocus();
-                }}
+                onBlur={onBlur}
+                onFocus={onFocus}
+                onKeyDown={onKeyDown}
                 focusBorderColor={`${primaryColor}.500`}
                 {...(inputProps as InputProps)}
               />
@@ -171,7 +173,7 @@ const Editable: React.FC<EditableProps> = ({
             </HStack>
             <FormErrorMessage {...formErrMsgProps}>
               {localeKey &&
-                (isInvalid && isEditing
+                (checkError(tempValue) && isEditing
                   ? t(`${localeKey}.error-${checkError(tempValue)}`)
                   : "")}
             </FormErrorMessage>

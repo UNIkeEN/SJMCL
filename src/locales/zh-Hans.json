@@ -50,7 +50,8 @@
           "description": "版权所有 © 2024-2025 SJMCL 开发团队."
         },
         "userAgreement": {
-          "title": "用户协议"
+          "title": "用户协议",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
         },
         "openSourceLicense": {
           "title": "开源协议",
@@ -176,7 +177,7 @@
           "3rdparty": "此认证源支持 Yggdrasil Connect 规范提案",
           "microsoft": "SJMCL 支持微软 OAuth 2.0 设备权限授予流"
         },
-        "next": "请点击继续登录按钮打开登录窗口，输入以上代码（已自动复制）"
+        "next": "请点击继续登录按钮跳转登录页面，输入以上代码（已自动复制）"
       },
       "button": {
         "start": {
@@ -214,9 +215,14 @@
         "colorMode": {
           "title": "颜色模式",
           "type": {
+            "system": "跟随系统",
             "light": "浅色",
             "dark": "深色"
           }
+        },
+        "useLiquidGlassDesign": {
+          "title": "液态玻璃效果",
+          "description": "启用后，部分界面将使用「液态玻璃」效果，这可能会影响性能"
         },
         "headNavStyle": {
           "title": "顶部导航栏样式",
@@ -230,6 +236,10 @@
     "font": {
       "title": "字体",
       "settings": {
+        "fontFamily": {
+          "title": "界面字体",
+          "default": "默认"
+        },
         "fontSize": {
           "title": "字体大小",
           "small": "小",
@@ -246,6 +256,9 @@
         "custom": {
           "title": "自定义图像",
           "add": "添加"
+        },
+        "randomCustom": {
+          "title": "随机自定义"
         }
       },
       "presetBgList": {
@@ -254,6 +267,9 @@
         },
         "SJTU-eastgate": {
           "name": "SJTU 紫气东来门"
+        },
+        "GNLXC": {
+          "name": "GNWork 理想城"
         }
       }
     },
@@ -267,6 +283,12 @@
           "title": "增强对比度"
         }
       }
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "清除下载缓存",
+      "content": "确定要清除下载缓存吗？此操作无法撤销。"
     }
   },
   "ComingSoonSign": {
@@ -320,6 +342,9 @@
       "info": "基本设置"
     }
   },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
@@ -342,8 +367,12 @@
       "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
+  "DevToolbar": {
+    "tooltip": "开发工具栏"
+  },
   "DiscoverPage": {
     "title": "发现",
+    "noMore": "无更多内容",
     "button": {
       "sources": "管理数据源"
     }
@@ -357,8 +386,16 @@
       "online": "在线"
     }
   },
-  "DownloadFloatButton": {
-    "tooltip": "正在下载"
+  "DownloadJavaModal": {
+    "header": {
+      "title": "下载 Java"
+    },
+    "selector": {
+      "vendor": "发行方",
+      "version": "版本",
+      "type": "类型"
+    },
+    "warning": "从 Oracle 源下载可能需要登录"
   },
   "DownloadModpackModal": {
     "header": {
@@ -373,7 +410,8 @@
       "world": "世界",
       "mod": "模组",
       "resourcepack": "资源包",
-      "shader": "光影"
+      "shader": "光影",
+      "datapack": "数据包"
     }
   },
   "DownloadSettingPage": {
@@ -412,6 +450,11 @@
           "title": "下载缓存目录",
           "select": "修改",
           "open": "打开"
+        },
+        "clear": {
+          "title": "清除下载缓存",
+          "description": "清除下载缓存目录中的所有文件，此操作不会清除已下载的资源文件。",
+          "button": "清除缓存"
         }
       }
     },
@@ -447,16 +490,26 @@
     }
   },
   "DownloadTasksPage": {
-    "title": "下载中任务",
+    "title": "下载任务",
     "button": {
       "settings": "下载设置",
       "pause": "暂停",
       "begin": "开始",
-      "retry": "重试"
+      "retry": "重试",
+      "deleteRecord": "删除此记录"
     },
     "label": {
       "paused": "已暂停",
-      "error": "错误"
+      "completed": "已完成",
+      "error": "错误",
+      "cancelled": "已取消"
+    },
+    "task": {
+      "game-client": "游戏客户端 {{param}}",
+      "game-server": "游戏服务端 {{param}}",
+      "game-resource": "资源包",
+      "patch-files": "修补游戏文件 {{param}}",
+      "retry": "重试任务"
     }
   },
   "Editable": {
@@ -503,10 +556,11 @@
         "empty": "目录名称不能为空",
         "tooLong": "目录名称不能超过 20 个字符",
         "exist": "目录名称已存在",
-        "hasInvalidChar": "目录名称存在非法字符"
+        "hasInvalidChar": "目录名称包含特殊字符或使用系统保留字"
       },
       "dirPath": {
-        "exist": "目录路径已存在"
+        "exist": "目录路径已存在",
+        "invalid": "目录路径不合法"
       }
     }
   },
@@ -656,6 +710,12 @@
   },
   "General": {
     "add": "添加",
+    "alert": {
+      "noFullLogin": {
+        "title": "当前功能暂不可用",
+        "description": "请先登录微软账户后使用此功能。"
+      }
+    },
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
@@ -678,6 +738,7 @@
       }
     },
     "disable": "禁用",
+    "dontShowAgain": "不再显示",
     "download": "下载",
     "edit": "编辑",
     "enable": "启用",
@@ -870,7 +931,8 @@
     "top": {
       "settings": {
         "LauncherDocs": {
-          "title": "SJMC Launcher 文档"
+          "title": "SJMC Launcher 文档",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
         }
       }
     }
@@ -943,7 +1005,9 @@
     "restoreSettingsDesc": "将以下特定设置重置为全局游戏设置",
     "restore": "重置",
     "errorMessage": {
-      "error-1": "实例名称不能为空"
+      "error-1": "实例名称不能为空",
+      "error-2": "实例名称不合法",
+      "error-3": "实例名称太长"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1022,7 +1086,8 @@
       },
       "addFailed": {
         "title": "添加 Java 失败",
-        "description": "不是有效的 Java 可执行文件"
+        "invalid": "不是有效的 Java 可执行文件或与当前平台不兼容",
+        "duplicated": "目标 Java 路径已添加"
       }
     },
     "confirmDelete": {
@@ -1089,6 +1154,11 @@
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "显示全部（+{{left}}）"
+    }
   },
   "PlayerMenu": {
     "label": {
@@ -1356,6 +1426,43 @@
         "technology": "科技"
       }
     },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Styles": "风格",
+        "Magic": "魔法",
+        "Miscellaneous": "杂项",
+        "Fantasy": "奇幻",
+        "Mod Support": "模组支持",
+        "Tech": "科技",
+        "Library": "支持库",
+        "Utility": "实用",
+        "Adventure": "冒险"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "styles": "风格",
+        "adventure": "冒险",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "economy": "经济",
+        "equipment": "装备",
+        "food": "食物",
+        "game-mechanics": "游戏机制",
+        "library": "支持库",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "小游戏",
+        "mobs": "生物",
+        "optimization": "优化",
+        "social": "社交",
+        "storage": "存储",
+        "technology": "科技",
+        "transportation": "交通运输",
+        "utility": "实用",
+        "worldgen": "世界生成"
+      }
+    },
     "sortByList": {
       "CurseForge": {
         "Popularity": "热度",
@@ -1452,12 +1559,38 @@
           "title": "Java 列表获取失败"
         }
       },
+      "validateJava": {
+        "error": {
+          "title": "Java 验证失败",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java 可执行文件无效"
+          }
+        }
+      },
       "checkGameDirectory": {
         "error": {
           "title": "游戏目录无效",
           "description": {
             "GAME_DIR_ALREADY_ADDED": "游戏目录已添加",
             "GAME_DIR_NOT_EXIST": "游戏目录不存在"
+          }
+        }
+      },
+      "checkServiceAvailability": {
+        "error": {
+          "title": "服务器不可用",
+          "description": {
+            "FETCH_ERROR": "服务器侧或未知错误"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "下载缓存已清除",
+        "error": {
+          "title": "清除下载缓存失败",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "当前有下载任务正在进行中，请稍后再试",
+            "FILE_DELETION_FAILED": "无法删除缓存文件，可能是文件正在被使用"
           }
         }
       }
@@ -1473,7 +1606,8 @@
         "error": {
           "title": "离线角色添加失败",
           "description": {
-            "DUPLICATE": "角色已存在"
+            "DUPLICATE": "角色已存在",
+            "INVALID": "UUID 无效"
           }
         }
       },
@@ -1498,8 +1632,21 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NOT_FOUND": "认证服务器不存在",
             "CANCELLED": "已取消",
-            "CREATE_WEBVIEW_ERROR": "创建 WebView 失败",
             "INVALID": "无效的认证服务器地址"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "角色重新登录成功",
+        "error": {
+          "title": "角色重新登录失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "INVALID": "不支持离线角色刷新",
+            "CANCELLED": "已取消"
           }
         }
       },
@@ -1516,12 +1663,28 @@
           }
         }
       },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "角色重新登录成功",
+        "error": {
+          "title": "角色重新登录失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "连接认证服务器失败",
+            "INVALID": "账号或密码错误"
+          }
+        }
+      },
       "addPlayerFromSelection": {
         "success": "角色添加成功",
         "error": {
           "title": "角色添加失败",
           "description": {
-            "DUPLICATE": "角色已存在"
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "无法连接至认证服务器",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "EXPIRED": "令牌已过期，请重新登录"
           }
         }
       },
@@ -1558,32 +1721,6 @@
           }
         }
       },
-      "reloginPlayerOAuth": {
-        "success": "角色重新登录成功",
-        "error": {
-          "title": "角色重新登录失败",
-          "description": {
-            "NOT_FOUND": "角色不存在",
-            "EXPIRED": "令牌已过期，请重新登录",
-            "PARSE_ERROR": "服务器返回数据格式错误",
-            "NETWORK_ERROR": "无法连接至认证服务器",
-            "INVALID": "不支持离线角色刷新"
-          }
-        }
-      },
-      "reloginPlayer3rdPartyPassword": {
-        "success": "角色重新登录成功",
-        "error": {
-          "title": "角色重新登录失败",
-          "description": {
-            "NOT_FOUND": "角色不存在",
-            "EXPIRED": "令牌已过期，请重新登录",
-            "PARSE_ERROR": "服务器返回数据格式错误",
-            "NETWORK_ERROR": "无法连接至认证服务器",
-            "INVALID": "账号或密码错误"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "获取认证服务器列表失败"
@@ -1594,7 +1731,8 @@
           "title": "获取认证服务器信息失败",
           "description": {
             "DUPLICATE": "认证服务器已存在",
-            "INVALID": "无效的认证服务器地址"
+            "INVALID": "无效的认证服务器地址",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
@@ -1604,7 +1742,8 @@
           "title": "认证服务器添加失败",
           "description": {
             "DUPLICATE": "认证服务器已存在",
-            "INVALID": "无效的认证服务器地址"
+            "INVALID": "无效的认证服务器地址",
+            "NOT_FOUND": "认证服务器不存在"
           }
         }
       },
@@ -1632,7 +1771,8 @@
         "error": {
           "title": "验证游戏文件失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "GAME_FILES_INCOMPLETE": "游戏文件不完整或缺失"
           }
         }
       },
@@ -1665,6 +1805,7 @@
           "title": "获取模组加载器列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器",
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
           }
         }
@@ -1674,6 +1815,7 @@
           "title": "获取资源列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器",
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
           }
         }
@@ -1683,7 +1825,18 @@
           "title": "获取资源版本列表失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器",
             "NO_DOWNLOAD_API": "无可用的下载策略，请检查网络连接"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "success": "下载任务创建成功",
+        "error": {
+          "title": "下载游戏服务器失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器"
           }
         }
       }
@@ -1691,7 +1844,27 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "获取实例列表失败"
+          "title": "获取实例列表失败",
+          "description": {
+            "INVALID_NAME_ERROR": "实例名称无效",
+            "INVALID_SOURCE_PATH": "实例目录无效",
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "FILE_MOVE_FAILED": "实例目录移动失败"
+          }
+        }
+      },
+      "createInstance": {
+        "success": "实例下载任务创建成功",
+        "error": {
+          "title": "实例下载任务创建失败",
+          "description": {
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "FOLDER_CREATION_FAILED": "目标文件夹创建失败",
+            "FILE_CREATION_FAILED": "目标文件创建失败",
+            "NETWORK_ERROR": "网络错误",
+            "CLIENT_JSON_PARSE_ERROR": "实例版本信息解析错误",
+            "ASSET_INDEX_PARSE_ERROR": "资源索引文件解析错误"
+          }
         }
       },
       "updateInstanceConfig": {
@@ -1716,17 +1889,16 @@
         "error": {
           "title": "实例游戏设置重置失败",
           "description": {
-            "INSTANCE_NOT_FOUND": "未找到指定 ID 的实例",
+            "INSTANCE_NOT_FOUND_BY_ID": "未找到指定 ID 的实例",
             "SAVE_ERROR": "保存实例设置文件失败"
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "打开实例目录失败",
+          "title": "获取实例子目录失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误",
-            "EXEC_OPEN_DIR_ERROR": "命令执行失败"
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在或类型错误"
           }
         }
       },
@@ -1744,7 +1916,10 @@
           "title": "实例重命名失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例"
+            "CONFLICT_NAME_ERROR": "当前游戏目录存在重名实例",
+            "INVALID_NAME_ERROR": "实例名称无效",
+            "INVALID_SOURCE_PATH": "实例目录无效",
+            "FILE_MOVE_FAILED": "实例目录移动失败"
           }
         }
       },
@@ -1786,6 +1961,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "获取模组列表失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "获取资源包列表失败"
@@ -1811,11 +1994,11 @@
           "title": "获取截图列表失败"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "获取模组列表失败",
+          "title": "模组状态切换失败",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
+            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
           }
         }
       },
@@ -1829,21 +2012,24 @@
           }
         }
       },
-      "toggleModByExtension": {
-        "error": {
-          "title": "模组状态切换失败",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "模组文件不存在，可能已更名、移动或删除"
-          }
-        }
-      },
       "createLaunchDesktopShortcut": {
         "success": "启动快捷方式已添加到桌面",
         "error": {
           "title": "启动快捷方式创建失败",
           "description": {
-            "SHORTCUT_CREATION_FAILED": "命令执行失败"
+            "SHORTCUT_CREATION_FAILED": "命令执行失败",
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
           }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "success": "任务创建成功"
+      },
+      "onProgressiveTaskUpdate": {
+        "error": {
+          "title": "任务 {{param}} 失败"
         }
       }
     }
@@ -1880,7 +2066,14 @@
     "input": {
       "placeholder": "聚合搜索"
     },
-    "tip": "集中一处搜索本地内容与线上游戏资源"
+    "tip": "集中一处搜索本地内容与线上游戏资源",
+    "empty": "无搜索结果",
+    "result": {
+      "page": "页面",
+      "recentViewed": "最近访问过",
+      "instance": "实例",
+      "player": "角色"
+    }
   },
   "StarUsModal": {
     "header": {

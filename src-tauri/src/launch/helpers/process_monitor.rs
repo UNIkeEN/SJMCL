@@ -1,21 +1,76 @@
 use crate::error::SJMCLResult;
 use crate::instance::models::misc::Instance;
-use crate::launch::constant::*;
+use crate::launch::constants::*;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
-use std::io::{BufRead, BufReader};
+use std::fs::File;
+use std::io::{prelude::*, BufRead, BufReader, Write};
+use std::path::PathBuf;
 use std::process::{Child, Command};
-use std::sync::{atomic, mpsc::Sender, Arc, Mutex};
+use std::sync::{
+  atomic::{AtomicBool, Ordering},
+  mpsc::Sender,
+  Arc, Mutex,
+};
 use std::thread;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio;
 
+struct OutputPipe<T: Read + Send + 'static> {
+  app: AppHandle,
+  out: T,
+  label: String,
+  start_time: Arc<Mutex<Option<Instant>>>,
+  log_file: Arc<Mutex<File>>,
+  display_log_window: bool,
+  ready_tx: Sender<()>,
+  game_ready_flag: Arc<AtomicBool>,
+}
+
+impl<T: Read + Send + 'static> OutputPipe<T> {
+  fn listen_from_output(self) -> thread::JoinHandle<()> {
+    thread::spawn(move || {
+      let reader = BufReader::new(self.out);
+      for line in reader.lines().map_while(Result::ok) {
+        if self.display_log_window {
+          let _ = self
+            .app
+            .emit_to(&self.label, GAME_PROCESS_OUTPUT_EVENT, &line);
+        }
+        writeln!(self.log_file.lock().unwrap(), "{line}").unwrap();
+        // the first time when log contains 'render thread', 'lwjgl version', or 'lwjgl openal', send signal to launch command, close frontend modal.
+        if !self.game_ready_flag.load(Ordering::SeqCst)
+          && READY_FLAG.iter().any(|p| line.to_lowercase().contains(p))
+        {
+          self.game_ready_flag.store(true, Ordering::SeqCst);
+          // record Instant::now as game start time
+          let mut start_time_lock = self.start_time.lock().unwrap();
+          if start_time_lock.is_none() {
+            *start_time_lock = Some(Instant::now());
+          }
+          let _ = self.ready_tx.send(());
+        }
+      }
+    })
+  }
+}
+
+pub async fn record_play_time(app: AppHandle, start_time: Instant, instance_id: String) {
+  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+  let inst = binding.lock().unwrap().get(&instance_id).cloned();
+  if let Some(mut instance) = inst {
+    instance.play_time = start_time.elapsed().as_secs() as u128;
+    let _ = instance.clone().save_json_cfg().await;
+  }
+}
+
 pub async fn monitor_process(
   app: AppHandle,
-  child: &mut Child,
+  mut child: Child,
   instance_id: String,
   display_log_window: bool,
   launcher_visibility: LauncherVisiablity,
@@ -26,156 +81,128 @@ pub async fn monitor_process(
     .duration_since(UNIX_EPOCH)
     .unwrap()
     .as_secs();
-  let label = format!("game_log_{}", timestamp);
+  let label = format!("game_log_{timestamp}");
+  let log_file_dir = app
+    .path()
+    .resolve::<PathBuf>(format!("{label}.log").into(), BaseDirectory::AppCache)?;
+
+  let log_file = Arc::new(Mutex::new(
+    std::fs::OpenOptions::new()
+      .create_new(true)
+      .write(true)
+      .read(true)
+      .open(&log_file_dir)?,
+  ));
+
   let log_window = if display_log_window {
-    match create_webview_window(&app, &label, "game_log", None).await {
-      Ok(window) => Some(window),
-      Err(_) => None,
-    }
+    create_webview_window(&app, &label, "game_log", None)
+      .await
+      .ok()
   } else {
     None
   };
 
-  let stdout = child.stdout.take();
-  let stderr = child.stderr.take();
-  let game_ready_flag = Arc::new(atomic::AtomicBool::new(false));
+  let game_ready_flag = Arc::new(AtomicBool::new(false));
   let start_time: Arc<Mutex<Option<Instant>>> = Arc::new(Mutex::new(None)); // used to calculate play time
 
-  // handle game process stdout
-  if let Some(out) = stdout {
-    let app_stdout = app.clone();
-    let label_stdout = label.clone();
-    let tx_clone_stdout = ready_tx.clone();
-    let game_ready_flag = game_ready_flag.clone();
-    let start_time = start_time.clone();
-
-    thread::spawn(move || {
-      let reader = BufReader::new(out);
-      for line in reader.lines().map_while(Result::ok) {
-        if display_log_window {
-          let _ = app_stdout.emit_to(&label_stdout, GAME_PROCESS_OUTPUT_CHANNEL, &line);
-        }
-
-        // the first time when log contains 'Render thread', send signal to launch command, close frontend modal.
-        // TODO: find a better way.
-        if !game_ready_flag.load(atomic::Ordering::SeqCst) && line.contains(GAME_WINDOW_READY_FLAG)
-        {
-          game_ready_flag.store(true, atomic::Ordering::SeqCst);
-
-          // record Instant::now as game start time
-          let mut start_time_lock = start_time.lock().unwrap();
-          if start_time_lock.is_none() {
-            *start_time_lock = Some(Instant::now());
-          }
-
-          let _ = tx_clone_stdout.send(());
-        }
-      }
-    });
-  }
+  let stdout = child.stdout.take().map(|out| {
+    (OutputPipe {
+      app: app.clone(),
+      label: label.clone(),
+      out,
+      start_time: start_time.clone(),
+      log_file: log_file.clone(),
+      display_log_window,
+      ready_tx: ready_tx.clone(),
+      game_ready_flag: game_ready_flag.clone(),
+    })
+    .listen_from_output()
+  });
 
   // handle game process stderr
-  if let Some(err) = stderr {
-    let app_stderr = app.clone();
-    let label_stderr = label.clone();
-    let tx_clone_stderr = ready_tx.clone();
-    let game_ready_flag = game_ready_flag.clone();
-    let start_time = start_time.clone();
-
-    thread::spawn(move || {
-      let reader = BufReader::new(err);
-      for line in reader.lines().map_while(Result::ok) {
-        if display_log_window {
-          let _ = app_stderr.emit_to(&label_stderr, GAME_PROCESS_OUTPUT_CHANNEL, &line);
-        }
-
-        if !game_ready_flag.load(atomic::Ordering::SeqCst) && line.contains(GAME_WINDOW_READY_FLAG)
-        {
-          game_ready_flag.store(true, atomic::Ordering::SeqCst);
-
-          let mut start_time_lock = start_time.lock().unwrap();
-          if start_time_lock.is_none() {
-            *start_time_lock = Some(Instant::now());
-          }
-
-          let _ = tx_clone_stderr.send(());
-        }
-      }
-    });
-  }
+  let stderr = child.stderr.take().map(|out| {
+    (OutputPipe {
+      app: app.clone(),
+      label: label.clone(),
+      out,
+      start_time: start_time.clone(),
+      log_file: log_file.clone(),
+      display_log_window,
+      ready_tx: ready_tx.clone(),
+      game_ready_flag: game_ready_flag.clone(),
+    })
+    .listen_from_output()
+  });
 
   // handle game process exit
   let instance_id_clone = instance_id.clone();
-  let mut dummy_child;
-  #[cfg(target_os = "windows")]
-  {
-    use std::os::windows::process::CommandExt;
-    dummy_child = Command::new("cmd")
-      .args(&["/C", "exit", "0"])
-      .creation_flags(0x08000000)
-      .spawn()?;
-  }
-  #[cfg(any(target_os = "linux", target_os = "macos"))]
-  {
-    dummy_child = Command::new("true").spawn()?;
-  }
-  let _ = dummy_child.wait();
-  let mut child = std::mem::replace(child, dummy_child);
   let game_ready_flag = game_ready_flag.clone();
+
   tokio::spawn(async move {
-    if let Ok(status) = child.wait() {
-      if !game_ready_flag.load(atomic::Ordering::SeqCst) {
-        let _ = ready_tx.send(());
+    let exit_ok = match child.wait() {
+      Ok(status) => {
+        if let Some(h) = stdout {
+          let _ = h.join();
+        }
+
+        if let Some(h) = stderr {
+          let _ = h.join();
+        }
+
+        if !game_ready_flag.load(Ordering::SeqCst) {
+          false
+        } else {
+          log_file.lock().unwrap().flush().unwrap();
+          status.success()
+        }
       }
 
-      // handle launcher main window visiablity
-      match launcher_visibility {
-        LauncherVisiablity::RunningHidden => {
-          let main_window = app.get_webview_window("main").expect("no main window");
-          let _ = main_window.show();
-          let _ = main_window.set_focus();
-        }
-        LauncherVisiablity::StartHidden => {
-          // If the main window is still hidden (not shown again due to the single instance plugin when the user runs the launcher again), exit the launcher process
-          let main_window = app.get_webview_window("main").expect("no main window");
-          if let Ok(is_visible) = main_window.is_visible() {
-            if !is_visible {
-              std::process::exit(0);
-            }
-          } else {
+      Err(e) => {
+        writeln!(
+          log_file.lock().unwrap(),
+          "[FATAL] Game process was killed Reason: {e}."
+        )
+        .unwrap();
+        false
+      }
+    };
+
+    drop(log_file);
+    // handle launcher main window visiablity
+    match launcher_visibility {
+      LauncherVisiablity::RunningHidden => {
+        let main_window = app.get_webview_window("main").expect("no main window");
+        let _ = main_window.show();
+        let _ = main_window.set_focus();
+      }
+      LauncherVisiablity::StartHidden => {
+        // If the main window is still hidden (not shown again due to the single instance plugin when the user runs the launcher again), exit the launcher process
+        let main_window = app.get_webview_window("main").expect("no main window");
+        if let Ok(is_visible) = main_window.is_visible() {
+          if !is_visible {
             std::process::exit(0);
           }
-        }
-        _ => {}
-      }
-
-      if status.success() {
-        println!("Game process exited successfully.");
-        if let Some(ref window) = log_window {
-          // auto close the game-log window if the game exits successfully
-          let _ = window.destroy();
-        }
-      } else {
-        println!("Game process exited with an error status: {:?}", status);
-        let _ =
-          create_webview_window(&app, &label.replace("log", "error"), "game_error", None).await;
-      }
-
-      // calc and update play time
-      let start_time_lock = start_time.lock().unwrap();
-      if let Some(start_time) = *start_time_lock {
-        let elapsed_time = start_time.elapsed().as_secs() as u128;
-
-        let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-        let mut state = binding.lock().unwrap();
-        if let Some(instance) = state.get_mut(&instance_id_clone) {
-          instance.play_time += elapsed_time;
-          let instance_clone = instance.clone();
-          tokio::task::spawn(async move {
-            let _ = &instance_clone.save_json_cfg().await;
-          });
+        } else {
+          std::process::exit(0);
         }
       }
+      _ => {}
+    }
+
+    if exit_ok {
+      if let Some(ref window) = log_window {
+        let _ = window.destroy();
+      }
+
+      let start_time_lock = *start_time.lock().unwrap();
+
+      if let Some(start_time) = start_time_lock {
+        record_play_time(app.clone(), start_time, instance_id_clone).await;
+      }
+    } else {
+      let _ = create_webview_window(&app, &label.replace("log", "error"), "game_error", None)
+        .await
+        .unwrap();
     }
   });
 
@@ -309,27 +336,3 @@ pub fn change_process_window_title(pid: u32, new_title: &str) -> SJMCLResult<()>
 
   Ok(())
 }
-
-// fn is_process_exists(pid: u32) -> bool {
-//   #[cfg(target_os = "windows")]
-//   {
-//     use std::os::windows::process::CommandExt;
-
-//     let output = Command::new("tasklist")
-//       .arg("/FI")
-//       .arg(format!("PID eq {}", pid))
-//       .output()
-//       .unwrap();
-//     output.stdout.contains(&pid.to_string().into_bytes())
-//   }
-
-//   #[cfg(any(target_os = "linux", target_os = "macos"))]
-//   {
-//     let output = Command::new("ps")
-//       .arg("-p")
-//       .arg(pid.to_string())
-//       .output()
-//       .unwrap();
-//     output.status.success()
-//   }
-// }

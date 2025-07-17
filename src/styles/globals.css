@@ -1,4 +1,5 @@
 @import 'fonts.css';
+@import 'animations.css';
 
 html {
   /* disable elastic scrolling */
@@ -13,6 +14,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
   user-select: none;
+}
+
+body[use-custom-font] {
+  font-family: var(--custom-global-font-family, inherit) !important;
+}
+
+body img {
+  -webkit-user-drag: none;
 }
 
 
@@ -101,3 +110,4 @@ body {
   padding-top: var(--chakra-space-2) !important;
   padding-bottom: var(--chakra-space-2) !important;
 } */
+ 

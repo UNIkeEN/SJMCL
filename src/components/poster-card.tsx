@@ -5,6 +5,7 @@ import {
   CardProps,
   HStack,
   Image,
+  Skeleton,
   Tag,
   Text,
   VStack,
@@ -19,6 +20,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { PostSourceInfo, PostSummary } from "@/models/post";
 import { formatRelativeTime } from "@/utils/datetime";
+import { cleanHtmlText } from "@/utils/string";
 
 interface PosterCardProps extends CardProps {
   data: PostSummary;
@@ -31,8 +33,9 @@ const PosterCard = ({ data }: PosterCardProps) => {
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
 
-  const { title, abstracts, keywords, imageSrc, source, updateAt, link } = data;
+  const { title, abstract, keywords, imageSrc, source, updateAt, link } = data;
   const [isHovered, setIsHovered] = useState(false);
+  const [src, width, height] = imageSrc || [];
 
   return (
     <Card
@@ -40,13 +43,27 @@ const PosterCard = ({ data }: PosterCardProps) => {
       cursor="pointer"
       overflow="hidden" // show the border
       p={0}
-      borderColor={`${primaryColor}.500`}
-      variant={isHovered ? "outline" : "elevated"}
+      boxShadow={
+        isHovered ? `0 0 0 1px var(--chakra-colors-${primaryColor}-500)` : "xs"
+      }
+      transition="box-shadow 0.2s"
       onClick={() => openUrl(link)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {imageSrc && <Image objectFit="cover" src={imageSrc} alt={title} />}
+      {src && (
+        <Skeleton isLoaded={!!src} height="auto">
+          <Image
+            objectFit="cover"
+            src={src}
+            alt={title}
+            width={width}
+            height={height}
+            style={{ height: "auto" }}
+          />
+        </Skeleton>
+      )}
+
       <CardBody p={3}>
         <VStack spacing={1} alignItems="start" overflow="hidden">
           <Text fontSize="xs-sm">{title}</Text>
@@ -59,9 +76,9 @@ const PosterCard = ({ data }: PosterCardProps) => {
               ))}
             </Wrap>
           )}
-          {abstracts && (
+          {abstract && (
             <Text fontSize="xs" className="secondary-text">
-              {abstracts}
+              {cleanHtmlText(abstract)}
             </Text>
           )}
           <HStack className="secondary-text" fontSize="xs" mt={1} spacing={1}>

@@ -2,20 +2,20 @@ use crate::{
   error::SJMCLResult,
   instance::{
     helpers::client_json::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
-    models::misc::InstanceError,
+    models::misc::{AssetIndex, InstanceError},
   },
+  resource::{
+    helpers::misc::get_download_api,
+    models::{ResourceType, SourceType},
+  },
+  tasks::{download::DownloadParam, PTaskParam},
+  utils::fs::validate_sha1,
 };
 use futures;
-use hex;
-use image::EncodableLayout;
-use sha1::{Digest, Sha1};
 use std::collections::HashSet;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
-use tokio::{
-  fs,
-  io::{AsyncReadExt, BufReader},
-};
+use tokio::fs;
 use zip::ZipArchive;
 
 use super::misc::get_natives_string;
@@ -64,84 +64,41 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
   artifacts.into_iter().collect()
 }
 
-pub async fn validate_artifact(
-  root_path: &Path,
-  artifacts: &DownloadsArtifact,
-  check_hash: bool,
-) -> SJMCLResult<bool> {
-  let file_path = root_path.join(&artifacts.path);
-
-  match tokio::fs::File::open(&file_path).await {
-    Ok(file) => {
-      if !check_hash {
-        return Ok(true);
-      }
-
-      // validate hash
-      let mut reader = BufReader::new(file);
-      let mut hasher = Sha1::new();
-      let mut buffer = [0; 4096];
-      loop {
-        let bytes_read = reader.read(&mut buffer).await?;
-        if bytes_read != 0 {
-          hasher.update(&buffer[..bytes_read]);
-        } else {
-          break;
-        }
-      }
-      let sha1 = hasher.finalize();
-      let result = sha1.as_bytes();
-      let expected = hex::decode(&artifacts.sha1)?;
-      Ok(result == expected)
-    }
-
-    Err(_) => Ok(false), // not exist
-  }
-}
-
-pub async fn validate_library_files(
+pub async fn get_invalid_library_files(
+  source: SourceType,
   library_path: &Path,
   client_info: &McClientInfo,
   check_hash: bool,
-) -> SJMCLResult<Vec<DownloadsArtifact>> {
+) -> SJMCLResult<Vec<PTaskParam>> {
   let mut artifacts = Vec::new();
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
-  let tasks: Vec<_> = artifacts
-    .into_iter()
-    .map(|artifact| {
-      let library_path_clone = library_path.to_path_buf();
-      tokio::spawn(async move {
-        match validate_artifact(&library_path_clone, &artifact, check_hash).await {
-          Ok(succ) => {
-            if !succ {
-              Some(artifact)
-            } else {
-              None
-            }
-          }
-          Err(_) => Some(artifact),
+
+  let library_download_api = get_download_api(source, ResourceType::Libraries)?;
+
+  Ok(
+    artifacts
+      .iter()
+      .filter_map(|artifact| {
+        let file_path = library_path.join(&artifact.path);
+        if file_path.exists()
+          && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
+        {
+          None
+        } else {
+          Some(PTaskParam::Download(DownloadParam {
+            src: library_download_api.join(&artifact.path).ok()?,
+            dest: file_path.clone(),
+            filename: None,
+            sha1: Some(artifact.sha1.clone()),
+          }))
         }
       })
-    })
-    .collect();
-
-  let results = futures::future::join_all(tasks).await;
-  let mut bad_artifacts = Vec::new();
-  for result in results {
-    match result {
-      Ok(Some(artifact)) => bad_artifacts.push(artifact),
-      Ok(None) => continue,
-      Err(e) => {
-        println!("{:?}", e);
-        continue;
-      }
-    }
-  }
-  Ok(bad_artifacts)
+      .collect::<Vec<_>>(),
+  )
 }
 
-fn convert_library_name_to_path(name: &String, native: Option<String>) -> SJMCLResult<String> {
+pub fn convert_library_name_to_path(name: &String, native: Option<String>) -> SJMCLResult<String> {
   let mut name_split: Vec<String> = name.split(":").map(|s| s.to_string()).collect();
   if name_split.len() < 3 {
     println!("name = {}", name);
@@ -234,4 +191,36 @@ pub async fn extract_native_libraries(
   }
 
   Ok(())
+}
+
+pub async fn get_invalid_assets(
+  source: SourceType,
+  asset_path: &Path,
+  asset_index: &AssetIndex,
+  check_hash: bool,
+) -> SJMCLResult<Vec<PTaskParam>> {
+  let assets_download_api = get_download_api(source, ResourceType::Assets)?;
+
+  Ok(
+    asset_index
+      .objects
+      .iter()
+      .filter_map(|(_, item)| {
+        let path = format!("{}/{}", &item.hash[..2], item.hash.clone());
+        let dest = asset_path.join(format!("objects/{}", path));
+
+        if dest.exists() && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok())
+        {
+          None
+        } else {
+          Some(PTaskParam::Download(DownloadParam {
+            src: assets_download_api.join(&path).ok()?,
+            dest,
+            filename: None,
+            sha1: Some(item.hash.clone()),
+          }))
+        }
+      })
+      .collect::<Vec<_>>(),
+  )
 }

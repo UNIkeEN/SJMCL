@@ -1,6 +1,7 @@
 import {
   Avatar,
   AvatarBadge,
+  Center,
   HStack,
   Highlight,
   Icon,
@@ -19,6 +20,7 @@ import {
   LuTriangleAlert,
   LuX,
 } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -29,8 +31,10 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { InstanceSubdirEnums, ModLoaderEnums } from "@/enums/instance";
+import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
+import { OtherResourceType } from "@/enums/resource";
 import { InstanceError } from "@/enums/service-error";
+import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -40,9 +44,10 @@ const InstanceModsPage = () => {
   const toast = useToast();
   const {
     summary,
-    handleOpenInstanceSubdir,
+    openInstanceSubdir,
     handleImportResource,
     getLocalModList,
+    isLocalModListLoading: isLoading,
   } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
   const { openSharedModal } = useSharedModals();
@@ -55,9 +60,22 @@ const InstanceModsPage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const getLocalModListWrapper = useCallback(
+    (sync?: boolean) => {
+      getLocalModList(sync).then((data) => {
+        if (data === GetStateFlag.Cancelled) {
+          // this means the user has cancelled the operation.
+          return;
+        }
+        setLocalMods(data || []);
+      });
+    },
+    [getLocalModList]
+  );
+
   useEffect(() => {
-    setLocalMods(getLocalModList() || []);
-  }, [getLocalModList]);
+    getLocalModListWrapper();
+  }, [getLocalModListWrapper]);
 
   useEffect(() => {
     const keywords = query.trim().toLowerCase().split(/\s+/);
@@ -117,20 +135,20 @@ const InstanceModsPage = () => {
               status: "error",
             });
             if (response.raw_error === InstanceError.FileNotFoundError) {
-              setLocalMods(getLocalModList(true) || []);
+              getLocalModListWrapper(true);
             }
           }
         }
       );
     },
-    [toast, getLocalModList]
+    [toast, getLocalModListWrapper]
   );
 
   const modSecMenuOperations = [
     {
       icon: "openFolder",
       onClick: () => {
-        handleOpenInstanceSubdir(InstanceSubdirEnums.Mods);
+        openInstanceSubdir(InstanceSubdirType.Mods);
       },
     },
     {
@@ -139,10 +157,10 @@ const InstanceModsPage = () => {
         handleImportResource({
           filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
           filterExt: ["zip", "jar", "disabled"],
-          tgtDirType: InstanceSubdirEnums.Mods,
+          tgtDirType: InstanceSubdirType.Mods,
           decompress: false,
           onSuccessCallback: () => {
-            setLocalMods(getLocalModList(true) || []);
+            getLocalModListWrapper(true);
           },
         });
       },
@@ -151,7 +169,7 @@ const InstanceModsPage = () => {
       icon: "download",
       onClick: () => {
         openSharedModal("download-resource", {
-          initialResourceType: "mod",
+          initialResourceType: OtherResourceType.Mod,
         });
       },
     },
@@ -163,7 +181,7 @@ const InstanceModsPage = () => {
     {
       icon: "refresh",
       onClick: () => {
-        setLocalMods(getLocalModList(true) || []);
+        getLocalModListWrapper(true);
       },
     },
   ];
@@ -217,7 +235,7 @@ const InstanceModsPage = () => {
         }}
       >
         <ModLoaderCards
-          currentType={summary?.modLoader.loaderType || "Unknown"}
+          currentType={summary?.modLoader.loaderType || ModLoaderType.Unknown}
           currentVersion={summary?.modLoader.version}
           displayMode="entry"
         />
@@ -227,9 +245,11 @@ const InstanceModsPage = () => {
         isAccordion
         initialIsOpen={accordionStates[1]}
         titleExtra={
-          <CountTag
-            count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
-          />
+          !isLoading && (
+            <CountTag
+              count={`${query.trim() ? `${filteredMods.length} / ` : ""}${localMods.length}`}
+            />
+          )
         }
         onAccordionToggle={(isOpen) => {
           update(
@@ -285,14 +305,18 @@ const InstanceModsPage = () => {
           </HStack>
         }
       >
-        {summary?.modLoader.loaderType === ModLoaderEnums.Unknown &&
+        {summary?.modLoader.loaderType === ModLoaderType.Unknown &&
           filteredMods.length > 0 && (
             <HStack fontSize="xs" color="red.600" mt={-0.5} ml={1.5} mb={2}>
               <Icon as={LuTriangleAlert} />
               <Text>{t("InstanceModsPage.modList.warning")}</Text>
             </HStack>
           )}
-        {filteredMods.length > 0 ? (
+        {isLoading ? (
+          <Center mt={8}>
+            <BeatLoader size={16} color="gray" />
+          </Center>
+        ) : filteredMods.length > 0 ? (
           <OptionItemGroup
             items={filteredMods.map((mod) => (
               <OptionItem
@@ -317,7 +341,7 @@ const InstanceModsPage = () => {
                         {mod.version}
                       </Text>
                     )}
-                    {mod.loaderType !== ModLoaderEnums.Unknown && (
+                    {mod.loaderType !== ModLoaderType.Unknown && (
                       <Tag colorScheme={primaryColor} className="tag-xs">
                         {mod.loaderType}
                       </Tag>
@@ -332,7 +356,7 @@ const InstanceModsPage = () => {
                   >
                     <Highlight
                       query={query.trim().toLowerCase().split(/\s+/)}
-                      styles={{ bg: "yello.200" }}
+                      styles={{ bg: "yellow.200" }}
                     >
                       {mod.fileName}
                     </Highlight>

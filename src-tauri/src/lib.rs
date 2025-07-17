@@ -20,17 +20,17 @@ use launcher_config::{
   helpers::java::refresh_and_update_javas,
   models::{JavaInfo, LauncherConfig},
 };
-use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
+use std::{collections::HashMap, sync::OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
-use tokio::sync::Notify;
+use tauri_plugin_log::{Target, TargetKind};
 use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
-use tauri::Manager;
+use tauri::{path::BaseDirectory, Manager};
 
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
   std::env::current_exe()
@@ -39,6 +39,8 @@ static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     .unwrap()
     .to_path_buf()
 });
+
+static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 pub async fn run() {
   tauri::Builder::default()
@@ -68,14 +70,15 @@ pub async fn run() {
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
+      launcher_config::commands::validate_java,
       launcher_config::commands::check_game_directory,
-      launcher_config::commands::retrieve_memory_info,
-      launcher_config::commands::check_service_availability,
+      launcher_config::commands::clear_download_cache,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,
       account::commands::add_player_oauth,
       account::commands::relogin_player_oauth,
+      account::commands::cancel_oauth,
       account::commands::add_player_3rdparty_password,
       account::commands::relogin_player_3rdparty_password,
       account::commands::add_player_from_selection,
@@ -87,10 +90,11 @@ pub async fn run() {
       account::commands::delete_auth_server,
       account::commands::fetch_auth_server,
       instance::commands::retrieve_instance_list,
+      instance::commands::create_instance,
       instance::commands::update_instance_config,
       instance::commands::retrieve_instance_game_config,
       instance::commands::reset_instance_game_config,
-      instance::commands::open_instance_subdir,
+      instance::commands::retrieve_instance_subdir_path,
       instance::commands::delete_instance,
       instance::commands::rename_instance,
       instance::commands::copy_resource_to_instances,
@@ -111,11 +115,15 @@ pub async fn run() {
       launch::commands::validate_selected_player,
       launch::commands::launch_game,
       launch::commands::cancel_launch_process,
+      launch::commands::open_game_log_window,
+      launch::commands::retrieve_game_log,
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_mod_loader_version_list,
       resource::commands::fetch_resource_list_by_name,
       resource::commands::fetch_resource_version_packs,
+      resource::commands::download_game_server,
       discover::commands::fetch_post_sources_info,
+      discover::commands::fetch_post_summaries,
       tasks::commands::schedule_progressive_task_group,
       tasks::commands::cancel_progressive_task,
       tasks::commands::resume_progressive_task,
@@ -125,17 +133,29 @@ pub async fn run() {
       tasks::commands::get_transient_task,
       tasks::commands::set_transient_task_state,
       tasks::commands::cancel_transient_task,
+      tasks::commands::cancel_progressive_task_group,
+      tasks::commands::resume_progressive_task_group,
+      tasks::commands::stop_progressive_task_group,
+      utils::commands::retrieve_memory_info,
+      utils::commands::extract_filename,
+      utils::commands::retrieve_truetype_font_list,
+      utils::commands::check_service_availability,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
 
       // Get version and os information
-      let version = if is_dev {
-        "dev".to_string()
-      } else {
-        app.package_info().version.to_string()
+      let version = match (is_dev, app.package_info().version.to_string().as_str()) {
+        (true, _) => "dev".to_string(),
+        (false, "0.0.0") => "nightly".to_string(),
+        (false, v) => v.to_string(),
       };
       let os = tauri_plugin_os::platform().to_string();
+
+      // init APP_DATA_DIR
+      APP_DATA_DIR
+        .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
+        .expect("APP_DATA_DIR initialization failed");
 
       // Set the launcher config and other states
       // Also extract assets in `setup_with_app()` if the application is portable
@@ -160,6 +180,14 @@ pub async fn run() {
 
       let launching = LaunchingState::default();
       app.manage(Mutex::new(launching));
+
+      // check if full account feature (offline and 3rd-party login) is available
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        account::helpers::misc::check_full_login_availability(&app_handle)
+          .await
+          .unwrap_or_default();
+      });
 
       // Refresh all auth servers
       let app_handle = app.handle().clone();
@@ -211,6 +239,10 @@ pub async fn run() {
         app.handle().plugin(
           tauri_plugin_log::Builder::default()
             .level(log::LevelFilter::Info)
+            .targets([
+              Target::new(TargetKind::Stdout),
+              Target::new(TargetKind::Webview),
+            ])
             .build(),
         )?;
       }

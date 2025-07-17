@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SJMCL",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "identifier": "SJMCL",
   "build": {
     "frontendDist": "../out",
@@ -19,17 +19,6 @@
         "height": 550,
         "minWidth": 800,
         "minHeight": 550,
-        "center": true,
-        "dragDropEnabled": false
-      },
-      {
-        "label": "oauth",
-        "create": false,
-        "title": "OAuth Login",
-        "width": 640,
-        "height": 520,
-        "minWidth": 640,
-        "minHeight": 440,
         "center": true,
         "dragDropEnabled": false
       },
@@ -103,7 +92,9 @@
   "plugins": {
     "deep-link": {
       "desktop": {
-        "schemes": ["sjmcl"]
+        "schemes": [
+          "sjmcl"
+        ]
       }
     },
     "fs": {

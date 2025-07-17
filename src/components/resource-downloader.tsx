@@ -27,6 +27,8 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import {
+  OtherResourceType,
+  datapackTagList,
   modTagList,
   modpackTagList,
   resourcePackTagList,
@@ -34,6 +36,7 @@ import {
   sortByLists,
   worldTagList,
 } from "@/enums/resource";
+import { GetStateFlag } from "@/hooks/get-state";
 import { InstanceSummary } from "@/models/instance/misc";
 import { GameResourceInfo, OtherResourceInfo } from "@/models/resource";
 import { ResourceService } from "@/services/resource";
@@ -41,7 +44,7 @@ import { ISOToDate } from "@/utils/datetime";
 import { formatDisplayCount } from "@/utils/string";
 
 interface ResourceDownloaderProps {
-  resourceType: string;
+  resourceType: OtherResourceType;
 }
 
 interface ResourceDownloaderMenuProps {
@@ -66,6 +69,7 @@ const tagLists: Record<string, any> = {
   resourcepack: resourcePackTagList,
   shader: shaderPackTagList,
   modpack: modpackTagList,
+  datapack: datapackTagList,
 };
 
 const downloadSourceLists: Record<string, string[]> = {
@@ -74,6 +78,7 @@ const downloadSourceLists: Record<string, string[]> = {
   resourcepack: ["CurseForge", "Modrinth"],
   shader: ["CurseForge", "Modrinth"],
   modpack: ["CurseForge", "Modrinth"],
+  datapack: ["CurseForge", "Modrinth"],
 };
 
 const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
@@ -147,9 +152,11 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
       ];
       let allTags: string[] = [];
       if (typeof tagList === "object" && tagList !== null) {
-        allTags = Object.values(tagList).flat() as string[];
+        const keys = Object.keys(tagList);
+        const values = Object.values(tagList).flat() as string[];
+        allTags = [...keys, ...values];
       }
-      if (!allTags.includes(tag)) return tag;
+      if (!allTags.includes(tag)) return "";
       return t(
         `ResourceDownloader.${resourceType}TagList.${downloadSource}.${tag}`
       );
@@ -177,16 +184,36 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     ),
     titleExtra: (
       <HStack spacing={1}>
-        {item.tags.slice(0, 3).map((tag) => (
-          <Tag key={tag} colorScheme={primaryColor} className="tag-xs">
-            {translateTag(tag, item.type, item.source)}
-          </Tag>
-        ))}
-        {item.tags.length > 3 && (
-          <Tag colorScheme={primaryColor} className="tag-xs" variant="outline">
-            {`+${item.tags.length - 3}`}
-          </Tag>
-        )}
+        {(() => {
+          const translatedTags = item.tags
+            .map((t) => ({
+              raw: t,
+              translated: translateTag(t, item.type, item.source),
+            }))
+            .filter((t) => t.translated);
+
+          const visibleTags = translatedTags.slice(0, 3);
+          const extraCount = translatedTags.length - visibleTags.length;
+
+          return (
+            <>
+              {visibleTags.map((t) => (
+                <Tag key={t.raw} colorScheme={primaryColor} className="tag-xs">
+                  {t.translated}
+                </Tag>
+              ))}
+              {extraCount > 0 && (
+                <Tag
+                  colorScheme={primaryColor}
+                  className="tag-xs"
+                  variant="outline"
+                >
+                  +{extraCount}
+                </Tag>
+              )}
+            </>
+          );
+        })()}
       </HStack>
     ),
     titleLineWrap: false,
@@ -257,7 +284,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
           resource={selectedItem}
           curInstanceMajorVersion={curInstance?.majorVersion}
           curInstanceModLoader={
-            selectedItem.type === "mod" &&
+            selectedItem.type === OtherResourceType.Mod &&
             curInstance?.modLoader.loaderType !== "Unknown"
               ? curInstance?.modLoader.loaderType
               : undefined
@@ -275,6 +302,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const toast = useToast();
+  const { getGameVersionList } = useGlobalData();
 
   const [gameVersionList, setGameVersionList] = useState<string[] | undefined>(
     undefined
@@ -305,24 +333,6 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
     setSelectedTag("All");
     setSortBy(e === "CurseForge" ? "Popularity" : "relevance");
   };
-
-  const handleFetchGameVersionList = useCallback(async () => {
-    const response = await ResourceService.fetchGameVersionList();
-    if (response.status === "success") {
-      const versionData = response.data;
-      const versionList = versionData
-        .filter((version: GameResourceInfo) => version.gameType === "release")
-        .map((version: GameResourceInfo) => version.id);
-      setGameVersionList(["All", ...versionList]);
-    } else {
-      setGameVersionList([]);
-      toast({
-        title: response.message,
-        description: response.details,
-        status: "error",
-      });
-    }
-  }, [toast]);
 
   const handleFetchResourceListByName = useCallback(
     async (
@@ -414,8 +424,17 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   ]);
 
   useEffect(() => {
-    handleFetchGameVersionList();
-  }, [handleFetchGameVersionList]);
+    getGameVersionList().then((list) => {
+      if (list && list !== GetStateFlag.Cancelled) {
+        const versionList = list
+          .filter((version: GameResourceInfo) => version.gameType === "release")
+          .map((version: GameResourceInfo) => version.id);
+        setGameVersionList(["All", ...versionList]);
+      } else {
+        setGameVersionList([]);
+      }
+    });
+  }, [getGameVersionList]);
 
   useEffect(() => {
     searchQueryRef.current = searchQuery;
@@ -438,7 +457,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const renderTagMenuOptions = () => {
     if (typeof tagList === "object" && tagList !== null) {
       return Object.entries(tagList).flatMap(([group, tags]) => [
-        group === "All" || resourceType === "mod" ? (
+        group === "All" || resourceType === OtherResourceType.Mod ? (
           <MenuItemOption key={`group-${group}`} value={group} fontSize="xs">
             {t(
               `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`

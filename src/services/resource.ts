@@ -4,7 +4,7 @@ import {
   GameResourceInfo,
   ModLoaderResourceInfo,
   OtherResourceSearchRes,
-  ResourceVersionPack,
+  OtherResourceVersionPack,
 } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
@@ -70,7 +70,7 @@ export class ResourceService {
 
   /**
    * FETCH the version packs for a specific resource.
-   * @returns {Promise<InvokeResponse<ResourceVersionPack[]>>}
+   * @returns {Promise<InvokeResponse<OtherResourceVersionPack[]>>}
    */
   @responseHandler("resource")
   static async fetchResourceVersionPacks(
@@ -78,7 +78,7 @@ export class ResourceService {
     modLoader: ModLoaderType | "All",
     gameVersions: string[],
     downloadSource: string
-  ): Promise<InvokeResponse<ResourceVersionPack[]>> {
+  ): Promise<InvokeResponse<OtherResourceVersionPack[]>> {
     return await invoke("fetch_resource_version_packs", {
       downloadSource,
       query: {
@@ -86,6 +86,23 @@ export class ResourceService {
         modLoader,
         gameVersions,
       },
+    });
+  }
+
+  /**
+   * DOWNLOAD a game server.
+   * @param {GameResourceInfo} resourceInfo - The resource information of the game server.
+   * @param {string} dest - The destination path to save the downloaded server file.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("resource")
+  static async downloadGameServer(
+    resourceInfo: GameResourceInfo,
+    dest: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("download_game_server", {
+      resourceInfo,
+      dest,
     });
   }
 }

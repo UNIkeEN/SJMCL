@@ -63,6 +63,7 @@ export interface LauncherConfig {
     osType: string;
     platformVersion: string;
     isPortable: boolean;
+    allowFullLoginFeature: boolean;
   };
   mocked: boolean;
   runCount: number;
@@ -70,13 +71,16 @@ export interface LauncherConfig {
     theme: {
       primaryColor: string;
       colorMode: "light" | "dark" | "system";
+      useLiquidGlassDesign: boolean;
       headNavStyle: string;
     };
     font: {
+      fontFamily: string;
       fontSize: number;
     };
     background: {
       choice: string;
+      randomCustom: boolean;
     };
     accessibility: {
       invertColors: boolean;
@@ -117,6 +121,7 @@ export interface LauncherConfig {
   globalGameConfig: GameConfig;
   discoverSourceEndpoints: string[];
   extraJavaPaths: string[];
+  suppressedDialogs: string[];
   states: {
     shared: {
       selectedPlayerId: string;
@@ -203,20 +208,24 @@ export const defaultConfig: LauncherConfig = {
     osType: "",
     platformVersion: "",
     isPortable: false,
+    allowFullLoginFeature: false,
   },
   mocked: true,
   runCount: -1,
   appearance: {
     theme: {
       primaryColor: "blue",
-      colorMode: "light",
+      colorMode: "system",
+      useLiquidGlassDesign: false,
       headNavStyle: "standard",
     },
     font: {
+      fontFamily: "%built-in",
       fontSize: 100,
     },
     background: {
       choice: "%built-in:Jokull",
+      randomCustom: false,
     },
     accessibility: {
       invertColors: false,
@@ -257,6 +266,7 @@ export const defaultConfig: LauncherConfig = {
   globalGameConfig: defaultGameConfig,
   discoverSourceEndpoints: ["https://mc.sjtu.cn/api-sjmcl/article"],
   extraJavaPaths: [],
+  suppressedDialogs: [],
   states: {
     shared: {
       selectedPlayerId: "",

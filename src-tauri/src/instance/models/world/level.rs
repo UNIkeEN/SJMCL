@@ -71,7 +71,7 @@ pub struct LevelData {
 pub struct Version {
   pub id: i32,
   pub name: String,
-  pub series: String,
+  pub series: Option<String>,
   pub snapshot: bool,
 }
 

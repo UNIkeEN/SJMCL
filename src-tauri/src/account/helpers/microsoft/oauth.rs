@@ -1,15 +1,15 @@
 use super::constants::{CLIENT_ID, SCOPE, TOKEN_ENDPOINT};
-use crate::account::models::{AccountError, OAuthCodeResponse, PlayerInfo, PlayerType, Texture};
+use crate::account::models::{
+  AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo, PlayerType, Texture,
+};
 use crate::error::SJMCLResult;
 use crate::utils::image::decode_image;
-use crate::utils::window::create_webview_window;
 use serde_json::{json, Value};
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
 use tokio::time::{sleep, Duration};
-use url::Url;
 use uuid::Uuid;
 
 pub async fn device_authorization(app: &AppHandle) -> SJMCLResult<OAuthCodeResponse> {
@@ -209,6 +209,7 @@ async fn parse_profile(
         texture_type: val.to_string(),
         image: decode_image(img_bytes.to_vec())?.into(),
         model,
+        preset: None,
       });
     }
   }
@@ -232,28 +233,25 @@ async fn parse_profile(
 
 pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult<PlayerInfo> {
   let client = app.state::<reqwest::Client>();
+  let account_binding = app.state::<Mutex<AccountInfo>>();
 
-  let verification_url =
-    Url::parse(auth_info.verification_uri.as_str()).map_err(|_| AccountError::ParseError)?;
-
-  let is_cancelled = Arc::new(Mutex::new(false));
-  let cancelled_clone = Arc::clone(&is_cancelled);
-
-  let auth_webview = create_webview_window(app, "oauth_microsoft", "oauth", Some(verification_url))
-    .await
-    .map_err(|_| AccountError::CreateWebviewError)?;
-
-  auth_webview.on_window_event(move |event| {
-    if let tauri::WindowEvent::Destroyed = event {
-      *cancelled_clone.lock().unwrap() = true;
-    }
-  });
+  {
+    let mut account_state = account_binding.lock()?;
+    account_state.is_oauth_processing = true;
+  }
 
   let mut interval = auth_info.interval;
   let microsoft_token: String;
   let microsoft_refresh_token: String;
 
   loop {
+    {
+      let account_state = account_binding.lock()?;
+      if !account_state.is_oauth_processing {
+        return Err(AccountError::Cancelled)?;
+      }
+    }
+
     let token_response = client
       .post(TOKEN_ENDPOINT)
       .form(&[
@@ -281,8 +279,6 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
         .as_str()
         .ok_or(AccountError::ParseError)?
         .to_string();
-
-      auth_webview.close()?;
       break;
     } else {
       let error_data = token_response
@@ -306,11 +302,6 @@ pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult
           return Err(AccountError::ParseError)?;
         }
       }
-    }
-
-    if *is_cancelled.lock().unwrap() {
-      // if user closed the webview
-      return Err(AccountError::Cancelled)?;
     }
 
     sleep(Duration::from_secs(interval)).await;

@@ -12,7 +12,10 @@ use super::{
     AccountError, AccountInfo, AuthServer, OAuthCodeResponse, Player, PlayerInfo, PlayerType,
   },
 };
-use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig, storage::Storage};
+use crate::{
+  account::helpers::misc, error::SJMCLResult, launcher_config::models::LauncherConfig,
+  storage::Storage,
+};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use url::Url;
@@ -49,7 +52,11 @@ pub async fn add_player_offline(app: AppHandle, username: String, uuid: String) 
     return Err(AccountError::Duplicate.into());
   }
 
-  config_state.states.shared.selected_player_id = new_player.id.clone();
+  config_state.partial_update(
+    &app,
+    "states.shared.selected_player_id",
+    &serde_json::to_string(&new_player.id).unwrap_or_default(),
+  )?;
   config_state.save()?;
 
   account_state.players.push(new_player);
@@ -110,26 +117,33 @@ pub async fn add_player_oauth(
     }
   };
 
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let mut account_state = account_binding.lock()?;
-
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
-
-  if account_state
-    .players
-    .iter()
-    .any(|player| player.id == new_player.id)
   {
-    return Err(AccountError::Duplicate.into());
+    let account_binding = app.state::<Mutex<AccountInfo>>();
+    let mut account_state = account_binding.lock()?;
+
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+
+    if account_state
+      .players
+      .iter()
+      .any(|player| player.id == new_player.id)
+    {
+      return Err(AccountError::Duplicate.into());
+    }
+
+    config_state.partial_update(
+      &app,
+      "states.shared.selected_player_id",
+      &serde_json::to_string(&new_player.id).unwrap_or_default(),
+    )?;
+    config_state.save()?;
+
+    account_state.players.push(new_player);
+    account_state.save()?;
   }
 
-  config_state.states.shared.selected_player_id = new_player.id.clone();
-  config_state.save()?;
-
-  account_state.players.push(new_player);
-  account_state.save()?;
-  Ok(())
+  misc::check_full_login_availability(&app).await
 }
 
 #[tauri::command]
@@ -172,16 +186,27 @@ pub async fn relogin_player_oauth(
     }
   };
 
-  let mut account_state = account_binding.lock()?;
-
-  if let Some(player) = account_state
-    .players
-    .iter_mut()
-    .find(|player| player.id == player_id)
   {
-    *player = new_player;
-    account_state.save()?;
+    let mut account_state = account_binding.lock()?;
+
+    if let Some(player) = account_state
+      .players
+      .iter_mut()
+      .find(|player| player.id == player_id)
+    {
+      *player = new_player;
+      account_state.save()?;
+    }
   }
+
+  misc::check_full_login_availability(&app).await
+}
+
+#[tauri::command]
+pub fn cancel_oauth(app: AppHandle) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+  account_state.is_oauth_processing = false;
 
   Ok(())
 }
@@ -219,7 +244,11 @@ pub async fn add_player_3rdparty_password(
     Err(AccountError::Duplicate.into())
   } else if new_players.len() == 1 {
     // if only one player will be added, save it and return **an empty vector** to inform the frontend not to trigger selector.
-    config_state.states.shared.selected_player_id = new_players[0].id.clone();
+    config_state.partial_update(
+      &app,
+      "states.shared.selected_player_id",
+      &serde_json::to_string(&new_players[0].id).unwrap_or_default(),
+    )?;
     account_state.players.push(new_players[0].clone());
 
     account_state.save()?;
@@ -272,18 +301,20 @@ pub async fn relogin_player_3rdparty_password(
 
   let refreshed_player = authlib_injector::password::refresh(&app, &new_player).await?;
 
-  let mut account_state = account_binding.lock()?;
-
-  if let Some(player) = account_state
-    .players
-    .iter_mut()
-    .find(|player| player.id == player_id)
   {
-    *player = refreshed_player;
-    account_state.save()?;
+    let mut account_state = account_binding.lock()?;
+
+    if let Some(player) = account_state
+      .players
+      .iter_mut()
+      .find(|player| player.id == player_id)
+    {
+      *player = refreshed_player;
+      account_state.save()?;
+    }
   }
 
-  Ok(())
+  misc::check_full_login_availability(&app).await
 }
 
 #[tauri::command]
@@ -291,26 +322,33 @@ pub async fn add_player_from_selection(app: AppHandle, player: Player) -> SJMCLR
   let player_info: PlayerInfo = player.into();
   let refreshed_player = authlib_injector::password::refresh(&app, &player_info).await?;
 
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let mut account_state = account_binding.lock()?;
-
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
-
-  if account_state
-    .players
-    .iter()
-    .any(|x| x.id == refreshed_player.id)
   {
-    return Err(AccountError::Duplicate.into());
+    let account_binding = app.state::<Mutex<AccountInfo>>();
+    let mut account_state = account_binding.lock()?;
+
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+
+    if account_state
+      .players
+      .iter()
+      .any(|x| x.id == refreshed_player.id)
+    {
+      return Err(AccountError::Duplicate.into());
+    }
+
+    config_state.partial_update(
+      &app,
+      "states.shared.selected_player_id",
+      &serde_json::to_string(&refreshed_player.id).unwrap_or_default(),
+    )?;
+    account_state.players.push(refreshed_player);
+
+    account_state.save()?;
+    config_state.save()?;
   }
 
-  config_state.states.shared.selected_player_id = refreshed_player.id.clone();
-  account_state.players.push(refreshed_player);
-
-  account_state.save()?;
-  config_state.save()?;
-  Ok(())
+  misc::check_full_login_availability(&app).await
 }
 
 #[tauri::command]
@@ -341,29 +379,39 @@ pub fn update_player_skin_offline_preset(
 }
 
 #[tauri::command]
-pub fn delete_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let mut account_state = account_binding.lock()?;
+pub async fn delete_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
+  {
+    let account_binding = app.state::<Mutex<AccountInfo>>();
+    let mut account_state = account_binding.lock()?;
 
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
 
-  let initial_len = account_state.players.len();
-  account_state.players.retain(|s| s.id != player_id);
-  if account_state.players.len() == initial_len {
-    return Err(AccountError::NotFound.into());
+    let initial_len = account_state.players.len();
+    account_state.players.retain(|s| s.id != player_id);
+    if account_state.players.len() == initial_len {
+      return Err(AccountError::NotFound.into());
+    }
+
+    if config_state.states.shared.selected_player_id == player_id {
+      config_state.partial_update(
+        &app,
+        "states.shared.selected_player_id",
+        &serde_json::to_string(
+          &account_state
+            .players
+            .first()
+            .map_or("".to_string(), |player| player.id.clone()),
+        )
+        .unwrap_or_default(),
+      )?;
+      config_state.save()?;
+    }
+
+    account_state.save()?;
   }
 
-  if config_state.states.shared.selected_player_id == player_id {
-    config_state.states.shared.selected_player_id = account_state
-      .players
-      .first()
-      .map_or("".to_string(), |player| player.id.clone());
-    config_state.save()?;
-  }
-
-  account_state.save()?;
-  Ok(())
+  misc::check_full_login_availability(&app).await
 }
 
 #[tauri::command]
@@ -408,6 +456,7 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
 
   Ok(())
 }
+
 #[tauri::command]
 pub fn retrieve_auth_server_list(app: AppHandle) -> SJMCLResult<Vec<AuthServer>> {
   let binding = app.state::<Mutex<AccountInfo>>();
@@ -485,11 +534,18 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
   });
 
   if need_reset {
-    if let Some(first_player) = account_state.players.first() {
-      config_state.states.shared.selected_player_id = first_player.id.clone();
-    } else {
-      config_state.states.shared.selected_player_id = "".to_string();
-    }
+    config_state.partial_update(
+      &app,
+      "states.shared.selected_player_id",
+      &serde_json::to_string(
+        &(if let Some(first_player) = account_state.players.first() {
+          first_player.id.clone()
+        } else {
+          "".to_string()
+        }),
+      )
+      .unwrap_or_default(),
+    )?;
   }
 
   account_state.save()?;
