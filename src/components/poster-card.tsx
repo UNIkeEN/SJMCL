@@ -43,8 +43,10 @@ const PosterCard = ({ data }: PosterCardProps) => {
       cursor="pointer"
       overflow="hidden" // show the border
       p={0}
-      borderColor={`${primaryColor}.500`}
-      variant={isHovered ? "outline" : "elevated"}
+      boxShadow={
+        isHovered ? `0 0 0 1px var(--chakra-colors-${primaryColor}-500)` : "xs"
+      }
+      transition="box-shadow 0.2s"
       onClick={() => openUrl(link)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
