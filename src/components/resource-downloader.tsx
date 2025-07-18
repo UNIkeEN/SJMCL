@@ -101,8 +101,6 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
         }
         value={value}
         onSelect={(val) => onChange(val as string)}
-        multiple={false}
-        size="xs"
         placeholder={displayText}
         menuListProps={{ maxH: "40vh", overflowY: "auto" }}
       />

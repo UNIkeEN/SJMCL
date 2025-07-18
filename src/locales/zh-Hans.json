@@ -1141,6 +1141,9 @@
       "maxAllocation": "为 Minecraft 分配的最大值"
     }
   },
+   "MenuSelector": {
+    "selectedCount": "已选 {{count}} 项"
+  },
   "ModLoaderCards": {
     "installed": "已安装",
     "unInstalled": "未安装",

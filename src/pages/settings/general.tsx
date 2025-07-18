@@ -110,7 +110,6 @@ const GeneralSettingsPage = () => {
               placeholder={t(
                 `GeneralSettingsPage.functions.settings.instancesNavType.${generalConfigs.functionality.instancesNavType}`
               )}
-              size="xs"
             />
           ),
         },

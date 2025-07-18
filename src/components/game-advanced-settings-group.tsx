@@ -233,12 +233,10 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 }))}
                 value={gameConfig.advanced.workaround.gameFileValidatePolicy}
                 onSelect={(val) => {
-                  if (typeof val === "string") {
-                    updateGameAdvancedConfig(
-                      "workaround.gameFileValidatePolicy",
-                      val
-                    );
-                  }
+                  updateGameAdvancedConfig(
+                    "workaround.gameFileValidatePolicy",
+                    val
+                  );
                 }}
               />
             </HStack>

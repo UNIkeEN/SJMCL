@@ -9,7 +9,6 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  Select,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -17,6 +16,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
+import { MenuSelector } from "@/components/common/menu-selector";
 import { useLauncherConfig } from "@/contexts/config";
 
 export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
@@ -71,41 +71,49 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalBody>
           <VStack align="stretch">
             <Grid templateColumns="1fr 1fr 1fr" gap={4} w="100%">
-              <Select
-                placeholder={t("DownloadJavaModal.selector.vendor")}
+              <MenuSelector
+                options={[
+                  { value: "zulu", label: "Zulu" },
+                  { value: "oracle", label: "Oracle" },
+                ]}
                 value={vendor}
-                onChange={(e) => {
-                  const val = e.target.value as any;
-                  setVendor(val);
-                  if (val === "oracle") setType("jdk");
+                onSelect={(val) => {
+                  const v = val as "zulu" | "oracle";
+                  setVendor(v);
+                  if (v === "oracle") setType("jdk");
                 }}
+                placeholder={t("DownloadJavaModal.selector.vendor")}
                 size="sm"
-              >
-                <option value="zulu">Zulu</option>
-                <option value="oracle">Oracle</option>
-              </Select>
+                fontSize="sm"
+              />
 
-              <Select
-                placeholder={t("DownloadJavaModal.selector.version")}
+              <MenuSelector
+                options={[
+                  { value: "8", label: "8" },
+                  { value: "11", label: "11" },
+                  { value: "17", label: "17" },
+                  { value: "21", label: "21" },
+                ]}
                 value={version}
-                onChange={(e) => setVersion(e.target.value as any)}
+                onSelect={(val) => setVersion(val as typeof version)}
+                placeholder={t("DownloadJavaModal.selector.version")}
                 size="sm"
-              >
-                <option value="8">8</option>
-                <option value="11">11</option>
-                <option value="17">17</option>
-                <option value="21">21</option>
-              </Select>
+                fontSize="sm"
+              />
 
-              <Select
-                placeholder={t("DownloadJavaModal.selector.type")}
+              <MenuSelector
+                options={[
+                  { value: "jdk", label: "JDK" },
+                  ...(vendor !== "oracle"
+                    ? [{ value: "jre", label: "JRE" }]
+                    : []),
+                ]}
                 value={type}
-                onChange={(e) => setType(e.target.value as any)}
+                onSelect={(val) => setType(val as typeof type)}
+                placeholder={t("DownloadJavaModal.selector.type")}
                 size="sm"
-              >
-                <option value="jdk">JDK</option>
-                {vendor !== "oracle" && <option value="jre">JRE</option>}
-              </Select>
+                fontSize="sm"
+              />
             </Grid>
 
             {vendor === "oracle" && (

@@ -157,7 +157,6 @@ const DownloadSettingsPage = () => {
               placeholder={t(
                 `DownloadSettingPage.source.settings.strategy.${downloadConfigs.source.strategy}`
               )}
-              size="xs"
             />
           ),
         },

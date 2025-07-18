@@ -202,7 +202,6 @@ const AppearanceSettingsPage = () => {
         placeholder={t(
           `AppearanceSettingsPage.theme.settings.headNavStyle.type.${appearanceConfigs.theme.headNavStyle}`
         )}
-        size="xs"
       />
     );
   };

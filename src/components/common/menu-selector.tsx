@@ -8,15 +8,17 @@ import {
   MenuProps,
 } from "@chakra-ui/react";
 import React from "react";
-import { LuChevronDown } from "react-icons/lu";
+import { useTranslation } from "react-i18next";
+import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 
 type OptionValue = string;
 type OptionLabel = React.ReactNode;
+
 type MenuSelectorOption =
   | OptionValue
   | { value: OptionValue; label: OptionLabel };
 
-interface MenuSelectorProps {
+export interface MenuSelectorProps extends Omit<MenuProps, "children"> {
   options: MenuSelectorOption[];
   value: OptionValue | OptionValue[] | null;
   onSelect: (value: OptionValue | OptionValue[] | null) => void;
@@ -24,7 +26,8 @@ interface MenuSelectorProps {
   placeholder?: string;
   disabled?: boolean;
   size?: string;
-  menuProps?: Partial<MenuProps>;
+  fontSize?: string;
+  buttonProps?: React.ComponentProps<typeof Button>;
   menuListProps?: React.ComponentProps<typeof MenuList>;
 }
 
@@ -36,25 +39,29 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
   placeholder = "Select...",
   disabled = false,
   size = "xs",
-  menuProps,
+  fontSize = "xs",
+  buttonProps,
   menuListProps,
+  ...menuProps
 }) => {
-  const normalize = (opt: MenuSelectorOption) =>
+  const { t } = useTranslation();
+  const buildOptions = (opt: MenuSelectorOption) =>
     typeof opt === "string" ? { value: opt, label: opt } : opt;
 
   const getLabelFromValue = (val: OptionValue) => {
-    const match = options.find((opt) => normalize(opt).value === val);
-    return match ? normalize(match).label : val;
+    const match = options.find((opt) => buildOptions(opt).value === val);
+    return match ? buildOptions(match).label : val;
   };
 
   const renderButtonLabel = () => {
-    if (!value || (Array.isArray(value) && value.length === 0))
+    if (!value || (Array.isArray(value) && value.length === 0)) {
       return placeholder;
+    }
 
     if (multiple && Array.isArray(value)) {
       return value.length <= 3
         ? value.map(getLabelFromValue).join(", ")
-        : `${value.length} selected`;
+        : t("MenuSelector.selectedCount", { count: value.length });
     }
 
     return getLabelFromValue(value as OptionValue);
@@ -64,12 +71,15 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
     <Menu closeOnSelect={!multiple} {...menuProps}>
       <MenuButton
         as={Button}
-        rightIcon={<LuChevronDown />}
+        rightIcon={
+          menuProps.placement === "top" ? <LuChevronUp /> : <LuChevronDown />
+        }
         isDisabled={disabled}
         size={size}
         variant="outline"
         textAlign="left"
         w="auto"
+        {...buttonProps}
       >
         {renderButtonLabel()}
       </MenuButton>
@@ -86,9 +96,9 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
           }}
         >
           {options.map((opt, i) => {
-            const { value: v, label } = normalize(opt);
+            const { value: v, label } = buildOptions(opt);
             return (
-              <MenuItemOption key={i} value={v} fontSize="xs">
+              <MenuItemOption key={i} value={v} fontSize={fontSize}>
                 {label}
               </MenuItemOption>
             );

@@ -127,7 +127,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 ),
                 children: (
                   <MenuSelector
-                    size="xs"
                     value={gameConfig.gameJava.execPath}
                     onSelect={(val) =>
                       updateGameConfig("gameJava.execPath", val)
@@ -354,7 +353,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           ),
           children: (
             <MenuSelector
-              size="xs"
               value={gameConfig.performance.processPriority}
               onSelect={(val) =>
                 updateGameConfig("performance.processPriority", val)
@@ -379,7 +377,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           ),
           children: (
             <MenuSelector
-              size="xs"
               value={gameConfig.launcherVisibility}
               onSelect={(val) => updateGameConfig("launcherVisibility", val)}
               options={launcherVisibilityStrategy.map((type) => ({
