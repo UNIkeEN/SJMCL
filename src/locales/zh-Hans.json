@@ -1141,7 +1141,7 @@
       "maxAllocation": "为 Minecraft 分配的最大值"
     }
   },
-   "MenuSelector": {
+  "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
   },
   "ModLoaderCards": {

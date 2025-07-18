@@ -545,7 +545,7 @@ const DownloadSpecificResourceModal: React.FC<
               }))}
               value={selectedVersionLabel}
               onSelect={(value) => setSelectedVersionLabel(value as string)}
-              placeholder="ALL"
+              menuListProps={{ maxH: "40vh", minW: 28, overflow: "auto" }}
             />
 
             <Box>

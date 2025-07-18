@@ -1141,7 +1141,9 @@
       "maxAllocation": "Maximum allocated for Minecraft"
     }
   },
-  "MenuSelector":{"selectedCount": "{{count}} selected"},
+  "MenuSelector": {
+    "selectedCount": "{{count}} selected"
+  },
   "ModLoaderCards": {
     "installed": "Installed",
     "unInstalled": "Not Installed",
