@@ -78,9 +78,8 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
                 ]}
                 value={vendor}
                 onSelect={(val) => {
-                  const v = val as "zulu" | "oracle";
-                  setVendor(v);
-                  if (v === "oracle") setType("jdk");
+                  if (val === "oracle") setType("jdk");
+                  setVendor(val as "zulu" | "oracle");
                 }}
                 placeholder={t("DownloadJavaModal.selector.vendor")}
                 size="sm"
@@ -88,12 +87,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
               />
 
               <MenuSelector
-                options={[
-                  { value: "8", label: "8" },
-                  { value: "11", label: "11" },
-                  { value: "17", label: "17" },
-                  { value: "21", label: "21" },
-                ]}
+                options={["8", "11", "17", "21"]}
                 value={version}
                 onSelect={(val) => setVersion(val as typeof version)}
                 placeholder={t("DownloadJavaModal.selector.version")}
