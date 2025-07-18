@@ -1,18 +1,7 @@
-import {
-  Badge,
-  Button,
-  Kbd,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
-  Switch,
-  Text,
-} from "@chakra-ui/react";
+import { Badge, Kbd, Switch, Text } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown } from "react-icons/lu";
+import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -103,38 +92,26 @@ const GeneralSettingsPage = () => {
             "GeneralSettingsPage.functions.settings.instancesNavType.description"
           ),
           children: (
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="xs"
-                w="auto"
-                rightIcon={<LuChevronDown />}
-                variant="outline"
-                textAlign="left"
-              >
-                {t(
-                  `GeneralSettingsPage.functions.settings.instancesNavType.${generalConfigs.functionality.instancesNavType}`
-                )}
-              </MenuButton>
-              <MenuList>
-                <MenuOptionGroup
-                  value={generalConfigs.functionality.instancesNavType}
-                  type="radio"
-                  onChange={(value) => {
-                    update("general.functionality.instancesNavType", value);
-                    removeHistory("/instances");
-                  }}
-                >
-                  {instancesNavTypes.map((type) => (
-                    <MenuItemOption value={type} fontSize="xs" key={type}>
-                      {t(
-                        `GeneralSettingsPage.functions.settings.instancesNavType.${type}`
-                      )}
-                    </MenuItemOption>
-                  ))}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
+            <MenuSelector
+              options={instancesNavTypes.map((type) => ({
+                value: type,
+                label: t(
+                  `GeneralSettingsPage.functions.settings.instancesNavType.${type}`
+                ),
+              }))}
+              value={generalConfigs.functionality.instancesNavType}
+              onSelect={(value) => {
+                update(
+                  "general.functionality.instancesNavType",
+                  value as string
+                );
+                removeHistory("/instances");
+              }}
+              placeholder={t(
+                `GeneralSettingsPage.functions.settings.instancesNavType.${generalConfigs.functionality.instancesNavType}`
+              )}
+              size="xs"
+            />
           ),
         },
         {

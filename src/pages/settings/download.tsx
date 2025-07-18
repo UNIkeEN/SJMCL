@@ -2,11 +2,6 @@ import {
   Button,
   HStack,
   Input,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -25,6 +20,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import LinkIconButton from "@/components/common/link-icon-button";
+import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -147,37 +143,22 @@ const DownloadSettingsPage = () => {
         {
           title: t("DownloadSettingPage.source.settings.strategy.title"),
           children: (
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="xs"
-                w="auto"
-                rightIcon={<LuChevronDown />}
-                variant="outline"
-                textAlign="left"
-              >
-                {t(
-                  `DownloadSettingPage.source.settings.strategy.${downloadConfigs.source.strategy}`
-                )}
-              </MenuButton>
-              <MenuList>
-                <MenuOptionGroup
-                  value={downloadConfigs.source.strategy}
-                  type="radio"
-                  onChange={(value) => {
-                    update("download.source.strategy", value);
-                  }}
-                >
-                  {sourceStrategyTypes.map((type) => (
-                    <MenuItemOption value={type} fontSize="xs" key={type}>
-                      {t(
-                        `DownloadSettingPage.source.settings.strategy.${type}`
-                      )}
-                    </MenuItemOption>
-                  ))}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
+            <MenuSelector
+              options={sourceStrategyTypes.map((type) => ({
+                value: type,
+                label: t(
+                  `DownloadSettingPage.source.settings.strategy.${type}`
+                ),
+              }))}
+              value={downloadConfigs.source.strategy}
+              onSelect={(value) =>
+                update("download.source.strategy", value as string)
+              }
+              placeholder={t(
+                `DownloadSettingPage.source.settings.strategy.${downloadConfigs.source.strategy}`
+              )}
+              size="xs"
+            />
           ),
         },
       ],

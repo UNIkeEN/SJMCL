@@ -2,14 +2,8 @@ import {
   Button,
   HStack,
   Input,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   NumberInput,
   NumberInputField,
-  Portal,
   Slider,
   SliderFilledTrack,
   SliderThumb,
@@ -21,7 +15,7 @@ import {
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown } from "react-icons/lu";
+import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -132,48 +126,18 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                   "GlobalGameSettingsPage.gameJava.settings.execPath.title"
                 ),
                 children: (
-                  <Menu>
-                    <MenuButton
-                      as={Button}
-                      size="xs"
-                      w="auto"
-                      maxW="80%"
-                      variant="outline"
-                    >
-                      <HStack spacing={1}>
-                        <Text noOfLines={1}>
-                          {buildJavaMenuLabel(
-                            javaInfos.find(
-                              (java) =>
-                                java.execPath === gameConfig.gameJava.execPath
-                            )
-                          )}
-                        </Text>
-                        <LuChevronDown />
-                      </HStack>
-                    </MenuButton>
-                    <Portal>
-                      <MenuList>
-                        <MenuOptionGroup
-                          value={gameConfig.gameJava.execPath}
-                          type="radio"
-                          onChange={(value) => {
-                            updateGameConfig("gameJava.execPath", value);
-                          }}
-                        >
-                          {javaInfos.map((java) => (
-                            <MenuItemOption
-                              value={java.execPath}
-                              fontSize="xs"
-                              key={java.execPath}
-                            >
-                              <Text>{buildJavaMenuLabel(java)}</Text>
-                            </MenuItemOption>
-                          ))}
-                        </MenuOptionGroup>
-                      </MenuList>
-                    </Portal>
-                  </Menu>
+                  <MenuSelector
+                    size="xs"
+                    value={gameConfig.gameJava.execPath}
+                    onSelect={(val) =>
+                      updateGameConfig("gameJava.execPath", val)
+                    }
+                    options={javaInfos.map((java) => ({
+                      value: java.execPath,
+                      label: buildJavaMenuLabel(java),
+                    }))}
+                    placeholder={""}
+                  />
                 ),
               },
             ]),
@@ -389,37 +353,19 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             "GlobalGameSettingsPage.performance.settings.processPriority.title"
           ),
           children: (
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="xs"
-                w="auto"
-                rightIcon={<LuChevronDown />}
-                variant="outline"
-                textAlign="left"
-              >
-                {t(
-                  `GlobalGameSettingsPage.performance.settings.processPriority.${gameConfig.performance.processPriority}`
-                )}
-              </MenuButton>
-              <MenuList>
-                <MenuOptionGroup
-                  value={gameConfig.performance.processPriority}
-                  type="radio"
-                  onChange={(value) => {
-                    updateGameConfig("performance.processPriority", value);
-                  }}
-                >
-                  {processPriority.map((type) => (
-                    <MenuItemOption value={type} fontSize="xs" key={type}>
-                      {t(
-                        `GlobalGameSettingsPage.performance.settings.processPriority.${type}`
-                      )}
-                    </MenuItemOption>
-                  ))}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
+            <MenuSelector
+              size="xs"
+              value={gameConfig.performance.processPriority}
+              onSelect={(val) =>
+                updateGameConfig("performance.processPriority", val)
+              }
+              options={processPriority.map((type) => ({
+                value: type,
+                label: t(
+                  `GlobalGameSettingsPage.performance.settings.processPriority.${type}`
+                ),
+              }))}
+            />
           ),
         },
       ],
@@ -432,37 +378,17 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             "GlobalGameSettingsPage.moreOptions.settings.launcherVisibility.title"
           ),
           children: (
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="xs"
-                w="auto"
-                rightIcon={<LuChevronDown />}
-                variant="outline"
-                textAlign="left"
-              >
-                {t(
-                  `GlobalGameSettingsPage.moreOptions.settings.launcherVisibility.${gameConfig.launcherVisibility}`
-                )}
-              </MenuButton>
-              <MenuList>
-                <MenuOptionGroup
-                  type="radio"
-                  value={gameConfig.launcherVisibility}
-                  onChange={(value) => {
-                    updateGameConfig("launcherVisibility", value);
-                  }}
-                >
-                  {launcherVisibilityStrategy.map((type) => (
-                    <MenuItemOption value={type} fontSize="xs" key={type}>
-                      {t(
-                        `GlobalGameSettingsPage.moreOptions.settings.launcherVisibility.${type}`
-                      )}
-                    </MenuItemOption>
-                  ))}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
+            <MenuSelector
+              size="xs"
+              value={gameConfig.launcherVisibility}
+              onSelect={(val) => updateGameConfig("launcherVisibility", val)}
+              options={launcherVisibilityStrategy.map((type) => ({
+                value: type,
+                label: t(
+                  `GlobalGameSettingsPage.moreOptions.settings.launcherVisibility.${type}`
+                ),
+              }))}
+            />
           ),
         },
         {

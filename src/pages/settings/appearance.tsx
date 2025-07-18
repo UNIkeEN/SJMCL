@@ -1,17 +1,11 @@
 import {
   Badge,
-  Button,
   Card,
   Center,
   HStack,
   Icon,
   IconButton,
   Image,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -34,6 +28,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuPlus, LuTrash } from "react-icons/lu";
 import ChakraColorSelector from "@/components/chakra-color-selector";
+import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -193,37 +188,22 @@ const AppearanceSettingsPage = () => {
     const headNavStyleTypes = ["standard", "simplified"];
 
     return (
-      <Menu>
-        <MenuButton
-          as={Button}
-          size="xs"
-          w="auto"
-          rightIcon={<LuChevronDown />}
-          variant="outline"
-          textAlign="left"
-        >
-          {t(
-            `AppearanceSettingsPage.theme.settings.headNavStyle.type.${appearanceConfigs.theme.headNavStyle}`
-          )}
-        </MenuButton>
-        <MenuList>
-          <MenuOptionGroup
-            value={appearanceConfigs.theme.headNavStyle}
-            type="radio"
-            onChange={(value) => {
-              update("appearance.theme.headNavStyle", value);
-            }}
-          >
-            {headNavStyleTypes.map((type) => (
-              <MenuItemOption value={type} fontSize="xs" key={type}>
-                {t(
-                  `AppearanceSettingsPage.theme.settings.headNavStyle.type.${type}`
-                )}
-              </MenuItemOption>
-            ))}
-          </MenuOptionGroup>
-        </MenuList>
-      </Menu>
+      <MenuSelector
+        options={headNavStyleTypes.map((type) => ({
+          value: type,
+          label: t(
+            `AppearanceSettingsPage.theme.settings.headNavStyle.type.${type}`
+          ),
+        }))}
+        value={appearanceConfigs.theme.headNavStyle}
+        onSelect={(value) =>
+          update("appearance.theme.headNavStyle", value as string)
+        }
+        placeholder={t(
+          `AppearanceSettingsPage.theme.settings.headNavStyle.type.${appearanceConfigs.theme.headNavStyle}`
+        )}
+        size="xs"
+      />
     );
   };
 
@@ -245,40 +225,25 @@ const AppearanceSettingsPage = () => {
     };
 
     return (
-      <Menu>
-        <MenuButton
-          as={Button}
-          size="xs"
-          w="auto"
-          rightIcon={<LuChevronDown />}
-          variant="outline"
-          textAlign="left"
-        >
-          {buildFontName(appearanceConfigs.font.fontFamily)}
-        </MenuButton>
-        <MenuList maxH="40vh" overflow="auto">
-          <MenuOptionGroup
-            value={buildFontName(appearanceConfigs.font.fontFamily)}
-            type="radio"
-            onChange={(value) => {
-              update("appearance.font.fontFamily", value);
-            }}
-          >
-            {fonts.map((font) => (
-              <MenuItemOption
-                value={font}
-                fontSize="xs"
-                fontFamily={
-                  font === "%built-in" ? "-apple-system, Sinter" : font
-                }
-                key={font}
-              >
-                {buildFontName(font)}
-              </MenuItemOption>
-            ))}
-          </MenuOptionGroup>
-        </MenuList>
-      </Menu>
+      <MenuSelector
+        options={fonts.map((font) => ({
+          value: font,
+          label: (
+            <Text
+              fontFamily={font === "%built-in" ? "-apple-system, Sinter" : font}
+              fontSize="xs"
+            >
+              {buildFontName(font)}
+            </Text>
+          ),
+        }))}
+        value={buildFontName(appearanceConfigs.font.fontFamily)}
+        onSelect={(value) =>
+          update("appearance.font.fontFamily", value as string)
+        }
+        placeholder={buildFontName(appearanceConfigs.font.fontFamily)}
+        menuListProps={{ maxH: "40vh", overflowY: "auto" }}
+      />
     );
   };
 

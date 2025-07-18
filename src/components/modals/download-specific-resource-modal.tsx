@@ -1,16 +1,10 @@
 import {
   Avatar,
   Box,
-  Button,
   Card,
   HStack,
   Image,
   Link,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -29,7 +23,6 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  LuChevronDown,
   LuDownload,
   LuExternalLink,
   LuPackage,
@@ -38,6 +31,7 @@ import {
 import { BeatLoader } from "react-spinners";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import { MenuSelector } from "@/components/common/menu-selector";
 import NavMenu from "@/components/common/nav-menu";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
@@ -544,36 +538,17 @@ const DownloadSpecificResourceModal: React.FC<
             </HStack>
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="xs"
-                w={28}
-                variant="outline"
-                fontSize="xs"
-                textAlign="center"
-                rightIcon={<LuChevronDown />}
-              >
-                <Text className="ellipsis-text" maxW={28}>
-                  {buildVersionLabelItem(selectedVersionLabel)}
-                </Text>
-              </MenuButton>
-              <MenuList maxH="40vh" minW={28} overflow="auto">
-                <MenuOptionGroup
-                  value={selectedVersionLabel}
-                  type="radio"
-                  onChange={(value) => {
-                    setSelectedVersionLabel(value as string);
-                  }}
-                >
-                  {versionLabels.map((item, key) => (
-                    <MenuItemOption key={key} value={item} fontSize="xs">
-                      {buildVersionLabelItem(item)}
-                    </MenuItemOption>
-                  ))}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
+            <MenuSelector
+              options={versionLabels.map((item) => ({
+                value: item,
+                label: buildVersionLabelItem(item),
+              }))}
+              value={selectedVersionLabel}
+              onSelect={(value) => setSelectedVersionLabel(value as string)}
+              placeholder="Select Version"
+              size="xs"
+            />
+
             <Box>
               {resource.type === OtherResourceType.Mod &&
                 !resource.tags.includes("datapack") && (

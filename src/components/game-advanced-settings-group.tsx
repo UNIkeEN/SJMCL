@@ -1,13 +1,8 @@
 import {
   Alert,
   AlertIcon,
-  Button,
+  HStack,
   Input,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   NumberInput,
   NumberInputField,
   Switch,
@@ -15,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown } from "react-icons/lu";
+import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -228,40 +223,25 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             "GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.title"
           ),
           children: (
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="xs"
-                w="auto"
-                rightIcon={<LuChevronDown />}
-                variant="outline"
-                textAlign="left"
-              >
-                {t(
-                  `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${gameConfig.advanced.workaround.gameFileValidatePolicy}`
-                )}
-              </MenuButton>
-              <MenuList>
-                <MenuOptionGroup
-                  type="radio"
-                  value={gameConfig.advanced.workaround.gameFileValidatePolicy}
-                  onChange={(value) => {
+            <HStack>
+              <MenuSelector
+                options={gameFileValidatePolicies.map((type) => ({
+                  value: type,
+                  label: t(
+                    `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}`
+                  ),
+                }))}
+                value={gameConfig.advanced.workaround.gameFileValidatePolicy}
+                onSelect={(val) => {
+                  if (typeof val === "string") {
                     updateGameAdvancedConfig(
                       "workaround.gameFileValidatePolicy",
-                      value
+                      val
                     );
-                  }}
-                >
-                  {gameFileValidatePolicies.map((type) => (
-                    <MenuItemOption value={type} fontSize="xs" key={type}>
-                      {t(
-                        `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}`
-                      )}
-                    </MenuItemOption>
-                  ))}
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
+                  }
+                }}
+              />
+            </HStack>
           ),
         },
         {
