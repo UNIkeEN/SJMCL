@@ -38,7 +38,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
   value,
   onSelect,
   multiple = false,
-  placeholder = "Select...",
+  placeholder = "",
   disabled = false,
   size = "xs",
   fontSize = "xs",
