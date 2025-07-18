@@ -1,9 +1,11 @@
 import {
   Button,
+  ButtonProps,
   Menu,
   MenuButton,
   MenuItemOption,
   MenuList,
+  MenuListProps,
   MenuOptionGroup,
   MenuProps,
 } from "@chakra-ui/react";
@@ -27,8 +29,8 @@ export interface MenuSelectorProps extends Omit<MenuProps, "children"> {
   disabled?: boolean;
   size?: string;
   fontSize?: string;
-  buttonProps?: React.ComponentProps<typeof Button>;
-  menuListProps?: React.ComponentProps<typeof MenuList>;
+  buttonProps?: ButtonProps;
+  menuListProps?: MenuListProps;
 }
 
 export const MenuSelector: React.FC<MenuSelectorProps> = ({
