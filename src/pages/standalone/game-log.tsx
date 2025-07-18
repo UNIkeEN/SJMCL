@@ -212,7 +212,6 @@ const GameLogPage: React.FC = () => {
             boxShadow="md"
             onClick={() => {
               scrollToBottom();
-              setIsScrolledToBottom(true);
             }}
             leftIcon={<LuChevronsDown />}
           >
