@@ -4,7 +4,11 @@ import {
   Button,
   HStack,
   Input,
+  Menu,
+  MenuButton,
   MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
   Tag,
   Text,
   VStack,
@@ -13,10 +17,9 @@ import {
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
+import { LuChevronDown, LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
-import { MenuSelector } from "@/components/common/menu-selector";
 import { OptionItemProps } from "@/components/common/option-item";
 import { VirtualOptionItemGroup } from "@/components/common/option-item-virtual";
 import DownloadSpecificResourceModal from "@/components/modals/download-specific-resource-modal";
@@ -82,28 +85,41 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
   label,
   displayText,
   onChange,
+  defaultValue,
   options,
   value,
+  width = 28,
 }) => {
   return (
     <HStack>
       <Text>{label}</Text>
-      <MenuSelector
-        options={
-          options == null
-            ? []
-            : React.Children.toArray(options)
-                .filter(React.isValidElement)
-                .map((opt: React.ReactElement) => ({
-                  value: opt.props.value,
-                  label: opt.props.children,
-                }))
-        }
-        value={value}
-        onSelect={(val) => onChange(val as string)}
-        placeholder={displayText}
-        menuListProps={{ maxH: "40vh", overflowY: "auto" }}
-      />
+      <Menu>
+        <MenuButton
+          as={Button}
+          size="xs"
+          w={width}
+          variant="outline"
+          fontSize="xs"
+          textAlign="left"
+          rightIcon={<LuChevronDown />}
+        >
+          <Text className="ellipsis-text" maxW={width}>
+            {displayText}
+          </Text>
+        </MenuButton>
+        <MenuList maxH="40vh" minW={width} overflow="auto">
+          <MenuOptionGroup
+            defaultValue={defaultValue}
+            value={value}
+            type="radio"
+            onChange={(value) => {
+              onChange(value as string);
+            }}
+          >
+            {options}
+          </MenuOptionGroup>
+        </MenuList>
+      </Menu>
     </HStack>
   );
 };
