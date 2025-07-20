@@ -5,7 +5,7 @@
 ![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)
 [![Deepwiki](https://img.shields.io/badge/Ask-DeepWiki-20B2AA?logo=&style=for-the-badge)](https://deepwiki.com/UNIkeEN/SJMCL)
 
-[English](../README.md) · **简体中文**
+[English](../README.md) · **简体中文** · [繁體中文](README.zh-Hant.md)
 
 ## 功能特性
 
