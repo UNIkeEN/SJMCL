@@ -49,7 +49,7 @@ export interface OtherResourceVersionPack {
 export interface ModLoaderResourceInfo {
   loaderType: ModLoaderType;
   version: string;
-  description?: string;
+  description: string;
   stable: boolean;
   branch?: string;
 }
@@ -57,6 +57,7 @@ export interface ModLoaderResourceInfo {
 export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
   loaderType: ModLoaderType.Unknown,
   version: "",
+  description: "",
   stable: true,
 };
 

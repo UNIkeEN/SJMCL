@@ -128,6 +128,7 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
             onSelectModLoader({
               loaderType,
               version: "",
+              description: "",
               stable: false,
             });
           } else {

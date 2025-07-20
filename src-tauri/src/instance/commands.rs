@@ -846,6 +846,7 @@ pub async fn create_instance(
     .map_err(|_| InstanceError::ClientJsonParseError)?;
 
   version_info.id = name.clone();
+  version_info.jar = Some(name.clone());
 
   let version_info_path = directory
     .dir

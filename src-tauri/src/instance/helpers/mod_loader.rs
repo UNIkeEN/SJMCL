@@ -10,7 +10,7 @@ use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
 use crate::instance::helpers::client_json::{
-  LaunchArgumentTemplate, LibrariesValue, McClientInfo, PatchesInfo,
+  FeaturesInfo, IsAllowed, LaunchArgumentTemplate, LibrariesValue, McClientInfo, PatchesInfo,
 };
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType};
@@ -29,7 +29,7 @@ use tauri::{AppHandle, State};
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,
   lib_path: &str,
-  maven_root: &str,
+  params: Option<LibrariesValue>,
 ) -> SJMCLResult<()> {
   let (group, artifact, _version) = {
     let parts: Vec<_> = lib_path.split(':').collect();
@@ -42,15 +42,14 @@ pub fn add_library_entry(
     .iter()
     .position(|item| item.name.starts_with(&key_prefix))
   {
-    libraries[pos].name = lib_path.to_string();
-    libraries[pos].downloads = None;
+    libraries[pos] = LibrariesValue {
+      name: lib_path.to_string(),
+      ..params.unwrap_or_default()
+    }
   } else {
     libraries.push(LibrariesValue {
       name: lib_path.to_string(),
-      downloads: None,
-      natives: None,
-      extract: None,
-      rules: Vec::new(),
+      ..params.unwrap_or_default()
     });
   }
 
@@ -171,18 +170,18 @@ async fn install_fabric_loader(
 
   let maven_root = get_download_api(priority[0], ResourceType::FabricMaven)?;
 
-  add_library_entry(&mut client_info.libraries, loader_path, maven_root.as_str())?;
-  add_library_entry(&mut client_info.libraries, int_path, maven_root.as_str())?;
-  add_library_entry(&mut new_patch.libraries, loader_path, maven_root.as_str())?;
-  add_library_entry(&mut new_patch.libraries, int_path, maven_root.as_str())?;
+  add_library_entry(&mut client_info.libraries, loader_path, None)?;
+  add_library_entry(&mut client_info.libraries, int_path, None)?;
+  add_library_entry(&mut new_patch.libraries, loader_path, None)?;
+  add_library_entry(&mut new_patch.libraries, int_path, None)?;
 
   let launcher_meta = &meta["launcherMeta"]["libraries"];
   for side in ["common", "server", "client"] {
     if let Some(arr) = launcher_meta.get(side).and_then(|v| v.as_array()) {
       for item in arr {
         let name = item["name"].as_str().unwrap();
-        add_library_entry(&mut client_info.libraries, name, maven_root.as_str())?;
-        add_library_entry(&mut new_patch.libraries, name, maven_root.as_str())?;
+        add_library_entry(&mut client_info.libraries, name, None)?;
+        add_library_entry(&mut new_patch.libraries, name, None)?;
       }
     }
   }
@@ -406,11 +405,39 @@ pub async fn download_forge_libraries(
     let forge_info: McClientInfo = serde_json::from_str(&version)?;
 
     let main_class = forge_info.main_class;
-    let libraries = profile_json["libraries"]
-      .as_array()
-      .ok_or(InstanceError::InstallProfileParseError)?;
-
     client_info.main_class = main_class.to_string();
+
+    let libraries: Vec<LibrariesValue> = serde_json::from_value(profile_json["libraries"].clone())
+      .map_err(|_| InstanceError::InstallProfileParseError)?;
+
+    let mut task_params = vec![];
+    let feature = FeaturesInfo::default();
+
+    for lib in forge_info.libraries.iter() {
+      if !lib.is_allowed(&feature).unwrap_or(false) {
+        continue;
+      }
+
+      let name = &lib.name;
+      add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+
+      let url = lib
+        .downloads
+        .as_ref()
+        .and_then(|d| d.artifact.as_ref())
+        .map(|a| a.url.as_str())
+        .unwrap_or_default();
+      if url.is_empty() {
+        continue;
+      }
+
+      task_params.push(PTaskParam::Download(DownloadParam {
+        src: url::Url::parse(url)?,
+        dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
+        filename: None,
+        sha1: None,
+      }));
+    }
 
     let nf_args = forge_info
       .arguments
@@ -434,18 +461,21 @@ pub async fn download_forge_libraries(
       ..Default::default()
     };
 
-    let mut task_params = vec![];
     for lib in libraries {
-      let name = lib["name"]
-        .as_str()
-        .ok_or(InstanceError::InstallProfileParseError)?;
-      let url = lib["downloads"]["artifact"]["url"]
-        .as_str()
-        .ok_or(InstanceError::InstallProfileParseError)?;
-      println!("[forge] lib: {}, url: {}", name, url);
+      if !lib.is_allowed(&feature).unwrap_or(false) {
+        continue;
+      }
 
-      add_library_entry(&mut client_info.libraries, name, url)?;
-      add_library_entry(&mut new_patch.libraries, name, url)?;
+      let name = &lib.name;
+      let url = lib
+        .downloads
+        .as_ref()
+        .and_then(|d| d.artifact.as_ref())
+        .map_or("https://libraries.minecraft.net/", |a| a.url.as_str());
+
+      add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+      add_library_entry(&mut new_patch.libraries, name, Some(lib.clone()))?;
+
       if url.is_empty() {
         continue;
       }
@@ -529,7 +559,7 @@ pub async fn download_forge_libraries(
       let name = first_lib["name"]
         .as_str()
         .ok_or(InstanceError::InstallProfileParseError)?;
-      let url = if first_lib["url"].is_null() {
+      let _url = if first_lib["url"].is_null() {
         "https://libraries.minecraft.net/"
       } else {
         first_lib["url"]
@@ -537,8 +567,8 @@ pub async fn download_forge_libraries(
           .ok_or(InstanceError::InstallProfileParseError)?
       };
 
-      add_library_entry(&mut client_info.libraries, name, url)?;
-      add_library_entry(&mut new_patch.libraries, name, url)?;
+      add_library_entry(&mut client_info.libraries, name, None)?;
+      add_library_entry(&mut new_patch.libraries, name, None)?;
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
 
@@ -576,8 +606,8 @@ pub async fn download_forge_libraries(
           .ok_or(InstanceError::InstallProfileParseError)?
       };
 
-      add_library_entry(&mut client_info.libraries, name, url)?;
-      add_library_entry(&mut new_patch.libraries, name, url)?;
+      add_library_entry(&mut client_info.libraries, name, None)?;
+      add_library_entry(&mut new_patch.libraries, name, None)?;
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
       let src = url::Url::parse(url)?.join(&rel)?;
@@ -650,11 +680,39 @@ pub async fn download_neoforge_libraries(
   let neoforge_info: McClientInfo = serde_json::from_str(&version)?;
 
   let main_class = neoforge_info.main_class;
-  let libraries = profile_json["libraries"]
-    .as_array()
-    .ok_or(InstanceError::InstallProfileParseError)?;
-
   client_info.main_class = main_class.to_string();
+
+  let libraries: Vec<LibrariesValue> = serde_json::from_value(profile_json["libraries"].clone())
+    .map_err(|_| InstanceError::InstallProfileParseError)?;
+
+  let mut task_params = vec![];
+  let feature = FeaturesInfo::default();
+
+  for lib in neoforge_info.libraries.iter() {
+    if !lib.is_allowed(&feature).unwrap_or(false) {
+      continue;
+    }
+
+    let name = &lib.name;
+    add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+
+    let url = lib
+      .downloads
+      .as_ref()
+      .and_then(|d| d.artifact.as_ref())
+      .map(|a| a.url.as_str())
+      .unwrap_or_default();
+    if url.is_empty() {
+      continue;
+    }
+
+    task_params.push(PTaskParam::Download(DownloadParam {
+      src: url::Url::parse(url)?,
+      dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
+      filename: None,
+      sha1: None,
+    }));
+  }
 
   let nf_args = neoforge_info
     .arguments
@@ -678,21 +736,23 @@ pub async fn download_neoforge_libraries(
     ..Default::default()
   };
 
-  let mut task_params = vec![];
   for lib in libraries {
-    let name = lib["name"]
-      .as_str()
-      .ok_or(InstanceError::InstallProfileParseError)?;
-    let url = lib["downloads"]["artifact"]["url"]
-      .as_str()
-      .ok_or(InstanceError::InstallProfileParseError)?;
+    if !lib.is_allowed(&feature).unwrap_or(false) {
+      continue;
+    }
+    let name = &lib.name;
+    let url = lib
+      .downloads
+      .as_ref()
+      .and_then(|d| d.artifact.as_ref())
+      .map_or("https://libraries.minecraft.net/", |a| a.url.as_str());
     if url.is_empty() {
       continue;
     }
     println!("[neoforge] lib: {}, url: {}", name, url);
 
-    add_library_entry(&mut client_info.libraries, name, url)?;
-    add_library_entry(&mut new_patch.libraries, name, url)?;
+    add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+    add_library_entry(&mut new_patch.libraries, name, Some(lib.clone()))?;
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
     task_params.push(PTaskParam::Download(DownloadParam {
