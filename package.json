@@ -35,7 +35,7 @@
     "@chakra-ui/theme-tools": "^2.2.6",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@tauri-apps/api": "^2.6.0",
+    "@tauri-apps/api": "^2.7.0",
     "@tauri-apps/plugin-clipboard-manager": "^2.3.0",
     "@tauri-apps/plugin-deep-link": "^2.4.0",
     "@tauri-apps/plugin-dialog": "^2.3.0",
@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.1.2",
-    "@tauri-apps/cli": "^2.6.1",
+    "@tauri-apps/cli": "^2.7.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/lodash": "^4.17.15",
     "@types/micromatch": "^4.0.9",

@@ -427,7 +427,7 @@ pub async fn download_forge_libraries(
       }));
     }
 
-    let nf_args: LaunchArgumentTemplate = forge_info
+    let nf_args = forge_info
       .arguments
       .ok_or(InstanceError::ModLoaderVersionParseError)?;
     let v_args = client_info
