@@ -170,7 +170,7 @@ impl TaskMonitor {
     });
 
     if let Some(ref task_group) = task_group {
-      GEvent::emit_group_started(&self.app_handle, &task_group);
+      GEvent::emit_group_started(&self.app_handle, task_group);
     }
 
     self

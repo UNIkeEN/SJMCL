@@ -292,9 +292,11 @@ export const DownloadTasksPage = () => {
                           />
                         )}
                       {task.status === TaskDescStatusEnums.Failed && (
-                        <Text color="red.600" fontSize="xs">
-                          {task.reason || t("DownloadTasksPage.label.error")}
-                        </Text>
+                        <Tooltip label={task.reason}>
+                          <Text color="red.600" fontSize="xs">
+                            {t("DownloadTasksPage.label.error")}
+                          </Text>
+                        </Tooltip>
                       )}
                       {task.status === TaskDescStatusEnums.Completed && (
                         <CommonIconButton
