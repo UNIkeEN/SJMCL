@@ -331,7 +331,7 @@ pub fn get_java_info_from_command(java_path: &str) -> Option<(String, String)> {
   // use "java -version -XshowSettings:properties" command to get info
   #[cfg(target_os = "windows")]
   let output = Command::new(java_path)
-    .args(&["-XshowSettings:properties", "-version"])
+    .args(["-XshowSettings:properties", "-version"])
     .creation_flags(0x08000000) // CREATE_NO_WINDOW
     .output()
     .ok()?;

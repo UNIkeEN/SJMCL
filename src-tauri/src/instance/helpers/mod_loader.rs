@@ -24,12 +24,13 @@ use crate::{
   },
   tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
 };
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Manager, State};
 
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,
   lib_path: &str,
   params: Option<LibrariesValue>,
+  overwrite: bool,
 ) -> SJMCLResult<()> {
   let (group, artifact, _version) = {
     let parts: Vec<_> = lib_path.split(':').collect();
@@ -42,6 +43,9 @@ pub fn add_library_entry(
     .iter()
     .position(|item| item.name.starts_with(&key_prefix))
   {
+    if !overwrite {
+      return Ok(());
+    }
     libraries[pos] = LibrariesValue {
       name: lib_path.to_string(),
       ..params.unwrap_or_default()
@@ -99,43 +103,46 @@ async fn fetch_forge_installer_url(
 
 pub async fn install_mod_loader(
   app: AppHandle,
-  client: State<'_, reqwest::Client>,
   priority: &[SourceType],
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
   client_info: &mut McClientInfo,
+  task_params: &mut Vec<PTaskParam>,
 ) -> SJMCLResult<()> {
   match loader.loader_type {
     ModLoaderType::Fabric => {
       install_fabric_loader(
         app,
-        client,
         priority,
         game_version,
         loader,
         lib_dir,
         client_info,
+        task_params,
       )
       .await
     }
     ModLoaderType::Forge => {
-      install_forge_loader(app, priority, game_version, loader, lib_dir).await
+      install_forge_loader(app, priority, game_version, loader, lib_dir, task_params).await
     }
-    ModLoaderType::NeoForge => install_neoforge_loader(app, priority, loader, lib_dir).await,
+    ModLoaderType::NeoForge => {
+      install_neoforge_loader(app, priority, loader, lib_dir, task_params).await
+    }
     _ => Err(InstanceError::UnsupportedModLoader.into()),
   }
 }
 
 async fn install_fabric_loader(
   app: AppHandle,
-  client: State<'_, reqwest::Client>,
   priority: &[SourceType],
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
   client_info: &mut McClientInfo,
+  task_params: &mut Vec<PTaskParam>,
 ) -> SJMCLResult<()> {
+  let client = app.state::<reqwest::Client>();
   let loader_ver = &loader.version;
 
   client_info
@@ -170,25 +177,23 @@ async fn install_fabric_loader(
 
   let maven_root = get_download_api(priority[0], ResourceType::FabricMaven)?;
 
-  add_library_entry(&mut client_info.libraries, loader_path, None)?;
-  add_library_entry(&mut client_info.libraries, int_path, None)?;
-  add_library_entry(&mut new_patch.libraries, loader_path, None)?;
-  add_library_entry(&mut new_patch.libraries, int_path, None)?;
+  add_library_entry(&mut client_info.libraries, loader_path, None, true)?;
+  add_library_entry(&mut client_info.libraries, int_path, None, true)?;
+  add_library_entry(&mut new_patch.libraries, loader_path, None, true)?;
+  add_library_entry(&mut new_patch.libraries, int_path, None, true)?;
 
   let launcher_meta = &meta["launcherMeta"]["libraries"];
   for side in ["common", "server", "client"] {
     if let Some(arr) = launcher_meta.get(side).and_then(|v| v.as_array()) {
       for item in arr {
         let name = item["name"].as_str().unwrap();
-        add_library_entry(&mut client_info.libraries, name, None)?;
-        add_library_entry(&mut new_patch.libraries, name, None)?;
+        add_library_entry(&mut client_info.libraries, name, None, true)?;
+        add_library_entry(&mut new_patch.libraries, name, None, true)?;
       }
     }
   }
 
   client_info.patches.push(new_patch);
-
-  let mut task_params: Vec<PTaskParam> = Vec::new();
 
   let mut push_task = |coord: &str, url_root: &str| -> SJMCLResult<()> {
     let rel: String = convert_library_name_to_path(&coord.to_string(), None)?;
@@ -217,13 +222,6 @@ async fn install_fabric_loader(
       }
     }
   }
-  schedule_progressive_task_group(
-    app,
-    format!("fabric-loader?{loader_ver}"),
-    task_params,
-    true,
-  )
-  .await?;
 
   Ok(())
 }
@@ -233,6 +231,7 @@ async fn install_neoforge_loader(
   priority: &[SourceType],
   loader: &ModLoader,
   lib_dir: PathBuf,
+  task_params: &mut Vec<PTaskParam>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
@@ -256,18 +255,12 @@ async fn install_neoforge_loader(
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
-  schedule_progressive_task_group(
-    app,
-    format!("neoforge-installer?{loader_ver}"),
-    vec![PTaskParam::Download(DownloadParam {
-      src: installer_url,
-      dest: installer_path,
-      filename: None,
-      sha1: None,
-    })],
-    true,
-  )
-  .await?;
+  task_params.push(PTaskParam::Download(DownloadParam {
+    src: installer_url,
+    dest: installer_path.clone(),
+    filename: None,
+    sha1: None,
+  }));
 
   Ok(())
 }
@@ -278,6 +271,7 @@ async fn install_forge_loader(
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
+  task_params: &mut Vec<PTaskParam>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
@@ -310,28 +304,22 @@ async fn install_forge_loader(
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
-  schedule_progressive_task_group(
-    app,
-    format!("forge-installer?{loader_ver}"),
-    vec![PTaskParam::Download(DownloadParam {
-      src: installer_url,
-      dest: installer_path,
-      filename: None,
-      sha1: None,
-    })],
-    true,
-  )
-  .await?;
+  task_params.push(PTaskParam::Download(DownloadParam {
+    src: installer_url,
+    dest: installer_path.clone(),
+    filename: None,
+    sha1: None,
+  }));
 
   Ok(())
 }
 
 pub async fn download_forge_libraries(
-  app: AppHandle,
+  app: &AppHandle,
   instance: &Instance,
   client_info: &McClientInfo,
 ) -> SJMCLResult<()> {
-  let subdirs = get_instance_subdir_paths(&app, instance, &[&InstanceSubdirType::Libraries])
+  let subdirs = get_instance_subdir_paths(app, instance, &[&InstanceSubdirType::Libraries])
     .ok_or(InstanceError::InvalidSourcePath)?;
   let lib_dir = subdirs[0].clone();
 
@@ -347,7 +335,7 @@ pub async fn download_forge_libraries(
   );
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
-  let comparison = compare_game_versions(&app, &instance.version, "1.13").await;
+  let comparison = compare_game_versions(app, &instance.version, "1.13").await;
   if comparison != Ordering::Less {
     let (content, version) = {
       let file = File::open(&installer_path)?;
@@ -419,7 +407,7 @@ pub async fn download_forge_libraries(
       }
 
       let name = &lib.name;
-      add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+      add_library_entry(&mut client_info.libraries, name, Some(lib.clone()), true)?;
 
       let url = lib
         .downloads
@@ -439,7 +427,7 @@ pub async fn download_forge_libraries(
       }));
     }
 
-    let nf_args = forge_info
+    let nf_args: LaunchArgumentTemplate = forge_info
       .arguments
       .ok_or(InstanceError::ModLoaderVersionParseError)?;
     let v_args = client_info
@@ -473,8 +461,8 @@ pub async fn download_forge_libraries(
         .and_then(|d| d.artifact.as_ref())
         .map_or("https://libraries.minecraft.net/", |a| a.url.as_str());
 
-      add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
-      add_library_entry(&mut new_patch.libraries, name, Some(lib.clone()))?;
+      add_library_entry(&mut client_info.libraries, name, Some(lib.clone()), false)?;
+      add_library_entry(&mut new_patch.libraries, name, Some(lib.clone()), false)?;
 
       if url.is_empty() {
         continue;
@@ -491,7 +479,7 @@ pub async fn download_forge_libraries(
     client_info.patches.push(new_patch.clone());
 
     schedule_progressive_task_group(
-      app,
+      app.clone(),
       format!("forge-libraries?{}", instance.id),
       task_params,
       true,
@@ -567,8 +555,8 @@ pub async fn download_forge_libraries(
           .ok_or(InstanceError::InstallProfileParseError)?
       };
 
-      add_library_entry(&mut client_info.libraries, name, None)?;
-      add_library_entry(&mut new_patch.libraries, name, None)?;
+      add_library_entry(&mut client_info.libraries, name, None, true)?;
+      add_library_entry(&mut new_patch.libraries, name, None, true)?;
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
 
@@ -606,8 +594,8 @@ pub async fn download_forge_libraries(
           .ok_or(InstanceError::InstallProfileParseError)?
       };
 
-      add_library_entry(&mut client_info.libraries, name, None)?;
-      add_library_entry(&mut new_patch.libraries, name, None)?;
+      add_library_entry(&mut client_info.libraries, name, None, true)?;
+      add_library_entry(&mut new_patch.libraries, name, None, true)?;
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
       let src = url::Url::parse(url)?.join(&rel)?;
@@ -621,7 +609,7 @@ pub async fn download_forge_libraries(
     client_info.patches.push(new_patch);
 
     schedule_progressive_task_group(
-      app,
+      app.clone(),
       format!("forge-libraries?{}", instance.id),
       task_params,
       true,
@@ -638,7 +626,7 @@ pub async fn download_forge_libraries(
 }
 
 pub async fn download_neoforge_libraries(
-  app: AppHandle,
+  app: &AppHandle,
   instance: &Instance,
   client_info: &McClientInfo,
 ) -> SJMCLResult<()> {
@@ -647,7 +635,7 @@ pub async fn download_neoforge_libraries(
     .patches
     .push(convert_client_info_to_patch(&client_info));
 
-  let subdirs = get_instance_subdir_paths(&app, instance, &[&InstanceSubdirType::Libraries])
+  let subdirs = get_instance_subdir_paths(app, instance, &[&InstanceSubdirType::Libraries])
     .ok_or(InstanceError::InvalidSourcePath)?;
   let lib_dir = subdirs[0].clone();
 
@@ -694,7 +682,7 @@ pub async fn download_neoforge_libraries(
     }
 
     let name = &lib.name;
-    add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+    add_library_entry(&mut client_info.libraries, name, Some(lib.clone()), true)?;
 
     let url = lib
       .downloads
@@ -751,8 +739,8 @@ pub async fn download_neoforge_libraries(
     }
     println!("[neoforge] lib: {}, url: {}", name, url);
 
-    add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
-    add_library_entry(&mut new_patch.libraries, name, Some(lib.clone()))?;
+    add_library_entry(&mut client_info.libraries, name, Some(lib.clone()), false)?;
+    add_library_entry(&mut new_patch.libraries, name, Some(lib.clone()), false)?;
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
     task_params.push(PTaskParam::Download(DownloadParam {
@@ -765,7 +753,7 @@ pub async fn download_neoforge_libraries(
   client_info.patches.push(new_patch.clone());
 
   schedule_progressive_task_group(
-    app,
+    app.clone(),
     format!("neoforge-libraries?{}", instance.id),
     task_params,
     true,

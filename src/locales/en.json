@@ -533,10 +533,7 @@
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",
       "retry": "Retry Task",
-      "fabric-loader": "Fabric Loader {{param}}",
-      "neoforge-installer": "NeoForge Installer {{param}}",
       "neoforge-libraries": "NeoForge Libraries",
-      "forge-installer": "Forge Installer {{param}}",
       "forge-libraries": "Forge Libraries"
     }
   },
@@ -2143,20 +2140,20 @@
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
-      },
-      "markModLoaderLibraryDownloaded": {
-        "success": "Successfully downloaded mod loader library",
-        "error": {
-          "title": "Failed to download mod loader library",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
-          }
-        }
       }
     },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "success": "Task created successfully"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "{{param}} download has started",
+          "Failed": "{{param}} download partially failed, please retry",
+          "Completed": "{{param}} has been downloaded successfully",
+          "Stopped": "{{param}} download has been stopped",
+          "Cancelled": "{{param}} download has been cancelled"
+        }
       }
     }
   },

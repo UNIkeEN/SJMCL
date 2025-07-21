@@ -33,6 +33,7 @@ import {
 } from "@/models/task";
 import { formatTimeInterval } from "@/utils/datetime";
 import { formatByteSize } from "@/utils/string";
+import { parseTaskGroup } from "@/utils/task";
 
 export const DownloadTasksPage = () => {
   const { t } = useTranslation();
@@ -85,10 +86,10 @@ export const DownloadTasksPage = () => {
   };
 
   const parseGroupTitle = (taskGroup: string) => {
-    let groupInfo = taskGroup.split("@")[0].split("?");
+    let { name, version } = parseTaskGroup(taskGroup);
 
-    return t(`DownloadTasksPage.task.${groupInfo[0]}`, {
-      param: groupInfo[1] || "",
+    return t(`DownloadTasksPage.task.${name}`, {
+      param: version || "",
     });
   };
 

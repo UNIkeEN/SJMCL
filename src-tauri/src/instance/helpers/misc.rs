@@ -7,6 +7,8 @@ use super::{
   client_jar::load_game_version_from_jar,
 };
 use crate::error::SJMCLResult;
+use crate::instance::helpers::mod_loader::{download_forge_libraries, download_neoforge_libraries};
+use crate::instance::models::misc::ModLoaderType;
 use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
 use crate::storage::load_json_async;
 use crate::{
@@ -128,8 +130,9 @@ pub fn unify_instance_name(src_version_path: &PathBuf, tgt_name: &String) -> SJM
 }
 
 pub async fn refresh_instances(
+  app: &AppHandle,
   game_directory: &GameDirectory,
-) -> Result<Vec<Instance>, std::io::Error> {
+) -> SJMCLResult<Vec<Instance>> {
   let mut instances = vec![];
   // traverse the "versions" directory
   let versions_dir = game_directory.dir.join("versions");
@@ -167,6 +170,20 @@ pub async fn refresh_instances(
     let mut cfg_read = load_json_async::<Instance>(&cfg_path)
       .await
       .unwrap_or_default();
+
+    if !cfg_read.mod_loader.library_downloaded {
+      // if mod loader is not downloaded, set it to default
+
+      match cfg_read.mod_loader.loader_type {
+        ModLoaderType::Forge => {
+          download_forge_libraries(app, &cfg_read, &client_data).await?;
+        }
+        ModLoaderType::NeoForge => {
+          download_neoforge_libraries(app, &cfg_read, &client_data).await?;
+        }
+        _ => {}
+      }
+    }
 
     let (mut game_version, loader_version, loader_type) = patchs_to_info(&client_data.patches);
     // TODO: patches related logic
@@ -207,13 +224,14 @@ pub async fn refresh_instances(
 }
 
 pub async fn refresh_all_instances(
+  app: &AppHandle,
   game_directories: &[GameDirectory],
 ) -> HashMap<String, Instance> {
   let mut instance_map = HashMap::new();
 
   for game_directory in game_directories {
     let dir_name = game_directory.name.clone();
-    match refresh_instances(game_directory).await {
+    match refresh_instances(app, game_directory).await {
       Ok(vs) => {
         for mut instance in vs {
           let composed_id = format!("{}:{}", dir_name, instance.name);
@@ -235,7 +253,7 @@ pub async fn refresh_and_update_instances(app: &AppHandle) {
     let state = binding.lock().unwrap();
     state.local_game_directories.clone()
   };
-  let instances = refresh_all_instances(&local_game_directories).await;
+  let instances = refresh_all_instances(app, &local_game_directories).await;
   // update the instances in the app state
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();

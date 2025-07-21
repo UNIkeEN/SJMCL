@@ -19,9 +19,8 @@ use crate::{
     helpers::{
       client_json::McClientInfo,
       misc::{get_instance_game_config, get_instance_subdir_paths},
-      mod_loader::{download_forge_libraries, download_neoforge_libraries},
     },
-    models::misc::{AssetIndex, Instance, InstanceError, InstanceSubdirType, ModLoaderType},
+    models::misc::{AssetIndex, Instance, InstanceError, InstanceSubdirType},
   },
   launch::{helpers::file_validator::get_invalid_assets, models::LaunchError},
   launcher_config::models::{FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity},
@@ -121,20 +120,6 @@ pub async fn validate_game_files(
         .clone(),
     )
   };
-
-  if !instance.mod_loader.library_downloaded {
-    match instance.mod_loader.loader_type {
-      ModLoaderType::Forge => {
-        download_forge_libraries(app, &instance, &client_info).await?;
-        return Err(LaunchError::ModLoaderLibNotDownloaded.into());
-      }
-      ModLoaderType::NeoForge => {
-        download_neoforge_libraries(app, &instance, &client_info).await?;
-        return Err(LaunchError::ModLoaderLibNotDownloaded.into());
-      }
-      _ => {}
-    }
-  }
 
   // extract native libraries
   let dirs = get_instance_subdir_paths(

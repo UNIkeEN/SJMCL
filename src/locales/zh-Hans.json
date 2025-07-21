@@ -533,10 +533,7 @@
       "patch-files": "修补游戏文件 {{param}}",
       "mod-update": "更新模组",
       "retry": "重试任务",
-      "fabric-loader": "Fabric 加载器 {{param}}",
-      "neoforge-installer": "NeoForge 安装器 {{param}}",
       "neoforge-libraries": "NeoForge 运行库",
-      "forge-installer": "Forge 安装器 {{param}}",
       "forge-libraries": "Forge 运行库"
     }
   },
@@ -2143,20 +2140,20 @@
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
           }
         }
-      },
-      "markModLoaderLibraryDownloaded": {
-        "success": "模组加载器运行库已下载",
-        "error": {
-          "title": "模组加载器运行库下载失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在"
-          }
-        }
       }
     },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "success": "任务创建成功"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "{{param}} 下载任务已开始",
+          "Failed": "{{param}} 部分下载失败，请重试",
+          "Completed": "{{param}} 已完成下载",
+          "Stopped": "{{param}} 下载任务已停止",
+          "Cancelled": "{{param}} 下载任务已取消"
+        }
       }
     }
   },

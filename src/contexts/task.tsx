@@ -23,6 +23,7 @@ import {
 } from "@/models/task";
 import { InstanceService } from "@/services/instance";
 import { TaskService } from "@/services/task";
+import { parseTaskGroup } from "@/utils/task";
 import { useGlobalData } from "./global-data";
 
 interface TaskContextType {
@@ -51,6 +52,13 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const { t } = useTranslation();
 
   const updateGroupInfo = useCallback((group: TaskGroupDesc) => {
+    if (group.status === GTaskEventStatusEnums.Completed) {
+      group.taskDescs.forEach((t) => {
+        t.status = TaskDescStatusEnums.Completed;
+        t.current = t.total; // Ensure current is set to total for completed tasks
+      });
+    }
+
     group.finishedCount = group.taskDescs.filter(
       (t) => t.status === TaskDescStatusEnums.Completed
     ).length;
@@ -123,8 +131,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               (group) => group.status !== GTaskEventStatusEnums.Cancelled
             );
           tasks.sort((a, b) => {
-            let aTime = parseInt(a.taskGroup.split("@").pop() || "0");
-            let bTime = parseInt(b.taskGroup.split("@").pop() || "0");
+            let { timestamp: aTime } = parseTaskGroup(a.taskGroup);
+            let { timestamp: bTime } = parseTaskGroup(b.taskGroup);
             return bTime - aTime; // Sort by timestamp descending
           });
           return tasks;
@@ -386,31 +394,32 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           });
         });
 
+        const { name, version } = parseTaskGroup(payload.taskGroup);
+
+        toast({
+          status:
+            payload.event.status === GTaskEventStatusEnums.Failed
+              ? "error"
+              : "success",
+          title: t(
+            `Services.task.onTaskGroupUpdate.status.${payload.event.status}`,
+            {
+              param: t(`DownloadTasksPage.task.${name}`, {
+                param: version || "",
+              }),
+            }
+          ),
+        });
+
         if (payload.event.status === GTaskEventStatusEnums.Completed) {
-          let groupDetails = payload.taskGroup.split("@")[0].split("?");
-          console.log(groupDetails[0]);
-          switch (groupDetails[0]) {
+          switch (name) {
             case "game-client":
               getInstanceList(true);
               break;
             case "forge-libraries":
             case "neoforge-libraries":
-              InstanceService.markModLoaderLibraryDownloaded(
-                groupDetails[1]
-              ).then((response) => {
-                if (response.status === "success") {
-                  toast({
-                    title: response.message,
-                    status: "success",
-                  });
-                } else {
-                  toast({
-                    title: response.message,
-                    description: response.details,
-                    status: "error",
-                  });
-                }
-              });
+              version &&
+                InstanceService.markModLoaderLibraryDownloaded(version);
               break;
             default:
               break;

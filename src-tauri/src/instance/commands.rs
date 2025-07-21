@@ -915,23 +915,15 @@ pub async fn create_instance(
     serde_json::from_value(asset_index_raw).map_err(|_| InstanceError::AssetIndexParseError)?;
   task_params.extend(get_invalid_assets(priority_list[0], assets_dir, &asset_index, false).await?);
 
-  schedule_progressive_task_group(
-    app.clone(),
-    format!("game-client?{}", name),
-    task_params,
-    true,
-  )
-  .await?;
-
   if instance.mod_loader.loader_type != ModLoaderType::Unknown {
     install_mod_loader(
       app.clone(),
-      client,
       &priority_list,
       &instance.version,
       &instance.mod_loader,
       libraries_dir.to_path_buf(),
       &mut version_info,
+      &mut task_params,
     )
     .await?;
 
@@ -941,6 +933,14 @@ pub async fn create_instance(
     )
     .map_err(|_| InstanceError::FileCreationFailed)?;
   }
+  schedule_progressive_task_group(
+    app.clone(),
+    format!("game-client?{}", name),
+    task_params,
+    true,
+  )
+  .await?;
+
   Ok(())
 }
 

@@ -10,7 +10,6 @@ use strum_macros::Display;
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum LaunchError {
   NoSuitableJava,
-  ModLoaderLibNotDownloaded,
   GameFilesIncomplete,
   SetProcessPriorityFailed,
   ChangeWindowTitleFailed,

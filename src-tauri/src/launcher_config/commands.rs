@@ -245,10 +245,13 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
     return Err(LauncherConfigError::GameDirNotExist.into());
   }
 
-  if !refresh_instances(&GameDirectory {
-    dir: directory.clone(),
-    name: "".to_string(),
-  })
+  if !refresh_instances(
+    &app,
+    &GameDirectory {
+      dir: directory.clone(),
+      name: "".to_string(),
+    },
+  )
   .await
   .unwrap_or_default()
   .is_empty()
@@ -263,10 +266,13 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
       Some(".minecraft") | Some("minecraft")
     )
   }) {
-    if !refresh_instances(&GameDirectory {
-      dir: sub_dir.clone(),
-      name: "".to_string(),
-    })
+    if !refresh_instances(
+      &app,
+      &GameDirectory {
+        dir: sub_dir.clone(),
+        name: "".to_string(),
+      },
+    )
     .await
     .unwrap_or_default()
     .is_empty()
