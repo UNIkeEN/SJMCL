@@ -17,6 +17,10 @@ pub trait Storage {
   where
     Self: Serialize,
   {
+    let path = Self::file_path();
+    if let Some(parent) = path.parent() {
+      fs::create_dir_all(parent)?;
+    }
     let json_string = serde_json::to_string_pretty(self)?;
     fs::write(Self::file_path(), json_string)?;
     Ok(())
@@ -36,6 +40,9 @@ pub async fn save_json_async<T>(value: &T, file_path: &Path) -> Result<(), std::
 where
   T: Serialize + Send,
 {
+  if let Some(parent) = file_path.parent() {
+    fs::create_dir_all(parent)?;
+  }
   let json_string = serde_json::to_string_pretty(value)?;
   tokio::fs::write(file_path, json_string).await?;
   Ok(())
