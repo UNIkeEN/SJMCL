@@ -184,6 +184,17 @@ jobs:
         with:
           path: artifacts
 
+      - name: Remove unsigned macOS artifacts to avoid conflicts
+        run: |
+          echo "Removing unsigned macOS artifacts to prevent filename conflicts..."
+          # Remove unsigned macOS artifacts since we have signed versions
+          rm -rf ./artifacts/SJMCL_*_macos_aarch64/
+          rm -rf ./artifacts/SJMCL_*_macos_x86_64/
+          echo "Unsigned macOS artifacts removed"
+          
+          echo "Remaining artifacts:"
+          ls -la ./artifacts/*/*
+
       - name: Delete existing nightly release if exists
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
