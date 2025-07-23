@@ -17,8 +17,7 @@ pub trait Storage {
   where
     Self: Serialize,
   {
-    let path = Self::file_path();
-    if let Some(parent) = path.parent() {
+    if let Some(parent) = Self::file_path().parent() {
       fs::create_dir_all(parent)?;
     }
     let json_string = serde_json::to_string_pretty(self)?;
