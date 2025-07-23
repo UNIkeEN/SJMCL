@@ -74,12 +74,12 @@ jobs:
     with:
       version: ${{ needs.Version-Check.outputs.version }}
     secrets:
-      CERT_P12_BASE64: ${{ secrets.CERT_P12_BASE64 }}
-      CERT_P12_PASSWORD: ${{ secrets.CERT_P12_PASSWORD }}
-      SIGNING_IDENTITY: ${{ secrets.SIGNING_IDENTITY }}
-      NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
-      NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
-      NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+      MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+      MACOS_CERT_P12_PASSWORD: ${{ secrets.MACOS_CERT_P12_PASSWORD }}
+      MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+      MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
+      MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
+      MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
 
   Create-Release:
     needs: [Version-Check, Build-and-Release, Code-Sign-macOS]

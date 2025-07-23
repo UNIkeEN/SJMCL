@@ -155,8 +155,22 @@ jobs:
       SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
       SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
-  Create-Nightly-Release:
+  Sign-macOS-Artifacts:
     needs: [Check-and-Prepare, Build-Nightly]
+    if: needs.Check-and-Prepare.outputs.should_build == 'true'
+    uses: ./.github/workflows/sign-macos.yml
+    with:
+      version: "nightly_${{ needs.Check-and-Prepare.outputs.nightly_version }}"
+    secrets:
+      MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+      MACOS_CERT_P12_PASSWORD: ${{ secrets.MACOS_CERT_P12_PASSWORD }}
+      MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+      MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
+      MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
+      MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
+
+  Create-Nightly-Release:
+    needs: [Check-and-Prepare, Build-Nightly, Sign-macOS-Artifacts]
     if: needs.Check-and-Prepare.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     
