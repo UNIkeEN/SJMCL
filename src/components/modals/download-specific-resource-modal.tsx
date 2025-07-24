@@ -506,9 +506,7 @@ const DownloadSpecificResourceModal: React.FC<
               description={
                 <Text
                   fontSize="xs"
-                  className="secondary-text"
-                  wordBreak="break-all"
-                  whiteSpace="pre-wrap"
+                  className="secondary-text break-wrap"
                   mt={1}
                 >
                   {resource.description}
