@@ -77,7 +77,9 @@ pub fn convert_url_source_type(
   let dst_api = get_download_api(*dst_type, *resource_type)?;
   if url_str.starts_with(src_api.as_str()) {
     Ok(Url::parse(
-      url_str.replace(src_api.as_str(), dst_api.as_str()).as_str(),
+      url_str
+        .replacen(src_api.as_str(), dst_api.as_str(), 1)
+        .as_str(),
     )?)
   } else {
     Err(ResourceError::NoDownloadApi.into())
@@ -90,10 +92,6 @@ pub fn convert_url_to_target_source(
   dst_type: &SourceType,
 ) -> SJMCLResult<Url> {
   let url_str = url.as_str();
-  println!(
-    "Converting URL: {} to target source: {:?}",
-    url_str, dst_type
-  );
   let resource_candidates = if resource_types.is_empty() {
     ResourceType::iter().collect::<Vec<_>>()
   } else {
@@ -113,8 +111,7 @@ pub fn convert_url_to_target_source(
 
       if let Ok(src_api) = get_download_api(src_type, resource_type) {
         if url_str.starts_with(src_api.as_str()) {
-          let new_url_str = url_str.replace(src_api.as_str(), dst_api.as_str());
-          println!("Converted URL: {}", new_url_str);
+          let new_url_str = url_str.replacen(src_api.as_str(), dst_api.as_str(), 1);
           return Ok(Url::parse(&new_url_str)?);
         }
       }
@@ -122,6 +119,5 @@ pub fn convert_url_to_target_source(
   }
 
   // If no replacement occurred, return the original URL
-  println!("No conversion applied, returning original URL: {}", url_str);
   Ok(url.clone())
 }

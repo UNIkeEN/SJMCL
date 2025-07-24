@@ -135,7 +135,6 @@ pub async fn refresh_instances(
   app: &AppHandle,
   game_directory: &GameDirectory,
 ) -> SJMCLResult<Vec<Instance>> {
-  println!("Refreshing instances in {}", game_directory.name);
   let mut instances = vec![];
   // traverse the "versions" directory
   let versions_dir = game_directory.dir.join("versions");
@@ -214,7 +213,7 @@ pub async fn refresh_instances(
           }
         }
       } {
-        println!("Failed to install mod loader for {}: {:?}", name, e);
+        eprintln!("Failed to install mod loader for {}: {:?}", name, e);
         cfg_read.mod_loader.status = ModLoaderStatus::NotDownloaded;
         cfg_read.save_json_cfg().await?;
         continue;
