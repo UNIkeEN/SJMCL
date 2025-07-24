@@ -63,6 +63,7 @@ export interface LauncherConfig {
     osType: string;
     platformVersion: string;
     isPortable: boolean;
+    isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
   };
   mocked: boolean;
@@ -208,6 +209,7 @@ export const defaultConfig: LauncherConfig = {
     osType: "",
     platformVersion: "",
     isPortable: false,
+    isChinaMainlandIp: false,
     allowFullLoginFeature: false,
   },
   mocked: true,

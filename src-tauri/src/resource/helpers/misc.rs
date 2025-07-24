@@ -7,6 +7,10 @@ pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceT
   match launcher_config.download.source.strategy.as_str() {
     "official" => vec![SourceType::Official, SourceType::BMCLAPIMirror],
     "mirror" => vec![SourceType::BMCLAPIMirror, SourceType::Official],
+    "auto" => match launcher_config.basic_info.is_china_mainland_ip {
+      true => vec![SourceType::BMCLAPIMirror, SourceType::Official],
+      false => vec![SourceType::Official, SourceType::BMCLAPIMirror],
+    },
     _ => vec![SourceType::BMCLAPIMirror, SourceType::Official],
   }
 }

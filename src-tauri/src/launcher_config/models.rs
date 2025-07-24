@@ -168,6 +168,8 @@ structstruck::strike! {
       pub platform_version: String,
       pub is_portable: bool,
       #[default = false]
+      pub is_china_mainland_ip: bool,
+      #[default = false]
       pub allow_full_login_feature: bool,
     },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.

@@ -98,7 +98,9 @@ impl LauncherConfig {
       os_type: tauri_plugin_os::type_().to_string(),
       platform_version: tauri_plugin_os::version().to_string(),
       is_portable: portable,
-      allow_full_login_feature: false, // default to false, will be updated later
+      // below set to default, will be updated later in first time calling `check_full_login_availability`
+      is_china_mainland_ip: false,
+      allow_full_login_feature: false,
     };
 
     Ok(())

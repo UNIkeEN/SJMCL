@@ -97,15 +97,34 @@ pub fn with_retry(client: Client) -> ClientWithMiddleware {
 pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
   let client = app.state::<Client>();
 
-  // retrieve the real IP
-  let resp = client
-    .get("https://cloudflare.com/cdn-cgi/trace")
-    .send()
-    .await
-    .ok()?;
-  let text = resp.text().await.ok()?;
-  let loc_pair = text.split('\n').find(|line| line.starts_with("loc="))?;
-  let location = loc_pair.split('=').nth(1)?;
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
 
-  Some(location == "CN")
+  let result = async {
+    let resp = client
+      .get("https://cloudflare.com/cdn-cgi/trace")
+      .send()
+      .await
+      .ok()?;
+    let text = resp.text().await.ok()?;
+    let loc_pair = text.split('\n').find(|line| line.starts_with("loc="))?;
+    let location = loc_pair.split('=').nth(1)?;
+    Some(location == "CN")
+  }
+  .await
+  .unwrap_or(false); // any failure → false
+
+  match config_binding.lock() {
+    Ok(mut config_state) => {
+      let _ = config_state.partial_update(
+        app,
+        "basic_info.is_china_mainland_ip",
+        &serde_json::to_string(&result).unwrap_or("false".to_string()),
+      );
+    }
+    Err(_) => {
+      return Some(false);
+    }
+  }
+
+  Some(result)
 }
