@@ -115,7 +115,6 @@ async fn fetch_bmcl_forge_installer_url(
     .await?;
 
   let final_url = response.url().to_string();
-  println!("Final URL for Forge installer: {}", final_url);
   Ok(final_url)
 }
 
