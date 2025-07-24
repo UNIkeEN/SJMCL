@@ -1,5 +1,13 @@
 import { ModLoaderType } from "@/enums/instance";
 
+export enum ModLoaderStatus {
+  NotDownloaded = "NotDownloaded",
+  Downloading = "Downloading",
+  NotInstalled = "NotInstalled",
+  Installing = "Installing",
+  Installed = "Installed",
+}
+
 export interface InstanceSummary {
   id: string;
   iconSrc: string;
@@ -14,7 +22,7 @@ export interface InstanceSummary {
   modLoader: {
     loaderType: ModLoaderType;
     version?: string;
-    installed: boolean;
+    status: ModLoaderStatus;
   };
   useSpecGameConfig: boolean;
 }

@@ -2147,6 +2147,7 @@
           "title": "模组加载器安装失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
             "MAIN_CLASS_NOT_FOUND": "主类未找到",
             "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败"
           }

@@ -4,8 +4,9 @@ use crate::{
     helpers::client_json::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
     models::misc::{AssetIndex, InstanceError},
   },
+  launch::models::LaunchError,
   resource::{
-    helpers::misc::get_download_api,
+    helpers::misc::{convert_url_to_target_source, get_download_api},
     models::{ResourceType, SourceType},
   },
   tasks::{download::DownloadParam, PTaskParam},
@@ -74,28 +75,37 @@ pub async fn get_invalid_library_files(
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
 
-  let library_download_api = get_download_api(source, ResourceType::Libraries)?;
+  let mut params = Vec::new();
 
-  Ok(
-    artifacts
-      .iter()
-      .filter_map(|artifact| {
-        let file_path = library_path.join(&artifact.path);
-        if file_path.exists()
-          && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
-        {
-          None
-        } else {
-          Some(PTaskParam::Download(DownloadParam {
-            src: library_download_api.join(&artifact.path).ok()?,
-            dest: file_path.clone(),
-            filename: None,
-            sha1: Some(artifact.sha1.clone()),
-          }))
-        }
-      })
-      .collect::<Vec<_>>(),
-  )
+  for artifact in artifacts {
+    let file_path = library_path.join(&artifact.path);
+    if file_path.exists()
+      && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
+    {
+      continue;
+    } else if artifact.url.is_empty() {
+      return Err(LaunchError::GameFilesIncomplete.into());
+    } else {
+      params.push(PTaskParam::Download(DownloadParam {
+        src: convert_url_to_target_source(
+          &url::Url::parse(&artifact.url)?,
+          &[
+            ResourceType::Libraries,
+            ResourceType::FabricMaven,
+            ResourceType::ForgeMaven,
+            ResourceType::ForgeMavenNew,
+            ResourceType::NeoforgeMaven,
+          ],
+          &source,
+        )?,
+        dest: file_path.clone(),
+        filename: None,
+        sha1: Some(artifact.sha1.clone()),
+      }));
+    }
+  }
+
+  Ok(params)
 }
 
 pub struct LibraryParts {

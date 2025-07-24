@@ -363,7 +363,7 @@ export class InstanceService {
   }
 
   /**
-   * MARK the mod loader's runtime libraries has been downloaded successfully.
+   * Finish the mod loader installation.
    * @param {string} instanceId - The ID of the instance to mark the mod loader as installed.
    * @returns {Promise<InvokeResponse<void>>}
    */

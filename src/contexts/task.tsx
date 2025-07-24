@@ -1,4 +1,4 @@
-import { useToast as useChakraToast } from "@chakra-ui/react";
+import { ToastId, useToast as useChakraToast } from "@chakra-ui/react";
 import React, {
   createContext,
   useCallback,
@@ -52,6 +52,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
   const { t } = useTranslation();
+  const loadingToastRef = React.useRef<ToastId | null>(null);
 
   const updateGroupInfo = useCallback((group: TaskGroupDesc) => {
     if (group.status === GTaskEventStatusEnums.Completed) {
@@ -393,8 +394,13 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               task.status = payload.event.status;
               if (payload.event.status === GTaskEventStatusEnums.Completed) {
                 task.taskDescs.forEach((t) => {
-                  t.status = TaskDescStatusEnums.Completed;
-                  t.current = t.total;
+                  if (
+                    t.status === TaskDescStatusEnums.Waiting ||
+                    t.status === TaskDescStatusEnums.InProgress
+                  ) {
+                    t.status = TaskDescStatusEnums.Completed;
+                    t.current = t.total;
+                  }
                 });
               }
             }
@@ -430,7 +436,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 let instanceName = getInstanceList()?.find(
                   (i) => i.id === version
                 )?.name;
-                let loadingToast = toast({
+                if (loadingToastRef.current) return;
+                loadingToastRef.current = toast({
                   title: t("Services.instance.finishModLoaderInstall.loading", {
                     instanceName,
                   }),
@@ -438,7 +445,10 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 });
                 InstanceService.finishModLoaderInstall(version).then(
                   (response) => {
-                    closeToast(loadingToast);
+                    if (loadingToastRef.current) {
+                      closeToast(loadingToastRef.current);
+                      loadingToastRef.current = null;
+                    }
                     if (response.status === "success") {
                       toast({
                         title: response.message,
@@ -464,8 +474,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       unlisten();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateGroupInfo]);
+  }, [closeToast, getInstanceList, t, toast, updateGroupInfo]);
 
   useEffect(() => {
     if (!tasks || !tasks.length) return;

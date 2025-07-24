@@ -30,7 +30,7 @@ use crate::{
       mod_loader::{execute_processors, install_mod_loader},
       mods::forge::InstallProfile,
     },
-    models::misc::{AssetIndex, ModLoader},
+    models::misc::{AssetIndex, ModLoader, ModLoaderStatus},
   },
   launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files},
   launcher_config::{
@@ -819,10 +819,14 @@ pub async fn create_instance(
     version_path: version_path.clone(),
     mod_loader: ModLoader {
       loader_type: mod_loader.loader_type.clone(),
-      installed: matches!(
+      status: if matches!(
         mod_loader.loader_type,
         ModLoaderType::Unknown | ModLoaderType::Fabric
-      ),
+      ) {
+        ModLoaderStatus::Installed
+      } else {
+        ModLoaderStatus::NotDownloaded
+      },
       version: mod_loader.version.clone(),
       branch: mod_loader.branch.clone(),
     },
@@ -951,6 +955,20 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
       .clone()
   };
 
+  match instance.mod_loader.status {
+    // prevent duplicated installation
+    ModLoaderStatus::NotDownloaded => {
+      return Err(InstanceError::ProcessorExecutionFailed.into());
+    }
+    ModLoaderStatus::Installing => {
+      return Err(InstanceError::InstallationDuplicated.into());
+    }
+    ModLoaderStatus::Installed => {
+      return Ok(());
+    }
+    _ => {}
+  }
+
   let client_info_dir = instance
     .version_path
     .join(format!("{}.json", instance.name));
@@ -968,7 +986,7 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
     let instance = state
       .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
-    instance.mod_loader.installed = true;
+    instance.mod_loader.status = ModLoaderStatus::Installed;
     instance.clone()
   };
   instance.save_json_cfg().await?;

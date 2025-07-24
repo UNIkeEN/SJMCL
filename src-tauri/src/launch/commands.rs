@@ -20,7 +20,7 @@ use crate::{
       client_json::McClientInfo,
       misc::{get_instance_game_config, get_instance_subdir_paths},
     },
-    models::misc::{AssetIndex, Instance, InstanceError, InstanceSubdirType},
+    models::misc::{AssetIndex, Instance, InstanceError, InstanceSubdirType, ModLoaderStatus},
   },
   launch::{
     helpers::{
@@ -63,7 +63,7 @@ pub async fn select_suitable_jre(
     .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?
     .clone();
-  if !instance.mod_loader.installed {
+  if instance.mod_loader.status != ModLoaderStatus::Installed {
     return Err(LaunchError::ModLoaderNotInstalled.into());
   }
   let game_config = get_instance_game_config(&app, &instance);

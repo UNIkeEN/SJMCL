@@ -1,9 +1,8 @@
 use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
-use strum::IntoEnumIterator;
 use strum_macros::{Display, EnumIter};
 
-#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
+#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]
 pub enum ResourceType {
   VersionManifest,
   VersionManifestV2,
@@ -14,6 +13,7 @@ pub enum ResourceType {
   MojangJava,
   ForgeMaven,
   ForgeMeta,
+  ForgeMavenNew,
   ForgeInstall,
   Liteloader,
   Optifine,
@@ -23,8 +23,7 @@ pub enum ResourceType {
   NeoforgeMetaForge,    // old version, only for 1.20.1
   NeoforgeMetaNeoforge, // new version
   NeoforgeInstall,
-  NeoforgedForge,
-  NeoforgedNeoforge,
+  NeoforgeMaven,
   QuiltMaven,
   QuiltMeta,
 }

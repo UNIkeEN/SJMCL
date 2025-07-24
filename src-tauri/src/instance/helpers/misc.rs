@@ -7,9 +7,11 @@ use super::{
   client_jar::load_game_version_from_jar,
 };
 use crate::error::SJMCLResult;
+use crate::instance::commands::finish_mod_loader_install;
 use crate::instance::helpers::mod_loader::{download_forge_libraries, download_neoforge_libraries};
-use crate::instance::models::misc::ModLoaderType;
+use crate::instance::models::misc::{ModLoaderStatus, ModLoaderType};
 use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
+use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::{
   instance::helpers::client_json::patchs_to_info,
@@ -133,6 +135,7 @@ pub async fn refresh_instances(
   app: &AppHandle,
   game_directory: &GameDirectory,
 ) -> SJMCLResult<Vec<Instance>> {
+  println!("Refreshing instances in {}", game_directory.name);
   let mut instances = vec![];
   // traverse the "versions" directory
   let versions_dir = game_directory.dir.join("versions");
@@ -175,19 +178,46 @@ pub async fn refresh_instances(
       .await
       .unwrap_or_default();
 
-    if !cfg_read.mod_loader.installed {
-      match cfg_read.mod_loader.loader_type {
-        ModLoaderType::Forge => {
-          download_forge_libraries(app, &cfg_read, &client_data)
-            .await
-            .inspect_err(|e| {
-              println!("Failed to download Forge libraries for {}: {:?}", name, e);
-            })?;
+    if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
+      let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+      let priority_list = {
+        let launcher_config = launcher_config_state.lock()?;
+        get_source_priority_list(&launcher_config)
+      };
+      if let Err(e) = {
+        match cfg_read.mod_loader.status {
+          ModLoaderStatus::NotDownloaded => match cfg_read.mod_loader.loader_type {
+            ModLoaderType::Forge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_forge_libraries(app, &priority_list, &cfg_read, &client_data).await
+            }
+            ModLoaderType::NeoForge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data).await
+            }
+            _ => Ok(()),
+          },
+          ModLoaderStatus::Downloading => {
+            // skip
+            Ok(())
+          }
+          ModLoaderStatus::NotInstalled => {
+            finish_mod_loader_install(app.clone(), cfg_read.id.clone()).await
+          }
+          ModLoaderStatus::Installing => {
+            // skip
+            Ok(())
+          }
+          ModLoaderStatus::Installed => {
+            // already installed
+            Ok(())
+          }
         }
-        ModLoaderType::NeoForge => {
-          download_neoforge_libraries(app, &cfg_read, &client_data).await?;
-        }
-        _ => {}
+      } {
+        println!("Failed to install mod loader for {}: {:?}", name, e);
+        cfg_read.mod_loader.status = ModLoaderStatus::NotDownloaded;
+        cfg_read.save_json_cfg().await?;
+        continue;
       }
     }
 
@@ -208,21 +238,21 @@ pub async fn refresh_instances(
       name,
       version: game_version.unwrap_or_default(),
       version_path,
-      mod_loader: if !cfg_read.mod_loader.installed {
+      mod_loader: if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
         // pass mod loader check if download is not ready
         cfg_read.mod_loader
       } else {
         ModLoader {
           loader_type,
           version: loader_version.unwrap_or_default(),
-          installed: true,
+          status: ModLoaderStatus::Installed,
           branch: None,
         }
       },
       ..cfg_read
     };
     // ignore error here, for now
-    instance.save_json_cfg().await.ok();
+    instance.save_json_cfg().await?;
     instances.push(instance);
   }
 

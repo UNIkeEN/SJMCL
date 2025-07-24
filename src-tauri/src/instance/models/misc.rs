@@ -81,6 +81,16 @@ impl ModLoaderType {
   }
 }
 
+#[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
+pub enum ModLoaderStatus {
+  #[default]
+  NotDownloaded,
+  Downloading,
+  NotInstalled,
+  Installing,
+  Installed,
+}
+
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields, default)]]
@@ -94,7 +104,7 @@ structstruck::strike! {
     pub version: String,
     pub version_path: PathBuf,
     pub mod_loader: struct {
-      pub installed: bool,
+      pub status: ModLoaderStatus,
       pub loader_type: ModLoaderType,
       pub version: String,
       pub branch: Option<String>, // Optional branch name for mod loaders like Forge
@@ -236,6 +246,7 @@ pub enum InstanceError {
   NetworkError,
   UnsupportedModLoader,
   MainClassNotFound,
+  InstallationDuplicated,
   ProcessorExecutionFailed,
 }
 
