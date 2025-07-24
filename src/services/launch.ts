@@ -65,9 +65,9 @@ export class LaunchService {
    */
   @responseHandler("launch")
   static async openGameLogWindow(
-    logLabel: string
+    launchingId: number
   ): Promise<InvokeResponse<void>> {
-    return await invoke("open_game_log_window", { logLabel });
+    return await invoke("open_game_log_window", { launchingId });
   }
 
   /**
@@ -77,8 +77,10 @@ export class LaunchService {
    * @returns {Promise<InvokeResponse<string[]>>}
    */
   @responseHandler("launch")
-  static async retrieveGameLog(id: number): Promise<InvokeResponse<string[]>> {
-    return await invoke("retrieve_game_log", { id });
+  static async retrieveGameLog(
+    launching_id: number
+  ): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_game_log", { launching_id });
   }
 
   /**
@@ -89,9 +91,9 @@ export class LaunchService {
    */
   @responseHandler("launch")
   static async retrieveGameLaunchingState(
-    id: number
+    launching_id: number
   ): Promise<InvokeResponse<LaunchingState>> {
-    return await invoke("retrieve_game_launching_state", { id });
+    return await invoke("retrieve_game_launching_state", { launching_id });
   }
 
   /**
