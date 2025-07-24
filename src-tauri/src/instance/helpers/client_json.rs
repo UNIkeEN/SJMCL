@@ -410,13 +410,31 @@ pub async fn replace_native_libraries(
     if lib.natives.is_some() {
       let natives_key = format!("{key}:natives");
       if let Some(Some(new_lib)) = platform_map.get(&natives_key) {
-        *lib = new_lib.clone();
+        lib.name = new_lib.name.clone();
+        if new_lib.downloads.is_some() {
+          lib.downloads = new_lib.downloads.clone();
+        }
+        if new_lib.natives.is_some() {
+          lib.natives = new_lib.natives.clone();
+        }
+        if new_lib.extract.is_some() {
+          lib.extract = new_lib.extract.clone();
+        }
         continue;
       }
     }
 
     if let Some(Some(new_lib_opt)) = platform_map.get(&key) {
-      *lib = new_lib_opt.clone();
+      lib.name = new_lib_opt.name.clone();
+      if new_lib_opt.downloads.is_some() {
+        lib.downloads = new_lib_opt.downloads.clone();
+      }
+      if new_lib_opt.natives.is_some() {
+        lib.natives = new_lib_opt.natives.clone();
+      }
+      if new_lib_opt.extract.is_some() {
+        lib.extract = new_lib_opt.extract.clone();
+      }
     }
   }
   Ok(())
