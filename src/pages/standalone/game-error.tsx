@@ -121,7 +121,8 @@ const GameErrorPage: React.FC = () => {
   };
 
   const handleOpenLogWindow = async () => {
-    let launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
+    const webview = getCurrentWebview();
+    let launchingId = webview ? parseIdFromWindowLabel(webview.label) : null;
     if (launchingId) {
       await LaunchService.openGameLogWindow(launchingId);
     }
