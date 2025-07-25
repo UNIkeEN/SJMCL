@@ -98,10 +98,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     )
       .then((res) => {
         if (res.status === "success") {
-          toast({
-            title: res.message,
-            status: "success",
-          });
+          // success toast will now be called by task context group listener
           modalProps.onClose();
           router.push("/downloads");
         } else {

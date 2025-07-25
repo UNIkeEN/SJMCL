@@ -48,21 +48,18 @@ export const DownloadGameServerModal: React.FC<
     );
     setIsLoading(false);
     if (response.status === "success") {
-      toast({
-        title: response.message,
-        status: "success",
-      });
+      // success toast will now be called by task context group listener
+      modalProps.onClose?.();
+      router.push("/downloads");
     } else {
       toast({
         title: response.message,
         description: response.details,
         status: "error",
       });
+      modalProps.onClose?.();
     }
-
     setSelectedGameVersion(undefined);
-    modalProps.onClose?.();
-    router.push("/downloads");
   };
 
   return (

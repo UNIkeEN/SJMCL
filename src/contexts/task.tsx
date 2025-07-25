@@ -158,12 +158,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     (taskGroup: string, params: TaskParam[]) => {
       TaskService.scheduleProgressiveTaskGroup(taskGroup, params).then(
         (response) => {
-          if (response.status === "success") {
-            toast({
-              title: response.message,
-              status: "success",
-            });
-          } else {
+          // success toast will now be called by task context group listener
+          if (response.status !== "success") {
             toast({
               title: response.message,
               description: response.details,

@@ -528,7 +528,7 @@
     "task": {
       "game-client": "Game Client {{param}}",
       "game-server": "Game Server {{param}}",
-      "game-resource": "Resource Pack",
+      "game-resource": "Game Resource",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",
       "retry": "Retry Task",
@@ -1931,7 +1931,6 @@
         }
       },
       "downloadGameServer": {
-        "success": "Download Task created successfully",
         "error": {
           "title": "Failed to download game server",
           "description": {
@@ -1974,7 +1973,6 @@
         }
       },
       "createInstance": {
-        "success": "Instance download task created successfully",
         "error": {
           "title": "Failed to create instance download task",
           "description": {
@@ -2158,7 +2156,7 @@
     },
     "task": {
       "scheduleProgressiveTaskGroup": {
-        "success": "Task created successfully"
+        "error": "Failed to create task"
       },
       "onTaskGroupUpdate": {
         "status": {

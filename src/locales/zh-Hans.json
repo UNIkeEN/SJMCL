@@ -528,7 +528,7 @@
     "task": {
       "game-client": "游戏客户端 {{param}}",
       "game-server": "游戏服务端 {{param}}",
-      "game-resource": "资源包",
+      "game-resource": "游戏资源",
       "patch-files": "修补游戏文件 {{param}}",
       "mod-update": "更新模组",
       "retry": "重试任务",
@@ -1931,7 +1931,6 @@
         }
       },
       "downloadGameServer": {
-        "success": "下载任务创建成功",
         "error": {
           "title": "下载游戏服务器失败",
           "description": {
@@ -1974,7 +1973,6 @@
         }
       },
       "createInstance": {
-        "success": "实例下载任务创建成功",
         "error": {
           "title": "实例下载任务创建失败",
           "description": {
@@ -2158,7 +2156,7 @@
     },
     "task": {
       "scheduleProgressiveTaskGroup": {
-        "success": "任务创建成功"
+        "error": "任务创建失败"
       },
       "onTaskGroupUpdate": {
         "status": {
