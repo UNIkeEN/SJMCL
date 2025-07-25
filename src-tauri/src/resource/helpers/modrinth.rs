@@ -97,7 +97,14 @@ pub fn map_modrinth_file_to_version_pack(
     };
 
     const ALLOWED_LOADERS: &[&str] = &[
-      "forge", "fabric", "neoforge", "vanilla", "iris", "canvas", "optifine",
+      "forge",
+      "fabric",
+      "neoforge",
+      "vanilla",
+      "iris",
+      "canvas",
+      "optifine",
+      "minecraft",
     ];
 
     let loaders = if version.loaders.is_empty() {
@@ -125,10 +132,10 @@ pub fn map_modrinth_file_to_version_pack(
             download_url: file.url.clone(),
             sha1: file.hashes.sha1.clone(),
             file_name: file.filename.clone(),
-            loader: if loader.is_empty() {
+            loader: if loader.is_empty() || loader == "minecraft" {
               None
             } else {
-              Some(loader.to_string())
+              Some(loader.to_string().to_lowercase())
             },
           })
           .collect::<Vec<_>>();

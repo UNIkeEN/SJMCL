@@ -2,36 +2,47 @@ use std::cmp::Ordering;
 
 use crate::resource::models::OtherResourceVersionPack;
 
-fn parse_version(version: &str) -> Vec<u32> {
-  version
-    .split('.')
-    .filter_map(|part| part.parse::<u32>().ok())
-    .collect()
-}
+fn parse_version(version: &str) -> (Vec<u32>, String) {
+  let mut version_numbers = Vec::new();
+  let mut suffix = String::new();
 
-fn parse_string(input: &str) -> (String, Vec<u32>) {
-  if let Some((prefix, version)) = input.rsplit_once(' ') {
-    (prefix.to_string(), parse_version(version))
-  } else {
-    ("".to_string(), parse_version(input))
+  for part in version.split('.') {
+    if let Some(dash_pos) = part.find('-') {
+      let (num_part, suffix_part) = part.split_at(dash_pos);
+      if let Ok(num) = num_part.parse::<u32>() {
+        version_numbers.push(num);
+        suffix = suffix_part.to_string();
+      }
+      break;
+    } else if let Ok(num) = part.parse::<u32>() {
+      version_numbers.push(num);
+    }
   }
+
+  (version_numbers, suffix)
 }
 
-fn compare_versions(v1: &[u32], v2: &[u32]) -> Ordering {
+fn compare_versions_with_suffix(v1: &[u32], suffix1: &str, v2: &[u32], suffix2: &str) -> Ordering {
   for (a, b) in v1.iter().zip(v2.iter()) {
     match a.cmp(b) {
       Ordering::Equal => continue,
       other => return other,
     }
   }
-  v1.len().cmp(&v2.len())
+
+  match v1.len().cmp(&v2.len()) {
+    Ordering::Equal => match (suffix1.is_empty(), suffix2.is_empty()) {
+      (true, false) => Ordering::Greater,
+      (false, true) => Ordering::Less,
+      _ => suffix1.cmp(suffix2),
+    },
+    other => other,
+  }
 }
 
 pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionPack) -> Ordering {
-  let (prefix_a, version_a) = parse_string(&a.name);
-  let (prefix_b, version_b) = parse_string(&b.name);
-  match compare_versions(&version_a, &version_b) {
-    Ordering::Equal => prefix_a.cmp(&prefix_b),
-    other => other.reverse(),
-  }
+  let (version_a, suffix_a) = parse_version(&a.name);
+  let (version_b, suffix_b) = parse_version(&b.name);
+
+  compare_versions_with_suffix(&version_a, &suffix_a, &version_b, &suffix_b).reverse()
 }
