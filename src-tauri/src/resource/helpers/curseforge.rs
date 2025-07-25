@@ -201,7 +201,7 @@ pub fn map_curseforge_file_to_version_pack(
           loader: if loader.is_empty() {
             None
           } else {
-            Some(loader.to_string().to_lowercase())
+            Some(loader.to_string())
           },
         };
 

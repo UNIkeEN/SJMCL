@@ -135,7 +135,16 @@ pub fn map_modrinth_file_to_version_pack(
             loader: if loader.is_empty() || loader == "minecraft" {
               None
             } else {
-              Some(loader.to_string().to_lowercase())
+              match loader.as_str() {
+                "forge" => Some("Forge".to_string()),
+                "fabric" => Some("Fabric".to_string()),
+                "neoforge" => Some("NeoForge".to_string()),
+                "vanilla" => Some("Vanilla".to_string()),
+                "iris" => Some("Iris".to_string()),
+                "canvas" => Some("Canvas".to_string()),
+                "optifine" => Some("OptiFine".to_string()),
+                _ => Some(loader.clone()),
+              }
             },
           })
           .collect::<Vec<_>>();
