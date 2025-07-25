@@ -395,7 +395,8 @@
   "DiscoverPage": {
     "title": "Discover",
     "noMore": "No more",
-    "sources": "Manage Sources"
+    "sources": "Manage Sources",
+    "NoSources": "No data sources"
   },
   "DiscoverSourcesPage": {
     "button": {

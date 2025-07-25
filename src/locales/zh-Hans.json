@@ -395,7 +395,7 @@
   "DiscoverPage": {
     "title": "发现",
     "noMore": "无更多内容",
-    "sources": "管理数据源"
+    "sources": "管理数据源",
     "NoSources": "未添加数据源"
   },
   "DiscoverSourcesPage": {
