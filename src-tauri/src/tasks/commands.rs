@@ -7,7 +7,6 @@ use crate::{
   utils::fs::extract_filename,
 };
 
-use super::events::GEvent;
 use super::{PTaskGroupDesc, PTaskParam, SJMCLFutureDesc, THandle};
 
 #[tauri::command]
@@ -63,7 +62,6 @@ pub async fn schedule_progressive_task_group(
   monitor
     .enqueue_task_group(task_group.clone(), future_descs)
     .await;
-  GEvent::emit_group_started(&app, &task_group);
   Ok(PTaskGroupDesc {
     task_group,
     task_descs,

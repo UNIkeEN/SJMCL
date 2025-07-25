@@ -210,6 +210,7 @@ impl TaskMonitor {
         phs: HashMap::from_iter(hvec),
       },
     );
+    GEvent::emit_group_started(&self.app_handle, &task_group);
 
     for future in futures {
       let task = Box::pin(async move {
