@@ -20,7 +20,7 @@ import { downloadDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuDownload,
@@ -67,6 +67,7 @@ interface DownloadSpecificResourceModalProps
   extends Omit<ModalProps, "children"> {
   resource: OtherResourceInfo;
   curInstanceMajorVersion: string | undefined;
+  curInstanceVersion: string | undefined;
   curInstanceModLoader: ModLoaderType | undefined;
 }
 
@@ -75,6 +76,7 @@ const DownloadSpecificResourceModal: React.FC<
 > = ({
   resource,
   curInstanceMajorVersion,
+  curInstanceVersion = undefined,
   curInstanceModLoader,
   ...modalProps
 }) => {
@@ -222,11 +224,11 @@ const DownloadSpecificResourceModal: React.FC<
     ]);
   };
 
-  const getRecommendedFiles = (): OtherResourceFileInfo[] => {
-    if (!curInstanceMajorVersion || !versionPacks.length) return [];
+  const getRecommendedFiles = useMemo((): OtherResourceFileInfo[] => {
+    if (!curInstanceVersion || !versionPacks.length) return [];
 
     const matchingPacks = versionPacks.filter(
-      (pack) => pack.name === curInstanceMajorVersion
+      (pack) => pack.name === curInstanceVersion
     );
     if (!matchingPacks.length) return [];
 
@@ -260,10 +262,16 @@ const DownloadSpecificResourceModal: React.FC<
       (a, b) => new Date(b.fileDate).getTime() - new Date(a.fileDate).getTime()
     );
     return [candidateFiles[0]];
-  };
+  }, [
+    curInstanceVersion,
+    versionPacks,
+    resource.type,
+    resource.tags,
+    curInstanceModLoader,
+  ]);
 
   const shouldShowRecommendedSection = (): boolean => {
-    const recommendedFiles = getRecommendedFiles();
+    const recommendedFiles = getRecommendedFiles;
     if (!recommendedFiles.length) return false;
 
     const isCorrectVersionFilter =
@@ -585,7 +593,7 @@ const DownloadSpecificResourceModal: React.FC<
                       name: t(
                         "DownloadSpecificResourceModal.label.recommendedVersion"
                       ),
-                      items: getRecommendedFiles(),
+                      items: getRecommendedFiles,
                     },
                   ]
                 : [];

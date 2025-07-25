@@ -52,6 +52,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
         source: downloadSource,
       },
       curInstanceMajorVersion: undefined,
+      curInstanceVersion: undefined,
       curInstanceModLoader: mod.loaderType,
     });
   };
