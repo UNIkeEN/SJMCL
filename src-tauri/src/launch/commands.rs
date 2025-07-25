@@ -313,17 +313,18 @@ pub fn cancel_launch_process(
 }
 
 #[tauri::command]
-pub async fn open_game_log_window(app: AppHandle, log_label: String) -> SJMCLResult<()> {
-  create_webview_window(&app, &log_label, "game_log", None).await?;
+pub async fn open_game_log_window(app: AppHandle, launching_id: u64) -> SJMCLResult<()> {
+  create_webview_window(&app, &format!("game_log_{launching_id}"), "game_log", None).await?;
 
   Ok(())
 }
 
 #[tauri::command]
-pub fn retrieve_game_log(app: AppHandle, id: u64) -> SJMCLResult<Vec<String>> {
-  let log_file_dir = app
-    .path()
-    .resolve::<PathBuf>(format!("game_log_{id}.log").into(), BaseDirectory::AppCache)?;
+pub fn retrieve_game_log(app: AppHandle, launching_id: u64) -> SJMCLResult<Vec<String>> {
+  let log_file_dir = app.path().resolve::<PathBuf>(
+    format!("game_log_{launching_id}.log").into(),
+    BaseDirectory::AppCache,
+  )?;
   Ok(
     BufReader::new(std::fs::OpenOptions::new().read(true).open(log_file_dir)?)
       .lines()
@@ -335,10 +336,10 @@ pub fn retrieve_game_log(app: AppHandle, id: u64) -> SJMCLResult<Vec<String>> {
 #[tauri::command]
 pub fn retrieve_game_launching_state(
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
-  id: u64,
+  launching_id: u64,
 ) -> SJMCLResult<LaunchingState> {
   let launching_queue = launching_queue_state.lock()?;
-  if let Some(launching) = launching_queue.iter().find(|l| l.id == id) {
+  if let Some(launching) = launching_queue.iter().find(|l| l.id == launching_id) {
     Ok(launching.clone())
   } else {
     Err(LaunchError::LaunchingStateNotFound.into())
@@ -349,15 +350,16 @@ pub fn retrieve_game_launching_state(
 pub fn export_game_crash_info(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
-  id: u64,
+  launching_id: u64,
 ) -> SJMCLResult<String> {
-  let log_file_dir = app
-    .path()
-    .resolve::<PathBuf>(format!("game_log_{id}.log").into(), BaseDirectory::AppCache)?;
+  let log_file_dir = app.path().resolve::<PathBuf>(
+    format!("game_log_{launching_id}.log").into(),
+    BaseDirectory::AppCache,
+  )?;
   let launching_queue = launching_queue_state.lock()?;
   let launching = launching_queue
     .iter()
-    .find(|l| l.id == id)
+    .find(|l| l.id == launching_id)
     .ok_or(LaunchError::LaunchingStateNotFound)?;
   let version_info_dir = launching
     .selected_instance

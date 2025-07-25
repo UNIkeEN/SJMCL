@@ -60,51 +60,53 @@ export class LaunchService {
 
   /**
    * OPEN the game log window during instance runtime.
-   * @param log_label The label of the game log.
+   * @param {number} launchingId The id of the launching state.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("launch")
   static async openGameLogWindow(
-    logLabel: string
+    launchingId: number
   ): Promise<InvokeResponse<void>> {
-    return await invoke("open_game_log_window", { logLabel });
+    return await invoke("open_game_log_window", { launchingId });
   }
 
   /**
    * RETRIEVE the game log content according to the specified log label.
    * Typically used when opening the game log window for the first time during instance runtime.
-   * @param id The id of the launching state.
+   * @param {number} launchingId The id of the launching state.
    * @returns {Promise<InvokeResponse<string[]>>}
    */
   @responseHandler("launch")
-  static async retrieveGameLog(id: number): Promise<InvokeResponse<string[]>> {
-    return await invoke("retrieve_game_log", { id });
+  static async retrieveGameLog(
+    launchingId: number
+  ): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_game_log", { launchingId });
   }
 
   /**
    * RETRIEVE the game launching state.
    * This command is usually called by the game error window when game process crashed.
-   * @param id The id of the launching state to retrieve.
+   * @param {number} launchingId The id of the launching state to retrieve.
    * @returns {Promise<InvokeResponse<LaunchingState>>} The current game launching state.
    */
   @responseHandler("launch")
   static async retrieveGameLaunchingState(
-    id: number
+    launchingId: number
   ): Promise<InvokeResponse<LaunchingState>> {
-    return await invoke("retrieve_game_launching_state", { id });
+    return await invoke("retrieve_game_launching_state", { launchingId });
   }
 
   /**
    * EXPORT the game crash info to a zip file and reveal it in the file explorer.
    * This command is usually called by the game error window when game process crashed.
-   * @param id The id of the launching state to export.
+   * @param {number} launchingId The id of the launching state to export.
    * @returns {Promise<InvokeResponse<string>>} The path of the exported zip file.
    */
   @responseHandler("launch")
   static async exportGameCrashInfo(
-    id: number
+    launchingId: number
   ): Promise<InvokeResponse<string>> {
-    return await invoke("export_game_crash_info", { id });
+    return await invoke("export_game_crash_info", { launchingId });
   }
 
   /**

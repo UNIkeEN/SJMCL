@@ -121,10 +121,9 @@ const GameErrorPage: React.FC = () => {
   };
 
   const handleOpenLogWindow = async () => {
-    const label = getCurrentWebview()?.label.replace("error", "log");
-    console.warn(label);
-    if (label) {
-      await LaunchService.openGameLogWindow(label);
+    let launchingId = parseIdFromWindowLabel(getCurrentWebview()?.label || "");
+    if (launchingId) {
+      await LaunchService.openGameLogWindow(launchingId);
     }
   };
 
