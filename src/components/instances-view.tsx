@@ -6,6 +6,7 @@ import {
   Image,
   Radio,
   RadioGroup,
+  Text,
 } from "@chakra-ui/react";
 import { FaStar } from "react-icons/fa6";
 import Empty from "@/components/common/empty";
@@ -41,7 +42,12 @@ const InstancesView: React.FC<InstancesViewProps> = ({
   };
 
   const listItems = instances.map((instance) => ({
-    title: instance.name,
+    title: (
+      <Text fontSize="xs-sm" className="break-wrap">
+        {instance.name}
+      </Text>
+    ),
+    titleLineWrap: false,
     description: [generateInstanceDesc(instance), instance.description]
       .filter(Boolean)
       .join(", "),
