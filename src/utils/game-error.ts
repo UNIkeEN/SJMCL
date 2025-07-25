@@ -241,6 +241,11 @@ const crashRules: { key: string; pattern: RegExp }[] = [
     pattern:
       /RivaTuner Statistics Server \(RTSS\) is not compatible with Sodium/,
   },
+  {
+    key: "NATIVE_LIBRARY_ARCH_INCOMPATIBLE",
+    pattern:
+      /java\.lang\.UnsatisfiedLinkError: .*?\.(dylib|so|dll): dlopen\(.*?\): .*?missing compatible architecture.*?\(have '.*?', need '.*?'\)/,
+  },
 ];
 
 export const analyzeCrashReport = (

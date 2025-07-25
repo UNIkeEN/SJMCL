@@ -758,6 +758,7 @@
       "NIGHT_CONFIG_FIXES": "Issues detected with the Night Config library. Installing the Night Config Fixes mod may help.",
       "SHADERS_MOD": "Both OptiFine and the Shaders mod are installed. Please remove the Shaders mod.",
       "RTSS_FOREST_SODIUM": "RTSS is not compatible with Sodium.",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "Some native libraries used by the game are incompatible with your system architecture.",
       "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
     },
     "button": {
