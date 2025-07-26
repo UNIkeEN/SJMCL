@@ -18,12 +18,12 @@ import { useTranslation } from "react-i18next";
 import { LuCalendar } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
-import { PostSourceInfo, PostSummary } from "@/models/post";
+import { NewsPostSummary, NewsSourceInfo } from "@/models/news-post";
 import { formatRelativeTime } from "@/utils/datetime";
 import { cleanHtmlText } from "@/utils/string";
 
 interface PosterCardProps extends CardProps {
-  data: PostSummary;
+  data: NewsPostSummary;
 }
 
 // used in discover page, under masonry container
@@ -84,7 +84,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
           <HStack className="secondary-text" fontSize="xs" mt={1} spacing={1}>
             <LuCalendar size={12} />
             <Text>{formatRelativeTime(createAt, t).replace("on", "")}</Text>
-            {(source as PostSourceInfo).name !== undefined && (
+            {(source as NewsSourceInfo).name !== undefined && (
               <>
                 <Avatar
                   name={source.name}

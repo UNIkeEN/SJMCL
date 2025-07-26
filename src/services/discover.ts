@@ -1,5 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { PostRequest, PostSourceInfo, PostSummary } from "@/models/post";
+import {
+  NewsPostRequest,
+  NewsPostSummary,
+  NewsSourceInfo,
+} from "@/models/news-post";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -8,27 +12,28 @@ import { responseHandler } from "@/utils/response";
  */
 export class DiscoverService {
   /**
-   * FETCH the list of post sources' info.
-   * @returns {Promise<InvokeResponse<PostSourceInfo[]>>}
+   * FETCH the list of news sources' info.
+   * @returns {Promise<InvokeResponse<NewsSourceInfo[]>>}
    */
   @responseHandler("resource")
-  static async fetchPostSourcesInfo(): Promise<
-    InvokeResponse<PostSourceInfo[]>
+  static async fetchNewsSourcesInfo(): Promise<
+    InvokeResponse<NewsSourceInfo[]>
   > {
-    return await invoke("fetch_post_sources_info");
+    return await invoke("fetch_news_sources_info");
   }
 
   /**
-   * FETCH the list of posts' summaries.
-   * @returns {Promise<InvokeResponse<PostSummary[]>>}
+   * FETCH the list of news posts' summaries.
+   * @returns {Promise<InvokeResponse<NewsPostSummary[]>>}
    */
 
   @responseHandler("resource")
-  static async fetchPostSummaries(
-    sources: PostRequest[]
-  ): Promise<
-    InvokeResponse<{ posts: PostSummary[]; cursors: Record<string, number> }>
+  static async fetchNewsPostSummaries(sources: NewsPostRequest[]): Promise<
+    InvokeResponse<{
+      posts: NewsPostSummary[];
+      cursors: Record<string, number>;
+    }>
   > {
-    return await invoke("fetch_post_summaries", { requests: sources });
+    return await invoke("fetch_news_post_summaries", { requests: sources });
   }
 }

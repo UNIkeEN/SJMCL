@@ -10,7 +10,7 @@ import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
 import PosterCard from "@/components/poster-card";
 import { useLauncherConfig } from "@/contexts/config";
-import { PostRequest, PostSummary } from "@/models/post";
+import { NewsPostRequest, NewsPostSummary } from "@/models/news-post";
 import { DiscoverService } from "@/services/discover";
 
 export const DiscoverPage = () => {
@@ -18,7 +18,7 @@ export const DiscoverPage = () => {
   const router = useRouter();
   const { config } = useLauncherConfig();
 
-  const [visiblePosts, setVisiblePosts] = useState<PostSummary[]>([]);
+  const [visiblePosts, setVisiblePosts] = useState<NewsPostSummary[]>([]);
   const [sourceCursors, setSourceCursors] = useState<
     Record<string, number | null>
   >({});
@@ -30,14 +30,14 @@ export const DiscoverPage = () => {
     setVisiblePosts([]);
     setIsLoading(true);
     try {
-      const sources: PostRequest[] = config.discoverSourceEndpoints.map(
+      const sources: NewsPostRequest[] = config.discoverSourceEndpoints.map(
         (url) => ({
           url,
           cursor: null,
         })
       );
 
-      const response = await DiscoverService.fetchPostSummaries(sources);
+      const response = await DiscoverService.fetchNewsPostSummaries(sources);
       console.log(response);
       if (response.status === "success") {
         setVisiblePosts(response.data.posts);
@@ -52,7 +52,7 @@ export const DiscoverPage = () => {
   const loadMore = useCallback(async () => {
     if (isLoading) return;
 
-    const pendingSources: PostRequest[] = Object.entries(sourceCursors)
+    const pendingSources: NewsPostRequest[] = Object.entries(sourceCursors)
       .filter(([, cursor]) => cursor !== null)
       .map(([url, cursor]) => ({ url, cursor }));
 
@@ -60,7 +60,8 @@ export const DiscoverPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await DiscoverService.fetchPostSummaries(pendingSources);
+      const response =
+        await DiscoverService.fetchNewsPostSummaries(pendingSources);
       if (response.status === "success") {
         setVisiblePosts((prev) => [...prev, ...response.data.posts]);
         setSourceCursors(response.data.cursors ?? {});

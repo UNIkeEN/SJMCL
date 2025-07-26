@@ -1,16 +1,16 @@
 type ImageSrcUnion = [string, number, number];
 
-export interface PostSummary {
+export interface NewsPostSummary {
   title: string;
   abstract?: string;
   keywords?: string;
   imageSrc?: ImageSrcUnion;
-  source: PostSourceInfo;
+  source: NewsSourceInfo;
   createAt: string;
   link: string;
 }
 
-export interface PostSourceInfo {
+export interface NewsSourceInfo {
   // In the backend, only store the endpointUrl (unique, as index), and retrieve and populate the remaining fields when fetching new posts or checking if the endpoint is online.
   name?: string;
   fullName?: string;
@@ -18,7 +18,7 @@ export interface PostSourceInfo {
   iconSrc?: string;
 }
 
-export interface PostRequest {
+export interface NewsPostRequest {
   url: string;
   cursor: number | null;
 }
