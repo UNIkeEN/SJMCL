@@ -40,12 +40,12 @@ export const parseModLoaderVersion = (version: string): string => {
   const patterns = [
     {
       // Forge: "1.16.5-forge-36.2.39"
-      regex: /(\d+\.\d+\.\d+)-forge-(\d+\.\d+\.\d+)/,
+      regex: /([\d.]+)-forge-([\d.]+)/,
       getVersion: (match: RegExpMatchArray) => match[2],
     },
     {
       // NeoForge: "neoforge-21.8.13" or "1.20.1-neoforge-47.0.44"
-      regex: /(neoforge|\d+\.\d+\.\d+)-(\d+\.\d+\.\d+)/,
+      regex: /(neoforge|[\d.]+)-([\d.]+)/,
       getVersion: (match: RegExpMatchArray) => match[2],
     },
   ];

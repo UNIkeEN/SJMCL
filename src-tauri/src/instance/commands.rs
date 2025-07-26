@@ -30,7 +30,7 @@ use crate::{
       mod_loader::{execute_processors, install_mod_loader},
       mods::forge::InstallProfile,
     },
-    models::misc::{AssetIndex, ModLoader, ModLoaderStatus},
+    models::misc::{ModLoader, ModLoaderStatus},
   },
   launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files},
   launcher_config::{
@@ -42,7 +42,7 @@ use crate::{
     helpers::misc::get_source_priority_list,
     models::{GameClientResourceInfo, ModLoaderResourceInfo},
   },
-  storage::{load_json_async, Storage},
+  storage::{load_json_async, save_json_async, Storage},
   tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
   utils::{fs::create_url_shortcut, image::ImageWrapper},
 };
@@ -905,19 +905,10 @@ pub async fn create_instance(
   );
 
   // Download asset index
-  let asset_index = client
-    .get(version_info.asset_index.url.clone())
-    .send()
-    .await
-    .map_err(|_| InstanceError::NetworkError)?
-    .json::<AssetIndex>()
-    .await
-    .map_err(|_| InstanceError::AssetIndexParseError)?;
-
-  let asset_index_path = assets_dir.join("indexes");
 
   // We only download assets if they are invalid (not already downloaded)
-  task_params.extend(get_invalid_assets(priority_list[0], assets_dir, &asset_index, false).await?);
+  task_params
+    .extend(get_invalid_assets(&app, &version_info, priority_list[0], assets_dir, false).await?);
 
   if instance.mod_loader.loader_type != ModLoaderType::Unknown {
     install_mod_loader(
@@ -939,26 +930,12 @@ pub async fn create_instance(
   )
   .await?;
 
-  fs::create_dir_all(&version_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+  save_json_async(&version_info, &version_path.join(format!("{}.json", name))).await?;
+
   instance
     .save_json_cfg()
     .await
     .map_err(|_| InstanceError::FileCreationFailed)?;
-  let version_info_path = directory
-    .dir
-    .join(format!("versions/{}/{}.json", name, name));
-
-  fs::write(
-    &version_info_path,
-    serde_json::to_vec_pretty(&version_info)?,
-  )
-  .map_err(|_| InstanceError::FileCreationFailed)?;
-  fs::create_dir_all(&asset_index_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-  fs::write(
-    asset_index_path.join(format!("{}.json", version_info.asset_index.id)),
-    serde_json::to_vec_pretty(&asset_index)?,
-  )
-  .map_err(|_| InstanceError::FileCreationFailed)?;
 
   Ok(())
 }

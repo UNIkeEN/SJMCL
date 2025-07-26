@@ -16,11 +16,12 @@ use crate::{
   },
   error::SJMCLResult,
   instance::{
+    constants::INSTANCE_CFG_FILE_NAME,
     helpers::{
       client_json::{replace_native_libraries, McClientInfo},
       misc::{get_instance_game_config, get_instance_subdir_paths},
     },
-    models::misc::{AssetIndex, Instance, InstanceError, InstanceSubdirType, ModLoaderStatus},
+    models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus},
   },
   launch::{
     helpers::{
@@ -34,7 +35,6 @@ use crate::{
   tasks::commands::schedule_progressive_task_group,
   utils::{fs::create_zip_from_dirs, window::create_webview_window},
 };
-use chrono::Local;
 use std::{collections::HashMap, path::PathBuf};
 use std::{
   io::{prelude::*, BufReader},
@@ -73,11 +73,6 @@ pub async fn select_suitable_jre(
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
-  let asset_index_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Assets])
-    .ok_or(InstanceError::InstanceNotFoundByID)?[0]
-    .join(format!("indexes/{}.json", client_info.asset_index.id));
-  let asset_index = load_json_async::<AssetIndex>(&asset_index_path).await?;
-
   let javas = javas_state.lock()?.clone();
   let selected_java = select_java_runtime(
     &app,
@@ -94,7 +89,6 @@ pub async fn select_suitable_jre(
     id: timestamp,
     game_config,
     client_info,
-    asset_index,
     selected_java,
     selected_instance: instance,
     ..LaunchingState::default()
@@ -110,7 +104,7 @@ pub async fn validate_game_files(
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (instance, mut client_info, asset_index, validate_policy) = {
+  let (instance, mut client_info, validate_policy) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -119,7 +113,6 @@ pub async fn validate_game_files(
     (
       launching.selected_instance.clone(),
       launching.client_info.clone(),
-      launching.asset_index.clone(),
       launching
         .game_config
         .advanced
@@ -168,12 +161,12 @@ pub async fn validate_game_files(
     FileValidatePolicy::Disable => return Ok(()), // skip
     FileValidatePolicy::Normal => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
-      get_invalid_assets(priority_list[0], assets_dir, &asset_index, false).await?,
+      get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, false).await?,
     ]
     .concat(),
     FileValidatePolicy::Full => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, true).await?,
-      get_invalid_assets(priority_list[0], assets_dir, &asset_index, true).await?,
+      get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, true).await?,
     ]
     .concat(),
   };
@@ -364,26 +357,31 @@ pub fn export_game_crash_info(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
   launching_id: u64,
+  save_path: String,
 ) -> SJMCLResult<String> {
-  let log_file_dir = app.path().resolve::<PathBuf>(
+  let game_log_path = app.path().resolve::<PathBuf>(
     format!("game_log_{launching_id}.log").into(),
     BaseDirectory::AppCache,
   )?;
+
   let launching_queue = launching_queue_state.lock()?;
   let launching = launching_queue
     .iter()
     .find(|l| l.id == launching_id)
     .ok_or(LaunchError::LaunchingStateNotFound)?;
-  let version_info_dir = launching
+  let version_info_path = launching
     .selected_instance
     .version_path
     .join(format!("{}.json", launching.selected_instance.name));
+  let version_config_path = launching
+    .selected_instance
+    .version_path
+    .join(INSTANCE_CFG_FILE_NAME);
 
-  let time = Local::now().format("%Y-%m-%d_%H-%M-%S").to_string();
-  let zip_file_path = app.path().resolve::<PathBuf>(
-    format!("minecraft-exported-crash-info-{time}.zip").into(),
-    BaseDirectory::AppCache,
-  )?;
+  let zip_file_path = PathBuf::from(save_path);
 
-  create_zip_from_dirs(vec![log_file_dir, version_info_dir], zip_file_path.clone())
+  create_zip_from_dirs(
+    vec![game_log_path, version_info_path, version_config_path],
+    zip_file_path.clone(),
+  )
 }

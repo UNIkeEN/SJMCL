@@ -1,8 +1,11 @@
 use crate::{
   error::SJMCLResult,
   instance::{
-    helpers::client_json::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
-    models::misc::{AssetIndex, InstanceError},
+    helpers::{
+      asset_index::load_asset_index,
+      client_json::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
+    },
+    models::misc::InstanceError,
   },
   launch::models::LaunchError,
   resource::{
@@ -16,6 +19,7 @@ use futures;
 use std::collections::HashSet;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
+use tauri::AppHandle;
 use tokio::fs;
 use zip::ZipArchive;
 
@@ -248,12 +252,16 @@ pub async fn extract_native_libraries(
 }
 
 pub async fn get_invalid_assets(
+  app: &AppHandle,
+  client_info: &McClientInfo,
   source: SourceType,
   asset_path: &Path,
-  asset_index: &AssetIndex,
   check_hash: bool,
 ) -> SJMCLResult<Vec<PTaskParam>> {
   let assets_download_api = get_download_api(source, ResourceType::Assets)?;
+
+  let asset_index_path = asset_path.join(format!("indexes/{}.json", client_info.asset_index.id));
+  let asset_index = load_asset_index(app, &asset_index_path, &client_info.asset_index.url).await?;
 
   Ok(
     asset_index

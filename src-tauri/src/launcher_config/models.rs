@@ -125,7 +125,7 @@ structstruck::strike! {
       },
       pub workaround: struct {
         pub no_jvm_args: bool,
-        #[default(FileValidatePolicy::Full)]
+        #[default(FileValidatePolicy::Normal)]
         pub game_file_validate_policy: FileValidatePolicy,
         pub dont_check_jvm_validity: bool,
         pub dont_patch_natives: bool,
@@ -289,7 +289,7 @@ impl LauncherConfig {
   ) -> Result<(), std::io::Error> {
     self
       .update(key_path, value)
-      .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+      .map_err(std::io::Error::other)?;
 
     app
       .emit(
@@ -299,7 +299,7 @@ impl LauncherConfig {
           "value": value,
         }),
       )
-      .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+      .map_err(std::io::Error::other)?;
 
     Ok(())
   }

@@ -16,6 +16,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +25,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { InstanceSummary } from "@/models/instance/misc";
 import { JavaInfo } from "@/models/system-info";
 import { LaunchService } from "@/services/launch";
+import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
 import { analyzeCrashReport } from "@/utils/game-error";
 import { capitalizeFirstLetter } from "@/utils/string";
@@ -127,16 +129,23 @@ const GameErrorPage: React.FC = () => {
     }
   };
 
-  const handleExportGameInfo = async () => {
+  const handleExportGameCrashInfo = async () => {
+    const timestamp = ISOToDatetime(new Date().toISOString()).replace(
+      /[: ]/g,
+      "-"
+    );
+
+    const savePath = await save({
+      defaultPath: `minecraft-exported-crash-info-${timestamp}.zip`,
+    });
     let launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
-    if (launchingId) {
-      setIsLoading(true);
-      const res = await LaunchService.exportGameCrashInfo(launchingId);
-      if (res.status === "success") {
-        await revealItemInDir(res.data);
-      }
-      setIsLoading(false);
+    if (!savePath || !launchingId) return;
+    setIsLoading(true);
+    const res = await LaunchService.exportGameCrashInfo(launchingId, savePath);
+    if (res.status === "success") {
+      await revealItemInDir(res.data);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -214,7 +223,7 @@ const GameErrorPage: React.FC = () => {
         <Button
           colorScheme={primaryColor}
           variant="solid"
-          onClick={handleExportGameInfo}
+          onClick={handleExportGameCrashInfo}
           isLoading={isLoading}
         >
           {t("GameErrorPage.button.exportGameInfo")}
