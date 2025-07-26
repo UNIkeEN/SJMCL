@@ -99,7 +99,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
             status: "error",
           });
           router.push("/downloads");
-        }, // TODO
+        },
       },
       {
         label: "validateSelectedPlayer",
@@ -133,9 +133,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         function: () => LaunchService.launchGame(),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
-        onErrCallback: (error: ResponseError) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {},
       },
-      // TODO: progress bar in last step, and cancel logic
     ],
     [
       activeStep,
@@ -158,7 +157,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       return;
     }
     if (activeStep >= launchProcessSteps.length) {
-      // Final launching state, we don't use handleCloseModalWithCancel
+      // Final launching state, we don't use handleCloseModalWithCancel (it includes cancel logic)
       setErrorPaused(false);
       props.onClose();
       return;
