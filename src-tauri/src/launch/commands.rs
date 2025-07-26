@@ -133,6 +133,15 @@ pub async fn validate_game_files(
     .await
     .map_err(|_| InstanceError::ClientJsonParseError)?;
 
+  {
+    let mut launching_queue = launching_queue_state.lock()?;
+    let launching = launching_queue
+      .last_mut()
+      .ok_or(LaunchError::LaunchingStateNotFound)?;
+
+    launching.client_info = client_info.clone();
+  }
+
   // extract native libraries
   let dirs = get_instance_subdir_paths(
     &app,
