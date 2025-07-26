@@ -17,7 +17,7 @@ use crate::{
   error::SJMCLResult,
   instance::{
     helpers::{
-      client_json::McClientInfo,
+      client_json::{replace_native_libraries, McClientInfo},
       misc::{get_instance_game_config, get_instance_subdir_paths},
     },
     models::misc::{AssetIndex, Instance, InstanceError, InstanceSubdirType, ModLoaderStatus},
@@ -110,7 +110,7 @@ pub async fn validate_game_files(
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (instance, client_info, asset_index, validate_policy) = {
+  let (instance, mut client_info, asset_index, validate_policy) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -128,6 +128,10 @@ pub async fn validate_game_files(
         .clone(),
     )
   };
+
+  replace_native_libraries(&app, &mut client_info, &instance)
+    .await
+    .map_err(|_| InstanceError::ClientJsonParseError)?;
 
   // extract native libraries
   let dirs = get_instance_subdir_paths(
