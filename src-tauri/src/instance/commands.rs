@@ -25,7 +25,7 @@ use crate::{
   error::SJMCLResult,
   instance::{
     helpers::{
-      client_json::{McClientInfo, PatchesInfo},
+      client_json::{replace_native_libraries, McClientInfo, PatchesInfo},
       misc::get_instance_subdir_paths,
       mod_loader::{execute_processors, install_mod_loader},
       mods::forge::InstallProfile,
@@ -894,6 +894,10 @@ pub async fn create_instance(
   let [libraries_dir, assets_dir] = subdirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
+
+  replace_native_libraries(&app, &mut version_info, &instance)
+    .await
+    .map_err(|_| InstanceError::ClientJsonParseError)?;
 
   // We only download libraries if they are invalid (not already downloaded)
   task_params.extend(
