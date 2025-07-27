@@ -292,15 +292,22 @@ pub fn patches_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<Strin
   let mut loader_type = ModLoaderType::Unknown;
   let mut game_version = None;
   let mut loader_version = None;
-  if !patches.is_empty() {
-    game_version = Some(patches[0].version.clone());
-  }
-  if patches.len() > 1 {
-    if let Ok(val) = ModLoaderType::from_str(&patches[1].id) {
-      loader_type = val;
+  for patch in patches {
+    if game_version.is_none() && patch.id == "game" {
+      game_version = Some(patch.version.clone());
     }
-    loader_version = Some(patches[1].version.clone())
+    if loader_type == ModLoaderType::Unknown {
+      if let Ok(found_loader_type) = ModLoaderType::from_str(&patch.id) {
+        loader_type = found_loader_type;
+        loader_version = Some(patch.version.clone());
+      }
+    }
+
+    if game_version.is_some() && loader_type != ModLoaderType::Unknown {
+      break;
+    }
   }
+
   (game_version, loader_version, loader_type)
 }
 

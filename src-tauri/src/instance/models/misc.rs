@@ -38,7 +38,7 @@ pub enum ModLoaderType {
 }
 
 impl FromStr for ModLoaderType {
-  type Err = String; // 定义错误类型
+  type Err = String;
 
   fn from_str(input: &str) -> Result<Self, Self::Err> {
     match input.to_lowercase().as_str() {
