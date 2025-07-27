@@ -149,7 +149,7 @@ export class ConfigService {
    */
   static onConfigPartialUpdate(
     callback: (payload: { path: string; value: any }) => void
-  ) {
+  ): () => void {
     return safeListen<{ path: string; value: any }>(
       "config:partial-update",
       (event) => {
