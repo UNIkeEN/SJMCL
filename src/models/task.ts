@@ -127,11 +127,7 @@ export enum GTaskEventStatusEnums {
   Cancelled = "Cancelled",
 }
 
-export interface GTaskEventStatus {
-  status: GTaskEventStatusEnums;
-}
-
 export interface GTaskEventPayload {
   taskGroup: string;
-  event: GTaskEventStatus;
+  event: GTaskEventStatusEnums;
 }

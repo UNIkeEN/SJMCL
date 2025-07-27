@@ -3,7 +3,7 @@ use tauri::{AppHandle, Manager};
 
 use crate::{
   error::SJMCLResult,
-  tasks::{download::DownloadTask, monitor::TaskMonitor},
+  tasks::{download::DownloadTask, events::GEventStatus, monitor::TaskMonitor},
   utils::fs::extract_filename,
 };
 
@@ -65,6 +65,7 @@ pub async fn schedule_progressive_task_group(
   Ok(PTaskGroupDesc {
     task_group,
     task_descs,
+    status: GEventStatus::Started,
   })
 }
 

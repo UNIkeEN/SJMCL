@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
+use crate::tasks::events::GEventStatus;
+
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PDesc<T>
@@ -128,4 +130,5 @@ where
 {
   pub task_group: String,
   pub task_descs: Vec<PDesc<T>>,
+  pub status: GEventStatus,
 }
