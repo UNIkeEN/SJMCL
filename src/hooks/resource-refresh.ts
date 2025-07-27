@@ -1,6 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect } from "react";
 
+export const REFRESH_RESOURCE_LIST_EVENT = "instance:refresh-resource-list";
+
 /**
  * Hook to listen for resource download completion events and refresh the resource list
  * @param resourceTypes - Array of resource types to listen for (e.g., ['mod', 'resourcepack'])
@@ -13,7 +15,7 @@ export const useResourceRefresh = (
   useEffect(() => {
     const setupListener = async () => {
       const unlisten = await listen<{ resourceType: string }>(
-        "resourceDownloadCompleted",
+        REFRESH_RESOURCE_LIST_EVENT,
         (event) => {
           const { resourceType } = event.payload;
           // Refresh if the downloaded resource type matches any of our target types

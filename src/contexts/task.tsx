@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/contexts/toast";
+import { REFRESH_RESOURCE_LIST_EVENT } from "@/hooks/resource-refresh";
 import {
   CreatedPTaskEventStatus,
   FailedPTaskEventStatus,
@@ -468,12 +469,12 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 const resourceTypeMatch = version.match(/type:(\w+)/);
                 if (resourceTypeMatch) {
                   const resourceType = resourceTypeMatch[1];
-                  emit("resourceDownloadCompleted", { resourceType });
+                  emit(REFRESH_RESOURCE_LIST_EVENT, { resourceType });
                 }
               }
               break;
             case "mod-update":
-              emit("resourceDownloadCompleted", { resourceType: "mod" });
+              emit(REFRESH_RESOURCE_LIST_EVENT, { resourceType: "mod" });
               break;
             default:
               break;
