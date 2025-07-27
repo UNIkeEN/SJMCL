@@ -104,8 +104,17 @@ export const GlobalDataContextProvider: React.FC<{
 
   const handleRetrieveInstanceList = useCallback(() => {
     InstanceService.retrieveInstanceList().then((response) => {
-      if (response.status === "success") setInstanceList(response.data);
-      else
+      if (response.status === "success") {
+        const sorted = [...response.data].sort((a, b) => {
+          // put starred instances at the top
+          if (a.starred !== b.starred) {
+            return Number(b.starred) - Number(a.starred);
+          }
+          return a.id.localeCompare(b.id);
+        });
+        setInstanceList(sorted);
+        return response.data;
+      } else
         toast({
           title: response.message,
           description: response.details,
@@ -132,18 +141,9 @@ export const GlobalDataContextProvider: React.FC<{
 
   const getPlayerList = useGetState(playerList, handleRetrievePlayerList);
 
-  const getInstanceList = useGetState(
-    instanceList
-      ? [...instanceList].sort((a, b) => {
-          // put starred instances at the top
-          if (a.starred !== b.starred) {
-            return Number(b.starred) - Number(a.starred);
-          }
-          return a.id.localeCompare(b.id);
-        })
-      : undefined,
-    handleRetrieveInstanceList
-  );
+  // Note: Do not apply any post-processing process on the local state,
+  //       as it will be passed into `useState` dependencies.
+  const getInstanceList = useGetState(instanceList, handleRetrieveInstanceList);
 
   const getAuthServerList = useGetState(
     authServerList,
