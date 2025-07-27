@@ -77,7 +77,10 @@ const InstanceSettingsPage = () => {
               isTextArea={false}
               value={summary?.name || ""}
               onEditSubmit={handleRenameInstance}
-              textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
+              textProps={{
+                className: "secondary-text ellipsis-text",
+                fontSize: "xs-sm",
+              }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
               checkError={checkDirNameError}
