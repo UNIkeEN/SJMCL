@@ -2141,7 +2141,7 @@
         }
       },
       "finishModLoaderInstall": {
-        "loading": "正在为 {{instanceName}} 安装模组加载器...",
+        "loading": "正在为 {{instanceName}} 安装模组加载器",
         "success": "模组加载器安装完成",
         "error": {
           "title": "模组加载器安装失败",

@@ -37,6 +37,9 @@ pub struct LaunchArguments {
   pub launcher_name: String,
   pub launcher_version: String,
 
+  // compatibility with HMCL
+  pub primary_jar_name: String,
+
   // auth params
   pub auth_access_token: String,
   pub auth_player_name: String,
@@ -162,6 +165,7 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
     game_directory: root_dir.to_string_lossy().to_string(),
 
     version_name: selected_instance.name.clone(),
+    primary_jar_name: format!("{}.jar", selected_instance.name.clone()),
     version_type: if !game_config.game_window.custom_info.is_empty() {
       game_config.game_window.custom_info.clone()
     } else {

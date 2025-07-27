@@ -2141,7 +2141,7 @@
         }
       },
       "finishModLoaderInstall": {
-        "loading": "正在為 {{instanceName}} 安裝模組載入器...",
+        "loading": "正在為 {{instanceName}} 安裝模組載入器",
         "success": "模組載入器安裝完成",
         "error": {
           "title": "模組載入器安裝失敗",

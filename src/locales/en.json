@@ -2141,7 +2141,7 @@
         }
       },
       "finishModLoaderInstall": {
-        "loading": "Installing mod loader for {{instanceId}}...",
+        "loading": "Installing mod loader for {{instanceId}}",
         "success": "Mod loader installed successfully",
         "error": {
           "title": "Failed to install mod loader",
