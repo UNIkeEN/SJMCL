@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SJMCL",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "identifier": "SJMCL",
   "build": {
     "frontendDist": "../out",
@@ -51,7 +51,10 @@
       "csp": null,
       "assetProtocol": {
         "enable": true,
-        "scope": ["**", "**/.minecraft/**"]
+        "scope": [
+          "**",
+          "**/.minecraft/**"
+        ]
       }
     }
   },
@@ -88,7 +91,9 @@
   "plugins": {
     "deep-link": {
       "desktop": {
-        "schemes": ["sjmcl"]
+        "schemes": [
+          "sjmcl"
+        ]
       }
     },
     "fs": {
