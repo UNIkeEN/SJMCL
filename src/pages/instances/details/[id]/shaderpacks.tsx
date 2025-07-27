@@ -13,6 +13,7 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
+import { useResourceRefresh } from "@/hooks/resource-refresh";
 import { ShaderPackInfo } from "@/models/instance/misc";
 
 const InstanceShaderPacksPage = () => {
@@ -43,6 +44,8 @@ const InstanceShaderPacksPage = () => {
   useEffect(() => {
     getShaderPackListWrapper();
   }, [getShaderPackListWrapper]);
+
+  useResourceRefresh(["shader"], () => getShaderPackListWrapper(true));
 
   const shaderSecMenuOperations = [
     {

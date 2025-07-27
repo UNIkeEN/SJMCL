@@ -38,6 +38,7 @@ import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { InstanceError } from "@/enums/service-error";
 import { GetStateFlag } from "@/hooks/get-state";
+import { useResourceRefresh } from "@/hooks/resource-refresh";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -94,6 +95,8 @@ const InstanceModsPage = () => {
   useEffect(() => {
     getLocalModListWrapper();
   }, [getLocalModListWrapper]);
+
+  useResourceRefresh(["mod"], () => getLocalModListWrapper(true));
 
   useEffect(() => {
     const keywords = query.trim().toLowerCase().split(/\s+/);

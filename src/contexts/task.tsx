@@ -1,4 +1,5 @@
 import { ToastId, useToast as useChakraToast } from "@chakra-ui/react";
+import { emit } from "@tauri-apps/api/event";
 import React, {
   createContext,
   useCallback,
@@ -461,6 +462,18 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   }
                 );
               }
+              break;
+            case "game-resource":
+              if (version) {
+                const resourceTypeMatch = version.match(/type:(\w+)/);
+                if (resourceTypeMatch) {
+                  const resourceType = resourceTypeMatch[1];
+                  emit("resourceDownloadCompleted", { resourceType });
+                }
+              }
+              break;
+            case "mod-update":
+              emit("resourceDownloadCompleted", { resourceType: "mod" });
               break;
             default:
               break;

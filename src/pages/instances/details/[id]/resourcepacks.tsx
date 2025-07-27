@@ -15,6 +15,7 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
+import { useResourceRefresh } from "@/hooks/resource-refresh";
 import { ResourcePackInfo } from "@/models/instance/misc";
 import { base64ImgSrc } from "@/utils/string";
 
@@ -67,6 +68,11 @@ const InstanceResourcePacksPage = () => {
   useEffect(() => {
     getServerResourcePackListWrapper();
   }, [getServerResourcePackListWrapper]);
+
+  useResourceRefresh(["resourcepack"], () => {
+    getResourcePackListWrapper(true);
+    getServerResourcePackListWrapper(true);
+  });
 
   const defaultIcon = "/images/icons/DefaultPack.webp";
 
