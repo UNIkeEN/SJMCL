@@ -2203,11 +2203,22 @@
     },
     "tip": "集中一处搜索本地内容与线上游戏资源",
     "empty": "无搜索结果",
+    "resource": {
+      "mod": "搜索关于 {{query}} 的模组",
+      "world": "搜索关于 {{query}} 的存档",
+      "resourcepack": "搜索关于 {{query}} 的资源包",
+      "shader": "搜索关于 {{query}} 的光影",
+      "modpack": "搜索关于 {{query}} 的整合包",
+      "curseforge": "在 CurseForge 上",
+      "modrinth": "在 Modrinth 上"
+    },
     "result": {
       "page": "页面",
       "recentViewed": "最近访问过",
       "instance": "实例",
-      "player": "角色"
+      "player": "角色",
+      "curseforge": "在 CurseForge 上搜索",
+      "modrinth": "在 Modrinth 上搜索"
     }
   },
   "StarUsModal": {

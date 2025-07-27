@@ -25,16 +25,19 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { useGlobalData } from "@/contexts/global-data";
 import { useRoutingHistory } from "@/contexts/routing-history";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { OtherResourceType } from "@/enums/resource";
 import { generatePlayerDesc } from "@/utils/account";
 import { generateInstanceDesc } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
 
 interface SearchResult {
-  type: "page" | "instance" | "player";
+  type: "page" | "instance" | "player" | "curseforge" | "modrinth";
   icon: string;
   title: string;
   description: string;
-  url: string;
+  url?: string;
+  action?: () => void;
 }
 
 const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
@@ -43,6 +46,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { history } = useRoutingHistory();
+  const { openSharedModal } = useSharedModals();
 
   const [queryText, setQueryText] = useState<string>("");
   const [instantRes, setInstantRes] = useState<SearchResult[]>([]);
@@ -121,9 +125,102 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     [getPlayerList, getInstanceList, history, t]
   );
 
+  const handleResourceSearch = useCallback(
+    (query: string): SearchResult[] => {
+      if (!query.trim()) return [];
+
+      const resourceTypes = [
+        { type: OtherResourceType.Mod, key: "mod" },
+        { type: OtherResourceType.World, key: "world" },
+        { type: OtherResourceType.ResourcePack, key: "resourcepack" },
+        { type: OtherResourceType.ShaderPack, key: "shader" },
+      ];
+
+      const resourceSearchResults: SearchResult[] = [];
+
+      resourceTypes.forEach(({ type, key }) => {
+        resourceSearchResults.push({
+          type: "curseforge",
+          icon: "",
+          title: t(`SpotlightSearchModal.resource.${key}`, {
+            query: query.trim(),
+          }),
+          description: "",
+          action: () => {
+            openSharedModal("download-resource", {
+              initialResourceType: type,
+              initialSearchQuery: query.trim(),
+              initialDownloadSource: "CurseForge",
+            });
+          },
+        });
+      });
+
+      resourceSearchResults.push({
+        type: "curseforge",
+        icon: "",
+        title: t("SpotlightSearchModal.resource.modpack", {
+          query: query.trim(),
+        }),
+        description: "",
+        action: () => {
+          openSharedModal("download-modpack", {
+            initialSearchQuery: query.trim(),
+            initialDownloadSource: "CurseForge",
+          });
+        },
+      });
+
+      resourceTypes.forEach(({ type, key }) => {
+        resourceSearchResults.push({
+          type: "modrinth",
+          icon: "",
+          title: t(`SpotlightSearchModal.resource.${key}`, {
+            query: query.trim(),
+          }),
+          description: "",
+          action: () => {
+            openSharedModal("download-resource", {
+              initialResourceType: type,
+              initialSearchQuery: query.trim(),
+              initialDownloadSource: "Modrinth",
+            });
+          },
+        });
+      });
+
+      resourceSearchResults.push({
+        type: "modrinth",
+        icon: "",
+        title: t("SpotlightSearchModal.resource.modpack", {
+          query: query.trim(),
+        }),
+        description: "",
+        action: () => {
+          openSharedModal("download-modpack", {
+            initialSearchQuery: query.trim(),
+            initialDownloadSource: "Modrinth",
+          });
+        },
+      });
+
+      return resourceSearchResults;
+    },
+    [openSharedModal, t]
+  );
+
+  const handleAllSearch = useCallback(
+    (query: string): SearchResult[] => {
+      const instantResults = handleInstantSearch(query);
+      const resourceResults = handleResourceSearch(query);
+      return [...instantResults, ...resourceResults];
+    },
+    [handleInstantSearch, handleResourceSearch]
+  );
+
   useEffect(() => {
-    setInstantRes(handleInstantSearch(queryText));
-  }, [queryText, handleInstantSearch]);
+    setInstantRes(handleAllSearch(queryText));
+  }, [queryText, handleAllSearch]);
 
   const groupSearchResults = () => {
     const groupedMap = new Map<string, React.ReactNode[]>();
@@ -166,7 +263,11 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
           }
           isFullClickZone
           onClick={() => {
-            router.push(res.url);
+            if (res.action) {
+              res.action();
+            } else if (res.url) {
+              router.push(res.url);
+            }
             setQueryText("");
             props.onClose?.();
           }}
@@ -210,7 +311,12 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               onChange={(e) => setQueryText(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && instantRes.length > 0) {
-                  router.push(instantRes[0].url);
+                  const firstResult = instantRes[0];
+                  if (firstResult.action) {
+                    firstResult.action();
+                  } else if (firstResult.url) {
+                    router.push(firstResult.url);
+                  }
                   setQueryText("");
                   props.onClose?.();
                 }

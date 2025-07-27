@@ -45,6 +45,8 @@ import { formatDisplayCount } from "@/utils/string";
 
 interface ResourceDownloaderProps {
   resourceType: OtherResourceType;
+  initialSearchQuery?: string;
+  initialDownloadSource?: "CurseForge" | "Modrinth";
 }
 
 interface ResourceDownloaderMenuProps {
@@ -298,6 +300,8 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
 
 const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   resourceType,
+  initialSearchQuery = "",
+  initialDownloadSource = "CurseForge",
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
@@ -315,13 +319,15 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [pageSize, setPageSize] = useState<number>(10);
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const [gameVersion, setGameVersion] = useState<string>("All");
   const [selectedTag, setSelectedTag] = useState<string>("All");
-  const [sortBy, setSortBy] = useState<string>("Popularity");
+  const [sortBy, setSortBy] = useState<string>(
+    initialDownloadSource === "CurseForge" ? "Popularity" : "relevance"
+  );
   const [downloadSource, setDownloadSource] = useState<
     "CurseForge" | "Modrinth"
-  >("CurseForge");
+  >(initialDownloadSource);
 
   const searchQueryRef = useRef(searchQuery);
   const pageRef = useRef(0);

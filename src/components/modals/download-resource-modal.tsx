@@ -29,10 +29,14 @@ import { OtherResourceType } from "@/enums/resource";
 
 interface DownloadResourceModalProps extends Omit<ModalProps, "children"> {
   initialResourceType?: OtherResourceType;
+  initialSearchQuery?: string;
+  initialDownloadSource?: "CurseForge" | "Modrinth";
 }
 
 const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
   initialResourceType = OtherResourceType.Mod,
+  initialSearchQuery = "",
+  initialDownloadSource = "CurseForge",
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -105,6 +109,8 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
             <ResourceDownloader
               // key={selectedResourceType}
               resourceType={selectedResourceType}
+              initialSearchQuery={initialSearchQuery}
+              initialDownloadSource={initialDownloadSource}
             />
           </ModalBody>
         </Flex>

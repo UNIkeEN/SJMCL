@@ -14,7 +14,14 @@ import { useTranslation } from "react-i18next";
 import ResourceDownloader from "@/components/resource-downloader";
 import { OtherResourceType } from "@/enums/resource";
 
-export const DownloadModpackModal: React.FC<Omit<ModalProps, "children">> = ({
+interface DownloadModpackModalProps extends Omit<ModalProps, "children"> {
+  initialSearchQuery?: string;
+  initialDownloadSource?: "CurseForge" | "Modrinth";
+}
+
+export const DownloadModpackModal: React.FC<DownloadModpackModalProps> = ({
+  initialSearchQuery = "",
+  initialDownloadSource = "CurseForge",
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -35,7 +42,11 @@ export const DownloadModpackModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalCloseButton />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
-            <ResourceDownloader resourceType={OtherResourceType.ModPack} />
+            <ResourceDownloader
+              resourceType={OtherResourceType.ModPack}
+              initialSearchQuery={initialSearchQuery}
+              initialDownloadSource={initialDownloadSource}
+            />
           </ModalBody>
         </Flex>
       </ModalContent>

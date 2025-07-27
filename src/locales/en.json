@@ -2203,11 +2203,22 @@
     },
     "tip": "Search local and online game resources in one place",
     "empty": "No results found",
+    "resource": {
+      "mod": "Search for {{query}} mods",
+      "world": "Search for {{query}} worlds",
+      "resourcepack": "Search for {{query}} resource packs",
+      "shader": "Search for {{query}} shader packs",
+      "modpack": "Search for {{query}} modpacks",
+      "curseforge": "on CurseForge",
+      "modrinth": "on Modrinth"
+    },
     "result": {
       "page": "Page",
       "recentViewed": "Recent Viewed",
       "instance": "Instance",
-      "player": "Player"
+      "player": "Player",
+      "curseforge": "Search on CurseForge",
+      "modrinth": "Search on Modrinth"
     }
   },
   "StarUsModal": {
