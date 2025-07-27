@@ -127,8 +127,7 @@ impl<'a> PEvent<'a> {
   }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-#[serde(tag = "status")]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum GEventStatus {
   Started,
   Stopped,

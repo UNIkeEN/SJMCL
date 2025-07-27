@@ -119,6 +119,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
       if (response.status === "success") {
+        console.log("Retrieved progressive tasks:", response.data);
         // info(JSON.stringify(response.data));
         setTasks((prevTasks) => {
           let tasks = response.data
@@ -383,12 +384,12 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const unlisten = TaskService.onTaskGroupUpdate(
       (payload: GTaskEventPayload) => {
-        console.log(`Received task group update: ${payload.event.status}`);
+        console.log(`Received task group update: ${payload.event}`);
         setTasks((prevTasks) => {
           return prevTasks.map((task) => {
             if (task.taskGroup === payload.taskGroup) {
-              task.status = payload.event.status;
-              if (payload.event.status === GTaskEventStatusEnums.Completed) {
+              task.status = payload.event;
+              if (payload.event === GTaskEventStatusEnums.Completed) {
                 task.taskDescs.forEach((t) => {
                   if (
                     t.status === TaskDescStatusEnums.Waiting ||
@@ -398,7 +399,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                     t.current = t.total;
                   } else if (t.status === TaskDescStatusEnums.Failed) {
                     task.status = GTaskEventStatusEnums.Failed;
-                    payload.event.status = GTaskEventStatusEnums.Failed;
+                    payload.event = GTaskEventStatusEnums.Failed;
                   }
                 });
               }
@@ -411,20 +412,17 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
         toast({
           status:
-            payload.event.status === GTaskEventStatusEnums.Failed
+            payload.event === GTaskEventStatusEnums.Failed
               ? "error"
               : "success",
-          title: t(
-            `Services.task.onTaskGroupUpdate.status.${payload.event.status}`,
-            {
-              param: t(`DownloadTasksPage.task.${name}`, {
-                param: version || "",
-              }),
-            }
-          ),
+          title: t(`Services.task.onTaskGroupUpdate.status.${payload.event}`, {
+            param: t(`DownloadTasksPage.task.${name}`, {
+              param: version || "",
+            }),
+          }),
         });
 
-        if (payload.event.status === GTaskEventStatusEnums.Completed) {
+        if (payload.event === GTaskEventStatusEnums.Completed) {
           switch (name) {
             case "game-client":
               getInstanceList(true);
@@ -476,18 +474,22 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [closeToast, getInstanceList, t, toast, updateGroupInfo]);
 
   useEffect(() => {
-    if (!tasks || !tasks.length) return;
+    if (!tasks || !tasks.length) setGeneralPercent(undefined);
+    else {
+      let filteredTasks = tasks.filter(
+        (t) => t.status === GTaskEventStatusEnums.Started
+      );
 
-    let filteredTasks = tasks.filter(
-      (t) => t.status === GTaskEventStatusEnums.Started
-    );
-
-    setGeneralPercent(
-      filteredTasks.reduce(
-        (acc, group) => acc + (group.progress ?? 0) / filteredTasks.length,
-        0
-      )
-    );
+      if (filteredTasks.length === 0) setGeneralPercent(undefined);
+      else {
+        setGeneralPercent(
+          filteredTasks.reduce(
+            (acc, group) => acc + (group.progress ?? 0) / filteredTasks.length,
+            0
+          )
+        );
+      }
+    }
   }, [tasks]);
 
   return (
