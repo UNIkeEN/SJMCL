@@ -295,7 +295,8 @@ pub fn patches_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<Strin
   for patch in patches {
     if game_version.is_none() && patch.id == "game" {
       game_version = Some(patch.version.clone());
-    } else if loader_type == ModLoaderType::Unknown {
+    }
+    if loader_type == ModLoaderType::Unknown {
       if let Ok(found_loader_type) = ModLoaderType::from_str(&patch.id) {
         loader_type = found_loader_type;
         loader_version = Some(patch.version.clone());
