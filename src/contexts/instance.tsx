@@ -167,8 +167,10 @@ export const InstanceContextProvider: React.FC<{
       const summary = instanceList.find(
         (instance) => instance.id === instanceId
       );
-      setInstanceSummary(summary);
-      handleRetrieveInstanceGameConfig(instanceId);
+      if (summary && summary?.id) {
+        setInstanceSummary(summary);
+        handleRetrieveInstanceGameConfig(instanceId);
+      }
     }
   }, [router.query.id, getInstanceList, handleRetrieveInstanceGameConfig]);
 

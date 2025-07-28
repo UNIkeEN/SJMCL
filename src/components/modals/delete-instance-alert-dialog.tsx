@@ -25,7 +25,6 @@ const DeleteInstanceDialog: React.FC<DeleteInstanceDialogProps> = ({
 
   const handleDeleteInstance = (instanceId: string) => {
     InstanceService.deleteInstance(instanceId).then((response) => {
-      getInstanceList(true);
       if (response.status === "success") {
         toast({
           title: response.message,
@@ -41,8 +40,10 @@ const DeleteInstanceDialog: React.FC<DeleteInstanceDialogProps> = ({
     });
 
     // Navigate to /instances/list
+    if (!router.asPath.startsWith("/instances/list")) {
+      router.push("/instances/list");
+    }
     getInstanceList(true);
-    router.push("/instances/list");
   };
 
   if (config.suppressedDialogs?.includes("deleteInstanceAlert")) {
