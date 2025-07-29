@@ -5,6 +5,7 @@ use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
+use std::fs;
 use std::fs::File;
 use std::io::{prelude::*, BufRead, BufReader, Write};
 use std::path::PathBuf;
@@ -79,16 +80,20 @@ pub async fn monitor_process(
 ) -> SJMCLResult<()> {
   // create unique log window
   let label = format!("game_log_{id}");
-  let log_file_dir = app
-    .path()
-    .resolve::<PathBuf>(format!("{label}.log").into(), BaseDirectory::AppCache)?;
+  let log_file_path = app.path().resolve::<PathBuf>(
+    format!("GameLogs/{label}.log").into(),
+    BaseDirectory::AppCache,
+  )?;
+  if let Some(parent_dir) = log_file_path.parent() {
+    fs::create_dir_all(parent_dir)?;
+  }
 
   let log_file = Arc::new(Mutex::new(
     std::fs::OpenOptions::new()
       .create_new(true)
       .write(true)
       .read(true)
-      .open(&log_file_dir)?,
+      .open(&log_file_path)?,
   ));
 
   let log_window = if display_log_window {

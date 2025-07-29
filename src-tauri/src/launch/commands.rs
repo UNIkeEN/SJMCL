@@ -328,7 +328,7 @@ pub async fn open_game_log_window(app: AppHandle, launching_id: u64) -> SJMCLRes
 #[tauri::command]
 pub fn retrieve_game_log(app: AppHandle, launching_id: u64) -> SJMCLResult<Vec<String>> {
   let log_file_dir = app.path().resolve::<PathBuf>(
-    format!("game_log_{launching_id}.log").into(),
+    format!("GameLogs/game_log_{launching_id}.log").into(),
     BaseDirectory::AppCache,
   )?;
   Ok(
@@ -360,7 +360,7 @@ pub fn export_game_crash_info(
   save_path: String,
 ) -> SJMCLResult<String> {
   let game_log_path = app.path().resolve::<PathBuf>(
-    format!("game_log_{launching_id}.log").into(),
+    format!("GameLogs/game_log_{launching_id}.log").into(),
     BaseDirectory::AppCache,
   )?;
 
