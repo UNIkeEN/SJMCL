@@ -109,6 +109,7 @@ export const InstanceBasicInfoWidget = () => {
     <InstanceWidgetBase
       title={t("InstanceWidgets.basicInfo.title")}
       icon={LuBox}
+      mr={-4} // ref: https://github.com/UNIkeEN/SJMCL/issues/762
     >
       <OptionItem
         title={t("InstanceWidgets.basicInfo.gameVersion")}
@@ -118,11 +119,14 @@ export const InstanceBasicInfoWidget = () => {
             fontSize="xs"
             alignItems="flex-start"
             className="secondary-text"
+            wordBreak="break-all"
           >
-            {summary?.version && <Text>{summary.version}</Text>}
+            {summary?.version && <Text noOfLines={1}>{summary.version}</Text>}
             {summary?.modLoader.loaderType &&
               summary?.modLoader.loaderType !== "Unknown" && (
-                <Text>{`${summary?.modLoader.loaderType} ${parseModLoaderVersion(summary?.modLoader.version || "")}`}</Text>
+                <Text
+                  noOfLines={1}
+                >{`${summary?.modLoader.loaderType} ${parseModLoaderVersion(summary?.modLoader.version || "")}`}</Text>
               )}
           </VStack>
         }

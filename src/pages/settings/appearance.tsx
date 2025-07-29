@@ -331,7 +331,7 @@ const AppearanceSettingsPage = () => {
           fontSize="xs"
           className={!selected ? "secondary-text" : ""}
           mt={selected ? "-1px" : 0} // compensate for the offset caused by selected card's border
-          noOfLines={1}
+          isTruncated
         >
           {label}
         </Text>
