@@ -306,11 +306,12 @@ pub async fn launch_game(
 pub fn cancel_launch_process(
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let launching_queue = launching_queue_state.lock()?;
+  let mut launching_queue = launching_queue_state.lock()?;
 
   // kill process if pid exists
-  if let Some(launching) = launching_queue.last() {
+  if let Some(launching) = launching_queue.last_mut() {
     if launching.pid != 0 {
+      launching.current_step = 0; // mark as manually cancelled to avoid game error window popping up
       kill_process(launching.pid)?;
     }
   }

@@ -201,9 +201,24 @@ pub async fn monitor_process(
       let mut launching_queue = launching_queue_state.lock().unwrap();
       launching_queue.retain(|state| state.id != id);
     } else {
-      let _ = create_webview_window(&app, &format!("game_error_{id}"), "game_error", None)
-        .await
-        .unwrap();
+      let launching_option = {
+        let launching_queue_state = app.state::<Mutex<Vec<LaunchingState>>>();
+        let launching_queue = launching_queue_state.lock().unwrap();
+        launching_queue.iter().find(|s| s.id == id).cloned()
+      };
+
+      if let Some(launching) = launching_option {
+        if launching.current_step == 0 {
+          // it was marked as manually cancelled, then remove from launching_queue and not show game error window
+          let launching_queue_state = app.state::<Mutex<Vec<LaunchingState>>>();
+          let mut launching_queue = launching_queue_state.lock().unwrap();
+          launching_queue.retain(|state| state.id != id);
+        } else {
+          let _ = create_webview_window(&app, &format!("game_error_{id}"), "game_error", None)
+            .await
+            .unwrap();
+        }
+      }
     }
   });
 
