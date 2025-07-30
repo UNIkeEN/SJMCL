@@ -1851,8 +1851,8 @@
           "title": "选择合适 Java 运行时失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "MOD_LOADER_NOT_INSTALLED": "模组加载器未完成安装",
-            "NO_SUITABLE_JAVA": "没有合适的 Java 运行时可供选择"
+            "NO_SUITABLE_JAVA": "没有合适的 Java 运行时可供选择",
+            "SELECTED_JAVA_UNAVAILABLE": "手动选择的 Java 运行时已移除或不可用"
           }
         }
       },
@@ -1860,6 +1860,7 @@
         "error": {
           "title": "验证游戏文件失败",
           "description": {
+            "MOD_LOADER_NOT_INSTALLED": "模组加载器未完成安装",
             "MOD_LOADER_LIB_NOT_DOWNLOADED": "模组加载器库文件未下载",
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "游戏文件不完整或缺失",

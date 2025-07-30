@@ -29,7 +29,10 @@ use crate::{
     },
     models::LaunchError,
   },
-  launcher_config::models::{FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity},
+  launcher_config::{
+    helpers::java::refresh_and_update_javas,
+    models::{FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity},
+  },
   resource::helpers::misc::get_source_priority_list,
   storage::load_json_async,
   tasks::commands::schedule_progressive_task_group,
@@ -63,9 +66,6 @@ pub async fn select_suitable_jre(
     .get(&instance_id)
     .ok_or(InstanceError::InstanceNotFoundByID)?
     .clone();
-  if instance.mod_loader.status != ModLoaderStatus::Installed {
-    return Err(LaunchError::ModLoaderNotInstalled.into());
-  }
   let game_config = get_instance_game_config(&app, &instance);
 
   let client_path = instance
@@ -73,7 +73,9 @@ pub async fn select_suitable_jre(
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
+  refresh_and_update_javas(&app).await;
   let javas = javas_state.lock()?.clone();
+
   let selected_java = select_java_runtime(
     &app,
     &game_config.game_java,
@@ -121,6 +123,10 @@ pub async fn validate_game_files(
         .clone(),
     )
   };
+
+  if instance.mod_loader.status != ModLoaderStatus::Installed {
+    return Err(LaunchError::ModLoaderNotInstalled.into());
+  }
 
   replace_native_libraries(&app, &mut client_info, &instance)
     .await

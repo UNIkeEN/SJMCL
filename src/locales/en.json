@@ -1851,8 +1851,8 @@
           "title": "Failed to select suitable JRE",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
-            "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
-            "NO_SUITABLE_JAVA": "No suitable Java version found"
+            "NO_SUITABLE_JAVA": "No suitable Java version found",
+            "SELECTED_JAVA_UNAVAILABLE": "The manually selected Java runtime has been removed or is unavailable"
           }
         }
       },
@@ -1860,6 +1860,7 @@
         "error": {
           "title": "Failed to validate game files",
           "description": {
+            "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
             "MOD_LOADER_LIB_NOT_DOWNLOADED": "Mod loader library files not downloaded",
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "GAME_FILES_INCOMPLETE": "Game files are incomplete",

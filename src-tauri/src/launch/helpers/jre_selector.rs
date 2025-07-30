@@ -19,7 +19,7 @@ pub async fn select_java_runtime(
       .iter()
       .find(|j| j.exec_path == game_java.exec_path)
       .cloned()
-      .ok_or_else(|| LaunchError::NoSuitableJava.into());
+      .ok_or_else(|| LaunchError::SelectedJavaUnavailable.into());
   }
 
   let mut min_version_req = get_minimum_java_version_by_game(app, instance).await;

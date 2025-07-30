@@ -11,6 +11,7 @@ use strum_macros::Display;
 pub enum LaunchError {
   ModLoaderNotInstalled,
   NoSuitableJava,
+  SelectedJavaUnavailable,
   GameFilesIncomplete,
   SetProcessPriorityFailed,
   ChangeWindowTitleFailed,
