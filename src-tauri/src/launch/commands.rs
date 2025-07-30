@@ -1,6 +1,6 @@
 use super::{
   helpers::{
-    command_generator::generate_launch_command,
+    command_generator::{export_full_launch_command, generate_launch_command},
     file_validator::{extract_native_libraries, get_invalid_library_files},
     jre_selector::select_java_runtime,
     process_monitor::{
@@ -37,6 +37,7 @@ use crate::{
 };
 use std::{collections::HashMap, path::PathBuf};
 use std::{
+  fs,
   io::{prelude::*, BufReader},
   process::{Command, Stdio},
 };
@@ -247,10 +248,7 @@ pub async fn launch_game(
   } = generate_launch_command(&app)?;
   let mut cmd_base = Command::new(selected_java.exec_path.clone());
 
-  let full_cmd = std::iter::once(selected_java.exec_path.clone())
-    .chain(cmd_args.iter().cloned())
-    .collect::<Vec<_>>()
-    .join(" ");
+  let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
   println!("[Launch Command] {}", full_cmd);
 
   // execute launch command
@@ -267,10 +265,11 @@ pub async fn launch_game(
   let pid = child.id();
   {
     let mut launching_queue = launching_queue_state.lock()?;
-    launching_queue
+    let launching = launching_queue
       .last_mut()
-      .ok_or(LaunchError::LaunchingStateNotFound)?
-      .pid = pid;
+      .ok_or(LaunchError::LaunchingStateNotFound)?;
+    launching.pid = pid;
+    launching.full_command = full_cmd;
   }
 
   // wait for the game window, create log window if needed
@@ -360,6 +359,7 @@ pub fn export_game_crash_info(
   launching_id: u64,
   save_path: String,
 ) -> SJMCLResult<String> {
+  // game log
   let game_log_path = app.path().resolve::<PathBuf>(
     format!("game_log_{launching_id}.log").into(),
     BaseDirectory::AppCache,
@@ -370,6 +370,7 @@ pub fn export_game_crash_info(
     .iter()
     .find(|l| l.id == launching_id)
     .ok_or(LaunchError::LaunchingStateNotFound)?;
+  // version json and sjmcl instance config
   let version_info_path = launching
     .selected_instance
     .version_path
@@ -379,10 +380,25 @@ pub fn export_game_crash_info(
     .version_path
     .join(INSTANCE_CFG_FILE_NAME);
 
-  let zip_file_path = PathBuf::from(save_path);
+  // full launch script
+  let launch_script_path = app.path().resolve::<PathBuf>(
+    if cfg!(target_os = "windows") {
+      "launch.bat".into()
+    } else {
+      "launch.sh".into()
+    },
+    BaseDirectory::Temp,
+  )?;
+  fs::write(&launch_script_path, &launching.full_command)?;
 
+  let zip_file_path = PathBuf::from(save_path);
   create_zip_from_dirs(
-    vec![game_log_path, version_info_path, version_config_path],
+    vec![
+      game_log_path,
+      version_info_path,
+      version_config_path,
+      launch_script_path,
+    ],
     zip_file_path.clone(),
   )
 }

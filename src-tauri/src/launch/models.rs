@@ -33,6 +33,7 @@ pub struct LaunchingState {
   pub client_info: McClientInfo,
   pub selected_player: Option<PlayerInfo>, // use Option to avoid SmartDefault trait error
   pub auth_server_meta: String,
+  pub full_command: String, // for export and debug
   #[default = 0] // default means not set yet
   pub pid: u32,
 }

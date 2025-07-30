@@ -21,6 +21,8 @@ use crate::{
 use base64::{engine::general_purpose, Engine};
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
+use shlex::try_quote;
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -93,7 +95,7 @@ impl LaunchArguments {
 }
 
 pub struct LaunchCommand {
-  pub class_paths: Vec<String>, // may be too long for Windows, consider use env var
+  pub class_paths: Vec<String>, // may be too long for Windows, split and use env var
   pub args: Vec<String>,
 }
 
@@ -339,8 +341,38 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
   if game_config.game_window.resolution.fullscreen {
     cmd.push("--fullscreen".to_string());
   }
+
   Ok(LaunchCommand {
     class_paths,
     args: cmd,
   })
+}
+
+pub fn export_full_launch_command(
+  class_paths: &[String],
+  args: &[String],
+  java_exec_str: &str,
+) -> String {
+  fn quote_or_raw(s: &str) -> Cow<str> {
+    try_quote(s).unwrap_or(Cow::Borrowed(s))
+  }
+
+  let classpath_str = class_paths.join(get_separator());
+  let java_exec = quote_or_raw(java_exec_str);
+  let quoted_args = args.iter().map(|s| quote_or_raw(s)).collect::<Vec<_>>();
+
+  let java_cmd = std::iter::once(java_exec)
+    .chain(quoted_args)
+    .collect::<Vec<_>>()
+    .join(" ");
+
+  #[cfg(target_os = "windows")]
+  {
+    format!("set CLASSPATH=\"{}\" && {}", classpath_str, java_cmd)
+  }
+
+  #[cfg(not(target_os = "windows"))]
+  {
+    format!("CLASSPATH=\"{}\" {}", classpath_str, java_cmd)
+  }
 }
