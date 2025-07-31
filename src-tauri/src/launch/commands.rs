@@ -249,7 +249,10 @@ pub async fn launch_game(
 
   let instance_id = instance.id.clone();
   let work_dir = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
-    .ok_or(InstanceError::InstanceNotFoundByID)?;
+    .ok_or(InstanceError::InstanceNotFoundByID)?
+    .get(0)
+    .ok_or(InstanceError::InstanceNotFoundByID)?
+    .clone();
 
   // generate launch command
   let LaunchCommand {
@@ -257,8 +260,6 @@ pub async fn launch_game(
     args: cmd_args,
   } = generate_launch_command(&app)?;
   let mut cmd_base = Command::new(selected_java.exec_path.clone());
-
-  cmd_base.current_dir(&work_dir[0]);
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
   println!("[Launch Command] {}", full_cmd);
@@ -273,6 +274,7 @@ pub async fn launch_game(
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())
     .spawn()?;
+  cmd_base.current_dir(&work_dir);
 
   let pid = child.id();
   {
