@@ -250,7 +250,7 @@ pub async fn launch_game(
   let instance_id = instance.id.clone();
   let work_dir = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
     .ok_or(InstanceError::InstanceNotFoundByID)?
-    .get(0)
+    .first()
     .ok_or(InstanceError::InstanceNotFoundByID)?
     .clone();
 
@@ -269,12 +269,12 @@ pub async fn launch_game(
   cmd_base.creation_flags(0x08000000);
 
   let child = cmd_base
+    .current_dir(&work_dir)
     .env("CLASSPATH", class_paths.join(get_separator()))
     .args(cmd_args)
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())
     .spawn()?;
-  cmd_base.current_dir(&work_dir);
 
   let pid = child.id();
   {
