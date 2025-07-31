@@ -233,7 +233,7 @@ pub async fn launch_game(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (id, selected_java, game_config, instance_id) = {
+  let (id, selected_java, game_config, instance) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -243,9 +243,13 @@ pub async fn launch_game(
       launching.id,
       launching.selected_java.clone(),
       launching.game_config.clone(),
-      launching.selected_instance.id.clone(),
+      launching.selected_instance.clone(),
     )
   };
+
+  let instance_id = instance.id.clone();
+  let work_dir = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
 
   // generate launch command
   let LaunchCommand {
@@ -253,6 +257,8 @@ pub async fn launch_game(
     args: cmd_args,
   } = generate_launch_command(&app)?;
   let mut cmd_base = Command::new(selected_java.exec_path.clone());
+
+  cmd_base.current_dir(&work_dir[0]);
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
   println!("[Launch Command] {}", full_cmd);
