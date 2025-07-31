@@ -1093,6 +1093,10 @@
       "error-1": "Instance name cannot be empty",
       "error-2": "Instance name is invalid",
       "error-3": "Instance name is too long"
+    },
+    "tipsToGlobal": {
+      "part-1": "This instance is not using specific settings. ",
+      "part-2": "Go to Global Game Settings"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1182,7 +1186,8 @@
   },
   "LaunchPage": {
     "button": {
-      "launch": "Launch Game"
+      "launch": "Launch Game",
+      "instanceSettings": "Instance Settings"
     },
     "SwitchButton": {
       "tooltip": {

@@ -4,7 +4,9 @@ import {
   Collapse,
   HStack,
   Image,
+  Link,
   Switch,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -185,6 +187,19 @@ const InstanceSettingsPage = () => {
             key={index}
           />
         ))}
+        {!useSpecGameConfig && (
+          <Text className="secondary-text" fontSize="xs-sm" textAlign="center">
+            {t("InstanceSettingsPage.tipsToGlobal.part-1")}
+            <Link
+              color={`${primaryColor}.500`}
+              onClick={() => {
+                router.push("/settings/global-game");
+              }}
+            >
+              {t("InstanceSettingsPage.tipsToGlobal.part-2")}
+            </Link>
+          </Text>
+        )}
       </VStack>
       <Box h={4} />
       <Collapse in={useSpecGameConfig} animateOpacity>
