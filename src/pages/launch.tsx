@@ -71,7 +71,6 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
     >
       <Tooltip label={tooltip} placement="top-end" isDisabled={tooltipDisabled}>
         <Box>
-          {" "}
           {/* anchor for Tooltip */}
           <PopoverTrigger>
             <IconButton

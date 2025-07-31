@@ -2,7 +2,7 @@ import { ButtonProps, HStack } from "@chakra-ui/react";
 import React from "react";
 
 interface CompactButtonGroupProps {
-  children: React.ReactNode[];
+  children: React.ReactNode;
   size?: ButtonProps["size"];
   variant?: ButtonProps["variant"];
   colorScheme?: ButtonProps["colorScheme"];
