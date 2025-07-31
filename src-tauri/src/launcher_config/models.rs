@@ -1,9 +1,9 @@
 use crate::{
-  launcher_config::constants::CONFIG_PARTIAL_UPDATE_EVENT,
+  launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME},
   partial::PartialUpdate,
   storage::Storage,
   utils::{string::snake_to_camel_case, sys_info},
-  APP_DATA_DIR,
+  APP_DATA_DIR, EXE_DIR, IS_PORTABLE,
 };
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
@@ -307,8 +307,11 @@ impl LauncherConfig {
 
 impl Storage for LauncherConfig {
   fn file_path() -> PathBuf {
-    // EXE_DIR.join("sjmcl.conf.json")
-    APP_DATA_DIR.get().unwrap().join("sjmcl.conf.json")
+    if *IS_PORTABLE {
+      EXE_DIR.join(LAUNCHER_CFG_FILE_NAME)
+    } else {
+      APP_DATA_DIR.get().unwrap().join(LAUNCHER_CFG_FILE_NAME)
+    }
   }
 }
 

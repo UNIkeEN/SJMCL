@@ -5,7 +5,8 @@ use crate::{
     models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig},
   },
   partial::{PartialAccess, PartialUpdate},
-  utils::portable::{extract_assets, is_portable},
+  utils::portable::extract_assets,
+  APP_DATA_DIR, IS_PORTABLE,
 };
 use rand::Rng;
 use std::fs;
@@ -55,22 +56,28 @@ impl LauncherConfig {
 
       #[cfg(target_os = "macos")]
       {
-        if let Ok(app_data_dir) = app.path().resolve("minecraft", BaseDirectory::AppData) {
+        if let Some(app_data_dir) = APP_DATA_DIR.get() {
+          let app_data_subdir = app_data_dir.join("minecraft");
           dirs.push(GameDirectory {
             name: "APP_DATA_SUBDIR".to_string(),
-            dir: app_data_dir,
+            dir: app_data_subdir,
           });
         }
       }
 
       #[cfg(not(target_os = "macos"))]
       {
-        use crate::EXE_DIR;
-        let current_dir = EXE_DIR.join(".minecraft");
-        dirs.push(GameDirectory {
-          name: "CURRENT_DIR".to_string(),
-          dir: current_dir,
-        });
+        if *IS_PORTABLE {
+          dirs.push(GameDirectory {
+            name: "CURRENT_DIR".to_string(),
+            dir: PathBuf::new(), // place holder, will be set later
+          });
+        } else {
+          dirs.push(GameDirectory {
+            name: "APP_DATA_SUBDIR".to_string(),
+            dir: APP_DATA_DIR.get().unwrap().join(".minecraft"),
+          });
+        }
       }
 
       dirs.push(get_official_minecraft_directory(app));
@@ -78,16 +85,18 @@ impl LauncherConfig {
     }
 
     for game_dir in &mut self.local_game_directories {
+      if game_dir.name == "CURRENT_DIR" {
+        game_dir.dir = crate::EXE_DIR.join(".minecraft");
+      }
       if (game_dir.name == "CURRENT_DIR" || game_dir.name == "APP_DATA_SUBDIR")
         && !game_dir.dir.exists()
       {
-        let _ = fs::create_dir(&game_dir.dir);
+        let _ = fs::create_dir_all(&game_dir.dir);
       }
     }
 
     // Extract assets if the application is portable
-    let portable = is_portable().unwrap_or(false);
-    if portable {
+    if *IS_PORTABLE {
       let _ = extract_assets(app);
     }
 
@@ -97,7 +106,7 @@ impl LauncherConfig {
       arch: tauri_plugin_os::arch().to_string(),
       os_type: tauri_plugin_os::type_().to_string(),
       platform_version: tauri_plugin_os::version().to_string(),
-      is_portable: portable,
+      is_portable: *IS_PORTABLE,
       // below set to default, will be updated later in first time calling `check_full_login_availability`
       is_china_mainland_ip: false,
       allow_full_login_feature: false,

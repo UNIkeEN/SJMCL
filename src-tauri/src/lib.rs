@@ -26,7 +26,7 @@ use std::{collections::HashMap, sync::OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use tauri_plugin_log::{Target, TargetKind};
-use utils::web::build_sjmcl_client;
+use utils::{portable::is_portable, web::build_sjmcl_client};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
@@ -39,6 +39,8 @@ static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     .unwrap()
     .to_path_buf()
 });
+
+static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(false));
 
 static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
