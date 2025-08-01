@@ -110,9 +110,7 @@ const DownloadSpecificResourceModal: React.FC<
 
   const [gameVersionList, setGameVersionList] = useState<string[]>([]);
   const [versionLabels, setVersionLabels] = useState<string[]>([]);
-  const [selectedVersionLabel, setSelectedVersionLabel] = useState<string>(
-    curInstanceMajorVersion || "All"
-  );
+  const [selectedVersionLabel, setSelectedVersionLabel] = useState<string>("");
   const [selectedModLoader, setSelectedModLoader] = useState<
     ModLoaderType | "All"
   >(curInstanceModLoader || "All");
@@ -338,7 +336,7 @@ const DownloadSpecificResourceModal: React.FC<
   );
 
   const reFetchVersionPacks = useCallback(() => {
-    if (!resource.id || !resource.source) return;
+    if (!resource.id || !resource.source || !selectedVersionLabel) return;
 
     handleFetchResourceVersionPacks(
       resource.id,
@@ -454,8 +452,16 @@ const DownloadSpecificResourceModal: React.FC<
 
   useEffect(() => {
     setSelectedModLoader(curInstanceModLoader || "All");
-    setSelectedVersionLabel(curInstanceMajorVersion || "All");
-  }, [curInstanceModLoader, curInstanceMajorVersion]);
+  }, [curInstanceModLoader]);
+
+  useEffect(() => {
+    const initialVersion = curInstanceMajorVersion || "All";
+    if (versionLabels.length > 0 && versionLabels.includes(initialVersion)) {
+      setSelectedVersionLabel(initialVersion);
+    } else {
+      setSelectedVersionLabel("All");
+    }
+  }, [curInstanceMajorVersion, versionLabels]);
 
   useEffect(() => {
     fetchVersionLabels();
