@@ -26,6 +26,7 @@ import DownloadSpecificResourceModal from "@/components/modals/download-specific
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
+import { ModLoaderType } from "@/enums/instance";
 import {
   OtherResourceType,
   datapackTagList,
@@ -284,14 +285,14 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
           isOpen={isOpen}
           onClose={onClose}
           resource={selectedItem}
-          curInstanceMajorVersion={curInstance?.majorVersion}
-          curInstanceVersion={curInstance?.version}
-          curInstanceModLoader={
-            selectedItem.type === OtherResourceType.Mod &&
-            curInstance?.modLoader.loaderType !== "Unknown"
-              ? curInstance?.modLoader.loaderType
-              : undefined
-          }
+          {...(selectedItem.type !== OtherResourceType.ModPack && {
+            curInstanceMajorVersion: curInstance?.majorVersion,
+            curInstanceVersion: curInstance?.version,
+          })}
+          {...(selectedItem.type === OtherResourceType.Mod &&
+            curInstance?.modLoader.loaderType !== ModLoaderType.Unknown && {
+              curInstanceModLoader: curInstance?.modLoader.loaderType,
+            })}
         />
       )}
     </>

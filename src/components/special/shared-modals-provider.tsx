@@ -2,6 +2,7 @@ import DownloadSpecificResourceModal from "@/components//modals/download-specifi
 import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
 import CopyOrMoveModal from "@/components/modals/copy-or-move-modal";
 import DeleteInstanceDialog from "@/components/modals/delete-instance-alert-dialog";
+import DownloadModpackModal from "@/components/modals/download-modpack-modal";
 import DownloadResourceModal from "@/components/modals/download-resource-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import LaunchProcessModal from "@/components/modals/launch-process-modal";
@@ -29,12 +30,13 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
     "add-auth-server": AddAuthServerModal,
     "copy-or-move": CopyOrMoveModal,
     "delete-instance-alert": DeleteInstanceDialog,
+    "download-modpack": DownloadModpackModal,
     "download-resource": DownloadResourceModal,
+    "download-specific-resource": DownloadSpecificResourceModal,
     "generic-confirm": GenericConfirmDialog,
     launch: LaunchProcessModal,
     relogin: ReLoginPlayerModal,
     "spotlight-search": SpotlightSearchModal,
-    "download-specific-resource": DownloadSpecificResourceModal,
   };
 
   return (

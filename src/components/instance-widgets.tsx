@@ -39,6 +39,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { ModLoaderType } from "@/enums/instance";
 import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ScreenshotInfo } from "@/models/instance/misc";
@@ -123,7 +124,7 @@ export const InstanceBasicInfoWidget = () => {
           >
             {summary?.version && <Text noOfLines={1}>{summary.version}</Text>}
             {summary?.modLoader.loaderType &&
-              summary?.modLoader.loaderType !== "Unknown" && (
+              summary?.modLoader.loaderType !== ModLoaderType.Unknown && (
                 <Text
                   noOfLines={1}
                 >{`${summary?.modLoader.loaderType} ${parseModLoaderVersion(summary?.modLoader.version || "")}`}</Text>

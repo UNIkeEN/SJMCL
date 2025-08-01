@@ -66,9 +66,9 @@ import { formatDisplayCount } from "@/utils/string";
 interface DownloadSpecificResourceModalProps
   extends Omit<ModalProps, "children"> {
   resource: OtherResourceInfo;
-  curInstanceMajorVersion: string | undefined;
-  curInstanceVersion: string | undefined;
-  curInstanceModLoader: ModLoaderType | undefined;
+  curInstanceMajorVersion?: string;
+  curInstanceVersion?: string;
+  curInstanceModLoader?: ModLoaderType;
 }
 
 const DownloadSpecificResourceModal: React.FC<
@@ -76,7 +76,7 @@ const DownloadSpecificResourceModal: React.FC<
 > = ({
   resource,
   curInstanceMajorVersion,
-  curInstanceVersion = undefined,
+  curInstanceVersion,
   curInstanceModLoader,
   ...modalProps
 }) => {
@@ -374,13 +374,17 @@ const DownloadSpecificResourceModal: React.FC<
     );
   };
 
-  const renderSection = (pack: OtherResourceVersionPack, index: number) => {
+  const renderSection = (
+    pack: OtherResourceVersionPack,
+    index: number,
+    initialIsOpen: boolean = false
+  ) => {
     return (
       <Section
         key={index}
         isAccordion
         title={pack.name}
-        initialIsOpen={false}
+        initialIsOpen={initialIsOpen}
         titleExtra={<CountTag count={pack.items.length} />}
         mb={2}
       >
@@ -603,7 +607,12 @@ const DownloadSpecificResourceModal: React.FC<
                 <Empty withIcon size="sm" />
               ) : (
                 [...recommendedPacks, ...normalPacks].map((pack, index) =>
-                  renderSection(pack, index)
+                  // recommended pack initially open
+                  renderSection(
+                    pack,
+                    index,
+                    index === 0 && shouldShowRecommendedSection()
+                  )
                 )
               );
             })()

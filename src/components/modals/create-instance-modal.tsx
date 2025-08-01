@@ -30,6 +30,7 @@ import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import { ModLoaderSelector } from "@/components/mod-loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
+import { ModLoaderType } from "@/enums/instance";
 import { GameDirectory } from "@/models/config";
 import {
   GameResourceInfo,
@@ -261,7 +262,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         key: "loader",
         content: step2Content,
         description:
-          selectedModLoader.loaderType === "Unknown"
+          selectedModLoader.loaderType === ModLoaderType.Unknown
             ? t("CreateInstanceModal.stepper.skipped")
             : `${selectedModLoader.loaderType} ${selectedModLoader.version}`,
       },

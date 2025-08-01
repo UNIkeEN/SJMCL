@@ -85,7 +85,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
                     : t("ModLoaderCards.unInstalled")
                   : isSelected
                     ? currentVersion || t("ModLoaderCards.versionNotSelected")
-                    : currentType === "Unknown"
+                    : currentType === ModLoaderType.Unknown
                       ? t("ModLoaderCards.versionNotSelected")
                       : t("ModLoaderCards.notCompatibleWith", {
                           modLoader: currentType,
