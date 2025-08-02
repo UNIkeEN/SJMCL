@@ -99,7 +99,10 @@ pub struct LaunchCommand {
   pub args: Vec<String>,
 }
 
-pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
+pub fn generate_launch_command(
+  app: &AppHandle,
+  quick_play_singleplayer: Option<String>,
+) -> SJMCLResult<LaunchCommand> {
   let launcher_config = { app.state::<Mutex<LauncherConfig>>().lock()?.clone() };
   let launching_queue = { app.state::<Mutex<Vec<LaunchingState>>>().lock()?.clone() };
 
@@ -192,7 +195,7 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
     resolution_height: game_config.game_window.resolution.height,
     resolution_width: game_config.game_window.resolution.width,
     quick_play_path: String::new(),
-    quick_play_singleplayer: String::new(),
+    quick_play_singleplayer: quick_play_singleplayer.unwrap_or_default(),
     quick_play_multiplayer: game_config.game_server.server_url,
     quick_play_realms: String::new(),
   };
@@ -286,10 +289,10 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
   let launch_feature = FeaturesInfo {
     is_demo_user: Some(false),
     has_custom_resolution: Some(true),
-    has_quick_plays_support: Some(false), // TODO
+    has_quick_plays_support: Some(true), // TODO
     is_quick_play_multiplayer: Some(game_config.game_server.auto_join),
-    is_quick_play_singleplayer: Some(false), // TODO
-    is_quick_play_realms: Some(false),       // unsupported
+    is_quick_play_singleplayer: Some(true), // TODO
+    is_quick_play_realms: Some(false),      // unsupported
   };
 
   if let Some(client_args) = &client_info.arguments {

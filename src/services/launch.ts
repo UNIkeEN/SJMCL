@@ -45,8 +45,10 @@ export class LaunchService {
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("launch")
-  static async launchGame(): Promise<InvokeResponse<void>> {
-    return await invoke("launch_game");
+  static async launchGame(
+    quickPlaySingleplayer?: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("launch_game", { quickPlaySingleplayer });
   }
 
   /**

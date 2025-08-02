@@ -232,6 +232,7 @@ pub async fn validate_selected_player(
 pub async fn launch_game(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
+  quick_play_singleplayer: Option<String>,
 ) -> SJMCLResult<()> {
   let (id, selected_java, game_config, instance) = {
     let mut launching_queue = launching_queue_state.lock()?;
@@ -258,7 +259,7 @@ pub async fn launch_game(
   let LaunchCommand {
     class_paths,
     args: cmd_args,
-  } = generate_launch_command(&app)?;
+  } = generate_launch_command(&app, quick_play_singleplayer)?;
   let mut cmd_base = Command::new(selected_java.exec_path.clone());
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);

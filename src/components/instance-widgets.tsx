@@ -39,6 +39,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { ModLoaderType } from "@/enums/instance";
 import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
@@ -329,6 +330,8 @@ export const InstanceModsWidget = () => {
 export const InstanceLastPlayedWidget = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const { openSharedModal } = useSharedModals();
+  const { summary } = useInstanceSharedData();
   const { getWorldList, isWorldListLoading: isLoading } =
     useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -402,6 +405,14 @@ export const InstanceLastPlayedWidget = () => {
               variant="ghost"
               colorScheme={primaryColor}
               justifyContent="flex-start"
+              onClick={() => {
+                openSharedModal("launch", {
+                  instanceId: summary?.id,
+                  ...(lastPlayedWorld?.dirPath && {
+                    quickPlaySingleplayer: lastPlayedWorld.dirPath,
+                  }),
+                });
+              }}
             >
               <HStack spacing={1.5}>
                 <Icon as={LuArrowRight} />
