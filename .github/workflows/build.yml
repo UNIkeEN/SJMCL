@@ -12,6 +12,11 @@ on:
         required: false
         type: boolean
         default: true
+      branch:
+        description: 'Git branch to checkout'
+        required: false
+        type: string
+        default: 'main'
     secrets:
       SJMCL_MICROSOFT_CLIENT_SECRET:
         required: true
@@ -49,6 +54,8 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
