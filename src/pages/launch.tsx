@@ -214,7 +214,7 @@ const LaunchPage = () => {
                 tooltipPlacement="top"
                 onClick={() =>
                   router.push(
-                    `/instances/details/${selectedInstance.id}/settings`
+                    `/instances/details/${encodeURIComponent(selectedInstance.id)}/settings`
                   )
                 }
               />
