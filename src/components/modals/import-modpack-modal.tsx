@@ -28,8 +28,10 @@ import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector
 import { modLoaderTypesToIcon } from "@/components/modals/create-instance-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { ModpackResourceInfo } from "@/models/resource";
+import { ModpackMetaInfo } from "@/models/instance/misc";
+import { ModLoaderResourceInfo } from "@/models/resource";
 import { InstanceService } from "@/services/instance";
+import { ResourceService } from "@/services/resource";
 import { getGameDirName } from "@/utils/instance";
 import { isFileNameSanitized } from "@/utils/string";
 
@@ -45,7 +47,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
   const router = useRouter();
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
-  const [modpack, setModpack] = useState<ModpackResourceInfo>();
+  const [modpack, setModpack] = useState<ModpackMetaInfo>();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [iconSrc, setIconSrc] = useState("");
@@ -53,7 +55,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
     config.localGameDirectories[0]
   );
   const [isPageLoading, setIsPageLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
 
   const checkDirNameError = (value: string): number => {
     if (value.trim() === "") return 1;
@@ -150,57 +152,77 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
             },
             {
               title: t("ImportModpackModal.label.modLoader"),
-              children: `${modpack.modLoaderInfo.loaderType} ${modpack.modLoaderInfo.version}`,
+              children: `${modpack.modLoader.loaderType} ${modpack.modLoader.version}`,
             },
             {
               title: t("ImportModpackModal.label.gameVersion"),
-              children: modpack.gameInfo.id,
+              children: modpack.clientVersion,
             },
           ],
         },
       ]
     : [];
 
-  const handleCreateInstance = async () => {
+  const handleImportModpack = async () => {
     if (!modpack || checkDirNameError(name) !== 0 || !gameDirectory) return;
     try {
-      setIsLoading(true);
-      let resp = await InstanceService.createInstance(
+      setIsBtnLoading(true);
+      // first get client resource info
+      const versionResp = await ResourceService.fetchGameVersionSpecific(
+        modpack.clientVersion
+      );
+      if (versionResp.status !== "success") {
+        toast({
+          title: versionResp.message,
+          description: versionResp.details,
+          status: "error",
+        });
+        return;
+      }
+      const clientResourceInfo = versionResp.data;
+
+      // then install modpack through `create_instance`
+      const createResp = await InstanceService.createInstance(
         gameDirectory,
         name,
         description,
         iconSrc,
-        modpack.gameInfo,
-        modpack.modLoaderInfo,
+        clientResourceInfo,
+        {
+          loaderType: modpack.modLoader.loaderType,
+          version: modpack.modLoader.version,
+          description: "",
+          stable: true,
+        } as ModLoaderResourceInfo,
         path
       );
-      if (resp.status === "success") {
+      if (createResp.status === "success") {
         modalProps.onClose?.();
         router.push("/downloads");
       } else {
         toast({
-          title: resp.message,
-          description: resp.details,
+          title: createResp.message,
+          description: createResp.details,
           status: "error",
         });
       }
     } catch (error) {
       console.error("Error creating instance:", error);
     } finally {
-      setIsLoading(false);
+      setIsBtnLoading(false);
     }
   };
 
   useEffect(() => {
     setIsPageLoading(true);
-    InstanceService.getModpackResourceInfo(path)
+    InstanceService.retrieveModpackMetaInfo(path)
       .then((response) => {
         if (response.status === "success") {
           setModpack(response.data);
           setName(response.data.name);
           setDescription(response.data.description || "");
           setIconSrc(
-            modLoaderTypesToIcon[response.data.modLoaderInfo.loaderType] || ""
+            modLoaderTypesToIcon[response.data.modLoader.loaderType] || ""
           );
         } else {
           toast({
@@ -208,6 +230,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
             description: response.details,
             status: "error",
           });
+          modalProps.onClose?.();
         }
       })
       .catch((error) => {
@@ -216,7 +239,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
       .finally(() => {
         setIsPageLoading(false);
       });
-  }, [path, toast]);
+  }, [path, toast, modalProps]);
 
   return (
     <Modal
@@ -250,8 +273,8 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
         <ModalFooter>
           <Button
             colorScheme={primaryColor}
-            onClick={() => handleCreateInstance()}
-            isLoading={isLoading || isPageLoading}
+            onClick={() => handleImportModpack()}
+            isLoading={isBtnLoading || isPageLoading}
           >
             {t("ImportModpackModal.button.import")}
           </Button>

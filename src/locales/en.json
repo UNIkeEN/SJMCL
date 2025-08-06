@@ -1929,6 +1929,16 @@
           }
         }
       },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "Failed to fetch game version metadata",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "CLIENT_VERSION_NOT_FOUND": "The requested game version does not exist"
+          }
+        }
+      },
       "fetchModLoaderVersionList": {
         "error": {
           "title": "Failed to fetch mod loader version list",
@@ -2182,12 +2192,11 @@
           }
         }
       },
-      "getModpackResourceInfo": {
+      "retrieveModpackMetaInfo": {
         "error": {
-          "title": "Failed to get modpack resource info",
+          "title": "Failed to retrieve modpack resource info",
           "description": {
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
-            "NETWORK_ERROR": "Failed to connect to the server",
             "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
           }
         }

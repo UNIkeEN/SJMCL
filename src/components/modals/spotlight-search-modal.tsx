@@ -26,7 +26,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { useGlobalData } from "@/contexts/global-data";
 import { useRoutingHistory } from "@/contexts/routing-history";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { OtherResourceType, ResourceDownloadType } from "@/enums/resource";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { generatePlayerDesc } from "@/utils/account";
 import { generateInstanceDesc } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
@@ -150,7 +150,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             openSharedModal("download-resource", {
               initialResourceType: type,
               initialSearchQuery: query.trim(),
-              initialDownloadSource: ResourceDownloadType.CurseForge,
+              initialDownloadSource: OtherResourceSource.CurseForge,
             });
           },
         });
@@ -166,7 +166,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         action: () => {
           openSharedModal("download-modpack", {
             initialSearchQuery: query.trim(),
-            initialDownloadSource: ResourceDownloadType.CurseForge,
+            initialDownloadSource: OtherResourceSource.CurseForge,
           });
         },
       });
@@ -183,7 +183,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             openSharedModal("download-resource", {
               initialResourceType: type,
               initialSearchQuery: query.trim(),
-              initialDownloadSource: ResourceDownloadType.Modrinth,
+              initialDownloadSource: OtherResourceSource.Modrinth,
             });
           },
         });
@@ -199,7 +199,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         action: () => {
           openSharedModal("download-modpack", {
             initialSearchQuery: query.trim(),
-            initialDownloadSource: ResourceDownloadType.Modrinth,
+            initialDownloadSource: OtherResourceSource.Modrinth,
           });
         },
       });

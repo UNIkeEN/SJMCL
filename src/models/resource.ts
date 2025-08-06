@@ -1,7 +1,7 @@
 import { ModLoaderType } from "@/enums/instance";
-import { OtherResourceType, ResourceDownloadType } from "@/enums/resource";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 
-export interface GameResourceInfo {
+export interface GameClientResourceInfo {
   id: string;
   gameType: string;
   releaseTime: string;
@@ -19,7 +19,7 @@ export interface OtherResourceInfo {
   tags: string[];
   lastUpdated: string;
   downloads: number;
-  source?: ResourceDownloadType;
+  source?: OtherResourceSource;
 }
 
 export interface OtherResourceSearchRes {
@@ -44,16 +44,6 @@ export interface OtherResourceFileInfo {
 export interface OtherResourceVersionPack {
   name: string;
   items: OtherResourceFileInfo[];
-}
-
-export interface ModpackResourceInfo {
-  name: string;
-  version: string;
-  author?: string;
-  description?: string;
-  modpackType: ResourceDownloadType;
-  gameInfo: GameResourceInfo;
-  modLoaderInfo: ModLoaderResourceInfo;
 }
 
 export interface ModLoaderResourceInfo {

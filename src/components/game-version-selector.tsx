@@ -31,7 +31,7 @@ import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { GetStateFlag } from "@/hooks/get-state";
-import { GameResourceInfo } from "@/models/resource";
+import { GameClientResourceInfo } from "@/models/resource";
 import { ISOToDatetime } from "@/utils/datetime";
 
 const gameTypesToIcon: Record<string, string> = {
@@ -42,8 +42,8 @@ const gameTypesToIcon: Record<string, string> = {
 };
 
 interface GameVersionSelectorProps extends BoxProps {
-  selectedVersion: GameResourceInfo | undefined;
-  onVersionSelect: (version: GameResourceInfo) => void;
+  selectedVersion: GameClientResourceInfo | undefined;
+  onVersionSelect: (version: GameClientResourceInfo) => void;
 }
 
 export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
@@ -57,10 +57,10 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
 
   const { getGameVersionList, isGameVersionListLoading: isLoading } =
     useGlobalData();
-  const [versions, setVersions] = useState<GameResourceInfo[]>([]);
-  const [filteredVersions, setFilteredVersions] = useState<GameResourceInfo[]>(
-    []
-  );
+  const [versions, setVersions] = useState<GameClientResourceInfo[]>([]);
+  const [filteredVersions, setFilteredVersions] = useState<
+    GameClientResourceInfo[]
+  >([]);
   const [counts, setCounts] = useState<Map<string, number>>();
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
     new Set(config.states.gameVersionSelector.gameTypes)
@@ -74,7 +74,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
         if (data === GetStateFlag.Cancelled) return;
         setVersions(data || []);
       })
-      .catch((e) => setVersions([] as GameResourceInfo[]));
+      .catch((e) => setVersions([] as GameClientResourceInfo[]));
   }, [getGameVersionList]);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
 
   useEffect(() => {
     const newCounts = new Map<string, number>();
-    versions.forEach((version: GameResourceInfo) => {
+    versions.forEach((version: GameClientResourceInfo) => {
       let oldCount = newCounts.get(version.gameType) || 0;
       newCounts.set(version.gameType, oldCount + 1);
     });
@@ -122,7 +122,9 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
     [update]
   );
 
-  const buildOptionItems = (version: GameResourceInfo): OptionItemProps => ({
+  const buildOptionItems = (
+    version: GameClientResourceInfo
+  ): OptionItemProps => ({
     title: version.id,
     description: ISOToDatetime(version.releaseTime),
     prefixElement: (

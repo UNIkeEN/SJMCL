@@ -28,8 +28,8 @@ import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import {
+  OtherResourceSource,
   OtherResourceType,
-  ResourceDownloadType,
   datapackTagList,
   modTagList,
   modpackTagList,
@@ -40,7 +40,7 @@ import {
 } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
 import { InstanceSummary } from "@/models/instance/misc";
-import { GameResourceInfo, OtherResourceInfo } from "@/models/resource";
+import { GameClientResourceInfo, OtherResourceInfo } from "@/models/resource";
 import { ResourceService } from "@/services/resource";
 import { ISOToDate } from "@/utils/datetime";
 import { formatDisplayCount } from "@/utils/string";
@@ -48,7 +48,7 @@ import { formatDisplayCount } from "@/utils/string";
 interface ResourceDownloaderProps {
   resourceType: OtherResourceType;
   initialSearchQuery?: string;
-  initialDownloadSource?: ResourceDownloadType;
+  initialDownloadSource?: OtherResourceSource;
 }
 
 interface ResourceDownloaderMenuProps {
@@ -76,16 +76,13 @@ const tagLists: Record<string, any> = {
   datapack: datapackTagList,
 };
 
-const downloadSourceLists: Record<string, ResourceDownloadType[]> = {
-  mod: [ResourceDownloadType.CurseForge, ResourceDownloadType.Modrinth],
-  world: [ResourceDownloadType.CurseForge],
-  resourcepack: [
-    ResourceDownloadType.CurseForge,
-    ResourceDownloadType.Modrinth,
-  ],
-  shader: [ResourceDownloadType.CurseForge, ResourceDownloadType.Modrinth],
-  modpack: [ResourceDownloadType.CurseForge, ResourceDownloadType.Modrinth],
-  datapack: [ResourceDownloadType.CurseForge, ResourceDownloadType.Modrinth],
+const downloadSourceLists: Record<string, OtherResourceSource[]> = {
+  mod: [OtherResourceSource.CurseForge, OtherResourceSource.Modrinth],
+  world: [OtherResourceSource.CurseForge],
+  resourcepack: [OtherResourceSource.CurseForge, OtherResourceSource.Modrinth],
+  shader: [OtherResourceSource.CurseForge, OtherResourceSource.Modrinth],
+  modpack: [OtherResourceSource.CurseForge, OtherResourceSource.Modrinth],
+  datapack: [OtherResourceSource.CurseForge, OtherResourceSource.Modrinth],
 };
 
 const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
@@ -151,7 +148,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
   const translateTag = (
     tag: string,
     resourceType: string,
-    downloadSource?: ResourceDownloadType
+    downloadSource?: OtherResourceSource
   ) => {
     if (downloadSource) {
       const tagList = (tagLists[resourceType] || modpackTagList)[
@@ -303,7 +300,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
 const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   resourceType,
   initialSearchQuery = "",
-  initialDownloadSource = ResourceDownloadType.CurseForge,
+  initialDownloadSource = OtherResourceSource.CurseForge,
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
@@ -325,11 +322,11 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const [gameVersion, setGameVersion] = useState<string>("All");
   const [selectedTag, setSelectedTag] = useState<string>("All");
   const [sortBy, setSortBy] = useState<string>(
-    initialDownloadSource === ResourceDownloadType.CurseForge
+    initialDownloadSource === OtherResourceSource.CurseForge
       ? "Popularity"
       : "relevance"
   );
-  const [downloadSource, setDownloadSource] = useState<ResourceDownloadType>(
+  const [downloadSource, setDownloadSource] = useState<OtherResourceSource>(
     initialDownloadSource
   );
 
@@ -342,8 +339,8 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const onDownloadSourceChange = (e: string) => {
     setDownloadSource(
       e === "CurseForge"
-        ? ResourceDownloadType.CurseForge
-        : ResourceDownloadType.Modrinth
+        ? OtherResourceSource.CurseForge
+        : OtherResourceSource.Modrinth
     );
     setSelectedTag("All");
     setSortBy(e === "CurseForge" ? "Popularity" : "relevance");
@@ -442,8 +439,10 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
     getGameVersionList().then((list) => {
       if (list && list !== GetStateFlag.Cancelled) {
         const versionList = list
-          .filter((version: GameResourceInfo) => version.gameType === "release")
-          .map((version: GameResourceInfo) => version.id);
+          .filter(
+            (version: GameClientResourceInfo) => version.gameType === "release"
+          )
+          .map((version: GameClientResourceInfo) => version.id);
         setGameVersionList(["All", ...versionList]);
       } else {
         setGameVersionList([]);
@@ -464,7 +463,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
       resourceType &&
       !(downloadSourceLists[resourceType] || []).includes(downloadSource)
     ) {
-      onDownloadSourceChange(ResourceDownloadType.CurseForge);
+      onDownloadSourceChange(OtherResourceSource.CurseForge);
     }
     setSelectedTag("All");
   }, [resourceType, downloadSource]);
@@ -556,7 +555,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           displayText={downloadSource}
           onChange={onDownloadSourceChange}
           value={downloadSource}
-          defaultValue={ResourceDownloadType.CurseForge}
+          defaultValue={OtherResourceSource.CurseForge}
           options={downloadSourceLists[resourceType].map((item, index) => (
             <MenuItemOption key={index} value={item} fontSize="xs">
               {item}
@@ -573,7 +572,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           onChange={setSortBy}
           value={sortBy}
           defaultValue={
-            downloadSource === ResourceDownloadType.CurseForge
+            downloadSource === OtherResourceSource.CurseForge
               ? "Popularity"
               : "relevance"
           }

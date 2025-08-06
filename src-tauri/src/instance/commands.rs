@@ -29,7 +29,7 @@ use crate::{
       misc::get_instance_subdir_paths,
       mod_loader::{execute_processors, install_mod_loader},
       modpack::{
-        curseforge::CurseForgeManifest, misc::ModpackResourceInfo, modrinth::ModrinthManifest,
+        curseforge::CurseForgeManifest, misc::ModpackMetaInfo, modrinth::ModrinthManifest,
       },
       mods::forge::InstallProfile,
     },
@@ -55,7 +55,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::{sync::Mutex, time::SystemTime};
-use tauri::{path, AppHandle, Manager};
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
 use url::Url;
@@ -908,8 +908,6 @@ pub async fn create_instance(
     get_invalid_library_files(priority_list[0], libraries_dir, &version_info, false).await?,
   );
 
-  // Download asset index
-
   // We only download assets if they are invalid (not already downloaded)
   task_params
     .extend(get_invalid_assets(&app, &version_info, priority_list[0], assets_dir, false).await?);
@@ -1011,11 +1009,8 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
 }
 
 #[tauri::command]
-pub async fn get_modpack_resource_info(
-  app: AppHandle,
-  path: String,
-) -> SJMCLResult<ModpackResourceInfo> {
+pub async fn retrieve_modpack_meta_info(path: String) -> SJMCLResult<ModpackMetaInfo> {
   let path = PathBuf::from(path);
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
-  ModpackResourceInfo::from_archive(&app, &file).await
+  ModpackMetaInfo::from_archive(&file).await
 }

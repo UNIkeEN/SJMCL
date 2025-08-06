@@ -1,7 +1,7 @@
 use crate::error::SJMCLResult;
 use crate::resource::models::{
   OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
-  OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceDownloadType, ResourceError,
+  OtherResourceSource, OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
 };
 use hex;
 use serde::Deserialize;
@@ -72,7 +72,7 @@ pub fn map_modrinth_to_resource_info(res: ModrinthSearchRes) -> OtherResourceSea
       tags: p.display_categories,
       last_updated: p.date_modified,
       downloads: p.downloads,
-      source: ResourceDownloadType::Modrinth,
+      source: OtherResourceSource::Modrinth,
     })
     .collect();
 

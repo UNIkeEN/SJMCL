@@ -1929,6 +1929,16 @@
           }
         }
       },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "获取游戏版本元信息失败",
+          "description": {
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接到服务器",
+            "CLIENT_VERSION_NOT_FOUND": "指定游戏版本不存在"
+          }
+        }
+      },
       "fetchModLoaderVersionList": {
         "error": {
           "title": "获取模组加载器列表失败",
@@ -2182,12 +2192,11 @@
           }
         }
       },
-      "getModpackResourceInfo": {
+      "retrieveModpackMetaInfo": {
         "error": {
           "title": "获取整合包资源信息失败",
           "description": {
             "FILE_NOT_FOUND_ERROR": "整合包文件不存在，可能已更名、移动或删除",
-            "NETWORK_ERROR": "无法连接到服务器",
             "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误"
           }
         }

@@ -37,11 +37,12 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import {
+  OtherResourceSource,
   OtherResourceType,
-  ResourceDownloadType,
   datapackTagList,
   modTagList,
   modpackTagList,
@@ -52,7 +53,7 @@ import {
 import { GetStateFlag } from "@/hooks/get-state";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import {
-  GameResourceInfo,
+  GameClientResourceInfo,
   OtherResourceFileInfo,
   OtherResourceInfo,
   OtherResourceVersionPack,
@@ -81,27 +82,6 @@ const DownloadSpecificResourceModal: React.FC<
   curInstanceModLoader,
   ...modalProps
 }) => {
-  const modLoaderLabels = [
-    "All",
-    ModLoaderType.Fabric,
-    ModLoaderType.Forge,
-    ModLoaderType.NeoForge,
-  ];
-
-  const tagLists: Record<string, any> = {
-    mod: modTagList,
-    world: worldTagList,
-    resourcepack: resourcePackTagList,
-    shader: shaderPackTagList,
-    datapack: datapackTagList,
-  };
-
-  const iconBackgroundColor: Record<string, string> = {
-    alpha: "yellow.300",
-    beta: "purple.500",
-    release: "green.500",
-  };
-
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const router = useRouter();
@@ -122,6 +102,28 @@ const DownloadSpecificResourceModal: React.FC<
   );
 
   const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
+  const { closeSharedModal } = useSharedModals();
+
+  const modLoaderLabels = [
+    "All",
+    ModLoaderType.Fabric,
+    ModLoaderType.Forge,
+    ModLoaderType.NeoForge,
+  ];
+
+  const tagLists: Record<string, any> = {
+    mod: modTagList,
+    world: worldTagList,
+    resourcepack: resourcePackTagList,
+    shader: shaderPackTagList,
+    datapack: datapackTagList,
+  };
+
+  const iconBackgroundColor: Record<string, string> = {
+    alpha: "yellow.300",
+    beta: "purple.500",
+    release: "green.500",
+  };
 
   const handleScheduleProgressiveTaskGroup = useCallback(
     (taskGroup: string, params: TaskParam[]) => {
@@ -144,11 +146,11 @@ const DownloadSpecificResourceModal: React.FC<
   const translateTag = (
     tag: string,
     resourceType: string,
-    downloadSource?: ResourceDownloadType
+    downloadSource?: OtherResourceSource
   ) => {
     if (
-      downloadSource === ResourceDownloadType.CurseForge ||
-      downloadSource === ResourceDownloadType.Modrinth
+      downloadSource === OtherResourceSource.CurseForge ||
+      downloadSource === OtherResourceSource.Modrinth
     ) {
       const tagList = (tagLists[resourceType] || modpackTagList)[
         downloadSource
@@ -170,7 +172,7 @@ const DownloadSpecificResourceModal: React.FC<
   const versionLabelToParam = useCallback(
     (label: string) => {
       if (label === "All") return ["All"];
-      if (resource.source === ResourceDownloadType.Modrinth)
+      if (resource.source === OtherResourceSource.Modrinth)
         return gameVersionList.filter((version) => version.startsWith(label));
       return [label];
     },
@@ -241,7 +243,12 @@ const DownloadSpecificResourceModal: React.FC<
         taskType: TaskTypeEnums.Download,
       },
     ]);
-    router.push("/downloads");
+
+    if (resource.type === OtherResourceType.ModPack) {
+      closeSharedModal("download-specific-resource");
+      closeSharedModal("download-modpack");
+      router.push("/downloads");
+    }
   };
 
   const getRecommendedFiles = useMemo((): OtherResourceFileInfo[] => {
@@ -308,8 +315,10 @@ const DownloadSpecificResourceModal: React.FC<
     getGameVersionList().then((list) => {
       if (list && list !== GetStateFlag.Cancelled) {
         const versionList = list
-          .filter((version: GameResourceInfo) => version.gameType === "release")
-          .map((version: GameResourceInfo) => version.id);
+          .filter(
+            (version: GameClientResourceInfo) => version.gameType === "release"
+          )
+          .map((version: GameClientResourceInfo) => version.id);
         setGameVersionList(versionList);
         const majorVersions = [
           ...new Set(
@@ -328,7 +337,7 @@ const DownloadSpecificResourceModal: React.FC<
       resourceId: string,
       modLoader: ModLoaderType | "All",
       gameVersions: string[],
-      downloadSource: ResourceDownloadType
+      downloadSource: OtherResourceSource
     ) => {
       setIsLoadingVersionPacks(true);
       ResourceService.fetchResourceVersionPacks(

@@ -33,7 +33,7 @@ import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import { GameDirectory } from "@/models/config";
 import {
-  GameResourceInfo,
+  GameClientResourceInfo,
   ModLoaderResourceInfo,
   defaultModLoaderResourceInfo,
 } from "@/models/resource";
@@ -68,7 +68,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
   });
 
   const [selectedGameVersion, setSelectedGameVersion] =
-    useState<GameResourceInfo>();
+    useState<GameClientResourceInfo>();
   const [selectedModLoader, setSelectedModLoader] =
     useState<ModLoaderResourceInfo>(defaultModLoaderResourceInfo);
   const [instanceName, setInstanceName] = useState("");

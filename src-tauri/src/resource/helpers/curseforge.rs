@@ -10,7 +10,7 @@ use crate::error::SJMCLResult;
 use crate::resource::helpers::curseforge_convert::cvt_category_to_id;
 use crate::resource::models::{
   OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
-  OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceDownloadType, ResourceError,
+  OtherResourceSource, OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
 };
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
@@ -132,7 +132,7 @@ pub fn map_curseforge_to_resource_info(res: CurseForgeSearchRes) -> OtherResourc
       tags: p.categories.iter().map(|c| c.name.clone()).collect(),
       last_updated: p.date_modified,
       downloads: p.download_count,
-      source: ResourceDownloadType::CurseForge,
+      source: OtherResourceSource::CurseForge,
     })
     .collect();
 

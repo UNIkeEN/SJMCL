@@ -5,6 +5,7 @@ import {
   GameServerInfo,
   InstanceSummary,
   LocalModInfo,
+  ModpackMetaInfo,
   ResourcePackInfo,
   SchematicInfo,
   ScreenshotInfo,
@@ -12,9 +13,8 @@ import {
 } from "@/models/instance/misc";
 import { LevelData, WorldInfo } from "@/models/instance/world";
 import {
-  GameResourceInfo,
+  GameClientResourceInfo,
   ModLoaderResourceInfo,
-  ModpackResourceInfo,
 } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
@@ -40,7 +40,7 @@ export class InstanceService {
    * @param {string} name - The name of the instance.
    * @param {string} description - The description of the instance.
    * @param {string} iconSrc - The icon source of the instance.
-   * @param {GameResourceInfo} game - The game resource info of the instance.
+   * @param {GameClientResourceInfo} game - The game resource info of the instance.
    * @param {ModLoaderResourceInfo} modLoader - The mod loader info of the instance.
    * @param {string} [modpackPath] - Optional path to the modpack archive file.
    * @returns {Promise<InvokeResponse<null>>}
@@ -51,7 +51,7 @@ export class InstanceService {
     name: string,
     description: string,
     iconSrc: string,
-    game: GameResourceInfo,
+    game: GameClientResourceInfo,
     modLoader: ModLoaderResourceInfo,
     modpackPath?: string
   ): Promise<InvokeResponse<null>> {
@@ -384,15 +384,15 @@ export class InstanceService {
   }
 
   /**
-   * GET the modpack resource info from a given path.
-   * @param {string} path - The path to the modpack archive file.
-   * @returns {Promise<InvokeResponse<ModpackResourceInfo>>}
+   * RETRIEVE the modpack meta info from a given manifest path.
+   * @param {string} path - The path to the modpack manifest file.
+   * @returns {Promise<InvokeResponse<ModpackMetaInfo>>}
    */
   @responseHandler("instance")
-  static async getModpackResourceInfo(
+  static async retrieveModpackMetaInfo(
     path: string
-  ): Promise<InvokeResponse<ModpackResourceInfo>> {
-    return await invoke("get_modpack_resource_info", {
+  ): Promise<InvokeResponse<ModpackMetaInfo>> {
+    return await invoke("retrieve_modpack_meta_info", {
       path,
     });
   }

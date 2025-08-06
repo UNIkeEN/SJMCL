@@ -25,18 +25,18 @@ import {
 import NavMenu from "@/components/common/nav-menu";
 import ResourceDownloader from "@/components/resource-downloader";
 import { useLauncherConfig } from "@/contexts/config";
-import { OtherResourceType, ResourceDownloadType } from "@/enums/resource";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 
 interface DownloadResourceModalProps extends Omit<ModalProps, "children"> {
   initialResourceType?: OtherResourceType;
   initialSearchQuery?: string;
-  initialDownloadSource?: ResourceDownloadType;
+  initialDownloadSource?: OtherResourceSource;
 }
 
 const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
   initialResourceType = OtherResourceType.Mod,
   initialSearchQuery = "",
-  initialDownloadSource = ResourceDownloadType.CurseForge,
+  initialDownloadSource = OtherResourceSource.CurseForge,
   ...modalProps
 }) => {
   const { t } = useTranslation();

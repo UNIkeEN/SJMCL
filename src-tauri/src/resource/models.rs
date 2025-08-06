@@ -37,20 +37,20 @@ pub enum SourceType {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-pub enum ResourceDownloadType {
+pub enum OtherResourceSource {
   #[default]
   Unknown,
   CurseForge,
   Modrinth,
 }
 
-impl FromStr for ResourceDownloadType {
+impl FromStr for OtherResourceSource {
   type Err = String;
 
   fn from_str(input: &str) -> Result<Self, Self::Err> {
     match input.to_lowercase().as_str() {
-      "curseforge" => Ok(ResourceDownloadType::CurseForge),
-      "modrinth" => Ok(ResourceDownloadType::Modrinth),
+      "curseforge" => Ok(OtherResourceSource::CurseForge),
+      "modrinth" => Ok(OtherResourceSource::Modrinth),
       _ => Err(format!("Unknown resource download type: {}", input)),
     }
   }
@@ -68,7 +68,7 @@ pub struct OtherResourceInfo {
   pub tags: Vec<String>,
   pub last_updated: String,
   pub downloads: u32,
-  pub source: ResourceDownloadType,
+  pub source: OtherResourceSource,
   pub website_url: String,
 }
 
@@ -158,6 +158,7 @@ pub enum ResourceError {
   NoDownloadApi,
   NetworkError,
   FileOperationError,
+  ClientVersionNotFound,
 }
 
 impl std::error::Error for ResourceError {}

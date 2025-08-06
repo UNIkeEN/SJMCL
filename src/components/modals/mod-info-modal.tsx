@@ -18,7 +18,7 @@ import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { ModLoaderType } from "@/enums/instance";
-import { OtherResourceType, ResourceDownloadType } from "@/enums/resource";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ResourceService } from "@/services/resource";
 import { base64ImgSrc } from "@/utils/string";
@@ -40,7 +40,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
     openSharedModal("download-specific-resource", {
       resource: {
         id:
-          downloadSource === ResourceDownloadType.CurseForge
+          downloadSource === OtherResourceSource.CurseForge
             ? cfRemoteModId
             : mrRemoteModId,
         websiteUrl: "",
@@ -62,7 +62,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
 
   const handleCurseForgeInfo = useCallback(async () => {
     ResourceService.fetchRemoteResourceByLocal(
-      ResourceDownloadType.CurseForge,
+      OtherResourceSource.CurseForge,
       mod.filePath
     ).then((response) => {
       if (response.status === "success") {
@@ -74,7 +74,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
 
   const handleModrinthInfo = useCallback(async () => {
     ResourceService.fetchRemoteResourceByLocal(
-      ResourceDownloadType.Modrinth,
+      OtherResourceSource.Modrinth,
       mod.filePath
     ).then((response) => {
       if (response.status === "success") {
@@ -150,7 +150,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
                 colorScheme={primaryColor}
                 onClick={() => {
                   modalProps.onClose();
-                  openDownloadModal(ResourceDownloadType.CurseForge);
+                  openDownloadModal(OtherResourceSource.CurseForge);
                 }}
                 fontSize="sm"
                 variant="link"
@@ -165,7 +165,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
                 colorScheme={primaryColor}
                 onClick={() => {
                   modalProps.onClose();
-                  openDownloadModal(ResourceDownloadType.Modrinth);
+                  openDownloadModal(OtherResourceSource.Modrinth);
                 }}
                 fontSize="sm"
                 variant="link"

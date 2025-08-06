@@ -1,3 +1,17 @@
+export enum OtherResourceType {
+  Mod = "mod",
+  World = "world",
+  ResourcePack = "resourcepack",
+  ShaderPack = "shader",
+  ModPack = "modpack",
+  DataPack = "datapack",
+}
+
+export enum OtherResourceSource {
+  CurseForge = "CurseForge",
+  Modrinth = "Modrinth",
+}
+
 export const modTagList = {
   CurseForge: {
     All: ["All"],
@@ -245,17 +259,3 @@ export const sortByLists = {
   ],
   Modrinth: ["relevance", "downloads", "follows", "updated", "newest"],
 };
-
-export enum OtherResourceType {
-  Mod = "mod",
-  World = "world",
-  ResourcePack = "resourcepack",
-  ShaderPack = "shader",
-  ModPack = "modpack",
-  DataPack = "datapack",
-}
-
-export enum ResourceDownloadType {
-  CurseForge = "CurseForge",
-  Modrinth = "Modrinth",
-}

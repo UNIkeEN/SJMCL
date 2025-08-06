@@ -14,7 +14,7 @@ import {
 } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
-import { GameResourceInfo } from "@/models/resource";
+import { GameClientResourceInfo } from "@/models/resource";
 import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
@@ -27,7 +27,7 @@ interface GlobalDataContextType {
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
   getGameVersionList: (
     sync?: boolean
-  ) => Promise<GameResourceInfo[] | GetStateFlag | undefined>;
+  ) => Promise<GameClientResourceInfo[] | GetStateFlag | undefined>;
   isGameVersionListLoading: boolean;
 }
 
@@ -38,7 +38,7 @@ interface GlobalDataDispatchContextType {
   setInstanceList: React.Dispatch<InstanceSummary[]>;
   setSelectedInstance: React.Dispatch<InstanceSummary | undefined>;
   setAuthServerList: React.Dispatch<AuthServer[]>;
-  setGameVersionList: React.Dispatch<GameResourceInfo[]>;
+  setGameVersionList: React.Dispatch<GameClientResourceInfo[]>;
 }
 
 const GlobalDataContext = createContext<GlobalDataContextType | undefined>(
@@ -60,7 +60,8 @@ export const GlobalDataContextProvider: React.FC<{
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>();
   const [selectedInstance, setSelectedInstance] = useState<InstanceSummary>();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>();
-  const [gameVersionList, setGameVersionList] = useState<GameResourceInfo[]>();
+  const [gameVersionList, setGameVersionList] =
+    useState<GameClientResourceInfo[]>();
 
   useEffect(() => {
     const selectedPlayerId = config.states.shared.selectedPlayerId;

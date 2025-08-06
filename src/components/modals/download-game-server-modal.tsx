@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { GameResourceInfo } from "@/models/resource";
+import { GameClientResourceInfo } from "@/models/resource";
 import { ResourceService } from "@/services/resource";
 
 export const DownloadGameServerModal: React.FC<
@@ -30,7 +30,7 @@ export const DownloadGameServerModal: React.FC<
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [selectedGameVersion, setSelectedGameVersion] =
-    useState<GameResourceInfo>();
+    useState<GameClientResourceInfo>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleDownloadGameServer = async () => {
