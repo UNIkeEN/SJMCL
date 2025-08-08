@@ -14,7 +14,6 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
@@ -49,6 +48,7 @@ interface ResourceDownloaderProps {
   resourceType: OtherResourceType;
   initialSearchQuery?: string;
   initialDownloadSource?: OtherResourceSource;
+  curInstance?: InstanceSummary;
 }
 
 interface ResourceDownloaderMenuProps {
@@ -63,6 +63,7 @@ interface ResourceDownloaderMenuProps {
 
 interface ResourceDownloaderListProps {
   list: OtherResourceInfo[];
+  curInstance?: InstanceSummary;
   hasMore: boolean;
   loadMore: () => void;
 }
@@ -130,18 +131,16 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
 
 const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
   list,
+  curInstance,
   hasMore,
   loadMore,
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const router = useRouter();
-  const { getInstanceList } = useGlobalData();
 
   const [selectedItem, setSelectedItem] = useState<OtherResourceInfo | null>(
     null
   );
-  const [curInstance, setCurInstance] = useState<InstanceSummary | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { t } = useTranslation();
 
@@ -167,16 +166,6 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     }
     return tag;
   };
-
-  useEffect(() => {
-    const instanceList = getInstanceList() || [];
-    const { id } = router.query;
-    const instanceId = Array.isArray(id) ? id[0] : id;
-    const currentInstance = instanceList.find(
-      (instance) => instance.id === instanceId
-    );
-    setCurInstance(currentInstance);
-  }, [getInstanceList, router.query]);
 
   const buildOptionItems = (item: OtherResourceInfo): OptionItemProps => ({
     title: (
@@ -301,6 +290,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   resourceType,
   initialSearchQuery = "",
   initialDownloadSource = OtherResourceSource.CurseForge,
+  curInstance,
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
@@ -308,9 +298,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const toast = useToast();
   const { getGameVersionList } = useGlobalData();
 
-  const [gameVersionList, setGameVersionList] = useState<string[] | undefined>(
-    undefined
-  );
+  const [gameVersionList, setGameVersionList] = useState<string[]>([]);
 
   const [resourceList, setResourceList] = useState<OtherResourceInfo[]>([]);
   const [isLoadingResourceList, setIsLoadingResourceList] =
@@ -319,7 +307,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const [pageSize, setPageSize] = useState<number>(10);
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
-  const [gameVersion, setGameVersion] = useState<string>("All");
+  const [gameVersion, setGameVersion] = useState<string>("");
   const [selectedTag, setSelectedTag] = useState<string>("All");
   const [sortBy, setSortBy] = useState<string>(
     initialDownloadSource === OtherResourceSource.CurseForge
@@ -392,7 +380,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   );
 
   const loadMore = () => {
-    if (!hasMore) return;
+    if (!hasMore || !gameVersion) return;
     const currentPage = pageRef.current;
     handleFetchResourceListByName(
       resourceType,
@@ -409,6 +397,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   };
 
   const reFetchResourceList = useCallback(() => {
+    if (!gameVersion) return;
     pageRef.current = 0;
 
     handleFetchResourceListByName(
@@ -453,6 +442,18 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   useEffect(() => {
     reFetchResourceList();
   }, [reFetchResourceList]);
+
+  useEffect(() => {
+    const initialVersion = curInstance?.version || "All";
+    if (
+      gameVersionList.length > 0 &&
+      gameVersionList.includes(initialVersion)
+    ) {
+      setGameVersion(initialVersion);
+    } else {
+      setGameVersion("All");
+    }
+  }, [curInstance?.version, gameVersionList]);
 
   useEffect(() => {
     if (
@@ -612,6 +613,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
         ) : (
           <ResourceDownloaderList
             list={resourceList}
+            curInstance={curInstance}
             hasMore={hasMore}
             loadMore={loadMore}
           />

@@ -12,7 +12,8 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -25,7 +26,9 @@ import {
 import NavMenu from "@/components/common/nav-menu";
 import ResourceDownloader from "@/components/resource-downloader";
 import { useLauncherConfig } from "@/contexts/config";
+import { useGlobalData } from "@/contexts/global-data";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
+import { InstanceSummary } from "@/models/instance/misc";
 
 interface DownloadResourceModalProps extends Omit<ModalProps, "children"> {
   initialResourceType?: OtherResourceType;
@@ -42,9 +45,12 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const language = config.general.general.language;
+  const router = useRouter();
+  const { getInstanceList } = useGlobalData();
 
   const [selectedResourceType, setSelectedResourceType] =
     useState<OtherResourceType>(initialResourceType);
+  const [curInstance, setCurInstance] = useState<InstanceSummary | undefined>();
 
   const resourceTypeList: { key: OtherResourceType; icon: IconType }[] = [
     { key: OtherResourceType.Mod, icon: LuSquareLibrary },
@@ -53,6 +59,16 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
     { key: OtherResourceType.ShaderPack, icon: LuHaze },
     { key: OtherResourceType.DataPack, icon: LuPuzzle },
   ];
+
+  useEffect(() => {
+    const instanceList = getInstanceList() || [];
+    const { id } = router.query;
+    const instanceId = Array.isArray(id) ? id[0] : id;
+    const currentInstance = instanceList.find(
+      (instance) => instance.id === instanceId
+    );
+    setCurInstance(currentInstance);
+  }, [getInstanceList, router.query]);
 
   return (
     <Modal
@@ -111,6 +127,7 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
               resourceType={selectedResourceType}
               initialSearchQuery={initialSearchQuery}
               initialDownloadSource={initialDownloadSource}
+              curInstance={curInstance}
             />
           </ModalBody>
         </Flex>
