@@ -11,14 +11,14 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
-import { useSharedModals } from "@/contexts/shared-modal";
 import { ModLoaderType } from "@/enums/instance";
-import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
+import { OtherResourceSource } from "@/enums/resource";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ResourceService } from "@/services/resource";
 import { base64ImgSrc } from "@/utils/string";
@@ -38,70 +38,50 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { openSharedModal } = useSharedModals();
 
-  const [cfRemoteModId, setCfRemoteModId] = useState<string | null>(null);
-  const [mrRemoteModId, setMrRemoteModId] = useState<string | null>(null);
-
-  const openDownloadModal = (downloadSource: string) => {
-    openSharedModal("download-specific-resource", {
-      resource: {
-        id:
-          downloadSource === OtherResourceSource.CurseForge
-            ? cfRemoteModId
-            : mrRemoteModId,
-        websiteUrl: "",
-        type: OtherResourceType.Mod,
-        name: mod.name || mod.fileName,
-        translatedName: mod.translatedName,
-        description: mod.description || "",
-        iconSrc: base64ImgSrc(mod.iconSrc),
-        tags: [],
-        lastUpdated: "",
-        downloads: 0,
-        source: downloadSource,
-      },
-      curInstanceMajorVersion,
-      curInstanceVersion,
-      curInstanceModLoader: mod.loaderType,
-    });
-  };
+  const [cfModWebsiteUrl, setCfModWebsiteUrl] = useState<string>("");
+  const [mrModWebsiteUrl, setMrModWebsiteUrl] = useState<string>("");
 
   const handleCurseForgeInfo = useCallback(async () => {
-    ResourceService.fetchRemoteResourceByLocal(
+    const response = await ResourceService.fetchRemoteResourceByLocal(
       OtherResourceSource.CurseForge,
       mod.filePath
-    ).then((response) => {
-      if (response.status === "success") {
-        const modId = response.data.resourceId;
-        setCfRemoteModId(modId);
+    );
+    if (response.status === "success") {
+      const modId = response.data.resourceId;
+      const res = await ResourceService.fetchRemoteResourceById(
+        OtherResourceSource.CurseForge,
+        modId
+      );
+      if (res.status === "success" && res.data.websiteUrl) {
+        setCfModWebsiteUrl(res.data.websiteUrl);
       }
-    });
-  }, [mod.filePath, setCfRemoteModId]);
+    }
+  }, [mod.filePath]);
 
   const handleModrinthInfo = useCallback(async () => {
-    ResourceService.fetchRemoteResourceByLocal(
+    const response = await ResourceService.fetchRemoteResourceByLocal(
       OtherResourceSource.Modrinth,
       mod.filePath
-    ).then((response) => {
-      if (response.status === "success") {
-        const modId = response.data.resourceId;
-        setMrRemoteModId(modId);
+    );
+    if (response.status === "success") {
+      const modId = response.data.resourceId;
+      const res = await ResourceService.fetchRemoteResourceById(
+        OtherResourceSource.Modrinth,
+        modId
+      );
+      if (res.status === "success" && res.data.websiteUrl) {
+        setMrModWebsiteUrl(res.data.websiteUrl);
       }
-    });
-  }, [mod.filePath, setMrRemoteModId]);
+    }
+  }, [mod.filePath]);
 
   useEffect(() => {
-    setCfRemoteModId(null);
-    setMrRemoteModId(null);
+    setCfModWebsiteUrl("");
+    setMrModWebsiteUrl("");
     handleCurseForgeInfo();
     handleModrinthInfo();
-  }, [
-    handleCurseForgeInfo,
-    handleModrinthInfo,
-    setCfRemoteModId,
-    setMrRemoteModId,
-  ]);
+  }, [handleCurseForgeInfo, handleModrinthInfo]);
 
   return (
     <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
@@ -156,12 +136,11 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
               <Button
                 colorScheme={primaryColor}
                 onClick={() => {
-                  modalProps.onClose();
-                  openDownloadModal(OtherResourceSource.CurseForge);
+                  openUrl(cfModWebsiteUrl);
                 }}
                 fontSize="sm"
                 variant="link"
-                disabled={!cfRemoteModId}
+                disabled={!cfModWebsiteUrl}
               >
                 CurseForge
               </Button>
@@ -171,12 +150,11 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
               <Button
                 colorScheme={primaryColor}
                 onClick={() => {
-                  modalProps.onClose();
-                  openDownloadModal(OtherResourceSource.Modrinth);
+                  openUrl(mrModWebsiteUrl);
                 }}
                 fontSize="sm"
                 variant="link"
-                disabled={!mrRemoteModId}
+                disabled={!mrModWebsiteUrl}
               >
                 Modrinth
               </Button>
