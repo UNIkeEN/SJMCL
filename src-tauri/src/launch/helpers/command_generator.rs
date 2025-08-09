@@ -203,7 +203,7 @@ pub async fn generate_launch_command(
     resolution_height: game_config.game_window.resolution.height,
     resolution_width: game_config.game_window.resolution.width,
     quick_play_path: String::new(),
-    quick_play_singleplayer: quick_play_singleplayer.unwrap_or_default(),
+    quick_play_singleplayer: quick_play_singleplayer.clone().unwrap_or_default(),
     quick_play_multiplayer: quickplay_server_url.clone(),
     quick_play_realms: String::new(),
   };
@@ -298,8 +298,12 @@ pub async fn generate_launch_command(
     is_demo_user: Some(false),
     has_custom_resolution: Some(true),
     has_quick_plays_support: Some(true),
-    is_quick_play_multiplayer: Some(true),
-    is_quick_play_singleplayer: Some(true),
+    is_quick_play_multiplayer: Some(!quickplay_server_url.is_empty()),
+    is_quick_play_singleplayer: Some(
+      quick_play_singleplayer
+        .as_ref()
+        .is_some_and(|s| !s.is_empty()),
+    ),
     is_quick_play_realms: Some(false), // unsupported
   };
 
