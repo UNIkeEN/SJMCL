@@ -40,11 +40,13 @@ import { LaunchService } from "@/services/launch";
 interface LaunchProcessModal extends Omit<ModalProps, "children"> {
   instanceId: string; // may not be select instance id
   quickPlaySingleplayer?: string;
+  quickPlayMultiplayer?: string;
 }
 
 const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   instanceId,
   quickPlaySingleplayer,
+  quickPlayMultiplayer,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -132,7 +134,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       },
       {
         label: "launchGame",
-        function: () => LaunchService.launchGame(quickPlaySingleplayer),
+        function: () =>
+          LaunchService.launchGame(quickPlaySingleplayer, quickPlayMultiplayer),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
         onErrCallback: (error: ResponseError) => {},
@@ -144,6 +147,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       instanceId,
       openSharedModal,
       quickPlaySingleplayer,
+      quickPlayMultiplayer,
       router,
       selectedPlayer,
       toast,

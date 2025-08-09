@@ -851,6 +851,7 @@
     "edit": "编辑",
     "enable": "启用",
     "finish": "完成",
+    "launch": "启动",
     "next": "下一步",
     "notice": "提示",
     "open": "打开",
@@ -1195,7 +1196,8 @@
         "spectator": "观察者模式"
       },
       "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）",
-      "viewLevelData": "存档基础数据"
+      "viewLevelData": "世界基础数据",
+      "launch": "游玩此世界"
     },
     "serverList": {
       "title": "服务器",
@@ -1203,7 +1205,8 @@
       "tag": {
         "online": "在线",
         "offline": "离线"
-      }
+      },
+      "launch": "游玩此服务器"
     }
   },
   "JavaSettingsPage": {

@@ -407,6 +407,7 @@ pub async fn retrieve_game_server_list(
     game_servers.push(GameServerInfo {
       ip: server.ip,
       name: server.name,
+      description: String::new(),
       icon_src: server.icon.unwrap_or_default(),
       is_queried: false,
       players_max: 0,
@@ -426,6 +427,7 @@ pub async fn retrieve_game_server_list(
               server.players_online = query_result.players.online as usize;
               server.players_max = query_result.players.max as usize;
               server.online = query_result.online;
+              server.description = query_result.description.text.unwrap_or_default();
               server.icon_src = query_result.favicon.unwrap_or_default();
             }
             Err(_) => {

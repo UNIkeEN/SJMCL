@@ -30,6 +30,7 @@ pub async fn load_servers_info_from_path(path: &Path) -> SJMCLResult<Vec<NbtServ
 pub struct SjmcServerQueryResult {
   pub online: bool,
   pub players: Players,
+  pub description: Description,
   pub favicon: Option<String>,
 }
 
@@ -37,6 +38,12 @@ pub struct SjmcServerQueryResult {
 pub struct Players {
   pub online: u64,
   pub max: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Description {
+  pub html: Option<String>,
+  pub text: Option<String>,
 }
 
 pub async fn query_server_status(server: &String) -> SJMCLResult<SjmcServerQueryResult> {

@@ -167,6 +167,20 @@ const InstanceWorldsPage = () => {
         onWorldLevelDataModallOpen();
       },
     },
+    ...(summary?.supportQuickPlay
+      ? [
+          {
+            label: t("InstanceWorldsPage.worldList.launch"),
+            icon: "launch",
+            onClick: () => {
+              openSharedModal("launch", {
+                instanceId: summary?.id,
+                quickPlaySingleplayer: save.dirPath,
+              });
+            },
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -299,16 +313,15 @@ const InstanceWorldsPage = () => {
                   />
                 }
               >
-                {!server.isQueried ? (
-                  <BeatLoader size={6} color="gray" />
-                ) : (
-                  <HStack>
-                    {server.online && (
-                      <Text fontSize="xs-sm" color="gray.500">
-                        {`${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
-                      </Text>
-                    )}
-                    {server.online ? (
+                <HStack>
+                  {!server.isQueried && <BeatLoader size={6} color="gray" />}
+                  {server.isQueried && server.online && (
+                    <Text fontSize="xs-sm" color="gray.500">
+                      {`${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
+                    </Text>
+                  )}
+                  {server.isQueried &&
+                    (server.online ? (
                       <Tag colorScheme="green">
                         <LuCheck />
                         <TagLabel ml={0.5}>
@@ -322,9 +335,18 @@ const InstanceWorldsPage = () => {
                           {t("InstanceWorldsPage.serverList.tag.offline")}
                         </TagLabel>
                       </Tag>
-                    )}
-                  </HStack>
-                )}
+                    ))}
+                  <CommonIconButton
+                    icon="launch"
+                    label={t("InstanceWorldsPage.serverList.launch")}
+                    onClick={() => {
+                      openSharedModal("launch", {
+                        instanceId: summary?.id,
+                        quickPlayMultiplayer: server.ip,
+                      });
+                    }}
+                  />
+                </HStack>
               </OptionItem>
             ))}
           />

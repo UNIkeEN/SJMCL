@@ -851,6 +851,7 @@
     "edit": "Edit",
     "enable": "Enable",
     "finish": "Finish",
+    "launch": "Launch",
     "next": "Next",
     "notice": "Notice",
     "open": "Open",
@@ -1195,7 +1196,8 @@
         "spectator": "Spectator Mode"
       },
       "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
-      "viewLevelData": "View Level Data"
+      "viewLevelData": "View Level Data",
+      "launch": "Play this World"
     },
     "serverList": {
       "title": "Servers",
@@ -1203,7 +1205,8 @@
       "tag": {
         "online": "Online",
         "offline": "Offline"
-      }
+      },
+      "launch": "Play this Server"
     }
   },
   "JavaSettingsPage": {
