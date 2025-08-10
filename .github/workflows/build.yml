@@ -1,6 +1,6 @@
 name: Build Artifacts
 permissions:
-  contents: write
+  contents: read
 
 on:
   workflow_call:
