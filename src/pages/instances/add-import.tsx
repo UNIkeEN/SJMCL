@@ -1,6 +1,6 @@
 import {
   HStack,
-  IconButton,
+  Icon,
   Menu,
   MenuButton,
   MenuItem,
@@ -22,18 +22,21 @@ import { CreateInstanceModal } from "@/components/modals/create-instance-modal";
 import { DownloadGameServerModal } from "@/components/modals/download-game-server-modal";
 import DownloadModpackModal from "@/components/modals/download-modpack-modal";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { useToast } from "@/contexts/toast";
 
 const AddAndImportInstancePage = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { openSharedModal } = useSharedModals();
-  const toast = useToast();
 
   const {
     isOpen: isCreateInstanceModalOpen,
     onOpen: onOpenCreateInstanceModal,
     onClose: onCloseCreateInstanceModal,
+  } = useDisclosure();
+  const {
+    isOpen: isModpackMenuOpen,
+    onOpen: onOpenModpackMenu,
+    onClose: onCloseModpackMenu,
   } = useDisclosure();
   const {
     isOpen: isDownloadModpackModalOpen,
@@ -65,7 +68,7 @@ const AddAndImportInstancePage = () => {
 
   const addAndImportOptions: Record<string, () => void> = {
     new: onOpenCreateInstanceModal,
-    modpack: () => {},
+    modpack: onOpenModpackMenu,
     manageDirs: () => router.push("/settings/global-game"),
   };
 
@@ -92,14 +95,10 @@ const AddAndImportInstancePage = () => {
 
   const ModpackMenu = () => {
     return (
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          size="sm"
-          variant="ghost"
-          aria-label="operations"
-          icon={<LuArrowRight />}
-        />
+      <Menu isOpen={isModpackMenuOpen} onClose={onCloseModpackMenu}>
+        <MenuButton>
+          <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
+        </MenuButton>
         <Portal>
           <MenuList>
             {modpackOperations.map((item) => (
@@ -128,14 +127,10 @@ const AddAndImportInstancePage = () => {
           key === "modpack" ? (
             <ModpackMenu />
           ) : (
-            <IconButton
-              aria-label={key}
-              onClick={addAndImportOptions[key]}
-              variant="ghost"
-              size="sm"
-              icon={<LuArrowRight />}
-            />
+            <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
           ),
+        isFullClickZone: true,
+        onClick: addAndImportOptions[key],
       })),
     },
     {
@@ -145,15 +140,9 @@ const AddAndImportInstancePage = () => {
         description: t(
           `AddAndImportInstancePage.moreOptions.${key}.description`
         ),
-        children: (
-          <IconButton
-            aria-label={key}
-            onClick={moreOptions[key]}
-            variant="ghost"
-            size="sm"
-            icon={<LuArrowRight />}
-          />
-        ),
+        children: <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />,
+        isFullClickZone: true,
+        onClick: moreOptions[key],
       })),
     },
   ];

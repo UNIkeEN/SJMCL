@@ -1,5 +1,6 @@
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
-import LinkIconButton from "@/components/common/link-icon-button";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -13,12 +14,16 @@ const HelpSettingsPage = () => {
         {
           title: t("HelpSettingsPage.top.settings.LauncherDocs.title"),
           children: (
-            <LinkIconButton
-              url={t("HelpSettingsPage.top.settings.LauncherDocs.url")}
-              aria-label="launcherdoc"
-              isExternal
+            <CommonIconButton
+              label={t("HelpSettingsPage.top.settings.LauncherDocs.url")}
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
               h={18}
+              onClick={() =>
+                openUrl(t("HelpSettingsPage.top.settings.LauncherDocs.url"))
+              }
             />
           ),
         },
@@ -33,11 +38,15 @@ const HelpSettingsPage = () => {
             "HelpSettingsPage.minecraft.settings.mcWiki.description"
           ),
           children: (
-            <LinkIconButton
-              url={t("HelpSettingsPage.minecraft.settings.mcWiki.url")}
-              aria-label="mcWiki"
-              isExternal
+            <CommonIconButton
+              label={t("HelpSettingsPage.minecraft.settings.mcWiki.url")}
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() =>
+                openUrl(t("HelpSettingsPage.minecraft.settings.mcWiki.url"))
+              }
             />
           ),
         },
@@ -47,11 +56,13 @@ const HelpSettingsPage = () => {
             "HelpSettingsPage.minecraft.settings.mcMod.description"
           ),
           children: (
-            <LinkIconButton
-              url="https://www.mcmod.cn/"
-              aria-label="mcMod"
-              isExternal
+            <CommonIconButton
+              label="https://www.mcmod.cn/"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => openUrl("https://www.mcmod.cn/")}
             />
           ),
         },
@@ -61,11 +72,13 @@ const HelpSettingsPage = () => {
             "HelpSettingsPage.minecraft.settings.curseforge.description"
           ),
           children: (
-            <LinkIconButton
-              url="https://www.curseforge.com/minecraft"
-              aria-label="curseforge"
-              isExternal
+            <CommonIconButton
+              label="https://www.curseforge.com/minecraft"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => openUrl("https://www.curseforge.com/minecraft")}
             />
           ),
         },
@@ -78,23 +91,31 @@ const HelpSettingsPage = () => {
           title: t("HelpSettingsPage.community.settings.MUA.title"),
           description: t("HelpSettingsPage.community.settings.MUA.description"),
           children: (
-            <LinkIconButton
-              url={t("HelpSettingsPage.community.settings.MUA.url")}
-              aria-label="MUA"
-              isExternal
+            <CommonIconButton
+              label={t("HelpSettingsPage.community.settings.MUA.url")}
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() =>
+                openUrl(t("HelpSettingsPage.community.settings.MUA.url"))
+              }
             />
           ),
         },
         {
           title: t("HelpSettingsPage.community.settings.SJMC.title"),
           children: (
-            <LinkIconButton
-              url={t("HelpSettingsPage.community.settings.SJMC.url")}
-              aria-label="SJMC"
-              isExternal
+            <CommonIconButton
+              label={t("HelpSettingsPage.community.settings.SJMC.url")}
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
               h={18}
+              onClick={() =>
+                openUrl(t("HelpSettingsPage.community.settings.SJMC.url"))
+              }
             />
           ),
         },

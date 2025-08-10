@@ -1,6 +1,9 @@
-import { Avatar, AvatarGroup, HStack } from "@chakra-ui/react";
+import { Avatar, AvatarGroup, HStack, Icon } from "@chakra-ui/react";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import LinkIconButton from "@/components/common/link-icon-button";
+import { LuArrowRight } from "react-icons/lu";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -13,6 +16,7 @@ const AboutSettingsPage = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const basicInfo = config.basicInfo;
+  const router = useRouter();
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -26,7 +30,7 @@ const AboutSettingsPage = () => {
         {
           title: t("AboutSettingsPage.about.settings.contributors.title"),
           children: (
-            <HStack spacing={0.5}>
+            <HStack spacing={2.5}>
               <AvatarGroup size="xs" spacing={-2}>
                 {CoreContributorsList.slice(0, 3).map((item) => (
                   <Avatar
@@ -36,34 +40,41 @@ const AboutSettingsPage = () => {
                   />
                 ))}
               </AvatarGroup>
-              <LinkIconButton
-                url="/settings/contributors"
-                aria-label="contributors"
-              />
+              <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
             </HStack>
           ),
+          isFullClickZone: true,
+          onClick: () => router.push("/settings/contributors"),
         },
         {
           title: t("AboutSettingsPage.about.settings.reportIssue.title"),
           children: (
-            <LinkIconButton
-              url="https://github.com/UNIkeEN/SJMCL/issues"
-              aria-label="issue"
-              isExternal
+            <CommonIconButton
+              label="https://github.com/UNIkeEN/SJMCL/issues"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
               h={18}
+              onClick={() => {
+                openUrl("https://github.com/UNIkeEN/SJMCL/issues");
+              }}
             />
           ),
         },
         {
           title: t("AboutSettingsPage.about.settings.aboutSJMC.title"),
           children: (
-            <LinkIconButton
-              url="https://mc.sjtu.cn/welcome/content/3/"
-              aria-label="aboutSJMC"
-              isExternal
+            <CommonIconButton
+              label="https://mc.sjtu.cn/welcome/content/3/"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
               h={18}
+              onClick={() => {
+                openUrl("https://mc.sjtu.cn/welcome/content/3/");
+              }}
             />
           ),
         },
@@ -78,11 +89,15 @@ const AboutSettingsPage = () => {
             "AboutSettingsPage.ack.settings.skinview3d.description"
           ),
           children: (
-            <LinkIconButton
-              url="https://github.com/bs-community/skinview3d"
-              aria-label="skinview3d"
-              isExternal
+            <CommonIconButton
+              label="https://github.com/bs-community/skinview3d"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => {
+                openUrl("https://github.com/bs-community/skinview3d");
+              }}
             />
           ),
         },
@@ -90,11 +105,15 @@ const AboutSettingsPage = () => {
           title: t("AboutSettingsPage.ack.settings.bmclapi.title"),
           description: t("AboutSettingsPage.ack.settings.bmclapi.description"),
           children: (
-            <LinkIconButton
-              url="https://bmclapidoc.bangbang93.com/"
-              aria-label="bmclapi"
-              isExternal
+            <CommonIconButton
+              label="https://bmclapidoc.bangbang93.com/"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => {
+                openUrl("https://bmclapidoc.bangbang93.com/");
+              }}
             />
           ),
         },
@@ -102,11 +121,15 @@ const AboutSettingsPage = () => {
           title: t("AboutSettingsPage.ack.settings.hmcl.title"),
           description: t("AboutSettingsPage.ack.settings.hmcl.description"),
           children: (
-            <LinkIconButton
-              url="https://hmcl.huangyuhui.net/"
-              aria-label="hmcl"
-              isExternal
+            <CommonIconButton
+              label="https://hmcl.huangyuhui.net/"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => {
+                openUrl("https://hmcl.huangyuhui.net/");
+              }}
             />
           ),
         },
@@ -116,11 +139,15 @@ const AboutSettingsPage = () => {
             "AboutSettingsPage.ack.settings.littleskin.description"
           ),
           children: (
-            <LinkIconButton
-              url="https://github.com/LittleSkinChina"
-              aria-label="littleskin"
-              isExternal
+            <CommonIconButton
+              label="https://github.com/LittleSkinChina"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => {
+                openUrl("https://github.com/LittleSkinChina");
+              }}
             />
           ),
         },
@@ -128,11 +155,15 @@ const AboutSettingsPage = () => {
           title: t("AboutSettingsPage.ack.settings.sinter.title"),
           description: t("AboutSettingsPage.ack.settings.sinter.description"),
           children: (
-            <LinkIconButton
-              url="https://m.ui.cn/details/615564"
-              aria-label="sinter"
-              isExternal
+            <CommonIconButton
+              label="https://m.ui.cn/details/615564"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => {
+                openUrl("https://m.ui.cn/details/615564");
+              }}
             />
           ),
         },
@@ -151,12 +182,20 @@ const AboutSettingsPage = () => {
         {
           title: t("AboutSettingsPage.legalInfo.settings.userAgreement.title"),
           children: (
-            <LinkIconButton
-              url={t("AboutSettingsPage.legalInfo.settings.userAgreement.url")}
-              aria-label="userAgreement"
-              isExternal
+            <CommonIconButton
+              label={t(
+                "AboutSettingsPage.legalInfo.settings.userAgreement.url"
+              )}
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
               h={18}
+              onClick={() => {
+                openUrl(
+                  t("AboutSettingsPage.legalInfo.settings.userAgreement.url")
+                );
+              }}
             />
           ),
         },
@@ -168,11 +207,17 @@ const AboutSettingsPage = () => {
             "AboutSettingsPage.legalInfo.settings.openSourceLicense.description"
           ),
           children: (
-            <LinkIconButton
-              url="https://github.com/UNIkeEN/SJMCL?tab=readme-ov-file#copyright"
-              aria-label="openSourceLicense"
-              isExternal
+            <CommonIconButton
+              label="https://github.com/UNIkeEN/SJMCL?tab=readme-ov-file#copyright"
+              icon="external"
               withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => {
+                openUrl(
+                  "https://github.com/UNIkeEN/SJMCL?tab=readme-ov-file#copyright"
+                );
+              }}
             />
           ),
         },
