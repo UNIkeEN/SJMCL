@@ -1,9 +1,6 @@
 use super::client_json::McClientInfo;
 use super::{
-  super::{
-    constants::INSTANCE_CFG_FILE_NAME,
-    models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
-  },
+  super::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
   client_jar::load_game_version_from_jar,
 };
 use crate::error::SJMCLResult;
@@ -172,10 +169,13 @@ pub async fn refresh_instances(
       }
     }
     let name = client_data.id.clone();
-    let cfg_path = version_path.join(INSTANCE_CFG_FILE_NAME);
-    let mut cfg_read = load_json_async::<Instance>(&cfg_path)
-      .await
-      .unwrap_or_default();
+    let mut cfg_read = Instance {
+      version_path: version_path.clone(),
+      ..Default::default()
+    }
+    .load_json_cfg()
+    .await
+    .unwrap_or_default();
 
     if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
       let priority_list = {

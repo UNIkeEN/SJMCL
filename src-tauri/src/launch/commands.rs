@@ -16,7 +16,6 @@ use crate::{
   },
   error::SJMCLResult,
   instance::{
-    constants::INSTANCE_CFG_FILE_NAME,
     helpers::{
       client_json::{replace_native_libraries, McClientInfo},
       misc::{get_instance_game_config, get_instance_subdir_paths},
@@ -391,10 +390,7 @@ pub fn export_game_crash_info(
     .selected_instance
     .version_path
     .join(format!("{}.json", launching.selected_instance.name));
-  let version_config_path = launching
-    .selected_instance
-    .version_path
-    .join(INSTANCE_CFG_FILE_NAME);
+  let version_config_path = launching.selected_instance.get_json_cfg_path();
 
   // full launch script
   let launch_script_path = app.path().resolve::<PathBuf>(

@@ -61,11 +61,23 @@ impl<T: Read + Send + 'static> OutputPipe<T> {
 }
 
 pub async fn record_play_time(app: AppHandle, start_time: Instant, instance_id: String) {
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let inst = binding.lock().unwrap().get(&instance_id).cloned();
-  if let Some(mut instance) = inst {
-    instance.play_time = start_time.elapsed().as_secs() as u128;
-    let _ = instance.clone().save_json_cfg().await;
+  let instance_in_mem = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let inst = binding.lock().unwrap().get(&instance_id).cloned();
+    inst
+  };
+
+  if let Some(instance_in_mem) = instance_in_mem {
+    // load newest play time in instance config from disk
+    let mut instance = instance_in_mem
+      .load_json_cfg()
+      .await
+      .unwrap_or(instance_in_mem);
+
+    let elapsed = start_time.elapsed().as_secs() as u128;
+    instance.play_time = instance.play_time.saturating_add(elapsed);
+
+    let _ = instance.save_json_cfg().await;
   }
 }
 
@@ -191,15 +203,14 @@ pub async fn monitor_process(
       _ => {}
     }
 
+    let start_time_lock = *start_time.lock().unwrap();
+    if let Some(start_time) = start_time_lock {
+      record_play_time(app.clone(), start_time, instance_id_clone).await;
+    }
+
     if exit_ok {
       if let Some(ref window) = log_window {
         let _ = window.destroy();
-      }
-
-      let start_time_lock = *start_time.lock().unwrap();
-
-      if let Some(start_time) = start_time_lock {
-        record_play_time(app.clone(), start_time, instance_id_clone).await;
       }
 
       let launching_queue_state = app.state::<Mutex<Vec<LaunchingState>>>();
