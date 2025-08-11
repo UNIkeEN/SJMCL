@@ -79,7 +79,6 @@ pub async fn get_invalid_library_files(
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
 
-  let source = source.clone();
   let futs = artifacts.into_iter().map(move |artifact| {
     let source = source.clone();
     async move {
