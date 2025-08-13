@@ -1,5 +1,4 @@
 import {
-  Flex,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -9,6 +8,7 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import SchematicView from "@/components/schematic-view";
 
 interface ViewSchematicModalProps extends Omit<ModalProps, "children"> {
   fileUrl?: string;
@@ -23,15 +23,13 @@ const ViewSchematicModal: React.FC<ViewSchematicModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md" {...modalProps}>
+    <Modal isOpen={isOpen} onClose={onClose} size="4xl" {...modalProps}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ViewSchematicModal.header.title")}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody pb={3}>
-          <Flex justify="center" align="center" width="100%" height="100%">
-            {/* TODO */}
-          </Flex>
+        <ModalBody pb={6} display="flex" flexDirection="column" flex="1">
+          <SchematicView fileUrl={fileUrl} />
         </ModalBody>
       </ModalContent>
     </Modal>

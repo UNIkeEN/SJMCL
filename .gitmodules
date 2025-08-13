@@ -1,0 +1,3 @@
+[submodule "public/litematic-viewer"]
+	path = public/litematic-viewer
+	url = https://github.com/SJMC-Dev/litematic-viewer.git

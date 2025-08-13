@@ -1286,6 +1286,12 @@
   "ViewSkinModal": {
     "skinView": "查看皮肤"
   },
+    "ViewSchematicModal":{
+      "header":{
+        "title":"查看原理图"
+      }
+
+    },
   "MemoryStatusProgress": {
     "title": "内存状态",
     "info": "{{used}} / {{total}} GB 已使用",
