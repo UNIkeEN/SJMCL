@@ -114,7 +114,7 @@ const HeadNavBar = () => {
                       selectedIndex === index ? "inherit" : unselectTabColor
                     }
                   >
-                    <HStack spacing={2}>
+                    <HStack spacing={2} id={`head-navbar-tab-${item.label}`}>
                       <Icon as={item.icon} />
                       {(!isSimplified || selectedIndex === index) && (
                         <Text>{t(`HeadNavBar.navList.${item.label}`)}</Text>

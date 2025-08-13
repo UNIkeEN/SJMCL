@@ -860,6 +860,7 @@
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
+    "skip": "Skip",
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -997,6 +998,20 @@
           "button": "Edit Advanced Options"
         }
       }
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "Instance Page",
+      "content": "Here you can add and select your Minecraft game instances, as well as download and manage various game resources."
+    },
+    "step2": {
+      "title": "Accounts Page",
+      "content": "Here you can add accounts and choose the player you want to play."
+    },
+    "step3": {
+      "title": "Launch Minecraft!",
+      "content": "After selecting your instance and player and adjusting the relevant settings, click the launch button and enjoy the game! 🥳"
     }
   },
   "HeadNavBar": {
