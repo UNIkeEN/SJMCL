@@ -247,28 +247,9 @@ const crashRules: { key: string; pattern: RegExp }[] = [
       /java\.lang\.UnsatisfiedLinkError: .*?\.(dylib|so|dll): dlopen\(.*?\): .*?missing compatible architecture.*?\(have '.*?', need '.*?'\)/,
   },
   {
-    key: "GRAPHICS_CONFIG_KEY_CORRECTED",
-    pattern:
-      /Incorrect key \[(earlyWindowSkipGLVersions|earlyWindowSquir)\] was corrected from null to (\[\]|false)/,
-  },
-  {
-    key: "UTF8_ENCODING_ERROR",
-    pattern:
-      /(java\.lang\.ClassNotFoundException: net\.fabricmc\.loader\.impl\.launch\.knot\.KnotClient)/,
-  },
-  {
-    key: "ASCII_ENCODING_ERROR",
-    pattern: /\[LWJGL] Failed to load a library\./,
-  },
-  {
     key: "MAC_DS_STORE",
     pattern:
       /ResourceLocationException: Non \[a-z0-9_.-\] character in namespace of location: \.DS_Store/,
-  },
-  {
-    key: "MOD_INCOMPATIBLE",
-    pattern:
-      /Exception caught during firing event: Unable to load library '(.*?)'/,
   },
   {
     key: "LEVEL_DAT_CORRUPTED",
@@ -279,11 +260,6 @@ const crashRules: { key: string; pattern: RegExp }[] = [
     key: "GL_OUT_OF_MEMORY",
     pattern:
       /GL_OUT_OF_MEMORY error generated\. Failed to allocate memory for buffer data\./,
-  },
-  {
-    key: "ENVIRONMENT_ISSUE",
-    pattern:
-      /java\.lang\.IllegalStateException: failed to create a child event loop/,
   },
   {
     key: "MOD_JAVA_VERSION_MISMATCH",
