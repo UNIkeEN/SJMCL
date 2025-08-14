@@ -3,9 +3,7 @@ use super::{
     command_generator::{export_full_launch_command, generate_launch_command},
     file_validator::{extract_native_libraries, get_invalid_library_files},
     jre_selector::select_java_runtime,
-    process_monitor::{
-      change_process_window_title, kill_process, monitor_process, set_process_priority,
-    },
+    process_monitor::{kill_process, monitor_process, set_process_priority},
   },
   models::LaunchingState,
 };
@@ -304,7 +302,6 @@ pub async fn launch_game(
 
   // set process priority and window title (if error, keep slient)
   let _ = set_process_priority(pid, &game_config.performance.process_priority);
-  let _ = !game_config.game_window.custom_title.trim().is_empty();
 
   if game_config.launcher_visibility != LauncherVisiablity::Always {
     let _ = app
