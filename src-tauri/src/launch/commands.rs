@@ -295,6 +295,7 @@ pub async fn launch_game(
     child,
     instance_id,
     game_config.display_game_log,
+    &game_config.game_window.custom_title,
     game_config.launcher_visibility.clone(),
     tx,
   )
@@ -303,8 +304,7 @@ pub async fn launch_game(
 
   // set process priority and window title (if error, keep slient)
   let _ = set_process_priority(pid, &game_config.performance.process_priority);
-  let _ = !game_config.game_window.custom_title.trim().is_empty()
-    && change_process_window_title(pid, &game_config.game_window.custom_title).is_err();
+  let _ = !game_config.game_window.custom_title.trim().is_empty();
 
   if game_config.launcher_visibility != LauncherVisiablity::Always {
     let _ = app
