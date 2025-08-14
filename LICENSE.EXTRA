@@ -4,4 +4,4 @@ By GPLv3 License term 7, we require that when you distribute a modified version 
 
 1. Use a different software name than SJMCL or SJMC Launcher;
 2. Do not remove the function of sending user statisitics to our statisitics server (src-tauri/src/utils/sys_info.rs), and send only version numbers with prefix (more than two letters, e.g. XX-0.0.1).
-3. Mark clearly in your repository README file, your distribution website or thread, Support documents, About Page in the software that you program is based on SJMCL and give out the url of the origin repository.
+3. Mark clearly in your repository README file, your distribution website or thread, Support documents, About Page in the software that your program is based on SJMCL and give out the url of the origin repository.
