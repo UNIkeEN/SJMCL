@@ -493,6 +493,7 @@ const DotStepper: React.FC<DotStepperProps> = ({ total, active }) => {
 
 export const useGuidedTour = () => {
   const ctx = useContext(TourContext);
-  if (!ctx) throw new Error("useTour must be used within <GuidedTourProvider>");
+  if (!ctx)
+    throw new Error("useGuidedTour must be used within <GuidedTourProvider>");
   return ctx;
 };
