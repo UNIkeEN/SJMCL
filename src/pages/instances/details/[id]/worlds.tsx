@@ -26,7 +26,6 @@ import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
-import { useResourceRefresh } from "@/hooks/resource-refresh";
 import { GameServerInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
@@ -72,8 +71,6 @@ const InstanceWorldsPage = () => {
   useEffect(() => {
     getWorldListWrapper();
   }, [getWorldListWrapper]);
-
-  useResourceRefresh(["world", "datapack"], () => getWorldListWrapper(true));
 
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
