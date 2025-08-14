@@ -258,8 +258,7 @@ const crashRules: { key: string; pattern: RegExp }[] = [
   },
   {
     key: "ASCII_ENCODING_ERROR",
-    pattern:
-      /\[LWJGL] Failed to load a library\./,
+    pattern: /\[LWJGL] Failed to load a library\./,
   },
   {
     key: "MAC_DS_STORE",
@@ -293,8 +292,7 @@ const crashRules: { key: string; pattern: RegExp }[] = [
   },
   {
     key: "DUPLICATE_MOD_INSTALLED",
-    pattern:
-      /ModResolutionException: Duplicate/,
+    pattern: /ModResolutionException: Duplicate/,
   },
   {
     key: "MOD_ZIP_CORRUPTED",
@@ -303,18 +301,15 @@ const crashRules: { key: string; pattern: RegExp }[] = [
   },
   {
     key: "MOD_INTERNET_ERROR",
-    pattern:
-      /(modpack-update-checker|commonality)/,
+    pattern: /(modpack-update-checker|commonality)/,
   },
   {
     key: "VICS_MODERN_WARFARE_ERROR",
-    pattern:
-      /java\.lang\.IllegalStateException: Not Building!/,
+    pattern: /java\.lang\.IllegalStateException: Not Building!/,
   },
   {
     key: "FORGE_LITELOADER_CONFLICT",
-    pattern:
-      /ModLauncher is not available/,
+    pattern: /ModLauncher is not available/,
   },
 ];
 
