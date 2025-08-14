@@ -131,8 +131,8 @@ const SchematicView: React.FC<SchematicViewProps> = ({
 
     const loadScripts = async () => {
       try {
-        await loadScript("https://unpkg.com/deepslate@0.10.1");
-        await loadScript("https://unpkg.com/gl-matrix@3.4.3/gl-matrix-min.js");
+        await loadScript("/litematic-viewer/resource/deepslate.js");
+        await loadScript("/litematic-viewer/resource/gl-matrix-min.js");
 
         await loadScript("/litematic-viewer/resource/assets.js");
         await loadScript("/litematic-viewer/resource/opaque.js");
