@@ -338,6 +338,9 @@ pub fn set_process_priority(pid: u32, priority: &ProcessPriority) -> SJMCLResult
 }
 
 pub fn change_process_window_title(pid: u32, new_title: &str) -> SJMCLResult<()> {
+  if new_title.trim().is_empty() {
+    return Ok(());
+  }
   #[cfg(target_os = "windows")]
   {
     use std::ffi::OsStr;
