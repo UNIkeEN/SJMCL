@@ -42,9 +42,18 @@ const HeadNavBar = () => {
 
   const unselectTabColor = useColorModeValue("gray.600", "gray.400");
 
-  const selectedTabBackgroundColor = useColorModeValue("rgba(0, 0, 0, 0.1)", "rgba(255, 255, 255, 0.1)");
-  const hoverTabBackgroundColor = useColorModeValue("rgba(0, 0, 0, 0.05)", "rgba(255, 255, 255, 0.05)");
-  const activeTabBackgroundColor = useColorModeValue("rgba(0, 0, 0, 0.15)", "rgba(255, 255, 255, 0.15)");
+  const selectedTabBackgroundColor = useColorModeValue(
+    "rgba(0, 0, 0, 0.1)",
+    "rgba(255, 255, 255, 0.1)"
+  );
+  const hoverTabBackgroundColor = useColorModeValue(
+    "rgba(0, 0, 0, 0.05)",
+    "rgba(255, 255, 255, 0.05)"
+  );
+  const activeTabBackgroundColor = useColorModeValue(
+    "rgba(0, 0, 0, 0.15)",
+    "rgba(255, 255, 255, 0.15)"
+  );
 
   useEffect(() => {
     setIsAnimating(true);
@@ -65,15 +74,15 @@ const HeadNavBar = () => {
     ...(config.general.functionality.discoverPage
       ? [{ icon: LuCompass, label: "discover", path: "/discover" }]
       : [
-        {
-          icon: LuSearch,
-          label: "search",
-          path: "%not-page",
-          onNav: () => {
-            openSharedModal("spotlight-search");
+          {
+            icon: LuSearch,
+            label: "search",
+            path: "%not-page",
+            onNav: () => {
+              openSharedModal("spotlight-search");
+            },
           },
-        },
-      ]),
+        ]),
     { icon: LuSettings, label: "settings", path: "/settings" },
   ];
 
@@ -120,15 +129,19 @@ const HeadNavBar = () => {
                     color={
                       selectedIndex === index ? "inherit" : unselectTabColor
                     }
-
                     // Set background color for the selected, hovered or active tab
                     _selected={{ bg: selectedTabBackgroundColor }}
-                    _hover={{ bg: selectedIndex === index ? selectedTabBackgroundColor : hoverTabBackgroundColor }}
-                    sx={{ ":active": { backgroundColor: activeTabBackgroundColor } }}
-
+                    _hover={{
+                      bg:
+                        selectedIndex === index
+                          ? selectedTabBackgroundColor
+                          : hoverTabBackgroundColor,
+                    }}
+                    sx={{
+                      ":active": { backgroundColor: activeTabBackgroundColor },
+                    }}
                     // Disable the outline when focused
                     _focus={{ boxShadow: "none", outline: "none" }}
-
                     // Select when mouse is released.
                     onMouseDown={(e) => e.preventDefault()}
                     onMouseUp={() => handleTabChange(index)}
@@ -157,7 +170,7 @@ const HeadNavBar = () => {
           )}
         </HStack>
       </AdvancedCard>
-    </Flex >
+    </Flex>
   );
 };
 

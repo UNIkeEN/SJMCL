@@ -1,7 +1,7 @@
 import { BoxProps, HStack, Heading, Highlight, Image } from "@chakra-ui/react";
 import styles from "@/styles/logo-title.module.css";
 
-interface LogoTitleProps extends BoxProps { }
+interface LogoTitleProps extends BoxProps {}
 
 export const TitleShort: React.FC<LogoTitleProps> = (props) => {
   return (
