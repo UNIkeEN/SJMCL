@@ -21,6 +21,8 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio;
 
+const POLLING_OPERATION_INTERVAL_MS: u64 = 2000;
+
 struct OutputPipe<T: Read + Send + 'static> {
   app: AppHandle,
   out: T,
@@ -157,7 +159,9 @@ pub async fn monitor_process(
     let custom_title = custom_title.to_string();
     thread::spawn(move || {
       while !stop_polling_flag.load(Ordering::SeqCst) {
-        thread::sleep(std::time::Duration::from_millis(2000));
+        thread::sleep(std::time::Duration::from_millis(
+          POLLING_OPERATION_INTERVAL_MS,
+        ));
         let _ = change_process_window_title(pid, &custom_title).is_err();
       }
     });
