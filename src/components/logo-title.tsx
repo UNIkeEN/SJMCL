@@ -1,7 +1,7 @@
 import { BoxProps, HStack, Heading, Highlight, Image } from "@chakra-ui/react";
 import styles from "@/styles/logo-title.module.css";
 
-interface LogoTitleProps extends BoxProps {}
+interface LogoTitleProps extends BoxProps { }
 
 export const TitleShort: React.FC<LogoTitleProps> = (props) => {
   return (
@@ -28,6 +28,15 @@ export const TitleFullWithLogo: React.FC<LogoTitleProps> = (props) => {
     <HStack>
       <Image src="/images/icons/Logo_128x128.png" alt="Logo" boxSize="36px" />
       <TitleFull {...props} />
+    </HStack>
+  );
+};
+
+export const TitleShortWithLogo: React.FC<LogoTitleProps> = (props) => {
+  return (
+    <HStack>
+      <Image src="/images/icons/Logo_128x128.png" alt="Logo" boxSize="36px" />
+      <TitleShort {...props} />
     </HStack>
   );
 };

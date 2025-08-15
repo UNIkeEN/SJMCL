@@ -23,10 +23,10 @@ import {
 } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import { DownloadIndicator } from "@/components/download-indicator";
-import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
+import { TitleFullWithLogo, TitleShortWithLogo } from "./logo-title";
 
 const HeadNavBar = () => {
   const router = useRouter();
@@ -41,6 +41,10 @@ const HeadNavBar = () => {
   const isDownloadIndicatorShown = tasks.length > 0;
 
   const unselectTabColor = useColorModeValue("gray.600", "gray.400");
+
+  const selectedTabBackgroundColor = useColorModeValue("rgba(0, 0, 0, 0.1)", "rgba(255, 255, 255, 0.1)");
+  const hoverTabBackgroundColor = useColorModeValue("rgba(0, 0, 0, 0.05)", "rgba(255, 255, 255, 0.05)");
+  const activeTabBackgroundColor = useColorModeValue("rgba(0, 0, 0, 0.15)", "rgba(255, 255, 255, 0.15)");
 
   useEffect(() => {
     setIsAnimating(true);
@@ -61,15 +65,15 @@ const HeadNavBar = () => {
     ...(config.general.functionality.discoverPage
       ? [{ icon: LuCompass, label: "discover", path: "/discover" }]
       : [
-          {
-            icon: LuSearch,
-            label: "search",
-            path: "%not-page",
-            onNav: () => {
-              openSharedModal("spotlight-search");
-            },
+        {
+          icon: LuSearch,
+          label: "search",
+          path: "%not-page",
+          onNav: () => {
+            openSharedModal("spotlight-search");
           },
-        ]),
+        },
+      ]),
     { icon: LuSettings, label: "settings", path: "/settings" },
   ];
 
@@ -92,13 +96,16 @@ const HeadNavBar = () => {
         className={`animated-card ${isAnimating ? "animate" : ""}`}
       >
         <HStack spacing={4} h="100%">
-          <TitleShort />
+          {isSimplified ? (
+            <TitleShortWithLogo w="fit-content" h="fit-content" />
+          ) : (
+            <TitleFullWithLogo w="fit-content" h="fit-content" />
+          )}
           <Tabs
             variant="soft-rounded"
             size="sm"
             colorScheme={primaryColor}
             index={selectedIndex}
-            onChange={handleTabChange}
           >
             <TabList>
               {navList.map((item, index) => (
@@ -113,6 +120,18 @@ const HeadNavBar = () => {
                     color={
                       selectedIndex === index ? "inherit" : unselectTabColor
                     }
+
+                    // Set background color for the selected, hovered or active tab
+                    _selected={{ bg: selectedTabBackgroundColor }}
+                    _hover={{ bg: selectedIndex === index ? selectedTabBackgroundColor : hoverTabBackgroundColor }}
+                    sx={{ ":active": { backgroundColor: activeTabBackgroundColor } }}
+
+                    // Disable the outline when focused
+                    _focus={{ boxShadow: "none", outline: "none" }}
+
+                    // Select when mouse is released.
+                    onMouseDown={(e) => e.preventDefault()}
+                    onMouseUp={() => handleTabChange(index)}
                   >
                     <HStack spacing={2}>
                       <Icon as={item.icon} />
@@ -138,7 +157,7 @@ const HeadNavBar = () => {
           )}
         </HStack>
       </AdvancedCard>
-    </Flex>
+    </Flex >
   );
 };
 
