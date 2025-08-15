@@ -6,6 +6,7 @@ import React, { useEffect, useMemo } from "react";
 import { initReactI18next } from "react-i18next";
 import { Fade } from "@/components/common/transition";
 import GlobalEventHandler from "@/components/special/global-event-handler";
+import { GuidedTourProvider } from "@/components/special/guided-tour-provider";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
 import { GlobalDataContextProvider } from "@/contexts/global-data";
@@ -113,19 +114,21 @@ export default function App({ Component, pageProps }: AppProps) {
         <RoutingHistoryContextProvider>
           <LauncherConfigContextProvider>
             <GlobalDataContextProvider>
-              <SharedModalsProvider>
-                <TaskContextProvider>
-                  <GlobalEventHandler>
-                    <MainLayout>
-                      <Fade key={router.pathname.split("/")[1] || ""} in>
-                        <SpecLayout>
-                          <Component {...pageProps} />
-                        </SpecLayout>
-                      </Fade>
-                    </MainLayout>
-                  </GlobalEventHandler>
-                </TaskContextProvider>
-              </SharedModalsProvider>
+              <GuidedTourProvider>
+                <SharedModalsProvider>
+                  <TaskContextProvider>
+                    <GlobalEventHandler>
+                      <MainLayout>
+                        <Fade key={router.pathname.split("/")[1] || ""} in>
+                          <SpecLayout>
+                            <Component {...pageProps} />
+                          </SpecLayout>
+                        </Fade>
+                      </MainLayout>
+                    </GlobalEventHandler>
+                  </TaskContextProvider>
+                </SharedModalsProvider>
+              </GuidedTourProvider>
             </GlobalDataContextProvider>
           </LauncherConfigContextProvider>
         </RoutingHistoryContextProvider>

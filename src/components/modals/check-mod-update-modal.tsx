@@ -298,7 +298,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent h="100%" pb={4}>
+      <ModalContent h="100%">
         <ModalHeader>
           <HStack w="100%" justify="flex-start" align="center">
             <Text>{t("CheckModUpdateModal.header.title")}</Text>
@@ -313,7 +313,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           overflow="hidden"
         >
           {isCheckingUpdate ? (
-            <VStack mt={8} spacing={4}>
+            <VStack spacing={4} justify="center" align="center" h="75%">
               <Text fontSize="md" color="gray.700">
                 {t("CheckModUpdateModal.label.loading", {
                   x: checkingUpdateIndex,

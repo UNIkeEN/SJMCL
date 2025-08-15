@@ -15,8 +15,8 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
-import { useResourceRefresh } from "@/hooks/resource-refresh";
 import { ResourcePackInfo } from "@/models/instance/misc";
+import { ResourceService } from "@/services/resource";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceResourcePacksPage = () => {
@@ -69,10 +69,17 @@ const InstanceResourcePacksPage = () => {
     getServerResourcePackListWrapper();
   }, [getServerResourcePackListWrapper]);
 
-  useResourceRefresh(["resourcepack"], () => {
-    getResourcePackListWrapper(true);
-    getServerResourcePackListWrapper(true);
-  });
+  useEffect(() => {
+    const unlisten = ResourceService.onResourceRefresh(
+      (payload: OtherResourceType) => {
+        if (payload === OtherResourceType.ResourcePack) {
+          getResourcePackListWrapper(true);
+          getServerResourcePackListWrapper(true);
+        }
+      }
+    );
+    return unlisten;
+  }, [getResourcePackListWrapper, getServerResourcePackListWrapper]);
 
   const defaultIcon = "/images/icons/DefaultPack.webp";
 

@@ -180,6 +180,7 @@ const LaunchPage = () => {
       </Card>
       <Box position="relative">
         <Button
+          id="main-launch-button"
           colorScheme="blackAlpha"
           className={styles["launch-button"]}
           onClick={() => {

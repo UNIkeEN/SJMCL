@@ -15,7 +15,7 @@ use crate::{
   tasks::{download::DownloadParam, PTaskParam},
   utils::fs::validate_sha1,
 };
-use futures;
+use futures::future::join_all;
 use std::collections::HashSet;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
@@ -79,19 +79,18 @@ pub async fn get_invalid_library_files(
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
 
-  let mut params = Vec::new();
-
-  for artifact in artifacts {
-    let file_path = library_path.join(&artifact.path);
-    if file_path.exists()
-      && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
-    {
-      continue;
-    } else if artifact.url.is_empty() {
-      return Err(LaunchError::GameFilesIncomplete.into());
-    } else {
-      params.push(PTaskParam::Download(DownloadParam {
-        src: convert_url_to_target_source(
+  let futs = artifacts.into_iter().map(move |artifact| {
+    let source = source.clone();
+    async move {
+      let file_path = library_path.join(&artifact.path);
+      if file_path.exists()
+        && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
+      {
+        return Ok(None);
+      } else if artifact.url.is_empty() {
+        return Err(LaunchError::GameFilesIncomplete.into());
+      } else {
+        let src = convert_url_to_target_source(
           &url::Url::parse(&artifact.url)?,
           &[
             ResourceType::Libraries,
@@ -101,11 +100,23 @@ pub async fn get_invalid_library_files(
             ResourceType::NeoforgeMaven,
           ],
           &source,
-        )?,
-        dest: file_path.clone(),
-        filename: None,
-        sha1: Some(artifact.sha1.clone()),
-      }));
+        )?;
+        Ok(Some(PTaskParam::Download(DownloadParam {
+          src,
+          dest: file_path,
+          filename: None,
+          sha1: Some(artifact.sha1.clone()),
+        })))
+      }
+    }
+  });
+
+  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+
+  let mut params = Vec::new();
+  for r in results {
+    if let Some(p) = r? {
+      params.push(p);
     }
   }
 

@@ -133,7 +133,7 @@ const HeadNavBar = () => {
                     onMouseDown={(e) => e.preventDefault()}
                     onMouseUp={() => handleTabChange(index)}
                   >
-                    <HStack spacing={2}>
+                    <HStack spacing={2} id={`head-navbar-tab-${item.label}`}>
                       <Icon as={item.icon} />
                       {(!isSimplified || selectedIndex === index) && (
                         <Text>{t(`HeadNavBar.navList.${item.label}`)}</Text>

@@ -19,6 +19,7 @@ import { exit } from "@tauri-apps/plugin-process";
 import { useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import LanguageMenu from "@/components/language-menu";
+import { useGuidedTour } from "@/components/special/guided-tour-provider";
 import { useLauncherConfig } from "@/contexts/config";
 
 const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
@@ -27,10 +28,12 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const { startGuidedTour } = useGuidedTour();
 
   const handleAgree = () => {
     update("runCount", config.runCount + 1);
     props.onClose();
+    startGuidedTour();
   };
 
   const unstableVersionLabels = ["dev", "nightly", "beta"];

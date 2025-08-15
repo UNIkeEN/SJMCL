@@ -87,6 +87,8 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Download non-macOS artifacts
         uses: actions/download-artifact@v4
@@ -123,6 +125,13 @@ jobs:
           echo "Final release artifacts:"
           ls -la release-artifacts/
 
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          pip install requests packaging
+          python scripts/release/generate_changelog_draft.py > release-notes.md
+        shell: bash
+
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -135,4 +144,5 @@ jobs:
             --title "SJMCL ${{ env.VERSION }}" \
             --draft \
             $PRERELEASE \
+            --notes-file release-notes.md \
             ./release-artifacts/*
