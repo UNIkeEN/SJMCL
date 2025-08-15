@@ -27,11 +27,13 @@ use crate::{
     helpers::{
       client_json::{replace_native_libraries, McClientInfo, PatchesInfo},
       misc::get_instance_subdir_paths,
-      mod_loader::{execute_processors, install_mod_loader},
       modpack::{
         curseforge::CurseForgeManifest, misc::ModpackMetaInfo, modrinth::ModrinthManifest,
       },
-      mods::forge::InstallProfile,
+      mods::loader::{
+        common::{execute_processors, install_mod_loader},
+        forge::InstallProfile,
+      },
     },
     models::misc::{ModLoader, ModLoaderStatus},
   },

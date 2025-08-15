@@ -2,7 +2,6 @@
 // https://forge.gemwire.uk/wiki/Mods.toml
 // https://docs.neoforged.net/docs/gettingstarted/modfiles/#neoforgemodstoml
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::client_json::LibrariesValue;
 use crate::instance::models::misc::ModLoaderType;
 use crate::utils::image::{load_image_from_dir_async, load_image_from_jar, ImageWrapper};
 use java_properties;
@@ -183,35 +182,4 @@ pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<ForgeModM
     }
   }
   Ok(meta)
-}
-
-#[derive(Serialize, Deserialize, Debug, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct InstallProfileData {
-  pub client: String,
-  pub server: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct ProcessorsValue {
-  pub sides: Option<Vec<String>>,
-  pub jar: String,
-  pub classpath: Vec<String>,
-  pub args: Vec<String>,
-  pub outputs: Option<HashMap<String, String>>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct InstallProfile {
-  pub spec: u64,
-  pub profile: String,
-  pub version: String,
-  pub path: Option<String>,
-  pub minecraft: String,
-  pub data: HashMap<String, InstallProfileData>,
-  pub processors: Vec<ProcessorsValue>,
-  pub libraries: Vec<LibrariesValue>,
-  pub json: String,
 }

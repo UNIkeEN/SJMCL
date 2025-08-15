@@ -53,36 +53,3 @@ pub async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<LegacyFor
   }
   Ok(meta.remove(0))
 }
-
-structstruck::strike! {
-#[strikethrough[derive(Debug, Serialize, Deserialize, Default)]]
-#[strikethrough[serde(rename_all = "camelCase", default)]]
-pub struct LegacyInstallProfile {
-  pub install: struct {
-    pub path: String,
-    pub version: String,
-    pub file_path: String,
-  },
-  pub version_info: struct {
-    pub id: String,
-    pub time: String,
-    pub release_time: String,
-    #[serde(rename = "type")]
-    pub type_: String,
-    pub minecraft_arguments: String,
-    pub main_class: String,
-    pub minimum_launcher_version: i32,
-    pub assets: String,
-    pub inherits_from: String,
-    pub jar: String,
-    pub libraries: Vec<LegacyLibrariesValue>
-  }
-}
-}
-
-#[derive(Debug, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase", default)]
-pub struct LegacyLibrariesValue {
-  pub name: String,
-  pub url: Option<String>,
-}

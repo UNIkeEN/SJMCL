@@ -4,7 +4,9 @@ use super::{
   client_jar::load_game_version_from_jar,
 };
 use crate::error::SJMCLResult;
-use crate::instance::helpers::mod_loader::{download_forge_libraries, download_neoforge_libraries};
+use crate::instance::helpers::mods::loader::{
+  forge::download_forge_libraries, neoforge::download_neoforge_libraries,
+};
 use crate::instance::models::misc::{ModLoaderStatus, ModLoaderType};
 use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
