@@ -173,6 +173,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
               colorScheme={primaryColor}
               onClick={() => handleReLogin()}
               isDisabled={!password.trim()}
+              isLoading={isLoading}
             >
               {t("ReLoginPlayerModal.button.login")}
             </Button>

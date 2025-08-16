@@ -21,6 +21,8 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio;
 
+const POLLING_OPERATION_INTERVAL_MS: u64 = 2000;
+
 struct OutputPipe<T: Read + Send + 'static> {
   app: AppHandle,
   out: T,
@@ -87,6 +89,7 @@ pub async fn monitor_process(
   mut child: Child,
   instance_id: String,
   display_log_window: bool,
+  custom_title: &str,
   launcher_visibility: LauncherVisiablity,
   ready_tx: Sender<()>,
 ) -> SJMCLResult<()> {
@@ -148,9 +151,26 @@ pub async fn monitor_process(
     .listen_from_output()
   });
 
+  // polling thread (for changing window title, etc.)
+  let stop_polling_flag = Arc::new(AtomicBool::new(false));
+  let _ = {
+    let stop_polling_flag = stop_polling_flag.clone();
+    let pid = child.id();
+    let custom_title = custom_title.to_string();
+    thread::spawn(move || {
+      while !stop_polling_flag.load(Ordering::SeqCst) {
+        thread::sleep(std::time::Duration::from_millis(
+          POLLING_OPERATION_INTERVAL_MS,
+        ));
+        let _ = change_process_window_title(pid, &custom_title).is_err();
+      }
+    });
+  };
+
   // handle game process exit
   let instance_id_clone = instance_id.clone();
   let game_ready_flag = game_ready_flag.clone();
+  let stop_polling_flag = stop_polling_flag.clone();
 
   tokio::spawn(async move {
     let exit_ok = match child.wait() {
@@ -181,6 +201,7 @@ pub async fn monitor_process(
       }
     };
 
+    stop_polling_flag.store(true, Ordering::SeqCst);
     drop(log_file);
     // handle launcher main window visiablity
     match launcher_visibility {
@@ -321,6 +342,9 @@ pub fn set_process_priority(pid: u32, priority: &ProcessPriority) -> SJMCLResult
 }
 
 pub fn change_process_window_title(pid: u32, new_title: &str) -> SJMCLResult<()> {
+  if new_title.trim().is_empty() {
+    return Ok(());
+  }
   #[cfg(target_os = "windows")]
   {
     use std::ffi::OsStr;
@@ -331,33 +355,28 @@ pub fn change_process_window_title(pid: u32, new_title: &str) -> SJMCLResult<()>
     use winapi::um::winnt::LPCWSTR;
     use winapi::um::winuser::{EnumWindows, GetWindowThreadProcessId, SetWindowTextW};
     let new_title = new_title.to_string();
-    thread::spawn(move || {
-      // sleep for a while to wait for the game window to be created.
-      // TODO: find a better way.
-      thread::sleep(std::time::Duration::from_secs(5));
-      let closure = |hwnd: HWND| unsafe {
-        let mut window_pid: DWORD = 0;
-        GetWindowThreadProcessId(hwnd, &mut window_pid);
-        if window_pid == pid {
-          let new_title: Vec<u16> = OsStr::new(&new_title)
-            .encode_wide()
-            .chain(once(0))
-            .collect();
-          SetWindowTextW(hwnd, new_title.as_ptr() as LPCWSTR);
-        }
-      };
-      type ForEachCallback<'a> = Box<dyn FnMut(HWND) + 'a>;
-      let wrapper: ForEachCallback = Box::new(closure);
-      unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
-        if let Some(boxed) = (lparam as *mut ForEachCallback).as_mut() {
-          (*boxed)(hwnd);
-        }
-        TRUE
+    let closure = |hwnd: HWND| unsafe {
+      let mut window_pid: DWORD = 0;
+      GetWindowThreadProcessId(hwnd, &mut window_pid);
+      if window_pid == pid {
+        let new_title: Vec<u16> = OsStr::new(&new_title)
+          .encode_wide()
+          .chain(once(0))
+          .collect();
+        SetWindowTextW(hwnd, new_title.as_ptr() as LPCWSTR);
       }
-      unsafe {
-        EnumWindows(Some(enum_proc), &wrapper as *const _ as LPARAM);
+    };
+    type ForEachCallback<'a> = Box<dyn FnMut(HWND) + 'a>;
+    let wrapper: ForEachCallback = Box::new(closure);
+    unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
+      if let Some(boxed) = (lparam as *mut ForEachCallback).as_mut() {
+        (*boxed)(hwnd);
       }
-    });
+      TRUE
+    }
+    unsafe {
+      EnumWindows(Some(enum_proc), &wrapper as *const _ as LPARAM);
+    }
   }
 
   #[cfg(any(target_os = "macos", target_os = "linux"))]

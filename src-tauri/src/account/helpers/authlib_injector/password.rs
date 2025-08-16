@@ -1,6 +1,8 @@
-use super::common::parse_profile;
 use crate::{
-  account::models::{AccountError, PlayerInfo},
+  account::{
+    helpers::authlib_injector::{common::parse_profile, models::MinecraftProfile},
+    models::{AccountError, PlayerInfo},
+  },
   error::SJMCLResult,
 };
 use serde_json::{json, Value};
@@ -24,18 +26,18 @@ async fn get_profile(
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
-    .json::<Value>()
+    .json::<MinecraftProfile>()
     .await
     .map_err(|_| AccountError::ParseError)?;
 
   parse_profile(
     app,
-    profile,
-    access_token,
-    "".to_string(),
-    auth_server_url,
-    auth_account,
-    password,
+    &profile,
+    Some(access_token),
+    None,
+    Some(auth_server_url),
+    Some(auth_account),
+    Some(password),
   )
   .await
 }
@@ -135,7 +137,10 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
   let client = app.state::<reqwest::Client>();
 
   let response = client
-    .post(format!("{}/authserver/refresh", player.auth_server_url))
+    .post(format!(
+      "{}/authserver/refresh",
+      player.auth_server_url.clone().unwrap_or_default()
+    ))
     .header("Content-Type", "application/json")
     .body(
       json!({
@@ -174,11 +179,11 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
 
   get_profile(
     app,
-    player.auth_server_url.clone(),
+    player.auth_server_url.clone().unwrap_or_default(),
     access_token,
     id,
-    player.auth_account.clone(),
-    player.password.clone(),
+    player.auth_account.clone().unwrap_or_default(),
+    player.password.clone().unwrap_or_default(),
   )
   .await
 }

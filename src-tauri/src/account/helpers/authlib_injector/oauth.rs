@@ -1,5 +1,6 @@
-use super::common::parse_profile;
 use super::constants::SCOPE;
+use crate::account::helpers::authlib_injector::{common::parse_profile, models::MinecraftProfile};
+use crate::account::helpers::misc::{OAuthCode, OAuthTokens};
 use crate::account::models::{AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo};
 use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
@@ -56,44 +57,28 @@ pub async fn device_authorization(
     .as_str()
     .ok_or(AccountError::ParseError)?;
 
-  let response: Value = client
+  let response = client
     .post(device_authorization_endpoint)
     .form(&[("client_id", client_id), ("scope", SCOPE.to_string())])
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
-    .json::<Value>()
+    .json::<OAuthCode>()
     .await
     .map_err(|_| AccountError::ParseError)?;
 
-  let user_code = response["user_code"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?
-    .to_string();
-
-  let device_code = response["device_code"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?
-    .to_string();
+  let device_code = response.device_code;
+  let user_code = response.user_code;
+  let verification_uri = response
+    .verification_uri_complete
+    .unwrap_or(response.verification_uri);
+  let interval = response.interval;
 
   app.clipboard().write_text(user_code.clone())?;
 
-  let verification_uri = response["verification_uri_complete"]
-    .as_str()
-    .unwrap_or(
-      response["verification_uri"]
-        .as_str()
-        .ok_or(AccountError::ParseError)?,
-    )
-    .to_string();
-
-  let interval = response["interval"]
-    .as_u64()
-    .ok_or(AccountError::ParseError)?;
-
   Ok(OAuthCodeResponse {
-    user_code,
     device_code,
+    user_code,
     verification_uri,
     interval,
   })
@@ -102,10 +87,8 @@ pub async fn device_authorization(
 async fn parse_token(
   app: &AppHandle,
   jwks: Value,
-  id_token: String,
-  access_token: String,
-  refresh_token: String,
-  auth_server_url: String,
+  tokens: &OAuthTokens,
+  auth_server_url: Option<String>,
   client_id: String,
 ) -> SJMCLResult<PlayerInfo> {
   let key = &jwks["keys"].as_array().ok_or(AccountError::ParseError)?[0];
@@ -119,24 +102,25 @@ async fn parse_token(
   let mut validation = Validation::new(Algorithm::RS256);
   validation.set_audience(&[client_id]);
 
-  let token_data = decode::<Value>(id_token.as_str(), &decoding_key, &validation)
-    .map_err(|_| AccountError::ParseError)?;
+  let token_data = decode::<Value>(
+    tokens.id_token.clone().unwrap_or_default().as_str(),
+    &decoding_key,
+    &validation,
+  )
+  .map_err(|_| AccountError::ParseError)?;
 
-  let selected_profile = token_data.claims["selectedProfile"].clone();
-
-  let auth_account = selected_profile["name"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?
-    .to_string();
+  let selected_profile =
+    serde_json::from_value::<MinecraftProfile>(token_data.claims["selectedProfile"].clone())
+      .map_err(|_| AccountError::ParseError)?;
 
   parse_profile(
     app,
-    selected_profile,
-    access_token,
-    refresh_token,
+    &selected_profile,
+    Some(tokens.access_token.clone()),
+    Some(tokens.refresh_token.clone()),
     auth_server_url,
-    auth_account,
-    "".to_string(),
+    Some(selected_profile.name.clone()),
+    None,
   )
   .await
 }
@@ -168,9 +152,7 @@ pub async fn login(
 
   let jwks = fetch_jwks(app, jwks_uri.to_string()).await?;
 
-  let access_token: String;
-  let id_token: String;
-  let refresh_token: String;
+  let tokens: OAuthTokens;
   loop {
     {
       let account_state = account_binding.lock()?;
@@ -181,45 +163,26 @@ pub async fn login(
 
     let token_response = client
       .post(token_endpoint)
-      .json(&serde_json::json!({
-          "client_id": client_id,
-          "device_code": auth_info.device_code,
-          "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
-      }))
+      .form(&[
+        ("client_id", client_id.as_str()),
+        ("device_code", auth_info.device_code.as_str()),
+        ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
+      ])
       .send()
       .await?;
 
     if token_response.status().is_success() {
-      let token: serde_json::Value = token_response.json().await?;
-
-      access_token = token["access_token"]
-        .as_str()
-        .ok_or(AccountError::ParseError)?
-        .to_string();
-      id_token = token["id_token"]
-        .as_str()
-        .ok_or(AccountError::ParseError)?
-        .to_string();
-      refresh_token = token["refresh_token"]
-        .as_str()
-        .ok_or(AccountError::ParseError)?
-        .to_string();
+      tokens = token_response
+        .json()
+        .await
+        .map_err(|_| AccountError::ParseError)?;
       break;
     }
 
     sleep(Duration::from_secs(auth_info.interval)).await;
   }
 
-  parse_token(
-    app,
-    jwks,
-    id_token,
-    access_token,
-    refresh_token,
-    auth_server_url,
-    client_id,
-  )
-  .await
+  parse_token(app, jwks, &tokens, Some(auth_server_url), client_id).await
 }
 
 pub async fn refresh(
@@ -251,30 +214,20 @@ pub async fn refresh(
     }))
     .send()
     .await?;
+
   if !token_response.status().is_success() {
     return Err(AccountError::Expired)?;
   }
-  let token: serde_json::Value = token_response.json().await?;
 
-  let access_token = token["access_token"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?
-    .to_string();
-  let id_token = token["id_token"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?
-    .to_string();
-  let refresh_token = token["refresh_token"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?
-    .to_string();
+  let tokens: OAuthTokens = token_response
+    .json()
+    .await
+    .map_err(|_| AccountError::ParseError)?;
 
   parse_token(
     app,
     jwks,
-    id_token,
-    access_token,
-    refresh_token,
+    &tokens,
     player.auth_server_url.clone(),
     client_id,
   )
