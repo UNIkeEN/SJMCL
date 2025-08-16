@@ -1,11 +1,11 @@
 use super::{
   helpers::{
     curseforge::{fetch_resource_list_by_name_curseforge, fetch_resource_version_packs_curseforge},
-    misc::get_source_priority_list,
-    mod_loader_meta::{
+    loader_meta::{
       fabric::get_fabric_meta_by_game_version, forge::get_forge_meta_by_game_version,
       neoforge::get_neoforge_meta_by_game_version,
     },
+    misc::get_source_priority_list,
     modrinth::{fetch_resource_list_by_name_modrinth, fetch_resource_version_packs_modrinth},
     version_manifest::get_game_version_manifest,
   },

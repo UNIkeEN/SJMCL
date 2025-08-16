@@ -1,5 +1,5 @@
 pub mod curseforge;
+pub mod loader_meta;
 pub mod misc;
-pub mod mod_loader_meta;
 pub mod modrinth;
 pub mod version_manifest;

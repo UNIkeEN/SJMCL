@@ -2,7 +2,7 @@ pub mod asset_index;
 pub mod client_jar;
 pub mod client_json;
 pub mod game_version;
-pub mod hmcl_patch;
+pub mod loader;
 pub mod misc;
 pub mod modpack;
 pub mod mods;
