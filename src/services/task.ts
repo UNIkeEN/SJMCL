@@ -2,10 +2,10 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { InvokeResponse } from "@/models/response";
 import {
-  GTaskEventPayload,
-  PTaskEventPayload,
-  TaskGroupDesc,
-  TaskParam,
+  GroupEvent,
+  RuntimeGroupDescSnapshot,
+  RuntimeTaskParam,
+  TaskEvent,
 } from "@/models/task";
 import { responseHandler } from "@/utils/response";
 
@@ -19,14 +19,14 @@ export class TaskService {
    * @param params - The parameters for the tasks to be scheduled.
    * @param withTimestamp - Whether to append a timestamp to the task group name for uniqueness.
    *                      Defaults to true.
-   * @returns {Promise<InvokeResponse<TaskGroupDesc>>}
+   * @returns {Promise<InvokeResponse<RuntimeGroupDescSnapshot>>}
    */
   @responseHandler("task")
   static async scheduleProgressiveTaskGroup(
     taskGroup: string,
-    params: TaskParam[],
+    params: RuntimeTaskParam[],
     withTimestamp: boolean = true
-  ): Promise<InvokeResponse<TaskGroupDesc>> {
+  ): Promise<InvokeResponse<RuntimeGroupDescSnapshot>> {
     return await invoke("schedule_progressive_task_group", {
       taskGroup,
       params,
@@ -109,12 +109,24 @@ export class TaskService {
   }
 
   /**
+   * Retry a task group.
+   * @param taskGroup - The name of the task group to be retried.
+   * @returns {Promise<InvokeResponse<null>>}
+   */
+  @responseHandler("task")
+  static async retryProgressiveTaskGroup(
+    taskGroup: string
+  ): Promise<InvokeResponse<null>> {
+    return await invoke("retry_progressive_task_group", { taskGroup });
+  }
+
+  /**
    * Retrieve the list of progressive tasks.
-   * @returns {Promise<InvokeResponse<TaskGroupDesc[]>>}
+   * @returns {Promise<InvokeResponse<RuntimeGroupDescSnapshot[]>>}
    */
   @responseHandler("task")
   static async retrieveProgressiveTaskList(): Promise<
-    InvokeResponse<TaskGroupDesc[]>
+    InvokeResponse<RuntimeGroupDescSnapshot[]>
   > {
     return await invoke("retrieve_progressive_task_list");
   }
@@ -124,9 +136,9 @@ export class TaskService {
    * @param callback - The callback to be invoked when a task update occurs.
    */
   static onProgressiveTaskUpdate(
-    callback: (payload: PTaskEventPayload) => void
+    callback: (payload: TaskEvent) => void
   ): () => void {
-    const unlisten = getCurrentWebview().listen<PTaskEventPayload>(
+    const unlisten = getCurrentWebview().listen<TaskEvent>(
       "task:progress-update",
       (event) => {
         callback(event.payload);
@@ -144,9 +156,9 @@ export class TaskService {
    */
 
   static onTaskGroupUpdate(
-    callback: (payload: GTaskEventPayload) => void
+    callback: (payload: GroupEvent) => void
   ): () => void {
-    const unlisten = getCurrentWebview().listen<GTaskEventPayload>(
+    const unlisten = getCurrentWebview().listen<GroupEvent>(
       "task:group-update",
       (event) => {
         callback(event.payload);

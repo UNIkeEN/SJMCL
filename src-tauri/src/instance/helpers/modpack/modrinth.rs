@@ -11,7 +11,7 @@ use zip::ZipArchive;
 use crate::{
   error::SJMCLResult,
   instance::models::misc::{InstanceError, ModLoaderType},
-  tasks::{download::DownloadParam, PTaskParam},
+  tasks::{download::DownloadParam, RuntimeTaskParam},
 };
 
 structstruck::strike! {
@@ -110,7 +110,7 @@ impl ModrinthManifest {
     Ok(())
   }
 
-  pub fn get_download_params(&self, instance_path: &Path) -> SJMCLResult<Vec<PTaskParam>> {
+  pub fn get_download_params(&self, instance_path: &Path) -> SJMCLResult<Vec<RuntimeTaskParam>> {
     self
       .files
       .iter()
@@ -119,7 +119,7 @@ impl ModrinthManifest {
           .downloads
           .first()
           .ok_or(InstanceError::InvalidSourcePath)?;
-        Ok(PTaskParam::Download(DownloadParam {
+        Ok(RuntimeTaskParam::Download(DownloadParam {
           src: url::Url::parse(download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
           sha1: Some(file.hashes.sha1.clone()),
           dest: instance_path.join(&file.path),

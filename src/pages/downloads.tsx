@@ -25,12 +25,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useTaskContext } from "@/contexts/task";
-import {
-  GTaskEventStatusEnums,
-  TaskDesc,
-  TaskDescStatusEnums,
-  TaskGroupDesc,
-} from "@/models/task";
+import { RuntimeStateEnums, TaskDesc, TaskGroupDesc } from "@/models/task";
 import { formatTimeInterval } from "@/utils/datetime";
 import { formatByteSize } from "@/utils/string";
 import { parseTaskGroup } from "@/utils/task";
@@ -43,10 +38,10 @@ export const DownloadTasksPage = () => {
 
   const {
     tasks,
-    handleScheduleProgressiveTaskGroup,
     handleCancelProgressiveTaskGroup,
     handleStopProgressiveTaskGroup,
     handleResumeProgressiveTaskGroup,
+    handleRetryProgressiveTaskGroup,
   } = useTaskContext();
 
   const [taskGroupList, setTaskGroupList] = useState<
@@ -127,44 +122,44 @@ export const DownloadTasksPage = () => {
                     <Text fontSize="xs" className="secondary-text">
                       {group.finishedCount} / {group.taskDescs.length}
                     </Text>
-                    {group.status === GTaskEventStatusEnums.Started &&
+                    {group.status === RuntimeStateEnums.InProgress &&
                       group.estimatedTime && (
                         <Text fontSize="xs" className="secondary-text">
                           {formatTimeInterval(group.estimatedTime.secs)}
                         </Text>
                       )}
 
-                    {group.status === GTaskEventStatusEnums.Stopped && (
+                    {group.status === RuntimeStateEnums.Stopped && (
                       <Text fontSize="xs" className="secondary-text">
                         {t("DownloadTasksPage.label.paused")}
                       </Text>
                     )}
 
-                    {group.status === GTaskEventStatusEnums.Completed && (
+                    {group.status === RuntimeStateEnums.Completed && (
                       <Text fontSize="xs" className="secondary-text">
                         {t("DownloadTasksPage.label.completed")}
                       </Text>
                     )}
 
-                    {(group.status === GTaskEventStatusEnums.Failed ||
+                    {(group.status === RuntimeStateEnums.Failed ||
                       group.reason) && (
                       <Text fontSize="xs" color="red.600">
                         {group.reason || t("DownloadTasksPage.label.error")}
                       </Text>
                     )}
 
-                    {group.status === GTaskEventStatusEnums.Cancelled && (
+                    {group.status === RuntimeStateEnums.Cancelled && (
                       <Text fontSize="xs" color="red.600">
                         {t("DownloadTasksPage.label.cancelled")}
                       </Text>
                     )}
 
-                    {(group.status === GTaskEventStatusEnums.Stopped ||
-                      group.status === GTaskEventStatusEnums.Started) && (
+                    {(group.status === RuntimeStateEnums.Stopped ||
+                      group.status === RuntimeStateEnums.InProgress) && (
                       <Tooltip
                         label={t(
                           `DownloadTasksPage.button.${
-                            group.status === GTaskEventStatusEnums.Started
+                            group.status === RuntimeStateEnums.InProgress
                               ? "pause"
                               : "begin"
                           }`
@@ -173,7 +168,7 @@ export const DownloadTasksPage = () => {
                         <IconButton
                           aria-label="pause / download"
                           icon={
-                            group.status === GTaskEventStatusEnums.Started ? (
+                            group.status === RuntimeStateEnums.InProgress ? (
                               <LuPause />
                             ) : (
                               <LuPlay />
@@ -185,7 +180,7 @@ export const DownloadTasksPage = () => {
                           ml={1}
                           variant="ghost"
                           onClick={() => {
-                            group.status === GTaskEventStatusEnums.Started
+                            group.status === RuntimeStateEnums.InProgress
                               ? handleStopProgressiveTaskGroup(group.taskGroup)
                               : handleResumeProgressiveTaskGroup(
                                   group.taskGroup
@@ -195,8 +190,8 @@ export const DownloadTasksPage = () => {
                       </Tooltip>
                     )}
 
-                    {(group.status === GTaskEventStatusEnums.Failed ||
-                      group.status === GTaskEventStatusEnums.Cancelled) && (
+                    {(group.status === RuntimeStateEnums.Failed ||
+                      group.status === RuntimeStateEnums.Cancelled) && (
                       <Tooltip label={t("DownloadTasksPage.button.retry")}>
                         <IconButton
                           aria-label="retry"
@@ -207,22 +202,14 @@ export const DownloadTasksPage = () => {
                           ml={1}
                           variant="ghost"
                           onClick={() =>
-                            handleScheduleProgressiveTaskGroup(
-                              "retry",
-                              group.taskDescs
-                                .filter(
-                                  (t) =>
-                                    t.status !== TaskDescStatusEnums.Completed
-                                )
-                                .map((t) => t.payload)
-                            )
+                            handleRetryProgressiveTaskGroup(group.taskGroup)
                           }
                         />
                       </Tooltip>
                     )}
 
-                    {group.status !== GTaskEventStatusEnums.Cancelled &&
-                      group.status !== GTaskEventStatusEnums.Completed && (
+                    {group.status !== RuntimeStateEnums.Cancelled &&
+                      group.status !== RuntimeStateEnums.Completed && (
                         <Tooltip label={t("General.cancel")}>
                           <IconButton
                             aria-label="cancel"
@@ -250,7 +237,7 @@ export const DownloadTasksPage = () => {
                   </HStack>
                 </Flex>
 
-                {group.status !== GTaskEventStatusEnums.Completed && (
+                {group.status !== RuntimeStateEnums.Completed && (
                   <Progress
                     size="xs"
                     value={group.progress}
@@ -265,9 +252,9 @@ export const DownloadTasksPage = () => {
                 ? group.taskDescs.map((task) => (
                     <OptionItem
                       key={`${task.taskId}-detail`}
-                      title={task.payload.filename}
+                      title={task.filename}
                       description={
-                        task.status === TaskDescStatusEnums.InProgress && (
+                        task.status === RuntimeStateEnums.InProgress && (
                           <Text
                             fontSize="xs"
                             className="secondary-text"
@@ -278,33 +265,33 @@ export const DownloadTasksPage = () => {
                         )
                       }
                     >
-                      {task.status !== TaskDescStatusEnums.Completed &&
-                        task.status !== TaskDescStatusEnums.Failed && (
+                      {task.status !== RuntimeStateEnums.Completed &&
+                        task.status !== RuntimeStateEnums.Failed && (
                           <Progress
                             w={36}
                             size="xs"
                             value={task.progress}
                             colorScheme={primaryColor}
                             isIndeterminate={
-                              task.status === TaskDescStatusEnums.Waiting
+                              task.status === RuntimeStateEnums.Waiting
                             }
                             borderRadius="sm"
                           />
                         )}
-                      {task.status === TaskDescStatusEnums.Failed && (
+                      {task.status === RuntimeStateEnums.Failed && (
                         <Tooltip label={task.reason}>
                           <Text color="red.600" fontSize="xs">
                             {t("DownloadTasksPage.label.error")}
                           </Text>
                         </Tooltip>
                       )}
-                      {task.status === TaskDescStatusEnums.Completed && (
+                      {task.status === RuntimeStateEnums.Completed && (
                         <CommonIconButton
                           icon="revealFile"
                           size="xs"
                           fontSize="sm"
                           h={21}
-                          onClick={() => revealItemInDir(task.payload.dest)}
+                          onClick={() => revealItemInDir(task.dest)}
                         />
                       )}
                     </OptionItem>

@@ -1,508 +1,786 @@
-use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_launcher_config;
-use crate::tasks::events::{GEventStatus, PEvent};
-use crate::tasks::streams::desc::PStatus;
+use crate::utils::fs::extract_filename;
 
-use async_speed_limit::Limiter;
-use download::DownloadTask;
-use flume::{Receiver as FlumeReceiver, Sender as FlumeSender};
-use glob::glob;
+use super::download;
+use super::reporter::{GroupReporter, TaskReporter};
+
+use super::RuntimeTaskParam;
+use flume::{Receiver, Sender};
 use log::info;
-use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::future::Future;
+use std::path::PathBuf;
+use std::pin::Pin;
 use std::sync::atomic::AtomicU32;
 use std::sync::{Arc, Mutex, RwLock};
-use std::vec::Vec;
-use tauri::async_runtime::JoinHandle;
+use std::task::{Context, Poll};
+use std::time::{Duration, SystemTime};
 use tauri::AppHandle;
+use thiserror::Error;
+use tokio::io::{AsyncRead, ReadBuf};
 use tokio::sync::Semaphore;
+use tokio::task::JoinHandle;
+use tokio::time::Interval;
 
-use super::events::{GEvent, TEvent};
-use super::SJMCLFuture;
-use super::*;
+pub type TaskId = u32;
+pub type TaskResult = std::io::Result<()>;
 
-pub struct GroupMonitor {
-  pub phs: HashMap<u32, Arc<RwLock<PTaskHandle>>>,
-  pub status: GEventStatus,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum RuntimeState {
+  #[serde(rename_all = "camelCase")]
+  Stopped {
+    stopped_at: SystemTime,
+  },
+  #[serde(rename_all = "camelCase")]
+  Failed {
+    reason: String,
+  },
+  InProgress,
+  #[serde(rename_all = "camelCase")]
+  Completed {
+    completed_at: SystemTime,
+  },
+  Cancelled,
+  Pending,
 }
 
-pub struct TaskMonitor {
-  app_handle: AppHandle,
-  id_counter: AtomicU32,
-  phs: RwLock<HashMap<u32, Arc<RwLock<PTaskHandle>>>>,
-  ths: RwLock<HashMap<u32, THandle>>,
-  tasks: Arc<Mutex<HashMap<u32, JoinHandle<()>>>>,
-  concurrency: Arc<Semaphore>,
-  tx: FlumeSender<SJMCLFuture>,
-  rx: FlumeReceiver<SJMCLFuture>,
-  group_map: Arc<RwLock<HashMap<String, GroupMonitor>>>,
-  stopped_futures: Arc<Mutex<Vec<SJMCLFuture>>>,
-  pub download_rate_limiter: Option<Limiter>,
-}
-
-impl TaskMonitor {
-  pub fn new(app_handle: AppHandle) -> Self {
-    let config = retrieve_launcher_config(app_handle.clone()).unwrap();
-    let (tx, rx) = flume::unbounded();
-    TaskMonitor {
-      app_handle: app_handle.clone(),
-      id_counter: AtomicU32::new(0),
-      phs: RwLock::new(HashMap::new()),
-      ths: RwLock::new(HashMap::new()),
-      tasks: Arc::new(Mutex::new(HashMap::new())),
-      concurrency: Arc::new(Semaphore::new(
-        if config.download.transmission.auto_concurrent {
-          std::thread::available_parallelism().unwrap().into()
-        } else {
-          config.download.transmission.concurrent_count
-        },
-      )),
-      tx,
-      rx,
-      group_map: Arc::new(RwLock::new(HashMap::new())),
-      stopped_futures: Arc::new(Mutex::new(Vec::new())),
-      download_rate_limiter: if config.download.transmission.enable_speed_limit {
-        Some(Limiter::new(
-          (config.download.transmission.speed_limit_value as i64 * 1024) as f64,
-        ))
-      } else {
-        None
-      },
-    }
+impl RuntimeState {
+  pub fn is_stopped(&self) -> bool {
+    matches!(self, RuntimeState::Stopped { .. })
   }
 
-  #[allow(clippy::manual_flatten)]
-  pub async fn load_saved_tasks(&self) {
-    let cache_dir = retrieve_launcher_config(self.app_handle.clone())
+  pub fn is_failed(&self) -> bool {
+    matches!(self, RuntimeState::Failed { .. })
+  }
+
+  pub fn is_completed(&self) -> bool {
+    matches!(self, RuntimeState::Completed { .. })
+  }
+  pub fn is_in_progress(&self) -> bool {
+    matches!(self, RuntimeState::InProgress)
+  }
+  pub fn is_pending(&self) -> bool {
+    matches!(self, RuntimeState::Pending)
+  }
+
+  pub fn is_cancelled(&self) -> bool {
+    matches!(self, RuntimeState::Cancelled)
+  }
+
+  pub fn pollable(&self) -> bool {
+    matches!(self, RuntimeState::InProgress | RuntimeState::Pending)
+  }
+
+  pub fn set_in_progress(&mut self) {
+    *self = RuntimeState::InProgress;
+  }
+
+  pub fn set_pending(&mut self) {
+    *self = RuntimeState::Pending;
+  }
+
+  pub fn set_stopped(&mut self) {
+    *self = RuntimeState::Stopped {
+      stopped_at: SystemTime::now(),
+    };
+  }
+  pub fn set_failed(&mut self, reason: String) {
+    *self = RuntimeState::Failed { reason };
+  }
+
+  pub fn set_cancelled(&mut self) {
+    *self = RuntimeState::Cancelled;
+  }
+
+  pub fn set_completed(&mut self) {
+    *self = RuntimeState::Completed {
+      completed_at: SystemTime::now(),
+    };
+  }
+}
+
+type RuntimeTaskState = RuntimeState;
+pub type RuntimeGroupState = RuntimeState;
+type RuntimeGroupDescRwLock = Arc<RwLock<RuntimeGroupDesc>>;
+type SharedRuntimeTaskHandle = Arc<RuntimeTaskHandle>;
+type ConcurrentHashMap<K, V> = Arc<Mutex<HashMap<K, V>>>;
+type ConcurrentHashSet<K> = Arc<Mutex<HashSet<K>>>;
+pub type PinnedFuture<'a> = Pin<Box<dyn Future<Output = TaskResult> + Send + 'a>>;
+pub type RuntimeGroupStateRwLock = Arc<RwLock<RuntimeGroupState>>;
+pub type RuntimeTaskDescRwLock = Arc<RwLock<RuntimeTaskDesc>>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RuntimeTaskDesc {
+  pub id: u32,
+  pub group: Option<String>,
+  started_at: SystemTime,
+  created_at: SystemTime,
+  #[serde(skip)]
+  pub path: PathBuf,
+  pub current: u64,
+  pub total: u64,
+  pub param: RuntimeTaskParam,
+  pub state: RuntimeTaskState,
+}
+
+impl RuntimeTaskDesc {
+  pub fn new(app: AppHandle, id: u32, group: Option<String>, param: RuntimeTaskParam) -> Self {
+    let cache_dir = retrieve_launcher_config(app.clone())
       .unwrap()
       .download
       .cache
       .directory;
-
-    for entry in glob(&format!(
-      "{}/descriptors/task_*.json",
-      cache_dir.to_str().unwrap()
-    ))
-    .unwrap()
-    {
-      if let Ok(task) = entry {
-        match PTaskDesc::load(&task.clone()) {
-          Ok(desc) => {
-            let task_id = desc.task_id;
-            let task_group = desc.task_group.clone();
-            match desc.payload {
-              PTaskParam::Download(_) => {
-                let task = DownloadTask::from_descriptor(
-                  self.app_handle.clone(),
-                  desc,
-                  Duration::from_secs(1),
-                  false,
-                );
-                let (f, p_handle) = task
-                  .future(self.app_handle.clone(), self.download_rate_limiter.clone())
-                  .await
-                  .unwrap();
-                self.enqueue_task(task_id, task_group, f, p_handle).await;
-              }
-            }
-          }
-          Err(_) => {
-            info!("Failed to load task descriptor: {}", task.display());
-          }
-        }
-      }
-    }
-  }
-
-  pub fn get_new_id(&self) -> u32 {
-    self
-      .id_counter
-      .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
-  }
-
-  pub async fn enqueue_task<T>(
-    &self,
-    id: u32,
-    task_group: Option<String>,
-    task: T,
-    p_handle: Arc<RwLock<PTaskHandle>>,
-  ) where
-    T: Future<Output = SJMCLResult<()>> + Send + 'static,
-  {
-    p_handle.write().unwrap().desc.status = PStatus::Waiting;
-    self.phs.write().unwrap().insert(id, p_handle.clone());
-
-    if let Some(ref g) = task_group {
-      let mut group_map = self.group_map.write().unwrap();
-      if let Some(group) = group_map.get_mut(g) {
-        group.phs.insert(id, p_handle.clone());
-      } else {
-        group_map.insert(
-          g.clone(),
-          GroupMonitor {
-            phs: HashMap::from_iter([(id, p_handle.clone())]),
-            status: GEventStatus::Started,
-          },
-        );
-      }
-    }
-
-    PEvent::emit_created(
-      &self.app_handle,
+    Self {
       id,
-      task_group.clone().as_deref(),
-      p_handle.read().unwrap().desc.clone(),
-    );
-
-    let task = Box::pin(async move {
-      if p_handle.read().unwrap().desc.status.is_cancelled() {
-        return Ok(());
-      }
-
-      let result = task.await;
-      let mut p_handle = p_handle.write().unwrap();
-
-      if let Err(e) = result {
-        p_handle.mark_failed(e.0);
-      }
-
-      Ok(())
-    });
-
-    if let Some(ref task_group) = task_group {
-      GEvent::emit_group_started(&self.app_handle, task_group);
+      group,
+      started_at: SystemTime::UNIX_EPOCH,
+      created_at: SystemTime::now(),
+      path: cache_dir.clone().join(format!("task-{id}.json")),
+      current: 0,
+      total: 0,
+      param,
+      state: RuntimeTaskState::Pending,
     }
-
-    self
-      .tx
-      .send_async(SJMCLFuture {
-        task_id: id,
-        task_group: task_group.clone(),
-        f: task,
-      })
-      .await
-      .unwrap();
   }
 
-  pub async fn enqueue_task_group(&self, task_group: String, futures: Vec<SJMCLFutureDesc>) {
-    let mut hvec: Vec<(u32, Arc<RwLock<PTaskHandle>>)> = Vec::new();
+  fn reset(&mut self) {
+    self.started_at = SystemTime::now();
+    self.current = 0;
+    self.total = 0;
+    self.state = RuntimeTaskState::Pending;
+  }
 
-    for future in futures.iter() {
-      future.h.write().unwrap().desc.status = PStatus::Waiting;
-      self
-        .phs
-        .write()
-        .unwrap()
-        .insert(future.task_id, future.h.clone());
-      PEvent::emit_created(
-        &self.app_handle,
-        future.task_id,
-        Some(task_group.as_ref()),
-        future.h.read().unwrap().desc.clone(),
-      );
-      hvec.push((future.task_id, future.h.clone()));
-    }
+  pub fn save(&self) -> std::io::Result<()> {
+    let file = std::fs::File::create(&self.path)?;
+    serde_json::to_writer(file, self)?;
+    Ok(())
+  }
 
-    self.group_map.write().unwrap().insert(
-      task_group.clone(),
-      GroupMonitor {
-        phs: HashMap::from_iter(hvec),
-        status: GEventStatus::Started,
+  fn load(path: PathBuf) -> std::io::Result<Self> {
+    let file = std::fs::File::open(&path)?;
+    let mut desc: Self = serde_json::from_reader(file)?;
+    desc.path = path;
+    Ok(desc)
+  }
+
+  fn snapshot(&self) -> RuntimeTaskDescSnapshot {
+    match self.param.clone() {
+      RuntimeTaskParam::Download(param) => RuntimeTaskDescSnapshot {
+        state: self.state.clone(),
+        total: self.total,
+        current: self.current,
+        start_at: self.started_at,
+        created_at: self.created_at,
+        filename: param.filename.unwrap_or_default(),
+        dest: self.path.clone(),
       },
-    );
-    GEvent::emit_group_started(&self.app_handle, &task_group);
-
-    for future in futures {
-      let task = Box::pin(async move {
-        if future.h.read().unwrap().desc.status.is_cancelled() {
-          return Ok(());
-        }
-        let result = future.f.await;
-        let mut p_handle = future.h.write().unwrap();
-        if let Err(e) = result {
-          p_handle.mark_failed(e.0);
-        }
-        Ok(())
-      });
-      self
-        .tx
-        .send_async(SJMCLFuture {
-          task_id: future.task_id,
-          task_group: Some(task_group.clone()),
-          f: task,
-        })
-        .await
-        .unwrap();
     }
+  }
+}
+
+fn into_runtime_task<'a>(
+  app_handle: AppHandle,
+  desc: RuntimeTaskDescRwLock,
+  group_state: RuntimeGroupStateRwLock,
+  reporter: &'a mut TaskReporter,
+) -> PinnedFuture<'a> {
+  match desc.read().unwrap().param.clone() {
+    RuntimeTaskParam::Download(param) => Box::pin(download::into_runtime_task(
+      app_handle,
+      group_state,
+      desc.clone(),
+      param,
+      reporter,
+    )),
+  }
+}
+
+pub struct RuntimeTaskHandle {
+  group_state: RuntimeGroupStateRwLock,
+  desc: RuntimeTaskDescRwLock,
+}
+
+impl RuntimeTaskHandle {
+  pub fn new(group_state: RuntimeGroupStateRwLock, desc: RuntimeTaskDescRwLock) -> Self {
+    Self { group_state, desc }
+  }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RuntimeStatefulSet<T>
+where
+  T: Clone + Eq + std::hash::Hash,
+{
+  pending: VecDeque<T>,
+  failed: HashSet<T>,
+  completed: HashSet<T>,
+  stopped: HashSet<T>,
+  cancelled: HashSet<T>,
+  running: HashSet<T>,
+  tracked: usize,
+}
+
+#[derive(Clone)]
+pub enum TaskCommand {
+  Stop,
+  Resume,
+  Restart,
+  Retry,
+  Cancel,
+}
+
+impl<T> RuntimeStatefulSet<T>
+where
+  T: Clone + Eq + std::hash::Hash,
+{
+  fn new<I: IntoIterator<Item = T>>(id_set: I) -> Self {
+    let pending = VecDeque::from_iter(id_set);
+    let tracked = pending.len();
+    Self {
+      pending,
+      failed: Default::default(),
+      completed: Default::default(),
+      stopped: Default::default(),
+      cancelled: Default::default(),
+      running: Default::default(),
+      tracked,
+    }
+  }
+
+  fn start_one(&mut self) -> Option<T> {
+    if let Some(id) = self.pending.pop_front() {
+      self.running.insert(id.clone());
+      Some(id)
+    } else {
+      None
+    }
+  }
+
+  fn complete_one(&mut self, id: T) {
+    let _ = self.running.remove(&id);
+    self.completed.insert(id);
+  }
+
+  fn fail_one(&mut self, id: T) {
+    let _ = self.running.remove(&id);
+    self.failed.insert(id);
+  }
+
+  fn stop_one(&mut self, id: T) {
+    if let Some(pos) = self.pending.iter().position(|x| *x == id) {
+      self.stopped.insert(self.pending.remove(pos).unwrap());
+    } else if let Some(id) = self.running.take(&id) {
+      self.stopped.insert(id.clone());
+    }
+  }
+
+  fn stop_all(&mut self) {
+    self.stopped.extend(self.pending.drain(..));
+    self.stopped.extend(self.running.drain());
+  }
+
+  fn cancel_all(&mut self) {
+    self.cancelled.extend(self.pending.drain(..));
+    self.cancelled.extend(self.stopped.drain());
+    self.cancelled.extend(self.running.drain());
+  }
+
+  fn cancel_one(&mut self, id: T) {
+    if let Some(pos) = self.pending.iter().position(|x| *x == id) {
+      self.cancelled.insert(self.pending.remove(pos).unwrap());
+    }
+    self.running.remove(&id);
+    self.stopped.remove(&id);
+    self.cancelled.insert(id);
+  }
+
+  fn resume_all(&mut self) {
+    self.pending.extend(self.stopped.drain());
+  }
+
+  fn resume_one(&mut self, id: T) {
+    self.stopped.remove(&id);
+    self.pending.push_back(id);
+  }
+
+  fn retry_one(&mut self, id: T) {
+    self.cancelled.remove(&id);
+    self.failed.remove(&id);
+    self.pending.push_back(id);
+  }
+
+  fn retry_all(&mut self) {
+    self.pending.extend(self.failed.drain());
+    self.pending.extend(self.cancelled.drain())
+  }
+
+  fn restart_one(&mut self, id: T) {
+    self.cancelled.remove(&id);
+    self.stopped.remove(&id);
+    self.failed.remove(&id);
+    self.completed.remove(&id);
+    self.pending.push_back(id);
+  }
+
+  fn restart_all(&mut self) {
+    self.pending.extend(self.stopped.drain());
+    self.pending.extend(self.failed.drain());
+    self.pending.extend(self.completed.drain());
+    self.pending.extend(self.cancelled.drain())
+  }
+
+  pub fn combine_all_states(&self) -> RuntimeState {
+    if !self.cancelled.is_empty() {
+      return RuntimeState::Cancelled;
+    }
+
+    if !self.stopped.is_empty() {
+      return RuntimeState::Stopped {
+        stopped_at: SystemTime::now(),
+      };
+    }
+
+    if !self.failed.is_empty() && self.pending.is_empty() {
+      return RuntimeState::Failed {
+        reason: "Some tasks failed".to_string(),
+      };
+    }
+
+    if self.running.is_empty() {
+      return RuntimeState::Pending;
+    }
+
+    if self.completed.len() == self.tracked {
+      RuntimeState::Completed {
+        completed_at: SystemTime::now(),
+      }
+    } else {
+      RuntimeState::InProgress
+    }
+  }
+
+  fn retry_set(&self) -> Vec<T> {
+    self
+      .cancelled
+      .iter()
+      .cloned()
+      .chain(self.failed.iter().cloned())
+      .collect()
+  }
+
+  fn restart_set(&self) -> Vec<T> {
+    self
+      .cancelled
+      .iter()
+      .cloned()
+      .chain(self.failed.iter().cloned())
+      .chain(self.running.iter().cloned())
+      .chain(self.completed.iter().cloned())
+      .chain(self.stopped.iter().cloned())
+      .collect()
+  }
+
+  fn apply_all(&mut self, cmd: TaskCommand) {
+    match cmd {
+      TaskCommand::Stop => self.stop_all(),
+      TaskCommand::Resume => self.resume_all(),
+      TaskCommand::Restart => self.restart_all(),
+      TaskCommand::Cancel => self.cancel_all(),
+      TaskCommand::Retry => self.retry_all(),
+    }
+  }
+
+  fn apply_one(&mut self, id: T, cmd: TaskCommand) {
+    match cmd {
+      TaskCommand::Stop => self.stop_one(id),
+      TaskCommand::Resume => self.resume_one(id),
+      TaskCommand::Restart => self.restart_one(id),
+      TaskCommand::Cancel => self.cancel_one(id),
+      TaskCommand::Retry => self.retry_one(id),
+    }
+  }
+}
+
+impl RuntimeState {
+  pub fn apply(&mut self, cmd: TaskCommand) {
+    match cmd {
+      TaskCommand::Stop => self.set_stopped(),
+      TaskCommand::Resume => self.set_in_progress(),
+      TaskCommand::Restart => self.set_pending(),
+      TaskCommand::Retry => self.set_pending(),
+      TaskCommand::Cancel => self.set_cancelled(),
+    }
+  }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct RuntimeGroupDesc {
+  name: String,
+  state: RuntimeGroupStateRwLock,
+  started_at: SystemTime,
+  created_at: SystemTime,
+  task_desc_map: HashMap<TaskId, RuntimeTaskDescRwLock>,
+  stateful_set: RuntimeStatefulSet<TaskId>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RuntimeTaskDescSnapshot {
+  state: RuntimeTaskState,
+  total: u64,
+  current: u64,
+  start_at: SystemTime,
+  created_at: SystemTime,
+  filename: String,
+  dest: PathBuf,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RuntimeGroupDescSnapshot {
+  name: String,
+  task_desc_map: HashMap<TaskId, RuntimeTaskDescSnapshot>,
+}
+
+impl RuntimeGroupDesc {
+  fn new(name: String, task_desc_map: HashMap<TaskId, RuntimeTaskDescRwLock>) -> Self {
+    let id_set: Vec<TaskId> = task_desc_map.keys().copied().collect();
+    Self {
+      name,
+      state: Arc::new(RwLock::new(RuntimeState::Pending)),
+      started_at: SystemTime::UNIX_EPOCH,
+      created_at: SystemTime::now(),
+      task_desc_map,
+      stateful_set: RuntimeStatefulSet::new(id_set),
+    }
+  }
+  fn apply(&mut self, handle_map: &mut HashMap<TaskId, JoinHandle<()>>, cmd: TaskCommand) -> bool {
+    self.state.write().unwrap().apply(cmd.clone());
+    let resched = match cmd {
+      TaskCommand::Restart => {
+        for id in self.stateful_set.restart_set() {
+          handle_map.remove(&id);
+          self
+            .task_desc_map
+            .get_mut(&id)
+            .unwrap()
+            .write()
+            .unwrap()
+            .reset();
+        }
+        true
+      }
+      TaskCommand::Retry => {
+        for id in self.stateful_set.retry_set() {
+          handle_map.remove(&id);
+          self
+            .task_desc_map
+            .get_mut(&id)
+            .unwrap()
+            .write()
+            .unwrap()
+            .reset();
+        }
+        true
+      }
+      _ => false,
+    };
+    self.stateful_set.apply_all(cmd.clone());
+    resched
+  }
+  fn snapshot(&self) -> RuntimeGroupDescSnapshot {
+    let task_desc_map = self
+      .task_desc_map
+      .iter()
+      .map(|(id, desc)| (*id, desc.read().unwrap().snapshot()))
+      .collect();
+    RuntimeGroupDescSnapshot {
+      name: self.name.clone(),
+      task_desc_map,
+    }
+  }
+}
+
+pub struct RuntimeTaskProgressReader<'a, A> {
+  reader: A,
+  handle: RuntimeTaskHandle,
+  reporter: &'a mut TaskReporter,
+  interval: Interval,
+}
+
+impl<'a, A> RuntimeTaskProgressReader<'a, A> {
+  pub fn new(
+    reader: A,
+    group_state: RuntimeGroupStateRwLock,
+    desc: RuntimeTaskDescRwLock,
+    reporter: &'a mut TaskReporter,
+  ) -> Self
+  where
+    A: AsyncRead + Unpin,
+  {
+    let handle = RuntimeTaskHandle::new(group_state, desc);
+    let interval = tokio::time::interval(Duration::from_secs(1));
+    Self {
+      reader,
+      handle,
+      reporter,
+      interval,
+    }
+  }
+}
+
+#[derive(Debug, Error)]
+pub enum RuntimeTaskProgressError {
+  #[error("The task has been stopped externally")]
+  ExternalInterrupted,
+}
+
+impl<'a, A> AsyncRead for RuntimeTaskProgressReader<'a, A>
+where
+  A: AsyncRead + Unpin,
+{
+  fn poll_read(
+    self: Pin<&mut Self>,
+    cx: &mut Context<'_>,
+    buf: &mut ReadBuf<'_>,
+  ) -> Poll<std::io::Result<()>> {
+    let this = self.get_mut();
+    {
+      let group_state = this.handle.group_state.read().unwrap();
+      let mut desc = this.handle.desc.write().unwrap();
+      if !group_state.pollable() || !desc.state.pollable() {
+        return Poll::Ready(Err(std::io::Error::other(Box::new(
+          RuntimeTaskProgressError::ExternalInterrupted,
+        ))));
+      }
+      Pin::new(&mut this.reader).poll_read(cx, buf).map_ok(|()| {
+        desc.current += buf.filled().len() as u64;
+        if this.interval.poll_tick(cx).is_ready() {
+          desc.save().unwrap();
+          this.reporter.report_progress(desc.current as i64)
+        }
+      })
+    }
+  }
+}
+
+pub struct IdGenerator {
+  seq: AtomicU32,
+}
+
+impl Default for IdGenerator {
+  fn default() -> Self {
+    Self { seq: 0.into() }
+  }
+}
+
+impl IdGenerator {
+  fn next_id(&self) -> u32 {
+    self.seq.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+  }
+}
+
+pub struct TaskMonitor {
+  app_handle: tauri::AppHandle,
+  group_descs: ConcurrentHashMap<String, RuntimeGroupDescRwLock>,
+  inqueue: ConcurrentHashSet<String>,
+  handle_map: ConcurrentHashMap<TaskId, JoinHandle<()>>,
+  tx: Sender<String>,
+  rx: Receiver<String>,
+  sema: Arc<Semaphore>,
+  id_gen: IdGenerator,
+  report_period: Duration,
+}
+
+impl TaskMonitor {
+  pub fn new(app_handle: AppHandle) -> Self {
+    let (tx, rx) = flume::unbounded();
+    let config = retrieve_launcher_config(app_handle.clone()).unwrap();
+    let concurrency = config.download.transmission.concurrent_count;
+    Self {
+      app_handle,
+      group_descs: Default::default(),
+      inqueue: Default::default(),
+      handle_map: Default::default(),
+      tx,
+      rx,
+      sema: Arc::new(Semaphore::new(concurrency)),
+      id_gen: IdGenerator::default(),
+      report_period: Duration::from_secs(1),
+    }
+  }
+  pub async fn schedule_task_group(
+    &self,
+    group_name: String,
+    params: Vec<RuntimeTaskParam>,
+  ) -> RuntimeGroupDescSnapshot {
+    let task_desc_map: HashMap<u32, RuntimeTaskDescRwLock> =
+      HashMap::from_iter(params.into_iter().map(|param| {
+        let task_id = self.id_gen.next_id();
+        let task_desc = match param {
+          RuntimeTaskParam::Download(mut param) => {
+            if param.filename.is_none() {
+              param.filename = Some(extract_filename(
+                param.dest.to_str().unwrap_or_default(),
+                true,
+              ));
+            }
+            Arc::new(RwLock::new(RuntimeTaskDesc::new(
+              self.app_handle.clone(),
+              task_id,
+              Some(group_name.clone()),
+              RuntimeTaskParam::Download(param),
+            )))
+          }
+        };
+        (task_id, task_desc)
+      }));
+    let group_desc = RuntimeGroupDesc::new(group_name.clone(), task_desc_map);
+    let snapshot = group_desc.snapshot();
+    self
+      .group_descs
+      .lock()
+      .unwrap()
+      .insert(group_name.clone(), Arc::new(RwLock::new(group_desc)));
+    self.inqueue.lock().unwrap().insert(group_name.clone());
+    self.tx.send_async(group_name).await.unwrap();
+    snapshot
   }
 
   pub async fn background_process(&self) {
     loop {
-      let future = self.rx.recv_async().await.unwrap();
-      if self
-        .phs
-        .read()
+      let group_name = self.rx.recv_async().await.unwrap();
+      let group_desc = self
+        .group_descs
+        .lock()
         .unwrap()
-        .get(&future.task_id)
+        .get(&group_name)
         .unwrap()
-        .read()
-        .unwrap()
-        .desc
-        .status
-        .is_cancelled()
-      {
-        continue;
-      }
-      // Check if the task group is stopped before acquiring permit
-      if let Some(ref task_group) = future.task_group {
-        let is_stopped = self
-          .group_map
-          .read()
-          .unwrap()
-          .get(task_group)
-          .map(|g| g.status == GEventStatus::Stopped)
-          .unwrap_or(false);
+        .clone();
+      let group_reporter = GroupReporter::new(self.app_handle.clone(), group_name.clone());
+      self.inqueue.lock().unwrap().remove(&group_name);
+      loop {
+        let (task_desc, group_state, task_id) = {
+          let mut group_desc = group_desc.write().unwrap();
+          let state = group_desc.state.clone();
+          let mut group_state = state.write().unwrap();
 
-        if is_stopped {
-          // Store the future in the stopped_futures list and continue to next task
-          self.stopped_futures.lock().unwrap().push(future);
-          continue;
-        }
-      }
-
-      // Acquire permit before spawning the task
-      let permit = self.concurrency.clone().acquire_owned().await.unwrap();
-
-      let tasks = self.tasks.clone();
-      let group_map = self.group_map.clone();
-      let app = self.app_handle.clone();
-
-      self.tasks.lock().unwrap().insert(
-        future.task_id,
-        tauri::async_runtime::spawn(async move {
-          // Move the permit into the spawned task
-          let _permit = permit;
-
-          if let Some(task_group) = future.task_group.clone() {
-            // Wait for the task group to be resumed if it is stopped
-            loop {
-              let is_stopped = group_map
-                .read()
-                .unwrap()
-                .get(&task_group)
-                .map(|g| g.status == GEventStatus::Stopped)
-                .unwrap_or(false);
-              if !is_stopped {
-                break;
-              }
-              tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-            }
+          if !group_state.pollable() {
+            break;
           }
 
-          let r = future.f.await;
-          match r {
-            Ok(_) => {
-              if let Some(group_name) = future.task_group {
-                if let Some(group) = group_map.write().unwrap().get_mut(&group_name) {
-                  group.phs.remove(&future.task_id);
-                  if group.phs.is_empty() {
-                    group.status = GEventStatus::Completed;
-                    GEvent::emit_group_completed(&app, &group_name)
+          if group_state.is_pending() {
+            group_state.set_in_progress();
+            group_reporter.report(&group_state);
+          }
+
+          let task_id_option = group_desc.stateful_set.start_one();
+
+          if task_id_option.is_none() {
+            break;
+          }
+
+          let task_id = task_id_option.unwrap();
+          (
+            group_desc.task_desc_map.get(&task_id).unwrap().clone(),
+            state.clone(),
+            task_id,
+          )
+        };
+
+        let handle = {
+          let app_handle = self.app_handle.clone();
+          let permit = self.sema.clone().acquire_owned().await.unwrap();
+          let report_period = self.report_period.clone();
+          let task_group_state = group_desc.read().unwrap().state.clone();
+          let task_group_desc = group_desc.clone();
+          let task_handle_map = self.handle_map.clone();
+          let task_group_reporter = group_reporter.clone();
+
+          tokio::spawn(async move {
+            // Create Task Reporter for this task
+            let mut task_reporter = {
+              let desc = task_desc.read().unwrap();
+              let group_name = desc.group.clone();
+              TaskReporter::from_desc_interval(
+                app_handle.clone(),
+                group_name,
+                &desc,
+                &report_period,
+              )
+            };
+            // Create the runtime task, erase the type for dispatching.
+            let task = into_runtime_task(
+              app_handle,
+              task_desc.clone(),
+              group_state,
+              &mut task_reporter,
+            );
+            let _ = permit;
+            let r = task.await;
+            {
+              let mut group_desc = task_group_desc.write().unwrap();
+              let mut group_state = task_group_state.write().unwrap();
+              let mut task_desc = task_desc.write().unwrap();
+              match r {
+                Ok(_) => {
+                  group_desc.stateful_set.complete_one(task_id);
+                  task_desc.state.set_completed();
+                }
+                Err(e) => {
+                  let reason = e.to_string();
+                  if e.downcast::<RuntimeTaskProgressError>().is_err() {
+                    group_desc.stateful_set.fail_one(task_id);
+                    task_desc.state.set_failed(reason.clone());
+                  } else {
+                    task_desc.state = group_state.clone();
                   }
                 }
               }
-            }
-            Err(e) => {
-              info!("Task failed: {e:?}");
-              if let Some(group_name) = future.task_group {
-                GEvent::emit_group_failed(&app, &group_name);
-                if let Some(group) = group_map.write().unwrap().remove(&group_name) {
-                  for (_, handle) in group.phs {
-                    let mut handle = handle.write().unwrap();
-                    if handle.desc.status.is_waiting() {
-                      handle.mark_cancelled()
-                    }
-                  }
-                }
+              task_reporter.report(&task_desc);
+              task_desc.save().unwrap();
+              if group_state.pollable() {
+                *group_state = group_desc.stateful_set.combine_all_states();
+              }
+              if !group_state.pollable() {
+                task_group_reporter.report(&group_state);
               }
             }
-          }
-          tasks.lock().unwrap().remove(&future.task_id);
-          // The permit will be automatically released when _permit is dropped
-        }),
-      );
-    }
-  }
-
-  pub fn stop_progress(&self, id: u32) {
-    if let Some(handle) = self.phs.read().unwrap().get(&id) {
-      handle.write().unwrap().mark_stopped();
-    }
-  }
-
-  pub fn resume_progress(&self, id: u32) {
-    if let Some(handle) = self.phs.read().unwrap().get(&id) {
-      handle.write().unwrap().mark_resumed();
-    }
-  }
-
-  pub fn cancel_progress(&self, id: u32) {
-    if let Some(p_handle) = self.phs.read().unwrap().get(&id) {
-      p_handle.write().unwrap().mark_cancelled();
-      if let Some(j_handle) = self.tasks.lock().unwrap().remove(&id) {
-        j_handle.abort();
+            task_handle_map.lock().unwrap().remove(&task_id);
+          })
+        };
+        self.handle_map.lock().unwrap().insert(task_id, handle);
       }
     }
   }
 
-  pub async fn restart_progress(&self, id: u32) {
-    let handle = self.phs.write().unwrap().remove(&id);
-    if let Some(handle) = handle {
-      let desc = handle.read().unwrap().desc.clone();
-      let task_group = desc.task_group.clone();
-      let task_state = desc.status.clone();
-      let j_handle = self.tasks.lock().unwrap().remove(&id).unwrap();
-      if !task_state.is_completed() {
-        handle.write().unwrap().mark_cancelled();
-        j_handle.abort();
-      }
-      match desc.payload {
-        PTaskParam::Download(_) => {
-          let task = DownloadTask::from_descriptor(
-            self.app_handle.clone(),
-            desc,
-            Duration::from_secs(1),
-            true,
-          );
-          let (f, new_h) = task
-            .future(self.app_handle.clone(), self.download_rate_limiter.clone())
-            .await
-            .unwrap();
-          self.enqueue_task(id, task_group, f, new_h).await;
-        }
-      }
+  pub async fn apply_cmd(&self, group_name: String, cmd: TaskCommand) {
+    let group_desc_opt = self.group_descs.lock().unwrap().get(&group_name).cloned();
+    if group_desc_opt.is_none() {
+      return;
     }
-  }
-
-  pub fn create_transient_task(&self, app: AppHandle, mut handle: THandle) {
-    handle.task_id = self.get_new_id();
-    TEvent::new(&handle).emit(&app);
-    self.ths.write().unwrap().insert(handle.task_id, handle);
-  }
-
-  pub fn set_transient_task(&self, app: AppHandle, task_id: u32, state: String) {
-    if let Some(desc) = self.ths.write().unwrap().get_mut(&task_id) {
-      desc.state = state;
-      TEvent::new(desc).emit(&app);
-    }
-  }
-
-  pub fn cancel_transient_task(&self, task_id: u32) {
-    self.ths.write().unwrap().remove(&task_id);
-  }
-
-  pub fn get_transient_task(&self, task_id: u32) -> Option<THandle> {
-    self.ths.read().unwrap().get(&task_id).cloned()
-  }
-
-  pub fn cancel_progressive_task_group(&self, task_group: String) {
-    if let Some(group) = self.group_map.write().unwrap().remove(&task_group) {
-      for handle in group.phs.values() {
-        handle.write().unwrap().mark_cancelled();
-        if let Some(join_handle) = self
-          .tasks
-          .lock()
-          .unwrap()
-          .remove(&handle.read().unwrap().desc.task_id)
-        {
-          join_handle.abort();
-        }
-      }
-      GEvent::emit_group_cancelled(&self.app_handle, &task_group);
-    }
-  }
-
-  pub async fn resume_progressive_task_group(&self, task_group: String) {
-    if let Some(group) = self.group_map.write().unwrap().get_mut(&task_group) {
-      group.status = GEventStatus::Started;
-
-      // Resume existing stopped tasks
-      for handle in group.phs.values() {
-        if handle.read().unwrap().desc.status.is_stopped() {
-          handle.write().unwrap().mark_resumed();
-        }
-      }
-    }
-
-    // Re-send all stored stopped futures for this task group
-    let futures_to_resend = {
-      let mut stopped_futures = self.stopped_futures.lock().unwrap();
-      let mut futures = Vec::new();
-
-      // Extract futures that belong to this task group
-      let mut i = 0;
-      while i < stopped_futures.len() {
-        if stopped_futures[i].task_group.as_ref() == Some(&task_group) {
-          futures.push(stopped_futures.remove(i));
-        } else {
-          i += 1;
-        }
-      }
-
-      futures
-    };
-
-    // Re-send the futures
-    for future in futures_to_resend {
-      self.tx.send_async(future).await.unwrap();
-    }
-
-    GEvent::emit_group_started(&self.app_handle, &task_group);
-  }
-
-  pub fn stop_progressive_task_group(&self, task_group: String) {
-    if let Some(group) = self.group_map.write().unwrap().get_mut(&task_group) {
-      group.status = GEventStatus::Stopped;
-      for handle in group.phs.values() {
-        let status = handle.read().unwrap().desc.status.clone();
-        if status.is_in_progress() || status.is_waiting() {
-          handle.write().unwrap().mark_stopped();
-        }
-      }
-      GEvent::emit_group_stopped(&self.app_handle, &task_group);
-    }
-  }
-
-  pub fn state_list(&self) -> Vec<PTaskGroupDesc> {
-    self
-      .group_map
-      .read()
+    let group_desc = group_desc_opt.unwrap();
+    if group_desc
+      .write()
       .unwrap()
-      .iter()
-      .map(|(k, v)| PTaskGroupDesc {
-        task_group: k.clone(),
-        task_descs: v
-          .phs
-          .values()
-          .map(|h| h.read().unwrap().desc.clone())
-          .collect(),
-        status: v.status.clone(),
-      })
+      .apply(&mut self.handle_map.lock().unwrap(), cmd.clone())
+      && !self.inqueue.lock().unwrap().contains(&group_name)
+    {
+      self.tx.send_async(group_name).await.unwrap();
+    }
+  }
+
+  pub fn state_list(&self) -> Vec<RuntimeGroupDescSnapshot> {
+    let group_descs = self.group_descs.lock().unwrap();
+    group_descs
+      .values()
+      .map(|desc| desc.read().unwrap().snapshot())
       .collect()
   }
 
   pub fn has_active_download_tasks(&self) -> bool {
-    let phs = self.phs.read().unwrap();
-    for handle in phs.values() {
-      let desc = handle.read().unwrap();
-      let status = &desc.desc.status;
-      // check if the task is a download task and is in progress or waiting
-      if matches!(desc.desc.payload, super::PTaskParam::Download(_))
-        && (status.is_in_progress() || status.is_waiting())
-      {
-        return true;
-      }
-    }
-    false
+    !self.handle_map.lock().unwrap().is_empty()
   }
 }
