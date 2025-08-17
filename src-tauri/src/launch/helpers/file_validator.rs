@@ -83,9 +83,20 @@ pub async fn get_invalid_library_files(
     let source = source.clone();
     async move {
       let file_path = library_path.join(&artifact.path);
-      if file_path.exists()
-        && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
-      {
+      let exists = fs::try_exists(&file_path).await?;
+      let ok = if !exists {
+        false
+      } else if check_hash {
+        let file_path_for_hash = file_path.clone();
+        let sha1_for_hash = artifact.sha1.clone();
+        tokio::task::spawn_blocking(move || {
+          validate_sha1(file_path_for_hash, sha1_for_hash).is_ok()
+        })
+        .await?
+      } else {
+        true
+      };
+      if ok {
         return Ok(None);
       } else if artifact.url.is_empty() {
         return Err(LaunchError::GameFilesIncomplete.into());
@@ -274,26 +285,50 @@ pub async fn get_invalid_assets(
   let asset_index_path = asset_path.join(format!("indexes/{}.json", client_info.asset_index.id));
   let asset_index = load_asset_index(app, &asset_index_path, &client_info.asset_index.url).await?;
 
-  Ok(
-    asset_index
-      .objects
-      .iter()
-      .filter_map(|(_, item)| {
-        let path = format!("{}/{}", &item.hash[..2], item.hash.clone());
-        let dest = asset_path.join(format!("objects/{}", path));
+  let futs = asset_index.objects.into_iter().map(|(_name, item)| {
+    let assets_download_api = assets_download_api.clone();
+    let base_path = asset_path.to_path_buf();
 
-        if dest.exists() && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok())
-        {
-          None
-        } else {
-          Some(PTaskParam::Download(DownloadParam {
-            src: assets_download_api.join(&path).ok()?,
-            dest,
-            filename: None,
-            sha1: Some(item.hash.clone()),
-          }))
-        }
-      })
-      .collect::<Vec<_>>(),
-  )
+    async move {
+      let path_in_repo = format!("{}/{}", &item.hash[..2], item.hash);
+      let dest = base_path.join(format!("objects/{}", path_in_repo));
+      let exists = fs::try_exists(&dest).await?;
+
+      let ok = if !exists {
+        false
+      } else if check_hash {
+        let dest_for_hash = dest.clone();
+        let hash_for_check = item.hash.clone();
+        tokio::task::spawn_blocking(move || validate_sha1(dest_for_hash, hash_for_check).is_ok())
+          .await?
+      } else {
+        true
+      };
+
+      if ok {
+        Ok::<Option<PTaskParam>, crate::error::SJMCLError>(None)
+      } else {
+        let src = assets_download_api
+          .join(&path_in_repo)
+          .map_err(crate::error::SJMCLError::from)?;
+        Ok(Some(PTaskParam::Download(DownloadParam {
+          src,
+          dest,
+          filename: None,
+          sha1: Some(item.hash.clone()),
+        })))
+      }
+    }
+  });
+
+  let results: Vec<SJMCLResult<Option<PTaskParam>>> =
+    join_all(futs.map(|fut| async move { fut.await.map_err(Into::into) })).await;
+
+  let mut params = Vec::new();
+  for r in results {
+    if let Some(p) = r? {
+      params.push(p);
+    }
+  }
+  Ok(params)
 }
