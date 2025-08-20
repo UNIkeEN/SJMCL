@@ -93,6 +93,11 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
         aria-label={finalLabel}
         variant="ghost"
         size="sm"
+        onMouseDown={(e) => {
+          e.preventDefault(); // Prevents button from being focused on click
+          e.stopPropagation(); // Prevents click from bubbling up to parent elements
+          props.onMouseDown?.(e);
+        }} // Prevents button from stealing focus
         {...props}
       />
     </Tooltip>
