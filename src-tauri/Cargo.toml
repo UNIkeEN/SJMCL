@@ -44,7 +44,6 @@ uuid = { version = "1.11.0", features = [
     "macro-diagnostics",
 ] }
 tauri-plugin-process = "2"
-tauri-plugin-opener = "2"
 base64 = "0.22.1"
 image = { version = "0.25.5", features = ["serde"] }
 rand = "0.9.0"
@@ -79,6 +78,7 @@ async-speed-limit = "0.4.2"
 reqwest-middleware = "0.4.2"
 reqwest-retry = "0.7.0"
 murmur2 = "0.1"
+tauri-plugin-opener = "2.5.0"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"
