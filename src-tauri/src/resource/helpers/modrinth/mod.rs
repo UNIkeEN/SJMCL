@@ -5,12 +5,15 @@ use crate::resource::models::{
   OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
   OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
 };
+use crate::tasks::download::DownloadParam;
 use hex;
 use sha1::{Digest, Sha1};
 use std::collections::HashMap;
 use std::fs;
+use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use url::Url;
 
 use misc::{
   get_modrinth_api, make_modrinth_request, map_modrinth_file_to_version_pack, ModrinthApiEndpoint,
@@ -165,4 +168,52 @@ pub async fn fetch_remote_resource_by_id_modrinth(
     make_modrinth_request::<ModrinthProject, ()>(&client, &url, ModrinthRequestType::Get).await?;
 
   Ok(results.into())
+}
+
+pub async fn get_latest_fabric_api_mod_download(
+  app: &AppHandle,
+  game_version: &str,
+  mods_dir: PathBuf,
+) -> SJMCLResult<Option<DownloadParam>> {
+  const FABRIC_API_MOD_ID: &str = "P7dR8mSH"; // Fabric API Mod Id in Modrinth
+
+  let query = OtherResourceVersionPackQuery {
+    resource_id: FABRIC_API_MOD_ID.to_string(),
+    mod_loader: "Fabric".to_string(),
+    game_versions: vec![game_version.to_string()],
+  };
+
+  let version_packs = fetch_resource_version_packs_modrinth(app, &query).await?;
+
+  let version_pack = version_packs
+    .iter()
+    .find(|pack| pack.name == game_version)
+    .ok_or(ResourceError::ParseError)?;
+
+  let mut candidate_files: Vec<&OtherResourceFileInfo> = version_pack
+    .items
+    .iter()
+    .filter(|file| matches!(file.release_type.as_str(), "beta" | "release"))
+    .collect();
+
+  if candidate_files.is_empty() {
+    return Ok(None);
+  }
+
+  candidate_files.sort_by(|a, b| b.file_date.cmp(&a.file_date));
+
+  let latest_file = candidate_files.first().ok_or(ResourceError::ParseError)?;
+
+  let download_url =
+    Url::parse(&latest_file.download_url).map_err(|_| ResourceError::ParseError)?;
+
+  let filename = latest_file.file_name.clone();
+  let dest_path = mods_dir.join(&filename);
+
+  Ok(Some(DownloadParam {
+    src: download_url,
+    dest: dest_path,
+    filename: Some(filename),
+    sha1: Some(latest_file.sha1.clone()),
+  }))
 }

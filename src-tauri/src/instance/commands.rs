@@ -44,7 +44,7 @@ use crate::{
   },
   partial::{PartialError, PartialUpdate},
   resource::{
-    helpers::misc::get_source_priority_list,
+    helpers::{misc::get_source_priority_list, modrinth::get_latest_fabric_api_mod_download},
     models::{GameClientResourceInfo, ModLoaderResourceInfo},
   },
   storage::{load_json_async, save_json_async, Storage},
@@ -932,6 +932,16 @@ pub async fn create_instance(
       &mut task_params,
     )
     .await?;
+  }
+
+  // Auto-download Fabric API mod for Fabric instances
+  if instance.mod_loader.loader_type == ModLoaderType::Fabric {
+    let mods_dir = version_path.join("mods");
+    if let Ok(Some(fabric_api_download)) =
+      get_latest_fabric_api_mod_download(&app, &instance.version, mods_dir).await
+    {
+      task_params.push(PTaskParam::Download(fabric_api_download));
+    }
   }
 
   // If modpack path is provided, install it
