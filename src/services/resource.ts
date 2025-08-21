@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { ModLoaderType } from "@/enums/instance";
-import { OtherResourceSource } from "@/enums/resource";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import {
   GameClientResourceInfo,
   ModLoaderResourceInfo,
@@ -173,5 +174,24 @@ export class ResourceService {
       downloadSource,
       resourceId,
     });
+  }
+
+  /**
+   * Listen for resource refresh events.
+   * @param callback - The callback to be invoked when a resource refresh event occurs.
+   */
+  static onResourceRefresh(
+    callback: (payload: OtherResourceType) => void
+  ): () => void {
+    const unlisten = getCurrentWebview().listen<OtherResourceType>(
+      "instance:refresh-resource-list",
+      (event) => {
+        callback(event.payload);
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

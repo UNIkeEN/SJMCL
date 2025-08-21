@@ -192,7 +192,7 @@ pub async fn generate_launch_command(
     library_directory: libraries_dir.to_string_lossy().to_string(),
     classpath_separator: get_separator().to_string(),
 
-    auth_access_token: selected_player.access_token,
+    auth_access_token: selected_player.access_token.unwrap_or_default(),
     auth_player_name: selected_player.name,
     user_type: "msa".to_string(), // TODO
     auth_uuid: selected_player.uuid.to_string(),
@@ -279,7 +279,7 @@ pub async fn generate_launch_command(
     cmd.push(format!(
       "-javaagent:{}={}",
       get_authlib_injector_jar_path(app)?.to_string_lossy(),
-      selected_player.auth_server_url
+      selected_player.auth_server_url.clone().unwrap_or_default()
     ));
     cmd.push("-Dauthlibinjector.side=client".to_string());
     cmd.push(format!(

@@ -1,4 +1,4 @@
-// TODO: Does Tauri have native API?
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { useEffect } from "react";
 
 interface DragDropOptions {
@@ -8,7 +8,7 @@ interface DragDropOptions {
   preventDefault?: boolean;
 }
 
-const useDragAndDrop = ({
+export const useDragAndDrop = ({
   mimeTypes = ["text/plain"],
   onDrop,
   onDragOver,
@@ -49,4 +49,42 @@ const useDragAndDrop = ({
   }, [mimeTypes, onDrop, onDragOver, preventDefault]);
 };
 
-export default useDragAndDrop;
+interface TauriFileDropOptions {
+  pattern: string;
+  onMatch: (path: string) => void;
+}
+
+export const useTauriFileDrop = ({
+  pattern,
+  onMatch,
+}: TauriFileDropOptions) => {
+  useEffect(() => {
+    let regex: RegExp;
+    try {
+      regex = new RegExp(pattern, "i");
+    } catch {
+      return;
+    }
+
+    let cleanup: (() => void) | undefined;
+
+    (async () => {
+      const unlisten = await getCurrentWebview().onDragDropEvent((event) => {
+        if (event.payload.type !== "drop") return;
+        console.log(event);
+        for (const fullPath of event.payload.paths) {
+          const fileName = fullPath.split(/[\\/]/).pop() || fullPath;
+          if (regex.test(fileName)) {
+            onMatch(fullPath);
+            break;
+          }
+        }
+      });
+      cleanup = unlisten;
+    })();
+
+    return () => {
+      cleanup?.();
+    };
+  }, [pattern, onMatch]);
+};

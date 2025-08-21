@@ -1,78 +1,60 @@
 use super::{oauth, password};
 use crate::{
   account::{
-    helpers::offline::load_preset_skin,
+    helpers::{
+      authlib_injector::models::{MinecraftProfile, TextureInfo},
+      misc::fetch_image,
+      offline::load_preset_skin,
+    },
     models::{AccountError, AuthServer, PlayerInfo, PlayerType, Texture},
   },
   error::SJMCLResult,
-  utils::image::decode_image,
 };
 use base64::{engine::general_purpose, Engine};
-use serde_json::{json, Value};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use uuid::Uuid;
 
 pub async fn parse_profile(
   app: &AppHandle,
-  profile: Value,
-  access_token: String,
-  refresh_token: String,
-  auth_server_url: String,
-  auth_account: String,
-  password: String,
+  profile: &MinecraftProfile,
+  access_token: Option<String>,
+  refresh_token: Option<String>,
+  auth_server_url: Option<String>,
+  auth_account: Option<String>,
+  password: Option<String>,
 ) -> SJMCLResult<PlayerInfo> {
-  let client = app.state::<reqwest::Client>();
-
-  let uuid = Uuid::parse_str(profile["id"].as_str().unwrap_or_default())
-    .map_err(|_| AccountError::ParseError)?;
-
-  let name = profile["name"].as_str().unwrap_or_default();
-
-  let properties = profile["properties"]
-    .as_array()
-    .ok_or(AccountError::ParseError)?;
-
+  let uuid = Uuid::parse_str(&profile.id).map_err(|_| AccountError::ParseError)?;
+  let name = profile.name.clone();
   let mut textures: Vec<Texture> = vec![];
 
-  if let Some(texture_info_base64) = properties
+  if let Some(texture_info_base64) = profile
+    .properties
     .iter()
-    .find(|property| property["name"] == "textures")
+    .find(|property| property.name == "textures")
   {
     let texture_info = general_purpose::STANDARD
-      .decode(texture_info_base64["value"].as_str().unwrap_or_default())
+      .decode(texture_info_base64.value.clone())
       .map_err(|_| AccountError::ParseError)?
       .into_iter()
       .map(|b| b as char)
       .collect::<String>();
 
-    let texture_info_value: Value =
+    let texture_info_value: TextureInfo =
       serde_json::from_str(&texture_info).map_err(|_| AccountError::ParseError)?;
 
     const TEXTURE_TYPES: [&str; 2] = ["SKIN", "CAPE"];
 
     for texture_type in TEXTURE_TYPES {
-      if let Some(skin) = texture_info_value["textures"].get(texture_type) {
-        let img_url = skin["url"].as_str().unwrap_or_default();
-        if img_url.is_empty() {
-          continue;
-        }
-        let img_bytes = client
-          .get(img_url)
-          .send()
-          .await
-          .map_err(|_| AccountError::NetworkError)?
-          .bytes()
-          .await
-          .map_err(|_| AccountError::ParseError)?;
-
+      if let Some(skin) = texture_info_value.textures.get(texture_type) {
         textures.push(Texture {
-          image: decode_image(img_bytes.to_vec())?.into(),
+          image: fetch_image(app, skin.url.clone()).await?,
           texture_type: texture_type.to_string(),
-          model: skin["metadata"]["model"]
-            .as_str()
-            .unwrap_or("default")
-            .to_string(),
+          model: skin
+            .metadata
+            .as_ref()
+            .and_then(|metadata| metadata.get("model").cloned())
+            .unwrap_or("default".into()),
           preset: None,
         });
       }
@@ -107,10 +89,10 @@ pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool>
   let response = client
     .post(format!(
       "{}/authserver/validate",
-      player.auth_server_url.clone()
+      player.auth_server_url.clone().unwrap_or_default()
     ))
     .header("Content-Type", "application/json")
-    .body(json!({ "accessToken": player.access_token.clone() }).to_string())
+    .form(&[("accessToken", player.access_token.clone())])
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
@@ -123,7 +105,7 @@ pub async fn refresh(
   player: &PlayerInfo,
   auth_server: &AuthServer,
 ) -> SJMCLResult<PlayerInfo> {
-  if player.refresh_token.is_empty() {
+  if player.refresh_token.is_none() {
     password::refresh(app, player).await
   } else {
     oauth::refresh(

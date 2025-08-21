@@ -152,7 +152,7 @@ const crashRules: { key: string; pattern: RegExp }[] = [
   {
     key: "FABRIC_WARNINGS",
     pattern:
-      /(Warnings were found!|Incompatible mod set!|Incompatible mods found!)(.*?)[\n\r]+([^[]+)\[/,
+      /(Warnings were found!|Incompatible mod set!|which is missing!|that is compatible with|Incompatible mods found!)(.*?)[\n\r]+([^[]+)\[/,
   },
   {
     key: "ENTITY",
@@ -245,6 +245,47 @@ const crashRules: { key: string; pattern: RegExp }[] = [
     key: "NATIVE_LIBRARY_ARCH_INCOMPATIBLE",
     pattern:
       /java\.lang\.UnsatisfiedLinkError: .*?\.(dylib|so|dll): dlopen\(.*?\): .*?missing compatible architecture.*?\(have '.*?', need '.*?'\)/,
+  },
+  {
+    key: "MAC_DS_STORE",
+    pattern:
+      /ResourceLocationException: Non \[a-z0-9_.-\] character in namespace of location: \.DS_Store/,
+  },
+  {
+    key: "LEVEL_DAT_CORRUPTED",
+    pattern:
+      /(Exception reading .*\\level\.dat|java\.util\.zip\.ZipException: invalid distance too far back|net\.minecraft\.util\.crash\.CrashException: Loading NBT data)/,
+  },
+  {
+    key: "GL_OUT_OF_MEMORY",
+    pattern:
+      /GL_OUT_OF_MEMORY error generated\. Failed to allocate memory for buffer data\./,
+  },
+  {
+    key: "MOD_JAVA_VERSION_MISMATCH",
+    pattern:
+      /(java\.lang\.UnsupportedClassVersionError: .*|Unsupported class file major version)/,
+  },
+  {
+    key: "DUPLICATE_MOD_INSTALLED",
+    pattern: /ModResolutionException: Duplicate/,
+  },
+  {
+    key: "MOD_ZIP_CORRUPTED",
+    pattern:
+      /Caused by: java\.util\.zip\.ZipException: zip END header not found/,
+  },
+  {
+    key: "MOD_INTERNET_ERROR",
+    pattern: /(modpack-update-checker|commonality)/,
+  },
+  {
+    key: "VICS_MODERN_WARFARE_ERROR",
+    pattern: /java\.lang\.IllegalStateException: Not Building!/,
+  },
+  {
+    key: "FORGE_LITELOADER_CONFLICT",
+    pattern: /ModLauncher is not available/,
   },
 ];
 

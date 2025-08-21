@@ -13,8 +13,8 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSubdirType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
-import { useResourceRefresh } from "@/hooks/resource-refresh";
 import { ShaderPackInfo } from "@/models/instance/misc";
+import { ResourceService } from "@/services/resource";
 
 const InstanceShaderPacksPage = () => {
   const { t } = useTranslation();
@@ -45,13 +45,30 @@ const InstanceShaderPacksPage = () => {
     getShaderPackListWrapper();
   }, [getShaderPackListWrapper]);
 
-  useResourceRefresh(["shader"], () => getShaderPackListWrapper(true));
+  useEffect(() => {
+    const unlisten = ResourceService.onResourceRefresh(
+      (payload: OtherResourceType) => {
+        if (payload === OtherResourceType.ShaderPack) {
+          getShaderPackListWrapper(true);
+        }
+      }
+    );
+    return unlisten;
+  }, [getShaderPackListWrapper]);
 
   const shaderSecMenuOperations = [
     {
       icon: "openFolder",
       onClick: () => {
         openInstanceSubdir(InstanceSubdirType.ShaderPacks);
+      },
+    },
+    {
+      icon: "download",
+      onClick: () => {
+        openSharedModal("download-resource", {
+          initialResourceType: OtherResourceType.ShaderPack,
+        });
       },
     },
     {
@@ -63,14 +80,6 @@ const InstanceShaderPacksPage = () => {
           tgtDirType: InstanceSubdirType.ShaderPacks,
           decompress: false,
           onSuccessCallback: () => getShaderPackListWrapper(true),
-        });
-      },
-    },
-    {
-      icon: "download",
-      onClick: () => {
-        openSharedModal("download-resource", {
-          initialResourceType: OtherResourceType.ShaderPack,
         });
       },
     },

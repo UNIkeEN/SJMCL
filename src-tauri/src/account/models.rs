@@ -37,16 +37,11 @@ pub struct Player {
   pub uuid: Uuid,
   pub avatar: ImageWrapper,
   pub player_type: PlayerType,
-  #[serde(default)]
-  pub auth_account: String,
-  #[serde(default)]
-  pub password: String,
-  #[serde(default)]
-  pub auth_server: AuthServer,
-  #[serde(default)]
-  pub access_token: String,
-  #[serde(default)]
-  pub refresh_token: String,
+  pub auth_account: Option<String>,
+  pub password: Option<String>,
+  pub auth_server: Option<AuthServer>,
+  pub access_token: Option<String>,
+  pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
 
@@ -54,14 +49,18 @@ impl From<PlayerInfo> for Player {
   fn from(player_info: PlayerInfo) -> Self {
     let state: AccountInfo = Storage::load().unwrap_or_default();
 
-    let auth_server = AuthServer::from(
-      state
-        .auth_servers
-        .iter()
-        .find(|server| server.auth_url == player_info.auth_server_url)
-        .cloned()
-        .unwrap_or_default(),
-    );
+    let auth_server = if let Some(auth_server_url) = player_info.auth_server_url {
+      Some(AuthServer::from(
+        state
+          .auth_servers
+          .iter()
+          .find(|server| server.auth_url == auth_server_url)
+          .cloned()
+          .unwrap_or_default(),
+      ))
+    } else {
+      None
+    };
 
     Player {
       id: player_info.id,
@@ -87,11 +86,11 @@ pub struct PlayerInfo {
   pub name: String,
   pub uuid: Uuid,
   pub player_type: PlayerType,
-  pub auth_account: String,
-  pub password: String,
-  pub auth_server_url: String,
-  pub access_token: String,
-  pub refresh_token: String,
+  pub auth_account: Option<String>,
+  pub password: Option<String>,
+  pub auth_server_url: Option<String>,
+  pub access_token: Option<String>,
+  pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
 
@@ -101,7 +100,7 @@ impl PlayerInfo {
     let server_identity = match self.player_type {
       PlayerType::Offline => "OFFLINE".to_string(),
       PlayerType::Microsoft => "MICROSOFT".to_string(),
-      _ => self.auth_server_url.clone(),
+      _ => self.auth_server_url.clone().unwrap_or_default(),
     };
     self.id = format!("{}:{}:{}", self.name, server_identity, self.uuid);
     self
@@ -120,7 +119,10 @@ impl From<Player> for PlayerInfo {
       textures: player.textures,
       access_token: player.access_token,
       refresh_token: player.refresh_token,
-      auth_server_url: player.auth_server.auth_url,
+      auth_server_url: player
+        .auth_server
+        .as_ref()
+        .map(|server| server.auth_url.clone()),
     }
   }
 }
@@ -248,6 +250,7 @@ pub enum AccountError {
   Cancelled,
   NoDownloadApi,
   SaveError,
+  NoMinecraftProfile,
 }
 
 impl std::error::Error for AccountError {}

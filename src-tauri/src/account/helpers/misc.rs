@@ -3,10 +3,52 @@ use crate::{
   error::SJMCLResult,
   launcher_config::models::LauncherConfig,
   storage::Storage,
-  utils::web::is_china_mainland_ip,
+  utils::{
+    image::{decode_image, ImageWrapper},
+    web::is_china_mainland_ip,
+  },
 };
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
+#[derive(serde::Deserialize)]
+pub struct OAuthCode {
+  pub device_code: String,
+  pub user_code: String,
+  pub verification_uri: String,
+  pub verification_uri_complete: Option<String>,
+  pub interval: u64,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, serde::Deserialize, serde::Serialize)]
+pub struct OAuthTokens {
+  pub access_token: String,
+  pub refresh_token: String,
+  pub id_token: Option<String>,
+}
+
+pub async fn fetch_image(app: &AppHandle, url: String) -> SJMCLResult<ImageWrapper> {
+  let client = app.state::<reqwest::Client>();
+
+  let response = client
+    .get(url)
+    .send()
+    .await
+    .map_err(|_| AccountError::NetworkError)?;
+
+  let img_bytes = response
+    .bytes()
+    .await
+    .map_err(|_| AccountError::ParseError)?
+    .to_vec();
+
+  Ok(
+    decode_image(img_bytes)
+      .map_err(|_| AccountError::ParseError)?
+      .into(),
+  )
+}
 
 pub fn get_selected_player_info(app: &AppHandle) -> SJMCLResult<PlayerInfo> {
   let account_binding = app.state::<Mutex<AccountInfo>>();

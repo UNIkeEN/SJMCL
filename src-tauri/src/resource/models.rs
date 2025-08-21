@@ -56,7 +56,7 @@ impl FromStr for OtherResourceSource {
   }
 }
 
-// mod, save, resourcepack and shader
+// mod, save, resourcepack, datapack and shader
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceInfo {

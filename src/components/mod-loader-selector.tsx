@@ -112,8 +112,14 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
         </Tag>
       ),
       children: <></>,
+      isFullClickZone: true,
+      onClick: () => {
+        if (version.version !== "") {
+          onSelectModLoader(version);
+        }
+      },
     }),
-    [primaryColor, t]
+    [primaryColor, t, onSelectModLoader]
   );
 
   return (

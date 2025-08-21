@@ -1,6 +1,7 @@
 import {
   Button,
   HStack,
+  Icon,
   Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -16,10 +17,11 @@ import {
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
-import LinkIconButton from "@/components/common/link-icon-button";
+import { LuArrowRight } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
@@ -37,6 +39,7 @@ const DownloadSettingsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { openGenericConfirmDialog, closeSharedModal } = useSharedModals();
+  const router = useRouter();
 
   const { config, update } = useLauncherConfig();
   const downloadConfigs = config.download;
@@ -125,15 +128,15 @@ const DownloadSettingsPage = () => {
       items: [
         {
           title: t("DownloadTasksPage.title"),
-          children: (
-            <LinkIconButton aria-label="download-tasks" url="/downloads" />
-          ),
+          children: <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />,
+          isFullClickZone: true,
+          onClick: () => router.push("/downloads"),
         },
         {
           title: t("PingTestPage.PingServerList.title"),
-          children: (
-            <LinkIconButton aria-label="ping-test" url="/settings/ping-test" />
-          ),
+          children: <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />,
+          isFullClickZone: true,
+          onClick: () => router.push("/settings/ping-test"),
         },
       ],
     },

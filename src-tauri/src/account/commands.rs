@@ -166,12 +166,12 @@ pub async fn relogin_player_oauth(
     PlayerType::ThirdParty => {
       let auth_server = AuthServer::from(get_auth_server_info_by_url(
         &app,
-        old_player.auth_server_url.clone(),
+        old_player.auth_server_url.clone().unwrap_or_default(),
       )?);
 
       authlib_injector::oauth::login(
         &app,
-        old_player.auth_server_url.clone(),
+        old_player.auth_server_url.clone().unwrap_or_default(),
         auth_server.features.openid_configuration_url,
         auth_server.client_id,
         auth_info,
@@ -288,8 +288,8 @@ pub async fn relogin_player_3rdparty_password(
 
   let player_list = authlib_injector::password::login(
     &app,
-    old_player.auth_server_url.clone(),
-    old_player.auth_account.clone(),
+    old_player.auth_server_url.clone().unwrap_or_default(),
+    old_player.auth_account.clone().unwrap_or_default(),
     password,
   )
   .await?;
@@ -430,7 +430,7 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
     PlayerType::ThirdParty => {
       let auth_server = AuthServer::from(get_auth_server_info_by_url(
         &app,
-        player.auth_server_url.clone(),
+        player.auth_server_url.clone().unwrap_or_default(),
       )?);
 
       authlib_injector::common::refresh(&app, player, &auth_server).await?
@@ -526,7 +526,7 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
   let selected_id = config_state.states.shared.selected_player_id.clone();
 
   account_state.players.retain(|player| {
-    let should_remove = player.auth_server_url == url;
+    let should_remove = player.auth_server_url == Some(url.clone());
     if should_remove && player.id == selected_id {
       need_reset = true;
     }

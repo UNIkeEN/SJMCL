@@ -1,6 +1,8 @@
 use crate::{
-  instance::constants::INSTANCE_CFG_FILE_NAME, launcher_config::models::GameConfig,
-  storage::save_json_async, utils::image::ImageWrapper,
+  instance::constants::INSTANCE_CFG_FILE_NAME,
+  launcher_config::models::GameConfig,
+  storage::{load_json_async, save_json_async},
+  utils::image::ImageWrapper,
 };
 use serde::{Deserialize, Serialize};
 use std::{
@@ -102,9 +104,19 @@ structstruck::strike! {
 }
 
 impl Instance {
+  pub fn get_json_cfg_path(&self) -> PathBuf {
+    self.version_path.join(INSTANCE_CFG_FILE_NAME)
+  }
+
+  pub async fn load_json_cfg(&self) -> Result<Self, std::io::Error>
+  where
+    Self: Sized + serde::de::DeserializeOwned + Send,
+  {
+    load_json_async::<Self>(&self.get_json_cfg_path()).await
+  }
+
   pub async fn save_json_cfg(&self) -> Result<(), std::io::Error> {
-    let file_path = self.version_path.join(INSTANCE_CFG_FILE_NAME);
-    save_json_async(self, &file_path).await
+    save_json_async(self, &self.get_json_cfg_path()).await
   }
 }
 

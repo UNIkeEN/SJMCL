@@ -787,6 +787,15 @@
       "SHADERS_MOD": "Both OptiFine and the Shaders mod are installed. Please remove the Shaders mod.",
       "RTSS_FOREST_SODIUM": "RTSS is not compatible with Sodium.",
       "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "Some native libraries used by the game are incompatible with your system architecture.",
+      "MAC_DS_STORE": "The instance cannot continue due to a .DS_Store file on Mac. Please delete the .DS_Store file in your game path and try again.",
+      "LEVEL_DAT_CORRUPTED": "The instance cannot continue due to a corrupted level.dat save file. Please try to repair the save or restore from backup.",
+      "GL_OUT_OF_MEMORY": "The instance cannot continue due to OpenGL out of memory. Try lowering game resolution, disabling shaders, or closing other programs.",
+      "MOD_JAVA_VERSION_MISMATCH": "The instance cannot continue due to mod and Java version mismatch. Please check the required Java version for your mods.",
+      "DUPLICATE_MOD_INSTALLED": "The instance cannot continue due to duplicate mod installation. Please check your mod list and remove duplicates.",
+      "MOD_ZIP_CORRUPTED": "The instance cannot continue due to a corrupted mod zip file. Please try re-downloading the mod.",
+      "MOD_INTERNET_ERROR": "The instance cannot continue due to mod download failure. Please check your network connection or use a proxy.",
+      "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
+      "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
       "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
     },
     "button": {
@@ -860,6 +869,7 @@
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
+    "skip": "Skip",
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -997,6 +1007,20 @@
           "button": "Edit Advanced Options"
         }
       }
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "Instance Page",
+      "content": "Here you can add and select your Minecraft game instances, as well as download and manage various game resources."
+    },
+    "step2": {
+      "title": "Accounts Page",
+      "content": "Here you can add accounts and choose the player you want to play."
+    },
+    "step3": {
+      "title": "Launch Minecraft!",
+      "content": "After selecting your instance and player and adjusting the relevant settings, click the launch button and enjoy the game! 🥳"
     }
   },
   "HeadNavBar": {
@@ -1773,7 +1797,8 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NOT_FOUND": "The authentication server does not exist",
             "CANCELLED": "OAuth login cancelled",
-            "INVALID": "The server type is invalid"
+            "INVALID": "The server type is invalid",
+            "NO_MINECRAFT_PROFILE": "No Minecraft profile found"
           }
         }
       },
@@ -1787,7 +1812,8 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
             "INVALID": "The player type is invalid",
-            "CANCELLED": "OAuth re-login cancelled"
+            "CANCELLED": "OAuth re-login cancelled",
+            "NO_MINECRAFT_PROFILE": "No Minecraft profile found"
           }
         }
       },

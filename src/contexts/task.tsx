@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/contexts/toast";
-import { REFRESH_RESOURCE_LIST_EVENT } from "@/hooks/resource-refresh";
+import { OtherResourceType } from "@/enums/resource";
 import {
   CreatedPTaskEventStatus,
   FailedPTaskEventStatus,
@@ -470,17 +470,21 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   );
                 }
                 break;
-              case "game-resource":
-                if (version) {
-                  const resourceTypeMatch = version.match(/type:(\w+)/);
-                  if (resourceTypeMatch) {
-                    const resourceType = resourceTypeMatch[1];
-                    emit(REFRESH_RESOURCE_LIST_EVENT, { resourceType });
-                  }
-                }
-                break;
+              case "mod":
               case "mod-update":
-                emit(REFRESH_RESOURCE_LIST_EVENT, { resourceType: "mod" });
+                emit("instance:refresh-resource-list", OtherResourceType.Mod);
+                break;
+              case "resourcepack":
+                emit(
+                  "instance:refresh-resource-list",
+                  OtherResourceType.ResourcePack
+                );
+                break;
+              case "shader":
+                emit(
+                  "instance:refresh-resource-list",
+                  OtherResourceType.ShaderPack
+                );
                 break;
               case "modpack":
                 let group = newTasks.find(

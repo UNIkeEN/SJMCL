@@ -1,4 +1,7 @@
 name: Update Minecraft Versions
+permissions:
+  contents: write
+  pull-requests: write
 
 on:
   schedule:

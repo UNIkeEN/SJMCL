@@ -1,4 +1,6 @@
 name: Sign macOS Artifacts
+permissions:
+  contents: read
 
 on:
   workflow_call:

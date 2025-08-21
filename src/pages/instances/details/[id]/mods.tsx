@@ -38,9 +38,9 @@ import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { InstanceError } from "@/enums/service-error";
 import { GetStateFlag } from "@/hooks/get-state";
-import { useResourceRefresh } from "@/hooks/resource-refresh";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
+import { ResourceService } from "@/services/resource";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceModsPage = () => {
@@ -96,7 +96,16 @@ const InstanceModsPage = () => {
     getLocalModListWrapper();
   }, [getLocalModListWrapper]);
 
-  useResourceRefresh(["mod"], () => getLocalModListWrapper(true));
+  useEffect(() => {
+    const unlisten = ResourceService.onResourceRefresh(
+      (payload: OtherResourceType) => {
+        if (payload === OtherResourceType.Mod) {
+          getLocalModListWrapper(true);
+        }
+      }
+    );
+    return unlisten;
+  }, [getLocalModListWrapper]);
 
   useEffect(() => {
     const keywords = query.trim().toLowerCase().split(/\s+/);
@@ -173,6 +182,21 @@ const InstanceModsPage = () => {
       },
     },
     {
+      icon: "download",
+      onClick: () => {
+        openSharedModal("download-resource", {
+          initialResourceType: OtherResourceType.Mod,
+        });
+      },
+    },
+    {
+      icon: LuClockArrowUp,
+      label: t("InstanceModsPage.modList.menu.update"),
+      onClick: () => {
+        if (!isLoading) onCheckUpdateModalOpen();
+      },
+    },
+    {
       icon: "add",
       onClick: () => {
         handleImportResource({
@@ -185,19 +209,6 @@ const InstanceModsPage = () => {
           },
         });
       },
-    },
-    {
-      icon: "download",
-      onClick: () => {
-        openSharedModal("download-resource", {
-          initialResourceType: OtherResourceType.Mod,
-        });
-      },
-    },
-    {
-      icon: LuClockArrowUp,
-      label: t("InstanceModsPage.modList.menu.update"),
-      onClick: onCheckUpdateModalOpen,
     },
     {
       icon: "refresh",
