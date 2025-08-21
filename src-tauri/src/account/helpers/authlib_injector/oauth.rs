@@ -4,6 +4,7 @@ use crate::account::helpers::misc::{OAuthCode, OAuthTokens};
 use crate::account::models::{AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo};
 use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -11,10 +12,17 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
 use tokio::time::{sleep, Duration};
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
+struct OpenIDConfig {
+  device_authorization_endpoint: String,
+  token_endpoint: String,
+  jwks_uri: String,
+}
+
 async fn fetch_openid_configuration(
   app: &AppHandle,
   openid_configuration_url: String,
-) -> SJMCLResult<Value> {
+) -> SJMCLResult<OpenIDConfig> {
   let client = app.state::<reqwest::Client>();
 
   let res = client
@@ -22,7 +30,7 @@ async fn fetch_openid_configuration(
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
-    .json::<Value>()
+    .json::<OpenIDConfig>()
     .await
     .map_err(|_| AccountError::ParseError)?;
 
@@ -53,12 +61,8 @@ pub async fn device_authorization(
 
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
 
-  let device_authorization_endpoint = openid_configuration["device_authorization_endpoint"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?;
-
   let response = client
-    .post(device_authorization_endpoint)
+    .post(openid_configuration.device_authorization_endpoint)
     .form(&[("client_id", client_id), ("scope", SCOPE.to_string())])
     .send()
     .await
@@ -141,17 +145,7 @@ pub async fn login(
   }
 
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
-
-  let token_endpoint = openid_configuration["token_endpoint"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?;
-
-  let jwks_uri = openid_configuration["jwks_uri"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?;
-
-  let jwks = fetch_jwks(app, jwks_uri.to_string()).await?;
-
+  let jwks = fetch_jwks(app, openid_configuration.jwks_uri).await?;
   let tokens: OAuthTokens;
   loop {
     {
@@ -162,7 +156,7 @@ pub async fn login(
     }
 
     let token_response = client
-      .post(token_endpoint)
+      .post(&openid_configuration.token_endpoint)
       .form(&[
         ("client_id", client_id.as_str()),
         ("device_code", auth_info.device_code.as_str()),
@@ -192,21 +186,11 @@ pub async fn refresh(
   openid_configuration_url: String,
 ) -> SJMCLResult<PlayerInfo> {
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
-
-  let token_endpoint = openid_configuration["token_endpoint"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?;
-
-  let jwks_uri = openid_configuration["jwks_uri"]
-    .as_str()
-    .ok_or(AccountError::ParseError)?;
-
-  let jwks = fetch_jwks(app, jwks_uri.to_string()).await?;
+  let jwks = fetch_jwks(app, openid_configuration.jwks_uri).await?;
 
   let client = app.state::<reqwest::Client>();
-
   let token_response = client
-    .post(token_endpoint)
+    .post(&openid_configuration.token_endpoint)
     .json(&serde_json::json!({
       "client_id": client_id,
       "refresh_token": player.refresh_token,
