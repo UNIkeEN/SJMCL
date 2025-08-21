@@ -67,6 +67,7 @@ pub async fn install_mod_loader(
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
+  mods_dir: PathBuf,
   client_info: &mut McClientInfo,
   task_params: &mut Vec<PTaskParam>,
 ) -> SJMCLResult<()> {
@@ -78,6 +79,7 @@ pub async fn install_mod_loader(
         game_version,
         loader,
         lib_dir,
+        mods_dir,
         client_info,
         task_params,
       )

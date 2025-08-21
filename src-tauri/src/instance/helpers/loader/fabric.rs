@@ -7,6 +7,7 @@ use super::common::add_library_entry;
 use crate::instance::helpers::client_json::{McClientInfo, PatchesInfo};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::convert_url_to_target_source;
+use crate::resource::helpers::modrinth::get_latest_fabric_api_mod_download;
 use crate::{
   error::{SJMCLError, SJMCLResult},
   instance::models::misc::ModLoader,
@@ -23,6 +24,7 @@ pub async fn install_fabric_loader(
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
+  mods_dir: PathBuf,
   client_info: &mut McClientInfo,
   task_params: &mut Vec<PTaskParam>,
 ) -> SJMCLResult<()> {
@@ -105,6 +107,13 @@ pub async fn install_fabric_loader(
         push_task(name, url)?;
       }
     }
+  }
+
+  // Auto download Fabric API mod
+  if let Ok(Some(fabric_api_download)) =
+    get_latest_fabric_api_mod_download(&app, game_version, mods_dir).await
+  {
+    task_params.push(PTaskParam::Download(fabric_api_download));
   }
 
   Ok(())

@@ -185,10 +185,7 @@ pub async fn get_latest_fabric_api_mod_download(
 
   let version_packs = fetch_resource_version_packs_modrinth(app, &query).await?;
 
-  let version_pack = version_packs
-    .iter()
-    .find(|pack| pack.name == game_version)
-    .ok_or(ResourceError::ParseError)?;
+  let version_pack = version_packs.first().ok_or(ResourceError::ParseError)?;
 
   let mut candidate_files: Vec<&OtherResourceFileInfo> = version_pack
     .items
