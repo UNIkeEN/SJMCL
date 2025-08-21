@@ -110,13 +110,22 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         function: () => LaunchService.validateSelectedPlayer(),
         isOK: (data: boolean) => data,
         onResCallback: (data: boolean) => {
+          const reValidate = () =>
+            LaunchService.validateSelectedPlayer().then((response) => {
+              if (response.status === "success") {
+                setActiveStep(activeStep + 1);
+              } else {
+                setErrorPaused(true);
+                setErrorDesc(response.details);
+              }
+            });
           AccountService.refreshPlayer(selectedPlayer?.id || "").then(
             (response) => {
               if (response.status !== "success") {
                 openSharedModal("relogin", {
                   player: selectedPlayer,
                   onSuccess: () => {
-                    setActiveStep(activeStep + 1);
+                    reValidate();
                   },
                   onError: () => {
                     setErrorPaused(true);
@@ -125,7 +134,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
                   },
                 });
               } else {
-                setActiveStep(activeStep + 1);
+                reValidate();
               }
             }
           );

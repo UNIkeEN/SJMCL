@@ -105,7 +105,8 @@ pub async fn refresh(
   player: &PlayerInfo,
   auth_server: &AuthServer,
 ) -> SJMCLResult<PlayerInfo> {
-  if player.refresh_token.is_none() {
+  if player.refresh_token.is_none() || Some("") == player.refresh_token.as_deref() {
+    // to be compatible with legacy version of account config
     password::refresh(app, player).await
   } else {
     oauth::refresh(
