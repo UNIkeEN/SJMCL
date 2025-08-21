@@ -11,6 +11,7 @@ use crate::{
   utils::{fs::generate_unique_filename, string::camel_to_snake_case},
 };
 use crate::{storage::Storage, utils::fs::get_subdirectories};
+use serde_json::{json, Value};
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::{fs, pin::Pin};
@@ -58,20 +59,16 @@ pub async fn export_launcher_config(
   let state = { binding.lock()?.clone() };
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/settings")
-    .header("Content-Type", "application/json")
-    .body(
-      serde_json::json!({
-        "version": app.package_info().version.to_string(),
-        "json_data": state,
-      })
-      .to_string(),
-    )
+    .json(&json!({
+      "version": app.package_info().version.to_string(),
+      "json_data": state,
+    }))
     .send()
     .await
   {
     Ok(response) => {
       let status = response.status();
-      let json: serde_json::Value = response
+      let json: Value = response
         .json()
         .await
         .map_err(|_| LauncherConfigError::FetchError)?;
@@ -98,14 +95,10 @@ pub async fn import_launcher_config(
 ) -> SJMCLResult<LauncherConfig> {
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/validate")
-    .header("Content-Type", "application/json")
-    .body(
-      serde_json::json!({
-        "version": app.package_info().version.to_string(),
-        "code": code,
-      })
-      .to_string(),
-    )
+    .json(&json!({
+      "version": app.package_info().version.to_string(),
+      "code": code,
+    }))
     .send()
     .await
   {

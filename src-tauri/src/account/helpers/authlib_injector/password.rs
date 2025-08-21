@@ -6,7 +6,7 @@ use crate::{
   error::SJMCLResult,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{json, to_string};
+use serde_json::json;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
@@ -68,18 +68,14 @@ pub async fn login(
 
   let response = client
     .post(format!("{}/authserver/authenticate", auth_server_url))
-    .header("Content-Type", "application/json")
-    .body(
-      json!({
-        "username": username,
-        "password": password,
-        "agent": {
-          "name": "Minecraft",
-          "version": 1
-        },
-      })
-      .to_string(),
-    )
+    .json(&json!({
+      "username": username,
+      "password": password,
+      "agent": {
+        "name": "Minecraft",
+        "version": 1
+      },
+    }))
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
@@ -135,7 +131,11 @@ pub async fn login(
   }
 }
 
-pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<PlayerInfo> {
+pub async fn refresh(
+  app: &AppHandle,
+  player: &PlayerInfo,
+  is_new_bind: bool,
+) -> SJMCLResult<PlayerInfo> {
   let client = app.state::<reqwest::Client>();
 
   let response = client
@@ -143,15 +143,18 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
       "{}/authserver/refresh",
       player.auth_server_url.clone().unwrap_or_default()
     ))
-    .header("Content-Type", "application/json")
-    .body(to_string(&YggdrasilSession {
+    .json(&YggdrasilSession {
       access_token: player.access_token.clone().unwrap_or_default(),
-      selected_profile: Some(YggdrasilProfile {
-        id: player.uuid.as_simple().to_string(),
-        name: player.name.clone(),
-      }),
+      selected_profile: if is_new_bind {
+        Some(YggdrasilProfile {
+          id: player.uuid.as_simple().to_string(),
+          name: player.name.clone(),
+        })
+      } else {
+        None
+      },
       available_profiles: None,
-    })?)
+    })
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;

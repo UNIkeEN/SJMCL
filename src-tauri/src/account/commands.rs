@@ -299,7 +299,7 @@ pub async fn relogin_player_3rdparty_password(
     .find(|player| player.uuid == old_player.uuid)
     .ok_or(AccountError::NotFound)?;
 
-  let refreshed_player = authlib_injector::password::refresh(&app, &new_player).await?;
+  let refreshed_player = authlib_injector::password::refresh(&app, &new_player, true).await?;
 
   {
     let mut account_state = account_binding.lock()?;
@@ -320,7 +320,7 @@ pub async fn relogin_player_3rdparty_password(
 #[tauri::command]
 pub async fn add_player_from_selection(app: AppHandle, player: Player) -> SJMCLResult<()> {
   let player_info: PlayerInfo = player.into();
-  let refreshed_player = authlib_injector::password::refresh(&app, &player_info).await?;
+  let refreshed_player = authlib_injector::password::refresh(&app, &player_info, true).await?;
 
   {
     let account_binding = app.state::<Mutex<AccountInfo>>();

@@ -158,9 +158,12 @@ pub async fn login(
     let token_response = client
       .post(&openid_configuration.token_endpoint)
       .form(&[
-        ("client_id", client_id.as_str()),
-        ("device_code", auth_info.device_code.as_str()),
-        ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
+        ("client_id", client_id.clone()),
+        ("device_code", auth_info.device_code.clone()),
+        (
+          "grant_type",
+          "urn:ietf:params:oauth:grant-type:device_code".to_string(),
+        ),
       ])
       .send()
       .await?;
@@ -191,11 +194,14 @@ pub async fn refresh(
   let client = app.state::<reqwest::Client>();
   let token_response = client
     .post(&openid_configuration.token_endpoint)
-    .json(&serde_json::json!({
-      "client_id": client_id,
-      "refresh_token": player.refresh_token,
-      "grant_type": "refresh_token",
-    }))
+    .form(&[
+      ("client_id", client_id.clone()),
+      (
+        "refresh_token",
+        player.refresh_token.clone().unwrap_or_default(),
+      ),
+      ("grant_type", "refresh_token".to_string()),
+    ])
     .send()
     .await?;
 

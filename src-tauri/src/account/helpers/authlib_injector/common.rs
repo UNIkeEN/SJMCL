@@ -11,6 +11,7 @@ use crate::{
   error::SJMCLResult,
 };
 use base64::{engine::general_purpose, Engine};
+use serde_json::json;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use uuid::Uuid;
@@ -91,8 +92,9 @@ pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool>
       "{}/authserver/validate",
       player.auth_server_url.clone().unwrap_or_default()
     ))
-    .header("Content-Type", "application/json")
-    .form(&[("accessToken", player.access_token.clone())])
+    .json(&json!({
+      "accessToken": player.access_token.clone()
+    }))
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
@@ -107,7 +109,7 @@ pub async fn refresh(
 ) -> SJMCLResult<PlayerInfo> {
   if player.refresh_token.is_none() || Some("") == player.refresh_token.as_deref() {
     // to be compatible with legacy version of account config
-    password::refresh(app, player).await
+    password::refresh(app, player, false).await
   } else {
     oauth::refresh(
       app,
