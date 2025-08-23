@@ -174,7 +174,7 @@ impl RuntimeTaskDesc {
         start_at: self.started_at,
         created_at: self.created_at,
         filename: param.filename.unwrap_or_default(),
-        dest: self.path.clone(),
+        dest: param.dest,
       },
     }
   }
@@ -348,7 +348,7 @@ where
       };
     }
 
-    if self.running.is_empty() {
+    if self.pending.len() == self.tracked {
       return RuntimeState::Pending;
     }
 
@@ -441,6 +441,7 @@ pub struct RuntimeTaskDescSnapshot {
 #[serde(rename_all = "camelCase")]
 pub struct RuntimeGroupDescSnapshot {
   name: String,
+  state: RuntimeGroupState,
   task_desc_map: HashMap<TaskId, RuntimeTaskDescSnapshot>,
 }
 
@@ -498,6 +499,7 @@ impl RuntimeGroupDesc {
       .collect();
     RuntimeGroupDescSnapshot {
       name: self.name.clone(),
+      state: self.state.read().unwrap().clone(),
       task_desc_map,
     }
   }
@@ -598,7 +600,11 @@ impl TaskMonitor {
   pub fn new(app_handle: AppHandle) -> Self {
     let (tx, rx) = flume::unbounded();
     let config = retrieve_launcher_config(app_handle.clone()).unwrap();
-    let concurrency = config.download.transmission.concurrent_count;
+    let concurrency = if config.download.transmission.auto_concurrent {
+      std::thread::available_parallelism().unwrap().into()
+    } else {
+      config.download.transmission.concurrent_count
+    };
     Self {
       app_handle,
       group_descs: Default::default(),
@@ -645,7 +651,9 @@ impl TaskMonitor {
       .unwrap()
       .insert(group_name.clone(), Arc::new(RwLock::new(group_desc)));
     self.inqueue.lock().unwrap().insert(group_name.clone());
-    self.tx.send_async(group_name).await.unwrap();
+    self.tx.send_async(group_name.clone()).await.unwrap();
+    let group_reporter = GroupReporter::new(self.app_handle.clone(), group_name.clone());
+    group_reporter.report(&RuntimeGroupState::Pending);
     snapshot
   }
 

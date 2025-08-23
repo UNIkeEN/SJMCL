@@ -114,6 +114,7 @@ impl<'a> TaskEvent<'a> {
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum GroupEventPayload {
+  Created,
   Started,
   Stopped,
   Failed,
@@ -131,6 +132,13 @@ pub struct GroupEvent<'a> {
 impl<'a> GroupEvent<'a> {
   fn emit(self, app: &AppHandle) {
     app.emit_to("main", TASK_GROUP_UPDATE_EVENT, self).unwrap();
+  }
+  pub fn emit_group_created(app: &AppHandle, task_group: &'a str) {
+    Self {
+      task_group,
+      event: GroupEventPayload::Created,
+    }
+    .emit(app);
   }
   pub fn emit_group_started(app: &AppHandle, task_group: &'a str) {
     Self {

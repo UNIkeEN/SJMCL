@@ -149,13 +149,17 @@ impl GroupReporter {
 
   pub fn report(&self, state: &RuntimeGroupState) {
     match *state {
+      RuntimeGroupState::Pending => self.report_group_created(),
       RuntimeGroupState::InProgress => self.report_group_started(),
       RuntimeGroupState::Cancelled => self.report_group_cancelled(),
       RuntimeGroupState::Stopped { .. } => self.report_group_stopped(),
       RuntimeGroupState::Failed { .. } => self.report_group_failed(),
       RuntimeGroupState::Completed { .. } => self.report_group_completed(),
-      _ => {}
     }
+  }
+
+  fn report_group_created(&self) {
+    GroupEvent::emit_group_created(&self.app, &self.group);
   }
 
   fn report_group_started(&self) {

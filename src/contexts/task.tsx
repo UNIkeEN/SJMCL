@@ -118,22 +118,24 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   ): TaskGroupDesc => {
     return {
       taskGroup: snapshot.name,
-      taskDescs: Object.entries(snapshot.taskDescMap).map(([id, desc]) => ({
-        taskId: parseInt(id),
-        status: desc.state.type,
-        total: desc.total,
-        current: desc.current,
-        startAt: desc.startAt,
-        createdAt: desc.createdAt,
-        filename: desc.filename,
-        dest: desc.dest,
-        progress: (desc.current * 100) / desc.total,
-        reason:
-          desc.state.type === RuntimeStateEnums.Failed
-            ? desc.state.reason
-            : undefined,
-      })),
-      status: RuntimeStateEnums.Waiting,
+      taskDescs: Object.entries(snapshot.taskDescMap).map(
+        ([id, desc]): TaskDesc => ({
+          taskId: parseInt(id),
+          status: desc.state.type,
+          total: desc.total,
+          current: desc.current,
+          startAt: desc.startAt,
+          createdAt: desc.createdAt,
+          filename: desc.filename,
+          dest: desc.dest,
+          progress: (desc.current * 100) / desc.total,
+          reason:
+            desc.state.type === RuntimeStateEnums.Failed
+              ? desc.state.reason
+              : undefined,
+        })
+      ),
+      status: snapshot.state.type,
       finishedCount: 0,
       progress: 0,
     };
@@ -377,6 +379,10 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const unlisten = TaskService.onTaskGroupUpdate((payload: GroupEvent) => {
       console.log(`Received task group update: ${payload.event}`);
+      if (payload.event == GroupEventPayloadEnums.Created) {
+        handleRetrieveProgressTasks();
+        return;
+      }
       setTasks((prevTasks) => {
         const { name, version } = parseTaskGroup(payload.taskGroup);
         let newTasks = prevTasks.map((group) => {
@@ -389,7 +395,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               case GroupEventPayloadEnums.Completed:
                 toast({
                   status: "success",
-                  title: t(`Services.task.onTaskGroupUpdate.state.Completed`, {
+                  title: t(`Services.task.onTaskGroupUpdate.status.Completed`, {
                     param: t(`DownloadTasksPage.task.${name}`, {
                       param: version || "",
                     }),
@@ -481,7 +487,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               case GroupEventPayloadEnums.Failed:
                 toast({
                   status: "error",
-                  title: t(`Services.task.onTaskGroupUpdate.state.Failed`, {
+                  title: t(`Services.task.onTaskGroupUpdate.status.Failed`, {
                     param: t(`DownloadTasksPage.task.${name}`, {
                       param: version || "",
                     }),
@@ -511,7 +517,15 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       unlisten();
     };
-  }, [closeToast, getInstanceList, t, toast, updateGroupDesc, openSharedModal]);
+  }, [
+    closeToast,
+    getInstanceList,
+    t,
+    toast,
+    updateGroupDesc,
+    openSharedModal,
+    handleRetrieveProgressTasks,
+  ]);
 
   useEffect(() => {
     if (!tasks || !tasks.length) setGeneralPercent(undefined);

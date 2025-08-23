@@ -80,7 +80,8 @@ export interface RuntimeTaskDescSnapshot {
 
 export interface RuntimeGroupDescSnapshot {
   name: string;
-  taskDescMap: Map<number, RuntimeTaskDescSnapshot>;
+  state: RuntimeState;
+  taskDescMap: Record<number, RuntimeTaskDescSnapshot>;
 }
 
 export interface TaskDesc {
@@ -165,6 +166,7 @@ export interface TaskEvent {
 }
 
 export enum GroupEventPayloadEnums {
+  Created = "Created",
   Started = "Started",
   Failed = "Failed",
   Completed = "Completed",
