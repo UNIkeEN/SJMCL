@@ -78,6 +78,7 @@ font-loader = "0.11.0"
 async-speed-limit = "0.4.2"
 reqwest-middleware = "0.4.2"
 reqwest-retry = "0.7.0"
+thiserror = "1.0"
 murmur2 = "0.1"
 
 [target."cfg(windows)".dependencies]

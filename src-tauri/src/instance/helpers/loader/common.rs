@@ -21,7 +21,7 @@ use crate::{
   error::SJMCLResult,
   instance::models::misc::{ModLoader, ModLoaderType},
   resource::models::SourceType,
-  tasks::PTaskParam,
+  tasks::RuntimeTaskParam,
 };
 
 pub fn add_library_entry(
@@ -69,7 +69,7 @@ pub async fn install_mod_loader(
   lib_dir: PathBuf,
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<RuntimeTaskParam>,
 ) -> SJMCLResult<()> {
   match loader.loader_type {
     ModLoaderType::Fabric => {

@@ -14,7 +14,7 @@ use crate::{
   error::{SJMCLError, SJMCLResult},
   instance::models::misc::{InstanceError, ModLoaderType},
   resource::helpers::curseforge::misc::CurseForgeProject,
-  tasks::{download::DownloadParam, PTaskParam},
+  tasks::{download::DownloadParam, RuntimeTaskParam},
 };
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -141,7 +141,7 @@ impl CurseForgeManifest {
     &self,
     app: &AppHandle,
     instance_path: &Path,
-  ) -> SJMCLResult<Vec<PTaskParam>> {
+  ) -> SJMCLResult<Vec<RuntimeTaskParam>> {
     let client = app.state::<reqwest::Client>();
     let instance_path = instance_path.to_path_buf();
 
@@ -198,7 +198,7 @@ impl CurseForgeManifest {
           .and_then(|hs| hs.iter().find(|h| h.algo == 1))
           .map(|h| h.value.clone());
 
-        let task_param = PTaskParam::Download(DownloadParam {
+        let task_param = RuntimeTaskParam::Download(DownloadParam {
           src: url::Url::parse(&download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
           sha1,
           dest: instance_path
@@ -211,7 +211,7 @@ impl CurseForgeManifest {
           filename: Some(file_manifest.data.file_name.clone()),
         });
 
-        Ok::<PTaskParam, SJMCLError>(task_param)
+        Ok::<RuntimeTaskParam, SJMCLError>(task_param)
       }
     });
 

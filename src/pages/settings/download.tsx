@@ -32,7 +32,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
 import { useToast } from "@/contexts/toast";
-import { GTaskEventStatusEnums } from "@/models/task";
+import { RuntimeStateEnums } from "@/models/task";
 import { ConfigService } from "@/services/config";
 
 const DownloadSettingsPage = () => {
@@ -49,8 +49,8 @@ const DownloadSettingsPage = () => {
   const hasActiveDownloadTasks = tasks.some(
     (taskGroup) =>
       !(
-        taskGroup.status === GTaskEventStatusEnums.Completed ||
-        taskGroup.status === GTaskEventStatusEnums.Failed
+        taskGroup.status === RuntimeStateEnums.Completed ||
+        taskGroup.status === RuntimeStateEnums.Failed
       )
   );
 
