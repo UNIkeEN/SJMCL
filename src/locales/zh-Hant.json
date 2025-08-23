@@ -193,6 +193,28 @@
       "usePasswordLogin": "賬號密碼登入"
     }
   },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "存在前置資源"
+    },
+    "description": "請確認已安裝所有前置資源，或繼續下載原資源",
+    "button": {
+      "continue": "繼續下載原資源",
+      "cancel": "取消"
+    },
+    "fallback": {
+      "title": "資源 ID: {{resourceId}}",
+      "description": "無法從網路獲取此資源詳情，請檢查您的網路連線或稍後再試。"
+    },
+    "dependencyType": {
+      "required": "必需",
+      "optional": "可選",
+      "incompatible": "衝突",
+      "embedded": "內建",
+      "tool": "工具",
+      "include": "包含"
+    }
+  },
   "AllInstancesPage": {
     "button": {
       "addAndImport": "新增與匯入",
@@ -528,7 +550,12 @@
     "task": {
       "game-client": "遊戲客戶端 {{param}}",
       "game-server": "遊戲服務端 {{param}}",
-      "game-resource": "遊戲資源",
+      "mod": "模組",
+      "world": "存檔",
+      "resourcepack": "資源包",
+      "shader": "光影",
+      "modpack": "整合包",
+      "datapack": "資料包",
       "patch-files": "修補遊戲檔案 {{param}}",
       "mod-update": "更新模組",
       "retry": "重試任務",
@@ -760,6 +787,15 @@
       "SHADERS_MOD": "當前例項由於同時安裝了 OptiFine 和 Shaders 模組，無法繼續執行。請嘗試刪除 Shaders 模組。",
       "RTSS_FOREST_SODIUM": "當前例項由於 RTSS 與 Sodium 不相容，無法繼續執行。",
       "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "當前例項由於本地庫與系統架構不相容，無法繼續執行。",
+      "MAC_DS_STORE": "當前例項由於 Mac 系統的 .DS_Store 檔案導致問題，無法繼續執行。請刪除遊戲路徑下的 .DS_Store 檔案後重試。",
+      "LEVEL_DAT_CORRUPTED": "當前例項由於存檔檔案 level.dat 損壞，無法繼續執行。請嘗試修復存檔或從備份中恢復。",
+      "GL_OUT_OF_MEMORY": "當前例項由於 OpenGL 記憶體不足，無法繼續執行。請嘗試降低遊戲解析度、關閉光影或關閉其他程式。",
+      "MOD_JAVA_VERSION_MISMATCH": "當前例項由於模組與 Java 版本不匹配，無法繼續執行。請檢查模組要求的 Java 版本並進行相應調整。",
+      "DUPLICATE_MOD_INSTALLED": "當前例項由於重複安裝模組而無法繼續執行。請檢查模組列表並移除重複的模組。",
+      "MOD_ZIP_CORRUPTED": "當前例項由於模組壓縮包損壞，無法繼續執行。請嘗試重新下載模組。",
+      "MOD_INTERNET_ERROR": "當前例項由於模組下載失敗，無法繼續執行。請檢查網路連線或使用網路代理。",
+      "VICS_MODERN_WARFARE_ERROR": "當前例項由於 Vics Modern Warfare 模組錯誤，無法繼續執行。請嘗試更新或刪除該模組。",
+      "FORGE_LITELOADER_CONFLICT": "當前例項由於 Forge 與 LiteLoader 衝突，無法繼續執行。請嘗試刪除 LiteLoader 或更換 Forge 版本。",
       "UNKNOWN": "暫時無法分析該錯誤，請檢視遊戲日誌或匯出錯誤崩潰報告。"
     },
     "button": {
@@ -814,7 +850,8 @@
     "delete": "刪除",
     "dialog": {
       "filterName": {
-        "image": "圖片檔案"
+        "image": "圖片檔案",
+        "modpack": "整合包"
       }
     },
     "disable": "停用",
@@ -823,6 +860,7 @@
     "edit": "編輯",
     "enable": "啟用",
     "finish": "完成",
+    "launch": "啟動",
     "next": "下一步",
     "notice": "提示",
     "open": "開啟",
@@ -831,6 +869,7 @@
     "refresh": "重新整理",
     "revealFile": "在{{opener}}中顯示",
     "search": "搜尋",
+    "skip": "跳過",
     "version": {
       "dev": "開發版本",
       "nightly": "夜間構建版本",
@@ -970,6 +1009,20 @@
       }
     }
   },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "例項頁",
+      "content": "在此處新增並選擇您的 Minecraft 遊戲例項，下載和管理各類遊戲資源"
+    },
+    "step2": {
+      "title": "賬戶頁",
+      "content": "在此處新增賬戶，選擇您想要遊玩的角色"
+    },
+    "step3": {
+      "title": "Minecraft，啟動！",
+      "content": "選中例項與角色、調整好相關設定後，點選啟動按鈕享受遊戲吧 🥳"
+    }
+  },
   "HeadNavBar": {
     "navList": {
       "launch": "啟動",
@@ -1020,6 +1073,23 @@
           "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
         }
       }
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "匯入整合包"
+    },
+    "label": {
+      "instanceSettings": "例項設定",
+      "modpackInfo": "整合包資訊",
+      "modpackName": "整合包名稱",
+      "modpackVersion": "整合包版本",
+      "author": "作者",
+      "modLoader": "模組載入器",
+      "gameVersion": "遊戲版本"
+    },
+    "button": {
+      "import": "匯入"
     }
   },
   "InstanceBasicSettings": {
@@ -1150,7 +1220,8 @@
         "spectator": "觀察者模式"
       },
       "moreDesc": "，{{gamemode}}（難度：{{difficulty}}）",
-      "viewLevelData": "存檔基礎資料"
+      "viewLevelData": "世界基礎資料",
+      "launch": "遊玩此世界"
     },
     "serverList": {
       "title": "伺服器",
@@ -1158,7 +1229,8 @@
       "tag": {
         "online": "線上",
         "offline": "離線"
-      }
+      },
+      "launch": "遊玩此伺服器"
     }
   },
   "JavaSettingsPage": {
@@ -1725,7 +1797,8 @@
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NOT_FOUND": "認證伺服器不存在",
             "CANCELLED": "已取消",
-            "INVALID": "無效的認證伺服器地址"
+            "INVALID": "無效的認證伺服器地址",
+            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft"
           }
         }
       },
@@ -1739,7 +1812,8 @@
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "INVALID": "不支援離線角色重新整理",
-            "CANCELLED": "已取消"
+            "CANCELLED": "已取消",
+            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft"
           }
         }
       },
@@ -1903,6 +1977,16 @@
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "獲取遊戲版本元資訊失敗",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線到伺服器",
+            "CLIENT_VERSION_NOT_FOUND": "指定遊戲版本不存在"
           }
         }
       },
@@ -2156,6 +2240,15 @@
             "INSTALLATION_DUPLICATED": "檢測到另一個程序已在安裝中",
             "MAIN_CLASS_NOT_FOUND": "主類未找到",
             "PROCESSOR_EXECUTION_FAILED": "安裝任務執行失敗"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "獲取整合包資源資訊失敗",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "整合包檔案不存在，可能已更名、移動或刪除",
+            "MODPACK_MANIFEST_PARSE_ERROR": "整合包清單檔案解析錯誤"
           }
         }
       }
