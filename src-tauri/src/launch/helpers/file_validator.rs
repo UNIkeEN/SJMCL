@@ -83,8 +83,8 @@ pub async fn get_invalid_library_files(
     let source = source.clone();
     async move {
       let file_path = library_path.join(&artifact.path);
-      if file_path.exists()
-        && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
+      let exists = fs::try_exists(&file_path).await?;
+      if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
       {
         return Ok(None);
       } else if artifact.url.is_empty() {
@@ -274,26 +274,38 @@ pub async fn get_invalid_assets(
   let asset_index_path = asset_path.join(format!("indexes/{}.json", client_info.asset_index.id));
   let asset_index = load_asset_index(app, &asset_index_path, &client_info.asset_index.url).await?;
 
-  Ok(
-    asset_index
-      .objects
-      .iter()
-      .filter_map(|(_, item)| {
-        let path = format!("{}/{}", &item.hash[..2], item.hash.clone());
-        let dest = asset_path.join(format!("objects/{}", path));
+  let futs = asset_index.objects.into_values().map(|item| {
+    let assets_download_api = assets_download_api.clone();
+    let base_path = asset_path.to_path_buf();
 
-        if dest.exists() && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok())
-        {
-          None
-        } else {
-          Some(RuntimeTaskParam::Download(DownloadParam {
-            src: assets_download_api.join(&path).ok()?,
-            dest,
-            filename: None,
-            sha1: Some(item.hash.clone()),
-          }))
-        }
-      })
-      .collect::<Vec<_>>(),
-  )
+    async move {
+      let path_in_repo = format!("{}/{}", &item.hash[..2], item.hash);
+      let dest = base_path.join(format!("objects/{}", path_in_repo));
+      let exists = fs::try_exists(&dest).await?;
+
+      if exists && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok()) {
+        Ok::<Option<RuntimeTaskParam>, crate::error::SJMCLError>(None)
+      } else {
+        let src = assets_download_api
+          .join(&path_in_repo)
+          .map_err(crate::error::SJMCLError::from)?;
+        Ok(Some(RuntimeTaskParam::Download(DownloadParam {
+          src,
+          dest,
+          filename: None,
+          sha1: Some(item.hash.clone()),
+        })))
+      }
+    }
+  });
+
+  let results: Vec<SJMCLResult<Option<RuntimeTaskParam>>> = join_all(futs).await;
+
+  let mut params = Vec::new();
+  for r in results {
+    if let Some(p) = r? {
+      params.push(p);
+    }
+  }
+  Ok(params)
 }
