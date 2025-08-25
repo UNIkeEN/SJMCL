@@ -1,7 +1,6 @@
-use std::str::FromStr;
-
 use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, str::FromStr};
 use strum_macros::{Display, EnumIter};
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]
@@ -56,6 +55,23 @@ impl FromStr for OtherResourceSource {
   }
 }
 
+// Enum to represent different request types
+#[allow(dead_code)]
+pub enum OtherResourceRequestType<'a, P> {
+  GetWithParams(&'a HashMap<String, String>),
+  Get,
+  Post(&'a P),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum OtherResourceApiEndpoint {
+  Search,
+  VersionPack,
+  FromLocal,
+  ById,
+  TranslateDesc,
+}
+
 // mod, save, resourcepack, datapack and shader
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -63,6 +79,7 @@ pub struct OtherResourceInfo {
   pub id: String,
   pub _type: String,
   pub name: String,
+  pub translated_name: Option<String>,
   pub description: String,
   pub icon_src: String,
   pub tags: Vec<String>,

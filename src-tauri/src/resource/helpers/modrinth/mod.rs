@@ -1,12 +1,18 @@
 pub mod misc;
 
+use super::misc::apply_translation_if_needed;
 use crate::error::SJMCLResult;
 use crate::resource::models::{
-  OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
-  OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
+  OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
+  OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
+  OtherResourceVersionPackQuery, ResourceError,
 };
 use crate::tasks::download::DownloadParam;
 use hex;
+use misc::{
+  get_modrinth_api, make_modrinth_request, map_modrinth_file_to_version_pack, ModrinthProject,
+  ModrinthSearchRes, ModrinthVersionPack,
+};
 use sha1::{Digest, Sha1};
 use std::collections::HashMap;
 use std::fs;
@@ -15,18 +21,13 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use misc::{
-  get_modrinth_api, make_modrinth_request, map_modrinth_file_to_version_pack, ModrinthApiEndpoint,
-  ModrinthProject, ModrinthRequestType, ModrinthSearchRes, ModrinthVersionPack,
-};
-
 const ALL_FILTER: &str = "All";
 
 pub async fn fetch_resource_list_by_name_modrinth(
   app: &AppHandle,
   query: &OtherResourceSearchQuery,
 ) -> SJMCLResult<OtherResourceSearchRes> {
-  let url = get_modrinth_api(ModrinthApiEndpoint::Search, None)?;
+  let url = get_modrinth_api(OtherResourceApiEndpoint::Search, None)?;
 
   let OtherResourceSearchQuery {
     resource_type,
@@ -60,10 +61,16 @@ pub async fn fetch_resource_list_by_name_modrinth(
   let results = make_modrinth_request::<ModrinthSearchRes, ()>(
     &client,
     &url,
-    ModrinthRequestType::GetWithParams(&params),
+    OtherResourceRequestType::GetWithParams(&params),
   )
   .await?;
-  Ok(results.into())
+
+  let mut search_result: OtherResourceSearchRes = results.into();
+  for resource_info in &mut search_result.list {
+    let _ = apply_translation_if_needed(app, resource_info).await;
+  }
+
+  Ok(search_result)
 }
 
 pub async fn fetch_resource_version_packs_modrinth(
@@ -76,7 +83,7 @@ pub async fn fetch_resource_version_packs_modrinth(
     game_versions,
   } = query;
 
-  let url = get_modrinth_api(ModrinthApiEndpoint::ProjectVersions, Some(resource_id))?;
+  let url = get_modrinth_api(OtherResourceApiEndpoint::VersionPack, Some(resource_id))?;
 
   let mut params = HashMap::new();
   if mod_loader != ALL_FILTER {
@@ -105,7 +112,7 @@ pub async fn fetch_resource_version_packs_modrinth(
   let results = make_modrinth_request::<Vec<ModrinthVersionPack>, ()>(
     &client,
     &url,
-    ModrinthRequestType::GetWithParams(&params),
+    OtherResourceRequestType::GetWithParams(&params),
   )
   .await?;
 
@@ -126,13 +133,13 @@ pub async fn fetch_remote_resource_by_local_modrinth(
   let mut params = HashMap::new();
   params.insert("algorithm".to_string(), "sha1".to_string());
 
-  let url = get_modrinth_api(ModrinthApiEndpoint::VersionFile, Some(&hash_string))?;
+  let url = get_modrinth_api(OtherResourceApiEndpoint::FromLocal, Some(&hash_string))?;
   let client = app.state::<reqwest::Client>();
 
   let version_pack = make_modrinth_request::<ModrinthVersionPack, ()>(
     &client,
     &url,
-    ModrinthRequestType::GetWithParams(&params),
+    OtherResourceRequestType::GetWithParams(&params),
   )
   .await?;
 
@@ -161,13 +168,17 @@ pub async fn fetch_remote_resource_by_id_modrinth(
   app: &AppHandle,
   resource_id: &str,
 ) -> SJMCLResult<OtherResourceInfo> {
-  let url = get_modrinth_api(ModrinthApiEndpoint::Project, Some(resource_id))?;
+  let url = get_modrinth_api(OtherResourceApiEndpoint::ById, Some(resource_id))?;
   let client = app.state::<reqwest::Client>();
 
   let results =
-    make_modrinth_request::<ModrinthProject, ()>(&client, &url, ModrinthRequestType::Get).await?;
+    make_modrinth_request::<ModrinthProject, ()>(&client, &url, OtherResourceRequestType::Get)
+      .await?;
 
-  Ok(results.into())
+  let mut resource_info: OtherResourceInfo = results.into();
+  let _ = apply_translation_if_needed(app, &mut resource_info).await;
+
+  Ok(resource_info)
 }
 
 pub async fn get_latest_fabric_api_mod_download(

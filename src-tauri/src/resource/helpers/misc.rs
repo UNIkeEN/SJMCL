@@ -1,7 +1,17 @@
-use crate::resource::models::{OtherResourceVersionPack, ResourceError, ResourceType, SourceType};
+use crate::error::SJMCLError;
+use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
+use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
+use crate::resource::models::{
+  OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
+  SourceType,
+};
+use crate::utils::fs::get_app_resource_filepath;
 use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig};
+use rusqlite::{Connection, OptionalExtension};
 use std::cmp::Ordering;
+use std::sync::Mutex;
 use strum::IntoEnumIterator;
+use tauri::{AppHandle, Manager};
 use url::Url;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
@@ -171,4 +181,73 @@ pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionP
   let (version_b, suffix_b) = parse_version(&b.name);
 
   compare_versions_with_suffix(&version_a, &suffix_a, &version_b, &suffix_b).reverse()
+}
+
+pub async fn get_translated_name_from_db(
+  app: &AppHandle,
+  resource_id: &str,
+  source: &OtherResourceSource,
+) -> SJMCLResult<Option<String>> {
+  let result = async {
+    let db_path = get_app_resource_filepath(app, "assets/db/resource_CN_translation.sqlite")
+      .ok()
+      .unwrap_or_default();
+
+    let conn = Connection::open(&db_path)?;
+    let query = match source {
+      OtherResourceSource::Modrinth => "SELECT name FROM project WHERE modrinthId = ?1",
+      OtherResourceSource::CurseForge => "SELECT name FROM project WHERE curseforgeId = ?1",
+      _ => return Err(ResourceError::ParseError.into()),
+    };
+    let mut stmt = conn.prepare(query)?;
+
+    let result = match source {
+      OtherResourceSource::CurseForge => {
+        let id: u32 = resource_id.parse().map_err(|_| ResourceError::ParseError)?;
+        stmt.query_row([id], |row| row.get(0)).optional()?
+      }
+      _ => stmt.query_row([resource_id], |row| row.get(0)).optional()?,
+    };
+
+    Ok::<_, SJMCLError>(result)
+  }
+  .await;
+
+  // Only return Ok(None) when translation fails, to avoid blocking major functionality
+  Ok(result.ok().flatten())
+}
+
+pub async fn apply_translation_if_needed(
+  app: &AppHandle,
+  resource_info: &mut OtherResourceInfo,
+) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<LauncherConfig>>();
+  let language = {
+    let state = binding.lock()?;
+    state.general.general.language.clone()
+  };
+
+  if language == "zh-Hans" {
+    // Get translated name from local database
+    resource_info.translated_name =
+      get_translated_name_from_db(app, &resource_info.id, &resource_info.source).await?;
+
+    // Get translated description
+    let translated_desc = match resource_info.source {
+      OtherResourceSource::Modrinth => {
+        translate_description_modrinth(app, &resource_info.id).await?
+      }
+      OtherResourceSource::CurseForge => {
+        translate_description_curseforge(app, &resource_info.id).await?
+      }
+      _ => None,
+    };
+
+    // Apply translated description if available
+    if let Some(desc) = translated_desc {
+      resource_info.description = desc;
+    }
+  }
+
+  Ok(())
 }
