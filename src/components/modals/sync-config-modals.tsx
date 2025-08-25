@@ -38,6 +38,12 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
   const [token, setToken] = useState<string>();
   const [countdown, setCountdown] = useState<number>(60);
   const [fadeFlag, setFadeFlag] = useState<boolean>(true);
+  const handleCloseModal = useCallback(() => {
+    setToken(undefined);
+    setCountdown(60);
+    setFadeFlag(true);
+    modalProps.onClose(); 
+  }, [modalProps]);
 
   const handleExportLauncherConfig = useCallback(async () => {
     setFadeFlag(false);
@@ -78,7 +84,8 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
   }, [handleExportLauncherConfig, modalProps.isOpen, token]);
 
   return (
-    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
+    ////close的时候重置countdown和token
+    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}onClose={handleCloseModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("SyncConfigExportModal.header.title")}</ModalHeader>
@@ -105,7 +112,7 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme={primaryColor} onClick={modalProps.onClose}>
+          <Button colorScheme={primaryColor} onClick={handleCloseModal}>
             {t("General.close")}
           </Button>
         </ModalFooter>
