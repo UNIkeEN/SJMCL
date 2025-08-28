@@ -42,7 +42,7 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
     setToken(undefined);
     setCountdown(60);
     setFadeFlag(true);
-    modalProps.onClose(); 
+    modalProps.onClose();
   }, [modalProps]);
 
   const handleExportLauncherConfig = useCallback(async () => {
@@ -84,8 +84,11 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
   }, [handleExportLauncherConfig, modalProps.isOpen, token]);
 
   return (
-    ////close的时候重置countdown和token
-    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}onClose={handleCloseModal}>
+    <Modal
+      size={{ base: "md", lg: "lg", xl: "xl" }}
+      {...modalProps}
+      onClose={handleCloseModal}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("SyncConfigExportModal.header.title")}</ModalHeader>
