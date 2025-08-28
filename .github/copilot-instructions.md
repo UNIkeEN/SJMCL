@@ -7,7 +7,7 @@
 SJMCL is a cross-platform Minecraft launcher built with **Tauri v2** architecture. It combines a **Rust backend** with a **Next.js frontend** to provide a native desktop application that supports Windows, macOS, and Linux.
 
 ### Project Summary
-- **Purpose**: Cross-platform Minecraft launcher with instance management, mod/resource pack/save/shaderpack management, and multi-account support
+- **Purpose**: Cross-platform Minecraft launcher with instance management, resource management, and multi-account support
 - **Architecture**: Tauri v2 (Rust backend + Next.js frontend)
 - **Repository Size**: ~4.5k files (excluding node_modules)
 - **Languages**: Rust (backend), TypeScript/JavaScript (frontend), Python (scripts)
@@ -221,9 +221,13 @@ npx tauri build
 
 ## Commit Message and PR Title Conventions
 
-The project follows a specific format for both commit messages and PR titles for consistency:
+The project follows a specific format for both commit messages and PR titles to ensure consistency:
 
 **Format**: `category(domain): content`
+
+This unified format applies to:
+- **Commit messages**: All commits must follow this format
+- **PR titles**: All pull request titles must follow this format
 
 **Categories**:
 - `feat`: New features
@@ -252,7 +256,7 @@ The project follows a specific format for both commit messages and PR titles for
 - `docs(api): update authentication flow documentation` - API documentation update
 - `chore(deps): update tauri to v2.1.0` - Dependency update
 
-Use this format for both commit messages and PR titles to maintain consistency with the project's conventions.
+**Both commit messages and PR titles must use this format** to maintain consistency with the project's conventions.
 
 ## Developer Productivity Tips
 
