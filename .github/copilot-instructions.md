@@ -221,7 +221,7 @@ npx tauri build
 
 The project follows a specific commit message format for consistency:
 
-**Format**: `分类(域): 内容` (category(domain): content)
+**Format**: `category(domain): content`
 
 **Categories**:
 - `feat`: New features
