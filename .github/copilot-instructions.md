@@ -219,9 +219,9 @@ npx tauri build
 6. **npm install issues**: If npm install fails or hangs, try `npm ci` instead
 7. **Script dependencies**: Some maintenance scripts (like locale tools) may require all npm dependencies to be installed
 
-## Commit Message Conventions
+## Commit Message and PR Title Conventions
 
-The project follows a specific commit message format for consistency:
+The project follows a specific format for both commit messages and PR titles for consistency:
 
 **Format**: `category(domain): content`
 
@@ -252,7 +252,7 @@ The project follows a specific commit message format for consistency:
 - `docs(api): update authentication flow documentation` - API documentation update
 - `chore(deps): update tauri to v2.1.0` - Dependency update
 
-Use this format for all commits to maintain consistency with the project's conventions.
+Use this format for both commit messages and PR titles to maintain consistency with the project's conventions.
 
 ## Developer Productivity Tips
 
