@@ -217,6 +217,41 @@ npx tauri build
 6. **npm install issues**: If npm install fails or hangs, try `npm ci` instead
 7. **Script dependencies**: Some maintenance scripts (like locale tools) may require all npm dependencies to be installed
 
+## Commit Message Conventions
+
+The project follows a specific commit message format for consistency:
+
+**Format**: `分类(域): 内容` (category(domain): content)
+
+**Categories**:
+- `feat`: New features
+- `fix`: Bug fixes  
+- `docs`: Documentation changes
+- `style`: Code style changes
+- `refactor`: Code refactoring
+- `test`: Test additions/changes
+- `chore`: Maintenance tasks
+- `perf`: Performance improvements
+- `ci`: CI/CD changes
+- `build`: Build system changes
+
+**Domains**:
+- `frontend`: Frontend-only or primarily frontend changes
+- `backend`: Backend-only or primarily backend changes  
+- `launch`: Game launching functionality (often full-stack)
+- `config`: Configuration management
+- `ui`: User interface components
+- `api`: API changes
+- `deps`: Dependency updates
+
+**Examples**:
+- `feat(frontend): support instance searching` - Frontend feature for instance search
+- `fix(launch): resolve game startup crash on Linux` - Launch system bug fix
+- `docs(api): update authentication flow documentation` - API documentation update
+- `chore(deps): update tauri to v2.1.0` - Dependency update
+
+Use this format for all commits to maintain consistency with the project's conventions.
+
 ## Developer Productivity Tips
 
 1. **Use existing scripts**: `npm run version check/bump`, `npm run locale` for common tasks

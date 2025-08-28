@@ -91,6 +91,20 @@ npm run tauri build
 
 For cross-platform compilation, packaging in a specific format, or more details, please refer to the official [Tauri distribution guide](https://tauri.app/distribute/).
 
+## Commit Message Conventions
+
+Please follow the conventional format for commit messages:
+
+**Format**: `分类(域): 内容` (category(domain): content)
+
+**Examples**:
+- `feat(frontend): support instance searching` - Frontend features  
+- `fix(launch): resolve startup crash on Linux` - Launch system fixes
+- `docs(api): update authentication guide` - Documentation updates
+- `chore(deps): update tauri to v2.1.0` - Dependency updates
+
+For detailed guidelines on categories and domains, see `.github/copilot-instructions.md`.
+
 ## Being a collaborator
 
 If you’re an active contributor and are interested in working closely with the SJMCL Team on our open-source workflow 💪, please contact us at [launcher@sjmc.club](mailto:launcher@sjmc.club).
