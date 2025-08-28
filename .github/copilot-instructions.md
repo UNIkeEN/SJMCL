@@ -116,12 +116,14 @@ The GitHub Actions pipeline validates:
 2. **Build Job**: Multi-platform test builds (Ubuntu primarily in PR tests)
 3. **Environment**: Requires secrets for Microsoft OAuth and CurseForge API
 
+**Important**: CI uses specific package versions and may work differently than local builds.
+
 To replicate CI locally:
 ```bash
 # Frontend linting (matches CI)
-npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0
+npx --package=eslint@8 eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0
 
-# Rust formatting (matches CI)
+# Rust formatting (matches CI) 
 find src-tauri/src -name '*.rs' | xargs rustfmt --check
 
 # Test build (matches CI - requires env vars)
@@ -217,11 +219,32 @@ npx tauri build
 
 ## Developer Productivity Tips
 
-1. **Use existing scripts**: `npm run version`, `npm run locale` for common tasks
-2. **Test incrementally**: Use `cargo check` in `src-tauri/` for faster Rust validation
+1. **Use existing scripts**: `npm run version check/bump`, `npm run locale` for common tasks
+2. **Test incrementally**: Use `cargo check` in `src-tauri/` for faster Rust validation without full compilation
 3. **Leverage hot reload**: `npm run tauri dev` provides fast iteration for frontend changes
 4. **Check CI locally**: Run the same linting commands as CI before committing
 5. **Environment setup**: Always start with `cp .env.template .env && npm install`
+6. **Dependency order**: Install system dependencies (Linux) before npm install to avoid build issues
+7. **Troubleshoot builds**: Check `cargo check` output for Rust issues, `npx eslint` for frontend issues
+
+### Quick Start Checklist
+```bash
+# 1. Setup environment
+cp .env.template .env
+npm install
+
+# 2. Verify setup
+cargo --version  # Should show Rust toolchain
+node --version   # Should be 22+
+npm run version check  # Should show matching versions
+
+# 3. Test build components
+cd src-tauri && cargo check  # Test Rust compilation
+cd .. && npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0  # Test linting
+
+# 4. Development
+npm run tauri dev  # Start development server
+```
 
 ---
 
