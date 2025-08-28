@@ -599,6 +599,23 @@ const DownloadSpecificResourceModal: React.FC<
                 </Link>
               </HStack>
             )}
+            {resource.mcmodId && (
+              <HStack spacing={1} ml={2}>
+                <LuExternalLink />
+                <Link
+                  fontSize="xs"
+                  color={`${primaryColor}.500`}
+                  onClick={() => {
+                    resource.mcmodId &&
+                      openUrl(
+                        `https://www.mcmod.cn/class/${resource.mcmodId}.html`
+                      );
+                  }}
+                >
+                  MCMod
+                </Link>
+              </HStack>
+            )}
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
             <MenuSelector

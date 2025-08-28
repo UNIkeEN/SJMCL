@@ -14,6 +14,7 @@ export interface GameClientResourceInfo {
 
 export interface OtherResourceInfo {
   id?: string; // got from API
+  mcmodId?: number; //got from mod database in backend
   websiteUrl?: string;
   type: OtherResourceType;
   name: string;

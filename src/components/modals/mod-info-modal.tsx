@@ -41,6 +41,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
 
   const [cfModWebsiteUrl, setCfModWebsiteUrl] = useState<string>("");
   const [mrModWebsiteUrl, setMrModWebsiteUrl] = useState<string>("");
+  const [MCModWebsiteUrl, setMCModWebsiteUrl] = useState<string>("");
 
   const handleCurseForgeInfo = useCallback(async () => {
     const response = await ResourceService.fetchRemoteResourceByLocal(
@@ -53,8 +54,15 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
         OtherResourceSource.CurseForge,
         modId
       );
-      if (res.status === "success" && res.data.websiteUrl) {
-        setCfModWebsiteUrl(res.data.websiteUrl);
+      if (res.status === "success") {
+        if (res.data.websiteUrl) {
+          setCfModWebsiteUrl(res.data.websiteUrl);
+        }
+        if (res.data.mcmodId) {
+          setMCModWebsiteUrl(
+            `https://www.mcmod.cn/class/${res.data.mcmodId}.html`
+          );
+        }
       }
     }
   }, [mod.filePath]);
@@ -70,8 +78,15 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
         OtherResourceSource.Modrinth,
         modId
       );
-      if (res.status === "success" && res.data.websiteUrl) {
-        setMrModWebsiteUrl(res.data.websiteUrl);
+      if (res.status === "success") {
+        if (res.data.websiteUrl) {
+          setMrModWebsiteUrl(res.data.websiteUrl);
+        }
+        if (res.data.mcmodId) {
+          setMCModWebsiteUrl(
+            `https://www.mcmod.cn/class/${res.data.mcmodId}.html`
+          );
+        }
       }
     }
   }, [mod.filePath]);
@@ -79,6 +94,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
   useEffect(() => {
     setCfModWebsiteUrl("");
     setMrModWebsiteUrl("");
+    setMCModWebsiteUrl("");
     handleCurseForgeInfo();
     handleModrinthInfo();
   }, [handleCurseForgeInfo, handleModrinthInfo]);
@@ -157,6 +173,20 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
                 disabled={!mrModWebsiteUrl}
               >
                 Modrinth
+              </Button>
+            </HStack>
+            <HStack spacing={2}>
+              <LuExternalLink />
+              <Button
+                colorScheme={primaryColor}
+                onClick={() => {
+                  openUrl(MCModWebsiteUrl);
+                }}
+                fontSize="sm"
+                variant="link"
+                disabled={!MCModWebsiteUrl}
+              >
+                MCMod
               </Button>
             </HStack>
           </HStack>
