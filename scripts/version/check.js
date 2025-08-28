@@ -21,8 +21,14 @@ const cargoToml = fs.readFileSync(
 );
 const cargoVersion = cargoToml.match(/version\s*=\s*"([^"]+)"/)[1];
 
+// Read package-lock.json
+const packageLockJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "../../package-lock.json"), "utf8")
+);
+
 const versions = {
   "package.json": packageJson.version,
+  "package-lock.json": packageLockJson.version,
   "tauri.conf.json": tauriConfig.version,
   "Cargo.toml": cargoVersion,
 };
