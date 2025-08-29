@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { execSync } = require("child_process");
 
 // Read package.json
 const packageJson = JSON.parse(
@@ -39,4 +40,20 @@ if (uniqueVersions.size !== 1) {
   process.exit(1);
 } else {
   console.log("\n✅ All versions match:", Object.values(versions)[0]);
+}
+
+// Sync package-lock.json with package.json
+console.log("\n🔄 Syncing package-lock.json with package.json...");
+try {
+  execSync(
+    "npm install --package-lock-only --no-audit --no-fund --ignore-scripts",
+    {
+      stdio: "inherit",
+      cwd: path.join(__dirname, "../../"),
+    }
+  );
+  console.log("✅ package-lock.json synced successfully!");
+} catch (error) {
+  console.error("❌ Failed to sync package-lock.json:", error.message);
+  process.exit(1);
 }
