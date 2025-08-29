@@ -25,8 +25,12 @@ jobs:
           node-version: lts/*
           cache: npm
 
-      - name: Run version fetch script
-        run: node scripts/game/fetch_version_list.js
+      - name: Run version fetch script and sync package-lock.json
+        run: | 
+          node scripts/game/fetch_version_list.js
+          if [ -f package.json ]; then
+            npm install --package-lock-only --no-audit --no-fund --ignore-scripts
+          fi
 
       - name: Generate PR metadata
         id: meta
@@ -55,13 +59,6 @@ jobs:
 
           echo "pr_title=$TITLE" >> $GITHUB_OUTPUT
           echo "pr_body=$TITLE"  >> $GITHUB_OUTPUT
-
-
-      - name: Sync package-lock.json with package.json
-        run: |
-          if [ -f package.json ]; then
-            npm install --package-lock-only --no-audit --no-fund --ignore-scripts
-          fi
 
       - name: Create or update Pull Request
         uses: peter-evans/create-pull-request@v7
