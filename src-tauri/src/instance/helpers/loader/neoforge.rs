@@ -20,14 +20,14 @@ use crate::{
     helpers::misc::get_download_api,
     models::{ResourceType, SourceType},
   },
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
+  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, RuntimeTaskParam},
 };
 
 pub async fn install_neoforge_loader(
   priority: &[SourceType],
   loader: &ModLoader,
   lib_dir: PathBuf,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<RuntimeTaskParam>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
@@ -62,7 +62,7 @@ pub async fn install_neoforge_loader(
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(RuntimeTaskParam::Download(DownloadParam {
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
@@ -204,7 +204,7 @@ pub async fn download_neoforge_libraries(
     if processor.args.contains(&"DOWNLOAD_MOJMAPS".to_string()) {
       if let Some(mojmaps) = args_map.get("{MOJMAPS}") {
         if let Some(client_mappings) = client_info.downloads.get("client_mappings") {
-          task_params.push(PTaskParam::Download(DownloadParam {
+          task_params.push(RuntimeTaskParam::Download(DownloadParam {
             src: client_mappings.url.parse()?,
             dest: lib_dir.join(mojmaps),
             filename: None,
@@ -277,7 +277,7 @@ pub async fn download_neoforge_libraries(
       continue;
     }
 
-    task_params.push(PTaskParam::Download(DownloadParam {
+    task_params.push(RuntimeTaskParam::Download(DownloadParam {
       src: convert_url_to_target_source(
         &Url::parse(url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
@@ -325,7 +325,7 @@ pub async fn download_neoforge_libraries(
     }
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
-    task_params.push(PTaskParam::Download(DownloadParam {
+    task_params.push(RuntimeTaskParam::Download(DownloadParam {
       src: convert_url_to_target_source(
         &Url::parse(url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],

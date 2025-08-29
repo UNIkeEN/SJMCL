@@ -48,7 +48,7 @@ use crate::{
     models::{GameClientResourceInfo, ModLoaderResourceInfo},
   },
   storage::{load_json_async, save_json_async, Storage},
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
+  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, RuntimeTaskParam},
   utils::{fs::create_url_shortcut, image::ImageWrapper},
 };
 use lazy_static::lazy_static;
@@ -883,7 +883,7 @@ pub async fn create_instance(
     minimum_launcher_version: version_info.minimum_launcher_version,
   });
 
-  let mut task_params = Vec::<PTaskParam>::new();
+  let mut task_params = Vec::<RuntimeTaskParam>::new();
 
   // Download client (use task)
   let client_download_info = version_info
@@ -891,7 +891,7 @@ pub async fn create_instance(
     .get("client")
     .ok_or(InstanceError::ClientJsonParseError)?;
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(RuntimeTaskParam::Download(DownloadParam {
     src: Url::parse(&client_download_info.url.clone())
       .map_err(|_| InstanceError::ClientJsonParseError)?,
     dest: instance.version_path.join(format!("{}.jar", name)),

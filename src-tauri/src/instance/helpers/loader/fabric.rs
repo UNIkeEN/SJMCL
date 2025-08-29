@@ -15,7 +15,7 @@ use crate::{
     helpers::misc::get_download_api,
     models::{ResourceType, SourceType},
   },
-  tasks::{download::DownloadParam, PTaskParam},
+  tasks::{download::DownloadParam, RuntimeTaskParam},
 };
 
 pub async fn install_fabric_loader(
@@ -26,7 +26,7 @@ pub async fn install_fabric_loader(
   lib_dir: PathBuf,
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<RuntimeTaskParam>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let loader_ver = &loader.version;
@@ -84,7 +84,7 @@ pub async fn install_fabric_loader(
       &[ResourceType::FabricMaven, ResourceType::Libraries],
       &priority[0],
     )?;
-    task_params.push(PTaskParam::Download(DownloadParam {
+    task_params.push(RuntimeTaskParam::Download(DownloadParam {
       src,
       dest: lib_dir.join(&rel),
       filename: None,
@@ -113,7 +113,7 @@ pub async fn install_fabric_loader(
   if let Ok(Some(fabric_api_download)) =
     get_latest_fabric_api_mod_download(&app, game_version, mods_dir).await
   {
-    task_params.push(PTaskParam::Download(fabric_api_download));
+    task_params.push(RuntimeTaskParam::Download(fabric_api_download));
   }
 
   Ok(())
