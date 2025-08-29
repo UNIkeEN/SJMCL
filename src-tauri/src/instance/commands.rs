@@ -997,6 +997,15 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
     _ => {}
   }
 
+  {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let mut state = binding.lock()?;
+    let instance = state
+      .get_mut(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+    instance.mod_loader.status = ModLoaderStatus::Installing;
+  };
+
   let client_info_dir = instance
     .version_path
     .join(format!("{}.json", instance.name));

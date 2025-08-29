@@ -101,27 +101,21 @@ pub async fn execute_processors(
   client_info: &McClientInfo,
   install_profile: &InstallProfile,
 ) -> SJMCLResult<()> {
-  let mut instance = instance.clone();
-  instance.mod_loader.status = ModLoaderStatus::Installing;
-  instance.save_json_cfg().await?;
-
   let javas_state = app.state::<Mutex<Vec<JavaInfo>>>();
   let javas = javas_state.lock()?.clone();
 
-  let game_config = get_instance_game_config(app, &instance);
+  let game_config = get_instance_game_config(app, instance);
 
   let selected_java = select_java_runtime(
     app,
     &game_config.game_java,
     &javas,
-    &instance,
+    instance,
     client_info.java_version.major_version,
   )
   .await?;
-  println!("Java: {}", selected_java.exec_path.clone());
 
   for processor in &install_profile.processors {
-    println!("[{}] Processing: {}", instance.name, processor.jar);
     let mut archive = ZipArchive::new(File::open(processor.jar.clone())?)?;
     let mut manifest = archive.by_name("META-INF/MANIFEST.MF")?;
     let mut manifest_content = String::new();
@@ -160,33 +154,10 @@ pub async fn execute_processors(
       cmd_base.arg(arg);
     }
 
-    println!(
-      "[{}] Executing processor: {} with args: {:?}",
-      instance.name,
-      processor_path.display(),
-      cmd_base
-    );
-
     let output = cmd_base.output()?;
 
-    if !output.stdout.is_empty() {
-      println!(
-        "[{}] Processor stdout: {}",
-        instance.name,
-        String::from_utf8_lossy(&output.stdout)
-      );
-    }
-
-    if !output.stderr.is_empty() {
-      println!(
-        "[{}] Processor stderr: {}",
-        instance.name,
-        String::from_utf8_lossy(&output.stderr)
-      );
-    }
-
     if !output.status.success() {
-      println!(
+      eprintln!(
         "[{}] Processor failed with exit code: {:?}",
         instance.name,
         output.status.code()
