@@ -7,10 +7,14 @@ interface AdvancedCardProps extends Omit<BoxProps, "children"> {
   variant?: string;
   level?: "back" | "front";
   children?: React.ReactNode;
+  noRadius?: boolean;
 }
 
 const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
-  ({ variant = "", level = "back", children, ...props }, ref) => {
+  (
+    { variant = "", level = "back", children, noRadius = false, ...props },
+    ref
+  ) => {
     const { config } = useLauncherConfig();
     const themedStyles = useThemedCSSStyle();
 
@@ -27,6 +31,7 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
           variant={_variant}
           {...props}
           className={`${themedStyles.card[`card-${level}`]} ${props.className || ""}`}
+          borderRadius={noRadius ? "none" : undefined}
         >
           {children}
         </Card>
@@ -39,9 +44,16 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
           ref={ref}
           {...props}
           className={`${themedStyles.liquidGlass["wrapper"]} ${props.className || ""}`}
+          style={{ borderRadius: noRadius ? 0 : undefined }}
         >
-          <div className={themedStyles.liquidGlass["effect"]} />
-          <div className={themedStyles.liquidGlass["shine"]} />
+          <div
+            className={themedStyles.liquidGlass["effect"]}
+            style={{ borderRadius: noRadius ? 0 : undefined }}
+          />
+          <div
+            className={themedStyles.liquidGlass["shine"]}
+            style={{ borderRadius: noRadius ? 0 : undefined }}
+          />
           <Box position="relative" zIndex={3} height="100%" width="100%">
             {children}
           </Box>
@@ -54,6 +66,7 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
         ref={ref}
         {...props}
         className={`${themedStyles.card[`card-${level}`]} ${props.className || ""}`}
+        borderRadius={noRadius ? "none" : undefined}
       >
         {children}
       </Card>

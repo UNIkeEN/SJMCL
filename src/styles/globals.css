@@ -1,5 +1,5 @@
-@import 'fonts.css';
-@import 'animations.css';
+@import "fonts.css";
+@import "animations.css";
 
 html {
   /* disable elastic scrolling */
@@ -9,7 +9,10 @@ html {
 /* root */
 body {
   margin: 0;
-  font-family: -apple-system, Sinter, ui-sans-serif, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol" !important;
+  font-family:
+    -apple-system, Sinter, ui-sans-serif, BlinkMacSystemFont,
+    "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji",
+    Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol" !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
@@ -23,7 +26,6 @@ body[use-custom-font] {
 body img {
   -webkit-user-drag: none;
 }
-
 
 /* scrollbar */
 ::-webkit-scrollbar {
@@ -46,7 +48,6 @@ body img {
   background-color: var(--chakra-colors-blackAlpha-500);
 }
 
-
 /* text */
 .subtitle {
   font-weight: 600;
@@ -68,7 +69,6 @@ body img {
   text-overflow: ellipsis;
 }
 
-
 /* card-style content container */
 .content-full-y {
   height: 100%;
@@ -81,7 +81,6 @@ body img {
   }
 }
 
-
 /* tag */
 .tag-xs {
   font-size: 0.675rem !important;
@@ -89,6 +88,17 @@ body img {
   min-height: 1.125rem !important;
 }
 
+/* control-icon */
+.control-icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  line-height: 1em;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  color: currentColor;
+}
 
 /* alert and toast */
 /* .chakra-alert__title {
@@ -105,4 +115,3 @@ body img {
   padding-top: var(--chakra-space-2) !important;
   padding-bottom: var(--chakra-space-2) !important;
 } */
- 

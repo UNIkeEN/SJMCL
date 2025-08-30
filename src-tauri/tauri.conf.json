@@ -20,7 +20,10 @@
         "minWidth": 800,
         "minHeight": 550,
         "center": true,
-        "dragDropEnabled": false
+        "dragDropEnabled": false,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": false
       },
       {
         "label": "game_error",
