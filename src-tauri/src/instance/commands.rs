@@ -985,7 +985,7 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
 
   match instance.mod_loader.status {
     // prevent duplicated installation
-    ModLoaderStatus::NotDownloaded => {
+    ModLoaderStatus::DownloadFailed => {
       return Err(InstanceError::ProcessorExecutionFailed.into());
     }
     ModLoaderStatus::Installing => {
