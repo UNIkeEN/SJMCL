@@ -42,18 +42,11 @@ if (uniqueVersions.size !== 1) {
   console.log("\n✅ All versions match:", Object.values(versions)[0]);
 }
 
-// Sync package-lock.json with package.json
-console.log("\n🔄 Syncing package-lock.json with package.json...");
+// Check whether package-lock.json is in sync
 try {
-  execSync(
-    "npm install --package-lock-only --no-audit --no-fund --ignore-scripts",
-    {
-      stdio: "inherit",
-      cwd: path.join(__dirname, "../../"),
-    }
-  );
-  console.log("✅ package-lock.json synced successfully!");
+  execSync("git diff --exit-code package-lock.json");
+  console.log("\n✅ package-lock.json is in sync");
 } catch (error) {
-  console.error("❌ Failed to sync package-lock.json:", error.message);
+  console.error("\n❌ package-lock.json is not in sync!");
   process.exit(1);
 }
