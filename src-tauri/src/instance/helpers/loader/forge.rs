@@ -103,6 +103,7 @@ pub async fn download_forge_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &McClientInfo,
+  is_retry: bool, // do not modify client info, just download necessary files
 ) -> SJMCLResult<()> {
   let subdirs = get_instance_subdir_paths(
     app,
@@ -445,6 +446,12 @@ pub async fn download_forge_libraries(
     }
     client_info.patches.push(new_patch);
   }
+
+  let mut seen = std::collections::HashSet::new();
+  task_params.retain(|param| match param {
+    PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
+  });
+
   schedule_progressive_task_group(
     app.clone(),
     format!("forge-libraries?{}", instance.id),
@@ -453,10 +460,12 @@ pub async fn download_forge_libraries(
   )
   .await?;
 
-  let vjson_path = instance
-    .version_path
-    .join(format!("{}.json", instance.name));
-  fs::write(vjson_path, serde_json::to_vec_pretty(&client_info)?)?;
+  if !is_retry {
+    let vjson_path = instance
+      .version_path
+      .join(format!("{}.json", instance.name));
+    fs::write(vjson_path, serde_json::to_vec_pretty(&client_info)?)?;
+  }
 
   Ok(())
 }

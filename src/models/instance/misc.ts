@@ -4,6 +4,7 @@ import { OtherResourceSource } from "@/enums/resource";
 export enum ModLoaderStatus {
   NotDownloaded = "NotDownloaded",
   Downloading = "Downloading",
+  DownloadFailed = "DownloadFailed",
   Installing = "Installing",
   Installed = "Installed",
 }

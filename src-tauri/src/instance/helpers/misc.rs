@@ -190,18 +190,29 @@ pub async fn refresh_instances(
           ModLoaderStatus::NotDownloaded => match cfg_read.mod_loader.loader_type {
             ModLoaderType::Forge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_forge_libraries(app, &priority_list, &cfg_read, &client_data).await
+              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
             }
             ModLoaderType::NeoForge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data).await
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
+            }
+            _ => Ok(()),
+          },
+          ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
+            ModLoaderType::Forge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
+            }
+            ModLoaderType::NeoForge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
             }
             _ => Ok(()),
           },
           ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
             if is_first_run {
-              // if it's the first run, reset the status and wait for download
-              cfg_read.mod_loader.status = ModLoaderStatus::NotDownloaded;
+              // The instance failed to install mod loader during last run.
+              cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
             }
             Ok(())
           }
@@ -209,7 +220,7 @@ pub async fn refresh_instances(
         }
       } {
         eprintln!("Failed to install mod loader for {}: {:?}", name, e);
-        cfg_read.mod_loader.status = ModLoaderStatus::NotDownloaded;
+        cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
         cfg_read.save_json_cfg().await?;
         continue;
       }
