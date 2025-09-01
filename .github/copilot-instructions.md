@@ -147,11 +147,16 @@ npx tauri build
 ├── src-tauri/             # Rust backend source
 │   ├── src/               # Rust source code
 │   │   ├── account/       # User account management
+│   │   ├── discover/      # Discovery and exploration features
 │   │   ├── instance/      # Game instance management
 │   │   ├── launch/        # Game launching logic
 │   │   ├── launcher_config/ # Application configuration
 │   │   ├── resource/      # Resource downloading
+│   │   ├── tasks/         # Background task management
 │   │   └── utils/         # Backend utilities
+│   ├── assets/            # Static assets (icons, game files, etc.)
+│   ├── capabilities/      # Tauri capability definitions
+│   ├── libs/              # Custom Rust libraries
 │   ├── Cargo.toml         # Rust dependencies
 │   ├── tauri.conf.json    # Tauri configuration
 │   └── build.rs           # Build script (env var handling)
@@ -183,9 +188,11 @@ npx tauri build
 - **Command Architecture**: Tauri commands exposed to frontend via `tauri::generate_handler![]`
 - **Core Modules**:
   - `account`: Microsoft OAuth, 3rd-party auth, offline accounts
+  - `discover`: Discovery and exploration features
   - `instance`: Game instance and mod management
   - `launch`: Game launching and process management
   - `resource`: CurseForge/Modrinth integration for downloading mods/modpacks/saves/shaderpacks/resourcepacks
+  - `tasks`: Background task management and processing
   - `launcher_config`: Application settings and configuration
 - **Build System**: Custom `build.rs` handles environment variable injection
 
