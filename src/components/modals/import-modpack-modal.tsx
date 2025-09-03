@@ -118,7 +118,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
             ),
           },
           {
-            title: t("InstanceSettingsPage.optionalMods"),
+            title: t("InstanceSettingsPage.downloadOptionalMods"),
             children: (
               <Switch
                 colorScheme={primaryColor}

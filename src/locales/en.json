@@ -1154,6 +1154,7 @@
   "InstanceSettingsPage": {
     "name": "Instance Name",
     "description": "Instance Description",
+    "downloadOptionalMods":"Download Optional Mods",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
     "restoreSettings": "Restore to default settings",
