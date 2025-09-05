@@ -1,44 +1,36 @@
+use super::super::misc::version_pack_sort;
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::resource::models::{
+  OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
+  OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,
+  ResourceError,
+};
 use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
-
-use crate::error::SJMCLResult;
-use crate::resource::models::{
-  OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchRes,
-  OtherResourceSource, OtherResourceVersionPack, ResourceError,
-};
-use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
-use super::super::misc::version_pack_sort;
-
 const CURSEFORGE_API_KEY: &str = env!("SJMCL_CURSEFORGE_API_KEY");
-
-// Enum to represent different request types
-pub enum CurseForgeRequestType<'a, P> {
-  GetWithParams(&'a HashMap<String, String>),
-  Get,
-  Post(&'a P),
-}
 
 pub async fn make_curseforge_request<T, P>(
   client: &reqwest::Client,
   url: &str,
-  request_type: CurseForgeRequestType<'_, P>,
+  request_type: OtherResourceRequestType<'_, P>,
 ) -> SJMCLResult<T>
 where
   T: serde::de::DeserializeOwned,
   P: serde::Serialize,
 {
   let request_builder = match request_type {
-    CurseForgeRequestType::GetWithParams(params) => client.get(url).query(params),
-    CurseForgeRequestType::Get => client.get(url),
-    CurseForgeRequestType::Post(payload) => client.post(url).json(payload),
+    OtherResourceRequestType::GetWithParams(params) => client.get(url).query(params),
+    OtherResourceRequestType::Get => client.get(url),
+    OtherResourceRequestType::Post(payload) => client.post(url).json(payload),
   };
 
   let response = request_builder
     .header("x-api-key", CURSEFORGE_API_KEY)
-    .header("accept", "application/json")
     .send()
     .await
     .map_err(|_| ResourceError::NetworkError)?;
@@ -53,30 +45,26 @@ where
     .map_err(|_| ResourceError::ParseError.into())
 }
 
-#[derive(Debug, Clone, Copy)]
-pub enum CurseForgeApiEndpoint {
-  Search,
-  ModFiles,
-  Fingerprints,
-  Project,
-}
-
 pub fn get_curseforge_api(
-  endpoint: CurseForgeApiEndpoint,
+  endpoint: OtherResourceApiEndpoint,
   id: Option<&str>,
 ) -> SJMCLResult<String> {
   let base_url = "https://api.curseforge.com/v1";
 
   let url_str = match endpoint {
-    CurseForgeApiEndpoint::Search => format!("{}/mods/search", base_url),
-    CurseForgeApiEndpoint::ModFiles => {
+    OtherResourceApiEndpoint::Search => format!("{}/mods/search", base_url),
+    OtherResourceApiEndpoint::VersionPack => {
       let mod_id = id.ok_or(ResourceError::ParseError)?;
       format!("{}/mods/{}/files", base_url, mod_id)
     }
-    CurseForgeApiEndpoint::Fingerprints => format!("{}/fingerprints/432", base_url),
-    CurseForgeApiEndpoint::Project => {
+    OtherResourceApiEndpoint::FromLocal => format!("{}/fingerprints/432", base_url),
+    OtherResourceApiEndpoint::ById => {
       let mod_id = id.ok_or(ResourceError::ParseError)?;
       format!("{}/mods/{}", base_url, mod_id)
+    }
+    OtherResourceApiEndpoint::TranslateDesc => {
+      let mod_id = id.ok_or(ResourceError::ParseError)?;
+      format!("https://mod.mcimirror.top/translate/curseforge/{}", mod_id)
     }
   };
 
@@ -93,6 +81,7 @@ structstruck::strike! {
       pub website_url: String,
     },
     pub name: String,
+    pub slug: String,
     pub summary: String,
     pub categories: Vec<pub struct {
       pub name: String,
@@ -165,6 +154,11 @@ structstruck::strike! {
 #[serde(rename_all = "camelCase")]
 pub struct CurseForgeGetProjectRes {
   pub data: CurseForgeProject,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct CurseForgeTranslationRes {
+  pub translated: String,
 }
 
 fn extract_versions_and_loaders(game_versions: &[String]) -> (Vec<String>, Vec<String>) {
@@ -240,8 +234,10 @@ impl From<CurseForgeProject> for OtherResourceInfo {
   fn from(project: CurseForgeProject) -> Self {
     Self {
       id: project.id.to_string(),
+      mcmod_id: 0,
       _type: cvt_class_id_to_type(project.class_id),
       name: project.name,
+      slug: project.slug,
       description: project.summary,
       icon_src: project.logo.map_or("".to_string(), |logo| logo.url),
       website_url: project.links.website_url,
@@ -249,6 +245,8 @@ impl From<CurseForgeProject> for OtherResourceInfo {
       last_updated: project.date_modified,
       downloads: project.download_count,
       source: OtherResourceSource::CurseForge,
+      translated_name: None,
+      translated_description: None,
     }
   }
 }
@@ -518,4 +516,28 @@ pub fn cvt_id_to_dependency_type(dependency_type: u32) -> String {
     5 => "incompatible".to_string(),
     _ => "include".to_string(),
   }
+}
+
+pub async fn translate_description_curseforge(
+  app: &AppHandle,
+  resource_id: &str,
+) -> SJMCLResult<Option<String>> {
+  let result = async {
+    let url = get_curseforge_api(OtherResourceApiEndpoint::TranslateDesc, Some(resource_id))?;
+    let client = app.state::<reqwest::Client>();
+
+    let translation_res = client
+      .get(&url)
+      .header("x-api-key", CURSEFORGE_API_KEY)
+      .send()
+      .await?
+      .json::<CurseForgeTranslationRes>()
+      .await?;
+
+    Ok::<_, SJMCLError>(translation_res.translated)
+  }
+  .await;
+
+  // Only return Ok(None) when translation fails, to avoid blocking major functionality
+  Ok(result.ok())
 }

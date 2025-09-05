@@ -1,34 +1,27 @@
-use crate::error::SJMCLResult;
+use super::super::misc::version_pack_sort;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::resource::models::{
-  OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchRes,
-  OtherResourceSource, OtherResourceVersionPack, ResourceError,
+  OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
+  OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,
+  ResourceError,
 };
 use serde::Deserialize;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
-
-use super::super::misc::version_pack_sort;
-
-// Enum to represent different request types
-#[allow(dead_code)] // Post is not used now, but may be in the future
-pub enum ModrinthRequestType<'a, P> {
-  GetWithParams(&'a std::collections::HashMap<String, String>),
-  Get,
-  Post(&'a P),
-}
 
 pub async fn make_modrinth_request<T, P>(
   client: &reqwest::Client,
   url: &str,
-  request_type: ModrinthRequestType<'_, P>,
+  request_type: OtherResourceRequestType<'_, P>,
 ) -> SJMCLResult<T>
 where
   T: serde::de::DeserializeOwned,
   P: serde::Serialize,
 {
   let request_builder = match request_type {
-    ModrinthRequestType::GetWithParams(params) => client.get(url).query(params),
-    ModrinthRequestType::Get => client.get(url),
-    ModrinthRequestType::Post(payload) => client.post(url).json(payload),
+    OtherResourceRequestType::GetWithParams(params) => client.get(url).query(params),
+    OtherResourceRequestType::Get => client.get(url),
+    OtherResourceRequestType::Post(payload) => client.post(url).json(payload),
   };
 
   let response = request_builder
@@ -46,30 +39,32 @@ where
     .map_err(|_| ResourceError::ParseError.into())
 }
 
-#[derive(Debug, Clone, Copy)]
-pub enum ModrinthApiEndpoint {
-  Search,
-  ProjectVersions,
-  VersionFile,
-  Project,
-}
-
-pub fn get_modrinth_api(endpoint: ModrinthApiEndpoint, param: Option<&str>) -> SJMCLResult<String> {
+pub fn get_modrinth_api(
+  endpoint: OtherResourceApiEndpoint,
+  param: Option<&str>,
+) -> SJMCLResult<String> {
   let base_url = "https://api.modrinth.com/v2";
 
   let url_str = match endpoint {
-    ModrinthApiEndpoint::Search => format!("{}/search", base_url),
-    ModrinthApiEndpoint::ProjectVersions => {
+    OtherResourceApiEndpoint::Search => format!("{}/search", base_url),
+    OtherResourceApiEndpoint::VersionPack => {
       let project_id = param.ok_or(ResourceError::ParseError)?;
       format!("{}/project/{}/version", base_url, project_id)
     }
-    ModrinthApiEndpoint::VersionFile => {
+    OtherResourceApiEndpoint::FromLocal => {
       let hash = param.ok_or(ResourceError::ParseError)?;
       format!("{}/version_file/{}", base_url, hash)
     }
-    ModrinthApiEndpoint::Project => {
+    OtherResourceApiEndpoint::ById => {
       let project_id = param.ok_or(ResourceError::ParseError)?;
       format!("{}/project/{}", base_url, project_id)
+    }
+    OtherResourceApiEndpoint::TranslateDesc => {
+      let project_id = param.ok_or(ResourceError::ParseError)?;
+      format!(
+        "https://mod.mcimirror.top/translate/modrinth/{}",
+        project_id
+      )
     }
   };
 
@@ -127,6 +122,11 @@ structstruck::strike! {
     pub version_type: String,
     pub files: Vec<ModrinthFileInfo>,
   }
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ModrinthTranslationRes {
+  pub translated: String,
 }
 
 fn normalize_modrinth_loader(loader: &str) -> Option<String> {
@@ -210,8 +210,10 @@ impl From<ModrinthProject> for OtherResourceInfo {
   fn from(project: ModrinthProject) -> Self {
     Self {
       id: project.project_id,
+      mcmod_id: 0,
       _type: project.project_type,
       name: project.title,
+      slug: project.slug.to_string(),
       description: project.description,
       icon_src: project.icon_url,
       website_url: format!("https://modrinth.com/mod/{}", project.slug),
@@ -219,6 +221,8 @@ impl From<ModrinthProject> for OtherResourceInfo {
       last_updated: project.date_modified,
       downloads: project.downloads,
       source: OtherResourceSource::Modrinth,
+      translated_name: None,
+      translated_description: None,
     }
   }
 }
@@ -260,4 +264,27 @@ impl From<ModrinthSearchRes> for OtherResourceSearchRes {
       page_size: res.limit,
     }
   }
+}
+
+pub async fn translate_description_modrinth(
+  app: &AppHandle,
+  resource_id: &str,
+) -> SJMCLResult<Option<String>> {
+  let result = async {
+    let url = get_modrinth_api(OtherResourceApiEndpoint::TranslateDesc, Some(resource_id))?;
+    let client = app.state::<reqwest::Client>();
+
+    let translation_res = client
+      .get(&url)
+      .send()
+      .await?
+      .json::<ModrinthTranslationRes>()
+      .await?;
+
+    Ok::<_, SJMCLError>(translation_res.translated)
+  }
+  .await;
+
+  // Only return Ok(None) when translation fails, to avoid blocking major functionality
+  Ok(result.ok())
 }

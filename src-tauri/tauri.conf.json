@@ -85,7 +85,8 @@
       "assets/skins/*",
       "assets/game/*",
       "assets/icons/icon.ico",
-      "assets/icons/icon.png"
+      "assets/icons/icon.png",
+      "assets/db/*"
     ]
   },
   "plugins": {

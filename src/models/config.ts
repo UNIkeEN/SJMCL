@@ -116,6 +116,7 @@ export interface LauncherConfig {
       discoverPage: boolean;
       instancesNavType: string;
       launchPageQuickSwitch: boolean;
+      resourceTranslation: boolean;
     };
   };
   localGameDirectories: GameDirectory[];
@@ -261,7 +262,8 @@ export const defaultConfig: LauncherConfig = {
     functionality: {
       discoverPage: false,
       instancesNavType: "instance",
-      launchPageQuickSwitch: false,
+      launchPageQuickSwitch: true,
+      resourceTranslation: true,
     },
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],

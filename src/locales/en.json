@@ -520,7 +520,7 @@
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": "Download Resource - {{name}} ({{source}})",
+    "title": "Download Resource - {{name}} - {{source}}",
     "label": {
       "all": "All",
       "recommendedVersion": "Recommended Ver.",
@@ -907,6 +907,10 @@
         "launchPageQuickSwitch": {
           "title": "Quick Switch for Accounts & Instances",
           "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+        },
+        "resourceTranslation": {
+          "title": "Resource Translation",
+          "description": "%only available in zh-Hans"
         }
       }
     }

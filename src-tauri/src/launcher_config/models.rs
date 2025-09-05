@@ -238,6 +238,8 @@ structstruck::strike! {
         pub instances_nav_type: String,
         #[default = true]
         pub launch_page_quick_switch: bool,
+        #[default = true]   // only in zh-Hans
+        pub resource_translation: bool,
       }
     },
     pub global_game_config: GameConfig,

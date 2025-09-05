@@ -22,6 +22,7 @@ use launcher_config::{
   helpers::java::refresh_and_update_javas,
   models::{JavaInfo, LauncherConfig},
 };
+use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 use std::{collections::HashMap, sync::OnceLock};
@@ -188,6 +189,9 @@ pub async fn run() {
       let javas: Vec<JavaInfo> = vec![];
       app.manage(Mutex::new(javas));
 
+      let mod_database = ModDataBase::new();
+      app.manage(Mutex::new(mod_database));
+
       app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
       let client = WebConfig::default().build(app.handle());
@@ -222,6 +226,12 @@ pub async fn run() {
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move {
         refresh_and_update_javas(&app_handle).await;
+      });
+
+      // Initialize mod database
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        initialize_mod_db(&app_handle).await.unwrap_or_default();
       });
 
       let app_handle = app.handle().clone();

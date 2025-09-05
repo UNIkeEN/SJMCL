@@ -133,6 +133,30 @@ const GeneralSettingsPage = () => {
             />
           ),
         },
+        ...(config.general.general.language == "zh-Hans"
+          ? [
+              {
+                title: t(
+                  "GeneralSettingsPage.functions.settings.resourceTranslation.title"
+                ),
+                description: t(
+                  "GeneralSettingsPage.functions.settings.resourceTranslation.description"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={generalConfigs.functionality.resourceTranslation}
+                    onChange={(e) => {
+                      update(
+                        "general.functionality.resourceTranslation",
+                        e.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
+            ]
+          : []),
       ],
     },
   ];
