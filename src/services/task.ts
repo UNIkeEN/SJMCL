@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { InvokeResponse } from "@/models/response";
 import {
   GTaskEventPayload,
@@ -8,6 +7,7 @@ import {
   TaskParam,
 } from "@/models/task";
 import { responseHandler } from "@/utils/response";
+import { createSafeEventListener } from "@/utils/safe-event-listener";
 
 /**
  * TaskService class for managing tasks.
@@ -126,16 +126,10 @@ export class TaskService {
   static onProgressiveTaskUpdate(
     callback: (payload: PTaskEventPayload) => void
   ): () => void {
-    const unlisten = getCurrentWebview().listen<PTaskEventPayload>(
+    return createSafeEventListener<PTaskEventPayload>(
       "task:progress-update",
-      (event) => {
-        callback(event.payload);
-      }
+      callback
     );
-
-    return () => {
-      unlisten.then((f) => f());
-    };
   }
 
   /**
@@ -146,14 +140,9 @@ export class TaskService {
   static onTaskGroupUpdate(
     callback: (payload: GTaskEventPayload) => void
   ): () => void {
-    const unlisten = getCurrentWebview().listen<GTaskEventPayload>(
+    return createSafeEventListener<GTaskEventPayload>(
       "task:group-update",
-      (event) => {
-        callback(event.payload);
-      }
+      callback
     );
-    return () => {
-      unlisten.then((f) => f());
-    };
   }
 }
