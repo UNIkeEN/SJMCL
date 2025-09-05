@@ -246,6 +246,7 @@ impl From<CurseForgeProject> for OtherResourceInfo {
       downloads: project.download_count,
       source: OtherResourceSource::CurseForge,
       translated_name: None,
+      translated_description: None,
     }
   }
 }

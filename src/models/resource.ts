@@ -20,6 +20,7 @@ export interface OtherResourceInfo {
   name: string;
   translatedName?: string;
   description: string;
+  translatedDescription?: string;
   iconSrc: string;
   tags: string[];
   lastUpdated: string;

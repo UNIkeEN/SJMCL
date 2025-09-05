@@ -216,12 +216,13 @@ impl From<ModrinthProject> for OtherResourceInfo {
       slug: project.slug.to_string(),
       description: project.description,
       icon_src: project.icon_url,
-      website_url: format!("https://modrinth.com/mod/{}", project.slug.to_string()),
+      website_url: format!("https://modrinth.com/mod/{}", project.slug),
       tags: project.categories,
       last_updated: project.date_modified,
       downloads: project.downloads,
       source: OtherResourceSource::Modrinth,
       translated_name: None,
+      translated_description: None,
     }
   }
 }

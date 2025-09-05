@@ -185,16 +185,10 @@ pub async fn apply_other_resource_enhancements(
   app: &AppHandle,
   resource_info: &mut OtherResourceInfo,
 ) -> SJMCLResult<()> {
-  let binding = app.state::<Mutex<LauncherConfig>>();
-  let language = {
-    let state = binding.lock()?;
-    state.general.general.language.clone()
-  };
-
   // Extract data from cache in a limited scope to avoid holding lock across await
   let (translated_name, mcmod_id) = {
     if let Ok(cache) = app.state::<Mutex<ModDataBase>>().lock() {
-      let translated_name = if language == "zh-Hans" && resource_info._type == "mod" {
+      let translated_name = if resource_info._type == "mod" {
         cache.get_translated_name(&resource_info.slug, &resource_info.source)
       } else {
         None
@@ -215,21 +209,17 @@ pub async fn apply_other_resource_enhancements(
     resource_info.mcmod_id = id;
   }
 
-  // Get translated description (only if language is zh-Hans)
-  if language == "zh-Hans" {
-    let translated_desc = match resource_info.source {
-      OtherResourceSource::Modrinth => {
-        translate_description_modrinth(app, &resource_info.id).await?
-      }
-      OtherResourceSource::CurseForge => {
-        translate_description_curseforge(app, &resource_info.id).await?
-      }
-      _ => None,
-    };
-
-    if let Some(desc) = translated_desc {
-      resource_info.description = desc;
+  // Get translated descriptio
+  let translated_desc = match resource_info.source {
+    OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
+    OtherResourceSource::CurseForge => {
+      translate_description_curseforge(app, &resource_info.id).await?
     }
+    _ => None,
+  };
+
+  if let Some(desc) = translated_desc {
+    resource_info.translated_description = Some(desc);
   }
 
   Ok(())

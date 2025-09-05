@@ -9,8 +9,8 @@ fn clean_keyword(word: &str) -> Option<String> {
   const STOP_WORDS: &[&str] = &["a", "of", "the", "for", "mod", "with", "and", "ftb"];
 
   let cleaned = word
-    .trim_start_matches(&['{', '[', '(', '"'])
-    .trim_end_matches(&['}', ']', ')', '"'])
+    .trim_start_matches(['{', '[', '(', '"'])
+    .trim_end_matches(['}', ']', ')', '"'])
     .trim_matches('-')
     .trim_matches('_')
     .to_lowercase();

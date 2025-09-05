@@ -137,6 +137,9 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
   const [selectedItem, setSelectedItem] = useState<OtherResourceInfo | null>(
     null
@@ -170,7 +173,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
   const buildOptionItems = (item: OtherResourceInfo): OptionItemProps => ({
     title: (
       <Text fontSize="xs-sm" className="ellipsis-text">
-        {item.translatedName
+        {showZhTrans && item.translatedName
           ? `${item.translatedName} | ${item.name}`
           : item.name}
       </Text>
@@ -216,7 +219,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
         w="100%"
       >
         <Text overflow="hidden" className="ellipsis-text">
-          {item.description}
+          {(showZhTrans && item.translatedDescription) || item.description}
         </Text>
         <HStack spacing={6}>
           <HStack spacing={1}>

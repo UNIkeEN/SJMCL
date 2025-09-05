@@ -520,7 +520,7 @@
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": "资源下载 - {{name}} ({{source}})",
+    "title": "资源下载 - {{name}} - {{source}}",
     "label": {
       "all": "全部",
       "recommendedVersion": "推荐版本",
@@ -907,6 +907,10 @@
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
           "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
+        },
+        "resourceTranslation": {
+          "title": "显示资源翻译",
+          "description": "启用后，在资源下载界面尝试显示名称或描述的简体中文翻译（如数据可用）"
         }
       }
     }

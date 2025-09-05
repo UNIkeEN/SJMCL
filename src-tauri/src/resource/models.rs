@@ -83,6 +83,7 @@ pub struct OtherResourceInfo {
   pub slug: String,
   pub translated_name: Option<String>,
   pub description: String,
+  pub translated_description: Option<String>,
   pub icon_src: String,
   pub tags: Vec<String>,
   pub last_updated: String,
