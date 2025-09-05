@@ -28,7 +28,7 @@ use std::{collections::HashMap, sync::OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use tauri_plugin_log::{Target, TargetKind};
-use utils::{portable::is_portable, web::build_sjmcl_client};
+use utils::{portable::is_portable, web::WebConfig};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
@@ -190,7 +190,7 @@ pub async fn run() {
 
       app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
-      let client = build_sjmcl_client(app.handle(), true, false);
+      let client = WebConfig::default().build(app.handle());
       app.manage(client);
 
       let launching_queue = Vec::<LaunchingState>::new();
@@ -204,8 +204,8 @@ pub async fn run() {
           .unwrap_or_default();
       });
 
-      // Refresh all auth servers
       let app_handle = app.handle().clone();
+      // Refresh all auth servers
       tauri::async_runtime::spawn(async move {
         refresh_and_update_auth_servers(&app_handle)
           .await
