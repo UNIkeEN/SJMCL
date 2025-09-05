@@ -911,6 +911,10 @@
         "resourceTranslation": {
           "title": "显示资源翻译",
           "description": "启用后，在资源下载界面尝试显示名称或描述的简体中文翻译（如数据可用）"
+        },
+        "skipWelcomeModal": {
+          "title": "跳过欢迎界面",
+          "description": "启用后，首次启动时将跳过欢迎与用户协议界面（推荐用户已熟悉本软件时使用）"
         }
       }
     }

@@ -240,6 +240,8 @@ structstruck::strike! {
         pub launch_page_quick_switch: bool,
         #[default = true]   // only in zh-Hans
         pub resource_translation: bool,
+        #[default = true]   // only in zh-Hans
+        pub skip_welcome_modal: bool,
       }
     },
     pub global_game_config: GameConfig,

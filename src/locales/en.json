@@ -911,6 +911,10 @@
         "resourceTranslation": {
           "title": "Resource Translation",
           "description": "%only available in zh-Hans"
+        },
+        "skipWelcomeModal": {
+          "title": "Skip Welcome Modal",
+          "description": "%only available in zh-Hans"
         }
       }
     }

@@ -155,6 +155,26 @@ const GeneralSettingsPage = () => {
                   />
                 ),
               },
+              {
+                title: t(
+                  "GeneralSettingsPage.functions.settings.skipWelcomeModal.title"
+                ),
+                description: t(
+                  "GeneralSettingsPage.functions.settings.skipWelcomeModal.description"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={generalConfigs.functionality.skipWelcomeModal}
+                    onChange={(e) => {
+                      update(
+                        "general.functionality.skipWelcomeModal",
+                        e.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
             ]
           : []),
       ],

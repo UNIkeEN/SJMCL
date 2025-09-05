@@ -45,9 +45,18 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   useEffect(() => {
     if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
       if (!config.runCount) {
-        setTimeout(() => {
-          onWelcomeAndTermsModalOpen();
-        }, 300); // some delay to avoid sudden popup
+        // Check if user is using zh-Hans and has skip welcome modal enabled
+        const isZhHans = config.general.general.language === "zh-Hans";
+        const shouldSkipWelcome = isZhHans && config.general.functionality.skipWelcomeModal;
+        
+        if (shouldSkipWelcome) {
+          // Skip welcome modal and just increment run count
+          update("runCount", 1);
+        } else {
+          setTimeout(() => {
+            onWelcomeAndTermsModalOpen();
+          }, 300); // some delay to avoid sudden popup
+        }
       } else {
         let newCount = config.runCount + 1;
         if (newCount === 10) {
@@ -62,6 +71,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   }, [
     config.mocked,
     config.runCount,
+    config.general.general.language,
+    config.general.functionality.skipWelcomeModal,
     isStandAlone,
     onWelcomeAndTermsModalOpen,
     onStarUsModalOpen,
