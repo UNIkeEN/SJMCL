@@ -87,14 +87,20 @@ pub fn into_runtime_task<'a>(
   async move {
     let current = task_desc.read().unwrap().current;
     let (resp, total_progress) = create_resp_stream(&app_handle, current as i64, &param).await?;
-    {
+    let total_progress = if total_progress != -1 {
       let mut task_desc = task_desc.write().unwrap();
       task_desc.total = total_progress as u64;
       task_desc.state.set_in_progress();
       task_desc.save().unwrap();
-      reporter.report_started(total_progress);
-    }
+      total_progress
+    } else {
+      let task_desc = task_desc.write().unwrap();
+      task_desc.total as i64
+    };
+
+    reporter.report_started(total_progress);
     tokio::fs::create_dir_all(&dest_path.parent().unwrap()).await?;
+
     let mut file = if current == 0 {
       tokio::fs::File::create(&dest_path).await?
     } else {
@@ -102,6 +108,7 @@ pub fn into_runtime_task<'a>(
       f.seek(std::io::SeekFrom::Start(current)).await?;
       f
     };
+
     let result = if let Some(lim) = lim {
       let mut reader = RuntimeTaskProgressReader::new(
         lim.limit(resp.into_async_read()).compat(),
@@ -120,8 +127,8 @@ pub fn into_runtime_task<'a>(
       tokio::io::copy(&mut reader, &mut file).await
     }
     .map(|_| ());
-    drop(file);
 
+    drop(file);
     if task_desc.read().unwrap().state.is_cancelled() {
       tokio::fs::remove_file(&dest_path).await?;
     }
