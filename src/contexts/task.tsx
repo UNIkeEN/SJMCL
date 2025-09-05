@@ -56,6 +56,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const { openSharedModal } = useSharedModals();
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
+  const [needRefresh, setNeedRefresh] = useState<boolean>(true);
   const { t } = useTranslation();
   const loadingToastRef = React.useRef<ToastId | null>(null);
 
@@ -170,8 +171,11 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [toast, updateGroupDesc]);
 
   useEffect(() => {
-    handleRetrieveProgressTasks();
-  }, [handleRetrieveProgressTasks]);
+    if (needRefresh) {
+      handleRetrieveProgressTasks();
+      setNeedRefresh(false);
+    }
+  }, [handleRetrieveProgressTasks, needRefresh]);
 
   const handleScheduleProgressiveTaskGroup = useCallback(
     (taskGroup: string, params: RuntimeTaskParam[]) => {
@@ -268,9 +272,13 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             (t) => t.taskGroup === payload.taskGroup
           );
 
+          if (!group) {
+            setNeedRefresh(true);
+            return prevTasks;
+          }
+
           switch (payload.event.status) {
             case TaskEventPayloadEnums.Started: {
-              if (!group) return prevTasks;
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
                   t.status = RuntimeStateEnums.InProgress;
@@ -283,7 +291,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             case TaskEventPayloadEnums.Completed: {
-              if (!group) return prevTasks;
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
                   t.status = RuntimeStateEnums.Completed;
@@ -297,7 +304,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             case TaskEventPayloadEnums.Stopped: {
-              if (!group) return prevTasks;
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
                   t.status = RuntimeStateEnums.Stopped;
@@ -309,7 +315,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             case TaskEventPayloadEnums.Cancelled: {
-              if (!group) return prevTasks;
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
                   t.status = RuntimeStateEnums.Cancelled;
@@ -322,7 +327,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             case TaskEventPayloadEnums.InProgress: {
-              if (!group) return prevTasks;
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
                   t.current = (
@@ -349,7 +353,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   (payload.event as FailedTaskEventPayload).reason
                 }`
               );
-              if (!group) return prevTasks;
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
                   t.status = RuntimeStateEnums.Failed;
@@ -380,7 +383,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     const unlisten = TaskService.onTaskGroupUpdate((payload: GroupEvent) => {
       console.log(`Received task group update: ${payload.event}`);
       if (payload.event == GroupEventPayloadEnums.Created) {
-        handleRetrieveProgressTasks();
+        setNeedRefresh(true);
         return;
       }
       setTasks((prevTasks) => {
@@ -508,6 +511,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 break;
             }
           }
+          updateGroupDesc(group);
           return group;
         });
 
@@ -517,15 +521,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       unlisten();
     };
-  }, [
-    closeToast,
-    getInstanceList,
-    t,
-    toast,
-    updateGroupDesc,
-    openSharedModal,
-    handleRetrieveProgressTasks,
-  ]);
+  }, [closeToast, getInstanceList, t, toast, updateGroupDesc, openSharedModal]);
 
   useEffect(() => {
     if (!tasks || !tasks.length) setGeneralPercent(undefined);
