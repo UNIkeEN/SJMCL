@@ -119,6 +119,7 @@ export interface LauncherConfig {
       resourceTranslation: boolean;
     };
   };
+  downloadOptionalMods: boolean;
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
   discoverSourceEndpoints: string[];
@@ -266,6 +267,7 @@ export const defaultConfig: LauncherConfig = {
       resourceTranslation: true,
     },
   },
+  downloadOptionalMods: true,
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
   discoverSourceEndpoints: [

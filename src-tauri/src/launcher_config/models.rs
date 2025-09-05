@@ -243,6 +243,7 @@ structstruck::strike! {
       }
     },
     pub global_game_config: GameConfig,
+    pub download_optional_mods: bool,
     pub local_game_directories: Vec<GameDirectory>,
     #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(),
     \"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string()]")]
