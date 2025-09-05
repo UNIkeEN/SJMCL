@@ -449,7 +449,7 @@ pub async fn download_forge_libraries(
 
   let mut seen = std::collections::HashSet::new();
   task_params.retain(|param| match param {
-    PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
+    RuntimeTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
   });
 
   schedule_progressive_task_group(
