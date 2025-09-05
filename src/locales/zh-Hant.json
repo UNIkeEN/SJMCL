@@ -911,6 +911,10 @@
         "resourceTranslation": {
           "title": "顯示資源翻譯",
           "description": "啟用後，在資源下載介面嘗試顯示名稱或描述的簡體中文翻譯（如資料可用）"
+        },
+        "skipWelcomeModal": {
+          "title": "跳過歡迎介面",
+          "description": "啟用後，首次啟動時將跳過歡迎與使用者協議介面（推薦用戶已熟悉本軟體時使用）"
         }
       }
     }
