@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { LaunchingState } from "@/models/launch";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
+import { createSafeEventListener } from "@/utils/safe-event-listener";
 
 /**
  * Service class for launching process.
@@ -124,15 +124,9 @@ export class LaunchService {
    * @param callback The callback function to be called when the game log is output.
    */
   static onGameProcessOutput(callback: (payload: string) => void) {
-    const unlisten = getCurrentWebview().listen<string>(
+    return createSafeEventListener<string>(
       "launch:game-process-output",
-      (event) => {
-        callback(event.payload);
-      }
+      callback
     );
-
-    return () => {
-      unlisten.then((f) => f());
-    };
   }
 }

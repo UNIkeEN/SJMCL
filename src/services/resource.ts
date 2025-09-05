@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import {
@@ -13,6 +12,7 @@ import {
 } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
+import { createSafeEventListener } from "@/utils/safe-event-listener";
 
 /**
  * Service class for managing game & mod loader resources.
@@ -183,15 +183,9 @@ export class ResourceService {
   static onResourceRefresh(
     callback: (payload: OtherResourceType) => void
   ): () => void {
-    const unlisten = getCurrentWebview().listen<OtherResourceType>(
+    return createSafeEventListener<OtherResourceType>(
       "instance:refresh-resource-list",
-      (event) => {
-        callback(event.payload);
-      }
+      callback
     );
-
-    return () => {
-      unlisten.then((f) => f());
-    };
   }
 }
