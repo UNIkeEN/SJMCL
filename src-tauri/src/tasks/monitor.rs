@@ -6,7 +6,6 @@ use super::reporter::{GroupReporter, TaskReporter};
 
 use super::RuntimeTaskParam;
 use flume::{Receiver, Sender};
-use log::info;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::future::Future;
@@ -551,20 +550,22 @@ where
     let this = self.get_mut();
     {
       let group_state = this.handle.group_state.read().unwrap();
-      let mut desc = this.handle.desc.write().unwrap();
+      let desc = this.handle.desc.read().unwrap();
       if !group_state.pollable() || !desc.state.pollable() {
         return Poll::Ready(Err(std::io::Error::other(Box::new(
           RuntimeTaskProgressError::ExternalInterrupted,
         ))));
       }
-      Pin::new(&mut this.reader).poll_read(cx, buf).map_ok(|()| {
-        desc.current += buf.filled().len() as u64;
-        if this.interval.poll_tick(cx).is_ready() {
-          desc.save().unwrap();
-          this.reporter.report_progress(desc.current as i64)
-        }
-      })
-    }
+    };
+    Pin::new(&mut this.reader).poll_read(cx, buf).map_ok(|()| {
+      let incre = buf.filled().len() as u64;
+      this.handle.desc.write().unwrap().current += incre;
+      if this.interval.poll_tick(cx).is_ready() {
+        let desc = this.handle.desc.read().unwrap();
+        desc.save().unwrap();
+        this.reporter.report_progress(desc.current as i64)
+      }
+    })
   }
 }
 
@@ -600,11 +601,14 @@ impl TaskMonitor {
   pub fn new(app_handle: AppHandle) -> Self {
     let (tx, rx) = flume::unbounded();
     let config = retrieve_launcher_config(app_handle.clone()).unwrap();
-    let concurrency = if config.download.transmission.auto_concurrent {
-      std::thread::available_parallelism().unwrap().into()
-    } else {
-      config.download.transmission.concurrent_count
-    };
+    let concurrency = usize::min(
+      if config.download.transmission.auto_concurrent {
+        std::thread::available_parallelism().unwrap().into()
+      } else {
+        config.download.transmission.concurrent_count
+      },
+      8,
+    );
     Self {
       app_handle,
       group_descs: Default::default(),
@@ -699,9 +703,9 @@ impl TaskMonitor {
         };
 
         let handle = {
-          let app_handle = self.app_handle.clone();
           let permit = self.sema.clone().acquire_owned().await.unwrap();
-          let report_period = self.report_period.clone();
+          let app_handle = self.app_handle.clone();
+          let report_period = self.report_period;
           let task_group_state = group_desc.read().unwrap().state.clone();
           let task_group_desc = group_desc.clone();
           let task_handle_map = self.handle_map.clone();
@@ -726,7 +730,7 @@ impl TaskMonitor {
               group_state,
               &mut task_reporter,
             );
-            let _ = permit;
+            let _permit = permit;
             let r = task.await;
             {
               let mut group_desc = task_group_desc.write().unwrap();
