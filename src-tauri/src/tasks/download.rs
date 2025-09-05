@@ -7,7 +7,6 @@ use super::reporter::TaskReporter;
 
 use async_speed_limit::{clock::StandardClock, Limiter};
 use futures::stream::{Stream, TryStreamExt};
-use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use std::future::Future;
 use std::path::PathBuf;
@@ -60,10 +59,7 @@ async fn create_resp_stream(
     -1
   };
   Ok((
-    resp.bytes_stream().map(|res| match res {
-      Ok(bytes) => Ok(bytes),
-      Err(_) => Ok(bytes::Bytes::new()),
-    }),
+    resp.bytes_stream().map_err(std::io::Error::other),
     total_progress,
   ))
 }
