@@ -58,7 +58,7 @@ import {
   OtherResourceInfo,
   OtherResourceVersionPack,
 } from "@/models/resource";
-import { TaskParam, TaskTypeEnums } from "@/models/task";
+import { RuntimeTaskParam, TaskTypeEnums } from "@/models/task";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
 import { TaskService } from "@/services/task";
@@ -129,7 +129,7 @@ const DownloadSpecificResourceModal: React.FC<
   };
 
   const handleScheduleProgressiveTaskGroup = useCallback(
-    (taskGroup: string, params: TaskParam[]) => {
+    (taskGroup: string, params: RuntimeTaskParam[]) => {
       TaskService.scheduleProgressiveTaskGroup(taskGroup, params).then(
         (response) => {
           // success toast will now be called by task context group listener
@@ -243,7 +243,7 @@ const DownloadSpecificResourceModal: React.FC<
         src: item.downloadUrl,
         dest: savepath,
         sha1: item.sha1,
-        taskType: TaskTypeEnums.Download,
+        type: TaskTypeEnums.Download,
       },
     ]);
 
@@ -604,7 +604,7 @@ const DownloadSpecificResourceModal: React.FC<
                 </Link>
               </HStack>
             )}
-            {resource.mcmodId && (
+            {!!resource.mcmodId && (
               <HStack spacing={1} ml={2}>
                 <LuExternalLink />
                 <Link

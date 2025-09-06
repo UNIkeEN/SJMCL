@@ -1,18 +1,18 @@
 export enum TaskTypeEnums {
-  Download = "download",
+  Download = "Download",
 }
 
 export type TaskType = `${TaskTypeEnums}`;
 
-export interface DownloadTaskParam {
-  taskType: TaskTypeEnums.Download;
+export interface DownloadRuntimeTaskParam {
+  type: TaskTypeEnums.Download;
   src: string;
   dest: string; // destination path
   filename?: string; // destination filename
   sha1?: string;
 }
 
-export type TaskParam = DownloadTaskParam;
+export type RuntimeTaskParam = DownloadRuntimeTaskParam;
 
 export interface DownloadTaskPayload {
   taskType: TaskTypeEnums.Download;
@@ -24,22 +24,75 @@ export interface DownloadTaskPayload {
 
 export type TaskPayload = DownloadTaskPayload;
 
-export enum TaskDescStatusEnums {
+export enum RuntimeStateEnums {
   Stopped = "Stopped",
   Cancelled = "Cancelled",
   Completed = "Completed",
   InProgress = "InProgress",
   Failed = "Failed",
-  Waiting = "Waiting",
+  Pending = "Pending",
+}
+
+export interface StoppedRuntimeState {
+  type: RuntimeStateEnums.Stopped;
+  stoppedAt: number;
+}
+
+export interface FailedRuntimeState {
+  type: RuntimeStateEnums.Failed;
+  reason: string;
+}
+
+export interface InProgressRuntimeState {
+  type: RuntimeStateEnums.InProgress;
+}
+
+export interface CompletedRuntimeState {
+  type: RuntimeStateEnums.Completed;
+  completedAt: number;
+}
+
+export interface CancelledRuntimeState {
+  type: RuntimeStateEnums.Cancelled;
+}
+
+export interface PendingRuntimeState {
+  type: RuntimeStateEnums.Pending;
+}
+
+export type RuntimeState =
+  | StoppedRuntimeState
+  | FailedRuntimeState
+  | InProgressRuntimeState
+  | CompletedRuntimeState
+  | CancelledRuntimeState
+  | PendingRuntimeState;
+
+export interface RuntimeTaskDescSnapshot {
+  state: RuntimeState;
+  total: number;
+  current: number;
+  startAt: number;
+  createdAt: number;
+  filename: string;
+  dest: string;
+}
+
+export interface RuntimeGroupDescSnapshot {
+  name: string;
+  state: RuntimeState;
+  taskDescMap: Record<number, RuntimeTaskDescSnapshot>;
 }
 
 export interface TaskDesc {
   taskId: number;
-  taskGroup: string | null;
-  payload: TaskPayload;
-  current: number;
+  status: RuntimeStateEnums;
   total: number;
-  status?: TaskDescStatusEnums;
+  current: number;
+  startAt: number;
+  createdAt: number;
+  filename: string;
+  dest: string;
   progress?: number;
   reason?: string;
   estimatedTime?: Duration; // estimated time remaining in seconds
@@ -49,15 +102,14 @@ export interface TaskDesc {
 export interface TaskGroupDesc {
   taskDescs: TaskDesc[];
   taskGroup: string;
-  status: GTaskEventStatusEnums;
-  finishedCount?: number;
-  progress?: number;
+  status: RuntimeStateEnums;
+  finishedCount: number;
+  progress: number;
   reason?: string;
-  estimatedTime?: Duration; // estimated time remaining in seconds
+  estimatedTime?: Duration;
 }
 
-export enum PTaskEventStatusEnums {
-  Created = "Created",
+export enum TaskEventPayloadEnums {
   Started = "Started",
   InProgress = "InProgress",
   Completed = "Completed",
@@ -71,55 +123,50 @@ export interface Duration {
   nanos: number; // nanoseconds
 }
 
-export interface InProgressPTaskEventStatus {
-  status: PTaskEventStatusEnums.InProgress;
+export interface InProgressTaskEventPayload {
+  status: TaskEventPayloadEnums.InProgress;
   percent: number;
   current: number;
-  estimatedTime: Duration; // estimated time remaining
+  estimatedTime?: Duration; // estimated time remaining
   speed: number; // speed in bytes per second
 }
 
-export interface StartedPTaskEventStatus {
-  status: PTaskEventStatusEnums.Started;
+export interface StartedTaskEventPayload {
+  status: TaskEventPayloadEnums.Started;
   total: number; // total size in bytes
 }
 
-export interface CreatedPTaskEventStatus {
-  status: PTaskEventStatusEnums.Created;
-  desc: TaskDesc; // task description
+export interface CompletedTaskEventPayload {
+  status: TaskEventPayloadEnums.Completed;
 }
 
-export interface CompletedPTaskEventStatus {
-  status: PTaskEventStatusEnums.Completed;
-}
-
-export interface FailedPTaskEventStatus {
-  status: PTaskEventStatusEnums.Failed;
+export interface FailedTaskEventPayload {
+  status: TaskEventPayloadEnums.Failed;
   reason: string; // error message
 }
 
-export interface StoppedPTaskEventStatus {
-  status: PTaskEventStatusEnums.Stopped;
+export interface StoppedTaskEventPayload {
+  status: TaskEventPayloadEnums.Stopped;
 }
 
-export interface CancelledPTaskEventStatus {
-  status: PTaskEventStatusEnums.Cancelled;
+export interface CancelledTaskEventPayload {
+  status: TaskEventPayloadEnums.Cancelled;
 }
 
-export interface PTaskEventPayload {
+export interface TaskEvent {
   id: number;
   taskGroup: string;
   event:
-    | InProgressPTaskEventStatus
-    | StartedPTaskEventStatus
-    | CreatedPTaskEventStatus
-    | CompletedPTaskEventStatus
-    | FailedPTaskEventStatus
-    | StoppedPTaskEventStatus
-    | CancelledPTaskEventStatus;
+    | InProgressTaskEventPayload
+    | StartedTaskEventPayload
+    | CompletedTaskEventPayload
+    | FailedTaskEventPayload
+    | StoppedTaskEventPayload
+    | CancelledTaskEventPayload;
 }
 
-export enum GTaskEventStatusEnums {
+export enum GroupEventPayloadEnums {
+  Created = "Created",
   Started = "Started",
   Failed = "Failed",
   Completed = "Completed",
@@ -127,7 +174,7 @@ export enum GTaskEventStatusEnums {
   Cancelled = "Cancelled",
 }
 
-export interface GTaskEventPayload {
+export interface GroupEvent {
   taskGroup: string;
-  event: GTaskEventStatusEnums;
+  event: GroupEventPayloadEnums;
 }

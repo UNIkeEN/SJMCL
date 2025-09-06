@@ -30,7 +30,7 @@ use crate::{
     },
     models::{ModUpdateQuery, OtherResourceFileInfo, OtherResourceInfo, OtherResourceSource},
   },
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
+  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, RuntimeTaskParam},
 };
 use std::sync::Mutex;
 use tauri::{AppHandle, State};
@@ -142,7 +142,7 @@ pub async fn download_game_server(
   schedule_progressive_task_group(
     app,
     format!("game-server?{}", resource_info.id),
-    vec![PTaskParam::Download(DownloadParam {
+    vec![RuntimeTaskParam::Download(DownloadParam {
       src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
       dest: dest.clone().into(),
       filename: None,
@@ -197,9 +197,8 @@ pub async fn update_mods(
       filename: None,
       sha1: Some(query.sha1.clone()),
     };
-    download_tasks.push(PTaskParam::Download(download_param));
+    download_tasks.push(RuntimeTaskParam::Download(download_param));
   }
-
   schedule_progressive_task_group(app, "mod-update".to_string(), download_tasks, true).await?;
 
   for query in &queries {

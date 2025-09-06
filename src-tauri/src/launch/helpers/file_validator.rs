@@ -12,7 +12,7 @@ use crate::{
     helpers::misc::{convert_url_to_target_source, get_download_api},
     models::{ResourceType, SourceType},
   },
-  tasks::{download::DownloadParam, PTaskParam},
+  tasks::{download::DownloadParam, RuntimeTaskParam},
   utils::fs::validate_sha1,
 };
 use futures::future::join_all;
@@ -74,7 +74,7 @@ pub async fn get_invalid_library_files(
   library_path: &Path,
   client_info: &McClientInfo,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<RuntimeTaskParam>> {
   let mut artifacts = Vec::new();
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
@@ -101,7 +101,7 @@ pub async fn get_invalid_library_files(
           ],
           &source,
         )?;
-        Ok(Some(PTaskParam::Download(DownloadParam {
+        Ok(Some(RuntimeTaskParam::Download(DownloadParam {
           src,
           dest: file_path,
           filename: None,
@@ -111,7 +111,7 @@ pub async fn get_invalid_library_files(
     }
   });
 
-  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+  let results: Vec<SJMCLResult<Option<RuntimeTaskParam>>> = join_all(futs).await;
 
   let mut params = Vec::new();
   for r in results {
@@ -268,7 +268,7 @@ pub async fn get_invalid_assets(
   source: SourceType,
   asset_path: &Path,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<RuntimeTaskParam>> {
   let assets_download_api = get_download_api(source, ResourceType::Assets)?;
 
   let asset_index_path = asset_path.join(format!("indexes/{}.json", client_info.asset_index.id));
@@ -284,12 +284,12 @@ pub async fn get_invalid_assets(
       let exists = fs::try_exists(&dest).await?;
 
       if exists && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok()) {
-        Ok::<Option<PTaskParam>, crate::error::SJMCLError>(None)
+        Ok::<Option<RuntimeTaskParam>, crate::error::SJMCLError>(None)
       } else {
         let src = assets_download_api
           .join(&path_in_repo)
           .map_err(crate::error::SJMCLError::from)?;
-        Ok(Some(PTaskParam::Download(DownloadParam {
+        Ok(Some(RuntimeTaskParam::Download(DownloadParam {
           src,
           dest,
           filename: None,
@@ -299,7 +299,7 @@ pub async fn get_invalid_assets(
     }
   });
 
-  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+  let results: Vec<SJMCLResult<Option<RuntimeTaskParam>>> = join_all(futs).await;
 
   let mut params = Vec::new();
   for r in results {

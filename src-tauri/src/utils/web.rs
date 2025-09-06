@@ -12,58 +12,60 @@ use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 use std::sync::Mutex;
 use std::time::Duration;
 
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(60);
+const READ_TIMEOUT: Duration = Duration::from_secs(60);
+const RETRY_CEILING: Duration = Duration::from_secs(3600);
+
+pub struct WebConfig {
+  connect_timeout: Duration,
+  read_timeout: Duration,
+  use_version_header: bool,
+  use_proxy: bool,
+}
+
 /// Builds a reqwest client with SJMCL version header and proxy support.
-/// Defaults to 10s timeout.
-///
-/// # Arguments
-///
-/// * `app` - The Tauri AppHandle.
-/// * `use_version_header` - Whether to include the SJMCL version header.
-/// * `use_proxy` - Whether to use the proxy settings from the config.
-///
-/// TODO: support more custom config from reqwest::Config
-/// FIXME: Seems like hyper will panic if this client is shared across threads.
-///
-/// # Returns
-///
-/// A reqwest::Client instance.
-///
-/// # Example
-///
-/// ```rust
-/// let client = build_sjmcl_client(&app, true, true);
-/// ```
-pub fn build_sjmcl_client(app: &AppHandle, use_version_header: bool, use_proxy: bool) -> Client {
-  let mut builder = ClientBuilder::new()
-    .timeout(Duration::from_secs(10))
-    .tcp_keepalive(Duration::from_secs(10));
-
-  if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
-    if use_version_header {
-      // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}
-      // https://github.com/MCLF-CN/docs/issues/2
-      // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/User-Agent
-      if let Ok(header_value) = format!("SJMCL/{}", &config.basic_info.launcher_version).parse() {
-        let mut headers = HeaderMap::new();
-        headers.insert("User-Agent", header_value);
-        builder = builder.default_headers(headers);
-      }
-    }
-
-    if use_proxy && config.download.proxy.enabled {
-      let proxy_cfg = &config.download.proxy;
-      let proxy_url = match proxy_cfg.selected_type {
-        ProxyType::Http => format!("http://{}:{}", proxy_cfg.host, proxy_cfg.port),
-        ProxyType::Socks => format!("socks5h://{}:{}", proxy_cfg.host, proxy_cfg.port),
-      };
-
-      if let Ok(proxy) = Proxy::all(&proxy_url) {
-        builder = builder.proxy(proxy);
-      }
+/// Default timeout is 60 seconds for both connect and read.
+impl Default for WebConfig {
+  fn default() -> Self {
+    WebConfig {
+      connect_timeout: CONNECT_TIMEOUT,
+      read_timeout: READ_TIMEOUT,
+      use_version_header: true,
+      use_proxy: false,
     }
   }
+}
 
-  builder.build().unwrap_or_else(|_| Client::new())
+impl WebConfig {
+  pub fn build(self, app: &AppHandle) -> Client {
+    let mut builder = ClientBuilder::new()
+      .connect_timeout(self.connect_timeout)
+      .read_timeout(self.read_timeout);
+    if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
+      if self.use_version_header {
+        // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}
+        // https://github.com/MCLF-CN/docs/issues/2
+        // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/User-Agent
+        if let Ok(header_value) = format!("SJMCL/{}", &config.basic_info.launcher_version).parse() {
+          let mut headers = HeaderMap::new();
+          headers.insert("User-Agent", header_value);
+          builder = builder.default_headers(headers);
+        }
+      }
+      if self.use_proxy && config.download.proxy.enabled {
+        let proxy_cfg = &config.download.proxy;
+        let proxy_url = match proxy_cfg.selected_type {
+          ProxyType::Http => format!("http://{}:{}", proxy_cfg.host, proxy_cfg.port),
+          ProxyType::Socks => format!("socks5h://{}:{}", proxy_cfg.host, proxy_cfg.port),
+        };
+
+        if let Ok(proxy) = Proxy::all(&proxy_url) {
+          builder = builder.proxy(proxy);
+        }
+      }
+    }
+    builder.build().unwrap_or_else(|_| Client::new())
+  }
 }
 
 struct SJMCLRetryableStrategy;
@@ -91,7 +93,7 @@ impl RetryableStrategy for SJMCLRetryableStrategy {
 pub fn with_retry(client: Client) -> ClientWithMiddleware {
   ClientWithMiddlewareBuilder::new(client)
     .with(RetryTransientMiddleware::new_with_policy_and_strategy(
-      ExponentialBackoff::builder().build_with_total_retry_duration(Duration::from_secs(3600)),
+      ExponentialBackoff::builder().build_with_total_retry_duration(RETRY_CEILING),
       SJMCLRetryableStrategy {},
     ))
     .build()

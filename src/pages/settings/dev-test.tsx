@@ -3,8 +3,12 @@ import { invoke } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SkinPreview from "@/components/skin-preview";
-import { DownloadTaskParam, TaskParam, TaskTypeEnums } from "@/models/task";
-import { TaskService } from "@/services/task";
+import { useTaskContext } from "@/contexts/task";
+import {
+  DownloadRuntimeTaskParam,
+  RuntimeTaskParam,
+  TaskTypeEnums,
+} from "@/models/task";
 import { isProd } from "@/utils/env";
 import { createWindow } from "@/utils/window";
 
@@ -14,6 +18,7 @@ import { createWindow } from "@/utils/window";
 // ============================================================
 
 const DevTestPage = () => {
+  const { handleScheduleProgressiveTaskGroup } = useTaskContext();
   const router = useRouter();
   useEffect(() => {
     if (isProd) {
@@ -61,14 +66,17 @@ const DevTestPage = () => {
       <Button
         onClick={() => {
           console.log("Download button clicked");
-          let dl: DownloadTaskParam[] = [
+          let dl: DownloadRuntimeTaskParam[] = [
             {
               src: "https://edge.forgecdn.net/files/3045/381/%5B___MixinCompat-0.8___%5D.jar",
               dest: "D:\\mods\\[___MixinCompat-0.8___].jar",
-              taskType: TaskTypeEnums.Download,
+              type: TaskTypeEnums.Download,
             },
           ];
-          TaskService.scheduleProgressiveTaskGroup("group1", dl as TaskParam[]);
+          handleScheduleProgressiveTaskGroup(
+            "group1",
+            dl as RuntimeTaskParam[]
+          );
         }}
       >
         Start Downloading Task

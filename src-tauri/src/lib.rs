@@ -13,6 +13,8 @@ mod utils;
 use account::{
   helpers::authlib_injector::info::refresh_and_update_auth_servers, models::AccountInfo,
 };
+
+use async_speed_limit::Limiter;
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
@@ -27,7 +29,7 @@ use std::{collections::HashMap, sync::OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use tauri_plugin_log::{Target, TargetKind};
-use utils::{portable::is_portable, web::build_sjmcl_client};
+use utils::{portable::is_portable, web::WebConfig};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
@@ -136,17 +138,11 @@ pub async fn run() {
       discover::commands::fetch_news_sources_info,
       discover::commands::fetch_news_post_summaries,
       tasks::commands::schedule_progressive_task_group,
-      tasks::commands::cancel_progressive_task,
-      tasks::commands::resume_progressive_task,
-      tasks::commands::stop_progressive_task,
       tasks::commands::retrieve_progressive_task_list,
-      tasks::commands::create_transient_task,
-      tasks::commands::get_transient_task,
-      tasks::commands::set_transient_task_state,
-      tasks::commands::cancel_transient_task,
       tasks::commands::cancel_progressive_task_group,
       tasks::commands::resume_progressive_task_group,
       tasks::commands::stop_progressive_task_group,
+      tasks::commands::retry_progressive_task_group,
       utils::commands::retrieve_memory_info,
       utils::commands::extract_filename,
       utils::commands::retrieve_truetype_font_list,
@@ -173,6 +169,15 @@ pub async fn run() {
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
+
+      let limiter = if launcher_config.download.transmission.enable_speed_limit {
+        Some(<Limiter>::new(
+          (launcher_config.download.transmission.speed_limit_value * 1024) as f64,
+        ))
+      } else {
+        None
+      };
+      app.manage(limiter);
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
@@ -189,7 +194,7 @@ pub async fn run() {
 
       app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
-      let client = build_sjmcl_client(app.handle(), true, false);
+      let client = WebConfig::default().build(app.handle());
       app.manage(client);
 
       let launching_queue = Vec::<LaunchingState>::new();
@@ -203,8 +208,8 @@ pub async fn run() {
           .unwrap_or_default();
       });
 
-      // Refresh all auth servers
       let app_handle = app.handle().clone();
+      // Refresh all auth servers
       tauri::async_runtime::spawn(async move {
         refresh_and_update_auth_servers(&app_handle)
           .await

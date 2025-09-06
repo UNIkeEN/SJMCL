@@ -8,38 +8,39 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useGlobalData } from "@/contexts/global-data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { OtherResourceType } from "@/enums/resource";
 import {
-  CreatedPTaskEventStatus,
-  FailedPTaskEventStatus,
-  GTaskEventPayload,
-  GTaskEventStatusEnums,
-  InProgressPTaskEventStatus,
-  PTaskEventPayload,
-  PTaskEventStatusEnums,
-  StartedPTaskEventStatus,
+  FailedTaskEventPayload,
+  GroupEvent,
+  GroupEventPayloadEnums,
+  InProgressTaskEventPayload,
+  RuntimeGroupDescSnapshot,
+  RuntimeStateEnums,
+  RuntimeTaskParam,
+  StartedTaskEventPayload,
   TaskDesc,
-  TaskDescStatusEnums,
+  TaskEvent,
+  TaskEventPayloadEnums,
   TaskGroupDesc,
-  TaskParam,
 } from "@/models/task";
 import { InstanceService } from "@/services/instance";
 import { TaskService } from "@/services/task";
 import { parseTaskGroup } from "@/utils/task";
-import { useGlobalData } from "./global-data";
-import { useSharedModals } from "./shared-modal";
 
 interface TaskContextType {
   tasks: TaskGroupDesc[];
   generalPercent: number | undefined; // General progress percentage for all tasks
   handleScheduleProgressiveTaskGroup: (
     taskGroup: string,
-    params: TaskParam[]
+    params: RuntimeTaskParam[]
   ) => void;
   handleCancelProgressiveTaskGroup: (taskGroup: string) => void;
   handleResumeProgressiveTaskGroup: (taskGroup: string) => void;
   handleStopProgressiveTaskGroup: (taskGroup: string) => void;
+  handleRetryProgressiveTaskGroup: (taskGroup: string) => void;
 }
 
 export const TaskContext = createContext<TaskContextType | undefined>(
@@ -55,19 +56,13 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const { openSharedModal } = useSharedModals();
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
+  const [needRefresh, setNeedRefresh] = useState<boolean>(true);
   const { t } = useTranslation();
   const loadingToastRef = React.useRef<ToastId | null>(null);
 
-  const updateGroupInfo = useCallback((group: TaskGroupDesc) => {
-    if (group.status === GTaskEventStatusEnums.Completed) {
-      group.taskDescs.forEach((t) => {
-        t.status = TaskDescStatusEnums.Completed;
-        t.current = t.total; // Ensure current is set to total for completed tasks
-      });
-    }
-
+  const updateGroupDesc = useCallback((group: TaskGroupDesc) => {
     group.finishedCount = group.taskDescs.filter(
-      (t) => t.status === TaskDescStatusEnums.Completed
+      (t) => t.status === RuntimeStateEnums.Completed
     ).length;
 
     let knownTotalArr = group.taskDescs.filter((t) => t.total && t.total > 0);
@@ -90,7 +85,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
     group.estimatedTime = undefined;
     group.taskDescs.forEach((t) => {
-      if (t.status === TaskDescStatusEnums.InProgress && t.estimatedTime) {
+      if (t.status === RuntimeStateEnums.InProgress && t.estimatedTime) {
         if (
           !group.estimatedTime ||
           group.estimatedTime.secs < t.estimatedTime.secs
@@ -103,14 +98,14 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     group.taskDescs.sort((a, b) => {
       let level = (desc: TaskDesc) => {
         switch (desc.status) {
-          case TaskDescStatusEnums.Failed:
+          case RuntimeStateEnums.Failed:
             return 0;
-          case TaskDescStatusEnums.InProgress:
+          case RuntimeStateEnums.InProgress:
             return 1;
-          case TaskDescStatusEnums.Waiting:
+          case RuntimeStateEnums.Pending:
             return 2;
-          case TaskDescStatusEnums.Completed:
-            return 4;
+          case RuntimeStateEnums.Completed:
+            return 999;
           default:
             return 3;
         }
@@ -119,31 +114,52 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, []);
 
+  const convertGroupSnapshotToDesc = (
+    snapshot: RuntimeGroupDescSnapshot
+  ): TaskGroupDesc => {
+    return {
+      taskGroup: snapshot.name,
+      taskDescs: Object.entries(snapshot.taskDescMap).map(
+        ([id, desc]): TaskDesc => ({
+          taskId: parseInt(id),
+          status: desc.state.type,
+          total: desc.total,
+          current: desc.current,
+          startAt: desc.startAt,
+          createdAt: desc.createdAt,
+          filename: desc.filename,
+          dest: desc.dest,
+          progress: (desc.current * 100) / desc.total,
+          reason:
+            desc.state.type === RuntimeStateEnums.Failed
+              ? desc.state.reason
+              : undefined,
+        })
+      ),
+      status: snapshot.state.type,
+      finishedCount: 0,
+      progress: 0,
+    };
+  };
+
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
       if (response.status === "success") {
         console.log("Retrieved progressive tasks:", response.data);
         // info(JSON.stringify(response.data));
-        setTasks((prevTasks) => {
-          let tasks = response.data
-            .map((group) => {
-              let prevGroup = prevTasks?.find(
-                (t) => t.taskGroup === group.taskGroup
-              );
-              if (prevGroup) return prevGroup;
-              updateGroupInfo(group);
-              return group;
-            })
-            .filter(
-              (group) => group.status !== GTaskEventStatusEnums.Cancelled
-            );
-          tasks.sort((a, b) => {
-            let { timestamp: aTime } = parseTaskGroup(a.taskGroup);
-            let { timestamp: bTime } = parseTaskGroup(b.taskGroup);
-            return bTime - aTime; // Sort by timestamp descending
-          });
-          return tasks;
+        let newTasks = response.data
+          .map((snapshot) => {
+            let groupDesc = convertGroupSnapshotToDesc(snapshot);
+            updateGroupDesc(groupDesc);
+            return groupDesc;
+          })
+          .filter((group) => group.status !== RuntimeStateEnums.Cancelled);
+        newTasks.sort((a, b) => {
+          let { timestamp: aTime } = parseTaskGroup(a.taskGroup);
+          let { timestamp: bTime } = parseTaskGroup(b.taskGroup);
+          return bTime - aTime; // Sort by timestamp descending
         });
+        setTasks(newTasks);
       } else {
         toast({
           title: response.message,
@@ -152,18 +168,27 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
     });
-  }, [toast, updateGroupInfo]);
+  }, [toast, updateGroupDesc]);
 
   useEffect(() => {
-    handleRetrieveProgressTasks();
-  }, [handleRetrieveProgressTasks]);
+    if (needRefresh) {
+      handleRetrieveProgressTasks();
+      setNeedRefresh(false);
+    }
+  }, [handleRetrieveProgressTasks, needRefresh]);
 
   const handleScheduleProgressiveTaskGroup = useCallback(
-    (taskGroup: string, params: TaskParam[]) => {
+    (taskGroup: string, params: RuntimeTaskParam[]) => {
       TaskService.scheduleProgressiveTaskGroup(taskGroup, params).then(
         (response) => {
-          // success toast will now be called by task context group listener
-          if (response.status !== "success") {
+          if (response.status === "success") {
+            console.log("Scheduled progressive tasks:", response.data);
+            let groupDesc = convertGroupSnapshotToDesc(response.data);
+            updateGroupDesc(groupDesc);
+            setTasks((prevTasks) => {
+              return [groupDesc, ...prevTasks];
+            });
+          } else {
             toast({
               title: response.message,
               description: response.details,
@@ -173,7 +198,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       );
     },
-    [toast]
+    [toast, updateGroupDesc]
   );
 
   const handleCancelProgressiveTaskGroup = useCallback(
@@ -221,151 +246,121 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     [toast]
   );
 
+  const handleRetryProgressiveTaskGroup = useCallback(
+    (taskGroup: string) => {
+      TaskService.retryProgressiveTaskGroup(taskGroup).then((response) => {
+        if (response.status !== "success") {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        }
+      });
+    },
+    [toast]
+  );
+
   useEffect(() => {
     const unlisten = TaskService.onProgressiveTaskUpdate(
-      (payload: PTaskEventPayload) => {
-        // info(
-        //   `Received task update: ${payload.id}, status: ${payload.event.status}`
-        // );
+      (payload: TaskEvent) => {
+        console.log(
+          `Received task update: ${payload.id}, status: ${payload.event.status}`
+        );
         setTasks((prevTasks) => {
           const group = prevTasks?.find(
             (t) => t.taskGroup === payload.taskGroup
           );
 
-          switch (payload.event.status) {
-            case PTaskEventStatusEnums.Created: {
-              if (group) {
-                if (group.taskDescs.some((t) => t.taskId === payload.id)) {
-                  // info(
-                  //   `Task ${payload.id} already exists in group ${payload.taskGroup}`
-                  // );
-                } else if (
-                  group.taskDescs.some(
-                    (t) =>
-                      t.payload.dest ===
-                      (payload.event as CreatedPTaskEventStatus).desc.payload
-                        .dest
-                  )
-                ) {
-                  // It' a retrial task emitted from the backend
-                  group.taskDescs = group.taskDescs.map((t) => {
-                    if (
-                      t.payload.dest ===
-                      (payload.event as CreatedPTaskEventStatus).desc.payload
-                        .dest
-                    ) {
-                      t = (payload.event as CreatedPTaskEventStatus).desc;
-                    }
-                    return t;
-                  });
-                } else {
-                  group.taskDescs.unshift(payload.event.desc);
-                  // info(`Added task ${payload.id} to group ${payload.taskGroup}`);
-                  updateGroupInfo(group);
-                }
-              } else {
-                // info(`Creating new task group ${payload.taskGroup}`);
-                // Create a new task group if it doesn't exist
-                let newGroup: TaskGroupDesc = {
-                  status: GTaskEventStatusEnums.Started,
-                  taskGroup: payload.taskGroup,
-                  taskDescs: [payload.event.desc],
-                };
-                updateGroupInfo(newGroup);
-                return [newGroup, ...(prevTasks || [])];
-              }
-              break;
-            }
+          if (!group) {
+            setNeedRefresh(true);
+            return prevTasks;
+          }
 
-            case PTaskEventStatusEnums.Started: {
-              if (!group) return prevTasks;
+          switch (payload.event.status) {
+            case TaskEventPayloadEnums.Started: {
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.InProgress;
-                  t.total = (payload.event as StartedPTaskEventStatus).total;
+                  t.status = RuntimeStateEnums.InProgress;
+                  t.total = (payload.event as StartedTaskEventPayload).total;
                 }
                 return t;
               });
-              updateGroupInfo(group);
+              updateGroupDesc(group);
               break;
             }
 
-            case PTaskEventStatusEnums.Completed: {
-              if (!group) return prevTasks;
+            case TaskEventPayloadEnums.Completed: {
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Completed;
+                  t.status = RuntimeStateEnums.Completed;
                   t.current = t.total;
                 }
                 return t;
               });
               // info(`Task ${payload.id} completed in group ${payload.taskGroup}`);
-              updateGroupInfo(group);
+              updateGroupDesc(group);
               break;
             }
 
-            case PTaskEventStatusEnums.Stopped: {
-              if (!group) return prevTasks;
+            case TaskEventPayloadEnums.Stopped: {
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Stopped;
+                  t.status = RuntimeStateEnums.Stopped;
                 }
                 return t;
               });
-              updateGroupInfo(group);
+              updateGroupDesc(group);
               break;
             }
 
-            case PTaskEventStatusEnums.Cancelled: {
-              if (!group) return prevTasks;
+            case TaskEventPayloadEnums.Cancelled: {
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Cancelled;
+                  t.status = RuntimeStateEnums.Cancelled;
                 }
                 return t;
               });
-              updateGroupInfo(group);
+              updateGroupDesc(group);
               // info(`Task ${payload.id} cancelled in group ${payload.taskGroup}`);
               break;
             }
 
-            case PTaskEventStatusEnums.InProgress: {
-              if (!group) return prevTasks;
+            case TaskEventPayloadEnums.InProgress: {
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
                   t.current = (
-                    payload.event as InProgressPTaskEventStatus
+                    payload.event as InProgressTaskEventPayload
                   ).current;
-                  t.status = TaskDescStatusEnums.InProgress;
+                  t.status = RuntimeStateEnums.InProgress;
                   t.estimatedTime = (
-                    payload.event as InProgressPTaskEventStatus
+                    payload.event as InProgressTaskEventPayload
                   ).estimatedTime;
-                  t.speed = (payload.event as InProgressPTaskEventStatus).speed;
+                  t.speed = (payload.event as InProgressTaskEventPayload).speed;
                 }
                 return t;
               });
-              updateGroupInfo(group);
+              updateGroupDesc(group);
               // info(
               //   `Task ${payload.id} in progress in group ${payload.taskGroup}`
               // );
               break;
             }
 
-            case PTaskEventStatusEnums.Failed: {
+            case TaskEventPayloadEnums.Failed: {
               console.error(
                 `Task ${payload.id} failed in group ${payload.taskGroup}: ${
-                  (payload.event as FailedPTaskEventStatus).reason
+                  (payload.event as FailedTaskEventPayload).reason
                 }`
               );
-              if (!group) return prevTasks;
               group.taskDescs = group.taskDescs.map((t) => {
                 if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Failed;
-                  t.reason = (payload.event as FailedPTaskEventStatus).reason;
+                  t.status = RuntimeStateEnums.Failed;
+                  t.reason = (payload.event as FailedTaskEventPayload).reason;
                 }
                 return t;
               });
-              updateGroupInfo(group);
+              updateGroupDesc(group);
               // info(`Task ${payload.id} failed in group ${payload.taskGroup}`);
               break;
             }
@@ -382,139 +377,157 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       unlisten();
     };
-  }, [t, toast, updateGroupInfo]);
+  }, [t, toast, updateGroupDesc]);
 
   useEffect(() => {
-    const unlisten = TaskService.onTaskGroupUpdate(
-      (payload: GTaskEventPayload) => {
-        console.log(`Received task group update: ${payload.event}`);
-        setTasks((prevTasks) => {
-          let newTasks = prevTasks.map((task) => {
-            if (task.taskGroup === payload.taskGroup) {
-              task.status = payload.event;
-              if (payload.event === GTaskEventStatusEnums.Completed) {
-                task.taskDescs.forEach((t) => {
+    const unlisten = TaskService.onTaskGroupUpdate((payload: GroupEvent) => {
+      console.log(`Received task group update: ${payload.event}`);
+      if (payload.event == GroupEventPayloadEnums.Created) {
+        setNeedRefresh(true);
+        return;
+      }
+      setTasks((prevTasks) => {
+        const { name, version } = parseTaskGroup(payload.taskGroup);
+        let newTasks = prevTasks.map((group) => {
+          if (group.taskGroup === payload.taskGroup) {
+            switch (payload.event) {
+              case GroupEventPayloadEnums.Started:
+                group.status = RuntimeStateEnums.InProgress;
+                break;
+
+              case GroupEventPayloadEnums.Completed:
+                toast({
+                  status: "success",
+                  title: t(`Services.task.onTaskGroupUpdate.status.Completed`, {
+                    param: t(`DownloadTasksPage.task.${name}`, {
+                      param: version || "",
+                    }),
+                  }),
+                });
+                group.status = RuntimeStateEnums.Completed;
+                group.taskDescs.forEach((t) => {
                   if (
-                    t.status === TaskDescStatusEnums.Waiting ||
-                    t.status === TaskDescStatusEnums.InProgress
+                    t.status === RuntimeStateEnums.Pending ||
+                    t.status === RuntimeStateEnums.InProgress
                   ) {
-                    t.status = TaskDescStatusEnums.Completed;
+                    t.status = RuntimeStateEnums.Completed;
                     t.current = t.total;
-                  } else if (t.status === TaskDescStatusEnums.Failed) {
-                    task.status = GTaskEventStatusEnums.Failed;
-                    payload.event = GTaskEventStatusEnums.Failed;
                   }
                 });
-              }
-            }
-            return task;
-          });
-
-          const { name, version } = parseTaskGroup(payload.taskGroup);
-
-          toast({
-            status:
-              payload.event === GTaskEventStatusEnums.Failed
-                ? "error"
-                : "success",
-            title: t(
-              `Services.task.onTaskGroupUpdate.status.${payload.event}`,
-              {
-                param: t(`DownloadTasksPage.task.${name}`, {
-                  param: version || "",
-                }),
-              }
-            ),
-          });
-
-          if (payload.event === GTaskEventStatusEnums.Completed) {
-            switch (name) {
-              case "game-client":
-                getInstanceList(true);
-                break;
-              case "forge-libraries":
-              case "neoforge-libraries":
-                if (version) {
-                  let instanceName = getInstanceList()?.find(
-                    (i) => i.id === version
-                  )?.name;
-                  if (loadingToastRef.current) return newTasks;
-                  loadingToastRef.current = toast({
-                    title: t(
-                      "Services.instance.finishModLoaderInstall.loading",
-                      {
-                        instanceName,
-                      }
-                    ),
-                    status: "loading",
-                  });
-                  InstanceService.finishModLoaderInstall(version).then(
-                    (response) => {
-                      if (loadingToastRef.current) {
-                        closeToast(loadingToastRef.current);
-                        loadingToastRef.current = null;
-                      }
-                      if (response.status === "success") {
-                        toast({
-                          title: response.message,
-                          status: "success",
-                        });
-                      } else {
-                        toast({
-                          title: response.message,
-                          description: response.details,
-                          status: "error",
-                        });
-                      }
+                switch (name) {
+                  case "game-client":
+                    getInstanceList(true);
+                    break;
+                  case "forge-libraries":
+                  case "neoforge-libraries":
+                    if (version) {
+                      let instanceName = getInstanceList()?.find(
+                        (i) => i.id === version
+                      )?.name;
+                      if (loadingToastRef.current) break;
+                      loadingToastRef.current = toast({
+                        title: t(
+                          "Services.instance.finishModLoaderInstall.loading",
+                          {
+                            instanceName,
+                          }
+                        ),
+                        status: "loading",
+                      });
+                      InstanceService.finishModLoaderInstall(version).then(
+                        (response) => {
+                          if (loadingToastRef.current) {
+                            closeToast(loadingToastRef.current);
+                            loadingToastRef.current = null;
+                          }
+                          if (response.status === "success") {
+                            toast({
+                              title: response.message,
+                              status: "success",
+                            });
+                          } else {
+                            toast({
+                              title: response.message,
+                              description: response.details,
+                              status: "error",
+                            });
+                          }
+                        }
+                      );
                     }
-                  );
+                    break;
+                  case "mod":
+                  case "mod-update":
+                    emit(
+                      "instance:refresh-resource-list",
+                      OtherResourceType.Mod
+                    );
+                    break;
+                  case "resourcepack":
+                    emit(
+                      "instance:refresh-resource-list",
+                      OtherResourceType.ResourcePack
+                    );
+                    break;
+                  case "shader":
+                    emit(
+                      "instance:refresh-resource-list",
+                      OtherResourceType.ShaderPack
+                    );
+                    break;
+                  case "modpack":
+                    if (group.taskDescs.length > 0) {
+                      openSharedModal("import-modpack", {
+                        path: group.taskDescs[0].dest,
+                      });
+                    }
+                    break;
+                  default:
+                    break;
                 }
                 break;
-              case "mod":
-              case "mod-update":
-                emit("instance:refresh-resource-list", OtherResourceType.Mod);
+
+              case GroupEventPayloadEnums.Failed:
+                toast({
+                  status: "error",
+                  title: t(`Services.task.onTaskGroupUpdate.status.Failed`, {
+                    param: t(`DownloadTasksPage.task.${name}`, {
+                      param: version || "",
+                    }),
+                  }),
+                });
+                group.status = RuntimeStateEnums.Failed;
                 break;
-              case "resourcepack":
-                emit(
-                  "instance:refresh-resource-list",
-                  OtherResourceType.ResourcePack
-                );
+
+              case GroupEventPayloadEnums.Stopped:
+                group.status = RuntimeStateEnums.Stopped;
                 break;
-              case "shader":
-                emit(
-                  "instance:refresh-resource-list",
-                  OtherResourceType.ShaderPack
-                );
+
+              case GroupEventPayloadEnums.Cancelled:
+                group.status = RuntimeStateEnums.Cancelled;
                 break;
-              case "modpack":
-                let group = newTasks.find(
-                  (t) => t.taskGroup === payload.taskGroup
-                );
-                if (group && group.taskDescs.length > 0) {
-                  openSharedModal("import-modpack", {
-                    path: group.taskDescs[0].payload.dest,
-                  });
-                }
-                break;
+
               default:
                 break;
             }
+            updateGroupDesc(group);
           }
-
-          return newTasks;
+          return group;
         });
-      }
-    );
+
+        return newTasks;
+      });
+    });
     return () => {
       unlisten();
     };
-  }, [closeToast, getInstanceList, t, toast, updateGroupInfo, openSharedModal]);
+  }, [closeToast, getInstanceList, t, toast, updateGroupDesc, openSharedModal]);
 
   useEffect(() => {
     if (!tasks || !tasks.length) setGeneralPercent(undefined);
     else {
       let filteredTasks = tasks.filter(
-        (t) => t.status === GTaskEventStatusEnums.Started
+        (t) => t.status === RuntimeStateEnums.InProgress
       );
 
       if (filteredTasks.length === 0) setGeneralPercent(undefined);
@@ -538,6 +551,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         handleCancelProgressiveTaskGroup,
         handleResumeProgressiveTaskGroup,
         handleStopProgressiveTaskGroup,
+        handleRetryProgressiveTaskGroup,
       }}
     >
       {children}
