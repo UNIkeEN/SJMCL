@@ -1,16 +1,16 @@
 use super::constants::SCOPE;
 use crate::account::helpers::authlib_injector::{common::parse_profile, models::MinecraftProfile};
-use crate::account::helpers::misc::{OAuthCode, OAuthTokens};
-use crate::account::models::{AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo};
+use crate::account::helpers::misc::oauth_polling;
+use crate::account::models::{
+  AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
+};
 use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
-use tokio::time::{sleep, Duration};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct OpenIDConfig {
@@ -56,7 +56,7 @@ pub async fn device_authorization(
   app: &AppHandle,
   openid_configuration_url: String,
   client_id: String,
-) -> SJMCLResult<OAuthCodeResponse> {
+) -> SJMCLResult<DeviceAuthResponseInfo> {
   let client = app.state::<reqwest::Client>();
 
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
@@ -67,7 +67,7 @@ pub async fn device_authorization(
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
-    .json::<OAuthCode>()
+    .json::<DeviceAuthResponse>()
     .await
     .map_err(|_| AccountError::ParseError)?;
 
@@ -77,14 +77,16 @@ pub async fn device_authorization(
     .verification_uri_complete
     .unwrap_or(response.verification_uri);
   let interval = response.interval;
+  let expires_in = response.expires_in;
 
   app.clipboard().write_text(user_code.clone())?;
 
-  Ok(OAuthCodeResponse {
+  Ok(DeviceAuthResponseInfo {
     device_code,
     user_code,
     verification_uri,
     interval,
+    expires_in,
   })
 }
 
@@ -134,51 +136,20 @@ pub async fn login(
   auth_server_url: String,
   openid_configuration_url: String,
   client_id: String,
-  auth_info: OAuthCodeResponse,
+  auth_info: DeviceAuthResponseInfo,
 ) -> SJMCLResult<PlayerInfo> {
   let client = app.state::<reqwest::Client>();
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-
-  {
-    let mut account_state = account_binding.lock()?;
-    account_state.is_oauth_processing = true;
-  }
-
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
   let jwks = fetch_jwks(app, openid_configuration.jwks_uri).await?;
-  let tokens: OAuthTokens;
-  loop {
-    {
-      let account_state = account_binding.lock()?;
-      if !account_state.is_oauth_processing {
-        return Err(AccountError::Cancelled)?;
-      }
-    }
-
-    let token_response = client
-      .post(&openid_configuration.token_endpoint)
-      .form(&[
-        ("client_id", client_id.clone()),
-        ("device_code", auth_info.device_code.clone()),
-        (
-          "grant_type",
-          "urn:ietf:params:oauth:grant-type:device_code".to_string(),
-        ),
-      ])
-      .send()
-      .await?;
-
-    if token_response.status().is_success() {
-      tokens = token_response
-        .json()
-        .await
-        .map_err(|_| AccountError::ParseError)?;
-      break;
-    }
-
-    sleep(Duration::from_secs(auth_info.interval)).await;
-  }
-
+  let sender = client.post(&openid_configuration.token_endpoint).form(&[
+    ("client_id", client_id.clone()),
+    ("device_code", auth_info.device_code.clone()),
+    (
+      "grant_type",
+      "urn:ietf:params:oauth:grant-type:device_code".to_string(),
+    ),
+  ]);
+  let tokens = oauth_polling(app, sender, auth_info).await?;
   parse_token(app, jwks, &tokens, Some(auth_server_url), client_id).await
 }
 

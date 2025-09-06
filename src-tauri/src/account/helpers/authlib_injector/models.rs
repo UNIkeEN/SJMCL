@@ -5,10 +5,10 @@ structstruck::strike! {
   pub struct MinecraftProfile {
     pub id: String,
     pub name: String,
-    pub properties: Vec<pub struct {
+    pub properties: Option<Vec<pub struct {
       pub name: String,
       pub value: String,
-    }>
+    }>>
   }
 }
 

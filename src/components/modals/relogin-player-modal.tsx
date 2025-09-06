@@ -21,7 +21,7 @@ import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { PlayerType } from "@/enums/account";
-import { OAuthCodeResponse, Player } from "@/models/account";
+import { DeviceAuthResponseInfo, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 
 interface ReLoginPlayerModalProps extends Omit<ModalProps, "children"> {
@@ -42,7 +42,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
   const isOAuth = !!player.refreshToken;
 
   const [oauthCodeResponse, setOAuthCodeResponse] =
-    useState<OAuthCodeResponse>();
+    useState<DeviceAuthResponseInfo>();
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

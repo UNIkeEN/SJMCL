@@ -9,7 +9,7 @@ use super::{
     microsoft, offline,
   },
   models::{
-    AccountError, AccountInfo, AuthServer, OAuthCodeResponse, Player, PlayerInfo, PlayerType,
+    AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
   },
 };
 use crate::{
@@ -69,7 +69,7 @@ pub async fn fetch_oauth_code(
   app: AppHandle,
   server_type: PlayerType,
   auth_server_url: String,
-) -> SJMCLResult<OAuthCodeResponse> {
+) -> SJMCLResult<DeviceAuthResponseInfo> {
   if server_type == PlayerType::ThirdParty {
     let auth_server = AuthServer::from(get_auth_server_info_by_url(&app, auth_server_url)?);
 
@@ -90,7 +90,7 @@ pub async fn fetch_oauth_code(
 pub async fn add_player_oauth(
   app: AppHandle,
   server_type: PlayerType,
-  auth_info: OAuthCodeResponse,
+  auth_info: DeviceAuthResponseInfo,
   auth_server_url: String,
 ) -> SJMCLResult<()> {
   let new_player = match server_type {
@@ -150,7 +150,7 @@ pub async fn add_player_oauth(
 pub async fn relogin_player_oauth(
   app: AppHandle,
   player_id: String,
-  auth_info: OAuthCodeResponse,
+  auth_info: DeviceAuthResponseInfo,
 ) -> SJMCLResult<()> {
   let account_binding = app.state::<Mutex<AccountInfo>>();
 

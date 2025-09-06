@@ -31,8 +31,8 @@ pub async fn parse_profile(
 
   if let Some(texture_info_base64) = profile
     .properties
-    .iter()
-    .find(|property| property.name == "textures")
+    .as_ref()
+    .and_then(|props| props.iter().find(|property| property.name == "textures"))
   {
     let texture_info = general_purpose::STANDARD
       .decode(texture_info_base64.value.clone())

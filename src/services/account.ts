@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { AuthServer, OAuthCodeResponse, Player } from "@/models/account";
+import { AuthServer, DeviceAuthResponseInfo, Player } from "@/models/account";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -37,13 +37,13 @@ export class AccountService {
    * FETCH the user code using both OAuth methods (Microsoft and 3rd party).
    * @param {string} serverType - The type of authentication server (Microsoft or 3rd party).
    * @param {string} [authServerUrl] - (Optional) The authentication server's URL.
-   * @returns {Promise<InvokeResponse<OAuthCodeResponse>>}
+   * @returns {Promise<InvokeResponse<DeviceAuthResponseInfo>>}
    */
   @responseHandler("account")
   static async fetchOAuthCode(
     serverType: "3rdparty" | "microsoft",
     authServerUrl?: string
-  ): Promise<InvokeResponse<OAuthCodeResponse>> {
+  ): Promise<InvokeResponse<DeviceAuthResponseInfo>> {
     return await invoke("fetch_oauth_code", {
       serverType,
       authServerUrl: authServerUrl || "",
@@ -53,14 +53,14 @@ export class AccountService {
   /**
    * ADD the player using both OAuth methods (Microsoft and 3rd party).
    * @param {string} serverType - The type of authentication server (Microsoft or 3rd party).
-   * @param {OAuthCodeResponse} authInfo - The authentication information (code and verification URI).
+   * @param {DeviceAuthResponseInfo} authInfo - The authentication information (code and verification URI).
    * @param {string} [authServerUrl] - (Optional) The authentication server's URL.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
   static async addPlayerOAuth(
     serverType: "3rdparty" | "microsoft",
-    authInfo: OAuthCodeResponse,
+    authInfo: DeviceAuthResponseInfo,
     authServerUrl?: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("add_player_oauth", {
@@ -73,13 +73,13 @@ export class AccountService {
   /**
    * RE-LOGIN a player using both OAuth methods (Microsoft and 3rd party).
    * @param {string} playerId - The player ID of the player to be re-logged in.
-   * @param {OAuthCodeResponse} authInfo - The authentication information (code and verification URI).
+   * @param {DeviceAuthResponseInfo} authInfo - The authentication information (code and verification URI).
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
   static async reloginPlayerOAuth(
     playerId: string,
-    authInfo: OAuthCodeResponse
+    authInfo: DeviceAuthResponseInfo
   ): Promise<InvokeResponse<void>> {
     return await invoke("relogin_player_oauth", { playerId, authInfo });
   }
