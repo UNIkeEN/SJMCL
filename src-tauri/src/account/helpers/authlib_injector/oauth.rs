@@ -1,6 +1,6 @@
 use super::constants::SCOPE;
 use crate::account::helpers::authlib_injector::{common::parse_profile, models::MinecraftProfile};
-use crate::account::helpers::misc::oauth_pooling;
+use crate::account::helpers::misc::oauth_polling;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
 };
@@ -149,7 +149,7 @@ pub async fn login(
       "urn:ietf:params:oauth:grant-type:device_code".to_string(),
     ),
   ]);
-  let tokens = oauth_pooling(app, sender, auth_info).await?;
+  let tokens = oauth_polling(app, sender, auth_info).await?;
   parse_token(app, jwks, &tokens, Some(auth_server_url), client_id).await
 }
 

@@ -1,6 +1,6 @@
 use crate::{
   account::{
-    constants::DEFAULT_POOLING_INTERVAL,
+    constants::DEFAULT_POLLING_INTERVAL,
     models::{AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo},
   },
   error::SJMCLResult,
@@ -91,7 +91,7 @@ pub async fn check_full_login_availability(app: &AppHandle) -> SJMCLResult<()> {
   Ok(())
 }
 
-pub async fn oauth_pooling(
+pub async fn oauth_polling(
   app: &AppHandle,
   sender: RequestBuilder,
   auth_info: DeviceAuthResponseInfo,
@@ -101,7 +101,7 @@ pub async fn oauth_pooling(
     let mut account_state = account_binding.lock()?;
     account_state.is_oauth_processing = true;
   }
-  let interval = auth_info.interval.unwrap_or(DEFAULT_POOLING_INTERVAL);
+  let interval = auth_info.interval.unwrap_or(DEFAULT_POLLING_INTERVAL);
   let start_time = std::time::Instant::now();
   loop {
     {
