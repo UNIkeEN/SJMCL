@@ -273,7 +273,7 @@ export const DownloadTasksPage = () => {
                             value={task.progress}
                             colorScheme={primaryColor}
                             isIndeterminate={
-                              task.status === RuntimeStateEnums.Waiting
+                              task.status === RuntimeStateEnums.Pending
                             }
                             borderRadius="sm"
                           />

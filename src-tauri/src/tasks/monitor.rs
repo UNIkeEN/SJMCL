@@ -746,6 +746,7 @@ impl TaskMonitor {
                   if e.downcast::<RuntimeTaskProgressError>().is_err() {
                     group_desc.stateful_set.fail_one(task_id);
                     task_desc.state.set_failed(reason.clone());
+                    *group_state = task_desc.state.clone();
                   } else {
                     task_desc.state = group_state.clone();
                   }
@@ -780,8 +781,10 @@ impl TaskMonitor {
       .apply(&mut self.handle_map.lock().unwrap(), cmd.clone())
       && !self.inqueue.lock().unwrap().contains(&group_name)
     {
-      self.tx.send_async(group_name).await.unwrap();
+      self.tx.send_async(group_name.clone()).await.unwrap();
     }
+    let group_reporter = GroupReporter::new(self.app_handle.clone(), group_name);
+    group_reporter.report(&group_desc.read().unwrap().state.read().unwrap());
   }
 
   pub fn state_list(&self) -> Vec<RuntimeGroupDescSnapshot> {

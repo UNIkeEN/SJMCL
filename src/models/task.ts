@@ -30,7 +30,7 @@ export enum RuntimeStateEnums {
   Completed = "Completed",
   InProgress = "InProgress",
   Failed = "Failed",
-  Waiting = "Waiting",
+  Pending = "Pending",
 }
 
 export interface StoppedRuntimeState {
@@ -57,7 +57,7 @@ export interface CancelledRuntimeState {
 }
 
 export interface PendingRuntimeState {
-  type: RuntimeStateEnums.Waiting;
+  type: RuntimeStateEnums.Pending;
 }
 
 export type RuntimeState =

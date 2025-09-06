@@ -102,7 +102,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             return 0;
           case RuntimeStateEnums.InProgress:
             return 1;
-          case RuntimeStateEnums.Waiting:
+          case RuntimeStateEnums.Pending:
             return 2;
           case RuntimeStateEnums.Completed:
             return 999;
@@ -407,7 +407,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 group.status = RuntimeStateEnums.Completed;
                 group.taskDescs.forEach((t) => {
                   if (
-                    t.status === RuntimeStateEnums.Waiting ||
+                    t.status === RuntimeStateEnums.Pending ||
                     t.status === RuntimeStateEnums.InProgress
                   ) {
                     t.status = RuntimeStateEnums.Completed;
@@ -510,8 +510,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               default:
                 break;
             }
+            updateGroupDesc(group);
           }
-          updateGroupDesc(group);
           return group;
         });
 
