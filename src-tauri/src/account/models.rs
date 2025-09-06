@@ -135,13 +135,33 @@ impl PartialEq for PlayerInfo {
 
 impl Eq for PlayerInfo {}
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct OAuthCodeResponse {
+#[derive(Deserialize)]
+// received from auth server, do not need camel case
+pub struct DeviceAuthResponse {
   pub device_code: String,
   pub user_code: String,
   pub verification_uri: String,
-  pub interval: u64,
+  pub verification_uri_complete: Option<String>,
+  pub interval: Option<u64>,
+  pub expires_in: u64,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+// communicate with the client
+pub struct DeviceAuthResponseInfo {
+  pub device_code: String,
+  pub user_code: String,
+  pub verification_uri: String,
+  pub interval: Option<u64>,
+  pub expires_in: u64,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+pub struct OAuthTokens {
+  pub access_token: String,
+  pub refresh_token: String,
+  pub id_token: Option<String>,
 }
 
 structstruck::strike! {
