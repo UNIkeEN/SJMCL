@@ -157,10 +157,7 @@ jobs:
           
           ARTIFACT_HASH=$(sha256sum releases.zip | awk '{ print $1 }')
           DEPLOY_TIMESTAMP=$(date +%s)
-          DEPLOY_HASH="${SECRET_KEY}${DEPLOY_TIMESTAMP}${ARTIFACT_HASH}"
-          DEPLOY_HASH=$(echo -n "$DEPLOY_HASH" | sha256sum | awk '{ print $1 }')
-          DEPLOY_HASH="${SECRET_KEY}${DEPLOY_HASH}"
-          DEPLOY_HASH=$(echo -n "$DEPLOY_HASH" | sha256sum | awk '{ print $1 }')
+          DEPLOY_HASH=$(echo -n "${DEPLOY_TIMESTAMP}${ARTIFACT_HASH}" | openssl dgst -sha256 -hmac "$SECRET_KEY" | cut -d' ' -f2)
           
           echo "🔑 Generated deployment hash"
           echo "📅 Timestamp: $DEPLOY_TIMESTAMP"
@@ -173,6 +170,7 @@ jobs:
                             -F "deploy_artifact=@releases.zip" \
                             -s \
                             -o /dev/null \
+                            --fail --max-time 300 --cacert
                             -w "%{http_code}")
           
           echo "📡 Server responded with status code: $STATUS_CODE"
