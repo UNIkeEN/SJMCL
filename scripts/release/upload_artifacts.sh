@@ -22,6 +22,13 @@ if [ -z "${DEPLOY_PROJECT:-}" ]; then
   exit 1
 fi
 
+# Enforce HTTPS and trim whitespace/newlines
+DEPLOY_API=$(echo -n "$DEPLOY_API" | tr -d '[:space:]')
+if [[ ! "$DEPLOY_API" =~ ^https:// ]]; then
+  echo "❌ DEPLOY_API must start with https://"
+  exit 1
+fi
+
 echo "✅ All required secrets are set"
 
 cd release-artifacts
@@ -41,14 +48,16 @@ echo "📅 Timestamp: $DEPLOY_TIMESTAMP"
 
 echo "🚀 Uploading to deployment server..."
 set +e
-STATUS_CODE=$(curl -X POST "$DEPLOY_API" \
-                  -F "deploy_project=${DEPLOY_PROJECT}" \
-                  -F "deploy_timestamp=${DEPLOY_TIMESTAMP}" \
-                  -F "deploy_hash=${DEPLOY_HASH}" \
-                  -F "deploy_artifact=@releases.zip" \
-                  -s \
-                  -o /dev/null \
-                  -w "%{http_code}")
+
+STATUS_CODE=$(curl --tlsv1.2 --proto '=https' --location -X POST "$DEPLOY_API" \
+                -F "deploy_project=${DEPLOY_PROJECT}" \
+                -F "deploy_timestamp=${DEPLOY_TIMESTAMP}" \
+                -F "deploy_hash=${DEPLOY_HASH}" \
+                -F "deploy_artifact=@releases.zip" \
+                -sS \
+                -o /dev/null \
+                -w "%{http_code}")
+
 CURL_EXIT_CODE=$?
 set -e
 
