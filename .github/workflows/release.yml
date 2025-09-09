@@ -127,9 +127,9 @@ jobs:
 
       - name: Upload artifacts to remote server
         env:
-          SECRET_KEY: ${{ secrets.DEPLOY_SECRET_KEY }}
-          DEPLOY_API: ${{ secrets.DEPLOY_API }}
-          DEPLOY_PROJECT: ${{ secrets.DEPLOY_PROJECT }}
+          SJMC_SECRET_KEY: ${{ secrets.SJMC_DEPLOY_SECRET_KEY }}
+          SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
+          SJMC_DEPLOY_PROJECT: ${{ secrets.SJMC_DEPLOY_PROJECT }}
         run: |
           bash scripts/release/upload_artifacts.sh
         shell: bash

@@ -3,29 +3,29 @@
 set -euo pipefail
 
 # Required environment variables:
-# - SECRET_KEY
-# - DEPLOY_API
-# - DEPLOY_PROJECT
+# - SJMC_SECRET_KEY
+# - SJMC_DEPLOY_API
+# - SJMC_DEPLOY_PROJECT
 
-if [ -z "${SECRET_KEY:-}" ]; then
-  echo "❌ DEPLOY_SECRET_KEY secret is not set"
+if [ -z "${SJMC_SECRET_KEY:-}" ]; then
+  echo "❌ SJMC_DEPLOY_SECRET_KEY secret is not set"
   exit 1
 fi
 
-if [ -z "${DEPLOY_API:-}" ]; then
-  echo "❌ DEPLOY_API secret is not set"
+if [ -z "${SJMC_DEPLOY_API:-}" ]; then
+  echo "❌ SJMC_DEPLOY_API secret is not set"
   exit 1
 fi
 
-if [ -z "${DEPLOY_PROJECT:-}" ]; then
-  echo "❌ DEPLOY_PROJECT secret is not set"
+if [ -z "${SJMC_DEPLOY_PROJECT:-}" ]; then
+  echo "❌ SJMC_DEPLOY_PROJECT secret is not set"
   exit 1
 fi
 
 # Enforce HTTPS and trim whitespace/newlines
-DEPLOY_API=$(echo -n "$DEPLOY_API" | tr -d '[:space:]')
-if [[ ! "$DEPLOY_API" =~ ^https:// ]]; then
-  echo "❌ DEPLOY_API must start with https://"
+SJMC_DEPLOY_API=$(echo -n "$SJMC_DEPLOY_API" | tr -d '[:space:]')
+if [[ ! "$SJMC_DEPLOY_API" =~ ^https:// ]]; then
+  echo "❌ SJMC_DEPLOY_API must start with https://"
   exit 1
 fi
 
@@ -41,7 +41,7 @@ ARTIFACT_HASH=$(sha256sum releases.zip | awk '{ print $1 }')
 DEPLOY_TIMESTAMP=$(date +%s)
 
 # HMAC-SHA256: hash of "<timestamp><artifact_hash>" using SECRET_KEY
-DEPLOY_HASH=$(echo -n "${DEPLOY_TIMESTAMP}${ARTIFACT_HASH}" | openssl dgst -sha256 -hmac "$SECRET_KEY" | cut -d' ' -f2)
+DEPLOY_HASH=$(echo -n "${DEPLOY_TIMESTAMP}${ARTIFACT_HASH}" | openssl dgst -sha256 -hmac "$SJMC_SECRET_KEY" | cut -d' ' -f2)
 
 echo "🔑 Generated deployment hash"
 echo "📅 Timestamp: $DEPLOY_TIMESTAMP"
@@ -49,8 +49,8 @@ echo "📅 Timestamp: $DEPLOY_TIMESTAMP"
 echo "🚀 Uploading to deployment server..."
 set +e
 
-STATUS_CODE=$(curl --tlsv1.2 --proto '=https' --location -X POST "$DEPLOY_API" \
-                -F "deploy_project=${DEPLOY_PROJECT}" \
+STATUS_CODE=$(curl --tlsv1.2 --proto '=https' --location -X POST "$SJMC_DEPLOY_API" \
+                -F "deploy_project=${SJMC_DEPLOY_PROJECT}" \
                 -F "deploy_timestamp=${DEPLOY_TIMESTAMP}" \
                 -F "deploy_hash=${DEPLOY_HASH}" \
                 -F "deploy_artifact=@releases.zip" \
