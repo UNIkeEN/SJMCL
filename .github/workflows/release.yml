@@ -131,9 +131,29 @@ jobs:
           DEPLOY_API: ${{ secrets.DEPLOY_API }}
           DEPLOY_PROJECT: ${{ secrets.DEPLOY_PROJECT }}
         run: |
+          # Validate required environment variables
+          if [ -z "$SECRET_KEY" ]; then
+            echo "❌ DEPLOY_SECRET_KEY secret is not set"
+            exit 1
+          fi
+          
+          if [ -z "$DEPLOY_API" ]; then
+            echo "❌ DEPLOY_API secret is not set"
+            exit 1
+          fi
+          
+          if [ -z "$DEPLOY_PROJECT" ]; then
+            echo "❌ DEPLOY_PROJECT secret is not set"
+            exit 1
+          fi
+          
+          echo "✅ All required secrets are set"
+          
           cd release-artifacts
           zip -r ../releases.zip *
           cd ..
+          
+          echo "📦 Created releases.zip with artifacts"
           
           ARTIFACT_HASH=$(sha256sum releases.zip | awk '{ print $1 }')
           DEPLOY_TIMESTAMP=$(date +%s)
@@ -142,6 +162,10 @@ jobs:
           DEPLOY_HASH="${SECRET_KEY}${DEPLOY_HASH}"
           DEPLOY_HASH=$(echo -n "$DEPLOY_HASH" | sha256sum | awk '{ print $1 }')
           
+          echo "🔑 Generated deployment hash"
+          echo "📅 Timestamp: $DEPLOY_TIMESTAMP"
+          
+          echo "🚀 Uploading to deployment server..."
           STATUS_CODE=$(curl -X POST $DEPLOY_API \
                             -F "deploy_project=${DEPLOY_PROJECT}" \
                             -F "deploy_timestamp=${DEPLOY_TIMESTAMP}" \
@@ -151,11 +175,13 @@ jobs:
                             -o /dev/null \
                             -w "%{http_code}")
           
+          echo "📡 Server responded with status code: $STATUS_CODE"
+          
           if [ "$STATUS_CODE" -ne 204 ]; then
-            echo "Deployment failed with status code $STATUS_CODE"
+            echo "❌ Deployment failed with status code $STATUS_CODE"
             exit 1
           else
-            echo "Deployment successful"
+            echo "✅ Deployment successful"
           fi
         shell: bash
 
