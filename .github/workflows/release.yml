@@ -125,6 +125,40 @@ jobs:
           echo "Final release artifacts:"
           ls -la release-artifacts/
 
+      - name: Upload artifacts to remote server
+        env:
+          SECRET_KEY: ${{ secrets.DEPLOY_SECRET_KEY }}
+          DEPLOY_API: ${{ secrets.DEPLOY_API }}
+          DEPLOY_PROJECT: ${{ secrets.DEPLOY_PROJECT }}
+        run: |
+          cd release-artifacts
+          zip -r ../releases.zip *
+          cd ..
+          
+          ARTIFACT_HASH=$(sha256sum releases.zip | awk '{ print $1 }')
+          DEPLOY_TIMESTAMP=$(date +%s)
+          DEPLOY_HASH="${SECRET_KEY}${DEPLOY_TIMESTAMP}${ARTIFACT_HASH}"
+          DEPLOY_HASH=$(echo -n "$DEPLOY_HASH" | sha256sum | awk '{ print $1 }')
+          DEPLOY_HASH="${SECRET_KEY}${DEPLOY_HASH}"
+          DEPLOY_HASH=$(echo -n "$DEPLOY_HASH" | sha256sum | awk '{ print $1 }')
+          
+          STATUS_CODE=$(curl -X POST $DEPLOY_API \
+                            -F "deploy_project=${DEPLOY_PROJECT}" \
+                            -F "deploy_timestamp=${DEPLOY_TIMESTAMP}" \
+                            -F "deploy_hash=${DEPLOY_HASH}" \
+                            -F "deploy_artifact=@releases.zip" \
+                            -s \
+                            -o /dev/null \
+                            -w "%{http_code}")
+          
+          if [ "$STATUS_CODE" -ne 204 ]; then
+            echo "Deployment failed with status code $STATUS_CODE"
+            exit 1
+          else
+            echo "Deployment successful"
+          fi
+        shell: bash
+
       - name: Generate Changelog
         id: changelog
         run: |
