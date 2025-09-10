@@ -6,7 +6,7 @@ import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import { checkServiceAvailability } from "@/services/utils";
+import { UtilsService } from "@/services/utils";
 
 interface ServiceStatus {
   loading: boolean;
@@ -54,7 +54,7 @@ const PingTestPage = () => {
           [serviceId]: { loading: true, error: false },
         }));
 
-        const latency = await checkServiceAvailability(url);
+        const latency = await UtilsService.checkServiceAvailability(url);
 
         setServicesStatus((prev) => ({
           ...prev,
