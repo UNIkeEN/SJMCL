@@ -131,7 +131,7 @@ jobs:
           SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
           SJMC_DEPLOY_PROJECT: ${{ secrets.SJMC_DEPLOY_PROJECT }}
         run: |
-          bash scripts/release/upload_artifacts.sh
+          bash scripts/release/upload_to_sjmc_server.sh
         shell: bash
 
       - name: Generate Changelog
