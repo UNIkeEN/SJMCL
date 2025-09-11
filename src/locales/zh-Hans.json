@@ -2262,16 +2262,6 @@
           "Cancelled": "{{param}} 下载任务已取消"
         }
       }
-    },
-    "utils":{
-      "checkServiceAvailability": {
-        "error": {
-          "title": "服务器不可用",
-          "description": {
-            "FETCH_ERROR": "服务器侧或未知错误"
-          }
-        }
-      }
     }
   },
   "SettingsLayout": {

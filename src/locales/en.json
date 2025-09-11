@@ -2262,16 +2262,6 @@
           "Cancelled": "{{param}} download has been cancelled"
         }
       }
-    },
-    "utils":{
-      "checkServiceAvailability": {
-        "error": {
-          "title": "Service Unavailable",
-          "description": {
-            "FETCH_ERROR": "Failed to fetch the meta server"
-          }
-        }
-      }
     }
   },
   "SettingsLayout": {
