@@ -214,7 +214,9 @@ const AppearanceSettingsPage = () => {
     useEffect(() => {
       const handleRetrieveFontList = async () => {
         const res = await UtilsService.retrieveFontList();
-        setFonts(["%built-in", ...res]);
+        if (res.status === "success") {
+          setFonts(["%built-in", ...res.data]);
+        }
       };
       handleRetrieveFontList();
     }, []);

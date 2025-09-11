@@ -89,11 +89,10 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const maxMemCanAllocated = Math.floor(memoryInfo.total / 1024 / 1024);
 
   const handleRetrieveMemoryInfo = async () => {
-    UtilsService.retrieveMemoryInfo()
-      .then((info) => {
-        setMemoryInfo(info);
-      })
-      .catch((error) => {});
+    const res = await UtilsService.retrieveMemoryInfo();
+    if (res.status === "success") {
+      setMemoryInfo(res.data);
+    }
   };
 
   useEffect(() => {
