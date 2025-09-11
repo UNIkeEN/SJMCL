@@ -1335,6 +1335,10 @@
       "viewSkin": "View Skin",
       "delete": "Delete",
       "copyUUID": "Copy UUID"
+    },
+    "toast": {
+      "refreshing": "Refreshing player info",
+      "deleting": "Deleting player"
     }
   },
   "PingTestPage": {

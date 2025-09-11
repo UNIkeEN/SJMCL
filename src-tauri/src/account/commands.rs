@@ -223,36 +223,43 @@ pub async fn add_player_3rdparty_password(
   let mut new_players =
     authlib_injector::password::login(&app, auth_server_url, username, password).await?;
 
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let mut account_state = account_binding.lock()?;
-
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
-
   if new_players.is_empty() {
     return Err(AccountError::NotFound.into());
   }
 
-  new_players.retain_mut(|new_player| {
-    account_state
-      .players
-      .iter()
-      .all(|player| new_player.id != player.id)
-  });
+  {
+    let account_binding = app.state::<Mutex<AccountInfo>>();
+    let account_state = account_binding.lock()?;
+    new_players.retain_mut(|new_player| {
+      account_state
+        .players
+        .iter()
+        .all(|player| new_player.id != player.id)
+    });
+  }
 
   if new_players.is_empty() {
     Err(AccountError::Duplicate.into())
   } else if new_players.len() == 1 {
     // if only one player will be added, save it and return **an empty vector** to inform the frontend not to trigger selector.
-    config_state.partial_update(
-      &app,
-      "states.shared.selected_player_id",
-      &serde_json::to_string(&new_players[0].id).unwrap_or_default(),
-    )?;
-    account_state.players.push(new_players[0].clone());
+    let refreshed_player = authlib_injector::password::refresh(&app, &new_players[0], true).await?;
 
-    account_state.save()?;
-    config_state.save()?;
+    {
+      let account_binding = app.state::<Mutex<AccountInfo>>();
+      let mut account_state = account_binding.lock()?;
+      let config_binding = app.state::<Mutex<LauncherConfig>>();
+      let mut config_state = config_binding.lock()?;
+
+      config_state.partial_update(
+        &app,
+        "states.shared.selected_player_id",
+        &serde_json::to_string(&refreshed_player.id).unwrap_or_default(),
+      )?;
+      account_state.players.push(refreshed_player);
+
+      account_state.save()?;
+      config_state.save()?;
+    }
 
     Ok(vec![])
   } else {

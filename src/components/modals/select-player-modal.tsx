@@ -1,5 +1,4 @@
 import {
-  HStack,
   Image,
   Modal,
   ModalBody,
@@ -8,7 +7,7 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  Radio,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
@@ -38,26 +37,27 @@ const SelectPlayerModal: React.FC<SelectPlayerModalProps> = ({
         <ModalHeader>{t("SelectPlayerModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={4}>
-          <VStack spacing={4} alignItems="start">
+          <VStack spacing={2} alignItems="start" w="full">
             {candidatePlayers.map((player) => (
               <OptionItem
                 key={player.id}
-                title={player.name}
-                prefixElement={
-                  <HStack spacing={2.5}>
-                    <Radio
-                      value={player.id}
-                      onClick={() => onPlayerSelected(player)}
-                      colorScheme={primaryColor}
-                    />
-                    <Image
-                      boxSize="32px"
-                      objectFit="cover"
-                      src={base64ImgSrc(player.avatar)}
-                      alt={player.name}
-                    />
-                  </HStack>
+                title={
+                  <Text fontWeight="bold" fontSize="sm">
+                    {player.name}
+                  </Text>
                 }
+                w="full"
+                prefixElement={
+                  <Image
+                    boxSize="32px"
+                    objectFit="cover"
+                    src={base64ImgSrc(player.avatar)}
+                    alt={player.name}
+                    m={2}
+                  />
+                }
+                onClick={() => onPlayerSelected(player)}
+                isFullClickZone
               />
             ))}
           </VStack>

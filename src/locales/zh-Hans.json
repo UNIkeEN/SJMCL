@@ -1335,6 +1335,10 @@
       "viewSkin": "查看皮肤",
       "delete": "删除此角色",
       "copyUUID": "复制 UUID"
+    },
+    "toast": {
+      "refreshing": "正在刷新角色信息",
+      "deleting": "正在删除角色"
     }
   },
   "PingTestPage": {
