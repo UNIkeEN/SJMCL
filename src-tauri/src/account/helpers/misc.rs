@@ -1,7 +1,10 @@
 use crate::{
   account::{
     constants::DEFAULT_POLLING_INTERVAL,
-    models::{AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo},
+    models::{
+      AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthErrorResponse, OAuthTokens,
+      PlayerInfo,
+    },
   },
   error::SJMCLResult,
   launcher_config::models::LauncherConfig,
@@ -101,7 +104,7 @@ pub async fn oauth_polling(
     let mut account_state = account_binding.lock()?;
     account_state.is_oauth_processing = true;
   }
-  let interval = auth_info.interval.unwrap_or(DEFAULT_POLLING_INTERVAL);
+  let mut interval = auth_info.interval.unwrap_or(DEFAULT_POLLING_INTERVAL);
   let start_time = std::time::Instant::now();
   loop {
     {
@@ -125,6 +128,33 @@ pub async fn oauth_polling(
           .await
           .map_err(|_| AccountError::ParseError)?,
       );
+    } else {
+      if response.status().as_u16() != 400 {
+        return Err(AccountError::NetworkError)?;
+      }
+
+      let error_response: OAuthErrorResponse = response
+        .json()
+        .await
+        .map_err(|_| AccountError::ParseError)?;
+
+      match error_response.error.as_str() {
+        "authorization_pending" => {
+          // continue polling
+        }
+        "slow_down" => {
+          interval += 5;
+        }
+        "access_denied" => {
+          return Err(AccountError::Cancelled)?;
+        }
+        "expired_token" => {
+          return Err(AccountError::Expired)?;
+        }
+        _ => {
+          return Err(AccountError::NetworkError)?;
+        }
+      }
     }
 
     if start_time.elapsed().as_secs() >= auth_info.expires_in {

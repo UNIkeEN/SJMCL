@@ -1,6 +1,6 @@
 use crate::{
   account::{
-    helpers::authlib_injector::{common::parse_profile, models::MinecraftProfile},
+    helpers::authlib_injector::common::{parse_profile, retrieve_profile},
     models::{AccountError, PlayerInfo},
   },
   error::SJMCLResult,
@@ -23,39 +23,6 @@ struct YggdrasilSession {
 struct YggdrasilProfile {
   id: String,
   name: String,
-}
-
-async fn get_profile(
-  app: &AppHandle,
-  auth_server_url: String,
-  access_token: String,
-  id: String,
-  auth_account: String,
-  password: String,
-) -> SJMCLResult<PlayerInfo> {
-  let client = app.state::<reqwest::Client>();
-  let profile = client
-    .get(format!(
-      "{}/sessionserver/session/minecraft/profile/{}",
-      auth_server_url, id
-    ))
-    .send()
-    .await
-    .map_err(|_| AccountError::NetworkError)?
-    .json::<MinecraftProfile>()
-    .await
-    .map_err(|_| AccountError::ParseError)?;
-
-  parse_profile(
-    app,
-    &profile,
-    Some(access_token),
-    None,
-    Some(auth_server_url),
-    Some(auth_account),
-    Some(password),
-  )
-  .await
 }
 
 pub async fn login(
@@ -92,15 +59,17 @@ pub async fn login(
 
   if let Some(selected_profile) = content.selected_profile {
     let id = selected_profile.id;
+    let profile = retrieve_profile(app, auth_server_url.clone(), id).await?;
 
     Ok(vec![
-      get_profile(
+      parse_profile(
         app,
-        auth_server_url.clone(),
-        access_token.clone(),
-        id,
-        username.clone(),
-        password.clone(),
+        &profile,
+        Some(access_token),
+        None,
+        Some(auth_server_url),
+        Some(username),
+        Some(password),
       )
       .await?,
     ])
@@ -114,13 +83,15 @@ pub async fn login(
     let mut players = vec![];
 
     for profile in available_profiles {
-      let player = get_profile(
+      let mc_profile = retrieve_profile(app, auth_server_url.clone(), profile.id).await?;
+      let player = parse_profile(
         app,
-        auth_server_url.clone(),
-        access_token.clone(),
-        profile.id,
-        username.clone(),
-        password.clone(),
+        &mc_profile,
+        Some(access_token.clone()),
+        None,
+        Some(auth_server_url.clone()),
+        Some(username.clone()),
+        Some(password.clone()),
       )
       .await?;
 
@@ -167,13 +138,21 @@ pub async fn refresh(
     .json::<YggdrasilSession>()
     .await
     .map_err(|_| AccountError::ParseError)?;
-  get_profile(
+  let profile = retrieve_profile(
     app,
     player.auth_server_url.clone().unwrap_or_default(),
-    content.access_token,
     content.selected_profile.ok_or(AccountError::ParseError)?.id,
-    player.auth_account.clone().unwrap_or_default(),
-    player.password.clone().unwrap_or_default(),
+  )
+  .await?;
+
+  parse_profile(
+    app,
+    &profile,
+    Some(content.access_token),
+    None,
+    player.auth_server_url.clone(),
+    player.auth_account.clone(),
+    player.password.clone(),
   )
   .await
 }

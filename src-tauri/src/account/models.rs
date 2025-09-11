@@ -164,6 +164,13 @@ pub struct OAuthTokens {
   pub id_token: Option<String>,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+pub struct OAuthErrorResponse {
+  pub error: String,
+  pub error_description: Option<String>,
+  pub error_uri: Option<String>,
+}
+
 structstruck::strike! {
   #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
@@ -176,7 +183,7 @@ structstruck::strike! {
       pub non_email_login: bool,
       pub openid_configuration_url: String,
     },
-    pub client_id: String,
+    pub client_id: Option<String>,
   }
 }
 
@@ -184,7 +191,7 @@ structstruck::strike! {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AuthServerInfo {
   pub auth_url: String,
-  pub client_id: String,
+  pub client_id: Option<String>,
   pub metadata: Value,
   pub timestamp: u64,
 }
@@ -235,7 +242,7 @@ impl Default for AccountInfo {
         .iter()
         .map(|url| AuthServerInfo {
           auth_url: url.to_string(),
-          client_id: "".to_string(),
+          client_id: None,
           metadata: Value::Null,
           timestamp: 0,
         })

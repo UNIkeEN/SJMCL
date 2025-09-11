@@ -15,7 +15,7 @@ pub async fn fetch_auth_server_info(
     Ok(response) => {
       let json: serde_json::Value = response.json().await.map_err(|_| AccountError::Invalid)?;
 
-      let mut client_id = String::new();
+      let mut client_id = None;
 
       let openid_configuration_url = json["meta"]["feature.openid_configuration_url"]
         .as_str()
@@ -29,13 +29,10 @@ pub async fn fetch_auth_server_info(
           client_id = get_client_id(domain.to_string());
         }
 
-        if client_id.is_empty() {
+        if client_id.is_none() {
           let response = client.get(&openid_configuration_url).send().await?;
           let data: serde_json::Value = response.json().await.map_err(|_| AccountError::Invalid)?;
-          client_id = data["shared_client_id"]
-            .as_str()
-            .unwrap_or_default()
-            .to_string();
+          client_id = data["shared_client_id"].as_str().map(|s| s.to_string());
         }
       }
 
@@ -50,13 +47,11 @@ pub async fn fetch_auth_server_info(
   }
 }
 
-pub fn get_client_id(domain: String) -> String {
+pub fn get_client_id(domain: String) -> Option<String> {
   CLIENT_IDS
     .iter()
     .find(|(first, _)| first == &domain)
-    .map(|(_, id)| id)
-    .unwrap_or(&"")
-    .to_string()
+    .map(|(_, id)| id.to_string())
 }
 
 pub async fn fetch_auth_url(app: &AppHandle, root: Url) -> SJMCLResult<String> {
