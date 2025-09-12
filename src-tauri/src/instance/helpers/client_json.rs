@@ -40,6 +40,7 @@ pub struct McClientInfo {
   pub patches: Vec<PatchesInfo>,
   pub main_class: String,
   pub jar: Option<String>,
+  pub client_version: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -305,6 +306,72 @@ pub fn patches_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<Strin
 
     if game_version.is_some() && loader_type != ModLoaderType::Unknown {
       break;
+    }
+  }
+
+  (game_version, loader_version, loader_type)
+}
+
+fn find_lib<'a>(libs: &'a [LibrariesValue], g: &str, a: &str) -> Option<&'a str> {
+  libs
+    .iter()
+    .filter_map(|l| {
+      let mut it = l.name.split(':');
+      let gg = it.next()?;
+      let aa = it.next()?;
+      let vv = it.next()?;
+      if gg == g && aa == a {
+        Some(vv)
+      } else {
+        None
+      }
+    })
+    .next()
+}
+
+pub async fn pcl_json_to_info(
+  client: &McClientInfo,
+) -> (Option<String>, Option<String>, ModLoaderType) {
+  let game_version: Option<String> = client.client_version.clone();
+  let mut loader_version: Option<String> = None;
+  let mut loader_type = ModLoaderType::Unknown;
+
+  if loader_type == ModLoaderType::Unknown {
+    if let Some(v) = find_lib(&client.libraries, "net.fabricmc", "fabric-loader") {
+      loader_type = ModLoaderType::Fabric;
+      loader_version = Some(v.to_string());
+    }
+  }
+
+  if loader_type == ModLoaderType::Unknown {
+    if let Some(v) = find_lib(&client.libraries, "org.quiltmc", "quilt-loader") {
+      loader_type = ModLoaderType::Quilt;
+      loader_version = Some(v.to_string());
+    }
+  }
+
+  if loader_type == ModLoaderType::Unknown {
+    if let Some(v) = find_lib(&client.libraries, "net.neoforged", "neoforge") {
+      loader_type = ModLoaderType::NeoForge;
+      loader_version = Some(v.to_string());
+    }
+  }
+
+  if loader_type == ModLoaderType::Unknown {
+    if let Some(v) = find_lib(&client.libraries, "net.minecraftforge", "forge")
+      .or_else(|| find_lib(&client.libraries, "net.minecraftforge", "fmlloader"))
+    {
+      loader_type = ModLoaderType::Forge;
+      if let Some((_, forge)) = v.split_once('-') {
+        loader_version = Some(forge.to_string());
+      }
+    }
+  }
+
+  if loader_type == ModLoaderType::Unknown {
+    if let Some(v) = find_lib(&client.libraries, "com.mumfrey", "liteloader") {
+      loader_type = ModLoaderType::LiteLoader;
+      loader_version = Some(v.to_string());
     }
   }
 
