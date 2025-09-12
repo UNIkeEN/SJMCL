@@ -813,10 +813,8 @@ pub async fn create_instance(
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
   // Get priority list
-  let priority_list = {
-    let launcher_config = launcher_config_state.lock()?;
-    get_source_priority_list(&launcher_config)
-  };
+  let launcher_config = launcher_config_state.lock()?.clone();
+  let priority_list = get_source_priority_list(&launcher_config);
 
   // Ensure the instance name is unique
   let version_path = directory.dir.join("versions").join(&name);
@@ -944,7 +942,11 @@ pub async fn create_instance(
     let path = PathBuf::from(modpack_path);
     let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
     if let Ok(manifest) = CurseForgeManifest::from_archive(&file) {
-      task_params.extend(manifest.get_download_params(&app, &version_path).await?);
+      task_params.extend(
+        manifest
+          .get_download_params(&app, &version_path, launcher_config.download_optional_mods)
+          .await?,
+      );
       manifest.extract_overrides(&file, &version_path)?;
     } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
       task_params.extend(manifest.get_download_params(&version_path)?);
