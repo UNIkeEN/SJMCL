@@ -558,7 +558,7 @@
       "datapack": "資料包",
       "patch-files": "修補遊戲檔案 {{param}}",
       "mod-update": "更新模組",
-      "retry": "重試任務",
+      "retry": "重試",
       "neoforge-libraries": "NeoForge 執行庫",
       "forge-libraries": "Forge 執行庫"
     }

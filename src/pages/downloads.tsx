@@ -86,11 +86,14 @@ export const DownloadTasksPage = () => {
   };
 
   const parseGroupTitle = (taskGroup: string) => {
-    let { name, version } = parseTaskGroup(taskGroup);
+    let { name, version, isRetry } = parseTaskGroup(taskGroup);
 
-    return t(`DownloadTasksPage.task.${name}`, {
-      param: version || "",
-    });
+    return `${isRetry ? `${t(`DownloadTasksPage.task.retry`)} ` : ""}${t(
+      `DownloadTasksPage.task.${name}`,
+      {
+        param: version || "",
+      }
+    )}`;
   };
 
   return (
@@ -208,7 +211,7 @@ export const DownloadTasksPage = () => {
                           variant="ghost"
                           onClick={() =>
                             handleScheduleProgressiveTaskGroup(
-                              "retry",
+                              "retry-" + group.taskGroup.replace(/^retry-/, ""),
                               group.taskDescs
                                 .filter(
                                   (t) =>

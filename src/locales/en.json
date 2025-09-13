@@ -558,7 +558,7 @@
       "datapack": "Datapack",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",
-      "retry": "Retry Task",
+      "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
       "forge-libraries": "Forge Libraries"
     }
