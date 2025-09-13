@@ -399,6 +399,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "删除模组",
+      "content": "确定要删除游戏实例 “{{instanceName}}” 中的模组 “{{modName}}” 吗？"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
@@ -2264,6 +2270,14 @@
           "Completed": "{{param}} 已完成下载",
           "Stopped": "{{param}} 下载任务已停止",
           "Cancelled": "{{param}} 下载任务已取消"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "删除文件成功",
+        "error": {
+          "title": "删除文件失败"
         }
       }
     }

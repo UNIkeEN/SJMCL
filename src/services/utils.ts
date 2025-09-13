@@ -17,6 +17,16 @@ export class UtilsService {
   }
 
   /**
+   * DELETE a file by absolute path.
+   * @param path the file to delete.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("utils")
+  static async deleteFile(path: string): Promise<InvokeResponse<void>> {
+    return await invoke("delete_file", { path });
+  }
+
+  /**
    * RETRIEVE the list of installed TrueType fonts.
    * @returns {Promise<InvokeResponse<string[]>>}
    */

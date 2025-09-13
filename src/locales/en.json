@@ -399,6 +399,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Delete Mod",
+      "content": "Confirm delete the mod \"{{modName}}\" in the game instance \"{{instanceName}}\" ?"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Delete Player",
@@ -2264,6 +2270,14 @@
           "Completed": "{{param}} has been downloaded successfully",
           "Stopped": "{{param}} download has been stopped",
           "Cancelled": "{{param}} download has been cancelled"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "File deleted successfully",
+        "error": {
+          "title": "Failed to delete file"
         }
       }
     }
