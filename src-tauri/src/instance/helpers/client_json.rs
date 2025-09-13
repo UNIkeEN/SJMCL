@@ -40,6 +40,7 @@ pub struct McClientInfo {
   pub patches: Vec<PatchesInfo>,
   pub main_class: String,
   pub jar: Option<String>,
+  pub client_version: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -305,6 +306,56 @@ pub fn patches_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<Strin
 
     if game_version.is_some() && loader_type != ModLoaderType::Unknown {
       break;
+    }
+  }
+
+  (game_version, loader_version, loader_type)
+}
+
+pub async fn libraries_to_info(
+  client: &McClientInfo,
+) -> (Option<String>, Option<String>, ModLoaderType) {
+  let game_version: Option<String> = client.client_version.clone();
+  let mut loader_version: Option<String> = None;
+  let mut loader_type = ModLoaderType::Unknown;
+
+  for lib in &client.libraries {
+    let parts: Vec<_> = lib.name.splitn(3, ':').collect();
+    if parts.len() != 3 {
+      continue;
+    }
+    let (g, a, v) = (parts[0], parts[1], parts[2]);
+    match (g, a) {
+      ("net.fabricmc", "fabric-loader") => {
+        loader_type = ModLoaderType::Fabric;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      ("org.quiltmc", "quilt-loader") => {
+        loader_type = ModLoaderType::Quilt;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      ("net.neoforged", "neoforge") => {
+        loader_type = ModLoaderType::NeoForge;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      ("net.minecraftforge", "forge") | ("net.minecraftforge", "fmlloader") => {
+        loader_type = ModLoaderType::Forge;
+        if let Some((_, forge)) = v.split_once('-') {
+          loader_version = Some(forge.to_string());
+        } else {
+          loader_version = Some(v.to_string());
+        }
+        break;
+      }
+      ("com.mumfrey", "liteloader") => {
+        loader_type = ModLoaderType::LiteLoader;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      _ => {}
     }
   }
 
