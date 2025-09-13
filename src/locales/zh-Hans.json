@@ -399,6 +399,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "删除模组",
+      "content": "确定要删除游戏实例 “{{instanceName}}”中的模组 “{{modName}}” 吗？"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",

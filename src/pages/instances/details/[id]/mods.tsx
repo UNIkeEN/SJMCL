@@ -181,8 +181,10 @@ const InstanceModsPage = () => {
         title: t("DeleteModAlertDialog.dialog.title"),
         body: (
           <Text fontSize="sm">
-            {t("InstanceModsPage.modList.menu.delete")}:{" "}
-            {mod.name || mod.fileName}
+            {t("DeleteModAlertDialog.dialog.content", {
+              instanceName: summary?.name ?? "",
+              modName: mod.name || mod.fileName,
+            })}
           </Text>
         ),
         btnOK: t("General.delete"),
@@ -208,7 +210,7 @@ const InstanceModsPage = () => {
         },
       });
     },
-    [openGenericConfirmDialog, t, toast, getLocalModListWrapper]
+    [openGenericConfirmDialog, t, toast, getLocalModListWrapper, summary?.name]
   );
 
   const modSecMenuOperations = [
@@ -292,7 +294,7 @@ const InstanceModsPage = () => {
       },
     },
     {
-      label: t("InstanceModsPage.modList.menu.delete"),
+      label: t("General.delete"),
       icon: "delete",
       danger: true,
       onClick: () => {

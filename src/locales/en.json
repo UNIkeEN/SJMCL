@@ -399,6 +399,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Delete Mod",
+      "content": "Confirm delete the mod \"{{modName}}\" in the game instance \"{{instanceName}}\" ?"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Delete Player",
