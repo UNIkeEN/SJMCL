@@ -339,14 +339,6 @@ export class InstanceService {
   }
 
   /**
-   * DELETE a mod file by absolute path.
-   */
-  @responseHandler("instance")
-  static async deleteMod(filePath: string): Promise<InvokeResponse<void>> {
-    return await invoke("delete_mod", { filePath });
-  }
-
-  /**
    * RETRIEVE the level details for a specific world.
    * @param {string} instanceId - The instance ID to retrieve the level detail for.
    * @param {string} worldName - The name of the world to retrieve details for.

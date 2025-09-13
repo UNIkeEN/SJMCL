@@ -41,6 +41,7 @@ import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
+import { UtilsService } from "@/services/utils";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceModsPage = () => {
@@ -177,7 +178,7 @@ const InstanceModsPage = () => {
   const handleDeleteSingleMod = useCallback(
     (mod: LocalModInfo) => {
       openGenericConfirmDialog({
-        title: t("DeleteInstanceAlertDialog.dialog.title"),
+        title: t("DeleteModAlertDialog.dialog.title"),
         body: (
           <Text fontSize="sm">
             {t("InstanceModsPage.modList.menu.delete")}:{" "}
@@ -189,7 +190,7 @@ const InstanceModsPage = () => {
         showSuppressBtn: true,
         suppressKey: "deleteModAlert",
         onOKCallback: () => {
-          InstanceService.deleteMod(mod.filePath).then((response) => {
+          UtilsService.deleteFile(mod.filePath).then((response) => {
             if (response.status === "success") {
               setLocalMods((prev) =>
                 prev.filter((m) => m.filePath !== mod.filePath)

@@ -26,6 +26,16 @@ export class UtilsService {
   }
 
   /**
+   * DELETE a file or directory by absolute path.
+   * @param path The file or directory path to delete.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("utils")
+  static async deleteFile(path: string): Promise<InvokeResponse<void>> {
+    return await invoke("delete_file", { path });
+  }
+
+  /**
    * CHECK the availability of a given service URL.
    * @param url The URL to test.
    * @returns {Promise<InvokeResponse<number>>} Round-trip time in milliseconds.

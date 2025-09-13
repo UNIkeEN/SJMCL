@@ -112,7 +112,6 @@ pub async fn run() {
       instance::commands::retrieve_shader_pack_list,
       instance::commands::retrieve_screenshot_list,
       instance::commands::toggle_mod_by_extension,
-      instance::commands::delete_mod,
       instance::commands::create_launch_desktop_shortcut,
       instance::commands::finish_mod_loader_install,
       instance::commands::retrieve_modpack_meta_info,
