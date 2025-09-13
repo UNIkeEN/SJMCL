@@ -188,25 +188,27 @@ const InstanceModsPage = () => {
         showSuppressBtn: true,
         suppressKey: "deleteModAlert",
         onOKCallback: () => {
-          UtilsService.deleteFile(mod.filePath).then((response) => {
-            if (response.status === "success") {
-              toast({
-                title: response.message,
-                status: "success",
-              });
-              setLocalMods((prev) =>
-                prev.filter((m) => m.filePath !== mod.filePath)
-              );
+          UtilsService.deleteFile(mod.filePath)
+            .then((response) => {
+              if (response.status === "success") {
+                setLocalMods((prev) =>
+                  prev.filter((m) => m.filePath !== mod.filePath)
+                );
+                toast({
+                  title: response.message,
+                  status: "success",
+                });
+              } else {
+                toast({
+                  title: response.message,
+                  description: response.details,
+                  status: "error",
+                });
+              }
+            })
+            .finally(() => {
               getLocalModListWrapper(true);
-            } else {
-              toast({
-                title: response.message,
-                description: response.details,
-                status: "error",
-              });
-              getLocalModListWrapper(true);
-            }
-          });
+            });
         },
       });
     },
