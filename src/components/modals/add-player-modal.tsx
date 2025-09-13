@@ -158,6 +158,12 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     if (candidatePlayers.length) onSelectPlayerModalOpen();
   }, [candidatePlayers, onSelectPlayerModalOpen]);
 
+  const handleSelectPlayerModalClose = () => {
+    setCandidatePlayers([]);
+    onSelectPlayerModalClose();
+    setIsLoading(false);
+  };
+
   const handleFetchOAuthCode = () => {
     if (playerType === PlayerType.Offline) return;
     setOAuthCodeResponse(undefined);
@@ -588,7 +594,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
         candidatePlayers={candidatePlayers}
         onPlayerSelected={handlePlayerSelect}
         isOpen={isSelectPlayerModalOpen}
-        onClose={onSelectPlayerModalClose}
+        onClose={handleSelectPlayerModalClose}
       />
     </Modal>
   );
