@@ -2,6 +2,32 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 0.3.1
+
+`2025-09-13`
+
+- 🐛 修复登录流程中 设备授权响应 与 账户资料 可能不完整的问题。#875 @Reqwey
+- 🐛 修复通过 OAuth（Ygg Connect 提案）登录到第三方认证源时玩家信息不完整的问题。#882 @Reqwey
+- 🐛 修复使用邮箱密码登录到第三方认证源时访问令牌可能无效的问题。#885 @Reqwey
+- 🛠 重构系统工具类方法的前端接口函数。#883 @baiyuansjtu
+- 📦 更换新的 SJTU 紫气东来门内置背景。@UNIkeEN @GNWork
+- 工作流：
+   - 自动上传发布构建产物到 SJMC 的自有服务器。#880 @Minecrafter-Pythoner @hans362
+
+## 0.3.0
+
+`2025-09-05`
+
+- **🔥 在下载页面添加模组名称的简体中文翻译，支持中文搜索。#851** @SundayChen @UNIkeEN
+- 🌟 在下载页面添加部分资源描述的简体中文翻译。#851 @SundayChen
+- 🌟 支持从模组信息对话框跳转至对应的 MCMod 页面。#851 @SundayChen
+- 🌟 支持 Windows Arm64 平台。#867 @Minecrafter-Pythoner
+- 🐛 修复联网配置同步时令牌计时更新失效的问题。#852 @Nova-Squ1
+- 🐛 修复因重试下载模组加载器导致启动参数重复的问题。#860 @Reqwey
+- 📦 更新前端依赖 next 至最新版本。#869 @dependabot[bot]
+- 工作流:
+   - 同步前端的 npm 和 pnpm 锁定文件。#861 #862 @pangbo13 @Minecrafter-Pythoner
+
 ## 0.2.0
 
 `2025-08-22`

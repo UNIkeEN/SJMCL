@@ -2,6 +2,32 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 0.3.1
+
+`2025-09-13`
+
+- 🐛 Fix issue of possible incompleteness in device authorization response and account profile during the login flow #875 @Reqwey
+- 🐛 Fix issue of incomplete player information when logging in to third-party authentication sources through OAuth (Ygg Connect proposal). #882 @Reqwey
+- 🐛 Fix the issue of possible invalid access token when logging in to third-party authentication sources with email and password. #885 @Reqwey
+- 🛠 Refactor system utility functions into a service class. #883 @baiyuansjtu
+- 📦 Use the new built-in background image of the SJTU east gate. @UNIkeEN @GNWork
+- Workflow:
+   - Auto upload release artifacts to the SJMC server. #880 @Minecrafter-Pythoner @hans362
+
+## 0.3.0
+
+`2025-09-05`
+
+- 🔥 **Add mod name's zh-Hans translation on the download page, support zh-Hans search queries. #851** @SundayChen @UNIkeEN
+- 🌟 Add zh-Hans translation for resource descriptions. #851 @SundayChen
+- 🌟 Support external link to the MCMod page from the mod info modal. #851 @SundayChen
+- 🌟 Support the Windows Arm64 platform. #867 @Minecrafter-Pythoner
+- 🐛 Fix issue of token refreshing in config synchronization. #852 @Nova-Squ1
+- 🐛 FIx issue of duplicate launch arguments caused by retrying mod loader downloads. #860 @Reqwey
+- 📦 Update the dependency next to the latest version. #869 @dependabot[bot]
+- Workflow:
+   - Synchronize the npm and pnpm lock files of frontend. #861 #862 @pangbo13 @Minecrafter-Pythoner
+
 ## 0.2.0
 
 `2025-08-22`
