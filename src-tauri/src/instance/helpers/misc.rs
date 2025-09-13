@@ -12,7 +12,7 @@ use crate::launcher_config::{helpers::misc::get_global_game_config, models::Game
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::{
-  instance::helpers::client_json::{patches_to_info, pcl_json_to_info},
+  instance::helpers::client_json::{libraries_to_info, patches_to_info},
   launcher_config::models::{GameDirectory, LauncherConfig},
 };
 use sanitize_filename;
@@ -229,7 +229,7 @@ pub async fn refresh_instances(
     let (mut game_version, loader_version, loader_type) = if !client_data.patches.is_empty() {
       patches_to_info(&client_data.patches)
     } else {
-      pcl_json_to_info(&client_data).await
+      libraries_to_info(&client_data).await
     };
     // TODO: patches related logic
     if game_version.is_none() {
