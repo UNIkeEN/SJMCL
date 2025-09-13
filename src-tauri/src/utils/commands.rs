@@ -3,6 +3,7 @@ use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
 use crate::utils::fs::extract_filename as extract_filename_helper;
 use font_loader::system_fonts;
+use std::fs;
 use tauri_plugin_http::reqwest;
 use tokio::time::Instant;
 use url::Url;
@@ -15,6 +16,16 @@ pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
 #[tauri::command]
 pub fn extract_filename(path_str: String, with_ext: bool) -> SJMCLResult<String> {
   Ok(extract_filename_helper(&path_str, with_ext))
+}
+
+#[tauri::command]
+pub fn delete_file(path: String) -> SJMCLResult<()> {
+  fs::remove_file(&path).map_err(Into::into)
+}
+
+#[tauri::command]
+pub fn delete_directory(path: String) -> SJMCLResult<()> {
+  fs::remove_dir_all(&path).map_err(Into::into)
 }
 
 #[tauri::command]

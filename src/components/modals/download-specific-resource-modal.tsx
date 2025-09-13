@@ -88,6 +88,9 @@ const DownloadSpecificResourceModal: React.FC<
   const toast = useToast();
   const themedStyles = useThemedCSSStyle();
   const primaryColor = config.appearance.theme.primaryColor;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
   const [gameVersionList, setGameVersionList] = useState<string[]>([]);
   const [versionLabels, setVersionLabels] = useState<string[]>([]);
@@ -524,9 +527,10 @@ const DownloadSpecificResourceModal: React.FC<
       <ModalContent h="100%" pb={4}>
         <ModalHeader>
           {t("DownloadSpecificResourceModal.title", {
-            name: resource.translatedName
-              ? `${resource.translatedName} (${resource.name})`
-              : resource.name,
+            name:
+              showZhTrans && resource.translatedName
+                ? `${resource.translatedName} (${resource.name})`
+                : resource.name,
             source: resource.source,
           })}
         </ModalHeader>
@@ -542,7 +546,7 @@ const DownloadSpecificResourceModal: React.FC<
           >
             <OptionItem
               title={
-                resource.translatedName
+                showZhTrans && resource.translatedName
                   ? `${resource.translatedName} | ${resource.name}`
                   : resource.name
               }
@@ -571,7 +575,8 @@ const DownloadSpecificResourceModal: React.FC<
                   whiteSpace="pre-wrap"
                   mt={1}
                 >
-                  {resource.description}
+                  {(showZhTrans && resource.translatedDescription) ||
+                    resource.description}
                 </Text>
               }
               prefixElement={
@@ -596,6 +601,23 @@ const DownloadSpecificResourceModal: React.FC<
                   }}
                 >
                   {resource.source}
+                </Link>
+              </HStack>
+            )}
+            {resource.mcmodId && (
+              <HStack spacing={1} ml={2}>
+                <LuExternalLink />
+                <Link
+                  fontSize="xs"
+                  color={`${primaryColor}.500`}
+                  onClick={() => {
+                    resource.mcmodId &&
+                      openUrl(
+                        `https://www.mcmod.cn/class/${resource.mcmodId}.html`
+                      );
+                  }}
+                >
+                  MCMod
                 </Link>
               </HStack>
             )}

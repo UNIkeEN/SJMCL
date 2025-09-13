@@ -1,29 +1,31 @@
-use super::constants::{CLIENT_ID, SCOPE, TOKEN_ENDPOINT};
+use super::constants::{CLIENT_ID, OAUTH_TOKEN_ENDPOINT, SCOPE};
+use crate::account::helpers::microsoft::constants::{
+  DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, PROFILE_ENDPOINT, XSTS_AUTH_ENDPOINT,
+};
 use crate::account::helpers::microsoft::models::{MinecraftProfile, XstsResponse};
-use crate::account::helpers::misc::{fetch_image, OAuthCode, OAuthTokens};
+use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
-  AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo, PlayerType, Texture,
+  AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
+  Texture,
 };
 use crate::error::SJMCLResult;
 use serde_json::{json, Value};
 use std::str::FromStr;
-use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
-use tokio::time::{sleep, Duration};
 use uuid::Uuid;
 
-pub async fn device_authorization(app: &AppHandle) -> SJMCLResult<OAuthCodeResponse> {
+pub async fn device_authorization(app: &AppHandle) -> SJMCLResult<DeviceAuthResponseInfo> {
   let client = app.state::<reqwest::Client>();
   let response = client
-    .post("https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode")
+    .post(DEVICE_AUTH_ENDPOINT)
     .form(&[("client_id", CLIENT_ID), ("scope", SCOPE)])
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
-    .json::<OAuthCode>()
+    .json::<DeviceAuthResponse>()
     .await
     .map_err(|_| AccountError::ParseError)?;
 
@@ -33,14 +35,16 @@ pub async fn device_authorization(app: &AppHandle) -> SJMCLResult<OAuthCodeRespo
     .verification_uri_complete
     .unwrap_or(response.verification_uri);
   let interval = response.interval;
+  let expires_in = response.expires_in;
 
   app.clipboard().write_text(user_code.clone())?;
 
-  Ok(OAuthCodeResponse {
+  Ok(DeviceAuthResponseInfo {
     device_code,
     user_code,
     verification_uri,
     interval,
+    expires_in,
   })
 }
 
@@ -75,7 +79,7 @@ async fn fetch_xsts_token(app: &AppHandle, xbl_token: String) -> SJMCLResult<(St
   let client = app.state::<reqwest::Client>();
 
   let response = client
-    .post("https://xsts.auth.xboxlive.com/xsts/authorize")
+    .post(XSTS_AUTH_ENDPOINT)
     .body(
       json!({
         "Properties": {
@@ -114,7 +118,7 @@ async fn fetch_minecraft_token(
   let client = app.state::<reqwest::Client>();
 
   let response: Value = client
-    .post("https://api.minecraftservices.com/authentication/login_with_xbox")
+    .post(MINECRAFT_TOKEN_ENDPOINT)
     .json(&serde_json::json!({
       "identityToken": format!("XBL3.0 x={};{}", xsts_userhash, xsts_token),
     }))
@@ -135,7 +139,7 @@ async fn fetch_minecraft_profile(
   let client = app.state::<reqwest::Client>();
 
   let response = client
-    .get("https://api.minecraftservices.com/minecraft/profile")
+    .get(PROFILE_ENDPOINT)
     .header("Authorization", format!("Bearer {}", minecraft_token))
     .send()
     .await
@@ -203,71 +207,15 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
   )
 }
 
-pub async fn login(app: &AppHandle, auth_info: OAuthCodeResponse) -> SJMCLResult<PlayerInfo> {
+pub async fn login(app: &AppHandle, auth_info: DeviceAuthResponseInfo) -> SJMCLResult<PlayerInfo> {
   let client = app.state::<reqwest::Client>();
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-
-  {
-    let mut account_state = account_binding.lock()?;
-    account_state.is_oauth_processing = true;
-  }
-
-  let mut interval = auth_info.interval;
-  let tokens: OAuthTokens;
-
-  loop {
-    {
-      let account_state = account_binding.lock()?;
-      if !account_state.is_oauth_processing {
-        return Err(AccountError::Cancelled)?;
-      }
-    }
-
-    let token_response = client
-      .post(TOKEN_ENDPOINT)
-      .form(&[
-        ("client_id", CLIENT_ID),
-        ("device_code", &auth_info.device_code),
-        ("client_secret", env!("SJMCL_MICROSOFT_CLIENT_SECRET")),
-        ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
-      ])
-      .send()
-      .await
-      .map_err(|_| AccountError::NetworkError)?;
-
-    if token_response.status().is_success() {
-      tokens = token_response
-        .json()
-        .await
-        .map_err(|_| AccountError::ParseError)?;
-      break;
-    } else {
-      let error_data = token_response
-        .json::<Value>()
-        .await
-        .map_err(|_| AccountError::ParseError)?;
-
-      let error = error_data["error"]
-        .as_str()
-        .ok_or(AccountError::ParseError)?;
-
-      match error {
-        "authorization_pending" => {}
-        "slow_down" => {
-          interval *= 2;
-        }
-        "expired_token" => {
-          return Err(AccountError::Expired)?;
-        }
-        _ => {
-          return Err(AccountError::ParseError)?;
-        }
-      }
-    }
-
-    sleep(Duration::from_secs(interval)).await;
-  }
-
+  let sender = client.post(OAUTH_TOKEN_ENDPOINT).form(&[
+    ("client_id", CLIENT_ID),
+    ("device_code", &auth_info.device_code),
+    ("client_secret", env!("SJMCL_MICROSOFT_CLIENT_SECRET")),
+    ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
+  ]);
+  let tokens = oauth_polling(app, sender, auth_info).await?;
   parse_profile(app, &tokens).await
 }
 
@@ -275,7 +223,7 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
   let client = app.state::<reqwest::Client>();
 
   let token_response = client
-    .post(TOKEN_ENDPOINT)
+    .post(OAUTH_TOKEN_ENDPOINT)
     .form(&[
       ("client_id", CLIENT_ID),
       (
@@ -303,7 +251,7 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
 pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool> {
   let client = app.state::<reqwest::Client>();
   let response = client
-    .get("https://api.minecraftservices.com/minecraft/profile")
+    .get(PROFILE_ENDPOINT)
     .header(
       "Authorization",
       format!("Bearer {}", player.access_token.clone().unwrap_or_default()),

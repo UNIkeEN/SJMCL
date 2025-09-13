@@ -1,7 +1,15 @@
-use crate::resource::models::{OtherResourceVersionPack, ResourceError, ResourceType, SourceType};
+use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
+use crate::resource::helpers::mod_db::ModDataBase;
+use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
+use crate::resource::models::{
+  OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
+  SourceType,
+};
 use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig};
 use std::cmp::Ordering;
+use std::sync::Mutex;
 use strum::IntoEnumIterator;
+use tauri::{AppHandle, Manager};
 use url::Url;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
@@ -171,4 +179,48 @@ pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionP
   let (version_b, suffix_b) = parse_version(&b.name);
 
   compare_versions_with_suffix(&version_a, &suffix_a, &version_b, &suffix_b).reverse()
+}
+
+pub async fn apply_other_resource_enhancements(
+  app: &AppHandle,
+  resource_info: &mut OtherResourceInfo,
+) -> SJMCLResult<()> {
+  // Extract data from cache in a limited scope to avoid holding lock across await
+  let (translated_name, mcmod_id) = {
+    if let Ok(cache) = app.state::<Mutex<ModDataBase>>().lock() {
+      let translated_name = if resource_info._type == "mod" {
+        cache.get_translated_name(&resource_info.slug, &resource_info.source)
+      } else {
+        None
+      };
+      let mcmod_id = cache.get_mcmod_id(&resource_info.slug, &resource_info.source);
+      (translated_name, mcmod_id)
+    } else {
+      (None, None)
+    }
+  };
+
+  if let Some(name) = translated_name {
+    if name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
+      resource_info.translated_name = Some(name);
+    }
+  }
+  if let Some(id) = mcmod_id {
+    resource_info.mcmod_id = id;
+  }
+
+  // Get translated descriptio
+  let translated_desc = match resource_info.source {
+    OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
+    OtherResourceSource::CurseForge => {
+      translate_description_curseforge(app, &resource_info.id).await?
+    }
+    _ => None,
+  };
+
+  if let Some(desc) = translated_desc {
+    resource_info.translated_description = Some(desc);
+  }
+
+  Ok(())
 }

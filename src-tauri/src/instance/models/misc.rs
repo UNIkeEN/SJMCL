@@ -71,9 +71,12 @@ impl ModLoaderType {
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
 pub enum ModLoaderStatus {
-  NotDownloaded,
-  Downloading,
-  Installing,
+  NotDownloaded, // mod loader's library has not been downloaded
+  DownloadFailed, /* mod loader's library download process failed (including processor installation failed)
+                  Only when SJMCL restart, it will try to re-download library while making no changes to client info JSON (is_retry = true),
+                  and do following steps */
+  Downloading, // mod loader's library download process is ongoing
+  Installing,  // mod loader's library has been downloaded, and installation processors are working
   #[default]
   Installed,
 }

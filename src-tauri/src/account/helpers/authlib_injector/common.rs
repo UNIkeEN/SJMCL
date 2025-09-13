@@ -2,7 +2,10 @@ use super::{oauth, password};
 use crate::{
   account::{
     helpers::{
-      authlib_injector::models::{MinecraftProfile, TextureInfo},
+      authlib_injector::{
+        constants::TEXTURE_TYPES,
+        models::{MinecraftProfile, TextureInfo},
+      },
       misc::fetch_image,
       offline::load_preset_skin,
     },
@@ -15,6 +18,27 @@ use serde_json::json;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use uuid::Uuid;
+
+pub async fn retrieve_profile(
+  app: &AppHandle,
+  auth_server_url: String,
+  id: String,
+) -> SJMCLResult<MinecraftProfile> {
+  let client = app.state::<reqwest::Client>();
+  Ok(
+    client
+      .get(format!(
+        "{}/sessionserver/session/minecraft/profile/{}",
+        auth_server_url, id
+      ))
+      .send()
+      .await
+      .map_err(|_| AccountError::NetworkError)?
+      .json::<MinecraftProfile>()
+      .await
+      .map_err(|_| AccountError::ParseError)?,
+  )
+}
 
 pub async fn parse_profile(
   app: &AppHandle,
@@ -31,8 +55,8 @@ pub async fn parse_profile(
 
   if let Some(texture_info_base64) = profile
     .properties
-    .iter()
-    .find(|property| property.name == "textures")
+    .as_ref()
+    .and_then(|props| props.iter().find(|property| property.name == "textures"))
   {
     let texture_info = general_purpose::STANDARD
       .decode(texture_info_base64.value.clone())
@@ -43,8 +67,6 @@ pub async fn parse_profile(
 
     let texture_info_value: TextureInfo =
       serde_json::from_str(&texture_info).map_err(|_| AccountError::ParseError)?;
-
-    const TEXTURE_TYPES: [&str; 2] = ["SKIN", "CAPE"];
 
     for texture_type in TEXTURE_TYPES {
       if let Some(skin) = texture_info_value.textures.get(texture_type) {

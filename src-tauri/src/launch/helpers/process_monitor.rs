@@ -153,7 +153,7 @@ pub async fn monitor_process(
 
   // polling thread (for changing window title, etc.)
   let stop_polling_flag = Arc::new(AtomicBool::new(false));
-  let _ = {
+  {
     let stop_polling_flag = stop_polling_flag.clone();
     let pid = child.id();
     let custom_title = custom_title.to_string();

@@ -125,6 +125,15 @@ jobs:
           echo "Final release artifacts:"
           ls -la release-artifacts/
 
+      - name: Upload artifacts to remote server
+        env:
+          SJMC_SECRET_KEY: ${{ secrets.SJMC_DEPLOY_SECRET_KEY }}
+          SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
+          SJMC_DEPLOY_PROJECT: ${{ secrets.SJMC_DEPLOY_PROJECT }}
+        run: |
+          bash scripts/release/upload_to_sjmc_server.sh
+        shell: bash
+
       - name: Generate Changelog
         id: changelog
         run: |

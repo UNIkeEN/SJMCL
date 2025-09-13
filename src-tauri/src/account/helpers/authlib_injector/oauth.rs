@@ -1,16 +1,17 @@
 use super::constants::SCOPE;
+use crate::account::helpers::authlib_injector::common::retrieve_profile;
 use crate::account::helpers::authlib_injector::{common::parse_profile, models::MinecraftProfile};
-use crate::account::helpers::misc::{OAuthCode, OAuthTokens};
-use crate::account::models::{AccountError, AccountInfo, OAuthCodeResponse, PlayerInfo};
+use crate::account::helpers::misc::oauth_polling;
+use crate::account::models::{
+  AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
+};
 use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
-use tokio::time::{sleep, Duration};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct OpenIDConfig {
@@ -55,19 +56,22 @@ async fn fetch_jwks(app: &AppHandle, jwks_uri: String) -> SJMCLResult<Value> {
 pub async fn device_authorization(
   app: &AppHandle,
   openid_configuration_url: String,
-  client_id: String,
-) -> SJMCLResult<OAuthCodeResponse> {
+  client_id: Option<String>,
+) -> SJMCLResult<DeviceAuthResponseInfo> {
   let client = app.state::<reqwest::Client>();
 
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
 
   let response = client
     .post(openid_configuration.device_authorization_endpoint)
-    .form(&[("client_id", client_id), ("scope", SCOPE.to_string())])
+    .form(&[
+      ("client_id", client_id.clone().unwrap_or_default()),
+      ("scope", SCOPE.to_string()),
+    ])
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?
-    .json::<OAuthCode>()
+    .json::<DeviceAuthResponse>()
     .await
     .map_err(|_| AccountError::ParseError)?;
 
@@ -77,14 +81,16 @@ pub async fn device_authorization(
     .verification_uri_complete
     .unwrap_or(response.verification_uri);
   let interval = response.interval;
+  let expires_in = response.expires_in;
 
   app.clipboard().write_text(user_code.clone())?;
 
-  Ok(OAuthCodeResponse {
+  Ok(DeviceAuthResponseInfo {
     device_code,
     user_code,
     verification_uri,
     interval,
+    expires_in,
   })
 }
 
@@ -93,7 +99,7 @@ async fn parse_token(
   jwks: Value,
   tokens: &OAuthTokens,
   auth_server_url: Option<String>,
-  client_id: String,
+  client_id: Option<String>,
 ) -> SJMCLResult<PlayerInfo> {
   let key = &jwks["keys"].as_array().ok_or(AccountError::ParseError)?[0];
 
@@ -104,7 +110,7 @@ async fn parse_token(
     DecodingKey::from_rsa_components(n, e).map_err(|_| AccountError::ParseError)?;
 
   let mut validation = Validation::new(Algorithm::RS256);
-  validation.set_audience(&[client_id]);
+  validation.set_audience(&[client_id.unwrap_or_default().to_string()]);
 
   let token_data = decode::<Value>(
     tokens.id_token.clone().unwrap_or_default().as_str(),
@@ -113,9 +119,18 @@ async fn parse_token(
   )
   .map_err(|_| AccountError::ParseError)?;
 
-  let selected_profile =
+  let mut selected_profile =
     serde_json::from_value::<MinecraftProfile>(token_data.claims["selectedProfile"].clone())
       .map_err(|_| AccountError::ParseError)?;
+
+  if selected_profile.properties.is_none() {
+    selected_profile = retrieve_profile(
+      app,
+      auth_server_url.clone().unwrap_or_default(),
+      selected_profile.id.clone(),
+    )
+    .await?;
+  }
 
   parse_profile(
     app,
@@ -133,59 +148,28 @@ pub async fn login(
   app: &AppHandle,
   auth_server_url: String,
   openid_configuration_url: String,
-  client_id: String,
-  auth_info: OAuthCodeResponse,
+  client_id: Option<String>,
+  auth_info: DeviceAuthResponseInfo,
 ) -> SJMCLResult<PlayerInfo> {
   let client = app.state::<reqwest::Client>();
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-
-  {
-    let mut account_state = account_binding.lock()?;
-    account_state.is_oauth_processing = true;
-  }
-
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
   let jwks = fetch_jwks(app, openid_configuration.jwks_uri).await?;
-  let tokens: OAuthTokens;
-  loop {
-    {
-      let account_state = account_binding.lock()?;
-      if !account_state.is_oauth_processing {
-        return Err(AccountError::Cancelled)?;
-      }
-    }
-
-    let token_response = client
-      .post(&openid_configuration.token_endpoint)
-      .form(&[
-        ("client_id", client_id.clone()),
-        ("device_code", auth_info.device_code.clone()),
-        (
-          "grant_type",
-          "urn:ietf:params:oauth:grant-type:device_code".to_string(),
-        ),
-      ])
-      .send()
-      .await?;
-
-    if token_response.status().is_success() {
-      tokens = token_response
-        .json()
-        .await
-        .map_err(|_| AccountError::ParseError)?;
-      break;
-    }
-
-    sleep(Duration::from_secs(auth_info.interval)).await;
-  }
-
+  let sender = client.post(&openid_configuration.token_endpoint).form(&[
+    ("client_id", client_id.clone().unwrap_or_default()),
+    ("device_code", auth_info.device_code.clone()),
+    (
+      "grant_type",
+      "urn:ietf:params:oauth:grant-type:device_code".to_string(),
+    ),
+  ]);
+  let tokens = oauth_polling(app, sender, auth_info).await?;
   parse_token(app, jwks, &tokens, Some(auth_server_url), client_id).await
 }
 
 pub async fn refresh(
   app: &AppHandle,
   player: &PlayerInfo,
-  client_id: String,
+  client_id: Option<String>,
   openid_configuration_url: String,
 ) -> SJMCLResult<PlayerInfo> {
   let openid_configuration = fetch_openid_configuration(app, openid_configuration_url).await?;
@@ -195,7 +179,7 @@ pub async fn refresh(
   let token_response = client
     .post(&openid_configuration.token_endpoint)
     .form(&[
-      ("client_id", client_id.clone()),
+      ("client_id", client_id.clone().unwrap_or_default()),
       (
         "refresh_token",
         player.refresh_token.clone().unwrap_or_default(),

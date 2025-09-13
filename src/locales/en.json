@@ -520,7 +520,7 @@
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": "Download Resource - {{name}} ({{source}})",
+    "title": "Download Resource - {{name}} - {{source}}",
     "label": {
       "all": "All",
       "recommendedVersion": "Recommended Ver.",
@@ -558,7 +558,7 @@
       "datapack": "Datapack",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",
-      "retry": "Retry Task",
+      "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
       "forge-libraries": "Forge Libraries"
     }
@@ -907,6 +907,10 @@
         "launchPageQuickSwitch": {
           "title": "Quick Switch for Accounts & Instances",
           "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+        },
+        "resourceTranslation": {
+          "title": "Resource Translation",
+          "description": "%only available in zh-Hans"
         }
       }
     }
@@ -1331,6 +1335,10 @@
       "viewSkin": "View Skin",
       "delete": "Delete",
       "copyUUID": "Copy UUID"
+    },
+    "toast": {
+      "refreshing": "Refreshing player info",
+      "deleting": "Deleting player"
     }
   },
   "PingTestPage": {
@@ -1738,14 +1746,6 @@
           "description": {
             "GAME_DIR_ALREADY_ADDED": "The directory has already been added",
             "GAME_DIR_NOT_EXIST": "The directory does not exist"
-          }
-        }
-      },
-      "checkServiceAvailability": {
-        "error": {
-          "title": "Service Unavailable",
-          "description": {
-            "FETCH_ERROR": "Failed to fetch the meta server"
           }
         }
       },

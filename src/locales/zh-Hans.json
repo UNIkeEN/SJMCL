@@ -520,7 +520,7 @@
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": "资源下载 - {{name}} ({{source}})",
+    "title": "资源下载 - {{name}} - {{source}}",
     "label": {
       "all": "全部",
       "recommendedVersion": "推荐版本",
@@ -558,7 +558,7 @@
       "datapack": "数据包",
       "patch-files": "修补游戏文件 {{param}}",
       "mod-update": "更新模组",
-      "retry": "重试任务",
+      "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
       "forge-libraries": "Forge 运行库"
     }
@@ -907,6 +907,10 @@
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
           "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
+        },
+        "resourceTranslation": {
+          "title": "显示资源翻译",
+          "description": "启用后，在资源下载界面尝试显示名称或描述的简体中文翻译（如数据可用）"
         }
       }
     }
@@ -1331,6 +1335,10 @@
       "viewSkin": "查看皮肤",
       "delete": "删除此角色",
       "copyUUID": "复制 UUID"
+    },
+    "toast": {
+      "refreshing": "正在刷新角色信息",
+      "deleting": "正在删除角色"
     }
   },
   "PingTestPage": {
@@ -1738,14 +1746,6 @@
           "description": {
             "GAME_DIR_ALREADY_ADDED": "游戏目录已添加",
             "GAME_DIR_NOT_EXIST": "游戏目录不存在"
-          }
-        }
-      },
-      "checkServiceAvailability": {
-        "error": {
-          "title": "服务器不可用",
-          "description": {
-            "FETCH_ERROR": "服务器侧或未知错误"
           }
         }
       },

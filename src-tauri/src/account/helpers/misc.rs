@@ -1,5 +1,11 @@
 use crate::{
-  account::models::{AccountError, AccountInfo, PlayerInfo},
+  account::{
+    constants::DEFAULT_POLLING_INTERVAL,
+    models::{
+      AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthErrorResponse, OAuthTokens,
+      PlayerInfo,
+    },
+  },
   error::SJMCLResult,
   launcher_config::models::LauncherConfig,
   storage::Storage,
@@ -10,23 +16,7 @@ use crate::{
 };
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-
-#[derive(serde::Deserialize)]
-pub struct OAuthCode {
-  pub device_code: String,
-  pub user_code: String,
-  pub verification_uri: String,
-  pub verification_uri_complete: Option<String>,
-  pub interval: u64,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, serde::Deserialize, serde::Serialize)]
-pub struct OAuthTokens {
-  pub access_token: String,
-  pub refresh_token: String,
-  pub id_token: Option<String>,
-}
+use tauri_plugin_http::reqwest::{self, RequestBuilder};
 
 pub async fn fetch_image(app: &AppHandle, url: String) -> SJMCLResult<ImageWrapper> {
   let client = app.state::<reqwest::Client>();
@@ -102,4 +92,75 @@ pub async fn check_full_login_availability(app: &AppHandle) -> SJMCLResult<()> {
 
   config_state.save()?;
   Ok(())
+}
+
+pub async fn oauth_polling(
+  app: &AppHandle,
+  sender: RequestBuilder,
+  auth_info: DeviceAuthResponseInfo,
+) -> SJMCLResult<OAuthTokens> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  {
+    let mut account_state = account_binding.lock()?;
+    account_state.is_oauth_processing = true;
+  }
+  let mut interval = auth_info.interval.unwrap_or(DEFAULT_POLLING_INTERVAL);
+  let start_time = std::time::Instant::now();
+  loop {
+    {
+      let account_state = account_binding.lock()?;
+      if !account_state.is_oauth_processing {
+        return Err(AccountError::Cancelled)?;
+      }
+    }
+
+    let response = sender
+      .try_clone()
+      .ok_or(AccountError::NetworkError)?
+      .send()
+      .await
+      .map_err(|_| AccountError::NetworkError)?;
+
+    if response.status().is_success() {
+      return Ok(
+        response
+          .json()
+          .await
+          .map_err(|_| AccountError::ParseError)?,
+      );
+    } else {
+      if response.status().as_u16() != 400 {
+        return Err(AccountError::NetworkError)?;
+      }
+
+      let error_response: OAuthErrorResponse = response
+        .json()
+        .await
+        .map_err(|_| AccountError::ParseError)?;
+
+      match error_response.error.as_str() {
+        "authorization_pending" => {
+          // continue polling
+        }
+        "slow_down" => {
+          interval += 5;
+        }
+        "access_denied" => {
+          return Err(AccountError::Cancelled)?;
+        }
+        "expired_token" => {
+          return Err(AccountError::Expired)?;
+        }
+        _ => {
+          return Err(AccountError::NetworkError)?;
+        }
+      }
+    }
+
+    if start_time.elapsed().as_secs() >= auth_info.expires_in {
+      return Err(AccountError::Expired)?;
+    }
+
+    tokio::time::sleep(std::time::Duration::from_secs(interval)).await;
+  }
 }

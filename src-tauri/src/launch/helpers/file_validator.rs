@@ -79,35 +79,31 @@ pub async fn get_invalid_library_files(
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
 
-  let futs = artifacts.into_iter().map(move |artifact| {
-    let source = source.clone();
-    async move {
-      let file_path = library_path.join(&artifact.path);
-      let exists = fs::try_exists(&file_path).await?;
-      if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
-      {
-        return Ok(None);
-      } else if artifact.url.is_empty() {
-        return Err(LaunchError::GameFilesIncomplete.into());
-      } else {
-        let src = convert_url_to_target_source(
-          &url::Url::parse(&artifact.url)?,
-          &[
-            ResourceType::Libraries,
-            ResourceType::FabricMaven,
-            ResourceType::ForgeMaven,
-            ResourceType::ForgeMavenNew,
-            ResourceType::NeoforgeMaven,
-          ],
-          &source,
-        )?;
-        Ok(Some(PTaskParam::Download(DownloadParam {
-          src,
-          dest: file_path,
-          filename: None,
-          sha1: Some(artifact.sha1.clone()),
-        })))
-      }
+  let futs = artifacts.into_iter().map(move |artifact| async move {
+    let file_path = library_path.join(&artifact.path);
+    let exists = fs::try_exists(&file_path).await?;
+    if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
+      Ok(None)
+    } else if artifact.url.is_empty() {
+      return Err(LaunchError::GameFilesIncomplete.into());
+    } else {
+      let src = convert_url_to_target_source(
+        &url::Url::parse(&artifact.url)?,
+        &[
+          ResourceType::Libraries,
+          ResourceType::FabricMaven,
+          ResourceType::ForgeMaven,
+          ResourceType::ForgeMavenNew,
+          ResourceType::NeoforgeMaven,
+        ],
+        &source,
+      )?;
+      Ok(Some(PTaskParam::Download(DownloadParam {
+        src,
+        dest: file_path,
+        filename: None,
+        sha1: Some(artifact.sha1.clone()),
+      })))
     }
   });
 

@@ -50,7 +50,7 @@ import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { PlayerType } from "@/enums/account";
-import { AuthServer, OAuthCodeResponse, Player } from "@/models/account";
+import { AuthServer, DeviceAuthResponseInfo, Player } from "@/models/account";
 import {
   InvokeResponse,
   ResponseError,
@@ -85,7 +85,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   const [showOAuth, setShowOAuth] = useState<boolean>(false); // show OAuth button instead of username and password input.
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [oauthCodeResponse, setOAuthCodeResponse] =
-    useState<OAuthCodeResponse>();
+    useState<DeviceAuthResponseInfo>();
   const [showAdvancedOptions, setShowAdvancedOptions] =
     useState<boolean>(false);
   const [candidatePlayers, setCandidatePlayers] = useState<Player[]>([]);
@@ -157,6 +157,12 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
   useEffect(() => {
     if (candidatePlayers.length) onSelectPlayerModalOpen();
   }, [candidatePlayers, onSelectPlayerModalOpen]);
+
+  const handleSelectPlayerModalClose = () => {
+    setCandidatePlayers([]);
+    onSelectPlayerModalClose();
+    setIsLoading(false);
+  };
 
   const handleFetchOAuthCode = () => {
     if (playerType === PlayerType.Offline) return;
@@ -588,7 +594,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
         candidatePlayers={candidatePlayers}
         onPlayerSelected={handlePlayerSelect}
         isOpen={isSelectPlayerModalOpen}
-        onClose={onSelectPlayerModalClose}
+        onClose={handleSelectPlayerModalClose}
       />
     </Modal>
   );

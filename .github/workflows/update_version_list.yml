@@ -20,7 +20,8 @@ jobs:
           ref: main
 
       - name: Run version fetch script
-        run: node scripts/game/fetch_version_list.js
+        run: | 
+          node scripts/game/fetch_version_list.js
 
       - name: Generate PR metadata
         id: meta
@@ -49,7 +50,6 @@ jobs:
 
           echo "pr_title=$TITLE" >> $GITHUB_OUTPUT
           echo "pr_body=$TITLE"  >> $GITHUB_OUTPUT
-
 
       - name: Create or update Pull Request
         uses: peter-evans/create-pull-request@v7
