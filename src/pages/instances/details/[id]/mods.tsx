@@ -54,7 +54,7 @@ const InstanceModsPage = () => {
     isLocalModListLoading: isLoading,
   } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
 
@@ -174,6 +174,42 @@ const InstanceModsPage = () => {
     [toast, getLocalModListWrapper]
   );
 
+  const handleDeleteSingleMod = useCallback(
+    (mod: LocalModInfo) => {
+      openGenericConfirmDialog({
+        title: t("DeleteInstanceAlertDialog.dialog.title"),
+        body: (
+          <Text fontSize="sm">
+            {t("InstanceModsPage.modList.menu.delete")}:{" "}
+            {mod.name || mod.fileName}
+          </Text>
+        ),
+        btnOK: t("General.delete"),
+        isAlert: true,
+        showSuppressBtn: true,
+        suppressKey: "deleteModAlert",
+        onOKCallback: () => {
+          InstanceService.deleteMod(mod.filePath).then((response) => {
+            if (response.status === "success") {
+              setLocalMods((prev) =>
+                prev.filter((m) => m.filePath !== mod.filePath)
+              );
+              getLocalModListWrapper(true);
+            } else {
+              toast({
+                title: response.message,
+                description: response.details,
+                status: "error",
+              });
+              getLocalModListWrapper(true);
+            }
+          });
+        },
+      });
+    },
+    [openGenericConfirmDialog, t, toast, getLocalModListWrapper]
+  );
+
   const modSecMenuOperations = [
     {
       icon: "openFolder",
@@ -252,6 +288,14 @@ const InstanceModsPage = () => {
       onClick: () => {
         setModInfoSelectedMod(mod);
         onModInfoModalOpen();
+      },
+    },
+    {
+      label: t("InstanceModsPage.modList.menu.delete"),
+      icon: "delete",
+      danger: true,
+      onClick: () => {
+        handleDeleteSingleMod(mod);
       },
     },
   ];

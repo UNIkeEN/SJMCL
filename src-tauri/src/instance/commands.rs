@@ -756,6 +756,19 @@ pub fn toggle_mod_by_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<
 }
 
 #[tauri::command]
+pub fn delete_mod(file_path: PathBuf) -> SJMCLResult<()> {
+  if file_path.is_file() {
+    fs::remove_file(&file_path)?;
+    Ok(())
+  } else if file_path.is_dir() {
+    fs::remove_dir_all(&file_path)?;
+    Ok(())
+  } else {
+    Err(InstanceError::FileNotFoundError.into())
+  }
+}
+
+#[tauri::command]
 pub async fn retrieve_world_details(
   app: AppHandle,
   instance_id: String,
