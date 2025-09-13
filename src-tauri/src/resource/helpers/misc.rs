@@ -209,7 +209,7 @@ pub async fn apply_other_resource_enhancements(
     resource_info.mcmod_id = id;
   }
 
-  // Get translated descriptio
+  // Get translated description
   let translated_desc = match resource_info.source {
     OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
     OtherResourceSource::CurseForge => {

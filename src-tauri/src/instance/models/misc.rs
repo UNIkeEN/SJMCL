@@ -166,6 +166,7 @@ pub struct LocalModInfo {
   pub file_name: String,
   pub file_path: PathBuf,
   pub description: String,
+  pub translated_description: Option<String>,
   pub potential_incompatibility: bool,
 }
 

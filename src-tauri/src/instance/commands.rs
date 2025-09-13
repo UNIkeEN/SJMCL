@@ -8,7 +8,7 @@ use super::{
       get_instance_game_config, get_instance_subdir_path_by_id, refresh_and_update_instances,
       unify_instance_name,
     },
-    mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
+    mods::common::{add_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar},
     resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
     server::{load_servers_info_from_path, query_server_status},
     world::{level_data_to_world_info, load_level_data_from_path},
@@ -488,16 +488,32 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state
-    .get(&instance_id)
-    .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let incompatible_loader_type = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock().unwrap();
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
+      Some(instance.mod_loader.loader_type.clone())
+    } else {
+      None
+    }
+  };
 
   mod_infos.iter_mut().for_each(|mod_info| {
-    mod_info.potential_incompatibility = instance.mod_loader.loader_type != ModLoaderType::Unknown
-      && mod_info.loader_type != instance.mod_loader.loader_type;
+    if let Some(loader_type) = &incompatible_loader_type {
+      mod_info.potential_incompatibility = mod_info.loader_type != *loader_type;
+    } else {
+      mod_info.potential_incompatibility = false;
+    }
   });
+
+  // Add translations for mod names and descriptions
+  for mod_info in &mut mod_infos {
+    if let Ok(()) = add_mod_translations(&app, mod_info).await {}
+  }
 
   // sort by name (and version)
   mod_infos.sort();

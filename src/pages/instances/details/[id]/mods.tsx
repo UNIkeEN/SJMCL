@@ -57,6 +57,9 @@ const InstanceModsPage = () => {
   const { openSharedModal } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
@@ -363,7 +366,7 @@ const InstanceModsPage = () => {
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yello.200" }}
                     >
-                      {mod.translatedName
+                      {showZhTrans && mod.translatedName
                         ? `${mod.translatedName} | ${mod.name}`
                         : mod.name || mod.fileName}
                     </Highlight>
@@ -395,7 +398,11 @@ const InstanceModsPage = () => {
                     >
                       {mod.fileName}
                     </Highlight>
-                    {mod.description ? `: ${mod.description}` : ""}
+                    {showZhTrans && mod.translatedDescription
+                      ? `: ${mod.translatedDescription}`
+                      : mod.description
+                        ? `: ${mod.description}`
+                        : ""}
                   </Text>
                 }
                 prefixElement={

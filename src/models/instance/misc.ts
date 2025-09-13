@@ -63,6 +63,7 @@ export interface LocalModInfo {
   fileName: string;
   filePath: string;
   description?: string;
+  translatedDescription?: string;
   potentialIncompatibility: boolean;
 }
 
