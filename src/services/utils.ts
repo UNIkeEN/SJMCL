@@ -26,8 +26,8 @@ export class UtilsService {
   }
 
   /**
-   * DELETE a file or directory by absolute path.
-   * @param path The file or directory path to delete.
+   * DELETE a file by absolute path.
+   * @param path The file to delete.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("utils")
