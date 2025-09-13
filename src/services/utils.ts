@@ -17,15 +17,6 @@ export class UtilsService {
   }
 
   /**
-   * RETRIEVE the list of installed TrueType fonts.
-   * @returns {Promise<InvokeResponse<string[]>>}
-   */
-  @responseHandler("utils")
-  static async retrieveFontList(): Promise<InvokeResponse<string[]>> {
-    return await invoke("retrieve_truetype_font_list");
-  }
-
-  /**
    * DELETE a file by absolute path.
    * @param path The file to delete.
    * @returns {Promise<InvokeResponse<void>>}
@@ -33,6 +24,15 @@ export class UtilsService {
   @responseHandler("utils")
   static async deleteFile(path: string): Promise<InvokeResponse<void>> {
     return await invoke("delete_file", { path });
+  }
+
+  /**
+   * RETRIEVE the list of installed TrueType fonts.
+   * @returns {Promise<InvokeResponse<string[]>>}
+   */
+  @responseHandler("utils")
+  static async retrieveFontList(): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_truetype_font_list");
   }
 
   /**

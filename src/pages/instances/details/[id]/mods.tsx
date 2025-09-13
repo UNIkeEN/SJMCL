@@ -179,21 +179,21 @@ const InstanceModsPage = () => {
     (mod: LocalModInfo) => {
       openGenericConfirmDialog({
         title: t("DeleteModAlertDialog.dialog.title"),
-        body: (
-          <Text fontSize="sm">
-            {t("DeleteModAlertDialog.dialog.content", {
-              instanceName: summary?.name ?? "",
-              modName: mod.name || mod.fileName,
-            })}
-          </Text>
-        ),
+        body: t("DeleteModAlertDialog.dialog.content", {
+          instanceName: summary?.name ?? "",
+          modName: mod.name || mod.fileName,
+        }),
         btnOK: t("General.delete"),
         isAlert: true,
         showSuppressBtn: true,
-        suppressKey: "deleteModAlert",
+        suppressKey: "deleteModAlert1",
         onOKCallback: () => {
           UtilsService.deleteFile(mod.filePath).then((response) => {
             if (response.status === "success") {
+              toast({
+                title: response.message,
+                status: "success",
+              });
               setLocalMods((prev) =>
                 prev.filter((m) => m.filePath !== mod.filePath)
               );

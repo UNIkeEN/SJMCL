@@ -2272,6 +2272,14 @@
           "Cancelled": "{{param}} download has been cancelled"
         }
       }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "File deleted successfully",
+        "error": {
+          "title": "Failed to delete file"
+        }
+      }
     }
   },
   "SettingsLayout": {

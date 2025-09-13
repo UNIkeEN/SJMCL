@@ -2272,6 +2272,14 @@
           "Cancelled": "{{param}} 下载任务已取消"
         }
       }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "删除文件成功",
+        "error": {
+          "title": "删除文件失败"
+        }
+      }
     }
   },
   "SettingsLayout": {
