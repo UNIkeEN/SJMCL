@@ -186,7 +186,7 @@ const InstanceModsPage = () => {
         btnOK: t("General.delete"),
         isAlert: true,
         showSuppressBtn: true,
-        suppressKey: "deleteModAlert1",
+        suppressKey: "deleteModAlert",
         onOKCallback: () => {
           UtilsService.deleteFile(mod.filePath).then((response) => {
             if (response.status === "success") {
@@ -294,7 +294,7 @@ const InstanceModsPage = () => {
       },
     },
     {
-      label: t("General.delete"),
+      label: "",
       icon: "delete",
       danger: true,
       onClick: () => {
