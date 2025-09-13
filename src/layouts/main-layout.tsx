@@ -183,7 +183,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           level="back"
           h="100%"
           overflow="auto"
-          mt={1}
+          mt={4}
           mb={4}
           mx={4}
         >
