@@ -422,14 +422,14 @@ pub async fn download_forge_libraries(
       }
 
       let url = if lib.url.is_none() {
-        continue;
+        get_download_api(priority[0], ResourceType::Libraries)?
       } else {
-        lib.url.clone().unwrap()
+        Url::parse(&lib.url.clone().unwrap())?
       };
 
       let rel = convert_library_name_to_path(&name, None)?;
       let src = convert_url_to_target_source(
-        &Url::parse(&url)?.join(&rel)?,
+        &url.join(&rel)?,
         &[
           ResourceType::ForgeMaven,
           ResourceType::ForgeMavenNew,
