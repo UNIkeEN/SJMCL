@@ -22,6 +22,7 @@ import { useToast } from "@/contexts/toast";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { ConfigService } from "@/services/config";
 import { UNIXToDatetime } from "@/utils/datetime";
+import { shareFile } from "@/utils/share";
 
 interface PreviewScreenshotModalProps extends Omit<ModalProps, "children"> {
   screenshot: ScreenshotInfo;
@@ -55,6 +56,17 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
   };
 
   const screenshotMenuOperations = [
+    {
+      icon: "share",
+      onClick: async () => {
+        await shareFile(
+          screenshot.filePath,
+          "image/png",
+          t("ScreenshotPreviewModal.menu.share"),
+          { toast }
+        );
+      },
+    },
     {
       icon: LuImagePlay,
       label: t("ScreenshotPreviewModal.menu.setAsBg"),

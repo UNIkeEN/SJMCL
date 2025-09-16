@@ -875,6 +875,12 @@
     "refresh": "刷新",
     "revealFile": "在{{opener}}中显示",
     "search": "搜索",
+    "share": {
+      "text": "分享",
+      "toast": {
+        "error": "分享失败"
+      }
+    },
     "skip": "跳过",
     "version": {
       "dev": "开发版本",

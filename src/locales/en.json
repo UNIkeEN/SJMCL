@@ -876,6 +876,12 @@
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
     "skip": "Skip",
+    "share": {
+      "text": "Share",
+      "toast": {
+        "error": "Failed to share"
+      }
+    },
     "version": {
       "dev": "development version",
       "nightly": "nightly build",

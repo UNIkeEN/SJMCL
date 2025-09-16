@@ -26,7 +26,6 @@ import {
 } from "@/models/task";
 import { InstanceService } from "@/services/instance";
 import { TaskService } from "@/services/task";
-import { parseTaskGroup } from "@/utils/task";
 import { useGlobalData } from "./global-data";
 import { useSharedModals } from "./shared-modal";
 
@@ -551,4 +550,22 @@ export const useTaskContext = (): TaskContextType => {
     throw new Error("useTaskContext must be used within a TaskContextProvider");
   }
   return context;
+};
+
+export const parseTaskGroup = (
+  taskGroup: string
+): {
+  name: string;
+  version?: string;
+  timestamp: number;
+  isRetry: boolean;
+} => {
+  const [rawName, timestamp] = taskGroup.split("@");
+  const [name, version] = rawName.split("?");
+  return {
+    name: name.replace(/^retry-/, ""),
+    version,
+    isRetry: name.startsWith("retry-"),
+    timestamp: parseInt(timestamp),
+  };
 };
