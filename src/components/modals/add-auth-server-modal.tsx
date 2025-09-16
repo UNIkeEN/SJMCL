@@ -169,17 +169,21 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
             </FormControl>
           ) : (
             <VStack spacing={3.5} align="flex-start">
-              <HStack spacing={2}>
-                <Text fontWeight={500}>
+              <HStack spacing={2} minW={0} w="100%">
+                <Text fontWeight={500} flexShrink={0}>
                   {t("AddAuthServerModal.page2.name")}
                 </Text>
-                <Text>{serverName}</Text>
+                <Text className="ellipsis-text" minW={0}>
+                  {serverName}
+                </Text>
               </HStack>
-              <HStack spacing={2}>
-                <Text fontWeight={500}>
+              <HStack spacing={2} minW={0} w="100%">
+                <Text fontWeight={500} flexShrink={0}>
                   {t("AddAuthServerModal.page2.serverUrl")}
                 </Text>
-                <Text>{serverUrl}</Text>
+                <Text className="ellipsis-text" minW={0}>
+                  {serverUrl}
+                </Text>
               </HStack>
             </VStack>
           )}

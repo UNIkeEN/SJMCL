@@ -157,7 +157,7 @@ const Editable: React.FC<EditableProps> = ({
           </FormControl>
         ) : (
           <FormControl isInvalid={checkError(tempValue) !== 0 && isEditing}>
-            <HStack>
+            <HStack minW={0} w="100%">
               <Input
                 ref={ref as React.RefObject<HTMLInputElement>}
                 value={tempValue}
@@ -170,6 +170,8 @@ const Editable: React.FC<EditableProps> = ({
                 onFocus={onFocus}
                 onKeyDown={onKeyDown}
                 focusBorderColor={`${primaryColor}.500`}
+                minW={0}
+                flex={1}
                 {...(inputProps as InputProps)}
               />
               {EditButtons()}
@@ -193,8 +195,8 @@ const Editable: React.FC<EditableProps> = ({
           {EditButtons()}
         </Text>
       ) : (
-        <HStack spacing={0}>
-          <Text w="100%" {...textProps}>
+        <HStack spacing={0} minW={0} w="100%">
+          <Text w="100%" className="ellipsis-text" minW={0} {...textProps}>
             {value}
           </Text>
           {EditButtons()}
