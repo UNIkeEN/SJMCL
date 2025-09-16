@@ -33,7 +33,7 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
   ...props
 }) => {
   const { t } = useTranslation();
-  const { update } = useLauncherConfig();
+  const { update, config } = useLauncherConfig();
   const toast = useToast();
 
   const handleSetAsBackground = () => {
@@ -56,17 +56,21 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
   };
 
   const screenshotMenuOperations = [
-    {
-      icon: "share",
-      onClick: async () => {
-        await shareFile(
-          screenshot.filePath,
-          "image/png",
-          t("ScreenshotPreviewModal.menu.share"),
-          { toast }
-        );
-      },
-    },
+    ...(config.basicInfo.osType === "macos"
+      ? [
+          {
+            icon: "share",
+            onClick: async () => {
+              await shareFile(
+                screenshot.filePath,
+                "image/png",
+                t("ScreenshotPreviewModal.menu.share"),
+                { toast }
+              );
+            },
+          },
+        ]
+      : []),
     {
       icon: LuImagePlay,
       label: t("ScreenshotPreviewModal.menu.setAsBg"),
