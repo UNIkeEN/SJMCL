@@ -76,7 +76,6 @@ pub struct JavaRuntimeFileDownload {
   pub url: String,
 }
 
-/// 获取系统对应的平台标识符
 fn get_platform_identifier() -> &'static str {
   #[cfg(all(target_os = "windows", target_arch = "x86_64"))]
   {
@@ -106,19 +105,16 @@ fn get_platform_identifier() -> &'static str {
     all(target_os = "linux", target_arch = "x86_64")
   )))]
   {
-    // 默认返回 Linux x64，虽然可能不完全正确，但是作为fallback
     "linux"
   }
 }
 
-/// 根据Java主版本号获取Mojang运行时标识符
 fn get_java_runtime_name(major_version: i32) -> &'static str {
   match major_version {
     8 => "jre-legacy",
     17 => "java-runtime-gamma",
     21 => "java-runtime-delta",
     _ => {
-      // 对于其他版本，尝试使用最新的运行时
       if major_version >= 21 {
         "java-runtime-delta"
       } else if major_version >= 17 {
@@ -130,7 +126,6 @@ fn get_java_runtime_name(major_version: i32) -> &'static str {
   }
 }
 
-/// 获取Java运行时信息
 async fn get_java_runtime_info(
   app: &AppHandle,
   priority_list: &[SourceType],
@@ -154,7 +149,6 @@ async fn get_java_runtime_info(
   ))
 }
 
-/// 获取Java运行时清单
 async fn get_java_runtime_manifest(
   app: &AppHandle,
   manifest_url: &str,
@@ -180,7 +174,6 @@ async fn get_java_runtime_manifest(
   }
 }
 
-/// 获取Java安装目录
 fn get_java_install_dir(app: &AppHandle, major_version: i32) -> SJMCLResult<PathBuf> {
   let app_data_dir = app.path().app_data_dir()?;
   let java_dir = app_data_dir
@@ -189,7 +182,6 @@ fn get_java_install_dir(app: &AppHandle, major_version: i32) -> SJMCLResult<Path
   Ok(java_dir)
 }
 
-/// 自动下载指定版本的Java运行时
 pub async fn auto_download_java(
   app: &AppHandle,
   required_major_version: i32,
@@ -198,13 +190,11 @@ pub async fn auto_download_java(
   let launcher_config = config_state.lock()?.clone();
   let priority_list = get_source_priority_list(&launcher_config);
 
-  // 获取Java运行时信息
   let runtime_info = get_java_runtime_info(app, &priority_list).await?;
 
   let platform = get_platform_identifier();
   let runtime_name = get_java_runtime_name(required_major_version);
 
-  // 查找适合的运行时版本
   let platform_runtimes = runtime_info
     .platforms
     .get(platform)
@@ -224,13 +214,10 @@ pub async fn auto_download_java(
     ))
   })?;
 
-  // 获取运行时清单
   let manifest_content = get_java_runtime_manifest(app, &release.manifest.url).await?;
 
-  // 确定安装目录
   let install_dir = get_java_install_dir(app, required_major_version)?;
 
-  // 创建下载任务
   let mut download_params = Vec::new();
 
   for (file_path, file_info) in manifest_content.files {
@@ -252,68 +239,62 @@ pub async fn auto_download_java(
     }
   }
 
-  // 安排下载任务
   let task_group_name = format!("download-java-{}", required_major_version);
   let _task_group_desc =
     schedule_progressive_task_group(app.clone(), task_group_name.clone(), download_params, true)
       .await?;
 
-  // 等待下载任务组完成
-
-  // 监听任务状态
   let task_monitor = app.state::<std::pin::Pin<Box<TaskMonitor>>>();
   let mut retry_count = 0;
-  let max_retries = 120; // 最多等待10分钟 (120 * 5秒)
+  let max_retries = 120;
 
   loop {
     let task_groups = task_monitor.state_list();
     let our_group = task_groups.iter().find(|g| g.task_group == task_group_name);
 
     match our_group {
-      Some(group) => {
-        match group.status {
-          GEventStatus::Completed => {
-            break;
-          }
-          GEventStatus::Failed => {
-            return Err(crate::error::SJMCLError("Java运行时下载失败".to_string()));
-          }
-          GEventStatus::Stopped => {
-            return Err(crate::error::SJMCLError("Java运行时下载被停止".to_string()));
-          }
-          _ => {
-            // 仍在进行中
-            if retry_count >= max_retries {
-              return Err(crate::error::SJMCLError("Java运行时下载超时".to_string()));
-            }
-            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-            retry_count += 1;
-          }
+      Some(group) => match group.status {
+        GEventStatus::Completed => {
+          break;
         }
-      }
+        GEventStatus::Failed => {
+          return Err(crate::error::SJMCLError(
+            "Java runtime download failed".to_string(),
+          ));
+        }
+        GEventStatus::Stopped => {
+          return Err(crate::error::SJMCLError(
+            "Java runtime download stopped".to_string(),
+          ));
+        }
+        _ => {
+          if retry_count >= max_retries {
+            return Err(crate::error::SJMCLError(
+              "Java runtime download timeout".to_string(),
+            ));
+          }
+          tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+          retry_count += 1;
+        }
+      },
       None => {
-        // 任务组不存在，可能已经完成并被清理
         break;
       }
     }
   }
 
-  // 检查Java可执行文件是否存在 - 增加重试机制确保文件完全就绪
   #[cfg(target_os = "windows")]
   let java_executable = install_dir.join("bin").join("java.exe");
   #[cfg(not(target_os = "windows"))]
   let java_executable = install_dir.join("bin").join("java");
 
-  // 等待文件完全就绪，最多重试30次（150秒）
   let mut retry_count = 0;
   let max_retries = 30;
 
   loop {
     if java_executable.exists() {
-      // 验证文件不是空的或正在写入
       if let Ok(metadata) = std::fs::metadata(&java_executable) {
         if metadata.len() > 0 {
-          // 尝试执行Java -version来验证文件完整性
           let test_command = std::process::Command::new(&java_executable)
             .arg("-version")
             .output();
@@ -324,9 +305,7 @@ pub async fn auto_download_java(
                 break;
               }
             }
-            Err(_) => {
-              // 继续等待
-            }
+            Err(_) => {}
           }
         }
       }
@@ -334,7 +313,7 @@ pub async fn auto_download_java(
 
     if retry_count >= max_retries {
       return Err(crate::error::SJMCLError(format!(
-        "Java运行时下载超时或不完整，文件: {:?}",
+        "Java runtime download timeout or incomplete, file: {:?}",
         java_executable
       )));
     }
@@ -343,7 +322,6 @@ pub async fn auto_download_java(
     retry_count += 1;
   }
 
-  // 设置Java可执行文件权限（Linux/macOS）
   #[cfg(any(target_os = "linux", target_os = "macos"))]
   {
     if java_executable.exists() {
@@ -359,7 +337,6 @@ pub async fn auto_download_java(
     .ok_or_else(|| crate::error::SJMCLError("Invalid Java executable path".to_string()))?
     .to_string();
 
-  // 创建JavaInfo对象
   let java_info = JavaInfo {
     name: format!("Mojang JRE {}", required_major_version),
     major_version: required_major_version,
@@ -369,14 +346,11 @@ pub async fn auto_download_java(
     is_user_added: false,
   };
 
-  // 刷新Java列表，确保新下载的Java被识别
   refresh_and_update_javas(app).await;
 
-  // 再次强制刷新确保路径被正确添加
   tokio::time::sleep(std::time::Duration::from_secs(2)).await;
   refresh_and_update_javas(app).await;
 
-  // 将新下载的Java路径添加到配置中
   {
     let config_state = app.state::<Mutex<LauncherConfig>>();
     let mut config = config_state.lock()?;
@@ -388,7 +362,6 @@ pub async fn auto_download_java(
   Ok(java_info)
 }
 
-/// 检查是否已经下载了指定版本的Java
 pub fn check_downloaded_java(app: &AppHandle, major_version: i32) -> Option<JavaInfo> {
   if let Ok(install_dir) = get_java_install_dir(app, major_version) {
     #[cfg(target_os = "windows")]

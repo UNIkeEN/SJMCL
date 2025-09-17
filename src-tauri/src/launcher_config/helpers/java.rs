@@ -192,7 +192,6 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
     java_paths.extend(search_java_homes_in_directory(home.join(".jdks")));
   }
 
-  // 添加SJMCL自动下载的Java目录到搜索路径
   if let Ok(app_data_dir) = app.path().app_data_dir() {
     let sjmcl_java_dir = app_data_dir.join("java");
     if sjmcl_java_dir.exists() {
