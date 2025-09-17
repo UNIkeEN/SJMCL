@@ -89,7 +89,6 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
         onErrCallback: (error: ResponseError) => {
-          // 当Java检测失败时，显示更友好的提示
           if (error.details.includes("NO_SUITABLE_JAVA")) {
             handleCloseModalWithCancel();
             toast({
