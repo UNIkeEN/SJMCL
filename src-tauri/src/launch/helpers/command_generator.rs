@@ -394,7 +394,17 @@ pub fn export_full_launch_command(
 
   let classpath_str = class_paths.join(get_separator());
   let java_exec = quote_or_raw(java_exec_str);
-  let quoted_args = args.iter().map(|s| quote_or_raw(s)).collect::<Vec<_>>();
+  let mut safe_args = args.to_vec();
+  if let Some(access_token_pos) = args.iter().position(|s| s == "--accessToken") {
+    if access_token_pos + 1 < args.len() {
+      // avoid leaking access token in exported files
+      safe_args[access_token_pos + 1] = "***".to_string();
+    }
+  }
+  let quoted_args = safe_args
+    .iter()
+    .map(|s| quote_or_raw(s))
+    .collect::<Vec<_>>();
 
   let java_cmd = std::iter::once(java_exec)
     .chain(quoted_args)
