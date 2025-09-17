@@ -1300,6 +1300,10 @@
     },
     "toast": {
       "noSelectedPlayer": "请先添加并选择游戏角色"
+    },
+    "javaAutoDownload": {
+      "title": "正在自动下载 Java 运行时",
+      "description": "系统未检测到合适的 Java 版本，正在为您自动下载所需的 Java 运行时，请稍候..."
     }
   },
   "ManageSkinModal": {

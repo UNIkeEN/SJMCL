@@ -1,7 +1,10 @@
 use crate::error::SJMCLResult;
 use crate::instance::{helpers::game_version::compare_game_versions, models::misc::Instance};
 use crate::launch::models::LaunchError;
-use crate::launcher_config::models::{GameJava, JavaInfo};
+use crate::launcher_config::{
+  helpers::java_auto_download::{auto_download_java, check_downloaded_java},
+  models::{GameJava, JavaInfo},
+};
 use std::cmp::Ordering;
 use tauri::AppHandle;
 
@@ -38,7 +41,26 @@ pub async fn select_java_runtime(
   }
 
   if suitable_candidates.is_empty() {
-    Err(LaunchError::NoSuitableJava.into())
+    // 尝试检查是否已经下载了所需版本的Java
+    if let Some(downloaded_java) = check_downloaded_java(app, min_version_req) {
+      Ok(downloaded_java)
+    } else {
+      // 如果没有找到合适的Java，尝试自动下载
+      match auto_download_java(app, min_version_req).await {
+        Ok(downloaded_java) => {
+          // 直接返回下载的Java，不依赖于刷新后的搜索
+          Ok(downloaded_java)
+        }
+        Err(_) => {
+          // 作为后备，再次检查是否有下载完成的Java
+          if let Some(downloaded_java) = check_downloaded_java(app, min_version_req) {
+            Ok(downloaded_java)
+          } else {
+            Err(LaunchError::NoSuitableJava.into())
+          }
+        }
+      }
+    }
   } else {
     suitable_candidates.sort_by_key(|j| j.major_version);
     Ok(suitable_candidates[0].clone())

@@ -1300,6 +1300,10 @@
     },
     "toast": {
       "noSelectedPlayer": "Please add and select a player first"
+    },
+    "javaAutoDownload": {
+      "title": "Auto-downloading Java Runtime",
+      "description": "No suitable Java version detected. Automatically downloading the required Java runtime for you, please wait..."
     }
   },
   "ManageSkinModal": {

@@ -191,6 +191,15 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   if let Ok(home) = app.path().home_dir() {
     java_paths.extend(search_java_homes_in_directory(home.join(".jdks")));
   }
+
+  // 添加SJMCL自动下载的Java目录到搜索路径
+  if let Ok(app_data_dir) = app.path().app_data_dir() {
+    let sjmcl_java_dir = app_data_dir.join("java");
+    if sjmcl_java_dir.exists() {
+      let found_javas = search_java_homes_in_directory(sjmcl_java_dir);
+      java_paths.extend(found_javas);
+    }
+  }
   #[cfg(target_os = "windows")]
   {
     let common_vendors = [
@@ -262,14 +271,17 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
 
 fn search_java_homes_in_directory(dir: PathBuf) -> Vec<String> {
   let mut java_paths = Vec::new();
-  if let Ok(entries) = fs::read_dir(dir) {
+
+  if let Ok(entries) = fs::read_dir(&dir) {
     for entry in entries.flatten() {
       let java_home = entry.path();
-      if let Ok(java_path) = resolve_java_home(java_home) {
+
+      if let Ok(java_path) = resolve_java_home(java_home.clone()) {
         java_paths.push(java_path);
       }
     }
   }
+
   java_paths
 }
 
@@ -292,7 +304,16 @@ fn resolve_java_home(path: PathBuf) -> SJMCLResult<String> {
   let java_bin = path.join(r"bin\java.exe");
   #[cfg(not(target_os = "windows"))]
   let java_bin = path.join("bin/java");
-  Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+
+  if !java_bin.exists() {
+    return Err(crate::error::SJMCLError(format!(
+      "Java executable not found: {:?}",
+      java_bin
+    )));
+  }
+
+  let canonical_path = fs::canonicalize(java_bin)?.to_string_lossy().into_owned();
+  Ok(canonical_path)
 }
 
 pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, String)> {
