@@ -17,11 +17,11 @@ use tauri_plugin_http::reqwest::header::RANGE;
 use tokio::io::AsyncSeekExt;
 use tokio_util::{bytes, compat::FuturesAsyncReadCompatExt};
 
-use super::super::utils::web::with_retry;
-use super::streams::desc::{PDesc, PStatus};
-use super::streams::reporter::Reporter;
-use super::streams::ProgressStream;
-use super::*;
+use crate::tasks::streams::desc::{PDesc, PStatus};
+use crate::tasks::streams::reporter::Reporter;
+use crate::tasks::streams::ProgressStream;
+use crate::tasks::*;
+use crate::utils::web::with_retry;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]

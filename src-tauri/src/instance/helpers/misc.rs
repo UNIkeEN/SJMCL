@@ -1,13 +1,13 @@
-use super::client_json::McClientInfo;
-use super::{
-  super::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
-  client_jar::load_game_version_from_jar,
-};
 use crate::error::SJMCLResult;
+use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::{
   forge::download_forge_libraries, neoforge::download_neoforge_libraries,
 };
 use crate::instance::models::misc::{ModLoaderStatus, ModLoaderType};
+use crate::instance::{
+  helpers::client_jar::load_game_version_from_jar,
+  models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
+};
 use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;

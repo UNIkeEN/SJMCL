@@ -1,41 +1,33 @@
-use super::{
-  super::utils::fs::{
-    copy_whole_dir, generate_unique_filename, get_files_with_regex, get_subdirectories,
-  },
-  helpers::{
-    game_version::{compare_game_versions, get_major_game_version},
-    misc::{
-      get_instance_game_config, get_instance_subdir_path_by_id, refresh_and_update_instances,
-      unify_instance_name,
-    },
-    mods::common::{add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar},
-    resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
-    server::{load_servers_info_from_path, query_server_status},
-    world::{level_data_to_world_info, load_level_data_from_path},
-  },
-  models::{
-    misc::{
-      GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
-      ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
-    },
-    world::{base::WorldInfo, level::LevelData},
-  },
-};
 use crate::{
   error::SJMCLResult,
   instance::{
     helpers::{
       client_json::{replace_native_libraries, McClientInfo, PatchesInfo},
+      game_version::{compare_game_versions, get_major_game_version},
       loader::{
         common::{execute_processors, install_mod_loader},
         forge::InstallProfile,
       },
-      misc::get_instance_subdir_paths,
+      misc::{
+        get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
+        refresh_and_update_instances, unify_instance_name,
+      },
       modpack::{
         curseforge::CurseForgeManifest, misc::ModpackMetaInfo, modrinth::ModrinthManifest,
       },
+      mods::common::{add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar},
+      resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
+      server::{load_servers_info_from_path, query_server_status},
+      world::{level_data_to_world_info, load_level_data_from_path},
     },
-    models::misc::{ModLoader, ModLoaderStatus},
+    models::{
+      misc::{
+        GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
+        ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
+        ShaderPackInfo,
+      },
+      world::{base::WorldInfo, level::LevelData},
+    },
   },
   launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files},
   launcher_config::{
@@ -49,14 +41,23 @@ use crate::{
   },
   storage::{load_json_async, save_json_async, Storage},
   tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
-  utils::{fs::create_url_shortcut, image::ImageWrapper},
+  utils::{
+    fs::{
+      copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
+      get_subdirectories,
+    },
+    image::ImageWrapper,
+  },
 };
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
-use std::collections::HashMap;
-use std::fs;
-use std::path::{Path, PathBuf};
-use std::{sync::Mutex, time::SystemTime};
+use std::{
+  collections::HashMap,
+  fs,
+  path::{Path, PathBuf},
+  sync::Mutex,
+  time::SystemTime,
+};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;

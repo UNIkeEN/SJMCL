@@ -1,7 +1,9 @@
-use crate::error::SJMCLResult;
-use crate::instance::{helpers::game_version::compare_game_versions, models::misc::Instance};
-use crate::launch::models::LaunchError;
-use crate::launcher_config::models::{GameJava, JavaInfo};
+use crate::{
+  error::SJMCLResult,
+  instance::{helpers::game_version::compare_game_versions, models::misc::Instance},
+  launch::models::LaunchError,
+  launcher_config::models::{GameJava, JavaInfo},
+};
 use std::cmp::Ordering;
 use tauri::AppHandle;
 

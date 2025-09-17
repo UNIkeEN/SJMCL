@@ -1,8 +1,4 @@
-use std::fs::File;
-use std::io::Read;
-use std::path::PathBuf;
-use std::process::Command;
-use std::sync::Mutex;
+use std::{fs::File, io::Read, path::PathBuf, process::Command, sync::Mutex};
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 

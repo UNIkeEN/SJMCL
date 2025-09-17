@@ -1,11 +1,11 @@
-use reqwest::redirect::Policy;
-use reqwest::{Client, Error};
+use reqwest::{redirect::Policy, Client, Error};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::fs;
-use std::fs::File;
-use std::io::Read;
-use std::path::PathBuf;
+use std::{
+  collections::HashMap,
+  fs::{self, File},
+  io::Read,
+  path::PathBuf,
+};
 use tauri::AppHandle;
 use tauri_plugin_http::reqwest;
 use url::Url;

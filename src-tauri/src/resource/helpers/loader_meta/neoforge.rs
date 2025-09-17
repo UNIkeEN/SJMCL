@@ -1,6 +1,6 @@
-use super::super::misc::get_download_api;
 use crate::error::SJMCLResult;
 use crate::instance::models::misc::ModLoaderType;
+use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};

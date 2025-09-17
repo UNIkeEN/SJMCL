@@ -1,8 +1,9 @@
-use std::collections::HashMap;
-use std::fs;
-use std::fs::File;
-use std::io::Read;
-use std::path::PathBuf;
+use std::{
+  collections::HashMap,
+  fs::{self, File},
+  io::Read,
+  path::PathBuf,
+};
 use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;

@@ -35,13 +35,12 @@ use crate::{
   tasks::commands::schedule_progressive_task_group,
   utils::{fs::create_zip_from_dirs, window::create_webview_window},
 };
-use std::{collections::HashMap, path::PathBuf};
 use std::{
+  collections::HashMap,
   fs,
   io::{prelude::*, BufReader},
+  path::PathBuf,
   process::{Command, Stdio},
-};
-use std::{
   sync::{mpsc, Mutex},
   time::{SystemTime, UNIX_EPOCH},
 };

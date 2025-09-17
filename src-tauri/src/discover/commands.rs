@@ -1,5 +1,5 @@
-use super::super::utils::web::with_retry;
 use super::models::NewsSourceInfo;
+use crate::utils::web::with_retry;
 use crate::{
   discover::models::{NewsPostRequest, NewsPostResponse},
   error::SJMCLResult,

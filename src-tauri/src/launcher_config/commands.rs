@@ -7,14 +7,20 @@ use super::{
 use crate::{
   error::SJMCLResult,
   instance::helpers::misc::refresh_instances,
+  storage::Storage,
   tasks::monitor::TaskMonitor,
-  utils::{fs::generate_unique_filename, string::camel_to_snake_case},
+  utils::{
+    fs::{generate_unique_filename, get_subdirectories},
+    string::camel_to_snake_case,
+  },
 };
-use crate::{storage::Storage, utils::fs::get_subdirectories};
 use serde_json::{json, Value};
-use std::path::{Path, PathBuf};
-use std::sync::Mutex;
-use std::{fs, pin::Pin};
+use std::{
+  fs,
+  path::{Path, PathBuf},
+  pin::Pin,
+  sync::Mutex,
+};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;

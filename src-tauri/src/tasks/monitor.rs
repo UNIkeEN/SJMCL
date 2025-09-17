@@ -17,9 +17,9 @@ use tauri::async_runtime::JoinHandle;
 use tauri::AppHandle;
 use tokio::sync::Semaphore;
 
-use super::events::{GEvent, TEvent};
-use super::SJMCLFuture;
-use super::*;
+use crate::tasks::events::{GEvent, TEvent};
+use crate::tasks::SJMCLFuture;
+use crate::tasks::*;
 
 pub struct GroupMonitor {
   pub phs: HashMap<u32, Arc<RwLock<PTaskHandle>>>,
