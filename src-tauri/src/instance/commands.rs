@@ -991,7 +991,7 @@ pub async fn create_instance(
   )
   .await?;
 
-  // Optionally skip first-screen options by add options.txt (avalid for zh-Hans only)
+  // Optionally skip first-screen options by adding options.txt (available for zh-Hans only)
   let (language, skip_first_screen_options) = {
     let launcher_config = launcher_config_state.lock()?;
     (
