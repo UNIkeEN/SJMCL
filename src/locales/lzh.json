@@ -1,0 +1,2433 @@
+{
+  "AboutSettingsPage": {
+    "about": {
+      "title": "關於",
+      "settings": {
+        "version": {
+          "title": "版本"
+        },
+        "contributors": {
+          "title": "開發者名錄"
+        },
+        "reportIssue": {
+          "title": "奏問題或請功能"
+        },
+        "aboutSJMC": {
+          "title": "關於上海交通大學 Minecraft 社（SJMC）"
+        }
+      }
+    },
+    "ack": {
+      "title": "致謝",
+      "settings": {
+        "bmclapi": {
+          "title": "BMCLAPI",
+          "description": "謝 @bangbang93 提供高速下載源"
+        },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "部分設計與代碼實現參考此開源項目"
+        },
+        "littleskin": {
+          "title": "LittleSkin",
+          "description": "謝 LittleSkin 與 @tnqzh123 對登錄流程設計之助"
+        },
+        "sinter": {
+          "title": "Sinter",
+          "description": "於 Windows 與 Linux 平台作為啟動器界面字體，遵循 SIL 協議使用"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "皮膚預覽組件基於此開源項目實現，遵循 MIT 協議使用"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "法律資訊",
+      "settings": {
+        "copyright": {
+          "title": "版權",
+          "description": "版權所有 © 2024-2025 SJMCL 開發團隊。"
+        },
+        "userAgreement": {
+          "title": "用戶協議",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
+        },
+        "openSourceLicense": {
+          "title": "開源協議",
+          "description": "本項目遵循 GNU General Public License v3.0 協議（包含附加條款）"
+        }
+      }
+    }
+  },
+  "AccountsPage": {
+    "button": {
+      "addPlayer": "添角色",
+      "add3rdPartyServer": "添認證服務器",
+      "sourceHomepage": "訪問主頁",
+      "deleteServer": "刪除此服務器"
+    },
+    "playerTypeList": {
+      "all": "全部來源"
+    },
+    "viewTypeList": {
+      "grid": "網格視圖",
+      "list": "列表視圖"
+    }
+  },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "安裝新實例",
+        "description": "選擇並安裝遊戲版本、加載器與模組"
+      },
+      "modpack": {
+        "title": "導入整合包",
+        "description": "從本地檔案或互聯網導入整合包（CurseForge, Modrinth 或 HMCL 格式）"
+      },
+      "manageDirs": {
+        "title": "管理遊戲目錄",
+        "description": "管理本地遊戲存儲目錄，以添已安裝實例"
+      }
+    },
+    "modpackOperations": {
+      "fromdisk": "從本地檔案導入",
+      "download": "下載整合包"
+    },
+    "moreOptions": {
+      "title": "更多",
+      "server": {
+        "title": "下載服務端",
+        "description": "下載各版本原版遊戲服務端檔案"
+      }
+    }
+  },
+  "AddAuthServerModal": {
+    "header": {
+      "title": "添認證服務器"
+    },
+    "placeholder": {
+      "inputServerUrl": "请输入服務器地址"
+    },
+    "page1": {
+      "serverUrl": "服務器地址",
+      "serverUrlRequired": "必填字段"
+    },
+    "page2": {
+      "name": "名称",
+      "serverUrl": "服務器地址"
+    }
+  },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "添數據源"
+    },
+    "label": {
+      "endpointUrl": "源地址"
+    },
+    "placeholder": {
+      "endpointUrl": "源地址"
+    }
+  },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "添角色"
+    },
+    "label": {
+      "playerType": "角色類型"
+    },
+    "offline": {
+      "playerName": {
+        "label": "角色名称",
+        "placeholder": "请输入角色名称",
+        "errorMessage": "只能包含英文字母、数字和下划线，不超过16个字符。"
+      },
+      "advancedOptions": {
+        "title": "高級選項",
+        "uuid": {
+          "label": "UUID",
+          "placeholder": "（由 SJMCL 自動生成）",
+          "errorMessage": "UUID 格式不正確"
+        }
+      }
+    },
+    "3rdparty": {
+      "authServer": {
+        "label": "認證源",
+        "selectSource": "请選擇認證源",
+        "noSource": "未添可用認證源服務器",
+        "addSource": "添認證源"
+      },
+      "email": {
+        "label": "邮箱",
+        "placeholder": "请输入邮箱"
+      },
+      "emailOrPlayerName": {
+        "label": "邮箱或角色名称",
+        "placeholder": "请输入邮箱或角色名称"
+      },
+      "password": {
+        "label": "密碼",
+        "placeholder": "请输入密碼"
+      }
+    },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "此認證源支持 Yggdrasil Connect 規範提案",
+          "microsoft": "SJMCL 支持微软 OAuth 2.0 設備權限授予流"
+        },
+        "next": "请点击繼續登錄按鈕跳转登錄頁面，输入以上代碼（已自動複製）"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "開始 OAuth 登錄",
+          "microsoft": "開始微软登錄"
+        },
+        "next": "繼續登錄"
+      }
+    },
+    "button": {
+      "buyMinecraft": "购买 Minecraft",
+      "useOAuthLogin": "OAuth 登錄",
+      "usePasswordLogin": "賬號密碼登錄"
+    }
+  },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "存在前置资源"
+    },
+    "description": "请確認已安裝所有前置资源，或繼續下載原资源",
+    "button": {
+      "continue": "繼續下載原资源",
+      "cancel": "取消"
+    },
+    "fallback": {
+      "title": "资源 ID: {{resourceId}}",
+      "description": "無法從網絡获取此资源詳情，请檢查您的網絡連接或稍后再试。"
+    },
+    "dependencyType": {
+      "required": "必需",
+      "optional": "可選",
+      "incompatible": "冲突",
+      "embedded": "内置",
+      "tool": "工具",
+      "include": "包含"
+    }
+  },
+  "AllInstancesPage": {
+    "button": {
+      "addAndImport": "添与導入",
+      "globalSettings": "全局遊戲設置",
+      "launch": "啟動遊戲"
+    },
+    "viewTypeList": {
+      "grid": "網格視圖",
+      "list": "列表視圖"
+    },
+    "title": "全部實例"
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "主題",
+      "settings": {
+        "primaryColor": {
+          "title": "啟動器强调色"
+        },
+        "colorMode": {
+          "title": "顏色模式",
+          "type": {
+            "system": "跟随系統",
+            "light": "浅色",
+            "dark": "深色"
+          }
+        },
+        "useLiquidGlassDesign": {
+          "title": "液态玻璃效果",
+          "description": "啟用后，部分界面将使用「液态玻璃」效果，这可能会影响性能"
+        },
+        "headNavStyle": {
+          "title": "顶部導航栏樣式",
+          "type": {
+            "standard": "標準",
+            "simplified": "简约"
+          }
+        }
+      }
+    },
+    "font": {
+      "title": "字體",
+      "settings": {
+        "fontFamily": {
+          "title": "界面字體",
+          "default": "默認"
+        },
+        "fontSize": {
+          "title": "字體大小",
+          "small": "小",
+          "large": "大"
+        }
+      }
+    },
+    "background": {
+      "title": "背景",
+      "settings": {
+        "preset": {
+          "title": "预设圖像"
+        },
+        "custom": {
+          "title": "自定義圖像",
+          "add": "添"
+        },
+        "randomCustom": {
+          "title": "隨機自定義"
+        }
+      },
+      "presetBgList": {
+        "Jokull": {
+          "name": "银淞雪镇"
+        },
+        "SJTU-eastgate": {
+          "name": "SJTU 紫气东来门"
+        },
+        "GNLXC": {
+          "name": "GNWork 理想城"
+        }
+      }
+    },
+    "accessibility": {
+      "title": "辅助顯示",
+      "settings": {
+        "invertColors": {
+          "title": "反转顏色"
+        },
+        "enhanceContrast": {
+          "title": "增強对比度"
+        }
+      }
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "檢查模組更新"
+    },
+    "button": {
+      "update": "更新",
+      "cancel": "取消"
+    },
+    "label": {
+      "noUpdate": "没有需要更新的模組",
+      "loading": "正在檢查更新... {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "模組",
+      "currentVersion": "当前版本",
+      "latestVersion": "最新版本",
+      "source": "來源"
+    },
+    "error": {
+      "renameOldMod": "重命名旧檔案失敗"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "清除下載緩存",
+      "content": "確定要清除下載緩存吗？此操作無法撤銷。"
+    }
+  },
+  "ComingSoonSign": {
+    "text": "该頁面暂未开放，敬请期待"
+  },
+  "ContributorsPage": {
+    "all": "全部開發者名錄",
+    "core": "主要開發者",
+    "contribution": {
+      "fullStackDev": "全栈开发",
+      "frontendDev": "前端开发",
+      "backendDev": "后端开发",
+      "externalAPI": "外部服務",
+      "doc": "文檔",
+      "cicd": "CI / CD",
+      "design": "视觉設計",
+      "mascot": "吉祥物"
+    }
+  },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "複製或移動资源"
+    },
+    "operation": {
+      "copy": "複製",
+      "move": "移動"
+    },
+    "tag": {
+      "source": "源"
+    },
+    "body": "到",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "資源包",
+      "Saves": "地图",
+      "Schematics": "原理图",
+      "ShaderPacks": "光影"
+    },
+    "error": {
+      "lackOfArguments": "缺少必要參數，请開發者檢查代碼"
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "創建新實例"
+    },
+    "stepper": {
+      "game": "選擇遊戲版本",
+      "loader": "選擇加載器",
+      "skipped": "不安裝",
+      "info": "基本設置"
+    }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "您最近更改了此實例的名称，请刷新實例列表或重啟啟動器后，再次尝试添啟動快捷方式。"
+  },
+  "DeleteInstanceAlertDialog": {
+    "dialog": {
+      "title": "刪除遊戲實例",
+      "content": "確定要刪除遊戲實例 “{{instanceName}}” 吗？它将会永久消失！（真的很久！）",
+      "warning": {
+        "withVerIso": "请注意，由于此實例已啟用版本隔离，刪除该實例将导致存档等數據一同被刪除。如需保留相關數據，请先遷移。",
+        "woVerIso": "请注意，如果该實例此前啟用过版本隔离，未遷移的存档等數據将一同被刪除。"
+      }
+    }
+  },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "刪除模組",
+      "content": "確定要刪除遊戲實例 “{{instanceName}}” 中的模組 “{{modName}}” 吗？"
+    }
+  },
+  "DeletePlayerAlertDialog": {
+    "dialog": {
+      "title": "刪除角色",
+      "content": "確定要刪除角色 “{{name}}” 吗？这一操作不可逆！"
+    }
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "刪除認證服務器",
+      "content": "確定要刪除認證服務器 “{{name}}” 吗？它将不再出现在你的服務器列表中。"
+    }
+  },
+  "DevToolbar": {
+    "tooltip": "开发工具栏"
+  },
+  "DiscoverPage": {
+    "title": "發現",
+    "noMore": "无更多內容",
+    "sources": "管理數據源",
+    "NoSources": "未添數據源"
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "添數據源",
+      "deleteSource": "刪除數據源"
+    },
+    "tag": {
+      "online": "在线"
+    }
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "下載 Java"
+    },
+    "selector": {
+      "vendor": "发行方",
+      "version": "版本",
+      "type": "類型"
+    },
+    "warning": "從 Oracle 源下載可能需要登錄"
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "下載整合包"
+    }
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "下載资源"
+    },
+    "resourceTypeList": {
+      "world": "世界",
+      "mod": "模組",
+      "resourcepack": "資源包",
+      "shader": "光影",
+      "datapack": "數據包"
+    }
+  },
+  "DownloadSettingPage": {
+    "source": {
+      "title": "源",
+      "settings": {
+        "strategy": {
+          "title": "下載源選擇策略",
+          "auto": "自動選擇",
+          "official": "官方源優先",
+          "mirror": "镜像源優先"
+        }
+      }
+    },
+    "download": {
+      "title": "下載",
+      "settings": {
+        "autoConcurrent": {
+          "title": "自動選擇並发数"
+        },
+        "concurrentCount": {
+          "title": "並发数"
+        },
+        "enableSpeedLimit": {
+          "title": "限制下載速度"
+        },
+        "speedLimitValue": {
+          "title": "限速設置"
+        }
+      }
+    },
+    "cache": {
+      "title": "緩存",
+      "settings": {
+        "directory": {
+          "title": "下載緩存目錄",
+          "select": "修改",
+          "open": "打開"
+        },
+        "clear": {
+          "title": "清除下載緩存",
+          "description": "清除下載緩存目錄中的所有檔案，此操作不会清除已下載的资源檔案",
+          "button": "清除"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "啟用代理"
+        },
+        "type": {
+          "title": "代理類型"
+        },
+        "host": {
+          "title": "服務器"
+        },
+        "port": {
+          "title": "端口"
+        }
+      }
+    }
+  },
+  "DownloadSpecificResourceModal": {
+    "title": "资源下載 - {{name}} - {{source}}",
+    "label": {
+      "all": "全部",
+      "recommendedVersion": "推荐版本",
+      "currentModLoader": "当前加載器"
+    },
+    "releaseType": {
+      "alpha": "内测版",
+      "beta": "公测版",
+      "release": "正式版"
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "下載任務",
+    "button": {
+      "settings": "下載設置",
+      "pause": "暫停",
+      "begin": "開始",
+      "retry": "重试",
+      "deleteRecord": "刪除此记录"
+    },
+    "label": {
+      "paused": "已暫停",
+      "completed": "已完成",
+      "error": "失敗",
+      "cancelled": "已取消"
+    },
+    "task": {
+      "game-client": "遊戲客戶端 {{param}}",
+      "game-server": "遊戲服務端 {{param}}",
+      "mod": "模組",
+      "world": "存档",
+      "resourcepack": "資源包",
+      "shader": "光影",
+      "modpack": "整合包",
+      "datapack": "數據包",
+      "patch-files": "修补遊戲檔案 {{param}}",
+      "mod-update": "更新模組",
+      "retry": "重试",
+      "neoforge-libraries": "NeoForge 運行庫",
+      "forge-libraries": "Forge 運行庫"
+    }
+  },
+  "Editable": {
+    "edit": "編輯",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "添遊戲目錄",
+        "edit": "編輯遊戲目錄"
+      }
+    },
+    "label": {
+      "dirName": "名称",
+      "dirPath": "遊戲目錄路徑"
+    },
+    "placeholder": {
+      "dirName": "请输入名称",
+      "dirPath": "请選擇遊戲目錄"
+    },
+    "button": {
+      "browse": "瀏覽"
+    },
+    "dialog": {
+      "browse": {
+        "title": "選擇目錄"
+      },
+      "addSubDir": {
+        "title": "添子目錄",
+        "body": "發現包含實例的 minecraft 子目錄，是否添子目錄？",
+        "addOriginDir": "添原始目錄",
+        "addSubDir": "添子目錄"
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "添遊戲目錄失敗"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "empty": "目錄名称不能为空",
+        "tooLong": "目錄名称不能超过 20 个字符",
+        "exist": "目錄名称已存在",
+        "hasInvalidChar": "目錄名称包含特殊字符或使用系統保留字"
+      },
+      "dirPath": {
+        "exist": "目錄路徑已存在",
+        "invalid": "目錄路徑不合法"
+      }
+    }
+  },
+  "Empty": {
+    "noData": "无數據"
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "灰色",
+      "red": "红色",
+      "orange": "橙色",
+      "yellow": "黄色",
+      "green": "绿色",
+      "teal": "蓝绿色",
+      "blue": "蓝色",
+      "cyan": "青色",
+      "purple": "紫色",
+      "pink": "粉色"
+    },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "playerTypes": {
+      "microsoft": "微软賬戶",
+      "offline": "离线模式",
+      "3rdparty": "第三方認證",
+      "3rdpartyShort": "第三方認證"
+    },
+    "systemFileManager": {
+      "linux": "檔案管理器",
+      "macos": "访达",
+      "windows": "檔案资源管理器"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "title": "高級遊戲設置",
+    "topWarning": "高級遊戲設置仅提供给專業玩家使用。修改以下選項可能导致遊戲無法啟動。除非您充分了解其中的意义，否则请不要修改这些選項！",
+    "customCommands": {
+      "title": "自定義命令",
+      "settings": {
+        "minecraftArgument": {
+          "title": "遊戲參數",
+          "placeholder": "默認"
+        },
+        "precallCommand": {
+          "title": "遊戲啟動前執行命令",
+          "placeholder": "将在遊戲啟動前调用"
+        },
+        "wrapperLauncher": {
+          "title": "包装命令",
+          "placeholder": "如填写\"optirun\"后，啟動命令将從\"java ...\"变为\"optirun java ...\""
+        },
+        "postExitCommand": {
+          "title": "遊戲結束后執行命令",
+          "placeholder": "将在遊戲結束后调用"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Java 虛擬机設置",
+      "settings": {
+        "args": {
+          "title": "JVM 虛擬机參數"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "內存永久保存區域",
+          "placeholder": "單位 MB"
+        },
+        "environmentVariable": {
+          "title": "環境變數"
+        }
+      }
+    },
+    "workaround": {
+      "title": "調試選項",
+      "settings": {
+        "noJvmArgs": "不添默認的 JVM 參數",
+        "gameFileValidatePolicy": {
+          "title": "遊戲檔案完整性檢查策略",
+          "disable": "不檢查",
+          "normal": "普通檢查",
+          "full": "增強檢查"
+        },
+        "dontCheckJvmValidity": {
+          "title": "不檢查 JVM 与遊戲的兼容性"
+        },
+        "dontPatchNatives": {
+          "title": "不尝试自動替換本地庫"
+        },
+        "useNativeGlfw": {
+          "title": "使用系統 GLFW（仅 Linux）"
+        },
+        "useNativeOpenal": {
+          "title": "使用系統 OpenAL（仅 Linux）"
+        }
+      }
+    }
+  },
+  "GameErrorPage": {
+    "title": "遊戲非正常退出，请查看日志，或寻求他人幫助",
+    "basicInfo": {
+      "arch": "架構",
+      "launcherVersion": "啟動器版本",
+      "os": "操作系統"
+    },
+    "gameInfo": {
+      "gameVersion": "遊戲版本"
+    },
+    "javaInfo": {
+      "javaVersion": "Java 版本"
+    },
+    "crashDetails": {
+      "title": "崩溃資訊",
+      "OPENJ9": "当前實例無法在 OpenJ9 JVM 上運行，请使用 HotSpot JVM。",
+      "NEED_JDK11": "当前實例使用了 JDK 11 特性，無法在当前虛擬机平台上運行，请選擇 JDK 11 啟動。",
+      "TOO_OLD_JAVA": "当前實例由于过旧的 Java 版本而無法運行，建議使用最新的 Java 版本。",
+      "JVM_32BIT": "遊戲內存分配过大，超过了 32 位 JVM 的限制。如果你的电脑是 64 位系統，请下載安裝並更换 64 位 Java。",
+      "GL_OPERATION_FAILURE": "当前實例由于你使用的某些模組/光影包/資源包/纹理包有問題，导致無法繼續運行。请先尝试禁用你所使用的模組/光影包/資源包/纹理包再试。",
+      "OPENGL_NOT_SUPPORTED": "当前實例由于你的显卡驅動不支持 OpenGL ，無法繼續運行。请檢查你的显卡驅動程序或尝试使用其他渲染器。",
+      "GRAPHICS_DRIVER": "当前實例由于显卡驅動問題而崩溃，请更新显卡驅動程序。",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "当前實例由于 Apple Silicon 平台下初始化 OpenGL 窗口失敗，無法繼續運行。",
+      "OUT_OF_MEMORY": "当前實例由于內存不足而崩溃，请尝试降低遊戲內存分配或關閉其他程序。",
+      "MEMORY_EXCEEDED": "当前實例由于內存分配超过限制而崩溃，请尝试降低遊戲內存分配或關閉其他程序。",
+      "RESOLUTION_TOO_HIGH": "当前實例由于分辨率过高而無法運行，请分辨率更低的資源包/纹理包再试。",
+      "JDK_9": "当前實例使用了 JDK 9 特性，無法在当前虛擬机平台上運行，请選擇 JDK 9 啟動。",
+      "MAC_JDK_8U261": "当前實例由于你所使用的 Forge/OptiFine 与 Java 冲突而崩溃。请尝试更新 Forge/OptiFine ，或使用 Java 8u251 及更早版本啟動。",
+      "FILE_CHANGED": "当前實例由于檔案校验失敗而無法運行，请檢查檔案完整性。",
+      "NO_SUCH_METHOD_ERROR": "当前實例由于代碼不完整，無法繼續運行。你的遊戲可能缺失了某个模組，或者某些模組檔案不完整，或者模組与遊戲的版本不匹配。你可能需要重新安裝遊戲和模組，或寻求他人幫助。",
+      "NO_CLASS_DEF_FOUND_ERROR": "当前實例由于代碼不完整，無法繼續運行。你的遊戲可能缺失了某个模組，或者某些模組檔案不完整，或者模組与遊戲的版本不匹配。你可能需要重新安裝遊戲和模組，或寻求他人幫助。",
+      "ILLEGAL_ACCESS_ERROR": "当前實例由于某些模組的問題，無法繼續運行，如果你认识 {{param1}}，你可以更新或刪除對應模組再试。",
+      "DUPLICATED_MOD": "当前實例由于模組 {{param1}} 重复安裝，無法繼續運行。请刪除多余的模組再试。",
+      "MOD_RESOLUTION": "当前實例由于模組依賴問題，無法繼續運行。Fabric 提供了如下資訊：{{param1}}",
+      "FORGEMOD_RESOLUTION": "当前實例由于模組依賴問題，無法繼續運行。Forge/NeoForge 提供了如下資訊：{{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "当前實例由于模組重复安裝，無法繼續運行，Forge/NeoForge 提供了如下資訊：{{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "当前實例由于模組 {{param1}} 与 {{param2}} 冲突，無法繼續運行。",
+      "MOD_RESOLUTION_MISSING": "当前實例由于模組 {{param1}} 缺少前置模組 {{param2}}，無法繼續運行。",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "当前實例中模組 {{param1}} 需要 Minecraft {{param2}} 才能運行。",
+      "MOD_RESOLUTION_COLLECTION": "当前實例由于模組 {{param1}} 缺少前置模組 {{param2}}，無法繼續運行。",
+      "FILE_ALREADY_EXISTS": "当前實例由于 {{param}} 已经存在，無法繼續運行。如果你认为这个檔案可以刪除，你可以在備份这个檔案后尝试刪除它，並重新啟動遊戲。",
+      "LOADING_CRASHED_FORGE": "当前實例由于模組 {{param1}} ({{param2}}) 錯誤，無法繼續運行。你可以尝试刪除或更新该模組以解决問題。",
+      "BOOTSTRAP_FAILED": "当前實例由于模組 {{param1}} 出现問題，無法繼續運行。你可以尝试刪除或更新该模組以解决問題。",
+      "LOADING_CRASHED_FABRIC": "当前實例由于模組 {{param1}} 錯誤，無法繼續運行。你可以尝试刪除或更新该模組以解决問題。",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 及更高版本与当前已经安裝的模組可能不兼容，你需要将 Fabric Loader 降级至 0.11.7。",
+      "MODLAUNCHER_8": "当前實例由于你所使用的 Forge 版本与当前使用的 Java 冲突而崩溃，请尝试更新 Forge 到 36.2.26 或更高版本或换用版本低于 1.8.0.320 的 Java。",
+      "DEBUG_CRASH": "当前實例由于手動触发崩溃，無法繼續運行。",
+      "CONFIG": "当前實例由于無法解析模組 {{param1}} 的配置檔案 {{param2}}，無法繼續運行。",
+      "FABRIC_WARNINGS": "Fabric 提供了一些警告資訊：{{param1}}",
+      "ENTITY": "当前實例由于某个实体（類型为 {{param1}}，位于 {{param2}}）不能正常工作，無法繼續運行。你可以尝试通过 MCEdit 工具刪除该实体，或者直接刪除相应的模組。",
+      "BLOCK": "当前實例由于某个方块（類型为 {{param1}}，位于 {{param2}}）不能正常工作，無法繼續運行。你可以尝试通过 MCEdit 工具刪除该方块，或者直接刪除相应的模組。",
+      "UNSATISFIED_LINK_ERROR": "当前實例由于缺少本地庫，無法繼續運行。这些缺失檔案包括：{{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "当前實例由于 OptiFine 与 Forge 不兼容，無法繼續運行。请尝试使用 OptiFine 的最新版本或不使用 OptiFine。",
+      "MOD_FILES_ARE_DECOMPRESSED": "当前實例由于模組檔案已被解壓縮，無法繼續運行。请直接把整个模組檔案放进模組檔案夹中即可。",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "当前實例可能由于 OptiFine 而無法繼續運行。该問題只在特定 OptiFine 版本中出现。",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "当前實例由于你所安裝的模組过多，超出了遊戲的 ID 限制，無法繼續運行。请尝试安裝 JEID 等修復模組，或刪除部分大型模組。",
+      "MODMIXIN_FAILURE": "当前實例由于某些模組注入失敗，無法繼續運行。请檢查模組兼容性或尝试更换模組。",
+      "MIXIN_APPLY_MOD_FAILED": "当前實例由于 Mixin 無法應用于模組 {{param1}}，無法繼續運行。你可以尝试刪除或更新该模組以解决問題。",
+      "FORGE_ERROR": "Forge/NeoForge 提供了錯誤資訊：{{param1}}",
+      "MOD_RESOLUTION0": "当前實例由于一些模組出现問題，無法繼續運行。你可以查看日志寻找出错模組。",
+      "FORGE_REPEAT_INSTALLATION": "当前實例由于 Forge / NeoForge 重复安裝，無法繼續運行。请刪除此實例后重新下載。",
+      "OPTIFINE_REPEAT_INSTALLATION": "当前實例由于 OptiFine 重复安裝，無法繼續運行。请刪除此實例后重新下載。",
+      "JAVA_VERSION_IS_TOO_HIGH": "当前實例由于 Java 版本过高，無法繼續運行。请使用 Java 8 或更低版本。",
+      "INSTALL_MIXINBOOTSTRAP": "当前實例由于 MixinBootstrap 未安裝，無法繼續運行。请安裝 MixinBootstrap 並重试。",
+      "MOD_NAME": "当前實例由于模組檔案名称問題，無法繼續運行。模組檔案名称应只使用半角的大小写字母 (Aa~Zz)、数字 (0~9)、横线 (-)、下划线 (_)和点 (.)。请到模組檔案夹中将所有不合规的模組檔案名修改为上述合规字符。",
+      "INCOMPLETE_FORGE_INSTALLATION": "当前實例由于 Forge 安裝不完整，無法繼續運行。请尝试重新安裝 Forge。",
+      "NIGHT_CONFIG_FIXES": "当前實例由于 Night Config 庫的一些問題，無法繼續運行。安裝 Night Config Fixes 模組或許能幫助你解决这个問題。",
+      "SHADERS_MOD": "当前實例由于同时安裝了 OptiFine 和 Shaders 模組，無法繼續運行。请尝试刪除 Shaders 模組。",
+      "RTSS_FOREST_SODIUM": "当前實例由于 RTSS 与 Sodium 不兼容，無法繼續運行。",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "当前實例由于本地庫与系統架構不兼容，無法繼續運行。",
+      "MAC_DS_STORE": "当前實例由于 Mac 系統的 .DS_Store 檔案导致問題，無法繼續運行。请刪除遊戲路徑下的 .DS_Store 檔案后重试。",
+      "LEVEL_DAT_CORRUPTED": "当前實例由于存档檔案 level.dat 损坏，無法繼續運行。请尝试修復存档或從備份中恢復。",
+      "GL_OUT_OF_MEMORY": "当前實例由于 OpenGL 內存不足，無法繼續運行。请尝试降低遊戲分辨率、關閉光影或關閉其他程序。",
+      "MOD_JAVA_VERSION_MISMATCH": "当前實例由于模組与 Java 版本不匹配，無法繼續運行。请檢查模組要求的 Java 版本並进行相应調整。",
+      "DUPLICATE_MOD_INSTALLED": "当前實例由于重复安裝模組而無法繼續運行。请檢查模組列表並移除重复的模組。",
+      "MOD_ZIP_CORRUPTED": "当前實例由于模組壓縮包损坏，無法繼續運行。请尝试重新下載模組。",
+      "MOD_INTERNET_ERROR": "当前實例由于模組下載失敗，無法繼續運行。请檢查網絡連接或使用網絡代理。",
+      "VICS_MODERN_WARFARE_ERROR": "当前實例由于 Vics Modern Warfare 模組錯誤，無法繼續運行。请尝试更新或刪除该模組。",
+      "FORGE_LITELOADER_CONFLICT": "当前實例由于 Forge 与 LiteLoader 冲突，無法繼續運行。请尝试刪除 LiteLoader 或更换 Forge 版本。",
+      "UNKNOWN": "暂时無法分析该錯誤，请查看遊戲日志或導出錯誤崩溃報告。"
+    },
+    "button": {
+      "exportGameInfo": "導出遊戲崩溃報告",
+      "gameLogs": "遊戲日志",
+      "help": "幫助"
+    },
+    "bottomAlert": "如需寻求他人幫助，请導出並發送崩溃報告，而非这个窗口的截图"
+  },
+  "GameLogPage": {
+    "placeholder": "输入關鍵词篩選",
+    "exportLogs": "導出日志",
+    "clearLogs": "清除所有日志",
+    "scrollToBottom": "滚动到底部"
+  },
+  "GameVersionSelector": {
+    "old_beta": "远古版",
+    "release": "正式版",
+    "snapshot": "測試版",
+    "april_fools": "愚人节版",
+    "searchPlaceholder": "搜索版本",
+    "wikiKey": {
+      "release": "Java版",
+      "snapshot": "",
+      "old_beta": "Java版Beta_",
+      "april_fools": ""
+    }
+  },
+  "General": {
+    "add": "添",
+    "alert": {
+      "noFullLogin": {
+        "title": "当前功能暂不可用",
+        "description": "请先登錄微软賬戶后使用此功能。"
+      }
+    },
+    "cancel": "取消",
+    "close": "關閉",
+    "confirm": "確定",
+    "copy": {
+      "text": "複製",
+      "toast": {
+        "success": "已成功複製到剪贴板",
+        "error": "寫入剪贴板失敗"
+      }
+    },
+    "copyOrMove": {
+      "linux": "複製或移動",
+      "macos": "拷貝或移動",
+      "windows": "複製或移動"
+    },
+    "delete": "刪除",
+    "dialog": {
+      "filterName": {
+        "image": "圖片檔案",
+        "modpack": "整合包"
+      }
+    },
+    "disable": "禁用",
+    "dontShowAgain": "不再顯示",
+    "download": "下載",
+    "edit": "編輯",
+    "enable": "啟用",
+    "finish": "完成",
+    "launch": "啟動",
+    "next": "下一步",
+    "notice": "提示",
+    "open": "打開",
+    "openFolder": "打開檔案夹",
+    "previous": "上一步",
+    "refresh": "刷新",
+    "revealFile": "在{{opener}}中顯示",
+    "search": "搜索",
+    "share": {
+      "text": "分享",
+      "toast": {
+        "error": "分享失敗"
+      }
+    },
+    "skip": "跳过",
+    "version": {
+      "dev": "开发版本",
+      "nightly": "夜间构建版本",
+      "beta": "測試版本"
+    },
+    "viewOnWiki": "在 Minecraft Wiki 中查看"
+  },
+  "GeneralSettingsPage": {
+    "general": {
+      "title": "通用設置",
+      "settings": {
+        "language": {
+          "title": "语言（Language）",
+          "communityAck": ""
+        }
+      }
+    },
+    "functions": {
+      "title": "功能",
+      "settings": {
+        "discoverPage": {
+          "title": "發現页",
+          "openNotice": {
+            "part-1": "顶部導航栏的 “搜索” 已替換为 “發現”，您可以通过键盘快捷键 ",
+            "part-2": " 繼續使用 “聚合搜索”。"
+          }
+        },
+        "instancesNavType": {
+          "title": "實例页導航栏模式",
+          "description": "更改實例页左侧導航栏是否顯示、分组方式",
+          "instance": "按實例",
+          "directory": "按目錄",
+          "hidden": "隱藏"
+        },
+        "launchPageQuickSwitch": {
+          "title": "快捷切換實例与賬戶",
+          "description": "啟用后，点击啟動页的切換按鈕可直接選擇賬戶或實例，而无需跳转頁面"
+        },
+        "resourceTranslation": {
+          "title": "顯示资源翻译",
+          "description": "啟用后，在资源下載界面尝试顯示名称或描述的简体中文翻译（如數據可用）"
+        }
+      }
+    }
+  },
+  "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "遊戲目錄",
+      "settings": {
+        "directories": {
+          "special": {
+            "CURRENT_DIR": "当前檔案夹",
+            "APP_DATA_SUBDIR": "SJMCL 數據檔案夹",
+            "OFFICIAL_DIR": "官方啟動器檔案夹"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "刪除遊戲目錄",
+        "content": "確定要刪除遊戲目錄 {{dirName}} 吗？（SJMCL 将不会扫描此目錄，但不会刪除硬盘上的檔案）"
+      },
+      "directoryNotExist": "该目錄不存在，请刪除並重新添"
+    },
+    "gameJava": {
+      "title": "遊戲 Java",
+      "settings": {
+        "autoSelect": {
+          "title": "自動選擇合适 Java"
+        },
+        "execPath": {
+          "title": "指定 Java 版本"
+        }
+      }
+    },
+    "gameWindow": {
+      "title": "窗口",
+      "settings": {
+        "resolution": {
+          "title": "遊戲分辨率",
+          "switch": "全屏"
+        },
+        "customTitle": {
+          "title": "自定義窗口标题"
+        },
+        "customInfo": {
+          "title": "自定義資訊",
+          "description": "将顯示在遊戲主界面左下角与 F3 調試頁面左上角"
+        }
+      }
+    },
+    "performance": {
+      "title": "性能",
+      "settings": {
+        "autoMemAllocation": {
+          "title": "自動分配內存"
+        },
+        "maxMemAllocation": {
+          "title": "最大內存分配"
+        },
+        "memoryUsage": {
+          "title": "內存佔用情况",
+          "description": "已用內存{{usedMemory}}GB；遊戲分配{{allocatedMemory}}GB；总內存{{totalMemory}}GB"
+        },
+        "processPriority": {
+          "title": "進程優先級",
+          "low": "低",
+          "belowNormal": "较低",
+          "normal": "中",
+          "aboveNormal": "较高",
+          "high": "高"
+        }
+      }
+    },
+    "versionIsolation": {
+      "settings": {
+        "title": "啟用版本隔离"
+      }
+    },
+    "moreOptions": {
+      "title": "更多選項",
+      "settings": {
+        "launcherVisibility": {
+          "title": "啟動器可见性",
+          "startHidden": "遊戲啟動后隱藏啟動器",
+          "runningHidden": "遊戲運行时隱藏啟動器",
+          "always": "啟動器始终可见"
+        },
+        "autoJoinGameServer": {
+          "title": "自動加入服務器"
+        },
+        "serverUrl": {
+          "title": "服務器地址"
+        },
+        "displayGameLog": {
+          "title": "顯示遊戲日志"
+        },
+        "advancedOptions": {
+          "title": "高級啟動設置",
+          "button": "編輯高級設置"
+        }
+      }
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "實例页",
+      "content": "在此处添並選擇您的 Minecraft 遊戲實例，下載和管理各类遊戲资源"
+    },
+    "step2": {
+      "title": "賬戶页",
+      "content": "在此处添賬戶，選擇您想要游玩的角色"
+    },
+    "step3": {
+      "title": "Minecraft，啟動！",
+      "content": "選中實例与角色、調整好相關設置后，点击啟動按鈕享受遊戲吧 🥳"
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "啟動",
+      "instances": "實例",
+      "accounts": "賬戶",
+      "discover": "發現",
+      "search": "搜索",
+      "settings": "設置"
+    }
+  },
+  "HelpSettingsPage": {
+    "community": {
+      "title": "高校玩家社區",
+      "settings": {
+        "MUA": {
+          "title": "Minecraft 高校联盟（MUA）",
+          "description": "和全国各高校的玩家一起游玩",
+          "url": "https://www.mualliance.cn"
+        },
+        "SJMC": {
+          "title": "上海交通大学 Minecraft 社（SJMC）",
+          "url": "https://mc.sjtu.cn"
+        }
+      }
+    },
+    "minecraft": {
+      "title": "Minecraft",
+      "settings": {
+        "mcWiki": {
+          "title": "中文 Minecraft Wiki",
+          "description": "最詳細的 Minecraft 百科全书",
+          "url": "https://zh.minecraft.wiki/"
+        },
+        "mcMod": {
+          "title": "MCMod",
+          "description": "Minecraft 模組中文百科"
+        },
+        "curseforge": {
+          "title": "CurseForge",
+          "description": "探索世界上最大的 Minecraft 模組存儲庫"
+        }
+      }
+    },
+    "top": {
+      "settings": {
+        "LauncherDocs": {
+          "title": "SJMC Launcher 文檔",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+        }
+      }
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "導入整合包"
+    },
+    "label": {
+      "instanceSettings": "實例設置",
+      "modpackInfo": "整合包資訊",
+      "modpackName": "整合包名称",
+      "modpackVersion": "整合包版本",
+      "author": "作者",
+      "modLoader": "模組加載器",
+      "gameVersion": "遊戲版本"
+    },
+    "button": {
+      "import": "導入"
+    }
+  },
+  "InstanceBasicSettings": {
+    "selectDirectory": "選擇遊戲目錄"
+  },
+  "InstanceDetailsLayout": {
+    "secMenu": {
+      "createShortcut": "創建啟動快捷方式",
+      "exportModPack": "導出为整合包",
+      "star": "星标此實例",
+      "unstar": "取消星标"
+    },
+    "instanceTabList": {
+      "overview": "概览",
+      "worlds": "世界",
+      "mods": "模組",
+      "resourcepacks": "資源包",
+      "schematics": "原理图",
+      "shaderpacks": "光影",
+      "screenshots": "截图",
+      "settings": "設置"
+    },
+    "button": {
+      "launch": "啟動實例"
+    }
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "實例詳情",
+      "delete": "刪除實例"
+    }
+  },
+  "InstanceModsPage": {
+    "modLoaderList": {
+      "title": "加載器"
+    },
+    "modList": {
+      "title": "模組",
+      "warning": "未發現模組加載器，模組可能無法正常工作",
+      "menu": {
+        "alert": "可能不兼容",
+        "info": "查看資訊",
+        "update": "檢查更新",
+        "search": "搜索",
+        "placeholder": "搜索模組..."
+      }
+    }
+  },
+  "InstanceResourcePacksPage": {
+    "resourcePackList": {
+      "title": "全局資源包"
+    },
+    "serverResPackList": {
+      "title": "服務器資源包"
+    }
+  },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "詳情"
+    }
+  },
+  "InstanceSettingsPage": {
+    "name": "實例名称",
+    "description": "實例描述",
+    "icon": "實例圖標",
+    "applySettings": "啟用特定遊戲設置",
+    "restoreSettings": "重置以下特定設置",
+    "restoreSettingsDesc": "将以下特定設置重置为全局遊戲設置",
+    "restore": "重置",
+    "errorMessage": {
+      "error-1": "實例名称不能为空",
+      "error-2": "實例名称不合法",
+      "error-3": "實例名称太长"
+    },
+    "tipsToGlobal": {
+      "part-1": "当前實例未啟用特定遊戲設置，",
+      "part-2": "前往全局遊戲設置"
+    }
+  },
+  "InstanceShaderPacksPage": {
+    "shaderPackList": {
+      "title": "光影包"
+    }
+  },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "原理图",
+      "preview": "預覽"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "基本資訊",
+      "gameVersion": "遊戲版本",
+      "playTime": "遊戲时长"
+    },
+    "screenshots": {
+      "title": "截图"
+    },
+    "mods": {
+      "title": "模組",
+      "summary": "{{totalMods}} 个模組, {{enabledMods}} 个已啟用",
+      "manage": "前往管理"
+    },
+    "lastPlayed": {
+      "title": "上次游玩",
+      "continuePlaying": "繼續游玩"
+    },
+    "more": {
+      "title": "更多"
+    }
+  },
+  "InstanceWorldsPage": {
+    "worldList": {
+      "title": "本地世界",
+      "lastPlayedAt": "上次游玩于",
+      "difficulty": {
+        "peaceful": "和平",
+        "easy": "簡單",
+        "normal": "普通",
+        "hard": "困難",
+        "hardcore": "极限生存"
+      },
+      "gamemode": {
+        "survival": "生存模式",
+        "creative": "创造模式",
+        "adventure": "冒险模式",
+        "spectator": "觀察者模式"
+      },
+      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）",
+      "viewLevelData": "世界基礎數據",
+      "launch": "游玩此世界"
+    },
+    "serverList": {
+      "title": "服務器",
+      "players": "玩家",
+      "tag": {
+        "online": "在线",
+        "offline": "离线"
+      },
+      "launch": "游玩此服務器"
+    }
+  },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Java 管理",
+      "download": "下載 Java",
+      "add": "添 Java",
+      "remove": "移除此 Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "添 Java 成功",
+        "description": "添自定義 Java 路徑成功"
+      },
+      "addFailed": {
+        "title": "添 Java 失敗",
+        "invalid": "不是有效的 Java 可執行檔案或与当前平台不兼容",
+        "duplicated": "目标 Java 路徑已添"
+      }
+    },
+    "confirmDelete": {
+      "title": "移除 Java",
+      "description": "確認要移除此版本 Java 吗？（SJMCL 将無法使用此 Java 啟動遊戲，但不会刪除硬盘上的檔案）"
+    }
+  },
+  "LaunchPage": {
+    "button": {
+      "launch": "啟動遊戲",
+      "instanceSettings": "實例設置"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchPlayer": "切換角色",
+        "switchGame": "切換遊戲實例"
+      }
+    },
+    "Text": {
+      "noSelectedPlayer": "尚未選擇角色",
+      "noSelectedGame": "尚未選擇遊戲實例"
+    }
+  },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "啟動遊戲 - {{name}}"
+    },
+    "step": {
+      "selectSuitableJRE": "選擇合适 Java 運行时",
+      "validateGameFiles": "驗證遊戲与依賴檔案完整性",
+      "validateSelectedPlayer": "驗證賬戶状态",
+      "launchGame": "等待遊戲啟動"
+    },
+    "toast": {
+      "noSelectedPlayer": "请先添並選擇遊戲角色"
+    }
+  },
+  "ManageSkinModal": {
+    "skinManage": "管理皮膚",
+    "default": "默認",
+    "steve": "Steve",
+    "alex": "Alex"
+  },
+  "ViewSkinModal": {
+    "skinView": "查看皮膚"
+  },
+  "MemoryStatusProgress": {
+    "title": "內存状态",
+    "info": "{{used}} / {{total}} GB 已使用",
+    "label": {
+      "now": "正在使用",
+      "maxAllocation": "为 Minecraft 分配的最大值"
+    }
+  },
+  "MenuSelector": {
+    "selectedCount": "已选 {{count}} 项"
+  },
+  "ModLoaderCards": {
+    "installed": "已安裝",
+    "unInstalled": "未安裝",
+    "notCompatibleWith": "与 {{modLoader}} 不兼容",
+    "versionNotSelected": "未選擇版本"
+  },
+  "ModLoaderSelector": {
+    "stable": "正式版",
+    "beta": "測試版",
+    "releaseDate": "發佈于 {{date}}"
+  },
+  "NotFoundPage": {
+    "text": "頁面不存在，即将在 {{seconds}} 秒后跳转"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "顯示全部（+{{left}}）"
+    }
+  },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "管理皮膚",
+      "viewSkin": "查看皮膚",
+      "delete": "刪除此角色",
+      "copyUUID": "複製 UUID"
+    },
+    "toast": {
+      "refreshing": "正在刷新角色資訊",
+      "deleting": "正在刪除角色"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "服務连通性測試",
+      "offline": "离线",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC Launcher API"
+    }
+  },
+  "ReLoginPlayerModal": {
+    "modal": {
+      "title": "重新登錄"
+    },
+    "label": {
+      "user": "用戶名",
+      "password": "密碼"
+    },
+    "placeholder": {
+      "password": "请输入密碼"
+    },
+    "button": {
+      "login": "登錄"
+    }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "下載源",
+      "gameVer": "遊戲版本",
+      "tag": "類型",
+      "sortBy": "排序",
+      "name": "名称"
+    },
+    "button": {
+      "search": "搜索"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Addons": "附属模組",
+        "Adventure and RPG": "冒险 RPG",
+        "API and Library": "支持庫",
+        "Applied Energistics 2": "應用能源2",
+        "Armor, Tools, and Weapons": "装备 武器",
+        "Automation": "自動化",
+        "Biomes": "生物群系",
+        "Blood Magic": "血魔法",
+        "Buildcraft": "建筑",
+        "Bug Fixes": "錯誤修復",
+        "Cosmetic": "装饰",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "机械动力",
+        "Dimensions": "维度",
+        "Education": "教育",
+        "Energy": "能源",
+        "Energy, Fluid, and Item Transport": "能源 流体 物品运输",
+        "Farming": "农业",
+        "Food": "食物",
+        "Forestry": "林业",
+        "Galacticraft": "星系",
+        "Genetics": "遗传学",
+        "Industrial Craft": "工业时代2",
+        "Integrated Dynamics": "集成动力",
+        "KubeJS": "KubeJS",
+        "Magic": "魔法",
+        "Map and Information": "地图 資訊",
+        "MCreator": "MCreator",
+        "Miscellaneous": "杂项",
+        "Mobs": "生物",
+        "Ores and Resources": "矿石 资源",
+        "Performance": "性能",
+        "Player Transport": "玩家运输",
+        "Processing": "加工處理",
+        "Redstone": "红石",
+        "Server Utility": "服務器",
+        "Skyblock": "空岛",
+        "Storage": "存儲系統",
+        "Structures": "結構",
+        "Technology": "科技",
+        "Thaumcraft": "神秘时代",
+        "Thermal Expansion": "热力膨胀",
+        "Tinker's Construct": "匠魂",
+        "Twilight Forest": "暮色森林",
+        "Twitch Integration": "Twitch集成",
+        "Utility & QoL": "实用功能与優化",
+        "World Gen": "世界生成",
+        "Auxiliary": "辅助模組",
+        "World": "世界"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "adventure": "冒险",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "economy": "经济",
+        "equipment": "装备",
+        "food": "食物",
+        "game-mechanics": "遊戲机制",
+        "library": "支持庫",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "小遊戲",
+        "mobs": "生物",
+        "optimization": "優化",
+        "social": "社交",
+        "storage": "存儲",
+        "technology": "科技",
+        "transportation": "交通运输",
+        "utility": "实用",
+        "worldgen": "世界生成"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Types": "類型",
+        "Adventure": "冒险模式",
+        "Creation": "创造模式",
+        "Game Map": "遊戲挑战",
+        "Modded World": "模組",
+        "Parkour": "跑酷",
+        "Puzzle": "解谜地图",
+        "Survival": "生存模式"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Resolution": "分辨率",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x 及以上",
+        "Styles": "風格",
+        "Animated": "动画",
+        "Special": "特殊",
+        "Data Packs": "數據包",
+        "Font Packs": "字體包",
+        "Medieval": "中世纪",
+        "Miscellaneous": "杂项",
+        "Mod Support": "模組支持",
+        "Modern": "现代",
+        "Photo Realistic": "影视级",
+        "Steampunk": "蒸汽朋克",
+        "Traditional": "传统"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Resolution": "分辨率",
+        "8x-": "8x 或更低",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x+": "512x 或更高",
+        "Styles": "風格",
+        "audio": "音频",
+        "blocks": "方块",
+        "core-shaders": "核心着色器",
+        "entities": "实体",
+        "environment": "環境",
+        "equipment": "装备",
+        "fonts": "字體",
+        "gui": "用戶界面",
+        "items": "物品",
+        "locale": "本地化",
+        "models": "模型",
+        "combat": "战斗",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "modded": "模組",
+        "realistic": "写实",
+        "simplistic": "简约",
+        "themed": "主題",
+        "tweaks": "優化",
+        "utility": "实用",
+        "vanilla-like": "原版風格"
+      }
+    },
+    "shaderTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Styles": "風格",
+        "Fantasy": "奇幻",
+        "Realistic": "写实",
+        "Vanilla": "原版"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "Styles": "風格",
+        "cartoon": "卡通",
+        "cursed": "诅咒",
+        "fantasy": "奇幻",
+        "realistic": "写实",
+        "semi-realistic": "半写实",
+        "vanilla-like": "原版風格",
+        "atmosphere": "大气",
+        "bloom": "泛光",
+        "colored-lighting": "彩色光照",
+        "foliage": "植被",
+        "path-tracing": "路徑追踪",
+        "pbr": "PBR",
+        "reflections": "反射",
+        "shadows": "阴影",
+        "potato": "极低",
+        "performance": "性能",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "screenshot": "影视级"
+      }
+    },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Styles": "風格",
+        "Adventure and RPG": "冒险 RPG",
+        "Combat / PvP": "战斗 PvP",
+        "Exploration": "探索",
+        "Extra Large": "大型整合",
+        "FTB Official Pack": "FTB",
+        "Hardcore": "极限生存",
+        "Horror": "恐怖",
+        "Magic": "魔法",
+        "Map Based": "基於地图",
+        "Mini Game": "小遊戲",
+        "Multiplayer": "多人",
+        "Quests": "任務",
+        "Sci-Fi": "科幻",
+        "Skyblock": "空岛",
+        "Small / Light": "轻量整合",
+        "Tech": "科技",
+        "Vanilla+": "原版改良"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "styles": "風格",
+        "adventure": "冒险",
+        "challenging": "挑战",
+        "combat": "战斗",
+        "kitchen-sink": "大杂烩",
+        "lightweight": "轻量整合",
+        "magic": "魔法",
+        "multiplayer": "多人",
+        "optimization": "優化",
+        "quests": "任務",
+        "technology": "科技"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "全部",
+        "Styles": "風格",
+        "Magic": "魔法",
+        "Miscellaneous": "杂项",
+        "Fantasy": "奇幻",
+        "Mod Support": "模組支持",
+        "Tech": "科技",
+        "Library": "支持庫",
+        "Utility": "实用",
+        "Adventure": "冒险"
+      },
+      "Modrinth": {
+        "All": "全部",
+        "styles": "風格",
+        "adventure": "冒险",
+        "cursed": "诅咒",
+        "decoration": "装饰",
+        "economy": "经济",
+        "equipment": "装备",
+        "food": "食物",
+        "game-mechanics": "遊戲机制",
+        "library": "支持庫",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "小遊戲",
+        "mobs": "生物",
+        "optimization": "優化",
+        "social": "社交",
+        "storage": "存儲",
+        "technology": "科技",
+        "transportation": "交通运输",
+        "utility": "实用",
+        "worldgen": "世界生成"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "热度",
+        "Latest update": "最近更新",
+        "Creation date": "創建日期",
+        "Total downloads": "下載量",
+        "A-Z": "名称"
+      },
+      "Modrinth": {
+        "relevance": "相關度",
+        "downloads": "下載量",
+        "follows": "关注量",
+        "newest": "發佈日期",
+        "updated": "更新日期"
+      }
+    },
+    "versionList": {
+      "All": "全部"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "還原啟動器設置",
+    "body": "此操作将会還原啟動器的所有設置为默認值，您確定要繼續吗？"
+  },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "設置为啟動器背景"
+    }
+  },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "请選擇想要添的角色"
+    }
+  },
+  "Services": {
+    "config": {
+      "retrieveLauncherConfig": {
+        "error": {
+          "title": "获取啟動器設置失敗"
+        }
+      },
+      "updateLauncherConfig": {
+        "error": {
+          "title": "更新啟動器設置失敗"
+        }
+      },
+      "restoreLauncherConfig": {
+        "success": "設置已成功還原",
+        "error": {
+          "title": "還原設置失敗，请重试"
+        }
+      },
+      "exportLauncherConfig": {
+        "success": "啟動器設置導出成功",
+        "error": {
+          "title": "啟動器設置導出失敗",
+          "description": {
+            "FETCH_ERROR": "与服務器通信失敗"
+          }
+        }
+      },
+      "importLauncherConfig": {
+        "success": "啟動器設置導入成功",
+        "error": {
+          "title": "啟動器設置導入失敗",
+          "description": {
+            "FETCH_ERROR": "与服務器通信失敗",
+            "INVALID_CODE": "无效的代碼",
+            "CODE_EXPIRED": "代碼已过期",
+            "VERSION_MISMATCH": "啟動器版本不匹配"
+          }
+        }
+      },
+      "retrieveCustomBackgroundList": {
+        "success": "自定義背景列表获取成功",
+        "error": {
+          "title": "自定義背景列表获取失敗"
+        }
+      },
+      "addCustomBackground": {
+        "success": "自定義背景添成功",
+        "error": {
+          "title": "自定義背景添失敗"
+        }
+      },
+      "deleteCustomBackground": {
+        "success": "自定義背景刪除成功",
+        "error": {
+          "title": "自定義背景刪除失敗"
+        }
+      },
+      "retrieveJavaList": {
+        "error": {
+          "title": "Java 列表获取失敗"
+        }
+      },
+      "validateJava": {
+        "error": {
+          "title": "Java 驗證失敗",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java 可執行檔案无效"
+          }
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "遊戲目錄无效",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "遊戲目錄已添",
+            "GAME_DIR_NOT_EXIST": "遊戲目錄不存在"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "下載緩存已清除",
+        "error": {
+          "title": "清除下載緩存失敗",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "当前有下載任務正在进行中，请稍后再试",
+            "FILE_DELETION_FAILED": "無法刪除緩存檔案，可能是檔案正在被使用"
+          }
+        }
+      }
+    },
+    "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "获取角色列表失敗"
+        }
+      },
+      "addPlayerOffline": {
+        "success": "离线角色添成功",
+        "error": {
+          "title": "离线角色添失敗",
+          "description": {
+            "DUPLICATE": "角色已存在",
+            "INVALID": "UUID 无效"
+          }
+        }
+      },
+      "fetchOAuthCode": {
+        "error": {
+          "title": "获取認證代碼失敗",
+          "description": {
+            "NETWORK_ERROR": "無法連接至認證服務器",
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "INVALID": "服務器類型錯誤",
+            "NOT_FOUND": "認證服務器不存在"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "角色添成功",
+        "error": {
+          "title": "角色添失敗",
+          "description": {
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "無法連接至認證服務器",
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NOT_FOUND": "認證服務器不存在",
+            "CANCELLED": "已取消",
+            "INVALID": "无效的認證服務器地址",
+            "NO_MINECRAFT_PROFILE": "未找到角色，请確認是否已购买 Minecraft"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "角色重新登錄成功",
+        "error": {
+          "title": "角色重新登錄失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登錄",
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接至認證服務器",
+            "INVALID": "不支持离线角色刷新",
+            "CANCELLED": "已取消",
+            "NO_MINECRAFT_PROFILE": "未找到角色，请確認是否已购买 Minecraft"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "角色添成功",
+        "error": {
+          "title": "角色添失敗",
+          "description": {
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "無法連接至認證服務器",
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "INVALID": "賬號或密碼錯誤",
+            "NOT_FOUND": "認證服務器不存在"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "角色重新登錄成功",
+        "error": {
+          "title": "角色重新登錄失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登錄",
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "連接認證服務器失敗",
+            "INVALID": "賬號或密碼錯誤"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "角色添成功",
+        "error": {
+          "title": "角色添失敗",
+          "description": {
+            "DUPLICATE": "角色已存在",
+            "NETWORK_ERROR": "無法連接至認證服務器",
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "EXPIRED": "令牌已过期，请重新登錄"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "角色皮膚更新成功",
+        "error": {
+          "title": "角色皮膚更新失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "角色類型錯誤",
+            "TEXTURE_ERROR": "角色皮膚获取失敗"
+          }
+        }
+      },
+      "deletePlayer": {
+        "success": "角色刪除成功",
+        "error": {
+          "title": "角色刪除失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "角色資訊更新成功",
+        "error": {
+          "title": "角色資訊更新失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "令牌已过期，请重新登錄",
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接至認證服務器",
+            "INVALID": "不支持离线角色刷新"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "获取認證服務器列表失敗"
+        }
+      },
+      "fetchAuthServer": {
+        "error": {
+          "title": "获取認證服務器資訊失敗",
+          "description": {
+            "DUPLICATE": "認證服務器已存在",
+            "INVALID": "无效的認證服務器地址",
+            "NOT_FOUND": "認證服務器不存在"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "認證服務器添成功",
+        "error": {
+          "title": "認證服務器添失敗",
+          "description": {
+            "DUPLICATE": "認證服務器已存在",
+            "INVALID": "无效的認證服務器地址",
+            "NOT_FOUND": "認證服務器不存在"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "認證服務器刪除成功",
+        "error": {
+          "title": "認證服務器刪除失敗",
+          "description": {
+            "NOT_FOUND": "認證服務器不存在"
+          }
+        }
+      }
+    },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "選擇合适 Java 運行时失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "NO_SUITABLE_JAVA": "没有合适的 Java 運行时可供選擇",
+            "SELECTED_JAVA_UNAVAILABLE": "手動選擇的 Java 運行时已移除或不可用"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "驗證遊戲檔案失敗",
+          "description": {
+            "MOD_LOADER_NOT_INSTALLED": "模組加載器未完成安裝",
+            "MOD_LOADER_LIB_NOT_DOWNLOADED": "模組加載器庫檔案未下載",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "GAME_FILES_INCOMPLETE": "遊戲檔案不完整或缺失",
+            "LAUNCHING_STATE_NOT_FOUND": "啟動状态丢失"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "驗證角色失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "EXPIRED": "訪問令牌已过期，请重新登錄",
+            "NETWORK_ERROR": "無法連接到服務器",
+            "PARSE_ERROR": "服務器返回的數據格式錯誤",
+            "NO_DOWNLOAD_API": "下載 Authlib-Injector 失敗，请檢查網絡連接",
+            "SAVE_ERROR": "保存 Authlib-Injector 失敗",
+            "LAUNCHING_STATE_NOT_FOUND": "啟動状态丢失"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "啟動遊戲失敗",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "啟動状态丢失"
+          }
+        }
+      }
+    },
+    "resource": {
+      "fetchGameVersionList": {
+        "error": {
+          "title": "获取遊戲版本列表失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "获取遊戲版本元資訊失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器",
+            "CLIENT_VERSION_NOT_FOUND": "指定遊戲版本不存在"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "获取模組加載器列表失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器",
+            "NO_DOWNLOAD_API": "无可用的下載策略，请檢查網絡連接"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "获取资源列表失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器",
+            "NO_DOWNLOAD_API": "无可用的下載策略，请檢查網絡連接"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "获取资源版本列表失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器",
+            "NO_DOWNLOAD_API": "无可用的下載策略，请檢查網絡連接"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "下載遊戲服務器失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "获取远程资源失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器",
+            "NO_DOWNLOAD_API": "无可用的下載策略，请檢查網絡連接"
+          }
+        }
+      },
+      "updateMod": {
+        "error": {
+          "title": "更新模組失敗",
+          "description": {
+            "PARSE_ERROR": "服務器返回數據格式錯誤",
+            "NETWORK_ERROR": "無法連接到服務器",
+            "FILE_OPERATION_ERROR": "無法重命名旧模組檔案"
+          }
+        }
+      }
+    },
+    "instance": {
+      "retrieveInstanceList": {
+        "error": {
+          "title": "获取實例列表失敗",
+          "description": {
+            "INVALID_NAME_ERROR": "實例名称无效",
+            "INVALID_SOURCE_PATH": "實例目錄无效",
+            "CONFLICT_NAME_ERROR": "当前實例目錄存在重名實例",
+            "FILE_MOVE_FAILED": "實例目錄移動失敗"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "實例下載任務創建失敗",
+          "description": {
+            "CONFLICT_NAME_ERROR": "当前實例目錄存在重名實例",
+            "FOLDER_CREATION_FAILED": "目标檔案夹創建失敗",
+            "FILE_CREATION_FAILED": "目标檔案創建失敗",
+            "NETWORK_ERROR": "網絡錯誤",
+            "CLIENT_JSON_PARSE_ERROR": "實例版本資訊解析錯誤",
+            "ASSET_INDEX_PARSE_ERROR": "资源索引檔案解析錯誤"
+          }
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "實例設置更新失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "NOT_FOUND": "實例不存在"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "實例遊戲設置获取失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "實例遊戲設置已重置",
+        "error": {
+          "title": "實例遊戲設置重置失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "未找到指定 ID 的實例",
+            "SAVE_ERROR": "保存實例設置檔案失敗"
+          }
+        }
+      },
+      "retrieveInstanceSubdirPath": {
+        "error": {
+          "title": "获取實例子目錄失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在或類型錯誤"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "實例刪除成功",
+        "error": {
+          "title": "實例刪除失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
+          }
+        }
+      },
+      "renameInstance": {
+        "error": {
+          "title": "實例重命名失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "CONFLICT_NAME_ERROR": "当前實例目錄存在重名實例",
+            "INVALID_NAME_ERROR": "實例名称无效",
+            "INVALID_SOURCE_PATH": "實例目錄无效",
+            "FILE_MOVE_FAILED": "實例目錄移動失敗"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "资源複製成功",
+        "error": {
+          "title": "複製资源失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在或類型錯誤",
+            "INVALID_SOURCE_PATH": "无效的源路徑",
+            "ZIP_FILE_PROCESS_FAILED": "壓縮檔案讀取或解壓失敗",
+            "FILE_COPY_FAILED": "複製檔案命令執行失敗",
+            "FOLDER_CREATION_FAILED": "目标檔案夹創建失敗"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "资源移動成功",
+        "error": {
+          "title": "移動资源失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在或類型錯誤",
+            "INVALID_SOURCE_PATH": "无效的源路徑",
+            "FILE_MOVE_FAILED": "移動檔案命令執行失敗",
+            "FOLDER_CREATION_FAILED": "目标檔案夹創建失敗"
+          }
+        }
+      },
+      "retrieveWorldList": {
+        "error": {
+          "title": "获取世界列表失敗"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "获取服務器列表失敗",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat 可能已损坏"
+          }
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "获取模組列表失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "获取資源包列表失敗"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "获取服務器資源包列表失敗"
+        }
+      },
+      "retrieveSchematicList": {
+        "error": {
+          "title": "获取原理图列表失敗"
+        }
+      },
+      "retrieveShaderPackList": {
+        "error": {
+          "title": "获取着色器包列表失敗"
+        }
+      },
+      "retrieveScreenshotList": {
+        "error": {
+          "title": "获取截图列表失敗"
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "模組状态切換失敗",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "模組檔案不存在，可能已更名、移動或刪除"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "获取世界詳細資訊失敗",
+          "description": {
+            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
+            "LEVEL_NOT_EXSIT_ERROR": "存档數據檔案不存在",
+            "LEVEL_PARSE_ERROR": "存档數據檔案解析錯誤"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "啟動快捷方式已添到桌面",
+        "error": {
+          "title": "啟動快捷方式創建失敗",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "命令執行失敗",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
+          }
+        }
+      },
+      "finishModLoaderInstall": {
+        "loading": "正在为 {{instanceName}} 安裝模組加載器",
+        "success": "模組加載器安裝完成",
+        "error": {
+          "title": "模組加載器安裝失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "INSTALLATION_DUPLICATED": "檢測到另一个進程已在安裝中",
+            "MAIN_CLASS_NOT_FOUND": "主类未找到",
+            "PROCESSOR_EXECUTION_FAILED": "安裝任務執行失敗"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "获取整合包资源資訊失敗",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "整合包檔案不存在，可能已更名、移動或刪除",
+            "MODPACK_MANIFEST_PARSE_ERROR": "整合包清單檔案解析錯誤"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "error": "任務創建失敗"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "{{param}} 下載任務已開始",
+          "Failed": "{{param}} 部分下載失敗，请重试",
+          "Completed": "{{param}} 已完成下載",
+          "Stopped": "{{param}} 下載任務已停止",
+          "Cancelled": "{{param}} 下載任務已取消"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "刪除檔案成功",
+        "error": {
+          "title": "刪除檔案失敗"
+        }
+      }
+    }
+  },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "全局遊戲設置",
+      "java": "Java",
+      "general": "通用",
+      "appearance": "外观",
+      "download": "下載资源",
+      "sync-restore": "同步与還原",
+      "help": "文檔与幫助",
+      "about": "關於",
+      "dev-test": "开发 - 測試页"
+    }
+  },
+  "SkinPreview": {
+    "cape": "披风",
+    "animation": {
+      "idle": "空闲",
+      "walk": "步行 ",
+      "run": "跑步",
+      "wave": "挥手"
+    },
+    "button": {
+      "enableRotation": "啟用旋转",
+      "disableRotation": "禁用旋转",
+      "play": "播放",
+      "pause": "暫停"
+    }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "聚合搜索"
+    },
+    "tip": "集中一处搜索本地內容与线上遊戲资源",
+    "empty": "无搜索结果",
+    "resource": {
+      "mod": "搜索關於 {{query}} 的模組",
+      "world": "搜索關於 {{query}} 的存档",
+      "resourcepack": "搜索關於 {{query}} 的資源包",
+      "shader": "搜索關於 {{query}} 的光影",
+      "modpack": "搜索關於 {{query}} 的整合包",
+      "curseforge": "在 CurseForge 上",
+      "modrinth": "在 Modrinth 上"
+    },
+    "result": {
+      "page": "頁面",
+      "recentViewed": "最近訪問过",
+      "instance": "實例",
+      "player": "角色",
+      "curseforge": "在 CurseForge 上搜索",
+      "modrinth": "在 Modrinth 上搜索"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "在 GitHub 为我们点亮星标"
+    },
+    "body": "如果您喜爱 SJMCL，並希望支持我们，可以在 GitHub 为我们点一颗星吗？这个小小的動作对我们来说意义重大，能激励我们为您持续提供特性体验。",
+    "button": {
+      "later": "稍后",
+      "starUs": "点亮星标"
+    }
+  },
+  "SyncAndRestoreSettingsPage": {
+    "launcherConfig": {
+      "title": "啟動器設置",
+      "settings": {
+        "internetSync": {
+          "title": "联网同步",
+          "import": "導入",
+          "export": "導出"
+        },
+        "restoreAll": {
+          "title": "還原所有設置",
+          "description": "将所有啟動器設置還原为默認值",
+          "restore": "還原"
+        }
+      }
+    }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "同步設置 - 導出"
+    },
+    "label": {
+      "token": "令牌"
+    },
+    "helper": "将上述令牌输入至待同步的設備以完成同步",
+    "countdown": "{{seconds}} 秒后刷新"
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "同步設置 - 導入"
+    },
+    "label": {
+      "token": "令牌"
+    },
+    "helper": "请输入需同步設備生成的令牌"
+  },
+  "Utils": {
+    "datetime": {
+      "formatRelativeTime": {
+        "now": "现在",
+        "minutes-ago": "{{count}} 分钟前",
+        "last-hour": "1 小时前",
+        "hours-ago": "{{count}} 小时前",
+        "yesterday": "昨天",
+        "others": "{{time}}"
+      }
+    },
+    "env": {
+      "checkFrontendCompatibility": {
+        "warning": {
+          "title": "系統 WebView 版本低，部分界面元素可能無法正常顯示"
+        }
+      }
+    },
+    "wiki": {
+      "baseUrl": "https://zh.minecraft.wiki/w/"
+    }
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "欢迎！"
+    },
+    "body": {
+      "part1": "欢迎使用 SJMCL！在開始使用之前，请务必阅读並同意我们的",
+      "terms": "用戶協議",
+      "periods": "。"
+    },
+    "warning": {
+      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不稳定或未开发完成，欢迎報告使用問題与功能建議。"
+    },
+    "button": {
+      "exit": "退出",
+      "agree": "同意並繼續"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "世界基礎數據 - {{worldName}}"
+    }
+  }
+}
