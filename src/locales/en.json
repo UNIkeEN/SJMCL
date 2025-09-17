@@ -923,6 +923,10 @@
         "resourceTranslation": {
           "title": "Resource Translation",
           "description": "%only available in zh-Hans"
+        },
+        "skipFirstScreenOptions": {
+          "title": "Skip First Launch Screen Options",
+          "description": "%only available in zh-Hans"
         }
       }
     }

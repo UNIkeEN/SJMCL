@@ -923,6 +923,10 @@
         "resourceTranslation": {
           "title": "显示资源翻译",
           "description": "启用后，在资源下载界面尝试显示名称或描述的简体中文翻译（如数据可用）"
+        },
+        "skipFirstScreenOptions": {
+          "title": "自动设置实例语言",
+          "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
         }
       }
     }
