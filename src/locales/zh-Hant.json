@@ -399,6 +399,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "刪除模組",
+      "content": "確定要刪除遊戲例項 “{{instanceName}}” 中的模組 “{{modName}}” 嗎？"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "刪除角色",
@@ -869,6 +875,12 @@
     "refresh": "重新整理",
     "revealFile": "在{{opener}}中顯示",
     "search": "搜尋",
+    "share": {
+      "text": "分享",
+      "toast": {
+        "error": "分享失敗"
+      }
+    },
     "skip": "跳過",
     "version": {
       "dev": "開發版本",
@@ -911,6 +923,10 @@
         "resourceTranslation": {
           "title": "顯示資源翻譯",
           "description": "啟用後，在資源下載介面嘗試顯示名稱或描述的簡體中文翻譯（如資料可用）"
+        },
+        "skipFirstScreenOptions": {
+          "title": "自動設定例項語言",
+          "description": "啟用後，新建例項的語言將自動設定為簡體中文，這將同時跳過輔助功能設定"
         }
       }
     }
@@ -2264,6 +2280,14 @@
           "Completed": "{{param}} 已完成下載",
           "Stopped": "{{param}} 下載任務已停止",
           "Cancelled": "{{param}} 下載任務已取消"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "刪除檔案成功",
+        "error": {
+          "title": "刪除檔案失敗"
         }
       }
     }

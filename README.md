@@ -32,11 +32,11 @@ You can also find all the releases, including the nightly versions, on [GitHub R
 
 SJMCL currently supports the following platforms:
 
-| Platform  | Versions            | Architectures           | Provided Bundles                        |
-|-----------|---------------------|-------------------------|-----------------------------------------|
-| Windows   | 10 and above        | `i686`, `x86_64`        | `.msi`, portable `.exe`                 |
-| macOS     | 10.15 and above     | `aarch64`, `x86_64`     | `.app`, `.dmg`                          |
-| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `x86_64`| `.AppImage`, `.deb`, `.rpm`, portable binary |
+| Platform  | Versions            | Architectures              | Provided Bundles                        |
+|-----------|---------------------|----------------------------|-----------------------------------------|
+| Windows   | 10 and above        | `aarch64`, `i686`, `x86_64`| `.msi`, portable `.exe`                 |
+| macOS     | 10.15 and above     | `aarch64`, `x86_64`        | `.app`, `.dmg`                          |
+| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `x86_64`   | `.AppImage`, `.deb`, `.rpm`, portable binary |
 
 To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs).
 

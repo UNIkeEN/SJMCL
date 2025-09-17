@@ -6,6 +6,7 @@ pub mod loader;
 pub mod misc;
 pub mod modpack;
 pub mod mods;
+pub mod options_txt;
 pub mod resourcepack;
 pub mod server;
 pub mod world;

@@ -26,6 +26,7 @@ use crate::{
         ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
         ShaderPackInfo,
       },
+      options_txt::get_zh_hans_lang_tag,
       world::{base::WorldInfo, level::LevelData},
     },
   },
@@ -991,8 +992,32 @@ pub async fn create_instance(
   )
   .await?;
 
-  save_json_async(&version_info, &version_path.join(format!("{}.json", name))).await?;
+  // Optionally skip first-screen options by adding options.txt (available for zh-Hans only)
+  let (language, skip_first_screen_options) = {
+    let launcher_config = launcher_config_state.lock()?;
+    (
+      launcher_config.general.general.language.clone(),
+      launcher_config
+        .general
+        .functionality
+        .skip_first_screen_options,
+    )
+  };
+  if language == "zh-Hans" && skip_first_screen_options {
+    if let Some(lang_code) = get_zh_hans_lang_tag(&instance.version, &app).await {
+      let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
+        .ok_or(InstanceError::InstanceNotFoundByID)?[0]
+        .join("options.txt");
+      if !options_path.exists() {
+        fs::write(options_path, format!("lang:{}\n", lang_code))
+          .map_err(|_| InstanceError::FileCreationFailed)?;
+      }
+    }
+  }
 
+  // Save the edited client json
+  save_json_async(&version_info, &version_path.join(format!("{}.json", name))).await?;
+  // Save the SJMCL instance config json
   instance
     .save_json_cfg()
     .await
