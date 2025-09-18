@@ -191,6 +191,17 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   if let Ok(home) = app.path().home_dir() {
     java_paths.extend(search_java_homes_in_directory(home.join(".jdks")));
   }
+
+  // Scan runtime directories in all configured game directories
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  if let Ok(config_state) = config_binding.lock() {
+    for game_dir in &config_state.local_game_directories {
+      let runtime_dir = game_dir.dir.join("runtime");
+      if runtime_dir.exists() {
+        java_paths.extend(search_java_homes_in_directory(runtime_dir));
+      }
+    }
+  }
   #[cfg(target_os = "windows")]
   {
     let common_vendors = [
