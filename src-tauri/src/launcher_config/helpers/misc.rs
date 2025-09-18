@@ -25,13 +25,21 @@ impl LauncherConfig {
       (false, v) => v.to_string(),
     };
 
-    // Set download cache dir to app cache directory
-    self.download.cache.directory = app
-      .path()
-      .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)?;
+    // Set default download cache dir if not exists
+    if self.download.cache.directory == PathBuf::default() {
+      self.download.cache.directory = app
+        .path()
+        .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)?;
+    }
 
-    // Create the directory if it doesn't exist
-    fs::create_dir_all(&self.download.cache.directory)?;
+    // Create the directory with fallback on error
+    if let Err(_) = fs::create_dir_all(&self.download.cache.directory) {
+      // Fallback to app cache directory if the configured path is not writable
+      self.download.cache.directory = app
+        .path()
+        .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)?;
+      fs::create_dir_all(&self.download.cache.directory)?;
+    }
 
     // Random pick custom background image if enabled
     if self.appearance.background.random_custom {
