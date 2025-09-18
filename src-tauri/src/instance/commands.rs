@@ -476,10 +476,14 @@ pub async fn retrieve_local_mod_list(
     let task = tokio::spawn(async move { get_mod_info_from_jar(&path).await.ok() });
     tasks.push(task);
   }
-  let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
-  for path in mod_paths {
-    let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
-    tasks.push(task);
+  #[cfg(debug_assertions)]
+  {
+    // mod information detection from folders is only used for debugging.
+    let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
+    for path in mod_paths {
+      let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
+      tasks.push(task);
+    }
   }
   let mut mod_infos = Vec::new();
   for task in tasks {
