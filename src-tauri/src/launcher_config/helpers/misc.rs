@@ -15,6 +15,57 @@ use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 
+fn ensure_writable_directory(app: &AppHandle, preferred_path: PathBuf) -> SJMCLResult<PathBuf> {
+  // Try the preferred path first
+  if preferred_path.exists() || fs::create_dir_all(&preferred_path).is_ok() {
+    let test_file = preferred_path.join(".write_test");
+    if fs::write(&test_file, b"test").is_ok() {
+      let _ = fs::remove_file(&test_file);
+      return Ok(preferred_path);
+    }
+  }
+
+  // Fallback strategies based on portable mode
+  let fallback_paths = if *IS_PORTABLE {
+    vec![
+      crate::EXE_DIR.join("Download"),
+      std::env::temp_dir().join("SJMCL").join("Download"),
+    ]
+  } else {
+    let mut paths = vec![];
+
+    // Try app cache directory
+    if let Ok(cache_dir) = app
+      .path()
+      .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)
+    {
+      paths.push(cache_dir);
+    }
+
+    // Platform-specific temp directories
+    if cfg!(target_os = "windows") {
+      paths.push(std::env::temp_dir().join("SJMCL").join("Download"));
+    } else {
+      paths.push(PathBuf::from("/tmp/SJMCL/Download"));
+    }
+
+    paths
+  };
+
+  // Try each fallback path
+  for fallback_path in fallback_paths {
+    if fs::create_dir_all(&fallback_path).is_ok() {
+      let test_file = fallback_path.join(".write_test");
+      if fs::write(&test_file, b"test").is_ok() {
+        let _ = fs::remove_file(&test_file);
+        return Ok(fallback_path);
+      }
+    }
+  }
+
+  Err(crate::error::SJMCLError("No writable directory found for download cache".to_string()).into())
+}
+
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
     // same as lib.rs
@@ -26,14 +77,16 @@ impl LauncherConfig {
     };
 
     // Set default download cache dir if not exists, create dir
-    if self.download.cache.directory == PathBuf::default() {
-      self.download.cache.directory = app
+    let default_cache_dir = if self.download.cache.directory == PathBuf::default() {
+      app
         .path()
-        .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)?;
-    }
-    if !self.download.cache.directory.exists() {
-      fs::create_dir_all(&self.download.cache.directory)?;
-    }
+        .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)?
+    } else {
+      self.download.cache.directory.clone()
+    };
+
+    // Ensure we have a writable download cache directory
+    self.download.cache.directory = ensure_writable_directory(app, default_cache_dir)?;
 
     // Random pick custom background image if enabled
     if self.appearance.background.random_custom {
