@@ -114,6 +114,11 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
     paths.insert(java_path);
   }
 
+  // Scan java paths from game directories
+  for java_path in scan_java_paths_in_game_directories(app) {
+    paths.insert(java_path);
+  }
+
   // For windows, try to get java path from registry
   #[cfg(target_os = "windows")]
   {
@@ -191,17 +196,6 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   if let Ok(home) = app.path().home_dir() {
     java_paths.extend(search_java_homes_in_directory(home.join(".jdks")));
   }
-
-  // Scan runtime directories in all configured game directories
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  if let Ok(config_state) = config_binding.lock() {
-    for game_dir in &config_state.local_game_directories {
-      let runtime_dir = game_dir.dir.join("runtime");
-      if runtime_dir.exists() {
-        java_paths.extend(search_java_homes_in_directory(runtime_dir));
-      }
-    }
-  }
   #[cfg(target_os = "windows")]
   {
     let common_vendors = [
@@ -268,6 +262,23 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
       }
     }
   }
+  java_paths
+}
+
+fn scan_java_paths_in_game_directories(app: &AppHandle) -> Vec<String> {
+  let mut java_paths = Vec::new();
+
+  // Scan runtime directories in all configured game directories (may downloaded by PCL)
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  if let Ok(config_state) = config_binding.lock() {
+    for game_dir in &config_state.local_game_directories {
+      let runtime_dir = game_dir.dir.join("runtime");
+      if runtime_dir.exists() {
+        java_paths.extend(search_java_homes_in_directory(runtime_dir));
+      }
+    }
+  }
+
   java_paths
 }
 
