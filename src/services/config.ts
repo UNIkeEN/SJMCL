@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { LauncherConfig } from "@/models/config";
 import { InvokeResponse } from "@/models/response";
 import { JavaInfo } from "@/models/system-info";
 import { responseHandler } from "@/utils/response";
+import { createSafeEventListener } from "@/utils/safe-event-listener";
 
 /**
  * Service class for managing launcher configurations.
@@ -150,15 +150,9 @@ export class ConfigService {
   static onConfigPartialUpdate(
     callback: (payload: { path: string; value: any }) => void
   ) {
-    const unlisten = getCurrentWebview().listen<{ path: string; value: any }>(
+    return createSafeEventListener<{ path: string; value: any }>(
       "config:partial-update",
-      (event) => {
-        callback(event.payload);
-      }
+      callback
     );
-
-    return () => {
-      unlisten.then((f) => f());
-    };
   }
 }
