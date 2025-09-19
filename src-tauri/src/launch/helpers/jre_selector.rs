@@ -2,7 +2,10 @@ use crate::error::SJMCLResult;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::models::misc::Instance;
 use crate::launch::models::LaunchError;
-use crate::launcher_config::models::{GameJava, JavaInfo};
+use crate::launcher_config::{
+  helpers::java_auto_download::{auto_download_java, check_downloaded_java},
+  models::{GameJava, JavaInfo},
+};
 use std::cmp::Ordering;
 use tauri::AppHandle;
 
@@ -39,7 +42,20 @@ pub async fn select_java_runtime(
   }
 
   if suitable_candidates.is_empty() {
-    Err(LaunchError::NoSuitableJava.into())
+    if let Some(downloaded_java) = check_downloaded_java(app, min_version_req) {
+      Ok(downloaded_java)
+    } else {
+      match auto_download_java(app, min_version_req).await {
+        Ok(downloaded_java) => Ok(downloaded_java),
+        Err(_) => {
+          if let Some(downloaded_java) = check_downloaded_java(app, min_version_req) {
+            Ok(downloaded_java)
+          } else {
+            Err(LaunchError::NoSuitableJava.into())
+          }
+        }
+      }
+    }
   } else {
     suitable_candidates.sort_by_key(|j| j.major_version);
     Ok(suitable_candidates[0].clone())

@@ -88,7 +88,17 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         function: () => LaunchService.selectSuitableJRE(instanceId),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
-        onErrCallback: (error: ResponseError) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {
+          if (error.details.includes("NO_SUITABLE_JAVA")) {
+            handleCloseModalWithCancel();
+            toast({
+              title: t("LaunchProcessModal.javaAutoDownload.title"),
+              description: t("LaunchProcessModal.javaAutoDownload.description"),
+              status: "info",
+              duration: 5000,
+            });
+          }
+        },
       },
       {
         label: "validateGameFiles",
@@ -159,6 +169,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       quickPlayMultiplayer,
       router,
       selectedPlayer,
+      t,
       toast,
     ]
   );
