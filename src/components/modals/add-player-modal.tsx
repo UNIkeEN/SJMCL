@@ -434,6 +434,10 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                             as={Button}
                             variant="outline"
                             rightIcon={<LuChevronDown />}
+                            maxW="200px"
+                            textOverflow="ellipsis"
+                            overflow="hidden"
+                            whiteSpace="nowrap"
                           >
                             {authServer?.name ||
                               t(
@@ -445,6 +449,10 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                               <MenuItem
                                 key={server.authUrl}
                                 onClick={() => setAuthServer(server)}
+                                maxW="300px"
+                                textOverflow="ellipsis"
+                                overflow="hidden"
+                                whiteSpace="nowrap"
                               >
                                 {server.name}
                               </MenuItem>
