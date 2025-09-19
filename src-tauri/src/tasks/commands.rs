@@ -2,10 +2,10 @@ use std::pin::Pin;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};
 
+use super::download::DownloadTask;
+use super::events::GEventStatus;
+use super::monitor::TaskMonitor;
 use crate::error::SJMCLResult;
-use crate::tasks::download::DownloadTask;
-use crate::tasks::events::GEventStatus;
-use crate::tasks::monitor::TaskMonitor;
 use crate::utils::fs::extract_filename;
 
 use super::{PTaskGroupDesc, PTaskParam, SJMCLFutureDesc, THandle};

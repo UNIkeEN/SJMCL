@@ -18,10 +18,10 @@ use tokio::io::AsyncSeekExt;
 use tokio_util::bytes;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
 
-use crate::tasks::streams::desc::{PDesc, PStatus};
-use crate::tasks::streams::reporter::Reporter;
-use crate::tasks::streams::ProgressStream;
-use crate::tasks::*;
+use super::streams::desc::{PDesc, PStatus};
+use super::streams::reporter::Reporter;
+use super::streams::ProgressStream;
+use super::*;
 use crate::utils::web::with_retry;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

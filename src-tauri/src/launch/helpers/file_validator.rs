@@ -18,7 +18,7 @@ use tauri::AppHandle;
 use tokio::fs;
 use zip::ZipArchive;
 
-use crate::launch::helpers::misc::get_natives_string;
+use super::misc::get_natives_string;
 
 pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();

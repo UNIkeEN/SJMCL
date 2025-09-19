@@ -1,8 +1,8 @@
 pub mod misc;
 
 use super::misc::apply_other_resource_enhancements;
+use super::mod_db::handle_search_query;
 use crate::error::SJMCLResult;
-use crate::resource::helpers::mod_db::handle_search_query;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,

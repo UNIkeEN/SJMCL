@@ -1,10 +1,10 @@
+use super::events::{GEventStatus, PEvent};
+use super::streams::desc::PStatus;
 use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_launcher_config;
-use crate::tasks::events::{GEventStatus, PEvent};
-use crate::tasks::streams::desc::PStatus;
 
+use super::download::DownloadTask;
 use async_speed_limit::Limiter;
-use download::DownloadTask;
 use flume::{Receiver as FlumeReceiver, Sender as FlumeSender};
 use glob::glob;
 use log::info;
@@ -17,8 +17,8 @@ use tauri::async_runtime::JoinHandle;
 use tauri::AppHandle;
 use tokio::sync::Semaphore;
 
-use crate::tasks::events::{GEvent, TEvent};
-use crate::tasks::{SJMCLFuture, *};
+use super::events::{GEvent, TEvent};
+use super::{SJMCLFuture, *};
 
 pub struct GroupMonitor {
   pub phs: HashMap<u32, Arc<RwLock<PTaskHandle>>>,
