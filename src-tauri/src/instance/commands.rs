@@ -1,64 +1,53 @@
-use crate::{
-  error::SJMCLResult,
-  instance::{
-    helpers::{
-      client_json::{replace_native_libraries, McClientInfo, PatchesInfo},
-      game_version::{compare_game_versions, get_major_game_version},
-      loader::{
-        common::{execute_processors, install_mod_loader},
-        forge::InstallProfile,
-      },
-      misc::{
-        get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
-        refresh_and_update_instances, unify_instance_name,
-      },
-      modpack::{
-        curseforge::CurseForgeManifest, misc::ModpackMetaInfo, modrinth::ModrinthManifest,
-      },
-      mods::common::{add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar},
-      options_txt::get_zh_hans_lang_tag,
-      resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
-      server::{load_servers_info_from_path, query_server_status},
-      world::{level_data_to_world_info, load_level_data_from_path},
-    },
-    models::{
-      misc::{
-        GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
-        ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
-        ShaderPackInfo,
-      },
-      world::{base::WorldInfo, level::LevelData},
-    },
-  },
-  launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files},
-  launcher_config::{
-    helpers::misc::get_global_game_config,
-    models::{GameConfig, GameDirectory, LauncherConfig},
-  },
-  partial::{PartialError, PartialUpdate},
-  resource::{
-    helpers::misc::get_source_priority_list,
-    models::{GameClientResourceInfo, ModLoaderResourceInfo},
-  },
-  storage::{load_json_async, save_json_async, Storage},
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
-  utils::{
-    fs::{
-      copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
-      get_subdirectories,
-    },
-    image::ImageWrapper,
-  },
+use crate::error::SJMCLResult;
+use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
+use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
+use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
+use crate::instance::helpers::loader::forge::InstallProfile;
+use crate::instance::helpers::misc::{
+  get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
+  refresh_and_update_instances, unify_instance_name,
 };
+use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
+use crate::instance::helpers::modpack::misc::ModpackMetaInfo;
+use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
+use crate::instance::helpers::mods::common::{
+  add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
+};
+use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
+use crate::instance::helpers::resourcepack::{
+  load_resourcepack_from_dir, load_resourcepack_from_zip,
+};
+use crate::instance::helpers::server::{load_servers_info_from_path, query_server_status};
+use crate::instance::helpers::world::{level_data_to_world_info, load_level_data_from_path};
+use crate::instance::models::misc::{
+  GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
+  ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
+  ShaderPackInfo,
+};
+use crate::instance::models::world::base::WorldInfo;
+use crate::instance::models::world::level::LevelData;
+use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
+use crate::launcher_config::helpers::misc::get_global_game_config;
+use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
+use crate::partial::{PartialError, PartialUpdate};
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::models::{GameClientResourceInfo, ModLoaderResourceInfo};
+use crate::storage::{load_json_async, save_json_async, Storage};
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
+use crate::utils::fs::{
+  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
+  get_subdirectories,
+};
+use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
-use std::{
-  collections::HashMap,
-  fs,
-  path::{Path, PathBuf},
-  sync::Mutex,
-  time::SystemTime,
-};
+use std::collections::HashMap;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+use std::time::SystemTime;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;

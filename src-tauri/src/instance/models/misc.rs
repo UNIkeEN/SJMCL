@@ -1,15 +1,11 @@
-use crate::{
-  instance::constants::INSTANCE_CFG_FILE_NAME,
-  launcher_config::models::GameConfig,
-  storage::{load_json_async, save_json_async},
-  utils::image::ImageWrapper,
-};
+use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
+use crate::launcher_config::models::GameConfig;
+use crate::storage::{load_json_async, save_json_async};
+use crate::utils::image::ImageWrapper;
 use serde::{Deserialize, Serialize};
-use std::{
-  cmp::{Ord, Ordering, PartialOrd},
-  path::PathBuf,
-  str::FromStr,
-};
+use std::cmp::{Ord, Ordering, PartialOrd};
+use std::path::PathBuf;
+use std::str::FromStr;
 use strum_macros::Display;
 
 #[derive(Debug, Deserialize, Serialize)]

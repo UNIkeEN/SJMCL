@@ -1,10 +1,9 @@
-use crate::{
-  launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME},
-  partial::PartialUpdate,
-  storage::Storage,
-  utils::{string::snake_to_camel_case, sys_info},
-  APP_DATA_DIR, EXE_DIR, IS_PORTABLE,
-};
+use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
+use crate::partial::PartialUpdate;
+use crate::storage::Storage;
+use crate::utils::string::snake_to_camel_case;
+use crate::utils::sys_info;
+use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;

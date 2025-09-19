@@ -1,33 +1,28 @@
-use reqwest::{redirect::Policy, Client, Error};
+use reqwest::redirect::Policy;
+use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
-use std::{
-  collections::HashMap,
-  fs::{self, File},
-  io::Read,
-  path::PathBuf,
-};
+use std::collections::HashMap;
+use std::fs::{self, File};
+use std::io::Read;
+use std::path::PathBuf;
 use tauri::AppHandle;
 use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
 use super::common::add_library_entry;
+use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{
   LaunchArgumentTemplate, LibrariesValue, McClientInfo, PatchesInfo,
 };
 use crate::instance::helpers::misc::get_instance_subdir_paths;
-use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType};
+use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::convert_url_to_target_source;
-use crate::{
-  error::SJMCLResult,
-  instance::models::misc::ModLoader,
-  resource::{
-    helpers::misc::get_download_api,
-    models::{ResourceType, SourceType},
-  },
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
-};
+use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::models::{ResourceType, SourceType};
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
 
 async fn fetch_bmcl_forge_installer_url(
   root: Url,

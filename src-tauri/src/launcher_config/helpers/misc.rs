@@ -1,13 +1,9 @@
-use crate::{
-  error::SJMCLResult,
-  launcher_config::{
-    commands::retrieve_custom_background_list,
-    models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig},
-  },
-  partial::{PartialAccess, PartialUpdate},
-  utils::portable::extract_assets,
-  APP_DATA_DIR, IS_PORTABLE,
-};
+use crate::error::SJMCLResult;
+use crate::launcher_config::commands::retrieve_custom_background_list;
+use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
+use crate::partial::{PartialAccess, PartialUpdate};
+use crate::utils::portable::extract_assets;
+use crate::{APP_DATA_DIR, IS_PORTABLE};
 use rand::Rng;
 use std::fs;
 use std::path::PathBuf;

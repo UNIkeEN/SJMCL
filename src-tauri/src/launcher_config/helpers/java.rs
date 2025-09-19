@@ -1,7 +1,5 @@
-use crate::{
-  error::SJMCLResult,
-  launcher_config::models::{JavaInfo, LauncherConfig},
-};
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};

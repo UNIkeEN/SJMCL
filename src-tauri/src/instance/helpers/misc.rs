@@ -1,23 +1,22 @@
 use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::McClientInfo;
-use crate::instance::helpers::loader::{
-  forge::download_forge_libraries, neoforge::download_neoforge_libraries,
+use crate::instance::helpers::client_jar::load_game_version_from_jar;
+use crate::instance::helpers::client_json::{libraries_to_info, patches_to_info, McClientInfo};
+use crate::instance::helpers::loader::forge::download_forge_libraries;
+use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
+use crate::instance::models::misc::{
+  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType,
 };
-use crate::instance::models::misc::{ModLoaderStatus, ModLoaderType};
-use crate::instance::{
-  helpers::client_jar::load_game_version_from_jar,
-  models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
-};
-use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
+use crate::launcher_config::helpers::misc::get_global_game_config;
+use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
-use crate::{
-  instance::helpers::client_json::{libraries_to_info, patches_to_info},
-  launcher_config::models::{GameDirectory, LauncherConfig},
-};
 use sanitize_filename;
 use serde_json::Value;
-use std::{collections::HashMap, fs, io::Cursor, path::PathBuf, sync::Mutex};
+use std::collections::HashMap;
+use std::fs;
+use std::io::Cursor;
+use std::path::PathBuf;
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 

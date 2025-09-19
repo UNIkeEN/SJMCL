@@ -1,20 +1,15 @@
-use crate::{
-  error::SJMCLResult,
-  instance::{
-    helpers::{
-      asset_index::load_asset_index,
-      client_json::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
-    },
-    models::misc::InstanceError,
-  },
-  launch::models::LaunchError,
-  resource::{
-    helpers::misc::{convert_url_to_target_source, get_download_api},
-    models::{ResourceType, SourceType},
-  },
-  tasks::{download::DownloadParam, PTaskParam},
-  utils::fs::validate_sha1,
+use crate::error::SJMCLResult;
+use crate::instance::helpers::asset_index::load_asset_index;
+use crate::instance::helpers::client_json::{
+  DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo,
 };
+use crate::instance::models::misc::InstanceError;
+use crate::launch::models::LaunchError;
+use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::models::{ResourceType, SourceType};
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
+use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
 use std::collections::HashSet;
 use std::io::Cursor;

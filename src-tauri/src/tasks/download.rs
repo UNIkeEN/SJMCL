@@ -15,7 +15,8 @@ use tauri::{AppHandle, Manager, Url};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_http::reqwest::header::RANGE;
 use tokio::io::AsyncSeekExt;
-use tokio_util::{bytes, compat::FuturesAsyncReadCompatExt};
+use tokio_util::bytes;
+use tokio_util::compat::FuturesAsyncReadCompatExt;
 
 use crate::tasks::streams::desc::{PDesc, PStatus};
 use crate::tasks::streams::reporter::Reporter;

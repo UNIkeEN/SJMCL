@@ -1,18 +1,15 @@
-use std::{
-  collections::HashMap,
-  fs::{self, File},
-  io::Read,
-  path::Path,
-};
+use std::collections::HashMap;
+use std::fs::{self, File};
+use std::io::Read;
+use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
-use crate::{
-  error::SJMCLResult,
-  instance::models::misc::{InstanceError, ModLoaderType},
-  tasks::{download::DownloadParam, PTaskParam},
-};
+use crate::error::SJMCLResult;
+use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
 
 structstruck::strike! {
 #[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]

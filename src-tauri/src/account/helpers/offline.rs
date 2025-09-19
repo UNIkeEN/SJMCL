@@ -1,11 +1,8 @@
-use crate::{
-  account::{
-    constants::TEXTURE_ROLES,
-    models::{AccountError, PlayerInfo, PlayerType, Texture},
-  },
-  error::SJMCLResult,
-  utils::{fs::get_app_resource_filepath, image::load_image_from_dir},
-};
+use crate::account::constants::TEXTURE_ROLES;
+use crate::account::models::{AccountError, PlayerInfo, PlayerType, Texture};
+use crate::error::SJMCLResult;
+use crate::utils::fs::get_app_resource_filepath;
+use crate::utils::image::load_image_from_dir;
 use rand::seq::IndexedRandom;
 use tauri::AppHandle;
 use uuid::Uuid;

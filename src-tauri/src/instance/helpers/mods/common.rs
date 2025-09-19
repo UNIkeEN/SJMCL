@@ -1,9 +1,11 @@
 use super::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
-use crate::resource::helpers::{
-  curseforge::{fetch_remote_resource_by_id_curseforge, fetch_remote_resource_by_local_curseforge},
-  modrinth::{fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth},
+use crate::resource::helpers::curseforge::{
+  fetch_remote_resource_by_id_curseforge, fetch_remote_resource_by_local_curseforge,
+};
+use crate::resource::helpers::modrinth::{
+  fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
 };
 use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
 use serde::{Deserialize, Serialize};

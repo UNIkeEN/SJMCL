@@ -1,20 +1,18 @@
-use crate::{
-  error::{SJMCLError, SJMCLResult},
-  instance::{
-    helpers::game_version::compare_game_versions, models::misc::Instance,
-    models::misc::ModLoaderType,
-  },
-  launcher_config::models::LauncherConfig,
-  utils::fs::get_app_resource_filepath,
-};
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::game_version::compare_game_versions;
+use crate::instance::models::misc::{Instance, ModLoaderType};
+use crate::launcher_config::models::LauncherConfig;
+use crate::utils::fs::get_app_resource_filepath;
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
-use serde_with::{formats::PreferMany, serde_as, OneOrMany};
+use serde_with::formats::PreferMany;
+use serde_with::{serde_as, OneOrMany};
 use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::fs;
+use std::str::FromStr;
 use std::sync::Mutex;
-use std::{collections::HashMap, str::FromStr};
 use tauri::{AppHandle, Manager};
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]

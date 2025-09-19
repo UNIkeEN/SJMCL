@@ -1,50 +1,38 @@
-use super::{
-  helpers::{
-    command_generator::{export_full_launch_command, generate_launch_command},
-    file_validator::{extract_native_libraries, get_invalid_library_files},
-    jre_selector::select_java_runtime,
-    process_monitor::{kill_process, monitor_process, set_process_priority},
-  },
-  models::LaunchingState,
+use super::helpers::command_generator::{export_full_launch_command, generate_launch_command};
+use super::helpers::file_validator::{extract_native_libraries, get_invalid_library_files};
+use super::helpers::jre_selector::select_java_runtime;
+use super::helpers::process_monitor::{kill_process, monitor_process, set_process_priority};
+use super::models::LaunchingState;
+use crate::account::helpers::misc::get_selected_player_info;
+use crate::account::helpers::{authlib_injector, microsoft};
+use crate::account::models::PlayerType;
+use crate::error::SJMCLResult;
+use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
+use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
+use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
+use crate::launch::helpers::command_generator::LaunchCommand;
+use crate::launch::helpers::file_validator::get_invalid_assets;
+use crate::launch::helpers::misc::get_separator;
+use crate::launch::models::LaunchError;
+use crate::launcher_config::helpers::java::refresh_and_update_javas;
+use crate::launcher_config::models::{
+  FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity,
 };
-use crate::{
-  account::{
-    helpers::{authlib_injector, microsoft, misc::get_selected_player_info},
-    models::PlayerType,
-  },
-  error::SJMCLResult,
-  instance::{
-    helpers::{
-      client_json::{replace_native_libraries, McClientInfo},
-      misc::{get_instance_game_config, get_instance_subdir_paths},
-    },
-    models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus},
-  },
-  launch::{
-    helpers::{
-      command_generator::LaunchCommand, file_validator::get_invalid_assets, misc::get_separator,
-    },
-    models::LaunchError,
-  },
-  launcher_config::{
-    helpers::java::refresh_and_update_javas,
-    models::{FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity},
-  },
-  resource::helpers::misc::get_source_priority_list,
-  storage::load_json_async,
-  tasks::commands::schedule_progressive_task_group,
-  utils::{fs::create_zip_from_dirs, window::create_webview_window},
-};
-use std::{
-  collections::HashMap,
-  fs,
-  io::{prelude::*, BufReader},
-  path::PathBuf,
-  process::{Command, Stdio},
-  sync::{mpsc, Mutex},
-  time::{SystemTime, UNIX_EPOCH},
-};
-use tauri::{path::BaseDirectory, AppHandle, Manager, State};
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::storage::load_json_async;
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::utils::fs::create_zip_from_dirs;
+use crate::utils::window::create_webview_window;
+use std::collections::HashMap;
+use std::fs;
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
+use std::sync::{mpsc, Mutex};
+use std::time::{SystemTime, UNIX_EPOCH};
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager, State};
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
