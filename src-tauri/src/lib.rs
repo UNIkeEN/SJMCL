@@ -75,6 +75,7 @@ pub async fn run() {
       launcher_config::commands::validate_java,
       launcher_config::commands::check_game_directory,
       launcher_config::commands::clear_download_cache,
+      launcher_config::commands::check_launcher_update,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,

@@ -144,6 +144,16 @@ export class ConfigService {
   }
 
   /**
+   * CHECK for launcher updates.
+   * @returns {Promise<InvokeResponse<string>>} The latest version string if an update is available.
+   * If the current version is up-to-date, returns "up2date", otherwise an empty string.
+   */
+  @responseHandler("config")
+  static async checkLauncherUpdate(): Promise<InvokeResponse<string>> {
+    return await invoke("check_launcher_update");
+  }
+
+  /**
    * Listens for backend-initiated changes to the `config` field.
    * @param callback - Callback function invoked whenever the config is updated by the backend.
    */

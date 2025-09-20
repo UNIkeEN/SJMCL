@@ -4,7 +4,9 @@
       "title": "关于",
       "settings": {
         "version": {
-          "title": "版本"
+          "title": "版本",
+          "foundNew": "有新版本",
+          "checkUpdate": "检查更新"
         },
         "contributors": {
           "title": "开发者名单"

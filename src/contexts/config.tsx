@@ -18,8 +18,11 @@ interface LauncherConfigContextType {
   config: LauncherConfig;
   setConfig: React.Dispatch<React.SetStateAction<LauncherConfig>>;
   update: (path: string, value: any) => void;
+  newerVersion: string;
   // other shared data associated with the launcher config.
   getJavaInfos: (sync?: boolean) => JavaInfo[] | undefined;
+  // shared service handlers
+  handleCheckLauncherUpdate: () => void;
 }
 
 const LauncherConfigContext = createContext<
@@ -36,6 +39,7 @@ export const LauncherConfigContextProvider: React.FC<{
   const userSelectedColorMode = config.appearance.theme.colorMode;
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>();
+  const [newerVersion, setNewerVersion] = useState<string>("");
 
   const handleRetrieveLauncherConfig = useCallback(() => {
     ConfigService.retrieveLauncherConfig().then((response) => {
@@ -111,6 +115,7 @@ export const LauncherConfigContextProvider: React.FC<{
     return () => unlisten();
   }, [handleConfigPartialUpdate]);
 
+  // java list cache and retriever
   const handleRetrieveJavaList = useCallback(() => {
     ConfigService.retrieveJavaList().then((response) => {
       if (response.status === "success") {
@@ -128,13 +133,30 @@ export const LauncherConfigContextProvider: React.FC<{
 
   const getJavaInfos = useGetState(javaInfos, handleRetrieveJavaList);
 
+  // check launcher update
+  const handleCheckLauncherUpdate = useCallback(() => {
+    ConfigService.checkLauncherUpdate().then((response) => {
+      if (response.status === "success") {
+        setNewerVersion(response.data === "up2date" ? "" : response.data);
+        return response.data;
+      }
+      return "";
+    });
+  }, []);
+
+  useEffect(() => {
+    handleCheckLauncherUpdate();
+  }, [handleCheckLauncherUpdate]);
+
   return (
     <LauncherConfigContext.Provider
       value={{
         config,
         setConfig,
         update: handleUpdateLauncherConfig,
+        newerVersion,
         getJavaInfos,
+        handleCheckLauncherUpdate,
       }}
     >
       <ColorModeScript initialColorMode={userSelectedColorMode} />

@@ -1,4 +1,11 @@
-import { Avatar, AvatarGroup, HStack, Icon } from "@chakra-ui/react";
+import {
+  Avatar,
+  AvatarGroup,
+  Button,
+  HStack,
+  Icon,
+  Text,
+} from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
@@ -11,11 +18,13 @@ import {
 import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { CoreContributorsList } from "@/pages/settings/contributors";
+import { isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
-  const { config } = useLauncherConfig();
+  const { config, newerVersion } = useLauncherConfig();
   const basicInfo = config.basicInfo;
+  const primaryColor = config.appearance.theme.primaryColor;
   const router = useRouter();
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
@@ -25,7 +34,24 @@ const AboutSettingsPage = () => {
         <TitleFullWithLogo key={0} />,
         {
           title: t("AboutSettingsPage.about.settings.version.title"),
-          children: `${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`,
+          children: (
+            <HStack>
+              <Text fontSize="xs-sm" className="secondary-text">
+                {`${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`}
+              </Text>
+              {isValidSemanticVersion(basicInfo.launcherVersion) && (
+                <Button
+                  variant="subtle"
+                  colorScheme={newerVersion ? primaryColor : "gray"}
+                  size="xs"
+                >
+                  {newerVersion
+                    ? t("AboutSettingsPage.about.settings.version.foundNew")
+                    : t("AboutSettingsPage.about.settings.version.checkUpdate")}
+                </Button>
+              )}
+            </HStack>
+          ),
         },
         {
           title: t("AboutSettingsPage.about.settings.contributors.title"),

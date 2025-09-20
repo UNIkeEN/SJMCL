@@ -321,6 +321,7 @@ impl Storage for LauncherConfig {
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum LauncherConfigError {
   FetchError,
+  ParseError,
   InvalidCode,
   CodeExpired,
   VersionMismatch,

@@ -4,7 +4,9 @@
       "title": "About",
       "settings": {
         "version": {
-          "title": "Version"
+          "title": "Version",
+          "foundNew": "New Version Available",
+          "checkUpdate": "Check for Updates"
         },
         "contributors": {
           "title": "Contributors"
@@ -26,7 +28,7 @@
         },
         "hmcl": {
           "title": "Hello Minecraft! Launcher",
-          "description": "Some design and code implementation are referenced from this open-source project"
+          "description": "Some design and code implementation are referenced from this project"
         },
         "littleskin": {
           "title": "LittleSkin",
