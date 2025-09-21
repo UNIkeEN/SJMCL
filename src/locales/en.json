@@ -399,6 +399,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Delete Mod",
+      "content": "Confirm delete the mod \"{{modName}}\" in the game instance \"{{instanceName}}\" ?"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Delete Player",
@@ -870,6 +876,12 @@
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
     "skip": "Skip",
+    "share": {
+      "text": "Share",
+      "toast": {
+        "error": "Failed to share"
+      }
+    },
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -910,6 +922,10 @@
         },
         "resourceTranslation": {
           "title": "Resource Translation",
+          "description": "%only available in zh-Hans"
+        },
+        "skipFirstScreenOptions": {
+          "title": "Skip First Launch Screen Options",
           "description": "%only available in zh-Hans"
         }
       }
@@ -2264,6 +2280,14 @@
           "Completed": "{{param}} has been downloaded successfully",
           "Stopped": "{{param}} download has been stopped",
           "Cancelled": "{{param}} download has been cancelled"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "File deleted successfully",
+        "error": {
+          "title": "Failed to delete file"
         }
       }
     }

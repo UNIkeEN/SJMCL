@@ -232,10 +232,16 @@ const DownloadSpecificResourceModal: React.FC<
     return defaultDownloadPath;
   }, [resource.type, router.query.id, toast]);
 
-  const startDownload = async (item: OtherResourceFileInfo) => {
+  const startDownload = async (
+    item: OtherResourceFileInfo,
+    translatedName?: string
+  ) => {
     const dir = await getDefaultFilePath();
+    const fileName = translatedName
+      ? `[${translatedName}] ${item.fileName}`
+      : item.fileName;
     const savepath = await save({
-      defaultPath: dir + "/" + item.fileName,
+      defaultPath: dir + "/" + fileName,
     });
     if (!savepath) return;
     handleScheduleProgressiveTaskGroup(resource.type, [
@@ -481,9 +487,10 @@ const DownloadSpecificResourceModal: React.FC<
                       curInstanceMajorVersion,
                       curInstanceVersion,
                       curInstanceModLoader,
-                      downloadOriginalResource: () => startDownload(item),
+                      downloadOriginalResource: () =>
+                        startDownload(item, resource.translatedName),
                     });
-                  } else startDownload(item);
+                  } else startDownload(item, resource.translatedName);
                 }}
               />
             ))}

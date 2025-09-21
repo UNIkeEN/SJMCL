@@ -10,28 +10,27 @@ mod storage;
 mod tasks;
 mod utils;
 
-use account::{
-  helpers::authlib_injector::info::refresh_and_update_auth_servers, models::AccountInfo,
-};
+use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
+use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
-use launcher_config::{
-  helpers::java::refresh_and_update_javas,
-  models::{JavaInfo, LauncherConfig},
-};
+use launcher_config::helpers::java::refresh_and_update_javas;
+use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{LazyLock, Mutex};
-use std::{collections::HashMap, sync::OnceLock};
+use std::sync::{LazyLock, Mutex, OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use tauri_plugin_log::{Target, TargetKind};
-use utils::{portable::is_portable, web::build_sjmcl_client};
+use utils::portable::is_portable;
+use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
-use tauri::{path::BaseDirectory, Manager};
+use tauri::path::BaseDirectory;
+use tauri::Manager;
 
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
   std::env::current_exe()

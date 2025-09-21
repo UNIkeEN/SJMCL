@@ -1,8 +1,8 @@
-use super::constants::{CLIENT_ID, OAUTH_TOKEN_ENDPOINT, SCOPE};
-use crate::account::helpers::microsoft::constants::{
-  DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, PROFILE_ENDPOINT, XSTS_AUTH_ENDPOINT,
+use super::constants::{
+  CLIENT_ID, DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, OAUTH_TOKEN_ENDPOINT,
+  PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
-use crate::account::helpers::microsoft::models::{MinecraftProfile, XstsResponse};
+use super::models::{MinecraftProfile, XstsResponse};
 use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{

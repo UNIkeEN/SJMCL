@@ -41,6 +41,7 @@ import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
+import { UtilsService } from "@/services/utils";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceModsPage = () => {
@@ -54,9 +55,12 @@ const InstanceModsPage = () => {
     isLocalModListLoading: isLoading,
   } = useInstanceSharedData();
   const { config, update } = useLauncherConfig();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
   const accordionStates = config.states.instanceModsPage.accordionStates;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
@@ -174,6 +178,46 @@ const InstanceModsPage = () => {
     [toast, getLocalModListWrapper]
   );
 
+  const handleDeleteSingleMod = useCallback(
+    (mod: LocalModInfo) => {
+      openGenericConfirmDialog({
+        title: t("DeleteModAlertDialog.dialog.title"),
+        body: t("DeleteModAlertDialog.dialog.content", {
+          instanceName: summary?.name ?? "",
+          modName: mod.name || mod.fileName,
+        }),
+        btnOK: t("General.delete"),
+        isAlert: true,
+        showSuppressBtn: true,
+        suppressKey: "deleteModAlert",
+        onOKCallback: () => {
+          UtilsService.deleteFile(mod.filePath)
+            .then((response) => {
+              if (response.status === "success") {
+                setLocalMods((prev) =>
+                  prev.filter((m) => m.filePath !== mod.filePath)
+                );
+                toast({
+                  title: response.message,
+                  status: "success",
+                });
+              } else {
+                toast({
+                  title: response.message,
+                  description: response.details,
+                  status: "error",
+                });
+              }
+            })
+            .finally(() => {
+              getLocalModListWrapper(true);
+            });
+        },
+      });
+    },
+    [openGenericConfirmDialog, t, toast, getLocalModListWrapper, summary?.name]
+  );
+
   const modSecMenuOperations = [
     {
       icon: "openFolder",
@@ -252,6 +296,14 @@ const InstanceModsPage = () => {
       onClick: () => {
         setModInfoSelectedMod(mod);
         onModInfoModalOpen();
+      },
+    },
+    {
+      label: "",
+      icon: "delete",
+      danger: true,
+      onClick: () => {
+        handleDeleteSingleMod(mod);
       },
     },
   ];
@@ -363,7 +415,7 @@ const InstanceModsPage = () => {
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yello.200" }}
                     >
-                      {mod.translatedName
+                      {showZhTrans && mod.translatedName
                         ? `${mod.translatedName} | ${mod.name}`
                         : mod.name || mod.fileName}
                     </Highlight>
@@ -395,7 +447,11 @@ const InstanceModsPage = () => {
                     >
                       {mod.fileName}
                     </Highlight>
-                    {mod.description ? `: ${mod.description}` : ""}
+                    {showZhTrans && mod.translatedDescription
+                      ? `: ${mod.translatedDescription}`
+                      : mod.description
+                        ? `: ${mod.description}`
+                        : ""}
                   </Text>
                 }
                 prefixElement={

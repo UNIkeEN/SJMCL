@@ -1,8 +1,7 @@
-use crate::{
-  error::{SJMCLError, SJMCLResult},
-  instance::models::world::level::{Level, LevelData},
-};
-use quartz_nbt::{io::Flavor, serde::deserialize};
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::models::world::level::{Level, LevelData};
+use quartz_nbt::io::Flavor;
+use quartz_nbt::serde::deserialize;
 use std::path::PathBuf;
 
 pub async fn load_level_data_from_path(path: &PathBuf) -> SJMCLResult<LevelData> {

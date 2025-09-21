@@ -133,8 +133,12 @@ const GeneralSettingsPage = () => {
             />
           ),
         },
-        ...(config.general.general.language == "zh-Hans"
-          ? [
+      ],
+    },
+    ...(config.general.general.language == "zh-Hans"
+      ? [
+          {
+            items: [
               {
                 title: t(
                   "GeneralSettingsPage.functions.settings.resourceTranslation.title"
@@ -155,10 +159,32 @@ const GeneralSettingsPage = () => {
                   />
                 ),
               },
-            ]
-          : []),
-      ],
-    },
+              {
+                title: t(
+                  "GeneralSettingsPage.functions.settings.skipFirstScreenOptions.title"
+                ),
+                description: t(
+                  "GeneralSettingsPage.functions.settings.skipFirstScreenOptions.description"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={
+                      generalConfigs.functionality.skipFirstScreenOptions
+                    }
+                    onChange={(e) => {
+                      update(
+                        "general.functionality.skipFirstScreenOptions",
+                        e.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   return (

@@ -1,27 +1,23 @@
 use std::collections::HashMap;
-use std::fs;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Read;
 use std::path::PathBuf;
 use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
-use super::{common::add_library_entry, forge::InstallProfile};
+use super::common::add_library_entry;
+use super::forge::InstallProfile;
+use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LaunchArgumentTemplate, McClientInfo, PatchesInfo};
 use crate::instance::helpers::misc::get_instance_subdir_paths;
-use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType};
+use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::convert_url_to_target_source;
-use crate::{
-  error::SJMCLResult,
-  instance::models::misc::ModLoader,
-  resource::{
-    helpers::misc::get_download_api,
-    models::{ResourceType, SourceType},
-  },
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
-};
+use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::models::{ResourceType, SourceType};
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
 
 pub async fn install_neoforge_loader(
   priority: &[SourceType],

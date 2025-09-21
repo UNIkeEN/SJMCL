@@ -1,21 +1,16 @@
-use super::{
-  constants::TEXTURE_ROLES,
-  helpers::{
-    authlib_injector::{
-      self,
-      info::{fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url},
-      jar::check_authlib_jar,
-    },
-    microsoft, offline,
-  },
-  models::{
-    AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
-  },
+use super::constants::TEXTURE_ROLES;
+use super::helpers::authlib_injector::info::{
+  fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
-use crate::{
-  account::helpers::misc, error::SJMCLResult, launcher_config::models::LauncherConfig,
-  storage::Storage,
+use super::helpers::authlib_injector::jar::check_authlib_jar;
+use super::helpers::authlib_injector::{self};
+use super::helpers::{microsoft, misc, offline};
+use super::models::{
+  AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
 };
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::LauncherConfig;
+use crate::storage::Storage;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use url::Url;

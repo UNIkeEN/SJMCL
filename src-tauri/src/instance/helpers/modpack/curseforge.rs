@@ -1,21 +1,18 @@
-use std::{
-  fs::{self, File},
-  io::Read,
-  path::Path,
-  str::FromStr,
-};
+use std::fs::{self, File};
+use std::io::Read;
+use std::path::Path;
+use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
-use crate::{
-  error::{SJMCLError, SJMCLResult},
-  instance::models::misc::{InstanceError, ModLoaderType},
-  resource::helpers::curseforge::misc::CurseForgeProject,
-  tasks::{download::DownloadParam, PTaskParam},
-};
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::resource::helpers::curseforge::misc::CurseForgeProject;
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

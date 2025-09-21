@@ -1,8 +1,9 @@
-use super::{
-  constants::ACCOUNTS_FILE_NAME,
-  helpers::{authlib_injector::constants::PRESET_AUTH_SERVERS, skin::draw_avatar},
-};
-use crate::{storage::Storage, utils::image::ImageWrapper, APP_DATA_DIR};
+use super::constants::ACCOUNTS_FILE_NAME;
+use super::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
+use super::helpers::skin::draw_avatar;
+use crate::storage::Storage;
+use crate::utils::image::ImageWrapper;
+use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;

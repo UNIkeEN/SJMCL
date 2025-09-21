@@ -20,6 +20,7 @@ import {
   LuPlay,
   LuPlus,
   LuRefreshCcw,
+  LuShare,
   LuTrash,
 } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
@@ -56,6 +57,7 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     openFolder: <LuFolderOpen />,
     refresh: <LuRefreshCcw />,
     revealFile: <LuFolderSearch />,
+    share: <LuShare />,
   };
 
   const specLabels: Record<string, string> = {
@@ -64,6 +66,7 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     revealFile: t("General.revealFile", {
       opener: t(`Enums.systemFileManager.${config.basicInfo.osType}`),
     }),
+    share: t("General.share.text"),
   };
 
   const selectedIcon =

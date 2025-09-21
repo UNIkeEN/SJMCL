@@ -1,20 +1,18 @@
-use super::{
-  helpers::java::{
-    get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
-  },
-  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError},
+use super::helpers::java::{
+  get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
 };
-use crate::{
-  error::SJMCLResult,
-  instance::helpers::misc::refresh_instances,
-  tasks::monitor::TaskMonitor,
-  utils::{fs::generate_unique_filename, string::camel_to_snake_case},
-};
-use crate::{storage::Storage, utils::fs::get_subdirectories};
+use super::models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError};
+use crate::error::SJMCLResult;
+use crate::instance::helpers::misc::refresh_instances;
+use crate::storage::Storage;
+use crate::tasks::monitor::TaskMonitor;
+use crate::utils::fs::{generate_unique_filename, get_subdirectories};
+use crate::utils::string::camel_to_snake_case;
 use serde_json::{json, Value};
+use std::fs;
 use std::path::{Path, PathBuf};
+use std::pin::Pin;
 use std::sync::Mutex;
-use std::{fs, pin::Pin};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;

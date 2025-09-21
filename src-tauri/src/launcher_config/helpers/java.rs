@@ -1,7 +1,5 @@
-use crate::{
-  error::SJMCLResult,
-  launcher_config::models::{JavaInfo, LauncherConfig},
-};
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -111,6 +109,11 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
 
   // Scan java paths from common dirs
   for java_path in scan_java_paths_in_common_directories(app) {
+    paths.insert(java_path);
+  }
+
+  // Scan java paths from game directories
+  for java_path in scan_java_paths_in_game_directories(app) {
     paths.insert(java_path);
   }
 
@@ -257,6 +260,23 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
       }
     }
   }
+  java_paths
+}
+
+fn scan_java_paths_in_game_directories(app: &AppHandle) -> Vec<String> {
+  let mut java_paths = Vec::new();
+
+  // Scan runtime directories in all configured game directories (may downloaded by PCL)
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  if let Ok(config_state) = config_binding.lock() {
+    for game_dir in &config_state.local_game_directories {
+      let runtime_dir = game_dir.dir.join("runtime");
+      if runtime_dir.exists() {
+        java_paths.extend(search_java_homes_in_directory(runtime_dir));
+      }
+    }
+  }
+
   java_paths
 }
 

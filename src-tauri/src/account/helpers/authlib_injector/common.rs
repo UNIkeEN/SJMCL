@@ -1,19 +1,12 @@
+use super::constants::TEXTURE_TYPES;
+use super::models::{MinecraftProfile, TextureInfo};
 use super::{oauth, password};
-use crate::{
-  account::{
-    helpers::{
-      authlib_injector::{
-        constants::TEXTURE_TYPES,
-        models::{MinecraftProfile, TextureInfo},
-      },
-      misc::fetch_image,
-      offline::load_preset_skin,
-    },
-    models::{AccountError, AuthServer, PlayerInfo, PlayerType, Texture},
-  },
-  error::SJMCLResult,
-};
-use base64::{engine::general_purpose, Engine};
+use crate::account::helpers::misc::fetch_image;
+use crate::account::helpers::offline::load_preset_skin;
+use crate::account::models::{AccountError, AuthServer, PlayerInfo, PlayerType, Texture};
+use crate::error::SJMCLResult;
+use base64::engine::general_purpose;
+use base64::Engine;
 use serde_json::json;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;

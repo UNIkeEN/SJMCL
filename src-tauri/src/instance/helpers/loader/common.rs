@@ -6,23 +6,18 @@ use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
-use super::{
-  fabric::install_fabric_loader,
-  forge::{install_forge_loader, InstallProfile},
-  neoforge::install_neoforge_loader,
-};
+use super::fabric::install_fabric_loader;
+use super::forge::{install_forge_loader, InstallProfile};
+use super::neoforge::install_neoforge_loader;
+use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::misc::get_instance_game_config;
-use crate::instance::models::misc::{Instance, InstanceError};
+use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::{parse_library_name, LibraryParts};
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launcher_config::models::JavaInfo;
-use crate::{
-  error::SJMCLResult,
-  instance::models::misc::{ModLoader, ModLoaderType},
-  resource::models::SourceType,
-  tasks::PTaskParam,
-};
+use crate::resource::models::SourceType;
+use crate::tasks::PTaskParam;
 
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,

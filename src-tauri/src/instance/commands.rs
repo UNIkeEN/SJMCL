@@ -1,62 +1,51 @@
-use super::{
-  super::utils::fs::{
-    copy_whole_dir, generate_unique_filename, get_files_with_regex, get_subdirectories,
-  },
-  helpers::{
-    game_version::{compare_game_versions, get_major_game_version},
-    misc::{
-      get_instance_game_config, get_instance_subdir_path_by_id, refresh_and_update_instances,
-      unify_instance_name,
-    },
-    mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
-    resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
-    server::{load_servers_info_from_path, query_server_status},
-    world::{level_data_to_world_info, load_level_data_from_path},
-  },
-  models::{
-    misc::{
-      GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
-      ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
-    },
-    world::{base::WorldInfo, level::LevelData},
-  },
+use super::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
+use super::helpers::game_version::{compare_game_versions, get_major_game_version};
+use super::helpers::loader::common::{execute_processors, install_mod_loader};
+use super::helpers::loader::forge::InstallProfile;
+use super::helpers::misc::{
+  get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
+  refresh_and_update_instances, unify_instance_name,
 };
-use crate::{
-  error::SJMCLResult,
-  instance::{
-    helpers::{
-      client_json::{replace_native_libraries, McClientInfo, PatchesInfo},
-      loader::{
-        common::{execute_processors, install_mod_loader},
-        forge::InstallProfile,
-      },
-      misc::get_instance_subdir_paths,
-      modpack::{
-        curseforge::CurseForgeManifest, misc::ModpackMetaInfo, modrinth::ModrinthManifest,
-      },
-    },
-    models::misc::{ModLoader, ModLoaderStatus},
-  },
-  launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files},
-  launcher_config::{
-    helpers::misc::get_global_game_config,
-    models::{GameConfig, GameDirectory, LauncherConfig},
-  },
-  partial::{PartialError, PartialUpdate},
-  resource::{
-    helpers::misc::get_source_priority_list,
-    models::{GameClientResourceInfo, ModLoaderResourceInfo},
-  },
-  storage::{load_json_async, save_json_async, Storage},
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
-  utils::{fs::create_url_shortcut, image::ImageWrapper},
+use super::helpers::modpack::curseforge::CurseForgeManifest;
+use super::helpers::modpack::misc::ModpackMetaInfo;
+use super::helpers::modpack::modrinth::ModrinthManifest;
+use super::helpers::mods::common::{
+  add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
 };
+use super::helpers::options_txt::get_zh_hans_lang_tag;
+use super::helpers::resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip};
+use super::helpers::server::{load_servers_info_from_path, query_server_status};
+use super::helpers::world::{level_data_to_world_info, load_level_data_from_path};
+use super::models::misc::{
+  GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
+  ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
+  ShaderPackInfo,
+};
+use super::models::world::base::WorldInfo;
+use super::models::world::level::LevelData;
+use crate::error::SJMCLResult;
+use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
+use crate::launcher_config::helpers::misc::get_global_game_config;
+use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
+use crate::partial::{PartialError, PartialUpdate};
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::models::{GameClientResourceInfo, ModLoaderResourceInfo};
+use crate::storage::{load_json_async, save_json_async, Storage};
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
+use crate::utils::fs::{
+  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
+  get_subdirectories,
+};
+use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::{sync::Mutex, time::SystemTime};
+use std::sync::Mutex;
+use std::time::SystemTime;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
@@ -475,10 +464,14 @@ pub async fn retrieve_local_mod_list(
     let task = tokio::spawn(async move { get_mod_info_from_jar(&path).await.ok() });
     tasks.push(task);
   }
-  let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
-  for path in mod_paths {
-    let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
-    tasks.push(task);
+  #[cfg(debug_assertions)]
+  {
+    // mod information detection from folders is only used for debugging.
+    let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
+    for path in mod_paths {
+      let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
+      tasks.push(task);
+    }
   }
   let mut mod_infos = Vec::new();
   for task in tasks {
@@ -488,16 +481,44 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state
-    .get(&instance_id)
-    .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let incompatible_loader_type = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock().unwrap();
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
+      Some(instance.mod_loader.loader_type.clone())
+    } else {
+      None
+    }
+  };
 
   mod_infos.iter_mut().for_each(|mod_info| {
-    mod_info.potential_incompatibility = instance.mod_loader.loader_type != ModLoaderType::Unknown
-      && mod_info.loader_type != instance.mod_loader.loader_type;
+    if let Some(loader_type) = &incompatible_loader_type {
+      mod_info.potential_incompatibility = mod_info.loader_type != *loader_type;
+    } else {
+      mod_info.potential_incompatibility = false;
+    }
   });
+
+  // Add translations for mod names and descriptions concurrently
+  let mut translation_tasks = Vec::new();
+  for mut mod_info in mod_infos {
+    let app = app.clone();
+    let task = tokio::spawn(async move {
+      let _ = add_local_mod_translations(&app, &mut mod_info).await;
+      mod_info
+    });
+    translation_tasks.push(task);
+  }
+  let mut mod_infos = Vec::new();
+  for task in translation_tasks {
+    if let Ok(mod_info) = task.await {
+      mod_infos.push(mod_info);
+    }
+  }
 
   // sort by name (and version)
   mod_infos.sort();
@@ -962,8 +983,32 @@ pub async fn create_instance(
   )
   .await?;
 
-  save_json_async(&version_info, &version_path.join(format!("{}.json", name))).await?;
+  // Optionally skip first-screen options by adding options.txt (available for zh-Hans only)
+  let (language, skip_first_screen_options) = {
+    let launcher_config = launcher_config_state.lock()?;
+    (
+      launcher_config.general.general.language.clone(),
+      launcher_config
+        .general
+        .functionality
+        .skip_first_screen_options,
+    )
+  };
+  if language == "zh-Hans" && skip_first_screen_options {
+    if let Some(lang_code) = get_zh_hans_lang_tag(&instance.version, &app).await {
+      let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
+        .ok_or(InstanceError::InstanceNotFoundByID)?[0]
+        .join("options.txt");
+      if !options_path.exists() {
+        fs::write(options_path, format!("lang:{}\n", lang_code))
+          .map_err(|_| InstanceError::FileCreationFailed)?;
+      }
+    }
+  }
 
+  // Save the edited client json
+  save_json_async(&version_info, &version_path.join(format!("{}.json", name))).await?;
+  // Save the SJMCL instance config json
   instance
     .save_json_cfg()
     .await

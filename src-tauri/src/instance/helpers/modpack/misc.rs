@@ -1,14 +1,11 @@
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 
-use crate::{
-  error::SJMCLResult,
-  instance::{
-    helpers::modpack::{curseforge::CurseForgeManifest, modrinth::ModrinthManifest},
-    models::misc::{InstanceError, ModLoader},
-  },
-  resource::models::OtherResourceSource,
-};
+use super::curseforge::CurseForgeManifest;
+use super::modrinth::ModrinthManifest;
+use crate::error::SJMCLResult;
+use crate::instance::models::misc::{InstanceError, ModLoader};
+use crate::resource::models::OtherResourceSource;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

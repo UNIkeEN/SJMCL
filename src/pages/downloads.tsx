@@ -24,7 +24,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { useTaskContext } from "@/contexts/task";
+import { parseTaskGroup, useTaskContext } from "@/contexts/task";
 import {
   GTaskEventStatusEnums,
   TaskDesc,
@@ -33,7 +33,6 @@ import {
 } from "@/models/task";
 import { formatTimeInterval } from "@/utils/datetime";
 import { formatByteSize } from "@/utils/string";
-import { parseTaskGroup } from "@/utils/task";
 
 export const DownloadTasksPage = () => {
   const { t } = useTranslation();

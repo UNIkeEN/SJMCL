@@ -4,6 +4,7 @@ import {
   HStack,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
@@ -38,6 +39,9 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
   const [cfModWebsiteUrl, setCfModWebsiteUrl] = useState<string>("");
   const [mrModWebsiteUrl, setMrModWebsiteUrl] = useState<string>("");
@@ -103,11 +107,12 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
     <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
       <ModalOverlay />
       <ModalContent>
+        <ModalCloseButton />
         <ModalBody mt={2}>
           <OptionItem
             title={
               <Text fontWeight="semibold" fontSize="md">
-                {mod.translatedName
+                {showZhTrans && mod.translatedName
                   ? `${mod.translatedName} | ${mod.name}`
                   : mod.name || mod.fileName}
               </Text>
@@ -142,7 +147,9 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
               />
             }
           />
-          <Text mt={4}>{mod.description}</Text>
+          <Text mt={4}>
+            {(showZhTrans && mod.translatedDescription) || mod.description}
+          </Text>
         </ModalBody>
 
         <ModalFooter w="100%">

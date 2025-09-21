@@ -1,5 +1,5 @@
-use super::super::misc::version_pack_sort;
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
   OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,

@@ -1,6 +1,7 @@
 use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, str::FromStr};
+use std::collections::HashMap;
+use std::str::FromStr;
 use strum_macros::{Display, EnumIter};
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]

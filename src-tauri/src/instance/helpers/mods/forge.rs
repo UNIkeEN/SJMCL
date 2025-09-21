@@ -4,14 +4,12 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::models::misc::ModLoaderType;
 use crate::utils::image::{load_image_from_dir_async, load_image_from_jar, ImageWrapper};
-use java_properties;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::io::{Cursor, Read, Seek};
 use std::path::Path;
-use tokio;
-use toml;
 use zip::ZipArchive;
+use {java_properties, tokio, toml};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase", default)]

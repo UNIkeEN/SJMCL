@@ -1,5 +1,6 @@
 use crate::error::SJMCLResult;
-use crate::instance::{helpers::game_version::compare_game_versions, models::misc::Instance};
+use crate::instance::helpers::game_version::compare_game_versions;
+use crate::instance::models::misc::Instance;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{GameJava, JavaInfo};
 use std::cmp::Ordering;
