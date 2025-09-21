@@ -1304,6 +1304,9 @@
     },
     "toast": {
       "noSelectedPlayer": "请先添加并选择游戏角色"
+    },
+    "javaDownload": {
+      "prompt": "没有当前可用Java，正在为您打开Java下载界面"
     }
   },
   "ManageSkinModal": {

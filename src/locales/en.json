@@ -1304,6 +1304,9 @@
     },
     "toast": {
       "noSelectedPlayer": "Please add and select a player first"
+    },
+    "javaDownload": {
+      "prompt": "No suitable Java available, opening Java download interface for you"
     }
   },
   "ManageSkinModal": {

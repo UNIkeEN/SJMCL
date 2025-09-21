@@ -3,6 +3,7 @@ import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
 import AlertResourceDependencyModal from "@/components/modals/alert-resource-dependency-modal";
 import CopyOrMoveModal from "@/components/modals/copy-or-move-modal";
 import DeleteInstanceDialog from "@/components/modals/delete-instance-alert-dialog";
+import { DownloadJavaModal } from "@/components/modals/download-java-modal";
 import DownloadModpackModal from "@/components/modals/download-modpack-modal";
 import DownloadResourceModal from "@/components/modals/download-resource-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
@@ -33,6 +34,7 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
     "alert-resource-dependency": AlertResourceDependencyModal,
     "copy-or-move": CopyOrMoveModal,
     "delete-instance-alert": DeleteInstanceDialog,
+    "download-java": DownloadJavaModal,
     "download-modpack": DownloadModpackModal,
     "download-resource": DownloadResourceModal,
     "download-specific-resource": DownloadSpecificResourceModal,

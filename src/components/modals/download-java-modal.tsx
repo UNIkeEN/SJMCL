@@ -13,11 +13,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
 import { useLauncherConfig } from "@/contexts/config";
+import { InstanceSummary } from "@/models/instance/misc";
 
 type VendorKey = "zulu" | "bellsoft" | "oracle";
 
@@ -68,7 +69,14 @@ const VENDORS: Record<VendorKey, JavaVendor> = {
   },
 };
 
-export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
+interface DownloadJavaModalProps extends Omit<ModalProps, "children"> {
+  instanceInfo?: InstanceSummary;
+  requiredJavaVersion?: number;
+}
+
+export const DownloadJavaModal: React.FC<DownloadJavaModalProps> = ({
+  instanceInfo,
+  requiredJavaVersion,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -77,9 +85,26 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   const os = config.basicInfo.osType;
   const arch = config.basicInfo.arch;
 
-  const [vendor, setVendor] = useState<VendorKey | "">("");
-  const [version, setVersion] = useState<"" | "8" | "11" | "17" | "21">("");
-  const [type, setType] = useState<"" | "jdk" | "jre">("");
+  const getRecommendedJavaVersion = (
+    requiredVersion?: number
+  ): "8" | "11" | "17" | "21" | "" => {
+    if (!requiredVersion) return "";
+    if (requiredVersion >= 21) return "21";
+    if (requiredVersion >= 17) return "17";
+    if (requiredVersion >= 11) return "11";
+    return "8";
+  };
+
+  const [vendor, setVendor] = useState<VendorKey | "">("bellsoft");
+  const [version, setVersion] = useState<"" | "8" | "11" | "17" | "21">(
+    getRecommendedJavaVersion(requiredJavaVersion)
+  );
+  const [type, setType] = useState<"" | "jdk" | "jre">("jdk");
+
+  useEffect(() => {
+    const recommendedVersion = getRecommendedJavaVersion(requiredJavaVersion);
+    setVersion(recommendedVersion);
+  }, [requiredJavaVersion]);
 
   const handleConfirm = () => {
     if (!vendor || !version || !type) return;
