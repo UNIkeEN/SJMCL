@@ -15,13 +15,36 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  List,
+  ListIcon,
+  ListItem,
+} from "@chakra-ui/react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen, LuSettings } from "react-icons/lu";
+import {
+  LuBot,
+  LuClipboardList,
+  LuFileText,
+  LuLightbulb,
+} from "react-icons/lu";
+import ReactMarkdown from "react-markdown";
 import { BeatLoader } from "react-spinners";
+import remarkGfm from "remark-gfm";
 import AddAIProviderModal, {
   loadAIProvider,
 } from "@/components/modals/add-ai-provider-modal";
@@ -48,7 +71,6 @@ const GameErrorPage: React.FC = () => {
   const [reason, setReason] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
 
-  // 新增：原始日志、AI 分析结果、AI 调用状态、设置 Modal 开关
   const [gameLog, setGameLog] = useState<string>("");
   const [aiResult, setAiResult] = useState<string>("");
   const [aiLoading, setAiLoading] = useState<boolean>(false);
@@ -97,14 +119,12 @@ const GameErrorPage: React.FC = () => {
 
     LaunchService.retrieveGameLog(launchingId).then((response) => {
       if (response.status === "success") {
-        // 标准化为 string[]（供分析）
         const rawLines: string[] = Array.isArray(response.data)
           ? response.data
           : response.data
             ? String(response.data).split(/\r?\n/)
             : [];
 
-        // 合并为 string（供展示）
         const raw = rawLines.join("\n");
         setGameLog(raw);
 
@@ -171,10 +191,55 @@ const GameErrorPage: React.FC = () => {
     setIsLoading(false);
   };
 
-  // —— 新增：调用 AI（OpenAI 兼容接口）——
+  function safeParseAI(content: string): {
+    primary: Array<{ reason: string; fix: string }>;
+    others_md: string;
+    raw: string;
+    isJSON: boolean;
+  } {
+    const raw = content ?? "";
+    try {
+      const obj = JSON.parse(raw);
+      if (Array.isArray(obj?.primary)) {
+        return {
+          primary: obj.primary
+            .map((x: any) => ({
+              reason: String(x?.reason ?? "").trim(),
+              fix: String(x?.fix ?? "").trim(),
+            }))
+            .filter((x: { reason: any; fix: any }) => x.reason || x.fix),
+          others_md: String(obj?.others_md ?? "").trim(),
+          raw,
+          isJSON: true,
+        };
+      }
+    } catch {}
+
+    const m = raw.match(/```json\s*([\s\S]*?)\s*```/i);
+    if (m) {
+      try {
+        const obj2 = JSON.parse(m[1]);
+        if (Array.isArray(obj2?.primary)) {
+          return {
+            primary: obj2.primary
+              .map((x: any) => ({
+                reason: String(x?.reason ?? "").trim(),
+                fix: String(x?.fix ?? "").trim(),
+              }))
+              .filter((x: { reason: any; fix: any }) => x.reason || x.fix),
+            others_md: String(obj2?.others_md ?? "").trim(),
+            raw,
+            isJSON: true,
+          };
+        }
+      } catch {}
+    }
+
+    return { primary: [], others_md: raw, raw, isJSON: false };
+  }
+
   async function callAIAnalyze(log: string) {
     setShowAIResult(true);
-    // 读取本地配置
     const provider = loadAIProvider();
     if (!provider) {
       setAIProviderModalOpen(true);
@@ -182,13 +247,30 @@ const GameErrorPage: React.FC = () => {
     }
     const { baseURL, apiKey, model } = provider;
 
-    const prompt = `请分析以下Minecraft日志，给出主要错误原因、其他原因和建议，并在给出快速解决方案，快速解决方案尽量简短，错误原因尽量详细：\n${log}`;
+    const prompt = `
+    你是 Minecraft 启动/崩溃诊断专家。请只按以下 JSON 模式输出，不要任何开头/结尾客套话、不要解释。
+
+    {
+      "primary": [            // 主要原因与解决方案（每条尽量短）
+        { "reason": "一句话原因", "fix": "一句话解决方案" }
+      ],
+     "others_md": "这里是较长说明，使用 Markdown 列表/小标题即可，可包含若干可能原因、定位思路、命令/路径等"
+    }
+
+    要求：
+    - 严禁输出 JSON 以外的内容。
+    - "primary" 2~5 条，每条各自 1 句中文（不超过30字）。
+    - "others_md" 可多段 Markdown，允许列表/代码块/链接。
+    - 聚焦本次日志，不要泛泛而谈。
+
+    以下是原始日志（可能很长）：
+    ${log}
+    `.trim();
 
     setAiLoading(true);
     setAiResult("");
 
     try {
-      // 兼容 OpenAI 风格 /v1/chat/completions
       const resp = await fetch(
         `${baseURL.replace(/\/+$/, "")}/v1/chat/completions`,
         {
@@ -217,7 +299,6 @@ const GameErrorPage: React.FC = () => {
       }
       const data = await resp.json();
 
-      // 兼容常见字段
       const content =
         data?.choices?.[0]?.message?.content ??
         data?.choices?.[0]?.text ??
@@ -293,7 +374,6 @@ const GameErrorPage: React.FC = () => {
               ),
             })}
 
-          {/* 原崩溃详情 */}
           <VStack spacing={1} align="stretch">
             <Text fontSize="xs-sm">
               {t("GameErrorPage.crashDetails.title")}
@@ -302,16 +382,113 @@ const GameErrorPage: React.FC = () => {
           </VStack>
 
           {showAIResult && (
-            <VStack spacing={1} align="stretch">
-              <Text fontSize="xs-sm">AI分析结果</Text>
-              {aiLoading ? (
-                <BeatLoader size={6} color="grey" />
-              ) : (
-                <Text fontSize="md" whiteSpace="pre-wrap">
-                  {aiResult}
-                </Text>
-              )}
-            </VStack>
+            <Card variant="outline" borderRadius="2xl" overflow="hidden">
+              <CardHeader pb={2}>
+                <HStack justify="space-between">
+                  <HStack>
+                    <Icon as={LuBot} />
+                    <Text fontSize="sm" fontWeight="bold">
+                      AI 分析结果
+                    </Text>
+                    <Badge colorScheme="purple" variant="subtle">
+                      BETA
+                    </Badge>
+                  </HStack>
+                  {aiLoading && <BeatLoader size={6} />}
+                </HStack>
+              </CardHeader>
+
+              <Divider />
+
+              <CardBody>
+                {aiLoading ? (
+                  <Text fontSize="sm" color="gray.500">
+                    正在分析日志，请稍候…
+                  </Text>
+                ) : (
+                  (() => {
+                    const parsed = safeParseAI(aiResult);
+
+                    return (
+                      <VStack align="stretch" spacing={5}>
+                        <Box>
+                          <HStack mb={2}>
+                            <Icon as={LuLightbulb} />
+                            <Text fontSize="sm" fontWeight="semibold">
+                              主要原因与解决方案
+                            </Text>
+                          </HStack>
+
+                          {parsed.primary.length > 0 ? (
+                            <List spacing={1}>
+                              {parsed.primary.map((item, i) => (
+                                <ListItem key={i}>
+                                  <ListIcon as={LuClipboardList} />
+                                  <Text as="span" fontSize="sm">
+                                    {item.reason && (
+                                      <>
+                                        <b>原因：</b>
+                                        {item.reason}；
+                                      </>
+                                    )}
+                                    {item.fix && (
+                                      <>
+                                        <b>方案：</b>
+                                        {item.fix}
+                                      </>
+                                    )}
+                                  </Text>
+                                </ListItem>
+                              ))}
+                            </List>
+                          ) : (
+                            <Text fontSize="sm" color="gray.500">
+                              未检测到结构化“主要原因”，已在下方给出完整
+                              Markdown。
+                            </Text>
+                          )}
+                        </Box>
+
+                        <Accordion allowToggle>
+                          <AccordionItem border="none">
+                            <AccordionButton px={0}>
+                              <HStack flex="1" textAlign="left">
+                                <Icon as={LuFileText} />
+                                <Text fontSize="sm" fontWeight="semibold">
+                                  其他可能原因
+                                </Text>
+                              </HStack>
+                              <AccordionIcon />
+                            </AccordionButton>
+                            <AccordionPanel px={0} pt={3}>
+                              <Box className="prose" fontSize="sm">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                  {parsed.others_md || parsed.raw || "（空）"}
+                                </ReactMarkdown>
+                              </Box>
+                            </AccordionPanel>
+                          </AccordionItem>
+                        </Accordion>
+
+                        {!parsed.isJSON && (
+                          <Box>
+                            <Divider my={3} />
+                            <Text fontSize="xs" color="gray.500">
+                              模型未按 JSON 返回，以下为原始 Markdown：
+                            </Text>
+                            <Box mt={2} className="prose" fontSize="sm">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {parsed.raw}
+                              </ReactMarkdown>
+                            </Box>
+                          </Box>
+                        )}
+                      </VStack>
+                    );
+                  })()
+                )}
+              </CardBody>
+            </Card>
           )}
         </VStack>
       </Box>
@@ -336,7 +513,6 @@ const GameErrorPage: React.FC = () => {
           {t("GameErrorPage.button.help")}
         </Button>
 
-        {/* —— 新增：“AI Log 分析”触发 —— */}
         <Button
           colorScheme={primaryColor}
           variant="solid"
@@ -347,7 +523,6 @@ const GameErrorPage: React.FC = () => {
           AI Log 分析
         </Button>
 
-        {/* —— 齿轮：打开 AI Provider Modal —— */}
         <Button variant="solid" onClick={() => setAIProviderModalOpen(true)}>
           <Icon as={LuSettings} />
         </Button>
@@ -358,7 +533,6 @@ const GameErrorPage: React.FC = () => {
         </Text>
       </HStack>
 
-      {/* —— 新增：AI 供应商配置 Modal —— */}
       <AddAIProviderModal
         isOpen={isAIProviderModalOpen}
         onClose={() => setAIProviderModalOpen(false)}

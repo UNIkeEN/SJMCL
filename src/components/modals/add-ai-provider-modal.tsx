@@ -23,10 +23,8 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 
-/** 本地存储 key */
 export const AI_PROVIDER_STORAGE_KEY = "ai-provider";
 
-/** 简单持久化工具 */
 export function loadAIProvider() {
   try {
     const raw = localStorage.getItem(AI_PROVIDER_STORAGE_KEY);
@@ -84,13 +82,11 @@ const AddAIProviderModal: React.FC<AddAIProviderModalProps> = (modalProps) => {
   const handleSave = () => {
     setIsSaving(true);
     try {
-      // 简单校验
       if (!baseURL || !apiKey || !model) {
         setTouched({ baseURL: true, apiKey: true, model: true });
         setIsSaving(false);
         return;
       }
-      // 统一去掉尾部斜杠
       const normalized = baseURL.replace(/\/+$/, "");
       saveAIProvider({ baseURL: normalized, apiKey, model });
       toast({ title: t("已保存 AI 供应商配置"), status: "success" });
@@ -117,7 +113,6 @@ const AddAIProviderModal: React.FC<AddAIProviderModalProps> = (modalProps) => {
         <ModalHeader>添加 AI 供应商</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {/* 可选：根据配置开关做限制提示（与 AddAuthServerModal 一致的提示风格） */}
           {!config.basicInfo.allowFullLoginFeature && (
             <Alert status="warning" borderRadius="md" mb="3">
               <AlertIcon />
