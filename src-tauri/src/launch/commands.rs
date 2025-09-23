@@ -1,5 +1,5 @@
 use super::helpers::command_generator::{
-  export_full_launch_command, generate_launch_command, LaunchCommand,
+  export_full_launch_command, generate_launch_command, split_wrapper, LaunchCommand,
 };
 use super::helpers::file_validator::{
   extract_native_libraries, get_invalid_assets, get_invalid_library_files,
@@ -248,10 +248,43 @@ pub async fn launch_game(
     class_paths,
     args: cmd_args,
   } = generate_launch_command(&app, quick_play_singleplayer, quick_play_multiplayer).await?;
-  let mut cmd_base = Command::new(selected_java.exec_path.clone());
+
+  let wrapper = game_config
+    .advanced
+    .custom_commands
+    .wrapper_launcher
+    .clone();
+  let wrapper_split = split_wrapper(&wrapper);
+
+  let mut cmd_base = if let Some((prog, wargs)) = wrapper_split {
+    let mut c = Command::new(prog);
+    if !wargs.is_empty() {
+      c.args(&wargs);
+    }
+    c.arg(selected_java.exec_path.clone());
+    c
+  } else {
+    Command::new(selected_java.exec_path.clone())
+  };
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
   println!("[Launch Command] {}", full_cmd);
+
+  let precall = game_config.advanced.custom_commands.precall_command.clone();
+  if !precall.trim().is_empty() {
+    #[cfg(target_os = "windows")]
+    let _ = std::process::Command::new("cmd")
+      .arg("/C")
+      .arg(&precall)
+      .creation_flags(0x08000000)
+      .status();
+
+    #[cfg(not(target_os = "windows"))]
+    let _ = std::process::Command::new("/bin/sh")
+      .arg("-c")
+      .arg(&precall)
+      .status();
+  }
 
   // execute launch command
   #[cfg(target_os = "windows")]
@@ -275,6 +308,12 @@ pub async fn launch_game(
     launching.full_command = full_cmd;
   }
 
+  let post_exit = game_config
+    .advanced
+    .custom_commands
+    .post_exit_command
+    .clone();
+
   // wait for the game window, create log window if needed
   let (tx, rx) = mpsc::channel();
   monitor_process(
@@ -286,6 +325,7 @@ pub async fn launch_game(
     &game_config.game_window.custom_title,
     game_config.launcher_visibility.clone(),
     tx,
+    Some(post_exit),
   )
   .await?;
   let _ = rx.recv();

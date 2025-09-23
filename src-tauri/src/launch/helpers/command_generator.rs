@@ -369,6 +369,21 @@ pub async fn generate_launch_command(
     cmd.push("--fullscreen".to_string());
   }
 
+  if !game_config
+    .advanced
+    .custom_commands
+    .minecraft_argument
+    .trim()
+    .is_empty()
+  {
+    match shlex::split(&game_config.advanced.custom_commands.minecraft_argument) {
+      Some(mut extra_args) => cmd.append(&mut extra_args),
+      None => {
+        eprintln!("[Warn] Failed to parse minecraftArgument");
+      }
+    }
+  }
+
   Ok(LaunchCommand {
     class_paths,
     args: cmd,
@@ -411,5 +426,22 @@ pub fn export_full_launch_command(
   #[cfg(not(target_os = "windows"))]
   {
     format!("CLASSPATH=\"{}\" {}", classpath_str, java_cmd)
+  }
+}
+
+pub fn split_wrapper(wrapper: &str) -> Option<(std::ffi::OsString, Vec<std::ffi::OsString>)> {
+  if wrapper.trim().is_empty() {
+    return None;
+  }
+  if let Some(parts) = shlex::split(wrapper) {
+    if parts.is_empty() {
+      return None;
+    }
+    let mut iter = parts.into_iter();
+    let prog = std::ffi::OsString::from(iter.next().unwrap());
+    let args = iter.map(std::ffi::OsString::from).collect::<Vec<_>>();
+    Some((prog, args))
+  } else {
+    None
   }
 }

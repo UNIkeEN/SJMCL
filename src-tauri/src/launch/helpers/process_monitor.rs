@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader, Write};
+use std::os::windows::process::CommandExt;
 use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -90,6 +91,7 @@ pub async fn monitor_process(
   custom_title: &str,
   launcher_visibility: LauncherVisiablity,
   ready_tx: Sender<()>,
+  post_exit_command: Option<String>,
 ) -> SJMCLResult<()> {
   // create unique log window
   let label = format!("game_log_{id}");
@@ -256,6 +258,21 @@ pub async fn monitor_process(
       }
     }
   });
+
+  if let Some(cmdline) = post_exit_command.as_ref().filter(|s| !s.trim().is_empty()) {
+    #[cfg(target_os = "windows")]
+    let _ = std::process::Command::new("cmd")
+      .arg("/C")
+      .arg(cmdline)
+      .creation_flags(0x08000000)
+      .status();
+
+    #[cfg(not(target_os = "windows"))]
+    let _ = std::process::Command::new("/bin/sh")
+      .arg("-c")
+      .arg(cmdline)
+      .status();
+  }
 
   Ok(())
 }
