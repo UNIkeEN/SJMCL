@@ -2352,6 +2352,7 @@
       "world": "Search for {{query}} worlds",
       "resourcepack": "Search for {{query}} resource packs",
       "shader": "Search for {{query}} shader packs",
+      "datapack": "Search for {{query}} data packs",
       "modpack": "Search for {{query}} modpacks",
       "curseforge": "on CurseForge",
       "modrinth": "on Modrinth"

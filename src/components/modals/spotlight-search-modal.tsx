@@ -129,80 +129,38 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     (query: string): SearchResult[] => {
       if (!query.trim()) return [];
 
-      const resourceTypes = [
-        { type: OtherResourceType.Mod, key: "mod" },
-        { type: OtherResourceType.World, key: "world" },
-        { type: OtherResourceType.ResourcePack, key: "resourcepack" },
-        { type: OtherResourceType.ShaderPack, key: "shader" },
+      const resourceTypes = Object.values(OtherResourceType);
+
+      const createResult =
+        (platform: string, source: OtherResourceSource) =>
+        (type: OtherResourceType): SearchResult => ({
+          type: platform as "curseforge" | "modrinth",
+          icon: "",
+          description: "",
+          title: t(`SpotlightSearchModal.resource.${type}`, { query }),
+          action: () =>
+            openSharedModal(
+              type === OtherResourceType.ModPack
+                ? "download-modpack"
+                : "download-resource",
+              {
+                initialSearchQuery: query,
+                initialDownloadSource: source,
+                ...(type !== OtherResourceType.ModPack && {
+                  initialResourceType: type,
+                }),
+              }
+            ),
+        });
+
+      const resourceSearchResults: SearchResult[] = [
+        ...resourceTypes.map(
+          createResult("curseforge", OtherResourceSource.CurseForge)
+        ),
+        ...resourceTypes
+          .filter((type) => type !== OtherResourceType.World) // Modrinth doesn't host worlds
+          .map(createResult("modrinth", OtherResourceSource.Modrinth)),
       ];
-
-      const resourceSearchResults: SearchResult[] = [];
-
-      resourceTypes.forEach(({ type, key }) => {
-        resourceSearchResults.push({
-          type: "curseforge",
-          icon: "",
-          title: t(`SpotlightSearchModal.resource.${key}`, {
-            query: query.trim(),
-          }),
-          description: "",
-          action: () => {
-            openSharedModal("download-resource", {
-              initialResourceType: type,
-              initialSearchQuery: query.trim(),
-              initialDownloadSource: OtherResourceSource.CurseForge,
-            });
-          },
-        });
-      });
-
-      resourceSearchResults.push({
-        type: "curseforge",
-        icon: "",
-        title: t("SpotlightSearchModal.resource.modpack", {
-          query: query.trim(),
-        }),
-        description: "",
-        action: () => {
-          openSharedModal("download-modpack", {
-            initialSearchQuery: query.trim(),
-            initialDownloadSource: OtherResourceSource.CurseForge,
-          });
-        },
-      });
-
-      resourceTypes.forEach(({ type, key }) => {
-        resourceSearchResults.push({
-          type: "modrinth",
-          icon: "",
-          title: t(`SpotlightSearchModal.resource.${key}`, {
-            query: query.trim(),
-          }),
-          description: "",
-          action: () => {
-            openSharedModal("download-resource", {
-              initialResourceType: type,
-              initialSearchQuery: query.trim(),
-              initialDownloadSource: OtherResourceSource.Modrinth,
-            });
-          },
-        });
-      });
-
-      resourceSearchResults.push({
-        type: "modrinth",
-        icon: "",
-        title: t("SpotlightSearchModal.resource.modpack", {
-          query: query.trim(),
-        }),
-        description: "",
-        action: () => {
-          openSharedModal("download-modpack", {
-            initialSearchQuery: query.trim(),
-            initialDownloadSource: OtherResourceSource.Modrinth,
-          });
-        },
-      });
 
       return resourceSearchResults;
     },

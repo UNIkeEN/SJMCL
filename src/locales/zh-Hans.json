@@ -2349,9 +2349,10 @@
     "empty": "无搜索结果",
     "resource": {
       "mod": "搜索关于 {{query}} 的模组",
-      "world": "搜索关于 {{query}} 的存档",
+      "world": "搜索关于 {{query}} 的世界",
       "resourcepack": "搜索关于 {{query}} 的资源包",
       "shader": "搜索关于 {{query}} 的光影",
+      "datapack": "搜索关于 {{query}} 的数据包",
       "modpack": "搜索关于 {{query}} 的整合包",
       "curseforge": "在 CurseForge 上",
       "modrinth": "在 Modrinth 上"

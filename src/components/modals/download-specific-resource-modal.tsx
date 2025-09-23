@@ -611,7 +611,7 @@ const DownloadSpecificResourceModal: React.FC<
                 </Link>
               </HStack>
             )}
-            {resource.mcmodId && (
+            {resource.mcmodId !== 0 && (
               <HStack spacing={1} ml={2}>
                 <LuExternalLink />
                 <Link
