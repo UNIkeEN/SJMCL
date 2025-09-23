@@ -68,6 +68,7 @@ pub async fn run() {
       launcher_config::commands::restore_launcher_config,
       launcher_config::commands::export_launcher_config,
       launcher_config::commands::import_launcher_config,
+      launcher_config::commands::reveal_launcher_config,
       launcher_config::commands::retrieve_custom_background_list,
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,

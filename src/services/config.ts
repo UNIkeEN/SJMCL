@@ -69,6 +69,15 @@ export class ConfigService {
   }
 
   /**
+   * REVEAL the launcher config file in the system file manager.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("config")
+  static async revealLauncherConfig(): Promise<InvokeResponse<void>> {
+    return await invoke("reveal_launcher_config");
+  }
+
+  /**
    * RETRIEVE the list of custom background files.
    * @returns {Promise<InvokeResponse<string[]>>} A list of background file names.
    */

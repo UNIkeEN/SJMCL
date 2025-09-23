@@ -929,6 +929,16 @@
           "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
         }
       }
+    },
+    "advanced": {
+      "title": "高级",
+      "settings": {
+        "openConfigJson": {
+          "title": "启动器设置文件",
+          "description": "在{{opener}}中显示启动器的原始设置文件",
+          "button": "打开"
+        }
+      }
     }
   },
   "GlobalGameSettingsPage": {
@@ -1675,6 +1685,9 @@
   "RestoreConfigConfirmDialog": {
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
   },
   "ScreenshotPreviewModal": {
     "menu": {

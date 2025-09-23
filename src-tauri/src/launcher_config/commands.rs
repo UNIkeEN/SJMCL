@@ -2,7 +2,7 @@ use super::helpers::java::{
   get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
 };
 use super::models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError};
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::misc::refresh_instances;
 use crate::storage::Storage;
 use crate::tasks::monitor::TaskMonitor;
@@ -16,6 +16,7 @@ use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use tauri_plugin_opener::reveal_item_in_dir;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -130,6 +131,15 @@ pub async fn import_launcher_config(
       }
     }
     Err(_err) => Err(LauncherConfigError::FetchError.into()),
+  }
+}
+
+#[tauri::command]
+pub fn reveal_launcher_config() -> SJMCLResult<()> {
+  let file_path = LauncherConfig::file_path();
+  match reveal_item_in_dir(file_path) {
+    Ok(()) => Ok(()),
+    Err(err) => Err(SJMCLError::from(err)),
   }
 }
 
