@@ -112,7 +112,7 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
     paths.insert(java_path);
   }
 
-  // Scan java paths from game directories
+  // Scan java paths in all configured game directories (may downloaded by PCL)
   for java_path in scan_java_paths_in_game_directories(app) {
     paths.insert(java_path);
   }
@@ -265,8 +265,6 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
 
 fn scan_java_paths_in_game_directories(app: &AppHandle) -> Vec<String> {
   let mut java_paths = Vec::new();
-
-  // Scan runtime directories in all configured game directories (may downloaded by PCL)
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   if let Ok(config_state) = config_binding.lock() {
     for game_dir in &config_state.local_game_directories {
@@ -276,7 +274,6 @@ fn scan_java_paths_in_game_directories(app: &AppHandle) -> Vec<String> {
       }
     }
   }
-
   java_paths
 }
 

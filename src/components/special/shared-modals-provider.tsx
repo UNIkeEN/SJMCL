@@ -8,6 +8,7 @@ import DownloadResourceModal from "@/components/modals/download-resource-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import ImportModpackModal from "@/components/modals/import-modpack-modal";
 import LaunchProcessModal from "@/components/modals/launch-process-modal";
+import NotifyNewVersionModal from "@/components/modals/notify-new-version-modal";
 import ReLoginPlayerModal from "@/components/modals/relogin-player-modal";
 import SpotlightSearchModal from "@/components/modals/spotlight-search-modal";
 import { SharedModalContextProvider } from "@/contexts/shared-modal";
@@ -39,6 +40,7 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
     "generic-confirm": GenericConfirmDialog,
     "import-modpack": ImportModpackModal,
     launch: LaunchProcessModal,
+    "notify-new-version": NotifyNewVersionModal,
     relogin: ReLoginPlayerModal,
     "spotlight-search": SpotlightSearchModal,
   };

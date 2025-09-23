@@ -32,6 +32,7 @@ dependencies = [
  "reqwest-middleware",
  "reqwest-retry",
  "sanitize-filename",
+ "semver",
  "serde",
  "serde_json",
  "serde_with",

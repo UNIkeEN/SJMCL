@@ -4,7 +4,14 @@
       "title": "关于",
       "settings": {
         "version": {
-          "title": "版本"
+          "title": "版本",
+          "foundNew": "有新版本",
+          "checkUpdate": "检查更新",
+          "checkToast": {
+            "loading": "正在检查更新",
+            "up2date": "当前已是最新版本",
+            "error": "检查更新失败"
+          }
         },
         "contributors": {
           "title": "开发者名单"
@@ -566,7 +573,8 @@
       "mod-update": "更新模组",
       "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
-      "forge-libraries": "Forge 运行库"
+      "forge-libraries": "Forge 运行库",
+      "launcher-update": "更新启动器"
     }
   },
   "Editable": {
@@ -1350,6 +1358,9 @@
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
   },
+  "NotifyNewVersionModal": {
+    "title": "发现新版本"
+  },
   "OptionItemGroup": {
     "button": {
       "showAll": "显示全部（+{{left}}）"
@@ -1396,6 +1407,16 @@
     },
     "button": {
       "login": "登录"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "启动器更新",
+    "body": "新版本已完成下载，重新启动 SJMCL 以完成更新",
+    "bodyMSI": "新版本已完成下载，点击安装将关闭 SJMCL 并运行安装程序",
+    "button": {
+      "restart": "重新启动",
+      "install": "安装",
+      "later": "稍后"
     }
   },
   "ResourceDownloader": {

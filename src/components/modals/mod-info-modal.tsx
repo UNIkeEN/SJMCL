@@ -4,6 +4,7 @@ import {
   HStack,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
@@ -106,6 +107,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
     <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
       <ModalOverlay />
       <ModalContent>
+        <ModalCloseButton />
         <ModalBody mt={2}>
           <OptionItem
             title={
