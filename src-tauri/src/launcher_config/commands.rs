@@ -137,10 +137,7 @@ pub async fn import_launcher_config(
 #[tauri::command]
 pub fn reveal_launcher_config() -> SJMCLResult<()> {
   let file_path = LauncherConfig::file_path();
-  match reveal_item_in_dir(file_path) {
-    Ok(()) => Ok(()),
-    Err(err) => Err(SJMCLError::from(err)),
-  }
+  reveal_item_in_dir(file_path).map_err(SJMCLError::from)
 }
 
 #[tauri::command]
