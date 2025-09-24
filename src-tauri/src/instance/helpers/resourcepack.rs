@@ -1,10 +1,12 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
-use image::RgbaImage;
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
+
+use image::RgbaImage;
 use zip::ZipArchive;
+
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
 
 pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option<RgbaImage>)> {
   let file = match fs::File::open(path) {

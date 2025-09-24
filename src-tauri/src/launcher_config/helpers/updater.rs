@@ -1,14 +1,15 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
-use serde_json::Value;
-use std::ffi::OsStr;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::Mutex;
+
+use serde_json::Value;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
 
 // Generate the new version filename on remote origin according to the current os, arch and is_portable
 fn build_resource_filename(ver: &str, os: &str, arch: &str, is_portable: bool) -> String {
@@ -147,7 +148,6 @@ pub async fn install_update_windows(
 
     let target_name = build_local_new_filename(&old_name, &old_version, &new_version);
     let target = cur_dir.join(target_name);
-    let backup = cur_dir.join("SJMCL_backup.exe");
     let pid = std::process::id().to_string();
     let restart_flag = if restart { "1" } else { "0" };
 
@@ -212,6 +212,8 @@ pub async fn install_update_macos(
   downloaded_filename: String,
   restart: bool,
 ) -> SJMCLResult<()> {
+  use std::ffi::OsStr;
+
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   let (old_version, downloaded_path, new_version) = {
     let config_state = config_binding.lock()?;

@@ -1,24 +1,25 @@
+use std::collections::HashSet;
+use std::io::Cursor;
+use std::path::{Path, PathBuf};
+
+use futures::future::join_all;
+use tauri::AppHandle;
+use tokio::fs;
+use zip::ZipArchive;
+
 use crate::error::SJMCLResult;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo,
 };
 use crate::instance::models::misc::InstanceError;
+use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
-use futures::future::join_all;
-use std::collections::HashSet;
-use std::io::Cursor;
-use std::path::{Path, PathBuf};
-use tauri::AppHandle;
-use tokio::fs;
-use zip::ZipArchive;
-
-use super::misc::get_natives_string;
 
 pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();

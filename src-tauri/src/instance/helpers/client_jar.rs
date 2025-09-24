@@ -1,9 +1,10 @@
 // https://zh.minecraft.wiki/w/%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F
 
+use std::io::{Read, Seek};
+
 use cafebabe::constant_pool::{ConstantPoolItem, LiteralConstant};
 use cafebabe::parse_class;
 use serde_json::Value;
-use std::io::{Read, Seek};
 use zip::ZipArchive;
 
 // ref: HMCL org.jackhuang.hmcl.game.GameVersion

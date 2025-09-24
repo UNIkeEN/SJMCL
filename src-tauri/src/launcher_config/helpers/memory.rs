@@ -1,5 +1,6 @@
-use crate::launcher_config::models::MemoryInfo;
 use systemstat::{saturating_sub_bytes, Platform};
+
+use crate::launcher_config::models::MemoryInfo;
 
 pub fn get_memory_info() -> MemoryInfo {
   let sys = systemstat::System::new();

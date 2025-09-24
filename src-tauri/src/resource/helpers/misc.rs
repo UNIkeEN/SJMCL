@@ -1,17 +1,19 @@
-use super::curseforge::misc::translate_description_curseforge;
-use super::mod_db::ModDataBase;
-use super::modrinth::misc::translate_description_modrinth;
+use std::cmp::Ordering;
+use std::sync::Mutex;
+
+use strum::IntoEnumIterator;
+use tauri::{AppHandle, Manager};
+use url::Url;
+
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
+use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
+use crate::resource::helpers::mod_db::ModDataBase;
+use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
 use crate::resource::models::{
   OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
   SourceType,
 };
-use std::cmp::Ordering;
-use std::sync::Mutex;
-use strum::IntoEnumIterator;
-use tauri::{AppHandle, Manager};
-use url::Url;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {

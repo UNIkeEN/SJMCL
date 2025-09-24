@@ -1,6 +1,7 @@
+use std::collections::HashMap;
+
 use lazy_static;
 use regex::Regex;
-use std::collections::HashMap;
 
 pub fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Vec<String> {
   lazy_static::lazy_static!(

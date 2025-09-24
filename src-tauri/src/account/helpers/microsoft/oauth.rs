@@ -1,8 +1,16 @@
-use super::constants::{
+use std::str::FromStr;
+
+use serde_json::{json, Value};
+use tauri::{AppHandle, Manager};
+use tauri_plugin_clipboard_manager::ClipboardExt;
+use tauri_plugin_http::reqwest;
+use uuid::Uuid;
+
+use crate::account::helpers::microsoft::constants::{
   CLIENT_ID, DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, OAUTH_TOKEN_ENDPOINT,
   PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
-use super::models::{MinecraftProfile, XstsResponse};
+use crate::account::helpers::microsoft::models::{MinecraftProfile, XstsResponse};
 use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
@@ -10,12 +18,6 @@ use crate::account::models::{
   Texture,
 };
 use crate::error::SJMCLResult;
-use serde_json::{json, Value};
-use std::str::FromStr;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_clipboard_manager::ClipboardExt;
-use tauri_plugin_http::reqwest;
-use uuid::Uuid;
 
 pub async fn device_authorization(app: &AppHandle) -> SJMCLResult<DeviceAuthResponseInfo> {
   let client = app.state::<reqwest::Client>();

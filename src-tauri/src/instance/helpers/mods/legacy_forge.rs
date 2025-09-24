@@ -1,11 +1,13 @@
 // https://mc1122modtutorialdocs-sphinx.readthedocs.io/zh-cn/latest/mainclass/01_mcmodinfo.html
-use crate::error::{SJMCLError, SJMCLResult};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use std::io::{Read, Seek};
 use std::path::Path;
+
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use tokio;
 use zip::ZipArchive;
+
+use crate::error::{SJMCLError, SJMCLResult};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase", default)]

@@ -1,8 +1,10 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use std::path::Path;
+
 use quartz_nbt::io::Flavor;
 use serde::{self, Deserialize, Serialize};
-use std::path::Path;
 use tauri_plugin_http::reqwest;
+
+use crate::error::{SJMCLError, SJMCLResult};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct NbtServerInfo {

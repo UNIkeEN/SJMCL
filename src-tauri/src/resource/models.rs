@@ -1,8 +1,10 @@
-use crate::instance::models::misc::ModLoaderType;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::str::FromStr;
+
+use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter};
+
+use crate::instance::models::misc::ModLoaderType;
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]
 pub enum ResourceType {

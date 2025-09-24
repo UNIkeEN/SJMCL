@@ -3,18 +3,18 @@ mod handle;
 pub mod reporter;
 mod unit;
 
-use futures::stream::FusedStream;
-use futures::Stream;
-use pin_project::pin_project;
-use serde::{Deserialize, Serialize};
 use std::pin::Pin;
 use std::sync::{Arc, RwLock};
 use std::task::{Context, Poll};
-use unit::Unit;
 
 pub use desc::{GDesc, PDesc};
+use futures::stream::FusedStream;
+use futures::Stream;
 pub use handle::PHandle;
+use pin_project::pin_project;
 use reporter::*;
+use serde::{Deserialize, Serialize};
+use unit::Unit;
 
 #[pin_project]
 pub struct ProgressStream<M, U, S, P>

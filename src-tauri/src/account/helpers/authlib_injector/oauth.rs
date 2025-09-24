@@ -1,17 +1,18 @@
-use super::common::{parse_profile, retrieve_profile};
-use super::constants::SCOPE;
-use super::models::MinecraftProfile;
-use crate::account::helpers::misc::oauth_polling;
-use crate::account::models::{
-  AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
-};
-use crate::error::SJMCLResult;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
+
+use crate::account::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
+use crate::account::helpers::authlib_injector::constants::SCOPE;
+use crate::account::helpers::authlib_injector::models::MinecraftProfile;
+use crate::account::helpers::misc::oauth_polling;
+use crate::account::models::{
+  AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
+};
+use crate::error::SJMCLResult;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct OpenIDConfig {

@@ -1,16 +1,17 @@
-use crate::error::SJMCLResult;
-use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 use std::collections::{HashMap, HashSet};
+#[cfg(target_os = "windows")]
+use std::error::Error;
 use std::fs;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Mutex;
+
 use tauri::{AppHandle, Manager};
 
-#[cfg(target_os = "windows")]
-use std::error::Error;
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 
 pub async fn refresh_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.

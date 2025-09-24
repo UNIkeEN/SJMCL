@@ -1,17 +1,19 @@
-use super::constants::AUTHLIB_INJECTOR_JAR_NAME;
+use std::io::Read;
+use std::path::PathBuf;
+use std::sync::Mutex;
+
+use serde::{Deserialize, Serialize};
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use url::Url;
+
+use crate::account::helpers::authlib_injector::constants::AUTHLIB_INJECTOR_JAR_NAME;
 use crate::account::models::AccountError;
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::{ResourceType, SourceType};
-use serde::{Deserialize, Serialize};
-use std::io::Read;
-use std::path::PathBuf;
-use std::sync::Mutex;
-use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use url::Url;
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 pub struct AuthlibInjectorMeta {

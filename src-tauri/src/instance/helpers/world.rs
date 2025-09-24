@@ -1,8 +1,10 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::models::world::level::{Level, LevelData};
+use std::path::PathBuf;
+
 use quartz_nbt::io::Flavor;
 use quartz_nbt::serde::deserialize;
-use std::path::PathBuf;
+
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::models::world::level::{Level, LevelData};
 
 pub async fn load_level_data_from_path(path: &PathBuf) -> SJMCLResult<LevelData> {
   let nbt_bytes = tokio::fs::read(path).await?;

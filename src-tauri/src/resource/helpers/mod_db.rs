@@ -1,9 +1,11 @@
+use std::collections::{HashMap, HashSet};
+use std::sync::Mutex;
+
+use tauri::{AppHandle, Manager};
+
 use crate::error::SJMCLResult;
 use crate::resource::models::{OtherResourceSource, ResourceError};
 use crate::utils::fs::get_app_resource_filepath;
-use std::collections::{HashMap, HashSet};
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
 
 fn clean_keyword(word: &str) -> Option<String> {
   const STOP_WORDS: &[&str] = &["a", "of", "the", "for", "mod", "with", "and", "ftb"];

@@ -1,8 +1,9 @@
-use super::streams::reporter::Sink;
-use super::{PTaskDesc, THandle};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
 use tokio::time::Duration;
+
+use crate::tasks::streams::reporter::Sink;
+use crate::tasks::{PTaskDesc, THandle};
 
 const TASK_PROGRESS_UPDATE_EVENT: &str = "task:progress-update";
 const TASK_GROUP_UPDATE_EVENT: &str = "task:group-update";
