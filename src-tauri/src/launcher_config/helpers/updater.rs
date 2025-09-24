@@ -1,5 +1,8 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
 use serde_json::Value;
 use std::ffi::OsStr;
 use std::fs;
@@ -9,6 +12,25 @@ use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+type SourceTuple = (&'static str, &'static str, fn(&str, &str) -> String);
+const SOURCES: [SourceTuple; 2] = [
+  (
+    "https://mc.sjtu.cn/api-sjmcl/releases/latest",
+    "version",
+    |_, fname| format!("https://mc.sjtu.cn/sjmcl/releases/{}", fname),
+  ),
+  (
+    "https://api.github.com/repos/UNIkeEN/SJMCL/releases/latest",
+    "tag_name",
+    |ver, fname| {
+      format!(
+        "https://github.com/UNIkeEN/SJMCL/releases/download/v{}/{}",
+        ver, fname
+      )
+    },
+  ),
+];
 
 // Generate the new version filename on remote origin according to the current os, arch and is_portable
 fn build_resource_filename(ver: &str, os: &str, arch: &str, is_portable: bool) -> String {
@@ -45,38 +67,26 @@ fn build_local_new_filename(old_name: &str, old_version: &str, new_version: &str
 
 pub async fn fetch_latest_version(
   app: &AppHandle,
-) -> SJMCLResult<Option<(String, String, String, String, String)>> {
+) -> SJMCLResult<Option<(String, String, String, String)>> {
   let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let (os, arch, is_portable) = {
+  let (os, arch, is_portable, is_china_mainland_ip) = {
     let config_state = config_binding.lock()?;
     (
       config_state.basic_info.os_type.clone(),
       config_state.basic_info.arch.clone(),
       config_state.basic_info.is_portable,
+      config_state.basic_info.is_china_mainland_ip,
     )
   };
   let client = app.state::<reqwest::Client>();
 
-  type SourceTuple = (&'static str, &'static str, fn(&str, &str) -> String);
-  let sources: [SourceTuple; 2] = [
-    (
-      "https://mc.sjtu.cn/api-sjmcl/releases/latest",
-      "version",
-      |_, fname| format!("https://mc.sjtu.cn/sjmcl/releases/{}", fname),
-    ),
-    (
-      "https://api.github.com/repos/UNIkeEN/SJMCL/releases/latest",
-      "tag_name",
-      |ver, fname| {
-        format!(
-          "https://github.com/UNIkeEN/SJMCL/releases/download/v{}/{}",
-          ver, fname
-        )
-      },
-    ),
-  ];
+  let mut sources = SOURCES;
+  // If not in China (mainland), firstly try GitHub.
+  if !is_china_mainland_ip {
+    sources.reverse();
+  }
 
-  for (endpoint, field, mk_url) in sources {
+  for (endpoint, field, _) in sources {
     if let Ok(resp) = client.get(endpoint).send().await {
       if let Ok(j) = resp.json::<Value>().await {
         if let Some(mut ver) = j.get(field).and_then(|v| v.as_str()).map(|s| s.to_string()) {
@@ -84,7 +94,6 @@ pub async fn fetch_latest_version(
             ver.remove(0);
           }
           let fname = build_resource_filename(&ver, os.as_str(), arch.as_str(), is_portable);
-          let url = mk_url(&ver, &fname);
 
           let release_notes = j
             .get("body")
@@ -97,8 +106,55 @@ pub async fn fetch_latest_version(
             .unwrap_or_default()
             .to_string();
 
-          return Ok(Some((ver, url, fname, release_notes, published_at)));
+          return Ok(Some((ver, fname, release_notes, published_at)));
         }
+      }
+    }
+  }
+
+  Err(LauncherConfigError::FetchError.into())
+}
+
+pub async fn download_target_version(
+  app: &AppHandle,
+  version: String,
+  fname: String,
+) -> SJMCLResult<()> {
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let (download_cache_dir, is_china_mainland_ip) = {
+    let config_state = config_binding.lock()?;
+    (
+      config_state.download.cache.directory.clone(),
+      config_state.basic_info.is_china_mainland_ip,
+    )
+  };
+
+  let client = app.state::<reqwest::Client>();
+
+  let mut sources = SOURCES;
+  if !is_china_mainland_ip {
+    sources.reverse();
+  }
+
+  for (endpoint, _, mk_url) in sources {
+    if let Ok(resp) = client.get(endpoint).send().await {
+      if resp.status().is_success() {
+        let url = mk_url(&version, &fname);
+
+        schedule_progressive_task_group(
+          app.clone(),
+          format!("launcher-update?{}", fname),
+          vec![PTaskParam::Download(DownloadParam {
+            src: url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?,
+            dest: download_cache_dir.join(&fname),
+            filename: Some(fname),
+            sha1: None,
+          })],
+          true,
+        )
+        .await?;
+
+        return Ok(());
       }
     }
   }

@@ -1,7 +1,7 @@
 use super::helpers::java::{
   get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
 };
-use super::helpers::updater::{self, fetch_latest_version};
+use super::helpers::updater::{self, download_target_version, fetch_latest_version};
 use super::models::{
   GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
 };
@@ -316,7 +316,7 @@ pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInf
     return Ok(VersionMetaInfo::default());
   }
 
-  if let Ok(Some((new_version, url, fname, release_notes, published_at))) =
+  if let Ok(Some((new_version, fname, release_notes, published_at))) =
     fetch_latest_version(&app).await
   {
     if let (Ok(current), Ok(latest)) = (
@@ -326,7 +326,6 @@ pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInf
       return Ok(match latest.cmp(&current) {
         std::cmp::Ordering::Greater => VersionMetaInfo {
           version: new_version,
-          url,
           file_name: fname,
           release_notes,
           published_at,
@@ -341,6 +340,16 @@ pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInf
   }
 
   Ok(VersionMetaInfo::default())
+}
+
+#[tauri::command]
+pub async fn download_launcher_update(app: AppHandle, version: VersionMetaInfo) -> SJMCLResult<()> {
+  if version.version.is_empty() || version.version == "up2date" {
+    Ok(())
+  } else {
+    // TODO: handle already downloaded case
+    return download_target_version(&app, version.version, version.file_name).await;
+  }
 }
 
 #[tauri::command]

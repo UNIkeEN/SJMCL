@@ -31,11 +31,10 @@ pub struct JavaInfo {
 }
 
 // Info about the latest release version fetched from remote, shown to the user to update.
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VersionMetaInfo {
   pub version: String,
-  pub url: String,
   pub file_name: String,
   pub release_notes: String,
   pub published_at: String,

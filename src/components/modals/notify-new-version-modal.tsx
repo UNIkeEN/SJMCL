@@ -10,14 +10,14 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
 import MarkdownContainer from "@/components/common/markdown-container";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { VersionMetaInfo } from "@/models/config";
-import { TaskTypeEnums } from "@/models/task";
-import { TaskService } from "@/services/task";
+import { ConfigService } from "@/services/config";
 
 interface NotifyNewVersionModalProps extends Omit<ModalProps, "children"> {
   newVersion: VersionMetaInfo;
@@ -28,31 +28,28 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
   ...props
 }) => {
   const toast = useToast();
+  const router = useRouter();
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const isLinux = config.basicInfo.osType === "linux"; // for Linux, navigate to the website.
 
-  const downloadRelease = () => {
+  const handleDownloadUpdate = () => {
     if (isLinux) {
       const lang = config.general.general.language === "zh-Hans" ? "zh" : "en";
       openUrl(`https://mc.sjtu.cn/sjmcl/${lang}`);
     } else {
-      TaskService.scheduleProgressiveTaskGroup("launcher-update", [
-        {
-          src: newVersion.url,
-          dest: config.download.cache.directory + "/" + newVersion.fileName,
-          filename: newVersion.fileName,
-          taskType: TaskTypeEnums.Download,
-        },
-      ]).then((response) => {
+      ConfigService.downloadLauncherUpdate(newVersion).then((response) => {
         if (response.status !== "success") {
           toast({
             title: response.message,
             description: response.details,
             status: "error",
           });
+          return;
+        } else {
+          router.push("/downloads");
         }
       });
     }
@@ -76,7 +73,7 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
             variant="solid"
             colorScheme={primaryColor}
             rightIcon={isLinux ? <LuExternalLink /> : undefined}
-            onClick={downloadRelease}
+            onClick={handleDownloadUpdate}
           >
             {t("General.download")}
           </Button>
