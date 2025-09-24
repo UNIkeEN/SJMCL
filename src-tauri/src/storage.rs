@@ -1,8 +1,7 @@
-use std::fs;
-use std::path::Path;
-
 use serde::de::DeserializeOwned;
 use serde::Serialize;
+use std::fs;
+use std::path::Path;
 
 pub trait Storage {
   fn file_path() -> std::path::PathBuf;

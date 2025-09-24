@@ -30,14 +30,15 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::prelude::*;
 use std::io::BufReader;
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::sync::{mpsc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager, State};
+
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 // Step 1: select suitable java runtime environment.
 #[tauri::command]

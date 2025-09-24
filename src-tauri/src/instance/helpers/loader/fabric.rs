@@ -1,3 +1,8 @@
+use std::path::PathBuf;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use url::Url;
+
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::{McClientInfo, PatchesInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
@@ -8,10 +13,6 @@ use crate::resource::helpers::modrinth::get_latest_fabric_api_mod_download;
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
-use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use url::Url;
 
 pub async fn install_fabric_loader(
   app: AppHandle,

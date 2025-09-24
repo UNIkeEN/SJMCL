@@ -1,16 +1,17 @@
-use crate::launcher_config::models::{LauncherConfig, ProxyType};
-use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
-use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::{
-  default_on_request_failure, default_on_request_success, RetryTransientMiddleware, Retryable,
-  RetryableStrategy,
+  default_on_request_failure, default_on_request_success, Retryable, RetryableStrategy,
 };
-use std::sync::Mutex;
-use std::time::Duration;
 use tauri::http::StatusCode;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest::header::HeaderMap;
 use tauri_plugin_http::reqwest::{Client, ClientBuilder, Proxy};
+
+use crate::launcher_config::models::{LauncherConfig, ProxyType};
+use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
+use reqwest_retry::policies::ExponentialBackoff;
+use reqwest_retry::RetryTransientMiddleware;
+use std::sync::Mutex;
+use std::time::Duration;
 
 /// Builds a reqwest client with SJMCL version header and proxy support.
 /// Defaults to 10s timeout.

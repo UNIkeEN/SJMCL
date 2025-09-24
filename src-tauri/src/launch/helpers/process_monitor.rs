@@ -348,7 +348,6 @@ pub fn change_process_window_title(pid: u32, new_title: &str) -> SJMCLResult<()>
     use std::ffi::OsStr;
     use std::iter::once;
     use std::os::windows::ffi::OsStrExt;
-
     use winapi::shared::minwindef::{BOOL, DWORD, LPARAM, TRUE};
     use winapi::shared::windef::HWND;
     use winapi::um::winnt::LPCWSTR;
