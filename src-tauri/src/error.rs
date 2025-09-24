@@ -1,6 +1,5 @@
-use std::error::Error;
-
 use serde::Serialize;
+use std::error::Error;
 
 #[derive(Debug, Serialize, PartialEq, Eq)]
 pub struct SJMCLError(pub String);

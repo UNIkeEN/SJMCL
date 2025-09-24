@@ -1,13 +1,12 @@
+use crate::error::SJMCLResult;
+use crate::instance::models::misc::ModLoaderType;
+use crate::resource::helpers::misc::get_download_api;
+use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
-
-use crate::error::SJMCLResult;
-use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::get_download_api;
-use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]

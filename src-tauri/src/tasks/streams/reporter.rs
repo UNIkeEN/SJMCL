@@ -1,9 +1,7 @@
-use std::time::Duration;
-
-use serde::{Deserialize, Serialize};
-use tauri::AppHandle;
-
 use crate::tasks::streams::desc::PDesc;
+use serde::{Deserialize, Serialize};
+use std::time::Duration;
+use tauri::AppHandle;
 
 pub trait Sink {
   fn report_progress(

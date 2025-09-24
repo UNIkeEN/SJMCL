@@ -1,12 +1,3 @@
-use std::fs::File;
-use std::io::Read;
-use std::path::PathBuf;
-use std::process::Command;
-use std::sync::Mutex;
-
-use tauri::{AppHandle, Manager};
-use zip::ZipArchive;
-
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
@@ -19,6 +10,13 @@ use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launcher_config::models::JavaInfo;
 use crate::resource::models::SourceType;
 use crate::tasks::PTaskParam;
+use std::fs::File;
+use std::io::Read;
+use std::path::PathBuf;
+use std::process::Command;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use zip::ZipArchive;
 
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,

@@ -1,19 +1,5 @@
 pub mod misc;
 
-use std::collections::HashMap;
-use std::path::Path;
-
-use misc::{
-  cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id, cvt_type_to_class_id,
-  cvt_version_to_type_id, get_curseforge_api, make_curseforge_request,
-  map_curseforge_file_to_version_pack, CurseForgeFileInfo, CurseForgeFingerprintRes,
-  CurseForgeGetProjectRes, CurseForgeSearchRes, CurseForgeVersionPackSearchRes,
-};
-use murmur2::murmur2;
-use serde_json::json;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-
 use crate::error::SJMCLResult;
 use crate::resource::helpers::misc::apply_other_resource_enhancements;
 use crate::resource::helpers::mod_db::handle_search_query;
@@ -22,6 +8,18 @@ use crate::resource::models::{
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
+use misc::{
+  cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id, cvt_type_to_class_id,
+  cvt_version_to_type_id, get_curseforge_api, make_curseforge_request,
+  map_curseforge_file_to_version_pack, CurseForgeFileInfo, CurseForgeFingerprintRes,
+  CurseForgeGetProjectRes, CurseForgeSearchRes, CurseForgeVersionPackSearchRes,
+};
+use murmur2::murmur2;
+use serde_json::json;
+use std::collections::HashMap;
+use std::path::Path;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";

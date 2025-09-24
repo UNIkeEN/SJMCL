@@ -1,14 +1,12 @@
-use std::pin::Pin;
-use std::time::Duration;
-
-use tauri::{AppHandle, Manager};
-
 use crate::error::SJMCLResult;
 use crate::tasks::download::DownloadTask;
 use crate::tasks::events::GEventStatus;
 use crate::tasks::monitor::TaskMonitor;
 use crate::tasks::{PTaskGroupDesc, PTaskParam, SJMCLFutureDesc, THandle};
 use crate::utils::fs::extract_filename;
+use std::pin::Pin;
+use std::time::Duration;
+use tauri::{AppHandle, Manager};
 
 #[tauri::command]
 pub async fn schedule_progressive_task_group(

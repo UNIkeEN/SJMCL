@@ -1,12 +1,10 @@
-use std::fs;
-
-use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-
 use crate::error::SJMCLResult;
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{GameClientResourceInfo, ResourceError, ResourceType, SourceType};
+use serde::{Deserialize, Serialize};
+use std::fs;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
 
 #[derive(Serialize, Deserialize, Default)]
 struct VersionManifest {

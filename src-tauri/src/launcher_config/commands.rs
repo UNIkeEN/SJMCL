@@ -1,13 +1,3 @@
-use std::fs;
-use std::path::{Path, PathBuf};
-use std::pin::Pin;
-use std::sync::Mutex;
-
-use serde_json::{json, Value};
-use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-
 use crate::error::SJMCLResult;
 use crate::instance::helpers::misc::refresh_instances;
 use crate::launcher_config::helpers::java::{
@@ -21,6 +11,14 @@ use crate::storage::Storage;
 use crate::tasks::monitor::TaskMonitor;
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};
 use crate::utils::string::camel_to_snake_case;
+use serde_json::{json, Value};
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::pin::Pin;
+use std::sync::Mutex;
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {

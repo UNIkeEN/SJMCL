@@ -1,17 +1,15 @@
-use std::fs;
-use std::path::PathBuf;
-use std::sync::Mutex;
-
-use rand::Rng;
-use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager};
-
 use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_custom_background_list;
 use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialAccess, PartialUpdate};
 use crate::utils::portable::extract_assets;
 use crate::{APP_DATA_DIR, IS_PORTABLE};
+use rand::Rng;
+use std::fs;
+use std::path::PathBuf;
+use std::sync::Mutex;
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {

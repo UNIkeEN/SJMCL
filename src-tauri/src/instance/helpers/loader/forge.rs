@@ -1,16 +1,3 @@
-use std::collections::HashMap;
-use std::fs::{self, File};
-use std::io::Read;
-use std::path::PathBuf;
-
-use reqwest::redirect::Policy;
-use reqwest::{Client, Error};
-use serde::{Deserialize, Serialize};
-use tauri::AppHandle;
-use tauri_plugin_http::reqwest;
-use url::Url;
-use zip::ZipArchive;
-
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{
   LaunchArgumentTemplate, LibrariesValue, McClientInfo, PatchesInfo,
@@ -24,6 +11,17 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use reqwest::redirect::Policy;
+use reqwest::{Client, Error};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fs::{self, File};
+use std::io::Read;
+use std::path::PathBuf;
+use tauri::AppHandle;
+use tauri_plugin_http::reqwest;
+use url::Url;
+use zip::ZipArchive;
 
 async fn fetch_bmcl_forge_installer_url(
   root: Url,

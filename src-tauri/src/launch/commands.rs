@@ -1,17 +1,3 @@
-use std::collections::HashMap;
-use std::fs;
-use std::io::prelude::*;
-use std::io::BufReader;
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
-use std::path::PathBuf;
-use std::process::{Command, Stdio};
-use std::sync::{mpsc, Mutex};
-use std::time::{SystemTime, UNIX_EPOCH};
-
-use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager, State};
-
 use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
@@ -40,6 +26,18 @@ use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
 use crate::utils::window::create_webview_window;
+use std::collections::HashMap;
+use std::fs;
+use std::io::prelude::*;
+use std::io::BufReader;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
+use std::sync::{mpsc, Mutex};
+use std::time::{SystemTime, UNIX_EPOCH};
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager, State};
 
 // Step 1: select suitable java runtime environment.
 #[tauri::command]

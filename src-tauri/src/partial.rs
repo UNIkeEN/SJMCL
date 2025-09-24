@@ -1,6 +1,5 @@
-use std::error::Error;
-
 use serde::{Deserialize, Serialize};
+use std::error::Error;
 use strum_macros::Display;
 
 #[derive(Debug, Display)]

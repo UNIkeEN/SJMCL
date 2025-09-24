@@ -1,12 +1,11 @@
-use rand::seq::IndexedRandom;
-use tauri::AppHandle;
-use uuid::Uuid;
-
 use crate::account::constants::TEXTURE_ROLES;
 use crate::account::models::{AccountError, PlayerInfo, PlayerType, Texture};
 use crate::error::SJMCLResult;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::image::load_image_from_dir;
+use rand::seq::IndexedRandom;
+use tauri::AppHandle;
+use uuid::Uuid;
 
 pub fn load_preset_skin(app: &AppHandle, preset_role: String) -> SJMCLResult<Vec<Texture>> {
   let texture_path = get_app_resource_filepath(app, &format!("assets/skins/{}.png", preset_role))

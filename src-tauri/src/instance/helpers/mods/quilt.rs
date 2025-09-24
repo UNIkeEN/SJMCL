@@ -1,13 +1,11 @@
 // https://github.com/QuiltMC/rfcs/blob/main/specification/0002-quilt.mod.json.md
-use std::io::{Read, Seek};
-use std::path::Path;
-
+use crate::error::{SJMCLError, SJMCLResult};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::io::{Read, Seek};
+use std::path::Path;
 use tokio;
 use zip::ZipArchive;
-
-use crate::error::{SJMCLError, SJMCLResult};
 
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]
 #[serde(default)]

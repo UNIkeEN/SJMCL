@@ -1,15 +1,13 @@
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
+use serde_json::Value;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::Mutex;
-
-use serde_json::Value;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
-
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
 
 // Generate the new version filename on remote origin according to the current os, arch and is_portable
 fn build_resource_filename(ver: &str, os: &str, arch: &str, is_portable: bool) -> String {

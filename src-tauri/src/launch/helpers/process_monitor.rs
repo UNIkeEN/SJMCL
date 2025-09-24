@@ -1,3 +1,9 @@
+use crate::error::SJMCLResult;
+use crate::instance::models::misc::Instance;
+use crate::launch::constants::*;
+use crate::launch::models::{LaunchError, LaunchingState};
+use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
+use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
@@ -9,17 +15,9 @@ use std::sync::mpsc::Sender;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use std::{fs, thread};
-
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio;
-
-use crate::error::SJMCLResult;
-use crate::instance::models::misc::Instance;
-use crate::launch::constants::*;
-use crate::launch::models::{LaunchError, LaunchingState};
-use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
-use crate::utils::window::create_webview_window;
 
 const POLLING_OPERATION_INTERVAL_MS: u64 = 2000;
 

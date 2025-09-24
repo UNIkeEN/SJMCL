@@ -1,21 +1,19 @@
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::fs;
-use std::str::FromStr;
-use std::sync::Mutex;
-
-use regex::RegexBuilder;
-use serde::{Deserialize, Deserializer, Serialize};
-use serde_json::Value;
-use serde_with::formats::PreferMany;
-use serde_with::{serde_as, OneOrMany};
-use tauri::{AppHandle, Manager};
-
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::models::misc::{Instance, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
 use crate::utils::fs::get_app_resource_filepath;
+use regex::RegexBuilder;
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::Value;
+use serde_with::formats::PreferMany;
+use serde_with::{serde_as, OneOrMany};
+use std::cmp::Ordering;
+use std::collections::HashMap;
+use std::fs;
+use std::str::FromStr;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]

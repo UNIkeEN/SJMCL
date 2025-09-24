@@ -1,9 +1,6 @@
-use std::collections::HashMap;
-
-use serde::{self, Deserialize, Serialize};
-
 use crate::instance::models::world::player::PlayerData;
-
+use serde::{self, Deserialize, Serialize};
+use std::collections::HashMap;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Level {
   #[serde(rename = "Data")]

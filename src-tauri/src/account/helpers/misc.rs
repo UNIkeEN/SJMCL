@@ -1,8 +1,3 @@
-use std::sync::Mutex;
-
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest::{self, RequestBuilder};
-
 use crate::account::constants::DEFAULT_POLLING_INTERVAL;
 use crate::account::models::{
   AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthErrorResponse, OAuthTokens, PlayerInfo,
@@ -12,6 +7,9 @@ use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
 use crate::utils::image::{decode_image, ImageWrapper};
 use crate::utils::web::is_china_mainland_ip;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest::{self, RequestBuilder};
 
 pub async fn fetch_image(app: &AppHandle, url: String) -> SJMCLResult<ImageWrapper> {
   let client = app.state::<reqwest::Client>();

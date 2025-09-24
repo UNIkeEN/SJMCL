@@ -1,14 +1,3 @@
-use std::collections::HashMap;
-use std::fs;
-use std::io::Cursor;
-use std::path::PathBuf;
-use std::sync::Mutex;
-
-use sanitize_filename;
-use serde_json::Value;
-use tauri::{AppHandle, Manager};
-use zip::ZipArchive;
-
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
 use crate::instance::helpers::client_json::{libraries_to_info, patches_to_info, McClientInfo};
@@ -21,6 +10,15 @@ use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
+use sanitize_filename;
+use serde_json::Value;
+use std::collections::HashMap;
+use std::fs;
+use std::io::Cursor;
+use std::path::PathBuf;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use zip::ZipArchive;
 
 pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
   if instance.use_spec_game_config {

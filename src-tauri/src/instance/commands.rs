@@ -1,17 +1,3 @@
-use std::collections::HashMap;
-use std::fs;
-use std::path::{Path, PathBuf};
-use std::sync::Mutex;
-use std::time::SystemTime;
-
-use lazy_static::lazy_static;
-use regex::{Regex, RegexBuilder};
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use tokio;
-use url::Url;
-use zip::read::ZipArchive;
-
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
 use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
@@ -55,6 +41,18 @@ use crate::utils::fs::{
   get_subdirectories,
 };
 use crate::utils::image::ImageWrapper;
+use lazy_static::lazy_static;
+use regex::{Regex, RegexBuilder};
+use std::collections::HashMap;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+use std::time::SystemTime;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use tokio;
+use url::Url;
+use zip::read::ZipArchive;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {

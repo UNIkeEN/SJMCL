@@ -1,14 +1,12 @@
-use std::fs;
-
-use font_loader::system_fonts;
-use tauri_plugin_http::reqwest;
-use tokio::time::Instant;
-use url::Url;
-
 use crate::error::SJMCLResult;
 use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
 use crate::utils::fs::extract_filename as extract_filename_helper;
+use font_loader::system_fonts;
+use std::fs;
+use tauri_plugin_http::reqwest;
+use tokio::time::Instant;
+use url::Url;
 
 #[tauri::command]
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {

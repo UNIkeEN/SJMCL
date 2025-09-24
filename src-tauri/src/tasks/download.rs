@@ -1,20 +1,3 @@
-use std::error::Error;
-use std::future::Future;
-use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
-use std::time::Duration;
-
-use async_speed_limit::Limiter;
-use futures::stream::TryStreamExt;
-use futures::StreamExt;
-use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager, Url};
-use tauri_plugin_http::reqwest;
-use tauri_plugin_http::reqwest::header::RANGE;
-use tokio::io::AsyncSeekExt;
-use tokio_util::bytes;
-use tokio_util::compat::FuturesAsyncReadCompatExt;
-
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::commands::retrieve_launcher_config;
 use crate::tasks::streams::desc::{PDesc, PStatus};
@@ -23,6 +6,21 @@ use crate::tasks::streams::ProgressStream;
 use crate::tasks::*;
 use crate::utils::fs::validate_sha1;
 use crate::utils::web::with_retry;
+use async_speed_limit::Limiter;
+use futures::stream::TryStreamExt;
+use futures::StreamExt;
+use serde::{Deserialize, Serialize};
+use std::error::Error;
+use std::future::Future;
+use std::path::PathBuf;
+use std::sync::{Arc, RwLock};
+use std::time::Duration;
+use tauri::{AppHandle, Manager, Url};
+use tauri_plugin_http::reqwest;
+use tauri_plugin_http::reqwest::header::RANGE;
+use tokio::io::AsyncSeekExt;
+use tokio_util::bytes;
+use tokio_util::compat::FuturesAsyncReadCompatExt;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]

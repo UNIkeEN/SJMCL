@@ -1,14 +1,3 @@
-use std::borrow::Cow;
-use std::collections::{HashMap, HashSet};
-use std::sync::Mutex;
-
-use base64::engine::general_purpose;
-use base64::Engine;
-use serde::{self, Deserialize, Serialize};
-use serde_json::Value;
-use shlex::try_quote;
-use tauri::{AppHandle, Manager};
-
 use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
 use crate::account::models::{AccountError, PlayerType};
 use crate::error::{SJMCLError, SJMCLResult};
@@ -21,6 +10,15 @@ use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::*;
+use base64::engine::general_purpose;
+use base64::Engine;
+use serde::{self, Deserialize, Serialize};
+use serde_json::Value;
+use shlex::try_quote;
+use std::borrow::Cow;
+use std::collections::{HashMap, HashSet};
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchArguments {

@@ -1,8 +1,3 @@
-use std::sync::Mutex;
-
-use tauri::{AppHandle, Manager};
-use url::Url;
-
 use crate::account::constants::TEXTURE_ROLES;
 use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
@@ -16,6 +11,9 @@ use crate::account::models::{
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use url::Url;
 
 #[tauri::command]
 pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {

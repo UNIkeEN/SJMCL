@@ -1,6 +1,5 @@
-use std::path::PathBuf;
-
 use serde::{self, Deserialize, Serialize};
+use std::path::PathBuf;
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
