@@ -154,6 +154,18 @@ export class ConfigService {
   }
 
   /**
+   * DOWNLOAD the launcher update.
+   * @param {VersionMetaInfo} version The version meta info of the new version.
+   * @returns {Promise<InvokeResponse<void>>} Returns void if the download process is started successfully.
+   */
+  @responseHandler("config")
+  static async downloadLauncherUpdate(
+    version: VersionMetaInfo
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("download_launcher_update", { version });
+  }
+
+  /**
    * INSTALL the launcher update.
    * @param {string} downloadedFilename The name of the downloaded new version file.
    * @param {boolean} restart Whether to restart the launcher now.

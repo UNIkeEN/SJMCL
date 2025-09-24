@@ -16,8 +16,7 @@ impl LauncherConfig {
     // same as lib.rs
     let is_dev = cfg!(debug_assertions);
     let version = match (is_dev, app.package_info().version.to_string().as_str()) {
-      // (true, _) => "dev".to_string(),
-      (true, v) => v.to_string(),
+      (true, _) => "dev".to_string(),
       (false, "0.0.0") => "nightly".to_string(),
       (false, v) => v.to_string(),
     };
