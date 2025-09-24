@@ -169,9 +169,8 @@ pub async fn run() {
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
-      // Get version and os information
       let version = launcher_config.basic_info.launcher_version.clone();
-      let os = tauri_plugin_os::platform().to_string();
+      let os = launcher_config.basic_info.platform.clone();
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
