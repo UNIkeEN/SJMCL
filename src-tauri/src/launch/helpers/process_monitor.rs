@@ -3,13 +3,12 @@ use crate::instance::models::misc::Instance;
 use crate::launch::constants::*;
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
+use crate::utils::shell::execute_command_line;
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader, Write};
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
 use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -261,18 +260,7 @@ pub async fn monitor_process(
   });
 
   if let Some(cmdline) = post_exit_command.as_ref().filter(|s| !s.trim().is_empty()) {
-    #[cfg(target_os = "windows")]
-    let _ = std::process::Command::new("cmd")
-      .arg("/C")
-      .arg(cmdline)
-      .creation_flags(0x08000000)
-      .status();
-
-    #[cfg(not(target_os = "windows"))]
-    let _ = std::process::Command::new("/bin/sh")
-      .arg("-c")
-      .arg(cmdline)
-      .status();
+    let _ = execute_command_line(cmdline);
   }
 
   Ok(())

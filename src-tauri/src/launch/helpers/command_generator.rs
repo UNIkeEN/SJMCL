@@ -428,20 +428,3 @@ pub fn export_full_launch_command(
     format!("CLASSPATH=\"{}\" {}", classpath_str, java_cmd)
   }
 }
-
-pub fn split_wrapper(wrapper: &str) -> Option<(std::ffi::OsString, Vec<std::ffi::OsString>)> {
-  if wrapper.trim().is_empty() {
-    return None;
-  }
-  if let Some(parts) = shlex::split(wrapper) {
-    if parts.is_empty() {
-      return None;
-    }
-    let mut iter = parts.into_iter();
-    let prog = std::ffi::OsString::from(iter.next().unwrap());
-    let args = iter.map(std::ffi::OsString::from).collect::<Vec<_>>();
-    Some((prog, args))
-  } else {
-    None
-  }
-}
