@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader, Write};
+#[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 use std::path::PathBuf;
 use std::process::{Child, Command};
