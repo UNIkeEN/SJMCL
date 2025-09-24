@@ -21,19 +21,25 @@ pub fn execute_command_line(cmdline: &str) -> io::Result<ExitStatus> {
   }
 }
 
-pub fn split_wrapper(wrapper: &str) -> Option<(std::ffi::OsString, Vec<std::ffi::OsString>)> {
+pub fn split_command_line(wrapper: &str) -> io::Result<Option<Command>> {
   if wrapper.trim().is_empty() {
-    return None;
+    return Ok(None);
   }
-  if let Some(parts) = shlex::split(wrapper) {
-    if parts.is_empty() {
-      return None;
+
+  let parts = match shlex::split(wrapper) {
+    Some(p) if !p.is_empty() => p,
+    _ => {
+      return Err(io::Error::new(
+        io::ErrorKind::InvalidInput,
+        "Invalid wrapper string",
+      ))
     }
-    let mut iter = parts.into_iter();
-    let prog = std::ffi::OsString::from(iter.next().unwrap());
-    let args = iter.map(std::ffi::OsString::from).collect::<Vec<_>>();
-    Some((prog, args))
-  } else {
-    None
+  };
+
+  let mut cmd = Command::new(&parts[0]);
+  if parts.len() > 1 {
+    cmd.args(&parts[1..]);
   }
+
+  Ok(Some(cmd))
 }

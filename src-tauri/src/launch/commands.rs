@@ -23,7 +23,7 @@ use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
-use crate::utils::shell::{execute_command_line, split_wrapper};
+use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs;
@@ -255,17 +255,12 @@ pub async fn launch_game(
     .custom_commands
     .wrapper_launcher
     .clone();
-  let wrapper_split = split_wrapper(&wrapper);
 
-  let mut cmd_base = if let Some((prog, wargs)) = wrapper_split {
-    let mut c = Command::new(prog);
-    if !wargs.is_empty() {
-      c.args(&wargs);
-    }
-    c.arg(selected_java.exec_path.clone());
+  let mut cmd_base = if let Some(mut c) = split_command_line(&wrapper)? {
+    c.arg(&selected_java.exec_path);
     c
   } else {
-    Command::new(selected_java.exec_path.clone())
+    Command::new(&selected_java.exec_path)
   };
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
