@@ -257,11 +257,11 @@ pub async fn monitor_process(
         }
       }
     }
-  });
 
-  if let Some(cmdline) = post_exit_command.as_ref().filter(|s| !s.trim().is_empty()) {
-    let _ = execute_command_line(cmdline);
-  }
+    if let Some(cmdline) = post_exit_command.as_ref().filter(|s| !s.trim().is_empty()) {
+      let _ = execute_command_line(cmdline);
+    }
+  });
 
   Ok(())
 }

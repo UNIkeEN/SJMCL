@@ -1,3 +1,4 @@
+use crate::error::{SJMCLError, SJMCLResult};
 use std::io;
 use std::process::{Command, ExitStatus};
 
@@ -21,7 +22,7 @@ pub fn execute_command_line(cmdline: &str) -> io::Result<ExitStatus> {
   }
 }
 
-pub fn split_command_line(wrapper: &str) -> io::Result<Option<Command>> {
+pub fn split_command_line(wrapper: &str) -> SJMCLResult<Option<Command>> {
   if wrapper.trim().is_empty() {
     return Ok(None);
   }
@@ -29,10 +30,7 @@ pub fn split_command_line(wrapper: &str) -> io::Result<Option<Command>> {
   let parts = match shlex::split(wrapper) {
     Some(p) if !p.is_empty() => p,
     _ => {
-      return Err(io::Error::new(
-        io::ErrorKind::InvalidInput,
-        "Invalid wrapper string",
-      ))
+      return Err(SJMCLError("Invalid wrapper string".to_string()));
     }
   };
 
