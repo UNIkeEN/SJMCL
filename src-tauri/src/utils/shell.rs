@@ -30,7 +30,7 @@ pub fn split_command_line(wrapper: &str) -> SJMCLResult<Option<Command>> {
   let parts = match shlex::split(wrapper) {
     Some(p) if !p.is_empty() => p,
     _ => {
-      return Err(SJMCLError("Invalid wrapper string".to_string()));
+      return Err(SJMCLError("Invalid command line".to_string()));
     }
   };
 
