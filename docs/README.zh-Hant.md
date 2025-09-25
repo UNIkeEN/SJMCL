@@ -28,7 +28,7 @@
 
 開始使用 SJMCL，只需前往 [官網](https://mc.sjtu.cn/sjmcl/en) 下載最新版即可。
 
-你也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 獲取所有版本，包括週期性構建。
+您也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 獲取所有版本，包括週期性構建。
 
 SJMCL 目前支援以下平臺：
 
@@ -59,7 +59,7 @@ npm run tauri dev
 
 * 在開始前，請先閱讀我們的 [貢獻指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（內含開發流程詳細說明）。
 * API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/zh/dev)。
-* 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享你的想法。
+* 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
 
 ### 倉庫活動
 
@@ -73,11 +73,12 @@ npm run tauri dev
 
 本專案基於 [GNU 通用公共許可證 v3.0](../LICENSE) 釋出。
 
-依據 GPLv3 第 7 條款，當你分發本軟體的修改版本時，除遵守 GPLv3 外，還須遵守以下 [附加條款](../LICENSE.EXTRA)：
+依據 GPLv3 第 7 條款，當您分發本軟體的修改版本時，除遵守 GPLv3 外，還須遵守以下 [附加條款](../LICENSE.EXTRA)：
 
 1. 必須更換軟體名稱，禁止使用 SJMCL 或 SJMC Launcher；
 2. 禁止移除向統計伺服器傳送資訊的功能（`src-tauri/src/utils/sys_info.rs`），且僅傳送帶字首（不少於兩個字母，如 `XX-0.0.1`）的版本號；
-3. 在你的倉庫 README、分發網站或相關文件、軟體的關於頁面中，須明確標註你的程式基於 SJMCL，並註明原倉庫連結。
+3. 在您的倉庫 README、分發網站或相關文件、軟體的關於頁面中，須明確標註您的程式基於 SJMCL，並註明原倉庫連結。
+4. 當對本軟件的修改僅限於**增加**（而非修改或刪除）預置認證伺服器（`src-tauri/src/account/helpers/authlib_injector/constants.rs`）時，前述第 1、2 條之限制不適用。在在此情形下，您得繼續使用原始軟體名稱進行編譯與分發。
 
 ## 社群合作伙伴
 
