@@ -39,7 +39,7 @@ pub async fn select_java_runtime(
   }
 
   if suitable_candidates.is_empty() {
-    Err(LaunchError::NoSuitableJava.into())
+    Err(LaunchError::NoSuitableJava(min_version_req).into())
   } else {
     suitable_candidates.sort_by_key(|j| j.major_version);
     Ok(suitable_candidates[0].clone())

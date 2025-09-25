@@ -88,7 +88,31 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         function: () => LaunchService.selectSuitableJRE(instanceId),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
-        onErrCallback: (error: ResponseError) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {
+          if (error.raw_error.startsWith("NO_SUITABLE_JAVA")) {
+            const match = error.raw_error.match(/NO_SUITABLE_JAVA\((\d+)\)/);
+            const requiredJavaVersion = match ? parseInt(match[1]) : undefined;
+
+            setErrorPaused(true);
+            setErrorDesc(error.details);
+
+            toast({
+              title: t("LaunchProcessModal.javaDownload.prompt"),
+              status: "info",
+              duration: 2000,
+            });
+            setTimeout(() => {
+              handleCloseModalWithCancel();
+              openSharedModal("download-java", {
+                instanceInfo: launchingInstance,
+                requiredJavaVersion,
+              });
+            }, 2000);
+          } else {
+            setErrorPaused(true);
+            setErrorDesc(error.details);
+          }
+        },
       },
       {
         label: "validateGameFiles",
@@ -153,6 +177,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
     [
       activeStep,
       handleCloseModalWithCancel,
+      launchingInstance,
+      t,
       instanceId,
       openSharedModal,
       quickPlaySingleplayer,
