@@ -19,21 +19,11 @@ export const RoutingHistoryContextProvider: React.FC<{
   const router = useRouter();
 
   useEffect(() => {
-    const handleRouteChange = (route: string) => {
-      setHistory((prev) => {
-        if (prev[prev.length - 1] === route) {
-          return prev;
-        }
-        return [...prev, route];
-      });
-    };
-
-    router.events.on("routeChangeComplete", handleRouteChange);
-
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router.events]);
+    if (!router.isReady) return;
+    setHistory((prev) =>
+      prev[prev.length - 1] === router.asPath ? prev : [...prev, router.asPath]
+    );
+  }, [router.isReady, router.asPath]);
 
   const removeHistory = (prefix: string) => {
     setHistory((prev) => prev.filter((route) => !route.startsWith(prefix)));
