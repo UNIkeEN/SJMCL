@@ -31,10 +31,9 @@ jobs:
       - name: Lint JavaScript/TypeScript Frontend
         run: npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0 
       
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          override: true
+          components: rustfmt
 
       - name: Lint Rust Backend
         run: |
