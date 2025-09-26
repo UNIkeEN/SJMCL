@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { execSync } = require("child_process");
 
 const newVersion = process.argv[3];
 
@@ -30,3 +31,19 @@ cargoToml = cargoToml.replace(
 fs.writeFileSync(cargoTomlPath, cargoToml);
 
 console.log(`✅ Updated all version numbers to ${newVersion}`);
+
+// Sync package-lock.json with package.json
+console.log("\n🔄 Syncing package-lock.json with package.json...");
+try {
+  execSync(
+    "npm install --package-lock-only --no-audit --no-fund --ignore-scripts",
+    {
+      stdio: "inherit",
+      cwd: path.join(__dirname, "../../"),
+    }
+  );
+  console.log("✅ package-lock.json synced successfully!");
+} catch (error) {
+  console.error("❌ Failed to sync package-lock.json:", error.message);
+  process.exit(1);
+}

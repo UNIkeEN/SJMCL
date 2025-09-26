@@ -4,6 +4,7 @@ import {
   HStack,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
@@ -11,94 +12,107 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
-import { useSharedModals } from "@/contexts/shared-modal";
 import { ModLoaderType } from "@/enums/instance";
-import { OtherResourceType } from "@/enums/resource";
+import { OtherResourceSource } from "@/enums/resource";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ResourceService } from "@/services/resource";
 import { base64ImgSrc } from "@/utils/string";
 
 interface ModInfoModalProps extends Omit<ModalProps, "children"> {
   mod: LocalModInfo;
+  curInstanceMajorVersion?: string;
+  curInstanceVersion?: string;
 }
 
-const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
+const ModInfoModal: React.FC<ModInfoModalProps> = ({
+  mod,
+  curInstanceMajorVersion,
+  curInstanceVersion,
+  ...modalProps
+}) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { openSharedModal } = useSharedModals();
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
-  const [cfRemoteModId, setCfRemoteModId] = useState<string | null>(null);
-  const [mrRemoteModId, setMrRemoteModId] = useState<string | null>(null);
-
-  const openDownloadModal = (downloadSource: string) => {
-    openSharedModal("download-specific-resource", {
-      resource: {
-        id: downloadSource === "CurseForge" ? cfRemoteModId : mrRemoteModId,
-        websiteUrl: "",
-        type: OtherResourceType.Mod,
-        name: mod.name || mod.fileName,
-        translatedName: mod.translatedName,
-        description: mod.description || "",
-        iconSrc: base64ImgSrc(mod.iconSrc),
-        tags: [],
-        lastUpdated: "",
-        downloads: 0,
-        source: downloadSource,
-      },
-      curInstanceMajorVersion: undefined,
-      curInstanceModLoader: mod.loaderType,
-    });
-  };
+  const [cfModWebsiteUrl, setCfModWebsiteUrl] = useState<string>("");
+  const [mrModWebsiteUrl, setMrModWebsiteUrl] = useState<string>("");
+  const [MCModWebsiteUrl, setMCModWebsiteUrl] = useState<string>("");
 
   const handleCurseForgeInfo = useCallback(async () => {
-    ResourceService.fetchRemoteResourceByLocal("CurseForge", mod.filePath).then(
-      (response) => {
-        if (response.status === "success") {
-          const modId = response.data.resourceId;
-          setCfRemoteModId(modId);
+    const response = await ResourceService.fetchRemoteResourceByLocal(
+      OtherResourceSource.CurseForge,
+      mod.filePath
+    );
+    if (response.status === "success") {
+      const modId = response.data.resourceId;
+      const res = await ResourceService.fetchRemoteResourceById(
+        OtherResourceSource.CurseForge,
+        modId
+      );
+      if (res.status === "success") {
+        if (res.data.websiteUrl) {
+          setCfModWebsiteUrl(res.data.websiteUrl);
+        }
+        if (res.data.mcmodId) {
+          setMCModWebsiteUrl(
+            `https://www.mcmod.cn/class/${res.data.mcmodId}.html`
+          );
         }
       }
-    );
-  }, [mod.filePath, setCfRemoteModId]);
+    }
+  }, [mod.filePath]);
 
   const handleModrinthInfo = useCallback(async () => {
-    ResourceService.fetchRemoteResourceByLocal("Modrinth", mod.filePath).then(
-      (response) => {
-        if (response.status === "success") {
-          const modId = response.data.resourceId;
-          setMrRemoteModId(modId);
+    const response = await ResourceService.fetchRemoteResourceByLocal(
+      OtherResourceSource.Modrinth,
+      mod.filePath
+    );
+    if (response.status === "success") {
+      const modId = response.data.resourceId;
+      const res = await ResourceService.fetchRemoteResourceById(
+        OtherResourceSource.Modrinth,
+        modId
+      );
+      if (res.status === "success") {
+        if (res.data.websiteUrl) {
+          setMrModWebsiteUrl(res.data.websiteUrl);
+        }
+        if (res.data.mcmodId) {
+          setMCModWebsiteUrl(
+            `https://www.mcmod.cn/class/${res.data.mcmodId}.html`
+          );
         }
       }
-    );
-  }, [mod.filePath, setMrRemoteModId]);
+    }
+  }, [mod.filePath]);
 
   useEffect(() => {
-    setCfRemoteModId(null);
-    setMrRemoteModId(null);
+    setCfModWebsiteUrl("");
+    setMrModWebsiteUrl("");
+    setMCModWebsiteUrl("");
     handleCurseForgeInfo();
     handleModrinthInfo();
-  }, [
-    handleCurseForgeInfo,
-    handleModrinthInfo,
-    setCfRemoteModId,
-    setMrRemoteModId,
-  ]);
+  }, [handleCurseForgeInfo, handleModrinthInfo]);
 
   return (
     <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
       <ModalOverlay />
       <ModalContent>
+        <ModalCloseButton />
         <ModalBody mt={2}>
           <OptionItem
             title={
               <Text fontWeight="semibold" fontSize="md">
-                {mod.translatedName
+                {showZhTrans && mod.translatedName
                   ? `${mod.translatedName} | ${mod.name}`
                   : mod.name || mod.fileName}
               </Text>
@@ -133,7 +147,9 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
               />
             }
           />
-          <Text mt={4}>{mod.description}</Text>
+          <Text mt={4}>
+            {(showZhTrans && mod.translatedDescription) || mod.description}
+          </Text>
         </ModalBody>
 
         <ModalFooter w="100%">
@@ -143,12 +159,11 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
               <Button
                 colorScheme={primaryColor}
                 onClick={() => {
-                  modalProps.onClose();
-                  openDownloadModal("CurseForge");
+                  openUrl(cfModWebsiteUrl);
                 }}
                 fontSize="sm"
                 variant="link"
-                disabled={!cfRemoteModId}
+                disabled={!cfModWebsiteUrl}
               >
                 CurseForge
               </Button>
@@ -158,14 +173,27 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({ mod, ...modalProps }) => {
               <Button
                 colorScheme={primaryColor}
                 onClick={() => {
-                  modalProps.onClose();
-                  openDownloadModal("Modrinth");
+                  openUrl(mrModWebsiteUrl);
                 }}
                 fontSize="sm"
                 variant="link"
-                disabled={!mrRemoteModId}
+                disabled={!mrModWebsiteUrl}
               >
                 Modrinth
+              </Button>
+            </HStack>
+            <HStack spacing={2}>
+              <LuExternalLink />
+              <Button
+                colorScheme={primaryColor}
+                onClick={() => {
+                  openUrl(MCModWebsiteUrl);
+                }}
+                fontSize="sm"
+                variant="link"
+                disabled={!MCModWebsiteUrl}
+              >
+                MCMod
               </Button>
             </HStack>
           </HStack>

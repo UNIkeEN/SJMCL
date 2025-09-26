@@ -18,7 +18,7 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import AddDiscoverSourceModal from "@/components/modals/add-post-source-modal";
 import { useLauncherConfig } from "@/contexts/config";
-import { PostSourceInfo } from "@/models/post";
+import { NewsSourceInfo } from "@/models/news-post";
 import { DiscoverService } from "@/services/discover";
 
 export const DiscoverSourcesPage = () => {
@@ -27,7 +27,7 @@ export const DiscoverSourcesPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const sources = config.discoverSourceEndpoints;
 
-  const [sourcesInfo, setSourcesInfo] = useState<PostSourceInfo[]>([]);
+  const [sourcesInfo, setSourcesInfo] = useState<NewsSourceInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const {
@@ -36,8 +36,8 @@ export const DiscoverSourcesPage = () => {
     onClose: onAddDiscoverSourceModalClose,
   } = useDisclosure();
 
-  const handleFetchPostSourcesInfo = useCallback(() => {
-    DiscoverService.fetchPostSourcesInfo().then((response) => {
+  const handleFetchNewsSourcesInfo = useCallback(() => {
+    DiscoverService.fetchNewsSourcesInfo().then((response) => {
       if (response.status === "success") {
         setSourcesInfo(response.data);
         setIsLoading(false);
@@ -50,7 +50,7 @@ export const DiscoverSourcesPage = () => {
     const updated = sources.filter((url) => url !== urlToRemove);
     update("discoverSourceEndpoints", updated);
     setSourcesInfo(updated.map((url) => ({ endpointUrl: url })));
-    handleFetchPostSourcesInfo();
+    handleFetchNewsSourcesInfo();
   };
 
   useEffect(() => {
@@ -62,8 +62,8 @@ export const DiscoverSourcesPage = () => {
       }))
     );
     // query details use invoke
-    handleFetchPostSourcesInfo();
-  }, [sources, handleFetchPostSourcesInfo]);
+    handleFetchNewsSourcesInfo();
+  }, [sources, handleFetchNewsSourcesInfo]);
 
   return (
     <Section

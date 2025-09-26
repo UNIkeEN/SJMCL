@@ -63,15 +63,8 @@ const DevTestPage = () => {
           console.log("Download button clicked");
           let dl: DownloadTaskParam[] = [
             {
-              src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
-              dest: "1.jar",
-              sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
-              taskType: TaskTypeEnums.Download,
-            },
-            {
-              src: "https://piston-data.mojang.com/v1/objects/15c777e2cfe0556eef19aab534b186c0c6f277e1/server.jar",
-              dest: "2.jar",
-              sha1: "15c777e2cfe0556eef19aab534b186c0c6f277e1",
+              src: "https://edge.forgecdn.net/files/3045/381/%5B___MixinCompat-0.8___%5D.jar",
+              dest: "D:\\mods\\[___MixinCompat-0.8___].jar",
               taskType: TaskTypeEnums.Download,
             },
           ];

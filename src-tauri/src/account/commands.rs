@@ -1,21 +1,16 @@
-use super::{
-  constants::TEXTURE_ROLES,
-  helpers::{
-    authlib_injector::{
-      self,
-      info::{fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url},
-      jar::check_authlib_jar,
-    },
-    microsoft, offline,
-  },
-  models::{
-    AccountError, AccountInfo, AuthServer, OAuthCodeResponse, Player, PlayerInfo, PlayerType,
-  },
+use super::constants::TEXTURE_ROLES;
+use super::helpers::authlib_injector::info::{
+  fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
-use crate::{
-  account::helpers::misc, error::SJMCLResult, launcher_config::models::LauncherConfig,
-  storage::Storage,
+use super::helpers::authlib_injector::jar::check_authlib_jar;
+use super::helpers::authlib_injector::{self};
+use super::helpers::{microsoft, misc, offline};
+use super::models::{
+  AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
 };
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::LauncherConfig;
+use crate::storage::Storage;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use url::Url;
@@ -69,7 +64,7 @@ pub async fn fetch_oauth_code(
   app: AppHandle,
   server_type: PlayerType,
   auth_server_url: String,
-) -> SJMCLResult<OAuthCodeResponse> {
+) -> SJMCLResult<DeviceAuthResponseInfo> {
   if server_type == PlayerType::ThirdParty {
     let auth_server = AuthServer::from(get_auth_server_info_by_url(&app, auth_server_url)?);
 
@@ -90,7 +85,7 @@ pub async fn fetch_oauth_code(
 pub async fn add_player_oauth(
   app: AppHandle,
   server_type: PlayerType,
-  auth_info: OAuthCodeResponse,
+  auth_info: DeviceAuthResponseInfo,
   auth_server_url: String,
 ) -> SJMCLResult<()> {
   let new_player = match server_type {
@@ -150,7 +145,7 @@ pub async fn add_player_oauth(
 pub async fn relogin_player_oauth(
   app: AppHandle,
   player_id: String,
-  auth_info: OAuthCodeResponse,
+  auth_info: DeviceAuthResponseInfo,
 ) -> SJMCLResult<()> {
   let account_binding = app.state::<Mutex<AccountInfo>>();
 
@@ -166,12 +161,12 @@ pub async fn relogin_player_oauth(
     PlayerType::ThirdParty => {
       let auth_server = AuthServer::from(get_auth_server_info_by_url(
         &app,
-        old_player.auth_server_url.clone(),
+        old_player.auth_server_url.clone().unwrap_or_default(),
       )?);
 
       authlib_injector::oauth::login(
         &app,
-        old_player.auth_server_url.clone(),
+        old_player.auth_server_url.clone().unwrap_or_default(),
         auth_server.features.openid_configuration_url,
         auth_server.client_id,
         auth_info,
@@ -223,36 +218,43 @@ pub async fn add_player_3rdparty_password(
   let mut new_players =
     authlib_injector::password::login(&app, auth_server_url, username, password).await?;
 
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let mut account_state = account_binding.lock()?;
-
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
-
   if new_players.is_empty() {
     return Err(AccountError::NotFound.into());
   }
 
-  new_players.retain_mut(|new_player| {
-    account_state
-      .players
-      .iter()
-      .all(|player| new_player.id != player.id)
-  });
+  {
+    let account_binding = app.state::<Mutex<AccountInfo>>();
+    let account_state = account_binding.lock()?;
+    new_players.retain_mut(|new_player| {
+      account_state
+        .players
+        .iter()
+        .all(|player| new_player.id != player.id)
+    });
+  }
 
   if new_players.is_empty() {
     Err(AccountError::Duplicate.into())
   } else if new_players.len() == 1 {
     // if only one player will be added, save it and return **an empty vector** to inform the frontend not to trigger selector.
-    config_state.partial_update(
-      &app,
-      "states.shared.selected_player_id",
-      &serde_json::to_string(&new_players[0].id).unwrap_or_default(),
-    )?;
-    account_state.players.push(new_players[0].clone());
+    let refreshed_player = authlib_injector::password::refresh(&app, &new_players[0], true).await?;
 
-    account_state.save()?;
-    config_state.save()?;
+    {
+      let account_binding = app.state::<Mutex<AccountInfo>>();
+      let mut account_state = account_binding.lock()?;
+      let config_binding = app.state::<Mutex<LauncherConfig>>();
+      let mut config_state = config_binding.lock()?;
+
+      config_state.partial_update(
+        &app,
+        "states.shared.selected_player_id",
+        &serde_json::to_string(&refreshed_player.id).unwrap_or_default(),
+      )?;
+      account_state.players.push(refreshed_player);
+
+      account_state.save()?;
+      config_state.save()?;
+    }
 
     Ok(vec![])
   } else {
@@ -288,8 +290,8 @@ pub async fn relogin_player_3rdparty_password(
 
   let player_list = authlib_injector::password::login(
     &app,
-    old_player.auth_server_url.clone(),
-    old_player.auth_account.clone(),
+    old_player.auth_server_url.clone().unwrap_or_default(),
+    old_player.auth_account.clone().unwrap_or_default(),
     password,
   )
   .await?;
@@ -299,7 +301,7 @@ pub async fn relogin_player_3rdparty_password(
     .find(|player| player.uuid == old_player.uuid)
     .ok_or(AccountError::NotFound)?;
 
-  let refreshed_player = authlib_injector::password::refresh(&app, &new_player).await?;
+  let refreshed_player = authlib_injector::password::refresh(&app, &new_player, true).await?;
 
   {
     let mut account_state = account_binding.lock()?;
@@ -320,7 +322,7 @@ pub async fn relogin_player_3rdparty_password(
 #[tauri::command]
 pub async fn add_player_from_selection(app: AppHandle, player: Player) -> SJMCLResult<()> {
   let player_info: PlayerInfo = player.into();
-  let refreshed_player = authlib_injector::password::refresh(&app, &player_info).await?;
+  let refreshed_player = authlib_injector::password::refresh(&app, &player_info, true).await?;
 
   {
     let account_binding = app.state::<Mutex<AccountInfo>>();
@@ -430,7 +432,7 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
     PlayerType::ThirdParty => {
       let auth_server = AuthServer::from(get_auth_server_info_by_url(
         &app,
-        player.auth_server_url.clone(),
+        player.auth_server_url.clone().unwrap_or_default(),
       )?);
 
       authlib_injector::common::refresh(&app, player, &auth_server).await?
@@ -526,7 +528,7 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
   let selected_id = config_state.states.shared.selected_player_id.clone();
 
   account_state.players.retain(|player| {
-    let should_remove = player.auth_server_url == url;
+    let should_remove = player.auth_server_url == Some(url.clone());
     if should_remove && player.id == selected_id {
       need_reset = true;
     }

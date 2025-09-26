@@ -1,4 +1,13 @@
 import { ModLoaderType } from "@/enums/instance";
+import { OtherResourceSource } from "@/enums/resource";
+
+export enum ModLoaderStatus {
+  NotDownloaded = "NotDownloaded",
+  Downloading = "Downloading",
+  DownloadFailed = "DownloadFailed",
+  Installing = "Installing",
+  Installed = "Installed",
+}
 
 export interface InstanceSummary {
   id: string;
@@ -10,19 +19,34 @@ export interface InstanceSummary {
   versionPath: string;
   version: string;
   majorVersion: string;
-  isVersionIsolated: boolean;
   modLoader: {
     loaderType: ModLoaderType;
     version?: string;
-    installed: boolean;
+    status: ModLoaderStatus;
   };
+  supportQuickPlay: boolean;
   useSpecGameConfig: boolean;
+  isVersionIsolated: boolean;
+}
+
+export interface ModpackMetaInfo {
+  name: string;
+  version: string;
+  author?: string;
+  description?: string;
+  modpackType: OtherResourceSource;
+  clientVersion: string;
+  modLoader: {
+    loaderType: ModLoaderType;
+    version: string;
+  };
 }
 
 export interface GameServerInfo {
   iconSrc: string;
   ip: string;
   name: string;
+  description: string;
   isQueried: boolean;
   playersOnline?: number;
   playersMax?: number;
@@ -39,6 +63,7 @@ export interface LocalModInfo {
   fileName: string;
   filePath: string;
   description?: string;
+  translatedDescription?: string;
   potentialIncompatibility: boolean;
 }
 

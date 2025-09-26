@@ -1,6 +1,5 @@
 use super::streams::reporter::Sink;
-use super::PTaskDesc;
-use super::THandle;
+use super::{PTaskDesc, THandle};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
 use tokio::time::Duration;
@@ -127,8 +126,7 @@ impl<'a> PEvent<'a> {
   }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-#[serde(tag = "status")]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum GEventStatus {
   Started,
   Stopped,

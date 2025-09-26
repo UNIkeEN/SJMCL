@@ -2,7 +2,7 @@ import { Avatar, Box, IconButton } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
 import { LuGithub } from "react-icons/lu";
-import LinkIconButton from "@/components/common/link-icon-button";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 
@@ -91,12 +91,18 @@ const ContributorsPage = () => {
           {
             title: t("ContributorsPage.all"),
             children: (
-              <LinkIconButton
-                url="https://github.com/UNIkeEN/SJMCL/graphs/contributors"
-                aria-label="all-contributors"
-                isExternal
+              <CommonIconButton
+                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                icon="external"
                 withTooltip
+                tooltipPlacement="bottom-end"
+                size="xs"
                 h={18}
+                onClick={() =>
+                  openUrl(
+                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                  )
+                }
               />
             ),
           },

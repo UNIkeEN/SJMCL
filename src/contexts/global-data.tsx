@@ -14,7 +14,7 @@ import {
 } from "@/hooks/get-state";
 import { AuthServer, Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
-import { GameResourceInfo } from "@/models/resource";
+import { GameClientResourceInfo } from "@/models/resource";
 import { AccountService } from "@/services/account";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
@@ -27,7 +27,7 @@ interface GlobalDataContextType {
   getAuthServerList: (sync?: boolean) => AuthServer[] | undefined;
   getGameVersionList: (
     sync?: boolean
-  ) => Promise<GameResourceInfo[] | GetStateFlag | undefined>;
+  ) => Promise<GameClientResourceInfo[] | GetStateFlag | undefined>;
   isGameVersionListLoading: boolean;
 }
 
@@ -38,7 +38,7 @@ interface GlobalDataDispatchContextType {
   setInstanceList: React.Dispatch<InstanceSummary[]>;
   setSelectedInstance: React.Dispatch<InstanceSummary | undefined>;
   setAuthServerList: React.Dispatch<AuthServer[]>;
-  setGameVersionList: React.Dispatch<GameResourceInfo[]>;
+  setGameVersionList: React.Dispatch<GameClientResourceInfo[]>;
 }
 
 const GlobalDataContext = createContext<GlobalDataContextType | undefined>(
@@ -60,7 +60,8 @@ export const GlobalDataContextProvider: React.FC<{
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>();
   const [selectedInstance, setSelectedInstance] = useState<InstanceSummary>();
   const [authServerList, setAuthServerList] = useState<AuthServer[]>();
-  const [gameVersionList, setGameVersionList] = useState<GameResourceInfo[]>();
+  const [gameVersionList, setGameVersionList] =
+    useState<GameClientResourceInfo[]>();
 
   useEffect(() => {
     const selectedPlayerId = config.states.shared.selectedPlayerId;
@@ -104,8 +105,17 @@ export const GlobalDataContextProvider: React.FC<{
 
   const handleRetrieveInstanceList = useCallback(() => {
     InstanceService.retrieveInstanceList().then((response) => {
-      if (response.status === "success") setInstanceList(response.data);
-      else
+      if (response.status === "success") {
+        const sorted = [...response.data].sort((a, b) => {
+          // put starred instances at the top
+          if (a.starred !== b.starred) {
+            return Number(b.starred) - Number(a.starred);
+          }
+          return a.id.localeCompare(b.id);
+        });
+        setInstanceList(sorted);
+        return response.data;
+      } else
         toast({
           title: response.message,
           description: response.details,
@@ -132,18 +142,9 @@ export const GlobalDataContextProvider: React.FC<{
 
   const getPlayerList = useGetState(playerList, handleRetrievePlayerList);
 
-  const getInstanceList = useGetState(
-    instanceList
-      ? [...instanceList].sort((a, b) => {
-          // put starred instances at the top
-          if (a.starred !== b.starred) {
-            return Number(b.starred) - Number(a.starred);
-          }
-          return a.id.localeCompare(b.id);
-        })
-      : undefined,
-    handleRetrieveInstanceList
-  );
+  // Note: Do not apply any post-processing process on the local state,
+  //       as it will be passed into `useState` dependencies.
+  const getInstanceList = useGetState(instanceList, handleRetrieveInstanceList);
 
   const getAuthServerList = useGetState(
     authServerList,

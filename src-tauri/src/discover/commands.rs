@@ -1,17 +1,15 @@
-use super::super::utils::web::with_retry;
-use super::models::PostSourceInfo;
-use crate::{
-  discover::models::{PostRequest, PostResponse},
-  error::SJMCLResult,
-  launcher_config::models::LauncherConfig,
-};
+use super::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::LauncherConfig;
+use crate::utils::web::with_retry;
 use futures::future;
-use std::{collections::HashMap, sync::Mutex};
+use std::collections::HashMap;
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSourceInfo>> {
+pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSourceInfo>> {
   let post_source_urls = {
     let binding = app.state::<Mutex<LauncherConfig>>();
     let state = binding.lock().unwrap();
@@ -25,7 +23,7 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
     .map(|url| {
       let client = client.clone();
       async move {
-        let mut post_source = PostSourceInfo {
+        let mut news_source = NewsSourceInfo {
           name: "".to_string(),
           full_name: "".to_string(),
           endpoint_url: url.clone(),
@@ -42,13 +40,13 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
           let json_data: serde_json::Value = response.json().await.unwrap_or_default();
 
           if let Some(source_info) = json_data.get("sourceInfo") {
-            post_source.name = source_info["name"].as_str().unwrap_or("").to_string();
-            post_source.full_name = source_info["fullName"].as_str().unwrap_or("").to_string();
-            post_source.icon_src = source_info["iconSrc"].as_str().unwrap_or("").to_string();
+            news_source.name = source_info["name"].as_str().unwrap_or("").to_string();
+            news_source.full_name = source_info["fullName"].as_str().unwrap_or("").to_string();
+            news_source.icon_src = source_info["iconSrc"].as_str().unwrap_or("").to_string();
           }
         }
 
-        post_source
+        news_source
       }
     })
     .collect();
@@ -57,14 +55,14 @@ pub async fn fetch_post_sources_info(app: AppHandle) -> SJMCLResult<Vec<PostSour
 }
 
 #[tauri::command]
-pub async fn fetch_post_summaries(
+pub async fn fetch_news_post_summaries(
   app: AppHandle,
-  requests: Vec<PostRequest>,
-) -> SJMCLResult<PostResponse> {
+  requests: Vec<NewsPostRequest>,
+) -> SJMCLResult<NewsPostResponse> {
   let client = with_retry(app.state::<reqwest::Client>().inner().clone());
   let tasks: Vec<_> = requests
     .into_iter()
-    .map(|PostRequest { url, cursor }| {
+    .map(|NewsPostRequest { url, cursor }| {
       let client = client.clone();
       async move {
         let mut req = client.get(&url).query(&[("pageSize", "12")]);
@@ -76,7 +74,7 @@ pub async fn fetch_post_summaries(
         let resp = req.send().await;
         match resp {
           Ok(resp) if resp.status().is_success() => {
-            let parsed: Result<PostResponse, _> = resp.json().await;
+            let parsed: Result<NewsPostResponse, _> = resp.json().await;
             parsed.ok().map(|mut p| {
               for post in &mut p.posts {
                 post.source.endpoint_url = url.clone();
@@ -105,7 +103,7 @@ pub async fn fetch_post_summaries(
 
   all_posts.sort_by(|a, b| b.create_at.cmp(&a.create_at));
 
-  Ok(PostResponse {
+  Ok(NewsPostResponse {
     posts: all_posts,
     next: None,
     cursors: Some(cursors_map),

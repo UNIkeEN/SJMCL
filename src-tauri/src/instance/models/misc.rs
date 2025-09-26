@@ -1,28 +1,12 @@
-use crate::{
-  instance::constants::INSTANCE_CFG_FILE_NAME, launcher_config::models::GameConfig,
-  storage::save_json_async, utils::image::ImageWrapper,
-};
+use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
+use crate::launcher_config::models::GameConfig;
+use crate::storage::{load_json_async, save_json_async};
+use crate::utils::image::ImageWrapper;
 use serde::{Deserialize, Serialize};
-use std::{
-  cmp::{Ord, Ordering, PartialOrd},
-  collections::HashMap,
-  path::PathBuf,
-  str::FromStr,
-};
+use std::cmp::{Ord, Ordering, PartialOrd};
+use std::path::PathBuf;
+use std::str::FromStr;
 use strum_macros::Display;
-
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
-#[serde(default)]
-pub struct AssetIndex {
-  pub objects: HashMap<String, AssetIndexItem>,
-}
-
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
-#[serde(default)]
-pub struct AssetIndexItem {
-  pub hash: String,
-  pub size: i64,
-}
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstanceSubdirType {
@@ -52,7 +36,7 @@ pub enum ModLoaderType {
 }
 
 impl FromStr for ModLoaderType {
-  type Err = String; // 定义错误类型
+  type Err = String;
 
   fn from_str(input: &str) -> Result<Self, Self::Err> {
     match input.to_lowercase().as_str() {
@@ -71,14 +55,26 @@ impl FromStr for ModLoaderType {
 impl ModLoaderType {
   pub fn to_icon_path(&self) -> &str {
     match self {
-      &ModLoaderType::Unknown => "/images/icons/GrassBlock.png",
+      &ModLoaderType::Unknown => "/images/icons/JEIcon_Release.png",
       &ModLoaderType::Fabric => "/images/icons/Fabric.png",
-      &ModLoaderType::Forge | &ModLoaderType::LegacyForge => "/images/icons/Forge.png",
+      &ModLoaderType::Forge | &ModLoaderType::LegacyForge => "/images/icons/Anvil.png",
       &ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
       &ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
       &ModLoaderType::Quilt => "/images/icons/Quilt.png",
     }
   }
+}
+
+#[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
+pub enum ModLoaderStatus {
+  NotDownloaded, // mod loader's library has not been downloaded
+  DownloadFailed, /* mod loader's library download process failed (including processor installation failed)
+                  Only when SJMCL restart, it will try to re-download library while making no changes to client info JSON (is_retry = true),
+                  and do following steps */
+  Downloading, // mod loader's library download process is ongoing
+  Installing,  // mod loader's library has been downloaded, and installation processors are working
+  #[default]
+  Installed,
 }
 
 structstruck::strike! {
@@ -94,7 +90,7 @@ structstruck::strike! {
     pub version: String,
     pub version_path: PathBuf,
     pub mod_loader: struct {
-      pub installed: bool,
+      pub status: ModLoaderStatus,
       pub loader_type: ModLoaderType,
       pub version: String,
       pub branch: Option<String>, // Optional branch name for mod loaders like Forge
@@ -107,9 +103,19 @@ structstruck::strike! {
 }
 
 impl Instance {
+  pub fn get_json_cfg_path(&self) -> PathBuf {
+    self.version_path.join(INSTANCE_CFG_FILE_NAME)
+  }
+
+  pub async fn load_json_cfg(&self) -> Result<Self, std::io::Error>
+  where
+    Self: Sized + serde::de::DeserializeOwned + Send,
+  {
+    load_json_async::<Self>(&self.get_json_cfg_path()).await
+  }
+
   pub async fn save_json_cfg(&self) -> Result<(), std::io::Error> {
-    let file_path = self.version_path.join(INSTANCE_CFG_FILE_NAME);
-    save_json_async(self, &file_path).await
+    save_json_async(self, &self.get_json_cfg_path()).await
   }
 }
 
@@ -122,10 +128,11 @@ pub struct InstanceSummary {
   pub icon_src: String,
   pub starred: bool,
   pub play_time: u128,
+  pub version_path: PathBuf,
   pub version: String,
   pub major_version: String,
-  pub version_path: PathBuf,
   pub mod_loader: ModLoader,
+  pub support_quick_play: bool,
   pub use_spec_game_config: bool,
   pub is_version_isolated: bool,
 }
@@ -136,6 +143,7 @@ pub struct GameServerInfo {
   pub icon_src: String,
   pub ip: String,
   pub name: String,
+  pub description: String,
   pub is_queried: bool, // if true, this is a complete result from a successful query
   pub players_online: usize,
   pub players_max: usize,
@@ -154,6 +162,7 @@ pub struct LocalModInfo {
   pub file_name: String,
   pub file_path: PathBuf,
   pub description: String,
+  pub translated_description: Option<String>,
   pub potential_incompatibility: bool,
 }
 
@@ -233,9 +242,12 @@ pub enum InstanceError {
   AssetIndexParseError,
   InstallProfileParseError,
   ModLoaderVersionParseError,
+  ModpackManifestParseError,
+  CurseForgeFileManifestParseError,
   NetworkError,
   UnsupportedModLoader,
   MainClassNotFound,
+  InstallationDuplicated,
   ProcessorExecutionFailed,
 }
 

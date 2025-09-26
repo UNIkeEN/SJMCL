@@ -1,4 +1,6 @@
 name: Build Artifacts
+permissions:
+  contents: read
 
 on:
   workflow_call:
@@ -12,6 +14,11 @@ on:
         required: false
         type: boolean
         default: true
+      branch:
+        description: 'Git branch to checkout'
+        required: false
+        type: string
+        default: 'main'
     secrets:
       SJMCL_MICROSOFT_CLIENT_SECRET:
         required: true
@@ -32,6 +39,10 @@ jobs:
             target: i686-pc-windows-msvc
             platform: windows
             arch: i686
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            platform: windows
+            arch: aarch64
           - os: macos-latest
             target: aarch64-apple-darwin
             platform: macos
@@ -49,6 +60,8 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -72,6 +85,7 @@ jobs:
       - name: Install frontend dependencies
         run: |
           npm install -g pnpm
+          pnpm import
           pnpm install
 
       - name: Remove Font files (MacOS)
@@ -109,7 +123,7 @@ jobs:
           echo "Artifact Name: $ARTIFACT_NAME"
           mkdir artifacts
           if [ "${{ matrix.platform }}" = "windows" ]; then
-            python scripts/portable/bundle_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL.exe"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL.exe"
             # For Windows, copy the portable exe
             mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/msi/"*.msi artifacts/"$ARTIFACT_NAME".msi
@@ -120,7 +134,7 @@ jobs:
             tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "SJMCL.app"
             ls -la artifacts
           elif [ "${{ matrix.platform }}" = "linux" ]; then
-            python scripts/portable/bundle_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL"
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/deb/"*.deb artifacts/"$ARTIFACT_NAME".deb
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/rpm/"*.rpm artifacts/"$ARTIFACT_NAME".rpm

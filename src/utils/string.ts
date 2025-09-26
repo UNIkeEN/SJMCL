@@ -60,6 +60,19 @@ export const isFileNameSanitized = (str: string): boolean => {
   );
 };
 
+export const sanitizeFileName = (str: string): string => {
+  // Remove forbidden characters
+  let sanitized = str.replace(/[\\/:*?"<>|]/g, "");
+  // Trim leading/trailing spaces and dots
+  sanitized = sanitized.replace(/^[\s.]+|[\s.]+$/g, "");
+  // If reserved name, append underscore
+  const reservedNames = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i;
+  if (reservedNames.test(sanitized)) {
+    sanitized += "_";
+  }
+  return sanitized;
+};
+
 export const isPathSanitized = (path: string, maxLength = 255): boolean => {
   const forbiddenChars = /[<>:"|?*\0]/;
   const reservedNames = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;
@@ -100,3 +113,6 @@ export const isPathSanitized = (path: string, maxLength = 255): boolean => {
 
   return true;
 };
+
+export const isValidSemanticVersion = (version: string) =>
+  /^\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?$/.test(version);

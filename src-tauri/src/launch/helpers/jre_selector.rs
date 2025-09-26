@@ -1,5 +1,6 @@
 use crate::error::SJMCLResult;
-use crate::instance::{helpers::game_version::compare_game_versions, models::misc::Instance};
+use crate::instance::helpers::game_version::compare_game_versions;
+use crate::instance::models::misc::Instance;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{GameJava, JavaInfo};
 use std::cmp::Ordering;
@@ -19,7 +20,7 @@ pub async fn select_java_runtime(
       .iter()
       .find(|j| j.exec_path == game_java.exec_path)
       .cloned()
-      .ok_or_else(|| LaunchError::NoSuitableJava.into());
+      .ok_or_else(|| LaunchError::SelectedJavaUnavailable.into());
   }
 
   let mut min_version_req = get_minimum_java_version_by_game(app, instance).await;
@@ -48,20 +49,22 @@ pub async fn select_java_runtime(
 /// Get minimum java version requirement by game client version
 /// ref: https://zh.minecraft.wiki/w/Java%E7%89%88?variant=zh-cn#%E8%BD%AF%E4%BB%B6%E9%9C%80%E6%B1%82
 async fn get_minimum_java_version_by_game(app: &AppHandle, instance: &Instance) -> i32 {
+  // only allow fallback remote fetch here in the launch process, as Java selection and command generation are used sequentially.
+  // ref: https://github.com/UNIkeEN/SJMCL/pull/799
   // 1.20.5(24w14a)+
-  if compare_game_versions(app, &instance.version, "24w14a").await >= Ordering::Equal {
+  if compare_game_versions(app, &instance.version, "24w14a", true).await >= Ordering::Equal {
     return 21;
   }
   // 1.18(1.18-pre2)+
-  if compare_game_versions(app, &instance.version, "1.18-pre2").await >= Ordering::Equal {
+  if compare_game_versions(app, &instance.version, "1.18-pre2", false).await >= Ordering::Equal {
     return 17;
   }
   // 1.17(21w19a)+
-  if compare_game_versions(app, &instance.version, "21w19a").await >= Ordering::Equal {
+  if compare_game_versions(app, &instance.version, "21w19a", false).await >= Ordering::Equal {
     return 16;
   }
   // 1.12(17w13a)+
-  if compare_game_versions(app, &instance.version, "17w13a").await >= Ordering::Equal {
+  if compare_game_versions(app, &instance.version, "17w13a", false).await >= Ordering::Equal {
     return 8;
   }
   0

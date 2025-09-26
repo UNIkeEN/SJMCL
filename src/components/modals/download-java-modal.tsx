@@ -19,6 +19,55 @@ import { LuExternalLink } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
 import { useLauncherConfig } from "@/contexts/config";
 
+type VendorKey = "zulu" | "bellsoft" | "oracle";
+
+interface JavaVendor {
+  label: string;
+  hasJre: boolean;
+  archMap: Record<string, string>;
+  getUrl: (params: {
+    version: string;
+    os: string;
+    archParam: string;
+    type: "jdk" | "jre";
+  }) => string;
+}
+
+const VENDORS: Record<VendorKey, JavaVendor> = {
+  zulu: {
+    label: "Zulu",
+    hasJre: true,
+    archMap: {
+      x86_64: "x86-64-bit",
+      aarch64: "arm-64-bit",
+    },
+    getUrl: ({ version, os, archParam, type }) => {
+      const archQuery = archParam ? `&architecture=${archParam}` : "";
+      return `https://www.azul.com/downloads/?version=java-${version}-lts&os=${os}${archQuery}&package=${type}&show-old-builds=true#zulu`;
+    },
+  },
+  bellsoft: {
+    label: "BellSoft",
+    hasJre: true,
+    archMap: {
+      x86_64: "x86",
+      aarch64: "arm",
+    },
+    getUrl: ({ version, os, archParam, type }) => {
+      return `https://bell-sw.com/pages/downloads/?version=java-${version}&os=${os}&package=${type}&architecture=${archParam}`;
+    },
+  },
+  oracle: {
+    label: "Oracle",
+    hasJre: false,
+    archMap: {},
+    getUrl: ({ version, os }) => {
+      const javaOrJdk = ["8", "11", "17"].includes(version) ? "java" : "jdk";
+      return `https://www.oracle.com/java/technologies/downloads/#${javaOrJdk}${version}-${os.replace("macos", "mac")}`;
+    },
+  },
+};
+
 export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
 }) => {
@@ -28,35 +77,22 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   const os = config.basicInfo.osType;
   const arch = config.basicInfo.arch;
 
-  const [vendor, setVendor] = useState<"zulu" | "oracle" | "">("");
+  const [vendor, setVendor] = useState<VendorKey | "">("");
   const [version, setVersion] = useState<"" | "8" | "11" | "17" | "21">("");
   const [type, setType] = useState<"" | "jdk" | "jre">("");
 
-  const mapArchToUrlParam = (arch: string): string | undefined => {
-    switch (arch) {
-      case "x86_64":
-        return "x86-64-bit";
-      case "aarch64":
-        return "arm-64-bit";
-      default:
-        return undefined;
-    }
-  };
-
   const handleConfirm = () => {
-    let url = "";
+    if (!vendor || !version || !type) return;
 
-    if (vendor === "zulu") {
-      const archParam = mapArchToUrlParam(arch);
-      const archQuery = archParam ? `&architecture=${archParam}` : "";
-      url = `https://www.azul.com/downloads/?version=java-${version}-lts&os=${os}${archQuery}&package=${type}&show-old-builds=true#zulu`;
-    } else if (vendor === "oracle") {
-      const javaOrJdk =
-        version === "8" || version === "11" || version === "17"
-          ? "java"
-          : "jdk";
-      url = `https://www.oracle.com/java/technologies/downloads/#${javaOrJdk}${version}-${os.replace("macos", "mac")}`;
-    }
+    const selectedVendor = VENDORS[vendor];
+    const archParam = selectedVendor.archMap[arch] || "";
+
+    const url = selectedVendor.getUrl({
+      version,
+      os,
+      archParam,
+      type: type as "jdk" | "jre",
+    });
 
     openUrl(url);
     props.onClose?.();
@@ -72,14 +108,15 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
           <VStack align="stretch">
             <Grid templateColumns="1fr 1fr 1fr" gap={4} w="100%">
               <MenuSelector
-                options={[
-                  { value: "zulu", label: "Zulu" },
-                  { value: "oracle", label: "Oracle" },
-                ]}
+                options={Object.entries(VENDORS).map(([key, val]) => ({
+                  value: key,
+                  label: val.label,
+                }))}
                 value={vendor}
                 onSelect={(val) => {
-                  if (val === "oracle") setType("jdk");
-                  setVendor(val as "zulu" | "oracle");
+                  const selected = val as VendorKey;
+                  if (!VENDORS[selected].hasJre) setType("jdk");
+                  setVendor(selected);
                 }}
                 placeholder={t("DownloadJavaModal.selector.vendor")}
                 size="sm"
@@ -98,7 +135,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
               <MenuSelector
                 options={[
                   { value: "jdk", label: "JDK" },
-                  ...(vendor !== "oracle"
+                  ...(vendor && VENDORS[vendor as VendorKey]?.hasJre
                     ? [{ value: "jre", label: "JRE" }]
                     : []),
                 ]}

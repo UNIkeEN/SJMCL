@@ -1,10 +1,13 @@
 use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::{
-  misc::get_source_priority_list, version_manifest::get_game_version_manifest,
-};
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::version_manifest::get_game_version_manifest;
 use crate::utils::fs::get_app_resource_filepath;
-use std::{cmp::Ordering, fs, path::PathBuf, sync::Mutex};
-use tauri::{path::BaseDirectory, AppHandle, Manager};
+use std::cmp::Ordering;
+use std::fs;
+use std::path::PathBuf;
+use std::sync::Mutex;
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager};
 
 fn load_versions(app: &AppHandle, path: &str, from_cache: bool) -> Vec<String> {
   let list_file_path: Option<PathBuf> = if from_cache {
@@ -26,14 +29,18 @@ fn try_find(versions: &[String], version: &str) -> Option<usize> {
 
 /// Compare two Minecraft version IDs.
 /// The order is determined by `assets/game/versions.txt`,
-/// or fallback to cache, or fetch remote if necessary.
+/// or fallback to cache, and optionally refresh from remote manifest if not found.
 ///
 /// # Examples
 /// ```
-/// if compare_game_versions(&app, version, "1.19").await.le(&Ordering::Equal) {
+/// if compare_game_versions(&app, version, "1.19", true).await.le(&Ordering::Equal) {
 ///     println!("{} <= 1.19", version);
 /// }
 /// ```
+///
+/// # Parameters
+/// - `fallback_fetch_remote`: Whether to refresh the version list from remote if not found in built-in or cache.
+///   ⚠️ If enabled, this may take extra time due to network request.
 ///
 /// # Expected result
 /// - Returns `Ordering::Less` if `version_a` < `version_b`
@@ -41,7 +48,12 @@ fn try_find(versions: &[String], version: &str) -> Option<usize> {
 /// - Returns `Ordering::Greater` if `version_a` > `version_b`, or if `version_a` not found
 /// - If both versions are not found, returns `Ordering::Equal`
 ///
-pub async fn compare_game_versions(app: &AppHandle, version_a: &str, version_b: &str) -> Ordering {
+pub async fn compare_game_versions(
+  app: &AppHandle,
+  version_a: &str,
+  version_b: &str,
+  fallback_fetch_remote: bool,
+) -> Ordering {
   let mut versions = load_versions(app, "assets/game/versions.txt", false);
   let mut idx_a = try_find(&versions, version_a);
   let mut idx_b = try_find(&versions, version_b);
@@ -54,7 +66,7 @@ pub async fn compare_game_versions(app: &AppHandle, version_a: &str, version_b: 
   }
 
   // Fallback to fetch remote manifest and retry.
-  if idx_a.is_none() || idx_b.is_none() {
+  if fallback_fetch_remote && (idx_a.is_none() || idx_b.is_none()) {
     if let Some(state) = app.try_state::<Mutex<LauncherConfig>>() {
       let priority_list = {
         let locked = state.lock().unwrap();
@@ -83,15 +95,23 @@ pub async fn compare_game_versions(app: &AppHandle, version_a: &str, version_b: 
 ///
 /// # Examples
 /// ```
-/// let version = get_major_game_version(&app, "1.18-pre1").await;
+/// let version = get_major_game_version(&app, "1.18-pre1", true).await;
 /// println!("Major version of 1.18-pre1: {}", version);
 /// ```
+///
+/// # Parameters
+/// - `fallback_fetch_remote`: Whether to refresh the version list from remote if not found in built-in or cache.
+///   ⚠️ If enabled, this may take extra time due to network request.
 ///
 /// # Expected result
 /// - Returns the major version if the input version starts with "1.x"
 /// - Returns the closest major version from the list otherwise
 /// - Returns empty string as fallback.
-pub async fn get_major_game_version(app: &AppHandle, version: &str) -> String {
+pub async fn get_major_game_version(
+  app: &AppHandle,
+  version: &str,
+  fallback_fetch_remote: bool,
+) -> String {
   fn is_1x_version(version: &str) -> bool {
     version.starts_with("1.")
   }
@@ -133,15 +153,17 @@ pub async fn get_major_game_version(app: &AppHandle, version: &str) -> String {
     return find_closest_major_version(&versions, idx);
   }
 
-  if let Some(state) = app.try_state::<Mutex<LauncherConfig>>() {
-    let priority_list = {
-      let locked = state.lock().unwrap();
-      get_source_priority_list(&locked)
-    };
-    let _ = get_game_version_manifest(app, &priority_list).await;
-    versions = load_versions(app, "game_versions.txt", true);
-    if let Some(idx) = try_find(&versions, version) {
-      return find_closest_major_version(&versions, idx);
+  if fallback_fetch_remote {
+    if let Some(state) = app.try_state::<Mutex<LauncherConfig>>() {
+      let priority_list = {
+        let locked = state.lock().unwrap();
+        get_source_priority_list(&locked)
+      };
+      let _ = get_game_version_manifest(app, &priority_list).await;
+      versions = load_versions(app, "game_versions.txt", true);
+      if let Some(idx) = try_find(&versions, version) {
+        return find_closest_major_version(&versions, idx);
+      }
     }
   }
 

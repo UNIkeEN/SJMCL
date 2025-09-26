@@ -44,6 +44,12 @@ const InstanceScreenshotsPage: React.FC = () => {
     getScreenshotListWrapper();
   }, [getScreenshotListWrapper]);
 
+  useEffect(() => {
+    // This page does not have a refresh button, so we need to fetch the screenshot list when the page is mounted
+    getScreenshotListWrapper(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const {
     isOpen: isScreenshotPreviewModalOpen,
     onOpen: onScreenshotPreviewModalOpen,
@@ -65,7 +71,7 @@ const InstanceScreenshotsPage: React.FC = () => {
       const instanceId = Array.isArray(id) ? id[0] : id;
       router.replace(
         {
-          pathname: `/instances/details/${instanceId}/screenshots`,
+          pathname: `/instances/details/${encodeURIComponent(instanceId)}/screenshots`,
           query: {},
         },
         undefined,

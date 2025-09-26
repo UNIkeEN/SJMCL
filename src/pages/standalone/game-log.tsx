@@ -74,7 +74,7 @@ const GameLogPage: React.FC = () => {
       return lastLevel;
     }
 
-    if (/exception|error|invalid|failed/i.test(log)) {
+    if (/exception|error|invalid|failed|错误/i.test(log)) {
       lastLevel = "ERROR";
       return "ERROR";
     }

@@ -26,7 +26,10 @@ export function responseHandler(serviceDomain: string): MethodDecorator {
 
         const details = String(error)
           ? t(
-              `Services.${serviceDomain}.${String(propertyKey)}.error.description.${String(error)}`
+              `Services.${serviceDomain}.${String(propertyKey)}.error.description.${String(error)}`,
+              {
+                defaultValue: String(error),
+              }
             )
           : "";
 

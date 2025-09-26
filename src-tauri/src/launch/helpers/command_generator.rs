@@ -1,27 +1,22 @@
+use super::file_validator::get_nonnative_library_paths;
+use super::misc::{get_separator, replace_arguments};
+use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
+use crate::account::models::{AccountError, PlayerType};
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::{
-  helpers::client_json::FeaturesInfo,
-  helpers::misc::get_instance_subdir_paths,
-  models::misc::{InstanceError, InstanceSubdirType},
-};
-use crate::launch::helpers::misc::get_separator;
-use crate::launch::{
-  helpers::file_validator::get_nonnative_library_paths, helpers::misc::replace_arguments,
-  models::LaunchingState,
-};
+use crate::instance::helpers::client_json::FeaturesInfo;
+use crate::instance::helpers::game_version::compare_game_versions;
+use crate::instance::helpers::misc::get_instance_subdir_paths;
+use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
+use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::*;
-use crate::{
-  account::{
-    helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path,
-    models::{AccountError, PlayerType},
-  },
-  launch::models::LaunchError,
-};
-use base64::{engine::general_purpose, Engine};
+use base64::engine::general_purpose;
+use base64::Engine;
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
-use std::collections::HashMap;
+use shlex::try_quote;
+use std::borrow::Cow;
+use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 
@@ -36,6 +31,9 @@ pub struct LaunchArguments {
   pub natives_directory: String,
   pub launcher_name: String,
   pub launcher_version: String,
+
+  // compatibility with HMCL
+  pub primary_jar_name: String,
 
   // auth params
   pub auth_access_token: String,
@@ -90,11 +88,15 @@ impl LaunchArguments {
 }
 
 pub struct LaunchCommand {
-  pub class_paths: Vec<String>, // may be too long for Windows, consider use env var
+  pub class_paths: Vec<String>, // may be too long for Windows, split and use env var
   pub args: Vec<String>,
 }
 
-pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
+pub async fn generate_launch_command(
+  app: &AppHandle,
+  quick_play_singleplayer: Option<String>,
+  quick_play_multiplayer: Option<String>,
+) -> SJMCLResult<LaunchCommand> {
   let launcher_config = { app.state::<Mutex<LauncherConfig>>().lock()?.clone() };
   let launching_queue = { app.state::<Mutex<Vec<LaunchingState>>>().lock()?.clone() };
 
@@ -152,9 +154,17 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
 
   let mut class_paths: Vec<String> = get_nonnative_library_paths(&client_info, libraries_dir)?
     .into_iter()
+    .collect::<HashSet<_>>()
+    .into_iter()
     .map(|p| p.to_string_lossy().to_string())
     .collect();
   class_paths.push(client_jar_path.clone());
+
+  let quickplay_server_url = match quick_play_multiplayer {
+    Some(ref url) if !url.is_empty() => url.clone(),
+    None if game_config.game_server.auto_join => game_config.game_server.server_url.clone(),
+    _ => String::new(),
+  };
 
   let arguments_value = LaunchArguments {
     assets_root: assets_dir.to_string_lossy().to_string(),
@@ -162,6 +172,7 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
     game_directory: root_dir.to_string_lossy().to_string(),
 
     version_name: selected_instance.name.clone(),
+    primary_jar_name: format!("{}.jar", selected_instance.name.clone()),
     version_type: if !game_config.game_window.custom_info.is_empty() {
       game_config.game_window.custom_info.clone()
     } else {
@@ -173,7 +184,7 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
     library_directory: libraries_dir.to_string_lossy().to_string(),
     classpath_separator: get_separator().to_string(),
 
-    auth_access_token: selected_player.access_token,
+    auth_access_token: selected_player.access_token.unwrap_or_default(),
     auth_player_name: selected_player.name,
     user_type: "msa".to_string(), // TODO
     auth_uuid: selected_player.uuid.to_string(),
@@ -184,8 +195,8 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
     resolution_height: game_config.game_window.resolution.height,
     resolution_width: game_config.game_window.resolution.width,
     quick_play_path: String::new(),
-    quick_play_singleplayer: String::new(),
-    quick_play_multiplayer: game_config.game_server.server_url,
+    quick_play_singleplayer: quick_play_singleplayer.clone().unwrap_or_default(),
+    quick_play_multiplayer: quickplay_server_url.clone(),
     quick_play_realms: String::new(),
   };
 
@@ -260,7 +271,7 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
     cmd.push(format!(
       "-javaagent:{}={}",
       get_authlib_injector_jar_path(app)?.to_string_lossy(),
-      selected_player.auth_server_url
+      selected_player.auth_server_url.clone().unwrap_or_default()
     ));
     cmd.push("-Dauthlibinjector.side=client".to_string());
     cmd.push(format!(
@@ -275,13 +286,20 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
   let map = arguments_value.into_hashmap()?;
 
   // some feature rules defined in client json, add to jvm/game arg templates
+  let has_quickplay_single = quick_play_singleplayer
+    .as_deref()
+    .map(|s| s.trim())
+    .is_some_and(|s| !s.is_empty());
+
   let launch_feature = FeaturesInfo {
     is_demo_user: Some(false),
     has_custom_resolution: Some(true),
-    has_quick_plays_support: Some(false), // TODO
-    is_quick_play_multiplayer: Some(game_config.game_server.auto_join),
-    is_quick_play_singleplayer: Some(false), // TODO
-    is_quick_play_realms: Some(false),       // unsupported
+    has_quick_plays_support: Some(true),
+    is_quick_play_multiplayer: Some(
+      !has_quickplay_single && !quickplay_server_url.trim().is_empty(),
+    ),
+    is_quick_play_singleplayer: Some(has_quickplay_single),
+    is_quick_play_realms: Some(false), // unsupported
   };
 
   if let Some(client_args) = &client_info.arguments {
@@ -332,11 +350,81 @@ pub fn generate_launch_command(app: &AppHandle) -> SJMCLResult<LaunchCommand> {
     return Err(InstanceError::ClientJsonParseError.into());
   }
 
+  // quick into server (for old version)
+  if !quickplay_server_url.is_empty()
+    && compare_game_versions(app, &selected_instance.version, "23w14a", false)
+      .await
+      .is_lt()
+  {
+    let (host, port) = quickplay_server_url
+      .split_once(':')
+      .map(|(h, p)| (h.to_string(), p.to_string()))
+      .unwrap_or((quickplay_server_url.clone(), "25565".to_string()));
+
+    cmd.extend(["--server".into(), host, "--port".into(), port]);
+  }
+
+  // fullscreen
   if game_config.game_window.resolution.fullscreen {
     cmd.push("--fullscreen".to_string());
   }
+
+  if !game_config
+    .advanced
+    .custom_commands
+    .minecraft_argument
+    .trim()
+    .is_empty()
+  {
+    match shlex::split(&game_config.advanced.custom_commands.minecraft_argument) {
+      Some(mut extra_args) => cmd.append(&mut extra_args),
+      None => {
+        eprintln!("[Warn] Failed to parse minecraftArgument");
+      }
+    }
+  }
+
   Ok(LaunchCommand {
     class_paths,
     args: cmd,
   })
+}
+
+pub fn export_full_launch_command(
+  class_paths: &[String],
+  args: &[String],
+  java_exec_str: &str,
+) -> String {
+  fn quote_or_raw(s: &str) -> Cow<str> {
+    try_quote(s).unwrap_or(Cow::Borrowed(s))
+  }
+
+  let classpath_str = class_paths.join(get_separator());
+  let java_exec = quote_or_raw(java_exec_str);
+  let mut safe_args = args.to_vec();
+  if let Some(access_token_pos) = args.iter().position(|s| s == "--accessToken") {
+    if access_token_pos + 1 < args.len() {
+      // avoid leaking access token in exported files
+      safe_args[access_token_pos + 1] = "***".to_string();
+    }
+  }
+  let quoted_args = safe_args
+    .iter()
+    .map(|s| quote_or_raw(s))
+    .collect::<Vec<_>>();
+
+  let java_cmd = std::iter::once(java_exec)
+    .chain(quoted_args)
+    .collect::<Vec<_>>()
+    .join(" ");
+
+  #[cfg(target_os = "windows")]
+  {
+    format!("set CLASSPATH=\"{}\" && {}", classpath_str, java_cmd)
+  }
+
+  #[cfg(not(target_os = "windows"))]
+  {
+    format!("CLASSPATH=\"{}\" {}", classpath_str, java_cmd)
+  }
 }

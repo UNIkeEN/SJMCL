@@ -79,7 +79,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       } else {
         const _appDataDir = await appDataDir();
         setBgImgSrc(
-          convertFileSrc(`${_appDataDir}/UserContent/Backgrounds/${bgKey}`)
+          convertFileSrc(`${_appDataDir}/UserContent/Backgrounds/${bgKey}`) +
+            `?t=${Date.now()}`
         );
       }
     };

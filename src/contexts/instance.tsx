@@ -167,8 +167,10 @@ export const InstanceContextProvider: React.FC<{
       const summary = instanceList.find(
         (instance) => instance.id === instanceId
       );
-      setInstanceSummary(summary);
-      handleRetrieveInstanceGameConfig(instanceId);
+      if (summary && summary?.id) {
+        setInstanceSummary(summary);
+        handleRetrieveInstanceGameConfig(instanceId);
+      }
     }
   }, [router.query.id, getInstanceList, handleRetrieveInstanceGameConfig]);
 
@@ -271,10 +273,11 @@ export const InstanceContextProvider: React.FC<{
       return "%CANCELLED%"; // to avoid state update after unmount
     }
     if (response.status === "success") {
-      setWorlds(
-        [...response.data].sort((a, b) => b.lastPlayedAt - a.lastPlayedAt)
+      const sorted = [...response.data].sort(
+        (a, b) => b.lastPlayedAt - a.lastPlayedAt
       );
-      return response.data;
+      setWorlds(sorted);
+      return sorted;
     } else {
       toast({
         title: response.message,
@@ -423,8 +426,9 @@ export const InstanceContextProvider: React.FC<{
       return "%CANCELLED%"; // to avoid state update after unmount
     }
     if (response.status === "success") {
-      setScreenshots([...response.data].sort((a, b) => b.time - a.time));
-      return response.data;
+      const sorted = [...response.data].sort((a, b) => b.time - a.time);
+      setScreenshots(sorted);
+      return sorted;
     } else {
       toast({
         title: response.message,

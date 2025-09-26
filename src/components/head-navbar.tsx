@@ -8,6 +8,7 @@ import {
   Tabs,
   Text,
   Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -38,6 +39,8 @@ const HeadNavBar = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const { tasks } = useTaskContext();
   const isDownloadIndicatorShown = tasks.length > 0;
+
+  const unselectTabColor = useColorModeValue("gray.600", "gray.400");
 
   useEffect(() => {
     setIsAnimating(true);
@@ -105,8 +108,13 @@ const HeadNavBar = () => {
                   placement="bottom"
                   isDisabled={!isSimplified || selectedIndex === index}
                 >
-                  <Tab fontWeight={selectedIndex === index ? "600" : "normal"}>
-                    <HStack spacing={2}>
+                  <Tab
+                    fontWeight={selectedIndex === index ? "600" : "normal"}
+                    color={
+                      selectedIndex === index ? "inherit" : unselectTabColor
+                    }
+                  >
+                    <HStack spacing={2} id={`head-navbar-tab-${item.label}`}>
                       <Icon as={item.icon} />
                       {(!isSimplified || selectedIndex === index) && (
                         <Text>{t(`HeadNavBar.navList.${item.label}`)}</Text>

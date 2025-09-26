@@ -20,7 +20,7 @@ import { downloadDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuDownload,
@@ -37,10 +37,11 @@ import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
-import { useTaskContext } from "@/contexts/task";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import {
+  OtherResourceSource,
   OtherResourceType,
   datapackTagList,
   modTagList,
@@ -52,22 +53,24 @@ import {
 import { GetStateFlag } from "@/hooks/get-state";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import {
-  GameResourceInfo,
+  GameClientResourceInfo,
   OtherResourceFileInfo,
   OtherResourceInfo,
   OtherResourceVersionPack,
 } from "@/models/resource";
-import { TaskTypeEnums } from "@/models/task";
+import { TaskParam, TaskTypeEnums } from "@/models/task";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
+import { TaskService } from "@/services/task";
 import { ISOToDate } from "@/utils/datetime";
 import { formatDisplayCount } from "@/utils/string";
 
 interface DownloadSpecificResourceModalProps
   extends Omit<ModalProps, "children"> {
   resource: OtherResourceInfo;
-  curInstanceMajorVersion: string | undefined;
-  curInstanceModLoader: ModLoaderType | undefined;
+  curInstanceMajorVersion?: string;
+  curInstanceVersion?: string;
+  curInstanceModLoader?: ModLoaderType;
 }
 
 const DownloadSpecificResourceModal: React.FC<
@@ -75,9 +78,35 @@ const DownloadSpecificResourceModal: React.FC<
 > = ({
   resource,
   curInstanceMajorVersion,
+  curInstanceVersion,
   curInstanceModLoader,
   ...modalProps
 }) => {
+  const { t } = useTranslation();
+  const { config } = useLauncherConfig();
+  const router = useRouter();
+  const toast = useToast();
+  const themedStyles = useThemedCSSStyle();
+  const primaryColor = config.appearance.theme.primaryColor;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
+
+  const [gameVersionList, setGameVersionList] = useState<string[]>([]);
+  const [versionLabels, setVersionLabels] = useState<string[]>([]);
+  const [selectedVersionLabel, setSelectedVersionLabel] = useState<string>("");
+  const [selectedModLoader, setSelectedModLoader] = useState<
+    ModLoaderType | "All"
+  >(curInstanceModLoader || "All");
+  const [isVersionPacksLoading, setIsLoadingVersionPacks] =
+    useState<boolean>(true);
+  const [versionPacks, setVersionPacks] = useState<OtherResourceVersionPack[]>(
+    []
+  );
+
+  const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
+  const { openSharedModal, closeSharedModal } = useSharedModals();
+
   const modLoaderLabels = [
     "All",
     ModLoaderType.Fabric,
@@ -99,36 +128,33 @@ const DownloadSpecificResourceModal: React.FC<
     release: "green.500",
   };
 
-  const { t } = useTranslation();
-  const { config } = useLauncherConfig();
-  const router = useRouter();
-  const toast = useToast();
-  const themedStyles = useThemedCSSStyle();
-  const primaryColor = config.appearance.theme.primaryColor;
-
-  const [gameVersionList, setGameVersionList] = useState<string[]>([]);
-  const [versionLabels, setVersionLabels] = useState<string[]>([]);
-  const [selectedVersionLabel, setSelectedVersionLabel] = useState<string>(
-    curInstanceMajorVersion || "All"
-  );
-  const [selectedModLoader, setSelectedModLoader] = useState<
-    ModLoaderType | "All"
-  >(curInstanceModLoader || "All");
-  const [isVersionPacksLoading, setIsLoadingVersionPacks] =
-    useState<boolean>(true);
-  const [versionPacks, setVersionPacks] = useState<OtherResourceVersionPack[]>(
-    []
-  );
-
-  const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
-  const { handleScheduleProgressiveTaskGroup } = useTaskContext();
+  const handleScheduleProgressiveTaskGroup = useCallback(
+    (taskGroup: string, params: TaskParam[]) => {
+      TaskService.scheduleProgressiveTaskGroup(taskGroup, params).then(
+        (response) => {
+          // success toast will now be called by task context group listener
+          if (response.status !== "success") {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
+        }
+      );
+    },
+    [toast]
+  ); // this is because TaskContext is now inside the SharedModalContext, use a separated function to avoid circular dependency
 
   const translateTag = (
     tag: string,
     resourceType: string,
-    downloadSource?: string
+    downloadSource?: OtherResourceSource
   ) => {
-    if (downloadSource === "CurseForge" || downloadSource === "Modrinth") {
+    if (
+      downloadSource === OtherResourceSource.CurseForge ||
+      downloadSource === OtherResourceSource.Modrinth
+    ) {
       const tagList = (tagLists[resourceType] || modpackTagList)[
         downloadSource
       ];
@@ -149,7 +175,7 @@ const DownloadSpecificResourceModal: React.FC<
   const versionLabelToParam = useCallback(
     (label: string) => {
       if (label === "All") return ["All"];
-      if (resource.source === "Modrinth")
+      if (resource.source === OtherResourceSource.Modrinth)
         return gameVersionList.filter((version) => version.startsWith(label));
       return [label];
     },
@@ -206,13 +232,19 @@ const DownloadSpecificResourceModal: React.FC<
     return defaultDownloadPath;
   }, [resource.type, router.query.id, toast]);
 
-  const startDownload = async (item: OtherResourceFileInfo) => {
+  const startDownload = async (
+    item: OtherResourceFileInfo,
+    translatedName?: string
+  ) => {
     const dir = await getDefaultFilePath();
+    const fileName = translatedName
+      ? `[${translatedName}] ${item.fileName}`
+      : item.fileName;
     const savepath = await save({
-      defaultPath: dir + "/" + item.fileName,
+      defaultPath: dir + "/" + fileName,
     });
     if (!savepath) return;
-    handleScheduleProgressiveTaskGroup("game-resource", [
+    handleScheduleProgressiveTaskGroup(resource.type, [
       {
         src: item.downloadUrl,
         dest: savepath,
@@ -220,13 +252,19 @@ const DownloadSpecificResourceModal: React.FC<
         taskType: TaskTypeEnums.Download,
       },
     ]);
+
+    if (resource.type === OtherResourceType.ModPack) {
+      closeSharedModal("download-specific-resource");
+      closeSharedModal("download-modpack");
+      router.push("/downloads");
+    }
   };
 
-  const getRecommendedFiles = (): OtherResourceFileInfo[] => {
-    if (!curInstanceMajorVersion || !versionPacks.length) return [];
+  const getRecommendedFiles = useMemo((): OtherResourceFileInfo[] => {
+    if (!curInstanceVersion || !versionPacks.length) return [];
 
     const matchingPacks = versionPacks.filter(
-      (pack) => pack.name === curInstanceMajorVersion
+      (pack) => pack.name === curInstanceVersion
     );
     if (!matchingPacks.length) return [];
 
@@ -260,10 +298,16 @@ const DownloadSpecificResourceModal: React.FC<
       (a, b) => new Date(b.fileDate).getTime() - new Date(a.fileDate).getTime()
     );
     return [candidateFiles[0]];
-  };
+  }, [
+    curInstanceVersion,
+    versionPacks,
+    resource.type,
+    resource.tags,
+    curInstanceModLoader,
+  ]);
 
   const shouldShowRecommendedSection = (): boolean => {
-    const recommendedFiles = getRecommendedFiles();
+    const recommendedFiles = getRecommendedFiles;
     if (!recommendedFiles.length) return false;
 
     const isCorrectVersionFilter =
@@ -280,8 +324,10 @@ const DownloadSpecificResourceModal: React.FC<
     getGameVersionList().then((list) => {
       if (list && list !== GetStateFlag.Cancelled) {
         const versionList = list
-          .filter((version: GameResourceInfo) => version.gameType === "release")
-          .map((version: GameResourceInfo) => version.id);
+          .filter(
+            (version: GameClientResourceInfo) => version.gameType === "release"
+          )
+          .map((version: GameClientResourceInfo) => version.id);
         setGameVersionList(versionList);
         const majorVersions = [
           ...new Set(
@@ -300,7 +346,7 @@ const DownloadSpecificResourceModal: React.FC<
       resourceId: string,
       modLoader: ModLoaderType | "All",
       gameVersions: string[],
-      downloadSource: string
+      downloadSource: OtherResourceSource
     ) => {
       setIsLoadingVersionPacks(true);
       ResourceService.fetchResourceVersionPacks(
@@ -330,7 +376,7 @@ const DownloadSpecificResourceModal: React.FC<
   );
 
   const reFetchVersionPacks = useCallback(() => {
-    if (!resource.id || !resource.source) return;
+    if (!resource.id || !resource.source || !selectedVersionLabel) return;
 
     handleFetchResourceVersionPacks(
       resource.id,
@@ -366,13 +412,17 @@ const DownloadSpecificResourceModal: React.FC<
     );
   };
 
-  const renderSection = (pack: OtherResourceVersionPack, index: number) => {
+  const renderSection = (
+    pack: OtherResourceVersionPack,
+    index: number,
+    initialIsOpen: boolean = false
+  ) => {
     return (
       <Section
         key={index}
         isAccordion
         title={pack.name}
-        initialIsOpen={false}
+        initialIsOpen={initialIsOpen}
         titleExtra={<CountTag count={pack.items.length} />}
         mb={2}
       >
@@ -429,7 +479,19 @@ const DownloadSpecificResourceModal: React.FC<
                   )
                 }
                 isFullClickZone
-                onClick={() => startDownload(item)}
+                onClick={() => {
+                  if (item.dependencies.length > 0) {
+                    openSharedModal("alert-resource-dependency", {
+                      dependencies: item.dependencies,
+                      downloadSource: resource.source as OtherResourceSource,
+                      curInstanceMajorVersion,
+                      curInstanceVersion,
+                      curInstanceModLoader,
+                      downloadOriginalResource: () =>
+                        startDownload(item, resource.translatedName),
+                    });
+                  } else startDownload(item, resource.translatedName);
+                }}
               />
             ))}
           />
@@ -442,8 +504,16 @@ const DownloadSpecificResourceModal: React.FC<
 
   useEffect(() => {
     setSelectedModLoader(curInstanceModLoader || "All");
-    setSelectedVersionLabel(curInstanceMajorVersion || "All");
-  }, [curInstanceModLoader, curInstanceMajorVersion]);
+  }, [curInstanceModLoader]);
+
+  useEffect(() => {
+    const initialVersion = curInstanceMajorVersion || "All";
+    if (versionLabels.length > 0 && versionLabels.includes(initialVersion)) {
+      setSelectedVersionLabel(initialVersion);
+    } else {
+      setSelectedVersionLabel("All");
+    }
+  }, [curInstanceMajorVersion, versionLabels]);
 
   useEffect(() => {
     fetchVersionLabels();
@@ -464,9 +534,10 @@ const DownloadSpecificResourceModal: React.FC<
       <ModalContent h="100%" pb={4}>
         <ModalHeader>
           {t("DownloadSpecificResourceModal.title", {
-            name: resource.translatedName
-              ? `${resource.translatedName} (${resource.name})`
-              : resource.name,
+            name:
+              showZhTrans && resource.translatedName
+                ? `${resource.translatedName} (${resource.name})`
+                : resource.name,
             source: resource.source,
           })}
         </ModalHeader>
@@ -482,7 +553,7 @@ const DownloadSpecificResourceModal: React.FC<
           >
             <OptionItem
               title={
-                resource.translatedName
+                showZhTrans && resource.translatedName
                   ? `${resource.translatedName} | ${resource.name}`
                   : resource.name
               }
@@ -509,7 +580,8 @@ const DownloadSpecificResourceModal: React.FC<
                   className="secondary-text break-wrap"
                   mt={1}
                 >
-                  {resource.description}
+                  {(showZhTrans && resource.translatedDescription) ||
+                    resource.description}
                 </Text>
               }
               prefixElement={
@@ -534,6 +606,23 @@ const DownloadSpecificResourceModal: React.FC<
                   }}
                 >
                   {resource.source}
+                </Link>
+              </HStack>
+            )}
+            {resource.mcmodId && (
+              <HStack spacing={1} ml={2}>
+                <LuExternalLink />
+                <Link
+                  fontSize="xs"
+                  color={`${primaryColor}.500`}
+                  onClick={() => {
+                    resource.mcmodId &&
+                      openUrl(
+                        `https://www.mcmod.cn/class/${resource.mcmodId}.html`
+                      );
+                  }}
+                >
+                  MCMod
                 </Link>
               </HStack>
             )}
@@ -583,7 +672,7 @@ const DownloadSpecificResourceModal: React.FC<
                       name: t(
                         "DownloadSpecificResourceModal.label.recommendedVersion"
                       ),
-                      items: getRecommendedFiles(),
+                      items: getRecommendedFiles,
                     },
                   ]
                 : [];
@@ -593,7 +682,12 @@ const DownloadSpecificResourceModal: React.FC<
                 <Empty withIcon size="sm" />
               ) : (
                 [...recommendedPacks, ...normalPacks].map((pack, index) =>
-                  renderSection(pack, index)
+                  // recommended pack initially open
+                  renderSection(
+                    pack,
+                    index,
+                    index === 0 && shouldShowRecommendedSection()
+                  )
                 )
               );
             })()

@@ -1,10 +1,10 @@
+use super::events::{GEventStatus, PEvent};
+use super::streams::desc::PStatus;
 use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_launcher_config;
-use crate::tasks::events::PEvent;
-use crate::tasks::streams::desc::PStatus;
 
+use super::download::DownloadTask;
 use async_speed_limit::Limiter;
-use download::DownloadTask;
 use flume::{Receiver as FlumeReceiver, Sender as FlumeSender};
 use glob::glob;
 use log::info;
@@ -18,12 +18,11 @@ use tauri::AppHandle;
 use tokio::sync::Semaphore;
 
 use super::events::{GEvent, TEvent};
-use super::SJMCLFuture;
-use super::*;
+use super::{SJMCLFuture, *};
 
 pub struct GroupMonitor {
-  pub is_stopped: bool,
   pub phs: HashMap<u32, Arc<RwLock<PTaskHandle>>>,
+  pub status: GEventStatus,
 }
 
 pub struct TaskMonitor {
@@ -140,8 +139,8 @@ impl TaskMonitor {
         group_map.insert(
           g.clone(),
           GroupMonitor {
-            is_stopped: false,
             phs: HashMap::from_iter([(id, p_handle.clone())]),
+            status: GEventStatus::Started,
           },
         );
       }
@@ -206,10 +205,11 @@ impl TaskMonitor {
     self.group_map.write().unwrap().insert(
       task_group.clone(),
       GroupMonitor {
-        is_stopped: false,
         phs: HashMap::from_iter(hvec),
+        status: GEventStatus::Started,
       },
     );
+    GEvent::emit_group_started(&self.app_handle, &task_group);
 
     for future in futures {
       let task = Box::pin(async move {
@@ -259,7 +259,7 @@ impl TaskMonitor {
           .read()
           .unwrap()
           .get(task_group)
-          .map(|g| g.is_stopped)
+          .map(|g| g.status == GEventStatus::Stopped)
           .unwrap_or(false);
 
         if is_stopped {
@@ -289,7 +289,7 @@ impl TaskMonitor {
                 .read()
                 .unwrap()
                 .get(&task_group)
-                .map(|g| g.is_stopped)
+                .map(|g| g.status == GEventStatus::Stopped)
                 .unwrap_or(false);
               if !is_stopped {
                 break;
@@ -305,6 +305,7 @@ impl TaskMonitor {
                 if let Some(group) = group_map.write().unwrap().get_mut(&group_name) {
                   group.phs.remove(&future.task_id);
                   if group.phs.is_empty() {
+                    group.status = GEventStatus::Completed;
                     GEvent::emit_group_completed(&app, &group_name)
                   }
                 }
@@ -422,7 +423,7 @@ impl TaskMonitor {
 
   pub async fn resume_progressive_task_group(&self, task_group: String) {
     if let Some(group) = self.group_map.write().unwrap().get_mut(&task_group) {
-      group.is_stopped = false;
+      group.status = GEventStatus::Started;
 
       // Resume existing stopped tasks
       for handle in group.phs.values() {
@@ -460,7 +461,7 @@ impl TaskMonitor {
 
   pub fn stop_progressive_task_group(&self, task_group: String) {
     if let Some(group) = self.group_map.write().unwrap().get_mut(&task_group) {
-      group.is_stopped = true;
+      group.status = GEventStatus::Stopped;
       for handle in group.phs.values() {
         let status = handle.read().unwrap().desc.status.clone();
         if status.is_in_progress() || status.is_waiting() {
@@ -484,6 +485,7 @@ impl TaskMonitor {
           .values()
           .map(|h| h.read().unwrap().desc.clone())
           .collect(),
+        status: v.status.clone(),
       })
       .collect()
   }

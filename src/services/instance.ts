@@ -5,13 +5,17 @@ import {
   GameServerInfo,
   InstanceSummary,
   LocalModInfo,
+  ModpackMetaInfo,
   ResourcePackInfo,
   SchematicInfo,
   ScreenshotInfo,
   ShaderPackInfo,
 } from "@/models/instance/misc";
 import { LevelData, WorldInfo } from "@/models/instance/world";
-import { GameResourceInfo, ModLoaderResourceInfo } from "@/models/resource";
+import {
+  GameClientResourceInfo,
+  ModLoaderResourceInfo,
+} from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -36,8 +40,9 @@ export class InstanceService {
    * @param {string} name - The name of the instance.
    * @param {string} description - The description of the instance.
    * @param {string} iconSrc - The icon source of the instance.
-   * @param {GameResourceInfo} game - The game resource info of the instance.
+   * @param {GameClientResourceInfo} game - The game resource info of the instance.
    * @param {ModLoaderResourceInfo} modLoader - The mod loader info of the instance.
+   * @param {string} [modpackPath] - Optional path to the modpack archive file.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
@@ -46,8 +51,9 @@ export class InstanceService {
     name: string,
     description: string,
     iconSrc: string,
-    game: GameResourceInfo,
-    modLoader: ModLoaderResourceInfo
+    game: GameClientResourceInfo,
+    modLoader: ModLoaderResourceInfo,
+    modpackPath?: string
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_instance", {
       directory,
@@ -56,6 +62,7 @@ export class InstanceService {
       iconSrc,
       game,
       modLoader,
+      modpackPath,
     });
   }
 
@@ -363,7 +370,7 @@ export class InstanceService {
   }
 
   /**
-   * MARK the mod loader's runtime libraries has been downloaded successfully.
+   * Finish the mod loader installation.
    * @param {string} instanceId - The ID of the instance to mark the mod loader as installed.
    * @returns {Promise<InvokeResponse<void>>}
    */
@@ -373,6 +380,20 @@ export class InstanceService {
   ): Promise<InvokeResponse<void>> {
     return await invoke("finish_mod_loader_install", {
       instanceId,
+    });
+  }
+
+  /**
+   * RETRIEVE the modpack meta info from a given manifest path.
+   * @param {string} path - The path to the modpack manifest file.
+   * @returns {Promise<InvokeResponse<ModpackMetaInfo>>}
+   */
+  @responseHandler("instance")
+  static async retrieveModpackMetaInfo(
+    path: string
+  ): Promise<InvokeResponse<ModpackMetaInfo>> {
+    return await invoke("retrieve_modpack_meta_info", {
+      path,
     });
   }
 }

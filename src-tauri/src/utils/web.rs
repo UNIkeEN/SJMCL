@@ -3,12 +3,13 @@ use reqwest_retry::{
 };
 use tauri::http::StatusCode;
 use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest::{header::HeaderMap, Client, ClientBuilder, Proxy};
+use tauri_plugin_http::reqwest::header::HeaderMap;
+use tauri_plugin_http::reqwest::{Client, ClientBuilder, Proxy};
 
 use crate::launcher_config::models::{LauncherConfig, ProxyType};
-use reqwest_middleware::ClientBuilder as ClientWithMiddlewareBuilder;
-use reqwest_middleware::ClientWithMiddleware;
-use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
+use reqwest_retry::policies::ExponentialBackoff;
+use reqwest_retry::RetryTransientMiddleware;
 use std::sync::Mutex;
 use std::time::Duration;
 
@@ -40,7 +41,10 @@ pub fn build_sjmcl_client(app: &AppHandle, use_version_header: bool, use_proxy: 
 
   if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
     if use_version_header {
-      if let Ok(header_value) = format!("SJMCL {}", &config.basic_info.launcher_version).parse() {
+      // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}
+      // https://github.com/MCLF-CN/docs/issues/2
+      // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/User-Agent
+      if let Ok(header_value) = format!("SJMCL/{}", &config.basic_info.launcher_version).parse() {
         let mut headers = HeaderMap::new();
         headers.insert("User-Agent", header_value);
         builder = builder.default_headers(headers);
@@ -97,15 +101,34 @@ pub fn with_retry(client: Client) -> ClientWithMiddleware {
 pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
   let client = app.state::<Client>();
 
-  // retrieve the real IP
-  let resp = client
-    .get("https://cloudflare.com/cdn-cgi/trace")
-    .send()
-    .await
-    .ok()?;
-  let text = resp.text().await.ok()?;
-  let loc_pair = text.split('\n').find(|line| line.starts_with("loc="))?;
-  let location = loc_pair.split('=').nth(1)?;
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
 
-  Some(location == "CN")
+  let result = async {
+    let resp = client
+      .get("https://cloudflare.com/cdn-cgi/trace")
+      .send()
+      .await
+      .ok()?;
+    let text = resp.text().await.ok()?;
+    let loc_pair = text.split('\n').find(|line| line.starts_with("loc="))?;
+    let location = loc_pair.split('=').nth(1)?;
+    Some(location == "CN")
+  }
+  .await
+  .unwrap_or(false); // any failure → false
+
+  match config_binding.lock() {
+    Ok(mut config_state) => {
+      let _ = config_state.partial_update(
+        app,
+        "basic_info.is_china_mainland_ip",
+        &serde_json::to_string(&result).unwrap_or("false".to_string()),
+      );
+    }
+    Err(_) => {
+      return Some(false);
+    }
+  }
+
+  Some(result)
 }

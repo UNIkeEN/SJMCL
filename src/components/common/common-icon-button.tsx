@@ -11,13 +11,16 @@ import {
   LuArrowDownToLine,
   LuCircleHelp,
   LuCopy,
+  LuExternalLink,
   LuFiles,
   LuFolderOpen,
   LuFolderSearch,
   LuInfo,
   LuPenLine,
+  LuPlay,
   LuPlus,
   LuRefreshCcw,
+  LuShare,
   LuTrash,
 } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
@@ -47,11 +50,14 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     delete: <LuTrash />,
     download: <LuArrowDownToLine />,
     edit: <LuPenLine />,
+    external: <LuExternalLink size="14" />, // keep the same as deprecated link-icon-button
     info: <LuInfo />,
+    launch: <LuPlay />,
     open: <LuFolderOpen />,
     openFolder: <LuFolderOpen />,
     refresh: <LuRefreshCcw />,
     revealFile: <LuFolderSearch />,
+    share: <LuShare />,
   };
 
   const specLabels: Record<string, string> = {
@@ -60,6 +66,7 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     revealFile: t("General.revealFile", {
       opener: t(`Enums.systemFileManager.${config.basicInfo.osType}`),
     }),
+    share: t("General.share.text"),
   };
 
   const selectedIcon =

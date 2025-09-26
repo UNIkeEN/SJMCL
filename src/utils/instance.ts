@@ -9,7 +9,7 @@ export const generateInstanceDesc = (instance: InstanceSummary) => {
   }
   return [
     instance.version,
-    `${instance.modLoader.loaderType} ${instance.modLoader.version}`,
+    `${instance.modLoader.loaderType} ${parseModLoaderVersion(instance.modLoader.version || "")}`,
   ]
     .filter(Boolean)
     .join(", ");
@@ -34,4 +34,28 @@ export const getGameDirName = (dir: string | GameDirectory) => {
         `GlobalGameSettingsPage.directories.settings.directories.special.${name}`
       )
     : name;
+};
+
+export const parseModLoaderVersion = (version: string): string => {
+  const patterns = [
+    {
+      // Forge: "1.16.5-forge-36.2.39"
+      regex: /([\d.]+)-forge-([\d.]+)/,
+      getVersion: (match: RegExpMatchArray) => match[2],
+    },
+    {
+      // NeoForge: "neoforge-21.8.13" or "1.20.1-neoforge-47.0.44"
+      regex: /(neoforge|[\d.]+)-([\d.]+)/,
+      getVersion: (match: RegExpMatchArray) => match[2],
+    },
+  ];
+
+  for (const { regex, getVersion } of patterns) {
+    const match = version.match(regex);
+    if (match) {
+      return getVersion(match);
+    }
+  }
+
+  return version;
 };

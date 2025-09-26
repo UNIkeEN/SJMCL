@@ -39,6 +39,8 @@ import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { ModLoaderType } from "@/enums/instance";
 import { GetStateFlag } from "@/hooks/get-state";
 import { LocalModInfo } from "@/models/instance/misc";
 import { ScreenshotInfo } from "@/models/instance/misc";
@@ -48,6 +50,7 @@ import {
   formatRelativeTime,
   formatTimeInterval,
 } from "@/utils/datetime";
+import { parseModLoaderVersion } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
@@ -108,6 +111,7 @@ export const InstanceBasicInfoWidget = () => {
     <InstanceWidgetBase
       title={t("InstanceWidgets.basicInfo.title")}
       icon={LuBox}
+      mr={-4} // ref: https://github.com/UNIkeEN/SJMCL/issues/762
     >
       <OptionItem
         title={t("InstanceWidgets.basicInfo.gameVersion")}
@@ -117,11 +121,14 @@ export const InstanceBasicInfoWidget = () => {
             fontSize="xs"
             alignItems="flex-start"
             className="secondary-text"
+            wordBreak="break-all"
           >
-            {summary?.version && <Text>{summary.version}</Text>}
+            {summary?.version && <Text noOfLines={1}>{summary.version}</Text>}
             {summary?.modLoader.loaderType &&
-              summary?.modLoader.loaderType !== "Unknown" && (
-                <Text>{`${summary?.modLoader.loaderType} ${summary?.modLoader.version}`}</Text>
+              summary?.modLoader.loaderType !== ModLoaderType.Unknown && (
+                <Text
+                  noOfLines={1}
+                >{`${summary?.modLoader.loaderType} ${parseModLoaderVersion(summary?.modLoader.version || "")}`}</Text>
               )}
           </VStack>
         }
@@ -323,6 +330,8 @@ export const InstanceModsWidget = () => {
 export const InstanceLastPlayedWidget = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const { openSharedModal } = useSharedModals();
+  const { summary } = useInstanceSharedData();
   const { getWorldList, isWorldListLoading: isLoading } =
     useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -390,19 +399,29 @@ export const InstanceLastPlayedWidget = () => {
               </VStack>
             </Box>
           </HStack>
-          <HStack spacing={1.5} position="absolute" left={2} bottom={2}>
-            <Button
-              size="xs"
-              variant="ghost"
-              colorScheme={primaryColor}
-              justifyContent="flex-start"
-            >
-              <HStack spacing={1.5}>
-                <Icon as={LuArrowRight} />
-                <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
-              </HStack>
-            </Button>
-          </HStack>
+          {summary?.supportQuickPlay && (
+            <HStack spacing={1.5} position="absolute" left={2} bottom={2}>
+              <Button
+                size="xs"
+                variant="ghost"
+                colorScheme={primaryColor}
+                justifyContent="flex-start"
+                onClick={() => {
+                  openSharedModal("launch", {
+                    instanceId: summary?.id,
+                    ...(lastPlayedWorld?.dirPath && {
+                      quickPlaySingleplayer: lastPlayedWorld.dirPath,
+                    }),
+                  });
+                }}
+              >
+                <HStack spacing={1.5}>
+                  <Icon as={LuArrowRight} />
+                  <Text>{t("InstanceWidgets.lastPlayed.continuePlaying")}</Text>
+                </HStack>
+              </Button>
+            </HStack>
+          )}
         </VStack>
       ) : (
         <Empty withIcon={false} size="sm" />

@@ -1,5 +1,5 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::utils::portable::is_portable;
+use crate::IS_PORTABLE;
 use regex::Regex;
 use sha1::{Digest, Sha1};
 use std::ffi::OsStr;
@@ -196,9 +196,7 @@ pub fn get_app_resource_filepath(
   app: &AppHandle,
   relative_path: &str,
 ) -> Result<PathBuf, io::Error> {
-  let portable = is_portable().unwrap_or(false);
-
-  let dir = if portable {
+  let dir = if *IS_PORTABLE {
     BaseDirectory::AppData
   } else {
     BaseDirectory::Resource

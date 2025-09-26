@@ -1,6 +1,6 @@
-use super::misc::get_download_api;
 use crate::error::SJMCLResult;
 use crate::instance::models::misc::ModLoaderType;
+use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
@@ -62,8 +62,6 @@ async fn get_neoforge_meta_by_game_version_official(
                     branch: None,
                   },
                 ));
-              } else {
-                println!("NEOFORGE VERSION CAPTURE ERROR!");
               }
             }
             results.sort_by(|a, b| b.0.cmp(&a.0));
@@ -100,8 +98,6 @@ async fn get_neoforge_meta_by_game_version_official(
                     },
                   ));
                 }
-              } else {
-                println!("NEOFORGE VERSION CAPTURE ERROR!");
               }
             }
             results.sort_by(|a, b| b.0.cmp(&a.0));

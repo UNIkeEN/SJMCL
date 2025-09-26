@@ -1,20 +1,18 @@
-use crate::{
-  error::{SJMCLError, SJMCLResult},
-  instance::{
-    helpers::game_version::compare_game_versions, models::misc::Instance,
-    models::misc::ModLoaderType,
-  },
-  launcher_config::models::LauncherConfig,
-  utils::fs::get_app_resource_filepath,
-};
+use super::game_version::compare_game_versions;
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::models::misc::{Instance, ModLoaderType};
+use crate::launcher_config::models::LauncherConfig;
+use crate::utils::fs::get_app_resource_filepath;
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
-use serde_with::{formats::PreferMany, serde_as, OneOrMany};
+use serde_with::formats::PreferMany;
+use serde_with::{serde_as, OneOrMany};
 use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::fs;
+use std::str::FromStr;
 use std::sync::Mutex;
-use std::{collections::HashMap, str::FromStr};
 use tauri::{AppHandle, Manager};
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -40,6 +38,7 @@ pub struct McClientInfo {
   pub patches: Vec<PatchesInfo>,
   pub main_class: String,
   pub jar: Option<String>,
+  pub client_version: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -49,7 +48,8 @@ pub struct PatchesInfo {
   pub version: String,
   pub priority: i64,
   pub inherits_from: Option<String>,
-  pub arguments: LaunchArgumentTemplate,
+  pub arguments: Option<LaunchArgumentTemplate>,
+  pub minecraft_arguments: Option<String>,
   pub main_class: String,
   pub asset_index: AssetIndexInfo,
   pub assets: String,
@@ -287,19 +287,76 @@ structstruck::strike! {
   }
 }
 
-pub fn patchs_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String>, ModLoaderType) {
+pub fn patches_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String>, ModLoaderType) {
   let mut loader_type = ModLoaderType::Unknown;
   let mut game_version = None;
   let mut loader_version = None;
-  if !patches.is_empty() {
-    game_version = Some(patches[0].version.clone());
-  }
-  if patches.len() > 1 {
-    if let Ok(val) = ModLoaderType::from_str(&patches[1].id) {
-      loader_type = val;
+  for patch in patches {
+    if game_version.is_none() && patch.id == "game" {
+      game_version = Some(patch.version.clone());
     }
-    loader_version = Some(patches[1].version.clone())
+    if loader_type == ModLoaderType::Unknown {
+      if let Ok(found_loader_type) = ModLoaderType::from_str(&patch.id) {
+        loader_type = found_loader_type;
+        loader_version = Some(patch.version.clone());
+      }
+    }
+
+    if game_version.is_some() && loader_type != ModLoaderType::Unknown {
+      break;
+    }
   }
+
+  (game_version, loader_version, loader_type)
+}
+
+pub async fn libraries_to_info(
+  client: &McClientInfo,
+) -> (Option<String>, Option<String>, ModLoaderType) {
+  let game_version: Option<String> = client.client_version.clone();
+  let mut loader_version: Option<String> = None;
+  let mut loader_type = ModLoaderType::Unknown;
+
+  for lib in &client.libraries {
+    let parts: Vec<_> = lib.name.splitn(3, ':').collect();
+    if parts.len() != 3 {
+      continue;
+    }
+    let (g, a, v) = (parts[0], parts[1], parts[2]);
+    match (g, a) {
+      ("net.fabricmc", "fabric-loader") => {
+        loader_type = ModLoaderType::Fabric;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      ("org.quiltmc", "quilt-loader") => {
+        loader_type = ModLoaderType::Quilt;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      ("net.neoforged", "neoforge") => {
+        loader_type = ModLoaderType::NeoForge;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      ("net.minecraftforge", "forge") | ("net.minecraftforge", "fmlloader") => {
+        loader_type = ModLoaderType::Forge;
+        if let Some((_, forge)) = v.split_once('-') {
+          loader_version = Some(forge.to_string());
+        } else {
+          loader_version = Some(v.to_string());
+        }
+        break;
+      }
+      ("com.mumfrey", "liteloader") => {
+        loader_type = ModLoaderType::LiteLoader;
+        loader_version = Some(v.to_string());
+        break;
+      }
+      _ => {}
+    }
+  }
+
   (game_version, loader_version, loader_type)
 }
 
@@ -384,7 +441,9 @@ pub async fn replace_native_libraries(
 
   #[cfg(all(target_arch = "aarch64", target_os = "macos"))]
   {
-    if compare_game_versions(app, instance.version.as_str(), "1.19").await != Ordering::Less {
+    if compare_game_versions(app, instance.version.as_str(), "1.20.1", true).await
+      == Ordering::Greater
+    {
       return Ok(());
     }
   }
@@ -410,13 +469,31 @@ pub async fn replace_native_libraries(
     if lib.natives.is_some() {
       let natives_key = format!("{key}:natives");
       if let Some(Some(new_lib)) = platform_map.get(&natives_key) {
-        *lib = new_lib.clone();
+        lib.name = new_lib.name.clone();
+        if new_lib.downloads.is_some() {
+          lib.downloads = new_lib.downloads.clone();
+        }
+        if new_lib.natives.is_some() {
+          lib.natives = new_lib.natives.clone();
+        }
+        if new_lib.extract.is_some() {
+          lib.extract = new_lib.extract.clone();
+        }
         continue;
       }
     }
 
     if let Some(Some(new_lib_opt)) = platform_map.get(&key) {
-      *lib = new_lib_opt.clone();
+      lib.name = new_lib_opt.name.clone();
+      if new_lib_opt.downloads.is_some() {
+        lib.downloads = new_lib_opt.downloads.clone();
+      }
+      if new_lib_opt.natives.is_some() {
+        lib.natives = new_lib_opt.natives.clone();
+      }
+      if new_lib_opt.extract.is_some() {
+        lib.extract = new_lib_opt.extract.clone();
+      }
     }
   }
   Ok(())

@@ -1,7 +1,7 @@
 use serde::Serialize;
 use std::error::Error;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, PartialEq, Eq)]
 pub struct SJMCLError(pub String);
 
 pub type SJMCLResult<T> = Result<T, SJMCLError>;

@@ -19,7 +19,7 @@ import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
 import { useLauncherConfig } from "@/contexts/config";
 import {
-  GameResourceInfo,
+  GameClientResourceInfo,
   ModLoaderResourceInfo,
   defaultModLoaderResourceInfo,
 } from "@/models/resource";
@@ -34,7 +34,7 @@ const modLoaderTypesToIcon: Record<string, string> = {
 };
 
 interface ModLoaderSelectorProps {
-  selectedGameVersion: GameResourceInfo;
+  selectedGameVersion: GameClientResourceInfo;
   selectedModLoader: ModLoaderResourceInfo;
   onSelectModLoader: (v: ModLoaderResourceInfo) => void;
 }
@@ -112,8 +112,14 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
         </Tag>
       ),
       children: <></>,
+      isFullClickZone: true,
+      onClick: () => {
+        if (version.version !== "") {
+          onSelectModLoader(version);
+        }
+      },
     }),
-    [primaryColor, t]
+    [primaryColor, t, onSelectModLoader]
   );
 
   return (

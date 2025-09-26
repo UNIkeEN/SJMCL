@@ -1,6 +1,6 @@
 import {
   HStack,
-  IconButton,
+  Icon,
   Menu,
   MenuButton,
   MenuItem,
@@ -10,6 +10,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import { open } from "@tauri-apps/plugin-dialog";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight, LuCloudDownload, LuFolderPlus } from "react-icons/lu";
@@ -20,15 +21,22 @@ import {
 import { CreateInstanceModal } from "@/components/modals/create-instance-modal";
 import { DownloadGameServerModal } from "@/components/modals/download-game-server-modal";
 import DownloadModpackModal from "@/components/modals/download-modpack-modal";
+import { useSharedModals } from "@/contexts/shared-modal";
 
 const AddAndImportInstancePage = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { openSharedModal } = useSharedModals();
 
   const {
     isOpen: isCreateInstanceModalOpen,
     onOpen: onOpenCreateInstanceModal,
     onClose: onCloseCreateInstanceModal,
+  } = useDisclosure();
+  const {
+    isOpen: isModpackMenuOpen,
+    onOpen: onOpenModpackMenu,
+    onClose: onCloseModpackMenu,
   } = useDisclosure();
   const {
     isOpen: isDownloadModpackModalOpen,
@@ -41,9 +49,26 @@ const AddAndImportInstancePage = () => {
     onClose: onCloseDownloadGameServerModal,
   } = useDisclosure();
 
+  const handleImportModpackFromDisk = async () => {
+    let filePath = await open({
+      multiple: false,
+      filters: [
+        {
+          name: t("General.dialog.filterName.modpack"),
+          extensions: ["zip", "mrpack"],
+        },
+      ],
+    });
+    if (filePath) {
+      openSharedModal("import-modpack", {
+        path: filePath,
+      });
+    }
+  };
+
   const addAndImportOptions: Record<string, () => void> = {
     new: onOpenCreateInstanceModal,
-    modpack: () => {},
+    modpack: onOpenModpackMenu,
     manageDirs: () => router.push("/settings/global-game"),
   };
 
@@ -55,7 +80,9 @@ const AddAndImportInstancePage = () => {
     {
       icon: LuFolderPlus,
       label: t("AddAndImportInstancePage.modpackOperations.fromdisk"),
-      onClick: () => {},
+      onClick: () => {
+        handleImportModpackFromDisk();
+      },
     },
     {
       icon: LuCloudDownload,
@@ -68,14 +95,10 @@ const AddAndImportInstancePage = () => {
 
   const ModpackMenu = () => {
     return (
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          size="sm"
-          variant="ghost"
-          aria-label="operations"
-          icon={<LuArrowRight />}
-        />
+      <Menu isOpen={isModpackMenuOpen} onClose={onCloseModpackMenu}>
+        <MenuButton>
+          <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
+        </MenuButton>
         <Portal>
           <MenuList>
             {modpackOperations.map((item) => (
@@ -104,14 +127,10 @@ const AddAndImportInstancePage = () => {
           key === "modpack" ? (
             <ModpackMenu />
           ) : (
-            <IconButton
-              aria-label={key}
-              onClick={addAndImportOptions[key]}
-              variant="ghost"
-              size="sm"
-              icon={<LuArrowRight />}
-            />
+            <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
           ),
+        isFullClickZone: true,
+        onClick: addAndImportOptions[key],
       })),
     },
     {
@@ -121,15 +140,9 @@ const AddAndImportInstancePage = () => {
         description: t(
           `AddAndImportInstancePage.moreOptions.${key}.description`
         ),
-        children: (
-          <IconButton
-            aria-label={key}
-            onClick={moreOptions[key]}
-            variant="ghost"
-            size="sm"
-            icon={<LuArrowRight />}
-          />
-        ),
+        children: <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />,
+        isFullClickZone: true,
+        onClick: moreOptions[key],
       })),
     },
   ];

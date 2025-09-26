@@ -1,10 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { ModLoaderType } from "@/enums/instance";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import {
-  GameResourceInfo,
+  GameClientResourceInfo,
   ModLoaderResourceInfo,
   ModUpdateQuery,
   OtherResourceFileInfo,
+  OtherResourceInfo,
   OtherResourceSearchRes,
   OtherResourceVersionPack,
 } from "@/models/resource";
@@ -16,14 +19,26 @@ import { responseHandler } from "@/utils/response";
  */
 export class ResourceService {
   /**
-   * FETCH the list of game versions.
-   * @returns {Promise<InvokeResponse<GameResourceInfo[]>>}
+   * FETCH the list of game versions with download metadata.
+   * @returns {Promise<InvokeResponse<GameClientResourceInfo[]>>}
    */
   @responseHandler("resource")
   static async fetchGameVersionList(): Promise<
-    InvokeResponse<GameResourceInfo[]>
+    InvokeResponse<GameClientResourceInfo[]>
   > {
     return await invoke("fetch_game_version_list");
+  }
+
+  /**
+   * FETCH a specific game version's download metadata.
+   * @param {string} gameVersion - The specific version to fetch.
+   * @returns {Promise<InvokeResponse<GameClientResourceInfo>>}
+   */
+  @responseHandler("resource")
+  static async fetchGameVersionSpecific(
+    gameVersion: string
+  ): Promise<InvokeResponse<GameClientResourceInfo>> {
+    return await invoke("fetch_game_version_specific", { gameVersion });
   }
 
   /**
@@ -79,7 +94,7 @@ export class ResourceService {
     resourceId: string,
     modLoader: ModLoaderType | "All",
     gameVersions: string[],
-    downloadSource: string
+    downloadSource: OtherResourceSource
   ): Promise<InvokeResponse<OtherResourceVersionPack[]>> {
     return await invoke("fetch_resource_version_packs", {
       downloadSource,
@@ -93,13 +108,13 @@ export class ResourceService {
 
   /**
    * DOWNLOAD a game server.
-   * @param {GameResourceInfo} resourceInfo - The resource information of the game server.
+   * @param {GameClientResourceInfo} resourceInfo - The resource information of the game server.
    * @param {string} dest - The destination path to save the downloaded server file.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("resource")
   static async downloadGameServer(
-    resourceInfo: GameResourceInfo,
+    resourceInfo: GameClientResourceInfo,
     dest: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("download_game_server", {
@@ -116,7 +131,7 @@ export class ResourceService {
    */
   @responseHandler("resource")
   static async fetchRemoteResourceByLocal(
-    downloadSource: string,
+    downloadSource: OtherResourceSource,
     filePath: string
   ): Promise<InvokeResponse<OtherResourceFileInfo>> {
     return await invoke("fetch_remote_resource_by_local", {
@@ -142,5 +157,41 @@ export class ResourceService {
       instanceId,
       queries,
     });
+  }
+
+  /**
+   * FETCH a remote resource by ID.
+   * @param downloadSource The source from which to download the resource.
+   * @param resourceId The ID of the resource.
+   * @returns {Promise<InvokeResponse<OtherResourceInfo>>}
+   */
+  @responseHandler("resource")
+  static async fetchRemoteResourceById(
+    downloadSource: OtherResourceSource,
+    resourceId: string
+  ): Promise<InvokeResponse<OtherResourceInfo>> {
+    return await invoke("fetch_remote_resource_by_id", {
+      downloadSource,
+      resourceId,
+    });
+  }
+
+  /**
+   * Listen for resource refresh events.
+   * @param callback - The callback to be invoked when a resource refresh event occurs.
+   */
+  static onResourceRefresh(
+    callback: (payload: OtherResourceType) => void
+  ): () => void {
+    const unlisten = getCurrentWebview().listen<OtherResourceType>(
+      "instance:refresh-resource-list",
+      (event) => {
+        callback(event.payload);
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

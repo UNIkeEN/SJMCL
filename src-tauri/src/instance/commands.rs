@@ -1,57 +1,51 @@
-use super::{
-  super::utils::fs::{
-    copy_whole_dir, generate_unique_filename, get_files_with_regex, get_subdirectories,
-  },
-  helpers::{
-    game_version::get_major_game_version,
-    misc::{
-      get_instance_game_config, get_instance_subdir_path_by_id, refresh_and_update_instances,
-      unify_instance_name,
-    },
-    mods::common::{get_mod_info_from_dir, get_mod_info_from_jar},
-    resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip},
-    server::{load_servers_info_from_path, query_server_status},
-    world::{level_data_to_world_info, load_level_data_from_path},
-  },
-  models::{
-    misc::{
-      GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
-      ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
-    },
-    world::{base::WorldInfo, level::LevelData},
-  },
+use super::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
+use super::helpers::game_version::{compare_game_versions, get_major_game_version};
+use super::helpers::loader::common::{execute_processors, install_mod_loader};
+use super::helpers::loader::forge::InstallProfile;
+use super::helpers::misc::{
+  get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
+  refresh_and_update_instances, unify_instance_name,
 };
-use crate::{
-  error::SJMCLResult,
-  instance::{
-    helpers::{
-      client_json::{replace_native_libraries, McClientInfo},
-      misc::get_instance_subdir_paths,
-      mod_loader::{execute_processors, install_mod_loader},
-      mods::forge::InstallProfile,
-    },
-    models::misc::{AssetIndex, ModLoader},
-  },
-  launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files},
-  launcher_config::{
-    helpers::misc::get_global_game_config,
-    models::{GameConfig, GameDirectory, LauncherConfig},
-  },
-  partial::{PartialError, PartialUpdate},
-  resource::{
-    helpers::misc::get_source_priority_list,
-    models::{GameClientResourceInfo, ModLoaderResourceInfo},
-  },
-  storage::{load_json_async, Storage},
-  tasks::{commands::schedule_progressive_task_group, download::DownloadParam, PTaskParam},
-  utils::{fs::create_url_shortcut, image::ImageWrapper},
+use super::helpers::modpack::curseforge::CurseForgeManifest;
+use super::helpers::modpack::misc::ModpackMetaInfo;
+use super::helpers::modpack::modrinth::ModrinthManifest;
+use super::helpers::mods::common::{
+  add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
 };
+use super::helpers::options_txt::get_zh_hans_lang_tag;
+use super::helpers::resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip};
+use super::helpers::server::{load_servers_info_from_path, query_server_status};
+use super::helpers::world::{level_data_to_world_info, load_level_data_from_path};
+use super::models::misc::{
+  GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
+  ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
+  ShaderPackInfo,
+};
+use super::models::world::base::WorldInfo;
+use super::models::world::level::LevelData;
+use crate::error::SJMCLResult;
+use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
+use crate::launcher_config::helpers::misc::get_global_game_config;
+use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
+use crate::partial::{PartialError, PartialUpdate};
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::models::{GameClientResourceInfo, ModLoaderResourceInfo};
+use crate::storage::{load_json_async, save_json_async, Storage};
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
+use crate::utils::fs::{
+  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
+  get_subdirectories,
+};
+use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::{sync::Mutex, time::SystemTime};
+use std::sync::Mutex;
+use std::time::SystemTime;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
@@ -60,7 +54,7 @@ use zip::read::ZipArchive;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
-  refresh_and_update_instances(&app).await; // firstly refresh and update
+  refresh_and_update_instances(&app, false).await; // firstly refresh and update
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let instances = binding.lock().unwrap().clone();
   let mut summary_list = Vec::new();
@@ -85,10 +79,15 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
       icon_src: instance.icon_src.clone(),
       starred: instance.starred,
       play_time: instance.play_time,
-      version: instance.version.clone(),
-      major_version: get_major_game_version(&app, &instance.version).await,
       version_path: instance.version_path.clone(),
+      version: instance.version.clone(),
       mod_loader: instance.mod_loader.clone(),
+      // skip fallback remote fetch in `get_major_game_version` and `compare_game_versions` to avoid instance list load delay.
+      // ref: https://github.com/UNIkeEN/SJMCL/pull/799
+      major_version: get_major_game_version(&app, &instance.version, false).await,
+      support_quick_play: compare_game_versions(&app, &instance.version, "23w14a", false)
+        .await
+        .is_ge(),
       use_spec_game_config: instance.use_spec_game_config,
       is_version_isolated,
     });
@@ -399,6 +398,7 @@ pub async fn retrieve_game_server_list(
     game_servers.push(GameServerInfo {
       ip: server.ip,
       name: server.name,
+      description: String::new(),
       icon_src: server.icon.unwrap_or_default(),
       is_queried: false,
       players_max: 0,
@@ -418,6 +418,7 @@ pub async fn retrieve_game_server_list(
               server.players_online = query_result.players.online as usize;
               server.players_max = query_result.players.max as usize;
               server.online = query_result.online;
+              server.description = query_result.description.text.unwrap_or_default();
               server.icon_src = query_result.favicon.unwrap_or_default();
             }
             Err(_) => {
@@ -463,10 +464,14 @@ pub async fn retrieve_local_mod_list(
     let task = tokio::spawn(async move { get_mod_info_from_jar(&path).await.ok() });
     tasks.push(task);
   }
-  let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
-  for path in mod_paths {
-    let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
-    tasks.push(task);
+  #[cfg(debug_assertions)]
+  {
+    // mod information detection from folders is only used for debugging.
+    let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
+    for path in mod_paths {
+      let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
+      tasks.push(task);
+    }
   }
   let mut mod_infos = Vec::new();
   for task in tasks {
@@ -476,16 +481,44 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let state = binding.lock().unwrap();
-  let instance = state
-    .get(&instance_id)
-    .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let incompatible_loader_type = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock().unwrap();
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
+      Some(instance.mod_loader.loader_type.clone())
+    } else {
+      None
+    }
+  };
 
   mod_infos.iter_mut().for_each(|mod_info| {
-    mod_info.potential_incompatibility = instance.mod_loader.loader_type != ModLoaderType::Unknown
-      && mod_info.loader_type != instance.mod_loader.loader_type;
+    if let Some(loader_type) = &incompatible_loader_type {
+      mod_info.potential_incompatibility = mod_info.loader_type != *loader_type;
+    } else {
+      mod_info.potential_incompatibility = false;
+    }
   });
+
+  // Add translations for mod names and descriptions concurrently
+  let mut translation_tasks = Vec::new();
+  for mut mod_info in mod_infos {
+    let app = app.clone();
+    let task = tokio::spawn(async move {
+      let _ = add_local_mod_translations(&app, &mut mod_info).await;
+      mod_info
+    });
+    translation_tasks.push(task);
+  }
+  let mut mod_infos = Vec::new();
+  for task in translation_tasks {
+    if let Ok(mod_info) = task.await {
+      mod_infos.push(mod_info);
+    }
+  }
 
   // sort by name (and version)
   mod_infos.sort();
@@ -796,6 +829,7 @@ pub async fn create_instance(
   icon_src: String,
   game: GameClientResourceInfo,
   mod_loader: ModLoaderResourceInfo,
+  modpack_path: Option<String>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -819,10 +853,14 @@ pub async fn create_instance(
     version_path: version_path.clone(),
     mod_loader: ModLoader {
       loader_type: mod_loader.loader_type.clone(),
-      installed: matches!(
+      status: if matches!(
         mod_loader.loader_type,
         ModLoaderType::Unknown | ModLoaderType::Fabric
-      ),
+      ) {
+        ModLoaderStatus::Installed
+      } else {
+        ModLoaderStatus::NotDownloaded
+      },
       version: mod_loader.version.clone(),
       branch: mod_loader.branch.clone(),
     },
@@ -846,6 +884,25 @@ pub async fn create_instance(
 
   version_info.id = name.clone();
   version_info.jar = Some(name.clone());
+  version_info.patches.push(PatchesInfo {
+    id: "game".to_string(),
+    version: game.id.clone(),
+    priority: 0,
+    inherits_from: None,
+    arguments: version_info.arguments.clone(),
+    minecraft_arguments: version_info.minecraft_arguments.clone(),
+    main_class: version_info.main_class.clone(),
+    asset_index: version_info.asset_index.clone(),
+    assets: version_info.assets.clone(),
+    downloads: version_info.downloads.clone(),
+    libraries: version_info.libraries.clone(),
+    logging: version_info.logging.clone(),
+    java_version: Some(version_info.java_version.clone()),
+    type_: version_info.type_.clone(),
+    time: version_info.time.clone(),
+    release_time: version_info.release_time.clone(),
+    minimum_launcher_version: version_info.minimum_launcher_version,
+  });
 
   let mut task_params = Vec::<PTaskParam>::new();
 
@@ -865,10 +922,14 @@ pub async fn create_instance(
   let subdirs = get_instance_subdir_paths(
     &app,
     &instance,
-    &[&InstanceSubdirType::Libraries, &InstanceSubdirType::Assets],
+    &[
+      &InstanceSubdirType::Libraries,
+      &InstanceSubdirType::Assets,
+      &InstanceSubdirType::Mods,
+    ],
   )
   .ok_or(InstanceError::InstanceNotFoundByID)?;
-  let [libraries_dir, assets_dir] = subdirs.as_slice() else {
+  let [libraries_dir, assets_dir, mods_dir] = subdirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
 
@@ -881,20 +942,9 @@ pub async fn create_instance(
     get_invalid_library_files(priority_list[0], libraries_dir, &version_info, false).await?,
   );
 
-  // Download asset index
-  let asset_index = client
-    .get(version_info.asset_index.url.clone())
-    .send()
-    .await
-    .map_err(|_| InstanceError::NetworkError)?
-    .json::<AssetIndex>()
-    .await
-    .map_err(|_| InstanceError::AssetIndexParseError)?;
-
-  let asset_index_path = assets_dir.join("indexes");
-
   // We only download assets if they are invalid (not already downloaded)
-  task_params.extend(get_invalid_assets(priority_list[0], assets_dir, &asset_index, false).await?);
+  task_params
+    .extend(get_invalid_assets(&app, &version_info, priority_list[0], assets_dir, false).await?);
 
   if instance.mod_loader.loader_type != ModLoaderType::Unknown {
     install_mod_loader(
@@ -903,11 +953,28 @@ pub async fn create_instance(
       &instance.version,
       &instance.mod_loader,
       libraries_dir.to_path_buf(),
+      mods_dir.to_path_buf(),
       &mut version_info,
       &mut task_params,
     )
     .await?;
   }
+
+  // If modpack path is provided, install it
+  if let Some(modpack_path) = modpack_path {
+    let path = PathBuf::from(modpack_path);
+    let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
+    if let Ok(manifest) = CurseForgeManifest::from_archive(&file) {
+      task_params.extend(manifest.get_download_params(&app, &version_path).await?);
+      manifest.extract_overrides(&file, &version_path)?;
+    } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
+      task_params.extend(manifest.get_download_params(&version_path)?);
+      manifest.extract_overrides(&file, &version_path)?;
+    } else {
+      return Err(InstanceError::ModpackManifestParseError.into());
+    }
+  }
+
   schedule_progressive_task_group(
     app.clone(),
     format!("game-client?{}", name),
@@ -916,26 +983,36 @@ pub async fn create_instance(
   )
   .await?;
 
-  fs::create_dir_all(&version_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+  // Optionally skip first-screen options by adding options.txt (available for zh-Hans only)
+  let (language, skip_first_screen_options) = {
+    let launcher_config = launcher_config_state.lock()?;
+    (
+      launcher_config.general.general.language.clone(),
+      launcher_config
+        .general
+        .functionality
+        .skip_first_screen_options,
+    )
+  };
+  if language == "zh-Hans" && skip_first_screen_options {
+    if let Some(lang_code) = get_zh_hans_lang_tag(&instance.version, &app).await {
+      let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
+        .ok_or(InstanceError::InstanceNotFoundByID)?[0]
+        .join("options.txt");
+      if !options_path.exists() {
+        fs::write(options_path, format!("lang:{}\n", lang_code))
+          .map_err(|_| InstanceError::FileCreationFailed)?;
+      }
+    }
+  }
+
+  // Save the edited client json
+  save_json_async(&version_info, &version_path.join(format!("{}.json", name))).await?;
+  // Save the SJMCL instance config json
   instance
     .save_json_cfg()
     .await
     .map_err(|_| InstanceError::FileCreationFailed)?;
-  let version_info_path = directory
-    .dir
-    .join(format!("versions/{}/{}.json", name, name));
-
-  fs::write(
-    &version_info_path,
-    serde_json::to_vec_pretty(&version_info)?,
-  )
-  .map_err(|_| InstanceError::FileCreationFailed)?;
-  fs::create_dir_all(&asset_index_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-  fs::write(
-    asset_index_path.join(format!("{}.json", version_info.asset_index.id)),
-    serde_json::to_vec_pretty(&asset_index)?,
-  )
-  .map_err(|_| InstanceError::FileCreationFailed)?;
 
   Ok(())
 }
@@ -949,6 +1026,29 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
       .get(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?
       .clone()
+  };
+
+  match instance.mod_loader.status {
+    // prevent duplicated installation
+    ModLoaderStatus::DownloadFailed => {
+      return Err(InstanceError::ProcessorExecutionFailed.into());
+    }
+    ModLoaderStatus::Installing => {
+      return Err(InstanceError::InstallationDuplicated.into());
+    }
+    ModLoaderStatus::Installed => {
+      return Ok(());
+    }
+    _ => {}
+  }
+
+  {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let mut state = binding.lock()?;
+    let instance = state
+      .get_mut(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+    instance.mod_loader.status = ModLoaderStatus::Installing;
   };
 
   let client_info_dir = instance
@@ -968,10 +1068,17 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
     let instance = state
       .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
-    instance.mod_loader.installed = true;
+    instance.mod_loader.status = ModLoaderStatus::Installed;
     instance.clone()
   };
   instance.save_json_cfg().await?;
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn retrieve_modpack_meta_info(path: String) -> SJMCLResult<ModpackMetaInfo> {
+  let path = PathBuf::from(path);
+  let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
+  ModpackMetaInfo::from_archive(&file).await
 }

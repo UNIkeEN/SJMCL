@@ -1,7 +1,11 @@
 import { ModLoaderType } from "@/enums/instance";
-import { OtherResourceType } from "@/enums/resource";
+import {
+  DependencyType,
+  OtherResourceSource,
+  OtherResourceType,
+} from "@/enums/resource";
 
-export interface GameResourceInfo {
+export interface GameClientResourceInfo {
   id: string;
   gameType: string;
   releaseTime: string;
@@ -10,16 +14,18 @@ export interface GameResourceInfo {
 
 export interface OtherResourceInfo {
   id?: string; // got from API
+  mcmodId?: number; //got from mod database in backend
   websiteUrl?: string;
   type: OtherResourceType;
   name: string;
   translatedName?: string;
   description: string;
+  translatedDescription?: string;
   iconSrc: string;
   tags: string[];
   lastUpdated: string;
   downloads: number;
-  source?: string; // CurseForge, Modrinth, etc.
+  source?: OtherResourceSource;
 }
 
 export interface OtherResourceSearchRes {
@@ -38,7 +44,14 @@ export interface OtherResourceFileInfo {
   downloadUrl: string;
   sha1: string;
   fileName: string;
+  dependencies: OtherResourceDependency[];
   loader?: string; // "forge", "fabric", "iris", "optifine", etc.
+}
+
+export interface OtherResourceDependency {
+  resourceId: string;
+  relation: DependencyType;
+  resource?: OtherResourceInfo;
 }
 
 export interface OtherResourceVersionPack {

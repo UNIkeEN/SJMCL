@@ -15,6 +15,7 @@ import { LuChevronRight, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/enums/instance";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
+import { parseModLoaderVersion } from "@/utils/instance";
 
 interface ModLoaderCardsProps extends BoxProps {
   currentType: ModLoaderType;
@@ -80,11 +81,11 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
               <Text fontSize="xs" className="secondary-text">
                 {displayMode === "entry"
                   ? isSelected
-                    ? `${t("ModLoaderCards.installed")} ${currentVersion}`
+                    ? `${t("ModLoaderCards.installed")} ${parseModLoaderVersion(currentVersion || "")}`
                     : t("ModLoaderCards.unInstalled")
                   : isSelected
                     ? currentVersion || t("ModLoaderCards.versionNotSelected")
-                    : currentType === "Unknown"
+                    : currentType === ModLoaderType.Unknown
                       ? t("ModLoaderCards.versionNotSelected")
                       : t("ModLoaderCards.notCompatibleWith", {
                           modLoader: currentType,

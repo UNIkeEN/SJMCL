@@ -20,6 +20,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/enums/instance";
+import { OtherResourceSource } from "@/enums/resource";
 import { InstanceSummary, LocalModInfo } from "@/models/instance/misc";
 import {
   ModUpdateQuery,
@@ -84,7 +85,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       resourceId: string,
       modLoader: ModLoaderType | "All",
       gameVersions: string[],
-      downloadSource: string
+      downloadSource: OtherResourceSource
     ): Promise<OtherResourceFileInfo | undefined> => {
       try {
         const response = await ResourceService.fetchResourceVersionPacks(
@@ -136,11 +137,11 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
         try {
           const [cfRemoteModRes, mrRemoteModRes] = await Promise.all([
             ResourceService.fetchRemoteResourceByLocal(
-              "CurseForge",
+              OtherResourceSource.CurseForge,
               mod.filePath
             ),
             ResourceService.fetchRemoteResourceByLocal(
-              "Modrinth",
+              OtherResourceSource.Modrinth,
               mod.filePath
             ),
           ]);
@@ -163,7 +164,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 cfRemoteMod.resourceId,
                 mod.loaderType,
                 [currentSummary?.majorVersion || "All"],
-                "CurseForge"
+                OtherResourceSource.CurseForge
               )
             );
           } else {
@@ -176,7 +177,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 mrRemoteMod.resourceId,
                 mod.loaderType,
                 [currentSummary?.version || "All"],
-                "Modrinth"
+                OtherResourceSource.Modrinth
               )
             );
           } else {
@@ -211,7 +212,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 name: mod.name,
                 curVersion: mod.version,
                 newVersion: latestFile.name,
-                source: isCurseForgeNewer ? "CurseForge" : "Modrinth",
+                source: isCurseForgeNewer
+                  ? OtherResourceSource.CurseForge
+                  : OtherResourceSource.Modrinth,
                 downloadUrl: latestFile.downloadUrl,
                 sha1: latestFile.sha1,
                 fileName: latestFile.fileName,
@@ -295,7 +298,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent h="100%" pb={4}>
+      <ModalContent h="100%">
         <ModalHeader>
           <HStack w="100%" justify="flex-start" align="center">
             <Text>{t("CheckModUpdateModal.header.title")}</Text>
@@ -310,7 +313,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           overflow="hidden"
         >
           {isCheckingUpdate ? (
-            <VStack mt={8} spacing={4}>
+            <VStack spacing={4} justify="center" align="center" h="75%">
               <Text fontSize="md" color="gray.700">
                 {t("CheckModUpdateModal.label.loading", {
                   x: checkingUpdateIndex,

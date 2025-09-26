@@ -45,7 +45,7 @@ lerna-debug.log*
 next-env.d.ts
 
 # lock
-package-lock.json
+# package-lock.json
 
 # IDE
 .vscode/*

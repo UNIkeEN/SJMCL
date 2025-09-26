@@ -37,7 +37,7 @@ import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
-import { retrieveFontList } from "@/services/utils";
+import { UtilsService } from "@/services/utils";
 import { removeFileExt } from "@/utils/string";
 
 const AppearanceSettingsPage = () => {
@@ -54,6 +54,7 @@ const AppearanceSettingsPage = () => {
   const [customBgList, setCustomBgList] = useState<Record<string, string>[]>(
     []
   );
+  const [bgCacheKey, setBgCacheKey] = useState(0);
 
   const handleRetrieveCustomBackgroundList = useCallback(() => {
     appDataDir()
@@ -66,6 +67,7 @@ const AppearanceSettingsPage = () => {
               fullPath: `${_appDataDir}/UserContent/Backgrounds/${bg}`,
             }));
             setCustomBgList(updatedList);
+            setBgCacheKey((k) => k + 1);
           } else {
             toast({
               title: response.message,
@@ -211,8 +213,10 @@ const AppearanceSettingsPage = () => {
 
     useEffect(() => {
       const handleRetrieveFontList = async () => {
-        const res = await retrieveFontList();
-        setFonts(["%built-in", ...res]);
+        const res = await UtilsService.retrieveFontList();
+        if (res.status === "success") {
+          setFonts(["%built-in", ...res.data]);
+        }
       };
       handleRetrieveFontList();
     }, []);
@@ -331,7 +335,7 @@ const AppearanceSettingsPage = () => {
           fontSize="xs"
           className={!selected ? "secondary-text" : ""}
           mt={selected ? "-1px" : 0} // compensate for the offset caused by selected card's border
-          noOfLines={1}
+          isTruncated
         >
           {label}
         </Text>
@@ -370,7 +374,7 @@ const AppearanceSettingsPage = () => {
           <WrapItem key={bg.fileName}>
             <BackgroundCard
               bgAlt={bg.fileName}
-              bgSrc={convertFileSrc(bg.fullPath)}
+              bgSrc={convertFileSrc(bg.fullPath) + "?v=" + bgCacheKey}
               selected={selectedBgKey === bg.fileName}
               onSelect={() =>
                 update("appearance.background.choice", bg.fileName)

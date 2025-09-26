@@ -1,10 +1,9 @@
-use crate::{
-  launcher_config::constants::CONFIG_PARTIAL_UPDATE_EVENT,
-  partial::PartialUpdate,
-  storage::Storage,
-  utils::{string::snake_to_camel_case, sys_info},
-  APP_DATA_DIR,
-};
+use super::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
+use crate::partial::PartialUpdate;
+use crate::storage::Storage;
+use crate::utils::string::snake_to_camel_case;
+use crate::utils::sys_info;
+use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
@@ -29,6 +28,16 @@ pub struct JavaInfo {
   pub major_version: i32, // major version + LTS flag
   pub is_lts: bool,
   pub is_user_added: bool,
+}
+
+// Info about the latest release version fetched from remote, shown to the user to update.
+#[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VersionMetaInfo {
+  pub version: String,
+  pub file_name: String,
+  pub release_notes: String,
+  pub published_at: String,
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/game/ProcessPriority.java#L20
@@ -168,6 +177,8 @@ structstruck::strike! {
       pub platform_version: String,
       pub is_portable: bool,
       #[default = false]
+      pub is_china_mainland_ip: bool,
+      #[default = false]
       pub allow_full_login_feature: bool,
     },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
@@ -177,7 +188,7 @@ structstruck::strike! {
       pub theme: struct {
         #[default = "blue"]
         pub primary_color: String,
-        #[default = "system"]
+        #[default = "light"]
         pub color_mode: String,
         pub use_liquid_glass_design: bool,
         #[default = "standard"]
@@ -236,6 +247,9 @@ structstruck::strike! {
         pub instances_nav_type: String,
         #[default = true]
         pub launch_page_quick_switch: bool,
+        #[default = true]
+        pub resource_translation: bool, // only available in zh-Hans
+        pub skip_first_screen_options: bool,  // only available in zh-Hans
       }
     },
     pub global_game_config: GameConfig,
@@ -287,7 +301,7 @@ impl LauncherConfig {
   ) -> Result<(), std::io::Error> {
     self
       .update(key_path, value)
-      .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+      .map_err(std::io::Error::other)?;
 
     app
       .emit(
@@ -297,7 +311,7 @@ impl LauncherConfig {
           "value": value,
         }),
       )
-      .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+      .map_err(std::io::Error::other)?;
 
     Ok(())
   }
@@ -305,8 +319,11 @@ impl LauncherConfig {
 
 impl Storage for LauncherConfig {
   fn file_path() -> PathBuf {
-    // EXE_DIR.join("sjmcl.conf.json")
-    APP_DATA_DIR.get().unwrap().join("sjmcl.conf.json")
+    if *IS_PORTABLE {
+      EXE_DIR.join(LAUNCHER_CFG_FILE_NAME)
+    } else {
+      APP_DATA_DIR.get().unwrap().join(LAUNCHER_CFG_FILE_NAME)
+    }
   }
 }
 

@@ -1,4 +1,5 @@
-import { useToast as useChakraToast } from "@chakra-ui/react";
+import { ToastId, useToast as useChakraToast } from "@chakra-ui/react";
+import { emit } from "@tauri-apps/api/event";
 import React, {
   createContext,
   useCallback,
@@ -7,7 +8,11 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useLauncherConfig } from "@/contexts/config";
+import { useGlobalData } from "@/contexts/global-data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { OtherResourceType } from "@/enums/resource";
 import {
   CreatedPTaskEventStatus,
   FailedPTaskEventStatus,
@@ -22,10 +27,9 @@ import {
   TaskGroupDesc,
   TaskParam,
 } from "@/models/task";
+import { ConfigService } from "@/services/config";
 import { InstanceService } from "@/services/instance";
 import { TaskService } from "@/services/task";
-import { parseTaskGroup } from "@/utils/task";
-import { useGlobalData } from "./global-data";
 
 interface TaskContextType {
   tasks: TaskGroupDesc[];
@@ -49,9 +53,12 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const toast = useToast();
   const { close: closeToast } = useChakraToast();
   const { getInstanceList } = useGlobalData();
+  const { config } = useLauncherConfig();
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
   const { t } = useTranslation();
+  const loadingToastRef = React.useRef<ToastId | null>(null);
 
   const updateGroupInfo = useCallback((group: TaskGroupDesc) => {
     if (group.status === GTaskEventStatusEnums.Completed) {
@@ -112,12 +119,12 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       };
       return level(a) - level(b);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
       if (response.status === "success") {
+        console.log("Retrieved progressive tasks:", response.data);
         // info(JSON.stringify(response.data));
         setTasks((prevTasks) => {
           let tasks = response.data
@@ -157,12 +164,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     (taskGroup: string, params: TaskParam[]) => {
       TaskService.scheduleProgressiveTaskGroup(taskGroup, params).then(
         (response) => {
-          if (response.status === "success") {
-            toast({
-              title: response.message,
-              status: "success",
-            });
-          } else {
+          // success toast will now be called by task context group listener
+          if (response.status !== "success") {
             toast({
               title: response.message,
               description: response.details,
@@ -386,100 +389,206 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const unlisten = TaskService.onTaskGroupUpdate(
       (payload: GTaskEventPayload) => {
-        console.log(`Received task group update: ${payload.event.status}`);
+        console.log(`Received task group update: ${payload.event}`);
         setTasks((prevTasks) => {
-          return prevTasks.map((task) => {
+          let newTasks = prevTasks.map((task) => {
             if (task.taskGroup === payload.taskGroup) {
-              task.status = payload.event.status;
-              if (payload.event.status === GTaskEventStatusEnums.Completed) {
+              task.status = payload.event;
+              if (payload.event === GTaskEventStatusEnums.Completed) {
                 task.taskDescs.forEach((t) => {
-                  t.status = TaskDescStatusEnums.Completed;
-                  t.current = t.total;
+                  if (
+                    t.status === TaskDescStatusEnums.Waiting ||
+                    t.status === TaskDescStatusEnums.InProgress
+                  ) {
+                    t.status = TaskDescStatusEnums.Completed;
+                    t.current = t.total;
+                  } else if (t.status === TaskDescStatusEnums.Failed) {
+                    task.status = GTaskEventStatusEnums.Failed;
+                    payload.event = GTaskEventStatusEnums.Failed;
+                  }
                 });
               }
             }
             return task;
           });
-        });
 
-        const { name, version } = parseTaskGroup(payload.taskGroup);
+          const { name, version } = parseTaskGroup(payload.taskGroup);
 
-        toast({
-          status:
-            payload.event.status === GTaskEventStatusEnums.Failed
-              ? "error"
-              : "success",
-          title: t(
-            `Services.task.onTaskGroupUpdate.status.${payload.event.status}`,
-            {
-              param: t(`DownloadTasksPage.task.${name}`, {
-                param: version || "",
-              }),
-            }
-          ),
-        });
-
-        if (payload.event.status === GTaskEventStatusEnums.Completed) {
-          switch (name) {
-            case "game-client":
-              getInstanceList(true);
-              break;
-            case "forge-libraries":
-            case "neoforge-libraries":
-              if (version) {
-                let instanceName = getInstanceList()?.find(
-                  (i) => i.id === version
-                )?.name;
-                let loadingToast = toast({
-                  title: t("Services.instance.finishModLoaderInstall.loading", {
-                    instanceName,
-                  }),
-                  status: "loading",
-                });
-                InstanceService.finishModLoaderInstall(version).then(
-                  (response) => {
-                    closeToast(loadingToast);
-                    if (response.status === "success") {
-                      toast({
-                        title: response.message,
-                        status: "success",
-                      });
-                    } else {
-                      toast({
-                        title: response.message,
-                        description: response.details,
-                        status: "error",
-                      });
-                    }
-                  }
-                );
+          toast({
+            status:
+              payload.event === GTaskEventStatusEnums.Failed
+                ? "error"
+                : "success",
+            title: t(
+              `Services.task.onTaskGroupUpdate.status.${payload.event}`,
+              {
+                param: t(`DownloadTasksPage.task.${name}`, {
+                  param: version || "",
+                }),
               }
-              break;
-            default:
-              break;
+            ),
+          });
+
+          if (payload.event === GTaskEventStatusEnums.Completed) {
+            switch (name) {
+              case "game-client":
+                getInstanceList(true);
+                break;
+              case "forge-libraries":
+              case "neoforge-libraries":
+                if (version) {
+                  let instanceName = getInstanceList()?.find(
+                    (i) => i.id === version
+                  )?.name;
+                  if (loadingToastRef.current) return newTasks;
+                  loadingToastRef.current = toast({
+                    title: t(
+                      "Services.instance.finishModLoaderInstall.loading",
+                      {
+                        instanceName,
+                      }
+                    ),
+                    status: "loading",
+                  });
+                  InstanceService.finishModLoaderInstall(version).then(
+                    (response) => {
+                      if (loadingToastRef.current) {
+                        closeToast(loadingToastRef.current);
+                        loadingToastRef.current = null;
+                      }
+                      if (response.status === "success") {
+                        toast({
+                          title: response.message,
+                          status: "success",
+                        });
+                      } else {
+                        toast({
+                          title: response.message,
+                          description: response.details,
+                          status: "error",
+                        });
+                      }
+                    }
+                  );
+                }
+                break;
+              case "mod":
+              case "mod-update":
+                emit("instance:refresh-resource-list", OtherResourceType.Mod);
+                break;
+              case "resourcepack":
+                emit(
+                  "instance:refresh-resource-list",
+                  OtherResourceType.ResourcePack
+                );
+                break;
+              case "shader":
+                emit(
+                  "instance:refresh-resource-list",
+                  OtherResourceType.ShaderPack
+                );
+                break;
+              case "modpack": {
+                let group = newTasks.find(
+                  (t) => t.taskGroup === payload.taskGroup
+                );
+                if (group && group.taskDescs.length > 0) {
+                  openSharedModal("import-modpack", {
+                    path: group.taskDescs[0].payload.dest,
+                  });
+                }
+                break;
+              }
+              case "launcher-update": {
+                let group = newTasks.find(
+                  (t) => t.taskGroup === payload.taskGroup
+                );
+                if (group && group.taskDescs.length > 0) {
+                  const isMSI =
+                    config.basicInfo.osType === "windows" &&
+                    !config.basicInfo.isPortable;
+                  openGenericConfirmDialog({
+                    title: t("RestartForUpdateConfirmDialog.title"),
+                    body: t(
+                      `RestartForUpdateConfirmDialog.${isMSI ? "bodyMSI" : "body"}`
+                    ),
+                    btnOK: t(
+                      `RestartForUpdateConfirmDialog.button.${isMSI ? "install" : "restart"}`
+                    ),
+                    btnCancel: t("RestartForUpdateConfirmDialog.button.later"),
+                    onOKCallback: () => {
+                      ConfigService.installLauncherUpdate(
+                        group.taskDescs[0].payload.filename || "",
+                        true
+                      ).then((response) => {
+                        if (response.status !== "success") {
+                          toast({
+                            title: response.message,
+                            description: response.details,
+                            status: "error",
+                          });
+                        }
+                      });
+                    },
+                    onCancelCallback: () => {
+                      ConfigService.installLauncherUpdate(
+                        group.taskDescs[0].payload.filename || "",
+                        false
+                      ).then((response) => {
+                        if (response.status !== "success") {
+                          toast({
+                            title: response.message,
+                            description: response.details,
+                            status: "error",
+                          });
+                        }
+                      });
+                    },
+                  });
+                }
+                break;
+              }
+              default:
+                break;
+            }
           }
-        }
+
+          return newTasks;
+        });
       }
     );
     return () => {
       unlisten();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateGroupInfo]);
+  }, [
+    closeToast,
+    getInstanceList,
+    t,
+    toast,
+    updateGroupInfo,
+    openSharedModal,
+    openGenericConfirmDialog,
+    config.basicInfo.osType,
+    config.basicInfo.isPortable,
+  ]);
 
   useEffect(() => {
-    if (!tasks || !tasks.length) return;
+    if (!tasks || !tasks.length) setGeneralPercent(undefined);
+    else {
+      let filteredTasks = tasks.filter(
+        (t) => t.status === GTaskEventStatusEnums.Started
+      );
 
-    let filteredTasks = tasks.filter(
-      (t) => t.status === GTaskEventStatusEnums.Started
-    );
-
-    setGeneralPercent(
-      filteredTasks.reduce(
-        (acc, group) => acc + (group.progress ?? 0) / filteredTasks.length,
-        0
-      )
-    );
+      if (filteredTasks.length === 0) setGeneralPercent(undefined);
+      else {
+        setGeneralPercent(
+          filteredTasks.reduce(
+            (acc, group) => acc + (group.progress ?? 0) / filteredTasks.length,
+            0
+          )
+        );
+      }
+    }
   }, [tasks]);
 
   return (
@@ -504,4 +613,22 @@ export const useTaskContext = (): TaskContextType => {
     throw new Error("useTaskContext must be used within a TaskContextProvider");
   }
   return context;
+};
+
+export const parseTaskGroup = (
+  taskGroup: string
+): {
+  name: string;
+  version?: string;
+  timestamp: number;
+  isRetry: boolean;
+} => {
+  const [rawName, timestamp] = taskGroup.split("@");
+  const [name, version] = rawName.split("?");
+  return {
+    name: name.replace(/^retry-/, ""),
+    version,
+    isRetry: name.startsWith("retry-"),
+    timestamp: parseInt(timestamp),
+  };
 };

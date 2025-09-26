@@ -39,10 +39,14 @@ import { LaunchService } from "@/services/launch";
 // This modal will use shared-modal-context
 interface LaunchProcessModal extends Omit<ModalProps, "children"> {
   instanceId: string; // may not be select instance id
+  quickPlaySingleplayer?: string;
+  quickPlayMultiplayer?: string;
 }
 
 const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   instanceId,
+  quickPlaySingleplayer,
+  quickPlayMultiplayer,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -99,20 +103,29 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
             status: "error",
           });
           router.push("/downloads");
-        }, // TODO
+        },
       },
       {
         label: "validateSelectedPlayer",
         function: () => LaunchService.validateSelectedPlayer(),
         isOK: (data: boolean) => data,
         onResCallback: (data: boolean) => {
+          const reValidate = () =>
+            LaunchService.validateSelectedPlayer().then((response) => {
+              if (response.status === "success") {
+                setActiveStep(activeStep + 1);
+              } else {
+                setErrorPaused(true);
+                setErrorDesc(response.details);
+              }
+            });
           AccountService.refreshPlayer(selectedPlayer?.id || "").then(
             (response) => {
               if (response.status !== "success") {
                 openSharedModal("relogin", {
                   player: selectedPlayer,
                   onSuccess: () => {
-                    setActiveStep(activeStep + 1);
+                    reValidate();
                   },
                   onError: () => {
                     setErrorPaused(true);
@@ -121,7 +134,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
                   },
                 });
               } else {
-                setActiveStep(activeStep + 1);
+                reValidate();
               }
             }
           );
@@ -130,18 +143,20 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       },
       {
         label: "launchGame",
-        function: () => LaunchService.launchGame(),
+        function: () =>
+          LaunchService.launchGame(quickPlaySingleplayer, quickPlayMultiplayer),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
-        onErrCallback: (error: ResponseError) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {},
       },
-      // TODO: progress bar in last step, and cancel logic
     ],
     [
       activeStep,
       handleCloseModalWithCancel,
       instanceId,
       openSharedModal,
+      quickPlaySingleplayer,
+      quickPlayMultiplayer,
       router,
       selectedPlayer,
       toast,
@@ -158,7 +173,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
       return;
     }
     if (activeStep >= launchProcessSteps.length) {
-      // Final launching state, we don't use handleCloseModalWithCancel
+      // Final launching state, we don't use handleCloseModalWithCancel (it includes cancel logic)
       setErrorPaused(false);
       props.onClose();
       return;

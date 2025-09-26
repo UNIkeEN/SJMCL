@@ -1,23 +1,22 @@
-use super::client_json::McClientInfo;
-use super::{
-  super::{
-    constants::INSTANCE_CFG_FILE_NAME,
-    models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
-  },
-  client_jar::load_game_version_from_jar,
-};
+use super::client_jar::load_game_version_from_jar;
+use super::client_json::{libraries_to_info, patches_to_info, McClientInfo};
+use super::loader::forge::download_forge_libraries;
+use super::loader::neoforge::download_neoforge_libraries;
 use crate::error::SJMCLResult;
-use crate::instance::helpers::mod_loader::{download_forge_libraries, download_neoforge_libraries};
-use crate::instance::models::misc::ModLoaderType;
-use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
-use crate::storage::load_json_async;
-use crate::{
-  instance::helpers::client_json::patchs_to_info,
-  launcher_config::models::{GameDirectory, LauncherConfig},
+use crate::instance::models::misc::{
+  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType,
 };
+use crate::launcher_config::helpers::misc::get_global_game_config;
+use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::storage::load_json_async;
 use sanitize_filename;
 use serde_json::Value;
-use std::{collections::HashMap, fs, io::Cursor, path::PathBuf, sync::Mutex};
+use std::collections::HashMap;
+use std::fs;
+use std::io::Cursor;
+use std::path::PathBuf;
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
@@ -132,6 +131,7 @@ pub fn unify_instance_name(src_version_path: &PathBuf, tgt_name: &String) -> SJM
 pub async fn refresh_instances(
   app: &AppHandle,
   game_directory: &GameDirectory,
+  is_first_run: bool,
 ) -> SJMCLResult<Vec<Instance>> {
   let mut instances = vec![];
   // traverse the "versions" directory
@@ -170,28 +170,66 @@ pub async fn refresh_instances(
       }
     }
     let name = client_data.id.clone();
-    let cfg_path = version_path.join(INSTANCE_CFG_FILE_NAME);
-    let mut cfg_read = load_json_async::<Instance>(&cfg_path)
-      .await
-      .unwrap_or_default();
+    let mut cfg_read = Instance {
+      version_path: version_path.clone(),
+      ..Default::default()
+    }
+    .load_json_cfg()
+    .await
+    .unwrap_or_default();
 
-    if !cfg_read.mod_loader.installed {
-      match cfg_read.mod_loader.loader_type {
-        ModLoaderType::Forge => {
-          download_forge_libraries(app, &cfg_read, &client_data)
-            .await
-            .inspect_err(|e| {
-              println!("Failed to download Forge libraries for {}: {:?}", name, e);
-            })?;
+    if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
+      let priority_list = {
+        let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+        let launcher_config = launcher_config_state.lock()?;
+        get_source_priority_list(&launcher_config)
+      };
+      if let Err(e) = {
+        match cfg_read.mod_loader.status {
+          ModLoaderStatus::NotDownloaded => match cfg_read.mod_loader.loader_type {
+            ModLoaderType::Forge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
+            }
+            ModLoaderType::NeoForge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
+            }
+            _ => Ok(()),
+          },
+          ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
+            ModLoaderType::Forge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
+            }
+            ModLoaderType::NeoForge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
+            }
+            _ => Ok(()),
+          },
+          ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
+            if is_first_run {
+              // The instance failed to install mod loader during last run.
+              cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
+            }
+            Ok(())
+          }
+          ModLoaderStatus::Installed => Ok(()),
         }
-        ModLoaderType::NeoForge => {
-          download_neoforge_libraries(app, &cfg_read, &client_data).await?;
-        }
-        _ => {}
+      } {
+        eprintln!("Failed to install mod loader for {}: {:?}", name, e);
+        cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
+        cfg_read.save_json_cfg().await?;
+        continue;
       }
     }
 
-    let (mut game_version, loader_version, loader_type) = patchs_to_info(&client_data.patches);
+    let (mut game_version, loader_version, loader_type) = if !client_data.patches.is_empty() {
+      patches_to_info(&client_data.patches)
+    } else {
+      libraries_to_info(&client_data).await
+    };
     // TODO: patches related logic
     if game_version.is_none() {
       let file = Cursor::new(tokio::fs::read(jar_path).await?);
@@ -208,21 +246,21 @@ pub async fn refresh_instances(
       name,
       version: game_version.unwrap_or_default(),
       version_path,
-      mod_loader: if !cfg_read.mod_loader.installed {
+      mod_loader: if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
         // pass mod loader check if download is not ready
         cfg_read.mod_loader
       } else {
         ModLoader {
           loader_type,
           version: loader_version.unwrap_or_default(),
-          installed: true,
+          status: ModLoaderStatus::Installed,
           branch: None,
         }
       },
       ..cfg_read
     };
     // ignore error here, for now
-    instance.save_json_cfg().await.ok();
+    instance.save_json_cfg().await?;
     instances.push(instance);
   }
 
@@ -232,12 +270,13 @@ pub async fn refresh_instances(
 pub async fn refresh_all_instances(
   app: &AppHandle,
   game_directories: &[GameDirectory],
+  is_first_run: bool,
 ) -> HashMap<String, Instance> {
   let mut instance_map = HashMap::new();
 
   for game_directory in game_directories {
     let dir_name = game_directory.name.clone();
-    match refresh_instances(app, game_directory).await {
+    match refresh_instances(app, game_directory, is_first_run).await {
       Ok(vs) => {
         for mut instance in vs {
           let composed_id = format!("{}:{}", dir_name, instance.name);
@@ -252,14 +291,14 @@ pub async fn refresh_all_instances(
   instance_map
 }
 
-pub async fn refresh_and_update_instances(app: &AppHandle) {
+pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
   // get launcher config -> local game directories
   let local_game_directories = {
     let binding = app.state::<Mutex<LauncherConfig>>();
     let state = binding.lock().unwrap();
     state.local_game_directories.clone()
   };
-  let instances = refresh_all_instances(app, &local_game_directories).await;
+  let instances = refresh_all_instances(app, &local_game_directories, is_first_run).await;
   // update the instances in the app state
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();

@@ -1,5 +1,6 @@
 use dotenvy::{dotenv_override, from_filename};
-use std::{env, fs, path::Path};
+use std::path::Path;
+use std::{env, fs};
 
 fn main() {
   if std::env::var("GITHUB_ACTIONS").is_err() {

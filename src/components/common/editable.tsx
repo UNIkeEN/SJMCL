@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCheck, LuPenLine, LuX } from "react-icons/lu";
+import { LuPenLine, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface EditableProps extends BoxProps {
@@ -47,35 +47,35 @@ const Editable: React.FC<EditableProps> = ({
   formErrMsgProps = {},
   ...boxProps
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(value);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [tempValue, setTempValue] = useState<string>(value);
 
   const ref = useRef<HTMLElement | HTMLInputElement | HTMLTextAreaElement>(
     null
   );
+  const isCancellingRef = useRef<boolean>(false);
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
+  const onSave = () => {
+    if (isCancellingRef.current || checkError(tempValue)) return;
+    if (tempValue !== value) onEditSubmit(tempValue);
+    setIsEditing(false);
+  };
+
+  const onCancel = () => {
+    isCancellingRef.current = true;
+    setTempValue(value);
+    setIsEditing(false);
+    setTimeout(() => {
+      isCancellingRef.current = false;
+    }, 10);
+  };
+
   const EditButtons = () => {
     return isEditing ? (
       <HStack ml="auto">
-        <Tooltip label={t("Editable.save")}>
-          <IconButton
-            icon={<LuCheck />}
-            size="xs"
-            variant="ghost"
-            h={18}
-            aria-label="submit"
-            isDisabled={checkError(tempValue) !== 0}
-            onClick={() => {
-              if (checkError(tempValue)) return;
-              if (tempValue !== value) onEditSubmit(tempValue);
-              setIsEditing(false);
-            }}
-          />
-        </Tooltip>
-
         <Tooltip label={t("Editable.cancel")}>
           <IconButton
             icon={<LuX />}
@@ -83,9 +83,9 @@ const Editable: React.FC<EditableProps> = ({
             variant="ghost"
             h={18}
             aria-label="cancel"
-            onClick={() => {
-              setTempValue(value);
-              setIsEditing(false);
+            onMouseDown={(e) => {
+              e.preventDefault();
+              onCancel();
             }}
           />
         </Tooltip>
@@ -117,10 +117,7 @@ const Editable: React.FC<EditableProps> = ({
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (checkError(tempValue)) return;
-
-      if (tempValue !== value) onEditSubmit(tempValue);
-      setIsEditing(false);
+      onSave();
     }
   };
 
@@ -137,7 +134,10 @@ const Editable: React.FC<EditableProps> = ({
               value={tempValue}
               placeholder={placeholder}
               onChange={(e) => setTempValue(e.target.value)}
-              onBlur={onBlur}
+              onBlur={() => {
+                onSave();
+                onBlur();
+              }}
               onFocus={onFocus}
               onKeyDown={onKeyDown}
               focusBorderColor={`${primaryColor}.500`}
@@ -163,7 +163,10 @@ const Editable: React.FC<EditableProps> = ({
                 value={tempValue}
                 placeholder={placeholder}
                 onChange={(e) => setTempValue(e.target.value)}
-                onBlur={onBlur}
+                onBlur={() => {
+                  onSave();
+                  onBlur();
+                }}
                 onFocus={onFocus}
                 onKeyDown={onKeyDown}
                 focusBorderColor={`${primaryColor}.500`}

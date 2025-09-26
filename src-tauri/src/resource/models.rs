@@ -1,9 +1,10 @@
 use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
-use strum::IntoEnumIterator;
+use std::collections::HashMap;
+use std::str::FromStr;
 use strum_macros::{Display, EnumIter};
 
-#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug)]
+#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]
 pub enum ResourceType {
   VersionManifest,
   VersionManifestV2,
@@ -14,6 +15,7 @@ pub enum ResourceType {
   MojangJava,
   ForgeMaven,
   ForgeMeta,
+  ForgeMavenNew,
   ForgeInstall,
   Liteloader,
   Optifine,
@@ -23,8 +25,7 @@ pub enum ResourceType {
   NeoforgeMetaForge,    // old version, only for 1.20.1
   NeoforgeMetaNeoforge, // new version
   NeoforgeInstall,
-  NeoforgedForge,
-  NeoforgedNeoforge,
+  NeoforgeMaven,
   QuiltMaven,
   QuiltMeta,
 }
@@ -35,19 +36,60 @@ pub enum SourceType {
   BMCLAPIMirror,
 }
 
-// mod, save, resourcepack and shader
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+pub enum OtherResourceSource {
+  #[default]
+  Unknown,
+  CurseForge,
+  Modrinth,
+}
+
+impl FromStr for OtherResourceSource {
+  type Err = String;
+
+  fn from_str(input: &str) -> Result<Self, Self::Err> {
+    match input.to_lowercase().as_str() {
+      "curseforge" => Ok(OtherResourceSource::CurseForge),
+      "modrinth" => Ok(OtherResourceSource::Modrinth),
+      _ => Err(format!("Unknown resource download type: {}", input)),
+    }
+  }
+}
+
+// Enum to represent different request types
+#[allow(dead_code)]
+pub enum OtherResourceRequestType<'a, P> {
+  GetWithParams(&'a HashMap<String, String>),
+  Get,
+  Post(&'a P),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum OtherResourceApiEndpoint {
+  Search,
+  VersionPack,
+  FromLocal,
+  ById,
+  TranslateDesc,
+}
+
+// mod, save, resourcepack, datapack and shader
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceInfo {
   pub id: String,
+  pub mcmod_id: u32,
   pub _type: String,
   pub name: String,
+  pub slug: String,
+  pub translated_name: Option<String>,
   pub description: String,
+  pub translated_description: Option<String>,
   pub icon_src: String,
   pub tags: Vec<String>,
   pub last_updated: String,
   pub downloads: u32,
-  pub source: String,
+  pub source: OtherResourceSource,
   pub website_url: String,
 }
 
@@ -91,7 +133,15 @@ pub struct OtherResourceFileInfo {
   pub download_url: String,
   pub sha1: String,
   pub file_name: String,
+  pub dependencies: Vec<OtherResourceDependency>,
   pub loader: Option<String>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct OtherResourceDependency {
+  pub resource_id: String,
+  pub relation: String,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -137,6 +187,7 @@ pub enum ResourceError {
   NoDownloadApi,
   NetworkError,
   FileOperationError,
+  ClientVersionNotFound,
 }
 
 impl std::error::Error for ResourceError {}
