@@ -1,20 +1,15 @@
-use crate::{
-  error::SJMCLResult,
-  instance::{
-    helpers::{
-      asset_index::load_asset_index,
-      client_json::{DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo},
-    },
-    models::misc::InstanceError,
-  },
-  launch::models::LaunchError,
-  resource::{
-    helpers::misc::{convert_url_to_target_source, get_download_api},
-    models::{ResourceType, SourceType},
-  },
-  tasks::{download::DownloadParam, PTaskParam},
-  utils::fs::validate_sha1,
+use crate::error::SJMCLResult;
+use crate::instance::helpers::asset_index::load_asset_index;
+use crate::instance::helpers::client_json::{
+  DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo,
 };
+use crate::instance::models::misc::InstanceError;
+use crate::launch::models::LaunchError;
+use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::models::{ResourceType, SourceType};
+use crate::tasks::download::DownloadParam;
+use crate::tasks::PTaskParam;
+use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
 use std::collections::HashSet;
 use std::io::Cursor;
@@ -79,35 +74,31 @@ pub async fn get_invalid_library_files(
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
 
-  let futs = artifacts.into_iter().map(move |artifact| {
-    let source = source.clone();
-    async move {
-      let file_path = library_path.join(&artifact.path);
-      if file_path.exists()
-        && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
-      {
-        return Ok(None);
-      } else if artifact.url.is_empty() {
-        return Err(LaunchError::GameFilesIncomplete.into());
-      } else {
-        let src = convert_url_to_target_source(
-          &url::Url::parse(&artifact.url)?,
-          &[
-            ResourceType::Libraries,
-            ResourceType::FabricMaven,
-            ResourceType::ForgeMaven,
-            ResourceType::ForgeMavenNew,
-            ResourceType::NeoforgeMaven,
-          ],
-          &source,
-        )?;
-        Ok(Some(PTaskParam::Download(DownloadParam {
-          src,
-          dest: file_path,
-          filename: None,
-          sha1: Some(artifact.sha1.clone()),
-        })))
-      }
+  let futs = artifacts.into_iter().map(move |artifact| async move {
+    let file_path = library_path.join(&artifact.path);
+    let exists = fs::try_exists(&file_path).await?;
+    if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
+      Ok(None)
+    } else if artifact.url.is_empty() {
+      return Err(LaunchError::GameFilesIncomplete.into());
+    } else {
+      let src = convert_url_to_target_source(
+        &url::Url::parse(&artifact.url)?,
+        &[
+          ResourceType::Libraries,
+          ResourceType::FabricMaven,
+          ResourceType::ForgeMaven,
+          ResourceType::ForgeMavenNew,
+          ResourceType::NeoforgeMaven,
+        ],
+        &source,
+      )?;
+      Ok(Some(PTaskParam::Download(DownloadParam {
+        src,
+        dest: file_path,
+        filename: None,
+        sha1: Some(artifact.sha1.clone()),
+      })))
     }
   });
 
@@ -274,26 +265,38 @@ pub async fn get_invalid_assets(
   let asset_index_path = asset_path.join(format!("indexes/{}.json", client_info.asset_index.id));
   let asset_index = load_asset_index(app, &asset_index_path, &client_info.asset_index.url).await?;
 
-  Ok(
-    asset_index
-      .objects
-      .iter()
-      .filter_map(|(_, item)| {
-        let path = format!("{}/{}", &item.hash[..2], item.hash.clone());
-        let dest = asset_path.join(format!("objects/{}", path));
+  let futs = asset_index.objects.into_values().map(|item| {
+    let assets_download_api = assets_download_api.clone();
+    let base_path = asset_path.to_path_buf();
 
-        if dest.exists() && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok())
-        {
-          None
-        } else {
-          Some(PTaskParam::Download(DownloadParam {
-            src: assets_download_api.join(&path).ok()?,
-            dest,
-            filename: None,
-            sha1: Some(item.hash.clone()),
-          }))
-        }
-      })
-      .collect::<Vec<_>>(),
-  )
+    async move {
+      let path_in_repo = format!("{}/{}", &item.hash[..2], item.hash);
+      let dest = base_path.join(format!("objects/{}", path_in_repo));
+      let exists = fs::try_exists(&dest).await?;
+
+      if exists && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok()) {
+        Ok::<Option<PTaskParam>, crate::error::SJMCLError>(None)
+      } else {
+        let src = assets_download_api
+          .join(&path_in_repo)
+          .map_err(crate::error::SJMCLError::from)?;
+        Ok(Some(PTaskParam::Download(DownloadParam {
+          src,
+          dest,
+          filename: None,
+          sha1: Some(item.hash.clone()),
+        })))
+      }
+    }
+  });
+
+  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+
+  let mut params = Vec::new();
+  for r in results {
+    if let Some(p) = r? {
+      params.push(p);
+    }
+  }
+  Ok(params)
 }

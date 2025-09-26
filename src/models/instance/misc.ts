@@ -4,6 +4,7 @@ import { OtherResourceSource } from "@/enums/resource";
 export enum ModLoaderStatus {
   NotDownloaded = "NotDownloaded",
   Downloading = "Downloading",
+  DownloadFailed = "DownloadFailed",
   Installing = "Installing",
   Installed = "Installed",
 }
@@ -62,6 +63,7 @@ export interface LocalModInfo {
   fileName: string;
   filePath: string;
   description?: string;
+  translatedDescription?: string;
   potentialIncompatibility: boolean;
 }
 

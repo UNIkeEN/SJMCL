@@ -4,7 +4,14 @@
       "title": "关于",
       "settings": {
         "version": {
-          "title": "版本"
+          "title": "版本",
+          "foundNew": "有新版本",
+          "checkUpdate": "检查更新",
+          "checkToast": {
+            "loading": "正在检查更新",
+            "up2date": "当前已是最新版本",
+            "error": "检查更新失败"
+          }
         },
         "contributors": {
           "title": "开发者名单"
@@ -399,6 +406,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "删除模组",
+      "content": "确定要删除游戏实例 “{{instanceName}}” 中的模组 “{{modName}}” 吗？"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
@@ -520,7 +533,7 @@
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": "资源下载 - {{name}} ({{source}})",
+    "title": "资源下载 - {{name}} - {{source}}",
     "label": {
       "all": "全部",
       "recommendedVersion": "推荐版本",
@@ -558,9 +571,10 @@
       "datapack": "数据包",
       "patch-files": "修补游戏文件 {{param}}",
       "mod-update": "更新模组",
-      "retry": "重试任务",
+      "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
-      "forge-libraries": "Forge 运行库"
+      "forge-libraries": "Forge 运行库",
+      "launcher-update": "更新启动器"
     }
   },
   "Editable": {
@@ -787,6 +801,15 @@
       "SHADERS_MOD": "当前实例由于同时安装了 OptiFine 和 Shaders 模组，无法继续运行。请尝试删除 Shaders 模组。",
       "RTSS_FOREST_SODIUM": "当前实例由于 RTSS 与 Sodium 不兼容，无法继续运行。",
       "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "当前实例由于本地库与系统架构不兼容，无法继续运行。",
+      "MAC_DS_STORE": "当前实例由于 Mac 系统的 .DS_Store 文件导致问题，无法继续运行。请删除游戏路径下的 .DS_Store 文件后重试。",
+      "LEVEL_DAT_CORRUPTED": "当前实例由于存档文件 level.dat 损坏，无法继续运行。请尝试修复存档或从备份中恢复。",
+      "GL_OUT_OF_MEMORY": "当前实例由于 OpenGL 内存不足，无法继续运行。请尝试降低游戏分辨率、关闭光影或关闭其他程序。",
+      "MOD_JAVA_VERSION_MISMATCH": "当前实例由于模组与 Java 版本不匹配，无法继续运行。请检查模组要求的 Java 版本并进行相应调整。",
+      "DUPLICATE_MOD_INSTALLED": "当前实例由于重复安装模组而无法继续运行。请检查模组列表并移除重复的模组。",
+      "MOD_ZIP_CORRUPTED": "当前实例由于模组压缩包损坏，无法继续运行。请尝试重新下载模组。",
+      "MOD_INTERNET_ERROR": "当前实例由于模组下载失败，无法继续运行。请检查网络连接或使用网络代理。",
+      "VICS_MODERN_WARFARE_ERROR": "当前实例由于 Vics Modern Warfare 模组错误，无法继续运行。请尝试更新或删除该模组。",
+      "FORGE_LITELOADER_CONFLICT": "当前实例由于 Forge 与 LiteLoader 冲突，无法继续运行。请尝试删除 LiteLoader 或更换 Forge 版本。",
       "UNKNOWN": "暂时无法分析该错误，请查看游戏日志或导出错误崩溃报告。"
     },
     "button": {
@@ -860,6 +883,12 @@
     "refresh": "刷新",
     "revealFile": "在{{opener}}中显示",
     "search": "搜索",
+    "share": {
+      "text": "分享",
+      "toast": {
+        "error": "分享失败"
+      }
+    },
     "skip": "跳过",
     "version": {
       "dev": "开发版本",
@@ -898,6 +927,24 @@
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
           "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
+        },
+        "resourceTranslation": {
+          "title": "显示资源翻译",
+          "description": "启用后，在资源下载界面尝试显示名称或描述的简体中文翻译（如数据可用）"
+        },
+        "skipFirstScreenOptions": {
+          "title": "自动设置实例语言",
+          "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
+        }
+      }
+    },
+    "advanced": {
+      "title": "高级",
+      "settings": {
+        "openConfigJson": {
+          "title": "启动器设置文件",
+          "description": "在{{opener}}中显示启动器的原始设置文件",
+          "button": "打开"
         }
       }
     }
@@ -1317,6 +1364,9 @@
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
   },
+  "NotifyNewVersionModal": {
+    "title": "发现新版本"
+  },
   "OptionItemGroup": {
     "button": {
       "showAll": "显示全部（+{{left}}）"
@@ -1328,6 +1378,10 @@
       "viewSkin": "查看皮肤",
       "delete": "删除此角色",
       "copyUUID": "复制 UUID"
+    },
+    "toast": {
+      "refreshing": "正在刷新角色信息",
+      "deleting": "正在删除角色"
     }
   },
   "PingTestPage": {
@@ -1359,6 +1413,16 @@
     },
     "button": {
       "login": "登录"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "启动器更新",
+    "body": "新版本已完成下载，重新启动 SJMCL 以完成更新",
+    "bodyMSI": "新版本已完成下载，点击安装将关闭 SJMCL 并运行安装程序",
+    "button": {
+      "restart": "重新启动",
+      "install": "安装",
+      "later": "稍后"
     }
   },
   "ResourceDownloader": {
@@ -1649,6 +1713,9 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
+  },
   "ScreenshotPreviewModal": {
     "menu": {
       "setAsBg": "设置为启动器背景"
@@ -1738,14 +1805,6 @@
           }
         }
       },
-      "checkServiceAvailability": {
-        "error": {
-          "title": "服务器不可用",
-          "description": {
-            "FETCH_ERROR": "服务器侧或未知错误"
-          }
-        }
-      },
       "clearDownloadCache": {
         "success": "下载缓存已清除",
         "error": {
@@ -1794,7 +1853,8 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NOT_FOUND": "认证服务器不存在",
             "CANCELLED": "已取消",
-            "INVALID": "无效的认证服务器地址"
+            "INVALID": "无效的认证服务器地址",
+            "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft"
           }
         }
       },
@@ -1808,7 +1868,8 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NETWORK_ERROR": "无法连接至认证服务器",
             "INVALID": "不支持离线角色刷新",
-            "CANCELLED": "已取消"
+            "CANCELLED": "已取消",
+            "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft"
           }
         }
       },
@@ -2259,6 +2320,14 @@
           "Completed": "{{param}} 已完成下载",
           "Stopped": "{{param}} 下载任务已停止",
           "Cancelled": "{{param}} 下载任务已取消"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "删除文件成功",
+        "error": {
+          "title": "删除文件失败"
         }
       }
     }

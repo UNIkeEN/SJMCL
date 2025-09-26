@@ -1,13 +1,9 @@
-use crate::{
-  error::SJMCLResult,
-  launcher_config::{
-    commands::retrieve_custom_background_list,
-    models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig},
-  },
-  partial::{PartialAccess, PartialUpdate},
-  utils::portable::extract_assets,
-  APP_DATA_DIR, IS_PORTABLE,
-};
+use crate::error::SJMCLResult;
+use crate::launcher_config::commands::retrieve_custom_background_list;
+use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
+use crate::partial::{PartialAccess, PartialUpdate};
+use crate::utils::portable::extract_assets;
+use crate::{APP_DATA_DIR, IS_PORTABLE};
 use rand::Rng;
 use std::fs;
 use std::path::PathBuf;
@@ -25,13 +21,13 @@ impl LauncherConfig {
       (false, v) => v.to_string(),
     };
 
-    // Set default download cache dir if not exists, create dir
-    if self.download.cache.directory == PathBuf::default() {
+    // Set the default download cache directory if unset or not writable, and create it
+    if self.download.cache.directory.as_os_str().is_empty()
+      || fs::create_dir_all(&self.download.cache.directory).is_err()
+    {
       self.download.cache.directory = app
         .path()
         .resolve::<PathBuf>("Download".into(), BaseDirectory::AppCache)?;
-    }
-    if !self.download.cache.directory.exists() {
       fs::create_dir_all(&self.download.cache.directory)?;
     }
 
@@ -67,7 +63,7 @@ impl LauncherConfig {
 
       #[cfg(not(target_os = "macos"))]
       {
-        if *IS_PORTABLE {
+        if *IS_PORTABLE || cfg!(debug_assertions) {
           dirs.push(GameDirectory {
             name: "CURRENT_DIR".to_string(),
             dir: PathBuf::new(), // place holder, will be set later

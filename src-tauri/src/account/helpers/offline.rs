@@ -1,11 +1,8 @@
-use crate::{
-  account::{
-    constants::TEXTURE_ROLES,
-    models::{AccountError, PlayerInfo, PlayerType, Texture},
-  },
-  error::SJMCLResult,
-  utils::{fs::get_app_resource_filepath, image::load_image_from_dir},
-};
+use crate::account::constants::TEXTURE_ROLES;
+use crate::account::models::{AccountError, PlayerInfo, PlayerType, Texture};
+use crate::error::SJMCLResult;
+use crate::utils::fs::get_app_resource_filepath;
+use crate::utils::image::load_image_from_dir;
 use rand::seq::IndexedRandom;
 use tauri::AppHandle;
 use uuid::Uuid;
@@ -43,11 +40,11 @@ pub async fn login(app: &AppHandle, username: String, raw_uuid: String) -> SJMCL
       name: username,
       uuid,
       player_type: PlayerType::Offline,
-      auth_account: "".to_string(),
-      password: "".to_string(),
-      auth_server_url: "".to_string(),
-      access_token: "".to_string(),
-      refresh_token: "".to_string(),
+      auth_account: None,
+      password: None,
+      auth_server_url: None,
+      access_token: None,
+      refresh_token: None,
       textures: load_preset_skin(app, texture_role.to_string())?,
     }
     .with_generated_id(),

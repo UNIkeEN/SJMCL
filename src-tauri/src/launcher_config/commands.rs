@@ -1,22 +1,25 @@
-use super::{
-  helpers::java::{
-    get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
-  },
-  models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError},
+use super::helpers::java::{
+  get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
 };
-use crate::{
-  error::SJMCLResult,
-  instance::helpers::misc::refresh_instances,
-  tasks::monitor::TaskMonitor,
-  utils::{fs::generate_unique_filename, string::camel_to_snake_case},
+use super::helpers::updater::{self, download_target_version, fetch_latest_version};
+use super::models::{
+  GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
 };
-use crate::{storage::Storage, utils::fs::get_subdirectories};
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::misc::refresh_instances;
+use crate::storage::Storage;
+use crate::tasks::monitor::TaskMonitor;
+use crate::utils::fs::{generate_unique_filename, get_subdirectories};
+use crate::utils::string::camel_to_snake_case;
+use serde_json::{json, Value};
+use std::fs;
 use std::path::{Path, PathBuf};
+use std::pin::Pin;
 use std::sync::Mutex;
-use std::{fs, pin::Pin};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use tauri_plugin_opener::reveal_item_in_dir;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -58,20 +61,16 @@ pub async fn export_launcher_config(
   let state = { binding.lock()?.clone() };
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/settings")
-    .header("Content-Type", "application/json")
-    .body(
-      serde_json::json!({
-        "version": app.package_info().version.to_string(),
-        "json_data": state,
-      })
-      .to_string(),
-    )
+    .json(&json!({
+      "version": app.package_info().version.to_string(),
+      "json_data": state,
+    }))
     .send()
     .await
   {
     Ok(response) => {
       let status = response.status();
-      let json: serde_json::Value = response
+      let json: Value = response
         .json()
         .await
         .map_err(|_| LauncherConfigError::FetchError)?;
@@ -98,14 +97,10 @@ pub async fn import_launcher_config(
 ) -> SJMCLResult<LauncherConfig> {
   match client
     .post("https://mc.sjtu.cn/api-sjmcl/validate")
-    .header("Content-Type", "application/json")
-    .body(
-      serde_json::json!({
-        "version": app.package_info().version.to_string(),
-        "code": code,
-      })
-      .to_string(),
-    )
+    .json(&json!({
+      "version": app.package_info().version.to_string(),
+      "code": code,
+    }))
     .send()
     .await
   {
@@ -140,6 +135,12 @@ pub async fn import_launcher_config(
     }
     Err(_err) => Err(LauncherConfigError::FetchError.into()),
   }
+}
+
+#[tauri::command]
+pub fn reveal_launcher_config() -> SJMCLResult<()> {
+  let file_path = LauncherConfig::file_path();
+  reveal_item_in_dir(file_path).map_err(SJMCLError::from)
 }
 
 #[tauri::command]
@@ -307,4 +308,73 @@ pub async fn clear_download_cache(app: AppHandle) -> SJMCLResult<()> {
   std::fs::create_dir_all(&cache_path).map_err(|_| LauncherConfigError::FileDeletionFailed)?;
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInfo> {
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let current_version = {
+    let config_state = config_binding.lock()?;
+    config_state.basic_info.launcher_version.clone()
+  };
+
+  // skip non-semver versions
+  if semver::Version::parse(&current_version).is_err() {
+    return Ok(VersionMetaInfo::default());
+  }
+
+  if let Ok(Some((new_version, fname, release_notes, published_at))) =
+    fetch_latest_version(&app).await
+  {
+    if let (Ok(current), Ok(latest)) = (
+      semver::Version::parse(&current_version),
+      semver::Version::parse(&new_version),
+    ) {
+      return Ok(match latest.cmp(&current) {
+        std::cmp::Ordering::Greater => VersionMetaInfo {
+          version: new_version,
+          file_name: fname,
+          release_notes,
+          published_at,
+        },
+        std::cmp::Ordering::Equal => VersionMetaInfo {
+          version: "up2date".to_string(),
+          ..Default::default()
+        },
+        std::cmp::Ordering::Less => VersionMetaInfo::default(),
+      });
+    }
+  }
+
+  Ok(VersionMetaInfo::default())
+}
+
+#[tauri::command]
+pub async fn download_launcher_update(app: AppHandle, version: VersionMetaInfo) -> SJMCLResult<()> {
+  if version.version.is_empty() || version.version == "up2date" {
+    Ok(())
+  } else {
+    // TODO: handle already downloaded case
+    return download_target_version(&app, version.version, version.file_name).await;
+  }
+}
+
+#[tauri::command]
+pub async fn install_launcher_update(
+  app: AppHandle,
+  downloaded_filename: String,
+  restart: bool,
+) -> SJMCLResult<()> {
+  #[cfg(target_os = "windows")]
+  {
+    updater::install_update_windows(&app, downloaded_filename, restart).await
+  }
+  #[cfg(target_os = "macos")]
+  {
+    updater::install_update_macos(&app, downloaded_filename, restart).await
+  }
+  #[cfg(target_os = "linux")]
+  {
+    Ok(()) // No supported
+  }
 }

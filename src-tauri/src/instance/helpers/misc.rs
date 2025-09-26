@@ -1,21 +1,22 @@
-use super::client_json::McClientInfo;
-use super::{
-  super::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader},
-  client_jar::load_game_version_from_jar,
-};
+use super::client_jar::load_game_version_from_jar;
+use super::client_json::{libraries_to_info, patches_to_info, McClientInfo};
+use super::loader::forge::download_forge_libraries;
+use super::loader::neoforge::download_neoforge_libraries;
 use crate::error::SJMCLResult;
-use crate::instance::helpers::mod_loader::{download_forge_libraries, download_neoforge_libraries};
-use crate::instance::models::misc::{ModLoaderStatus, ModLoaderType};
-use crate::launcher_config::{helpers::misc::get_global_game_config, models::GameConfig};
+use crate::instance::models::misc::{
+  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType,
+};
+use crate::launcher_config::helpers::misc::get_global_game_config;
+use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
-use crate::{
-  instance::helpers::client_json::patches_to_info,
-  launcher_config::models::{GameDirectory, LauncherConfig},
-};
 use sanitize_filename;
 use serde_json::Value;
-use std::{collections::HashMap, fs, io::Cursor, path::PathBuf, sync::Mutex};
+use std::collections::HashMap;
+use std::fs;
+use std::io::Cursor;
+use std::path::PathBuf;
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
@@ -188,18 +189,29 @@ pub async fn refresh_instances(
           ModLoaderStatus::NotDownloaded => match cfg_read.mod_loader.loader_type {
             ModLoaderType::Forge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_forge_libraries(app, &priority_list, &cfg_read, &client_data).await
+              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
             }
             ModLoaderType::NeoForge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data).await
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
+            }
+            _ => Ok(()),
+          },
+          ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
+            ModLoaderType::Forge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
+            }
+            ModLoaderType::NeoForge => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
             }
             _ => Ok(()),
           },
           ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
             if is_first_run {
-              // if it's the first run, reset the status and wait for download
-              cfg_read.mod_loader.status = ModLoaderStatus::NotDownloaded;
+              // The instance failed to install mod loader during last run.
+              cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
             }
             Ok(())
           }
@@ -207,13 +219,17 @@ pub async fn refresh_instances(
         }
       } {
         eprintln!("Failed to install mod loader for {}: {:?}", name, e);
-        cfg_read.mod_loader.status = ModLoaderStatus::NotDownloaded;
+        cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
         cfg_read.save_json_cfg().await?;
         continue;
       }
     }
 
-    let (mut game_version, loader_version, loader_type) = patches_to_info(&client_data.patches);
+    let (mut game_version, loader_version, loader_type) = if !client_data.patches.is_empty() {
+      patches_to_info(&client_data.patches)
+    } else {
+      libraries_to_info(&client_data).await
+    };
     // TODO: patches related logic
     if game_version.is_none() {
       let file = Cursor::new(tokio::fs::read(jar_path).await?);

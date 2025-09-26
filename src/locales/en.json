@@ -4,7 +4,14 @@
       "title": "About",
       "settings": {
         "version": {
-          "title": "Version"
+          "title": "Version",
+          "foundNew": "New Version Available",
+          "checkUpdate": "Check for Updates",
+          "checkToast": {
+            "loading": "Checking for updates",
+            "up2date": "Already up to date",
+            "error": "Failed to check for updates"
+          }
         },
         "contributors": {
           "title": "Contributors"
@@ -26,7 +33,7 @@
         },
         "hmcl": {
           "title": "Hello Minecraft! Launcher",
-          "description": "Some design and code implementation are referenced from this open-source project"
+          "description": "Some design and code implementation are referenced from this project"
         },
         "littleskin": {
           "title": "LittleSkin",
@@ -399,6 +406,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Delete Mod",
+      "content": "Confirm delete the mod \"{{modName}}\" in the game instance \"{{instanceName}}\" ?"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Delete Player",
@@ -520,7 +533,7 @@
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": "Download Resource - {{name}} ({{source}})",
+    "title": "Download Resource - {{name}} - {{source}}",
     "label": {
       "all": "All",
       "recommendedVersion": "Recommended Ver.",
@@ -558,9 +571,10 @@
       "datapack": "Datapack",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",
-      "retry": "Retry Task",
+      "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
-      "forge-libraries": "Forge Libraries"
+      "forge-libraries": "Forge Libraries",
+      "launcher-update": "Update Launcher"
     }
   },
   "Editable": {
@@ -787,6 +801,15 @@
       "SHADERS_MOD": "Both OptiFine and the Shaders mod are installed. Please remove the Shaders mod.",
       "RTSS_FOREST_SODIUM": "RTSS is not compatible with Sodium.",
       "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "Some native libraries used by the game are incompatible with your system architecture.",
+      "MAC_DS_STORE": "The instance cannot continue due to a .DS_Store file on Mac. Please delete the .DS_Store file in your game path and try again.",
+      "LEVEL_DAT_CORRUPTED": "The instance cannot continue due to a corrupted level.dat save file. Please try to repair the save or restore from backup.",
+      "GL_OUT_OF_MEMORY": "The instance cannot continue due to OpenGL out of memory. Try lowering game resolution, disabling shaders, or closing other programs.",
+      "MOD_JAVA_VERSION_MISMATCH": "The instance cannot continue due to mod and Java version mismatch. Please check the required Java version for your mods.",
+      "DUPLICATE_MOD_INSTALLED": "The instance cannot continue due to duplicate mod installation. Please check your mod list and remove duplicates.",
+      "MOD_ZIP_CORRUPTED": "The instance cannot continue due to a corrupted mod zip file. Please try re-downloading the mod.",
+      "MOD_INTERNET_ERROR": "The instance cannot continue due to mod download failure. Please check your network connection or use a proxy.",
+      "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
+      "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
       "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
     },
     "button": {
@@ -861,6 +884,12 @@
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
     "skip": "Skip",
+    "share": {
+      "text": "Share",
+      "toast": {
+        "error": "Failed to share"
+      }
+    },
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -898,6 +927,24 @@
         "launchPageQuickSwitch": {
           "title": "Quick Switch for Accounts & Instances",
           "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+        },
+        "resourceTranslation": {
+          "title": "Resource Translation",
+          "description": "%only available in zh-Hans"
+        },
+        "skipFirstScreenOptions": {
+          "title": "Skip First Launch Screen Options",
+          "description": "%only available in zh-Hans"
+        }
+      }
+    },
+    "advanced": {
+      "title": "Advanced",
+      "settings": {
+        "openConfigJson": {
+          "title": "Launcher Settings File",
+          "description": "Reveal the raw launcher settings file in {{opener}}.",
+          "button": "Open"
         }
       }
     }
@@ -1317,6 +1364,9 @@
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
   },
+  "NotifyNewVersionModal": {
+    "title": "New Version Available"
+  },
   "OptionItemGroup": {
     "button": {
       "showAll": "Show All (+{{left}})"
@@ -1328,6 +1378,10 @@
       "viewSkin": "View Skin",
       "delete": "Delete",
       "copyUUID": "Copy UUID"
+    },
+    "toast": {
+      "refreshing": "Refreshing player info",
+      "deleting": "Deleting player"
     }
   },
   "PingTestPage": {
@@ -1359,6 +1413,16 @@
     },
     "button": {
       "login": "Login"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Launcher Update",
+    "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
+    "bodyMSI": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
+    "button": {
+      "restart": "Restart",
+      "install": "Install",
+      "later": "Later"
     }
   },
   "ResourceDownloader": {
@@ -1649,6 +1713,9 @@
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
   },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
+  },
   "ScreenshotPreviewModal": {
     "menu": {
       "setAsBg": "Set as Launcher Background"
@@ -1738,14 +1805,6 @@
           }
         }
       },
-      "checkServiceAvailability": {
-        "error": {
-          "title": "Service Unavailable",
-          "description": {
-            "FETCH_ERROR": "Failed to fetch the meta server"
-          }
-        }
-      },
       "clearDownloadCache": {
         "success": "Successfully cleared download cache",
         "error": {
@@ -1794,7 +1853,8 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NOT_FOUND": "The authentication server does not exist",
             "CANCELLED": "OAuth login cancelled",
-            "INVALID": "The server type is invalid"
+            "INVALID": "The server type is invalid",
+            "NO_MINECRAFT_PROFILE": "No Minecraft profile found"
           }
         }
       },
@@ -1808,7 +1868,8 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
             "INVALID": "The player type is invalid",
-            "CANCELLED": "OAuth re-login cancelled"
+            "CANCELLED": "OAuth re-login cancelled",
+            "NO_MINECRAFT_PROFILE": "No Minecraft profile found"
           }
         }
       },
@@ -2259,6 +2320,14 @@
           "Completed": "{{param}} has been downloaded successfully",
           "Stopped": "{{param}} download has been stopped",
           "Cancelled": "{{param}} download has been cancelled"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "File deleted successfully",
+        "error": {
+          "title": "Failed to delete file"
         }
       }
     }

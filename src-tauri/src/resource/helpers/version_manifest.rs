@@ -1,5 +1,5 @@
-use crate::resource::models::{ResourceError, ResourceType, SourceType};
-use crate::{error::SJMCLResult, resource::models::GameClientResourceInfo};
+use crate::error::SJMCLResult;
+use crate::resource::models::{GameClientResourceInfo, ResourceError, ResourceType, SourceType};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::{AppHandle, Manager};

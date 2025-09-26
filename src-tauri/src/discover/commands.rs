@@ -1,12 +1,10 @@
-use super::super::utils::web::with_retry;
-use super::models::NewsSourceInfo;
-use crate::{
-  discover::models::{NewsPostRequest, NewsPostResponse},
-  error::SJMCLResult,
-  launcher_config::models::LauncherConfig,
-};
+use super::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::LauncherConfig;
+use crate::utils::web::with_retry;
 use futures::future;
-use std::{collections::HashMap, sync::Mutex};
+use std::collections::HashMap;
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 

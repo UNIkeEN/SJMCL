@@ -15,13 +15,14 @@ use tauri::{AppHandle, Manager, Url};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_http::reqwest::header::RANGE;
 use tokio::io::AsyncSeekExt;
-use tokio_util::{bytes, compat::FuturesAsyncReadCompatExt};
+use tokio_util::bytes;
+use tokio_util::compat::FuturesAsyncReadCompatExt;
 
-use super::super::utils::web::with_retry;
 use super::streams::desc::{PDesc, PStatus};
 use super::streams::reporter::Reporter;
 use super::streams::ProgressStream;
 use super::*;
+use crate::utils::web::with_retry;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]

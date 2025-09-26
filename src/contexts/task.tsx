@@ -8,8 +8,11 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useLauncherConfig } from "@/contexts/config";
+import { useGlobalData } from "@/contexts/global-data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { REFRESH_RESOURCE_LIST_EVENT } from "@/hooks/resource-refresh";
+import { OtherResourceType } from "@/enums/resource";
 import {
   CreatedPTaskEventStatus,
   FailedPTaskEventStatus,
@@ -24,11 +27,9 @@ import {
   TaskGroupDesc,
   TaskParam,
 } from "@/models/task";
+import { ConfigService } from "@/services/config";
 import { InstanceService } from "@/services/instance";
 import { TaskService } from "@/services/task";
-import { parseTaskGroup } from "@/utils/task";
-import { useGlobalData } from "./global-data";
-import { useSharedModals } from "./shared-modal";
 
 interface TaskContextType {
   tasks: TaskGroupDesc[];
@@ -52,7 +53,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const toast = useToast();
   const { close: closeToast } = useChakraToast();
   const { getInstanceList } = useGlobalData();
-  const { openSharedModal } = useSharedModals();
+  const { config } = useLauncherConfig();
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
   const { t } = useTranslation();
@@ -470,19 +472,23 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   );
                 }
                 break;
-              case "game-resource":
-                if (version) {
-                  const resourceTypeMatch = version.match(/type:(\w+)/);
-                  if (resourceTypeMatch) {
-                    const resourceType = resourceTypeMatch[1];
-                    emit(REFRESH_RESOURCE_LIST_EVENT, { resourceType });
-                  }
-                }
-                break;
+              case "mod":
               case "mod-update":
-                emit(REFRESH_RESOURCE_LIST_EVENT, { resourceType: "mod" });
+                emit("instance:refresh-resource-list", OtherResourceType.Mod);
                 break;
-              case "modpack":
+              case "resourcepack":
+                emit(
+                  "instance:refresh-resource-list",
+                  OtherResourceType.ResourcePack
+                );
+                break;
+              case "shader":
+                emit(
+                  "instance:refresh-resource-list",
+                  OtherResourceType.ShaderPack
+                );
+                break;
+              case "modpack": {
                 let group = newTasks.find(
                   (t) => t.taskGroup === payload.taskGroup
                 );
@@ -492,6 +498,56 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   });
                 }
                 break;
+              }
+              case "launcher-update": {
+                let group = newTasks.find(
+                  (t) => t.taskGroup === payload.taskGroup
+                );
+                if (group && group.taskDescs.length > 0) {
+                  const isMSI =
+                    config.basicInfo.osType === "windows" &&
+                    !config.basicInfo.isPortable;
+                  openGenericConfirmDialog({
+                    title: t("RestartForUpdateConfirmDialog.title"),
+                    body: t(
+                      `RestartForUpdateConfirmDialog.${isMSI ? "bodyMSI" : "body"}`
+                    ),
+                    btnOK: t(
+                      `RestartForUpdateConfirmDialog.button.${isMSI ? "install" : "restart"}`
+                    ),
+                    btnCancel: t("RestartForUpdateConfirmDialog.button.later"),
+                    onOKCallback: () => {
+                      ConfigService.installLauncherUpdate(
+                        group.taskDescs[0].payload.filename || "",
+                        true
+                      ).then((response) => {
+                        if (response.status !== "success") {
+                          toast({
+                            title: response.message,
+                            description: response.details,
+                            status: "error",
+                          });
+                        }
+                      });
+                    },
+                    onCancelCallback: () => {
+                      ConfigService.installLauncherUpdate(
+                        group.taskDescs[0].payload.filename || "",
+                        false
+                      ).then((response) => {
+                        if (response.status !== "success") {
+                          toast({
+                            title: response.message,
+                            description: response.details,
+                            status: "error",
+                          });
+                        }
+                      });
+                    },
+                  });
+                }
+                break;
+              }
               default:
                 break;
             }
@@ -504,7 +560,17 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       unlisten();
     };
-  }, [closeToast, getInstanceList, t, toast, updateGroupInfo, openSharedModal]);
+  }, [
+    closeToast,
+    getInstanceList,
+    t,
+    toast,
+    updateGroupInfo,
+    openSharedModal,
+    openGenericConfirmDialog,
+    config.basicInfo.osType,
+    config.basicInfo.isPortable,
+  ]);
 
   useEffect(() => {
     if (!tasks || !tasks.length) setGeneralPercent(undefined);
@@ -547,4 +613,22 @@ export const useTaskContext = (): TaskContextType => {
     throw new Error("useTaskContext must be used within a TaskContextProvider");
   }
   return context;
+};
+
+export const parseTaskGroup = (
+  taskGroup: string
+): {
+  name: string;
+  version?: string;
+  timestamp: number;
+  isRetry: boolean;
+} => {
+  const [rawName, timestamp] = taskGroup.split("@");
+  const [name, version] = rawName.split("?");
+  return {
+    name: name.replace(/^retry-/, ""),
+    version,
+    isRetry: name.startsWith("retry-"),
+    timestamp: parseInt(timestamp),
+  };
 };

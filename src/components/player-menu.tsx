@@ -6,10 +6,10 @@ import {
   MenuItem,
   MenuList,
   Portal,
-  Spinner,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useToast as useChakraToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCopy, LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
@@ -37,10 +37,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
 }) => {
   const { t } = useTranslation();
   const toast = useToast();
+  const { close: closeToast } = useChakraToast();
   const { getPlayerList } = useGlobalData();
   const { openSharedModal, closeSharedModal, openGenericConfirmDialog } =
     useSharedModals();
-
   const {
     isOpen: isSkinModalOpen,
     onOpen: onSkinModalOpen,
@@ -52,9 +52,14 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
 
   const handleDeletePlayer = () => {
     setIsDeleting(true);
+    let loadingToast = toast({
+      title: t("PlayerMenu.toast.deleting"),
+      status: "loading",
+    });
     AccountService.deletePlayer(player.id).then((response) => {
       if (response.status === "success") {
         getPlayerList(true);
+        closeToast(loadingToast);
         toast({
           title: response.message,
           status: "success",
@@ -73,10 +78,15 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
 
   const handleRefreshPlayer = () => {
     setIsRefreshing(true);
+    let loadingToast = toast({
+      title: t("PlayerMenu.toast.refreshing"),
+      status: "loading",
+    });
     AccountService.refreshPlayer(player.id)
       .then((response) => {
         if (response.status === "success") {
           getPlayerList(true);
+          closeToast(loadingToast);
           toast({
             title: response.message,
             status: "success",
@@ -138,6 +148,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           suppressKey: "deletePlayerAlert",
         });
       },
+      isLoading: isDeleting,
     },
   ];
 
@@ -162,7 +173,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
                   onClick={item.onClick}
                 >
                   <HStack>
-                    {item.isLoading ? <Spinner /> : <item.icon />}
+                    <item.icon />
                     <Text>{item.label}</Text>
                   </HStack>
                 </MenuItem>

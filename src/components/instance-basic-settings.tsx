@@ -106,14 +106,13 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
             title: getGameDirName(directory),
             description: directory.dir,
             prefixElement: (
-              <Radio
-                isChecked={directory.dir === gameDirectory?.dir}
-                onChange={() => {
-                  setGameDirectory(directory);
-                }}
-              />
+              <Radio isChecked={directory.dir === gameDirectory?.dir} />
             ),
             children: <></>,
+            isFullClickZone: true,
+            onClick: () => {
+              setGameDirectory(directory);
+            },
           })
         ),
       ],

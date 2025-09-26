@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
 import { useSharedModals } from "@/contexts/shared-modal";
 import useDeepLink from "@/hooks/deep-link";
-import useDragAndDrop from "@/hooks/drag-and-drop";
+import { useDragAndDrop } from "@/hooks/drag-and-drop";
 import useKeyboardShortcut from "@/hooks/keyboard-shortcut";
 
 // Handle global keyboard shortcuts, DnD events, etc.
@@ -13,7 +13,8 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const isStandAlone = router.pathname.startsWith("/standalone");
 
-  const shortcutConditions = useMemo(
+  // ----------------- Keyboard Shortcuts -----------------
+  const spotlightShortcuts = useMemo(
     () => ({
       macos: { metaKey: true, key: "s" },
       windows: { ctrlKey: true, key: "s" },
@@ -22,13 +23,15 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
-  const onKeyboardShortcut = useCallback(() => {
+  const openSpotlightSearch = useCallback(() => {
     if (!isStandAlone) openSharedModal("spotlight-search");
   }, [isStandAlone, openSharedModal]);
 
-  const mimeTypes = useMemo(() => ["text/plain"], []);
+  useKeyboardShortcut(spotlightShortcuts, openSpotlightSearch);
 
-  const handleDragAndDrop = useCallback(
+  // ------------------- Drag and Drops -------------------
+
+  const addAuthServerByDnD = useCallback(
     (data: string) => {
       const prefix = "authlib-injector:yggdrasil-server:";
       if (data.startsWith(prefix)) {
@@ -41,6 +44,18 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
     [isStandAlone, openSharedModal]
   );
 
+  useDragAndDrop({
+    onDrop: addAuthServerByDnD,
+  });
+
+  // KNOWN ISSUE: https://github.com/tauri-apps/tauri/issues/14055
+  // useTauriFileDrop({
+  //   pattern: "\\.zip$",
+  //   onMatch: (path) => openSharedModal("import-modpack", { path }),
+  // });
+
+  // ---------------------- Deeplinks ---------------------
+
   // Note: These triggers appear to be ordinary strings on the surface,
   //       but they are actually syntactic sugar for JavaScript,
   //       being parsed into RegExp objects,
@@ -51,7 +66,7 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
   );
   const launchTrigger = useMemo(() => /^launch\/?(?:\?.*)?$/, []);
 
-  const handleAddAuthServer = useCallback(
+  const addAuthServerByDeeplink = useCallback(
     (path: string | URL) => {
       const url = new URL(path).searchParams.get("url") || "";
       const decodeUrl = decodeURIComponent(url);
@@ -62,7 +77,7 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
     [isStandAlone, openSharedModal]
   );
 
-  const handleLaunch = useCallback(
+  const quickLaunchGame = useCallback(
     (path: string | URL) => {
       const id = new URL(path).searchParams.get("id") || "";
       const decodeId = decodeURIComponent(id);
@@ -78,21 +93,14 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
     [isStandAlone, openSharedModal]
   );
 
-  useKeyboardShortcut(shortcutConditions, onKeyboardShortcut);
-
-  useDragAndDrop({
-    mimeTypes,
-    onDrop: handleDragAndDrop,
-  });
-
   useDeepLink({
     trigger: addAuthServerTrigger,
-    onCall: handleAddAuthServer,
+    onCall: addAuthServerByDeeplink,
   });
 
   useDeepLink({
     trigger: launchTrigger,
-    onCall: handleLaunch,
+    onCall: quickLaunchGame,
   });
 
   return <>{children}</>;

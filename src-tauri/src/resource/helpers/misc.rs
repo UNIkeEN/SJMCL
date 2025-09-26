@@ -1,6 +1,16 @@
-use crate::resource::models::{ResourceError, ResourceType, SourceType};
-use crate::{error::SJMCLResult, launcher_config::models::LauncherConfig};
+use super::curseforge::misc::translate_description_curseforge;
+use super::mod_db::ModDataBase;
+use super::modrinth::misc::translate_description_modrinth;
+use crate::error::SJMCLResult;
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::models::{
+  OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
+  SourceType,
+};
+use std::cmp::Ordering;
+use std::sync::Mutex;
 use strum::IntoEnumIterator;
+use tauri::{AppHandle, Manager};
 use url::Url;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
@@ -120,4 +130,98 @@ pub fn convert_url_to_target_source(
 
   // If no replacement occurred, return the original URL
   Ok(url.clone())
+}
+
+pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionPack) -> Ordering {
+  fn parse_version(version: &str) -> (Vec<u32>, String) {
+    let mut version_numbers = Vec::new();
+    let mut suffix = String::new();
+
+    for part in version.split('.') {
+      if let Some(dash_pos) = part.find('-') {
+        let (num_part, suffix_part) = part.split_at(dash_pos);
+        if let Ok(num) = num_part.parse::<u32>() {
+          version_numbers.push(num);
+          suffix = suffix_part.to_string();
+        }
+        break;
+      } else if let Ok(num) = part.parse::<u32>() {
+        version_numbers.push(num);
+      }
+    }
+
+    (version_numbers, suffix)
+  }
+
+  fn compare_versions_with_suffix(
+    v1: &[u32],
+    suffix1: &str,
+    v2: &[u32],
+    suffix2: &str,
+  ) -> Ordering {
+    for (a, b) in v1.iter().zip(v2.iter()) {
+      match a.cmp(b) {
+        Ordering::Equal => continue,
+        other => return other,
+      }
+    }
+
+    match v1.len().cmp(&v2.len()) {
+      Ordering::Equal => match (suffix1.is_empty(), suffix2.is_empty()) {
+        (true, false) => Ordering::Greater,
+        (false, true) => Ordering::Less,
+        _ => suffix1.cmp(suffix2),
+      },
+      other => other,
+    }
+  }
+
+  let (version_a, suffix_a) = parse_version(&a.name);
+  let (version_b, suffix_b) = parse_version(&b.name);
+
+  compare_versions_with_suffix(&version_a, &suffix_a, &version_b, &suffix_b).reverse()
+}
+
+pub async fn apply_other_resource_enhancements(
+  app: &AppHandle,
+  resource_info: &mut OtherResourceInfo,
+) -> SJMCLResult<()> {
+  // Extract data from cache in a limited scope to avoid holding lock across await
+  let (translated_name, mcmod_id) = {
+    if let Ok(cache) = app.state::<Mutex<ModDataBase>>().lock() {
+      let translated_name = if resource_info._type == "mod" {
+        cache.get_translated_name(&resource_info.slug, &resource_info.source)
+      } else {
+        None
+      };
+      let mcmod_id = cache.get_mcmod_id(&resource_info.slug, &resource_info.source);
+      (translated_name, mcmod_id)
+    } else {
+      (None, None)
+    }
+  };
+
+  if let Some(name) = translated_name {
+    if name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
+      resource_info.translated_name = Some(name);
+    }
+  }
+  if let Some(id) = mcmod_id {
+    resource_info.mcmod_id = id;
+  }
+
+  // Get translated description
+  let translated_desc = match resource_info.source {
+    OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
+    OtherResourceSource::CurseForge => {
+      translate_description_curseforge(app, &resource_info.id).await?
+    }
+    _ => None,
+  };
+
+  if let Some(desc) = translated_desc {
+    resource_info.translated_description = Some(desc);
+  }
+
+  Ok(())
 }

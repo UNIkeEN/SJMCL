@@ -58,8 +58,10 @@ export interface AuthServerFeatures {
   openidConfigurationUrl: string;
 }
 
-export interface OAuthCodeResponse {
+export interface DeviceAuthResponseInfo {
   deviceCode: string;
   userCode: string;
   verificationUri: string;
+  interval?: number;
+  expiresIn: number;
 }

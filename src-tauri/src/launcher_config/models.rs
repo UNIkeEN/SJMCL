@@ -1,10 +1,9 @@
-use crate::{
-  launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME},
-  partial::PartialUpdate,
-  storage::Storage,
-  utils::{string::snake_to_camel_case, sys_info},
-  APP_DATA_DIR, EXE_DIR, IS_PORTABLE,
-};
+use super::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
+use crate::partial::PartialUpdate;
+use crate::storage::Storage;
+use crate::utils::string::snake_to_camel_case;
+use crate::utils::sys_info;
+use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
 use smart_default::SmartDefault;
@@ -29,6 +28,16 @@ pub struct JavaInfo {
   pub major_version: i32, // major version + LTS flag
   pub is_lts: bool,
   pub is_user_added: bool,
+}
+
+// Info about the latest release version fetched from remote, shown to the user to update.
+#[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VersionMetaInfo {
+  pub version: String,
+  pub file_name: String,
+  pub release_notes: String,
+  pub published_at: String,
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/game/ProcessPriority.java#L20
@@ -238,6 +247,9 @@ structstruck::strike! {
         pub instances_nav_type: String,
         #[default = true]
         pub launch_page_quick_switch: bool,
+        #[default = true]
+        pub resource_translation: bool, // only available in zh-Hans
+        pub skip_first_screen_options: bool,  // only available in zh-Hans
       }
     },
     pub global_game_config: GameConfig,

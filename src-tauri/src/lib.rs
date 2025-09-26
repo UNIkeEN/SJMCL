@@ -10,27 +10,27 @@ mod storage;
 mod tasks;
 mod utils;
 
-use account::{
-  helpers::authlib_injector::info::refresh_and_update_auth_servers, models::AccountInfo,
-};
+use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
+use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
-use launcher_config::{
-  helpers::java::refresh_and_update_javas,
-  models::{JavaInfo, LauncherConfig},
-};
+use launcher_config::helpers::java::refresh_and_update_javas;
+use launcher_config::models::{JavaInfo, LauncherConfig};
+use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{LazyLock, Mutex};
-use std::{collections::HashMap, sync::OnceLock};
+use std::sync::{LazyLock, Mutex, OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use tauri_plugin_log::{Target, TargetKind};
-use utils::{portable::is_portable, web::build_sjmcl_client};
+use utils::portable::is_portable;
+use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::menu::MenuBuilder;
-use tauri::{path::BaseDirectory, Manager};
+use tauri::path::BaseDirectory;
+use tauri::Manager;
 
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
   std::env::current_exe()
@@ -68,6 +68,7 @@ pub async fn run() {
       launcher_config::commands::restore_launcher_config,
       launcher_config::commands::export_launcher_config,
       launcher_config::commands::import_launcher_config,
+      launcher_config::commands::reveal_launcher_config,
       launcher_config::commands::retrieve_custom_background_list,
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
@@ -75,6 +76,9 @@ pub async fn run() {
       launcher_config::commands::validate_java,
       launcher_config::commands::check_game_directory,
       launcher_config::commands::clear_download_cache,
+      launcher_config::commands::check_launcher_update,
+      launcher_config::commands::download_launcher_update,
+      launcher_config::commands::install_launcher_update,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,
@@ -148,19 +152,13 @@ pub async fn run() {
       tasks::commands::stop_progressive_task_group,
       utils::commands::retrieve_memory_info,
       utils::commands::extract_filename,
+      utils::commands::delete_file,
+      utils::commands::delete_directory,
       utils::commands::retrieve_truetype_font_list,
       utils::commands::check_service_availability,
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
-
-      // Get version and os information
-      let version = match (is_dev, app.package_info().version.to_string().as_str()) {
-        (true, _) => "dev".to_string(),
-        (false, "0.0.0") => "nightly".to_string(),
-        (false, v) => v.to_string(),
-      };
-      let os = tauri_plugin_os::platform().to_string();
 
       // init APP_DATA_DIR
       APP_DATA_DIR
@@ -172,6 +170,8 @@ pub async fn run() {
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
+      let version = launcher_config.basic_info.launcher_version.clone();
+      let os = launcher_config.basic_info.platform.clone();
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
@@ -182,6 +182,9 @@ pub async fn run() {
 
       let javas: Vec<JavaInfo> = vec![];
       app.manage(Mutex::new(javas));
+
+      let mod_database = ModDataBase::new();
+      app.manage(Mutex::new(mod_database));
 
       app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
@@ -219,6 +222,12 @@ pub async fn run() {
         refresh_and_update_javas(&app_handle).await;
       });
 
+      // Initialize mod database
+      let app_handle = app.handle().clone();
+      tauri::async_runtime::spawn(async move {
+        initialize_mod_db(&app_handle).await.unwrap_or_default();
+      });
+
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move {
         tasks::background::monitor_background_process(app_handle).await;
@@ -226,10 +235,11 @@ pub async fn run() {
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
-      if os.clone() != "macos" {
+      #[cfg(not(target_os = "macos"))]
+      {
         let menu = MenuBuilder::new(app).build()?;
         app.set_menu(menu)?;
-      };
+      }
 
       // Send statistics
       tokio::spawn(async move {

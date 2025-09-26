@@ -36,6 +36,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+          components: rustfmt
 
       - name: Lint Rust Backend
         run: |

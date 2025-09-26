@@ -126,13 +126,13 @@ const JavaSettingsPage = () => {
       onClick: () => onDownloadJavaModalOpen(),
     },
     {
-      icon: "refresh",
-      onClick: () => getJavaInfos(true),
-    },
-    {
       icon: "add",
       label: t("JavaSettingsPage.javaList.add"),
       onClick: () => handleAddJavaPath(),
+    },
+    {
+      icon: "refresh",
+      onClick: () => getJavaInfos(true),
     },
   ];
 

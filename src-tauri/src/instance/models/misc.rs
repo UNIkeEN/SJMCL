@@ -1,15 +1,11 @@
-use crate::{
-  instance::constants::INSTANCE_CFG_FILE_NAME,
-  launcher_config::models::GameConfig,
-  storage::{load_json_async, save_json_async},
-  utils::image::ImageWrapper,
-};
+use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
+use crate::launcher_config::models::GameConfig;
+use crate::storage::{load_json_async, save_json_async};
+use crate::utils::image::ImageWrapper;
 use serde::{Deserialize, Serialize};
-use std::{
-  cmp::{Ord, Ordering, PartialOrd},
-  path::PathBuf,
-  str::FromStr,
-};
+use std::cmp::{Ord, Ordering, PartialOrd};
+use std::path::PathBuf;
+use std::str::FromStr;
 use strum_macros::Display;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -71,9 +67,12 @@ impl ModLoaderType {
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
 pub enum ModLoaderStatus {
-  NotDownloaded,
-  Downloading,
-  Installing,
+  NotDownloaded, // mod loader's library has not been downloaded
+  DownloadFailed, /* mod loader's library download process failed (including processor installation failed)
+                  Only when SJMCL restart, it will try to re-download library while making no changes to client info JSON (is_retry = true),
+                  and do following steps */
+  Downloading, // mod loader's library download process is ongoing
+  Installing,  // mod loader's library has been downloaded, and installation processors are working
   #[default]
   Installed,
 }
@@ -163,6 +162,7 @@ pub struct LocalModInfo {
   pub file_name: String,
   pub file_path: PathBuf,
   pub description: String,
+  pub translated_description: Option<String>,
   pub potential_incompatibility: bool,
 }
 

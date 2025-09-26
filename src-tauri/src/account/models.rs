@@ -1,8 +1,9 @@
-use super::{
-  constants::ACCOUNTS_FILE_NAME,
-  helpers::{authlib_injector::constants::PRESET_AUTH_SERVERS, skin::draw_avatar},
-};
-use crate::{storage::Storage, utils::image::ImageWrapper, APP_DATA_DIR};
+use super::constants::ACCOUNTS_FILE_NAME;
+use super::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
+use super::helpers::skin::draw_avatar;
+use crate::storage::Storage;
+use crate::utils::image::ImageWrapper;
+use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
@@ -37,16 +38,11 @@ pub struct Player {
   pub uuid: Uuid,
   pub avatar: ImageWrapper,
   pub player_type: PlayerType,
-  #[serde(default)]
-  pub auth_account: String,
-  #[serde(default)]
-  pub password: String,
-  #[serde(default)]
-  pub auth_server: AuthServer,
-  #[serde(default)]
-  pub access_token: String,
-  #[serde(default)]
-  pub refresh_token: String,
+  pub auth_account: Option<String>,
+  pub password: Option<String>,
+  pub auth_server: Option<AuthServer>,
+  pub access_token: Option<String>,
+  pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
 
@@ -54,14 +50,18 @@ impl From<PlayerInfo> for Player {
   fn from(player_info: PlayerInfo) -> Self {
     let state: AccountInfo = Storage::load().unwrap_or_default();
 
-    let auth_server = AuthServer::from(
-      state
-        .auth_servers
-        .iter()
-        .find(|server| server.auth_url == player_info.auth_server_url)
-        .cloned()
-        .unwrap_or_default(),
-    );
+    let auth_server = if let Some(auth_server_url) = player_info.auth_server_url {
+      Some(AuthServer::from(
+        state
+          .auth_servers
+          .iter()
+          .find(|server| server.auth_url == auth_server_url)
+          .cloned()
+          .unwrap_or_default(),
+      ))
+    } else {
+      None
+    };
 
     Player {
       id: player_info.id,
@@ -87,11 +87,11 @@ pub struct PlayerInfo {
   pub name: String,
   pub uuid: Uuid,
   pub player_type: PlayerType,
-  pub auth_account: String,
-  pub password: String,
-  pub auth_server_url: String,
-  pub access_token: String,
-  pub refresh_token: String,
+  pub auth_account: Option<String>,
+  pub password: Option<String>,
+  pub auth_server_url: Option<String>,
+  pub access_token: Option<String>,
+  pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
 
@@ -101,7 +101,7 @@ impl PlayerInfo {
     let server_identity = match self.player_type {
       PlayerType::Offline => "OFFLINE".to_string(),
       PlayerType::Microsoft => "MICROSOFT".to_string(),
-      _ => self.auth_server_url.clone(),
+      _ => self.auth_server_url.clone().unwrap_or_default(),
     };
     self.id = format!("{}:{}:{}", self.name, server_identity, self.uuid);
     self
@@ -120,7 +120,10 @@ impl From<Player> for PlayerInfo {
       textures: player.textures,
       access_token: player.access_token,
       refresh_token: player.refresh_token,
-      auth_server_url: player.auth_server.auth_url,
+      auth_server_url: player
+        .auth_server
+        .as_ref()
+        .map(|server| server.auth_url.clone()),
     }
   }
 }
@@ -133,13 +136,40 @@ impl PartialEq for PlayerInfo {
 
 impl Eq for PlayerInfo {}
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct OAuthCodeResponse {
+#[derive(Deserialize)]
+// received from auth server, do not need camel case
+pub struct DeviceAuthResponse {
   pub device_code: String,
   pub user_code: String,
   pub verification_uri: String,
-  pub interval: u64,
+  pub verification_uri_complete: Option<String>,
+  pub interval: Option<u64>,
+  pub expires_in: u64,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+// communicate with the client
+pub struct DeviceAuthResponseInfo {
+  pub device_code: String,
+  pub user_code: String,
+  pub verification_uri: String,
+  pub interval: Option<u64>,
+  pub expires_in: u64,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+pub struct OAuthTokens {
+  pub access_token: String,
+  pub refresh_token: String,
+  pub id_token: Option<String>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+pub struct OAuthErrorResponse {
+  pub error: String,
+  pub error_description: Option<String>,
+  pub error_uri: Option<String>,
 }
 
 structstruck::strike! {
@@ -154,7 +184,7 @@ structstruck::strike! {
       pub non_email_login: bool,
       pub openid_configuration_url: String,
     },
-    pub client_id: String,
+    pub client_id: Option<String>,
   }
 }
 
@@ -162,7 +192,7 @@ structstruck::strike! {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AuthServerInfo {
   pub auth_url: String,
-  pub client_id: String,
+  pub client_id: Option<String>,
   pub metadata: Value,
   pub timestamp: u64,
 }
@@ -213,7 +243,7 @@ impl Default for AccountInfo {
         .iter()
         .map(|url| AuthServerInfo {
           auth_url: url.to_string(),
-          client_id: "".to_string(),
+          client_id: None,
           metadata: Value::Null,
           timestamp: 0,
         })
@@ -248,6 +278,7 @@ pub enum AccountError {
   Cancelled,
   NoDownloadApi,
   SaveError,
+  NoMinecraftProfile,
 }
 
 impl std::error::Error for AccountError {}

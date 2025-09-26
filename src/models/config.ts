@@ -116,6 +116,8 @@ export interface LauncherConfig {
       discoverPage: boolean;
       instancesNavType: string;
       launchPageQuickSwitch: boolean;
+      resourceTranslation: boolean;
+      skipFirstScreenOptions: boolean;
     };
   };
   localGameDirectories: GameDirectory[];
@@ -261,7 +263,9 @@ export const defaultConfig: LauncherConfig = {
     functionality: {
       discoverPage: false,
       instancesNavType: "instance",
-      launchPageQuickSwitch: false,
+      launchPageQuickSwitch: true,
+      resourceTranslation: true,
+      skipFirstScreenOptions: false,
     },
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
@@ -296,4 +300,17 @@ export const defaultConfig: LauncherConfig = {
       accordionStates: [true, true],
     },
   },
+};
+
+export interface VersionMetaInfo {
+  version: string;
+  fileName: string;
+  releaseNotes?: string;
+  publishedAt?: string;
+}
+
+// empty release meta info indicating up-to-date or error.
+export const defaultVersionMetaInfo: VersionMetaInfo = {
+  version: "",
+  fileName: "",
 };

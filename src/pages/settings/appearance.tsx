@@ -37,7 +37,7 @@ import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
-import { retrieveFontList } from "@/services/utils";
+import { UtilsService } from "@/services/utils";
 import { removeFileExt } from "@/utils/string";
 
 const AppearanceSettingsPage = () => {
@@ -213,8 +213,10 @@ const AppearanceSettingsPage = () => {
 
     useEffect(() => {
       const handleRetrieveFontList = async () => {
-        const res = await retrieveFontList();
-        setFonts(["%built-in", ...res]);
+        const res = await UtilsService.retrieveFontList();
+        if (res.status === "success") {
+          setFonts(["%built-in", ...res.data]);
+        }
       };
       handleRetrieveFontList();
     }, []);

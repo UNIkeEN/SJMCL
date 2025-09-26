@@ -4,6 +4,7 @@ import {
   HStack,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
@@ -38,9 +39,13 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
   const [cfModWebsiteUrl, setCfModWebsiteUrl] = useState<string>("");
   const [mrModWebsiteUrl, setMrModWebsiteUrl] = useState<string>("");
+  const [MCModWebsiteUrl, setMCModWebsiteUrl] = useState<string>("");
 
   const handleCurseForgeInfo = useCallback(async () => {
     const response = await ResourceService.fetchRemoteResourceByLocal(
@@ -53,8 +58,15 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
         OtherResourceSource.CurseForge,
         modId
       );
-      if (res.status === "success" && res.data.websiteUrl) {
-        setCfModWebsiteUrl(res.data.websiteUrl);
+      if (res.status === "success") {
+        if (res.data.websiteUrl) {
+          setCfModWebsiteUrl(res.data.websiteUrl);
+        }
+        if (res.data.mcmodId) {
+          setMCModWebsiteUrl(
+            `https://www.mcmod.cn/class/${res.data.mcmodId}.html`
+          );
+        }
       }
     }
   }, [mod.filePath]);
@@ -70,8 +82,15 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
         OtherResourceSource.Modrinth,
         modId
       );
-      if (res.status === "success" && res.data.websiteUrl) {
-        setMrModWebsiteUrl(res.data.websiteUrl);
+      if (res.status === "success") {
+        if (res.data.websiteUrl) {
+          setMrModWebsiteUrl(res.data.websiteUrl);
+        }
+        if (res.data.mcmodId) {
+          setMCModWebsiteUrl(
+            `https://www.mcmod.cn/class/${res.data.mcmodId}.html`
+          );
+        }
       }
     }
   }, [mod.filePath]);
@@ -79,6 +98,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
   useEffect(() => {
     setCfModWebsiteUrl("");
     setMrModWebsiteUrl("");
+    setMCModWebsiteUrl("");
     handleCurseForgeInfo();
     handleModrinthInfo();
   }, [handleCurseForgeInfo, handleModrinthInfo]);
@@ -87,11 +107,12 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
     <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
       <ModalOverlay />
       <ModalContent>
+        <ModalCloseButton />
         <ModalBody mt={2}>
           <OptionItem
             title={
               <Text fontWeight="semibold" fontSize="md">
-                {mod.translatedName
+                {showZhTrans && mod.translatedName
                   ? `${mod.translatedName} | ${mod.name}`
                   : mod.name || mod.fileName}
               </Text>
@@ -126,7 +147,9 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
               />
             }
           />
-          <Text mt={4}>{mod.description}</Text>
+          <Text mt={4}>
+            {(showZhTrans && mod.translatedDescription) || mod.description}
+          </Text>
         </ModalBody>
 
         <ModalFooter w="100%">
@@ -157,6 +180,20 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
                 disabled={!mrModWebsiteUrl}
               >
                 Modrinth
+              </Button>
+            </HStack>
+            <HStack spacing={2}>
+              <LuExternalLink />
+              <Button
+                colorScheme={primaryColor}
+                onClick={() => {
+                  openUrl(MCModWebsiteUrl);
+                }}
+                fontSize="sm"
+                variant="link"
+                disabled={!MCModWebsiteUrl}
+              >
+                MCMod
               </Button>
             </HStack>
           </HStack>
