@@ -451,7 +451,10 @@
       "version": "Version",
       "type": "Type"
     },
-    "warning": "Downloading from Oracle may require login."
+    "warning": {
+      "mojang": "Java runtime from Mojang will be installed by SJMCL into a specific directory.",
+      "oracle": "Downloading from Oracle may require login."
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -574,7 +577,8 @@
       "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
       "forge-libraries": "Forge Libraries",
-      "launcher-update": "Update Launcher"
+      "launcher-update": "Update Launcher",
+      "mojang-java": "Java {{param}} Runtime"
     }
   },
   "Editable": {
@@ -935,6 +939,16 @@
         "skipFirstScreenOptions": {
           "title": "Skip First Launch Screen Options",
           "description": "%only available in zh-Hans"
+        }
+      }
+    },
+    "advanced": {
+      "title": "Advanced",
+      "settings": {
+        "openConfigJson": {
+          "title": "Launcher Settings File",
+          "description": "Reveal the raw launcher settings file in {{opener}}.",
+          "button": "Open"
         }
       }
     }
@@ -1697,6 +1711,9 @@
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
   },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
+  },
   "ScreenshotPreviewModal": {
     "menu": {
       "setAsBg": "Set as Launcher Background"
@@ -1773,8 +1790,13 @@
         "error": {
           "title": "Failed to validate Java",
           "description": {
-            "JAVA_EXEC_INVALID": "Java executable is invalid "
+            "JAVA_EXEC_INVALID": "Java executable is invalid"
           }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Failed to download Mojang Java runtime"
         }
       },
       "checkGameDirectory": {

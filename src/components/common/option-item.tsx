@@ -8,6 +8,7 @@ import {
   HStack,
   Skeleton,
   Text,
+  TextProps,
   VStack,
   Wrap,
   useColorModeValue,
@@ -28,6 +29,9 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   isFullClickZone?: boolean;
   children?: React.ReactNode;
   childrenOnHover?: boolean;
+  titleFlex?: boolean;
+  maxTitleLines?: number;
+  maxDescriptionLines?: number;
 }
 
 export interface OptionItemGroupProps extends SectionProps {
@@ -48,16 +52,35 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   isFullClickZone = false,
   children,
   childrenOnHover = false,
+  titleFlex = false,
+  maxTitleLines = undefined,
+  maxDescriptionLines = undefined,
   ...boxProps
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
 
+  const titleLineClampProps: TextProps = {
+    noOfLines: maxTitleLines,
+    sx: {
+      wordBreak: "break-all",
+    },
+  };
+
+  const descriptionLineClampProps: TextProps = {
+    noOfLines: maxDescriptionLines,
+    sx: {
+      wordBreak: "break-all",
+    },
+  };
+
   const _title =
     typeof title === "string" ? (
       <Skeleton isLoaded={!isLoading}>
-        <Text fontSize="xs-sm">{title}</Text>
+        <Text fontSize="xs-sm" {...(maxTitleLines ? titleLineClampProps : {})}>
+          {title}
+        </Text>
       </Skeleton>
     ) : (
       title
@@ -94,16 +117,18 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       p={0.5}
       {...boxProps}
     >
-      <HStack spacing={2.5} overflowY="hidden">
+      <HStack spacing={2.5} overflow="hidden">
         {prefixElement && (
-          <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
+          <Skeleton isLoaded={!isLoading} flex="0 0 auto">
+            {prefixElement}
+          </Skeleton>
         )}
         <VStack
           spacing={0}
           mr={2}
           alignItems="start"
           overflow="hidden"
-          flex="1"
+          flex={titleFlex ? "1 1 auto" : "0 0 auto"}
         >
           {titleLineWrap ? (
             <Wrap spacingX={2} spacingY={0.5}>
@@ -120,7 +145,11 @@ export const OptionItem: React.FC<OptionItemProps> = ({
           {description &&
             (typeof description === "string" ? (
               <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs" className="secondary-text">
+                <Text
+                  fontSize="xs"
+                  className="secondary-text"
+                  {...(maxDescriptionLines ? descriptionLineClampProps : {})}
+                >
                   {description}
                 </Text>
               </Skeleton>

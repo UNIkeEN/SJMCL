@@ -9,7 +9,10 @@ import {
 } from "@chakra-ui/react";
 import { FaStar } from "react-icons/fa6";
 import Empty from "@/components/common/empty";
-import { OptionItemGroup } from "@/components/common/option-item";
+import {
+  OptionItemGroup,
+  OptionItemProps,
+} from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import InstanceMenu from "@/components/instance-menu";
 import { useLauncherConfig } from "@/contexts/config";
@@ -40,7 +43,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     onSelectCallback();
   };
 
-  const listItems = instances.map((instance) => ({
+  const listItems: OptionItemProps[] = instances.map((instance) => ({
     title: instance.name,
     description: [generateInstanceDesc(instance), instance.description]
       .filter(Boolean)
@@ -48,6 +51,9 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     ...{
       titleExtra: instance.starred && <Icon as={FaStar} color="yellow.500" />,
     },
+    titleFlex: true,
+    maxTitleLines: 1,
+    maxDescriptionLines: 2,
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio

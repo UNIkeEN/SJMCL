@@ -65,7 +65,6 @@ jobs:
       version: ${{ needs.Version-Check.outputs.version }}
       upload_artifacts: true
     secrets:
-      SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
       SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
   Code-Sign-macOS:

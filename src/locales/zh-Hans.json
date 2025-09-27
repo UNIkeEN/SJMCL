@@ -451,7 +451,10 @@
       "version": "版本",
       "type": "类型"
     },
-    "warning": "从 Oracle 源下载可能需要登录"
+    "warning": {
+      "mojang": "由 Mojang 分发的 Java 运行时将由 SJMCL 安装到特定目录",
+      "oracle": "从 Oracle 源下载可能需要登录"
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -574,7 +577,8 @@
       "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
       "forge-libraries": "Forge 运行库",
-      "launcher-update": "更新启动器"
+      "launcher-update": "更新启动器",
+      "mojang-java": "Java {{param}} 运行时"
     }
   },
   "Editable": {
@@ -935,6 +939,16 @@
         "skipFirstScreenOptions": {
           "title": "自动设置实例语言",
           "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
+        }
+      }
+    },
+    "advanced": {
+      "title": "高级",
+      "settings": {
+        "openConfigJson": {
+          "title": "启动器设置文件",
+          "description": "在{{opener}}中显示启动器的原始设置文件",
+          "button": "打开"
         }
       }
     }
@@ -1697,6 +1711,9 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
+  },
   "ScreenshotPreviewModal": {
     "menu": {
       "setAsBg": "设置为启动器背景"
@@ -1775,6 +1792,11 @@
           "description": {
             "JAVA_EXEC_INVALID": "Java 可执行文件无效"
           }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Mojang Java 运行时下载失败"
         }
       },
       "checkGameDirectory": {

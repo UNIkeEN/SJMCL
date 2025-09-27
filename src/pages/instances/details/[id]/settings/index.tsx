@@ -84,6 +84,7 @@ const InstanceSettingsPage = () => {
               formErrMsgProps={{ fontSize: "xs-sm" }}
               checkError={checkDirNameError}
               localeKey="InstanceSettingsPage.errorMessage"
+              flex={1}
             />
           ),
         },
@@ -98,6 +99,7 @@ const InstanceSettingsPage = () => {
               }}
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
+              flex={1}
             />
           ),
         },

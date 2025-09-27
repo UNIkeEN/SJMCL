@@ -69,6 +69,15 @@ export class ConfigService {
   }
 
   /**
+   * REVEAL the launcher config file in the system file manager.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("config")
+  static async revealLauncherConfig(): Promise<InvokeResponse<void>> {
+    return await invoke("reveal_launcher_config");
+  }
+
+  /**
    * RETRIEVE the list of custom background files.
    * @returns {Promise<InvokeResponse<string[]>>} A list of background file names.
    */
@@ -120,6 +129,18 @@ export class ConfigService {
   @responseHandler("config")
   static async validateJava(javaPath: string): Promise<InvokeResponse<void>> {
     return await invoke("validate_java", { javaPath });
+  }
+
+  /**
+   * DOWNLOAD Java runtime distributed by Mojang API.
+   * @param {string} version - Java version to download
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("config")
+  static async downloadMojangJava(
+    version: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("download_mojang_java", { version });
   }
 
   /**

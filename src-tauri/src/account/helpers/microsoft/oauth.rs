@@ -212,7 +212,6 @@ pub async fn login(app: &AppHandle, auth_info: DeviceAuthResponseInfo) -> SJMCLR
   let sender = client.post(OAUTH_TOKEN_ENDPOINT).form(&[
     ("client_id", CLIENT_ID),
     ("device_code", &auth_info.device_code),
-    ("client_secret", env!("SJMCL_MICROSOFT_CLIENT_SECRET")),
     ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
   ]);
   let tokens = oauth_polling(app, sender, auth_info).await?;

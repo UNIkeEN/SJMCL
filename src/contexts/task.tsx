@@ -53,7 +53,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const toast = useToast();
   const { close: closeToast } = useChakraToast();
   const { getInstanceList } = useGlobalData();
-  const { config } = useLauncherConfig();
+  const { config, getJavaInfos } = useLauncherConfig();
   const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
@@ -548,6 +548,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
                 break;
               }
+              case "mojang-java":
+                getJavaInfos(true);
+                break;
               default:
                 break;
             }
@@ -561,11 +564,12 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       unlisten();
     };
   }, [
-    closeToast,
-    getInstanceList,
     t,
     toast,
+    closeToast,
+    getInstanceList,
     updateGroupInfo,
+    getJavaInfos,
     openSharedModal,
     openGenericConfirmDialog,
     config.basicInfo.osType,

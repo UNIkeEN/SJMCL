@@ -1,4 +1,4 @@
-import { Badge, Kbd, Switch, Text } from "@chakra-ui/react";
+import { Badge, Button, Kbd, Switch, Text } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { MenuSelector } from "@/components/common/menu-selector";
@@ -10,9 +10,12 @@ import LanguageMenu from "@/components/language-menu";
 import { useLauncherConfig } from "@/contexts/config";
 import { useRoutingHistory } from "@/contexts/routing-history";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { useToast } from "@/contexts/toast";
+import { ConfigService } from "@/services/config";
 
 const GeneralSettingsPage = () => {
   const { t } = useTranslation();
+  const toast = useToast();
   const { config, update } = useLauncherConfig();
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
@@ -185,6 +188,48 @@ const GeneralSettingsPage = () => {
           },
         ]
       : []),
+    {
+      title: t("GeneralSettingsPage.advanced.title"),
+      items: [
+        {
+          title: t(
+            "GeneralSettingsPage.advanced.settings.openConfigJson.title"
+          ),
+          description: t(
+            "GeneralSettingsPage.advanced.settings.openConfigJson.description",
+            { opener: t(`Enums.systemFileManager.${config.basicInfo.osType}`) }
+          ),
+          children: (
+            <Button
+              variant="subtle"
+              size="xs"
+              onClick={() =>
+                openGenericConfirmDialog({
+                  title: t("General.notice"),
+                  body: t("RevealConfigJsonConfirmDialog.body"),
+                  btnOK: t("General.confirm"),
+                  showSuppressBtn: true,
+                  suppressKey: "openConfigJson",
+                  onOKCallback: () => {
+                    ConfigService.revealLauncherConfig().then((response) => {
+                      if (response.status !== "success") {
+                        toast({
+                          title: response.message,
+                          description: response.details,
+                          status: "error",
+                        });
+                      }
+                    });
+                  },
+                })
+              }
+            >
+              {t("GeneralSettingsPage.advanced.settings.openConfigJson.button")}
+            </Button>
+          ),
+        },
+      ],
+    },
   ];
 
   return (

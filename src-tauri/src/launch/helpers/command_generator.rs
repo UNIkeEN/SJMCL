@@ -369,6 +369,21 @@ pub async fn generate_launch_command(
     cmd.push("--fullscreen".to_string());
   }
 
+  if !game_config
+    .advanced
+    .custom_commands
+    .minecraft_argument
+    .trim()
+    .is_empty()
+  {
+    match shlex::split(&game_config.advanced.custom_commands.minecraft_argument) {
+      Some(mut extra_args) => cmd.append(&mut extra_args),
+      None => {
+        eprintln!("[Warn] Failed to parse minecraftArgument");
+      }
+    }
+  }
+
   Ok(LaunchCommand {
     class_paths,
     args: cmd,
