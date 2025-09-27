@@ -1294,6 +1294,17 @@
       "description": "确认要移除此版本 Java 吗？（SJMCL 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
     }
   },
+  "ManualJavaPathModal": {
+    "title": "手动添加 Java 路径",
+    "description": "请输入 Java 可执行文件的完整路径。例如：java.exe 或 java 文件的绝对路径。",
+    "pathLabel": "Java 路径",
+    "cancel": "取消",
+    "add": "添加",
+    "error": {
+      "empty": "路径不能为空",
+      "invalidFileName": "文件名必须是 java.exe（Windows）或 java（其他系统）"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "启动游戏",

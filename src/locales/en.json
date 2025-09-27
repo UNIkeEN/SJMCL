@@ -1294,6 +1294,17 @@
       "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
     }
   },
+  "ManualJavaPathModal": {
+    "title": "Manually Add Java Path",
+    "description": "Please enter the full path to the Java executable. For example: the absolute path to java.exe or java file.",
+    "pathLabel": "Java Path",
+    "cancel": "Cancel",
+    "add": "Add",
+    "error": {
+      "empty": "Path cannot be empty",
+      "invalidFileName": "File name must be java.exe (Windows) or java (other systems)"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "Launch Game",
