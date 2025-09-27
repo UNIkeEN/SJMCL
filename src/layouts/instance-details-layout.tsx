@@ -161,6 +161,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           size="xs"
           fontSize="sm"
           h={21}
+          marginInlineEnd="0.5rem"
         />
       }
       headExtra={
