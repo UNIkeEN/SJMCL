@@ -1082,3 +1082,109 @@ pub async fn retrieve_modpack_meta_info(path: String) -> SJMCLResult<ModpackMeta
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
   ModpackMetaInfo::from_archive(&file).await
 }
+
+#[tauri::command]
+pub async fn change_mod_loader(
+  app: AppHandle,
+  instance_id: String,
+  new_mod_loader: ModLoaderResourceInfo,
+) -> SJMCLResult<()> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+
+  let json_path = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+
+  let current_info: McClientInfo = load_json_async(&json_path).await?;
+  let vanilla_info = current_info.patches[0].clone();
+
+  let priority = {
+    let s = app.state::<Mutex<LauncherConfig>>();
+    let c = s.lock()?;
+    get_source_priority_list(&c)
+  };
+
+  let mod_loader = ModLoader {
+    loader_type: new_mod_loader.loader_type.clone(),
+    version: new_mod_loader.version.clone(),
+    status: if matches!(
+      new_mod_loader.loader_type,
+      ModLoaderType::Unknown | ModLoaderType::Fabric
+    ) {
+      ModLoaderStatus::Installed
+    } else {
+      ModLoaderStatus::NotDownloaded
+    },
+    branch: new_mod_loader.branch.clone(),
+  };
+
+  let game_version = instance.version.clone();
+
+  let mut task_params: Vec<PTaskParam> = Vec::new();
+
+  let subdirs = get_instance_subdir_paths(
+    &app,
+    &instance,
+    &[&InstanceSubdirType::Libraries, &InstanceSubdirType::Mods],
+  )
+  .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let [libraries_dir, mods_dir] = subdirs.as_slice() else {
+    return Err(InstanceError::InstanceNotFoundByID.into());
+  };
+
+  let mut version_info = McClientInfo {
+    id: vanilla_info.id.clone(),
+    inherits_from: vanilla_info.inherits_from.clone(),
+    jar: Some(instance.name.clone()),
+    main_class: vanilla_info.main_class.clone(),
+    arguments: vanilla_info.arguments.clone(),
+    minecraft_arguments: vanilla_info.minecraft_arguments.clone(),
+    asset_index: vanilla_info.asset_index.clone(),
+    assets: vanilla_info.assets.clone(),
+    downloads: vanilla_info.downloads.clone(),
+    libraries: vanilla_info.libraries.clone(),
+    logging: vanilla_info.logging.clone(),
+    java_version: current_info.java_version.clone(),
+    type_: vanilla_info.type_.clone(),
+    time: vanilla_info.time.clone(),
+    release_time: vanilla_info.release_time.clone(),
+    minimum_launcher_version: vanilla_info.minimum_launcher_version,
+    client_version: Some(instance.version.clone()),
+    patches: vec![vanilla_info.clone()],
+  };
+
+  install_mod_loader(
+    app.clone(),
+    &priority,
+    &game_version,
+    &mod_loader,
+    libraries_dir.to_path_buf(),
+    mods_dir.to_path_buf(),
+    &mut version_info,
+    &mut task_params,
+  )
+  .await?;
+
+  schedule_progressive_task_group(
+    app.clone(),
+    format!("mod-loader?{}", instance.name),
+    task_params,
+    true,
+  )
+  .await?;
+
+  save_json_async(&version_info, &json_path).await?;
+  instance
+    .save_json_cfg()
+    .await
+    .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  Ok(())
+}
