@@ -1,4 +1,4 @@
-use super::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
+use crate::discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::utils::web::with_retry;

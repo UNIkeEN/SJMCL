@@ -1,8 +1,8 @@
-use super::client_jar::load_game_version_from_jar;
-use super::client_json::{libraries_to_info, patches_to_info, McClientInfo};
-use super::loader::forge::download_forge_libraries;
-use super::loader::neoforge::download_neoforge_libraries;
 use crate::error::SJMCLResult;
+use crate::instance::helpers::client_jar::load_game_version_from_jar;
+use crate::instance::helpers::client_json::{libraries_to_info, patches_to_info, McClientInfo};
+use crate::instance::helpers::loader::forge::download_forge_libraries;
+use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType,
 };

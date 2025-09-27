@@ -1,29 +1,31 @@
-use super::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
-use super::helpers::game_version::{compare_game_versions, get_major_game_version};
-use super::helpers::loader::common::{execute_processors, install_mod_loader};
-use super::helpers::loader::forge::InstallProfile;
-use super::helpers::misc::{
+use crate::error::SJMCLResult;
+use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
+use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
+use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
+use crate::instance::helpers::loader::forge::InstallProfile;
+use crate::instance::helpers::misc::{
   get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
   refresh_and_update_instances, unify_instance_name,
 };
-use super::helpers::modpack::curseforge::CurseForgeManifest;
-use super::helpers::modpack::misc::ModpackMetaInfo;
-use super::helpers::modpack::modrinth::ModrinthManifest;
-use super::helpers::mods::common::{
+use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
+use crate::instance::helpers::modpack::misc::ModpackMetaInfo;
+use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
+use crate::instance::helpers::mods::common::{
   add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
 };
-use super::helpers::options_txt::get_zh_hans_lang_tag;
-use super::helpers::resourcepack::{load_resourcepack_from_dir, load_resourcepack_from_zip};
-use super::helpers::server::{load_servers_info_from_path, query_server_status};
-use super::helpers::world::{level_data_to_world_info, load_level_data_from_path};
-use super::models::misc::{
+use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
+use crate::instance::helpers::resourcepack::{
+  load_resourcepack_from_dir, load_resourcepack_from_zip,
+};
+use crate::instance::helpers::server::{load_servers_info_from_path, query_server_status};
+use crate::instance::helpers::world::{level_data_to_world_info, load_level_data_from_path};
+use crate::instance::models::misc::{
   GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
   ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
   ShaderPackInfo,
 };
-use super::models::world::base::WorldInfo;
-use super::models::world::level::LevelData;
-use crate::error::SJMCLResult;
+use crate::instance::models::world::base::WorldInfo;
+use crate::instance::models::world::level::LevelData;
 use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};

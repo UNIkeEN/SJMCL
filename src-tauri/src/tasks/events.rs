@@ -1,5 +1,5 @@
-use super::streams::reporter::Sink;
-use super::{PTaskDesc, THandle};
+use crate::tasks::streams::reporter::Sink;
+use crate::tasks::{PTaskDesc, THandle};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
 use tokio::time::Duration;

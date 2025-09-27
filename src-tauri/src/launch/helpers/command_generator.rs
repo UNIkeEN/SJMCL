@@ -1,5 +1,3 @@
-use super::file_validator::get_nonnative_library_paths;
-use super::misc::{get_separator, replace_arguments};
 use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
 use crate::account::models::{AccountError, PlayerType};
 use crate::error::{SJMCLError, SJMCLResult};
@@ -7,6 +5,8 @@ use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
+use crate::launch::helpers::file_validator::get_nonnative_library_paths;
+use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::*;

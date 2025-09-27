@@ -1,13 +1,16 @@
-use super::helpers::java::{
+use crate::error::SJMCLError;
+use crate::error::SJMCLResult;
+use crate::instance::helpers::misc::refresh_instances;
+use crate::launcher_config::helpers::java::{
   build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
   refresh_and_update_javas,
 };
-use super::helpers::updater::{self, download_target_version, fetch_latest_version};
-use super::models::{
+use crate::launcher_config::helpers::updater::{
+  self, download_target_version, fetch_latest_version,
+};
+use crate::launcher_config::models::{
   GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
 };
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::misc::refresh_instances;
 use crate::storage::Storage;
 use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};

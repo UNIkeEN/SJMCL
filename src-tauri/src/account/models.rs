@@ -1,6 +1,6 @@
-use super::constants::ACCOUNTS_FILE_NAME;
-use super::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
-use super::helpers::skin::draw_avatar;
+use crate::account::constants::ACCOUNTS_FILE_NAME;
+use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
+use crate::account::helpers::skin::draw_avatar;
 use crate::storage::Storage;
 use crate::utils::image::ImageWrapper;
 use crate::APP_DATA_DIR;

@@ -10,11 +10,11 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
-use super::common::add_library_entry;
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{
   LaunchArgumentTemplate, LibrariesValue, McClientInfo, PatchesInfo,
 };
+use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;

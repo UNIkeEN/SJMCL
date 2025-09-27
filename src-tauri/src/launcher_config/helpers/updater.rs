@@ -4,7 +4,6 @@ use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use serde_json::Value;
-use std::ffi::OsStr;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
@@ -203,7 +202,6 @@ pub async fn install_update_windows(
 
     let target_name = build_local_new_filename(&old_name, &old_version, &new_version);
     let target = cur_dir.join(target_name);
-    let backup = cur_dir.join("SJMCL_backup.exe");
     let pid = std::process::id().to_string();
     let restart_flag = if restart { "1" } else { "0" };
 
@@ -268,6 +266,8 @@ pub async fn install_update_macos(
   downloaded_filename: String,
   restart: bool,
 ) -> SJMCLResult<()> {
+  use std::ffi::OsStr;
+
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   let (old_version, downloaded_path, new_version) = {
     let config_state = config_binding.lock()?;

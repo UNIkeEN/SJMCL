@@ -1,5 +1,5 @@
-use super::game_version::compare_game_versions;
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::models::misc::{Instance, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
 use crate::utils::fs::get_app_resource_filepath;

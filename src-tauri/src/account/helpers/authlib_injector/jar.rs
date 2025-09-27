@@ -1,4 +1,4 @@
-use super::constants::AUTHLIB_INJECTOR_JAR_NAME;
+use crate::account::helpers::authlib_injector::constants::AUTHLIB_INJECTOR_JAR_NAME;
 use crate::account::models::AccountError;
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;

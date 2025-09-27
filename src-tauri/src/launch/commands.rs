@@ -1,13 +1,3 @@
-use super::helpers::command_generator::{
-  export_full_launch_command, generate_launch_command, LaunchCommand,
-};
-use super::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
-};
-use super::helpers::jre_selector::select_java_runtime;
-use super::helpers::misc::get_separator;
-use super::helpers::process_monitor::{kill_process, monitor_process, set_process_priority};
-use super::models::{LaunchError, LaunchingState};
 use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
@@ -15,6 +5,18 @@ use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
+use crate::launch::helpers::command_generator::{
+  export_full_launch_command, generate_launch_command, LaunchCommand,
+};
+use crate::launch::helpers::file_validator::{
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
+};
+use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::misc::get_separator;
+use crate::launch::helpers::process_monitor::{
+  kill_process, monitor_process, set_process_priority,
+};
+use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
 use crate::launcher_config::models::{
   FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity,

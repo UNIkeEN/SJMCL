@@ -1,4 +1,4 @@
-use super::game_version::compare_game_versions;
+use crate::instance::helpers::game_version::compare_game_versions;
 use tauri::AppHandle;
 
 pub async fn get_zh_hans_lang_tag(game_version: &str, app: &AppHandle) -> Option<&'static str> {
