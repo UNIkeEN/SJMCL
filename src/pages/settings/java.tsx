@@ -203,6 +203,7 @@ const JavaSettingsPage = () => {
                     </HStack>
                   </Flex>
                 }
+                titleFlex={true}
               >
                 <HStack spacing={0}>
                   {javaItemMenuOperations(java).map((item, index) => (

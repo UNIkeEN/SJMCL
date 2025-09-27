@@ -190,6 +190,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
           </Button>
         </HStack>
       }
+      maxTitleLines={1}
     >
       <NavMenu
         flexWrap="wrap"
