@@ -28,6 +28,7 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   isFullClickZone?: boolean;
   children?: React.ReactNode;
   childrenOnHover?: boolean;
+  isChildrenIndependent?: boolean;
 }
 
 export interface OptionItemGroupProps extends SectionProps {
@@ -48,6 +49,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   isFullClickZone = false,
   children,
   childrenOnHover = false,
+  isChildrenIndependent = false,
   ...boxProps
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -76,60 +78,75 @@ export const OptionItem: React.FC<OptionItemProps> = ({
     ));
 
   return (
-    <Flex
-      justify="space-between"
-      alignItems="center"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      borderRadius="md"
-      _hover={{
-        bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
-        transition: "background-color 0.2s ease-in-out",
-      }}
-      _active={{
-        bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
-        transition: "background-color 0.1s ease-in-out",
-      }}
-      cursor={isFullClickZone ? "pointer" : "default"}
-      p={0.5}
-      {...boxProps}
-    >
-      <HStack spacing={2.5} overflowY="hidden">
-        {prefixElement && (
-          <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
-        )}
-        <VStack
-          spacing={0}
-          mr={2}
-          alignItems="start"
-          overflow="hidden"
-          flex="1"
-        >
-          {titleLineWrap ? (
-            <Wrap spacingX={2} spacingY={0.5}>
-              {_title}
-              {titleExtra && _titleExtra}
-            </Wrap>
-          ) : (
-            <HStack spacing={2} flexWrap="nowrap">
-              {_title}
-              {titleExtra && _titleExtra}
-            </HStack>
+    <Flex justify="space-between" alignItems="center" w="100%">
+      <Flex
+        flex={1}
+        justify="space-between"
+        alignItems="center"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        borderRadius="md"
+        _hover={{
+          bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
+          transition: "background-color 0.2s ease-in-out",
+        }}
+        _active={{
+          bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
+          transition: "background-color 0.1s ease-in-out",
+        }}
+        cursor={isFullClickZone ? "pointer" : "default"}
+        p={0.5}
+        {...boxProps}
+      >
+        <HStack spacing={2.5} overflowY="hidden">
+          {prefixElement && (
+            <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
           )}
-
-          {description &&
-            (typeof description === "string" ? (
-              <Skeleton isLoaded={!isLoading}>
-                <Text fontSize="xs" className="secondary-text">
-                  {description}
-                </Text>
-              </Skeleton>
+          <VStack
+            spacing={0}
+            mr={2}
+            alignItems="start"
+            overflow="hidden"
+            flex="1"
+          >
+            {titleLineWrap ? (
+              <Wrap spacingX={2} spacingY={0.5}>
+                {_title}
+                {titleExtra && _titleExtra}
+              </Wrap>
             ) : (
-              description
-            ))}
-        </VStack>
-      </HStack>
-      {(childrenOnHover ? isHovered : true) &&
+              <HStack spacing={2} flexWrap="nowrap">
+                {_title}
+                {titleExtra && _titleExtra}
+              </HStack>
+            )}
+
+            {description &&
+              (typeof description === "string" ? (
+                <Skeleton isLoaded={!isLoading}>
+                  <Text fontSize="xs" className="secondary-text">
+                    {description}
+                  </Text>
+                </Skeleton>
+              ) : (
+                description
+              ))}
+          </VStack>
+        </HStack>
+        {!isChildrenIndependent &&
+          (childrenOnHover ? isHovered : true) &&
+          (typeof children === "string" ? (
+            <Skeleton isLoaded={!isLoading}>
+              <Text fontSize="xs-sm" className="secondary-text">
+                {children}
+              </Text>
+            </Skeleton>
+          ) : (
+            children
+          ))}
+      </Flex>
+      {isChildrenIndependent &&
+        (childrenOnHover ? isHovered : true) &&
         (typeof children === "string" ? (
           <Skeleton isLoaded={!isLoading}>
             <Text fontSize="xs-sm" className="secondary-text">
