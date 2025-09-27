@@ -77,6 +77,17 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       titleExtra
     ));
 
+  const wrappedChildren =
+    typeof children === "string" ? (
+      <Skeleton isLoaded={!isLoading}>
+        <Text fontSize="xs-sm" className="secondary-text">
+          {children}
+        </Text>
+      </Skeleton>
+    ) : (
+      children
+    );
+
   return (
     <Flex justify="space-between" alignItems="center" w="100%">
       <Flex
@@ -135,27 +146,11 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         </HStack>
         {!isChildrenIndependent &&
           (childrenOnHover ? isHovered : true) &&
-          (typeof children === "string" ? (
-            <Skeleton isLoaded={!isLoading}>
-              <Text fontSize="xs-sm" className="secondary-text">
-                {children}
-              </Text>
-            </Skeleton>
-          ) : (
-            children
-          ))}
+          wrappedChildren}
       </Flex>
       {isChildrenIndependent &&
         (childrenOnHover ? isHovered : true) &&
-        (typeof children === "string" ? (
-          <Skeleton isLoaded={!isLoading}>
-            <Text fontSize="xs-sm" className="secondary-text">
-              {children}
-            </Text>
-          </Skeleton>
-        ) : (
-          children
-        ))}
+        wrappedChildren}
     </Flex>
   );
 };
