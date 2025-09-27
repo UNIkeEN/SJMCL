@@ -1,6 +1,7 @@
 import {
   Box,
   BoxProps,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormErrorMessageProps,
@@ -183,22 +184,24 @@ const Editable: React.FC<EditableProps> = ({
           </FormControl>
         )
       ) : isTextArea ? (
-        <Text
-          w="100%"
-          wordBreak="break-all"
-          whiteSpace="pre-wrap"
-          {...textProps}
-        >
-          {value}
-          {EditButtons()}
-        </Text>
-      ) : (
-        <HStack spacing={0}>
-          <Text w="100%" {...textProps}>
+        <Flex align="center" justify="space-between">
+          <Text
+            flex={1}
+            wordBreak="break-all"
+            whiteSpace="pre-wrap"
+            {...textProps}
+          >
             {value}
           </Text>
           {EditButtons()}
-        </HStack>
+        </Flex>
+      ) : (
+        <Flex align="center" justify="space-between">
+          <Text flex={1} noOfLines={1} wordBreak="break-all" {...textProps}>
+            {value}
+          </Text>
+          {EditButtons()}
+        </Flex>
       )}
     </Box>
   );

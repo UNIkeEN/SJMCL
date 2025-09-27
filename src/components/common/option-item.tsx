@@ -126,7 +126,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         <VStack
           spacing={0}
           mr={2}
-          alignItems="start"
+          alignItems="stretch"
           overflow="hidden"
           flex={titleFlex ? "1 1 auto" : "0 0 auto"}
         >
