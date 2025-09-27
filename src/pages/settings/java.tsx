@@ -9,11 +9,12 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { DownloadJavaModal } from "@/components/modals/download-java-modal";
+import ManualJavaPathModal from "@/components/modals/manual-java-path-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { JavaInfo } from "@/models/system-info";
-import { ConfigService } from "@/services/config";
+import { JavaPathValidator } from "@/utils/java-validation";
 
 const JavaSettingsPage = () => {
   const { t } = useTranslation();
@@ -35,6 +36,12 @@ const JavaSettingsPage = () => {
     onClose: onDownloadJavaModalClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isManualJavaPathModalOpen,
+    onOpen: onManualJavaPathModalOpen,
+    onClose: onManualJavaPathModalClose,
+  } = useDisclosure();
+
   const handleAddJavaPath = async () => {
     const newJavaPath = await open({
       multiple: false,
@@ -47,52 +54,43 @@ const JavaSettingsPage = () => {
       ],
     });
     if (newJavaPath && typeof newJavaPath === "string") {
-      const fileName = newJavaPath.split(/[/\\]/).pop();
-      const isValidFileName =
-        config.basicInfo.platform === "windows"
-          ? fileName === "java.exe"
-          : fileName === "java";
-      if (!isValidFileName) {
-        toast({
-          title: t("JavaSettingsPage.toast.addFailed.title"),
-          description: t("JavaSettingsPage.toast.addFailed.invalid"),
-          status: "error",
-        });
-        return;
-      }
-
-      const isDuplicated =
-        config.extraJavaPaths.includes(newJavaPath) ||
-        javaInfos.some((java) => java.execPath === newJavaPath);
-      if (isDuplicated) {
-        toast({
-          title: t("JavaSettingsPage.toast.addFailed.title"),
-          description: t("JavaSettingsPage.toast.addFailed.duplicated"),
-          status: "error",
-        });
-        return;
-      }
-
-      // check java validity and update config
-      ConfigService.validateJava(newJavaPath).then((response) => {
-        if (response.status !== "success") {
-          toast({
-            title: t("JavaSettingsPage.toast.addFailed.title"),
-            description: t("JavaSettingsPage.toast.addFailed.invalid"),
-            status: "error",
-          });
-          return;
-        } else {
-          update("extraJavaPaths", [...config.extraJavaPaths, newJavaPath]);
-          setJavaInfos(getJavaInfos(true) || []);
-          toast({
-            title: t("JavaSettingsPage.toast.addSuccess.title"),
-            description: t("JavaSettingsPage.toast.addSuccess.description"),
-            status: "success",
-          });
-        }
-      });
+      await processJavaPath(newJavaPath);
     }
+  };
+
+  const processJavaPath = async (javaPath: string) => {
+    const validationResult = await JavaPathValidator.validateJavaPath(
+      javaPath,
+      {
+        platform: config.basicInfo.platform,
+        existingJavaPaths: config.extraJavaPaths,
+        javaInfos: javaInfos,
+      }
+    );
+
+    if (!validationResult.isValid) {
+      toast({
+        title: t("JavaSettingsPage.toast.addFailed.title"),
+        description: t(
+          `JavaSettingsPage.toast.addFailed.${validationResult.error}`
+        ),
+        status: "error",
+      });
+      return;
+    }
+
+    // 添加成功
+    update("extraJavaPaths", [...config.extraJavaPaths, javaPath]);
+    setJavaInfos(getJavaInfos(true) || []);
+    toast({
+      title: t("JavaSettingsPage.toast.addSuccess.title"),
+      description: t("JavaSettingsPage.toast.addSuccess.description"),
+      status: "success",
+    });
+  };
+
+  const handleManualJavaPathSubmit = async (javaPath: string) => {
+    await processJavaPath(javaPath);
   };
 
   const handleRemoveJavaPath = (java: JavaInfo) => {
@@ -119,6 +117,14 @@ const JavaSettingsPage = () => {
     setSelectedJava(null);
   };
 
+  const handleAddButtonClick = (event: React.MouseEvent) => {
+    if (event.altKey) {
+      onManualJavaPathModalOpen();
+    } else {
+      handleAddJavaPath();
+    }
+  };
+
   const javaSecMenuOperations = [
     {
       icon: "download",
@@ -128,7 +134,7 @@ const JavaSettingsPage = () => {
     {
       icon: "add",
       label: t("JavaSettingsPage.javaList.add"),
-      onClick: () => handleAddJavaPath(),
+      onClick: handleAddButtonClick,
     },
     {
       icon: "refresh",
@@ -225,6 +231,11 @@ const JavaSettingsPage = () => {
       <DownloadJavaModal
         isOpen={isDownloadJavaModalOpen}
         onClose={onDownloadJavaModalClose}
+      />
+      <ManualJavaPathModal
+        isOpen={isManualJavaPathModalOpen}
+        onClose={onManualJavaPathModalClose}
+        onSubmit={handleManualJavaPathSubmit}
       />
     </>
   );
