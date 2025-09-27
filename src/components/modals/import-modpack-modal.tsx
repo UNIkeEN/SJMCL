@@ -12,6 +12,7 @@ import {
   ModalOverlay,
   ModalProps,
   Radio,
+  Switch,
   VStack,
 } from "@chakra-ui/react";
 import { t } from "i18next";
@@ -43,7 +44,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
   path,
   ...modalProps
 }) => {
-  const { config } = useLauncherConfig();
+  const { config, update } = useLauncherConfig();
   const router = useRouter();
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -116,6 +117,18 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
               </HStack>
             ),
           },
+          {
+            title: t("InstanceSettingsPage.downloadOptionalMods"),
+            children: (
+              <Switch
+                colorScheme={primaryColor}
+                isChecked={config.downloadOptionalMods}
+                onChange={(event) => {
+                  update("downloadOptionalMods", event.target.checked);
+                }}
+              />
+            ),
+          },
         ],
       },
       {
@@ -168,7 +181,10 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
     description,
     iconSrc,
     gameDirectory,
+    primaryColor,
+    update,
     config.localGameDirectories,
+    config.downloadOptionalMods,
     checkDirNameError,
     setDescription,
     setGameDirectory,
