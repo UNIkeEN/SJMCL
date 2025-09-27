@@ -20,8 +20,6 @@ on:
         type: string
         default: 'main'
     secrets:
-      SJMCL_MICROSOFT_CLIENT_SECRET:
-        required: true
       SJMCL_CURSEFORGE_API_KEY:
         required: true
 
@@ -104,14 +102,12 @@ jobs:
         if: matrix.platform == 'macos'
         run: pnpm run tauri build --bundles app --target ${{ matrix.target }}
         env:
-          SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
       - name: Build the app
         if: matrix.platform != 'macos'
         run: pnpm run tauri build --target ${{ matrix.target }}
         env:
-          SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
       - name: Prepare release artifact
