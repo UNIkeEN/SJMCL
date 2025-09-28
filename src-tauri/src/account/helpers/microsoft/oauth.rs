@@ -1,8 +1,8 @@
-use super::constants::{
+use crate::account::helpers::microsoft::constants::{
   CLIENT_ID, DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, OAUTH_TOKEN_ENDPOINT,
   PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
-use super::models::{MinecraftProfile, XstsResponse};
+use crate::account::helpers::microsoft::models::{MinecraftProfile, XstsResponse};
 use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
@@ -212,7 +212,6 @@ pub async fn login(app: &AppHandle, auth_info: DeviceAuthResponseInfo) -> SJMCLR
   let sender = client.post(OAUTH_TOKEN_ENDPOINT).form(&[
     ("client_id", CLIENT_ID),
     ("device_code", &auth_info.device_code),
-    ("client_secret", env!("SJMCL_MICROSOFT_CLIENT_SECRET")),
     ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
   ]);
   let tokens = oauth_polling(app, sender, auth_info).await?;

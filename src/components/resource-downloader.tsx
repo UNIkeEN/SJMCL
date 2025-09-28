@@ -179,7 +179,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
       </Text>
     ),
     titleExtra: (
-      <HStack spacing={1}>
+      <HStack spacing={1} flex="0 0 auto">
         {(() => {
           const translatedTags = item.tags
             .map((t) => translateTag(t, item.type, item.source))
@@ -210,6 +210,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
       </HStack>
     ),
     titleLineWrap: false,
+    titleFlex: true,
     description: (
       <VStack
         fontSize="xs"

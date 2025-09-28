@@ -1,11 +1,11 @@
-use super::constants::TEXTURE_ROLES;
-use super::helpers::authlib_injector::info::{
+use crate::account::constants::TEXTURE_ROLES;
+use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
-use super::helpers::authlib_injector::jar::check_authlib_jar;
-use super::helpers::authlib_injector::{self};
-use super::helpers::{microsoft, misc, offline};
-use super::models::{
+use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
+use crate::account::helpers::authlib_injector::{self};
+use crate::account::helpers::{microsoft, misc, offline};
+use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
 };
 use crate::error::SJMCLResult;

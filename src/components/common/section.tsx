@@ -7,6 +7,7 @@ import {
   Icon,
   IconButton,
   Text,
+  TextProps,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -24,6 +25,7 @@ export interface SectionProps extends Omit<BoxProps, "children"> {
   withBackButton?: boolean;
   backRoutePath?: string;
   children?: React.ReactNode;
+  maxTitleLines?: number;
 }
 
 export const Section: React.FC<SectionProps> = ({
@@ -35,6 +37,7 @@ export const Section: React.FC<SectionProps> = ({
   initialIsOpen = true,
   onAccordionToggle,
   withBackButton = false,
+  maxTitleLines = undefined,
   backRoutePath = "",
   children,
   ...props
@@ -43,10 +46,16 @@ export const Section: React.FC<SectionProps> = ({
     defaultIsOpen: initialIsOpen,
   });
   const router = useRouter();
+  const lineClampProps: TextProps = {
+    noOfLines: maxTitleLines,
+    sx: {
+      wordBreak: "break-all",
+    },
+  };
   return (
     <Box {...props}>
       {(isAccordion || title || description || titleExtra || headExtra) && (
-        <Flex alignItems="flex-start" flexShrink={0} mb={isOpen ? 2.5 : 0}>
+        <Flex alignItems="stretch" flexShrink={0} mb={isOpen ? 2.5 : 0}>
           <HStack spacing={1}>
             {withBackButton && (
               <IconButton
@@ -88,7 +97,11 @@ export const Section: React.FC<SectionProps> = ({
             <VStack spacing={0} align="start">
               <HStack spacing={2}>
                 {title && (
-                  <Text fontWeight="bold" fontSize="sm">
+                  <Text
+                    fontWeight="bold"
+                    fontSize="sm"
+                    {...(maxTitleLines ? lineClampProps : {})}
+                  >
                     {title}
                   </Text>
                 )}

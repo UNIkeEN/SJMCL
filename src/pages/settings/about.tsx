@@ -1,6 +1,15 @@
-import { Avatar, AvatarGroup, HStack, Icon } from "@chakra-ui/react";
+import {
+  Avatar,
+  AvatarGroup,
+  Button,
+  HStack,
+  Icon,
+  Text,
+  useToast as useChakraToast,
+} from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -10,13 +19,46 @@ import {
 } from "@/components/common/option-item";
 import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { useToast } from "@/contexts/toast";
 import { CoreContributorsList } from "@/pages/settings/contributors";
+import { isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
-  const { config } = useLauncherConfig();
-  const basicInfo = config.basicInfo;
   const router = useRouter();
+  const toast = useToast();
+  const { close: closeToast } = useChakraToast();
+  const { openSharedModal } = useSharedModals();
+
+  const { config, newerVersion, handleCheckLauncherUpdate } =
+    useLauncherConfig();
+  const basicInfo = config.basicInfo;
+  const primaryColor = config.appearance.theme.primaryColor;
+
+  const [checkingUpdate, setCheckingUpdate] = useState(false);
+
+  const checkUpdate = useCallback(async () => {
+    setCheckingUpdate(true);
+    let checkingToast = toast({
+      title: t("AboutSettingsPage.about.settings.version.checkToast.loading"),
+      status: "loading",
+    });
+    const res = await handleCheckLauncherUpdate();
+    closeToast(checkingToast);
+    if (res.version === "up2date") {
+      toast({
+        title: t("AboutSettingsPage.about.settings.version.checkToast.up2date"),
+        status: "success",
+      });
+    } else if (res.version === "") {
+      toast({
+        title: t("AboutSettingsPage.about.settings.version.checkToast.error"),
+        status: "error",
+      });
+    } else openSharedModal("notify-new-version", { newVersion: res });
+    setCheckingUpdate(false);
+  }, [handleCheckLauncherUpdate, t, toast, closeToast, openSharedModal]);
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -25,7 +67,34 @@ const AboutSettingsPage = () => {
         <TitleFullWithLogo key={0} />,
         {
           title: t("AboutSettingsPage.about.settings.version.title"),
-          children: `${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`,
+          children: (
+            <HStack>
+              <Text fontSize="xs-sm" className="secondary-text">
+                {`${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`}
+              </Text>
+              {isValidSemanticVersion(basicInfo.launcherVersion) && (
+                <Button
+                  variant="subtle"
+                  colorScheme={newerVersion.version ? primaryColor : "gray"}
+                  size="xs"
+                  onClick={
+                    newerVersion.version
+                      ? () => {
+                          openSharedModal("notify-new-version", {
+                            newVersion: newerVersion,
+                          });
+                        }
+                      : checkUpdate
+                  }
+                  isLoading={checkingUpdate}
+                >
+                  {newerVersion.version
+                    ? t("AboutSettingsPage.about.settings.version.foundNew")
+                    : t("AboutSettingsPage.about.settings.version.checkUpdate")}
+                </Button>
+              )}
+            </HStack>
+          ),
         },
         {
           title: t("AboutSettingsPage.about.settings.contributors.title"),

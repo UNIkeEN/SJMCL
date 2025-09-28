@@ -1,26 +1,26 @@
-use super::helpers::curseforge::{
-  fetch_remote_resource_by_id_curseforge, fetch_remote_resource_by_local_curseforge,
-  fetch_resource_list_by_name_curseforge, fetch_resource_version_packs_curseforge,
-};
-use super::helpers::loader_meta::fabric::get_fabric_meta_by_game_version;
-use super::helpers::loader_meta::forge::get_forge_meta_by_game_version;
-use super::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
-use super::helpers::misc::get_source_priority_list;
-use super::helpers::modrinth::{
-  fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
-  fetch_resource_list_by_name_modrinth, fetch_resource_version_packs_modrinth,
-};
-use super::helpers::version_manifest::get_game_version_manifest;
-use super::models::{
-  GameClientResourceInfo, ModLoaderResourceInfo, ModUpdateQuery, OtherResourceFileInfo,
-  OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceSource,
-  OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
-};
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
 use crate::instance::models::misc::{InstanceSubdirType, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
+use crate::resource::helpers::curseforge::{
+  fetch_remote_resource_by_id_curseforge, fetch_remote_resource_by_local_curseforge,
+  fetch_resource_list_by_name_curseforge, fetch_resource_version_packs_curseforge,
+};
+use crate::resource::helpers::loader_meta::fabric::get_fabric_meta_by_game_version;
+use crate::resource::helpers::loader_meta::forge::get_forge_meta_by_game_version;
+use crate::resource::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::modrinth::{
+  fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
+  fetch_resource_list_by_name_modrinth, fetch_resource_version_packs_modrinth,
+};
+use crate::resource::helpers::version_manifest::get_game_version_manifest;
+use crate::resource::models::{
+  GameClientResourceInfo, ModLoaderResourceInfo, ModUpdateQuery, OtherResourceFileInfo,
+  OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceSource,
+  OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
+};
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;

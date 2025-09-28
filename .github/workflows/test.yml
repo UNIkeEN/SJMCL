@@ -36,6 +36,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+          components: rustfmt
 
       - name: Lint Rust Backend
         run: |
@@ -82,5 +83,4 @@ jobs:
       - name: Test Build
         run: npx tauri build ${{ matrix.args }}
         env:
-          SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}

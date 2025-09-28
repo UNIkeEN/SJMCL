@@ -1,11 +1,16 @@
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::{JavaInfo, LauncherConfig};
+use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
+use crate::resource::models::ResourceType;
+use crate::tasks::{download::DownloadParam, PTaskParam};
+use serde_json::Value;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
 
 #[cfg(target_os = "windows")]
 use std::error::Error;
@@ -112,7 +117,12 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
     paths.insert(java_path);
   }
 
-  // Scan java paths from game directories
+  // Scan Mojang Java downloaded by SJMCL itself
+  for java_path in scan_java_paths_in_sjmcl_data_directory(app) {
+    paths.insert(java_path);
+  }
+
+  // Scan java paths in all configured game directories (may downloaded by PCL)
   for java_path in scan_java_paths_in_game_directories(app) {
     paths.insert(java_path);
   }
@@ -191,8 +201,8 @@ fn get_java_paths_from_windows_registry() -> Vec<String> {
 
 fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   let mut java_paths = Vec::new();
-  if let Ok(home) = app.path().home_dir() {
-    java_paths.extend(search_java_homes_in_directory(home.join(".jdks")));
+  if let Ok(home_dir) = app.path().home_dir() {
+    java_paths.extend(search_java_homes_in_directory(home_dir.join(".jdks")));
   }
   #[cfg(target_os = "windows")]
   {
@@ -263,10 +273,30 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
   java_paths
 }
 
+fn scan_java_paths_in_sjmcl_data_directory(app: &AppHandle) -> Vec<String> {
+  let mut java_paths = Vec::new();
+  #[cfg(any(target_os = "linux", target_os = "windows"))]
+  {
+    if let Ok(app_data_dir) = app.path().app_data_dir() {
+      java_paths.extend(search_java_homes_in_directory(app_data_dir.join("runtime")));
+    }
+    // TODO: test on the Linux.
+  }
+  #[cfg(target_os = "macos")]
+  {
+    if let Ok(rt) = app.path().app_data_dir().map(|p| p.join("runtime")) {
+      for v in [8, 11, 17, 21] {
+        java_paths.extend(search_java_homes_in_mac_java_virtual_machines(
+          rt.join(format!("java-{v}")),
+        ));
+      }
+    }
+  }
+  java_paths
+}
+
 fn scan_java_paths_in_game_directories(app: &AppHandle) -> Vec<String> {
   let mut java_paths = Vec::new();
-
-  // Scan runtime directories in all configured game directories (may downloaded by PCL)
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   if let Ok(config_state) = config_binding.lock() {
     for game_dir in &config_state.local_game_directories {
@@ -276,7 +306,6 @@ fn scan_java_paths_in_game_directories(app: &AppHandle) -> Vec<String> {
       }
     }
   }
-
   java_paths
 }
 
@@ -405,4 +434,72 @@ pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
 
   let is_lts = [8, 11, 17, 21, 25].contains(&major_version);
   (major_version, is_lts)
+}
+
+pub async fn build_mojang_java_download_params(
+  app: &AppHandle,
+  version: &str,
+) -> SJMCLResult<Vec<PTaskParam>> {
+  let config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
+  let client = app.state::<reqwest::Client>();
+
+  let platform = match (&*config.basic_info.os_type, &*config.basic_info.arch) {
+    ("windows", "aarch64") => "windows-arm64",
+    ("windows", "x86_64") => "windows-x64",
+    ("windows", _) => "windows-x86",
+    ("macos", "aarch64") => "mac-os-arm64",
+    ("macos", _) => "mac-os",
+    ("linux", "x86_64") => "linux",
+    _ => "linux-i386",
+  };
+  let runtime_type = match version {
+    "8" => "jre-legacy",
+    "21" => "java-runtime-delta",
+    _ => "java-runtime-gamma",
+  };
+
+  let priority_list = get_source_priority_list(&config);
+  let mut json: Option<Value> = None;
+
+  for source_type in priority_list.iter() {
+    if let Ok(api_url) = get_download_api(*source_type, ResourceType::MojangJava) {
+      if let Ok(response) = client.get(api_url).send().await {
+        if let Ok(parsed_json) = response.json::<Value>().await {
+          json = Some(parsed_json);
+          break;
+        }
+      }
+    }
+  }
+
+  let json =
+    json.ok_or_else(|| SJMCLError("Failed to fetch Mojang Java runtime manifest".into()))?;
+  let manifest_url = json[platform][runtime_type][0]["manifest"]["url"]
+    .as_str()
+    .ok_or_else(|| SJMCLError("Failed to parse manifest URL".into()))?;
+
+  let manifest: Value = client.get(manifest_url).send().await?.json().await?;
+  let runtime_dir = app.path().resolve(
+    format!("runtime/java-{}", version),
+    tauri::path::BaseDirectory::AppData,
+  )?;
+
+  let download_params: Vec<_> = manifest["files"]
+    .as_object()
+    .ok_or_else(|| SJMCLError("Invalid files data".into()))?
+    .iter()
+    .filter_map(|(path, info)| {
+      let raw = info["downloads"]["raw"].as_object()?;
+      let (url, sha1) = (raw["url"].as_str()?, raw["sha1"].as_str()?);
+
+      Some(PTaskParam::Download(DownloadParam {
+        src: url.parse().ok()?,
+        dest: runtime_dir.join(path),
+        filename: None,
+        sha1: Some(sha1.into()),
+      }))
+    })
+    .collect();
+
+  Ok(download_params)
 }

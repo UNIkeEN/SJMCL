@@ -1,11 +1,18 @@
-use super::helpers::java::{
-  get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
-};
-use super::models::{GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError};
+use crate::error::SJMCLError;
 use crate::error::SJMCLResult;
 use crate::instance::helpers::misc::refresh_instances;
+use crate::launcher_config::helpers::java::{
+  build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
+  refresh_and_update_javas,
+};
+use crate::launcher_config::helpers::updater::{
+  self, download_target_version, fetch_latest_version,
+};
+use crate::launcher_config::models::{
+  GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
+};
 use crate::storage::Storage;
-use crate::tasks::monitor::TaskMonitor;
+use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};
 use crate::utils::string::camel_to_snake_case;
 use serde_json::{json, Value};
@@ -16,6 +23,7 @@ use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use tauri_plugin_opener::reveal_item_in_dir;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -134,6 +142,12 @@ pub async fn import_launcher_config(
 }
 
 #[tauri::command]
+pub fn reveal_launcher_config() -> SJMCLResult<()> {
+  let file_path = LauncherConfig::file_path();
+  reveal_item_in_dir(file_path).map_err(SJMCLError::from)
+}
+
+#[tauri::command]
 pub fn retrieve_custom_background_list(app: AppHandle) -> SJMCLResult<Vec<String>> {
   let custom_bg_dir = app
     .path()
@@ -222,6 +236,21 @@ pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
+pub async fn download_mojang_java(app: AppHandle, version: String) -> SJMCLResult<()> {
+  let download_params = build_mojang_java_download_params(&app, &version).await?;
+
+  schedule_progressive_task_group(
+    app,
+    format!("mojang-java?{}", version),
+    download_params,
+    true,
+  )
+  .await?;
+
+  Ok(())
+}
+
+#[tauri::command]
 pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<String> {
   let local_game_directories: Vec<_>;
   {
@@ -298,4 +327,73 @@ pub async fn clear_download_cache(app: AppHandle) -> SJMCLResult<()> {
   std::fs::create_dir_all(&cache_path).map_err(|_| LauncherConfigError::FileDeletionFailed)?;
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInfo> {
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let current_version = {
+    let config_state = config_binding.lock()?;
+    config_state.basic_info.launcher_version.clone()
+  };
+
+  // skip non-semver versions
+  if semver::Version::parse(&current_version).is_err() {
+    return Ok(VersionMetaInfo::default());
+  }
+
+  if let Ok(Some((new_version, fname, release_notes, published_at))) =
+    fetch_latest_version(&app).await
+  {
+    if let (Ok(current), Ok(latest)) = (
+      semver::Version::parse(&current_version),
+      semver::Version::parse(&new_version),
+    ) {
+      return Ok(match latest.cmp(&current) {
+        std::cmp::Ordering::Greater => VersionMetaInfo {
+          version: new_version,
+          file_name: fname,
+          release_notes,
+          published_at,
+        },
+        std::cmp::Ordering::Equal => VersionMetaInfo {
+          version: "up2date".to_string(),
+          ..Default::default()
+        },
+        std::cmp::Ordering::Less => VersionMetaInfo::default(),
+      });
+    }
+  }
+
+  Ok(VersionMetaInfo::default())
+}
+
+#[tauri::command]
+pub async fn download_launcher_update(app: AppHandle, version: VersionMetaInfo) -> SJMCLResult<()> {
+  if version.version.is_empty() || version.version == "up2date" {
+    Ok(())
+  } else {
+    // TODO: handle already downloaded case
+    return download_target_version(&app, version.version, version.file_name).await;
+  }
+}
+
+#[tauri::command]
+pub async fn install_launcher_update(
+  app: AppHandle,
+  downloaded_filename: String,
+  restart: bool,
+) -> SJMCLResult<()> {
+  #[cfg(target_os = "windows")]
+  {
+    updater::install_update_windows(&app, downloaded_filename, restart).await
+  }
+  #[cfg(target_os = "macos")]
+  {
+    updater::install_update_macos(&app, downloaded_filename, restart).await
+  }
+  #[cfg(target_os = "linux")]
+  {
+    Ok(()) // No supported
+  }
 }

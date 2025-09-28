@@ -3,9 +3,9 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use super::common::add_library_entry;
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::{McClientInfo, PatchesInfo};
+use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::ModLoader;
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};

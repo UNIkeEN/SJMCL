@@ -68,13 +68,18 @@ pub async fn run() {
       launcher_config::commands::restore_launcher_config,
       launcher_config::commands::export_launcher_config,
       launcher_config::commands::import_launcher_config,
+      launcher_config::commands::reveal_launcher_config,
       launcher_config::commands::retrieve_custom_background_list,
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
       launcher_config::commands::validate_java,
+      launcher_config::commands::download_mojang_java,
       launcher_config::commands::check_game_directory,
       launcher_config::commands::clear_download_cache,
+      launcher_config::commands::check_launcher_update,
+      launcher_config::commands::download_launcher_update,
+      launcher_config::commands::install_launcher_update,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,
@@ -156,14 +161,6 @@ pub async fn run() {
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
 
-      // Get version and os information
-      let version = match (is_dev, app.package_info().version.to_string().as_str()) {
-        (true, _) => "dev".to_string(),
-        (false, "0.0.0") => "nightly".to_string(),
-        (false, v) => v.to_string(),
-      };
-      let os = tauri_plugin_os::platform().to_string();
-
       // init APP_DATA_DIR
       APP_DATA_DIR
         .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
@@ -174,6 +171,8 @@ pub async fn run() {
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
+      let version = launcher_config.basic_info.launcher_version.clone();
+      let os = launcher_config.basic_info.platform.clone();
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
@@ -237,10 +236,11 @@ pub async fn run() {
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
-      if os.clone() != "macos" {
+      #[cfg(not(target_os = "macos"))]
+      {
         let menu = MenuBuilder::new(app).build()?;
         app.set_menu(menu)?;
-      };
+      }
 
       // Send statistics
       tokio::spawn(async move {

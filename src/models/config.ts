@@ -301,3 +301,16 @@ export const defaultConfig: LauncherConfig = {
     },
   },
 };
+
+export interface VersionMetaInfo {
+  version: string;
+  fileName: string;
+  releaseNotes?: string;
+  publishedAt?: string;
+}
+
+// empty release meta info indicating up-to-date or error.
+export const defaultVersionMetaInfo: VersionMetaInfo = {
+  version: "",
+  fileName: "",
+};

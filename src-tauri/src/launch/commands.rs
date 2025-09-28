@@ -1,13 +1,3 @@
-use super::helpers::command_generator::{
-  export_full_launch_command, generate_launch_command, LaunchCommand,
-};
-use super::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
-};
-use super::helpers::jre_selector::select_java_runtime;
-use super::helpers::misc::get_separator;
-use super::helpers::process_monitor::{kill_process, monitor_process, set_process_priority};
-use super::models::{LaunchError, LaunchingState};
 use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
@@ -15,6 +5,18 @@ use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
+use crate::launch::helpers::command_generator::{
+  export_full_launch_command, generate_launch_command, LaunchCommand,
+};
+use crate::launch::helpers::file_validator::{
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
+};
+use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::misc::get_separator;
+use crate::launch::helpers::process_monitor::{
+  kill_process, monitor_process, set_process_priority,
+};
+use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
 use crate::launcher_config::models::{
   FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity,
@@ -23,6 +25,7 @@ use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
+use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs;
@@ -248,10 +251,27 @@ pub async fn launch_game(
     class_paths,
     args: cmd_args,
   } = generate_launch_command(&app, quick_play_singleplayer, quick_play_multiplayer).await?;
-  let mut cmd_base = Command::new(selected_java.exec_path.clone());
+
+  let wrapper = game_config
+    .advanced
+    .custom_commands
+    .wrapper_launcher
+    .clone();
+
+  let mut cmd_base = if let Some(mut c) = split_command_line(&wrapper)? {
+    c.arg(&selected_java.exec_path);
+    c
+  } else {
+    Command::new(&selected_java.exec_path)
+  };
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
   println!("[Launch Command] {}", full_cmd);
+
+  let precall_cmd = game_config.advanced.custom_commands.precall_command.clone();
+  if !precall_cmd.trim().is_empty() {
+    let _ = execute_command_line(&precall_cmd);
+  }
 
   // execute launch command
   #[cfg(target_os = "windows")]
@@ -275,6 +295,12 @@ pub async fn launch_game(
     launching.full_command = full_cmd;
   }
 
+  let post_exit_cmd = game_config
+    .advanced
+    .custom_commands
+    .post_exit_command
+    .clone();
+
   // wait for the game window, create log window if needed
   let (tx, rx) = mpsc::channel();
   monitor_process(
@@ -286,6 +312,7 @@ pub async fn launch_game(
     &game_config.game_window.custom_title,
     game_config.launcher_visibility.clone(),
     tx,
+    Some(post_exit_cmd),
   )
   .await?;
   let _ = rx.recv();

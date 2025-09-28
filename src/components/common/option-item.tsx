@@ -8,6 +8,7 @@ import {
   HStack,
   Skeleton,
   Text,
+  TextProps,
   VStack,
   Wrap,
   useColorModeValue,
@@ -29,6 +30,9 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   children?: React.ReactNode;
   childrenOnHover?: boolean;
   isChildrenIndependent?: boolean;
+  titleFlex?: boolean;
+  maxTitleLines?: number;
+  maxDescriptionLines?: number;
 }
 
 export interface OptionItemGroupProps extends SectionProps {
@@ -50,16 +54,35 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   children,
   childrenOnHover = false,
   isChildrenIndependent = false,
+  titleFlex = false,
+  maxTitleLines = undefined,
+  maxDescriptionLines = undefined,
   ...boxProps
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
 
+  const titleLineClampProps: TextProps = {
+    noOfLines: maxTitleLines,
+    sx: {
+      wordBreak: "break-all",
+    },
+  };
+
+  const descriptionLineClampProps: TextProps = {
+    noOfLines: maxDescriptionLines,
+    sx: {
+      wordBreak: "break-all",
+    },
+  };
+
   const _title =
     typeof title === "string" ? (
       <Skeleton isLoaded={!isLoading}>
-        <Text fontSize="xs-sm">{title}</Text>
+        <Text fontSize="xs-sm" {...(maxTitleLines ? titleLineClampProps : {})}>
+          {title}
+        </Text>
       </Skeleton>
     ) : (
       title
@@ -78,7 +101,8 @@ export const OptionItem: React.FC<OptionItemProps> = ({
     ));
 
   const wrappedChildren =
-    typeof children === "string" ? (
+    (childrenOnHover ? isHovered : true) &&
+    (typeof children === "string" ? (
       <Skeleton isLoaded={!isLoading}>
         <Text fontSize="xs-sm" className="secondary-text">
           {children}
@@ -86,10 +110,10 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       </Skeleton>
     ) : (
       children
-    );
+    ));
 
   return (
-    <Flex justify="space-between" alignItems="center" w="100%">
+    <Flex justify="space-between" alignItems="center">
       <Flex
         flex={1}
         justify="space-between"
@@ -109,16 +133,18 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         p={0.5}
         {...boxProps}
       >
-        <HStack spacing={2.5} overflowY="hidden">
+        <HStack spacing={2.5} overflow="hidden">
           {prefixElement && (
-            <Skeleton isLoaded={!isLoading}>{prefixElement}</Skeleton>
+            <Skeleton isLoaded={!isLoading} flex="0 0 auto">
+              {prefixElement}
+            </Skeleton>
           )}
           <VStack
             spacing={0}
             mr={2}
-            alignItems="start"
+            alignItems="stretch"
             overflow="hidden"
-            flex="1"
+            flex={titleFlex ? "1 1 auto" : "0 0 auto"}
           >
             {titleLineWrap ? (
               <Wrap spacingX={2} spacingY={0.5}>
@@ -135,7 +161,11 @@ export const OptionItem: React.FC<OptionItemProps> = ({
             {description &&
               (typeof description === "string" ? (
                 <Skeleton isLoaded={!isLoading}>
-                  <Text fontSize="xs" className="secondary-text">
+                  <Text
+                    fontSize="xs"
+                    className="secondary-text"
+                    {...(maxDescriptionLines ? descriptionLineClampProps : {})}
+                  >
                     {description}
                   </Text>
                 </Skeleton>
@@ -144,13 +174,9 @@ export const OptionItem: React.FC<OptionItemProps> = ({
               ))}
           </VStack>
         </HStack>
-        {!isChildrenIndependent &&
-          (childrenOnHover ? isHovered : true) &&
-          wrappedChildren}
+        {!isChildrenIndependent && wrappedChildren}
       </Flex>
-      {isChildrenIndependent &&
-        (childrenOnHover ? isHovered : true) &&
-        wrappedChildren}
+      {isChildrenIndependent && wrappedChildren}
     </Flex>
   );
 };

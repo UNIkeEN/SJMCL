@@ -1,6 +1,6 @@
-use super::common::{parse_profile, retrieve_profile};
-use super::constants::SCOPE;
-use super::models::MinecraftProfile;
+use crate::account::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
+use crate::account::helpers::authlib_injector::constants::SCOPE;
+use crate::account::helpers::authlib_injector::models::MinecraftProfile;
 use crate::account::helpers::misc::oauth_polling;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,

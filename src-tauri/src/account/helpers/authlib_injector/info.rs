@@ -1,4 +1,4 @@
-use super::constants::CLIENT_IDS;
+use crate::account::helpers::authlib_injector::constants::CLIENT_IDS;
 use crate::account::models::{AccountError, AccountInfo, AuthServerInfo};
 use crate::error::SJMCLResult;
 use std::sync::Mutex;

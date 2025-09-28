@@ -153,7 +153,6 @@ jobs:
       upload_artifacts: true
       branch: "nightly"
     secrets:
-      SJMCL_MICROSOFT_CLIENT_SECRET: ${{ secrets.SJMCL_MICROSOFT_CLIENT_SECRET }}
       SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
   Sign-macOS-Artifacts:

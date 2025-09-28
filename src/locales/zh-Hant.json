@@ -4,7 +4,14 @@
       "title": "關於",
       "settings": {
         "version": {
-          "title": "版本"
+          "title": "版本",
+          "foundNew": "有新版本",
+          "checkUpdate": "檢查更新",
+          "checkToast": {
+            "loading": "正在檢查更新",
+            "up2date": "當前已是最新版本",
+            "error": "檢查更新失敗"
+          }
         },
         "contributors": {
           "title": "開發者名單"
@@ -444,7 +451,10 @@
       "version": "版本",
       "type": "型別"
     },
-    "warning": "從 Oracle 源下載可能需要登入"
+    "warning": {
+      "mojang": "由 Mojang 分發的 Java 執行時將由 SJMCL 安裝到特定目錄",
+      "oracle": "從 Oracle 源下載可能需要登入"
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -566,7 +576,9 @@
       "mod-update": "更新模組",
       "retry": "重試",
       "neoforge-libraries": "NeoForge 執行庫",
-      "forge-libraries": "Forge 執行庫"
+      "forge-libraries": "Forge 執行庫",
+      "launcher-update": "更新啟動器",
+      "mojang-java": "Java {{param}} 執行時"
     }
   },
   "Editable": {
@@ -927,6 +939,16 @@
         "skipFirstScreenOptions": {
           "title": "自動設定例項語言",
           "description": "啟用後，新建例項的語言將自動設定為簡體中文，這將同時跳過輔助功能設定"
+        }
+      }
+    },
+    "advanced": {
+      "title": "高階",
+      "settings": {
+        "openConfigJson": {
+          "title": "啟動器設定檔案",
+          "description": "在{{opener}}中顯示啟動器的原始設定檔案",
+          "button": "開啟"
         }
       }
     }
@@ -1340,6 +1362,9 @@
   "NotFoundPage": {
     "text": "頁面不存在，即將在 {{seconds}} 秒後跳轉"
   },
+  "NotifyNewVersionModal": {
+    "title": "發現新版本"
+  },
   "OptionItemGroup": {
     "button": {
       "showAll": "顯示全部（+{{left}}）"
@@ -1386,6 +1411,16 @@
     },
     "button": {
       "login": "登入"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "啟動器更新",
+    "body": "新版本已完成下載，重新啟動 SJMCL 以完成更新",
+    "bodyMSI": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
+    "button": {
+      "restart": "重新啟動",
+      "install": "安裝",
+      "later": "稍後"
     }
   },
   "ResourceDownloader": {
@@ -1676,6 +1711,9 @@
     "title": "還原啟動器設定",
     "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？"
   },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "請謹慎編輯啟動器原始設定檔案，錯誤的格式可能導致原有設定丟失或啟動器無法正常工作"
+  },
   "ScreenshotPreviewModal": {
     "menu": {
       "setAsBg": "設定為啟動器背景"
@@ -1754,6 +1792,11 @@
           "description": {
             "JAVA_EXEC_INVALID": "Java 可執行檔案無效"
           }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Mojang Java 執行時下載失敗"
         }
       },
       "checkGameDirectory": {

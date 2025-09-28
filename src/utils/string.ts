@@ -113,3 +113,6 @@ export const isPathSanitized = (path: string, maxLength = 255): boolean => {
 
   return true;
 };
+
+export const isValidSemanticVersion = (version: string) =>
+  /^\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?$/.test(version);
