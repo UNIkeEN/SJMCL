@@ -83,7 +83,7 @@ npm run tauri dev
 
 ## 联系我们
 
-SJMCL 用户交流 QQ 群：860851380
+SJMCL 用户 QQ 交流群：860851380
 
 您还可以发送邮件至 launcher@sjmc.club 来联系我们。
 
