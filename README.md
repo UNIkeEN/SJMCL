@@ -81,6 +81,12 @@ By GPLv3 License term 7, we require that when you distribute a modified version 
 
 Besides, per term of use of our website, when distributing a modified version of the software, please use or send version numbers with prefix (more than two letters, e.g. `XX-0.0.1`) to our statistics server unless your modifications meets Clauses 3 above.
 
+## Contact
+
+QQ Group for SJMCL Users: 860851380
+
+You can also send email to launcher@sjmc.club if you want to contact us.
+
 ## Community Partners
 
 We sincerely thank the following organizations for their development and community support throughout the SJMCL project.
