@@ -132,7 +132,6 @@ pub async fn refresh(
     .map_err(|_| AccountError::NetworkError)?;
 
   if !response.status().is_success() {
-    println!("Failed to refresh: {:?}", response.text().await);
     return Err(AccountError::Expired)?;
   }
 
