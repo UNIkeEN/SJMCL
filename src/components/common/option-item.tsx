@@ -113,7 +113,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
     ));
 
   return (
-    <Flex justify="space-between" alignItems="center">
+    <Flex justify="space-between" alignItems="center" overflow="hidden">
       <Flex
         flex={1}
         justify="space-between"
