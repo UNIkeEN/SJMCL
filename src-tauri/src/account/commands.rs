@@ -237,8 +237,6 @@ pub async fn add_player_3rdparty_password(
     Err(AccountError::Duplicate.into())
   } else if new_players.len() == 1 {
     // if only one player will be added, save it and return **an empty vector** to inform the frontend not to trigger selector.
-    let refreshed_player = authlib_injector::password::refresh(&app, &new_players[0], true).await?;
-
     {
       let account_binding = app.state::<Mutex<AccountInfo>>();
       let mut account_state = account_binding.lock()?;
@@ -248,9 +246,9 @@ pub async fn add_player_3rdparty_password(
       config_state.partial_update(
         &app,
         "states.shared.selected_player_id",
-        &serde_json::to_string(&refreshed_player.id).unwrap_or_default(),
+        &serde_json::to_string(&new_players[0].id).unwrap_or_default(),
       )?;
-      account_state.players.push(refreshed_player);
+      account_state.players.push(new_players[0].clone());
 
       account_state.save()?;
       config_state.save()?;

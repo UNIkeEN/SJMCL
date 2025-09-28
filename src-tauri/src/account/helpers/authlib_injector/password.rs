@@ -94,6 +94,11 @@ pub async fn login(
       players.push(player);
     }
 
+    if players.len() == 1 {
+      // auto select if only one profile available
+      players[0] = refresh(app, &players[0], true).await?;
+    }
+
     Ok(players)
   }
 }
@@ -127,6 +132,7 @@ pub async fn refresh(
     .map_err(|_| AccountError::NetworkError)?;
 
   if !response.status().is_success() {
+    println!("Failed to refresh: {:?}", response.text().await);
     return Err(AccountError::Expired)?;
   }
 
