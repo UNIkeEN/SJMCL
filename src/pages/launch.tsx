@@ -148,13 +148,13 @@ const LaunchPage = () => {
                 src={base64ImgSrc(selectedPlayer.avatar)}
                 alt={selectedPlayer.name}
               />
-              <VStack spacing={0} align="left" mt={-2}>
+              <VStack spacing={0} align="left" mt={-2} minW={0}>
                 <Text
                   fontSize="xs-sm"
-                  className="ellipsis-text"
                   fontWeight="bold"
-                  w="100%"
+                  maxW="100%"
                   mt={2}
+                  isTruncated
                 >
                   {selectedPlayer.name}
                 </Text>
