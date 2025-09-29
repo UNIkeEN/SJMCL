@@ -1337,6 +1337,12 @@
   "ViewSkinModal": {
     "skinView": "View Skin"
   },
+  "ViewSchematicModal":{
+      "header":{
+        "title":"View Schematic"
+      }
+
+    },
   "MemoryStatusProgress": {
     "title": "Memory Status",
     "info": "{{used}} / {{total}} GB used",
