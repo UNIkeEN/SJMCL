@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { openPath } from "@tauri-apps/plugin-opener";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -49,6 +49,8 @@ const InstanceWorldsPage = () => {
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [selectedWorldName, setSelectedWorldName] = useState<string>();
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
+  // Use a ref to track the current instance ID to prevent stale updates
+  const summaryIdRef = useRef<string | undefined>(summary?.id);
 
   const {
     isOpen: isWorldLevelDataModalOpen,
@@ -72,28 +74,55 @@ const InstanceWorldsPage = () => {
     getWorldListWrapper();
   }, [getWorldListWrapper]);
 
+  // Update ref when summary ID changes
+  useEffect(() => {
+    summaryIdRef.current = summary?.id;
+  }, [summary?.id]);
+
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
-      if (summary?.id !== undefined) {
-        InstanceService.retrieveGameServerList(summary.id, queryOnline).then(
-          (response) => {
-            if (response.status === "success") {
-              setGameServers(response.data);
-            } else if (!queryOnline) {
+      if (summaryIdRef.current === undefined) {
+        return;
+      }
+      // Save current ID before async operation
+      const currentInstanceId = summaryIdRef.current;
+
+      InstanceService.retrieveGameServerList(currentInstanceId, queryOnline)
+        .then((response) => {
+          // Check if instance ID has changed during async operation
+          if (currentInstanceId !== summaryIdRef.current) {
+            return; // Ignore response for old instance
+          }
+
+          if (response.status === "success") {
+            setGameServers(response.data);
+          } else {
+            if (!queryOnline) {
               toast({
                 title: response.message,
                 description: response.details,
                 status: "error",
               });
             }
+            // Clear server list on error to prevent showing stale data
+            setGameServers([]);
           }
-        );
-      }
+        })
+        .catch(() => {
+          // Clear server list on any error
+          if (currentInstanceId === summaryIdRef.current) {
+            setGameServers([]);
+          }
+        });
     },
-    [toast, summary?.id]
+    [toast]
   );
 
   useEffect(() => {
+    // Clear server list immediately when instance changes to prevent showing stale data
+    setGameServers([]);
+
+    // Fetch new server list for the current instance
     handleRetrieveGameServerList(false);
     handleRetrieveGameServerList(true);
 
