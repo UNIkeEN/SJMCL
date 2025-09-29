@@ -480,7 +480,10 @@ const DownloadSpecificResourceModal: React.FC<
                 }
                 isFullClickZone
                 onClick={() => {
-                  if (item.dependencies.length > 0) {
+                  if (
+                    item.dependencies.length > 0 &&
+                    resource.type !== OtherResourceType.ModPack
+                  ) {
                     openSharedModal("alert-resource-dependency", {
                       dependencies: item.dependencies,
                       downloadSource: resource.source as OtherResourceSource,
