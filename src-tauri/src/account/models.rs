@@ -21,7 +21,7 @@ pub enum PlayerType {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct Texture {
   pub texture_type: String,
   pub image: ImageWrapper,
@@ -31,7 +31,7 @@ pub struct Texture {
 
 // only for the client
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct Player {
   pub id: String,
   pub name: String,
@@ -39,7 +39,6 @@ pub struct Player {
   pub avatar: ImageWrapper,
   pub player_type: PlayerType,
   pub auth_account: Option<String>,
-  pub password: Option<String>,
   pub auth_server: Option<AuthServer>,
   pub access_token: Option<String>,
   pub refresh_token: Option<String>,
@@ -70,7 +69,6 @@ impl From<PlayerInfo> for Player {
       avatar: draw_avatar(36, &player_info.textures[0].image.image).into(),
       player_type: player_info.player_type,
       auth_account: player_info.auth_account,
-      password: player_info.password,
       access_token: player_info.access_token,
       refresh_token: player_info.refresh_token,
       auth_server,
@@ -81,14 +79,13 @@ impl From<PlayerInfo> for Player {
 
 // for backend storage, without saving the whole auth server info
 #[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct PlayerInfo {
   pub id: String,
   pub name: String,
   pub uuid: Uuid,
   pub player_type: PlayerType,
   pub auth_account: Option<String>,
-  pub password: Option<String>,
   pub auth_server_url: Option<String>,
   pub access_token: Option<String>,
   pub refresh_token: Option<String>,
@@ -116,7 +113,6 @@ impl From<Player> for PlayerInfo {
       uuid: player.uuid,
       player_type: player.player_type,
       auth_account: player.auth_account,
-      password: player.password,
       textures: player.textures,
       access_token: player.access_token,
       refresh_token: player.refresh_token,

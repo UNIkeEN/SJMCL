@@ -41,7 +41,6 @@ pub async fn login(app: &AppHandle, username: String, raw_uuid: String) -> SJMCL
       uuid,
       player_type: PlayerType::Offline,
       auth_account: None,
-      password: None,
       auth_server_url: None,
       access_token: None,
       refresh_token: None,

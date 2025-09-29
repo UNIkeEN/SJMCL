@@ -66,7 +66,6 @@ pub async fn login(
           None,
           Some(auth_server_url),
           Some(username),
-          Some(password),
         )
         .await?,
       ],
@@ -90,7 +89,6 @@ pub async fn login(
         None,
         Some(auth_server_url.clone()),
         Some(username.clone()),
-        Some(password.clone()),
       )
       .await?;
 
@@ -151,7 +149,6 @@ pub async fn refresh(
     None,
     player.auth_server_url.clone(),
     player.auth_account.clone(),
-    player.password.clone(),
   )
   .await
 }

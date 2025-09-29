@@ -176,7 +176,8 @@ pub async fn run() {
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
-      app.manage(Mutex::new(account_info));
+      app.manage(Mutex::new(account_info.clone()));
+      account_info.save().unwrap(); // TODO: add migration helper
 
       let instances: HashMap<String, Instance> = HashMap::new();
       app.manage(Mutex::new(instances));
