@@ -88,7 +88,7 @@ pub struct OtherResourceInfo {
   pub icon_src: String,
   pub tags: Vec<String>,
   pub last_updated: String,
-  pub downloads: u32,
+  pub downloads: u64,
   pub source: OtherResourceSource,
   pub website_url: String,
 }
@@ -97,7 +97,7 @@ pub struct OtherResourceInfo {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceSearchRes {
   pub list: Vec<OtherResourceInfo>,
-  pub total: u32,
+  pub total: u64,
   pub page: u32,
   pub page_size: u32,
 }
@@ -128,7 +128,7 @@ pub struct OtherResourceFileInfo {
   pub resource_id: String,
   pub name: String,
   pub release_type: String,
-  pub downloads: u32,
+  pub downloads: u64,
   pub file_date: String,
   pub download_url: String,
   pub sha1: String,
