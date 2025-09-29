@@ -113,11 +113,12 @@ export const OptionItem: React.FC<OptionItemProps> = ({
     ));
 
   return (
-    <Flex justify="space-between" alignItems="center" overflow="hidden">
+    <Flex justify="space-between" alignItems="center">
       <Flex
         flex={1}
         justify="space-between"
         alignItems="center"
+        overflow="hidden"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         borderRadius="md"
