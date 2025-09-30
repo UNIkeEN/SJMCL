@@ -172,7 +172,7 @@ const InstanceWorldsPage = () => {
             onClick: () => {
               openSharedModal("launch", {
                 instanceId: summary?.id,
-                quickPlaySingleplayer: save.dirPath,
+                quickPlaySingleplayer: save.name,
               });
             },
           },
