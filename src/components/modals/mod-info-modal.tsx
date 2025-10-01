@@ -111,7 +111,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
         <ModalBody mt={2}>
           <OptionItem
             title={
-              <Text fontWeight="semibold" fontSize="md">
+              <Text fontWeight="semibold" fontSize="md" wordBreak="break-all">
                 {showZhTrans && mod.translatedName
                   ? `${mod.translatedName} | ${mod.name}`
                   : mod.name || mod.fileName}
@@ -130,7 +130,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
               </HStack>
             }
             description={
-              <Text fontSize="xs-sm" className="secondary-text">
+              <Text fontSize="xs-sm" mt="4px" className="secondary-text">
                 {mod.fileName}
               </Text>
             }
@@ -146,6 +146,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
                 }}
               />
             }
+            marginRight="8px"
           />
           <Text mt={4}>
             {(showZhTrans && mod.translatedDescription) || mod.description}

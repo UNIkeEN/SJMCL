@@ -410,7 +410,11 @@ const InstanceModsPage = () => {
                 key={mod.fileName} // unique
                 childrenOnHover
                 title={
-                  <Text fontSize="xs-sm">
+                  <Text
+                    fontSize="xs-sm"
+                    overflow="hidden"
+                    className="secondary-text ellipsis-text"
+                  >
                     <Highlight
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yello.200" }}
@@ -478,6 +482,7 @@ const InstanceModsPage = () => {
                     />
                   </Avatar>
                 }
+                titleLineWrap={false}
               >
                 <HStack spacing={0}>
                   {modItemMenuOperations(mod).map((item, index) => (

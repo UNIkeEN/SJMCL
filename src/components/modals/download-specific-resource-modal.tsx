@@ -600,7 +600,6 @@ const DownloadSpecificResourceModal: React.FC<
               }
               fontWeight={400}
               flex={1}
-              titleFlex
             />
             {resource.websiteUrl && (
               <HStack spacing={1}>

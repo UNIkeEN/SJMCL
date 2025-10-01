@@ -337,7 +337,6 @@ const DownloadSettingsPage = () => {
               </Button>
             </HStack>
           ),
-          titleFlex: true,
         },
         {
           title: t("DownloadSettingPage.cache.settings.clear.title"),

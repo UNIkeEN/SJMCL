@@ -210,7 +210,6 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
       </HStack>
     ),
     titleLineWrap: false,
-    titleFlex: true,
     description: (
       <VStack
         fontSize="xs"
