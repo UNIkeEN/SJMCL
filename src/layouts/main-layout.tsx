@@ -1,6 +1,7 @@
 import {
   Center,
   Flex,
+  useColorMode,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -24,6 +25,9 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const { config, update } = useLauncherConfig();
+  const { colorMode } = useColorMode();
+  const isDarkenBg =
+    colorMode === "dark" && config.appearance.background.autoDarken;
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
@@ -173,6 +177,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       bgSize="cover"
       bgPosition="center"
       bgRepeat="no-repeat"
+      bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
+      bgBlendMode={isDarkenBg ? "darken" : "normal"}
       style={getGlobalExtraStyle(config)}
     >
       <HeadNavBar />

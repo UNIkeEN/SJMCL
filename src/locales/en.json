@@ -288,6 +288,9 @@
         },
         "randomCustom": {
           "title": "Random Custom Image"
+        },
+        "autoDarken": {
+          "title": "Dim Background in Dark Mode"
         }
       },
       "presetBgList": {
