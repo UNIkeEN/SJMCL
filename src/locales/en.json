@@ -837,13 +837,7 @@
     "release": "Release",
     "snapshot": "Snapshot",
     "april_fools": "April Fools",
-    "searchPlaceholder": "Search",
-    "wikiKey": {
-      "release": "Java_Edition_",
-      "snapshot": "",
-      "old_beta": "Java_Edition_Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "Search"
   },
   "General": {
     "add": "Add",
@@ -2457,7 +2451,8 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/w/"
+      "url": "https://minecraft.wiki/w/Java_Edition_{{version}}",
+      "url-snapshot": "https://minecraft.wiki/w/{{version}}"
     }
   },
   "WelcomeAndTermsModal": {

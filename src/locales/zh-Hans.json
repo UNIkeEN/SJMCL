@@ -837,13 +837,7 @@
     "release": "正式版",
     "snapshot": "测试版",
     "april_fools": "愚人节版",
-    "searchPlaceholder": "搜索版本",
-    "wikiKey": {
-      "release": "Java版",
-      "snapshot": "",
-      "old_beta": "Java版Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "搜索版本"
   },
   "General": {
     "add": "添加",
@@ -2457,7 +2451,8 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://zh.minecraft.wiki/w/"
+      "url": "https://zh.minecraft.wiki/w/Java版{{version}}",
+      "url-snapshot": "https://zh.minecraft.wiki/w/{{version}}"
     }
   },
   "WelcomeAndTermsModal": {

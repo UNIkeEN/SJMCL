@@ -632,13 +632,7 @@
     "release": "正式版",
     "snapshot": "開発版",
     "april_fools": "エイプリルフールバージョン",
-    "searchPlaceholder": "バージョンを検索",
-    "wikiKey": {
-      "release": "Java_Edition_",
-      "snapshot": "",
-      "old_beta": "Java_Edition_Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "バージョンを検索"
   },
   "General": {
     "add": "追加",
@@ -1808,7 +1802,8 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://ja.minecraft.wiki/w/"
+      "url": "https://ja.minecraft.wiki/w/Java_Edition_{{version}}",
+      "url-snapshot": "https://ja.minecraft.wiki/w/{{version}}"
     }
   },
   "WelcomeAndTermsModal": {
