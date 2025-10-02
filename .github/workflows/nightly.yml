@@ -171,7 +171,7 @@ jobs:
 
   Create-Nightly-Release:
     needs: [Check-and-Prepare, Build-Nightly, Sign-macOS-Artifacts]
-    if: needs.Check-and-Prepare.outputs.should_build == 'true'
+    if: always() && needs.Check-and-Prepare.outputs.should_build == 'true' && needs.Build-Nightly.result == 'success'
     runs-on: ubuntu-latest
     
     steps:
@@ -184,13 +184,22 @@ jobs:
         with:
           path: artifacts
 
-      - name: Remove unsigned macOS artifacts to avoid conflicts
+      - name: Organize macOS artifacts based on signing status
+        env:
+          SIGNING_SUCCESS: ${{ needs.Sign-macOS-Artifacts.result == 'success' }}
         run: |
-          echo "Removing unsigned macOS artifacts to prevent filename conflicts..."
-          # Remove unsigned macOS artifacts since we have signed versions
-          rm -rf ./artifacts/SJMCL_*_macos_aarch64/
-          rm -rf ./artifacts/SJMCL_*_macos_x86_64/
-          echo "Unsigned macOS artifacts removed"
+          if [ "${{ env.SIGNING_SUCCESS }}" = "true" ]; then
+            echo "Using signed macOS artifacts"
+            # Remove unsigned macOS artifacts since we have signed versions
+            rm -rf ./artifacts/SJMCL_*_macos_aarch64/
+            rm -rf ./artifacts/SJMCL_*_macos_x86_64/
+            echo "Unsigned macOS artifacts removed"
+          else
+            echo "⚠️ WARNING: macOS signing failed or was skipped, using unsigned artifacts"
+            # Remove signed artifact directories if they exist (likely empty or failed)
+            rm -rf ./artifacts/SJMCL_*_macos_*_signed/
+            echo "Using unsigned macOS artifacts"
+          fi
           
           echo "Remaining artifacts:"
           ls -la ./artifacts/*/*
@@ -212,6 +221,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NIGHTLY_VERSION: ${{ needs.Check-and-Prepare.outputs.nightly_version }}
           COMMIT_HASH: ${{ needs.Check-and-Prepare.outputs.commit_hash }}
+          SIGNING_SUCCESS: ${{ needs.Sign-macOS-Artifacts.result == 'success' }}
         run: |
           # Create release notes
           cat > release_notes.md << 'EOF'
@@ -228,6 +238,14 @@ jobs:
           - Features may change or be removed without notice
 
           EOF
+          
+          # Add warning if macOS signing failed
+          if [ "${{ env.SIGNING_SUCCESS }}" != "true" ]; then
+            echo "" >> release_notes.md
+            echo "---" >> release_notes.md
+            echo "" >> release_notes.md
+            echo "⚠️ **Note:** macOS artifacts in this nightly build are **not code-signed**. macOS users may see security warnings when running the application." >> release_notes.md
+          fi
           
           echo "Creating nightly pre-release..."
           ls -la ./artifacts/*/*
