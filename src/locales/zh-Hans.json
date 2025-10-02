@@ -2451,8 +2451,10 @@
       }
     },
     "wiki": {
-      "url": "https://zh.minecraft.wiki/w/Java版{{version}}?variant=zh-cn",
-      "url-snapshot": "https://zh.minecraft.wiki/w/{{version}}?variant=zh-cn"
+      "baseUrl": "https://zh.minecraft.wiki/w/{{key}}?variant=zh-cn",
+      "key": {
+        "javaEdition": "Java版{{version}}"
+      }
     }
   },
   "WelcomeAndTermsModal": {

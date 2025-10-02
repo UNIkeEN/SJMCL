@@ -2448,8 +2448,10 @@
       }
     },
     "wiki": {
-      "url": "https://zh.minecraft.wiki/w/Java版{{version}}?variant=zh-tw",
-      "url-snapshot": "https://zh.minecraft.wiki/w/{{version}}?variant=zh-tw"
+      "baseUrl": "https://zh.minecraft.wiki/w/{{key}}?variant=zh-tw",
+      "key": {
+        "javaEdition": "Java版{{version}}"
+      }
     }
   },
   "WelcomeAndTermsModal": {

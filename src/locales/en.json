@@ -2451,8 +2451,10 @@
       }
     },
     "wiki": {
-      "url": "https://minecraft.wiki/w/Java_Edition_{{version}}",
-      "url-snapshot": "https://minecraft.wiki/w/{{version}}"
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Java_Edition_{{version}}"
+      }
     }
   },
   "WelcomeAndTermsModal": {

@@ -1979,8 +1979,10 @@
       }
     },
     "wiki": {
-      "url": "https://fr.minecraft.wiki/w/Édition_Java_{{version}}",
-      "url-snapshot": "https://fr.minecraft.wiki/w/{{version}}"
+      "baseUrl": "https://fr.minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Édition_Java_{{version}}"
+      }
     }
   },
   "WelcomeAndTermsModal": {

@@ -1,27 +1,26 @@
-import { useTranslation } from "react-i18next";
-import { GameClientResourceInfo } from "@/models/resource";
+import { t } from "i18next";
 
-const SNAPSHOT_PATTERN = /^[0-9]{2}w[0-9]{2}.+$/;
-
-export const getWikiLink = (
-  t: ReturnType<typeof useTranslation>[0],
-  locale: string,
-  version: GameClientResourceInfo
+export const buildWikiUrl = (
+  key: string,
+  params?: Record<string, string>
 ): string => {
-  let wikiVersion = version.id;
-  if (SNAPSHOT_PATTERN.test(wikiVersion)) {
-    return t("Utils.wiki.url-snapshot", {
-      version: wikiVersion,
-    });
+  const baseUrl = t("Utils.wiki.baseUrl", { key });
+  const query = new URLSearchParams(params).toString();
+  return query ? `${baseUrl}?${query}` : baseUrl;
+};
+
+export const getGameVersionWikiLink = (version: string): string => {
+  // not depending on version type beacause of some april fools versions
+  const SNAPSHOT_PATTERN = /^[0-9]{2}w[0-9]{2}.+$/;
+
+  if (SNAPSHOT_PATTERN.test(version)) {
+    return buildWikiUrl(version);
   }
 
-  const lower = wikiVersion.toLocaleLowerCase(locale);
-
+  const lower = version.toLowerCase();
   if (lower.startsWith("b")) {
-    wikiVersion = lower.replace("b", "Beta_");
+    version = lower.replace("b", "Beta_");
   }
 
-  return t("Utils.wiki.url", {
-    version: wikiVersion,
-  });
+  return buildWikiUrl(t("Utils.wiki.key.javaEdition", { version }));
 };

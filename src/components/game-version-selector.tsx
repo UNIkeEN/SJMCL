@@ -33,7 +33,7 @@ import { useGlobalData } from "@/contexts/global-data";
 import { GetStateFlag } from "@/hooks/get-state";
 import { GameClientResourceInfo } from "@/models/resource";
 import { ISOToDatetime } from "@/utils/datetime";
-import { getWikiLink } from "@/utils/wiki";
+import { getGameVersionWikiLink } from "@/utils/wiki";
 
 const gameTypesToIcon: Record<string, string> = {
   release: "JEIcon_Release.png",
@@ -153,7 +153,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
           variant="ghost"
           onClick={(e) => {
             e.stopPropagation();
-            openUrl(getWikiLink(t, config.general.general.language, version));
+            openUrl(getGameVersionWikiLink(version.id));
           }}
         />
       </Tooltip>
