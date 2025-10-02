@@ -74,11 +74,6 @@ const InstanceWorldsPage = () => {
     getWorldListWrapper();
   }, [getWorldListWrapper]);
 
-  // Update ref when summary ID changes
-  useEffect(() => {
-    summaryIdRef.current = summary?.id;
-  }, [summary?.id]);
-
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
       if (summaryIdRef.current === undefined) {
