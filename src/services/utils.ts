@@ -57,4 +57,9 @@ export class UtilsService {
   ): Promise<InvokeResponse<number>> {
     return await invoke("check_service_availability", { url });
   }
+
+  @responseHandler("utils")
+  static async getSystemRegion(): Promise<InvokeResponse<string>> {
+    return await invoke("get_system_region");
+  }
 }

@@ -156,6 +156,7 @@ pub async fn run() {
       utils::commands::delete_directory,
       utils::commands::retrieve_truetype_font_list,
       utils::commands::check_service_availability,
+      utils::commands::get_system_region
     ])
     .setup(|app| {
       let is_dev = cfg!(debug_assertions);
