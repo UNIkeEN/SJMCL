@@ -10,7 +10,7 @@ export const buildWikiUrl = (
 };
 
 export const getGameVersionWikiLink = (version: string): string => {
-  // not depending on version type beacause of some april fools versions
+  // not depending on version type beacause of some pre-release, rc and april fools versions
   const SNAPSHOT_PATTERN = /^[0-9]{2}w[0-9]{2}.+$/;
 
   if (SNAPSHOT_PATTERN.test(version)) {
