@@ -325,6 +325,9 @@ const InstanceModsPage = () => {
           currentType={summary?.modLoader.loaderType || ModLoaderType.Unknown}
           currentVersion={summary?.modLoader.version}
           displayMode="entry"
+          openChangeModal
+          instanceId={summary?.id}
+          gameVersion={summary?.version}
         />
       </Section>
       <Section

@@ -314,6 +314,11 @@
       }
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": "Change Mod Loader"
+    }
+  },
   "CheckModUpdateModal": {
     "header": {
       "title": "Check Mod Updates"

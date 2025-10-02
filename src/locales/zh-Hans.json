@@ -336,6 +336,11 @@
       "renameOldMod": "重命名旧文件失败"
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": "修改模组加载器"
+    }
+  },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
       "title": "清除下载缓存",

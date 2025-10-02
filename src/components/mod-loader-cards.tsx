@@ -9,9 +9,11 @@ import {
   Image,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { LuChevronRight, LuX } from "react-icons/lu";
+import { ChangeModLoaderModal } from "@/components/modals/change-mod-loader-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/enums/instance";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
@@ -23,6 +25,9 @@ interface ModLoaderCardsProps extends BoxProps {
   displayMode: "entry" | "selector";
   loading?: boolean;
   onTypeSelect?: (type: ModLoaderType) => void;
+  openChangeModal?: boolean;
+  instanceId?: string;
+  gameVersion?: string;
 }
 
 const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
@@ -31,12 +36,20 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   displayMode,
   loading = false,
   onTypeSelect,
+  openChangeModal = false,
+  instanceId,
+  gameVersion,
   ...boxProps
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
+  const {
+    isOpen: isChangeModLoaderModalOpen,
+    onOpen: onChangeModLoaderModalOpen,
+    onClose: onChangeModLoaderModalClose,
+  } = useDisclosure();
 
   const borderWidth = "1px";
   const basePadding = boxProps.padding || "12px";
@@ -51,6 +64,15 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const renderCard = (type: ModLoaderType) => {
     const isSelected =
       type === currentType && currentType !== ModLoaderType.Unknown;
+
+    const handleClick = () => {
+      if (openChangeModal && instanceId && gameVersion) {
+        onChangeModLoaderModalOpen();
+      } else {
+        onTypeSelect?.(type);
+      }
+    };
+
     return (
       <Card
         key={type}
@@ -108,7 +130,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
             variant="ghost"
             size="xs"
             disabled={loading}
-            onClick={() => onTypeSelect?.(type)}
+            onClick={handleClick}
           />
         </Flex>
       </Card>
@@ -116,9 +138,20 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   };
 
   return (
-    <Grid templateColumns="repeat(3, 1fr)" gap={3.5} {...boxProps}>
-      {loaderTypes.map(renderCard)}
-    </Grid>
+    <>
+      <Grid templateColumns="repeat(3, 1fr)" gap={3.5} {...boxProps}>
+        {loaderTypes.map(renderCard)}
+      </Grid>
+
+      {openChangeModal && instanceId && gameVersion && (
+        <ChangeModLoaderModal
+          isOpen={isChangeModLoaderModalOpen}
+          onClose={onChangeModLoaderModalClose}
+          instanceId={instanceId}
+          gameVersion={gameVersion}
+        />
+      )}
+    </>
   );
 };
 
