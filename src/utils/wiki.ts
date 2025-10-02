@@ -1,40 +1,21 @@
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { GameClientResourceInfo } from "@/models/resource";
-import { UtilsService } from "@/services/utils";
 
 const SNAPSHOT_PATTERN = /^[0-9]{2}w[0-9]{2}.+$/;
 
-/**
- * Obtain the Game Version Wikipedia URL suffix
- * @param locale Current Language
- * @returns Game Version Wikipedia URL suffix
- */
-export const getChineseWikiVariantSuffix = async (
-  locale: string
-): Promise<string> => {
-  if (locale.startsWith("zh")) {
-    if (locale.endsWith("Hant")) {
-      const res = await UtilsService.getSystemRegion();
-      if (res.status === "success") {
-        console.log(res.data);
-        return res.data === "HK" || res.data === "MO"
-          ? "?variant=zh-hk"
-          : "?variant=zh-tw";
-      }
-    } else {
-      return "?variant=zh-cn";
-    }
-  }
-  return "";
-};
-
-export const getGameVersionWikiLink = async (
+export const getWikiLink = (
+  t: ReturnType<typeof useTranslation>[0],
   locale: string,
   version: GameClientResourceInfo
-): Promise<string> => {
+): string => {
   let wikiVersion = version.id;
 
-  const variantSuffix = await getChineseWikiVariantSuffix(locale);
+  let variantSuffix = "";
+  if (locale.startsWith("zh")) {
+    variantSuffix = locale.endsWith("Hant")
+      ? "?variant=zh-tw"
+      : "?variant=zh-cn";
+  }
 
   if (version.gameType == "snapshot") {
     return (

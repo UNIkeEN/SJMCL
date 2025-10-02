@@ -4,7 +4,6 @@ use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
 use crate::utils::fs::extract_filename as extract_filename_helper;
 use font_loader::system_fonts;
 use std::fs;
-use sys_locale::get_locale;
 use tauri_plugin_http::reqwest;
 use tokio::time::Instant;
 use url::Url;
@@ -56,18 +55,5 @@ pub async fn check_service_availability(
       }
     }
     Err(_) => Err(LauncherConfigError::FetchError.into()),
-  }
-}
-
-#[tauri::command]
-pub fn get_system_region() -> SJMCLResult<String> {
-  let locale = get_locale().unwrap_or_else(|| String::from("en-US"));
-
-  // Split the locale string to extract the region part
-  let parts: Vec<&str> = locale.split('-').collect();
-  if parts.len() > 1 {
-    Ok(parts[1].to_uppercase()) // convert to uppercase for standardization
-  } else {
-    Ok(String::from("")) // fallback if no region is found
   }
 }

@@ -42,7 +42,6 @@ dependencies = [
  "structstruck",
  "strum",
  "strum_macros",
- "sys-locale",
  "systemstat",
  "tauri",
  "tauri-build",
