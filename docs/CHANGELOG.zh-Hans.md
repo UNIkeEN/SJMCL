@@ -7,6 +7,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 `2025-09-30`
 
 **本更新提供了重要的安全性更新，建议所有用户安装。**
+
 - 🐛 修复实例设置与资源列表界面的显示问题。#952 @1357310795
 - 🐛 修复部分第三方认证源无法使用密码登录的问题。#956 @Reqwey
 - 🐛 修复角色名称过长时，启动界面的文本显示问题。#957 @UNIkeEN
@@ -22,7 +23,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
 `2025-09-27`
 
-- 🐛 Fix the issue where the Java page cannot load properly. @UNIkeEN
+- 🐛 修复 Java 页面无法正常加载的问题。 @UNIkeEN
 
 ## 0.4.0
 

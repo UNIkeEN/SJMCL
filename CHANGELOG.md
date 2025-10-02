@@ -7,6 +7,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 `2025-09-30`
 
 **This update provides important security updates. All users are strongly recommended to install it.**
+
 - 🐛 Fix display issues in instance settings and resource list pages. #952 @1357310795
 - 🐛 Fix the issue where some third-party authentication sources could not log in with a password. #956 @Reqwey
 - 🐛 Fix text display issue on the launch screen when character names are too long. #957 @UNIkeEN
