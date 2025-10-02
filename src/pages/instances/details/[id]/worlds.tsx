@@ -52,6 +52,9 @@ const InstanceWorldsPage = () => {
   // Use a ref to track the current instance ID to prevent stale updates
   const summaryIdRef = useRef<string | undefined>(summary?.id);
 
+  // Directly update the ref in component body when summary changes
+  summaryIdRef.current = summary?.id;
+
   const {
     isOpen: isWorldLevelDataModalOpen,
     onOpen: onWorldLevelDataModallOpen,
@@ -73,11 +76,6 @@ const InstanceWorldsPage = () => {
   useEffect(() => {
     getWorldListWrapper();
   }, [getWorldListWrapper]);
-
-  // Update ref when summary ID changes
-  useEffect(() => {
-    summaryIdRef.current = summary?.id;
-  }, [summary?.id]);
 
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
