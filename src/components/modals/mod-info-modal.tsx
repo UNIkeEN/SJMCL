@@ -146,7 +146,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
                 }}
               />
             }
-            marginRight="8px"
+            marginRight={1.5}
           />
           <Text mt={4}>
             {(showZhTrans && mod.translatedDescription) || mod.description}
