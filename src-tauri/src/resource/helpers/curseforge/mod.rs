@@ -8,6 +8,7 @@ use crate::resource::models::{
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
+use hex;
 use misc::{
   cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id, cvt_type_to_class_id,
   cvt_version_to_type_id, get_curseforge_api, make_curseforge_request,
@@ -16,6 +17,7 @@ use misc::{
 };
 use murmur2::murmur2;
 use serde_json::json;
+use sha1::{Digest, Sha1};
 use std::collections::HashMap;
 use std::path::Path;
 use tauri::{AppHandle, Manager};
@@ -153,6 +155,11 @@ pub async fn fetch_remote_resource_by_local_curseforge(
 
   let file_content = std::fs::read(file_path).map_err(|_| ResourceError::ParseError)?;
 
+  // Calculate SHA1 hash of the local file for verification
+  let mut hasher = Sha1::new();
+  hasher.update(&file_content);
+  let local_sha1 = hex::encode(hasher.finalize());
+
   let filtered_bytes: Vec<u8> = file_content
     .into_iter()
     .filter(|&byte| !matches!(byte, 0x09 | 0x0a | 0x0d | 0x20))
@@ -175,7 +182,17 @@ pub async fn fetch_remote_resource_by_local_curseforge(
 
   if let Some(exact_match) = fingerprint_response.data.exact_matches.first() {
     let cf_file = &exact_match.file;
-    Ok((cf_file, None).into())
+
+    // Verify SHA1 hash matches between local and remote
+    if let Some(remote_sha1) = cf_file.hashes.iter().find(|h| h.algo == 1) {
+      if remote_sha1.value.to_lowercase() == local_sha1.to_lowercase() {
+        Ok((cf_file, None).into())
+      } else {
+        Err(ResourceError::ParseError.into())
+      }
+    } else {
+      Err(ResourceError::ParseError.into())
+    }
   } else {
     Err(ResourceError::ParseError.into())
   }
