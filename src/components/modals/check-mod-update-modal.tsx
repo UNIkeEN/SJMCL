@@ -397,7 +397,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 <VStack spacing={0} align="stretch">
                   {updateList.map((mod, index) => (
                     <HStack
-                      key={mod.name}
+                      key={mod.fileName} // unique
                       py={3}
                       px={4}
                       borderBottom={
@@ -419,10 +419,10 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                         <Text
                           fontSize="xs"
                           noOfLines={1}
-                          title={mod.name}
+                          title={mod.name || mod.fileName}
                           textAlign="center"
                         >
-                          {mod.name}
+                          {mod.name || mod.fileName}
                         </Text>
                       </Box>
                       <Box flex="2" minW="0">
@@ -430,10 +430,10 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                           fontSize="xs"
                           color="gray.600"
                           noOfLines={1}
-                          title={mod.curVersion}
+                          title={mod.curVersion || mod.fileName}
                           textAlign="center"
                         >
-                          {mod.curVersion}
+                          {mod.curVersion || mod.fileName}
                         </Text>
                       </Box>
                       <Box flex="3" minW="0">
