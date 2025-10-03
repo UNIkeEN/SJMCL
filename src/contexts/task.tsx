@@ -627,25 +627,24 @@ export const parseTaskGroup = (
   timestamp: number;
   isRetry: boolean;
 } => {
-  // Use the last '@' to split the timestamp to avoid issues with dir names containing '@' #1004
   const lastAtIndex = taskGroup.lastIndexOf("@");
+  let rawName: string;
+  let timestamp: number;
+
   if (lastAtIndex === -1) {
-    return {
-      name: taskGroup.replace(/^retry-/, ""),
-      version: undefined,
-      isRetry: taskGroup.startsWith("retry-"),
-      timestamp: Date.now(),
-    };
+    rawName = taskGroup;
+    timestamp = Date.now();
+  } else {
+    rawName = taskGroup.substring(0, lastAtIndex);
+    timestamp = parseInt(taskGroup.substring(lastAtIndex + 1));
   }
 
-  const rawName = taskGroup.substring(0, lastAtIndex);
-  const timestamp = taskGroup.substring(lastAtIndex + 1);
   const [name, version] = rawName.split("?");
 
   return {
     name: name.replace(/^retry-/, ""),
     version,
     isRetry: name.startsWith("retry-"),
-    timestamp: parseInt(timestamp) || Date.now(), // Fallback to current time if parsing fails
+    timestamp: timestamp,
   };
 };
