@@ -11,8 +11,6 @@ use std::process::Command;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
-use winreg::enums::HKEY_LOCAL_MACHINE;
-use winreg::RegKey;
 
 #[cfg(target_os = "windows")]
 use {crate::utils::sys_info::get_all_drive_mount_points, std::os::windows::process::CommandExt};
@@ -176,7 +174,7 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
 // Get canonicalized java paths from Windows registry
 #[cfg(target_os = "windows")]
 fn get_java_paths_from_windows_registry() -> Vec<String> {
-  let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+  let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
   let registry_paths = [
     r"SOFTWARE\JavaSoft\JDK",
     r"SOFTWARE\JavaSoft\JRE",
