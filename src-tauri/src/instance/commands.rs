@@ -346,6 +346,15 @@ pub async fn retrieve_world_list(
   app: AppHandle,
   instance_id: String,
 ) -> SJMCLResult<Vec<WorldInfo>> {
+  let game_version = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock().unwrap();
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+    instance.version.clone()
+  };
+
   let worlds_dir =
     match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Saves) {
       Some(path) => path,
@@ -363,7 +372,8 @@ pub async fn retrieve_world_list(
     let icon_path = path.join("icon.png");
     let nbt_path = path.join("level.dat");
     if let Ok(level_data) = load_level_data_from_path(&nbt_path).await {
-      let (last_played, difficulty, gamemode) = level_data_to_world_info(&level_data)?;
+      let (last_played, difficulty, gamemode) =
+        level_data_to_world_info(&app, &game_version, &level_data).await?;
       world_list.push(WorldInfo {
         name: name.to_string(),
         last_played_at: last_played,

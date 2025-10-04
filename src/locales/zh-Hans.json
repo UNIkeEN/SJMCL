@@ -1259,6 +1259,7 @@
         "spectator": "观察者模式"
       },
       "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）",
+      "moreDescWithoutDifficulty": "，{{gamemode}}",
       "viewLevelData": "世界基础数据",
       "launch": "游玩此世界"
     },
