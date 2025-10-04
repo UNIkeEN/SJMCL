@@ -65,7 +65,6 @@ export interface ModLoaderResourceInfo {
   description: string;
   stable: boolean;
   branch?: string;
-  fabricApi?: boolean;
 }
 
 export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
