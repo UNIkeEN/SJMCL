@@ -13,9 +13,10 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[cfg(target_os = "windows")]
-use std::error::Error;
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
+use {
+  crate::utils::sys_info::get_all_drive_mount_points, std::error::Error,
+  std::os::windows::process::CommandExt,
+};
 
 pub async fn refresh_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.
@@ -215,13 +216,15 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
       "Eclipse Foundation",
       "Semeru",
     ];
-    for vendor in common_vendors {
-      java_paths.extend(search_java_homes_in_directory(
-        PathBuf::from(r"C:\Program Files").join(vendor),
-      ));
-      java_paths.extend(search_java_homes_in_directory(
-        PathBuf::from(r"C:\Program Files (x86)").join(vendor),
-      ));
+    for mount in get_all_drive_mount_points() {
+      for vendor in &common_vendors {
+        java_paths.extend(search_java_homes_in_directory(
+          mount.join("Program Files").join(vendor),
+        ));
+        java_paths.extend(search_java_homes_in_directory(
+          mount.join("Program Files (x86)").join(vendor),
+        ));
+      }
     }
   }
   #[cfg(target_os = "linux")]
