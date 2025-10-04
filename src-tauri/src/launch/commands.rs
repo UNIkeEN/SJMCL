@@ -286,6 +286,10 @@ pub async fn launch_game(
     .spawn()?;
 
   let pid = child.id();
+
+  // set process priority immediately after spawn to ensure startup phase gets proper priority (if error, keep slient)
+  let _ = set_process_priority(pid, &game_config.performance.process_priority);
+
   {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
@@ -316,9 +320,6 @@ pub async fn launch_game(
   )
   .await?;
   let _ = rx.recv();
-
-  // set process priority and window title (if error, keep slient)
-  let _ = set_process_priority(pid, &game_config.performance.process_priority);
 
   if game_config.launcher_visibility != LauncherVisiablity::Always {
     let _ = app
