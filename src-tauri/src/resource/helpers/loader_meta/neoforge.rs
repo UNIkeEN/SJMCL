@@ -33,9 +33,10 @@ async fn get_neoforge_meta_by_game_version_official(
       RegexBuilder::new(r"^(?:1\.20\.1\-)?(\d+)\.(\d+)\.(\d+)$")
         .build()
         .unwrap();
-    static ref NEW_VERSION_REGEX: Regex = RegexBuilder::new(r"^(\d+)\.(\d+)\.(\d+)(-beta)?$")
-      .build()
-      .unwrap();
+    static ref NEW_VERSION_REGEX: Regex =
+      RegexBuilder::new(r"^(0\.(\d+\w+)\.(\d+)|(\d+)\.(\d+)\.(\d+))(-beta)?$")
+        .build()
+        .unwrap();
   };
   let client = app.state::<reqwest::Client>();
   if game_version == "1.20.1" {
