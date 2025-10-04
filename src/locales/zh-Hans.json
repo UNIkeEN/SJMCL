@@ -1354,7 +1354,10 @@
   "ModLoaderSelector": {
     "stable": "正式版",
     "beta": "测试版",
-    "releaseDate": "发布于 {{date}}"
+    "releaseDate": "发布于 {{date}}",
+    "fabricApi": {
+      "autoDownload": "Fabric API"
+    }
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"

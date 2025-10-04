@@ -53,7 +53,8 @@ export class InstanceService {
     iconSrc: string,
     game: GameClientResourceInfo,
     modLoader: ModLoaderResourceInfo,
-    modpackPath?: string
+    modpackPath?: string,
+    fabricApi?: boolean
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_instance", {
       directory,
@@ -63,6 +64,7 @@ export class InstanceService {
       game,
       modLoader,
       modpackPath,
+      fabricApi: fabricApi,
     });
   }
 
