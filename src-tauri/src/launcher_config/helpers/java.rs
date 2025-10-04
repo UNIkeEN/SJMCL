@@ -11,9 +11,9 @@ use std::process::Command;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use winreg::enums::HKEY_LOCAL_MACHINE;
+use winreg::RegKey;
 
-#[cfg(target_os = "windows")]
-use std::error::Error;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
@@ -173,29 +173,43 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   }
 }
 
-// Get canonicalized java path from Windows registry
+// Get canonicalized java paths from Windows registry
 #[cfg(target_os = "windows")]
 fn get_java_paths_from_windows_registry() -> Vec<String> {
-  let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
+  let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
   let registry_paths = [
     r"SOFTWARE\JavaSoft\JDK",
     r"SOFTWARE\JavaSoft\JRE",
     r"SOFTWARE\JavaSoft\Java Development Kit",
     r"SOFTWARE\JavaSoft\Java Runtime Environment",
   ];
-  let mut java_paths = Vec::new();
+
+  let mut java_paths_set = HashSet::new();
+
   for base_path in registry_paths {
-    if let Ok(java_path) = (|| {
-      let current_version: String = hklm.open_subkey(base_path)?.get_value("CurrentVersion")?;
-      let java_home: String = hklm
-        .open_subkey(format!(r"{}\{}", base_path, current_version))?
-        .get_value("JavaHome")?;
-      let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
-      Ok::<String, Box<dyn Error>>(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
-    })() {
-      java_paths.push(java_path);
+    if let Ok(base_key) = hklm.open_subkey(base_path) {
+      for subkey_name_result in base_key.enum_keys() {
+        if let Ok(version_name) = subkey_name_result {
+          if version_name
+            .chars()
+            .next()
+            .map_or(false, |c| c.is_ascii_digit())
+          {
+            if let Ok(version_key) = base_key.open_subkey(&version_name) {
+              if let Ok(java_home) = version_key.get_value::<String, _>("JavaHome") {
+                let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
+                if let Ok(canonical_path) = fs::canonicalize(&java_bin) {
+                  java_paths_set.insert(canonical_path.to_string_lossy().into_owned());
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
+
+  let java_paths: Vec<String> = java_paths_set.into_iter().collect();
   java_paths
 }
 
