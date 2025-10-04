@@ -317,7 +317,8 @@
   "ChangeModLoaderModal": {
     "header": {
       "title": "Change Mod Loader"
-    }
+    },
+    "success": "Change Mod Loader successfully"
   },
   "CheckModUpdateModal": {
     "header": {
@@ -569,6 +570,7 @@
       "game-client": "Game Client {{param}}",
       "game-server": "Game Server {{param}}",
       "mod": "Mod",
+      "mod-loader": "Mod Loader",
       "world": "World",
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",
