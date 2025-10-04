@@ -15,7 +15,7 @@ use winreg::enums::HKEY_LOCAL_MACHINE;
 use winreg::RegKey;
 
 #[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
+use {crate::utils::sys_info::get_all_drive_mount_points, std::os::windows::process::CommandExt};
 
 pub async fn refresh_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.
@@ -227,15 +227,19 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
       "Zulu",
       "Microsoft",
       "Eclipse Foundation",
+      "Eclipse Adoptium",
       "Semeru",
     ];
-    for vendor in common_vendors {
-      java_paths.extend(search_java_homes_in_directory(
-        PathBuf::from(r"C:\Program Files").join(vendor),
-      ));
-      java_paths.extend(search_java_homes_in_directory(
-        PathBuf::from(r"C:\Program Files (x86)").join(vendor),
-      ));
+    for mount in get_all_drive_mount_points() {
+      for vendor in &common_vendors {
+        java_paths.extend(search_java_homes_in_directory(
+          mount.join("Program Files").join(vendor),
+        ));
+        java_paths.extend(search_java_homes_in_directory(
+          mount.join("Program Files (x86)").join(vendor),
+        ));
+      }
+      java_paths.extend(search_java_homes_in_directory(mount.join("Java")));
     }
   }
   #[cfg(target_os = "linux")]
