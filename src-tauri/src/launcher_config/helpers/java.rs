@@ -214,6 +214,7 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
       "Zulu",
       "Microsoft",
       "Eclipse Foundation",
+      "Eclipse Adoptium",
       "Semeru",
     ];
     for mount in get_all_drive_mount_points() {
