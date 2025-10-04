@@ -1,3 +1,4 @@
+use std::fs;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -110,6 +111,36 @@ pub async fn install_fabric_loader(
     get_latest_fabric_api_mod_download(&app, game_version, mods_dir).await
   {
     task_params.push(PTaskParam::Download(fabric_api_download));
+  }
+
+  Ok(())
+}
+
+pub async fn remove_fabric_api_mods(mods_dir: &PathBuf) -> SJMCLResult<()> {
+  if !mods_dir.exists() {
+    return Ok(());
+  }
+
+  for entry in fs::read_dir(mods_dir)? {
+    let entry = match entry {
+      Ok(v) => v,
+      Err(_) => continue,
+    };
+    let path = entry.path();
+    if path.extension().and_then(|s| s.to_str()) != Some("jar") {
+      continue;
+    }
+
+    let file_name = path
+      .file_name()
+      .and_then(|s| s.to_str())
+      .unwrap_or_default()
+      .to_lowercase();
+
+    if file_name.starts_with("fabric-api-") || file_name.starts_with("quilted-fabric-api-") {
+      fs::remove_file(&path)
+        .map_err(|e| SJMCLError(format!("Failed to remove {}: {}", file_name, e)))?;
+    }
   }
 
   Ok(())

@@ -1,6 +1,7 @@
 use super::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
 use super::helpers::game_version::{compare_game_versions, get_major_game_version};
 use super::helpers::loader::common::{execute_processors, install_mod_loader};
+use super::helpers::loader::fabric::remove_fabric_api_mods;
 use super::helpers::loader::forge::InstallProfile;
 use super::helpers::misc::{
   get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
@@ -1089,7 +1090,7 @@ pub async fn change_mod_loader(
   instance_id: String,
   new_mod_loader: ModLoaderResourceInfo,
 ) -> SJMCLResult<()> {
-  let instance = {
+  let mut instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let state = binding.lock()?;
     state
@@ -1139,8 +1140,14 @@ pub async fn change_mod_loader(
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
 
+  if instance.mod_loader.loader_type == ModLoaderType::Fabric {
+    remove_fabric_api_mods(mods_dir).await?;
+  }
+
+  instance.mod_loader = mod_loader.clone();
+
   let mut version_info = McClientInfo {
-    id: vanilla_info.id.clone(),
+    id: current_info.id.clone(),
     inherits_from: vanilla_info.inherits_from.clone(),
     jar: Some(instance.name.clone()),
     main_class: vanilla_info.main_class.clone(),
@@ -1174,7 +1181,7 @@ pub async fn change_mod_loader(
 
   schedule_progressive_task_group(
     app.clone(),
-    format!("mod-loader?{}", instance.name),
+    format!("game-client?{}", instance.name),
     task_params,
     true,
   )
