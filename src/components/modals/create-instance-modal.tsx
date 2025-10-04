@@ -2,7 +2,9 @@ import {
   Box,
   Button,
   Center,
+  Checkbox,
   Flex,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,6 +22,7 @@ import {
   StepStatus,
   StepTitle,
   Stepper,
+  Text,
   useSteps,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -163,34 +166,55 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
             />
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" onClick={modalProps.onClose}>
-              {t("General.cancel")}
-            </Button>
-            <Button variant="ghost" onClick={() => setActiveStep(0)}>
-              {t("General.previous")}
-            </Button>
-            <Button
-              colorScheme={primaryColor}
-              onClick={() => {
-                if (!selectedModLoader.version) {
-                  setSelectedModLoader(defaultModLoaderResourceInfo); // if the user selected the loader but did not choose a version from the list
-                  setInstanceName(selectedGameVersion.id);
-                  setInstanceIconSrc(
-                    gameTypesToIcon[selectedGameVersion.gameType]
-                  );
-                } else {
-                  setInstanceName(
-                    `${selectedGameVersion.id}-${selectedModLoader.loaderType}`
-                  );
-                  setInstanceIconSrc(
-                    modLoaderTypesToIcon[selectedModLoader.loaderType]
-                  );
-                }
-                setActiveStep(2);
-              }}
-            >
-              {t("General.next")}
-            </Button>
+            {/* Fabric API download option - only show when Fabric is selected and has version */}
+            {selectedModLoader.loaderType === ModLoaderType.Fabric &&
+              selectedModLoader.version && (
+                <Checkbox
+                  colorScheme={primaryColor}
+                  isChecked={selectedModLoader.fabricApi ?? true}
+                  onChange={(e) => {
+                    setSelectedModLoader({
+                      ...selectedModLoader,
+                      fabricApi: e.target.checked,
+                    });
+                  }}
+                >
+                  <Text fontSize="sm">
+                    {t("ModLoaderSelector.fabricApi.autoDownload")}
+                  </Text>
+                </Checkbox>
+              )}
+
+            <HStack spacing={3} ml="auto">
+              <Button variant="ghost" onClick={modalProps.onClose}>
+                {t("General.cancel")}
+              </Button>
+              <Button variant="ghost" onClick={() => setActiveStep(0)}>
+                {t("General.previous")}
+              </Button>
+              <Button
+                colorScheme={primaryColor}
+                onClick={() => {
+                  if (!selectedModLoader.version) {
+                    setSelectedModLoader(defaultModLoaderResourceInfo); // if the user selected the loader but did not choose a version from the list
+                    setInstanceName(selectedGameVersion.id);
+                    setInstanceIconSrc(
+                      gameTypesToIcon[selectedGameVersion.gameType]
+                    );
+                  } else {
+                    setInstanceName(
+                      `${selectedGameVersion.id}-${selectedModLoader.loaderType}`
+                    );
+                    setInstanceIconSrc(
+                      modLoaderTypesToIcon[selectedModLoader.loaderType]
+                    );
+                  }
+                  setActiveStep(2);
+                }}
+              >
+                {t("General.next")}
+              </Button>
+            </HStack>
           </ModalFooter>
         </>
       )

@@ -55,15 +55,18 @@ export class InstanceService {
     modLoader: ModLoaderResourceInfo,
     modpackPath?: string
   ): Promise<InvokeResponse<null>> {
+    // Extract fabricApi before passing modLoader to avoid serialization issues
+    const { fabricApi, ...modLoaderWithoutFabricApi } = modLoader;
+
     return await invoke("create_instance", {
       directory,
       name,
       description,
       iconSrc,
       game,
-      modLoader,
+      modLoader: modLoaderWithoutFabricApi,
       modpackPath,
-      fabricApiOption: modLoader.fabricApi, // Extract fabricApi as separate parameter
+      fabricApiOption: fabricApi, // Pass fabricApi as separate parameter
     });
   }
 

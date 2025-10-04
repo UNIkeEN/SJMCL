@@ -1,6 +1,5 @@
 import {
   Center,
-  Checkbox,
   HStack,
   Image,
   Radio,
@@ -19,7 +18,6 @@ import {
 import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
 import { useLauncherConfig } from "@/contexts/config";
-import { ModLoaderType } from "@/enums/instance";
 import {
   GameClientResourceInfo,
   ModLoaderResourceInfo,
@@ -166,25 +164,6 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
           </RadioGroup>
         )}
       </Section>
-
-      {/* Fabric API download option - only show when Fabric is selected and has version */}
-      {selectedModLoader.loaderType === ModLoaderType.Fabric &&
-        selectedModLoader.version && (
-          <Section w="100%" p={3}>
-            <Checkbox
-              isChecked={selectedModLoader.fabricApi ?? true}
-              colorScheme={primaryColor}
-              onChange={(e) => {
-                onSelectModLoader({
-                  ...selectedModLoader,
-                  fabricApi: e.target.checked,
-                });
-              }}
-            >
-              {t("ModLoaderSelector.fabricApi.autoDownload")}
-            </Checkbox>
-          </Section>
-        )}
     </VStack>
   );
 };
