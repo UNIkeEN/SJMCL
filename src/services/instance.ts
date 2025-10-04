@@ -64,7 +64,7 @@ export class InstanceService {
       game,
       modLoader,
       modpackPath,
-      fabricApiOption: fabricApi,
+      fabricApi: fabricApi,
     });
   }
 
