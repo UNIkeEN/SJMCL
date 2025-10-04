@@ -1015,6 +1015,7 @@
         "spectator": "Mode spectateur"
       },
       "moreDesc": ", {{gamemode}} (difficulté : {{difficulty}})",
+      "moreDescWithoutDifficulty": ", {{gamemode}}",
       "viewLevelData": "Données de base de la sauvegarde"
     },
     "serverList": {

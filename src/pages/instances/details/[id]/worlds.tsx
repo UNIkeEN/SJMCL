@@ -215,12 +215,28 @@ const InstanceWorldsPage = () => {
         ) : worlds.length > 0 ? (
           <OptionItemGroup
             items={worlds.map((world) => {
-              const difficulty = t(
-                `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
-              );
               const gamemode = t(
                 `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
               );
+
+              let formatted_more_desc: string;
+
+              console.log(world.difficulty);
+
+              if (world.difficulty === "") {
+                formatted_more_desc = t(
+                  "InstanceWorldsPage.worldList.moreDescWithoutDifficulty",
+                  { gamemode }
+                );
+              } else {
+                const difficulty = t(
+                  `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
+                );
+                formatted_more_desc = t(
+                  "InstanceWorldsPage.worldList.moreDesc",
+                  { gamemode, difficulty }
+                );
+              }
 
               return (
                 <OptionItem
@@ -228,7 +244,7 @@ const InstanceWorldsPage = () => {
                   title={world.name}
                   description={`${t(
                     "InstanceWorldsPage.worldList.lastPlayedAt"
-                  )} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}${t("InstanceWorldsPage.worldList.moreDesc", { gamemode, difficulty })}`}
+                  )} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}${formatted_more_desc}`}
                   prefixElement={
                     <Image
                       src={convertFileSrc(world.iconSrc)}
