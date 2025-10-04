@@ -225,6 +225,7 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
           mount.join("Program Files (x86)").join(vendor),
         ));
       }
+      java_paths.extend(search_java_homes_in_directory(mount.join("Java")));
     }
   }
   #[cfg(target_os = "linux")]
