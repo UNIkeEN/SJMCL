@@ -205,36 +205,44 @@ pub async fn install_update_windows(
     let pid = std::process::id().to_string();
     let restart_flag = if restart { "1" } else { "0" };
 
-    // write and execute a bash script to wait -> replace -> start -> cleanup
+    // write and execute a PowerShell script to wait -> replace -> start -> cleanup
     let script_path = app
       .path()
-      .resolve::<PathBuf>("update.cmd".into(), BaseDirectory::AppCache)?;
-    let script_content = r#"@echo off
-setlocal enableextensions
-set PID=%1
-set DOWNLOADED=%2
-set TARGET=%3
-set OLD_EXE=%4
-set RESTART=%5
-
-:waitloop
-tasklist /FI "PID eq %PID%" | findstr /I "%PID%" >nul
-if %ERRORLEVEL%==0 (
-  ping -n 1 127.0.0.1 >nul
-  goto waitloop
+      .resolve::<PathBuf>("update.ps1".into(), BaseDirectory::AppCache)?;
+    let script_content = r#"param(
+  [string]$ProcessId,
+  [string]$Downloaded,
+  [string]$Target,
+  [string]$OldExe,
+  [string]$Restart
 )
 
-if exist "%TARGET%" del /F /Q "%TARGET%"
-if exist "%OLD_EXE%" del /F /Q "%OLD_EXE%"
+try {
+  while (Get-Process -Id $ProcessId -ErrorAction SilentlyContinue) {
+    Start-Sleep -Milliseconds 200
+  }
 
-move /Y "%DOWNLOADED%" "%TARGET%"
+  if (Test-Path -LiteralPath $Target) { Remove-Item -LiteralPath $Target -Force -ErrorAction SilentlyContinue }
+  if (Test-Path -LiteralPath $OldExe) { Remove-Item -LiteralPath $OldExe -Force -ErrorAction SilentlyContinue }
 
-if "%RESTART%"=="1" start "" "%TARGET%"
+  Move-Item -LiteralPath $Downloaded -Destination $Target -Force
+
+  if ($Restart -eq '1') {
+    Start-Process -FilePath $Target
+  }
+} catch {
+  Write-Error $_.Exception.Message
+  exit 1
+}
 "#;
 
     fs::write(&script_path, script_content.as_bytes())?;
-    let _ = Command::new("cmd")
-      .args(["/C", &script_path.to_string_lossy()])
+    let _ = Command::new("powershell.exe")
+      .arg("-NoProfile")
+      .arg("-ExecutionPolicy")
+      .arg("Bypass")
+      .arg("-File")
+      .arg(&script_path)
       .arg(&pid)
       .arg(&downloaded_path)
       .arg(&target)
