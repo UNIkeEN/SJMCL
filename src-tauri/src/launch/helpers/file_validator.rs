@@ -1,7 +1,7 @@
 use crate::error::SJMCLResult;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
-  DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo,
+  DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
 use crate::instance::models::misc::InstanceError;
 use crate::launch::helpers::misc::get_natives_string;
@@ -153,6 +153,37 @@ pub fn parse_library_name(name: &str, native: Option<String>) -> SJMCLResult<Lib
   }
 }
 
+// adds a library entry to the libraries vector, choose the latest version if duplicate
+pub fn add_library_smart(
+  libraries: &mut Vec<LibrariesValue>,
+  new_library: LibrariesValue,
+) -> SJMCLResult<()> {
+  let LibraryParts {
+    path,
+    pack_name,
+    pack_version: _pack_version,
+    classifier,
+    extension,
+  } = parse_library_name(&new_library.name, None)?;
+
+  if let Some(pos) = libraries.iter().position(|item| {
+    if let Ok(parts) = parse_library_name(&item.name, None) {
+      parts.path == path
+        && parts.pack_name == pack_name
+        && parts.classifier == classifier
+        && parts.extension == extension
+    } else {
+      false
+    }
+  }) {
+    libraries[pos] = new_library;
+  } else {
+    libraries.push(new_library);
+  }
+
+  Ok(())
+}
+
 pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCLResult<String> {
   let LibraryParts {
     path,
@@ -181,7 +212,7 @@ pub fn get_nonnative_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
 ) -> SJMCLResult<Vec<PathBuf>> {
-  let mut result = Vec::new();
+  let mut libraries = Vec::new();
   let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
     if !library.is_allowed(&feature).unwrap_or(false) {
@@ -190,6 +221,10 @@ pub fn get_nonnative_library_paths(
     if library.natives.is_some() {
       continue;
     }
+    add_library_smart(&mut libraries, library.clone())?;
+  }
+  let mut result = Vec::new();
+  for library in libraries {
     result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
   }
   Ok(result)
