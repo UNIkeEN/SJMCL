@@ -4,7 +4,6 @@ use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use serde_json::Value;
-use std::env;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
@@ -211,15 +210,18 @@ pub async fn install_update_windows(
       "update_{}.cmd",
       uuid::Uuid::new_v4().to_string()[..8].to_string()
     );
-    let script_path = env::temp_dir().join(script_name.clone());
+    let script_path = app
+      .path()
+      .resolve(script_name.clone(), BaseDirectory::Temp)?;
     let script_path_cmd = PathBuf::from(format!("%TMP%\\{}", script_name));
-    let script_content = r#"@echo off
+    let script_content = format!(
+      r#"@echo off
 setlocal enableextensions
-set PID=%1
-set DOWNLOADED=%2
-set TARGET=%3
-set OLD_EXE=%4
-set RESTART=%5
+set "PID={}"
+set "DOWNLOADED={}"
+set "TARGET={}"
+set "OLD_EXE={}"
+set "RESTART={}"
 
 :waitloop
 tasklist /FI "PID eq %PID%" | findstr /I "%PID%" >nul
@@ -234,16 +236,17 @@ if exist "%OLD_EXE%" del /F /Q "%OLD_EXE%"
 move /Y "%DOWNLOADED%" "%TARGET%"
 
 if "%RESTART%"=="1" start "" "%TARGET%"
-"#;
+"#,
+      pid,
+      downloaded_path.to_string_lossy(),
+      target.to_string_lossy(),
+      cur_exe.to_string_lossy(),
+      restart_flag
+    );
 
     fs::write(&script_path, script_content.as_bytes())?;
     let _ = Command::new("cmd")
       .args(["/C", &script_path_cmd.to_string_lossy()])
-      .arg(&pid)
-      .arg(&downloaded_path)
-      .arg(&target)
-      .arg(&cur_exe.clone())
-      .arg(restart_flag)
       .creation_flags(0x08000000)
       .spawn()?;
 
