@@ -206,6 +206,7 @@ pub async fn install_update_windows(
     let restart_flag = if restart { "1" } else { "0" };
 
     // write and execute a bash script to wait -> replace -> start -> cleanup
+    // NOTES: In Windows, we generate script in temp_dir and use `set` vars to avoid path quoting issues (see PR #1037)
     let script_name = format!(
       "update_{}.cmd",
       uuid::Uuid::new_v4().to_string()[..8].to_string()
@@ -214,6 +215,7 @@ pub async fn install_update_windows(
       .path()
       .resolve(script_name.clone(), BaseDirectory::Temp)?;
     let script_path_cmd = PathBuf::from(format!("%TMP%\\{}", script_name));
+
     let script_content = format!(
       r#"@echo off
 setlocal enableextensions
@@ -317,6 +319,7 @@ pub async fn install_update_macos(
   let restart_flag = if restart { "1" } else { "0" };
 
   // write and execute a bash script to wait -> replace -> start -> cleanup
+  // NOTES: In macOS, we pass paths as args to avoid quoting issues in bash (see PR #918)
   let script_path = app
     .path()
     .resolve::<PathBuf>("update.sh".to_string().into(), BaseDirectory::AppCache)?;
