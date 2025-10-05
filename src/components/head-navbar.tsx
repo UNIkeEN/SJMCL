@@ -86,6 +86,7 @@ const HeadNavBar = () => {
     <Flex justify="center" p={4}>
       <AdvancedCard
         level="back"
+        variant="acrylic"
         pl={8}
         pr={isDownloadIndicatorShown ? 4 : 8}
         py={2}
