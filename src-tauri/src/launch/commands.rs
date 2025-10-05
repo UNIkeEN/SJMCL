@@ -287,7 +287,7 @@ pub async fn launch_game(
 
   let pid = child.id();
 
-  // set process priority immediately after spawn to ensure startup phase gets proper priority (if error, keep slient)
+  // set process priority (if error, keep silent)
   let _ = set_process_priority(pid, &game_config.performance.process_priority);
 
   {
@@ -298,12 +298,6 @@ pub async fn launch_game(
     launching.pid = pid;
     launching.full_command = full_cmd;
   }
-
-  let post_exit_cmd = game_config
-    .advanced
-    .custom_commands
-    .post_exit_command
-    .clone();
 
   // wait for the game window, create log window if needed
   let (tx, rx) = mpsc::channel();
@@ -316,7 +310,13 @@ pub async fn launch_game(
     &game_config.game_window.custom_title,
     game_config.launcher_visibility.clone(),
     tx,
-    Some(post_exit_cmd),
+    Some(
+      game_config
+        .advanced
+        .custom_commands
+        .post_exit_command
+        .clone(),
+    ),
   )
   .await?;
   let _ = rx.recv();
