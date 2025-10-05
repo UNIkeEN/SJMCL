@@ -187,6 +187,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       ) : (
         <AdvancedCard
           level="back"
+          variant="acrylic"
           h="100%"
           overflow="auto"
           mt={1}

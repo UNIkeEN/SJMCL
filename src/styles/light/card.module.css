@@ -1,9 +1,12 @@
 .card-back {
-  background-color: rgba(255, 255, 255, 0.75) !important;
-  backdrop-filter: blur(20px);
+  background-color: rgba(246, 249, 255, 0.6) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .card-front {
-  background-color: #FAFAFA !important;
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
   padding: var(--chakra-space-3);
 }
