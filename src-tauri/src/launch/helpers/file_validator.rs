@@ -12,6 +12,7 @@ use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
+use std::cmp::Ordering;
 use std::collections::HashSet;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
@@ -161,7 +162,7 @@ pub fn add_library_smart(
   let LibraryParts {
     path,
     pack_name,
-    pack_version: _pack_version,
+    pack_version,
     classifier,
     extension,
   } = parse_library_name(&new_library.name, None)?;
@@ -176,12 +177,34 @@ pub fn add_library_smart(
       false
     }
   }) {
-    libraries[pos] = new_library;
+    let existing_parts = parse_library_name(&libraries[pos].name, None)?;
+    let existing_pack_version = existing_parts.pack_version;
+    match compare_versions(&pack_version, &existing_pack_version) {
+      Ordering::Greater => {
+        libraries[pos] = new_library;
+      }
+      Ordering::Less | Ordering::Equal => {
+        // do nothing, keep the existing one
+      }
+    }
   } else {
     libraries.push(new_library);
   }
 
   Ok(())
+}
+
+fn compare_versions(version_a: &str, version_b: &str) -> Ordering {
+  let ver_a = extract_numbers(version_a);
+  let ver_b = extract_numbers(version_b);
+  ver_a.cmp(&ver_b) // only compare the numeric parts for simplicity
+}
+
+fn extract_numbers(version: &str) -> Vec<u32> {
+  version
+    .split(|c: char| !c.is_ascii_digit())
+    .filter_map(|s| s.parse::<u32>().ok())
+    .collect()
 }
 
 pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCLResult<String> {
