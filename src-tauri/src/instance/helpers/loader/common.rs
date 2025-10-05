@@ -65,7 +65,7 @@ pub async fn install_mod_loader(
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
   task_params: &mut Vec<PTaskParam>,
-  fabric_api: Option<bool>,
+  is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   match loader.loader_type {
     ModLoaderType::Fabric => {
@@ -78,7 +78,7 @@ pub async fn install_mod_loader(
         mods_dir,
         client_info,
         task_params,
-        fabric_api,
+        is_install_fabric_api,
       )
       .await
     }

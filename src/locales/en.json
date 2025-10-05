@@ -1354,11 +1354,9 @@
   "ModLoaderSelector": {
     "stable": "Stable",
     "beta": "Beta",
-    "releaseDate": "Released at {{date}}",
-    "fabricApi": {
-      "autoDownload": "Fabric API"
-    }
+    "releaseDate": "Released at {{date}}"
   },
+  "installFabricApi": "Install Fabric API Mod",
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
   },

@@ -832,7 +832,7 @@ pub async fn create_instance(
   game: GameClientResourceInfo,
   mod_loader: ModLoaderResourceInfo,
   modpack_path: Option<String>,
-  fabric_api: Option<bool>,
+  is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -959,7 +959,7 @@ pub async fn create_instance(
       mods_dir.to_path_buf(),
       &mut version_info,
       &mut task_params,
-      fabric_api,
+      is_install_fabric_api,
     )
     .await?;
   }

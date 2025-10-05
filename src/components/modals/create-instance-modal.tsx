@@ -79,7 +79,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
   const [instanceIconSrc, setInstanceIconSrc] = useState("");
   const [instanceDirectory, setInstanceDirectory] = useState<GameDirectory>();
   const [isLoading, setIsLoading] = useState(false);
-  const [fabricApi, setFabricApi] = useState(true);
+  const [isInstallFabricApi, setIsInstallFabricApi] = useState(true);
 
   useEffect(() => {
     setSelectedModLoader(defaultModLoaderResourceInfo);
@@ -88,7 +88,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     setInstanceIconSrc(
       gameTypesToIcon[selectedGameVersion?.gameType || "release"]
     );
-    setFabricApi(true);
+    setIsInstallFabricApi(true);
   }, [selectedGameVersion]);
 
   const handleCreateInstance = useCallback(() => {
@@ -103,7 +103,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       selectedGameVersion,
       selectedModLoader,
       undefined, // modpackPath
-      fabricApi
+      isInstallFabricApi
     )
       .then((res) => {
         if (res.status === "success") {
@@ -126,7 +126,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     instanceDescription,
     instanceIconSrc,
     selectedModLoader,
-    fabricApi,
+    isInstallFabricApi,
     toast,
     modalProps,
     router,
@@ -176,12 +176,10 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
               selectedModLoader.version && (
                 <Checkbox
                   colorScheme={primaryColor}
-                  isChecked={fabricApi}
-                  onChange={(e) => setFabricApi(e.target.checked)}
+                  isChecked={isInstallFabricApi}
+                  onChange={(e) => setIsInstallFabricApi(e.target.checked)}
                 >
-                  <Text fontSize="sm">
-                    {t("ModLoaderSelector.fabricApi.autoDownload")}
-                  </Text>
+                  <Text fontSize="sm">{t("installFabricApi")}</Text>
                 </Checkbox>
               )}
 
@@ -224,7 +222,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     primaryColor,
     selectedGameVersion,
     selectedModLoader,
-    fabricApi,
+    isInstallFabricApi,
     setActiveStep,
     t,
   ]);
