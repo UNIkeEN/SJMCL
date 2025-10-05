@@ -10,6 +10,7 @@ use crate::instance::helpers::misc::{
 use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
 use crate::instance::helpers::modpack::misc::ModpackMetaInfo;
 use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
+use crate::instance::helpers::modpack::multimc::MultiMcManifest;
 use crate::instance::helpers::mods::common::{
   add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
 };
@@ -971,6 +972,8 @@ pub async fn create_instance(
       manifest.extract_overrides(&file, &version_path)?;
     } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
       task_params.extend(manifest.get_download_params(&version_path)?);
+      manifest.extract_overrides(&file, &version_path)?;
+    } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
       manifest.extract_overrides(&file, &version_path)?;
     } else {
       return Err(InstanceError::ModpackManifestParseError.into());

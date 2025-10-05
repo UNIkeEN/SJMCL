@@ -1,4 +1,4 @@
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::FromStr;
@@ -9,6 +9,7 @@ use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::modpack::misc::extract_overrides_helper;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::resource::helpers::curseforge::misc::CurseForgeProject;
 use crate::tasks::download::DownloadParam;
@@ -102,36 +103,7 @@ impl CurseForgeManifest {
   }
 
   pub fn extract_overrides(&self, file: &File, instance_path: &Path) -> SJMCLResult<()> {
-    let mut archive = ZipArchive::new(file)?;
-    for i in 0..archive.len() {
-      let mut file = archive.by_index(i)?;
-      let outpath = match file.enclosed_name() {
-        Some(path) => {
-          if path.starts_with(format!("{}/", self.overrides)) {
-            // Remove "{overrides}/" prefix and join with instance path
-            let relative_path = path.strip_prefix(format!("{}/", self.overrides)).unwrap();
-            instance_path.join(relative_path)
-          } else {
-            continue;
-          }
-        }
-        None => continue,
-      };
-
-      if file.is_file() {
-        // Create parent directories if they don't exist
-        if let Some(p) = outpath.parent() {
-          if !p.exists() {
-            fs::create_dir_all(p)?;
-          }
-        }
-
-        // Extract file
-        let mut outfile = File::create(&outpath)?;
-        std::io::copy(&mut file, &mut outfile)?;
-      }
-    }
-    Ok(())
+    extract_overrides_helper(&format!("{}/", self.overrides), file, instance_path)
   }
 
   pub async fn get_download_params(

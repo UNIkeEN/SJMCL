@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
 use crate::error::SJMCLResult;
+use crate::instance::helpers::modpack::misc::extract_overrides_helper;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
@@ -75,36 +76,7 @@ impl ModrinthManifest {
   }
 
   pub fn extract_overrides(&self, file: &File, instance_path: &Path) -> SJMCLResult<()> {
-    let mut archive = ZipArchive::new(file)?;
-    for i in 0..archive.len() {
-      let mut file = archive.by_index(i)?;
-      let outpath = match file.enclosed_name() {
-        Some(path) => {
-          if path.starts_with("overrides/") {
-            // Remove "overrides/" prefix and join with instance path
-            let relative_path = path.strip_prefix("overrides/").unwrap();
-            instance_path.join(relative_path)
-          } else {
-            continue;
-          }
-        }
-        None => continue,
-      };
-
-      if file.is_file() {
-        // Create parent directories if they don't exist
-        if let Some(p) = outpath.parent() {
-          if !p.exists() {
-            fs::create_dir_all(p)?;
-          }
-        }
-
-        // Extract file
-        let mut outfile = File::create(&outpath)?;
-        std::io::copy(&mut file, &mut outfile)?;
-      }
-    }
-    Ok(())
+    extract_overrides_helper(&String::from("overrides/"), file, instance_path)
   }
 
   pub fn get_download_params(&self, instance_path: &Path) -> SJMCLResult<Vec<PTaskParam>> {
