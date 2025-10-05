@@ -1,5 +1,5 @@
-use super::desc::{PDesc, PStatus};
-use super::reporter::{Reporter, Sink};
+use crate::tasks::streams::desc::{PDesc, PStatus};
+use crate::tasks::streams::reporter::{Reporter, Sink};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::task::{Context, Waker};

@@ -12,22 +12,22 @@ on:
     secrets:
       MACOS_CERT_P12_BASE64:
         description: 'Base64 encoded p12 certificate'
-        required: true
+        required: false
       MACOS_CERT_P12_PASSWORD:
         description: 'Password for p12 certificate'
-        required: true
+        required: false
       MACOS_SIGNING_IDENTITY:
         description: 'Code signing identity'
-        required: true
+        required: false
       MACOS_NOTARY_APPLE_ID:
         description: 'Apple ID for notarization'
-        required: true
+        required: false
       MACOS_NOTARY_PASSWORD:
         description: 'App-specific password for notarization'
-        required: true
+        required: false
       MACOS_NOTARY_TEAM_ID:
         description: 'Team ID for notarization'
-        required: true
+        required: false
 
 jobs:
   sign-macos:
@@ -37,6 +37,38 @@ jobs:
         arch: [aarch64, x86_64]
     
     steps:
+      - name: Validate signing secrets
+        id: validate
+        run: |
+          MISSING_SECRETS=()
+          
+          if [ -z "${{ secrets.MACOS_CERT_P12_BASE64 }}" ]; then
+            MISSING_SECRETS+=("MACOS_CERT_P12_BASE64")
+          fi
+          if [ -z "${{ secrets.MACOS_CERT_P12_PASSWORD }}" ]; then
+            MISSING_SECRETS+=("MACOS_CERT_P12_PASSWORD")
+          fi
+          if [ -z "${{ secrets.MACOS_SIGNING_IDENTITY }}" ]; then
+            MISSING_SECRETS+=("MACOS_SIGNING_IDENTITY")
+          fi
+          if [ -z "${{ secrets.MACOS_NOTARY_APPLE_ID }}" ]; then
+            MISSING_SECRETS+=("MACOS_NOTARY_APPLE_ID")
+          fi
+          if [ -z "${{ secrets.MACOS_NOTARY_PASSWORD }}" ]; then
+            MISSING_SECRETS+=("MACOS_NOTARY_PASSWORD")
+          fi
+          if [ -z "${{ secrets.MACOS_NOTARY_TEAM_ID }}" ]; then
+            MISSING_SECRETS+=("MACOS_NOTARY_TEAM_ID")
+          fi
+          
+          if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
+            echo "::warning::⚠️ macOS code signing will be skipped - missing secrets: ${MISSING_SECRETS[*]}"
+            echo "The release will continue with unsigned macOS artifacts."
+            exit 1
+          fi
+          
+          echo "✅ All required secrets are present"
+
       - uses: actions/checkout@v4
 
       - name: Download macOS artifacts

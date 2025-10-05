@@ -308,7 +308,15 @@ const DownloadSettingsPage = () => {
       items: [
         {
           title: t("DownloadSettingPage.cache.settings.directory.title"),
-          description: downloadConfigs.cache.directory,
+          description: (
+            <Text
+              fontSize="xs"
+              className="secondary-text"
+              wordBreak="break-all"
+            >
+              {downloadConfigs.cache.directory}
+            </Text>
+          ),
           children: (
             <HStack>
               <Button

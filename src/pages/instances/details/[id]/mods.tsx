@@ -236,9 +236,8 @@ const InstanceModsPage = () => {
     {
       icon: LuClockArrowUp,
       label: t("InstanceModsPage.modList.menu.update"),
-      onClick: () => {
-        if (!isLoading) onCheckUpdateModalOpen();
-      },
+      onClick: onCheckUpdateModalOpen,
+      disable: isLoading || localMods.length === 0,
     },
     {
       icon: "add",
@@ -358,6 +357,7 @@ const InstanceModsPage = () => {
                 size="xs"
                 fontSize="sm"
                 h={21}
+                isDisabled={btn.disable}
               />
             ))}
 
@@ -413,7 +413,11 @@ const InstanceModsPage = () => {
                 key={mod.fileName} // unique
                 childrenOnHover
                 title={
-                  <Text fontSize="xs-sm">
+                  <Text
+                    fontSize="xs-sm"
+                    overflow="hidden"
+                    className="secondary-text ellipsis-text"
+                  >
                     <Highlight
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yello.200" }}
@@ -481,6 +485,7 @@ const InstanceModsPage = () => {
                     />
                   </Avatar>
                 }
+                titleLineWrap={false}
               >
                 <HStack spacing={0}>
                   {modItemMenuOperations(mod).map((item, index) => (

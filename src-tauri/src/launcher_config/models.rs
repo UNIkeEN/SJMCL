@@ -1,4 +1,4 @@
-use super::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
+use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
 use crate::partial::PartialUpdate;
 use crate::storage::Storage;
 use crate::utils::string::snake_to_camel_case;
@@ -204,6 +204,8 @@ structstruck::strike! {
         #[default = "%built-in:Jokull"]
         pub choice: String,
         pub random_custom: bool,
+        #[default = true]
+        pub auto_darken: bool,
       },
       pub accessibility: struct {
         pub invert_colors: bool,

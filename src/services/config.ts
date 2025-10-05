@@ -132,6 +132,18 @@ export class ConfigService {
   }
 
   /**
+   * DOWNLOAD Java runtime distributed by Mojang API.
+   * @param {string} version - Java version to download
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("config")
+  static async downloadMojangJava(
+    version: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("download_mojang_java", { version });
+  }
+
+  /**
    * CHECK whether the game directory is valid.
    * @param {string} dir The game directory to check.
    * @returns {Promise<InvokeResponse<string>>} The sub directory if a sub game directory is valid.

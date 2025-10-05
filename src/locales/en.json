@@ -288,6 +288,9 @@
         },
         "randomCustom": {
           "title": "Random Custom Image"
+        },
+        "autoDarken": {
+          "title": "Dim Background in Dark Mode"
         }
       },
       "presetBgList": {
@@ -457,7 +460,10 @@
       "version": "Version",
       "type": "Type"
     },
-    "warning": "Downloading from Oracle may require login."
+    "warning": {
+      "mojang": "Java runtime from Mojang will be installed by SJMCL into a specific directory.",
+      "oracle": "Downloading from Oracle may require login."
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -581,7 +587,8 @@
       "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
       "forge-libraries": "Forge Libraries",
-      "launcher-update": "Update Launcher"
+      "launcher-update": "Update Launcher",
+      "mojang-java": "Java {{param}} Runtime"
     }
   },
   "Editable": {
@@ -837,13 +844,7 @@
     "release": "Release",
     "snapshot": "Snapshot",
     "april_fools": "April Fools",
-    "searchPlaceholder": "Search",
-    "wikiKey": {
-      "release": "Java_Edition_",
-      "snapshot": "",
-      "old_beta": "Java_Edition_Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "Search"
   },
   "General": {
     "add": "Add",
@@ -1085,7 +1086,7 @@
         "MUA": {
           "title": "Minecraft University Alliance (MUA)",
           "description": "Play with university players across China",
-          "url": " https://www.mualliance.cn/en"
+          "url": "https://www.mualliance.cn/en"
         },
         "SJMC": {
           "title": "SJTU Minecraft Club (SJMC)",
@@ -1793,8 +1794,13 @@
         "error": {
           "title": "Failed to validate Java",
           "description": {
-            "JAVA_EXEC_INVALID": "Java executable is invalid "
+            "JAVA_EXEC_INVALID": "Java executable is invalid"
           }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Failed to download Mojang Java runtime"
         }
       },
       "checkGameDirectory": {
@@ -1883,7 +1889,8 @@
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "INVALID": "Wrong account or password",
-            "NOT_FOUND": "The server does not exist"
+            "NOT_FOUND": "The server does not exist",
+            "EXPIRED": "The access token has expired, please re-login"
           }
         }
       },
@@ -2372,6 +2379,7 @@
       "world": "Search for {{query}} worlds",
       "resourcepack": "Search for {{query}} resource packs",
       "shader": "Search for {{query}} shader packs",
+      "datapack": "Search for {{query}} data packs",
       "modpack": "Search for {{query}} modpacks",
       "curseforge": "on CurseForge",
       "modrinth": "on Modrinth"
@@ -2450,7 +2458,10 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/w/"
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Java_Edition_{{version}}"
+      }
     }
   },
   "WelcomeAndTermsModal": {

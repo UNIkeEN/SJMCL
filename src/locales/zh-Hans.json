@@ -288,6 +288,9 @@
         },
         "randomCustom": {
           "title": "随机自定义"
+        },
+        "autoDarken": {
+          "title": "深色模式下调暗背景"
         }
       },
       "presetBgList": {
@@ -457,7 +460,10 @@
       "version": "版本",
       "type": "类型"
     },
-    "warning": "从 Oracle 源下载可能需要登录"
+    "warning": {
+      "mojang": "由 Mojang 分发的 Java 运行时将由 SJMCL 安装到特定目录",
+      "oracle": "从 Oracle 源下载可能需要登录"
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -581,7 +587,8 @@
       "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
       "forge-libraries": "Forge 运行库",
-      "launcher-update": "更新启动器"
+      "launcher-update": "更新启动器",
+      "mojang-java": "Java {{param}} 运行时"
     }
   },
   "Editable": {
@@ -837,13 +844,7 @@
     "release": "正式版",
     "snapshot": "测试版",
     "april_fools": "愚人节版",
-    "searchPlaceholder": "搜索版本",
-    "wikiKey": {
-      "release": "Java版",
-      "snapshot": "",
-      "old_beta": "Java版Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "搜索版本"
   },
   "General": {
     "add": "添加",
@@ -1797,6 +1798,11 @@
           }
         }
       },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Mojang Java 运行时下载失败"
+        }
+      },
       "checkGameDirectory": {
         "error": {
           "title": "游戏目录无效",
@@ -1883,7 +1889,8 @@
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
             "INVALID": "账号或密码错误",
-            "NOT_FOUND": "认证服务器不存在"
+            "NOT_FOUND": "认证服务器不存在",
+            "EXPIRED": "令牌已过期，请重新登录"
           }
         }
       },
@@ -2369,9 +2376,10 @@
     "empty": "无搜索结果",
     "resource": {
       "mod": "搜索关于 {{query}} 的模组",
-      "world": "搜索关于 {{query}} 的存档",
+      "world": "搜索关于 {{query}} 的世界",
       "resourcepack": "搜索关于 {{query}} 的资源包",
       "shader": "搜索关于 {{query}} 的光影",
+      "datapack": "搜索关于 {{query}} 的数据包",
       "modpack": "搜索关于 {{query}} 的整合包",
       "curseforge": "在 CurseForge 上",
       "modrinth": "在 Modrinth 上"
@@ -2450,7 +2458,10 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://zh.minecraft.wiki/w/"
+      "baseUrl": "https://zh.minecraft.wiki/w/{{key}}?variant=zh-cn",
+      "key": {
+        "javaEdition": "Java版{{version}}"
+      }
     }
   },
   "WelcomeAndTermsModal": {

@@ -480,7 +480,10 @@ const DownloadSpecificResourceModal: React.FC<
                 }
                 isFullClickZone
                 onClick={() => {
-                  if (item.dependencies.length > 0) {
+                  if (
+                    item.dependencies.length > 0 &&
+                    resource.type !== OtherResourceType.ModPack
+                  ) {
                     openSharedModal("alert-resource-dependency", {
                       dependencies: item.dependencies,
                       downloadSource: resource.source as OtherResourceSource,
@@ -580,6 +583,7 @@ const DownloadSpecificResourceModal: React.FC<
                   className="secondary-text"
                   wordBreak="break-all"
                   whiteSpace="pre-wrap"
+                  noOfLines={3}
                   mt={1}
                 >
                   {(showZhTrans && resource.translatedDescription) ||
@@ -611,7 +615,7 @@ const DownloadSpecificResourceModal: React.FC<
                 </Link>
               </HStack>
             )}
-            {resource.mcmodId && (
+            {resource.mcmodId !== 0 && (
               <HStack spacing={1} ml={2}>
                 <LuExternalLink />
                 <Link

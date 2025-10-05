@@ -86,7 +86,6 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
       .then((response) => {
         if (response.status === "success") {
           getPlayerList(true);
-          closeToast(loadingToast);
           toast({
             title: response.message,
             status: "success",
@@ -105,7 +104,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           }
         }
       })
-      .finally(() => setIsRefreshing(false));
+      .finally(() => {
+        closeToast(loadingToast);
+        setIsRefreshing(false);
+      });
   };
 
   const playerMenuOperations = [

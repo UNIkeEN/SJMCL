@@ -200,8 +200,8 @@ impl CurseForgeManifest {
           sha1,
           dest: instance_path
             .join(match class_id {
-              12 => "resourcepacks",
-              6552 => "shaderpacks",
+              Some(12) => "resourcepacks",
+              Some(6552) => "shaderpacks",
               _ => "mods",
             })
             .join(&file_manifest.data.file_name),

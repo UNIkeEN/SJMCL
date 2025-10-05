@@ -1,6 +1,6 @@
-use super::constants::TEXTURE_TYPES;
-use super::models::{MinecraftProfile, TextureInfo};
-use super::{oauth, password};
+use crate::account::helpers::authlib_injector::constants::TEXTURE_TYPES;
+use crate::account::helpers::authlib_injector::models::{MinecraftProfile, TextureInfo};
+use crate::account::helpers::authlib_injector::{oauth, password};
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{AccountError, AuthServer, PlayerInfo, PlayerType, Texture};
@@ -40,7 +40,6 @@ pub async fn parse_profile(
   refresh_token: Option<String>,
   auth_server_url: Option<String>,
   auth_account: Option<String>,
-  password: Option<String>,
 ) -> SJMCLResult<PlayerInfo> {
   let uuid = Uuid::parse_str(&profile.id).map_err(|_| AccountError::ParseError)?;
   let name = profile.name.clone();
@@ -92,7 +91,6 @@ pub async fn parse_profile(
       access_token,
       refresh_token,
       textures,
-      password,
       auth_server_url,
     }
     .with_generated_id(),

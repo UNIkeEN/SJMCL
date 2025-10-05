@@ -3,8 +3,8 @@ export enum OtherResourceType {
   World = "world",
   ResourcePack = "resourcepack",
   ShaderPack = "shader",
-  ModPack = "modpack",
   DataPack = "datapack",
+  ModPack = "modpack",
 }
 
 export enum OtherResourceSource {

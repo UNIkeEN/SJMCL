@@ -28,7 +28,6 @@ use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-use tauri::menu::MenuBuilder;
 use tauri::path::BaseDirectory;
 use tauri::Manager;
 
@@ -74,6 +73,7 @@ pub async fn run() {
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
       launcher_config::commands::validate_java,
+      launcher_config::commands::download_mojang_java,
       launcher_config::commands::check_game_directory,
       launcher_config::commands::clear_download_cache,
       launcher_config::commands::check_launcher_update,
@@ -176,7 +176,8 @@ pub async fn run() {
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
-      app.manage(Mutex::new(account_info));
+      app.manage(Mutex::new(account_info.clone()));
+      account_info.save().unwrap(); // TODO: add migration helper
 
       let instances: HashMap<String, Instance> = HashMap::new();
       app.manage(Mutex::new(instances));
@@ -238,6 +239,7 @@ pub async fn run() {
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
       #[cfg(not(target_os = "macos"))]
       {
+        use tauri::menu::MenuBuilder;
         let menu = MenuBuilder::new(app).build()?;
         app.set_menu(menu)?;
       }

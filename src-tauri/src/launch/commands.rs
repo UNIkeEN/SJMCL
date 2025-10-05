@@ -1,13 +1,3 @@
-use super::helpers::command_generator::{
-  export_full_launch_command, generate_launch_command, LaunchCommand,
-};
-use super::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
-};
-use super::helpers::jre_selector::select_java_runtime;
-use super::helpers::misc::get_separator;
-use super::helpers::process_monitor::{kill_process, monitor_process, set_process_priority};
-use super::models::{LaunchError, LaunchingState};
 use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
@@ -15,6 +5,18 @@ use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
+use crate::launch::helpers::command_generator::{
+  export_full_launch_command, generate_launch_command, LaunchCommand,
+};
+use crate::launch::helpers::file_validator::{
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
+};
+use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::misc::get_separator;
+use crate::launch::helpers::process_monitor::{
+  kill_process, monitor_process, set_process_priority,
+};
+use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
 use crate::launcher_config::models::{
   FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity,
@@ -284,6 +286,10 @@ pub async fn launch_game(
     .spawn()?;
 
   let pid = child.id();
+
+  // set process priority (if error, keep silent)
+  let _ = set_process_priority(pid, &game_config.performance.process_priority);
+
   {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
@@ -292,12 +298,6 @@ pub async fn launch_game(
     launching.pid = pid;
     launching.full_command = full_cmd;
   }
-
-  let post_exit_cmd = game_config
-    .advanced
-    .custom_commands
-    .post_exit_command
-    .clone();
 
   // wait for the game window, create log window if needed
   let (tx, rx) = mpsc::channel();
@@ -310,13 +310,16 @@ pub async fn launch_game(
     &game_config.game_window.custom_title,
     game_config.launcher_visibility.clone(),
     tx,
-    Some(post_exit_cmd),
+    Some(
+      game_config
+        .advanced
+        .custom_commands
+        .post_exit_command
+        .clone(),
+    ),
   )
   .await?;
   let _ = rx.recv();
-
-  // set process priority and window title (if error, keep slient)
-  let _ = set_process_priority(pid, &game_config.performance.process_priority);
 
   if game_config.launcher_visibility != LauncherVisiablity::Always {
     let _ = app

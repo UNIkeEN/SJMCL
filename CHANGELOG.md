@@ -2,6 +2,57 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 0.4.2
+
+`2025-09-30`
+
+**This update provides important security updates. All users are strongly recommended to install it.**
+
+- 🐛 Fix display issues in instance settings and resource list pages. #952 @1357310795
+- 🐛 Fix the issue where some third-party authentication sources could not log in with a password. #956 @Reqwey
+- 🐛 Fix text display issue on the launch screen when character names are too long. #957 @UNIkeEN
+- 🐛 Optimize account storage format to avoid potential security issues. #962 @Reqwey @hans362
+- 🐛 Fix display issue in the mod info dialog and improve information display in resource version list. #964 @SundayChen @UNIkeEN
+- 🐛 Fix the issue where version lists of some resources from Modrinth could not be displayed properly. #968 @SundayChen
+- 🐛 Disable "check mod updates" button when the local mod list is empty. #977 @SundayChen
+- 💄 Refactor part of the codebase to improve style and maintainability. #935 #964 @baiyuansjtu @SundayChen
+- Docs:
+   - Update additional terms of the open source license. #960 @ff98sha
+
+## 0.4.1
+
+`2025-09-27`
+
+- 🐛 Fix the issue where the Java page cannot load properly. @UNIkeEN
+
+## 0.4.0
+
+`2025-09-27`
+
+- 🔥 Support auto-update of the launcher itself. #918 #934 @UNIkeEN @hans362
+- 🔥 Support downloading multiple versions of Java runtime from Mojang source. #926 @Nova-Squ1 @UNIkeEN
+- 🌟 Add one-click action in settings page to reveal and edit the raw JSON config file in file explorer. #928 @UNIkeEN
+- 🌟 Complete the logic for advanced game launch options. #929 @xunying123
+- 🐛 Fix missing close button in mod info dialog. #921 @SundayChen
+- 🐛 Fix routing error when switching between instance detail pages. #942 @UNIkeEN
+- 🐛 Fix text overflow issue in instance detail, resource download and other pages under specific scenarios. #950 @1357310795
+- ⚡️ Avoid redundant version number fetching logic during main process startup. #937 @ModistAndrew
+- 📦 Remove unused Microsoft client secret environment variable. #949 @Reqwey
+- Web & Docs:
+   - Update the additional terms of the open source license. #945 @UNIkeEN @ff98sha
+   - Add download pages for latest and historical versions on the website. @itray25 @xunying123
+- Workflow:
+   - Fix missing `rustfmt` component and `i686-pc-windows-msvc` target in build workflow. @UNIkeEN
+
+## 0.3.3
+
+`2025-09-21`
+
+- 🌟 Support automatic detection of the Java runtime downloaded by PCL. #916 @Nova-Squ1
+- 🐛 Fix crash when the configured download cache directory has no write permission. #913 @Nova-Squ1
+- 💄 Refactor code for better style and improved maintainability. #908 @w1049
+- 🛠 The mod list no longer shows unpackaged mods in non-development mode. #915 @UNIkeEN
+
 ## 0.3.2
 
 `2025-09-17`

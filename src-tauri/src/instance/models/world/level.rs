@@ -1,4 +1,4 @@
-use super::player::PlayerData;
+use crate::instance::models::world::player::PlayerData;
 use serde::{self, Deserialize, Serialize};
 use std::collections::HashMap;
 

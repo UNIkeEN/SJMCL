@@ -6,11 +6,11 @@ use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
-use super::fabric::install_fabric_loader;
-use super::forge::{install_forge_loader, InstallProfile};
-use super::neoforge::install_neoforge_loader;
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
+use crate::instance::helpers::loader::fabric::install_fabric_loader;
+use crate::instance::helpers::loader::forge::{install_forge_loader, InstallProfile};
+use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
 use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::{parse_library_name, LibraryParts};

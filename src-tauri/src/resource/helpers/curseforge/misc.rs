@@ -75,8 +75,8 @@ structstruck::strike! {
 #[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
 #[strikethrough[serde(rename_all = "camelCase")]]
   pub struct CurseForgeProject {
-    pub id: u32,
-    pub class_id: u32,
+    pub id: i32,
+    pub class_id: Option<i32>,
     pub links: pub struct {
       pub website_url: String,
     },
@@ -86,7 +86,7 @@ structstruck::strike! {
     pub categories: Vec<pub struct {
       pub name: String,
     }>,
-    pub download_count: u32,
+    pub download_count: u64,
     pub logo: Option<pub struct {
       pub url: String,
     }>,
@@ -99,7 +99,7 @@ structstruck::strike! {
 pub struct CurseForgePagination {
   pub index: u32,
   pub page_size: u32,
-  pub total_count: u32,
+  pub total_count: u64,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -112,8 +112,8 @@ structstruck::strike! {
 #[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
 #[strikethrough[serde(rename_all = "camelCase")]]
   pub struct CurseForgeFileInfo {
-    pub id: u32,
-    pub mod_id: u32,
+    pub id: i32,
+    pub mod_id: i32,
     pub display_name: String,
     pub file_name: String,
     pub release_type: u32,
@@ -123,10 +123,10 @@ structstruck::strike! {
     }>,
     pub file_date: String,
     pub download_url: Option<String>,
-    pub download_count: u32,
+    pub download_count: u64,
     pub game_versions: Vec<String>,
     pub dependencies: Vec<pub struct {
-      pub mod_id: u32,
+      pub mod_id: i32,
       pub relation_type: u32,
     }>,
   }
@@ -235,7 +235,7 @@ impl From<CurseForgeProject> for OtherResourceInfo {
     Self {
       id: project.id.to_string(),
       mcmod_id: 0,
-      _type: cvt_class_id_to_type(project.class_id),
+      _type: cvt_class_id_to_type(project.class_id.unwrap_or(0)),
       name: project.name,
       slug: project.slug,
       description: project.summary,
@@ -427,7 +427,7 @@ pub fn cvt_category_to_id(category: &str, class_id: u32) -> u32 {
   }
 }
 
-pub fn cvt_class_id_to_type(class_id: u32) -> String {
+pub fn cvt_class_id_to_type(class_id: i32) -> String {
   match class_id {
     6 => "mod".to_string(),
     12 => "resourcepack".to_string(),

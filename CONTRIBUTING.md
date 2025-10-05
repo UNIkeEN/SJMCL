@@ -74,9 +74,14 @@ Alternatively, to manually check and fix formatting issues, run the following co
 npx eslint "src/**/*.{js,jsx,ts,tsx}" --no-fix     # check
 npx eslint "src/**/*.{js,jsx,ts,tsx}" --fix        # fix
 
-# For backend part
+# For backend part (For Linux, macOS or Git Bash on Windows)
 rustfmt --check src-tauri/src/**/*.rs              # check
 rustfmt src-tauri/src/**/*.rs                      # fix
+
+# For backend part (For Windows PowerShell)
+cd src-tauri
+cargo fmt -- --check src/**/*.rs                   # check
+cargo fmt -- src/**/*.rs                           # fix
 ```
 
 If you use VS Code for developing this project, we recommend setting `rust-analyzer.check.command` to `clippy` in your workspace settings for stricter code checking.

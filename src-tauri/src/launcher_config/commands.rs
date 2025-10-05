@@ -1,14 +1,18 @@
-use super::helpers::java::{
-  get_java_info_from_command, get_java_info_from_release_file, refresh_and_update_javas,
+use crate::error::SJMCLError;
+use crate::error::SJMCLResult;
+use crate::instance::helpers::misc::refresh_instances;
+use crate::launcher_config::helpers::java::{
+  build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
+  refresh_and_update_javas,
 };
-use super::helpers::updater::{self, download_target_version, fetch_latest_version};
-use super::models::{
+use crate::launcher_config::helpers::updater::{
+  self, download_target_version, fetch_latest_version,
+};
+use crate::launcher_config::models::{
   GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
 };
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::misc::refresh_instances;
 use crate::storage::Storage;
-use crate::tasks::monitor::TaskMonitor;
+use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};
 use crate::utils::string::camel_to_snake_case;
 use serde_json::{json, Value};
@@ -229,6 +233,21 @@ pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
   } else {
     Err(LauncherConfigError::JavaExecInvalid.into())
   }
+}
+
+#[tauri::command]
+pub async fn download_mojang_java(app: AppHandle, version: String) -> SJMCLResult<()> {
+  let download_params = build_mojang_java_download_params(&app, &version).await?;
+
+  schedule_progressive_task_group(
+    app,
+    format!("mojang-java?{}", version),
+    download_params,
+    true,
+  )
+  .await?;
+
+  Ok(())
 }
 
 #[tauri::command]
