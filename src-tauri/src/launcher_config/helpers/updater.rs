@@ -4,6 +4,7 @@ use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use serde_json::Value;
+use std::env;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
@@ -206,9 +207,12 @@ pub async fn install_update_windows(
     let restart_flag = if restart { "1" } else { "0" };
 
     // write and execute a bash script to wait -> replace -> start -> cleanup
-    let script_path = app
-      .path()
-      .resolve::<PathBuf>("update.cmd".into(), BaseDirectory::AppCache)?;
+    let script_name = format!(
+      "update_{}.cmd",
+      uuid::Uuid::new_v4().to_string()[..8].to_string()
+    );
+    let script_path = env::temp_dir().join(script_name.clone());
+    let script_path_cmd = PathBuf::from(format!("%TMP%\\{}", script_name));
     let script_content = r#"@echo off
 setlocal enableextensions
 set PID=%1
@@ -234,7 +238,7 @@ if "%RESTART%"=="1" start "" "%TARGET%"
 
     fs::write(&script_path, script_content.as_bytes())?;
     let _ = Command::new("cmd")
-      .args(["/C", &script_path.to_string_lossy()])
+      .args(["/C", &script_path_cmd.to_string_lossy()])
       .arg(&pid)
       .arg(&downloaded_path)
       .arg(&target)
