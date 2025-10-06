@@ -21,7 +21,7 @@ const lightTokens: SurfaceTokenMap = {
     "--sjmcl-acrylic-backdrop": "none",
   },
   acrylic: {
-    "--sjmcl-card-front-bg": "rgba(255, 255, 255, 0.72)",
+    "--sjmcl-card-front-bg": "rgba(255, 255, 255, 0.56)",
     "--sjmcl-card-front-backdrop": "blur(20px) saturate(125%)",
     "--sjmcl-card-front-shadow": "0 22px 45px rgba(15, 23, 42, 0.28)",
     "--sjmcl-card-front-border": "1px solid rgba(148, 163, 184, 0.28)",
@@ -38,7 +38,7 @@ const lightTokens: SurfaceTokenMap = {
     "--sjmcl-card-front-backdrop": "blur(32px) saturate(185%)",
     "--sjmcl-card-front-shadow": "0 28px 60px rgba(15, 23, 42, 0.38)",
     "--sjmcl-card-front-border": "1px solid rgba(148, 163, 184, 0.24)",
-    "--sjmcl-card-back-bg": "rgba(236, 242, 255, 0.36)",
+    "--sjmcl-card-back-bg": "rgba(236, 242, 255, 0.41)",
     "--sjmcl-card-back-backdrop": "blur(32px) saturate(160%)",
     "--sjmcl-card-back-shadow": "0 32px 72px rgba(15, 23, 42, 0.4)",
     "--sjmcl-acrylic-bg": "rgba(255, 255, 255, 0.81)",

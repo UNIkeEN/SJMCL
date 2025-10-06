@@ -8,6 +8,7 @@ import {
   MenuListProps,
   MenuOptionGroup,
   MenuProps,
+  Portal,
 } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -85,28 +86,30 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
       >
         {renderButtonLabel()}
       </MenuButton>
-      <MenuList {...menuListProps}>
-        <MenuOptionGroup
-          type={multiple ? "checkbox" : "radio"}
-          value={value ?? (multiple ? [] : "")}
-          onChange={(val) => {
-            if (multiple) {
-              onSelect(Array.isArray(val) ? val : []);
-            } else {
-              onSelect(typeof val === "string" ? val : null);
-            }
-          }}
-        >
-          {options.map((opt, i) => {
-            const { value: v, label } = buildOptions(opt);
-            return (
-              <MenuItemOption key={i} value={v} fontSize={fontSize}>
-                {label}
-              </MenuItemOption>
-            );
-          })}
-        </MenuOptionGroup>
-      </MenuList>
+      <Portal>
+        <MenuList {...menuListProps}>
+          <MenuOptionGroup
+            type={multiple ? "checkbox" : "radio"}
+            value={value ?? (multiple ? [] : "")}
+            onChange={(val) => {
+              if (multiple) {
+                onSelect(Array.isArray(val) ? val : []);
+              } else {
+                onSelect(typeof val === "string" ? val : null);
+              }
+            }}
+          >
+            {options.map((opt, i) => {
+              const { value: v, label } = buildOptions(opt);
+              return (
+                <MenuItemOption key={i} value={v} fontSize={fontSize}>
+                  {label}
+                </MenuItemOption>
+              );
+            })}
+          </MenuOptionGroup>
+        </MenuList>
+      </Portal>
     </Menu>
   );
 };
