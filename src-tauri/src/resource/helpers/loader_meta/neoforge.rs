@@ -85,16 +85,28 @@ async fn get_neoforge_meta_by_game_version_official(
             let mut results: Vec<(i32, ModLoaderResourceInfo)> = Vec::new();
             for version in versions.versions.into_iter() {
               if let Some(cap) = NEW_VERSION_REGEX.captures(&version.clone()) {
-                if *game_version
-                  == format!("1.{}.{}", cap[1].parse::<i32>()?, cap[2].parse::<i32>()?)
-                {
+                // Special April Fools Version Format: 0.{snapshot}.{patch}
+                let matches_game_version = if cap.get(2).is_some() {
+                  *game_version == cap[2].to_string()
+                } else {
+                  *game_version
+                    == format!("1.{}.{}", cap[4].parse::<i32>()?, cap[5].parse::<i32>()?)
+                };
+
+                if matches_game_version {
+                  let sort_key = if cap.get(2).is_some() {
+                    cap[3].parse::<i32>()?
+                  } else {
+                    cap[6].parse::<i32>()?
+                  };
+
                   results.push((
-                    cap[3].parse::<i32>()?,
+                    sort_key,
                     ModLoaderResourceInfo {
                       loader_type: ModLoaderType::NeoForge,
                       version,
                       description: String::new(),
-                      stable: cap.get(4).is_none(),
+                      stable: cap.get(7).is_none(),
                       branch: None,
                     },
                   ));
