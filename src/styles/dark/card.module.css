@@ -1,12 +1,15 @@
 .card-back {
-  background-color: rgba(12, 16, 24, 0.78) !important;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background-color: var(--sjmcl-card-back-bg, rgba(12, 16, 24, 0.78)) !important;
+  backdrop-filter: var(--sjmcl-card-back-backdrop, blur(20px));
+  -webkit-backdrop-filter: var(--sjmcl-card-back-backdrop, blur(20px));
+  box-shadow: var(--sjmcl-card-back-shadow, 0 28px 54px rgba(2, 8, 23, 0.6));
 }
 
 .card-front {
-  background-color: rgba(18, 24, 36, 0.66) !important;
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  background-color: var(--sjmcl-card-front-bg, rgba(18, 24, 36, 0.66)) !important;
+  backdrop-filter: var(--sjmcl-card-front-backdrop, blur(18px));
+  -webkit-backdrop-filter: var(--sjmcl-card-front-backdrop, blur(18px));
+  box-shadow: var(--sjmcl-card-front-shadow, 0 24px 48px rgba(2, 8, 23, 0.62));
+  border: var(--sjmcl-card-front-border, 1px solid rgba(148, 163, 184, 0.18));
   padding: var(--chakra-space-3);
 }

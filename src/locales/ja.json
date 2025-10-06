@@ -219,6 +219,15 @@
             "dark": "ダーク"
           }
         },
+        "surfaceStyle": {
+          "title": "サーフェススタイル",
+          "description": "カードやパネルの描画方法を選択します。",
+          "type": {
+            "flat": "フラット",
+            "acrylic": "アクリル",
+            "liquid": "リキッドグラス"
+          }
+        },
         "headNavStyle": {
           "title": "上部ナビゲーションバーのスタイル",
           "type": {

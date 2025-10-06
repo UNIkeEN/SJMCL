@@ -39,6 +39,10 @@ import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
 import { UtilsService } from "@/services/utils";
 import { removeFileExt } from "@/utils/string";
+import {
+  DEFAULT_SURFACE_STYLE,
+  deriveSurfaceStyle,
+} from "@/utils/theme/surface-style";
 
 const AppearanceSettingsPage = () => {
   const { t } = useTranslation();
@@ -46,6 +50,10 @@ const AppearanceSettingsPage = () => {
   const toast = useToast();
   const appearanceConfigs = config.appearance;
   const primaryColor = appearanceConfigs.theme.primaryColor;
+  const selectedSurfaceStyle = deriveSurfaceStyle(
+    appearanceConfigs.theme.surfaceStyle,
+    appearanceConfigs.theme.useLiquidGlassDesign
+  );
   const selectedBgKey = appearanceConfigs.background.choice.replace(
     "%built-in:",
     ""
@@ -451,23 +459,24 @@ const AppearanceSettingsPage = () => {
           ),
         },
         {
-          title: t(
-            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.title"
-          ),
+          title: t("AppearanceSettingsPage.theme.settings.surfaceStyle.title"),
           titleExtra: <Badge colorScheme="purple">Beta</Badge>,
           description: t(
-            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.description"
+            "AppearanceSettingsPage.theme.settings.surfaceStyle.description"
           ),
           children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={appearanceConfigs.theme.useLiquidGlassDesign}
-              onChange={(e) => {
-                update(
-                  "appearance.theme.useLiquidGlassDesign",
-                  e.target.checked
-                );
+            <SegmentedControl
+              selected={selectedSurfaceStyle ?? DEFAULT_SURFACE_STYLE}
+              onSelectItem={(s) => {
+                update("appearance.theme.surfaceStyle", s as string);
               }}
+              size="xs"
+              items={["flat", "acrylic", "liquid"].map((item) => ({
+                label: t(
+                  `AppearanceSettingsPage.theme.settings.surfaceStyle.type.${item}`
+                ),
+                value: item,
+              }))}
             />
           ),
         },

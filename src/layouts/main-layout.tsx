@@ -17,6 +17,11 @@ import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { isDev } from "@/utils/env";
+import {
+  deriveSurfaceStyle,
+  resolveSurfaceTokens,
+  surfaceStyleToVariant,
+} from "@/utils/theme/surface-style";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -28,6 +33,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const { colorMode } = useColorMode();
   const isDarkenBg =
     colorMode === "dark" && config.appearance.background.autoDarken;
+  const surfaceStyle = deriveSurfaceStyle(
+    config.appearance.theme.surfaceStyle,
+    config.appearance.theme.useLiquidGlassDesign
+  );
+  const surfaceVariant = surfaceStyleToVariant(surfaceStyle);
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
@@ -130,6 +140,24 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     }
   }, [config.appearance.font.fontSize]);
 
+  useEffect(() => {
+    const tokens = resolveSurfaceTokens(surfaceStyle, colorMode);
+    const body = document.body;
+
+    Object.entries(tokens).forEach(([key, value]) => {
+      body.style.setProperty(key, value);
+    });
+
+    body.setAttribute("data-surface-style", surfaceStyle);
+
+    return () => {
+      Object.keys(tokens).forEach((key) => {
+        body.style.removeProperty(key);
+      });
+      body.removeAttribute("data-surface-style");
+    };
+  }, [surfaceStyle, colorMode]);
+
   const getGlobalExtraStyle = (config: any) => {
     const isInvertColors = config.appearance.accessibility.invertColors;
     const enhanceContrast = config.appearance.accessibility.enhanceContrast;
@@ -187,7 +215,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       ) : (
         <AdvancedCard
           level="back"
-          variant="acrylic"
+          variant={surfaceVariant}
           h="100%"
           overflow="auto"
           mt={1}

@@ -27,6 +27,10 @@ import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
+import {
+  deriveSurfaceStyle,
+  surfaceStyleToVariant,
+} from "@/utils/theme/surface-style";
 
 const HeadNavBar = () => {
   const router = useRouter();
@@ -34,6 +38,11 @@ const HeadNavBar = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const isSimplified = config.appearance.theme.headNavStyle === "simplified";
+  const surfaceStyle = deriveSurfaceStyle(
+    config.appearance.theme.surfaceStyle,
+    config.appearance.theme.useLiquidGlassDesign
+  );
+  const navVariant = surfaceStyleToVariant(surfaceStyle);
 
   const { openSharedModal } = useSharedModals();
   const [isAnimating, setIsAnimating] = useState(false);
@@ -47,7 +56,7 @@ const HeadNavBar = () => {
     setTimeout(() => setIsAnimating(false), 700);
   }, [
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    config.appearance.theme.useLiquidGlassDesign,
+    surfaceStyle,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     isDownloadIndicatorShown,
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,7 +95,7 @@ const HeadNavBar = () => {
     <Flex justify="center" p={4}>
       <AdvancedCard
         level="back"
-        variant="acrylic"
+        variant={navVariant}
         pl={8}
         pr={isDownloadIndicatorShown ? 4 : 8}
         py={2}

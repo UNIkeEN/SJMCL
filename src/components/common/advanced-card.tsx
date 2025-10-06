@@ -1,7 +1,12 @@
-import { Box, BoxProps, Card, useColorModeValue } from "@chakra-ui/react";
+import { Box, BoxProps, Card, useColorMode } from "@chakra-ui/react";
 import React, { forwardRef } from "react";
 import { useLauncherConfig } from "@/contexts/config";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
+import {
+  deriveSurfaceStyle,
+  resolveSurfaceTokens,
+  surfaceStyleToVariant,
+} from "@/utils/theme/surface-style";
 
 interface AdvancedCardProps extends Omit<BoxProps, "children"> {
   variant?: string;
@@ -10,65 +15,82 @@ interface AdvancedCardProps extends Omit<BoxProps, "children"> {
 }
 
 const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
-  ({ variant = "", level = "back", children, ...props }, ref) => {
+  ({ variant = "", level = "back", children, ...restProps }, ref) => {
     const { config } = useLauncherConfig();
+    const { colorMode } = useColorMode();
     const themedStyles = useThemedCSSStyle();
-    const acrylicBackground = useColorModeValue(
-      "rgba(255, 255, 255, 0.72)",
-      "rgba(15, 18, 26, 0.66)"
+    const surfaceStyle = deriveSurfaceStyle(
+      config.appearance.theme.surfaceStyle,
+      config.appearance.theme.useLiquidGlassDesign
     );
-    const acrylicBorder = useColorModeValue(
-      "rgba(148, 163, 184, 0.28)",
-      "rgba(255, 255, 255, 0.08)"
-    );
-    const acrylicShadow = useColorModeValue(
-      "0 18px 32px rgba(148, 163, 184, 0.25)",
-      "0 18px 32px rgba(2, 12, 27, 0.4)"
-    );
+    const tokens = resolveSurfaceTokens(surfaceStyle, colorMode);
+    const defaultVariant = surfaceStyleToVariant(surfaceStyle);
+    const resolvedVariant = variant || defaultVariant;
 
-    const _variant =
-      variant ||
-      (config.appearance.theme.useLiquidGlassDesign
-        ? "liquid-glass"
-        : "elevated");
+    const {
+      className: classNameProp = "",
+      style: styleProp,
+      ...passthroughProps
+    } = restProps;
 
-    if (_variant === "acrylic") {
+    const baseClassName = [themedStyles.card[`card-${level}`], classNameProp]
+      .filter(Boolean)
+      .join(" ");
+
+    if (resolvedVariant === "acrylic") {
+      const mergedStyle: React.CSSProperties = {
+        ...((styleProp as React.CSSProperties) || {}),
+        backdropFilter: tokens["--sjmcl-acrylic-backdrop"],
+        WebkitBackdropFilter: tokens["--sjmcl-acrylic-backdrop"],
+      };
+
       return (
         <Card
           ref={ref}
-          bg={acrylicBackground}
           borderRadius="xl"
           borderWidth="1px"
-          borderColor={acrylicBorder}
-          boxShadow={acrylicShadow}
-          backdropFilter="blur(18px)"
-          {...props}
-          className={`${props.className || ""}`.trim()}
+          borderColor={tokens["--sjmcl-acrylic-border"]}
+          boxShadow={tokens["--sjmcl-acrylic-shadow"]}
+          bg={tokens["--sjmcl-acrylic-bg"]}
+          {...passthroughProps}
+          className={baseClassName}
+          style={mergedStyle}
         >
           {children}
         </Card>
       );
     }
 
-    if (["elevated", "outline", "filled", "unstyled"].includes(_variant)) {
+    if (
+      ["elevated", "outline", "filled", "unstyled"].includes(resolvedVariant)
+    ) {
       return (
         <Card
           ref={ref}
-          variant={_variant}
-          {...props}
-          className={`${themedStyles.card[`card-${level}`]} ${props.className || ""}`}
+          variant={resolvedVariant}
+          {...passthroughProps}
+          className={baseClassName}
+          style={styleProp}
         >
           {children}
         </Card>
       );
     }
 
-    if (_variant == "liquid-glass") {
+    if (resolvedVariant === "liquid-glass") {
+      const wrapperClassName = [
+        themedStyles.liquidGlass["wrapper"],
+        classNameProp,
+      ]
+        .filter(Boolean)
+        .join(" ");
+
       return (
         <Box
           ref={ref}
-          {...props}
-          className={`${themedStyles.liquidGlass["wrapper"]} ${props.className || ""}`}
+          {...passthroughProps}
+          className={wrapperClassName}
+          style={styleProp as React.CSSProperties}
         >
           <div className={themedStyles.liquidGlass["effect"]} />
           <div className={themedStyles.liquidGlass["shine"]} />
@@ -82,8 +104,9 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
     return (
       <Card
         ref={ref}
-        {...props}
-        className={`${themedStyles.card[`card-${level}`]} ${props.className || ""}`}
+        {...passthroughProps}
+        className={baseClassName}
+        style={styleProp}
       >
         {children}
       </Card>

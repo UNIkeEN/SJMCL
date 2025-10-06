@@ -72,8 +72,10 @@ export interface LauncherConfig {
     theme: {
       primaryColor: string;
       colorMode: "light" | "dark" | "system";
-      useLiquidGlassDesign: boolean;
+      surfaceStyle: "flat" | "acrylic" | "liquid";
       headNavStyle: string;
+      /** @deprecated Use surfaceStyle instead */
+      useLiquidGlassDesign?: boolean;
     };
     font: {
       fontFamily: string;
@@ -221,8 +223,9 @@ export const defaultConfig: LauncherConfig = {
     theme: {
       primaryColor: "blue",
       colorMode: "light",
-      useLiquidGlassDesign: false,
+      surfaceStyle: "acrylic",
       headNavStyle: "standard",
+      useLiquidGlassDesign: false,
     },
     font: {
       fontFamily: "%built-in",

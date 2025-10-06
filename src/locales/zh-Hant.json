@@ -249,9 +249,14 @@
             "dark": "深色"
           }
         },
-        "useLiquidGlassDesign": {
-          "title": "液態玻璃效果",
-          "description": "啟用後，部分介面將使用「液態玻璃」效果，這可能會影響效能"
+        "surfaceStyle": {
+          "title": "介面材質風格",
+          "description": "選擇卡片與面板的呈現方式。",
+          "type": {
+            "flat": "平面",
+            "acrylic": "壓克力",
+            "liquid": "液態玻璃"
+          }
         },
         "headNavStyle": {
           "title": "頂部導航欄樣式",

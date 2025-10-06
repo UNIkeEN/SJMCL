@@ -219,10 +219,15 @@
             "dark": "Sombre"
           }
         },
-        "useLiquidGlassDesign": {
-          "title": "Effet verre liquide",
-          "description": "Une fois activé, certaines interfaces utiliseront l'effet 'Verre liquide', ce qui peut affecter les performances"
-       },
+        "surfaceStyle": {
+          "title": "Style de surface",
+          "description": "Choisissez comment les cartes et panneaux sont rendus.",
+          "type": {
+            "flat": "Plat",
+            "acrylic": "Acrylique",
+            "liquid": "Verre liquide"
+          }
+        },
         "headNavStyle": {
           "title": "Style de la barre de navigation supérieure",
           "type": {
