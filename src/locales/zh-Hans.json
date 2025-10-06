@@ -394,6 +394,9 @@
       "loader": "选择加载器",
       "skipped": "不安装",
       "info": "基本设置"
+    },
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -1356,7 +1359,6 @@
     "beta": "测试版",
     "releaseDate": "发布于 {{date}}"
   },
-  "installFabricApi": "同时安装 Fabric API 模组",
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
   },

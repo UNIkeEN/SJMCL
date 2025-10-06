@@ -172,16 +172,20 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
           </ModalBody>
           <ModalFooter>
             {/* Fabric API download option - only show when Fabric is selected and has version */}
-            {selectedModLoader.loaderType === ModLoaderType.Fabric &&
-              selectedModLoader.version && (
-                <Checkbox
-                  colorScheme={primaryColor}
-                  isChecked={isInstallFabricApi}
-                  onChange={(e) => setIsInstallFabricApi(e.target.checked)}
-                >
-                  <Text fontSize="sm">{t("installFabricApi")}</Text>
-                </Checkbox>
-              )}
+            {selectedModLoader.loaderType === ModLoaderType.Fabric && (
+              <Checkbox
+                colorScheme={primaryColor}
+                isChecked={
+                  selectedModLoader.version !== "" && isInstallFabricApi
+                }
+                disabled={!selectedModLoader.version}
+                onChange={(e) => setIsInstallFabricApi(e.target.checked)}
+              >
+                <Text fontSize="sm">
+                  {t("CreateInstanceModal.footer.installFabricApi")}
+                </Text>
+              </Checkbox>
+            )}
 
             <HStack spacing={3} ml="auto">
               <Button variant="ghost" onClick={modalProps.onClose}>

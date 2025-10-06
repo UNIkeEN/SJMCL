@@ -394,6 +394,9 @@
       "loader": "Mod Loader",
       "skipped": "Skipped",
       "info": "Basic Settings"
+    },
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -1356,7 +1359,6 @@
     "beta": "Beta",
     "releaseDate": "Released at {{date}}"
   },
-  "installFabricApi": "Install Fabric API Mod",
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
   },
