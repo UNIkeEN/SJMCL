@@ -102,7 +102,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       alignItems="center"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      borderRadius="md"
+      borderRadius="lg"
       _hover={{
         bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
         transition: "background-color 0.2s ease-in-out",
@@ -112,7 +112,8 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         transition: "background-color 0.1s ease-in-out",
       }}
       cursor={isFullClickZone ? "pointer" : "default"}
-      p={0.5}
+      px={3}
+      py={2}
       {...boxProps}
     >
       <HStack spacing={2.5} overflow="hidden">
