@@ -43,6 +43,13 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     onSelectCallback();
   };
 
+  const handleSelectById = (instanceId: string) => {
+    const instance = instances.find((item) => item.id === instanceId);
+    if (instance) {
+      handleUpdateSelectedInstance(instance);
+    }
+  };
+
   const listItems: OptionItemProps[] = instances.map((instance) => ({
     title: instance.name,
     description: [generateInstanceDesc(instance), instance.description]
@@ -56,11 +63,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     titleLineWrap: false,
     prefixElement: (
       <HStack spacing={2.5}>
-        <Radio
-          value={instance.id}
-          onClick={() => handleUpdateSelectedInstance(instance)}
-          colorScheme={primaryColor}
-        />
+        <Radio value={instance.id} colorScheme={primaryColor} />
         <Image
           boxSize="32px"
           objectFit="cover"
@@ -69,14 +72,16 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       </HStack>
     ),
-    ...(withMenu
-      ? {}
-      : {
-          isFullClickZone: true,
-          onClick: () => handleUpdateSelectedInstance(instance),
-        }),
+    isFullClickZone: true,
+    onClick: () => handleUpdateSelectedInstance(instance),
     children: withMenu ? (
-      <InstanceMenu instance={instance} variant="buttonGroup" />
+      <Box
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        <InstanceMenu instance={instance} variant="buttonGroup" />
+      </Box>
     ) : (
       <></>
     ),
@@ -102,7 +107,10 @@ const InstancesView: React.FC<InstancesViewProps> = ({
   return (
     <Box {...boxProps}>
       {instances.length > 0 ? (
-        <RadioGroup value={selectedInstance?.id}>
+        <RadioGroup
+          value={selectedInstance?.id}
+          onChange={(nextValue) => handleSelectById(nextValue as string)}
+        >
           {viewType === "list" ? (
             <OptionItemGroup items={listItems} />
           ) : (
