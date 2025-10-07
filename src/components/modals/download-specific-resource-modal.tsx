@@ -12,9 +12,12 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Stack,
   Tag,
   Text,
+  Tooltip,
   VStack,
+  Wrap,
 } from "@chakra-ui/react";
 import { downloadDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
@@ -103,6 +106,7 @@ const DownloadSpecificResourceModal: React.FC<
   const [versionPacks, setVersionPacks] = useState<OtherResourceVersionPack[]>(
     []
   );
+  const [isPortrait, setIsPortrait] = useState<boolean>(false);
 
   const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
   const { openSharedModal, closeSharedModal } = useSharedModals();
@@ -171,6 +175,52 @@ const DownloadSpecificResourceModal: React.FC<
     }
     return tag;
   };
+
+  const toCamelCaseLabel = (value: string): string => {
+    return value
+      .split(/[\s_-]+/)
+      .filter(Boolean)
+      .map((segment) =>
+        segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase()
+      )
+      .join("");
+  };
+
+  const getTagColor = useMemo(() => {
+    const colorPalette = [
+      "green",
+      "blue",
+      "purple",
+      "teal",
+      "orange",
+      "pink",
+      "cyan",
+      "yellow",
+    ] as const;
+    const cache = new Map<string, (typeof colorPalette)[number]>();
+
+    return (tag: string) => {
+      if (!cache.has(tag)) {
+        const normalized = tag.toLowerCase();
+        const hash = normalized
+          .split("")
+          .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) % 2147483647, 7);
+        const paletteIndex = hash % colorPalette.length;
+        cache.set(tag, colorPalette[paletteIndex]);
+      }
+      return cache.get(tag)!;
+    };
+  }, []);
+
+  const shouldShowResourceLinks = Boolean(
+    resource.websiteUrl || resource.mcmodId !== 0
+  );
+
+  const translatedTags = resource.tags
+    .map((tag) => translateTag(tag, resource.type, resource.source))
+    .filter((tag): tag is string => Boolean(tag));
+  const visibleTags = translatedTags.slice(0, 3);
+  const hiddenTags = translatedTags.slice(3);
 
   const versionLabelToParam = useCallback(
     (label: string) => {
@@ -412,18 +462,58 @@ const DownloadSpecificResourceModal: React.FC<
     );
   };
 
+  const collectItemTags = (items: OtherResourceFileInfo[]) => {
+    const tagMap = new Map<string, { raw: string; label: string }>();
+    items.forEach((item) => {
+      if (!item.loader) return;
+      const rawTag = item.loader.trim();
+      if (!rawTag) return;
+      if (!tagMap.has(rawTag)) {
+        tagMap.set(rawTag, { raw: rawTag, label: toCamelCaseLabel(rawTag) });
+      }
+    });
+    return Array.from(tagMap.values()).sort((a, b) =>
+      a.label.localeCompare(b.label)
+    );
+  };
+
   const renderSection = (
     pack: OtherResourceVersionPack,
     index: number,
     initialIsOpen: boolean = false
   ) => {
+    const sectionTags = collectItemTags(pack.items);
     return (
       <Section
         key={index}
         isAccordion
         title={pack.name}
         initialIsOpen={initialIsOpen}
-        titleExtra={<CountTag count={pack.items.length} />}
+        titleExtra={
+            <CountTag count={pack.items.length} />
+        }
+        headExtra={
+          <HStack spacing={2} align="center">
+            {sectionTags.length > 0 && (
+              <Wrap
+                spacing={1}
+                shouldWrapChildren
+                justify="flex-end"
+                maxW={{ base: "42vw", md: "28vw" }}
+              >
+                {sectionTags.map(({ raw, label }) => (
+                  <Tag
+                    key={`${pack.name}-${raw}`}
+                    colorScheme={getTagColor(raw)}
+                    className="tag-xs"
+                  >
+                    {label}
+                  </Tag>
+                ))}
+              </Wrap>
+            )}
+          </HStack>
+        }
         mb={2}
       >
         {pack.items.length > 0 ? (
@@ -510,6 +600,18 @@ const DownloadSpecificResourceModal: React.FC<
   }, [curInstanceModLoader]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const updateOrientation = () => {
+      setIsPortrait(window.innerWidth < window.innerHeight);
+    };
+    updateOrientation();
+    window.addEventListener("resize", updateOrientation);
+    return () => {
+      window.removeEventListener("resize", updateOrientation);
+    };
+  }, []);
+
+  useEffect(() => {
     const initialVersion = curInstanceMajorVersion || "All";
     if (versionLabels.length > 0 && versionLabels.includes(initialVersion)) {
       setSelectedVersionLabel(initialVersion);
@@ -552,85 +654,121 @@ const DownloadSpecificResourceModal: React.FC<
             mb={2}
             py={2}
             fontWeight={400}
-            flexDir="row"
+            display="flex"
+            flexDirection={isPortrait ? "column" : "row"}
+            alignItems={isPortrait ? "stretch" : "center"}
+            gap={isPortrait ? 3 : 4}
           >
-            <OptionItem
-              title={
-                showZhTrans && resource.translatedName
-                  ? `${resource.translatedName} | ${resource.name}`
-                  : resource.name
-              }
-              titleExtra={
-                <HStack spacing={1}>
-                  {resource.tags
-                    .filter((t) =>
-                      translateTag(t, resource.type, resource.source)
-                    )
-                    .map((tag) => (
-                      <Tag
-                        key={tag}
-                        colorScheme={primaryColor}
-                        className="tag-xs"
-                      >
-                        {translateTag(tag, resource.type, resource.source)}
-                      </Tag>
-                    ))}
-                </HStack>
-              }
-              description={
-                <Text
-                  fontSize="xs"
-                  className="secondary-text"
-                  wordBreak="break-all"
-                  whiteSpace="pre-wrap"
-                  noOfLines={3}
-                  mt={1}
-                >
-                  {(showZhTrans && resource.translatedDescription) ||
-                    resource.description}
-                </Text>
-              }
-              prefixElement={
-                <Avatar
-                  src={resource.iconSrc}
-                  name={resource.name}
-                  boxSize="36px"
-                  borderRadius="2px"
-                />
-              }
-              fontWeight={400}
-              flex={1}
-            />
-            {resource.websiteUrl && (
-              <HStack spacing={1}>
-                <LuExternalLink />
-                <Link
-                  fontSize="xs"
-                  color={`${primaryColor}.500`}
-                  onClick={() => {
-                    resource.websiteUrl && openUrl(resource.websiteUrl);
-                  }}
-                >
-                  {resource.source}
-                </Link>
-              </HStack>
-            )}
-            {resource.mcmodId !== 0 && (
-              <HStack spacing={1} ml={2}>
-                <LuExternalLink />
-                <Link
-                  fontSize="xs"
-                  color={`${primaryColor}.500`}
-                  onClick={() => {
-                    resource.mcmodId &&
-                      openUrl(
-                        `https://www.mcmod.cn/class/${resource.mcmodId}.html`
-                      );
-                  }}
-                >
-                  MCMod
-                </Link>
-              </HStack>
+            <Box flex="1" minW={0}>
+              <OptionItem
+                title={
+                  showZhTrans && resource.translatedName
+                    ? `${resource.translatedName} | ${resource.name}`
+                    : resource.name
+                }
+                titleExtra={
+                  translatedTags.length > 0 && (
+                    <Wrap
+                      spacing={1}
+                      justify={isPortrait ? "flex-start" : "flex-end"}
+                      shouldWrapChildren
+                      maxW="100%"
+                    >
+                      {visibleTags.map((tag, index) => (
+                        <Tag
+                          key={`${tag}-${index}`}
+                          colorScheme={primaryColor}
+                          className="tag-xs"
+                        >
+                          {tag}
+                        </Tag>
+                      ))}
+                      {hiddenTags.length > 0 && (
+                        <Tooltip
+                          label={hiddenTags.join(", ")}
+                          aria-label="more-tags"
+                          hasArrow
+                          openDelay={150}
+                        >
+                          <Tag
+                            colorScheme={primaryColor}
+                            className="tag-xs"
+                            variant="outline"
+                            cursor="pointer"
+                          >
+                            +{hiddenTags.length}
+                          </Tag>
+                        </Tooltip>
+                      )}
+                    </Wrap>
+                  )
+                }
+                description={
+                  <Text
+                    fontSize="xs"
+                    className="secondary-text"
+                    wordBreak="break-all"
+                    whiteSpace="pre-wrap"
+                    noOfLines={3}
+                    mt={1}
+                  >
+                    {(showZhTrans && resource.translatedDescription) ||
+                      resource.description}
+                  </Text>
+                }
+                prefixElement={
+                  <Avatar
+                    src={resource.iconSrc}
+                    name={resource.name}
+                    boxSize="36px"
+                    borderRadius="2px"
+                  />
+                }
+                fontWeight={400}
+                w="100%"
+              />
+            </Box>
+            {shouldShowResourceLinks && (
+              <Stack
+                direction={isPortrait ? "row" : "column"}
+                spacing={isPortrait ? 3 : 2}
+                align={isPortrait ? "flex-start" : "flex-end"}
+                flexShrink={0}
+              >
+                {resource.websiteUrl && (
+                  <Link
+                    fontSize="xs"
+                    color={`${primaryColor}.500`}
+                    display="inline-flex"
+                    alignItems="center"
+                    gap={1}
+                    onClick={() => {
+                      resource.websiteUrl && openUrl(resource.websiteUrl);
+                    }}
+                  >
+                    <LuExternalLink />
+                    {resource.source}
+                  </Link>
+                )}
+                {resource.mcmodId !== 0 && (
+                  <Link
+                    fontSize="xs"
+                    color={`${primaryColor}.500`}
+                    display="inline-flex"
+                    alignItems="center"
+                    gap={1}
+                    onClick={() => {
+                      resource.mcmodId &&
+                        openUrl(
+                          `https://www.mcmod.cn/class/${resource.mcmodId}.html`
+                        );
+                    }}
+                  >
+                    <LuExternalLink />
+                    MCMod
+                  </Link>
+                )}
+              </Stack>
             )}
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
