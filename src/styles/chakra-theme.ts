@@ -166,8 +166,10 @@ const chakraExtendTheme = extendTheme({
           boxShadow: "var(--sjmcl-card-front-shadow, var(--chakra-shadows-md))",
           background: "var(--sjmcl-card-front-bg, var(--popper-bg))",
           backdropFilter: "var(--sjmcl-card-front-backdrop, none)",
-          border: "var(--sjmcl-card-front-border, 1px solid var(--chakra-colors-chakra-border-color))",
-          "--popper-bg": "var(--sjmcl-card-front-bg, var(--chakra-colors-white))",
+          border:
+            "var(--sjmcl-card-front-border, 1px solid var(--chakra-colors-chakra-border-color))",
+          "--popper-bg":
+            "var(--sjmcl-card-front-bg, var(--chakra-colors-white))",
           transition: "background 0.2s ease, backdrop-filter 0.2s ease",
         },
       },

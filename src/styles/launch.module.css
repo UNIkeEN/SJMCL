@@ -2,26 +2,10 @@
   height: 4.5rem !important;
   width: 14.5rem !important;
   backdrop-filter: blur(9px);
-  box-shadow: 
-    -1px 0 5px 1px rgba(250, 130, 60, 0.3),
-    0px 0 5px 1px rgba(247, 28, 90, 0.3),
-    1px 0 5px 1px rgba(222, 57, 189, 0.3);
-  transition: box-shadow 0.2s ease;
-}
-
-
-.launch-button:hover {
-  box-shadow: 
-    -2px 0 5px 2px rgba(233, 121, 57, 0.5),
-    0px 0 5px 2px rgba(215, 25, 79, 0.5),
-    2px 0 5px 2px rgba(222, 55, 188, 0.5);
-}
-
-.launch-button:active {
-  box-shadow: 
-    -3px 0 5px 3px rgba(233, 121, 57, 0.7),
-    0px 0 5px 3px rgba(215, 25, 79, 0.7),
-    3px 0 5px 3px rgba(222, 55, 188, 0.7);
+  border-radius: var(--chakra-radii-xl);
+  transition: background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .selected-user-card {

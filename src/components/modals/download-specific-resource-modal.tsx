@@ -180,8 +180,9 @@ const DownloadSpecificResourceModal: React.FC<
     return value
       .split(/[\s_-]+/)
       .filter(Boolean)
-      .map((segment) =>
-        segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase()
+      .map(
+        (segment) =>
+          segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase()
       )
       .join("");
   };
@@ -197,6 +198,7 @@ const DownloadSpecificResourceModal: React.FC<
       "cyan",
       "yellow",
     ] as const;
+
     const cache = new Map<string, (typeof colorPalette)[number]>();
 
     return (tag: string) => {
@@ -204,7 +206,10 @@ const DownloadSpecificResourceModal: React.FC<
         const normalized = tag.toLowerCase();
         const hash = normalized
           .split("")
-          .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) % 2147483647, 7);
+          .reduce(
+            (acc, char) => (acc * 31 + char.charCodeAt(0)) % 2147483647,
+            7
+          );
         const paletteIndex = hash % colorPalette.length;
         cache.set(tag, colorPalette[paletteIndex]);
       }
@@ -489,9 +494,7 @@ const DownloadSpecificResourceModal: React.FC<
         isAccordion
         title={pack.name}
         initialIsOpen={initialIsOpen}
-        titleExtra={
-            <CountTag count={pack.items.length} />
-        }
+        titleExtra={<CountTag count={pack.items.length} />}
         headExtra={
           <HStack spacing={2} align="center">
             {sectionTags.length > 0 && (

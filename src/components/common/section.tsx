@@ -1,4 +1,3 @@
-import type { KeyboardEvent } from "react";
 import {
   Box,
   BoxProps,
@@ -14,6 +13,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import type { KeyboardEvent } from "react";
 import { LuArrowLeft, LuChevronRight } from "react-icons/lu";
 
 export interface SectionProps extends Omit<BoxProps, "children"> {
