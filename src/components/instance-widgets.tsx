@@ -136,6 +136,7 @@ export const InstanceBasicInfoWidget = () => {
           <Image src={summary?.iconSrc} alt={summary?.iconSrc} boxSize="28px" />
         }
         zIndex={998}
+        py={0.5}
       />
       <OptionItem
         title={t("InstanceWidgets.basicInfo.playTime")}
@@ -149,6 +150,7 @@ export const InstanceBasicInfoWidget = () => {
           </Center>
         }
         zIndex={998}
+        py={0.5}
       />
     </InstanceWidgetBase>
   );
