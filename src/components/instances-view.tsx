@@ -7,6 +7,7 @@ import {
   Radio,
   RadioGroup,
 } from "@chakra-ui/react";
+import { CSSProperties } from "react";
 import { FaStar } from "react-icons/fa6";
 import Empty from "@/components/common/empty";
 import {
@@ -26,6 +27,15 @@ interface InstancesViewProps extends BoxProps {
   onSelectCallback?: () => void;
   withMenu?: boolean;
 }
+
+const instanceListSurfaceStyleOverrides = {
+  "--sjmcl-card-front-bg": "var(--sjmcl-instance-list-bg)",
+  "--sjmcl-card-front-backdrop": "var(--sjmcl-instance-list-backdrop)",
+  "--sjmcl-card-front-shadow": "var(--sjmcl-instance-list-shadow)",
+  "--sjmcl-card-front-border": "var(--sjmcl-instance-list-border)",
+  "--sjmcl-option-item-hover-bg": "var(--sjmcl-instance-list-hover-bg)",
+  "--sjmcl-option-item-active-bg": "var(--sjmcl-instance-list-active-bg)",
+} as CSSProperties;
 
 const InstancesView: React.FC<InstancesViewProps> = ({
   instances,
@@ -112,7 +122,9 @@ const InstancesView: React.FC<InstancesViewProps> = ({
           onChange={(nextValue) => handleSelectById(nextValue as string)}
         >
           {viewType === "list" ? (
-            <OptionItemGroup items={listItems} />
+            <Box style={instanceListSurfaceStyleOverrides}>
+              <OptionItemGroup items={listItems} />
+            </Box>
           ) : (
             <WrapCardGroup items={gridItems} variant="radio" />
           )}

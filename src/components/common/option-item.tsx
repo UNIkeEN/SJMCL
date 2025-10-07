@@ -58,6 +58,8 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
+  const hoverBgVar = `var(--sjmcl-option-item-hover-bg, var(--chakra-colors-gray-${palettes[0]}))`;
+  const activeBgVar = `var(--sjmcl-option-item-active-bg, var(--chakra-colors-gray-${palettes[1]}))`;
 
   const titleLineClampProps: TextProps = {
     noOfLines: maxTitleLines,
@@ -104,11 +106,11 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       onMouseLeave={() => setIsHovered(false)}
       borderRadius="md"
       _hover={{
-        bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
+        bg: isFullClickZone ? hoverBgVar : "inherit",
         transition: "background-color 0.2s ease-in-out",
       }}
       _active={{
-        bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
+        bg: isFullClickZone ? activeBgVar : "inherit",
         transition: "background-color 0.1s ease-in-out",
       }}
       cursor={isFullClickZone ? "pointer" : "default"}
