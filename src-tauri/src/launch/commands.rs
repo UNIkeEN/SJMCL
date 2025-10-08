@@ -286,6 +286,10 @@ pub async fn launch_game(
     .spawn()?;
 
   let pid = child.id();
+
+  // set process priority (if error, keep silent)
+  let _ = set_process_priority(pid, &game_config.performance.process_priority);
+
   {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
@@ -294,12 +298,6 @@ pub async fn launch_game(
     launching.pid = pid;
     launching.full_command = full_cmd;
   }
-
-  let post_exit_cmd = game_config
-    .advanced
-    .custom_commands
-    .post_exit_command
-    .clone();
 
   // wait for the game window, create log window if needed
   let (tx, rx) = mpsc::channel();
@@ -312,13 +310,16 @@ pub async fn launch_game(
     &game_config.game_window.custom_title,
     game_config.launcher_visibility.clone(),
     tx,
-    Some(post_exit_cmd),
+    Some(
+      game_config
+        .advanced
+        .custom_commands
+        .post_exit_command
+        .clone(),
+    ),
   )
   .await?;
   let _ = rx.recv();
-
-  // set process priority and window title (if error, keep slient)
-  let _ = set_process_priority(pid, &game_config.performance.process_priority);
 
   if game_config.launcher_visibility != LauncherVisiablity::Always {
     let _ = app

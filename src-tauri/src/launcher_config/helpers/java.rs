@@ -211,6 +211,8 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
       "Java",
       "BellSoft",
       "AdoptOpenJDK",
+      "SapMachine",
+      "Amazon Corretto",
       "Zulu",
       "Microsoft",
       "Eclipse Foundation",

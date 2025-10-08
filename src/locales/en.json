@@ -394,6 +394,9 @@
       "loader": "Mod Loader",
       "skipped": "Skipped",
       "info": "Basic Settings"
+    },
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {

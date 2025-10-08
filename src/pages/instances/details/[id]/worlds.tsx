@@ -36,6 +36,7 @@ const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const {
+    instanceId,
     summary,
     openInstanceSubdir,
     handleImportResource,
@@ -74,8 +75,8 @@ const InstanceWorldsPage = () => {
 
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
-      if (summary?.id !== undefined) {
-        InstanceService.retrieveGameServerList(summary.id, queryOnline).then(
+      if (instanceId !== undefined) {
+        InstanceService.retrieveGameServerList(instanceId, queryOnline).then(
           (response) => {
             if (response.status === "success") {
               setGameServers(response.data);
@@ -90,7 +91,7 @@ const InstanceWorldsPage = () => {
         );
       }
     },
-    [toast, summary?.id]
+    [toast, instanceId]
   );
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const InstanceWorldsPage = () => {
       handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [summary?.id, handleRetrieveGameServerList]);
+  }, [instanceId, handleRetrieveGameServerList]);
 
   const worldSecMenuOperations = [
     {
@@ -171,7 +172,7 @@ const InstanceWorldsPage = () => {
             icon: "launch",
             onClick: () => {
               openSharedModal("launch", {
-                instanceId: summary?.id,
+                instanceId: instanceId,
                 quickPlaySingleplayer: save.name,
               });
             },
@@ -259,7 +260,7 @@ const InstanceWorldsPage = () => {
       </Section>
 
       <WorldLevelDataModal
-        instanceId={summary?.id}
+        instanceId={instanceId}
         worldName={selectedWorldName || ""}
         isOpen={isWorldLevelDataModalOpen}
         onClose={onWorldLevelDataModalClose}
@@ -338,7 +339,7 @@ const InstanceWorldsPage = () => {
                     label={t("InstanceWorldsPage.serverList.launch")}
                     onClick={() => {
                       openSharedModal("launch", {
-                        instanceId: summary?.id,
+                        instanceId: instanceId,
                         quickPlayMultiplayer: server.ip,
                       });
                     }}
