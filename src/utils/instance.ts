@@ -44,8 +44,8 @@ export const parseModLoaderVersion = (version: string): string => {
       getVersion: (match: RegExpMatchArray) => match[2],
     },
     {
-      // NeoForge: "neoforge-21.8.13" or "1.20.1-neoforge-47.0.44"
-      regex: /(neoforge|[\d.]+)-([\d.]+)/,
+      // NeoForge: "neoforge-21.8.13" or "1.20.1-neoforge-47.0.44" or "neoforge-0.25w14craftmine.3-beta"
+      regex: /(neoforge|[a-zA-Z0-9.]+)-([a-zA-Z0-9.]+)/,
       getVersion: (match: RegExpMatchArray) => match[2],
     },
   ];
