@@ -409,8 +409,8 @@ export const InstanceLastPlayedWidget = () => {
                 onClick={() => {
                   openSharedModal("launch", {
                     instanceId: summary?.id,
-                    ...(lastPlayedWorld?.dirPath && {
-                      quickPlaySingleplayer: lastPlayedWorld.dirPath,
+                    ...(lastPlayedWorld?.name && {
+                      quickPlaySingleplayer: lastPlayedWorld.name,
                     }),
                   });
                 }}

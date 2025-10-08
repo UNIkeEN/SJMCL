@@ -78,17 +78,13 @@ impl ModrinthManifest {
     let mut archive = ZipArchive::new(file)?;
     for i in 0..archive.len() {
       let mut file = archive.by_index(i)?;
-      let outpath = match file.enclosed_name() {
-        Some(path) => {
-          if path.starts_with("overrides/") {
-            // Remove "overrides/" prefix and join with instance path
-            let relative_path = path.strip_prefix("overrides/").unwrap();
-            instance_path.join(relative_path)
-          } else {
-            continue;
-          }
-        }
-        None => continue,
+      let path = file.mangled_name();
+      let outpath = if path.starts_with("overrides/") {
+        // Remove "overrides/" prefix and join with instance path
+        let relative_path = path.strip_prefix("overrides/").unwrap();
+        instance_path.join(relative_path)
+      } else {
+        continue;
       };
 
       if file.is_file() {

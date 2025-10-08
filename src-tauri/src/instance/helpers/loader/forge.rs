@@ -132,19 +132,15 @@ pub async fn download_forge_libraries(
   // Extract maven folder contents to lib_dir
   for i in 0..archive.len() {
     let mut file = archive.by_index(i)?;
-    let outpath = match file.enclosed_name() {
-      Some(path) => {
-        if path.starts_with("maven/") {
-          // Remove "maven/" prefix and join with lib_dir
-          let relative_path = path.strip_prefix("maven/").unwrap();
-          lib_dir.join(relative_path)
-        } else if path == PathBuf::from("data/client.lzma") {
-          bin_patch.clone()
-        } else {
-          continue;
-        }
-      }
-      None => continue,
+    let path = file.mangled_name();
+    let outpath = if path.starts_with("maven/") {
+      // Remove "maven/" prefix and join with lib_dir
+      let relative_path = path.strip_prefix("maven/").unwrap();
+      lib_dir.join(relative_path)
+    } else if path == PathBuf::from("data/client.lzma") {
+      bin_patch.clone()
+    } else {
+      continue;
     };
 
     if file.is_file() {
