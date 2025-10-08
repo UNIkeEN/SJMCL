@@ -33,6 +33,7 @@ async fn get_neoforge_meta_by_game_version_official(
       RegexBuilder::new(r"^(?:1\.20\.1\-)?(\d+)\.(\d+)\.(\d+)$")
         .build()
         .unwrap();
+    // For April Fools NeoForge versions like "0.25w14craftmine.3-beta" (resource version 0.25w14craftmine)
     static ref APRIL_FOOLS_VERSION_REGEX: Regex =
       RegexBuilder::new(r"^0\.(\d+\w+)\.(\d+)(-beta)?$")
         .build()
