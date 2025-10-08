@@ -1,0 +1,52 @@
+name: Publish AUR Package
+
+permissions:
+  contents: read
+  
+on: 
+    workflow_dispatch:
+
+jobs:
+    publish_aur_package:
+        name: Publish AUR package
+        outputs:
+            version: ${{ steps.gen_template.outputs.version }}
+
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: true
+            matrix:
+                target:
+                    - x86_64-unknown-linux-gnu
+
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                fetch-depth: 0
+
+            - name: Resolve latest tag
+              id: resolve_tag
+              run: |
+                    git fetch --tags
+                    LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
+                    echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+                    echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
+                    echo "Latest tag: $LATEST_TAG"
+
+            - name: Generate PKGBUILD
+              id: gen_template
+              run: |
+                  sed -i "s/pkgver=.*/pkgver=$LATEST_TAG/" template/sjmcl/PKGBUILD
+
+            - name: Publish SJMCL to the AUR
+              uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+              with:
+                  pkgname: sjmcl
+                  pkgbuild: ${{ github.workspace }}/template/sjmcl/PKGBUILD
+                  commit_username: ${{ secrets.AUR_USERNAME }}
+                  commit_email: ${{ secrets.AUR_EMAIL }}
+                  ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+                  commit_message: ${{ steps.resolve_tag.outputs.latest }}
+                  updpkgsums: "true"
+                  ssh_keyscan_types: rsa,ecdsa,ed25519
