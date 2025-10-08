@@ -123,32 +123,20 @@ async fn get_neoforge_meta_by_game_version_official(
       };
 
       if let Some(cap) = cap_opt {
-        const APRIL_SNAPSHOT_GROUP: usize = 1;
-        const APRIL_PATCH_GROUP: usize = 2;
-        const REGULAR_MINOR_GROUP: usize = 1;
-        const REGULAR_PATCH_GROUP: usize = 2;
-        const REGULAR_BUILD_GROUP: usize = 3;
-        const BETA_SUFFIX_GROUP: usize = 4;
-
         let matches_game_version = if is_april_fools {
-          *game_version == cap[APRIL_SNAPSHOT_GROUP]
+          *game_version == cap[1]
         } else {
-          game_version
-            == format!(
-              "1.{}.{}",
-              cap[REGULAR_MINOR_GROUP].parse::<i32>()?,
-              cap[REGULAR_PATCH_GROUP].parse::<i32>()?
-            )
+          game_version == format!("1.{}.{}", cap[1].parse::<i32>()?, cap[2].parse::<i32>()?)
         };
 
         if matches_game_version {
           let sort_key: i32 = if is_april_fools {
-            cap[APRIL_PATCH_GROUP].parse()?
+            cap[2].parse()?
           } else {
-            cap[REGULAR_BUILD_GROUP].parse()?
+            cap[3].parse()?
           };
 
-          let stable = cap.get(BETA_SUFFIX_GROUP).is_none();
+          let stable = cap.get(4).is_none(); // beta suffix
 
           results.push((
             sort_key,
