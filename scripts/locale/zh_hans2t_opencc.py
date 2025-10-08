@@ -12,33 +12,24 @@ import os
 from opencc import OpenCC
 
 def is_url(text):
-    return text.startswith(('http://', 'https://', 'ftp://', '//'))
-def merge_preserve_urls(new_obj, existing_obj):
-    if isinstance(new_obj, dict) and isinstance(existing_obj, dict):
-        result = {}
-        for key in new_obj:
-            if key in existing_obj:
-                result[key] = merge_preserve_urls(new_obj[key], existing_obj[key])
-            else:
-                result[key] = new_obj[key]
-        for key in existing_obj:
-            if key not in result:
-                result[key] = existing_obj[key]
-        return result
-    elif isinstance(new_obj, list) and isinstance(existing_obj, list):
-        return new_obj
-    elif isinstance(new_obj, str) and isinstance(existing_obj, str):
-        if is_url(new_obj) and is_url(existing_obj):
-            return existing_obj
-        return new_obj
-    else:
-        return new_obj
-def convert_simplified_to_traditional(obj):
+    return text.startswith(('http://', 'https://', 'ftp://', '//', 'sjmcl://', 'mailto:'))
+
+def convert_simplified_to_traditional(obj, existing_obj=None):
     if isinstance(obj, dict):
-        return {key: convert_simplified_to_traditional(value) for key, value in obj.items()}
+        existing_dict = existing_obj if isinstance(existing_obj, dict) else {}
+        result = {}
+        for key, value in obj.items():
+            existing_value = existing_dict.get(key)
+            result[key] = convert_simplified_to_traditional(value, existing_value)
+        for key in existing_dict:
+            if key not in result:
+                result[key] = existing_dict[key]
+        return result
     elif isinstance(obj, list):
         return [convert_simplified_to_traditional(element) for element in obj]
     elif isinstance(obj, str):
+        if is_url(obj) and existing_obj and isinstance(existing_obj, str) and is_url(existing_obj):
+            return existing_obj
         if is_url(obj):
             return obj
         return converter.convert(obj)
@@ -65,8 +56,7 @@ if os.path.exists(output_path):
 with open(input_path, 'r', encoding='utf-8') as f:
     simplified_data = json.load(f)
 
-converted_data = convert_simplified_to_traditional(simplified_data)
-traditional_data = merge_preserve_urls(converted_data, existing_traditional_data)
+traditional_data = convert_simplified_to_traditional(simplified_data, existing_traditional_data)
 
 with open(output_path, 'w', encoding='utf-8') as f:
     json.dump(traditional_data, f, ensure_ascii=False, indent=2)
