@@ -17,14 +17,7 @@ def is_url(text):
 def convert_simplified_to_traditional(obj, existing_obj=None):
     if isinstance(obj, dict):
         existing_dict = existing_obj if isinstance(existing_obj, dict) else {}
-        result = {}
-        for key, value in obj.items():
-            existing_value = existing_dict.get(key)
-            result[key] = convert_simplified_to_traditional(value, existing_value)
-        for key in existing_dict:
-            if key not in result:
-                result[key] = existing_dict[key]
-        return result
+        return {key: convert_simplified_to_traditional(value, existing_dict.get(key)) for key, value in obj.items()}
     elif isinstance(obj, list):
         return [convert_simplified_to_traditional(element) for element in obj]
     elif isinstance(obj, str):
