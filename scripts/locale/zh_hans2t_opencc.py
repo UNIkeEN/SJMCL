@@ -11,7 +11,8 @@ import json
 import os
 from opencc import OpenCC
 
-def is_url(text):
+def is_preserved(text):
+    # URLs and Deeplinks
     return text.startswith(('http://', 'https://', 'ftp://', '//', 'sjmcl://', 'mailto:'))
 
 def convert_simplified_to_traditional(obj, existing_obj=None):
@@ -21,9 +22,9 @@ def convert_simplified_to_traditional(obj, existing_obj=None):
     elif isinstance(obj, list):
         return [convert_simplified_to_traditional(element) for element in obj]
     elif isinstance(obj, str):
-        if is_url(obj) and existing_obj and isinstance(existing_obj, str) and is_url(existing_obj):
+        if is_preserved(obj) and existing_obj and isinstance(existing_obj, str) and is_preserved(existing_obj):
             return existing_obj
-        if is_url(obj):
+        if is_preserved(obj):
             return obj
         return converter.convert(obj)
     else:
