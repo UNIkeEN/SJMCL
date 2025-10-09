@@ -33,14 +33,14 @@ async fn get_neoforge_meta_by_game_version_official(
       RegexBuilder::new(r"^(?:1\.20\.1\-)?(\d+)\.(\d+)\.(\d+)$")
         .build()
         .unwrap();
-    // For April Fools NeoForge versions like "0.25w14craftmine.3-beta" (resource version 25w14craftmine)
+    static ref REGULAR_VERSION_REGEX: Regex = RegexBuilder::new(r"^(\d+)\.(\d+)\.(\d+)(-beta)?$")
+      .build()
+      .unwrap();
+    // For April Fools' NeoForge versions (e.g., "0.25w14craftmine.3-beta" for 25w14craftmine)
     static ref APRIL_FOOLS_VERSION_REGEX: Regex =
       RegexBuilder::new(r"^0\.(\d+\w+)\.(\d+)(-beta)?$")
         .build()
         .unwrap();
-    static ref REGULAR_VERSION_REGEX: Regex = RegexBuilder::new(r"^(\d+)\.(\d+)\.(\d+)(-beta)?$")
-      .build()
-      .unwrap();
   }
 
   let client = app.state::<reqwest::Client>();
