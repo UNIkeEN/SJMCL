@@ -211,7 +211,7 @@ export const DownloadTasksPage = () => {
                           onClick={() =>
                             handleScheduleProgressiveTaskGroup(
                               "retry-" +
-                                parseTaskGroup(group.taskGroup).name.replace(
+                                parseTaskGroup(group.taskGroup).rawName.replace(
                                   /^retry-/,
                                   ""
                                 ),
