@@ -391,11 +391,13 @@ export const InstanceLastPlayedWidget = () => {
                     `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode}`
                   )}
                 </Text>
-                <Text className="secondary-text" fontSize="xs">
-                  {t(
-                    `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
-                  )}
-                </Text>
+                {lastPlayedWorld.difficulty && (
+                  <Text className="secondary-text" fontSize="xs">
+                    {t(
+                      `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
+                    )}
+                  </Text>
+                )}
               </VStack>
             </Box>
           </HStack>

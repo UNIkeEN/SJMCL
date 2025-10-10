@@ -973,6 +973,7 @@
         "spectator": "スペクテイター"
       },
       "moreDesc": " ｜ {{gamemode}} ｜ {{difficulty}}",
+      "moreDescWithoutDifficulty": " ｜ {{gamemode}}",
       "viewLevelData": "セーブデータを見る"
     },
     "serverList": {

@@ -1262,6 +1262,7 @@
         "spectator": "Spectator Mode"
       },
       "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
+      "moreDescWithoutDifficulty": ", {{gamemode}}",
       "viewLevelData": "View Level Data",
       "launch": "Play this World"
     },
