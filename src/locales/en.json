@@ -321,7 +321,8 @@
     "header": {
       "title": "Change Mod Loader"
     },
-    "success": "Change Mod Loader successfully"
+    "notSelectedLoader": "No new loader selected",
+    "notSelectedVersion": "No version selected"
   },
   "CheckModUpdateModal": {
     "header": {
@@ -2115,6 +2116,7 @@
       }
     },
     "instance": {
+      "changeModLoader": { "success": "Change Mod Loader successfully" },
       "retrieveInstanceList": {
         "error": {
           "title": "Failed to retrieve game instance list",

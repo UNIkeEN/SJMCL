@@ -343,7 +343,8 @@
     "header": {
       "title": "修改模组加载器"
     },
-    "success": "修改模组加载器成功"
+    "notSelectedLoader": "未选择新的加载器",
+    "notSelectedVersion": "未选择版本"
   },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
@@ -2115,6 +2116,7 @@
       }
     },
     "instance": {
+      "changeModLoader": { "success": "修改模组加载器成功" },
       "retrieveInstanceList": {
         "error": {
           "title": "获取实例列表失败",

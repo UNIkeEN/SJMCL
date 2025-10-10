@@ -25,9 +25,6 @@ interface ModLoaderCardsProps extends BoxProps {
   displayMode: "entry" | "selector";
   loading?: boolean;
   onTypeSelect?: (type: ModLoaderType) => void;
-  openChangeModal?: boolean;
-  instanceId?: string;
-  gameVersion?: string;
 }
 
 const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
@@ -36,9 +33,6 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   displayMode,
   loading = false,
   onTypeSelect,
-  openChangeModal = false,
-  instanceId,
-  gameVersion,
   ...boxProps
 }) => {
   const { t } = useTranslation();
@@ -64,14 +58,6 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const renderCard = (type: ModLoaderType) => {
     const isSelected =
       type === currentType && currentType !== ModLoaderType.Unknown;
-
-    const handleClick = () => {
-      if (openChangeModal && instanceId && gameVersion) {
-        onChangeModLoaderModalOpen();
-      } else {
-        onTypeSelect?.(type);
-      }
-    };
 
     return (
       <Card
@@ -130,7 +116,11 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
             variant="ghost"
             size="xs"
             disabled={loading}
-            onClick={handleClick}
+            onClick={() =>
+              displayMode === "entry"
+                ? onChangeModLoaderModalOpen()
+                : onTypeSelect?.(type)
+            }
           />
         </Flex>
       </Card>
@@ -143,12 +133,10 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
         {loaderTypes.map(renderCard)}
       </Grid>
 
-      {openChangeModal && instanceId && gameVersion && (
+      {displayMode === "entry" && (
         <ChangeModLoaderModal
           isOpen={isChangeModLoaderModalOpen}
           onClose={onChangeModLoaderModalClose}
-          instanceId={instanceId}
-          gameVersion={gameVersion}
         />
       )}
     </>
