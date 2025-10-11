@@ -1,7 +1,7 @@
 use crate::error::SJMCLResult;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
-  DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo,
+  DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
 use crate::instance::models::misc::InstanceError;
 use crate::launch::helpers::misc::get_natives_string;
@@ -12,7 +12,8 @@ use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
-use std::collections::HashSet;
+use std::cmp::Ordering;
+use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use tauri::AppHandle;
@@ -153,6 +154,54 @@ pub fn parse_library_name(name: &str, native: Option<String>) -> SJMCLResult<Lib
   }
 }
 
+#[derive(Debug, Hash, Eq, PartialEq)]
+struct LibraryKey {
+  path: String,
+  pack_name: String,
+  classifier: Option<String>,
+  extension: String,
+}
+
+// accept a vec of libraries, remove duplicates by name, keep the one with the highest version. also remove libraries with invalid names
+pub fn unique_library_list(libraries: &Vec<LibrariesValue>) -> Vec<LibrariesValue> {
+  let mut library_map: HashMap<LibraryKey, LibrariesValue> = HashMap::new();
+  for library in libraries {
+    if let Ok(library_parts) = parse_library_name(&library.name, None) {
+      let key = LibraryKey {
+        path: library_parts.path,
+        pack_name: library_parts.pack_name,
+        classifier: library_parts.classifier,
+        extension: library_parts.extension,
+      };
+      if let Some(existing_library) = library_map.get(&key) {
+        let new_version = library_parts.pack_version;
+        let existing_version = parse_library_name(&existing_library.name, None)
+          .unwrap() // must succeed for existing_library
+          .pack_version;
+        if compare_versions(&new_version, &existing_version) == Ordering::Greater {
+          library_map.insert(key, library.clone());
+        }
+      } else {
+        library_map.insert(key, library.clone());
+      }
+    }
+  }
+  library_map.into_values().collect()
+}
+
+fn compare_versions(version_a: &str, version_b: &str) -> Ordering {
+  let ver_a = extract_numbers(version_a);
+  let ver_b = extract_numbers(version_b);
+  ver_a.cmp(&ver_b) // only compare the numeric parts for simplicity
+}
+
+fn extract_numbers(version: &str) -> Vec<u32> {
+  version
+    .split(|c: char| !c.is_ascii_digit())
+    .filter_map(|s| s.parse::<u32>().ok())
+    .collect()
+}
+
 pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCLResult<String> {
   let LibraryParts {
     path,
@@ -181,7 +230,7 @@ pub fn get_nonnative_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
 ) -> SJMCLResult<Vec<PathBuf>> {
-  let mut result = Vec::new();
+  let mut libraries = Vec::new();
   let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
     if !library.is_allowed(&feature).unwrap_or(false) {
@@ -190,6 +239,11 @@ pub fn get_nonnative_library_paths(
     if library.natives.is_some() {
       continue;
     }
+    libraries.push(library.clone());
+  }
+  libraries = unique_library_list(&libraries);
+  let mut result = Vec::new();
+  for library in libraries {
     result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
   }
   Ok(result)
