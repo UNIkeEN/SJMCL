@@ -26,12 +26,6 @@ jobs:
 
         continue-on-error: true
 
-        strategy:
-            fail-fast: true
-            matrix:
-                target:
-                    - x86_64-unknown-linux-gnu
-
         steps:
             - uses: actions/checkout@v5
               with:
@@ -59,7 +53,7 @@ jobs:
             - name: Generate PKGBUILD
               id: gen_template
               run: |
-                  sed -i "s/pkgver=.*/pkgver=$LATEST_TAG/" PKGBUILD
+                  sed -i "s/pkgver=0.0.0/pkgver=$LATEST_TAG/" PKGBUILD
 
             - name: Publish SJMCL to the AUR
               uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
