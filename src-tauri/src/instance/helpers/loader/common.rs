@@ -13,7 +13,7 @@ use crate::instance::helpers::loader::forge::{install_forge_loader, InstallProfi
 use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
 use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
-use crate::launch::helpers::file_validator::add_library_smart;
+use crate::launch::helpers::file_validator::unique_library_list;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launcher_config::models::JavaInfo;
 use crate::resource::models::SourceType;
@@ -28,7 +28,9 @@ pub fn add_library_entry(
     name: lib_path.to_string(),
     ..params.unwrap_or_default()
   };
-  add_library_smart(libraries, new_library)
+  libraries.push(new_library);
+  *libraries = unique_library_list(libraries);
+  Ok(())
 }
 
 pub async fn install_mod_loader(

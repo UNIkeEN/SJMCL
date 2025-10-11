@@ -13,7 +13,7 @@ use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
 use std::cmp::Ordering;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use tauri::AppHandle;
@@ -154,44 +154,39 @@ pub fn parse_library_name(name: &str, native: Option<String>) -> SJMCLResult<Lib
   }
 }
 
-// adds a library entry to the libraries vector, choose the latest version if duplicate
-pub fn add_library_smart(
-  libraries: &mut Vec<LibrariesValue>,
-  new_library: LibrariesValue,
-) -> SJMCLResult<()> {
-  let LibraryParts {
-    path,
-    pack_name,
-    pack_version,
-    classifier,
-    extension,
-  } = parse_library_name(&new_library.name, None)?;
+#[derive(Debug, Hash, Eq, PartialEq)]
+struct LibraryKey {
+  path: String,
+  pack_name: String,
+  classifier: Option<String>,
+  extension: String,
+}
 
-  if let Some(pos) = libraries.iter().position(|item| {
-    if let Ok(parts) = parse_library_name(&item.name, None) {
-      parts.path == path
-        && parts.pack_name == pack_name
-        && parts.classifier == classifier
-        && parts.extension == extension
-    } else {
-      false
-    }
-  }) {
-    let existing_parts = parse_library_name(&libraries[pos].name, None)?;
-    let existing_pack_version = existing_parts.pack_version;
-    match compare_versions(&pack_version, &existing_pack_version) {
-      Ordering::Greater => {
-        libraries[pos] = new_library;
+// accept a vec of libraries, remove duplicates by name, keep the one with the highest version. also remove libraries with invalid names
+pub fn unique_library_list(libraries: &Vec<LibrariesValue>) -> Vec<LibrariesValue> {
+  let mut library_map: HashMap<LibraryKey, LibrariesValue> = HashMap::new();
+  for library in libraries {
+    if let Ok(library_parts) = parse_library_name(&library.name, None) {
+      let key = LibraryKey {
+        path: library_parts.path,
+        pack_name: library_parts.pack_name,
+        classifier: library_parts.classifier,
+        extension: library_parts.extension,
+      };
+      if let Some(existing_library) = library_map.get(&key) {
+        let new_version = library_parts.pack_version;
+        let existing_version = parse_library_name(&existing_library.name, None)
+          .unwrap() // must succeed for existing_library
+          .pack_version;
+        if compare_versions(&new_version, &existing_version) == Ordering::Greater {
+          library_map.insert(key, library.clone());
+        }
+      } else {
+        library_map.insert(key, library.clone());
       }
-      Ordering::Less | Ordering::Equal => {
-        // do nothing, keep the existing one
-      }
     }
-  } else {
-    libraries.push(new_library);
   }
-
-  Ok(())
+  library_map.into_values().collect()
 }
 
 fn compare_versions(version_a: &str, version_b: &str) -> Ordering {
@@ -244,8 +239,9 @@ pub fn get_nonnative_library_paths(
     if library.natives.is_some() {
       continue;
     }
-    add_library_smart(&mut libraries, library.clone())?;
+    libraries.push(library.clone());
   }
+  libraries = unique_library_list(&libraries);
   let mut result = Vec::new();
   for library in libraries {
     result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
