@@ -2,7 +2,7 @@
 pkgname='sjmcl'
 _pkgname='SJMCL'
 pkgdesc='🌟 A Minecraft launcher from @SJMC-Dev'
-pkgver=
+pkgver=0.0.0
 pkgrel=1
 arch=(x86_64)
 license=(GPL-3.0,custom:LICENSE.EXTRA)
