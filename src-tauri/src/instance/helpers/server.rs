@@ -1,6 +1,7 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use quartz_nbt::io::Flavor;
-use serde::{self, Deserialize, Serialize};
+use serde::{self, Deserialize, Deserializer, Serialize};
+use serde_json::Value;
 use std::path::Path;
 use tauri_plugin_http::reqwest;
 
@@ -29,9 +30,29 @@ pub async fn load_servers_info_from_path(path: &Path) -> SJMCLResult<Vec<NbtServ
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SjmcServerQueryResult {
   pub online: bool,
-  pub players: Players,
+  #[serde(deserialize_with = "deserialize_players")]
+  pub players: Option<Players>,
   pub description: Description,
   pub favicon: Option<String>,
+}
+
+fn deserialize_players<'de, D>(deserializer: D) -> Result<Option<Players>, D::Error>
+where
+  D: Deserializer<'de>,
+{
+  let value = Value::deserialize(deserializer)?;
+  match value {
+    Value::Bool(false) => Ok(None),
+    Value::Object(map) => {
+      let players_value = Value::Object(map);
+      let players: Players =
+        serde_json::from_value(players_value).map_err(serde::de::Error::custom)?;
+      Ok(Some(players))
+    }
+    _ => Err(serde::de::Error::custom(
+      "Expected 'players' to be a boolean 'false' or an object",
+    )),
+  }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

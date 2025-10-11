@@ -417,8 +417,16 @@ pub async fn retrieve_game_server_list(
           match query_server_status(&server.ip).await {
             Ok(query_result) => {
               server.is_queried = true;
-              server.players_online = query_result.players.online as usize;
-              server.players_max = query_result.players.max as usize;
+              server.players_online = query_result
+                .players
+                .as_ref()
+                .map(|p| p.online as usize)
+                .unwrap_or(0);
+              server.players_max = query_result
+                .players
+                .as_ref()
+                .map(|p| p.max as usize)
+                .unwrap_or(0);
               server.online = query_result.online;
               server.description = query_result.description.text.unwrap_or_default();
               server.icon_src = query_result.favicon.unwrap_or_default();
