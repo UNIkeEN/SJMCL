@@ -86,8 +86,6 @@ jobs:
     with:
       version: ${{ needs.Version-Check.outputs.version }}
     secrets:
-      AUR_USERNAME: ${{ secrets.AUR_USERNAME }}
-      AUR_EMAIL: ${{ secrets.AUR_EMAIL }}
       AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
 
   Create-Release:
