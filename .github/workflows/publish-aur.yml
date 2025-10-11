@@ -4,7 +4,17 @@ permissions:
   contents: read
   
 on: 
-    workflow_dispatch:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version to publish'
+        required: true
+        type: string
+    secrets:
+      AUR_SSH_PRIVATE_KEY:
+        description: 'SSH private key for AUR'
+        required: true
 
 jobs:
     publish_aur_package:
@@ -25,11 +35,21 @@ jobs:
               with:
                 fetch-depth: 0
 
-            - name: Resolve latest tag
-              id: resolve_tag
+            - name: Resolve latest tag(from git)
+              if: ${{ github.event_name == 'workflow_dispatch'}}
+              id: resolve_tag_git
               run: |
                     git fetch --tags
                     LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
+                    echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+                    echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
+                    echo "Latest tag: $LATEST_TAG"
+            
+            - name: Resolve latest tag(from input)
+              if: ${{ github.event_name != 'workflow_dispatch'}}
+              id: resolve_tag_input
+              run: |
+                    LATEST_TAG=${{ inputs.version }}
                     echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
                     echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
                     echo "Latest tag: $LATEST_TAG"
@@ -37,16 +57,16 @@ jobs:
             - name: Generate PKGBUILD
               id: gen_template
               run: |
-                  sed -i "s/pkgver=.*/pkgver=$LATEST_TAG/" template/sjmcl/PKGBUILD
+                  sed -i "s/pkgver=.*/pkgver=$LATEST_TAG/" PKGBUILD
 
             - name: Publish SJMCL to the AUR
               uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
               with:
                   pkgname: sjmcl
-                  pkgbuild: ${{ github.workspace }}/template/sjmcl/PKGBUILD
-                  commit_username: ${{ secrets.AUR_USERNAME }}
-                  commit_email: ${{ secrets.AUR_EMAIL }}
+                  pkgbuild: ${{ github.workspace }}/PKGBUILD
+                  commit_username: SJMC
+                  commit_email: launcher@sjmc.club
                   ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-                  commit_message: ${{ steps.resolve_tag.outputs.latest }}
+                  commit_message: ${{ steps.resolve_tag_git.outputs.latest || steps.resolve_tag_input.outputs.latest }}
                   updpkgsums: "true"
                   ssh_keyscan_types: rsa,ecdsa,ed25519
