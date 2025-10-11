@@ -9,8 +9,11 @@ license=(GPL-3.0,custom:LICENSE.EXTRA)
 url='https://github.com/UNIkeEN/SJMCL'
 source=("https://github.com/UNIkeEN/SJMCL/archive/refs/tags/v$pkgver.tar.gz")
 sha512sums=('SKIP')
-depends=(webkit2gtk-4.1 gtk3)
+depends=('cairo' 'desktop-file-utils' 'gdk-pixbuf2' 'glib2' 'gtk3' 'hicolor-icon-theme' 'libsoup' 'pango' 'webkit2gtk-4.1')
 makedepends=(pnpm npm cargo)
+options=('!strip' '!emptydirs')
+provides=('sjmcl')
+conflicts=('sjmcl-bin' 'sjmcl-git')
 
 prepare() {
   cd "$srcdir/$_pkgname-$pkgver" || return 1
