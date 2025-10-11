@@ -80,6 +80,16 @@ jobs:
       MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
       MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
 
+  Upload-release-to-AUR:
+    needs: [Version-Check]
+    uses: ./.github/workflows/publish-aur.yml
+    with:
+      version: ${{ needs.Version-Check.outputs.version }}
+    secrets:
+      AUR_USERNAME: ${{ secrets.AUR_USERNAME }}
+      AUR_EMAIL: ${{ secrets.AUR_EMAIL }}
+      AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+
   Create-Release:
     needs: [Version-Check, Build-and-Release, Code-Sign-macOS]
     if: always() && needs.Build-and-Release.result == 'success'
