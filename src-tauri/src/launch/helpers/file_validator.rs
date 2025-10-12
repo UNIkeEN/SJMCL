@@ -192,17 +192,28 @@ pub fn merge_library_lists(
   library_map.into_values().collect()
 }
 
-fn compare_versions(version_a: &str, version_b: &str) -> Ordering {
-  let ver_a = extract_numbers(version_a);
-  let ver_b = extract_numbers(version_b);
-  ver_a.cmp(&ver_b) // only compare the numeric parts for simplicity
+fn compare_versions(version_new: &str, version_old: &str) -> Ordering {
+  let ver_new = extract_version(version_new);
+  let ver_old = extract_version(version_old);
+  match (ver_new, ver_old) {
+    (Some(new), Some(old)) => new.cmp(&old),
+    _ => Ordering::Greater, // cannot parse, assume new is greater
+  }
 }
 
-fn extract_numbers(version: &str) -> Vec<u32> {
-  version
-    .split(|c: char| !c.is_ascii_digit())
-    .filter_map(|s| s.parse::<u32>().ok())
-    .collect()
+fn extract_version(version: &str) -> Option<semver::Version> {
+  if let Ok(ver) = semver::Version::parse(version) {
+    return Some(ver);
+  }
+
+  let parts: Vec<&str> = version.split('.').collect();
+
+  match parts.len() {
+    0 => semver::Version::parse("1.0.0").ok(),
+    1 => semver::Version::parse(&format!("{}.0.0", parts[0])).ok(),
+    2 => semver::Version::parse(&format!("{}.{}.0", parts[0], parts[1])).ok(),
+    _ => semver::Version::parse(&format!("{}.{}.{}", parts[0], parts[1], parts[2])).ok(),
+  }
 }
 
 pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCLResult<String> {
