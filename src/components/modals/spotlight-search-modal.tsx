@@ -418,16 +418,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
           }
           description={
             <Text fontSize="xs" className="secondary-text">
-              <Highlight
-                query={
-                  res.resourceType
-                    ? []
-                    : queryText.trim().toLowerCase().split(/\s+/)
-                } // only highlight when not an online resource
-                styles={{ bg: "yellow.200" }}
-              >
-                {(showZhTrans && res.translatedDescription) || res.description}
-              </Highlight>
+              {(showZhTrans && res.translatedDescription) || res.description}
             </Text>
           }
           prefixElement={
