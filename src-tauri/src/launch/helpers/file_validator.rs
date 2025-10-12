@@ -13,7 +13,6 @@ use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
 use semver::Version;
-use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
@@ -163,7 +162,7 @@ struct LibraryKey {
   extension: String,
 }
 
-// accept a vec of libraries, remove duplicates by name, keep the one with the highest version. also remove libraries with invalid names
+// merge two vectors of libraries, remove duplicates by name, keep the one with the highest version. also remove libraries with invalid names
 pub fn merge_library_lists(
   libraries_a: &Vec<LibrariesValue>,
   libraries_b: &Vec<LibrariesValue>,
@@ -186,15 +185,7 @@ pub fn merge_library_lists(
           .map(|parts| parts.pack_version)
           .unwrap_or("0.1.0".to_string());
 
-        let ordering = match (
-          parse_sem_version(&new_version),
-          parse_sem_version(&existing_version),
-        ) {
-          (Some(a), Some(b)) => a.cmp(&b),
-          _ => Ordering::Greater,
-        };
-
-        if ordering == Ordering::Greater {
+        if parse_sem_version(&new_version) > parse_sem_version(&existing_version) {
           library_map.insert(key, library.clone());
         }
       } else {
@@ -206,15 +197,13 @@ pub fn merge_library_lists(
   library_map.into_values().collect()
 }
 
-fn parse_sem_version(version: &str) -> Option<Version> {
-  Version::parse(version).ok().or_else(|| {
+fn parse_sem_version(version: &str) -> Version {
+  Version::parse(version).unwrap_or({
     let mut parts = version.split('.').collect::<Vec<_>>();
     while parts.len() < 3 {
       parts.push("0");
     }
-    Version::parse(&parts[..3].join("."))
-      .ok()
-      .or_else(|| Version::parse("0.1.0").ok())
+    Version::parse(&parts[..3].join(".")).unwrap_or(Version::new(0, 1, 0))
   })
 }
 
@@ -257,7 +246,7 @@ pub fn get_nonnative_library_paths(
     }
     libraries.push(library.clone());
   }
-  libraries = merge_library_lists(&libraries, &Vec::new());
+  libraries = merge_library_lists(&libraries, &Vec::new()); // remove duplicates (just for the libraries vec, leave another vec as empty)
   let mut result = Vec::new();
   for library in libraries {
     result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
