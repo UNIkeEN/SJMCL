@@ -180,6 +180,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     (query: string): SearchResult[] => {
       if (!query.trim()) return [];
 
+      // Resource types ordered by popularity for generating search option buttons
       const resourceTypes = [
         OtherResourceType.Mod,
         OtherResourceType.ModPack,
@@ -187,7 +188,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         OtherResourceType.ShaderPack,
         OtherResourceType.World,
         OtherResourceType.DataPack,
-      ]; // ordered by popularity
+      ];
 
       const createResult =
         (platform: "curseforge" | "modrinth", source: OtherResourceSource) =>
@@ -238,6 +239,8 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     async (query: string, signal?: AbortSignal): Promise<SearchResult[]> => {
       if (!query.trim()) return [];
 
+      // Priority resource types for network search - performs concurrent searches
+      // 4 resource types * 2 sources * 3 results per request = 24 results before filtering
       const priorityResourceTypes = [
         OtherResourceType.Mod,
         OtherResourceType.ModPack,
@@ -258,7 +261,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               "All",
               source === OtherResourceSource.CurseForge
                 ? "Popularity"
-                : "relevance",
+                : "downloads",
               source,
               0,
               RESOURCES_PER_REQUEST
@@ -299,7 +302,14 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
           }
         });
 
-        return results.slice(0, MAX_SEARCH_RESULTS);
+        const cfResults = results
+          .filter((res) => res.source === OtherResourceSource.CurseForge)
+          .slice(0, MAX_SEARCH_RESULTS);
+        const mrResults = results
+          .filter((res) => res.source === OtherResourceSource.Modrinth)
+          .slice(0, MAX_SEARCH_RESULTS);
+
+        return [...cfResults, ...mrResults];
       } catch (error) {
         if (!signal?.aborted) {
           console.error("Network search error:", error);
@@ -409,7 +419,11 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
           description={
             <Text fontSize="xs" className="secondary-text">
               <Highlight
-                query={queryText.trim().toLowerCase().split(/\s+/)}
+                query={
+                  res.resourceType
+                    ? []
+                    : queryText.trim().toLowerCase().split(/\s+/)
+                } // only highlight when not an online resource
                 styles={{ bg: "yellow.200" }}
               >
                 {(showZhTrans && res.translatedDescription) || res.description}
