@@ -12,6 +12,7 @@ use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
+use semver::Version;
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
@@ -168,6 +169,7 @@ pub fn merge_library_lists(
   libraries_b: &Vec<LibrariesValue>,
 ) -> Vec<LibrariesValue> {
   let mut library_map: HashMap<LibraryKey, LibrariesValue> = HashMap::new();
+
   for library in libraries_a.iter().chain(libraries_b.iter()) {
     if let Ok(library_parts) = parse_library_name(&library.name, None) {
       let key = LibraryKey {
@@ -176,12 +178,23 @@ pub fn merge_library_lists(
         classifier: library_parts.classifier,
         extension: library_parts.extension,
       };
+
+      let new_version = library_parts.pack_version;
+
       if let Some(existing_library) = library_map.get(&key) {
-        let new_version = library_parts.pack_version;
         let existing_version = parse_library_name(&existing_library.name, None)
-          .unwrap() // must succeed for existing_library
-          .pack_version;
-        if compare_versions(&new_version, &existing_version) == Ordering::Greater {
+          .map(|parts| parts.pack_version)
+          .unwrap_or("0.1.0".to_string());
+
+        let ordering = match (
+          parse_sem_version(&new_version),
+          parse_sem_version(&existing_version),
+        ) {
+          (Some(a), Some(b)) => a.cmp(&b),
+          _ => Ordering::Greater,
+        };
+
+        if ordering == Ordering::Greater {
           library_map.insert(key, library.clone());
         }
       } else {
@@ -189,31 +202,20 @@ pub fn merge_library_lists(
       }
     }
   }
+
   library_map.into_values().collect()
 }
 
-fn compare_versions(version_new: &str, version_old: &str) -> Ordering {
-  let ver_new = extract_version(version_new);
-  let ver_old = extract_version(version_old);
-  match (ver_new, ver_old) {
-    (Some(new), Some(old)) => new.cmp(&old),
-    _ => Ordering::Greater, // cannot parse, assume new is greater
-  }
-}
-
-fn extract_version(version: &str) -> Option<semver::Version> {
-  if let Ok(ver) = semver::Version::parse(version) {
-    return Some(ver);
-  }
-
-  let parts: Vec<&str> = version.split('.').collect();
-
-  match parts.len() {
-    0 => semver::Version::parse("1.0.0").ok(),
-    1 => semver::Version::parse(&format!("{}.0.0", parts[0])).ok(),
-    2 => semver::Version::parse(&format!("{}.{}.0", parts[0], parts[1])).ok(),
-    _ => semver::Version::parse(&format!("{}.{}.{}", parts[0], parts[1], parts[2])).ok(),
-  }
+fn parse_sem_version(version: &str) -> Option<Version> {
+  Version::parse(version).ok().or_else(|| {
+    let mut parts = version.split('.').collect::<Vec<_>>();
+    while parts.len() < 3 {
+      parts.push("0");
+    }
+    Version::parse(&parts[..3].join("."))
+      .ok()
+      .or_else(|| Version::parse("0.1.0").ok())
+  })
 }
 
 pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCLResult<String> {
