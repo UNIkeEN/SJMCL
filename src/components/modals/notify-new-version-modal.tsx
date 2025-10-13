@@ -18,6 +18,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { VersionMetaInfo } from "@/models/config";
 import { ConfigService } from "@/services/config";
+import { swapReleaseNotesLanguages } from "@/utils/update";
 
 interface NotifyNewVersionModalProps extends Omit<ModalProps, "children"> {
   newVersion: VersionMetaInfo;
@@ -63,7 +64,11 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
         <ModalHeader>{`${t("NotifyNewVersionModal.title")} - ${newVersion.version}`}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <MarkdownContainer>{newVersion.releaseNotes || ""}</MarkdownContainer>
+          <MarkdownContainer>
+            {config.general.general.language.startsWith("zh")
+              ? swapReleaseNotesLanguages(newVersion.releaseNotes || "")
+              : newVersion.releaseNotes || ""}
+          </MarkdownContainer>
         </ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={props.onClose}>
