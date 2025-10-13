@@ -20,11 +20,12 @@ def convert_simplified_to_traditional(obj, existing_obj=None):
         existing_dict = existing_obj if isinstance(existing_obj, dict) else {}
         return {key: convert_simplified_to_traditional(value, existing_dict.get(key)) for key, value in obj.items()}
     elif isinstance(obj, list):
-        return [convert_simplified_to_traditional(element) for element in obj]
+        existing_list = existing_obj if isinstance(existing_obj, list) else []
+        return [convert_simplified_to_traditional(element, existing_list[i] if i < len(existing_list) else None) for i, element in enumerate(obj)]
     elif isinstance(obj, str):
-        if is_preserved(obj) and existing_obj and isinstance(existing_obj, str) and is_preserved(existing_obj):
-            return existing_obj
         if is_preserved(obj):
+            if existing_obj and isinstance(existing_obj, str) and is_preserved(existing_obj):
+                return existing_obj
             return obj
         return converter.convert(obj)
     else:
