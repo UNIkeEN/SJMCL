@@ -35,6 +35,7 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
 
   const isLinux = config.basicInfo.osType === "linux"; // for Linux, navigate to the website.
+  const releaseNotes = newVersion.releaseNotes || "";
 
   const handleDownloadUpdate = () => {
     if (isLinux) {
@@ -66,8 +67,8 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
         <ModalBody>
           <MarkdownContainer>
             {config.general.general.language.startsWith("zh")
-              ? swapReleaseNotesLanguages(newVersion.releaseNotes || "")
-              : newVersion.releaseNotes || ""}
+              ? swapReleaseNotesLanguages(releaseNotes)
+              : releaseNotes}
           </MarkdownContainer>
         </ModalBody>
         <ModalFooter>
