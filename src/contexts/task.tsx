@@ -434,6 +434,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               case "game-client":
                 getInstanceList(true);
                 break;
+              case "change-mode-loader-":
+                getInstanceList(true);
+                break;
               case "forge-libraries":
               case "neoforge-libraries":
                 if (version) {
