@@ -18,7 +18,6 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { VersionMetaInfo } from "@/models/config";
 import { ConfigService } from "@/services/config";
-import { swapReleaseNotesLanguages } from "@/utils/update";
 
 interface NotifyNewVersionModalProps extends Omit<ModalProps, "children"> {
   newVersion: VersionMetaInfo;
@@ -35,7 +34,6 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
   const primaryColor = config.appearance.theme.primaryColor;
 
   const isLinux = config.basicInfo.osType === "linux"; // for Linux, navigate to the website.
-  const releaseNotes = newVersion.releaseNotes || "";
 
   const handleDownloadUpdate = () => {
     if (isLinux) {
@@ -58,6 +56,14 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
     props.onClose();
   };
 
+  const processReleaseNotes = (raw: string): string => {
+    const m = raw.match(/^([\s\S]*?)\r?\n\s*-{3,}\s*\r?\n([\s\S]*)$/); // match MD separator
+
+    // If user language is Chinese, swap to make Chinese part on top.
+    const isZh = config.general.general.language.startsWith("zh");
+    return m && isZh ? `${m[2].trim()}\n---\n${m[1].trim()}` : raw;
+  };
+
   return (
     <Modal scrollBehavior="inside" size="xl" {...props}>
       <ModalOverlay />
@@ -66,9 +72,7 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           <MarkdownContainer>
-            {config.general.general.language.startsWith("zh")
-              ? swapReleaseNotesLanguages(releaseNotes)
-              : releaseNotes}
+            {processReleaseNotes(newVersion.releaseNotes || "")}
           </MarkdownContainer>
         </ModalBody>
         <ModalFooter>
