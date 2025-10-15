@@ -1099,6 +1099,7 @@ pub async fn change_mod_loader(
   app: AppHandle,
   instance_id: String,
   new_mod_loader: ModLoaderResourceInfo,
+  is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let mut instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
@@ -1169,6 +1170,7 @@ pub async fn change_mod_loader(
     mods_dir.to_path_buf(),
     &mut version_info,
     &mut task_params,
+    is_install_fabric_api,
   )
   .await?;
 
