@@ -1,9 +1,7 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use crate::error::SJMCLResult;
 use quartz_nbt::io::Flavor;
-use serde::{self, Deserialize, Deserializer, Serialize};
-use serde_json::Value;
+use serde::{self, Deserialize, Serialize};
 use std::path::Path;
-use tauri_plugin_http::reqwest;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct NbtServerInfo {
@@ -28,52 +26,13 @@ pub async fn load_servers_info_from_path(path: &Path) -> SJMCLResult<Vec<NbtServ
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct SjmcServerQueryResult {
+pub struct GameServerInfo {
+  pub ip: String,
+  pub name: String,
+  pub description: String,
+  pub icon_src: String,
+  pub is_queried: bool,
+  pub players_max: usize,
+  pub players_online: usize,
   pub online: bool,
-  #[serde(deserialize_with = "deserialize_players")]
-  pub players: Option<Players>,
-  pub description: Description,
-  pub favicon: Option<String>,
-}
-
-fn deserialize_players<'de, D>(deserializer: D) -> Result<Option<Players>, D::Error>
-where
-  D: Deserializer<'de>,
-{
-  let value = Value::deserialize(deserializer)?;
-  match value {
-    Value::Bool(false) => Ok(None),
-    Value::Object(map) => {
-      let players_value = Value::Object(map);
-      let players: Players =
-        serde_json::from_value(players_value).map_err(serde::de::Error::custom)?;
-      Ok(Some(players))
-    }
-    _ => Err(serde::de::Error::custom(
-      "Expected 'players' to be a boolean 'false' or an object",
-    )),
-  }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Players {
-  pub online: u64,
-  pub max: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Description {
-  pub html: Option<String>,
-  pub text: Option<String>,
-}
-
-pub async fn query_server_status(server: &String) -> SJMCLResult<SjmcServerQueryResult> {
-  // construct request url
-  let url = format!("https://mc.sjtu.cn/custom/serverlist/?query={}", server);
-  let response = reqwest::get(&url).await?;
-  if !response.status().is_success() {
-    return Err(SJMCLError(format!("http error: {}", response.status())));
-  }
-  let query_result: SjmcServerQueryResult = response.json().await?;
-  Ok(query_result)
 }
