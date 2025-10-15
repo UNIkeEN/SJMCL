@@ -78,7 +78,7 @@ impl ModpackMetaInfo {
   }
 }
 
-pub fn extract_overrides_helper(
+pub fn extract_overrides(
   overrides_path: &String,
   file: &File,
   instance_path: &Path,
@@ -86,17 +86,13 @@ pub fn extract_overrides_helper(
   let mut archive = ZipArchive::new(file)?;
   for i in 0..archive.len() {
     let mut file = archive.by_index(i)?;
-    let outpath = match file.enclosed_name() {
-      Some(path) => {
-        if path.starts_with(overrides_path) {
-          // Remove "{overrides}/" prefix and join with instance path
-          let relative_path = path.strip_prefix(overrides_path)?;
-          instance_path.join(relative_path)
-        } else {
-          continue;
-        }
-      }
-      None => continue,
+    let path = file.mangled_name();
+    let outpath = if path.starts_with(format!("{}/", overrides_path)) {
+      // Remove "{overrides}/" prefix and join with instance path
+      let relative_path = path.strip_prefix(format!("{}/", overrides_path)).unwrap();
+      instance_path.join(relative_path)
+    } else {
+      continue;
     };
 
     if file.is_file() {

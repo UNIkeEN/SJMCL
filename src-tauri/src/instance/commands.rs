@@ -8,7 +8,7 @@ use crate::instance::helpers::misc::{
   refresh_and_update_instances, unify_instance_name,
 };
 use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
-use crate::instance::helpers::modpack::misc::ModpackMetaInfo;
+use crate::instance::helpers::modpack::misc::{extract_overrides, ModpackMetaInfo};
 use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
 use crate::instance::helpers::mods::common::{
@@ -31,7 +31,7 @@ use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_lib
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialError, PartialUpdate};
-use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::misc::{get_source_priority_list, version_pack_sort};
 use crate::resource::models::{GameClientResourceInfo, ModLoaderResourceInfo};
 use crate::storage::{load_json_async, save_json_async, Storage};
 use crate::tasks::commands::schedule_progressive_task_group;
@@ -833,6 +833,7 @@ pub async fn create_instance(
   game: GameClientResourceInfo,
   mod_loader: ModLoaderResourceInfo,
   modpack_path: Option<String>,
+  is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -959,6 +960,7 @@ pub async fn create_instance(
       mods_dir.to_path_buf(),
       &mut version_info,
       &mut task_params,
+      is_install_fabric_api,
     )
     .await?;
   }
@@ -969,12 +971,12 @@ pub async fn create_instance(
     let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
     if let Ok(manifest) = CurseForgeManifest::from_archive(&file) {
       task_params.extend(manifest.get_download_params(&app, &version_path).await?);
-      manifest.extract_overrides(&file, &version_path)?;
+      extract_overrides(&format!("{}/", manifest.overrides), &file, &version_path)?;
     } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
       task_params.extend(manifest.get_download_params(&version_path)?);
-      manifest.extract_overrides(&file, &version_path)?;
+      extract_overrides(&String::from("overrides/"), &file, &version_path)?;
     } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
-      manifest.extract_overrides(&file, &version_path)?;
+      extract_overrides(&String::from(".minecraft/"), &file, &version_path)?;
     } else {
       return Err(InstanceError::ModpackManifestParseError.into());
     }

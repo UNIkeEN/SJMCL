@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
 use crate::error::SJMCLResult;
-use crate::instance::helpers::modpack::misc::extract_overrides_helper;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
@@ -73,10 +72,6 @@ impl ModrinthManifest {
       }
     }
     Err(InstanceError::ModpackManifestParseError.into())
-  }
-
-  pub fn extract_overrides(&self, file: &File, instance_path: &Path) -> SJMCLResult<()> {
-    extract_overrides_helper(&String::from("overrides/"), file, instance_path)
   }
 
   pub fn get_download_params(&self, instance_path: &Path) -> SJMCLResult<Vec<PTaskParam>> {

@@ -2,7 +2,9 @@ import {
   Box,
   Button,
   Center,
+  Checkbox,
   Flex,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,6 +22,7 @@ import {
   StepStatus,
   StepTitle,
   Stepper,
+  Text,
   useSteps,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -76,6 +79,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
   const [instanceIconSrc, setInstanceIconSrc] = useState("");
   const [instanceDirectory, setInstanceDirectory] = useState<GameDirectory>();
   const [isLoading, setIsLoading] = useState(false);
+  const [isInstallFabricApi, setIsInstallFabricApi] = useState(true);
 
   useEffect(() => {
     setSelectedModLoader(defaultModLoaderResourceInfo);
@@ -84,6 +88,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     setInstanceIconSrc(
       gameTypesToIcon[selectedGameVersion?.gameType || "release"]
     );
+    setIsInstallFabricApi(true);
   }, [selectedGameVersion]);
 
   const handleCreateInstance = useCallback(() => {
@@ -96,7 +101,9 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       instanceDescription,
       instanceIconSrc,
       selectedGameVersion,
-      selectedModLoader
+      selectedModLoader,
+      undefined, // modpackPath
+      isInstallFabricApi
     )
       .then((res) => {
         if (res.status === "success") {
@@ -119,6 +126,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     instanceDescription,
     instanceIconSrc,
     selectedModLoader,
+    isInstallFabricApi,
     toast,
     modalProps,
     router,
@@ -163,34 +171,52 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
             />
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" onClick={modalProps.onClose}>
-              {t("General.cancel")}
-            </Button>
-            <Button variant="ghost" onClick={() => setActiveStep(0)}>
-              {t("General.previous")}
-            </Button>
-            <Button
-              colorScheme={primaryColor}
-              onClick={() => {
-                if (!selectedModLoader.version) {
-                  setSelectedModLoader(defaultModLoaderResourceInfo); // if the user selected the loader but did not choose a version from the list
-                  setInstanceName(selectedGameVersion.id);
-                  setInstanceIconSrc(
-                    gameTypesToIcon[selectedGameVersion.gameType]
-                  );
-                } else {
-                  setInstanceName(
-                    `${selectedGameVersion.id}-${selectedModLoader.loaderType}`
-                  );
-                  setInstanceIconSrc(
-                    modLoaderTypesToIcon[selectedModLoader.loaderType]
-                  );
+            {/* Fabric API download option - only show when Fabric is selected and has version */}
+            {selectedModLoader.loaderType === ModLoaderType.Fabric && (
+              <Checkbox
+                colorScheme={primaryColor}
+                isChecked={
+                  selectedModLoader.version !== "" && isInstallFabricApi
                 }
-                setActiveStep(2);
-              }}
-            >
-              {t("General.next")}
-            </Button>
+                disabled={!selectedModLoader.version}
+                onChange={(e) => setIsInstallFabricApi(e.target.checked)}
+              >
+                <Text fontSize="sm">
+                  {t("CreateInstanceModal.footer.installFabricApi")}
+                </Text>
+              </Checkbox>
+            )}
+
+            <HStack spacing={3} ml="auto">
+              <Button variant="ghost" onClick={modalProps.onClose}>
+                {t("General.cancel")}
+              </Button>
+              <Button variant="ghost" onClick={() => setActiveStep(0)}>
+                {t("General.previous")}
+              </Button>
+              <Button
+                colorScheme={primaryColor}
+                onClick={() => {
+                  if (!selectedModLoader.version) {
+                    setSelectedModLoader(defaultModLoaderResourceInfo); // if the user selected the loader but did not choose a version from the list
+                    setInstanceName(selectedGameVersion.id);
+                    setInstanceIconSrc(
+                      gameTypesToIcon[selectedGameVersion.gameType]
+                    );
+                  } else {
+                    setInstanceName(
+                      `${selectedGameVersion.id}-${selectedModLoader.loaderType}`
+                    );
+                    setInstanceIconSrc(
+                      modLoaderTypesToIcon[selectedModLoader.loaderType]
+                    );
+                  }
+                  setActiveStep(2);
+                }}
+              >
+                {t("General.next")}
+              </Button>
+            </HStack>
           </ModalFooter>
         </>
       )
@@ -200,6 +226,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     primaryColor,
     selectedGameVersion,
     selectedModLoader,
+    isInstallFabricApi,
     setActiveStep,
     t,
   ]);

@@ -164,7 +164,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   if (config.mocked)
     return (
-      <Center h="100%" style={getGlobalExtraStyle(config)}>
+      <Center h="100vh" style={getGlobalExtraStyle(config)}>
         <BeatLoader size={16} color="gray" />
       </Center>
     );

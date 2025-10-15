@@ -9,7 +9,6 @@ use tauri::Manager;
 use zip::ZipArchive;
 
 use crate::error::SJMCLResult;
-use crate::instance::helpers::modpack::misc::extract_overrides_helper;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -53,17 +52,13 @@ impl MultiMcManifest {
       let mut manifest_file = archive.by_name(&manifest_path)?;
       let mut manifest_content = String::new();
       manifest_file.read_to_string(&mut manifest_content)?;
-      manifest = serde_json::from_str(&manifest_content).inspect_err(|e| {
-        eprintln!("{:?}", e);
-      })?;
+      manifest = serde_json::from_str(&manifest_content)?;
     }
 
     let cfg_path = format!("{}instance.cfg", base_path);
     let mut cfg_file = archive.by_name(&cfg_path)?;
     let mut cfg_str = String::new();
-    cfg_file.read_to_string(&mut cfg_str).inspect_err(|e| {
-      eprintln!("{:?}", e);
-    })?;
+    cfg_file.read_to_string(&mut cfg_str)?;
 
     let config = Config::builder()
       .add_source(config::File::from_str(&cfg_str, config::FileFormat::Ini))
@@ -122,9 +117,5 @@ impl MultiMcManifest {
       }
     }
     Err(InstanceError::ModpackManifestParseError.into())
-  }
-
-  pub fn extract_overrides(&self, file: &File, instance_path: &Path) -> SJMCLResult<()> {
-    extract_overrides_helper(&String::from(".minecraft/"), file, instance_path)
   }
 }

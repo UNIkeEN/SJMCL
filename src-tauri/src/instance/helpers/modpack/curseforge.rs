@@ -9,7 +9,6 @@ use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::modpack::misc::extract_overrides_helper;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::resource::helpers::curseforge::misc::CurseForgeProject;
 use crate::tasks::download::DownloadParam;
@@ -100,10 +99,6 @@ impl CurseForgeManifest {
       }
     }
     (ModLoaderType::Unknown, String::new())
-  }
-
-  pub fn extract_overrides(&self, file: &File, instance_path: &Path) -> SJMCLResult<()> {
-    extract_overrides_helper(&format!("{}/", self.overrides), file, instance_path)
   }
 
   pub async fn get_download_params(

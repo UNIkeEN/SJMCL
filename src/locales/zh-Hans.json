@@ -394,6 +394,9 @@
       "loader": "选择加载器",
       "skipped": "不安装",
       "info": "基本设置"
+    },
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
