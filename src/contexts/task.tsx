@@ -629,6 +629,7 @@ export const parseTaskGroup = (
   version?: string;
   timestamp: number;
   isRetry: boolean;
+  rawName: string;
 } => {
   const lastAtIndex = taskGroup.lastIndexOf("@");
   let rawName: string;
@@ -649,5 +650,6 @@ export const parseTaskGroup = (
     version,
     isRetry: name.startsWith("retry-"),
     timestamp: timestamp,
+    rawName,
   };
 };

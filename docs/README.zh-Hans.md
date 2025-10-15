@@ -34,11 +34,15 @@ SJMCL 目前支持以下平台：
 
 | 平台    | 系统版本            | 架构               | 提供的的分发类型                              |
 |---------|---------------------|--------------------|--------------------------------------------|
-| Windows | 10 及以上           | `aarch64`, `i686`, `x86_64`   | `.msi`，便携版 `.exe`                |
+| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`   | `.msi`，便携版 `.exe`                |
 | macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`                   |
 | Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便携版二进制文件 |
 
 了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/zh/docs)。
+
+### Windows 7
+
+如果您需要在 Windows 7 运行 SJMCL，请先 [下载 Microsoft Edge WebView2 运行时](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2#download) 并安装之，推荐选择“常青引导程序”。
 
 ## 开发与贡献
 
@@ -85,7 +89,7 @@ npm run tauri dev
 
 SJMCL 用户 QQ 交流群：860851380
 
-您还可以发送邮件至 launcher@sjmc.club 来联系我们。
+您还可以发送邮件至 [launcher@sjmc.club](mailto:launcher@sjmc.club) 来联系我们。
 
 ## 社区合作伙伴
 
