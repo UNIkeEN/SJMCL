@@ -48,6 +48,11 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
     props.onClose();
   };
 
+  const handleClose = () => {
+    onSubmitCallback?.(null);
+    props.onClose();
+  };
+
   const handleBrowseJava = async () => {
     try {
       const selected = await open({
@@ -68,14 +73,14 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
     } catch (error) {
       setInnerPath("");
       toast({
-        title: t("ManualAddJavaPathModal.toast.error.title"),
+        title: t("JavaSettingsPage.toast.addFailed.title"),
         status: "error",
       });
     }
   };
 
   return (
-    <Modal {...props}>
+    <Modal {...props} onClose={handleClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ManualAddJavaPathModal.modal.header")}</ModalHeader>
