@@ -14,8 +14,11 @@ import {
   Skeleton,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuArrowRight } from "react-icons/lu";
+import { OptionItem } from "@/components/common/option-item";
 import { ModLoaderSelector } from "@/components/mod-loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
@@ -41,6 +44,7 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
   const { summary } = useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
   const toast = useToast();
+  const router = useRouter();
 
   const [selectedModLoader, setSelectedModLoader] =
     useState<ModLoaderResourceInfo>(defaultModLoaderResourceInfo);
@@ -74,20 +78,22 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
         selectedModLoader
       );
 
-      toast({
-        title: res.message,
-        status: res.status,
-      });
-
-      if (res.status === "success") modalProps.onClose?.();
+      if (res.status === "error") {
+        toast({
+          title: res.message,
+          status: "error",
+        });
+      } else {
+        modalProps.onClose?.();
+        router.push("/downloads");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isSameLoader =
-    selectedModLoader.loaderType === currentModLoader.loaderType &&
-    selectedModLoader.version === currentModLoader.version;
+  const showSkeleton =
+    !selectedModLoader.version || selectedModLoader.loaderType === "Unknown";
 
   return (
     <Modal
@@ -100,45 +106,64 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalHeader>{t("ChangeModLoaderModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <Flex flexDir="column" h="100%">
-          <HStack spacing={8} justify="center" px={6} py={4}>
-            <HStack align="center" spacing={1}>
-              <Image
-                src={modLoaderIcons[currentModLoader.loaderType]}
-                alt={currentModLoader.loaderType}
-                boxSize="36px"
-                borderRadius="4px"
+          <HStack spacing={8} justify="center" px={6} py={3}>
+            <OptionItem
+              prefixElement={
+                currentModLoader.loaderType !== "Unknown" ? (
+                  <Image
+                    src={modLoaderIcons[currentModLoader.loaderType]}
+                    alt={currentModLoader.loaderType}
+                    boxSize="36px"
+                    borderRadius="md"
+                  />
+                ) : (
+                  <Skeleton boxSize="36px" borderRadius="md" />
+                )
+              }
+              title={
+                <Text fontSize="sm" fontWeight="medium">
+                  {currentModLoader.loaderType}
+                </Text>
+              }
+              description={
+                <Text fontSize="xs" color="gray.500">
+                  {currentModLoader.version}
+                </Text>
+              }
+            />
+            <LuArrowRight size={22} />
+            {showSkeleton ? (
+              <OptionItem
+                prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
+                title={
+                  <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                    {t("ChangeModLoaderModal.notSelectedLoader")}
+                  </Text>
+                }
               />
-              <Text>
-                {currentModLoader.loaderType} {currentModLoader.version}
-              </Text>
-            </HStack>
-
-            <Text fontSize="2xl" fontWeight="bold">
-              →
-            </Text>
-
-            <HStack spacing={3} align="center">
-              {selectedModLoader.loaderType === "Unknown" ? (
-                <>
-                  <Skeleton boxSize="36px" borderRadius="4px" />
-                  <Text>{t("ChangeModLoaderModal.notSelectedLoader")}</Text>
-                </>
-              ) : (
-                <>
+            ) : (
+              <OptionItem
+                prefixElement={
                   <Image
                     src={`/images/icons/${selectedModLoader.loaderType}.png`}
                     alt={selectedModLoader.loaderType}
                     boxSize="36px"
-                    borderRadius="4px"
+                    borderRadius="md"
                   />
-                  <Text>
-                    {selectedModLoader.loaderType}{" "}
+                }
+                title={
+                  <Text fontSize="sm" fontWeight="medium">
+                    {selectedModLoader.loaderType}
+                  </Text>
+                }
+                description={
+                  <Text fontSize="xs" color="gray.500">
                     {selectedModLoader.version ||
                       t("ChangeModLoaderModal.notSelectedVersion")}
                   </Text>
-                </>
-              )}
-            </HStack>
+                }
+              />
+            )}
           </HStack>
 
           <ModalBody>
@@ -163,7 +188,7 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
               colorScheme={primaryColor}
               onClick={handleChangeModLoader}
               isLoading={isLoading}
-              isDisabled={!selectedModLoader.version || isSameLoader}
+              isDisabled={showSkeleton}
             >
               {t("General.confirm")}
             </Button>
