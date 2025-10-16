@@ -58,6 +58,7 @@ dependencies = [
  "tauri-plugin-single-instance",
  "tauri-plugin-window-state",
  "tauri-utils",
+ "time",
  "tokio",
  "tokio-util",
  "toml 0.8.23",
