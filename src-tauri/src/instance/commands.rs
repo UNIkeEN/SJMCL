@@ -1103,12 +1103,13 @@ pub async fn change_mod_loader(
 ) -> SJMCLResult<()> {
   let mut instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let launcher_config_state = binding.lock()?;
-    launcher_config_state
+    let state = binding.lock()?;
+    state
       .get(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?
       .clone()
   };
+  let version_isolation = get_instance_game_config(&app, &instance).version_isolation;
   // Get priority list
   let priority_list = {
     let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -1147,7 +1148,7 @@ pub async fn change_mod_loader(
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
   // Remove Fabric API mods if switching from Fabric modloader
-  if instance.mod_loader.loader_type == ModLoaderType::Fabric {
+  if instance.mod_loader.loader_type == ModLoaderType::Fabric && version_isolation {
     remove_fabric_api_mods(mods_dir).await?;
   }
   // construct new version info
@@ -1176,7 +1177,7 @@ pub async fn change_mod_loader(
 
   schedule_progressive_task_group(
     app.clone(),
-    format!("change-mode-loader-?{}", instance.name),
+    format!("change-mod-loader-?{}", instance.name),
     task_params,
     true,
   )

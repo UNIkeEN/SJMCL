@@ -1,4 +1,6 @@
+use regex::Regex;
 use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -14,6 +16,7 @@ use crate::resource::helpers::modrinth::get_latest_fabric_api_mod_download;
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::utils::fs::get_files_with_regex;
 
 pub async fn install_fabric_loader(
   app: AppHandle,
@@ -119,31 +122,21 @@ pub async fn install_fabric_loader(
   Ok(())
 }
 
-pub async fn remove_fabric_api_mods(mods_dir: &PathBuf) -> SJMCLResult<()> {
+pub async fn remove_fabric_api_mods<P: AsRef<Path>>(mods_dir: P) -> SJMCLResult<()> {
+  let mods_dir = mods_dir.as_ref();
   if !mods_dir.exists() {
     return Ok(());
   }
-
-  for entry in fs::read_dir(mods_dir)? {
-    let entry = match entry {
-      Ok(v) => v,
-      Err(_) => continue,
-    };
-    let path = entry.path();
-    if path.extension().and_then(|s| s.to_str()) != Some("jar") {
-      continue;
-    }
-
-    let file_name = path
+  let re = Regex::new(r"(?i)^(fabric-api|quilted-fabric-api)-.*\.jar$")
+    .map_err(|e| SJMCLError(format!("Invalid regex: {}", e)))?;
+  let targets: Vec<PathBuf> = get_files_with_regex(mods_dir, &re).unwrap_or_default();
+  for p in targets {
+    let name = p
       .file_name()
       .and_then(|s| s.to_str())
       .unwrap_or_default()
-      .to_lowercase();
-
-    if file_name.starts_with("fabric-api-") || file_name.starts_with("quilted-fabric-api-") {
-      fs::remove_file(&path)
-        .map_err(|e| SJMCLError(format!("Failed to remove {}: {}", file_name, e)))?;
-    }
+      .to_string();
+    fs::remove_file(&p).map_err(|e| SJMCLError(format!("Failed to remove {}: {}", name, e)))?;
   }
 
   Ok(())
