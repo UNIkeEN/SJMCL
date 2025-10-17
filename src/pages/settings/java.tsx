@@ -51,7 +51,7 @@ const JavaSettingsPage = () => {
     let newJavaPath: string | null = null;
     if (useModal) {
       newJavaPath = await new Promise<string | null>((resolve) => {
-        setOnSubmitCallback(() => (path) => {
+        setOnSubmitCallback(() => (path: string | null) => {
           resolve(path);
           setOnSubmitCallback(null);
         });
