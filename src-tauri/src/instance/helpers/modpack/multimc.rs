@@ -1,15 +1,11 @@
+use crate::error::SJMCLResult;
+use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use config::Config;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
-use std::path::Path;
-use std::str::FromStr;
-use tauri::Manager;
 use zip::ZipArchive;
-
-use crate::error::SJMCLResult;
-use crate::instance::models::misc::{InstanceError, ModLoaderType};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
