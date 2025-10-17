@@ -51,7 +51,10 @@ const JavaSettingsPage = () => {
     let newJavaPath: string | null = null;
     if (useModal) {
       newJavaPath = await new Promise<string | null>((resolve) => {
-        setOnSubmitCallback(() => resolve);
+        setOnSubmitCallback(() => (path) => {
+          resolve(path);
+          setOnSubmitCallback(null);
+        });
         onManualAddJavaPathModalOpen();
       });
     } else {
