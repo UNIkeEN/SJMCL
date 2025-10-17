@@ -396,12 +396,12 @@ pub fn export_game_crash_info(
     BaseDirectory::AppCache,
   )?;
 
+  // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
   let launching = launching_queue
     .iter()
     .find(|l| l.id == launching_id)
     .ok_or(LaunchError::LaunchingStateNotFound)?;
-  // version json and sjmcl instance config
   let version_info_path = launching
     .selected_instance
     .version_path
@@ -417,10 +417,10 @@ pub fn export_game_crash_info(
     },
     BaseDirectory::Temp,
   )?;
-
-  let launcher_log_path = get_launcher_log_path(app.clone());
-
   fs::write(&launch_script_path, &launching.full_command)?;
+
+  // launcher log
+  let launcher_log_path = get_launcher_log_path(app.clone());
 
   let zip_file_path = PathBuf::from(save_path);
   create_zip_from_dirs(
