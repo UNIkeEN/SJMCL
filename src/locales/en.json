@@ -394,6 +394,9 @@
       "loader": "Mod Loader",
       "skipped": "Skipped",
       "info": "Basic Settings"
+    },
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -603,9 +606,6 @@
     "placeholder": {
       "dirName": "Directory Name",
       "dirPath": "Select a game directory"
-    },
-    "button": {
-      "browse": "Browse"
     },
     "dialog": {
       "browse": {
@@ -847,6 +847,7 @@
         "description": "Please log in with your Microsoft account before accessing this feature."
       }
     },
+    "browse": "Browse",
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "OK",
@@ -1331,8 +1332,16 @@
     "steve": "Steve",
     "alex": "Alex"
   },
-  "ViewSkinModal": {
-    "skinView": "View Skin"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Add Java"
+    },
+    "label": {
+      "javaPath": "Java Path"
+    },
+    "placeholder": {
+      "javaPath": "Please enter or select the Java executable file path"
+    }
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
@@ -2456,6 +2465,9 @@
         "javaEdition": "Java_Edition_{{version}}"
       }
     }
+  },
+  "ViewSkinModal": {
+    "skinView": "View Skin"
   },
   "WelcomeAndTermsModal": {
     "header": {

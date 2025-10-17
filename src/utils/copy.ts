@@ -15,7 +15,7 @@ export const copyText = async (text: string, { toast }: ToastOptions) => {
     });
     return true;
   } catch (error) {
-    console.error("Copy failed:", error);
+    logger.error("Copy failed:", error);
     toast({
       title: t("General.copy.toast.error"),
       status: "error",
@@ -37,7 +37,7 @@ export const copyImage = async (
     });
     return true;
   } catch (error) {
-    console.error("Copy image failed:", error);
+    logger.error("Copy image failed:", error);
     toast({
       title: t("General.copy.toast.error"),
       status: "error",

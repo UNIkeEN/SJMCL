@@ -39,7 +39,7 @@ export async function shareFile(
       // user cancelled the share action
       return;
     }
-    console.error("Share failed:", error);
+    logger.error("Share failed:", error);
     toast({
       title: t("General.share.toast.error"),
       status: "error",

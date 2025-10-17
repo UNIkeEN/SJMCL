@@ -23,6 +23,7 @@ pub async fn install_fabric_loader(
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
   task_params: &mut Vec<PTaskParam>,
+  is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let loader_ver = &loader.version;
@@ -105,11 +106,13 @@ pub async fn install_fabric_loader(
     }
   }
 
-  // Auto download Fabric API mod
-  if let Ok(Some(fabric_api_download)) =
-    get_latest_fabric_api_mod_download(&app, game_version, mods_dir).await
-  {
-    task_params.push(PTaskParam::Download(fabric_api_download));
+  // Download Fabric API mod
+  if is_install_fabric_api.unwrap_or(true) {
+    if let Ok(Some(fabric_api_download)) =
+      get_latest_fabric_api_mod_download(&app, game_version, mods_dir).await
+    {
+      task_params.push(PTaskParam::Download(fabric_api_download));
+    }
   }
 
   Ok(())

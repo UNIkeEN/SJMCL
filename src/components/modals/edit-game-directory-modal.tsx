@@ -382,7 +382,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
                       onClick={handleBrowseGameDir}
                       colorScheme={primaryColor}
                     >
-                      {t("EditGameDirectoryModal.button.browse")}
+                      {t("General.browse")}
                     </Button>
                   </InputRightElement>
                 </InputGroup>

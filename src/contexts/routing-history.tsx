@@ -23,6 +23,7 @@ export const RoutingHistoryContextProvider: React.FC<{
     setHistory((prev) =>
       prev[prev.length - 1] === router.asPath ? prev : [...prev, router.asPath]
     );
+    if (window.logger) logger.info("Frontend navigated to:", router.asPath);
   }, [router.isReady, router.asPath]);
 
   const removeHistory = (prefix: string) => {
