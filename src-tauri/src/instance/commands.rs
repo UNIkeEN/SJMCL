@@ -31,7 +31,7 @@ use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_lib
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialError, PartialUpdate};
-use crate::resource::helpers::misc::{get_source_priority_list, version_pack_sort};
+use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::models::{GameClientResourceInfo, ModLoaderResourceInfo};
 use crate::storage::{load_json_async, save_json_async, Storage};
 use crate::tasks::commands::schedule_progressive_task_group;
