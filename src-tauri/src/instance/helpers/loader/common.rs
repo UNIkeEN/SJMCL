@@ -13,7 +13,7 @@ use crate::instance::helpers::loader::forge::{install_forge_loader, InstallProfi
 use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
 use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
-use crate::launch::helpers::file_validator::{parse_library_name, LibraryParts};
+use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launcher_config::models::JavaInfo;
 use crate::resource::models::SourceType;
@@ -24,35 +24,11 @@ pub fn add_library_entry(
   lib_path: &str,
   params: Option<LibrariesValue>,
 ) -> SJMCLResult<()> {
-  let LibraryParts {
-    path,
-    pack_name,
-    pack_version: _pack_version,
-    classifier,
-    extension,
-  } = parse_library_name(lib_path, None)?;
-
-  if let Some(pos) = libraries.iter().position(|item| {
-    if let Ok(parts) = parse_library_name(&item.name, None) {
-      parts.path == path
-        && parts.pack_name == pack_name
-        && parts.classifier == classifier
-        && parts.extension == extension
-    } else {
-      false
-    }
-  }) {
-    libraries[pos] = LibrariesValue {
-      name: lib_path.to_string(),
-      ..params.unwrap_or_default()
-    }
-  } else {
-    libraries.push(LibrariesValue {
-      name: lib_path.to_string(),
-      ..params.unwrap_or_default()
-    });
-  }
-
+  let new_library = LibrariesValue {
+    name: lib_path.to_string(),
+    ..params.unwrap_or_default()
+  };
+  *libraries = merge_library_lists(libraries, &vec![new_library]);
   Ok(())
 }
 

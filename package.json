@@ -1,12 +1,12 @@
 {
   "name": "sjmcl",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint",
     "tauri": "tauri",
     "lint-staged": "lint-staged",
     "prepare": "husky",
@@ -59,7 +59,8 @@
     "react-spinners": "^0.14.1",
     "react-virtualized": "^9.22.6",
     "remark-gfm": "^4.0.1",
-    "skinview3d": "^3.1.0"
+    "skinview3d": "^3.1.0",
+    "string-similarity": "^4.0.4"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.1.2",
@@ -71,6 +72,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-virtualized": "^9.22.0",
+    "@types/string-similarity": "^4.0.2",
     "chalk": "^4.1.2",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",

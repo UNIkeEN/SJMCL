@@ -38,7 +38,6 @@ export const DiscoverPage = () => {
       );
 
       const response = await DiscoverService.fetchNewsPostSummaries(sources);
-      console.log(response);
       if (response.status === "success") {
         setVisiblePosts(response.data.posts);
         setSourceCursors(response.data.cursors ?? {});

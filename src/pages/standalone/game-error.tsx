@@ -77,7 +77,6 @@ const GameErrorPage: React.FC = () => {
 
     LaunchService.retrieveGameLaunchingState(launchingId).then((response) => {
       if (response.status === "success") {
-        console.log(response.data);
         setInstanceInfo(response.data.selectedInstance);
         setJavaInfo(response.data.selectedJava);
       }

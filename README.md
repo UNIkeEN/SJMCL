@@ -34,11 +34,15 @@ SJMCL currently supports the following platforms:
 
 | Platform  | Versions            | Architectures              | Provided Bundles                        |
 |-----------|---------------------|----------------------------|-----------------------------------------|
-| Windows   | 10 and above        | `aarch64`, `i686`, `x86_64`| `.msi`, portable `.exe`                 |
+| Windows   | 7 and above         | `aarch64`, `i686`, `x86_64`| `.msi`, portable `.exe`                 |
 | macOS     | 10.15 and above     | `aarch64`, `x86_64`        | `.app`, `.dmg`                          |
 | Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `x86_64`   | `.AppImage`, `.deb`, `.rpm`, portable binary |
 
 To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs).
+
+### Windows 7
+
+If you need to run SJMCL on Windows 7, please first [download the Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download) and install it. We recommend choosing the 'Evergreen Bootstrapper'.
 
 ## Development and Contributing
 
@@ -85,7 +89,7 @@ Besides, per term of use of our website, when distributing a modified version of
 
 QQ Group for SJMCL Users: 860851380
 
-You can also send email to launcher@sjmc.club if you want to contact us.
+You can also send email to [launcher@sjmc.club](mailto:launcher@sjmc.club) if you want to contact us.
 
 ## Community Partners
 
