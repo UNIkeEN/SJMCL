@@ -174,7 +174,6 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
 // Get canonicalized java paths from Windows registry
 #[cfg(target_os = "windows")]
 fn get_java_paths_from_windows_registry() -> Vec<String> {
-  let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
   let registry_paths = [
     r"SOFTWARE\JavaSoft\JDK",
     r"SOFTWARE\JavaSoft\JRE",
@@ -182,33 +181,47 @@ fn get_java_paths_from_windows_registry() -> Vec<String> {
     r"SOFTWARE\JavaSoft\Java Runtime Environment",
   ];
 
-  let mut java_paths_set = HashSet::new();
+  registry_paths
+    .iter()
+    .flat_map(|&base_path| get_java_homes_from_registry_path(base_path))
+    .filter_map(|java_home| canonicalize_java_exe(&java_home))
+    .collect::<HashSet<_>>()
+    .into_iter()
+    .collect()
+}
 
-  for base_path in registry_paths {
-    if let Ok(base_key) = hklm.open_subkey(base_path) {
-      for subkey_name_result in base_key.enum_keys() {
-        if let Ok(version_name) = subkey_name_result {
-          if version_name
-            .chars()
-            .next()
-            .map_or(false, |c| c.is_ascii_digit())
-          {
-            if let Ok(version_key) = base_key.open_subkey(&version_name) {
-              if let Ok(java_home) = version_key.get_value::<String, _>("JavaHome") {
-                let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
-                if let Ok(canonical_path) = fs::canonicalize(&java_bin) {
-                  java_paths_set.insert(canonical_path.to_string_lossy().into_owned());
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+#[cfg(target_os = "windows")]
+fn get_java_homes_from_registry_path(base_path: &str) -> Vec<String> {
+  let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
 
-  let java_paths: Vec<String> = java_paths_set.into_iter().collect();
-  java_paths
+  let Ok(base_key) = hklm.open_subkey(base_path) else {
+    return Vec::new();
+  };
+
+  base_key
+    .enum_keys()
+    .filter_map(Result::ok)
+    .filter(|version_name| {
+      version_name
+        .chars()
+        .next()
+        .map_or(false, |c| c.is_ascii_digit())
+    })
+    .filter_map(|version_name| {
+      base_key
+        .open_subkey(&version_name)
+        .and_then(|key| key.get_value::<String, _>("JavaHome"))
+        .ok()
+    })
+    .collect()
+}
+
+#[cfg(target_os = "windows")]
+fn canonicalize_java_exe(java_home: &str) -> Option<String> {
+  let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
+  fs::canonicalize(&java_bin)
+    .ok()
+    .map(|path| path.to_string_lossy().into_owned())
 }
 
 fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
