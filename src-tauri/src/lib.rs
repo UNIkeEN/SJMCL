@@ -23,7 +23,6 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
-use tauri_plugin_log::{Target, TargetKind};
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
@@ -158,12 +157,13 @@ pub async fn run() {
       utils::commands::check_service_availability,
     ])
     .setup(|app| {
-      let is_dev = cfg!(debug_assertions);
-
       // init APP_DATA_DIR
       APP_DATA_DIR
         .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
         .expect("APP_DATA_DIR initialization failed");
+
+      // Set up logging
+      utils::logging::setup_with_app(app.handle().clone())?;
 
       // Set the launcher config and other states
       // Also extract assets in `setup_with_app()` if the application is portable
@@ -254,19 +254,6 @@ pub async fn run() {
       {
         use tauri_plugin_deep_link::DeepLinkExt;
         app.deep_link().register_all()?;
-      }
-
-      // Log in debug mode
-      if is_dev {
-        app.handle().plugin(
-          tauri_plugin_log::Builder::default()
-            .level(log::LevelFilter::Info)
-            .targets([
-              Target::new(TargetKind::Stdout),
-              Target::new(TargetKind::Webview),
-            ])
-            .build(),
-        )?;
       }
 
       Ok(())

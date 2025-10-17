@@ -25,6 +25,7 @@ use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
+use crate::utils::logging::get_launcher_log_path;
 use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
@@ -395,12 +396,12 @@ pub fn export_game_crash_info(
     BaseDirectory::AppCache,
   )?;
 
+  // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
   let launching = launching_queue
     .iter()
     .find(|l| l.id == launching_id)
     .ok_or(LaunchError::LaunchingStateNotFound)?;
-  // version json and sjmcl instance config
   let version_info_path = launching
     .selected_instance
     .version_path
@@ -418,6 +419,9 @@ pub fn export_game_crash_info(
   )?;
   fs::write(&launch_script_path, &launching.full_command)?;
 
+  // launcher log
+  let launcher_log_path = get_launcher_log_path(app.clone());
+
   let zip_file_path = PathBuf::from(save_path);
   create_zip_from_dirs(
     vec![
@@ -425,6 +429,7 @@ pub fn export_game_crash_info(
       version_info_path,
       version_config_path,
       launch_script_path,
+      launcher_log_path,
     ],
     zip_file_path.clone(),
   )
