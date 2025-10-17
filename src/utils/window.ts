@@ -21,11 +21,11 @@ export const createWindow = (
   });
 
   newWindow.once("tauri://created", () => {
-    log.info(`Child window ${windowLabel} successfully created`);
+    logger.info(`Child window ${windowLabel} successfully created`);
   });
 
   newWindow.once("tauri://error", (error) => {
-    log.error(`Failed to create child window ${windowLabel}:`, error);
+    logger.error(`Failed to create child window ${windowLabel}:`, error);
   });
 
   return newWindow;

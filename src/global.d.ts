@@ -2,7 +2,7 @@ export {};
 
 declare global {
   interface Window {
-    log: {
+    logger: {
       info: (...args: any[]) => Promise<void>;
       warn: (...args: any[]) => Promise<void>;
       error: (...args: any[]) => Promise<void>;
@@ -11,5 +11,5 @@ declare global {
     };
   }
 
-  const log: Window["log"];
+  const logger: Window["logger"];
 }

@@ -43,7 +43,7 @@ export function responseHandler(serviceDomain: string): MethodDecorator {
           };
           console.table(errorSet);
         }
-        log.error(
+        logger.error(
           `Invoke ${String(propertyKey)} failed: ${message} - ${details}`
         );
 

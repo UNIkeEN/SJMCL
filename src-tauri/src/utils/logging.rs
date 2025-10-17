@@ -25,7 +25,7 @@ pub fn setup_with_app(app: AppHandle) -> Result<(), Box<dyn std::error::Error>> 
     targetkinds.push(TargetKind::Stderr);
     log::LevelFilter::Debug
   } else {
-    log::LevelFilter::Warn
+    log::LevelFilter::Info
   };
 
   let p = tauri_plugin_log::Builder::default()

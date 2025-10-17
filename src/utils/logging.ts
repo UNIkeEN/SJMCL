@@ -6,7 +6,7 @@ function formatArg(arg: any): string {
   return String(arg);
 }
 
-export const log = {
+export const logger = {
   info: async (...args: any[]) => info(args.map(formatArg).join(" ")),
   warn: async (...args: any[]) => warn(args.map(formatArg).join(" ")),
   error: async (...args: any[]) => error(args.map(formatArg).join(" ")),
@@ -16,6 +16,6 @@ export const log = {
 
 export function setupLogger() {
   if (typeof window !== "undefined" && !(window as any).log) {
-    (window as any).log = log;
+    (window as any).logger = logger;
   }
 }

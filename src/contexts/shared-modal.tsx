@@ -25,7 +25,7 @@ export const SharedModalContextProvider: React.FC<{
       ...prev,
       [key]: { isOpen: true, ...params },
     }));
-    log.info("Opened shared modal:", key, params);
+    logger.info("Opened shared modal:", key, params);
   };
 
   const closeSharedModal = (key: string) => {
