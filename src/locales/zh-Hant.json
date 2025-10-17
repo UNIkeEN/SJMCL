@@ -288,6 +288,9 @@
         },
         "randomCustom": {
           "title": "隨機自定義"
+        },
+        "autoDarken": {
+          "title": "深色模式下調暗背景"
         }
       },
       "presetBgList": {
@@ -391,6 +394,9 @@
       "loader": "選擇載入器",
       "skipped": "不安裝",
       "info": "基本設定"
+    },
+    "footer": {
+      "installFabricApi": "同時安裝 Fabric API 模組"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {

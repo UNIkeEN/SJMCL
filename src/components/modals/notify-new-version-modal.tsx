@@ -56,6 +56,14 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
     props.onClose();
   };
 
+  const processReleaseNotes = (raw: string): string => {
+    const m = raw.match(/^([\s\S]*?)\r?\n\s*-{3,}\s*\r?\n([\s\S]*)$/); // match MD separator
+
+    // If user language is Chinese, swap to make Chinese part on top.
+    const isZh = config.general.general.language.startsWith("zh");
+    return m && isZh ? `${m[2].trim()}\n---\n${m[1].trim()}` : raw;
+  };
+
   return (
     <Modal scrollBehavior="inside" size="xl" {...props}>
       <ModalOverlay />
@@ -63,7 +71,9 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
         <ModalHeader>{`${t("NotifyNewVersionModal.title")} - ${newVersion.version}`}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <MarkdownContainer>{newVersion.releaseNotes || ""}</MarkdownContainer>
+          <MarkdownContainer>
+            {processReleaseNotes(newVersion.releaseNotes || "")}
+          </MarkdownContainer>
         </ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={props.onClose}>

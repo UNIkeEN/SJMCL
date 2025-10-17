@@ -70,7 +70,6 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
             }))
           );
         } else {
-          console.log(res.raw_error);
           setModLoaders([]);
         }
       })

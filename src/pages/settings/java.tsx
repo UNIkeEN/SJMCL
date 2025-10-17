@@ -9,6 +9,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { DownloadJavaModal } from "@/components/modals/download-java-modal";
+import ManualAddJavaPathModal from "@/components/modals/manual-add-java-path-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
@@ -25,6 +26,11 @@ const JavaSettingsPage = () => {
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
   const [selectedJava, setSelectedJava] = useState<JavaInfo | null>(null);
 
+  // for manual add java path modal
+  const [onSubmitCallback, setOnSubmitCallback] = useState<
+    ((path: string | null) => void) | null
+  >(null);
+
   useEffect(() => {
     setJavaInfos(getJavaInfos() || []);
   }, [getJavaInfos]);
@@ -35,17 +41,36 @@ const JavaSettingsPage = () => {
     onClose: onDownloadJavaModalClose,
   } = useDisclosure();
 
-  const handleAddJavaPath = async () => {
-    const newJavaPath = await open({
-      multiple: false,
-      directory: false,
-      filters: [
-        {
-          name: "Java",
-          extensions: config.basicInfo.platform === "windows" ? ["exe"] : [""], // TBD: cross platform test
-        },
-      ],
-    });
+  const {
+    isOpen: isManualAddJavaPathModalOpen,
+    onOpen: onManualAddJavaPathModalOpen,
+    onClose: onManualAddJavaPathModalClose,
+  } = useDisclosure();
+
+  const handleAddJavaPath = async (useModal: boolean) => {
+    let newJavaPath: string | null = null;
+    if (useModal) {
+      newJavaPath = await new Promise<string | null>((resolve) => {
+        setOnSubmitCallback(() => (path: string | null) => {
+          resolve(path);
+          setOnSubmitCallback(null);
+        });
+        onManualAddJavaPathModalOpen();
+      });
+    } else {
+      newJavaPath = await open({
+        multiple: false,
+        directory: false,
+        filters: [
+          {
+            name: "Java",
+            extensions:
+              config.basicInfo.platform === "windows" ? ["exe"] : [""],
+          },
+        ],
+      });
+    }
+
     if (newJavaPath && typeof newJavaPath === "string") {
       const fileName = newJavaPath.split(/[/\\]/).pop();
       const isValidFileName =
@@ -128,7 +153,7 @@ const JavaSettingsPage = () => {
     {
       icon: "add",
       label: t("JavaSettingsPage.javaList.add"),
-      onClick: () => handleAddJavaPath(),
+      onClick: (event: React.MouseEvent) => handleAddJavaPath(event.altKey),
     },
     {
       icon: "refresh",
@@ -224,6 +249,11 @@ const JavaSettingsPage = () => {
       <DownloadJavaModal
         isOpen={isDownloadJavaModalOpen}
         onClose={onDownloadJavaModalClose}
+      />
+      <ManualAddJavaPathModal
+        isOpen={isManualAddJavaPathModalOpen}
+        onClose={onManualAddJavaPathModalClose}
+        onSubmitCallback={onSubmitCallback ?? undefined}
       />
     </>
   );

@@ -60,7 +60,7 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::Assets => Ok(Url::parse("https://bmclapi2.bangbang93.com/assets/")?),
       ResourceType::Libraries => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
       ResourceType::MojangJava => Ok(Url::parse("https://bmclapi2.bangbang93.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json")?),
-      ResourceType::ForgeMaven | ResourceType::ForgeMavenNew | ResourceType::NeoforgeMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven")?),
+      ResourceType::ForgeMaven | ResourceType::ForgeMavenNew | ResourceType::NeoforgeMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
       ResourceType::ForgeInstall => Ok(Url::parse("https://bmclapi2.bangbang93.com/forge/download/")?),
       ResourceType::ForgeMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/forge/")?),
       ResourceType::Liteloader => Ok(Url::parse("https://bmclapi.bangbang93.com/maven/com/mumfrey/liteloader/versions.json")?),

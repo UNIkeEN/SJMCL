@@ -394,6 +394,9 @@
       "loader": "选择加载器",
       "skipped": "不安装",
       "info": "基本设置"
+    },
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -603,9 +606,6 @@
     "placeholder": {
       "dirName": "请输入名称",
       "dirPath": "请选择游戏目录"
-    },
-    "button": {
-      "browse": "浏览"
     },
     "dialog": {
       "browse": {
@@ -847,6 +847,7 @@
         "description": "请先登录微软账户后使用此功能。"
       }
     },
+    "browse": "浏览",
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
@@ -1332,8 +1333,16 @@
     "steve": "Steve",
     "alex": "Alex"
   },
-  "ViewSkinModal": {
-    "skinView": "查看皮肤"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "添加 Java"
+    },
+    "label": {
+      "javaPath": "Java 路径"
+    },
+    "placeholder": {
+      "javaPath": "请输入或选择 Java 可执行文件路径"  
+    }
   },
   "MemoryStatusProgress": {
     "title": "内存状态",
@@ -2457,6 +2466,9 @@
         "javaEdition": "Java版{{version}}"
       }
     }
+  },
+  "ViewSkinModal": {
+    "skinView": "查看皮肤"
   },
   "WelcomeAndTermsModal": {
     "header": {

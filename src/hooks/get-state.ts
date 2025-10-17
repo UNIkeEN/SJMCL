@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export enum GetStateFlag {
   Cancelled = "%CANCELLED%",
@@ -21,15 +21,23 @@ export function useGetState<T>(
 
 export function usePromisedGetState<T>(
   state: T | undefined,
+  versionRef: React.MutableRefObject<string | undefined>,
   retrieveHandler: () => Promise<any>
 ): [(sync?: boolean) => Promise<T | GetStateFlag | undefined>, boolean] {
   const [isLoading, setIsLoading] = useState(false);
+  const validVersion = useRef<string | undefined>(undefined);
+  const isBusy = isLoading || versionRef.current !== validVersion.current;
   const getState = useCallback(
     async (sync = false) => {
-      if (sync || state === undefined) {
+      if (
+        sync ||
+        state === undefined ||
+        validVersion.current !== versionRef.current
+      ) {
         setIsLoading(true);
         try {
           const data = await retrieveHandler();
+          validVersion.current = versionRef.current;
           return data;
         } catch (_) {
           return undefined;
@@ -38,8 +46,7 @@ export function usePromisedGetState<T>(
         }
       } else return state;
     },
-    [state, retrieveHandler]
+    [state, versionRef, retrieveHandler]
   );
-
-  return [getState, isLoading];
+  return [getState, isBusy];
 }
