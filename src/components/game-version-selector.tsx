@@ -158,6 +158,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
         />
       </Tooltip>
     ),
+    isChildrenIndependent: true,
     isFullClickZone: true,
     onClick: () => onVersionSelect(version),
   });
