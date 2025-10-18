@@ -30,7 +30,6 @@ import { GameServerInfo } from "@/models/instance/misc";
 import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
-import { base64ImgSrc } from "@/utils/string";
 
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
@@ -79,6 +78,7 @@ const InstanceWorldsPage = () => {
         InstanceService.retrieveGameServerList(instanceId, queryOnline).then(
           (response) => {
             if (response.status === "success") {
+              console.log(response.data);
               setGameServers(response.data);
             } else if (!queryOnline) {
               toast({
@@ -299,11 +299,7 @@ const InstanceWorldsPage = () => {
                 description={server.ip}
                 prefixElement={
                   <Image
-                    src={
-                      server.isQueried
-                        ? server.iconSrc
-                        : base64ImgSrc(server.iconSrc)
-                    }
+                    src={server.iconSrc}
                     fallbackSrc="/images/icons/UnknownWorld.webp"
                     alt={server.name}
                     boxSize="28px"
@@ -315,7 +311,9 @@ const InstanceWorldsPage = () => {
                   {!server.isQueried && <BeatLoader size={6} color="gray" />}
                   {server.isQueried && server.online && (
                     <Text fontSize="xs-sm" color="gray.500">
-                      {`${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
+                      {server.playersOnline === 0 && server.playersMax === 0
+                        ? "???"
+                        : `${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
                     </Text>
                   )}
                   {server.isQueried &&
