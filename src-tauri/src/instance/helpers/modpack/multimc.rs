@@ -11,7 +11,7 @@ use zip::ZipArchive;
 #[serde(rename_all = "camelCase")]
 pub struct MultiMcCacheRequires {
   pub uid: String,
-  pub equals: String,
+  pub equals: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -33,6 +33,8 @@ structstruck::strike! {
     pub format_version: u64,
     #[serde(skip)]
     pub cfg: HashMap<String, String>,
+    #[serde(skip)]
+    pub base_path: String,
   }
 }
 
@@ -60,6 +62,7 @@ impl MultiMcManifest {
       .add_source(config::File::from_str(&cfg_str, config::FileFormat::Ini))
       .build()?;
 
+    manifest.base_path = base_path;
     manifest.cfg = config.try_deserialize::<HashMap<String, String>>()?;
 
     Ok(manifest)

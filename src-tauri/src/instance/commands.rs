@@ -976,7 +976,12 @@ pub async fn create_instance(
       task_params.extend(manifest.get_download_params(&version_path)?);
       extract_overrides(&String::from("overrides/"), &file, &version_path)?;
     } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
-      extract_overrides(&String::from(".minecraft/"), &file, &version_path)?;
+      let base_path = manifest.base_path;
+      extract_overrides(
+        &String::from(format!("{}.minecraft/", base_path)),
+        &file,
+        &version_path,
+      )?;
     } else {
       return Err(InstanceError::ModpackManifestParseError.into());
     }
