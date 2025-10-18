@@ -498,3 +498,54 @@ pub async fn replace_native_libraries(
   }
   Ok(())
 }
+
+// Convert McClientInfo to PatchesInfo
+impl From<McClientInfo> for PatchesInfo {
+  fn from(client: McClientInfo) -> Self {
+    PatchesInfo {
+      id: client.id.clone(),
+      version: client.client_version.clone().unwrap_or_default(),
+      priority: 0,
+      inherits_from: client.inherits_from.clone(),
+      arguments: client.arguments.clone(),
+      minecraft_arguments: client.minecraft_arguments.clone(),
+      main_class: client.main_class.clone(),
+      asset_index: client.asset_index.clone(),
+      assets: client.assets.clone(),
+      downloads: client.downloads.clone(),
+      libraries: client.libraries.clone(),
+      logging: client.logging.clone(),
+      java_version: Some(client.java_version.clone()),
+      type_: client.type_.clone(),
+      time: client.time.clone(),
+      release_time: client.release_time.clone(),
+      minimum_launcher_version: client.minimum_launcher_version,
+    }
+  }
+}
+
+// Convert PatchesInfo to McClientInfo
+impl From<PatchesInfo> for McClientInfo {
+  fn from(patch: PatchesInfo) -> Self {
+    McClientInfo {
+      id: patch.id,
+      inherits_from: patch.inherits_from,
+      arguments: patch.arguments,
+      minecraft_arguments: patch.minecraft_arguments,
+      asset_index: patch.asset_index,
+      assets: patch.assets,
+      downloads: patch.downloads,
+      libraries: patch.libraries,
+      logging: patch.logging,
+      java_version: patch.java_version.unwrap_or_default(),
+      type_: patch.type_,
+      time: patch.time,
+      release_time: patch.release_time,
+      minimum_launcher_version: patch.minimum_launcher_version,
+      patches: vec![],
+      main_class: patch.main_class,
+      jar: None,
+      client_version: None,
+    }
+  }
+}

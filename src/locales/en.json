@@ -317,6 +317,13 @@
       }
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": "Change Mod Loader"
+    },
+    "notSelectedLoader": "No new loader selected",
+    "notSelectedVersion": "No version selected"
+  },
   "CheckModUpdateModal": {
     "header": {
       "title": "Check Mod Updates"
@@ -573,6 +580,7 @@
       "game-client": "Game Client {{param}}",
       "game-server": "Game Server {{param}}",
       "mod": "Mod",
+      "mod-loader": "Mod Loader",
       "world": "World",
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",
@@ -2117,6 +2125,7 @@
       }
     },
     "instance": {
+      "changeModLoader": { "success": "Change Mod Loader successfully" },
       "retrieveInstanceList": {
         "error": {
           "title": "Failed to retrieve game instance list",

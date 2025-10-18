@@ -1,3 +1,4 @@
+use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
 use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
@@ -887,25 +888,13 @@ pub async fn create_instance(
 
   version_info.id = name.clone();
   version_info.jar = Some(name.clone());
-  version_info.patches.push(PatchesInfo {
-    id: "game".to_string(),
-    version: game.id.clone(),
-    priority: 0,
-    inherits_from: None,
-    arguments: version_info.arguments.clone(),
-    minecraft_arguments: version_info.minecraft_arguments.clone(),
-    main_class: version_info.main_class.clone(),
-    asset_index: version_info.asset_index.clone(),
-    assets: version_info.assets.clone(),
-    downloads: version_info.downloads.clone(),
-    libraries: version_info.libraries.clone(),
-    logging: version_info.logging.clone(),
-    java_version: Some(version_info.java_version.clone()),
-    type_: version_info.type_.clone(),
-    time: version_info.time.clone(),
-    release_time: version_info.release_time.clone(),
-    minimum_launcher_version: version_info.minimum_launcher_version,
-  });
+
+  // convert vanilla version info to vanilla patch
+  let mut vanilla_patch: PatchesInfo = version_info.clone().into();
+  vanilla_patch.id = "game".to_string();
+  vanilla_patch.version = game.id.clone();
+  vanilla_patch.inherits_from = None;
+  version_info.patches.push(vanilla_patch);
 
   let mut task_params = Vec::<PTaskParam>::new();
 
@@ -1081,8 +1070,128 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
 }
 
 #[tauri::command]
+pub async fn change_mod_loader(
+  app: AppHandle,
+  instance_id: String,
+  new_mod_loader: ModLoaderResourceInfo,
+  is_install_fabric_api: Option<bool>,
+) -> SJMCLResult<()> {
+  let mut instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  let version_isolation = get_instance_game_config(&app, &instance).version_isolation;
+  // Get priority list
+  let priority_list = {
+    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
+  };
+
+  // load current version info
+  let json_path = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+  let current_info: McClientInfo = load_json_async(&json_path).await?;
+  let vanilla_info = current_info.patches[0].clone();
+
+  let mod_loader = ModLoader {
+    loader_type: new_mod_loader.loader_type.clone(),
+    version: new_mod_loader.version.clone(),
+    status: if matches!(
+      new_mod_loader.loader_type,
+      ModLoaderType::Unknown | ModLoaderType::Fabric
+    ) {
+      ModLoaderStatus::Installed
+    } else {
+      ModLoaderStatus::NotDownloaded
+    },
+    branch: new_mod_loader.branch.clone(),
+  };
+  let game_version = instance.version.clone();
+  let subdirs = get_instance_subdir_paths(
+    &app,
+    &instance,
+    &[&InstanceSubdirType::Libraries, &InstanceSubdirType::Mods],
+  )
+  .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let [libraries_dir, mods_dir] = subdirs.as_slice() else {
+    return Err(InstanceError::InstanceNotFoundByID.into());
+  };
+  // Remove Fabric API mods if switching from Fabric modloader
+  if instance.mod_loader.loader_type == ModLoaderType::Fabric && version_isolation {
+    remove_fabric_api_mods(mods_dir).await?;
+  }
+  // construct new version info
+  instance.mod_loader = mod_loader.clone();
+  let mut version_info: McClientInfo = vanilla_info.clone().into();
+  version_info.id = current_info.id.clone();
+  version_info.jar = Some(instance.name.clone());
+  version_info.java_version = current_info.java_version.clone();
+  version_info.client_version = Some(instance.version.clone());
+  version_info.patches = vec![vanilla_info];
+
+  // install new mod loader
+  let mut task_params: Vec<PTaskParam> = Vec::new();
+  install_mod_loader(
+    app.clone(),
+    &priority_list,
+    &game_version,
+    &mod_loader,
+    libraries_dir.to_path_buf(),
+    mods_dir.to_path_buf(),
+    &mut version_info,
+    &mut task_params,
+    is_install_fabric_api,
+  )
+  .await?;
+
+  schedule_progressive_task_group(
+    app.clone(),
+    format!(
+      "change-mod-loader?{}&{}",
+      mod_loader.loader_type.as_str(),
+      mod_loader.version.as_str()
+    ),
+    task_params,
+    true,
+  )
+  .await?;
+
+  save_json_async(&version_info, &json_path).await?;
+  instance
+    .save_json_cfg()
+    .await
+    .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  Ok(())
+}
+
+#[tauri::command]
 pub async fn retrieve_modpack_meta_info(path: String) -> SJMCLResult<ModpackMetaInfo> {
   let path = PathBuf::from(path);
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
   ModpackMetaInfo::from_archive(&file).await
+}
+
+#[tauri::command]
+pub async fn check_loader_json(app: AppHandle, instance_id: String) -> SJMCLResult<bool> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let launcher_config_state = binding.lock()?;
+    launcher_config_state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  let json_path = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+  let current_info: McClientInfo = load_json_async(&json_path).await?;
+  //native check
+  Ok(!current_info.patches.is_empty())
 }

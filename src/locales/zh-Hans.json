@@ -339,6 +339,13 @@
       "renameOldMod": "重命名旧文件失败"
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": "修改模组加载器"
+    },
+    "notSelectedLoader": "未选择新的加载器",
+    "notSelectedVersion": "未选择版本"
+  },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
       "title": "清除下载缓存",
@@ -573,6 +580,7 @@
       "game-client": "游戏客户端 {{param}}",
       "game-server": "游戏服务端 {{param}}",
       "mod": "模组",
+      "mod-loader": "模组加载器",
       "world": "存档",
       "resourcepack": "资源包",
       "shader": "光影",
@@ -2117,6 +2125,7 @@
       }
     },
     "instance": {
+      "changeModLoader": { "success": "修改模组加载器成功" },
       "retrieveInstanceList": {
         "error": {
           "title": "获取实例列表失败",
