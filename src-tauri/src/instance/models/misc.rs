@@ -53,6 +53,18 @@ impl FromStr for ModLoaderType {
 }
 
 impl ModLoaderType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      &ModLoaderType::Unknown => "unknown",
+      &ModLoaderType::Fabric => "fabric",
+      &ModLoaderType::Forge => "forge",
+      &ModLoaderType::LegacyForge => "legacyforge",
+      &ModLoaderType::NeoForge => "neoforge",
+      &ModLoaderType::LiteLoader => "liteloader",
+      &ModLoaderType::Quilt => "quilt",
+    }
+  }
+
   pub fn to_icon_path(&self) -> &str {
     match self {
       &ModLoaderType::Unknown => "/images/icons/JEIcon_Release.png",
