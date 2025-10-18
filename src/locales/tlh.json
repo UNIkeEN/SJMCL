@@ -4,1817 +4,1817 @@
       "title": "About",
       "settings": {
         "version": {
-          "title": " Version",
-          "foundNew": " New Version Available",
-          "checkUpdate": " Check for Updates",
+          "title": "Version",
+          "foundNew": "New Version Available",
+          "checkUpdate": "Check for Updates",
           "checkToast": {
-            "loading": " Checking for updates",
-            "up2date": " Already up to date",
-            "error": " Failed to check for updates"
+            "loading": "Checking for updates",
+            "up2date": "Already up to date",
+            "error": "Failed to check for updates"
           }
         },
         "contributors": {
-          "title": " Contributors"
+          "title": "Contributors"
         },
         "reportIssue": {
-          "title": " ja' an Issue qoj Submit a Feature tlhob"
+          "title": "ja' an Issue qoj Submit a Feature tlhob"
         },
         "aboutSJMC": {
-          "title": " About SJTU Minecraft jeqqij (SJMC)"
+          "title": "About SJTU Minecraft jeqqij (SJMC)"
         }
       }
     },
     "ack": {
-      "title": " Acknowledgement",
+      "title": "Acknowledgement",
       "settings": {
         "bmclapi": {
-          "title": " BMCLAPI",
-          "description": " Thanks to @bangbang93 for providing the high-do download hal sila'"
+          "title": "BMCLAPI",
+          "description": "Thanks to @bangbang93 for providing the high-do download hal sila'"
         },
         "hmcl": {
-          "title": " Hello Minecraft! Bahjan",
-          "description": " 'op design 'ej ngoq implementation are referenced from this jinmol"
+          "title": "Hello Minecraft! Bahjan",
+          "description": "'op design 'ej ngoq implementation are referenced from this jinmol"
         },
         "littleskin": {
-          "title": " LittleSkin",
-          "description": " Thanks to LittleSkin 'ej @tnqzh123 for their qah with the login process design"
+          "title": "LittleSkin",
+          "description": "Thanks to LittleSkin 'ej @tnqzh123 for their qah with the login process design"
         },
         "sinter": {
-          "title": " Sinter",
-          "description": " Used as the interface font on Windows 'ej Linux platforms, under the SIL License"
+          "title": "Sinter",
+          "description": "Used as the interface font on Windows 'ej Linux platforms, under the SIL License"
         },
         "skinview3d": {
-          "title": " bs-community / skinview3d",
-          "description": " Our surgh preview 'ay' is built based on this posmoh-hal jinmol, under the MIT License"
+          "title": "bs-community / skinview3d",
+          "description": "Our surgh preview 'ay' is built based on this posmoh-hal jinmol, under the MIT License"
         }
       }
     },
     "legalInfo": {
-      "title": " Legal Notices",
+      "title": "Legal Notices",
       "settings": {
         "copyright": {
-          "title": " Copyright",
-          "description": " Copyright © 2024-2025 SJMCL Team."
+          "title": "Copyright",
+          "description": "Copyright © 2024-2025 SJMCL Team."
         },
         "userAgreement": {
-          "title": " User Agreement",
-          "url": " https: //mc. Sjtu. Cn/sjmcl/en/docs/tos"
+          "title": "User Agreement",
+          "url": "https: //mc. Sjtu. Cn/sjmcl/en/docs/tos"
         },
         "openSourceLicense": {
-          "title": " posmoh hal License",
-          "description": " Licensed under the GNU sa' Public License v3.0, with additional terms."
+          "title": "posmoh hal License",
+          "description": "Licensed under the GNU sa' Public License v3.0, with additional terms."
         }
       }
     }
   },
   "AccountsPage": {
     "button": {
-      "addPlayer": " chel chu'wi'",
-      "add3rdPartyServer": " chel 3rd-lopno' Auth",
-      "sourceHomepage": " View Homepage",
-      "deleteServer": " Delete Auth Server"
+      "addPlayer": "chel chu'wi'",
+      "add3rdPartyServer": "chel 3rd-lopno' Auth",
+      "sourceHomepage": "View Homepage",
+      "deleteServer": "Delete Auth Server"
     },
     "playerTypeList": {
-      "all": " hoch hal"
+      "all": "hoch hal"
     },
     "viewTypeList": {
-      "grid": " Grid View",
-      "list": " tetlh View"
+      "grid": "Grid View",
+      "list": "tetlh View"
     }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
-        "title": " sugh New Instance",
-        "description": " wiv 'ej sugh quj versions, loaders 'ej mods"
+        "title": "sugh New Instance",
+        "description": "wiv 'ej sugh quj versions, loaders 'ej mods"
       },
       "modpack": {
-        "title": " Import Modpack",
-        "description": " Import a modpack (CurseForge, Modrinth qoj HMCL formats) from local files qoj the internet"
+        "title": "Import Modpack",
+        "description": "Import a modpack (CurseForge, Modrinth qoj HMCL formats) from local files qoj the internet"
       },
       "manageDirs": {
-        "title": " vu' quj Directories",
-        "description": " vu' local quj storage directories to chel installed instances"
+        "title": "vu' quj Directories",
+        "description": "vu' local quj storage directories to chel installed instances"
       }
     },
     "modpackOperations": {
-      "fromdisk": " Import from jengva'",
-      "download": " Download Modpack"
+      "fromdisk": "Import from jengva'",
+      "download": "Download Modpack"
     },
     "moreOptions": {
-      "title": " More",
+      "title": "More",
       "server": {
-        "title": " Download quj Server",
-        "description": " Download quj server files for different versions"
+        "title": "Download quj Server",
+        "description": "Download quj server files for different versions"
       }
     }
   },
   "AddAuthServerModal": {
     "header": {
-      "title": " chel Authentication Server"
+      "title": "chel Authentication Server"
     },
     "placeholder": {
-      "inputServerUrl": " Server URL"
+      "inputServerUrl": "Server URL"
     },
     "page1": {
-      "serverUrl": " Server URL",
-      "serverUrlRequired": " Server URL is required"
+      "serverUrl": "Server URL",
+      "serverUrlRequired": "Server URL is required"
     },
     "page2": {
-      "name": " pong",
-      "serverUrl": " Server URL"
+      "name": "pong",
+      "serverUrl": "Server URL"
     }
   },
   "AddDiscoverSourceModal": {
     "modal": {
-      "header": " chel de' hal"
+      "header": "chel de' hal"
     },
     "label": {
-      "endpointUrl": " Endpoint URL"
+      "endpointUrl": "Endpoint URL"
     },
     "placeholder": {
-      "endpointUrl": " Endpoint URL"
+      "endpointUrl": "Endpoint URL"
     }
   },
   "AddPlayerModal": {
     "modal": {
-      "header": " chel chu'wi'"
+      "header": "chel chu'wi'"
     },
     "label": {
-      "playerType": " chu'wi' Type"
+      "playerType": "chu'wi' Type"
     },
     "offline": {
       "playerName": {
-        "label": " chu'wi' pong",
-        "placeholder": " chu'wi' pong",
-        "errorMessage": " Can neh sev letters, numbers 'ej underscores, within 16 characters."
+        "label": "chu'wi' pong",
+        "placeholder": "chu'wi' pong",
+        "errorMessage": "Can neh sev letters, numbers 'ej underscores, within 16 characters."
       },
       "advancedOptions": {
-        "title": " Advanced Options",
+        "title": "Advanced Options",
         "uuid": {
-          "label": " UUID",
-          "placeholder": " (Generated by SJMCL)",
-          "errorMessage": " Invalid chenmoh of UUID"
+          "label": "UUID",
+          "placeholder": "(Generated by SJMCL)",
+          "errorMessage": "Invalid chenmoh of UUID"
         }
       }
     },
     "3rdparty": {
       "authServer": {
-        "label": " Auth hal",
-        "selectSource": " wiv Auth hal",
-        "noSource": " qo' auth hal added.",
-        "addSource": " chel wa'"
+        "label": "Auth hal",
+        "selectSource": "wiv Auth hal",
+        "noSource": "qo' auth hal added.",
+        "addSource": "chel wa'"
       },
       "email": {
-        "label": " Email",
-        "placeholder": " Email"
+        "label": "Email",
+        "placeholder": "Email"
       },
       "emailOrPlayerName": {
-        "label": " Email qoj chu'wi' pong",
-        "placeholder": " Email qoj chu'wi' pong"
+        "label": "Email qoj chu'wi' pong",
+        "placeholder": "Email qoj chu'wi' pong"
       },
       "password": {
-        "label": " Password",
-        "placeholder": " Password"
+        "label": "Password",
+        "placeholder": "Password"
       }
     },
     "oauthCommon": {
       "description": {
         "start": {
-          "3rdparty": " This auth hal supports the Yggdrasil rar Proposal",
-          "microsoft": " Supports Microsoft OAuth 2.0 jan authorization grant flow"
+          "3rdparty": "This auth hal supports the Yggdrasil rar Proposal",
+          "microsoft": "Supports Microsoft OAuth 2.0 jan authorization grant flow"
         },
-        "next": " Please click the tah button 'ej input the ngoq above (already copied)"
+        "next": "Please click the tah button 'ej input the ngoq above (already copied)"
       },
       "button": {
         "start": {
-          "3rdparty": " wa'dich OAuth Login",
-          "microsoft": " wa'dich Microsoft OAuth"
+          "3rdparty": "wa'dich OAuth Login",
+          "microsoft": "wa'dich Microsoft OAuth"
         },
-        "next": " tah"
+        "next": "tah"
       }
     },
     "button": {
-      "buyMinecraft": " je' Minecraft",
-      "useOAuthLogin": " OAuth Login",
-      "usePasswordLogin": " Account & Password Login"
+      "buyMinecraft": "je' Minecraft",
+      "useOAuthLogin": "OAuth Login",
+      "usePasswordLogin": "Account & Password Login"
     }
   },
   "AlertResourceDependencyModal": {
     "header": {
-      "title": " Dependency jo Exist"
+      "title": "Dependency jo Exist"
     },
-    "description": " Please confirm 'e' hoch required jo are installed, qoj tah downloading the wa'dich sup.",
+    "description": "Please confirm 'e' hoch required jo are installed, qoj tah downloading the wa'dich sup.",
     "button": {
-      "continue": " Download wa'dich sup",
-      "cancel": " qil"
+      "continue": "Download wa'dich sup",
+      "cancel": "qil"
     },
     "fallback": {
-      "title": " sup ID: {{resourceId}}",
-      "description": " Failed to fetch this sup from remote, please check your network connection qoj nid again sibi'ha'."
+      "title": "sup ID: {{resourceId}}",
+      "description": "Failed to fetch this sup from remote, please check your network connection qoj nid again sibi'ha'."
     },
     "dependencyType": {
-      "required": " Required",
-      "optional": " Optional",
-      "incompatible": " Incompatible",
-      "embedded": " Embedded",
-      "tool": " Tool",
-      "include": " Include"
+      "required": "Required",
+      "optional": "Optional",
+      "incompatible": "Incompatible",
+      "embedded": "Embedded",
+      "tool": "Tool",
+      "include": "Include"
     }
   },
   "AllInstancesPage": {
     "button": {
-      "addAndImport": " chel & Import",
-      "globalSettings": " Global quj Settings",
-      "launch": " Launch quj"
+      "addAndImport": "chel & Import",
+      "globalSettings": "Global quj Settings",
+      "launch": "Launch quj"
     },
     "viewTypeList": {
-      "grid": " Grid View",
-      "list": " tetlh View"
+      "grid": "Grid View",
+      "list": "tetlh View"
     },
-    "title": " hoch Instances"
+    "title": "hoch Instances"
   },
   "AppearanceSettingsPage": {
     "theme": {
-      "title": " Theme",
+      "title": "Theme",
       "settings": {
         "primaryColor": {
-          "title": " bahjan Primary Color"
+          "title": "bahjan Primary Color"
         },
         "colorMode": {
-          "title": " Color Mode",
+          "title": "Color Mode",
           "type": {
-            "system": " pat",
-            "light": " wovmohwi'",
-            "dark": " Dark"
+            "system": "pat",
+            "light": "wovmohwi'",
+            "dark": "Dark"
           }
         },
         "useLiquidGlassDesign": {
-          "title": " Liquid hivje' Effect",
-          "description": " ghorgh enabled, parts of the interface will yan the 'Liquid hivje'' effect, which may mup performance."
+          "title": "Liquid hivje' Effect",
+          "description": "ghorgh enabled, parts of the interface will yan the 'Liquid hivje'' effect, which may mup performance."
         },
         "headNavStyle": {
-          "title": " Navigation tach Style",
+          "title": "Navigation tach Style",
           "type": {
-            "standard": " Standard",
-            "simplified": " Simplified"
+            "standard": "Standard",
+            "simplified": "Simplified"
           }
         }
       }
     },
     "font": {
-      "title": " Font",
+      "title": "Font",
       "settings": {
         "fontFamily": {
-          "title": " Font qordu'",
-          "default": " Default"
+          "title": "Font qordu'",
+          "default": "Default"
         },
         "fontSize": {
-          "title": " Font Size",
-          "small": " T",
-          "large": " T"
+          "title": "Font Size",
+          "small": "T",
+          "large": "T"
         }
       }
     },
     "background": {
-      "title": " Background",
+      "title": "Background",
       "settings": {
         "preset": {
-          "title": " Preset Images"
+          "title": "Preset Images"
         },
         "custom": {
-          "title": " tigh Images",
-          "add": " chel"
+          "title": "tigh Images",
+          "add": "chel"
         },
         "randomCustom": {
-          "title": " Random tigh Image"
+          "title": "Random tigh Image"
         },
         "autoDarken": {
-          "title": " Dim Background in Dark Mode"
+          "title": "Dim Background in Dark Mode"
         }
       },
       "presetBgList": {
         "Jokull": {
-          "name": " Jǫkull venghom"
+          "name": "Jǫkull venghom"
         },
         "SJTU-eastgate": {
-          "name": " SJTU Eastgate"
+          "name": "SJTU Eastgate"
         },
         "GNLXC": {
-          "name": " GNWork veng"
+          "name": "GNWork veng"
         }
       }
     },
     "accessibility": {
-      "title": " 'agh Accessibility",
+      "title": "'agh Accessibility",
       "settings": {
         "invertColors": {
-          "title": " Invert Colors"
+          "title": "Invert Colors"
         },
         "enhanceContrast": {
-          "title": " Enhance Contrast"
+          "title": "Enhance Contrast"
         }
       }
     }
   },
   "CheckModUpdateModal": {
     "header": {
-      "title": " Check Mod Updates"
+      "title": "Check Mod Updates"
     },
     "button": {
-      "update": " Update",
-      "cancel": " qil"
+      "update": "Update",
+      "cancel": "qil"
     },
     "label": {
-      "noUpdate": " qo' mods need updating",
-      "loading": " Checking for updates. {{x}}/{{y}}"
+      "noUpdate": "qo' mods need updating",
+      "loading": "Checking for updates. {{x}}/{{y}}"
     },
     "updateList": {
-      "mod": " Mod",
-      "currentVersion": " Current Version",
-      "latestVersion": " Latest Version",
-      "source": " hal"
+      "mod": "Mod",
+      "currentVersion": "Current Version",
+      "latestVersion": "Latest Version",
+      "source": "hal"
     },
     "error": {
-      "renameOldMod": " Failed to rename old mod teywi'"
+      "renameOldMod": "Failed to rename old mod teywi'"
     }
   },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
-      "title": " Clear Download Cache",
-      "content": " Are tlhih sure tlhih neh to clear the download cache? This action cannot qu' undone."
+      "title": "Clear Download Cache",
+      "content": "Are tlhih sure tlhih neh to clear the download cache? This action cannot qu' undone."
     }
   },
   "ComingSoonSign": {
-    "text": " This page is not available yet, coming tugh!"
+    "text": "This page is not available yet, coming tugh!"
   },
   "ContributorsPage": {
-    "all": " hoch Contributors tetlh",
-    "core": " Main Contributors",
+    "all": "hoch Contributors tetlh",
+    "core": "Main Contributors",
     "contribution": {
-      "fullStackDev": " Full Stack Dev",
-      "frontendDev": " Frontend Dev",
-      "backendDev": " Backend Dev",
-      "externalAPI": " External API",
-      "doc": " Documentation",
-      "cicd": " CI / de' jengva'",
-      "design": " Visual Design",
-      "mascot": " Team Mascot"
+      "fullStackDev": "Full Stack Dev",
+      "frontendDev": "Frontend Dev",
+      "backendDev": "Backend Dev",
+      "externalAPI": "External API",
+      "doc": "Documentation",
+      "cicd": "CI / de' jengva'",
+      "design": "Visual Design",
+      "mascot": "Team Mascot"
     }
   },
   "CopyOrMoveModal": {
     "modal": {
-      "header": " velqa' qoj vih sup"
+      "header": "velqa' qoj vih sup"
     },
     "operation": {
-      "copy": " velqa'",
-      "move": " vih"
+      "copy": "velqa'",
+      "move": "vih"
     },
     "tag": {
-      "source": " hal"
+      "source": "hal"
     },
-    "body": " to",
+    "body": "to",
     "resourceType": {
-      "Root": " ",
-      "ResourcePacks": " sup Packs",
-      "Saves": " qo'",
-      "Schematics": " Schematic",
-      "ShaderPacks": " Shader Packs"
+      "Root": "",
+      "ResourcePacks": "sup Packs",
+      "Saves": "qo'",
+      "Schematics": "Schematic",
+      "ShaderPacks": "Shader Packs"
     },
     "error": {
-      "lackOfArguments": " Missing necessary parameters. Please ghaj the developer check the ngoq"
+      "lackOfArguments": "Missing necessary parameters. Please ghaj the developer check the ngoq"
     }
   },
   "CreateInstanceModal": {
     "header": {
-      "title": " chenmoh New Instance"
+      "title": "chenmoh New Instance"
     },
     "stepper": {
-      "game": " quj Client",
-      "loader": " Mod Loader",
-      "skipped": " Skipped",
-      "info": " Basic Settings"
+      "game": "quj Client",
+      "loader": "Mod Loader",
+      "skipped": "Skipped",
+      "info": "Basic Settings"
     },
     "footer": {
-      "installFabricApi": " sugh Fabric API Mod"
+      "installFabricApi": "sugh Fabric API Mod"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
-    "content": " The pong of this instance has qen been changed. Please refresh the instance tetlh qoj restart the bahjan before trying to chel a launch qigh again."
+    "content": "The pong of this instance has qen been changed. Please refresh the instance tetlh qoj restart the bahjan before trying to chel a launch qigh again."
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
-      "title": " Delete quj Instance",
-      "content": " Confirm delete the quj instance \"{{instanceName}}\"? 'oh will qu' lost forever! (A long poh!)",
+      "title": "Delete quj Instance",
+      "content": "Confirm delete the quj instance \"{{instanceName}}\"? 'oh will qu' lost forever! (A long poh!)",
       "warning": {
-        "withVerIso": " Please note 'e' since version isolation is enabled for this instance, deleting 'oh will vabdot teq saves 'ej other associated files. If tlhih wish to retain this de', please migrate 'oh wa'dich.",
-        "woVerIso": " Please note 'e' if version isolation was previously enabled for this instance, any un-migrated saves 'ej other files will vabdot qu' deleted."
+        "withVerIso": "Please note 'e' since version isolation is enabled for this instance, deleting 'oh will vabdot teq saves 'ej other associated files. If tlhih wish to retain this de', please migrate 'oh wa'dich.",
+        "woVerIso": "Please note 'e' if version isolation was previously enabled for this instance, any un-migrated saves 'ej other files will vabdot qu' deleted."
       }
     }
   },
   "DeleteModAlertDialog": {
     "dialog": {
-      "title": " Delete Mod",
-      "content": " Confirm delete the mod \"{{modName}}\" in the quj instance \"{{instanceName}}\"?"
+      "title": "Delete Mod",
+      "content": "Confirm delete the mod \"{{modName}}\" in the quj instance \"{{instanceName}}\"?"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
-      "title": " Delete chu'wi'",
-      "content": " Confirm delete the chu'wi' \"{{pong}}\"? This cannot qu' undone!"
+      "title": "Delete chu'wi'",
+      "content": "Confirm delete the chu'wi' \"{{pong}}\"? This cannot qu' undone!"
     }
   },
   "DeleteAuthServerAlertDialog": {
     "dialog": {
-      "title": " Delete Authentication Server",
-      "content": " Confirm delete the authentication server \"{{pong}}\"? This will teq 'oh from your server tetlh."
+      "title": "Delete Authentication Server",
+      "content": "Confirm delete the authentication server \"{{pong}}\"? This will teq 'oh from your server tetlh."
     }
   },
   "DevToolbar": {
-    "tooltip": " Dev Toolbar"
+    "tooltip": "Dev Toolbar"
   },
   "DiscoverPage": {
-    "title": " tu'",
-    "noMore": " qo' more",
-    "sources": " vu' Sources",
-    "NoSources": " qo' hal added"
+    "title": "tu'",
+    "noMore": "qo' more",
+    "sources": "vu' Sources",
+    "NoSources": "qo' hal added"
   },
   "DiscoverSourcesPage": {
     "button": {
-      "addSource": " chel hal",
-      "deleteSource": " Delete"
+      "addSource": "chel hal",
+      "deleteSource": "Delete"
     },
     "tag": {
-      "online": " Online"
+      "online": "Online"
     }
   },
   "DownloadJavaModal": {
     "header": {
-      "title": " Download Java"
+      "title": "Download Java"
     },
     "selector": {
-      "vendor": " Vendor",
-      "version": " Version",
-      "type": " Type"
+      "vendor": "Vendor",
+      "version": "Version",
+      "type": "Type"
     },
     "warning": {
-      "mojang": " Java runtime from Mojang will qu' installed by SJMCL into a specific directory.",
-      "oracle": " Downloading from Oracle may poq login."
+      "mojang": "Java runtime from Mojang will qu' installed by SJMCL into a specific directory.",
+      "oracle": "Downloading from Oracle may poq login."
     }
   },
   "DownloadModpackModal": {
     "header": {
-      "title": " Download Modpack"
+      "title": "Download Modpack"
     }
   },
   "DownloadResourceModal": {
     "header": {
-      "title": " Download sup"
+      "title": "Download sup"
     },
     "resourceTypeList": {
-      "world": " Worlds",
-      "mod": " Mods",
-      "resourcepack": " Resourcepacks",
-      "shader": " Shaderpacks",
-      "datapack": " Datapacks"
+      "world": "Worlds",
+      "mod": "Mods",
+      "resourcepack": "Resourcepacks",
+      "shader": "Shaderpacks",
+      "datapack": "Datapacks"
     }
   },
   "DownloadSettingPage": {
     "source": {
-      "title": " hal",
+      "title": "hal",
       "settings": {
         "strategy": {
-          "title": " Download hal Selection dup",
-          "auto": " Auto wiv",
-          "official": " Prioritize Official hal",
-          "mirror": " Prioritize sila' hal"
+          "title": "Download hal Selection dup",
+          "auto": "Auto wiv",
+          "official": "Prioritize Official hal",
+          "mirror": "Prioritize sila' hal"
         }
       }
     },
     "download": {
-      "title": " Download",
+      "title": "Download",
       "settings": {
         "autoConcurrent": {
-          "title": " Auto wiv the mi' of Concurrent Threads"
+          "title": "Auto wiv the mi' of Concurrent Threads"
         },
         "concurrentCount": {
-          "title": " Concurrent sirgh togh"
+          "title": "Concurrent sirgh togh"
         },
         "enableSpeedLimit": {
-          "title": " vus Download do"
+          "title": "vus Download do"
         },
         "speedLimitValue": {
-          "title": " do vus Settings"
+          "title": "do vus Settings"
         }
       }
     },
     "cache": {
-      "title": " Cache",
+      "title": "Cache",
       "settings": {
         "directory": {
-          "title": " Download Cache Directory",
-          "select": " choh",
-          "open": " posmoh"
+          "title": "Download Cache Directory",
+          "select": "choh",
+          "open": "posmoh"
         },
         "clear": {
-          "title": " Clear Download Cache",
-          "description": " Clear hoch files in the cache directory, which will not affect downloaded sup files.",
-          "button": " Clear"
+          "title": "Clear Download Cache",
+          "description": "Clear hoch files in the cache directory, which will not affect downloaded sup files.",
+          "button": "Clear"
         }
       }
     },
     "proxy": {
-      "title": " Proxy",
+      "title": "Proxy",
       "settings": {
         "enabled": {
-          "title": " Enable Proxy"
+          "title": "Enable Proxy"
         },
         "type": {
-          "title": " Proxy Type"
+          "title": "Proxy Type"
         },
         "host": {
-          "title": " Host"
+          "title": "Host"
         },
         "port": {
-          "title": " Port"
+          "title": "Port"
         }
       }
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": " Download sup - {{pong}} - {{hal}}",
+    "title": "Download sup - {{pong}} - {{hal}}",
     "label": {
-      "all": " hoch",
-      "recommendedVersion": " Recommended Ver.",
-      "currentModLoader": " Current Loader"
+      "all": "hoch",
+      "recommendedVersion": "Recommended Ver.",
+      "currentModLoader": "Current Loader"
     },
     "releaseType": {
-      "alpha": " Alpha",
-      "beta": " Beta",
-      "release": " Release"
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "release": "Release"
     }
   },
   "DownloadTasksPage": {
-    "title": " Download Tasks",
+    "title": "Download Tasks",
     "button": {
-      "settings": " Download Settings",
-      "pause": " yev",
-      "begin": " wa'dich",
-      "retry": " Retry",
-      "deleteRecord": " Delete this ta"
+      "settings": "Download Settings",
+      "pause": "yev",
+      "begin": "wa'dich",
+      "retry": "Retry",
+      "deleteRecord": "Delete this ta"
     },
     "label": {
-      "paused": " Paused",
-      "completed": " Completed",
-      "error": " Failed",
-      "cancelled": " Cancelled"
+      "paused": "Paused",
+      "completed": "Completed",
+      "error": "Failed",
+      "cancelled": "Cancelled"
     },
     "task": {
-      "game-client": " quj Client {{param}}",
-      "game-server": " quj Server {{param}}",
-      "mod": " Mod",
-      "world": " qo'",
-      "resourcepack": " Resourcepack",
-      "shader": " Shaderpack",
-      "modpack": " Modpack",
-      "datapack": " Datapack",
-      "patch-files": " Patch quj Files {{param}}",
-      "mod-update": " Update Mod",
-      "retry": " Retry",
-      "neoforge-libraries": " NeoForge Libraries",
-      "forge-libraries": " Forge Libraries",
-      "launcher-update": " Update bahjan",
-      "mojang-java": " Java {{param}} Runtime"
+      "game-client": "quj Client {{param}}",
+      "game-server": "quj Server {{param}}",
+      "mod": "Mod",
+      "world": "qo'",
+      "resourcepack": "Resourcepack",
+      "shader": "Shaderpack",
+      "modpack": "Modpack",
+      "datapack": "Datapack",
+      "patch-files": "Patch quj Files {{param}}",
+      "mod-update": "Update Mod",
+      "retry": "Retry",
+      "neoforge-libraries": "NeoForge Libraries",
+      "forge-libraries": "Forge Libraries",
+      "launcher-update": "Update bahjan",
+      "mojang-java": "Java {{param}} Runtime"
     }
   },
   "Editable": {
-    "edit": " Edit",
-    "save": " tod",
-    "cancel": " qil"
+    "edit": "Edit",
+    "save": "tod",
+    "cancel": "qil"
   },
   "EditGameDirectoryModal": {
     "header": {
       "title": {
-        "add": " chel quj Directory",
-        "edit": " Edit quj Directory"
+        "add": "chel quj Directory",
+        "edit": "Edit quj Directory"
       }
     },
     "label": {
-      "dirName": " pong",
-      "dirPath": " quj Directory"
+      "dirName": "pong",
+      "dirPath": "quj Directory"
     },
     "placeholder": {
-      "dirName": " Directory pong",
-      "dirPath": " wiv a quj directory"
+      "dirName": "Directory pong",
+      "dirPath": "wiv a quj directory"
     },
     "button": {
-      "browse": " Browse"
+      "browse": "Browse"
     },
     "dialog": {
       "browse": {
-        "title": " wiv Directory"
+        "title": "wiv Directory"
       },
       "addSubDir": {
-        "title": " chel Subdirectory",
-        "body": " An instance-containing Minecraft subdirectory has been found. Do tlhih neh to chel the subdirectory?",
-        "addOriginDir": " chel mung Directory",
-        "addSubDir": " chel Subdirectory"
+        "title": "chel Subdirectory",
+        "body": "An instance-containing Minecraft subdirectory has been found. Do tlhih neh to chel the subdirectory?",
+        "addOriginDir": "chel mung Directory",
+        "addSubDir": "chel Subdirectory"
       }
     },
     "toast": {
       "error": {
-        "title": " Failed to chel quj directory"
+        "title": "Failed to chel quj directory"
       }
     },
     "errorMessage": {
       "dirName": {
-        "tooLong": " Directory pong cannot qu' longer than 20 characters",
-        "empty": " Directory pong cannot chim",
-        "exist": " Directory pong already exists",
-        "hasInvalidChar": " Directory pong has invalid characters"
+        "tooLong": "Directory pong cannot qu' longer than 20 characters",
+        "empty": "Directory pong cannot chim",
+        "exist": "Directory pong already exists",
+        "hasInvalidChar": "Directory pong has invalid characters"
       },
       "dirPath": {
-        "exist": " Directory already exists",
-        "invalid": " Directory path is invalid"
+        "exist": "Directory already exists",
+        "invalid": "Directory path is invalid"
       }
     }
   },
   "Empty": {
-    "noData": " qo' de'"
+    "noData": "qo' de'"
   },
   "Enums": {
     "chakraColors": {
-      "gray": " Gray",
-      "red": " Red",
-      "orange": " tera' na'ran",
-      "yellow": " Yellow",
-      "green": " Green",
-      "teal": " Teal",
-      "blue": " Blue",
-      "cyan": " Cyan",
-      "purple": " Purple",
-      "pink": " Pink"
+      "gray": "Gray",
+      "red": "Red",
+      "orange": "tera' na'ran",
+      "yellow": "Yellow",
+      "green": "Green",
+      "teal": "Teal",
+      "blue": "Blue",
+      "cyan": "Cyan",
+      "purple": "Purple",
+      "pink": "Pink"
     },
     "ctrlKey": {
-      "linux": " Ctrl",
-      "macos": " seh(⌃)",
-      "windows": " Ctrl"
+      "linux": "Ctrl",
+      "macos": "seh(⌃)",
+      "windows": "Ctrl"
     },
     "metaKey": {
-      "linux": " Meta",
-      "macos": " ra'(⌘)",
-      "windows": " qap"
+      "linux": "Meta",
+      "macos": "ra'(⌘)",
+      "windows": "qap"
     },
     "playerTypes": {
-      "microsoft": " Microsoft",
-      "offline": " Offline Mode",
-      "3rdparty": " 3rd-lopno' Authentication",
-      "3rdpartyShort": " 3rd-lopno' Auth"
+      "microsoft": "Microsoft",
+      "offline": "Offline Mode",
+      "3rdparty": "3rd-lopno' Authentication",
+      "3rdpartyShort": "3rd-lopno' Auth"
     },
     "systemFileManager": {
-      "linux": " teywi' vu'wi'",
-      "macos": " Finder",
-      "windows": " teywi' Explorer"
+      "linux": "teywi' vu'wi'",
+      "macos": "Finder",
+      "windows": "teywi' Explorer"
     }
   },
   "GameAdvancedSettingsPage": {
-    "title": " Advanced Settings",
-    "topWarning": " Advanced settings are for pin users. Changing chah may len the quj. Do not modify unless tlhih sov nuqjatlh tlhih're doing.",
+    "title": "Advanced Settings",
+    "topWarning": "Advanced settings are for pin users. Changing chah may len the quj. Do not modify unless tlhih sov nuqjatlh tlhih're doing.",
     "customCommands": {
-      "title": " tigh Commands",
+      "title": "tigh Commands",
       "settings": {
         "minecraftArgument": {
-          "title": " bahjan Argument",
-          "placeholder": " Default"
+          "title": "bahjan Argument",
+          "placeholder": "Default"
         },
         "precallCommand": {
-          "title": " Pre-launch ra'",
-          "placeholder": " Commands to muh before the quj launches"
+          "title": "Pre-launch ra'",
+          "placeholder": "Commands to muh before the quj launches"
         },
         "wrapperLauncher": {
-          "title": " Wrapper ra'",
-          "placeholder": " Allows launching using an extra wrapper ghun parha' \"optirun\" on Linux"
+          "title": "Wrapper ra'",
+          "placeholder": "Allows launching using an extra wrapper ghun parha' \"optirun\" on Linux"
         },
         "postExitCommand": {
-          "title": " Post-exit ra'",
-          "placeholder": " Commands to muh after quj exits"
+          "title": "Post-exit ra'",
+          "placeholder": "Commands to muh after quj exits"
         }
       }
     },
     "jvm": {
-      "title": " Java VM Options",
+      "title": "Java VM Options",
       "settings": {
         "args": {
-          "title": " JVM VM Argument"
+          "title": "JVM VM Argument"
         },
         "javaPermanentGenerationSpace": {
-          "title": " PermGen logh",
-          "placeholder": " in MB"
+          "title": "PermGen logh",
+          "placeholder": "in MB"
         },
         "environmentVariable": {
-          "title": " Environment Variables"
+          "title": "Environment Variables"
         }
       }
     },
     "workaround": {
-      "title": " Workaround",
+      "title": "Workaround",
       "settings": {
-        "noJvmArgs": " Do not chel default Java VM arguments",
+        "noJvmArgs": "Do not chel default Java VM arguments",
         "gameFileValidatePolicy": {
-          "title": " quj teywi' Validation ngoch",
-          "disable": " qotlh Check",
-          "normal": " Normal Check",
-          "full": " Full Check"
+          "title": "quj teywi' Validation ngoch",
+          "disable": "qotlh Check",
+          "normal": "Normal Check",
+          "full": "Full Check"
         },
         "dontCheckJvmValidity": {
-          "title": " Do not check Java VM compatibility"
+          "title": "Do not check Java VM compatibility"
         },
         "dontPatchNatives": {
-          "title": " Do not nid to automatically tam sung libraries"
+          "title": "Do not nid to automatically tam sung libraries"
         },
         "useNativeGlfw": {
-          "title": " yan pat GLFW(Linux neh)"
+          "title": "yan pat GLFW(Linux neh)"
         },
         "useNativeOpenal": {
-          "title": " yan pat OpenAL(Linux neh)"
+          "title": "yan pat OpenAL(Linux neh)"
         }
       }
     }
   },
   "GameErrorPage": {
-    "title": " quj exited unexpectedly. Check the logs qoj nej boq.",
+    "title": "quj exited unexpectedly. Check the logs qoj nej boq.",
     "basicInfo": {
-      "arch": " Arch",
-      "launcherVersion": " bahjan Version",
-      "os": " OS"
+      "arch": "Arch",
+      "launcherVersion": "bahjan Version",
+      "os": "OS"
     },
     "gameInfo": {
-      "gameVersion": " Minecraft Version"
+      "gameVersion": "Minecraft Version"
     },
     "javaInfo": {
-      "javaVersion": " Java Version"
+      "javaVersion": "Java Version"
     },
     "crashDetails": {
-      "title": " Crash Details",
-      "OPENJ9": " OpenJ9 JVM is not supported. Please yan HotSpot JVM.",
-      "NEED_JDK11": " JDK 11 features are required. Please wiv JDK 11 to launch.",
-      "TOO_OLD_JAVA": " Java version is je old. Please yan the latest Java version.",
-      "JVM_32BIT": " Memory allocation exceeds the vus of a 32-bit JVM. If your pat is 64-bit, please yan a 64-bit Java.",
-      "GL_OPERATION_FAILURE": " A mod, shader vey, sup vey, qoj texture vey caused a problem. Nid disabling chah 'ej launching again.",
-      "OPENGL_NOT_SUPPORTED": " Your graphics driver does not qutlh OpenGL. Please check your graphics driver qoj nid another renderer.",
-      "GRAPHICS_DRIVER": " A graphics driver issue caused the crash. Please update your graphics driver.",
-      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": " Failed to initialize the OpenGL qorwagh on 'epil nah Silicon platform.",
-      "OUT_OF_MEMORY": " Insufficient memory. Nid lowering the quj's memory allocation qoj closing other programs.",
-      "MEMORY_EXCEEDED": " Memory allocation exceeded the vus. Nid lowering the quj's memory allocation qoj closing other programs.",
-      "RESOLUTION_TOO_HIGH": " Resolution is je high. Nid using a lower resolution sup/texture vey.",
-      "JDK_9": " JDK 9 features are required. Please wiv JDK 9 to launch.",
-      "MAC_JDK_8U261": " A yol between Forge/OptiFine 'ej Java caused the crash. Nid updating Forge/OptiFine qoj yan Java 8u251 qoj earlier.",
-      "FILE_CHANGED": " teywi' verification failed. Please check teywi' integrity.",
-      "NO_SUCH_METHOD_ERROR": " Incomplete ngoq detected. A mod may qu' missing, incomplete, qoj incompatible. Nid reinstalling the quj 'ej mods qoj nej qah.",
-      "NO_CLASS_DEF_FOUND_ERROR": " Incomplete ngoq detected. A mod may qu' missing, incomplete, qoj incompatible. Nid reinstalling the quj 'ej mods qoj nej qah.",
-      "ILLEGAL_ACCESS_ERROR": " A mod caused an naw' issue. If tlhih sov {{param1}}, nid updating qoj removing the corresponding mod.",
-      "DUPLICATED_MOD": " The mod {{param1}} is installed multiple times. Please teq duplicates 'ej nid again.",
-      "MOD_RESOLUTION": " Mod dependency issues detected. Fabric provided the following de': {{param1}}",
-      "FORGEMOD_RESOLUTION": " Mod dependency issues detected. Forge/NeoForge provided the following de': {{param1}}",
-      "FORGE_FOUND_DUPLICATE_MODS": " Duplicate mods detected. Forge/NeoForge provided the following de': {{param1}}",
-      "MOD_RESOLUTION_CONFLICT": " A yol exists between mod {{param1}} 'ej {{param2}}.",
-      "MOD_RESOLUTION_MISSING": " Mod {{param1}} is missing the required dependency {{param2}}.",
-      "MOD_RESOLUTION_MISSING_MINECRAFT": " Mod {{param1}} requires Minecraft {{param2}} to qet.",
-      "MOD_RESOLUTION_COLLECTION": " Mod {{param1}} is missing the required dependency {{param2}}.",
-      "FILE_ALREADY_EXISTS": " {{param1}} already exists. If tlhih qub this teywi' can qu' deleted, nid backing 'oh up 'ej deleting 'oh, vaj restart.",
-      "LOADING_CRASHED_FORGE": " Mod {{param1}} ({{param2}}) caused an qagh. Nid deleting qoj updating this mod.",
-      "BOOTSTRAP_FAILED": " Mod {{param1}} caused a startup issue. Nid deleting qoj updating this mod.",
-      "LOADING_CRASHED_FABRIC": " Mod {{param1}} caused an qagh. Nid deleting qoj updating this mod.",
-      "FABRIC_VERSION_0_12": " Fabric Loader 0.12 'ej above may not qu' compatible with the installed mods. Downgrade Fabric Loader to 0.11.7.",
-      "MODLAUNCHER_8": " A yol exists between your Forge version 'ej Java version. Update Forge to 36.2.26 qoj above, qoj yan Java below 1.8.0.320.",
-      "DEBUG_CRASH": " A manual crash was triggered.",
-      "CONFIG": " Failed to parse the configuration teywi' {{param2}} for mod {{param1}}.",
-      "FABRIC_WARNINGS": " Fabric provided 'op warning messages: {{param1}}",
-      "ENTITY": " An dol (type {{param1}}, at {{param2}}) is not working properly. Nid deleting the dol using MCEdit qoj teq the corresponding mod.",
-      "BLOCK": " A ngogh (type {{param1}}, at {{param2}}) is not working properly. Nid deleting the ngogh using MCEdit qoj teq the corresponding mod.",
-      "UNSATISFIED_LINK_ERROR": " Missing sung libraries: {{param1}}",
-      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": " OptiFine is not compatible with Forge. Yan the latest OptiFine qoj do not yan OptiFine.",
-      "MOD_FILES_ARE_DECOMPRESSED": " Mod files ghaj been decompressed. Lan the entire mod teywi' directly into the mods folder.",
-      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": " OptiFine may cause qo' loading issues in specific versions.",
-      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": " je many mods installed, exceeding the quj's ID vus. Nid installing JEID qoj similar mods, qoj teq 'op large mods.",
-      "MODMIXIN_FAILURE": " Mod injection failure detected. Check mod compatibility qoj nid replacing mods.",
-      "MIXIN_APPLY_MOD_FAILED": " Mixin failed to apply to mod {{param1}}. Nid deleting qoj updating this mod.",
-      "FORGE_ERROR": " Forge/NeoForge provided the following qagh qin: {{param1}}",
-      "MOD_RESOLUTION0": " Issues detected with 'op mods. Check the logs to tu' the problematic mod.",
-      "FORGE_REPEAT_INSTALLATION": " Repeated installation of Forge / NeoForge detected. Please delete the instance 'ej reinstall 'oh manually.",
-      "OPTIFINE_REPEAT_INSTALLATION": " Repeated installation of OptiFine detected. Please delete the instance 'ej reinstall 'oh manually.",
-      "JAVA_VERSION_IS_TOO_HIGH": " Java version is je high. Please yan Java 8 qoj lower.",
-      "INSTALL_MIXINBOOTSTRAP": " MixinBootstrap is not installed. Please sugh MixinBootstrap 'ej nid again.",
-      "MOD_NAME": " Mod teywi' names should neh yan bid-width letters (A-Z, a-z), numbers (0-9), hyphens (-), underscores (_), 'ej dots (.). Please rename hoch non-compliant mod files in the mods folder.",
-      "INCOMPLETE_FORGE_INSTALLATION": " Forge installation is incomplete. Please nid reinstalling Forge.",
-      "NIGHT_CONFIG_FIXES": " Issues detected with the ram Config library. Installing the ram Config Fixes mod may qah.",
-      "SHADERS_MOD": " Both OptiFine 'ej the Shaders mod are installed. Please teq the Shaders mod.",
-      "RTSS_FOREST_SODIUM": " RTSS is not compatible with Sodium.",
-      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": " 'op sung libraries used by the quj are incompatible with your pat architecture.",
-      "MAC_DS_STORE": " The instance cannot tah due to a. DS_Store teywi' on Mac. Please delete the. DS_Store teywi' in your quj path 'ej nid again.",
-      "LEVEL_DAT_CORRUPTED": " The instance cannot tah due to a corrupted patlh. Dat tod teywi'. Please nid to ti' the tod qoj restore from backup.",
-      "GL_OUT_OF_MEMORY": " The instance cannot tah due to OpenGL out of memory. Nid lowering quj resolution, disabling shaders, qoj closing other programs.",
-      "MOD_JAVA_VERSION_MISMATCH": " The instance cannot tah due to mod 'ej Java version mismatch. Please check the required Java version for your mods.",
-      "DUPLICATE_MOD_INSTALLED": " The instance cannot tah due to duplicate mod installation. Please check your mod tetlh 'ej teq duplicates.",
-      "MOD_ZIP_CORRUPTED": " The instance cannot tah due to a corrupted mod zip teywi'. Please nid re-downloading the mod.",
-      "MOD_INTERNET_ERROR": " The instance cannot tah due to mod download failure. Please check your network connection qoj yan a proxy.",
-      "VICS_MODERN_WARFARE_ERROR": " The instance cannot tah due to Vic's Modern ves mod qagh. Please nid updating qoj removing the mod.",
-      "FORGE_LITELOADER_CONFLICT": " The instance cannot tah due to Forge 'ej LiteLoader yol. Please nid removing LiteLoader qoj changing Forge version.",
-      "UNKNOWN": " Cannot determine the cause of the crash. Please check the logs for more details qoj export the crash ja'."
+      "title": "Crash Details",
+      "OPENJ9": "OpenJ9 JVM is not supported. Please yan HotSpot JVM.",
+      "NEED_JDK11": "JDK 11 features are required. Please wiv JDK 11 to launch.",
+      "TOO_OLD_JAVA": "Java version is je old. Please yan the latest Java version.",
+      "JVM_32BIT": "Memory allocation exceeds the vus of a 32-bit JVM. If your pat is 64-bit, please yan a 64-bit Java.",
+      "GL_OPERATION_FAILURE": "A mod, shader vey, sup vey, qoj texture vey caused a problem. Nid disabling chah 'ej launching again.",
+      "OPENGL_NOT_SUPPORTED": "Your graphics driver does not qutlh OpenGL. Please check your graphics driver qoj nid another renderer.",
+      "GRAPHICS_DRIVER": "A graphics driver issue caused the crash. Please update your graphics driver.",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "Failed to initialize the OpenGL qorwagh on 'epil nah Silicon platform.",
+      "OUT_OF_MEMORY": "Insufficient memory. Nid lowering the quj's memory allocation qoj closing other programs.",
+      "MEMORY_EXCEEDED": "Memory allocation exceeded the vus. Nid lowering the quj's memory allocation qoj closing other programs.",
+      "RESOLUTION_TOO_HIGH": "Resolution is je high. Nid using a lower resolution sup/texture vey.",
+      "JDK_9": "JDK 9 features are required. Please wiv JDK 9 to launch.",
+      "MAC_JDK_8U261": "A yol between Forge/OptiFine 'ej Java caused the crash. Nid updating Forge/OptiFine qoj yan Java 8u251 qoj earlier.",
+      "FILE_CHANGED": "teywi' verification failed. Please check teywi' integrity.",
+      "NO_SUCH_METHOD_ERROR": "Incomplete ngoq detected. A mod may qu' missing, incomplete, qoj incompatible. Nid reinstalling the quj 'ej mods qoj nej qah.",
+      "NO_CLASS_DEF_FOUND_ERROR": "Incomplete ngoq detected. A mod may qu' missing, incomplete, qoj incompatible. Nid reinstalling the quj 'ej mods qoj nej qah.",
+      "ILLEGAL_ACCESS_ERROR": "A mod caused an naw' issue. If tlhih sov {{param1}}, nid updating qoj removing the corresponding mod.",
+      "DUPLICATED_MOD": "The mod {{param1}} is installed multiple times. Please teq duplicates 'ej nid again.",
+      "MOD_RESOLUTION": "Mod dependency issues detected. Fabric provided the following de': {{param1}}",
+      "FORGEMOD_RESOLUTION": "Mod dependency issues detected. Forge/NeoForge provided the following de': {{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "Duplicate mods detected. Forge/NeoForge provided the following de': {{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "A yol exists between mod {{param1}} 'ej {{param2}}.",
+      "MOD_RESOLUTION_MISSING": "Mod {{param1}} is missing the required dependency {{param2}}.",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "Mod {{param1}} requires Minecraft {{param2}} to qet.",
+      "MOD_RESOLUTION_COLLECTION": "Mod {{param1}} is missing the required dependency {{param2}}.",
+      "FILE_ALREADY_EXISTS": "{{param1}} already exists. If tlhih qub this teywi' can qu' deleted, nid backing 'oh up 'ej deleting 'oh, vaj restart.",
+      "LOADING_CRASHED_FORGE": "Mod {{param1}} ({{param2}}) caused an qagh. Nid deleting qoj updating this mod.",
+      "BOOTSTRAP_FAILED": "Mod {{param1}} caused a startup issue. Nid deleting qoj updating this mod.",
+      "LOADING_CRASHED_FABRIC": "Mod {{param1}} caused an qagh. Nid deleting qoj updating this mod.",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 'ej above may not qu' compatible with the installed mods. Downgrade Fabric Loader to 0.11.7.",
+      "MODLAUNCHER_8": "A yol exists between your Forge version 'ej Java version. Update Forge to 36.2.26 qoj above, qoj yan Java below 1.8.0.320.",
+      "DEBUG_CRASH": "A manual crash was triggered.",
+      "CONFIG": "Failed to parse the configuration teywi' {{param2}} for mod {{param1}}.",
+      "FABRIC_WARNINGS": "Fabric provided 'op warning messages: {{param1}}",
+      "ENTITY": "An dol (type {{param1}}, at {{param2}}) is not working properly. Nid deleting the dol using MCEdit qoj teq the corresponding mod.",
+      "BLOCK": "A ngogh (type {{param1}}, at {{param2}}) is not working properly. Nid deleting the ngogh using MCEdit qoj teq the corresponding mod.",
+      "UNSATISFIED_LINK_ERROR": "Missing sung libraries: {{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "OptiFine is not compatible with Forge. Yan the latest OptiFine qoj do not yan OptiFine.",
+      "MOD_FILES_ARE_DECOMPRESSED": "Mod files ghaj been decompressed. Lan the entire mod teywi' directly into the mods folder.",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "OptiFine may cause qo' loading issues in specific versions.",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "je many mods installed, exceeding the quj's ID vus. Nid installing JEID qoj similar mods, qoj teq 'op large mods.",
+      "MODMIXIN_FAILURE": "Mod injection failure detected. Check mod compatibility qoj nid replacing mods.",
+      "MIXIN_APPLY_MOD_FAILED": "Mixin failed to apply to mod {{param1}}. Nid deleting qoj updating this mod.",
+      "FORGE_ERROR": "Forge/NeoForge provided the following qagh qin: {{param1}}",
+      "MOD_RESOLUTION0": "Issues detected with 'op mods. Check the logs to tu' the problematic mod.",
+      "FORGE_REPEAT_INSTALLATION": "Repeated installation of Forge / NeoForge detected. Please delete the instance 'ej reinstall 'oh manually.",
+      "OPTIFINE_REPEAT_INSTALLATION": "Repeated installation of OptiFine detected. Please delete the instance 'ej reinstall 'oh manually.",
+      "JAVA_VERSION_IS_TOO_HIGH": "Java version is je high. Please yan Java 8 qoj lower.",
+      "INSTALL_MIXINBOOTSTRAP": "MixinBootstrap is not installed. Please sugh MixinBootstrap 'ej nid again.",
+      "MOD_NAME": "Mod teywi' names should neh yan bid-width letters (A-Z, a-z), numbers (0-9), hyphens (-), underscores (_), 'ej dots (.). Please rename hoch non-compliant mod files in the mods folder.",
+      "INCOMPLETE_FORGE_INSTALLATION": "Forge installation is incomplete. Please nid reinstalling Forge.",
+      "NIGHT_CONFIG_FIXES": "Issues detected with the ram Config library. Installing the ram Config Fixes mod may qah.",
+      "SHADERS_MOD": "Both OptiFine 'ej the Shaders mod are installed. Please teq the Shaders mod.",
+      "RTSS_FOREST_SODIUM": "RTSS is not compatible with Sodium.",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "'op sung libraries used by the quj are incompatible with your pat architecture.",
+      "MAC_DS_STORE": "The instance cannot tah due to a. DS_Store teywi' on Mac. Please delete the. DS_Store teywi' in your quj path 'ej nid again.",
+      "LEVEL_DAT_CORRUPTED": "The instance cannot tah due to a corrupted patlh. Dat tod teywi'. Please nid to ti' the tod qoj restore from backup.",
+      "GL_OUT_OF_MEMORY": "The instance cannot tah due to OpenGL out of memory. Nid lowering quj resolution, disabling shaders, qoj closing other programs.",
+      "MOD_JAVA_VERSION_MISMATCH": "The instance cannot tah due to mod 'ej Java version mismatch. Please check the required Java version for your mods.",
+      "DUPLICATE_MOD_INSTALLED": "The instance cannot tah due to duplicate mod installation. Please check your mod tetlh 'ej teq duplicates.",
+      "MOD_ZIP_CORRUPTED": "The instance cannot tah due to a corrupted mod zip teywi'. Please nid re-downloading the mod.",
+      "MOD_INTERNET_ERROR": "The instance cannot tah due to mod download failure. Please check your network connection qoj yan a proxy.",
+      "VICS_MODERN_WARFARE_ERROR": "The instance cannot tah due to Vic's Modern ves mod qagh. Please nid updating qoj removing the mod.",
+      "FORGE_LITELOADER_CONFLICT": "The instance cannot tah due to Forge 'ej LiteLoader yol. Please nid removing LiteLoader qoj changing Forge version.",
+      "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details qoj export the crash ja'."
     },
     "button": {
-      "exportGameInfo": " Export Crash ja'",
-      "gameLogs": " quj Logs",
-      "help": " qah"
+      "exportGameInfo": "Export Crash ja'",
+      "gameLogs": "quj Logs",
+      "help": "qah"
     },
-    "bottomAlert": " Export 'ej ngeh the crash ja' instead of a screenshot of this page for qah."
+    "bottomAlert": "Export 'ej ngeh the crash ja' instead of a screenshot of this page for qah."
   },
   "GameLogPage": {
-    "placeholder": " Filter by Text",
-    "exportLogs": " Export Logs",
-    "clearLogs": " Clear hoch Logs",
-    "scrollToBottom": " tetlh to pirmus"
+    "placeholder": "Filter by Text",
+    "exportLogs": "Export Logs",
+    "clearLogs": "Clear hoch Logs",
+    "scrollToBottom": "tetlh to pirmus"
   },
   "GameVersionSelector": {
-    "old_beta": " Old Beta",
-    "release": " Release",
-    "snapshot": " Snapshot",
-    "april_fools": " April Fools",
-    "searchPlaceholder": " Search"
+    "old_beta": "Old Beta",
+    "release": "Release",
+    "snapshot": "Snapshot",
+    "april_fools": "April Fools",
+    "searchPlaceholder": "Search"
   },
   "General": {
-    "add": " chel",
+    "add": "chel",
     "alert": {
       "noFullLogin": {
-        "title": " This Feature is Not Available Currently",
-        "description": " Please qonos in with your Microsoft account before accessing this feature."
+        "title": "This Feature is Not Available Currently",
+        "description": "Please qonos in with your Microsoft account before accessing this feature."
       }
     },
-    "cancel": " qil",
-    "close": " soqmoh",
-    "confirm": " OK",
+    "cancel": "qil",
+    "close": "soqmoh",
+    "confirm": "OK",
     "copy": {
-      "text": " velqa'",
+      "text": "velqa'",
       "toast": {
-        "success": " Copied to clipboard",
-        "error": " Failed to velqa' to clipboard"
+        "success": "Copied to clipboard",
+        "error": "Failed to velqa' to clipboard"
       }
     },
     "copyOrMove": {
-      "linux": " velqa' / vih",
-      "macos": " velqa' / vih",
-      "windows": " velqa' / vih"
+      "linux": "velqa' / vih",
+      "macos": "velqa' / vih",
+      "windows": "velqa' / vih"
     },
-    "delete": " Delete",
+    "delete": "Delete",
     "dialog": {
       "filterName": {
-        "image": " Image",
-        "modpack": " Modpack"
+        "image": "Image",
+        "modpack": "Modpack"
       }
     },
-    "disable": " qotlh",
-    "dontShowAgain": " Don't 'ang Again",
-    "download": " Download",
-    "edit": " Edit",
-    "enable": " Enable",
-    "finish": " Finish",
-    "launch": " Launch",
-    "next": " Next",
-    "notice": " tu'",
-    "open": " posmoh",
-    "openFolder": " posmoh Folder",
-    "previous": " Previous",
-    "refresh": " Refresh",
-    "revealFile": " 'ang in {{opener}}",
-    "search": " Search",
-    "skip": " Skip",
+    "disable": "qotlh",
+    "dontShowAgain": "Don't 'ang Again",
+    "download": "Download",
+    "edit": "Edit",
+    "enable": "Enable",
+    "finish": "Finish",
+    "launch": "Launch",
+    "next": "Next",
+    "notice": "tu'",
+    "open": "posmoh",
+    "openFolder": "posmoh Folder",
+    "previous": "Previous",
+    "refresh": "Refresh",
+    "revealFile": "'ang in {{opener}}",
+    "search": "Search",
+    "skip": "Skip",
     "share": {
-      "text": " Share",
+      "text": "Share",
       "toast": {
-        "error": " Failed to share"
+        "error": "Failed to share"
       }
     },
     "version": {
-      "dev": " development version",
-      "nightly": " nightly build",
-      "beta": " beta version"
+      "dev": "development version",
+      "nightly": "nightly build",
+      "beta": "beta version"
     },
-    "viewOnWiki": " View on Minecraft Wiki"
+    "viewOnWiki": "View on Minecraft Wiki"
   },
   "GeneralSettingsPage": {
     "general": {
-      "title": " sa' Settings",
+      "title": "sa' Settings",
       "settings": {
         "language": {
-          "title": " hol",
-          "communityAck": " "
+          "title": "hol",
+          "communityAck": ""
         }
       }
     },
     "functions": {
-      "title": " Functionality",
+      "title": "Functionality",
       "settings": {
         "discoverPage": {
-          "title": " tu' Page",
+          "title": "tu' Page",
           "openNotice": {
-            "part-1": " The 'Search' in the yuvtlhe' navigation tach has been replaced with 'tu''. Tlhih can tah using the 'Global Search' through the keyboard qigh ",
+            "part-1": "The 'Search' in the yuvtlhe' navigation tach has been replaced with 'tu''. Tlhih can tah using the 'Global Search' through the keyboard qigh ",
             "part-2": "."
           }
         },
         "instancesNavType": {
-          "title": " Instance Page Navigation Mode",
-          "description": " choh whether the instance page's pos navigation tach is displayed 'ej its grouping method.",
-          "instance": " By Instance",
-          "directory": " By Directory",
-          "hidden": " Hidden"
+          "title": "Instance Page Navigation Mode",
+          "description": "choh whether the instance page's pos navigation tach is displayed 'ej its grouping method.",
+          "instance": "By Instance",
+          "directory": "By Directory",
+          "hidden": "Hidden"
         },
         "launchPageQuickSwitch": {
-          "title": " Quick leq for Accounts & Instances",
-          "description": " ghorgh enabled, clicking the leq button on the launch page allows direct selection of accounts 'ej instances instead of navigating to another page."
+          "title": "Quick leq for Accounts & Instances",
+          "description": "ghorgh enabled, clicking the leq button on the launch page allows direct selection of accounts 'ej instances instead of navigating to another page."
         },
         "resourceTranslation": {
-          "title": " sup Translation",
-          "description": " %neh available in zh-Hans"
+          "title": "sup Translation",
+          "description": "%neh available in zh-Hans"
         },
         "skipFirstScreenOptions": {
-          "title": " Skip wa'dich Launch Screen Options",
-          "description": " %neh available in zh-Hans"
+          "title": "Skip wa'dich Launch Screen Options",
+          "description": "%neh available in zh-Hans"
         }
       }
     },
     "advanced": {
-      "title": " Advanced",
+      "title": "Advanced",
       "settings": {
         "openConfigJson": {
-          "title": " bahjan Settings teywi'",
-          "description": " 'ang the raw bahjan settings teywi' in {{opener}}.",
-          "button": " posmoh"
+          "title": "bahjan Settings teywi'",
+          "description": "'ang the raw bahjan settings teywi' in {{opener}}.",
+          "button": "posmoh"
         }
       }
     }
   },
   "GlobalGameSettingsPage": {
     "directories": {
-      "title": " quj Directories",
+      "title": "quj Directories",
       "settings": {
         "directories": {
           "special": {
-            "CURRENT_DIR": " Current",
-            "APP_DATA_SUBDIR": " SJMCL de'",
-            "OFFICIAL_DIR": " Official bahjan"
+            "CURRENT_DIR": "Current",
+            "APP_DATA_SUBDIR": "SJMCL de'",
+            "OFFICIAL_DIR": "Official bahjan"
           }
         }
       },
       "deleteDialog": {
-        "title": " Delete quj Directory",
-        "content": " Confirm the removal of quj directory {{dirName}}? (SJMCL will qo' longer hotlh this directory, 'ach your files ratlh on the jengva'.)"
+        "title": "Delete quj Directory",
+        "content": "Confirm the removal of quj directory {{dirName}}? (SJMCL will qo' longer hotlh this directory, 'ach your files ratlh on the jengva'.)"
       },
-      "directoryNotExist": " Directory does not exist, please chel path again."
+      "directoryNotExist": "Directory does not exist, please chel path again."
     },
     "gameJava": {
-      "title": " quj Java",
+      "title": "quj Java",
       "settings": {
         "autoSelect": {
-          "title": " Automatically wiv quj Java"
+          "title": "Automatically wiv quj Java"
         },
         "execPath": {
-          "title": " per Java Version"
+          "title": "per Java Version"
         }
       }
     },
     "gameWindow": {
-      "title": " quj qorwagh",
+      "title": "quj qorwagh",
       "settings": {
         "resolution": {
-          "title": " quj Resolution",
-          "switch": " Fullscreen"
+          "title": "quj Resolution",
+          "switch": "Fullscreen"
         },
         "customTitle": {
-          "title": " tigh qorwagh Title"
+          "title": "tigh qorwagh Title"
         },
         "customInfo": {
-          "title": " tigh de'",
-          "description": " 'oh is displayed in the pirmus pos corner of the quj's main screen 'ej the yuvtlhe' pos corner of the F3 debugging page."
+          "title": "tigh de'",
+          "description": "'oh is displayed in the pirmus pos corner of the quj's main screen 'ej the yuvtlhe' pos corner of the F3 debugging page."
         }
       }
     },
     "performance": {
-      "title": " Performance",
+      "title": "Performance",
       "settings": {
         "autoMemAllocation": {
-          "title": " Allocate Memory Automatically"
+          "title": "Allocate Memory Automatically"
         },
         "maxMemAllocation": {
-          "title": " 'aqros Memory Allocation"
+          "title": "'aqros Memory Allocation"
         },
         "memoryUsage": {
-          "title": " Memory Usage",
-          "description": " Used memory {{usedMemory}}GB; quj allocated {{allocatedMemory}}GB; Total memory {{totalMemory}}GB"
+          "title": "Memory Usage",
+          "description": "Used memory {{usedMemory}}GB; quj allocated {{allocatedMemory}}GB; Total memory {{totalMemory}}GB"
         },
         "processPriority": {
-          "title": " Process Priority",
-          "low": " Low",
-          "belowNormal": " Below Normal",
-          "normal": " Normal",
-          "aboveNormal": " Above Normal",
-          "high": " High"
+          "title": "Process Priority",
+          "low": "Low",
+          "belowNormal": "Below Normal",
+          "normal": "Normal",
+          "aboveNormal": "Above Normal",
+          "high": "High"
         }
       }
     },
     "versionIsolation": {
       "settings": {
-        "title": " Enable Version Isolation"
+        "title": "Enable Version Isolation"
       }
     },
     "moreOptions": {
-      "title": " More Options",
+      "title": "More Options",
       "settings": {
         "launcherVisibility": {
-          "title": " bahjan Visibility",
-          "startHidden": " vaj' bahjan after quj Starts",
-          "runningHidden": " vaj' bahjan while quj is Running",
-          "always": " bahjan reh Visible"
+          "title": "bahjan Visibility",
+          "startHidden": "vaj' bahjan after quj Starts",
+          "runningHidden": "vaj' bahjan while quj is Running",
+          "always": "bahjan reh Visible"
         },
         "autoJoinGameServer": {
-          "title": " Auto muv quj Server"
+          "title": "Auto muv quj Server"
         },
         "serverUrl": {
-          "title": " Server URL"
+          "title": "Server URL"
         },
         "displayGameLog": {
-          "title": " 'agh quj Logs"
+          "title": "'agh quj Logs"
         },
         "advancedOptions": {
-          "title": " Advanced Launch Options",
-          "button": " Edit Advanced Options"
+          "title": "Advanced Launch Options",
+          "button": "Edit Advanced Options"
         }
       }
     }
   },
   "GuidedTourProvider": {
     "step1": {
-      "title": " Instance Page",
-      "content": " nadev tlhih can chel 'ej wiv your Minecraft quj instances, as toh as download 'ej vu' various quj jo."
+      "title": "Instance Page",
+      "content": "nadev tlhih can chel 'ej wiv your Minecraft quj instances, as toh as download 'ej vu' various quj jo."
     },
     "step2": {
-      "title": " Accounts Page",
-      "content": " nadev tlhih can chel accounts 'ej wiv the chu'wi' tlhih neh to ril."
+      "title": "Accounts Page",
+      "content": "nadev tlhih can chel accounts 'ej wiv the chu'wi' tlhih neh to ril."
     },
     "step3": {
-      "title": " Launch Minecraft!",
-      "content": " After selecting your instance 'ej chu'wi' 'ej adjusting the relevant settings, click the launch button 'ej tiv the quj! 🥳"
+      "title": "Launch Minecraft!",
+      "content": "After selecting your instance 'ej chu'wi' 'ej adjusting the relevant settings, click the launch button 'ej tiv the quj! 🥳"
     }
   },
   "HeadNavBar": {
     "navList": {
-      "launch": " Launch",
-      "instances": " Games",
-      "accounts": " Accounts",
-      "discover": " tu'",
-      "search": " Search",
-      "settings": " Settings"
+      "launch": "Launch",
+      "instances": "Games",
+      "accounts": "Accounts",
+      "discover": "tu'",
+      "search": "Search",
+      "settings": "Settings"
     }
   },
   "HelpSettingsPage": {
     "community": {
-      "title": " University chu'wi' Community",
+      "title": "University chu'wi' Community",
       "settings": {
         "MUA": {
-          "title": " Minecraft University boq (MUA)",
-          "description": " ril with university players across jungwoq",
-          "url": " https: //www. Mualliance. Cn/en"
+          "title": "Minecraft University boq (MUA)",
+          "description": "ril with university players across jungwoq",
+          "url": "https: //www. Mualliance. Cn/en"
         },
         "SJMC": {
-          "title": " SJTU Minecraft jeqqij (SJMC)",
-          "url": " https: //mc. Sjtu. Cn/en/"
+          "title": "SJTU Minecraft jeqqij (SJMC)",
+          "url": "https: //mc. Sjtu. Cn/en/"
         }
       }
     },
     "minecraft": {
-      "title": " Minecraft",
+      "title": "Minecraft",
       "settings": {
         "mcWiki": {
-          "title": " Minecraft Wiki",
-          "description": " The hochhom detailed Minecraft encyclopedia",
-          "url": " https: //minecraft. Wiki/"
+          "title": "Minecraft Wiki",
+          "description": "The hochhom detailed Minecraft encyclopedia",
+          "url": "https: //minecraft. Wiki/"
         },
         "mcMod": {
-          "title": " MCMod",
-          "description": " A Chinese mod encyclopedia for Minecraft"
+          "title": "MCMod",
+          "description": "A Chinese mod encyclopedia for Minecraft"
         },
         "curseforge": {
-          "title": " CurseForge",
-          "description": " tu' the qo''s largest Minecraft mod repository"
+          "title": "CurseForge",
+          "description": "tu' the qo''s largest Minecraft mod repository"
         }
       }
     },
     "top": {
       "settings": {
         "LauncherDocs": {
-          "title": " SJMC bahjan Documentation",
-          "url": " https: //mc. Sjtu. Cn/sjmcl/en/docs"
+          "title": "SJMC bahjan Documentation",
+          "url": "https: //mc. Sjtu. Cn/sjmcl/en/docs"
         }
       }
     }
   },
   "ImportModpackModal": {
     "header": {
-      "title": " Import Modpack"
+      "title": "Import Modpack"
     },
     "label": {
-      "instanceSettings": " Instance Settings",
-      "modpackInfo": " Modpack de'",
-      "modpackName": " Modpack pong",
-      "modpackVersion": " Modpack Version",
-      "author": " Author",
-      "modLoader": " Mod Loader",
-      "gameVersion": " quj Version"
+      "instanceSettings": "Instance Settings",
+      "modpackInfo": "Modpack de'",
+      "modpackName": "Modpack pong",
+      "modpackVersion": "Modpack Version",
+      "author": "Author",
+      "modLoader": "Mod Loader",
+      "gameVersion": "quj Version"
     },
     "button": {
-      "import": " Import"
+      "import": "Import"
     }
   },
   "InstanceBasicSettings": {
-    "selectDirectory": " wiv quj Directory"
+    "selectDirectory": "wiv quj Directory"
   },
   "InstanceDetailsLayout": {
     "secMenu": {
-      "createShortcut": " chenmoh Launch qigh",
-      "exportModPack": " Export as Modpack",
-      "star": " hov this instance",
-      "unstar": " Unstar"
+      "createShortcut": "chenmoh Launch qigh",
+      "exportModPack": "Export as Modpack",
+      "star": "hov this instance",
+      "unstar": "Unstar"
     },
     "instanceTabList": {
-      "overview": " Overview",
-      "worlds": " Worlds",
-      "mods": " Mods",
-      "resourcepacks": " sup Packs",
-      "schematics": " Schematics",
-      "shaderpacks": " Shader Packs",
-      "screenshots": " Screenshots",
-      "settings": " Settings"
+      "overview": "Overview",
+      "worlds": "Worlds",
+      "mods": "Mods",
+      "resourcepacks": "sup Packs",
+      "schematics": "Schematics",
+      "shaderpacks": "Shader Packs",
+      "screenshots": "Screenshots",
+      "settings": "Settings"
     },
     "button": {
-      "launch": " Launch Instance"
+      "launch": "Launch Instance"
     }
   },
   "InstanceMenu": {
     "label": {
-      "details": " Instance Details",
-      "delete": " Delete"
+      "details": "Instance Details",
+      "delete": "Delete"
     }
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": " Mod Loader"
+      "title": "Mod Loader"
     },
     "modList": {
-      "title": " Mods",
-      "warning": " Mod loader not found, these mods may not vum properly",
+      "title": "Mods",
+      "warning": "Mod loader not found, these mods may not vum properly",
       "menu": {
-        "alert": " Potentially incompatible",
-        "info": " Mod Info",
-        "update": " Update",
-        "search": " Search",
-        "placeholder": " Search mods."
+        "alert": "Potentially incompatible",
+        "info": "Mod Info",
+        "update": "Update",
+        "search": "Search",
+        "placeholder": "Search mods."
       }
     }
   },
   "InstanceResourcePacksPage": {
     "resourcePackList": {
-      "title": " Global sup Packs"
+      "title": "Global sup Packs"
     },
     "serverResPackList": {
-      "title": " Server sup Packs"
+      "title": "Server sup Packs"
     }
   },
   "InstanceScreenshotsPage": {
     "button": {
-      "details": " Details"
+      "details": "Details"
     }
   },
   "InstanceSettingsPage": {
-    "name": " Instance pong",
-    "description": " Instance Description",
-    "icon": " Instance Icon",
-    "applySettings": " Apply the following specific settings",
-    "restoreSettings": " Restore to default settings",
-    "restoreSettingsDesc": " Restore the following specific settings to their default values",
-    "restore": " Restore",
+    "name": "Instance pong",
+    "description": "Instance Description",
+    "icon": "Instance Icon",
+    "applySettings": "Apply the following specific settings",
+    "restoreSettings": "Restore to default settings",
+    "restoreSettingsDesc": "Restore the following specific settings to their default values",
+    "restore": "Restore",
     "errorMessage": {
-      "error-1": " Instance pong cannot chim",
-      "error-2": " Instance pong is invalid",
-      "error-3": " Instance pong is je long"
+      "error-1": "Instance pong cannot chim",
+      "error-2": "Instance pong is invalid",
+      "error-3": "Instance pong is je long"
     },
     "tipsToGlobal": {
-      "part-1": " This instance is not using specific settings. ",
-      "part-2": " jah to Global quj Settings"
+      "part-1": "This instance is not using specific settings. ",
+      "part-2": "jah to Global quj Settings"
     }
   },
   "InstanceShaderPacksPage": {
     "shaderPackList": {
-      "title": " Shader Packs"
+      "title": "Shader Packs"
     }
   },
   "InstanceSchematicsPage": {
     "schematicList": {
-      "title": " Schematics",
-      "preview": " Preview"
+      "title": "Schematics",
+      "preview": "Preview"
     }
   },
   "InstanceWidgets": {
     "basicInfo": {
-      "title": " Basic Info",
-      "gameVersion": " Version",
-      "playTime": " Playtime"
+      "title": "Basic Info",
+      "gameVersion": "Version",
+      "playTime": "Playtime"
     },
     "screenshots": {
-      "title": " Screenshots"
+      "title": "Screenshots"
     },
     "mods": {
-      "title": " Mods",
-      "summary": " {{totalMods}} mods, {{enabledMods}} enabled",
-      "manage": " vu'"
+      "title": "Mods",
+      "summary": "{{totalMods}} mods, {{enabledMods}} enabled",
+      "manage": "vu'"
     },
     "lastPlayed": {
-      "title": " hochdich Played",
-      "continuePlaying": " tah"
+      "title": "hochdich Played",
+      "continuePlaying": "tah"
     },
     "more": {
-      "title": " More"
+      "title": "More"
     }
   },
   "InstanceWorldsPage": {
     "worldList": {
-      "title": " Worlds",
-      "lastPlayedAt": " hochdich played",
+      "title": "Worlds",
+      "lastPlayedAt": "hochdich played",
       "difficulty": {
-        "peaceful": " Peaceful",
-        "easy": " Easy",
-        "normal": " Normal",
-        "hard": " Hard",
-        "hardcore": " Hardcore"
+        "peaceful": "Peaceful",
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard",
+        "hardcore": "Hardcore"
       },
       "gamemode": {
-        "survival": " Survival Mode",
-        "creative": " Creative Mode",
-        "adventure": " Adventure Mode",
-        "spectator": " Spectator Mode"
+        "survival": "Survival Mode",
+        "creative": "Creative Mode",
+        "adventure": "Adventure Mode",
+        "spectator": "Spectator Mode"
       },
       "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
-      "viewLevelData": " View patlh de'",
-      "launch": " ril this qo'"
+      "viewLevelData": "View patlh de'",
+      "launch": "ril this qo'"
     },
     "serverList": {
-      "title": " Servers",
-      "players": " Players",
+      "title": "Servers",
+      "players": "Players",
       "tag": {
-        "online": " Online",
-        "offline": " Offline"
+        "online": "Online",
+        "offline": "Offline"
       },
-      "launch": " ril this Server"
+      "launch": "ril this Server"
     }
   },
   "JavaSettingsPage": {
     "javaList": {
-      "title": " Java Management",
-      "download": " Download Java",
-      "add": " chel Java",
-      "remove": " teq this Java"
+      "title": "Java Management",
+      "download": "Download Java",
+      "add": "chel Java",
+      "remove": "teq this Java"
     },
     "toast": {
       "addSuccess": {
-        "title": " chel Java Successfully",
-        "description": " Java has been added successfully"
+        "title": "chel Java Successfully",
+        "description": "Java has been added successfully"
       },
       "addFailed": {
-        "title": " Failed to chel Java",
-        "invalid": " Not a valid Java executable qoj incompatible with the current platform",
-        "duplicated": " The dos path has already been added"
+        "title": "Failed to chel Java",
+        "invalid": "Not a valid Java executable qoj incompatible with the current platform",
+        "duplicated": "The dos path has already been added"
       }
     },
     "confirmDelete": {
-      "title": " Delete Java",
-      "description": " Confirm the removal of this Java? (SJMCL will qo' longer hotlh this directory, 'ach your files ratlh on the jengva'.)"
+      "title": "Delete Java",
+      "description": "Confirm the removal of this Java? (SJMCL will qo' longer hotlh this directory, 'ach your files ratlh on the jengva'.)"
     }
   },
   "LaunchPage": {
     "button": {
-      "launch": " Launch quj",
-      "instanceSettings": " Instance Settings"
+      "launch": "Launch quj",
+      "instanceSettings": "Instance Settings"
     },
     "SwitchButton": {
       "tooltip": {
-        "switchPlayer": " leq chu'wi'",
-        "switchGame": " leq quj"
+        "switchPlayer": "leq chu'wi'",
+        "switchGame": "leq quj"
       }
     },
     "Text": {
-      "noSelectedPlayer": " qo' chu'wi' selected",
-      "noSelectedGame": " qo' quj instance selected"
+      "noSelectedPlayer": "qo' chu'wi' selected",
+      "noSelectedGame": "qo' quj instance selected"
     }
   },
   "LaunchProcessModal": {
     "header": {
-      "title": " Launch quj - {{pong}}"
+      "title": "Launch quj - {{pong}}"
     },
     "step": {
-      "selectSuitableJRE": " wiv Suitable Java Runtime",
-      "validateGameFiles": " Validate quj 'ej Dependency Files",
-      "validateSelectedPlayer": " Validate chu'wi''s Credentials",
-      "launchGame": " Waiting for quj to Launch"
+      "selectSuitableJRE": "wiv Suitable Java Runtime",
+      "validateGameFiles": "Validate quj 'ej Dependency Files",
+      "validateSelectedPlayer": "Validate chu'wi''s Credentials",
+      "launchGame": "Waiting for quj to Launch"
     },
     "toast": {
-      "noSelectedPlayer": " Please chel 'ej wiv a chu'wi' wa'dich"
+      "noSelectedPlayer": "Please chel 'ej wiv a chu'wi' wa'dich"
     }
   },
   "ManageSkinModal": {
-    "skinManage": " vu' surgh",
-    "default": " Default",
-    "steve": " Steve",
-    "alex": " Alex"
+    "skinManage": "vu' surgh",
+    "default": "Default",
+    "steve": "Steve",
+    "alex": "Alex"
   },
   "ViewSkinModal": {
-    "skinView": " View surgh"
+    "skinView": "View surgh"
   },
   "MemoryStatusProgress": {
-    "title": " Memory dotlh",
-    "info": " {{used}} / {{total}} GB used",
+    "title": "Memory dotlh",
+    "info": "{{used}} / {{total}} GB used",
     "label": {
-      "now": " In yan",
-      "maxAllocation": " 'aqros allocated for Minecraft"
+      "now": "In yan",
+      "maxAllocation": "'aqros allocated for Minecraft"
     }
   },
   "MenuSelector": {
-    "selectedCount": " {{togh}} selected"
+    "selectedCount": "{{togh}} selected"
   },
   "ModLoaderCards": {
-    "installed": " Installed",
-    "unInstalled": " Not Installed",
-    "notCompatibleWith": " Not compatible with {{modLoader}}",
-    "versionNotSelected": " qo' version selected"
+    "installed": "Installed",
+    "unInstalled": "Not Installed",
+    "notCompatibleWith": "Not compatible with {{modLoader}}",
+    "versionNotSelected": "qo' version selected"
   },
   "ModLoaderSelector": {
-    "stable": " Stable",
-    "beta": " Beta",
-    "releaseDate": " Released at {{date}}"
+    "stable": "Stable",
+    "beta": "Beta",
+    "releaseDate": "Released at {{date}}"
   },
   "NotFoundPage": {
-    "text": " Page not found, redirecting to launch page in {{seconds}} seconds."
+    "text": "Page not found, redirecting to launch page in {{seconds}} seconds."
   },
   "NotifyNewVersionModal": {
-    "title": " New Version Available"
+    "title": "New Version Available"
   },
   "OptionItemGroup": {
     "button": {
-      "showAll": " 'ang hoch (+{{pos}})"
+      "showAll": "'ang hoch (+{{pos}})"
     }
   },
   "PlayerMenu": {
     "label": {
-      "manageSkin": " vu' surgh",
-      "viewSkin": " View surgh",
-      "delete": " Delete",
-      "copyUUID": " velqa' UUID"
+      "manageSkin": "vu' surgh",
+      "viewSkin": "View surgh",
+      "delete": "Delete",
+      "copyUUID": "velqa' UUID"
     },
     "toast": {
-      "refreshing": " Refreshing chu'wi' info",
-      "deleting": " Deleting chu'wi'"
+      "refreshing": "Refreshing chu'wi' info",
+      "deleting": "Deleting chu'wi'"
     }
   },
   "PingTestPage": {
     "PingServerList": {
-      "title": " Service Connectivity wah",
-      "offline": " Offline",
-      "bmclapi": " BMCLAPI",
-      "curseforge": " CurseForge",
-      "modrinth": " Modrinth",
-      "mojang": " Mojang",
-      "forge": " Forge",
-      "fabric": " Fabric",
-      "neoforge": " NeoForge",
-      "authlibInjector": " Authlib Injector",
-      "github": " GitHub",
-      "sjmclapi": " SJMC bahjan API"
+      "title": "Service Connectivity wah",
+      "offline": "Offline",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC bahjan API"
     }
   },
   "ReLoginPlayerModal": {
     "modal": {
-      "title": " Re-login"
+      "title": "Re-login"
     },
     "label": {
-      "user": " Username",
-      "password": " Password"
+      "user": "Username",
+      "password": "Password"
     },
     "placeholder": {
-      "password": " Password"
+      "password": "Password"
     },
     "button": {
-      "login": " Login"
+      "login": "Login"
     }
   },
   "RestartForUpdateConfirmDialog": {
-    "title": " bahjan Update",
-    "body": " The new version has been downloaded. Restart SJMCL to complete the update.",
-    "bodyMSI": " The new version has been downloaded. Clicking sugh will soqmoh SJMCL 'ej qet the installer.",
+    "title": "bahjan Update",
+    "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
+    "bodyMSI": "The new version has been downloaded. Clicking sugh will soqmoh SJMCL 'ej qet the installer.",
     "button": {
-      "restart": " Restart",
-      "install": " sugh",
-      "later": " sibi'ha'"
+      "restart": "Restart",
+      "install": "sugh",
+      "later": "sibi'ha'"
     }
   },
   "ResourceDownloader": {
     "label": {
-      "source": " hal",
-      "gameVer": " quj Ver.",
-      "tag": " Type",
-      "sortBy": " Sort by",
-      "name": " pong"
+      "source": "hal",
+      "gameVer": "quj Ver.",
+      "tag": "Type",
+      "sortBy": "Sort by",
+      "name": "pong"
     },
     "button": {
-      "search": " Search"
+      "search": "Search"
     },
     "modTagList": {
       "CurseForge": {
-        "All": " hoch",
-        "Addons": " Addons",
-        "Adventure and RPG": " Adventure RPG",
-        "API and Library": " API Library",
-        "Applied Energistics 2": " Applied Energistics 2",
-        "Armor, Tools, and Weapons": " Armor Tools dah",
-        "Automation": " Automation",
-        "Auxiliary": " Auxiliary",
-        "Biomes": " Biomes",
-        "Blood Magic": " 'iw Magic",
-        "Buildcraft": " Buildcraft",
-        "Bug Fixes": " ghew Fixes",
-        "Cosmetic": " Cosmetic",
-        "CraftTweaker": " CraftTweaker",
-        "Create": " chenmoh",
-        "Dimensions": " Dimensions",
-        "Education": " Education",
-        "Energy": " hos",
-        "Energy, Fluid, and Item Transport": " hos Fluid Item lup",
-        "Farming": " Farming",
-        "Food": " soj",
-        "Forestry": " Forestry",
-        "Galacticraft": " Galacticraft",
-        "Genetics": " Genetics",
-        "Industrial Craft": " Industrial Craft",
-        "Integrated Dynamics": " Integrated Dynamics",
-        "KubeJS": " KubeJS",
-        "Magic": " Magic",
-        "Map and Information": " pu'jin de'",
-        "MCreator": " MCreator",
-        "Miscellaneous": " Misc.",
-        "Mobs": " Mobs",
-        "Ores and Resources": " Ores jo",
-        "Performance": " Performance",
-        "Player Transport": " chu'wi' lup",
-        "Processing": " Processing",
-        "Redstone": " Redstone",
-        "Server Utility": " Server",
-        "Skyblock": " Skyblock",
-        "Storage": " Storage",
-        "Structures": " Structures",
-        "Technology": " cham",
-        "Thaumcraft": " Thaumcraft",
-        "Thermal Expansion": " Thermal Expansion",
-        "Tinker's Construct": " Tinker's mutlh",
-        "Twilight Forest": " chos ngem",
-        "Twitch Integration": " Twitch",
-        "Utility & QoL": " lo' law' QoL",
-        "World Gen": " qo' Gen",
-        "World": " qo'"
+        "All": "hoch",
+        "Addons": "Addons",
+        "Adventure and RPG": "Adventure RPG",
+        "API and Library": "API Library",
+        "Applied Energistics 2": "Applied Energistics 2",
+        "Armor, Tools, and Weapons": "Armor Tools dah",
+        "Automation": "Automation",
+        "Auxiliary": "Auxiliary",
+        "Biomes": "Biomes",
+        "Blood Magic": "'iw Magic",
+        "Buildcraft": "Buildcraft",
+        "Bug Fixes": "ghew Fixes",
+        "Cosmetic": "Cosmetic",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "chenmoh",
+        "Dimensions": "Dimensions",
+        "Education": "Education",
+        "Energy": "hos",
+        "Energy, Fluid, and Item Transport": "hos Fluid Item lup",
+        "Farming": "Farming",
+        "Food": "soj",
+        "Forestry": "Forestry",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "Genetics",
+        "Industrial Craft": "Industrial Craft",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
+        "Magic": "Magic",
+        "Map and Information": "pu'jin de'",
+        "MCreator": "MCreator",
+        "Miscellaneous": "Misc.",
+        "Mobs": "Mobs",
+        "Ores and Resources": "Ores jo",
+        "Performance": "Performance",
+        "Player Transport": "chu'wi' lup",
+        "Processing": "Processing",
+        "Redstone": "Redstone",
+        "Server Utility": "Server",
+        "Skyblock": "Skyblock",
+        "Storage": "Storage",
+        "Structures": "Structures",
+        "Technology": "cham",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's mutlh",
+        "Twilight Forest": "chos ngem",
+        "Twitch Integration": "Twitch",
+        "Utility & QoL": "lo' law' QoL",
+        "World Gen": "qo' Gen",
+        "World": "qo'"
       },
       "Modrinth": {
-        "All": " hoch",
-        "adventure": " Adventure",
-        "cursed": " Cursed",
-        "decoration": " Decoration",
-        "economy": " Economy",
-        "equipment": " luch",
-        "food": " soj",
-        "game-mechanics": " quj Mechanics",
-        "library": " Library",
-        "magic": " Magic",
-        "management": " Management",
-        "minigame": " Minigame",
-        "mobs": " Mobs",
-        "optimization": " Optimization",
-        "social": " Social",
-        "storage": " Storage",
-        "technology": " cham",
-        "transportation": " Transportation",
-        "utility": " lo' law'",
-        "worldgen": " qo' Gen"
+        "All": "hoch",
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "luch",
+        "food": "soj",
+        "game-mechanics": "quj Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "cham",
+        "transportation": "Transportation",
+        "utility": "lo' law'",
+        "worldgen": "qo' Gen"
       }
     },
     "worldTagList": {
       "CurseForge": {
-        "All": " hoch",
-        "Adventure": " Adventure",
-        "Creation": " Creation",
-        "Game Map": " quj pu'jin",
-        "Modded World": " Modded qo'",
-        "Parkour": " Parkour",
-        "Puzzle": " Puzzle",
-        "Survival": " Survival",
-        "Types": " Types"
+        "All": "hoch",
+        "Adventure": "Adventure",
+        "Creation": "Creation",
+        "Game Map": "quj pu'jin",
+        "Modded World": "Modded qo'",
+        "Parkour": "Parkour",
+        "Puzzle": "Puzzle",
+        "Survival": "Survival",
+        "Types": "Types"
       }
     },
     "resourcepackTagList": {
       "CurseForge": {
-        "All": " hoch",
-        "16x": " 16x",
-        "32x": " 32x",
-        "64x": " 64x",
-        "128x": " 128x",
-        "256x": " 256x",
-        "512x and Higher": " 512x 'ej Higher",
-        "Styles": " Styles",
-        "Animated": " Animated",
-        "Special": " Special",
-        "Data Packs": " de' Packs",
-        "Font Packs": " Font Packs",
-        "Medieval": " Medieval",
-        "Miscellaneous": " Misc.",
-        "Mod Support": " Mod qutlh",
-        "Modern": " Modern",
-        "Photo Realistic": " millogh Realistic",
-        "Resolution": " Resolution",
-        "Steampunk": " Steampunk",
-        "Traditional": " Traditional"
+        "All": "hoch",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x 'ej Higher",
+        "Styles": "Styles",
+        "Animated": "Animated",
+        "Special": "Special",
+        "Data Packs": "de' Packs",
+        "Font Packs": "Font Packs",
+        "Medieval": "Medieval",
+        "Miscellaneous": "Misc.",
+        "Mod Support": "Mod qutlh",
+        "Modern": "Modern",
+        "Photo Realistic": "millogh Realistic",
+        "Resolution": "Resolution",
+        "Steampunk": "Steampunk",
+        "Traditional": "Traditional"
       },
       "Modrinth": {
-        "All": " hoch",
-        "8x-": " 8x qoj Lower",
-        "16x": " 16x",
-        "32x": " 32x",
-        "64x": " 64x",
-        "128x": " 128x",
-        "256x": " 256x",
-        "512x+": " 512x qoj Higher",
-        "Styles": " Styles",
-        "audio": " Audio",
-        "blocks": " Blocks",
-        "core-shaders": " sosbor Shaders",
-        "entities": " Entities",
-        "environment": " Environment",
-        "equipment": " luch",
-        "fonts": " Fonts",
-        "gui": " GUI",
-        "items": " Items",
-        "locale": " Locale",
-        "models": " Models",
-        "combat": " viq",
-        "cursed": " Cursed",
-        "decoration": " Decoration",
-        "modded": " Modded",
-        "realistic": " Realistic",
-        "Resolution": " Resolution",
-        "simplistic": " Simplistic",
-        "themed": " Themed",
-        "tweaks": " Tweaks",
-        "utility": " lo' law'",
-        "vanilla-like": " Vanilla-parha'"
+        "All": "hoch",
+        "8x-": "8x qoj Lower",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x+": "512x qoj Higher",
+        "Styles": "Styles",
+        "audio": "Audio",
+        "blocks": "Blocks",
+        "core-shaders": "sosbor Shaders",
+        "entities": "Entities",
+        "environment": "Environment",
+        "equipment": "luch",
+        "fonts": "Fonts",
+        "gui": "GUI",
+        "items": "Items",
+        "locale": "Locale",
+        "models": "Models",
+        "combat": "viq",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "modded": "Modded",
+        "realistic": "Realistic",
+        "Resolution": "Resolution",
+        "simplistic": "Simplistic",
+        "themed": "Themed",
+        "tweaks": "Tweaks",
+        "utility": "lo' law'",
+        "vanilla-like": "Vanilla-parha'"
       }
     },
     "shaderTagList": {
       "CurseForge": {
-        "All": " hoch",
-        "Styles": " Styles",
-        "Fantasy": " Fantasy",
-        "Realistic": " Realistic",
-        "Vanilla": " Vanilla"
+        "All": "hoch",
+        "Styles": "Styles",
+        "Fantasy": "Fantasy",
+        "Realistic": "Realistic",
+        "Vanilla": "Vanilla"
       },
       "Modrinth": {
-        "All": " hoch",
-        "Styles": " Styles",
-        "cartoon": " millogh",
-        "cursed": " Cursed",
-        "fantasy": " Fantasy",
-        "realistic": " Realistic",
-        "semi-realistic": " Semi-Realistic",
-        "vanilla-like": " Vanilla-parha'",
-        "atmosphere": " mud",
-        "bloom": " Bloom",
-        "colored-lighting": " Colored Lighting",
-        "foliage": " Foliage",
-        "path-tracing": " Path Tracing",
-        "pbr": " PBR",
-        "reflections": " Reflections",
-        "shadows": " Shadows",
-        "potato": " patat 'oqqar",
-        "performance": " Performance",
-        "low": " Low",
-        "medium": " Medium",
-        "high": " High",
-        "screenshot": " Screenshot"
+        "All": "hoch",
+        "Styles": "Styles",
+        "cartoon": "millogh",
+        "cursed": "Cursed",
+        "fantasy": "Fantasy",
+        "realistic": "Realistic",
+        "semi-realistic": "Semi-Realistic",
+        "vanilla-like": "Vanilla-parha'",
+        "atmosphere": "mud",
+        "bloom": "Bloom",
+        "colored-lighting": "Colored Lighting",
+        "foliage": "Foliage",
+        "path-tracing": "Path Tracing",
+        "pbr": "PBR",
+        "reflections": "Reflections",
+        "shadows": "Shadows",
+        "potato": "patat 'oqqar",
+        "performance": "Performance",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "screenshot": "Screenshot"
       }
     },
     "modpackTagList": {
       "CurseForge": {
-        "All": " hoch",
-        "Styles": " Styles",
-        "Adventure and RPG": " Adventure RPG",
-        "Combat / PvP": " viq PvP",
-        "Exploration": " Exploration",
-        "Extra Large": " Extra Large",
-        "FTB Official Pack": " FTB",
-        "Hardcore": " Hardcore",
-        "Horror": " Horror",
-        "Magic": " Magic",
-        "Map Based": " pu'jin Based",
-        "Mini Game": " Mini quj",
-        "Multiplayer": " Multiplayer",
-        "Quests": " Quests",
-        "Sci-Fi": " Sci-Fi",
-        "Skyblock": " Skyblock",
-        "Small / Light": " Small wovmohwi'",
-        "Tech": " Tech",
-        "Vanilla+": " Vanilla+"
+        "All": "hoch",
+        "Styles": "Styles",
+        "Adventure and RPG": "Adventure RPG",
+        "Combat / PvP": "viq PvP",
+        "Exploration": "Exploration",
+        "Extra Large": "Extra Large",
+        "FTB Official Pack": "FTB",
+        "Hardcore": "Hardcore",
+        "Horror": "Horror",
+        "Magic": "Magic",
+        "Map Based": "pu'jin Based",
+        "Mini Game": "Mini quj",
+        "Multiplayer": "Multiplayer",
+        "Quests": "Quests",
+        "Sci-Fi": "Sci-Fi",
+        "Skyblock": "Skyblock",
+        "Small / Light": "Small wovmohwi'",
+        "Tech": "Tech",
+        "Vanilla+": "Vanilla+"
       },
       "Modrinth": {
-        "All": " hoch",
-        "styles": " Styles",
-        "adventure": " Adventure",
-        "challenging": " Challenging",
-        "combat": " viq",
-        "kitchen-sink": " Kitchen Sink",
-        "lightweight": " Lightweight",
-        "magic": " Magic",
-        "multiplayer": " Multiplayer",
-        "optimization": " Optimization",
-        "quests": " Quests",
-        "technology": " cham"
+        "All": "hoch",
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "challenging": "Challenging",
+        "combat": "viq",
+        "kitchen-sink": "Kitchen Sink",
+        "lightweight": "Lightweight",
+        "magic": "Magic",
+        "multiplayer": "Multiplayer",
+        "optimization": "Optimization",
+        "quests": "Quests",
+        "technology": "cham"
       }
     },
     "datapackTagList": {
       "CurseForge": {
-        "All": " hoch",
-        "Styles": " Styles",
-        "Magic": " Magic",
-        "Miscellaneous": " Misc.",
-        "Fantasy": " Fantasy",
-        "Mod Support": " Mod qutlh",
-        "Tech": " Tech",
-        "Library": " Library",
-        "Utility": " lo' law'",
-        "Adventure": " Adventure"
+        "All": "hoch",
+        "Styles": "Styles",
+        "Magic": "Magic",
+        "Miscellaneous": "Misc.",
+        "Fantasy": "Fantasy",
+        "Mod Support": "Mod qutlh",
+        "Tech": "Tech",
+        "Library": "Library",
+        "Utility": "lo' law'",
+        "Adventure": "Adventure"
       },
       "Modrinth": {
-        "All": " hoch",
-        "styles": " Styles",
-        "adventure": " Adventure",
-        "cursed": " Cursed",
-        "decoration": " Decoration",
-        "economy": " Economy",
-        "equipment": " luch",
-        "food": " soj",
-        "game-mechanics": " quj Mechanics",
-        "library": " Library",
-        "magic": " Magic",
-        "management": " Management",
-        "minigame": " Minigame",
-        "mobs": " Mobs",
-        "optimization": " Optimization",
-        "social": " Social",
-        "storage": " Storage",
-        "technology": " cham",
-        "transportation": " Transportation",
-        "utility": " lo' law'",
-        "worldgen": " qo' Gen"
+        "All": "hoch",
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "luch",
+        "food": "soj",
+        "game-mechanics": "quj Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "cham",
+        "transportation": "Transportation",
+        "utility": "lo' law'",
+        "worldgen": "qo' Gen"
       }
     },
     "sortByList": {
       "CurseForge": {
-        "Popularity": " Popularity",
-        "Latest update": " Latest update",
-        "Creation date": " Creation date",
-        "Total downloads": " Total downloads",
-        "A-Z": " A-Z"
+        "Popularity": "Popularity",
+        "Latest update": "Latest update",
+        "Creation date": "Creation date",
+        "Total downloads": "Total downloads",
+        "A-Z": "A-Z"
       },
       "Modrinth": {
-        "relevance": " Relevance",
-        "downloads": " Downloads",
-        "follows": " Followers",
-        "newest": " Date published",
-        "updated": " Date updated"
+        "relevance": "Relevance",
+        "downloads": "Downloads",
+        "follows": "Followers",
+        "newest": "Date published",
+        "updated": "Date updated"
       }
     },
     "versionList": {
-      "All": " hoch"
+      "All": "hoch"
     }
   },
   "RestoreConfigConfirmDialog": {
-    "title": " Restore bahjan Settings",
-    "body": " This action will restore hoch bahjan settings to their default values. Are tlhih sure tlhih neh to ruch?"
+    "title": "Restore bahjan Settings",
+    "body": "This action will restore hoch bahjan settings to their default values. Are tlhih sure tlhih neh to ruch?"
   },
   "RevealConfigJsonConfirmDialog": {
-    "body": " Please hoj ghorgh editing the raw bahjan settings teywi'. Incorrect formatting may dev to the loss of wa'dich settings qoj bot the bahjan from working properly."
+    "body": "Please hoj ghorgh editing the raw bahjan settings teywi'. Incorrect formatting may dev to the loss of wa'dich settings qoj bot the bahjan from working properly."
   },
   "ScreenshotPreviewModal": {
     "menu": {
-      "setAsBg": " vey as bahjan Background"
+      "setAsBg": "vey as bahjan Background"
     }
   },
   "SelectPlayerModal": {
     "header": {
-      "title": " Please wiv a chu'wi' to chel"
+      "title": "Please wiv a chu'wi' to chel"
     }
   },
   "Services": {
     "config": {
       "retrieveLauncherConfig": {
         "error": {
-          "title": " Failed to suq bahjan settings"
+          "title": "Failed to suq bahjan settings"
         }
       },
       "updateLauncherConfig": {
         "error": {
-          "title": " Failed to update bahjan settings"
+          "title": "Failed to update bahjan settings"
         }
       },
       "restoreLauncherConfig": {
-        "success": " Successfully restored bahjan settings",
+        "success": "Successfully restored bahjan settings",
         "error": {
-          "title": " Failed to restore bahjan settings"
+          "title": "Failed to restore bahjan settings"
         }
       },
       "exportLauncherConfig": {
-        "success": " Successfully exported bahjan settings",
+        "success": "Successfully exported bahjan settings",
         "error": {
-          "title": " Failed to export bahjan settings",
+          "title": "Failed to export bahjan settings",
           "description": {
-            "FETCH_ERROR": " Failed to fetch the meta server"
+            "FETCH_ERROR": "Failed to fetch the meta server"
           }
         }
       },
       "importLauncherConfig": {
-        "success": " Successfully imported bahjan settings",
+        "success": "Successfully imported bahjan settings",
         "error": {
-          "title": " Failed to import bahjan settings",
+          "title": "Failed to import bahjan settings",
           "description": {
-            "FETCH_ERROR": " Failed to fetch the meta server",
-            "INVALID_CODE": " Invalid ngoq",
-            "CODE_EXPIRED": " ngoq expired",
-            "VERSION_MISMATCH": " bahjan version mismatch"
+            "FETCH_ERROR": "Failed to fetch the meta server",
+            "INVALID_CODE": "Invalid ngoq",
+            "CODE_EXPIRED": "ngoq expired",
+            "VERSION_MISMATCH": "bahjan version mismatch"
           }
         }
       },
       "retrieveCustomBackgroundList": {
-        "success": " Successfully retrieved tigh background tetlh",
+        "success": "Successfully retrieved tigh background tetlh",
         "error": {
-          "title": " Failed to tlhapqa' tigh background tetlh"
+          "title": "Failed to tlhapqa' tigh background tetlh"
         }
       },
       "addCustomBackground": {
-        "success": " Successfully added tigh background",
+        "success": "Successfully added tigh background",
         "error": {
-          "title": " Failed to chel tigh background"
+          "title": "Failed to chel tigh background"
         }
       },
       "deleteCustomBackground": {
-        "success": " Successfully deleted tigh background",
+        "success": "Successfully deleted tigh background",
         "error": {
-          "title": " Failed to delete tigh background"
+          "title": "Failed to delete tigh background"
         }
       },
       "retrieveJavaList": {
         "error": {
-          "title": " Failed to tlhapqa' installed Java tetlh"
+          "title": "Failed to tlhapqa' installed Java tetlh"
         }
       },
       "validateJava": {
         "error": {
-          "title": " Failed to validate Java",
+          "title": "Failed to validate Java",
           "description": {
-            "JAVA_EXEC_INVALID": " Java executable is invalid"
+            "JAVA_EXEC_INVALID": "Java executable is invalid"
           }
         }
       },
       "downloadMojangJava": {
         "error": {
-          "title": " Failed to download Mojang Java runtime"
+          "title": "Failed to download Mojang Java runtime"
         }
       },
       "checkGameDirectory": {
         "error": {
-          "title": " Invalid quj directory",
+          "title": "Invalid quj directory",
           "description": {
-            "GAME_DIR_ALREADY_ADDED": " The directory has already been added",
-            "GAME_DIR_NOT_EXIST": " The directory does not exist"
+            "GAME_DIR_ALREADY_ADDED": "The directory has already been added",
+            "GAME_DIR_NOT_EXIST": "The directory does not exist"
           }
         }
       },
       "clearDownloadCache": {
-        "success": " Successfully cleared download cache",
+        "success": "Successfully cleared download cache",
         "error": {
-          "title": " Failed to clear download cache",
+          "title": "Failed to clear download cache",
           "description": {
-            "HAS_ACTIVE_DOWNLOAD_TASKS": " pa' are active download tasks in tlhetlh.",
-            "FILE_DELETION_FAILED": " Failed to delete files, chah may qu' in yan."
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "pa' are active download tasks in tlhetlh.",
+            "FILE_DELETION_FAILED": "Failed to delete files, chah may qu' in yan."
           }
         }
       }
@@ -1822,164 +1822,164 @@
     "account": {
       "retrievePlayerList": {
         "error": {
-          "title": " Failed to tlhapqa' chu'wi' tetlh"
+          "title": "Failed to tlhapqa' chu'wi' tetlh"
         }
       },
       "addPlayerOffline": {
-        "success": " Successfully added offline chu'wi'",
+        "success": "Successfully added offline chu'wi'",
         "error": {
-          "title": " Failed to chel offline chu'wi'",
+          "title": "Failed to chel offline chu'wi'",
           "description": {
-            "DUPLICATE": " chu'wi' already exists",
-            "INVALID": " UUID is invalid"
+            "DUPLICATE": "chu'wi' already exists",
+            "INVALID": "UUID is invalid"
           }
         }
       },
       "fetchOAuthCode": {
         "error": {
-          "title": " Failed to suq authentication ngoq",
+          "title": "Failed to suq authentication ngoq",
           "description": {
-            "NETWORK_ERROR": " Unable to rar to the server",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "INVALID": " The chu'wi' type is invalid",
-            "NOT_FOUND": " The server does not exist"
+            "NETWORK_ERROR": "Unable to rar to the server",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "INVALID": "The chu'wi' type is invalid",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
       "addPlayerOAuth": {
-        "success": " Successfully added chu'wi'",
+        "success": "Successfully added chu'wi'",
         "error": {
-          "title": " Failed to chel chu'wi'",
+          "title": "Failed to chel chu'wi'",
           "description": {
-            "DUPLICATE": " chu'wi' already exists",
-            "NETWORK_ERROR": " Unable to rar to the server",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NOT_FOUND": " The authentication server does not exist",
-            "CANCELLED": " OAuth login cancelled",
-            "INVALID": " The server type is invalid",
-            "NO_MINECRAFT_PROFILE": " qo' Minecraft profile found"
+            "DUPLICATE": "chu'wi' already exists",
+            "NETWORK_ERROR": "Unable to rar to the server",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NOT_FOUND": "The authentication server does not exist",
+            "CANCELLED": "OAuth login cancelled",
+            "INVALID": "The server type is invalid",
+            "NO_MINECRAFT_PROFILE": "qo' Minecraft profile found"
           }
         }
       },
       "reloginPlayerOAuth": {
-        "success": " Successfully re-logged in",
+        "success": "Successfully re-logged in",
         "error": {
-          "title": " Failed to re-login",
+          "title": "Failed to re-login",
           "description": {
-            "NOT_FOUND": " The chu'wi' does not exist",
-            "EXPIRED": " The naw' token has expired, please re-login",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "INVALID": " The chu'wi' type is invalid",
-            "CANCELLED": " OAuth re-login cancelled",
-            "NO_MINECRAFT_PROFILE": " qo' Minecraft profile found"
+            "NOT_FOUND": "The chu'wi' does not exist",
+            "EXPIRED": "The naw' token has expired, please re-login",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "INVALID": "The chu'wi' type is invalid",
+            "CANCELLED": "OAuth re-login cancelled",
+            "NO_MINECRAFT_PROFILE": "qo' Minecraft profile found"
           }
         }
       },
       "addPlayer3rdPartyPassword": {
-        "success": " Successfully added chu'wi'",
+        "success": "Successfully added chu'wi'",
         "error": {
-          "title": " Failed to chel chu'wi'",
+          "title": "Failed to chel chu'wi'",
           "description": {
-            "DUPLICATE": " chu'wi' already exists",
-            "NETWORK_ERROR": " Unable to rar to the server",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "INVALID": " qih account qoj password",
-            "NOT_FOUND": " The server does not exist",
-            "EXPIRED": " The naw' token has expired, please re-login"
+            "DUPLICATE": "chu'wi' already exists",
+            "NETWORK_ERROR": "Unable to rar to the server",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "INVALID": "qih account qoj password",
+            "NOT_FOUND": "The server does not exist",
+            "EXPIRED": "The naw' token has expired, please re-login"
           }
         }
       },
       "reloginPlayer3rdPartyPassword": {
-        "success": " Successfully re-logged in",
+        "success": "Successfully re-logged in",
         "error": {
-          "title": " Failed to re-login",
+          "title": "Failed to re-login",
           "description": {
-            "NOT_FOUND": " The chu'wi' does not exist",
-            "EXPIRED": " The naw' token has expired, please re-login",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "INVALID": " qih account qoj password"
+            "NOT_FOUND": "The chu'wi' does not exist",
+            "EXPIRED": "The naw' token has expired, please re-login",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "INVALID": "qih account qoj password"
           }
         }
       },
       "addPlayerFromSelection": {
-        "success": " Successfully added chu'wi'",
+        "success": "Successfully added chu'wi'",
         "error": {
-          "title": " Failed to chel chu'wi'",
+          "title": "Failed to chel chu'wi'",
           "description": {
-            "DUPLICATE": " chu'wi' already exists",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "EXPIRED": " The naw' token has expired, please re-login"
+            "DUPLICATE": "chu'wi' already exists",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "EXPIRED": "The naw' token has expired, please re-login"
           }
         }
       },
       "updatePlayerSkinOfflinePreset": {
-        "success": " Successfully updated chu'wi' surgh",
+        "success": "Successfully updated chu'wi' surgh",
         "error": {
-          "title": " Failed to update chu'wi' surgh",
+          "title": "Failed to update chu'wi' surgh",
           "description": {
-            "NOT_FOUND": " The chu'wi' does not exist",
-            "INVALID": " The chu'wi' type is invalid",
-            "TEXTURE_ERROR": " Unable to suq chu'wi' texture"
+            "NOT_FOUND": "The chu'wi' does not exist",
+            "INVALID": "The chu'wi' type is invalid",
+            "TEXTURE_ERROR": "Unable to suq chu'wi' texture"
           }
         }
       },
       "deletePlayer": {
-        "success": " Successfully deleted chu'wi'",
+        "success": "Successfully deleted chu'wi'",
         "error": {
-          "title": " Failed to delete chu'wi'",
+          "title": "Failed to delete chu'wi'",
           "description": {
-            "NOT_FOUND": " The chu'wi' does not exist"
+            "NOT_FOUND": "The chu'wi' does not exist"
           }
         }
       },
       "refreshPlayer": {
-        "success": " Successfully refreshed chu'wi' info",
+        "success": "Successfully refreshed chu'wi' info",
         "error": {
-          "title": " Failed to refresh chu'wi' info",
+          "title": "Failed to refresh chu'wi' info",
           "description": {
-            "NOT_FOUND": " The chu'wi' does not exist",
-            "EXPIRED": " The naw' token has expired, please re-login",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "INVALID": " The chu'wi' type is invalid"
+            "NOT_FOUND": "The chu'wi' does not exist",
+            "EXPIRED": "The naw' token has expired, please re-login",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "INVALID": "The chu'wi' type is invalid"
           }
         }
       },
       "retrieveAuthServerList": {
         "error": {
-          "title": " Failed to tlhapqa' server tetlh"
+          "title": "Failed to tlhapqa' server tetlh"
         }
       },
       "fetchAuthServer": {
         "error": {
-          "title": " Failed to suq authentication server de'",
+          "title": "Failed to suq authentication server de'",
           "description": {
-            "DUPLICATE": " The server has already been added",
-            "INVALID": " Invalid server URL",
-            "NOT_FOUND": " The server does not exist"
+            "DUPLICATE": "The server has already been added",
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
       "addAuthServer": {
-        "success": " Successfully added authentication server",
+        "success": "Successfully added authentication server",
         "error": {
-          "title": " Failed to chel authentication server",
+          "title": "Failed to chel authentication server",
           "description": {
-            "DUPLICATE": " The server has already been added",
-            "INVALID": " Invalid server URL",
-            "NOT_FOUND": " The server does not exist"
+            "DUPLICATE": "The server has already been added",
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
           }
         }
       },
       "deleteAuthServer": {
-        "success": " Successfully deleted authentication server",
+        "success": "Successfully deleted authentication server",
         "error": {
-          "title": " Failed to delete authentication server",
+          "title": "Failed to delete authentication server",
           "description": {
-            "NOT_FOUND": " The authentication server does not exist"
+            "NOT_FOUND": "The authentication server does not exist"
           }
         }
       }
@@ -1987,45 +1987,45 @@
     "launch": {
       "selectSuitableJRE": {
         "error": {
-          "title": " Failed to wiv suitable JRE",
+          "title": "Failed to wiv suitable JRE",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist",
-            "NO_SUITABLE_JAVA": " qo' suitable Java version found",
-            "SELECTED_JAVA_UNAVAILABLE": " The manually selected Java runtime has been removed qoj is unavailable"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "NO_SUITABLE_JAVA": "qo' suitable Java version found",
+            "SELECTED_JAVA_UNAVAILABLE": "The manually selected Java runtime has been removed qoj is unavailable"
           }
         }
       },
       "validateGameFiles": {
         "error": {
-          "title": " Failed to validate quj files",
+          "title": "Failed to validate quj files",
           "description": {
-            "MOD_LOADER_NOT_INSTALLED": " Mod loader installation not completed",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": " Mod loader library files not downloaded",
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist",
-            "GAME_FILES_INCOMPLETE": " quj files are incomplete",
-            "LAUNCHING_STATE_NOT_FOUND": " Launching state not found"
+            "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
+            "MOD_LOADER_LIB_NOT_DOWNLOADED": "Mod loader library files not downloaded",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "GAME_FILES_INCOMPLETE": "quj files are incomplete",
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
           }
         }
       },
       "validateSelectedPlayer": {
         "error": {
-          "title": " Failed to validate chu'wi'",
+          "title": "Failed to validate chu'wi'",
           "description": {
-            "NOT_FOUND": " The chu'wi' does not exist",
-            "EXPIRED": " The naw' token has expired, please re-login",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NO_DOWNLOAD_API": " Failed to download Authlib-Injector, please check internet connection",
-            "SAVE_ERROR": " Failed to tod Authlib-Injector",
-            "LAUNCHING_STATE_NOT_FOUND": " Launching state not found"
+            "NOT_FOUND": "The chu'wi' does not exist",
+            "EXPIRED": "The naw' token has expired, please re-login",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NO_DOWNLOAD_API": "Failed to download Authlib-Injector, please check internet connection",
+            "SAVE_ERROR": "Failed to tod Authlib-Injector",
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
           }
         }
       },
       "launchGame": {
         "error": {
-          "title": " Failed to launch quj",
+          "title": "Failed to launch quj",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": " Launching state not found"
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
           }
         }
       }
@@ -2033,79 +2033,79 @@
     "resource": {
       "fetchGameVersionList": {
         "error": {
-          "title": " Failed to fetch quj version tetlh",
+          "title": "Failed to fetch quj version tetlh",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server"
           }
         }
       },
       "fetchGameVersionSpecific": {
         "error": {
-          "title": " Failed to fetch quj version metadata",
+          "title": "Failed to fetch quj version metadata",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "CLIENT_VERSION_NOT_FOUND": " The requested quj version does not exist"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "CLIENT_VERSION_NOT_FOUND": "The requested quj version does not exist"
           }
         }
       },
       "fetchModLoaderVersionList": {
         "error": {
-          "title": " Failed to fetch mod loader version tetlh",
+          "title": "Failed to fetch mod loader version tetlh",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "NO_DOWNLOAD_API": " qo' download dup available, please check internet connection"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "NO_DOWNLOAD_API": "qo' download dup available, please check internet connection"
           }
         }
       },
       "fetchResourceListByName": {
         "error": {
-          "title": " Failed to fetch sup tetlh",
+          "title": "Failed to fetch sup tetlh",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "NO_DOWNLOAD_API": " qo' download dup available, please check internet connection"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "NO_DOWNLOAD_API": "qo' download dup available, please check internet connection"
           }
         }
       },
       "fetchResourceVersionPacks": {
         "error": {
-          "title": " Failed to fetch sup version tetlh",
+          "title": "Failed to fetch sup version tetlh",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "NO_DOWNLOAD_API": " qo' download dup available, please check internet connection"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "NO_DOWNLOAD_API": "qo' download dup available, please check internet connection"
           }
         }
       },
       "downloadGameServer": {
         "error": {
-          "title": " Failed to download quj server",
+          "title": "Failed to download quj server",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server"
           }
         }
       },
       "fetchRemoteResourceByLocal": {
         "error": {
-          "title": " Failed to suq remote sup",
+          "title": "Failed to suq remote sup",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "NO_DOWNLOAD_API": " qo' download dup available, please check internet connection"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "NO_DOWNLOAD_API": "qo' download dup available, please check internet connection"
           }
         }
       },
       "updateMod": {
         "error": {
-          "title": " Failed to download latest mod",
+          "title": "Failed to download latest mod",
           "description": {
-            "PARSE_ERROR": " The server returned de' in an incorrect format",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "FILE_OPERATION_ERROR": " Failed to rename old mod teywi'"
+            "PARSE_ERROR": "The server returned de' in an incorrect format",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "FILE_OPERATION_ERROR": "Failed to rename old mod teywi'"
           }
         }
       }
@@ -2113,373 +2113,373 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": " Failed to tlhapqa' quj instance tetlh",
+          "title": "Failed to tlhapqa' quj instance tetlh",
           "description": {
-            "INVALID_NAME_ERROR": " Invalid instance pong",
-            "INVALID_SOURCE_PATH": " Invalid hal path",
-            "CONFLICT_NAME_ERROR": " Instance pong already exists",
-            "FILE_MOVE_FAILED": " Failed to vih instance files"
+            "INVALID_NAME_ERROR": "Invalid instance pong",
+            "INVALID_SOURCE_PATH": "Invalid hal path",
+            "CONFLICT_NAME_ERROR": "Instance pong already exists",
+            "FILE_MOVE_FAILED": "Failed to vih instance files"
           }
         }
       },
       "createInstance": {
         "error": {
-          "title": " Failed to chenmoh instance download qu'",
+          "title": "Failed to chenmoh instance download qu'",
           "description": {
-            "CONFLICT_NAME_ERROR": " Instance pong already exists",
-            "FOLDER_CREATION_FAILED": " Failed to chenmoh dos folder",
-            "FILE_CREATION_FAILED": " Failed to chenmoh dos teywi'",
-            "NETWORK_ERROR": " Failed to rar to the server",
-            "CLIENT_JSON_PARSE_ERROR": " Failed to parse instance version info",
-            "ASSET_INDEX_PARSE_ERROR": " Failed to parse asset index"
+            "CONFLICT_NAME_ERROR": "Instance pong already exists",
+            "FOLDER_CREATION_FAILED": "Failed to chenmoh dos folder",
+            "FILE_CREATION_FAILED": "Failed to chenmoh dos teywi'",
+            "NETWORK_ERROR": "Failed to rar to the server",
+            "CLIENT_JSON_PARSE_ERROR": "Failed to parse instance version info",
+            "ASSET_INDEX_PARSE_ERROR": "Failed to parse asset index"
           }
         }
       },
       "updateInstanceConfig": {
         "error": {
-          "title": " Failed to update instance settings",
+          "title": "Failed to update instance settings",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist",
-            "NOT_FOUND": " Instance not found"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "NOT_FOUND": "Instance not found"
           }
         }
       },
       "retrieveInstanceGameConfig": {
         "error": {
-          "title": " Failed to tlhapqa' instance quj settings",
+          "title": "Failed to tlhapqa' instance quj settings",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
       },
       "resetInstanceGameConfig": {
-        "success": " Successfully reset instance quj settings",
+        "success": "Successfully reset instance quj settings",
         "error": {
-          "title": " Failed to reset instance quj settings",
+          "title": "Failed to reset instance quj settings",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist",
-            "SAVE_ERROR": " Failed to tod instance settings"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "SAVE_ERROR": "Failed to tod instance settings"
           }
         }
       },
       "retrieveInstanceSubdirPath": {
         "error": {
-          "title": " Failed to tlhapqa' instance directory path",
+          "title": "Failed to tlhapqa' instance directory path",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist qoj has a type qagh"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist qoj has a type qagh"
           }
         }
       },
       "deleteInstance": {
-        "success": " Successfully deleted instance",
+        "success": "Successfully deleted instance",
         "error": {
-          "title": " Failed to delete instance",
+          "title": "Failed to delete instance",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
       },
       "renameInstance": {
         "error": {
-          "title": " Failed to rename instance",
+          "title": "Failed to rename instance",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist",
-            "CONFLICT_NAME_ERROR": " A duplicate instance pong exists",
-            "INVALID_NAME_ERROR": " Invalid instance pong",
-            "INVALID_SOURCE_PATH": " Invalid hal path",
-            "FILE_MOVE_FAILED": " Failed to vih instance files"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "CONFLICT_NAME_ERROR": "A duplicate instance pong exists",
+            "INVALID_NAME_ERROR": "Invalid instance pong",
+            "INVALID_SOURCE_PATH": "Invalid hal path",
+            "FILE_MOVE_FAILED": "Failed to vih instance files"
           }
         }
       },
       "copyResourceToInstances": {
-        "success": " sup copied successfully",
+        "success": "sup copied successfully",
         "error": {
-          "title": " Failed to velqa' sup",
+          "title": "Failed to velqa' sup",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist qoj type qagh",
-            "INVALID_SOURCE_PATH": " Invalid hal path",
-            "ZIP_FILE_PROCESS_FAILED": " Failed to process zip teywi'",
-            "FILE_COPY_FAILED": " Failed to muh the velqa' teywi' ra'",
-            "FOLDER_CREATION_FAILED": " Failed to chenmoh dos folder"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist qoj type qagh",
+            "INVALID_SOURCE_PATH": "Invalid hal path",
+            "ZIP_FILE_PROCESS_FAILED": "Failed to process zip teywi'",
+            "FILE_COPY_FAILED": "Failed to muh the velqa' teywi' ra'",
+            "FOLDER_CREATION_FAILED": "Failed to chenmoh dos folder"
           }
         }
       },
       "moveResourceToInstance": {
-        "success": " sup moved successfully",
+        "success": "sup moved successfully",
         "error": {
-          "title": " vih sup failed",
+          "title": "vih sup failed",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist qoj type qagh",
-            "INVALID_SOURCE_PATH": " Invalid hal path",
-            "FILE_MOVE_FAILED": " Failed to muh the vih teywi' ra'",
-            "FOLDER_CREATION_FAILED": " Failed to chenmoh dos folder"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist qoj type qagh",
+            "INVALID_SOURCE_PATH": "Invalid hal path",
+            "FILE_MOVE_FAILED": "Failed to muh the vih teywi' ra'",
+            "FOLDER_CREATION_FAILED": "Failed to chenmoh dos folder"
           }
         }
       },
       "retrieveWorldList": {
         "error": {
-          "title": " Failed to tlhapqa' qo' tetlh"
+          "title": "Failed to tlhapqa' qo' tetlh"
         }
       },
       "retrieveGameServerList": {
         "error": {
-          "title": " Failed to tlhapqa' quj server tetlh",
+          "title": "Failed to tlhapqa' quj server tetlh",
           "description": {
-            "SERVER_NBT_READ_ERROR": " servers. Dat may ghaj been corrupted"
+            "SERVER_NBT_READ_ERROR": "servers. Dat may ghaj been corrupted"
           }
         }
       },
       "retrieveLocalModList": {
         "error": {
-          "title": " Failed to tlhapqa' local mod tetlh",
+          "title": "Failed to tlhapqa' local mod tetlh",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
       },
       "retrieveResourcePackList": {
         "error": {
-          "title": " Failed to tlhapqa' sup vey tetlh"
+          "title": "Failed to tlhapqa' sup vey tetlh"
         }
       },
       "retrieveServerResourcePackList": {
         "error": {
-          "title": " Failed to tlhapqa' sup vey tetlh from servers"
+          "title": "Failed to tlhapqa' sup vey tetlh from servers"
         }
       },
       "retrieveSchematicList": {
         "error": {
-          "title": " Failed to tlhapqa' schematic tetlh"
+          "title": "Failed to tlhapqa' schematic tetlh"
         }
       },
       "retrieveShaderPackList": {
         "error": {
-          "title": " Failed to tlhapqa' shader vey tetlh"
+          "title": "Failed to tlhapqa' shader vey tetlh"
         }
       },
       "retrieveScreenshotList": {
         "error": {
-          "title": " Failed to tlhapqa' screenshot tetlh"
+          "title": "Failed to tlhapqa' screenshot tetlh"
         }
       },
       "toggleModByExtension": {
         "error": {
-          "title": " Mod state toggle failed",
+          "title": "Mod state toggle failed",
           "description": {
-            "FILE_NOT_FOUND_ERROR": " The mod teywi' does not exist, 'oh may ghaj been renamed, moved, qoj deleted"
+            "FILE_NOT_FOUND_ERROR": "The mod teywi' does not exist, 'oh may ghaj been renamed, moved, qoj deleted"
           }
         }
       },
       "retrieveWorldDetails": {
         "error": {
-          "title": " Failed to tlhapqa' qo' details tetlh",
+          "title": "Failed to tlhapqa' qo' details tetlh",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": " qo' not exist",
-            "LEVEL_NOT_EXSIT_ERROR": " patlh de' not exist",
-            "LEVEL_PARSE_ERROR": " patlh de' parse qagh"
+            "WORLD_NOT_EXSIT_ERROR": "qo' not exist",
+            "LEVEL_NOT_EXSIT_ERROR": "patlh de' not exist",
+            "LEVEL_PARSE_ERROR": "patlh de' parse qagh"
           }
         }
       },
       "createLaunchDesktopShortcut": {
-        "success": " Launch qigh has been added to the desktop",
+        "success": "Launch qigh has been added to the desktop",
         "error": {
-          "title": " Failed to chenmoh launch qigh",
+          "title": "Failed to chenmoh launch qigh",
           "description": {
-            "SHORTCUT_CREATION_FAILED": " ra' execution failed",
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist"
+            "SHORTCUT_CREATION_FAILED": "ra' execution failed",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
           }
         }
       },
       "finishModLoaderInstall": {
-        "loading": " Installing mod loader for {{instanceId}}",
-        "success": " Mod loader installed successfully",
+        "loading": "Installing mod loader for {{instanceId}}",
+        "success": "Mod loader installed successfully",
         "error": {
-          "title": " Failed to sugh mod loader",
+          "title": "Failed to sugh mod loader",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": " Instance ID does not exist",
-            "INSTALLATION_DUPLICATED": " Another installation process is already in tlhetlh",
-            "MAIN_CLASS_NOT_FOUND": " Main class not found in the mod loader version",
-            "PROCESSOR_EXECUTION_FAILED": " Failed to muh the sugh process"
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "INSTALLATION_DUPLICATED": "Another installation process is already in tlhetlh",
+            "MAIN_CLASS_NOT_FOUND": "Main class not found in the mod loader version",
+            "PROCESSOR_EXECUTION_FAILED": "Failed to muh the sugh process"
           }
         }
       },
       "retrieveModpackMetaInfo": {
         "error": {
-          "title": " Failed to tlhapqa' modpack sup info",
+          "title": "Failed to tlhapqa' modpack sup info",
           "description": {
-            "FILE_NOT_FOUND_ERROR": " Modpack teywi' not found, 'oh may ghaj been renamed, moved qoj deleted",
-            "MODPACK_MANIFEST_PARSE_ERROR": " Modpack manifest teywi' parse qagh"
+            "FILE_NOT_FOUND_ERROR": "Modpack teywi' not found, 'oh may ghaj been renamed, moved qoj deleted",
+            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest teywi' parse qagh"
           }
         }
       }
     },
     "task": {
       "scheduleProgressiveTaskGroup": {
-        "error": " Failed to chenmoh qu'"
+        "error": "Failed to chenmoh qu'"
       },
       "onTaskGroupUpdate": {
         "status": {
-          "Started": " {{param}} download has started",
-          "Failed": " {{param}} download partially failed, please retry",
-          "Completed": " {{param}} has been downloaded successfully",
-          "Stopped": " {{param}} download has been stopped",
-          "Cancelled": " {{param}} download has been cancelled"
+          "Started": "{{param}} download has started",
+          "Failed": "{{param}} download partially failed, please retry",
+          "Completed": "{{param}} has been downloaded successfully",
+          "Stopped": "{{param}} download has been stopped",
+          "Cancelled": "{{param}} download has been cancelled"
         }
       }
     },
     "utils": {
       "deleteFile": {
-        "success": " teywi' deleted successfully",
+        "success": "teywi' deleted successfully",
         "error": {
-          "title": " Failed to delete teywi'"
+          "title": "Failed to delete teywi'"
         }
       }
     }
   },
   "SettingsLayout": {
     "settingsDomainList": {
-      "global-game": " quj Settings",
-      "java": " Java",
-      "general": " sa'",
-      "appearance": " Appearance",
-      "download": " Download",
-      "sync-restore": " Sync & Restore",
-      "help": " Docs & qah",
-      "about": " About",
-      "dev-test": " Dev - wah Page"
+      "global-game": "quj Settings",
+      "java": "Java",
+      "general": "sa'",
+      "appearance": "Appearance",
+      "download": "Download",
+      "sync-restore": "Sync & Restore",
+      "help": "Docs & qah",
+      "about": "About",
+      "dev-test": "Dev - wah Page"
     }
   },
   "SkinPreview": {
-    "cape": " ngup",
+    "cape": "ngup",
     "animation": {
-      "idle": " Idle",
-      "walk": " yit",
-      "run": " qet",
-      "wave": " yu'egh"
+      "idle": "Idle",
+      "walk": "yit",
+      "run": "qet",
+      "wave": "yu'egh"
     },
     "button": {
-      "enableRotation": " Enable Rotation",
-      "disableRotation": " qotlh Rotation",
-      "play": " ril",
-      "pause": " yev"
+      "enableRotation": "Enable Rotation",
+      "disableRotation": "qotlh Rotation",
+      "play": "ril",
+      "pause": "yev"
     }
   },
   "SpotlightSearchModal": {
     "input": {
-      "placeholder": " Global Search"
+      "placeholder": "Global Search"
     },
-    "tip": " Search local 'ej online quj jo in wa' lan",
-    "empty": " qo' results found",
+    "tip": "Search local 'ej online quj jo in wa' lan",
+    "empty": "qo' results found",
     "resource": {
-      "mod": " nej {{query}} mods",
-      "world": " nej {{query}} worlds",
-      "resourcepack": " nej {{query}} sup packs",
-      "shader": " nej {{query}} shader packs",
-      "datapack": " nej {{query}} de' packs",
-      "modpack": " nej {{query}} modpacks",
-      "curseforge": " on CurseForge",
-      "modrinth": " on Modrinth"
+      "mod": "nej {{query}} mods",
+      "world": "nej {{query}} worlds",
+      "resourcepack": "nej {{query}} sup packs",
+      "shader": "nej {{query}} shader packs",
+      "datapack": "nej {{query}} de' packs",
+      "modpack": "nej {{query}} modpacks",
+      "curseforge": "on CurseForge",
+      "modrinth": "on Modrinth"
     },
     "result": {
-      "page": " Page",
-      "recentViewed": " Recent Viewed",
-      "instance": " Instance",
-      "player": " chu'wi'",
-      "curseforge": " Search on CurseForge",
-      "modrinth": " Search on Modrinth"
+      "page": "Page",
+      "recentViewed": "Recent Viewed",
+      "instance": "Instance",
+      "player": "chu'wi'",
+      "curseforge": "Search on CurseForge",
+      "modrinth": "Search on Modrinth"
     }
   },
   "StarUsModal": {
     "header": {
-      "title": " hov mah on GitHub"
+      "title": "hov mah on GitHub"
     },
-    "body": " If tlhih parmaq our product 'ej would parha' to qutlh mah, could tlhih nob mah a hov on GitHub? This small action means a lot to mah 'ej will pilmoh mah to tah delivering new features 'ej experiences for tlhih.",
+    "body": "If tlhih parmaq our product 'ej would parha' to qutlh mah, could tlhih nob mah a hov on GitHub? This small action means a lot to mah 'ej will pilmoh mah to tah delivering new features 'ej experiences for tlhih.",
     "button": {
-      "later": " sibi'ha'",
-      "starUs": " hov mah"
+      "later": "sibi'ha'",
+      "starUs": "hov mah"
     }
   },
   "SyncAndRestoreSettingsPage": {
     "launcherConfig": {
-      "title": " bahjan Settings",
+      "title": "bahjan Settings",
       "settings": {
         "internetSync": {
-          "title": " Sync through the Internet",
-          "import": " Import",
-          "export": " Export"
+          "title": "Sync through the Internet",
+          "import": "Import",
+          "export": "Export"
         },
         "restoreAll": {
-          "title": " Restore hoch Settings",
-          "description": " Restore hoch bahjan settings to their default values",
-          "restore": " Restore"
+          "title": "Restore hoch Settings",
+          "description": "Restore hoch bahjan settings to their default values",
+          "restore": "Restore"
         }
       }
     }
   },
   "SyncConfigExportModal": {
     "header": {
-      "title": " Sync Settings - Export"
+      "title": "Sync Settings - Export"
     },
     "label": {
-      "token": " Token"
+      "token": "Token"
     },
-    "helper": " 'el the token above into the jan to export to",
-    "countdown": " {{seconds}} seconds until refresh"
+    "helper": "'el the token above into the jan to export to",
+    "countdown": "{{seconds}} seconds until refresh"
   },
   "SyncConfigImportModal": {
     "header": {
-      "title": " Sync Settings - Import"
+      "title": "Sync Settings - Import"
     },
     "label": {
-      "token": " Token"
+      "token": "Token"
     },
-    "helper": " 'el the token generated by the jan to import from"
+    "helper": "'el the token generated by the jan to import from"
   },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
-        "now": " dah",
-        "minutes-ago": " {{togh}} minutes ago",
-        "last-hour": " hochdich rep",
-        "hours-ago": " {{togh}} hours ago",
-        "yesterday": " wa'hu'",
-        "others": " on {{poh}}"
+        "now": "dah",
+        "minutes-ago": "{{togh}} minutes ago",
+        "last-hour": "hochdich rep",
+        "hours-ago": "{{togh}} hours ago",
+        "yesterday": "wa'hu'",
+        "others": "on {{poh}}"
       }
     },
     "env": {
       "checkFrontendCompatibility": {
         "warning": {
-          "title": " pat's webview version is outdated. 'op UI elements may not 'agh correctly."
+          "title": "pat's webview version is outdated. 'op UI elements may not 'agh correctly."
         }
       }
     },
     "wiki": {
-      "baseUrl": " https: //minecraft. Wiki/w/{{ngaqha'mohwi'}}",
+      "baseUrl": "https: //minecraft. Wiki/w/{{ngaqha'mohwi'}}",
       "key": {
-        "javaEdition": " Java_Edition_{{version}}"
+        "javaEdition": "Java_Edition_{{version}}"
       }
     }
   },
   "WelcomeAndTermsModal": {
     "header": {
-      "title": " Welcome!"
+      "title": "Welcome!"
     },
     "body": {
-      "part1": " Welcome to SJMCL! Before tlhih wa'dich, please na' to lad 'ej qochbe' to our ",
-      "terms": " User Agreement",
+      "part1": "Welcome to SJMCL! Before tlhih wa'dich, please na' to lad 'ej qochbe' to our ",
+      "terms": "User Agreement",
       "periods": "."
     },
     "warning": {
-      "unstableVersion": " tlhih are using the {{versionLabel}} of SJMCL. 'op features may qu' unstable qoj incomplete. Ghew reports 'ej feature requests are welcome."
+      "unstableVersion": "tlhih are using the {{versionLabel}} of SJMCL. 'op features may qu' unstable qoj incomplete. Ghew reports 'ej feature requests are welcome."
     },
     "button": {
-      "exit": " Exit",
-      "agree": " qochbe'"
+      "exit": "Exit",
+      "agree": "qochbe'"
     }
   },
   "WorldLevelDataModal": {
     "header": {
-      "title": " qo' patlh de' - {{worldName}}"
+      "title": "qo' patlh de' - {{worldName}}"
     }
   }
 }
