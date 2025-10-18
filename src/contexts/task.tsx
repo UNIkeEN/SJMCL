@@ -626,13 +626,27 @@ export const parseTaskGroup = (
   version?: string;
   timestamp: number;
   isRetry: boolean;
+  rawName: string;
 } => {
-  const [rawName, timestamp] = taskGroup.split("@");
+  const lastAtIndex = taskGroup.lastIndexOf("@");
+  let rawName: string;
+  let timestamp: number;
+
+  if (lastAtIndex === -1) {
+    rawName = taskGroup;
+    timestamp = Date.now();
+  } else {
+    rawName = taskGroup.substring(0, lastAtIndex);
+    timestamp = parseInt(taskGroup.substring(lastAtIndex + 1));
+  }
+
   const [name, version] = rawName.split("?");
+
   return {
     name: name.replace(/^retry-/, ""),
     version,
     isRetry: name.startsWith("retry-"),
-    timestamp: parseInt(timestamp),
+    timestamp: timestamp,
+    rawName,
   };
 };

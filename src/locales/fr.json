@@ -661,13 +661,7 @@
     "release": "Stable",
     "snapshot": "Bêta",
     "april_fools": "Avril édition",
-    "searchPlaceholder": "Rechercher une version",
-    "wikiKey": {
-      "release": "Version Java",
-      "snapshot": "",
-      "old_beta": "Version Java Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "Rechercher une version"
   },
   "General": {
     "add": "Ajouter",
@@ -1985,7 +1979,10 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://fr.minecraft.wiki/w/"
+      "baseUrl": "https://fr.minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Édition_Java_{{version}}"
+      }
     }
   },
   "WelcomeAndTermsModal": {

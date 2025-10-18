@@ -40,16 +40,7 @@ import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
-import {
-  OtherResourceSource,
-  OtherResourceType,
-  datapackTagList,
-  modTagList,
-  modpackTagList,
-  resourcePackTagList,
-  shaderPackTagList,
-  worldTagList,
-} from "@/enums/resource";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import {
@@ -63,6 +54,7 @@ import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
 import { TaskService } from "@/services/task";
 import { ISOToDate } from "@/utils/datetime";
+import { translateTag } from "@/utils/resource";
 import { formatDisplayCount } from "@/utils/string";
 
 interface DownloadSpecificResourceModalProps
@@ -114,14 +106,6 @@ const DownloadSpecificResourceModal: React.FC<
     ModLoaderType.NeoForge,
   ];
 
-  const tagLists: Record<string, any> = {
-    mod: modTagList,
-    world: worldTagList,
-    resourcepack: resourcePackTagList,
-    shader: shaderPackTagList,
-    datapack: datapackTagList,
-  };
-
   const iconBackgroundColor: Record<string, string> = {
     alpha: "yellow.300",
     beta: "purple.500",
@@ -145,32 +129,6 @@ const DownloadSpecificResourceModal: React.FC<
     },
     [toast]
   ); // this is because TaskContext is now inside the SharedModalContext, use a separated function to avoid circular dependency
-
-  const translateTag = (
-    tag: string,
-    resourceType: string,
-    downloadSource?: OtherResourceSource
-  ) => {
-    if (
-      downloadSource === OtherResourceSource.CurseForge ||
-      downloadSource === OtherResourceSource.Modrinth
-    ) {
-      const tagList = (tagLists[resourceType] || modpackTagList)[
-        downloadSource
-      ];
-      let allTags: string[] = [];
-      if (typeof tagList === "object" && tagList !== null) {
-        const keys = Object.keys(tagList);
-        const values = Object.values(tagList).flat() as string[];
-        allTags = [...keys, ...values];
-      }
-      if (!allTags.includes(tag)) return "";
-      return t(
-        `ResourceDownloader.${resourceType}TagList.${downloadSource}.${tag}`
-      );
-    }
-    return tag;
-  };
 
   const versionLabelToParam = useCallback(
     (label: string) => {
@@ -480,7 +438,10 @@ const DownloadSpecificResourceModal: React.FC<
                 }
                 isFullClickZone
                 onClick={() => {
-                  if (item.dependencies.length > 0) {
+                  if (
+                    item.dependencies.length > 0 &&
+                    resource.type !== OtherResourceType.ModPack
+                  ) {
                     openSharedModal("alert-resource-dependency", {
                       dependencies: item.dependencies,
                       downloadSource: resource.source as OtherResourceSource,
@@ -580,6 +541,7 @@ const DownloadSpecificResourceModal: React.FC<
                   className="secondary-text"
                   wordBreak="break-all"
                   whiteSpace="pre-wrap"
+                  noOfLines={3}
                   mt={1}
                 >
                   {(showZhTrans && resource.translatedDescription) ||
@@ -611,7 +573,7 @@ const DownloadSpecificResourceModal: React.FC<
                 </Link>
               </HStack>
             )}
-            {resource.mcmodId && (
+            {resource.mcmodId !== 0 && (
               <HStack spacing={1} ml={2}>
                 <LuExternalLink />
                 <Link

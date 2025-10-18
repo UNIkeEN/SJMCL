@@ -30,7 +30,6 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   children?: React.ReactNode;
   childrenOnHover?: boolean;
   isChildrenIndependent?: boolean;
-  titleFlex?: boolean;
   maxTitleLines?: number;
   maxDescriptionLines?: number;
 }
@@ -54,7 +53,6 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   children,
   childrenOnHover = false,
   isChildrenIndependent = false,
-  titleFlex = false,
   maxTitleLines = undefined,
   maxDescriptionLines = undefined,
   ...boxProps
@@ -144,7 +142,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
             mr={2}
             alignItems="stretch"
             overflow="hidden"
-            flex={titleFlex ? "1 1 auto" : "0 0 auto"}
+            flex={"1 1 auto"}
           >
             {titleLineWrap ? (
               <Wrap spacingX={2} spacingY={0.5}>

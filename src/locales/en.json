@@ -288,6 +288,9 @@
         },
         "randomCustom": {
           "title": "Random Custom Image"
+        },
+        "autoDarken": {
+          "title": "Dim Background in Dark Mode"
         }
       },
       "presetBgList": {
@@ -391,6 +394,9 @@
       "loader": "Mod Loader",
       "skipped": "Skipped",
       "info": "Basic Settings"
+    },
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -600,9 +606,6 @@
     "placeholder": {
       "dirName": "Directory Name",
       "dirPath": "Select a game directory"
-    },
-    "button": {
-      "browse": "Browse"
     },
     "dialog": {
       "browse": {
@@ -834,13 +837,7 @@
     "release": "Release",
     "snapshot": "Snapshot",
     "april_fools": "April Fools",
-    "searchPlaceholder": "Search",
-    "wikiKey": {
-      "release": "Java_Edition_",
-      "snapshot": "",
-      "old_beta": "Java_Edition_Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "Search"
   },
   "General": {
     "add": "Add",
@@ -850,6 +847,7 @@
         "description": "Please log in with your Microsoft account before accessing this feature."
       }
     },
+    "browse": "Browse",
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "OK",
@@ -1082,7 +1080,7 @@
         "MUA": {
           "title": "Minecraft University Alliance (MUA)",
           "description": "Play with university players across China",
-          "url": " https://www.mualliance.cn/en"
+          "url": "https://www.mualliance.cn/en"
         },
         "SJMC": {
           "title": "SJTU Minecraft Club (SJMC)",
@@ -1334,8 +1332,16 @@
     "steve": "Steve",
     "alex": "Alex"
   },
-  "ViewSkinModal": {
-    "skinView": "View Skin"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Add Java"
+    },
+    "label": {
+      "javaPath": "Java Path"
+    },
+    "placeholder": {
+      "javaPath": "Please enter or select the Java executable file path"
+    }
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
@@ -1885,7 +1891,8 @@
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "INVALID": "Wrong account or password",
-            "NOT_FOUND": "The server does not exist"
+            "NOT_FOUND": "The server does not exist",
+            "EXPIRED": "The access token has expired, please re-login"
           }
         }
       },
@@ -2374,6 +2381,7 @@
       "world": "Search for {{query}} worlds",
       "resourcepack": "Search for {{query}} resource packs",
       "shader": "Search for {{query}} shader packs",
+      "datapack": "Search for {{query}} data packs",
       "modpack": "Search for {{query}} modpacks",
       "curseforge": "on CurseForge",
       "modrinth": "on Modrinth"
@@ -2452,8 +2460,14 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/w/"
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Java_Edition_{{version}}"
+      }
     }
+  },
+  "ViewSkinModal": {
+    "skinView": "View Skin"
   },
   "WelcomeAndTermsModal": {
     "header": {

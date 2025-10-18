@@ -184,9 +184,9 @@ const Editable: React.FC<EditableProps> = ({
           </FormControl>
         )
       ) : isTextArea ? (
-        <Flex align="center" justify="space-between">
+        <Flex align="center" justify="flex-end">
           <Text
-            flex={1}
+            flex="0 1 auto"
             wordBreak="break-all"
             whiteSpace="pre-wrap"
             {...textProps}
@@ -196,8 +196,13 @@ const Editable: React.FC<EditableProps> = ({
           {EditButtons()}
         </Flex>
       ) : (
-        <Flex align="center" justify="space-between">
-          <Text flex={1} noOfLines={1} wordBreak="break-all" {...textProps}>
+        <Flex align="center" justify="flex-end">
+          <Text
+            flex="0 1 auto"
+            noOfLines={1}
+            wordBreak="break-all"
+            {...textProps}
+          >
             {value}
           </Text>
           {EditButtons()}

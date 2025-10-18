@@ -152,7 +152,6 @@ pub async fn fetch_remote_resource_by_local_modrinth(
     .files
     .iter()
     .find(|file| file.hashes.sha1 == hash_string)
-    .or_else(|| version_pack.files.first())
     .ok_or(ResourceError::ParseError)?;
 
   Ok(

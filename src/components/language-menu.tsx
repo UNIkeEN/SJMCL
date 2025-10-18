@@ -22,6 +22,9 @@ const LanguageMenu: React.FC<Omit<MenuProps, "children">> = ({ ...props }) => {
         label: val.display_name,
       }))}
       size="xs"
+      buttonProps={{
+        flex: "0 0 auto",
+      }}
     />
   );
 };

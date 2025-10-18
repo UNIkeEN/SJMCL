@@ -52,6 +52,10 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const headerBg = useColorModeValue("gray.50", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
   const hoverBg = useColorModeValue("gray.50", "gray.700");
+  const textColor = useColorModeValue("gray.700", "gray.200");
+  const secondaryTextColor = useColorModeValue("gray.500", "gray.400");
+  const mutedTextColor = useColorModeValue("gray.600", "gray.300");
+  const successTextColor = useColorModeValue("green.500", "green.400");
 
   const handleSelectAll = () => {
     if (selectedMods.length === updateList.length) {
@@ -314,7 +318,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
         >
           {isCheckingUpdate ? (
             <VStack spacing={4} justify="center" align="center" h="75%">
-              <Text fontSize="md" color="gray.700">
+              <Text fontSize="md" color={textColor}>
                 {t("CheckModUpdateModal.label.loading", {
                   x: checkingUpdateIndex,
                   y: localMods.length,
@@ -334,7 +338,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
             </VStack>
           ) : updateList.length === 0 ? (
             <VStack mt={8}>
-              <Text color="gray.500">
+              <Text color={secondaryTextColor}>
                 {t("CheckModUpdateModal.label.noUpdate")}
               </Text>
             </VStack>
@@ -397,7 +401,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 <VStack spacing={0} align="stretch">
                   {updateList.map((mod, index) => (
                     <HStack
-                      key={mod.name}
+                      key={mod.fileName} // unique
                       py={3}
                       px={4}
                       borderBottom={
@@ -419,27 +423,27 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                         <Text
                           fontSize="xs"
                           noOfLines={1}
-                          title={mod.name}
+                          title={mod.name || mod.fileName}
                           textAlign="center"
                         >
-                          {mod.name}
+                          {mod.name || mod.fileName}
                         </Text>
                       </Box>
                       <Box flex="2" minW="0">
                         <Text
                           fontSize="xs"
-                          color="gray.600"
+                          color={mutedTextColor}
                           noOfLines={1}
-                          title={mod.curVersion}
+                          title={mod.curVersion || mod.fileName}
                           textAlign="center"
                         >
-                          {mod.curVersion}
+                          {mod.curVersion || mod.fileName}
                         </Text>
                       </Box>
                       <Box flex="3" minW="0">
                         <Text
                           fontSize="xs"
-                          color="green.500"
+                          color={successTextColor}
                           noOfLines={1}
                           title={mod.newVersion}
                           textAlign="center"
@@ -450,7 +454,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                       <Box flex="1" minW="0">
                         <Text
                           fontSize="xs"
-                          color="gray.500"
+                          color={secondaryTextColor}
                           noOfLines={1}
                           title={mod.source}
                           textAlign="center"

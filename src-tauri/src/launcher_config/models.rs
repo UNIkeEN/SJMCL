@@ -204,6 +204,8 @@ structstruck::strike! {
         #[default = "%built-in:Jokull"]
         pub choice: String,
         pub random_custom: bool,
+        #[default = true]
+        pub auto_darken: bool,
       },
       pub accessibility: struct {
         pub invert_colors: bool,

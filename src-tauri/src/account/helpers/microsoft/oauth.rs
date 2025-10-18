@@ -201,7 +201,6 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
       refresh_token: Some(tokens.refresh_token.clone()),
       textures,
       auth_server_url: None,
-      password: None,
     }
     .with_generated_id(),
   )

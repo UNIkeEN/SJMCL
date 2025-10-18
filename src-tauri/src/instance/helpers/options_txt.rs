@@ -7,14 +7,14 @@ pub async fn get_zh_hans_lang_tag(game_version: &str, app: &AppHandle) -> Option
     .await
     .is_lt()
   {
-    Some("zh_CN")
+    None
   } else if compare_game_versions(app, game_version, "1.11", false)
     .await
     .is_ge()
   {
     Some("zh_cn")
   } else {
-    None
+    Some("zh_CN")
   }
 }
 

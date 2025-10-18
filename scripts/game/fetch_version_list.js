@@ -40,7 +40,7 @@ https
             }
           });
         const versionIds = versions.map((v) => v.id);
-        const text = versionIds.join("\n") + '\n';
+        const text = versionIds.join("\n") + "\n";
 
         // Ensure the directory exists
         fs.mkdirSync(path.dirname(outputPath), { recursive: true });

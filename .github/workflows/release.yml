@@ -82,6 +82,7 @@ jobs:
 
   Create-Release:
     needs: [Version-Check, Build-and-Release, Code-Sign-macOS]
+    if: always() && needs.Build-and-Release.result == 'success'
     runs-on: ubuntu-latest
     
     steps:
@@ -97,6 +98,7 @@ jobs:
           merge-multiple: true
 
       - name: Download signed macOS artifacts
+        if: needs.Code-Sign-macOS.result == 'success'
         uses: actions/download-artifact@v4
         with:
           pattern: 'SJMCL_${{ needs.Version-Check.outputs.version }}_macos_*_signed'
@@ -106,6 +108,7 @@ jobs:
       - name: Organize release artifacts
         env:
           VERSION: ${{ needs.Version-Check.outputs.version }}
+          SIGNING_SUCCESS: ${{ needs.Code-Sign-macOS.result == 'success' }}
         run: |
           mkdir -p release-artifacts
           
@@ -113,13 +116,21 @@ jobs:
           find artifacts -name "SJMCL_${{ env.VERSION }}_windows_*" -exec cp {} release-artifacts/ \;
           find artifacts -name "SJMCL_${{ env.VERSION }}_linux_*" -exec cp {} release-artifacts/ \;
           
-          # Copy signed macOS artifacts (rename to remove _signed suffix)
-          find artifacts-signed -name "SJMCL_${{ env.VERSION }}_macos_*" -type f | while read file; do
-            basename=$(basename "$file")
-            # Remove _signed suffix before the file extension
-            newname=$(echo "$basename" | sed 's/_signed\./\./')
-            cp "$file" "release-artifacts/$newname"
-          done
+          # Copy macOS artifacts (signed if available, unsigned otherwise)
+          if [ "${{ env.SIGNING_SUCCESS }}" = "true" ] && [ -d artifacts-signed ]; then
+            echo "Using signed macOS artifacts"
+            # Copy signed macOS artifacts (rename to remove _signed suffix)
+            find artifacts-signed -name "SJMCL_${{ env.VERSION }}_macos_*" -type f | while read file; do
+              basename=$(basename "$file")
+              # Remove _signed suffix before the file extension
+              newname=$(echo "$basename" | sed 's/_signed\./\./')
+              cp "$file" "release-artifacts/$newname"
+            done
+          else
+            echo "⚠️ WARNING: Using unsigned macOS artifacts (signing failed or was skipped)"
+            # Copy unsigned macOS artifacts
+            find artifacts -name "SJMCL_${{ env.VERSION }}_macos_*" -exec cp {} release-artifacts/ \;
+          fi
           
           echo "Final release artifacts:"
           ls -la release-artifacts/
@@ -135,9 +146,19 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
+        env:
+          SIGNING_SUCCESS: ${{ needs.Code-Sign-macOS.result == 'success' }}
         run: |
           pip install requests packaging
           python scripts/release/generate_changelog_draft.py > release-notes.md
+          
+          # Add warning if macOS signing failed
+          if [ "${{ env.SIGNING_SUCCESS }}" != "true" ]; then
+            echo "" >> release-notes.md
+            echo "---" >> release-notes.md
+            echo "" >> release-notes.md
+            echo "⚠️ **Note:** macOS artifacts in this release are **not code-signed**. macOS users may see security warnings when running the application." >> release-notes.md
+          fi
         shell: bash
 
       - name: Create Release

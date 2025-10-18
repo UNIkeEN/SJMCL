@@ -113,6 +113,9 @@ const GeneralSettingsPage = () => {
               placeholder={t(
                 `GeneralSettingsPage.functions.settings.instancesNavType.${generalConfigs.functionality.instancesNavType}`
               )}
+              buttonProps={{
+                flex: "0 0 auto",
+              }}
             />
           ),
         },

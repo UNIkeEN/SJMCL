@@ -1,6 +1,7 @@
 import {
   Center,
   Divider,
+  HStack,
   Highlight,
   Image,
   Input,
@@ -13,22 +14,29 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Spinner,
+  Tag,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSearch } from "react-icons/lu";
+import stringSimilarity from "string-similarity";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
+import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useRoutingHistory } from "@/contexts/routing-history";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
+import { OtherResourceInfo } from "@/models/resource";
+import { ResourceService } from "@/services/resource";
 import { generatePlayerDesc } from "@/utils/account";
 import { generateInstanceDesc } from "@/utils/instance";
+import { translateTag } from "@/utils/resource";
 import { base64ImgSrc } from "@/utils/string";
 
 interface SearchResult {
@@ -38,20 +46,63 @@ interface SearchResult {
   description: string;
   url?: string;
   action?: () => void;
+  // Optional members for online resource search
+  translatedDescription?: string;
+  translatedTitle?: string;
+  tags?: string[];
+  source?: OtherResourceSource;
+  resourceType?: OtherResourceType;
 }
 
 const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
 }) => {
+  // constants for online resource search
+  const RESOURCES_PER_REQUEST = 3;
+  const MIN_RELEVANCE_SCORE = 0.45;
+  const MAX_SEARCH_RESULTS = 3;
+
   const { t } = useTranslation();
   const router = useRouter();
   const { history } = useRoutingHistory();
   const { openSharedModal } = useSharedModals();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
+  const searchAbortControllerRef = useRef<AbortController | null>(null);
 
   const [queryText, setQueryText] = useState<string>("");
   const [instantRes, setInstantRes] = useState<SearchResult[]>([]);
+  const [networkSearchResults, setNetworkSearchResults] = useState<
+    SearchResult[]
+  >([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const { getPlayerList, getInstanceList } = useGlobalData();
+
+  const convertResourceToSearchResult = useCallback(
+    (resource: OtherResourceInfo): SearchResult => ({
+      type:
+        resource.source === OtherResourceSource.CurseForge
+          ? "curseforge"
+          : "modrinth",
+      icon: resource.iconSrc,
+      title: resource.name,
+      translatedTitle: resource.translatedName,
+      description: resource.description,
+      translatedDescription: resource.translatedDescription,
+      tags: resource.tags,
+      source: resource.source,
+      resourceType: resource.type,
+      action: () =>
+        openSharedModal("download-specific-resource", {
+          resource,
+        }),
+    }),
+    [openSharedModal]
+  );
 
   const handleInstantSearch = useCallback(
     (query: string): SearchResult[] => {
@@ -129,80 +180,46 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     (query: string): SearchResult[] => {
       if (!query.trim()) return [];
 
+      // Resource types ordered by popularity for generating search option buttons
       const resourceTypes = [
-        { type: OtherResourceType.Mod, key: "mod" },
-        { type: OtherResourceType.World, key: "world" },
-        { type: OtherResourceType.ResourcePack, key: "resourcepack" },
-        { type: OtherResourceType.ShaderPack, key: "shader" },
+        OtherResourceType.Mod,
+        OtherResourceType.ModPack,
+        OtherResourceType.ResourcePack,
+        OtherResourceType.ShaderPack,
+        OtherResourceType.World,
+        OtherResourceType.DataPack,
       ];
 
-      const resourceSearchResults: SearchResult[] = [];
-
-      resourceTypes.forEach(({ type, key }) => {
-        resourceSearchResults.push({
-          type: "curseforge",
+      const createResult =
+        (platform: "curseforge" | "modrinth", source: OtherResourceSource) =>
+        (type: OtherResourceType): SearchResult => ({
+          type: platform,
           icon: "",
-          title: t(`SpotlightSearchModal.resource.${key}`, {
-            query: query.trim(),
-          }),
           description: "",
-          action: () => {
-            openSharedModal("download-resource", {
-              initialResourceType: type,
-              initialSearchQuery: query.trim(),
-              initialDownloadSource: OtherResourceSource.CurseForge,
-            });
-          },
+          title: t(`SpotlightSearchModal.resource.${type}`, { query }),
+          action: () =>
+            openSharedModal(
+              type === OtherResourceType.ModPack
+                ? "download-modpack"
+                : "download-resource",
+              {
+                initialSearchQuery: query,
+                initialDownloadSource: source,
+                ...(type !== OtherResourceType.ModPack && {
+                  initialResourceType: type,
+                }),
+              }
+            ),
         });
-      });
 
-      resourceSearchResults.push({
-        type: "curseforge",
-        icon: "",
-        title: t("SpotlightSearchModal.resource.modpack", {
-          query: query.trim(),
-        }),
-        description: "",
-        action: () => {
-          openSharedModal("download-modpack", {
-            initialSearchQuery: query.trim(),
-            initialDownloadSource: OtherResourceSource.CurseForge,
-          });
-        },
-      });
-
-      resourceTypes.forEach(({ type, key }) => {
-        resourceSearchResults.push({
-          type: "modrinth",
-          icon: "",
-          title: t(`SpotlightSearchModal.resource.${key}`, {
-            query: query.trim(),
-          }),
-          description: "",
-          action: () => {
-            openSharedModal("download-resource", {
-              initialResourceType: type,
-              initialSearchQuery: query.trim(),
-              initialDownloadSource: OtherResourceSource.Modrinth,
-            });
-          },
-        });
-      });
-
-      resourceSearchResults.push({
-        type: "modrinth",
-        icon: "",
-        title: t("SpotlightSearchModal.resource.modpack", {
-          query: query.trim(),
-        }),
-        description: "",
-        action: () => {
-          openSharedModal("download-modpack", {
-            initialSearchQuery: query.trim(),
-            initialDownloadSource: OtherResourceSource.Modrinth,
-          });
-        },
-      });
+      const resourceSearchResults: SearchResult[] = [
+        ...resourceTypes.map(
+          createResult("curseforge", OtherResourceSource.CurseForge)
+        ),
+        ...resourceTypes
+          .filter((type) => type !== OtherResourceType.World) // Modrinth doesn't host worlds
+          .map(createResult("modrinth", OtherResourceSource.Modrinth)),
+      ];
 
       return resourceSearchResults;
     },
@@ -213,14 +230,152 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     (query: string): SearchResult[] => {
       const instantResults = handleInstantSearch(query);
       const resourceResults = handleResourceSearch(query);
-      return [...instantResults, ...resourceResults];
+      return [...instantResults, ...networkSearchResults, ...resourceResults];
     },
-    [handleInstantSearch, handleResourceSearch]
+    [handleInstantSearch, handleResourceSearch, networkSearchResults]
+  );
+
+  const performNetworkSearch = useCallback(
+    async (query: string, signal?: AbortSignal): Promise<SearchResult[]> => {
+      if (!query.trim()) return [];
+
+      // Priority resource types for network search - performs concurrent searches
+      // 4 resource types * 2 sources * 3 results per request = 24 results before filtering
+      const priorityResourceTypes = [
+        OtherResourceType.Mod,
+        OtherResourceType.ModPack,
+        OtherResourceType.ResourcePack,
+        OtherResourceType.ShaderPack,
+      ];
+      const sources = Object.values(OtherResourceSource);
+
+      try {
+        const searchPromises = priorityResourceTypes.flatMap((resourceType) =>
+          sources.map(async (source) => {
+            if (signal?.aborted) return [];
+
+            const response = await ResourceService.fetchResourceListByName(
+              resourceType,
+              query,
+              "All",
+              "All",
+              source === OtherResourceSource.CurseForge
+                ? "Popularity"
+                : "downloads",
+              source,
+              0,
+              RESOURCES_PER_REQUEST
+            );
+
+            if (signal?.aborted || response.status !== "success") {
+              return [];
+            }
+
+            return response.data.list
+              .map((resource) => {
+                const relevanceScore = Math.max(
+                  stringSimilarity.compareTwoStrings(
+                    query.toLowerCase(),
+                    resource.name.toLowerCase()
+                  ),
+                  stringSimilarity.compareTwoStrings(
+                    query,
+                    resource.translatedName || ""
+                  )
+                );
+
+                return { resource, relevanceScore };
+              })
+              .filter(
+                ({ relevanceScore }) => relevanceScore > MIN_RELEVANCE_SCORE
+              )
+              .map(({ resource }) => convertResourceToSearchResult(resource));
+          })
+        );
+
+        const searchResults = await Promise.allSettled(searchPromises);
+
+        const results: SearchResult[] = [];
+        searchResults.forEach((result) => {
+          if (result.status === "fulfilled") {
+            results.push(...result.value);
+          }
+        });
+
+        const cfResults = results
+          .filter((res) => res.source === OtherResourceSource.CurseForge)
+          .slice(0, MAX_SEARCH_RESULTS);
+        const mrResults = results
+          .filter((res) => res.source === OtherResourceSource.Modrinth)
+          .slice(0, MAX_SEARCH_RESULTS);
+
+        return [...cfResults, ...mrResults];
+      } catch (error) {
+        if (!signal?.aborted) {
+          console.error("Network search error:", error);
+        }
+        return [];
+      }
+    },
+    [convertResourceToSearchResult]
   );
 
   useEffect(() => {
     setInstantRes(handleAllSearch(queryText));
   }, [queryText, handleAllSearch]);
+
+  // Handle network search with debounce and abort control
+  useEffect(() => {
+    if (searchAbortControllerRef.current) {
+      searchAbortControllerRef.current.abort();
+    }
+
+    if (!queryText.trim()) {
+      setNetworkSearchResults([]);
+      setIsSearching(false);
+      searchAbortControllerRef.current = null;
+      return;
+    }
+
+    const debounceTimer = setTimeout(() => {
+      const controller = new AbortController();
+      searchAbortControllerRef.current = controller;
+      setIsSearching(true);
+
+      setNetworkSearchResults([]);
+
+      performNetworkSearch(queryText, controller.signal)
+        .then((results) => {
+          if (!controller.signal.aborted) {
+            setNetworkSearchResults(results);
+            setIsSearching(false);
+            searchAbortControllerRef.current = null;
+          }
+        })
+        .catch((error) => {
+          if (!controller.signal.aborted) {
+            console.error("Network search error:", error);
+            setNetworkSearchResults([]);
+            setIsSearching(false);
+            searchAbortControllerRef.current = null;
+          }
+        });
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [queryText, performNetworkSearch]);
+
+  useEffect(() => {
+    if (!props.isOpen) {
+      setQueryText("");
+      setNetworkSearchResults([]);
+      setIsSearching(false);
+      if (searchAbortControllerRef.current) {
+        searchAbortControllerRef.current.abort();
+        searchAbortControllerRef.current = null;
+      }
+    }
+  }, [props.isOpen]);
 
   const groupSearchResults = () => {
     const groupedMap = new Map<string, React.ReactNode[]>();
@@ -237,18 +392,33 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
                 query={queryText.trim().toLowerCase().split(/\s+/)}
                 styles={{ bg: "yellow.200" }}
               >
-                {res.title}
+                {showZhTrans && res.translatedTitle
+                  ? `${res.translatedTitle} | ${res.title}`
+                  : res.title}
               </Highlight>
             </Text>
           }
+          titleExtra={
+            res.tags &&
+            res.tags.length > 0 && (
+              <HStack spacing={1}>
+                {res.tags
+                  .filter((t) => translateTag(t, res.resourceType, res.source))
+                  .map((tag) => (
+                    <Tag
+                      key={tag}
+                      colorScheme={primaryColor}
+                      className="tag-xs"
+                    >
+                      {translateTag(tag, res.resourceType, res.source)}
+                    </Tag>
+                  ))}
+              </HStack>
+            )
+          }
           description={
             <Text fontSize="xs" className="secondary-text">
-              <Highlight
-                query={queryText.trim().toLowerCase().split(/\s+/)}
-                styles={{ bg: "yellow.200" }}
-              >
-                {res.description}
-              </Highlight>
+              {(showZhTrans && res.translatedDescription) || res.description}
             </Text>
           }
           prefixElement={
@@ -300,7 +470,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         <ModalHeader>
           <InputGroup size="md">
             <InputLeftElement pointerEvents="none" h="100%" w="auto">
-              <LuSearch />
+              {isSearching ? <Spinner size="sm" /> : <LuSearch />}
             </InputLeftElement>
             <Input
               variant="unstyled"

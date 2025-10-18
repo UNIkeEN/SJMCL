@@ -139,7 +139,6 @@ async fn parse_token(
     Some(tokens.refresh_token.clone()),
     auth_server_url,
     Some(selected_profile.name.clone()),
-    None,
   )
   .await
 }

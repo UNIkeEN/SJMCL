@@ -51,9 +51,9 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     ...{
       titleExtra: instance.starred && <Icon as={FaStar} color="yellow.500" />,
     },
-    titleFlex: true,
     maxTitleLines: 1,
     maxDescriptionLines: 2,
+    titleLineWrap: false,
     prefixElement: (
       <HStack spacing={2.5}>
         <Radio

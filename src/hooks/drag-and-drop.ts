@@ -71,7 +71,6 @@ export const useTauriFileDrop = ({
     (async () => {
       const unlisten = await getCurrentWebview().onDragDropEvent((event) => {
         if (event.payload.type !== "drop") return;
-        console.log(event);
         for (const fullPath of event.payload.paths) {
           const fileName = fullPath.split(/[\\/]/).pop() || fullPath;
           if (regex.test(fileName)) {
