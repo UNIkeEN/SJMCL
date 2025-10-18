@@ -82,6 +82,7 @@ murmur2 = "0.1"
 csv = "1.3"
 semver = "1"
 sysinfo = "0.36.0"
+config = "0.15.18"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
 
 [target."cfg(windows)".dependencies]
