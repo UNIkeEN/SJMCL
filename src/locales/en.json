@@ -90,7 +90,7 @@
       },
       "modpack": {
         "title": "Import Modpack",
-        "description": "Import a modpack (CurseForge, Modrinth or HMCL formats) from local files or the internet"
+        "description": "Import a modpack (CurseForge, Modrinth or MultiMC formats) from local files or the internet"
       },
       "manageDirs": {
         "title": "Manage Game Directories",

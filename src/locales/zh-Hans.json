@@ -90,7 +90,7 @@
       },
       "modpack": {
         "title": "导入整合包",
-        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 HMCL 格式）"
+        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理游戏目录",
