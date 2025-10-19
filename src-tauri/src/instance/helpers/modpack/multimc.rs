@@ -20,9 +20,11 @@ pub struct MultiMcComponent {
   pub cached_name: Option<String>,
   pub cached_requires: Option<Vec<MultiMcCacheRequires>>,
   pub cached_version: Option<String>,
+  pub cached_volatile: Option<bool>,
   pub important: Option<bool>,
+  pub dependency_only: Option<bool>,
   pub uid: String,
-  pub version: String,
+  pub version: Option<String>,
 }
 
 structstruck::strike! {
@@ -92,29 +94,36 @@ impl MultiMcManifest {
   }
 
   pub fn get_client_version(&self) -> SJMCLResult<String> {
-    Ok(
-      self
-        .components
-        .iter()
-        .find(|component| component.uid == "net.minecraft")
-        .ok_or(InstanceError::ModpackManifestParseError)?
-        .version
-        .clone(),
-    )
+    let component = self
+      .components
+      .iter()
+      .find(|component| component.uid == "net.minecraft")
+      .ok_or(InstanceError::ModpackManifestParseError)?;
+
+    get_version(component)
   }
 
   pub fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
     for component in &self.components {
       match component.uid.as_str() {
         "net.minecraft" => continue,
-        "net.minecraftforge" => return Ok((ModLoaderType::Forge, component.version.to_string())),
+        "net.minecraftforge" => return Ok((ModLoaderType::Forge, get_version(component)?)),
         "net.fabricmc.fabric-loader" => {
-          return Ok((ModLoaderType::Fabric, component.version.to_string()))
+          return Ok((ModLoaderType::Fabric, get_version(component)?))
         }
-        "net.neoforged" => return Ok((ModLoaderType::NeoForge, component.version.to_string())),
-        _ => return Err(InstanceError::UnsupportedModLoader.into()),
+        "net.neoforged" => return Ok((ModLoaderType::NeoForge, get_version(component)?)),
+        _ => continue,
       }
     }
     Err(InstanceError::ModpackManifestParseError.into())
   }
+}
+
+fn get_version(component: &MultiMcComponent) -> SJMCLResult<String> {
+  component
+    .version
+    .as_ref()
+    .or(component.cached_version.as_ref())
+    .cloned()
+    .ok_or(InstanceError::ModpackManifestParseError.into())
 }
