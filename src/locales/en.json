@@ -1343,6 +1343,12 @@
       "javaPath": "Please enter or select the Java executable file path"
     }
   },
+  "ViewSchematicModal":{
+      "header":{
+        "title":"View Schematic"
+      }
+
+    },
   "MemoryStatusProgress": {
     "title": "Memory Status",
     "info": "{{used}} / {{total}} GB used",
