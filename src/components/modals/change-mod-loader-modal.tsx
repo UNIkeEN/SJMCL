@@ -92,8 +92,10 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
     }
   };
 
-  const showSkeleton =
-    !selectedModLoader.version || selectedModLoader.loaderType === "Unknown";
+  // ✅ 统一判断：未选择有效加载器（类型未知或版本缺失）
+  const isUnselected =
+    !selectedModLoader.version ||
+    selectedModLoader.loaderType === ModLoaderType.Unknown;
 
   return (
     <Modal
@@ -132,7 +134,7 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
               }
             />
             <LuArrowRight size={22} />
-            {showSkeleton ? (
+            {isUnselected ? (
               <OptionItem
                 prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
                 title={
@@ -158,8 +160,7 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
                 }
                 description={
                   <Text fontSize="xs" color="gray.500">
-                    {selectedModLoader.version ||
-                      t("ChangeModLoaderModal.notSelectedVersion")}
+                    {selectedModLoader.version}
                   </Text>
                 }
               />
@@ -188,7 +189,7 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
               colorScheme={primaryColor}
               onClick={handleChangeModLoader}
               isLoading={isLoading}
-              isDisabled={showSkeleton}
+              isDisabled={isUnselected}
             >
               {t("General.confirm")}
             </Button>

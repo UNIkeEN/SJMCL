@@ -343,8 +343,7 @@
     "header": {
       "title": "修改模组加载器"
     },
-    "notSelectedLoader": "未选择新的加载器",
-    "notSelectedVersion": "未选择版本"
+    "notSelectedLoader": "未选择新的加载器"
   },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
@@ -581,6 +580,7 @@
       "game-server": "游戏服务端 {{param}}",
       "mod": "模组",
       "mod-loader": "模组加载器",
+      "change-mod-loader": "修改模组加载器",
       "world": "存档",
       "resourcepack": "资源包",
       "shader": "光影",
@@ -2119,7 +2119,6 @@
       }
     },
     "instance": {
-      "changeModLoader": { "success": "修改模组加载器成功" },
       "retrieveInstanceList": {
         "error": {
           "title": "获取实例列表失败",
@@ -2310,6 +2309,11 @@
             "MAIN_CLASS_NOT_FOUND": "主类未找到",
             "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败"
           }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "修改模组加载器失败"
         }
       },
       "retrieveModpackMetaInfo": {

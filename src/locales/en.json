@@ -321,8 +321,7 @@
     "header": {
       "title": "Change Mod Loader"
     },
-    "notSelectedLoader": "No new loader selected",
-    "notSelectedVersion": "No version selected"
+    "notSelectedLoader": "No new loader selected"
   },
   "CheckModUpdateModal": {
     "header": {
@@ -581,6 +580,7 @@
       "game-server": "Game Server {{param}}",
       "mod": "Mod",
       "mod-loader": "Mod Loader",
+      "change-mod-loader": "Change Mod Loader",
       "world": "World",
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",
@@ -2119,7 +2119,6 @@
       }
     },
     "instance": {
-      "changeModLoader": { "success": "Change Mod Loader successfully" },
       "retrieveInstanceList": {
         "error": {
           "title": "Failed to retrieve game instance list",
@@ -2310,6 +2309,11 @@
             "MAIN_CLASS_NOT_FOUND": "Main class not found in the mod loader version",
             "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process"
           }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "Failed to Change Mod Loader"
         }
       },
       "retrieveModpackMetaInfo": {
