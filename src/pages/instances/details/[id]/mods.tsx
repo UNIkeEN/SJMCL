@@ -28,6 +28,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
+import { ChangeModLoaderModal } from "@/components/modals/change-mod-loader-modal";
 import CheckModUpdateModal from "@/components/modals/check-mod-update-modal";
 import ModInfoModal from "@/components/modals/mod-info-modal";
 import { useLauncherConfig } from "@/contexts/config";
@@ -66,10 +67,19 @@ const InstanceModsPage = () => {
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [targetLoaderType, setTargetLoaderType] = useState<ModLoaderType>(
+    ModLoaderType.Unknown
+  );
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [modInfoSelectedMod, setModInfoSelectedMod] =
     useState<LocalModInfo | null>(null);
+
+  const {
+    isOpen: isChangeModLoaderModalOpen,
+    onOpen: onChangeModLoaderModalOpen,
+    onClose: onChangeModLoaderModalClose,
+  } = useDisclosure();
 
   const {
     isOpen: isCheckUpdateModalOpen,
@@ -82,6 +92,11 @@ const InstanceModsPage = () => {
     onOpen: onModInfoModalOpen,
     onClose: onModInfoModalClose,
   } = useDisclosure();
+
+  const handleTypeSelect = (type: ModLoaderType) => {
+    setTargetLoaderType(type);
+    onChangeModLoaderModalOpen();
+  };
 
   const getLocalModListWrapper = useCallback(
     (sync?: boolean) => {
@@ -324,6 +339,7 @@ const InstanceModsPage = () => {
           currentType={summary?.modLoader.loaderType || ModLoaderType.Unknown}
           currentVersion={summary?.modLoader.version}
           displayMode="entry"
+          onTypeSelect={handleTypeSelect}
         />
       </Section>
       <Section
@@ -508,6 +524,12 @@ const InstanceModsPage = () => {
         summary={summary}
         localMods={localMods}
       />
+      <ChangeModLoaderModal
+        isOpen={isChangeModLoaderModalOpen}
+        onClose={onChangeModLoaderModalClose}
+        defaultSelectedType={targetLoaderType}
+      />
+
       {modInfoSelectedMod && (
         <ModInfoModal
           isOpen={isModInfoModalOpen}

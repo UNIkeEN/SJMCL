@@ -9,11 +9,9 @@ import {
   Image,
   Text,
   VStack,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { LuChevronRight, LuX } from "react-icons/lu";
-import { ChangeModLoaderModal } from "@/components/modals/change-mod-loader-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/enums/instance";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
@@ -39,11 +37,6 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const themedStyles = useThemedCSSStyle();
-  const {
-    isOpen: isChangeModLoaderModalOpen,
-    onOpen: onChangeModLoaderModalOpen,
-    onClose: onChangeModLoaderModalClose,
-  } = useDisclosure();
 
   const borderWidth = "1px";
   const basePadding = boxProps.padding || "12px";
@@ -116,11 +109,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
             variant="ghost"
             size="xs"
             disabled={loading}
-            onClick={() =>
-              displayMode === "entry"
-                ? onChangeModLoaderModalOpen()
-                : onTypeSelect?.(type)
-            }
+            onClick={() => onTypeSelect?.(type)}
           />
         </Flex>
       </Card>
@@ -132,13 +121,6 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
       <Grid templateColumns="repeat(3, 1fr)" gap={3.5} {...boxProps}>
         {loaderTypes.map(renderCard)}
       </Grid>
-
-      {displayMode === "entry" && (
-        <ChangeModLoaderModal
-          isOpen={isChangeModLoaderModalOpen}
-          onClose={onChangeModLoaderModalClose}
-        />
-      )}
     </>
   );
 };

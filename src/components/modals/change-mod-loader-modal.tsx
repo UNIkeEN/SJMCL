@@ -30,13 +30,18 @@ import {
 } from "@/models/resource";
 import { InstanceService } from "@/services/instance";
 
+interface ChangeModLoaderModalProps extends Omit<ModalProps, "children"> {
+  defaultSelectedType?: ModLoaderType;
+}
+
 const modLoaderIcons: Record<string, string> = {
   Fabric: "/images/icons/Fabric.png",
   Forge: "/images/icons/Anvil.png",
   NeoForge: "/images/icons/NeoForge.png",
 };
 
-export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
+export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
+  defaultSelectedType,
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -51,8 +56,15 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setSelectedModLoader(defaultModLoaderResourceInfo);
-  }, [summary?.version]);
+    if (defaultSelectedType && defaultSelectedType !== ModLoaderType.Unknown) {
+      setSelectedModLoader({
+        ...defaultModLoaderResourceInfo,
+        loaderType: defaultSelectedType,
+      });
+    } else {
+      setSelectedModLoader(defaultModLoaderResourceInfo);
+    }
+  }, [summary?.version, defaultSelectedType]);
 
   const currentModLoader: ModLoaderResourceInfo = useMemo(() => {
     if (!summary?.modLoader)
@@ -92,7 +104,6 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
     }
   };
 
-  // ✅ 统一判断：未选择有效加载器（类型未知或版本缺失）
   const isUnselected =
     !selectedModLoader.version ||
     selectedModLoader.loaderType === ModLoaderType.Unknown;
@@ -101,6 +112,9 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      onCloseComplete={() => {
+        setSelectedModLoader(defaultModLoaderResourceInfo);
+      }}
       {...modalProps}
     >
       <ModalOverlay />
@@ -166,7 +180,6 @@ export const ChangeModLoaderModal: React.FC<Omit<ModalProps, "children">> = ({
               />
             )}
           </HStack>
-
           <ModalBody>
             {summary?.version && (
               <ModLoaderSelector
