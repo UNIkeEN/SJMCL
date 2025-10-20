@@ -390,16 +390,19 @@ export class InstanceService {
    * CHANGE the mod loader for a given instance.
    * @param {string} instanceId - The ID of the instance to update.
    * @param {ModLoaderResourceInfo} newModLoader - The new mod loader information.
+   * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async changeModLoader(
     instanceId: string,
-    newModLoader: ModLoaderResourceInfo
+    newModLoader: ModLoaderResourceInfo,
+    isInstallFabricApi?: boolean
   ): Promise<InvokeResponse<void>> {
     return await invoke("change_mod_loader", {
       instanceId,
       newModLoader,
+      isInstallFabricApi,
     });
   }
 

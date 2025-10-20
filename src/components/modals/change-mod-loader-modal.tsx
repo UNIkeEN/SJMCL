@@ -1,7 +1,9 @@
 import {
   Box,
   Button,
+  Checkbox,
   Flex,
+  HStack,
   Image,
   Modal,
   ModalBody,
@@ -48,6 +50,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
   const [selectedModLoader, setSelectedModLoader] =
     useState<ModLoaderResourceInfo>(defaultModLoaderResourceInfo);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInstallFabricApi, setIsInstallFabricApi] = useState(true);
 
   useEffect(() => {
     if (defaultSelectedType && defaultSelectedType !== ModLoaderType.Unknown) {
@@ -81,7 +84,8 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     try {
       const res = await InstanceService.changeModLoader(
         summary.id,
-        selectedModLoader
+        selectedModLoader,
+        isInstallFabricApi
       );
 
       if (res.status === "error") {
@@ -101,6 +105,10 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
   const isUnselected =
     !selectedModLoader.version ||
     selectedModLoader.loaderType === ModLoaderType.Unknown;
+
+  const isSameAsCurrent =
+    selectedModLoader.loaderType === currentModLoader.loaderType &&
+    selectedModLoader.version === currentModLoader.version;
 
   return (
     <Modal
@@ -197,17 +205,33 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
             )}
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" onClick={modalProps.onClose}>
-              {t("General.cancel")}
-            </Button>
-            <Button
-              colorScheme={primaryColor}
-              onClick={handleChangeModLoader}
-              isLoading={isLoading}
-              isDisabled={isUnselected}
-            >
-              {t("General.confirm")}
-            </Button>
+            {selectedModLoader.loaderType === ModLoaderType.Fabric && (
+              <Checkbox
+                colorScheme={primaryColor}
+                isChecked={
+                  selectedModLoader.version !== "" && isInstallFabricApi
+                }
+                disabled={!selectedModLoader.version}
+                onChange={(e) => setIsInstallFabricApi(e.target.checked)}
+              >
+                <Text fontSize="sm">
+                  {t("CreateInstanceModal.footer.installFabricApi")}
+                </Text>
+              </Checkbox>
+            )}
+            <HStack spacing={3} ml="auto">
+              <Button variant="ghost" onClick={modalProps.onClose}>
+                {t("General.cancel")}
+              </Button>
+              <Button
+                colorScheme={primaryColor}
+                onClick={handleChangeModLoader}
+                isLoading={isLoading}
+                isDisabled={isUnselected || isSameAsCurrent}
+              >
+                {t("General.confirm")}
+              </Button>
+            </HStack>
           </ModalFooter>
         </Flex>
       </ModalContent>
