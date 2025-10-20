@@ -578,9 +578,8 @@
     "task": {
       "game-client": "Game Client {{param}}",
       "game-server": "Game Server {{param}}",
+      "change-mod-loader": "Change Mod Loader {{param}}",
       "mod": "Mod",
-      "mod-loader": "Mod Loader",
-      "change-mod-loader": "Change Mod Loader",
       "world": "World",
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",

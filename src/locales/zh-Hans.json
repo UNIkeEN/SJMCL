@@ -578,9 +578,8 @@
     "task": {
       "game-client": "游戏客户端 {{param}}",
       "game-server": "游戏服务端 {{param}}",
+      "change-mod-loader": "修改模组加载器 {{param}}",
       "mod": "模组",
-      "mod-loader": "模组加载器",
-      "change-mod-loader": "修改模组加载器",
       "world": "存档",
       "resourcepack": "资源包",
       "shader": "光影",

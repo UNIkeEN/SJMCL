@@ -432,8 +432,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           if (payload.event === GTaskEventStatusEnums.Completed) {
             switch (name) {
               case "game-client":
-                getInstanceList(true);
-                break;
               case "change-mod-loader":
                 getInstanceList(true);
                 break;

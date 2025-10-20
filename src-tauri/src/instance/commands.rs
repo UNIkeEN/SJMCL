@@ -1153,9 +1153,8 @@ pub async fn change_mod_loader(
   schedule_progressive_task_group(
     app.clone(),
     format!(
-      "change-mod-loader?{}&{}",
-      mod_loader.loader_type.as_str(),
-      mod_loader.version.as_str()
+      "change-mod-loader?{} {}",
+      mod_loader.loader_type, mod_loader.version
     ),
     task_params,
     true,
@@ -1176,22 +1175,4 @@ pub async fn retrieve_modpack_meta_info(path: String) -> SJMCLResult<ModpackMeta
   let path = PathBuf::from(path);
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
   ModpackMetaInfo::from_archive(&file).await
-}
-
-#[tauri::command]
-pub async fn check_loader_json(app: AppHandle, instance_id: String) -> SJMCLResult<bool> {
-  let instance = {
-    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let launcher_config_state = binding.lock()?;
-    launcher_config_state
-      .get(&instance_id)
-      .ok_or(InstanceError::InstanceNotFoundByID)?
-      .clone()
-  };
-  let json_path = instance
-    .version_path
-    .join(format!("{}.json", instance.name));
-  let current_info: McClientInfo = load_json_async(&json_path).await?;
-  //native check
-  Ok(!current_info.patches.is_empty())
 }

@@ -1,7 +1,7 @@
 import {
+  Box,
   Button,
   Flex,
-  HStack,
   Image,
   Modal,
   ModalBody,
@@ -122,64 +122,72 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
         <ModalHeader>{t("ChangeModLoaderModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <Flex flexDir="column" h="100%">
-          <HStack spacing={8} justify="center" px={6} py={3}>
-            <OptionItem
-              prefixElement={
-                currentModLoader.loaderType !== "Unknown" ? (
-                  <Image
-                    src={modLoaderIcons[currentModLoader.loaderType]}
-                    alt={currentModLoader.loaderType}
-                    boxSize="36px"
-                    borderRadius="md"
-                  />
-                ) : (
-                  <Skeleton boxSize="36px" borderRadius="md" />
-                )
-              }
-              title={
-                <Text fontSize="sm" fontWeight="medium">
-                  {currentModLoader.loaderType}
-                </Text>
-              }
-              description={
-                <Text fontSize="xs" color="gray.500">
-                  {currentModLoader.version}
-                </Text>
-              }
-            />
-            <LuArrowRight size={22} />
-            {isUnselected ? (
-              <OptionItem
-                prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
-                title={
-                  <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                    {t("ChangeModLoaderModal.notSelectedLoader")}
-                  </Text>
-                }
-              />
-            ) : (
+          <Flex position="relative" align="center" justify="center" py={2}>
+            <Flex flex="1" justify="flex-end" pr={8}>
               <OptionItem
                 prefixElement={
-                  <Image
-                    src={`/images/icons/${selectedModLoader.loaderType}.png`}
-                    alt={selectedModLoader.loaderType}
-                    boxSize="36px"
-                    borderRadius="md"
-                  />
+                  currentModLoader.loaderType !== "Unknown" ? (
+                    <Image
+                      src={modLoaderIcons[currentModLoader.loaderType]}
+                      alt={currentModLoader.loaderType}
+                      boxSize="36px"
+                      borderRadius="md"
+                    />
+                  ) : (
+                    <Skeleton boxSize="36px" borderRadius="md" />
+                  )
                 }
                 title={
                   <Text fontSize="sm" fontWeight="medium">
-                    {selectedModLoader.loaderType}
+                    {currentModLoader.loaderType}
                   </Text>
                 }
                 description={
                   <Text fontSize="xs" color="gray.500">
-                    {selectedModLoader.version}
+                    {currentModLoader.version}
                   </Text>
                 }
               />
-            )}
-          </HStack>
+            </Flex>
+
+            <Box position="absolute" left="50%" transform="translateX(-50%)">
+              <LuArrowRight size={18} />
+            </Box>
+
+            <Flex flex="1" justify="flex-start" pl={8}>
+              {isUnselected ? (
+                <OptionItem
+                  prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
+                  title={
+                    <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                      {t("ChangeModLoaderModal.notSelectedLoader")}
+                    </Text>
+                  }
+                />
+              ) : (
+                <OptionItem
+                  prefixElement={
+                    <Image
+                      src={`/images/icons/${selectedModLoader.loaderType}.png`}
+                      alt={selectedModLoader.loaderType}
+                      boxSize="36px"
+                      borderRadius="md"
+                    />
+                  }
+                  title={
+                    <Text fontSize="sm" fontWeight="medium">
+                      {selectedModLoader.loaderType}
+                    </Text>
+                  }
+                  description={
+                    <Text fontSize="xs" color="gray.500">
+                      {selectedModLoader.version}
+                    </Text>
+                  }
+                />
+              )}
+            </Flex>
+          </Flex>
           <ModalBody>
             {summary?.version && (
               <ModLoaderSelector
