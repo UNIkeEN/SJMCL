@@ -2319,6 +2319,14 @@
           }
         }
       },
+      "checkLoaderJson": {
+        "error": {
+          "title": "无法更改模组加载器",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换"
+          }
+        }
+      },
       "changeModLoader": {
         "error": {
           "title": "修改模组加载器失败"

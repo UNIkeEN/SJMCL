@@ -387,6 +387,20 @@ export class InstanceService {
   }
 
   /**
+   * CHECK whether the given instance supports mod loader change.
+   * @param {string} instanceId - The instance ID to check.
+   * @returns {Promise<InvokeResponse<boolean>>}
+   */
+  @responseHandler("instance")
+  static async checkLoaderJson(
+    instanceId: string
+  ): Promise<InvokeResponse<boolean>> {
+    return await invoke("check_loader_json", {
+      instanceId,
+    });
+  }
+
+  /**
    * CHANGE the mod loader for a given instance.
    * @param {string} instanceId - The ID of the instance to update.
    * @param {ModLoaderResourceInfo} newModLoader - The new mod loader information.

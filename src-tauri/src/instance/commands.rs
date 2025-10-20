@@ -1078,6 +1078,35 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
 }
 
 #[tauri::command]
+pub async fn check_loader_json(app: AppHandle, instance_id: String) -> SJMCLResult<bool> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let launcher_config_state = binding.lock()?;
+    launcher_config_state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+
+  let json_path = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+  if !json_path.exists() {
+    return Err(InstanceError::NotSupportChangeModLoader.into());
+  }
+
+  let current_info: McClientInfo = load_json_async(&json_path)
+    .await
+    .map_err(|_| InstanceError::NotSupportChangeModLoader)?;
+
+  if current_info.patches.is_empty() {
+    return Err(InstanceError::NotSupportChangeModLoader.into());
+  }
+
+  Ok(true)
+}
+
+#[tauri::command]
 pub async fn change_mod_loader(
   app: AppHandle,
   instance_id: String,

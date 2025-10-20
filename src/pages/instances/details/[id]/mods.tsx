@@ -93,9 +93,23 @@ const InstanceModsPage = () => {
     onClose: onModInfoModalClose,
   } = useDisclosure();
 
-  const handleTypeSelect = (type: ModLoaderType) => {
-    setTargetLoaderType(type);
-    onChangeModLoaderModalOpen();
+  const handleTypeSelect = async (type: ModLoaderType) => {
+    if (!summary?.id) return;
+
+    const response = await InstanceService.checkLoaderJson(summary.id);
+
+    if (response.status === "success") {
+      if (response.data) {
+        setTargetLoaderType(type);
+        onChangeModLoaderModalOpen();
+      }
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+    }
   };
 
   const getLocalModListWrapper = useCallback(

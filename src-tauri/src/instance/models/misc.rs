@@ -246,6 +246,7 @@ pub enum InstanceError {
   CurseForgeFileManifestParseError,
   NetworkError,
   UnsupportedModLoader,
+  NotSupportChangeModLoader,
   MainClassNotFound,
   InstallationDuplicated,
   ProcessorExecutionFailed,
