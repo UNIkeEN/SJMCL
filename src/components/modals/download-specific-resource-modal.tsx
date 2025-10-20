@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Card,
+  Grid,
   HStack,
   Image,
   Link,
@@ -391,12 +392,12 @@ const DownloadSpecificResourceModal: React.FC<
                 key={index}
                 title={item.name}
                 description={
-                  <HStack
+                  <Grid
+                    templateColumns="repeat(3, 1fr)"
                     fontSize="xs"
                     className="secondary-text"
-                    spacing={6}
-                    align="flex-start"
-                    w="100%"
+                    w={{ base: "sm", lg: "md", xl: "md" }}
+                    mt={0.5}
                   >
                     <HStack spacing={1}>
                       <LuDownload />
@@ -414,7 +415,7 @@ const DownloadSpecificResourceModal: React.FC<
                         )}
                       </Text>
                     </HStack>
-                  </HStack>
+                  </Grid>
                 }
                 prefixElement={
                   <Avatar
