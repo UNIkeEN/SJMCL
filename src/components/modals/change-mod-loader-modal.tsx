@@ -34,12 +34,6 @@ interface ChangeModLoaderModalProps extends Omit<ModalProps, "children"> {
   defaultSelectedType?: ModLoaderType;
 }
 
-const modLoaderIcons: Record<string, string> = {
-  Fabric: "/images/icons/Fabric.png",
-  Forge: "/images/icons/Anvil.png",
-  NeoForge: "/images/icons/NeoForge.png",
-};
-
 export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
   defaultSelectedType,
   ...modalProps
@@ -128,7 +122,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                 prefixElement={
                   currentModLoader.loaderType !== "Unknown" ? (
                     <Image
-                      src={modLoaderIcons[currentModLoader.loaderType]}
+                      src={`/images/icons/${currentModLoader.loaderType}.png`}
                       alt={currentModLoader.loaderType}
                       boxSize="36px"
                       borderRadius="md"
