@@ -392,10 +392,10 @@ export class InstanceService {
    * @returns {Promise<InvokeResponse<boolean>>}
    */
   @responseHandler("instance")
-  static async checkLoaderJson(
+  static async checkChangeModLoaderAvailablity(
     instanceId: string
   ): Promise<InvokeResponse<boolean>> {
-    return await invoke("check_loader_json", {
+    return await invoke("check_change_mod_loader_availablity", {
       instanceId,
     });
   }

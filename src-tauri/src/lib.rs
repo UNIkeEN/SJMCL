@@ -116,7 +116,7 @@ pub async fn run() {
       instance::commands::toggle_mod_by_extension,
       instance::commands::create_launch_desktop_shortcut,
       instance::commands::finish_mod_loader_install,
-      instance::commands::check_loader_json,
+      instance::commands::check_change_mod_loader_availablity,
       instance::commands::change_mod_loader,
       instance::commands::retrieve_modpack_meta_info,
       launch::commands::select_suitable_jre,

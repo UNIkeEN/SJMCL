@@ -2319,7 +2319,7 @@
           }
         }
       },
-      "checkLoaderJson": {
+      "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "Unable to Change Mod Loader",
           "description": {
@@ -2329,7 +2329,10 @@
       },
       "changeModLoader": {
         "error": {
-          "title": "Failed to Change Mod Loader"
+          "title": "Failed to Change Mod Loader",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
+          }
         }
       },
       "retrieveModpackMetaInfo": {

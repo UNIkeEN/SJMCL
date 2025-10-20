@@ -92,6 +92,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
         toast({
           title: res.message,
           status: "error",
+          description: res.details,
         });
       } else {
         modalProps.onClose?.();

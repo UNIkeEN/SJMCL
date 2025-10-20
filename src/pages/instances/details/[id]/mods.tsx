@@ -96,7 +96,9 @@ const InstanceModsPage = () => {
   const handleTypeSelect = async (type: ModLoaderType) => {
     if (!summary?.id) return;
 
-    const response = await InstanceService.checkLoaderJson(summary.id);
+    const response = await InstanceService.checkChangeModLoaderAvailablity(
+      summary.id
+    );
 
     if (response.status === "success") {
       if (response.data) {
