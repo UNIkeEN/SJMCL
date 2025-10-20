@@ -321,7 +321,10 @@
     "header": {
       "title": "Change Mod Loader"
     },
-    "notSelectedLoader": "No new loader selected"
+    "notSelectedLoader": "No new loader selected",
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
+    }
   },
   "CheckModUpdateModal": {
     "header": {

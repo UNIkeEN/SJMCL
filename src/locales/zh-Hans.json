@@ -343,7 +343,10 @@
     "header": {
       "title": "修改模组加载器"
     },
-    "notSelectedLoader": "未选择新的加载器"
+    "notSelectedLoader": "未选择新的加载器",
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
+    }
   },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
@@ -1347,7 +1350,7 @@
       "javaPath": "Java 路径"
     },
     "placeholder": {
-      "javaPath": "请输入或选择 Java 可执行文件路径"  
+      "javaPath": "请输入或选择 Java 可执行文件路径"
     }
   },
   "MemoryStatusProgress": {

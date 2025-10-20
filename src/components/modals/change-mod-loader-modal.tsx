@@ -215,7 +215,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                 onChange={(e) => setIsInstallFabricApi(e.target.checked)}
               >
                 <Text fontSize="sm">
-                  {t("CreateInstanceModal.footer.installFabricApi")}
+                  {t("ChangeModLoaderModal.footer.installFabricApi")}
                 </Text>
               </Checkbox>
             )}
