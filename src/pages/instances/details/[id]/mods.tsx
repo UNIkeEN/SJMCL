@@ -104,6 +104,11 @@ const InstanceModsPage = () => {
       if (response.data) {
         setTargetLoaderType(type);
         onChangeModLoaderModalOpen();
+      } else {
+        toast({
+          title: t("Services.instance.changeModLoader.error.title"),
+          status: "error",
+        });
       }
     } else {
       toast({

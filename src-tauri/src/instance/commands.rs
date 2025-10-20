@@ -966,11 +966,7 @@ pub async fn create_instance(
       extract_overrides(&String::from("overrides/"), &file, &version_path)?;
     } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
       let base_path = manifest.base_path;
-      extract_overrides(
-        &String::from(format!("{}.minecraft/", base_path)),
-        &file,
-        &version_path,
-      )?;
+      extract_overrides(&format!("{}.minecraft/", base_path), &file, &version_path)?;
     } else {
       return Err(InstanceError::ModpackManifestParseError.into());
     }
@@ -1139,7 +1135,7 @@ pub async fn change_mod_loader(
   let current_info: McClientInfo = load_json_async(&json_path).await?;
   let vanilla_info = current_info
     .patches
-    .get(0)
+    .first()
     .cloned()
     .ok_or(InstanceError::NotSupportChangeModLoader)?;
 
