@@ -28,54 +28,65 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  // process GitHub-style mentions and issue / PR references
-  const processGitHubMarks = (children: React.ReactNode) => {
-    if (typeof children !== "string") return children;
+  const processGitHubMarks = (children: React.ReactNode): React.ReactNode => {
+    if (typeof children === "string") {
+      const parts = children.split(/(\#[0-9]+|\@[a-zA-Z0-9_-]+)/g);
+      return parts.map((part, idx) => {
+        if (/^#[0-9]+$/.test(part)) {
+          const issueNumber = part.substring(1);
+          return (
+            <Link
+              key={idx}
+              color={`${primaryColor}.500`}
+              onClick={() =>
+                openUrl(
+                  `https://github.com/UNIkeEN/SJMCL/pull/${issueNumber}`
+                ).catch(console.error)
+              }
+            >
+              {part}
+            </Link>
+          );
+        }
+        if (/^@[a-zA-Z0-9_-]+$/.test(part)) {
+          const username = part.substring(1);
+          return (
+            <Link
+              key={idx}
+              color={`${primaryColor}.500`}
+              onClick={() =>
+                openUrl(`https://github.com/${username}`).catch(console.error)
+              }
+            >
+              {part}
+            </Link>
+          );
+        }
+        return <React.Fragment key={idx}>{part}</React.Fragment>;
+      });
+    }
 
-    const parts = children.split(/(\#[0-9]+|\@[a-zA-Z0-9_-]+)/g);
-    console.warn(parts);
-    return parts.map((part, idx) => {
-      if (/^#[0-9]+$/.test(part)) {
-        const issueNumber = part.substring(1);
-        return (
-          <Link
-            key={idx}
-            color={`${primaryColor}.500`}
-            onClick={() =>
-              openUrl(
-                `https://github.com/UNIkeEN/SJMCL/pull/${issueNumber}`
-              ).catch(console.error)
-            }
-          >
-            {part}
-          </Link>
-        );
-      }
-      if (/^@[a-zA-Z0-9_-]+$/.test(part)) {
-        const username = part.substring(1);
-        return (
-          <Link
-            key={idx}
-            color={`${primaryColor}.500`}
-            onClick={() =>
-              openUrl(`https://github.com/${username}`).catch(console.error)
-            }
-          >
-            {part}
-          </Link>
-        );
-      }
-      return <React.Fragment key={idx}>{part}</React.Fragment>;
-    });
+    if (Array.isArray(children)) {
+      return children.map((child, i) => (
+        <React.Fragment key={i}>{processGitHubMarks(child)}</React.Fragment>
+      ));
+    }
+
+    if (React.isValidElement(children)) {
+      return React.cloneElement(children, {
+        children: processGitHubMarks(children.props.children),
+      });
+    }
+
+    return children;
   };
 
-  // map HTML tags to Chakra components so styles are inherited.
   const components: Components = {
-    // paragraphs
     p: ({ node, children, ...rest }) => (
-      <Text {...rest}>{processGitHubMarks(children)}</Text>
+      <Text my={2} {...rest}>
+        {processGitHubMarks(children)}
+      </Text>
     ),
-    // headings
     h1: ({ node, children, ...rest }) => (
       <Heading as="h1" size="xl" my={4} {...rest}>
         {processGitHubMarks(children)}
@@ -88,20 +99,20 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
     ),
     h3: ({ node, children, ...rest }) => (
       <Heading as="h3" size="md" my={2} {...rest}>
-        {children}
+        {processGitHubMarks(children)}
       </Heading>
     ),
     h4: ({ node, children, ...rest }) => (
       <Heading as="h4" size="sm" my={2} {...rest}>
-        {children}
+        {processGitHubMarks(children)}
       </Heading>
     ),
-    // divider
     hr: ({ node, ...rest }) => <Divider my={4} {...rest} />,
-    // links
     a: ({ node, href, children, ...rest }) => (
       <Link
-        _hover={{ textDecoration: "underline" }}
+        color={`${primaryColor}.500`}
+        textDecoration="underline"
+        _hover={{ color: `${primaryColor}.600`, textDecoration: "underline" }}
         onClick={(e) => {
           e.preventDefault();
           if (href) openUrl(href);
@@ -111,7 +122,6 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         {children}
       </Link>
     ),
-    // lists
     ul: ({ node, children, ...rest }) => (
       <UnorderedList pl={5} my={2} {...rest}>
         {processGitHubMarks(children)}
@@ -127,7 +137,6 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         {processGitHubMarks(children)}
       </ListItem>
     ),
-    // images
     img: ({ node, src, alt, ...rest }) => (
       <Image
         src={src}
@@ -138,10 +147,34 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         {...rest}
       />
     ),
+    strong: ({ node, children, ...rest }) => (
+      <Text as="strong" fontWeight="600" color="inherit" {...rest}>
+        {processGitHubMarks(children)}
+      </Text>
+    ),
+    em: ({ node, children, ...rest }) => (
+      <Text as="em" fontStyle="italic" {...rest}>
+        {processGitHubMarks(children)}
+      </Text>
+    ),
   };
 
   return (
-    <Box {...boxProps}>
+    <Box
+      {...boxProps}
+      sx={{
+        a: {
+          color: `${primaryColor}.500`,
+          textDecoration: "underline",
+          fontWeight: "normal",
+          _hover: { color: `${primaryColor}.600`, textDecoration: "underline" },
+        },
+        strong: {
+          fontWeight: 600,
+          color: "inherit",
+        },
+      }}
+    >
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {children || ""}
       </ReactMarkdown>
