@@ -9,7 +9,7 @@ pkgrel=1
 arch=(x86_64)
 license=(GPL-3.0,custom:LICENSE.EXTRA)
 url='https://github.com/UNIkeEN/SJMCL'
-source=("https://mc.sjtu.cn/sjmcl/releases/SJMCL_${pkgver}_linux_x86_64.deb"
+source=("https://github.com/UNIkeEN/SJMCL/releases/download/v${pkgver}/SJMCL_${pkgver}_linux_x86_64.deb"
         'LICENSE.EXTRA')
 sha512sums=('SKIP'
             'SKIP')
