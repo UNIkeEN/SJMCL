@@ -30,22 +30,15 @@ jobs:
             - uses: actions/checkout@v5
               with:
                 fetch-depth: 0
-
-            - name: Resolve latest tag(from git)
-              if: ${{ github.event_name == 'workflow_dispatch'}}
-              id: resolve_tag_git
-              run: |
-                    git fetch --tags
-                    LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
-                    echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
-                    echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
-                    echo "Latest tag: $LATEST_TAG"
             
-            - name: Resolve latest tag(from input)
-              if: ${{ github.event_name != 'workflow_dispatch'}}
-              id: resolve_tag_input
+            - name: Resolve latest tag
+              id: resolve_tag
               run: |
                     LATEST_TAG=${{ inputs.version }}
+                    if [[ -z "$LATEST_TAG" ]]; then
+                      git fetch --tags
+                      LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
+                    fi
                     echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
                     echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
                     echo "Latest tag: $LATEST_TAG"
@@ -58,11 +51,12 @@ jobs:
             - name: Publish SJMCL to the AUR
               uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
               with:
-                  pkgname: sjmcl
+                  pkgname: sjmcl-bin
                   pkgbuild: ${{ github.workspace }}/PKGBUILD
+                  assets: ${{ github.workspace }}/LICENSE.EXTRA
                   commit_username: SJMC
                   commit_email: launcher@sjmc.club
                   ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-                  commit_message: ${{ steps.resolve_tag_git.outputs.latest || steps.resolve_tag_input.outputs.latest }}
+                  commit_message: ${{ steps.resolve_tag.outputs.latest }}
                   updpkgsums: "true"
                   ssh_keyscan_types: rsa,ecdsa,ed25519
