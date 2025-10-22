@@ -190,37 +190,47 @@ pub fn retrieve_instance_subdir_path(
 }
 
 #[tauri::command]
-pub fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
-  let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let instance_state = instance_binding.lock().unwrap();
+pub async fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+  let (version_path, should_update_selection) = {
+    let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let instance_state = instance_binding.lock().unwrap();
 
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let mut config_state = config_binding.lock()?;
+    let instance = instance_state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
 
-  let instance = instance_state
-    .get(&instance_id)
-    .ok_or(InstanceError::InstanceNotFoundByID)?;
+    let version_path = instance.version_path.clone();
 
-  let version_path = &instance.version_path;
-  let path = Path::new(version_path);
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let config_state = config_binding.lock()?;
 
+    let should_update_selection = config_state.states.shared.selected_instance_id == instance_id;
+
+    (version_path, should_update_selection)
+  };
+
+  let path = Path::new(&version_path);
   if path.exists() {
-    fs::remove_dir_all(path)?;
+    tokio::fs::remove_dir_all(path).await?;
   }
   // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
 
-  if config_state.states.shared.selected_instance_id == instance_id {
+  if should_update_selection {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+
+    let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let instance_state = instance_binding.lock().unwrap();
+    let new_selected_id = instance_state
+      .keys()
+      .next()
+      .cloned()
+      .unwrap_or_else(|| "".to_string());
+
     config_state.partial_update(
       &app,
       "states.shared.selected_instance_id",
-      &serde_json::to_string(
-        &instance_state
-          .keys()
-          .next()
-          .cloned()
-          .unwrap_or_else(|| "".to_string()),
-      )
-      .unwrap_or_default(),
+      &serde_json::to_string(&new_selected_id).unwrap_or_default(),
     )?;
     config_state.save()?;
   }
