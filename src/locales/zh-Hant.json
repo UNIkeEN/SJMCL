@@ -1269,7 +1269,8 @@
         "adventure": "冒險模式",
         "spectator": "觀察者模式"
       },
-      "moreDesc": "，{{gamemode}}（難度：{{difficulty}}）",
+      "gamemodeDesc": "，{{gamemode}}",
+      "difficultyDesc": "（難度：{{difficulty}}）",
       "viewLevelData": "世界基礎資料",
       "launch": "遊玩此世界"
     },

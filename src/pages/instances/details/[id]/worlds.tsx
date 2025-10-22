@@ -216,36 +216,34 @@ const InstanceWorldsPage = () => {
         ) : worlds.length > 0 ? (
           <OptionItemGroup
             items={worlds.map((world) => {
+              const difficulty =
+                world.difficulty != null
+                  ? t(
+                      `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
+                    )
+                  : null;
               const gamemode = t(
                 `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
               );
 
-              let formatted_more_desc: string;
-
-              console.log(world.difficulty);
-
-              if (world.difficulty === "") {
-                formatted_more_desc = t(
-                  "InstanceWorldsPage.worldList.moreDescWithoutDifficulty",
-                  { gamemode }
-                );
-              } else {
-                const difficulty = t(
-                  `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
-                );
-                formatted_more_desc = t(
-                  "InstanceWorldsPage.worldList.moreDesc",
-                  { gamemode, difficulty }
-                );
-              }
+              const description = [
+                `${t("InstanceWorldsPage.worldList.lastPlayedAt")} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}`,
+                t("InstanceWorldsPage.worldList.gamemodeDesc", { gamemode }),
+                world.difficulty &&
+                  t("InstanceWorldsPage.worldList.difficultyDesc", {
+                    difficulty: t(
+                      `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
+                    ),
+                  }),
+              ]
+                .filter(Boolean)
+                .join("");
 
               return (
                 <OptionItem
                   key={world.name}
                   title={world.name}
-                  description={`${t(
-                    "InstanceWorldsPage.worldList.lastPlayedAt"
-                  )} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}${formatted_more_desc}`}
+                  description={description}
                   prefixElement={
                     <Image
                       src={convertFileSrc(world.iconSrc)}

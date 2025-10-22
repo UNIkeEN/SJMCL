@@ -1269,7 +1269,8 @@
         "adventure": "Adventure Mode",
         "spectator": "Spectator Mode"
       },
-      "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
+      "gamemodeDesc": ", {{gamemode}}",
+      "difficultyDesc": " (Difficulty: {{difficulty}})",
       "viewLevelData": "View Level Data",
       "launch": "Play this World"
     },

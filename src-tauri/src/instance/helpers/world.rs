@@ -1,11 +1,8 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::game_version::compare_game_versions;
-use crate::instance::models::misc::Instance;
 use crate::instance::models::world::level::{Level, LevelData};
 use quartz_nbt::io::Flavor;
 use quartz_nbt::serde::deserialize;
 use std::path::PathBuf;
-use tauri::AppHandle;
 
 pub async fn load_level_data_from_path(path: &PathBuf) -> SJMCLResult<LevelData> {
   let nbt_bytes = tokio::fs::read(path).await?;
@@ -13,11 +10,7 @@ pub async fn load_level_data_from_path(path: &PathBuf) -> SJMCLResult<LevelData>
   Ok(level.data)
 }
 
-pub async fn level_data_to_world_info(
-  app: &AppHandle,
-  game_version: &String,
-  data: &LevelData,
-) -> SJMCLResult<(i64, String, String)> {
+pub fn level_data_to_world_info(data: &LevelData) -> SJMCLResult<(i64, String, String)> {
   // return (last_played, difficulty, gamemode)
   let last_played = data.last_played / 1000;
   let mut difficulty: u8;
@@ -44,19 +37,9 @@ pub async fn level_data_to_world_info(
       gametype
     )));
   }
-
-  let difficulty_str: &str;
-  if compare_game_versions(app, game_version, "14w02a", false)
-    .await
-    .is_ge()
-  {
-    difficulty_str = DIFFICULTY_STR[difficulty as usize];
-  } else {
-    difficulty_str = "";
-  }
   Ok((
     last_played,
-    difficulty_str.to_string(),
+    DIFFICULTY_STR[difficulty as usize].to_string(),
     GAMEMODE_STR[gametype as usize].to_string(),
   ))
 }

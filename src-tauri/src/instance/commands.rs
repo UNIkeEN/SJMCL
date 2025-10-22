@@ -350,12 +350,16 @@ pub async fn retrieve_world_list(
 ) -> SJMCLResult<Vec<WorldInfo>> {
   let game_version = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let state = binding.lock().unwrap();
+    let state = binding.lock()?;
     let instance = state
       .get(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
     instance.version.clone()
   };
+
+  let has_difficulty_support = compare_game_versions(&app, &game_version, "14w02a", false)
+    .await
+    .is_ge();
 
   let worlds_dir =
     match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Saves) {
@@ -374,12 +378,11 @@ pub async fn retrieve_world_list(
     let icon_path = path.join("icon.png");
     let nbt_path = path.join("level.dat");
     if let Ok(level_data) = load_level_data_from_path(&nbt_path).await {
-      let (last_played, difficulty, gamemode) =
-        level_data_to_world_info(&app, &game_version, &level_data).await?;
+      let (last_played, difficulty, gamemode) = level_data_to_world_info(&level_data)?;
       world_list.push(WorldInfo {
         name: name.to_string(),
         last_played_at: last_played,
-        difficulty: difficulty.to_string(),
+        difficulty: has_difficulty_support.then(|| difficulty.to_string()),
         gamemode: gamemode.to_string(),
         icon_src: icon_path,
         dir_path: path,

@@ -972,7 +972,8 @@
         "adventure": "アドベンチャー",
         "spectator": "スペクテイター"
       },
-      "moreDesc": " ｜ {{gamemode}} ｜ {{difficulty}}",
+      "gamemodeDesc": " ｜ {{gamemode}}",
+      "difficultyDesc": " ｜ {{difficulty}}",
       "viewLevelData": "セーブデータを見る"
     },
     "serverList": {

@@ -1,7 +1,7 @@
 export interface WorldInfo {
   name: string;
   lastPlayedAt: number;
-  difficulty: string;
+  difficulty?: string;
   gamemode: string;
   iconSrc: string;
   dirPath: string;

@@ -1014,7 +1014,8 @@
         "adventure": "Mode aventure",
         "spectator": "Mode spectateur"
       },
-      "moreDesc": ", {{gamemode}} (difficulté : {{difficulty}})",
+      "gamemodeDesc": ", {{gamemode}}",
+      "difficultyDesc": " (difficulté : {{difficulty}})",
       "viewLevelData": "Données de base de la sauvegarde"
     },
     "serverList": {
