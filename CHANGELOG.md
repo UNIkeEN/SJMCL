@@ -28,7 +28,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🌟 Improve rendering of Minecraft colored text, enhancing readability in light mode. #1065 @UNIkeEN @funkthesky-ops @RobertZhang0901
 - 🐛 Fix issue where imported instances from other launchers failed to start due to duplicate libraries. #1039 @ModistAndrew @UNIkeEN
 - 🐛 Fix potential security issue when importing modpacks to prevent malicious attacks. #1043 @hans362
-- 🐛 Fix issue where “Continue Last Play” failed to work on 1.21.x game versions. #1057 @pynickle
+- 🐛 Fix issue where 'Continue Last Play' failed to work on 1.21.x game versions. #1057 @pynickle
 - 🐛 Fix incorrect frontend display of download task names when retrying. #1060 @pynickle
 - 🛠 Adjust and optimize the entry display order on the global search modal. #1049 @SundayChen
 - 🛠 Adjust and optimize the layout of the launcher's initial loading screen. #1056 @HsxMark
@@ -150,7 +150,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🐛 FIx issue of duplicate launch arguments caused by retrying mod loader downloads. #860 @Reqwey
 - 📦 Update the dependency `next` to the latest version. #869 @dependabot[bot]
 - Workflow:
-   - Synchronize the npm and pnpm lock files of frontend. #861 #862 @pangbo13 @Minecrafter-Pythoner
+   - Synchronize the `npm` and `pnpm` lock files of frontend. #861 #862 @pangbo13 @Minecrafter-Pythoner
 
 ## 0.2.0
 
