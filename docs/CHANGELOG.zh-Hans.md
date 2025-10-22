@@ -96,7 +96,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 - 📦 移除未使用的微软客户端密钥环境变量。#949 @Reqwey
 - 网页与文档：
    - 更新开源协议的附加条款。#945 @UNIkeEN @ff98sha
-- 在网页添加最新与历史版本的下载页面。 @itray25 @xunying123
+   - 在网页添加最新与历史版本的下载页面。 @itray25 @xunying123
 - 工作流：
    - 修复编译工作流中 `rustfmt` 组件与 `i686-pc-windows-msvc` 目标未安装的问题。 @UNIkeEN
 

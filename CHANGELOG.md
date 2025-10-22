@@ -148,7 +148,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🌟 Support the Windows Arm64 platform. #867 @Minecrafter-Pythoner
 - 🐛 Fix issue of token refreshing in config synchronization. #852 @Nova-Squ1
 - 🐛 FIx issue of duplicate launch arguments caused by retrying mod loader downloads. #860 @Reqwey
-- 📦 Update the dependency next to the latest version. #869 @dependabot[bot]
+- 📦 Update the dependency `next` to the latest version. #869 @dependabot[bot]
 - Workflow:
    - Synchronize the npm and pnpm lock files of frontend. #861 #862 @pangbo13 @Minecrafter-Pythoner
 
