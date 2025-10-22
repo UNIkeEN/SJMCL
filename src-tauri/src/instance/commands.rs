@@ -357,6 +357,7 @@ pub async fn retrieve_world_list(
     instance.version.clone()
   };
 
+  // difficulty setting was introduced in game version 14w02a
   let has_difficulty_support = compare_game_versions(&app, &game_version, "14w02a", false)
     .await
     .is_ge();
@@ -366,7 +367,6 @@ pub async fn retrieve_world_list(
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
-
   let world_dirs = match get_subdirectories(worlds_dir) {
     Ok(val) => val,
     Err(_) => return Ok(Vec::new()), // if dir not exists, no need to error
@@ -382,6 +382,7 @@ pub async fn retrieve_world_list(
       world_list.push(WorldInfo {
         name: name.to_string(),
         last_played_at: last_played,
+        // newer game clients return a default "normal" difficulty when reading older worlds; older clients omit this field
         difficulty: has_difficulty_support.then(|| difficulty.to_string()),
         gamemode: gamemode.to_string(),
         icon_src: icon_path,

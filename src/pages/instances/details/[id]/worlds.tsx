@@ -216,12 +216,6 @@ const InstanceWorldsPage = () => {
         ) : worlds.length > 0 ? (
           <OptionItemGroup
             items={worlds.map((world) => {
-              const difficulty =
-                world.difficulty != null
-                  ? t(
-                      `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
-                    )
-                  : null;
               const gamemode = t(
                 `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
               );
