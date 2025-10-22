@@ -6,9 +6,9 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
 `2025-10-20`
 
-- 🔥 支持更换或更新已安装实例的模组加载器。#943 #1083 #1085 @xunying123 @baiyuansjtu @UNIkeEN
-- 🔥 支持导入并安装 MultiMC 格式的整合包。#1040 @pynickle
-- 🔥 新增启动器自身日志系统。#1077 #1079 #1080 @ToolmanP @UNIkeEN
+- **🔥 支持更换或更新已安装实例的模组加载器。#943 #1083 #1085** @xunying123 @baiyuansjtu @UNIkeEN
+- **🔥 支持导入并安装 MultiMC 格式的整合包。#1040** @pynickle
+- **🔥 新增启动器自身日志系统。#1077 #1079 #1080** @ToolmanP @UNIkeEN
 - 🌟 自动检测 Windows 注册表中更多版本的 Java。#1031 @pynickle @UNIkeEN
 - 🌟 新增手动输入 Java 路径的对话框，便于 macOS 和 Linux 用户使用。#1074 @UNIkeEN @DragonRock37
 - 🐛 修复创建实例对话框中游戏版本列表的交互效果显示问题。#948 @Reqwey
@@ -85,8 +85,8 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
 `2025-09-27`
 
-- 🔥 支持启动器本体的自动更新。#918 #934 @UNIkeEN @hans362
-- 🔥 支持从 Mojang 源下载多版本的 Java 运行时。#926 @Nova-Squ1 @UNIkeEN
+- **🔥 支持启动器本体的自动更新。#918 #934** @UNIkeEN @hans362
+- **🔥 支持从 Mojang 源下载多版本的 Java 运行时。#926** @Nova-Squ1 @UNIkeEN
 - 🌟 在设置页面现可一键在文件资源管理器中显示以编辑启动器设置的原始 JSON 文件。#928 @UNIkeEN
 - 🌟 补全高级游戏启动选项的相关逻辑。#929 @xunying123
 - 🐛 修复模组信息对话框未显示关闭按钮的问题。#921 @SundayChen

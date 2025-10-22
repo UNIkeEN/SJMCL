@@ -6,9 +6,9 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 `2025-10-20`
 
-- 🔥 Support changing or updating the mod loader of an existing instance. #943 #1083 #1085 @xunying123 @baiyuansjtu @UNIkeEN
-- 🔥 Support importing and installing MultiMC-format modpacks. #1040 @pynickle
-- 🔥 Add a new logging system for the launcher itself. #1077 #1079 #1080 @ToolmanP @UNIkeEN
+- **🔥 Support changing or updating the mod loader of an existing instance. #943 #1083 #1085** @xunying123 @baiyuansjtu @UNIkeEN
+- **🔥 Support importing and installing MultiMC-format modpacks. #1040** @pynickle
+- **🔥 Add a new logging system for the launcher itself. #1077 #1079 #1080** @ToolmanP @UNIkeEN
 - 🌟 Automatically detect more versions of Java from the Windows registry. #1031 @pynickle @UNIkeEN
 - 🌟 Add a modal for manually entering Java paths, improving usability for macOS and Linux users. #1074 @UNIkeEN @DragonRock37
 - 🐛 Fix visual issue in the game version list within the create instance modal. #948 @Reqwey
@@ -85,8 +85,8 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 `2025-09-27`
 
-- 🔥 Support auto-update of the launcher itself. #918 #934 @UNIkeEN @hans362
-- 🔥 Support downloading multiple versions of Java runtime from Mojang source. #926 @Nova-Squ1 @UNIkeEN
+- **🔥 Support auto-update of the launcher itself. #918 #934** @UNIkeEN @hans362
+- **🔥 Support downloading multiple versions of Java runtime from Mojang source. #926** @Nova-Squ1 @UNIkeEN
 - 🌟 Add one-click action in settings page to reveal and edit the raw JSON config file in file explorer. #928 @UNIkeEN
 - 🌟 Complete the logic for advanced game launch options. #929 @xunying123
 - 🐛 Fix missing close button in mod info modal. #921 @SundayChen
