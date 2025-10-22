@@ -29,6 +29,7 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   isFullClickZone?: boolean;
   children?: React.ReactNode;
   childrenOnHover?: boolean;
+  isChildrenIndependent?: boolean;
   maxTitleLines?: number;
   maxDescriptionLines?: number;
 }
@@ -51,6 +52,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   isFullClickZone = false,
   children,
   childrenOnHover = false,
+  isChildrenIndependent = false,
   maxTitleLines = undefined,
   maxDescriptionLines = undefined,
   ...boxProps
@@ -96,76 +98,84 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       titleExtra
     ));
 
-  return (
-    <Flex
-      justify="space-between"
-      alignItems="center"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      borderRadius="md"
-      _hover={{
-        bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
-        transition: "background-color 0.2s ease-in-out",
-      }}
-      _active={{
-        bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
-        transition: "background-color 0.1s ease-in-out",
-      }}
-      cursor={isFullClickZone ? "pointer" : "default"}
-      p={0.5}
-      {...boxProps}
-    >
-      <HStack spacing={2.5} overflow="hidden">
-        {prefixElement && (
-          <Skeleton isLoaded={!isLoading} flex="0 0 auto">
-            {prefixElement}
-          </Skeleton>
-        )}
-        <VStack
-          spacing={0}
-          mr={2}
-          alignItems="stretch"
-          overflow="hidden"
-          flex="1 1 auto"
-        >
-          {titleLineWrap ? (
-            <Wrap spacingX={2} spacingY={0.5}>
-              {_title}
-              {titleExtra && _titleExtra}
-            </Wrap>
-          ) : (
-            <HStack spacing={2} flexWrap="nowrap">
-              {_title}
-              {titleExtra && _titleExtra}
-            </HStack>
-          )}
+  const wrappedChildren =
+    (childrenOnHover ? isHovered : true) &&
+    (typeof children === "string" ? (
+      <Skeleton isLoaded={!isLoading}>
+        <Text fontSize="xs-sm" className="secondary-text">
+          {children}
+        </Text>
+      </Skeleton>
+    ) : (
+      children
+    ));
 
-          {description &&
-            (typeof description === "string" ? (
-              <Skeleton isLoaded={!isLoading}>
-                <Text
-                  fontSize="xs"
-                  className="secondary-text"
-                  {...(maxDescriptionLines ? descriptionLineClampProps : {})}
-                >
-                  {description}
-                </Text>
-              </Skeleton>
+  return (
+    <Flex justify="space-between" alignItems="center">
+      <Flex
+        flex={1}
+        justify="space-between"
+        alignItems="center"
+        overflow="hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        borderRadius="md"
+        _hover={{
+          bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
+          transition: "background-color 0.2s ease-in-out",
+        }}
+        _active={{
+          bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
+          transition: "background-color 0.1s ease-in-out",
+        }}
+        cursor={isFullClickZone ? "pointer" : "default"}
+        p={0.5}
+        {...boxProps}
+      >
+        <HStack spacing={2.5} overflow="hidden">
+          {prefixElement && (
+            <Skeleton isLoaded={!isLoading} flex="0 0 auto">
+              {prefixElement}
+            </Skeleton>
+          )}
+          <VStack
+            spacing={0}
+            mr={2}
+            alignItems="stretch"
+            overflow="hidden"
+            flex={"1 1 auto"}
+          >
+            {titleLineWrap ? (
+              <Wrap spacingX={2} spacingY={0.5}>
+                {_title}
+                {titleExtra && _titleExtra}
+              </Wrap>
             ) : (
-              description
-            ))}
-        </VStack>
-      </HStack>
-      {(childrenOnHover ? isHovered : true) &&
-        (typeof children === "string" ? (
-          <Skeleton isLoaded={!isLoading}>
-            <Text fontSize="xs-sm" className="secondary-text">
-              {children}
-            </Text>
-          </Skeleton>
-        ) : (
-          children
-        ))}
+              <HStack spacing={2} flexWrap="nowrap">
+                {_title}
+                {titleExtra && _titleExtra}
+              </HStack>
+            )}
+
+            {description &&
+              (typeof description === "string" ? (
+                <Skeleton isLoaded={!isLoading}>
+                  <Text
+                    fontSize="xs"
+                    className="secondary-text"
+                    {...(maxDescriptionLines ? descriptionLineClampProps : {})}
+                  >
+                    {description}
+                  </Text>
+                </Skeleton>
+              ) : (
+                description
+              ))}
+          </VStack>
+        </HStack>
+        {!isChildrenIndependent && wrappedChildren}
+      </Flex>
+      {isChildrenIndependent && wrappedChildren}
     </Flex>
   );
 };

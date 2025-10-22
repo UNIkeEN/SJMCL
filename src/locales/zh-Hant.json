@@ -90,7 +90,7 @@
       },
       "modpack": {
         "title": "匯入整合包",
-        "description": "從本地檔案或網際網路匯入整合包（CurseForge, Modrinth 或 HMCL 格式）"
+        "description": "從本地檔案或網際網路匯入整合包（CurseForge, Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理遊戲目錄",
@@ -339,6 +339,15 @@
       "renameOldMod": "重新命名舊檔案失敗"
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": "修改模組載入器"
+    },
+    "notSelectedLoader": "未選擇新的載入器",
+    "footer": {
+      "installFabricApi": "同時安裝 Fabric API 模組"
+    }
+  },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
       "title": "清除下載快取",
@@ -572,6 +581,7 @@
     "task": {
       "game-client": "遊戲客戶端 {{param}}",
       "game-server": "遊戲服務端 {{param}}",
+      "change-mod-loader": "修改模組載入器 {{param}}",
       "mod": "模組",
       "world": "存檔",
       "resourcepack": "資源包",
@@ -606,9 +616,6 @@
     "placeholder": {
       "dirName": "請輸入名稱",
       "dirPath": "請選擇遊戲目錄"
-    },
-    "button": {
-      "browse": "瀏覽"
     },
     "dialog": {
       "browse": {
@@ -850,6 +857,7 @@
         "description": "請先登入微軟賬戶後使用此功能。"
       }
     },
+    "browse": "瀏覽",
     "cancel": "取消",
     "close": "關閉",
     "confirm": "確定",
@@ -1334,8 +1342,16 @@
     "steve": "Steve",
     "alex": "Alex"
   },
-  "ViewSkinModal": {
-    "skinView": "檢視皮膚"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "新增 Java"
+    },
+    "label": {
+      "javaPath": "Java 路徑"
+    },
+    "placeholder": {
+      "javaPath": "請輸入或選擇 Java 可執行檔案路徑"
+    }
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
@@ -2303,6 +2319,22 @@
           }
         }
       },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "無法更改模組載入器",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安裝的版本，無法解除安裝或更換"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "修改模組載入器失敗",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安裝的版本，無法解除安裝或更換"
+          }
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "獲取整合包資源資訊失敗",
@@ -2459,6 +2491,9 @@
         "javaEdition": "Java版{{version}}"
       }
     }
+  },
+  "ViewSkinModal": {
+    "skinView": "檢視皮膚"
   },
   "WelcomeAndTermsModal": {
     "header": {

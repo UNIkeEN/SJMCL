@@ -90,7 +90,7 @@
       },
       "modpack": {
         "title": "导入整合包",
-        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 HMCL 格式）"
+        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理游戏目录",
@@ -339,6 +339,15 @@
       "renameOldMod": "重命名旧文件失败"
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": "修改模组加载器"
+    },
+    "notSelectedLoader": "未选择新的加载器",
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
+    }
+  },
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
       "title": "清除下载缓存",
@@ -572,6 +581,7 @@
     "task": {
       "game-client": "游戏客户端 {{param}}",
       "game-server": "游戏服务端 {{param}}",
+      "change-mod-loader": "修改模组加载器 {{param}}",
       "mod": "模组",
       "world": "存档",
       "resourcepack": "资源包",
@@ -1340,7 +1350,7 @@
       "javaPath": "Java 路径"
     },
     "placeholder": {
-      "javaPath": "请输入或选择 Java 可执行文件路径"  
+      "javaPath": "请输入或选择 Java 可执行文件路径"
     }
   },
   "MemoryStatusProgress": {
@@ -2306,6 +2316,22 @@
             "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
             "MAIN_CLASS_NOT_FOUND": "主类未找到",
             "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "无法更改模组加载器",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "修改模组加载器失败",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换"
           }
         }
       },

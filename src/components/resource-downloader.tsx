@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  Grid,
   HStack,
   Input,
   Menu,
@@ -194,11 +195,15 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
         spacing={1}
         align="flex-start"
         w="100%"
+        mt={0.5}
       >
         <Text overflow="hidden" className="ellipsis-text">
           {(showZhTrans && item.translatedDescription) || item.description}
         </Text>
-        <HStack spacing={6}>
+        <Grid
+          templateColumns="repeat(3, 1fr)"
+          w={{ base: "sm", lg: "md", xl: "md" }}
+        >
           <HStack spacing={1}>
             <LuUpload />
             <Text>{ISOToDate(item.lastUpdated)}</Text>
@@ -213,7 +218,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
               <Text>{item.source}</Text>
             </HStack>
           )}
-        </HStack>
+        </Grid>
       </VStack>
     ),
     prefixElement: (

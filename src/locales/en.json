@@ -90,7 +90,7 @@
       },
       "modpack": {
         "title": "Import Modpack",
-        "description": "Import a modpack (CurseForge, Modrinth or HMCL formats) from local files or the internet"
+        "description": "Import a modpack (CurseForge, Modrinth or MultiMC formats) from local files or the internet"
       },
       "manageDirs": {
         "title": "Manage Game Directories",
@@ -315,6 +315,15 @@
           "title": "Enhance Contrast"
         }
       }
+    }
+  },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": "Change Mod Loader"
+    },
+    "notSelectedLoader": "No new loader selected",
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
     }
   },
   "CheckModUpdateModal": {
@@ -572,6 +581,7 @@
     "task": {
       "game-client": "Game Client {{param}}",
       "game-server": "Game Server {{param}}",
+      "change-mod-loader": "Change Mod Loader {{param}}",
       "mod": "Mod",
       "world": "World",
       "resourcepack": "Resourcepack",
@@ -2306,6 +2316,22 @@
             "INSTALLATION_DUPLICATED": "Another installation process is already in progress",
             "MAIN_CLASS_NOT_FOUND": "Main class not found in the mod loader version",
             "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "Unable to Change Mod Loader",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "Failed to Change Mod Loader",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
           }
         }
       },

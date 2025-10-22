@@ -36,7 +36,7 @@ const useKeyboardShortcut = (
       const isCtrlKey = ctrlKey === event.ctrlKey;
       const isAltKey = altKey === event.altKey;
       const isShiftKey = shiftKey === event.shiftKey;
-      const isKey = key ? event.key === key : true;
+      const isKey = key ? event.key.toLowerCase() === key.toLowerCase() : true;
       const isCode = code ? event.code === code : true;
 
       if (isMetaKey && isCtrlKey && isAltKey && isShiftKey && isKey && isCode) {

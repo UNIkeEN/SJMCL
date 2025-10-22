@@ -432,6 +432,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           if (payload.event === GTaskEventStatusEnums.Completed) {
             switch (name) {
               case "game-client":
+              case "change-mod-loader":
                 getInstanceList(true);
                 break;
               case "forge-libraries":

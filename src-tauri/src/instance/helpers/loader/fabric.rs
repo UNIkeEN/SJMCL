@@ -1,3 +1,6 @@
+use regex::Regex;
+use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -13,6 +16,7 @@ use crate::resource::helpers::modrinth::get_latest_fabric_api_mod_download;
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::utils::fs::get_files_with_regex;
 
 pub async fn install_fabric_loader(
   app: AppHandle,
@@ -113,6 +117,26 @@ pub async fn install_fabric_loader(
     {
       task_params.push(PTaskParam::Download(fabric_api_download));
     }
+  }
+
+  Ok(())
+}
+
+pub async fn remove_fabric_api_mods<P: AsRef<Path>>(mods_dir: P) -> SJMCLResult<()> {
+  let mods_dir = mods_dir.as_ref();
+  if !mods_dir.exists() {
+    return Ok(());
+  }
+  let re = Regex::new(r"(?i)^(fabric-api|quilted-fabric-api)-.*\.jar$")
+    .map_err(|e| SJMCLError(format!("Invalid regex: {}", e)))?;
+  let targets: Vec<PathBuf> = get_files_with_regex(mods_dir, &re).unwrap_or_default();
+  for p in targets {
+    let name = p
+      .file_name()
+      .and_then(|s| s.to_str())
+      .unwrap_or_default()
+      .to_string();
+    fs::remove_file(&p).map_err(|e| SJMCLError(format!("Failed to remove {}: {}", name, e)))?;
   }
 
   Ok(())

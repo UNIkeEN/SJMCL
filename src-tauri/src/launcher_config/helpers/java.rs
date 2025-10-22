@@ -13,10 +13,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[cfg(target_os = "windows")]
-use {
-  crate::utils::sys_info::get_all_drive_mount_points, std::error::Error,
-  std::os::windows::process::CommandExt,
-};
+use {crate::utils::sys_info::get_all_drive_mount_points, std::os::windows::process::CommandExt};
 
 pub async fn refresh_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.
@@ -131,7 +128,7 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   // For windows, try to get java path from registry
   #[cfg(target_os = "windows")]
   {
-    for java_path in get_java_paths_from_windows_registry() {
+    for java_path in scan_java_paths_in_windows_registry() {
       paths.insert(java_path);
     }
   }
@@ -174,27 +171,36 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   }
 }
 
-// Get canonicalized java path from Windows registry
-#[cfg(target_os = "windows")]
-fn get_java_paths_from_windows_registry() -> Vec<String> {
-  let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
-  let registry_paths = [
-    r"SOFTWARE\JavaSoft\JDK",
-    r"SOFTWARE\JavaSoft\JRE",
-    r"SOFTWARE\JavaSoft\Java Development Kit",
-    r"SOFTWARE\JavaSoft\Java Runtime Environment",
-  ];
+fn resolve_java_home(path: PathBuf) -> SJMCLResult<String> {
+  #[cfg(target_os = "windows")]
+  let java_bin = path.join(r"bin\java.exe");
+  #[cfg(not(target_os = "windows"))]
+  let java_bin = path.join("bin/java");
+  Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+}
+
+fn search_java_homes_in_directory(dir: PathBuf) -> Vec<String> {
   let mut java_paths = Vec::new();
-  for base_path in registry_paths {
-    if let Ok(java_path) = (|| {
-      let current_version: String = hklm.open_subkey(base_path)?.get_value("CurrentVersion")?;
-      let java_home: String = hklm
-        .open_subkey(format!(r"{}\{}", base_path, current_version))?
-        .get_value("JavaHome")?;
-      let java_bin = PathBuf::from(java_home).join(r"bin\java.exe");
-      Ok::<String, Box<dyn Error>>(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
-    })() {
-      java_paths.push(java_path);
+  if let Ok(entries) = fs::read_dir(dir) {
+    for entry in entries.flatten() {
+      let java_home = entry.path();
+      if let Ok(java_path) = resolve_java_home(java_home) {
+        java_paths.push(java_path);
+      }
+    }
+  }
+  java_paths
+}
+
+#[cfg(target_os = "macos")]
+fn search_java_homes_in_mac_java_virtual_machines(dir: PathBuf) -> Vec<String> {
+  let mut java_paths = Vec::new();
+  if let Ok(entries) = fs::read_dir(dir) {
+    for entry in entries.flatten() {
+      let java_home = entry.path().join("Contents/Home");
+      if let Ok(java_path) = resolve_java_home(java_home) {
+        java_paths.push(java_path);
+      }
     }
   }
   java_paths
@@ -316,39 +322,47 @@ fn scan_java_paths_in_game_directories(app: &AppHandle) -> Vec<String> {
   java_paths
 }
 
-fn search_java_homes_in_directory(dir: PathBuf) -> Vec<String> {
-  let mut java_paths = Vec::new();
-  if let Ok(entries) = fs::read_dir(dir) {
-    for entry in entries.flatten() {
-      let java_home = entry.path();
-      if let Ok(java_path) = resolve_java_home(java_home) {
-        java_paths.push(java_path);
-      }
-    }
-  }
-  java_paths
-}
+// Get canonicalized java paths from Windows registry
+#[cfg(target_os = "windows")]
+fn scan_java_paths_in_windows_registry() -> Vec<String> {
+  let registry_paths = [
+    r"SOFTWARE\JavaSoft\JDK",
+    r"SOFTWARE\JavaSoft\JRE",
+    r"SOFTWARE\JavaSoft\Java Development Kit",
+    r"SOFTWARE\JavaSoft\Java Runtime Environment",
+  ];
 
-#[cfg(target_os = "macos")]
-fn search_java_homes_in_mac_java_virtual_machines(dir: PathBuf) -> Vec<String> {
-  let mut java_paths = Vec::new();
-  if let Ok(entries) = fs::read_dir(dir) {
-    for entry in entries.flatten() {
-      let java_home = entry.path().join("Contents/Home");
-      if let Ok(java_path) = resolve_java_home(java_home) {
-        java_paths.push(java_path);
-      }
-    }
-  }
-  java_paths
-}
+  let resolve_registry_path = |base_path: &str| -> Vec<String> {
+    let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
+    let Ok(base_key) = hklm.open_subkey(base_path) else {
+      return Vec::new();
+    };
 
-fn resolve_java_home(path: PathBuf) -> SJMCLResult<String> {
-  #[cfg(target_os = "windows")]
-  let java_bin = path.join(r"bin\java.exe");
-  #[cfg(not(target_os = "windows"))]
-  let java_bin = path.join("bin/java");
-  Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
+    base_key
+      .enum_keys()
+      .filter_map(Result::ok)
+      .filter(|version_name| {
+        version_name
+          .chars()
+          .next()
+          .map_or(false, |c| c.is_ascii_digit())
+      })
+      .filter_map(|version_name| {
+        base_key
+          .open_subkey(&version_name)
+          .and_then(|key| key.get_value::<String, _>("JavaHome"))
+          .ok()
+      })
+      .collect()
+  };
+
+  registry_paths
+    .iter()
+    .flat_map(|&base_path| resolve_registry_path(base_path))
+    .filter_map(|java_home| resolve_java_home(PathBuf::from(java_home)).ok())
+    .collect::<HashSet<_>>()
+    .into_iter()
+    .collect()
 }
 
 pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, String)> {

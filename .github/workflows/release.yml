@@ -80,8 +80,17 @@ jobs:
       MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
       MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
 
+  Upload-release-to-AUR:
+    needs: [Version-Check, Build-and-Release]
+    if: always() && needs.Build-and-Release.result == 'success'
+    uses: ./.github/workflows/publish-aur.yml
+    with:
+      version: ${{ needs.Version-Check.outputs.version }}
+    secrets:
+      AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+
   Create-Release:
-    needs: [Version-Check, Build-and-Release, Code-Sign-macOS]
+    needs: [Version-Check, Build-and-Release, Code-Sign-macOS, Upload-release-to-AUR]
     if: always() && needs.Build-and-Release.result == 'success'
     runs-on: ubuntu-latest
     
@@ -148,6 +157,7 @@ jobs:
         id: changelog
         env:
           SIGNING_SUCCESS: ${{ needs.Code-Sign-macOS.result == 'success' }}
+          UPLOAD_AUR_SUCCESS: ${{ needs.Upload-release-to-AUR.result == 'success' }}
         run: |
           pip install requests packaging
           python scripts/release/generate_changelog_draft.py > release-notes.md
@@ -158,6 +168,12 @@ jobs:
             echo "---" >> release-notes.md
             echo "" >> release-notes.md
             echo "⚠️ **Note:** macOS artifacts in this release are **not code-signed**. macOS users may see security warnings when running the application." >> release-notes.md
+          fi
+          if [ "${{ env.UPLOAD_AUR_SUCCESS }}" != "true" ]; then
+            echo "" >> release-notes.md
+            echo "---" >> release-notes.md
+            echo "" >> release-notes.md
+            echo "⚠️ **Note:** version of this release are **not updated** in AUR. The AUR package may be outdated." >> release-notes.md
           fi
         shell: bash
 
@@ -175,3 +191,4 @@ jobs:
             $PRERELEASE \
             --notes-file release-notes.md \
             ./release-artifacts/*
+
