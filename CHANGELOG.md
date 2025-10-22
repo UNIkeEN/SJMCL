@@ -68,7 +68,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🐛 Fix the issue where some third-party authentication sources could not log in with a password. #956 @Reqwey
 - 🐛 Fix text display issue on the launch screen when character names are too long. #957 @UNIkeEN
 - 🐛 Optimize account storage format to avoid potential security issues. #962 @Reqwey @hans362
-- 🐛 Fix display issue in the mod info dialog and improve information display in resource version list. #964 @SundayChen @UNIkeEN
+- 🐛 Fix display issue in the mod info modal and improve information display in resource version list. #964 @SundayChen @UNIkeEN
 - 🐛 Fix the issue where version lists of some resources from Modrinth could not be displayed properly. #968 @SundayChen
 - 🐛 Disable "check mod updates" button when the local mod list is empty. #977 @SundayChen
 - 💄 Refactor part of the codebase to improve style and maintainability. #935 #964 @baiyuansjtu @SundayChen
@@ -89,7 +89,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🔥 Support downloading multiple versions of Java runtime from Mojang source. #926 @Nova-Squ1 @UNIkeEN
 - 🌟 Add one-click action in settings page to reveal and edit the raw JSON config file in file explorer. #928 @UNIkeEN
 - 🌟 Complete the logic for advanced game launch options. #929 @xunying123
-- 🐛 Fix missing close button in mod info dialog. #921 @SundayChen
+- 🐛 Fix missing close button in mod info modal. #921 @SundayChen
 - 🐛 Fix routing error when switching between instance detail pages. #942 @UNIkeEN
 - 🐛 Fix text overflow issue in instance detail, resource download and other pages under specific scenarios. #950 @1357310795
 - ⚡️ Avoid redundant version number fetching logic during main process startup. #937 @ModistAndrew
