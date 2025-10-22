@@ -79,8 +79,9 @@ jobs:
       MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
       MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
       MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
+
   Upload-release-to-AUR:
-    needs: [Version-Check,Build-and-Release]
+    needs: [Version-Check, Build-and-Release]
     if: always() && needs.Build-and-Release.result == 'success'
     uses: ./.github/workflows/publish-aur.yml
     with:
