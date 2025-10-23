@@ -207,13 +207,12 @@ pub async fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult
     tokio::fs::remove_dir_all(path).await?;
   }
 
-  // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
+  // not update instance state here. if send success to frontend, it will call retrieve_instance_list and update state there.
+
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   let mut config_state = config_binding.lock()?;
 
-  let should_update_selection = config_state.states.shared.selected_instance_id == instance_id;
-
-  if should_update_selection {
+  if instance_id == config_state.states.shared.selected_instance_id {
     let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let instance_state = instance_binding.lock()?;
     let new_selected_id = instance_state
