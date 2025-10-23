@@ -191,36 +191,31 @@ pub fn retrieve_instance_subdir_path(
 
 #[tauri::command]
 pub async fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
-  let (version_path, should_update_selection) = {
+  let version_path = {
     let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let instance_state = instance_binding.lock().unwrap();
+    let instance_state = instance_binding.lock()?;
 
     let instance = instance_state
       .get(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
 
-    let version_path = instance.version_path.clone();
-
-    let config_binding = app.state::<Mutex<LauncherConfig>>();
-    let config_state = config_binding.lock()?;
-
-    let should_update_selection = config_state.states.shared.selected_instance_id == instance_id;
-
-    (version_path, should_update_selection)
+    instance.version_path.clone()
   };
 
   let path = Path::new(&version_path);
   if path.exists() {
     tokio::fs::remove_dir_all(path).await?;
   }
+
   // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let mut config_state = config_binding.lock()?;
+
+  let should_update_selection = config_state.states.shared.selected_instance_id == instance_id;
 
   if should_update_selection {
-    let config_binding = app.state::<Mutex<LauncherConfig>>();
-    let mut config_state = config_binding.lock()?;
-
     let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let instance_state = instance_binding.lock().unwrap();
+    let instance_state = instance_binding.lock()?;
     let new_selected_id = instance_state
       .keys()
       .next()
@@ -234,6 +229,7 @@ pub async fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult
     )?;
     config_state.save()?;
   }
+
   Ok(())
 }
 
