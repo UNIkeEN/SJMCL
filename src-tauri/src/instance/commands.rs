@@ -979,13 +979,23 @@ pub async fn create_instance(
     let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
     if let Ok(manifest) = CurseForgeManifest::from_archive(&file) {
       task_params.extend(manifest.get_download_params(&app, &version_path).await?);
-      extract_overrides(&format!("{}/", manifest.overrides), &file, &version_path)?;
+      extract_overrides(
+        &app,
+        &format!("{}/", manifest.overrides),
+        file,
+        &version_path,
+      )?;
     } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
       task_params.extend(manifest.get_download_params(&version_path)?);
-      extract_overrides(&String::from("overrides/"), &file, &version_path)?;
+      extract_overrides(&app, &String::from("overrides/"), file, &version_path)?;
     } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
       let base_path = manifest.base_path;
-      extract_overrides(&format!("{}.minecraft/", base_path), &file, &version_path)?;
+      extract_overrides(
+        &app,
+        &format!("{}.minecraft/", base_path),
+        file,
+        &version_path,
+      )?;
     } else {
       return Err(InstanceError::ModpackManifestParseError.into());
     }
