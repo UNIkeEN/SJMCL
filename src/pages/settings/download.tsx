@@ -333,7 +333,7 @@ const DownloadSettingsPage = () => {
                   openPath(downloadConfigs.cache.directory);
                 }}
               >
-                {t("DownloadSettingPage.cache.settings.directory.open")}
+                {t("General.open")}
               </Button>
             </HStack>
           ),

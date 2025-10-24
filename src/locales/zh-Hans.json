@@ -522,8 +522,7 @@
       "settings": {
         "directory": {
           "title": "下载缓存目录",
-          "select": "修改",
-          "open": "打开"
+          "select": "修改"
         },
         "clear": {
           "title": "清除下载缓存",
@@ -955,8 +954,10 @@
       "settings": {
         "openConfigJson": {
           "title": "启动器设置文件",
-          "description": "在{{opener}}中显示启动器的原始设置文件",
-          "button": "打开"
+          "description": "在{{opener}}中显示启动器的原始设置文件"
+        },
+        "launcherLogDir": {
+          "title": "启动器日志目录"
         }
       }
     }
