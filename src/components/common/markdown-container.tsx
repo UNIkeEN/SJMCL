@@ -28,6 +28,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
+  // process GitHub-style mentions and issue / PR references
   const processGitHubMarks = (children: React.ReactNode): React.ReactNode => {
     if (typeof children === "string") {
       const parts = children.split(/(\#[0-9]+|\@[a-zA-Z0-9_-]+)/g);
@@ -81,12 +82,15 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
     return children;
   };
 
+  // map HTML tags to Chakra components so styles are inherited.
   const components: Components = {
+    // paragraphs
     p: ({ node, children, ...rest }) => (
       <Text my={2} {...rest}>
         {processGitHubMarks(children)}
       </Text>
     ),
+    // headings
     h1: ({ node, children, ...rest }) => (
       <Heading as="h1" size="xl" my={4} {...rest}>
         {processGitHubMarks(children)}
@@ -107,12 +111,11 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         {processGitHubMarks(children)}
       </Heading>
     ),
+    // divider
     hr: ({ node, ...rest }) => <Divider my={4} {...rest} />,
     a: ({ node, href, children, ...rest }) => (
       <Link
-        color={`${primaryColor}.500`}
-        textDecoration="underline"
-        _hover={{ color: `${primaryColor}.600`, textDecoration: "underline" }}
+        _hover={{ textDecoration: "underline" }}
         onClick={(e) => {
           e.preventDefault();
           if (href) openUrl(href);
@@ -122,6 +125,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         {children}
       </Link>
     ),
+    // lists
     ul: ({ node, children, ...rest }) => (
       <UnorderedList pl={5} my={2} {...rest}>
         {processGitHubMarks(children)}
@@ -137,6 +141,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         {processGitHubMarks(children)}
       </ListItem>
     ),
+    // images
     img: ({ node, src, alt, ...rest }) => (
       <Image
         src={src}
