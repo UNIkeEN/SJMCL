@@ -1,5 +1,6 @@
 use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
+use crate::instance::constants::CACHE_EXPIRY_HOURS;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
 use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
@@ -14,6 +15,7 @@ use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
 use crate::instance::helpers::mods::common::{
   add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
+  LocalModTranslationEntry, LocalModTranslationsCache,
 };
 use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
 use crate::instance::helpers::resourcepack::{
@@ -44,15 +46,17 @@ use crate::utils::fs::{
 };
 use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
+use log::info;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 use tokio;
+use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
 
@@ -469,6 +473,7 @@ pub async fn retrieve_game_server_list(
 pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
+  local_mod_translations_cache_state: State<'_, Mutex<LocalModTranslationsCache>>,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
@@ -483,8 +488,17 @@ pub async fn retrieve_local_mod_list(
 
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
   let mut tasks = Vec::new();
+  let semaphore = Arc::new(Semaphore::new(
+    std::thread::available_parallelism().unwrap().into(),
+  ));
   for path in mod_paths {
-    let task = tokio::spawn(async move { get_mod_info_from_jar(&path).await.ok() });
+    let permit = semaphore.clone().acquire_owned().await.unwrap();
+    let task = tokio::spawn(async move {
+      info!("Processing mod: {}", path.display());
+      let info = get_mod_info_from_jar(&path).await.ok();
+      drop(permit);
+      info
+    });
     tasks.push(task);
   }
   #[cfg(debug_assertions)]
@@ -492,7 +506,13 @@ pub async fn retrieve_local_mod_list(
     // mod information detection from folders is only used for debugging.
     let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
     for path in mod_paths {
-      let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
+      let permit = semaphore.clone().acquire_owned().await.unwrap();
+      let task = tokio::spawn(async move {
+        info!("Debugging mod: {}", path.display());
+        let info = get_mod_info_from_dir(&path).await.ok();
+        drop(permit);
+        info
+      });
       tasks.push(task);
     }
   }
@@ -530,8 +550,11 @@ pub async fn retrieve_local_mod_list(
   let mut translation_tasks = Vec::new();
   for mut mod_info in mod_infos {
     let app = app.clone();
+    let permit = semaphore.clone().acquire_owned().await.unwrap();
     let task = tokio::spawn(async move {
+      info!("Translating mod: {}", mod_info.file_name);
       let _ = add_local_mod_translations(&app, &mut mod_info).await;
+      drop(permit);
       mod_info
     });
     translation_tasks.push(task);
@@ -542,9 +565,24 @@ pub async fn retrieve_local_mod_list(
       mod_infos.push(mod_info);
     }
   }
-
   // sort by name (and version)
   mod_infos.sort();
+  let mut cache = local_mod_translations_cache_state.lock()?;
+  for info in mod_infos.iter() {
+    if let Some(entry) = cache.translations.get(&info.file_name) {
+      if !entry.is_expired(CACHE_EXPIRY_HOURS) {
+        continue;
+      }
+    }
+    cache.translations.insert(
+      info.file_name.clone(),
+      LocalModTranslationEntry::new(
+        info.translated_name.clone(),
+        info.translated_description.clone(),
+      ),
+    );
+  }
+  cache.save()?;
 
   Ok(mod_infos)
 }
