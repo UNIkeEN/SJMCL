@@ -69,17 +69,14 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       </HStack>
     ),
-    ...(withMenu
-      ? {}
-      : {
-          isFullClickZone: true,
-          onClick: () => handleUpdateSelectedInstance(instance),
-        }),
+    isFullClickZone: true,
+    onClick: () => handleUpdateSelectedInstance(instance),
     children: withMenu ? (
       <InstanceMenu instance={instance} variant="buttonGroup" />
     ) : (
       <></>
     ),
+    isChildrenIndependent: withMenu,
   }));
 
   const gridItems = instances.map((instance) => ({

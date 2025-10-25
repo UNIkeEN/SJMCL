@@ -164,6 +164,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
             variant="ghost"
             aria-label="operations"
             icon={<LuEllipsis />}
+            onClick={(e) => e.stopPropagation()}
           />
           <Portal>
             <MenuList>
@@ -172,7 +173,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
                   key={item.label}
                   fontSize="xs"
                   color={item.danger ? "red.500" : "inherit"}
-                  onClick={item.onClick}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    item.onClick();
+                  }}
                 >
                   <HStack>
                     <item.icon />
@@ -191,7 +195,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
               icon={item.icon}
               label={item.label}
               colorScheme={item.danger ? "red" : "gray"}
-              onClick={item.onClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                item.onClick();
+              }}
               isLoading={item.isLoading}
             />
           ))}

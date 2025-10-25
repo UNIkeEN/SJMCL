@@ -101,14 +101,11 @@ export const WrapCard: React.FC<WrapCardProps> = ({
       borderWidth={isSelected ? borderWidth : 0}
       p={isSelected ? selectedPadding : basePadding}
       {...cardProps}
+      onClick={onSelect}
     >
       {variant === "radio" && (
         <Box position="absolute" top={2} left={2}>
-          <Radio
-            value={radioValue}
-            onClick={onSelect}
-            colorScheme={primaryColor}
-          />
+          <Radio value={radioValue} colorScheme={primaryColor} />
         </Box>
       )}
       {renderContent()}
