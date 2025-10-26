@@ -317,6 +317,18 @@
       }
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "修改模组加载器",
+        "install": "安装模组加载器"
+      }
+    },
+    "notSelectedLoader": "未选择新的加载器",
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
+    }
+  },
   "CheckModUpdateModal": {
     "header": {
       "title": "检查模组更新"
@@ -337,15 +349,6 @@
     },
     "error": {
       "renameOldMod": "重命名旧文件失败"
-    }
-  },
-  "ChangeModLoaderModal": {
-    "header": {
-      "title": "修改模组加载器"
-    },
-    "notSelectedLoader": "未选择新的加载器",
-    "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
     }
   },
   "ClearDownloadCacheAlertDialog": {
