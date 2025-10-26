@@ -74,8 +74,10 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
     }
 
     if (React.isValidElement(children)) {
+      const childProps = (children.props && children.props.children) ?? null;
       return React.cloneElement(children, {
-        children: processGitHubMarks(children.props.children),
+        ...children.props,
+        children: processGitHubMarks(childProps),
       });
     }
 
@@ -86,9 +88,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
   const components: Components = {
     // paragraphs
     p: ({ node, children, ...rest }) => (
-      <Text my={2} {...rest}>
-        {processGitHubMarks(children)}
-      </Text>
+      <Text {...rest}>{processGitHubMarks(children)}</Text>
     ),
     // headings
     h1: ({ node, children, ...rest }) => (
@@ -103,16 +103,27 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
     ),
     h3: ({ node, children, ...rest }) => (
       <Heading as="h3" size="md" my={2} {...rest}>
-        {processGitHubMarks(children)}
+        {children}
       </Heading>
     ),
     h4: ({ node, children, ...rest }) => (
       <Heading as="h4" size="sm" my={2} {...rest}>
-        {processGitHubMarks(children)}
+        {children}
       </Heading>
+    ),
+    strong: ({ node, children, ...rest }) => (
+      <Text as="strong" fontWeight="600" color="inherit" {...rest}>
+        {processGitHubMarks(children)}
+      </Text>
+    ),
+    em: ({ node, children, ...rest }) => (
+      <Text as="em" fontStyle="italic" color="inherit" {...rest}>
+        {processGitHubMarks(children)}
+      </Text>
     ),
     // divider
     hr: ({ node, ...rest }) => <Divider my={4} {...rest} />,
+    // links
     a: ({ node, href, children, ...rest }) => (
       <Link
         _hover={{ textDecoration: "underline" }}
@@ -152,34 +163,10 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         {...rest}
       />
     ),
-    strong: ({ node, children, ...rest }) => (
-      <Text as="strong" fontWeight="600" color="inherit" {...rest}>
-        {processGitHubMarks(children)}
-      </Text>
-    ),
-    em: ({ node, children, ...rest }) => (
-      <Text as="em" fontStyle="italic" {...rest}>
-        {processGitHubMarks(children)}
-      </Text>
-    ),
   };
 
   return (
-    <Box
-      {...boxProps}
-      sx={{
-        a: {
-          color: `${primaryColor}.500`,
-          textDecoration: "underline",
-          fontWeight: "normal",
-          _hover: { color: `${primaryColor}.600`, textDecoration: "underline" },
-        },
-        strong: {
-          fontWeight: 600,
-          color: "inherit",
-        },
-      }}
-    >
+    <Box {...boxProps}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {children || ""}
       </ReactMarkdown>
