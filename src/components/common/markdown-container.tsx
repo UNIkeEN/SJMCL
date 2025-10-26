@@ -74,7 +74,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
     }
 
     if (React.isValidElement(children)) {
-      const childProps = (children.props && children.props.children) ?? null;
+      const childProps = children.props?.children ?? null;
       return React.cloneElement(children, {
         ...children.props,
         children: processGitHubMarks(childProps),
