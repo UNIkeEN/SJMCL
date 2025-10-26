@@ -1,5 +1,5 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::constants::{CACHE_EXPIRY_HOURS, CACHE_FILE_NAME};
+use crate::instance::constants::{TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME};
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::resource::helpers::curseforge::{
@@ -29,7 +29,10 @@ pub struct LocalModTranslationsCache {
 
 impl Storage for LocalModTranslationsCache {
   fn file_path() -> PathBuf {
-    APP_DATA_DIR.get().unwrap().join(CACHE_FILE_NAME)
+    APP_DATA_DIR
+      .get()
+      .unwrap()
+      .join(TRANSLATION_CACHE_FILE_NAME)
   }
 }
 
@@ -292,15 +295,15 @@ pub async fn add_local_mod_translations(
   mod_info: &mut LocalModInfo,
 ) -> SJMCLResult<()> {
   let cache = {
-    let cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
-    let cache = cache_state.lock()?.clone();
+    let translation_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
+    let cache = translation_cache_state.lock()?.clone();
     cache
   };
   let file_path = mod_info.file_path.to_string_lossy().to_string();
   let file_name = mod_info.file_name.clone();
 
   if let Some(entry) = cache.translations.get(&file_name) {
-    if !entry.is_expired(CACHE_EXPIRY_HOURS) {
+    if !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS) {
       info!("Using cached translation for mod: {}", file_name);
       mod_info.translated_name = entry.translated_name.clone();
       mod_info.translated_description = entry.translated_description.clone();

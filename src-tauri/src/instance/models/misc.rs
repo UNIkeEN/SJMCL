@@ -250,6 +250,7 @@ pub enum InstanceError {
   MainClassNotFound,
   InstallationDuplicated,
   ProcessorExecutionFailed,
+  SemaphoreAcquireFailed,
 }
 
 impl std::error::Error for InstanceError {}
