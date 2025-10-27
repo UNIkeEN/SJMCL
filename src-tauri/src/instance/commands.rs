@@ -497,7 +497,7 @@ pub async fn retrieve_local_mod_list(
       .await
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
-      log::info!("Load mod info from dir: {}", path.display());
+      log::debug!("Load mod info from dir: {}", path.display());
       let info = get_mod_info_from_jar(&path).await.ok();
       drop(permit);
       info
@@ -563,7 +563,7 @@ pub async fn retrieve_local_mod_list(
       .await
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
-      log::info!("Translating mod: {}", mod_info.file_name);
+      log::debug!("Translating mod: {}", mod_info.file_name);
       let _ = add_local_mod_translations(&app, &mut mod_info).await;
       drop(permit);
       mod_info
