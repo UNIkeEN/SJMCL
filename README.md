@@ -44,6 +44,26 @@ To learn about how to use SJMCL’s features and browse frequently asked questio
 
 If you need to run SJMCL on Windows 7, please first [download the Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download) and install it. We recommend choosing the 'Evergreen Bootstrapper'.
 
+### Install from Command Line
+
+<details>
+<summary><h4>Arch Linux</h4></summary>
+
+SJMCL is available on the Arch User Repository (AUR). You can install it using your favorite [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
+
+```bash
+yay -S sjmcl-bin
+```
+
+Manual installation without an AUR helper:
+
+```bash
+git clone https://aur.archlinux.org/sjmcl-bin.git
+cd sjmcl-bin
+makepkg -si
+```
+</details>
+
 ## Development and Contributing
 
 To get started, clone the repository and install the required dependencies:
