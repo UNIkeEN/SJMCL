@@ -50,7 +50,7 @@ If you need to run SJMCL on Windows 7, please first [download the Microsoft Edge
 <details>
 <summary><h4>Arch Linux</h4></summary>
 
-SJMCL is available on the Arch User Repository (AUR). You can install it using your favorite [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
+SJMCL is available on the Arch User Repository (AUR). You can install it using a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
 
 ```bash
 yay -S sjmcl-bin

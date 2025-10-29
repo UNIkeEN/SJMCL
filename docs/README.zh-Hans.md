@@ -44,6 +44,29 @@ SJMCL 目前支持以下平台：
 
 如果您需要在 Windows 7 运行 SJMCL，请先 [下载 Microsoft Edge WebView2 运行时](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2#download) 并安装之，推荐选择“常青引导程序”。
 
+<details>
+<summary><h3>从命令行安装</h3></summary>
+
+<details>
+<summary><h4>Arch Linux</h4></summary>
+
+SJMCL 已上传至 Arch Linux 用户仓库（AUR）。您可以使用常见的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 安装：
+
+```bash
+yay -S sjmcl-bin
+```
+
+如不使用 AUR 助手，您也可以手动安装：
+
+```bash
+git clone https://aur.archlinux.org/sjmcl-bin.git
+cd sjmcl-bin
+makepkg -si
+```
+
+</details>
+</details>
+
 ## 开发与贡献
 
 首先克隆本项目并安装前端依赖：
