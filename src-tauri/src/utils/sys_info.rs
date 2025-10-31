@@ -139,13 +139,12 @@ pub fn get_all_drive_mount_points() -> Vec<PathBuf> {
 /// println!("Found free port: {}", available_port);
 /// ```
 pub fn find_free_port(start_port: Option<u16>) -> SJMCLResult<u16> {
-  let mut port = start_port.unwrap_or(0); // Default to 0 if no start_port is provided
+  let start = start_port.unwrap_or(0); // Default to 0 if no start_port is provided
 
-  while port < u16::MAX {
+  for port in start..=u16::MAX {
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    match TcpListener::bind(addr) {
-      Ok(_) => return Ok(port),
-      Err(_) => port += 1,
+    if TcpListener::bind(addr).is_ok() {
+      return Ok(port);
     }
   }
 

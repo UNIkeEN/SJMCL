@@ -11,7 +11,6 @@ use axum::{
 };
 use base64::{engine::general_purpose, Engine};
 use image::{ImageFormat, RgbaImage};
-use log::{info, warn};
 use rsa::{
   pkcs1v15::SigningKey,
   pkcs8::EncodePublicKey,
@@ -150,8 +149,7 @@ impl YggdrasilServer {
     let addr = SocketAddr::from_str(&format!("127.0.0.1:{}", self.port))?;
 
     let listener = tokio::net::TcpListener::bind(&addr).await?;
-    info!("🚀 Yggdrasil server listening on {}", addr);
-    info!("📍 Root URL: {}", self.root_url);
+    log::info!("Local Yggdrasil server listening on {}", addr);
 
     axum::serve(listener, app).await?;
     Ok(())
@@ -227,7 +225,7 @@ impl YggdrasilServer {
 }
 
 async fn handle_root(State(state): State<YggdrasilServer>) -> Json<Value> {
-  info!("📨 GET / - Root endpoint");
+  log::info!("Local Yggdrasil server received: GET /");
 
   Json(state.metadata.clone())
 }
@@ -235,8 +233,8 @@ async fn handle_root(State(state): State<YggdrasilServer>) -> Json<Value> {
 async fn handle_status(State(state): State<YggdrasilServer>) -> Json<Value> {
   let players = state.players.lock().unwrap();
 
-  info!(
-    "📨 GET /status - Status endpoint (chars: {})",
+  log::info!(
+    "Local Yggdrasil server received: GET /status - Status endpoint (chars: {})",
     players.len()
   );
 
@@ -259,8 +257,8 @@ async fn handle_profiles(
     }
   }
 
-  info!(
-    "📨 POST /api/profiles/minecraft - Profiles: {} requested, {} found",
+  log::info!(
+    "Local Yggdrasil server received: POST /api/profiles/minecraft - Profiles: {} requested, {} found",
     names.len(),
     results.len()
   );
@@ -274,8 +272,8 @@ async fn handle_has_joined(
 ) -> impl IntoResponse {
   match params.get("username") {
     Some(username) => {
-      info!(
-        "📨 GET /sessionserver/session/minecraft/hasJoined - username: {}",
+      log::info!(
+        "Local Yggdrasil server received: GET /sessionserver/session/minecraft/hasJoined - username: {}",
         username
       );
       if let Some(player) = state.find_player_by_name(username) {
@@ -285,12 +283,12 @@ async fn handle_has_joined(
         )
           .into_response()
       } else {
-        warn!("❌ Character not found: {}", username);
+        log::warn!("Character not found: {}", username);
         StatusCode::NO_CONTENT.into_response()
       }
     }
     None => {
-      warn!("⚠️ Missing username parameter");
+      log::warn!("Missing username parameter");
       StatusCode::BAD_REQUEST.into_response()
     }
   }
@@ -300,7 +298,7 @@ async fn handle_join_server(
   State(_state): State<YggdrasilServer>,
   Json(_body): Json<Value>,
 ) -> StatusCode {
-  info!("📨 POST /sessionserver/session/minecraft/join - Join server request");
+  log::info!("Local Yggdrasil server received: POST /sessionserver/session/minecraft/join");
   StatusCode::NO_CONTENT
 }
 
@@ -308,7 +306,10 @@ async fn handle_profile_route(
   State(state): State<YggdrasilServer>,
   Path(uuid): Path<String>,
 ) -> impl IntoResponse {
-  info!("📨 GET /sessionserver/session/minecraft/profile/{}", uuid);
+  log::info!(
+    "Local Yggdrasil server received: GET /sessionserver/session/minecraft/profile/{}",
+    uuid
+  );
   if let Ok(parsed_uuid) = Uuid::parse_str(&uuid) {
     if let Some(player) = state.find_player_by_uuid(parsed_uuid) {
       return (
@@ -318,7 +319,7 @@ async fn handle_profile_route(
         .into_response();
     }
   }
-  warn!("❌ Profile not found: {}", uuid);
+  log::warn!("Profile not found: {}", uuid);
   StatusCode::NO_CONTENT.into_response()
 }
 
@@ -326,7 +327,7 @@ async fn handle_texture_route(
   State(state): State<YggdrasilServer>,
   Path(hash): Path<String>,
 ) -> impl IntoResponse {
-  info!("📨 GET /textures/{}", hash);
+  log::info!("Local Yggdrasil server received: GET /textures/{}", hash);
 
   if let Some(image) = state.find_texture_by_hash(&hash) {
     let mut buf = Vec::new();
@@ -340,7 +341,7 @@ async fn handle_texture_route(
 
     (StatusCode::OK, headers, buf).into_response()
   } else {
-    warn!("❌ Texture not found: {}", hash);
+    log::warn!("Texture not found: {}", hash);
     StatusCode::NOT_FOUND.into_response()
   }
 }

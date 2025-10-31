@@ -100,7 +100,7 @@ pub async fn generate_launch_command(
 ) -> SJMCLResult<LaunchCommand> {
   let launcher_config = { app.state::<Mutex<LauncherConfig>>().lock()?.clone() };
   let launching_queue = { app.state::<Mutex<Vec<LaunchingState>>>().lock()?.clone() };
-  let yggdrasil_server = { app.state::<Mutex<YggdrasilServer>>().lock()?.clone() };
+  let local_ygg_server = { app.state::<Mutex<YggdrasilServer>>().lock()?.clone() };
 
   let LauncherConfig { basic_info, .. } = launcher_config;
   let launching = launching_queue
@@ -278,7 +278,7 @@ pub async fn generate_launch_command(
       selected_player
         .auth_server_url
         .clone()
-        .unwrap_or(yggdrasil_server.root_url.clone())
+        .unwrap_or(local_ygg_server.root_url.clone())
     ));
     cmd.push("-Dauthlibinjector.side=client".to_string());
     cmd.push(format!(

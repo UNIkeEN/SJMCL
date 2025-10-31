@@ -48,7 +48,7 @@ pub enum SkinModel {
 }
 
 // legacy version of SJMCL storage skin model in both upper and lower cases, need to be converted to the new format
-// will be removed in the future
+// TODO: will be removed after the new migration utils crate implemented
 impl<'de> Deserialize<'de> for SkinModel {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
   where
