@@ -1,6 +1,7 @@
 use crate::account::models::{PlayerInfo, SkinModel};
 use crate::error::SJMCLResult;
 use crate::utils::image::ImageWrapper;
+use crate::utils::sys_info::find_free_port;
 use axum::{
   extract::{Path, Query, State},
   http::{HeaderMap, StatusCode},
@@ -123,7 +124,8 @@ pub struct YggdrasilServer {
 }
 
 impl YggdrasilServer {
-  pub fn new(port: u16) -> Self {
+  pub fn new() -> Self {
+    let port = find_free_port(Some(18960)).unwrap(); // 饮水思源，爱国荣校
     let public_key = get_public_key();
 
     Self {

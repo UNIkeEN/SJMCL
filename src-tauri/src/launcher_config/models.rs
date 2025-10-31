@@ -261,8 +261,6 @@ structstruck::strike! {
     pub discover_source_endpoints: Vec<String>,
     pub extra_java_paths: Vec<String>,
     pub suppressed_dialogs: Vec<String>,
-    #[default = 18960]
-    pub local_ygg_server_port: u16,
     pub states: struct States {
       pub shared: struct {
         pub selected_player_id: String,
