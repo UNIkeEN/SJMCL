@@ -1,4 +1,5 @@
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::constants::{TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME};
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::resource::helpers::curseforge::{
@@ -7,31 +8,43 @@ use crate::resource::helpers::curseforge::{
 use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
 };
+use crate::storage::Storage;
 use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
+use crate::APP_DATA_DIR;
+use log::info;
 use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Manager};
-use tokio::fs;
 use zip::ZipArchive;
 
 // Cache structure for local mod translations
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-struct LocalModTranslationsCache {
+pub struct LocalModTranslationsCache {
   #[serde(flatten)]
-  translations: std::collections::HashMap<String, LocalModTranslationEntry>,
+  pub translations: std::collections::HashMap<String, LocalModTranslationEntry>,
+}
+
+impl Storage for LocalModTranslationsCache {
+  fn file_path() -> PathBuf {
+    APP_DATA_DIR
+      .get()
+      .unwrap()
+      .join(TRANSLATION_CACHE_FILE_NAME)
+  }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct LocalModTranslationEntry {
-  translated_name: Option<String>,
-  translated_description: Option<String>,
-  timestamp: u64,
+pub struct LocalModTranslationEntry {
+  pub translated_name: Option<String>,
+  pub translated_description: Option<String>,
+  pub timestamp: u64,
 }
 
 impl LocalModTranslationEntry {
-  fn new(translated_name: Option<String>, translated_description: Option<String>) -> Self {
+  pub fn new(translated_name: Option<String>, translated_description: Option<String>) -> Self {
     Self {
       translated_name,
       translated_description,
@@ -42,44 +55,13 @@ impl LocalModTranslationEntry {
     }
   }
 
-  fn is_expired(&self, max_age_hours: u64) -> bool {
+  pub fn is_expired(&self, max_age_hours: u64) -> bool {
     let current_time = SystemTime::now()
       .duration_since(UNIX_EPOCH)
       .unwrap_or_default()
       .as_secs();
     current_time > self.timestamp + (max_age_hours * 60 * 60)
   }
-}
-
-async fn load_local_mod_translations_cache(app: &AppHandle) -> LocalModTranslationsCache {
-  let cache_path = match app.path().app_cache_dir() {
-    Ok(cache_dir) => cache_dir.join("local_mod_translations.json"),
-    Err(_) => return LocalModTranslationsCache::default(),
-  };
-
-  let content = match fs::read_to_string(&cache_path).await {
-    Ok(content) => content,
-    Err(_) => return LocalModTranslationsCache::default(),
-  };
-
-  serde_json::from_str(&content).unwrap_or_else(|_| LocalModTranslationsCache::default())
-}
-
-async fn save_local_mod_translations_cache(
-  app: &AppHandle,
-  cache: &LocalModTranslationsCache,
-) -> bool {
-  let cache_path = match app.path().app_cache_dir() {
-    Ok(cache_dir) => cache_dir.join("local_mod_translations.json"),
-    Err(_) => return false,
-  };
-
-  let content = match serde_json::to_string_pretty(cache) {
-    Ok(content) => content,
-    Err(_) => return false,
-  };
-
-  fs::write(cache_path, content).await.is_ok()
 }
 
 pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> {
@@ -312,13 +294,17 @@ pub async fn add_local_mod_translations(
   app: &AppHandle,
   mod_info: &mut LocalModInfo,
 ) -> SJMCLResult<()> {
-  const CACHE_EXPIRY_HOURS: u64 = 24;
-
+  let cache = {
+    let translation_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
+    let cache = translation_cache_state.lock()?.clone();
+    cache
+  };
   let file_path = mod_info.file_path.to_string_lossy().to_string();
-  let cache = load_local_mod_translations_cache(app).await;
+  let file_name = mod_info.file_name.clone();
 
-  if let Some(entry) = cache.translations.get(&file_path) {
-    if !entry.is_expired(CACHE_EXPIRY_HOURS) {
+  if let Some(entry) = cache.translations.get(&file_name) {
+    if !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS) {
+      info!("Using cached translation for mod: {}", file_name);
       mod_info.translated_name = entry.translated_name.clone();
       mod_info.translated_description = entry.translated_description.clone();
       return Ok(());
@@ -358,25 +344,10 @@ pub async fn add_local_mod_translations(
     _ => None,
   };
 
-  let resource_info = match final_result {
-    Some(data) => data,
-    None => return Ok(()),
-  };
-
-  mod_info.translated_name = resource_info.translated_name.clone();
-  mod_info.translated_description = resource_info.translated_description.clone();
-
-  // Save to cache
-  let mut cache = load_local_mod_translations_cache(app).await;
-  cache.translations.insert(
-    file_path.clone(),
-    LocalModTranslationEntry::new(
-      resource_info.translated_name,
-      resource_info.translated_description,
-    ),
-  );
-
-  save_local_mod_translations_cache(app, &cache).await;
-
+  if let Some(resource_info) = final_result {
+    info!("Fetched translation for mod: {}", file_name);
+    mod_info.translated_name = resource_info.translated_name.clone();
+    mod_info.translated_description = resource_info.translated_description.clone();
+  }
   Ok(())
 }
