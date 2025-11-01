@@ -4,7 +4,14 @@
       "title": "À propos",
       "settings": {
         "version": {
-          "title": "Version"
+          "title": "Version",
+          "foundNew": "Il existe une nouvelle version de",
+          "checkUpdate": "Vérifier les mises à jour",
+          "checkToast": {
+            "loading": "vérifie les mises à jour",
+            "up2date": "est actuellement la dernière version",
+            "error": "Échec de la vérification des mises à jour"
+          }
         },
         "contributors": {
           "title": "Liste des développeurs"
@@ -216,13 +223,14 @@
           "title": "Mode de couleur",
           "type": {
             "light": "Clairs",
-            "dark": "Sombre"
+            "dark": "Sombre",
+            "system": "suit le système"
           }
         },
         "useLiquidGlassDesign": {
           "title": "Effet verre liquide",
           "description": "Une fois activé, certaines interfaces utiliseront l'effet 'Verre liquide', ce qui peut affecter les performances"
-       },
+        },
         "headNavStyle": {
           "title": "Style de la barre de navigation supérieure",
           "type": {
@@ -258,6 +266,9 @@
         },
         "randomCustom": {
           "title": "Aléatoire et personnalisé"
+        },
+        "autoDarken": {
+          "title": "Assombrir l'arrière-plan en mode sombre"
         }
       },
       "presetBgList": {
@@ -266,6 +277,9 @@
         },
         "SJTU-eastgate": {
           "name": "Porte Est SJTU"
+        },
+        "GNLXC": {
+          "name": "GNWork Ville idéale"
         }
       }
     },
@@ -330,6 +344,9 @@
       "loader": "Le chargeur",
       "skipped": "Ne pas installer",
       "info": "Paramètres de base"
+    },
+    "footer": {
+      "installFabricApi": "Installez également le module Fabric API"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -359,9 +376,9 @@
   },
   "DiscoverPage": {
     "title": "Découvrir",
-    "button": {
-      "sources": "Gérer les sources de données"
-    }
+    "noMore": "Plus de contenu",
+    "sources": "Gérer les sources de données",
+    "NoSources": "Aucune source de données ajoutée"
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -371,9 +388,6 @@
     "tag": {
       "online": "En ligne"
     }
-  },
-  "DownloadFloatButton": {
-    "tooltip": "Téléchargement en cours"
   },
   "DownloadModpackModal": {
     "header": {
@@ -388,7 +402,8 @@
       "world": "Monde",
       "mod": "Mod",
       "resourcepack": "Pack de ressources",
-      "shader": "Shader"
+      "shader": "Shader",
+      "datapack": "Paquet"
     }
   },
   "DownloadSettingPage": {
@@ -425,8 +440,12 @@
       "settings": {
         "directory": {
           "title": "Répertoire du cache de téléchargement",
-          "select": "Modifier",
-          "open": "Ouvrir"
+          "select": "Modifier"
+        },
+        "clear": {
+          "title": "Effacer le cache de téléchargement",
+          "description": "efface tous les fichiers du répertoire du cache de téléchargement. Cette opération n'effacera pas les fichiers de ressources téléchargés.",
+          "button": "Effacer"
         }
       }
     },
@@ -467,11 +486,32 @@
       "settings": "Paramètres de téléchargement",
       "pause": "Pause",
       "begin": "Démarrer",
-      "retry": "Réessayer"
+      "retry": "Réessayer",
+      "deleteRecord": "supprimer cet enregistrement"
     },
     "label": {
       "paused": "En pause",
-      "error": "Erreur"
+      "error": "Erreur",
+      "completed": "terminé",
+      "cancelled": "annulé"
+    },
+    "task": {
+      "game-client": "Client de jeu  {{param}}",
+      "game-server": "Serveur de jeu  {{param}}",
+      "change-mod-loader": "modifier le chargeur de module {{param}}",
+      "mod": "Module %À FAIRE",
+      "world": "Archives %À FAIRE",
+      "resourcepack": "Paquet de ressources",
+      "shader": "lumière et ombre",
+      "modpack": "Package intégré",
+      "datapack": "Paquet",
+      "patch-files": "Fichier de jeu de correctif  {{param}}",
+      "mod-update": "Module de mise à jour",
+      "retry": "réessaye",
+      "neoforge-libraries": "Bibliothèque d'exécution  NeoForge",
+      "forge-libraries": "Bibliothèque d'exécution  Forge",
+      "launcher-update": "Lanceur de mise à jour",
+      "mojang-java": "Exécution  Java {{param}}"
     }
   },
   "Editable": {
@@ -493,9 +533,6 @@
     "placeholder": {
       "dirName": "Veuillez saisir le nom",
       "dirPath": "Veuillez sélectionner le répertoire de jeu"
-    },
-    "button": {
-      "browse": "Parcourir"
     },
     "dialog": {
       "browse": {
@@ -521,7 +558,8 @@
         "hasInvalidChar": "Le nom du répertoire contient des caractères non valides"
       },
       "dirPath": {
-        "exist": "Le chemin du répertoire existe déjà"
+        "exist": "Le chemin du répertoire existe déjà",
+        "invalid": "Le chemin du répertoire  est illégal"
       }
     }
   },
@@ -641,7 +679,72 @@
       "javaVersion": "Version Java"
     },
     "crashDetails": {
-      "title": "Détails du crash"
+      "title": "Détails du crash",
+      "OPENJ9": "L'instance actuelle ne peut pas s'exécuter sur OpenJ9 JVM, veuillez utiliser HotSpot JVM.",
+      "NEED_JDK11": "L'instance actuelle utilise les fonctionnalités du JDK 11 et ne peut pas s'exécuter sur la plateforme de machine virtuelle actuelle. Veuillez sélectionner JDK 11 pour démarrer.",
+      "TOO_OLD_JAVA": "L'instance actuelle ne peut pas s'exécuter en raison d'une ancienne version de Java. Il est recommandé d'utiliser la dernière version de Java.",
+      "JVM_32BIT": "L'allocation de mémoire du jeu est trop importante et dépasse les limites de la JVM 32 bits.Si votre ordinateur est un système 64 bits, veuillez télécharger, installer et remplacer Java 64 bits.",
+      "GL_OPERATION_FAILURE": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de problèmes avec certains des modules/packs lumière et ombre/packs de ressources/packs de textures que vous utilisez.Veuillez essayer de désactiver le module/pack de lumière et d'ombre/pack de ressources/pack de textures que vous utilisez en premier et réessayez.",
+      "OPENGL_NOT_SUPPORTED": "L'instance actuelle ne peut pas continuer à s'exécuter car le pilote de votre carte graphique ne prend pas en charge OpenGL.Veuillez vérifier le pilote de votre carte graphique ou essayer d'utiliser un autre moteur de rendu.",
+      "GRAPHICS_DRIVER": "L'instance actuelle a planté en raison d'un problème de pilote de carte graphique. Veuillez mettre à jour le pilote de la carte graphique.",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de l'échec de l'initialisation de la fenêtre OpenGL sous la plateforme Apple Silicon.",
+      "OUT_OF_MEMORY": "L'instance actuelle a planté en raison d'une mémoire insuffisante, veuillez essayer de réduire l'allocation de mémoire du jeu ou de fermer d'autres programmes.",
+      "MEMORY_EXCEEDED": "L'instance actuelle a planté car l'allocation de mémoire a dépassé la limite. Veuillez essayer de réduire l'allocation de mémoire du jeu ou de fermer d'autres programmes.",
+      "RESOLUTION_TOO_HIGH": "L'instance actuelle ne peut pas s'exécuter car la résolution est trop élevée. Veuillez réessayer avec un pack de ressources/pack de textures avec une résolution inférieure.",
+      "JDK_9": "L'instance actuelle utilise les fonctionnalités du JDK 9 et ne peut pas s'exécuter sur la plateforme de machine virtuelle actuelle. Veuillez sélectionner JDK 9 pour démarrer.",
+      "MAC_JDK_8U261": "L'instance actuelle a planté en raison d'un conflit entre Forge/OptiFine que vous utilisez et Java.Veuillez essayer de mettre à jour Forge/OptiFine ou de démarrer avec Java 8u251 et versions antérieures.",
+      "FILE_CHANGED": "L'instance actuelle ne peut pas s'exécuter en raison d'un échec de vérification du fichier. Veuillez vérifier l'intégrité du fichier.",
+      "NO_SUCH_METHOD_ERROR": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un code incomplet.Il se peut qu'il manque un mod à votre jeu, ou certains fichiers du mod peuvent être incomplets, ou le mod peut ne pas correspondre à la version du jeu. Vous devrez peut-être réinstaller le jeu et les mods, ou demander de l'aide.",
+      "NO_CLASS_DEF_FOUND_ERROR": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un code incomplet.Il se peut qu'il manque un mod à votre jeu, ou certains fichiers du mod peuvent être incomplets, ou le mod peut ne pas correspondre à la version du jeu. Vous devrez peut-être réinstaller le jeu et les mods, ou demander de l'aide.",
+      "ILLEGAL_ACCESS_ERROR": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de problèmes avec certains modules. Si vous connaissez {{param1}}, vous pouvez mettre à jour ou supprimer le module correspondant et réessayer.",
+      "DUPLICATED_MOD": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de l'installation répétée du module {{param1}}.Veuillez supprimer les modules redondants et réessayer.",
+      "MOD_RESOLUTION": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de problèmes de dépendance de module.Fabric fournit les informations suivantes : {{param1}}",
+      "FORGEMOD_RESOLUTION": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de problèmes de dépendance de module.Forge/NeoForge fournit les informations suivantes : {{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de l'installation répétée du module. Forge/NeoForge a fourni les informations suivantes : {{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un conflit entre les modules {{param1}} et {{param2}}.",
+      "MOD_RESOLUTION_MISSING": "L'instance actuelle ne peut pas continuer à s'exécuter car le module {{param1}} ne dispose pas du module prérequis {{param2}}.",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "Le module  {{param1}} dans l'instance actuelle nécessite l'exécution de Minecraft {{param2}}.",
+      "MOD_RESOLUTION_COLLECTION": "L'instance actuelle ne peut pas continuer à s'exécuter car le module {{param1}} ne dispose pas du module prérequis {{param2}}.",
+      "FILE_ALREADY_EXISTS": "L'instance actuelle ne peut pas continuer à s'exécuter car {{param}} existe déjà.Si vous pensez que ce fichier peut être supprimé, vous pouvez essayer de le supprimer après avoir sauvegardé le fichier et redémarré le jeu.",
+      "LOADING_CRASHED_FORGE": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'une erreur du module {{param1}} ({{param2}}).Vous pouvez essayer de supprimer ou de mettre à jour le mod pour résoudre le problème.",
+      "BOOTSTRAP_FAILED": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un problème avec le module {{param1}}.Vous pouvez essayer de supprimer ou de mettre à jour le mod pour résoudre le problème.",
+      "LOADING_CRASHED_FABRIC": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'une erreur du module {{param1}}.Vous pouvez essayer de supprimer ou de mettre à jour le mod pour résoudre le problème.",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 et versions ultérieures peuvent être incompatibles avec les modules actuellement installés, vous devez rétrograder Fabric Loader vers la version 0.11.7.",
+      "MODLAUNCHER_8": "L'instance actuelle a planté car la version de Forge que vous utilisez est en conflit avec le Java que vous utilisez actuellement. Veuillez essayer de mettre à jour Forge vers la version 36.2.26 ou supérieure ou de passer à une version Java inférieure à 1.8.0.320.",
+      "DEBUG_CRASH": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un crash déclenché manuellement.",
+      "CONFIG": "L'instance actuelle ne peut pas continuer à s'exécuter car elle ne peut pas analyser le fichier de configuration {{param2}} du module {{param1}}.",
+      "FABRIC_WARNINGS": "Fabric fournit des messages d'avertissement : {{param1}}",
+      "ENTITY": "L'instance actuelle ne peut pas continuer car une entité de type {{param1}} sur {{param2}} ne fonctionne pas correctement.Vous pouvez essayer de supprimer l'entité via l'outil MCEdit, ou supprimer directement le module correspondant.",
+      "BLOCK": "L'instance actuelle ne peut pas continuer car un bloc (de type {{param1}} situé à {{param2}}) ne fonctionne pas correctement.Vous pouvez essayer de supprimer le bloc via l'outil MCEdit, ou supprimer directement le module correspondant.",
+      "UNSATISFIED_LINK_ERROR": "L'instance actuelle ne peut pas continuer à s'exécuter en raison du manque de bibliothèques locales.Ces fichiers manquants incluent : {{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de l'incompatibilité entre OptiFine et Forge.Veuillez essayer d'utiliser la dernière version d'OptiFine ou sans OptiFine.",
+      "MOD_FILES_ARE_DECOMPRESSED": "L'instance actuelle ne peut pas continuer à s'exécuter car le fichier du module a été décompressé.Veuillez placer l'intégralité du fichier du module directement dans le dossier du module.",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "L'instance actuelle ne pourra peut-être plus s'exécuter à cause d'OptiFine.Ce problème ne se produit que dans certaines versions d'OptiFine.",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "L'instance actuelle ne peut pas continuer à s'exécuter car vous avez installé trop de modules, ce qui dépasse la limite d'ID de jeu. Veuillez essayer d'installer des mods de réparation tels que JEID ou supprimer certains mods volumineux.",
+      "MODMIXIN_FAILURE": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de certains échecs d'injection de module.Veuillez vérifier la compatibilité des modules ou essayer de changer de module.",
+      "MIXIN_APPLY_MOD_FAILED": "L'instance actuelle ne peut pas continuer à s'exécuter car Mixin ne peut pas être appliqué au module {{param1}}.Vous pouvez essayer de supprimer ou de mettre à jour le mod pour résoudre le problème.",
+      "FORGE_ERROR": "Forge/NeoForge a fourni un message d'erreur : {{param1}}",
+      "MOD_RESOLUTION0": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de problèmes avec certains modules.Vous pouvez consulter les journaux pour trouver le module erroné.",
+      "FORGE_REPEAT_INSTALLATION": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de l'installation répétée de Forge / NeoForge.Veuillez supprimer cette instance et la télécharger à nouveau.",
+      "OPTIFINE_REPEAT_INSTALLATION": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de l'installation répétée d'OptiFine.Veuillez supprimer cette instance et la télécharger à nouveau.",
+      "JAVA_VERSION_IS_TOO_HIGH": "L'instance actuelle ne peut pas continuer à s'exécuter car la version Java est trop élevée.Veuillez utiliser Java 8 ou une version antérieure.",
+      "INSTALL_MIXINBOOTSTRAP": "L'instance actuelle ne peut pas continuer à s'exécuter car MixinBootstrap n'est pas installé.Veuillez installer MixinBootstrap et réessayer.",
+      "MOD_NAME": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un problème avec le nom de fichier du module.Les noms de fichiers de modules ne doivent utiliser que des lettres majuscules et minuscules demi-chasse (Aa ~ Zz), des chiffres (0 ~ 9), des tirets (-), des traits de soulignement (_) et des points (.).Veuillez accéder au dossier du module et remplacer tous les noms de fichiers de module non conformes par les caractères conformes mentionnés ci-dessus.",
+      "INCOMPLETE_FORGE_INSTALLATION": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'une installation incomplète de Forge.Veuillez essayer de réinstaller Forge.",
+      "NIGHT_CONFIG_FIXES": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de problèmes avec la bibliothèque Night Config.L'installation du mod Night Config Fixes peut vous aider à résoudre ce problème.",
+      "SHADERS_MOD": "L'instance actuelle ne peut pas continuer à s'exécuter car les modules OptiFine et Shaders sont installés en même temps.Veuillez essayer de supprimer le mod Shaders.",
+      "RTSS_FOREST_SODIUM": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'une incompatibilité entre RTSS et Sodium.",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "L'instance actuelle ne peut pas continuer à s'exécuter car la bibliothèque locale est incompatible avec l'architecture du système.",
+      "MAC_DS_STORE": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un problème avec le fichier .DS_Store du système Mac.Veuillez supprimer le fichier .DS_Store dans le chemin du jeu et réessayer.",
+      "LEVEL_DAT_CORRUPTED": "L'instance actuelle ne peut pas continuer à s'exécuter car le fichier d'archive level.dat est endommagé.Veuillez essayer de réparer l'archive ou de restaurer à partir d'une sauvegarde.",
+      "GL_OUT_OF_MEMORY": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'une mémoire OpenGL insuffisante.Veuillez essayer de réduire la résolution du jeu, d'éteindre les lumières et les ombres ou de fermer d'autres programmes.",
+      "MOD_JAVA_VERSION_MISMATCH": "L'instance actuelle ne peut pas continuer à s'exécuter car le module ne correspond pas à la version Java.Veuillez vérifier la version Java requise par le mod et l'ajuster en conséquence.",
+      "DUPLICATE_MOD_INSTALLED": "L'instance actuelle ne peut pas continuer à s'exécuter en raison de l'installation répétée du module.Veuillez vérifier la liste des mods et supprimer les mods en double.",
+      "MOD_ZIP_CORRUPTED": "L'instance actuelle ne peut pas continuer à s'exécuter car le package compressé du module est endommagé.Veuillez réessayer de télécharger le mod.",
+      "MOD_INTERNET_ERROR": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un échec de téléchargement du module.Veuillez vérifier votre connexion réseau ou utiliser un proxy réseau.",
+      "VICS_MODERN_WARFARE_ERROR": "L'instance actuelle ne peut pas continuer en raison d'une erreur du module Vics Modern Warfare.Veuillez essayer de mettre à jour ou de supprimer le mod.",
+      "FORGE_LITELOADER_CONFLICT": "L'instance actuelle ne peut pas continuer à s'exécuter en raison d'un conflit entre Forge et LiteLoader.Veuillez essayer de supprimer LiteLoader ou de modifier la version de Forge.",
+      "UNKNOWN": "Cette erreur ne peut pas être analysée pour le moment. Veuillez consulter le journal du jeu ou exporter le rapport d'erreur."
     },
     "button": {
       "exportGameInfo": "Exporter le rapport de crash du jeu",
@@ -689,7 +792,8 @@
     "delete": "Supprimer",
     "dialog": {
       "filterName": {
-        "image": "Fichier image"
+        "image": "Fichier image",
+        "modpack": "Package intégré"
       }
     },
     "disable": "Désactiver",
@@ -706,7 +810,21 @@
     "refresh": "Rafraîchir",
     "revealFile": "Afficher dans {{opener}}",
     "search": "Rechercher",
-    "viewOnWiki": "Voir sur Minecraft Wiki"
+    "viewOnWiki": "Voir sur Minecraft Wiki",
+    "browse": "Parcourir",
+    "launch": "démarre",
+    "share": {
+      "text": "Partager",
+      "toast": {
+        "error": "Échec du partage"
+      }
+    },
+    "skip": "sauter",
+    "version": {
+      "dev": "Version de développement",
+      "nightly": "build nocturne",
+      "beta": "Version de test"
+    }
   },
   "GeneralSettingsPage": {
     "general": {
@@ -738,6 +856,26 @@
         "launchPageQuickSwitch": {
           "title": "Basculement rapide entre instances et comptes",
           "description": "Si activé, cliquer sur le bouton de changement de la page de lancement permet de choisir directement un compte ou une instance sans changer de page"
+        },
+        "resourceTranslation": {
+          "title": "affiche les traductions des ressources",
+          "description": "Lorsque  est activé, essayez d'afficher la traduction chinoise simplifiée du nom ou de la description dans l'interface de téléchargement des ressources (si les données sont disponibles)"
+        },
+        "skipFirstScreenOptions": {
+          "title": "définit automatiquement la langue de l'instance",
+          "description": "Lorsque  est activé, la langue des nouvelles instances sera automatiquement définie sur le chinois simplifié, ce qui ignorera également les paramètres d'accessibilité."
+        }
+      }
+    },
+    "advanced": {
+      "title": "Avancé",
+      "settings": {
+        "openConfigJson": {
+          "title": "Fichier de paramètres du lanceur",
+          "description": "affiche le fichier de paramètres d'origine du lanceur dans {{opener}}"
+        },
+        "launcherLogDir": {
+          "title": "Répertoire des journaux du lanceur"
         }
       }
     }
@@ -961,7 +1099,12 @@
     "restore": "Réinitialiser",
     "errorMessage": {
       "error-1": "Le nom de l'instance ne peut pas être vide",
-      "error-2": "Le nom de l'instance contient des caractères illégaux"
+      "error-2": "Le nom de l'instance contient des caractères illégaux",
+      "error-3": "Le nom de l'instance  est trop long"
+    },
+    "tipsToGlobal": {
+      "part-1": "Les paramètres de jeu spécifiques ne sont pas activés pour l'instance actuelle.",
+      "part-2": "Aller aux paramètres globaux du jeu"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1016,7 +1159,8 @@
       },
       "gamemodeDesc": ", {{gamemode}}",
       "difficultyDesc": " (difficulté : {{difficulty}})",
-      "viewLevelData": "Données de base de la sauvegarde"
+      "viewLevelData": "Données de base de la sauvegarde",
+      "launch": "Jouer à ce monde"
     },
     "serverList": {
       "title": "Serveurs",
@@ -1024,7 +1168,8 @@
       "tag": {
         "online": "En ligne",
         "offline": "Hors ligne"
-      }
+      },
+      "launch": "jouer sur ce serveur"
     }
   },
   "JavaSettingsPage": {
@@ -1052,7 +1197,8 @@
   },
   "LaunchPage": {
     "button": {
-      "launch": "Lancer le jeu"
+      "launch": "Lancer le jeu",
+      "instanceSettings": "Paramètres de l'instance"
     },
     "SwitchButton": {
       "tooltip": {
@@ -1121,6 +1267,10 @@
       "viewSkin": "Voir le skin",
       "delete": "Supprimer ce joueur",
       "copyUUID": "Copier l'UUID"
+    },
+    "toast": {
+      "refreshing": "actualise les informations sur les personnages",
+      "deleting": "suppression du rôle"
     }
   },
   "PingTestPage": {
@@ -1399,6 +1549,43 @@
     },
     "versionList": {
       "All": "Tous"
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "%À FAIRE Tout",
+        "Styles": "Style %À FAIRE",
+        "Magic": "magie",
+        "Miscellaneous": "Divers",
+        "Fantasy": "Fantaisie",
+        "Mod Support": "Prise en charge du module",
+        "Tech": "Technologie",
+        "Library": "Bibliothèque de support",
+        "Utility": "%A FAIRE pratique",
+        "Adventure": "Aventure"
+      },
+      "Modrinth": {
+        "All": "%À FAIRE Tout",
+        "styles": "Style %À FAIRE",
+        "adventure": "Aventure",
+        "cursed": "malédiction",
+        "decoration": "%À FAIRE décoration",
+        "economy": "Économie",
+        "equipment": "Équipement",
+        "food": "%À FAIRE nourriture",
+        "game-mechanics": "Mécaniques de jeu",
+        "library": "Bibliothèque de support",
+        "magic": "magie",
+        "management": "Gestion des",
+        "minigame": "Mini-jeu",
+        "mobs": "biologie",
+        "optimization": "Optimisation",
+        "social": "Social",
+        "storage": "Stockage",
+        "technology": "Technologie",
+        "transportation": "Transport",
+        "utility": "%A FAIRE pratique",
+        "worldgen": "Génération mondiale"
+      }
     }
   },
   "RestoreConfigConfirmDialog": {
@@ -1485,6 +1672,29 @@
             "GAME_DIR_NOT_EXIST": "Le répertoire du jeu n'existe pas"
           }
         }
+      },
+      "validateJava": {
+        "error": {
+          "title": "La validation Java  a échoué",
+          "description": {
+            "JAVA_EXEC_INVALID": "Le fichier exécutable Java  n'est pas valide"
+          }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Le téléchargement du runtime Mojang Java a échoué"
+        }
+      },
+      "clearDownloadCache": {
+        "success": "Cache de téléchargement  vidé",
+        "error": {
+          "title": "Échec de la suppression du cache de téléchargement",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "Il y a actuellement une tâche de téléchargement en cours, veuillez réessayer plus tard.",
+            "FILE_DELETION_FAILED": "Impossible de supprimer le fichier mis en cache, le fichier est peut-être en cours d'utilisation"
+          }
+        }
       }
     },
     "account": {
@@ -1498,7 +1708,8 @@
         "error": {
           "title": "Échec de l'ajout du joueur hors ligne",
           "description": {
-            "DUPLICATE": "Le joueur existe déjà"
+            "DUPLICATE": "Le joueur existe déjà",
+            "INVALID": "L'UUID  n'est pas valide"
           }
         }
       },
@@ -1523,7 +1734,8 @@
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NOT_FOUND": "Serveur d'authentification introuvable",
             "CANCELLED": "Annulé",
-            "INVALID": "Adresse du serveur d'authentification invalide"
+            "INVALID": "Adresse du serveur d'authentification invalide",
+            "NO_MINECRAFT_PROFILE": "Personnage introuvable, veuillez confirmer si vous avez acheté Minecraft"
           }
         }
       },
@@ -1536,7 +1748,8 @@
             "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "INVALID": "Nom d'utilisateur ou mot de passe incorrect",
-            "NOT_FOUND": "Serveur d'authentification introuvable"
+            "NOT_FOUND": "Serveur d'authentification introuvable",
+            "EXPIRED": "Le jeton  a expiré, veuillez vous reconnecter"
           }
         }
       },
@@ -1545,7 +1758,10 @@
         "error": {
           "title": "Échec de l'ajout du joueur",
           "description": {
-            "DUPLICATE": "Le joueur existe déjà"
+            "DUPLICATE": "Le joueur existe déjà",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "PARSE_ERROR": "Le format des données renvoyé par le serveur est incorrect.",
+            "EXPIRED": "Le jeton  a expiré, veuillez vous reconnecter"
           }
         }
       },
@@ -1591,7 +1807,9 @@
             "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
-            "INVALID": "Impossible d'actualiser un joueur hors ligne"
+            "INVALID": "Impossible d'actualiser un joueur hors ligne",
+            "CANCELLED": "annulé",
+            "NO_MINECRAFT_PROFILE": "Personnage introuvable, veuillez confirmer si vous avez acheté Minecraft"
           }
         }
       },
@@ -1618,7 +1836,8 @@
           "title": "Échec de la récupération des informations du serveur d'authentification",
           "description": {
             "DUPLICATE": "Le serveur d'authentification existe déjà",
-            "INVALID": "Adresse du serveur d'authentification invalide"
+            "INVALID": "Adresse du serveur d'authentification invalide",
+            "NOT_FOUND": "Le serveur d'authentification  n'existe pas"
           }
         }
       },
@@ -1628,7 +1847,8 @@
           "title": "Échec de l'ajout du serveur d'authentification",
           "description": {
             "DUPLICATE": "Le serveur d'authentification existe déjà",
-            "INVALID": "Adresse du serveur d'authentification invalide"
+            "INVALID": "Adresse du serveur d'authentification invalide",
+            "NOT_FOUND": "Le serveur d'authentification  n'existe pas"
           }
         }
       },
@@ -1648,7 +1868,8 @@
           "title": "Échec de la sélection d'un environnement Java approprié",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
-            "NO_SUITABLE_JAVA": "Aucun environnement Java approprié disponible"
+            "NO_SUITABLE_JAVA": "Aucun environnement Java approprié disponible",
+            "SELECTED_JAVA_UNAVAILABLE": "Le runtime Java sélectionné manuellement a été supprimé ou n'est pas disponible"
           }
         }
       },
@@ -1656,7 +1877,11 @@
         "error": {
           "title": "Échec de la vérification des fichiers du jeu",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable"
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
+            "MOD_LOADER_NOT_INSTALLED": "Modloader n'a pas terminé l'installation",
+            "MOD_LOADER_LIB_NOT_DOWNLOADED": "Fichier de bibliothèque  Modloader non téléchargé",
+            "GAME_FILES_INCOMPLETE": "Le fichier du jeu  est incomplet ou manquant",
+            "LAUNCHING_STATE_NOT_FOUND": "Statut de démarrage  perdu"
           }
         }
       },
@@ -1669,7 +1894,16 @@
             "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NO_DOWNLOAD_API": "Échec du téléchargement d'Authlib-Injector, veuillez vérifier la connexion réseau",
-            "SAVE_ERROR": "Échec de l'enregistrement d'Authlib-Injector"
+            "SAVE_ERROR": "Échec de l'enregistrement d'Authlib-Injector",
+            "LAUNCHING_STATE_NOT_FOUND": "Statut de démarrage  perdu"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "n'a pas réussi à démarrer le jeu",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "Statut de démarrage  perdu"
           }
         }
       }
@@ -1689,7 +1923,8 @@
           "title": "Échec de la récupération de la liste des chargeurs de mods",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur"
           }
         }
       },
@@ -1698,7 +1933,8 @@
           "title": "Échec de la récupération de la liste des ressources",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur"
           }
         }
       },
@@ -1707,7 +1943,47 @@
           "title": "Échec de la récupération de la liste des versions de la ressource",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "Échec de l'obtention des méta-informations sur la version du jeu",
+          "description": {
+            "PARSE_ERROR": "Le format des données renvoyé par le serveur est incorrect.",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
+            "CLIENT_VERSION_NOT_FOUND": "La version du jeu spécifiée n'existe pas"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "Échec du téléchargement du serveur de jeu",
+          "description": {
+            "PARSE_ERROR": "Le format des données renvoyé par le serveur est incorrect.",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "Échec de l'obtention des ressources distantes",
+          "description": {
+            "PARSE_ERROR": "Le format des données renvoyé par le serveur est incorrect.",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier votre connexion réseau"
+          }
+        }
+      },
+      "updateMod": {
+        "error": {
+          "title": "Échec de la mise à jour du module",
+          "description": {
+            "PARSE_ERROR": "Le format des données renvoyé par le serveur est incorrect.",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
+            "FILE_OPERATION_ERROR": "Impossible de renommer l'ancien fichier mod"
           }
         }
       }
@@ -1715,7 +1991,13 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "Échec de la récupération de la liste des instances"
+          "title": "Échec de la récupération de la liste des instances",
+          "description": {
+            "INVALID_NAME_ERROR": "Le nom de l'instance  n'est pas valide",
+            "INVALID_SOURCE_PATH": "Le répertoire de l'instance  n'est pas valide",
+            "CONFLICT_NAME_ERROR": "Il existe une instance du même nom dans le répertoire de l'instance actuelle.",
+            "FILE_MOVE_FAILED": "Échec du déplacement du répertoire de l'instance"
+          }
         }
       },
       "updateInstanceConfig": {
@@ -1740,8 +2022,8 @@
         "error": {
           "title": "Échec de la réinitialisation des paramètres du jeu de l'instance",
           "description": {
-            "INSTANCE_NOT_FOUND": "Instance avec l'ID spécifié introuvable",
-            "SAVE_ERROR": "Échec de l'enregistrement du fichier de paramètres de l'instance"
+            "SAVE_ERROR": "Échec de l'enregistrement du fichier de paramètres de l'instance",
+            "INSTANCE_NOT_FOUND_BY_ID": "Aucune instance trouvée avec l'ID spécifié"
           }
         }
       },
@@ -1767,7 +2049,10 @@
           "title": "Échec du renommage de l'instance",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
-            "CONFLICT_NAME_ERROR": "Une instance portant le même nom existe déjà dans ce répertoire"
+            "CONFLICT_NAME_ERROR": "Une instance portant le même nom existe déjà dans ce répertoire",
+            "INVALID_NAME_ERROR": "Le nom de l'instance  n'est pas valide",
+            "INVALID_SOURCE_PATH": "Le répertoire de l'instance  n'est pas valide",
+            "FILE_MOVE_FAILED": "Échec du déplacement du répertoire de l'instance"
           }
         }
       },
@@ -1865,14 +2150,83 @@
         "error": {
           "title": "Échec de la création du raccourci de lancement",
           "description": {
-            "SHORTCUT_CREATION_FAILED": "Échec de l'exécution de la commande"
+            "SHORTCUT_CREATION_FAILED": "Échec de l'exécution de la commande",
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance  n'existe pas"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "Échec de la création de la tâche de téléchargement de l'instance",
+          "description": {
+            "CONFLICT_NAME_ERROR": "Il existe une instance du même nom dans le répertoire de l'instance actuelle.",
+            "FOLDER_CREATION_FAILED": "La création du dossier cible a échoué",
+            "FILE_CREATION_FAILED": "La création du fichier cible  a échoué",
+            "NETWORK_ERROR": "Erreur réseau",
+            "CLIENT_JSON_PARSE_ERROR": "Erreur d'analyse des informations sur la version de l'instance",
+            "ASSET_INDEX_PARSE_ERROR": "Erreur d'analyse du fichier d'index de ressources"
+          }
+        }
+      },
+      "finishModLoaderInstall": {
+        "loading": "Installation du chargeur de mod pour {{instanceName}}",
+        "success": "Installation du chargeur de module  terminée",
+        "error": {
+          "title": "L'installation de  Modloader a échoué",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance  n'existe pas",
+            "INSTALLATION_DUPLICATED": "a détecté qu'un autre processus est déjà en cours d'installation",
+            "MAIN_CLASS_NOT_FOUND": "Classe principale  introuvable",
+            "PROCESSOR_EXECUTION_FAILED": "La tâche d'installation  n'a pas pu être exécutée"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "Impossible de changer le chargeur de mod",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "est une version installée en externe et ne peut pas être désinstallée ou remplacée."
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "Échec de la modification du chargeur de module",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "est une version installée en externe et ne peut pas être désinstallée ou remplacée."
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "Échec de l'obtention des informations sur les ressources du package d'intégration",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "Le fichier du package d'intégration n'existe pas et a peut-être été renommé, déplacé ou supprimé.",
+            "MODPACK_MANIFEST_PARSE_ERROR": "Erreur d'analyse du fichier manifeste du package d'intégration"
           }
         }
       }
     },
     "task": {
       "scheduleProgressiveTaskGroup": {
-        "success": "Tâche créée avec succès"
+        "error": "La création de la tâche  a échoué"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "La tâche de téléchargement  {{param}} a commencé",
+          "Failed": "Échec du téléchargement partiel  {{param}}, veuillez réessayer",
+          "Completed": "{{param}} a été téléchargé",
+          "Stopped": "La tâche de téléchargement  {{param}} s'est arrêtée",
+          "Cancelled": "La tâche de téléchargement  {{param}} a été annulée"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "Fichier  supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression du fichier"
+        }
       }
     }
   },
@@ -1912,7 +2266,21 @@
     "empty": "Aucun résultat de recherche",
     "result": {
       "instance": "Les exemples",
-      "player": "Les rôles"
+      "player": "Les rôles",
+      "page": "Page %À FAIRE",
+      "recentViewed": "récemment visité",
+      "curseforge": "Rechercher sur CurseForge",
+      "modrinth": "Recherche sur Modrinth"
+    },
+    "resource": {
+      "mod": "Rechercher des mods sur {{query}}",
+      "world": "Rechercher dans le monde sur {{query}}",
+      "resourcepack": "Rechercher des packages de ressources sur {{query}}",
+      "shader": "Rechercher l'éclairage et les ombres sur {{query}}",
+      "datapack": "Rechercher des paquets sur {{query}}",
+      "modpack": "Rechercher des packages d'intégration sur {{query}}",
+      "curseforge": "%À FAIRE sur CurseForge",
+      "modrinth": "%À FAIRE sur Modrinth"
     }
   },
   "StarUsModal": {
@@ -1998,11 +2366,160 @@
     "button": {
       "exit": "Quitter",
       "agree": "Accepter"
+    },
+    "warning": {
+      "unstableVersion": "Vous utilisez SJMCL de {{versionLabel}}. Certaines fonctions peuvent être instables ou n'ont pas encore été développées. Vous êtes invités à signaler des problèmes d’utilisation et des suggestions de fonctionnalités."
     }
   },
   "WorldLevelDataModal": {
     "header": {
       "title": "Données de base du monde - {{worldName}}"
     }
+  },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "a des pré-ressources"
+    },
+    "description": "Veuillez confirmer que toutes les ressources prérequises ont été installées ou continuez à télécharger les ressources d'origine",
+    "button": {
+      "continue": "Continuer le téléchargement des ressources originales",
+      "cancel": "Annuler"
+    },
+    "fallback": {
+      "title": "ID de ressource  : {{resourceId}}",
+      "description": "Impossible de récupérer les détails de cette ressource à partir du réseau, veuillez vérifier votre connexion réseau ou réessayer plus tard."
+    },
+    "dependencyType": {
+      "required": "requis",
+      "optional": "facultatif",
+      "incompatible": "Conflit",
+      "embedded": "intégré",
+      "tool": "Outils %À FAIRE",
+      "include": "contient"
+    }
+  },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "Modifier le chargeur de module",
+        "install": "installer le chargeur de module"
+      }
+    },
+    "notSelectedLoader": "Aucun nouveau chargeur sélectionné",
+    "footer": {
+      "installFabricApi": "Installez également le module Fabric API"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "Vérifier les mises à jour du module"
+    },
+    "button": {
+      "update": "Mise à jour",
+      "cancel": "Annuler"
+    },
+    "label": {
+      "noUpdate": "Il n'y a aucun module à mettre à jour",
+      "loading": "Vérification des mises à jour... {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "Module %À FAIRE",
+      "currentVersion": "version actuelle",
+      "latestVersion": "dernière version",
+      "source": "Source %À FAIRE"
+    },
+    "error": {
+      "renameOldMod": "Échec de la renommage de l'ancien fichier"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "Effacer le cache de téléchargement",
+      "content": "Etes-vous sûr de vouloir vider le cache de téléchargement ?Cette action ne peut pas être annulée."
+    }
+  },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "supprimer le module",
+      "content": "Etes-vous sûr de vouloir supprimer le mod \"{{modName}}\" dans l'instance de jeu \"{{instanceName}}\" ?"
+    }
+  },
+  "DevToolbar": {
+    "tooltip": "Barre d'outils de développement"
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "%À FAIRE Télécharger Java"
+    },
+    "selector": {
+      "vendor": "Émetteur",
+      "version": "Version %À FAIRE",
+      "type": "Type %À FAIRE"
+    },
+    "warning": {
+      "mojang": "Le runtime Java distribué par Mojang sera installé par SJMCL dans un répertoire spécifique",
+      "oracle": "Le téléchargement à partir de sources Oracle peut nécessiter une connexion"
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "Page de l'instance",
+      "content": "Ajoutez et sélectionnez votre instance de jeu Minecraft ici, téléchargez et gérez diverses ressources de jeu"
+    },
+    "step2": {
+      "title": "Page du compte",
+      "content": "Ajoutez un compte ici et choisissez le personnage que vous souhaitez jouer"
+    },
+    "step3": {
+      "title": "Minecraft, démarrez !",
+      "content": "Après avoir sélectionné l'instance et le personnage, ajusté les paramètres correspondants, cliquez sur le bouton Démarrer pour profiter du jeu 🥳"
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "Package d'intégration d'importation"
+    },
+    "label": {
+      "instanceSettings": "Paramètres de l'instance",
+      "modpackInfo": "Informations sur le package d'intégration",
+      "modpackName": "Nom du package d'intégration",
+      "modpackVersion": "Version du package d'intégration",
+      "author": "Auteur",
+      "modLoader": "Chargeur de module",
+      "gameVersion": "Version du jeu"
+    },
+    "button": {
+      "import": "Importation"
+    }
+  },
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Ajouter Java"
+    },
+    "label": {
+      "javaPath": "Chemin Java"
+    },
+    "placeholder": {
+      "javaPath": "Veuillez saisir ou sélectionner le chemin du fichier exécutable Java"
+    }
+  },
+  "MenuSelector": {
+    "selectedCount": "{{count}} éléments sélectionnés"
+  },
+  "NotifyNewVersionModal": {
+    "title": "nouvelle version trouvée"
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Mise à jour du lanceur",
+    "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour terminer la mise à jour.",
+    "bodyMSI": "La nouvelle version a été téléchargée. Cliquer sur Installer fermera SJMCL et exécutera le programme d’installation.",
+    "button": {
+      "restart": "Redémarrer",
+      "install": "Installation %À FAIRE",
+      "later": "plus tard"
+    }
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Soyez prudent lorsque vous modifiez le fichier de paramètres d'origine du lanceur. Un format incorrect peut entraîner la perte des paramètres d'origine ou un dysfonctionnement du lanceur."
   }
 }
