@@ -84,6 +84,7 @@ semver = "1"
 sysinfo = "0.36.0"
 config = "0.15.18"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
+ripunzip = "2.0.3"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

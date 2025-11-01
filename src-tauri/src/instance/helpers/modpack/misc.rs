@@ -4,11 +4,13 @@ use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
 use crate::instance::models::misc::{InstanceError, ModLoader};
 use crate::resource::models::OtherResourceSource;
+use ripunzip::{NullProgressReporter, UnzipEngine, UnzipOptions};
 use serde::{Deserialize, Serialize};
-use std::fs;
 use std::fs::File;
-use std::path::Path;
-use zip::ZipArchive;
+use std::path::{Path, PathBuf};
+use std::{fs, process};
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -79,34 +81,43 @@ impl ModpackMetaInfo {
 }
 
 pub fn extract_overrides(
+  app: &AppHandle,
   overrides_path: &String,
-  file: &File,
+  file: File,
   instance_path: &Path,
 ) -> SJMCLResult<()> {
-  let mut archive = ZipArchive::new(file)?;
-  for i in 0..archive.len() {
-    let mut file = archive.by_index(i)?;
-    let path = file.mangled_name();
-    let outpath = if path.starts_with(format!("{}/", overrides_path)) {
-      // Remove "{overrides}/" prefix and join with instance path
-      let relative_path = path.strip_prefix(format!("{}/", overrides_path)).unwrap();
-      instance_path.join(relative_path)
-    } else {
-      continue;
-    };
+  let engine = UnzipEngine::for_file(file).unwrap();
 
-    if file.is_file() {
-      // Create parent directories if they don't exist
-      if let Some(p) = outpath.parent() {
-        if !p.exists() {
-          fs::create_dir_all(p)?;
-        }
-      }
+  let pid = process::id();
+  let temp_name = format!("ripunzip_overrides_{}", pid);
+  let temp_path: PathBuf = app
+    .path()
+    .resolve::<PathBuf>(PathBuf::from(&temp_name), BaseDirectory::Temp)?;
+  fs::create_dir_all(&temp_path)?;
 
-      // Extract file
-      let mut outfile = File::create(&outpath)?;
-      std::io::copy(&mut file, &mut outfile)?;
+  let options = UnzipOptions {
+    output_directory: Some(temp_path.clone()),
+    password: None,
+    single_threaded: false,
+    filename_filter: None,
+    progress_reporter: Box::new(NullProgressReporter),
+  };
+
+  engine.unzip(options).expect("Unzip failed");
+
+  let overrides_path_buf = PathBuf::from(overrides_path.as_str());
+  let extracted_overrides = temp_path.join(overrides_path_buf);
+
+  if extracted_overrides.exists() {
+    for entry in fs::read_dir(&extracted_overrides)? {
+      let entry = entry?;
+      let from = entry.path();
+      let to = instance_path.join(entry.file_name());
+      fs::rename(from, to)?;
     }
   }
+
+  fs::remove_dir_all(&temp_path)?;
+
   Ok(())
 }
