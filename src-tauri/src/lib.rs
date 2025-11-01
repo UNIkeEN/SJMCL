@@ -165,7 +165,7 @@ pub async fn run() {
         .expect("APP_DATA_DIR initialization failed");
 
       // Set up logging
-      utils::logging::setup_with_app(app.handle().clone())?;
+      utils::logging::setup_with_app(app.handle().clone()).unwrap();
 
       // Set the launcher config and other states
       // Also extract assets in `setup_with_app()` if the application is portable
@@ -174,6 +174,7 @@ pub async fn run() {
       launcher_config.save().unwrap();
       let version = launcher_config.basic_info.launcher_version.clone();
       let os = launcher_config.basic_info.platform.clone();
+      let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
@@ -236,6 +237,19 @@ pub async fn run() {
         tasks::background::monitor_background_process(app_handle).await;
       });
 
+      // Send statistics
+      tokio::spawn(async move {
+        utils::sys_info::send_statistics(version, os).await;
+      });
+
+      // Auto purge launcher logs older than 30 days if enabled
+      if auto_purge_launcher_logs {
+        let app_handle = app.handle().clone();
+        tauri::async_runtime::spawn(async move {
+          let _ = utils::logging::purge_old_launcher_logs(app_handle, 30).await;
+        });
+      }
+
       // On platforms other than macOS, set the menu to empty to hide the default menu.
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
       #[cfg(not(target_os = "macos"))]
@@ -244,11 +258,6 @@ pub async fn run() {
         let menu = MenuBuilder::new(app).build()?;
         app.set_menu(menu)?;
       }
-
-      // Send statistics
-      tokio::spawn(async move {
-        utils::sys_info::send_statistics(version, os).await;
-      });
 
       // Registering the deep links at runtime on Linux and Windows
       // ref: https://v2.tauri.app/plugin/deep-linking/#registering-desktop-deep-links-at-runtime

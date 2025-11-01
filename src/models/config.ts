@@ -120,6 +120,9 @@ export interface LauncherConfig {
       resourceTranslation: boolean;
       skipFirstScreenOptions: boolean;
     };
+    advanced: {
+      autoPurgeLauncherLogs: boolean;
+    };
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
@@ -268,6 +271,9 @@ export const defaultConfig: LauncherConfig = {
       launchPageQuickSwitch: true,
       resourceTranslation: true,
       skipFirstScreenOptions: false,
+    },
+    advanced: {
+      autoPurgeLauncherLogs: true,
     },
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
