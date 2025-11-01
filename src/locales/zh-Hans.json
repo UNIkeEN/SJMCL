@@ -961,6 +961,10 @@
         },
         "launcherLogDir": {
           "title": "启动器日志目录"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "自动清理启动器日志",
+          "description": "自动清理 30 天及以前的启动器日志文件"
         }
       }
     }

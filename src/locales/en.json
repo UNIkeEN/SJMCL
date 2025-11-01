@@ -961,6 +961,10 @@
         },
         "launcherLogDir": {
           "title": "Launcher Logs Directory"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "Auto Purge Launcher Logs",
+          "description": "Automatically purge launcher log files older than 30 days"
         }
       }
     }
