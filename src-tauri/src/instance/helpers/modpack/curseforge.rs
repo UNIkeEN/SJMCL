@@ -89,8 +89,7 @@ impl ModpackManifest for CurseForgeManifest {
   fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
     for loader in self.minecraft.mod_loaders.clone() {
       if loader.primary {
-        let parsed = loader.id.split("-").collect::<Vec<_>>();
-        let [loader, version] = parsed.as_slice() else {
+        let Some((loader, version)) = loader.id.split_once('-') else {
           return Err(InstanceError::ModLoaderVersionParseError.into());
         };
         return Ok((
