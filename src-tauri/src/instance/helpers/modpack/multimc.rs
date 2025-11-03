@@ -1,10 +1,14 @@
 use crate::error::SJMCLResult;
+use crate::instance::helpers::modpack::misc::ModpackManifest;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::tasks::PTaskParam;
 use config::Config;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
+use std::path::Path;
+use tauri::AppHandle;
 use zip::ZipArchive;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -40,11 +44,31 @@ structstruck::strike! {
   }
 }
 
-impl MultiMcManifest {
-  pub fn from_archive(file: &File) -> SJMCLResult<Self> {
+impl ModpackManifest for MultiMcManifest {
+  fn from_archive(file: &File) -> SJMCLResult<Self> {
     let mut archive = ZipArchive::new(file)?;
 
-    let base_path = Self::find_manifest_path(&mut archive)?;
+    let base_path = if archive.by_name("mmc-pack.json").is_ok() {
+      String::new()
+    } else {
+      let mut found_path = None;
+      for i in 0..archive.len() {
+        let file = archive.by_index(i)?;
+        let name = file.name();
+
+        if name.ends_with("mmc-pack.json") {
+          if let Some(last_slash) = name.rfind('/') {
+            let dir_path = &name[..=last_slash];
+            let depth = name[..last_slash].matches('/').count();
+            if depth <= 1 {
+              found_path = Some(dir_path.to_string());
+              break;
+            }
+          }
+        }
+      }
+      found_path.ok_or(InstanceError::ModpackManifestParseError)?
+    };
 
     let mut manifest: MultiMcManifest;
     {
@@ -70,30 +94,7 @@ impl MultiMcManifest {
     Ok(manifest)
   }
 
-  fn find_manifest_path(archive: &mut ZipArchive<&File>) -> SJMCLResult<String> {
-    if archive.by_name("mmc-pack.json").is_ok() {
-      return Ok(String::new());
-    }
-
-    for i in 0..archive.len() {
-      let file = archive.by_index(i)?;
-      let name = file.name();
-
-      if name.ends_with("mmc-pack.json") {
-        if let Some(last_slash) = name.rfind('/') {
-          let dir_path = &name[..=last_slash];
-          let prefix = &name[..last_slash];
-          if !prefix.contains('/') || prefix.chars().filter(|&c| c == '/').count() == 1 {
-            return Ok(dir_path.to_string());
-          }
-        }
-      }
-    }
-
-    Err(InstanceError::ModpackManifestParseError.into())
-  }
-
-  pub fn get_client_version(&self) -> SJMCLResult<String> {
+  fn get_client_version(&self) -> SJMCLResult<String> {
     let component = self
       .components
       .iter()
@@ -103,7 +104,7 @@ impl MultiMcManifest {
     get_version(component)
   }
 
-  pub fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
+  fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
     for component in &self.components {
       match component.uid.as_str() {
         "net.minecraft" => continue,
@@ -116,6 +117,15 @@ impl MultiMcManifest {
       }
     }
     Err(InstanceError::ModpackManifestParseError.into())
+  }
+
+  async fn get_download_params(
+    &self,
+    _app: &AppHandle,
+    _instance_path: &Path,
+  ) -> SJMCLResult<Vec<PTaskParam>> {
+    // MultiMC Manifests do not include download parameters
+    Ok(Vec::new())
   }
 }
 

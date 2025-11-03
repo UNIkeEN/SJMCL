@@ -9,7 +9,9 @@ use crate::instance::helpers::misc::{
   refresh_and_update_instances, unify_instance_name,
 };
 use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
-use crate::instance::helpers::modpack::misc::{extract_overrides, ModpackMetaInfo};
+use crate::instance::helpers::modpack::misc::{
+  extract_overrides, ModpackManifest, ModpackMetaInfo,
+};
 use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
 use crate::instance::helpers::mods::common::{
@@ -981,7 +983,7 @@ pub async fn create_instance(
       task_params.extend(manifest.get_download_params(&app, &version_path).await?);
       extract_overrides(&format!("{}/", manifest.overrides), &file, &version_path)?;
     } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
-      task_params.extend(manifest.get_download_params(&version_path)?);
+      task_params.extend(manifest.get_download_params(&app, &version_path).await?);
       extract_overrides(&String::from("overrides/"), &file, &version_path)?;
     } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
       let base_path = manifest.base_path;
@@ -1230,8 +1232,11 @@ pub async fn change_mod_loader(
 }
 
 #[tauri::command]
-pub async fn retrieve_modpack_meta_info(path: String) -> SJMCLResult<ModpackMetaInfo> {
+pub async fn retrieve_modpack_meta_info(
+  app: AppHandle,
+  path: String,
+) -> SJMCLResult<ModpackMetaInfo> {
   let path = PathBuf::from(path);
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
-  ModpackMetaInfo::from_archive(&file).await
+  ModpackMetaInfo::from_archive(&app, &file).await
 }

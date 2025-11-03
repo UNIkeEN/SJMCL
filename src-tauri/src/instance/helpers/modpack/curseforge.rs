@@ -9,6 +9,7 @@ use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::modpack::misc::ModpackManifest;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::resource::helpers::curseforge::misc::CurseForgeProject;
 use crate::tasks::download::DownloadParam;
@@ -68,8 +69,8 @@ pub struct CurseForgeProjectRes {
   pub data: CurseForgeProject,
 }
 
-impl CurseForgeManifest {
-  pub fn from_archive(file: &File) -> SJMCLResult<Self> {
+impl ModpackManifest for CurseForgeManifest {
+  fn from_archive(file: &File) -> SJMCLResult<Self> {
     let mut archive = ZipArchive::new(file)?;
     let mut manifest_file = archive.by_name("manifest.json")?;
     let mut manifest_content = String::new();
@@ -81,27 +82,27 @@ impl CurseForgeManifest {
     Ok(manifest)
   }
 
-  pub fn get_client_version(&self) -> String {
-    self.minecraft.version.clone()
+  fn get_client_version(&self) -> SJMCLResult<String> {
+    Ok(self.minecraft.version.clone())
   }
 
-  pub fn get_mod_loader_type_version(&self) -> (ModLoaderType, String) {
+  fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
     for loader in self.minecraft.mod_loaders.clone() {
       if loader.primary {
         let parsed = loader.id.split("-").collect::<Vec<_>>();
         let [loader, version] = parsed.as_slice() else {
-          return (ModLoaderType::Unknown, String::new());
+          return Err(InstanceError::ModLoaderVersionParseError.into());
         };
-        return (
+        return Ok((
           ModLoaderType::from_str(loader).unwrap_or_default(),
           version.to_string(),
-        );
+        ));
       }
     }
-    (ModLoaderType::Unknown, String::new())
+    Err(InstanceError::ModLoaderVersionParseError.into())
   }
 
-  pub async fn get_download_params(
+  async fn get_download_params(
     &self,
     app: &AppHandle,
     instance_path: &Path,

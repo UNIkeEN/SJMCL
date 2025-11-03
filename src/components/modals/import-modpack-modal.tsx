@@ -153,7 +153,9 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
           },
           {
             title: t("ImportModpackModal.label.modLoader"),
-            children: `${modpack.modLoader.loaderType} ${modpack.modLoader.version}`,
+            children: `${modpack.modLoader.loaderType} ${modpack.modLoader.version} ${
+              modpack.modLoader.branch ? `(${modpack.modLoader.branch})` : ""
+            }`,
           },
           {
             title: t("ImportModpackModal.label.gameVersion"),
@@ -202,6 +204,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
         {
           loaderType: modpack.modLoader.loaderType,
           version: modpack.modLoader.version,
+          branch: modpack.modLoader.branch,
           description: "",
           stable: true,
         } as ModLoaderResourceInfo,
