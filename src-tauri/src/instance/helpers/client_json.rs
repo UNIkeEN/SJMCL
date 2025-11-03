@@ -334,9 +334,23 @@ pub async fn libraries_to_info(
         loader_version = Some(v.to_string());
         break;
       }
-      ("net.neoforged", "neoforge") => {
+      ("net.neoforged.fancymodloader", _) | ("net.neoforged", "fancymodloader") => {
         loader_type = ModLoaderType::NeoForge;
-        loader_version = Some(v.to_string());
+        let arguments = client.arguments.clone();
+        if let Some(args) = arguments {
+          for (i, item) in args.game.iter().enumerate() {
+            if item.value[0].contains("--fml.neoForgeVersion")
+              || item.value[0].contains("--fml.forgeVersion")
+            {
+              println!("Found NeoForge loader version argument: {}", item.value[0]);
+              let next = args.game[i + 1].value[0].clone();
+              println!("Next argument: {}", next);
+              if !next.is_empty() {
+                loader_version = Some(next);
+              }
+            }
+          }
+        }
         break;
       }
       ("net.minecraftforge", "forge") | ("net.minecraftforge", "fmlloader") => {
