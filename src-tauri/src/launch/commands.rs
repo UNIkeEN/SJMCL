@@ -13,6 +13,7 @@ use crate::launch::helpers::file_validator::{
   extract_native_libraries, get_invalid_assets, get_invalid_library_files,
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
 use crate::launch::helpers::misc::get_separator;
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
@@ -408,6 +409,9 @@ pub fn export_game_crash_info(
     BaseDirectory::AppCache,
   )?;
 
+  // crash report
+  let crash_report_opt = parse_crash_report_path_from_log(&game_log_path);
+
   // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
   let launching = launching_queue
@@ -435,14 +439,15 @@ pub fn export_game_crash_info(
   let launcher_log_path = get_launcher_log_path(app.clone());
 
   let zip_file_path = PathBuf::from(save_path);
-  create_zip_from_dirs(
-    vec![
-      game_log_path,
-      version_info_path,
-      version_config_path,
-      launch_script_path,
-      launcher_log_path,
-    ],
-    zip_file_path.clone(),
-  )
+
+  let mut paths_to_zip = vec![
+    game_log_path,
+    version_info_path,
+    version_config_path,
+    launch_script_path,
+    launcher_log_path,
+  ];
+
+  paths_to_zip.extend(crash_report_opt);
+  create_zip_from_dirs(paths_to_zip, zip_file_path.clone())
 }
