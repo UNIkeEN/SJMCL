@@ -1,4 +1,5 @@
 use crate::account::helpers::misc::get_selected_player_info;
+use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
 use crate::error::SJMCLResult;
@@ -186,8 +187,32 @@ pub async fn validate_game_files(
 pub async fn validate_selected_player(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
+  local_ygg_server_state: State<'_, Mutex<YggdrasilServer>>,
 ) -> SJMCLResult<bool> {
-  let player = get_selected_player_info(&app)?;
+  let mut player = get_selected_player_info(&app)?.clone();
+
+  let metadata = if player.player_type == PlayerType::ThirdParty {
+    authlib_injector::jar::check_authlib_jar(&app)
+      .await
+      .map_err(|_| LaunchError::AuthlibInjectorNotReady)?;
+    Some(
+      authlib_injector::info::get_auth_server_info_by_url(
+        &app,
+        player.auth_server_url.clone().unwrap_or_default(),
+      )?
+      .metadata
+      .to_string(),
+    )
+  } else if player.player_type == PlayerType::Offline
+    && authlib_injector::jar::check_authlib_jar(&app).await.is_ok()
+  {
+    let local_ygg_server = local_ygg_server_state.lock()?;
+    player.auth_server_url = Some(local_ygg_server.root_url.clone());
+    local_ygg_server.apply_player(player.clone());
+    Some(local_ygg_server.metadata.to_string())
+  } else {
+    None
+  };
 
   {
     let mut launching_queue = launching_queue_state.lock()?;
@@ -196,24 +221,11 @@ pub async fn validate_selected_player(
       .ok_or(LaunchError::LaunchingStateNotFound)?;
     launching.current_step = 3;
     launching.selected_player = Some(player.clone());
-
-    if player.player_type == PlayerType::ThirdParty {
-      let meta = authlib_injector::info::get_auth_server_info_by_url(
-        &app,
-        player.auth_server_url.clone().unwrap_or_default(),
-      )?
-      .metadata
-      .to_string();
-
-      launching.auth_server_meta = meta;
-    }
+    launching.auth_server_meta = metadata;
   }
 
   match player.player_type {
-    PlayerType::ThirdParty => {
-      authlib_injector::jar::check_authlib_jar(&app).await?;
-      authlib_injector::common::validate(&app, &player).await
-    }
+    PlayerType::ThirdParty => authlib_injector::common::validate(&app, &player).await,
     PlayerType::Microsoft => microsoft::oauth::validate(&app, &player).await,
     PlayerType::Offline => Ok(true),
   }

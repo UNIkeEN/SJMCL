@@ -8,6 +8,7 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import SkinPreview from "@/components/skin-preview";
 import { Texture } from "@/models/account";
@@ -25,6 +26,7 @@ const ViewSkinModal: React.FC<ViewSkinModalProps> = ({
   cape,
   ...modalProps
 }) => {
+  const [isCapeVisible, setIsCapeVisible] = useState<boolean>(true);
   const { t } = useTranslation();
 
   return (
@@ -41,6 +43,8 @@ const ViewSkinModal: React.FC<ViewSkinModalProps> = ({
               width={416} // calculated from model content size
               height={310}
               showControlBar
+              isCapeVisible={isCapeVisible}
+              onCapeVisibilityChange={setIsCapeVisible}
             />
           </Flex>
         </ModalBody>

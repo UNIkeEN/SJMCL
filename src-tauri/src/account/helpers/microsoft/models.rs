@@ -1,3 +1,5 @@
+use crate::account::models::SkinModel;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct MinecraftProfile {
   pub id: String,
@@ -10,7 +12,7 @@ pub struct MinecraftProfile {
 pub struct TextureEntry {
   pub state: String,
   pub url: String,
-  pub variant: Option<String>,
+  pub variant: Option<SkinModel>,
 }
 
 structstruck::strike! {

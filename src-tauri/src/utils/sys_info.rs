@@ -1,5 +1,7 @@
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::MemoryInfo;
 use serde_json::json;
+use std::net::{SocketAddr, TcpListener};
 use std::path::PathBuf;
 use sysinfo::{Disk, Disks};
 use systemstat::{saturating_sub_bytes, Platform};
@@ -73,6 +75,7 @@ pub fn get_mapped_locale() -> String {
 }
 
 /// Retrieves system memory information including total, used, and suggested maximum allocation for Minecraft.
+///
 /// # Examples
 ///
 /// ```rust
@@ -107,7 +110,7 @@ pub fn get_memory_info() -> MemoryInfo {
 ///
 /// This can be used to scan typical installation directories across all available disks.
 ///
-/// # Example
+/// # Examples
 /// ```
 /// let drives = get_all_drive_mount_points();
 /// for mount in drives {
@@ -122,4 +125,29 @@ pub fn get_all_drive_mount_points() -> Vec<PathBuf> {
     .iter()
     .map(|disk: &Disk| disk.mount_point().to_path_buf())
     .collect()
+}
+
+/// Finds an available port starting from the specified port (or 0 if not provided).
+///
+/// # Parameters
+/// - `start_port`: The port to begin searching from. If `None`, it will start from 0.
+///
+/// # Examples
+///
+/// ```rust
+/// let available_port = find_free_port(None).unwrap();
+/// println!("Found free port: {}", available_port);
+/// ```
+pub fn find_free_port(start_port: Option<u16>) -> SJMCLResult<u16> {
+  let start = start_port.unwrap_or(0); // Default to 0 if no start_port is provided
+
+  for port in start..=u16::MAX {
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    if TcpListener::bind(addr).is_ok() {
+      return Ok(port);
+    }
+  }
+
+  log::error!("No free port found.");
+  Err(SJMCLError("No free port found".to_string()))
 }

@@ -84,6 +84,10 @@ semver = "1"
 sysinfo = "0.36.0"
 config = "0.15.18"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
+rsa = "0.9.8"
+axum = "0.8.6"
+tower-http = { version = "0.6.6", features = ["cors"] }
+sha2 = "0.10.9"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

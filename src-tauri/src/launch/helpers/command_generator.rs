@@ -266,17 +266,25 @@ pub async fn generate_launch_command(
 
   // TODO: lwjgl non-ASCII path fix (HMCL DefaultLauncher.java#L236)
 
-  // authlib-injector login
-  if selected_player.player_type == PlayerType::ThirdParty {
+  // login via authlib-injector
+  if matches!(
+    selected_player.player_type,
+    PlayerType::ThirdParty | PlayerType::Offline
+  ) && auth_server_meta.is_some()
+  {
+    let auth_server_url = selected_player
+      .auth_server_url
+      .clone()
+      .ok_or(LaunchError::AuthServerNotFound)?;
     cmd.push(format!(
       "-javaagent:{}={}",
       get_authlib_injector_jar_path(app)?.to_string_lossy(),
-      selected_player.auth_server_url.clone().unwrap_or_default()
+      auth_server_url
     ));
     cmd.push("-Dauthlibinjector.side=client".to_string());
     cmd.push(format!(
       "-Dauthlibinjector.yggdrasil.prefetched={}",
-      general_purpose::STANDARD.encode(&auth_server_meta)
+      general_purpose::STANDARD.encode(auth_server_meta.unwrap())
     ));
   }
 
@@ -395,7 +403,7 @@ pub fn export_full_launch_command(
   args: &[String],
   java_exec_str: &str,
 ) -> String {
-  fn quote_or_raw(s: &str) -> Cow<str> {
+  fn quote_or_raw(s: &'_ str) -> Cow<'_, str> {
     try_quote(s).unwrap_or(Cow::Borrowed(s))
   }
 

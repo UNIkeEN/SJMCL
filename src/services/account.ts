@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { SkinModel, TextureType } from "@/enums/account";
 import { AuthServer, DeviceAuthResponseInfo, Player } from "@/models/account";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
@@ -156,6 +157,29 @@ export class AccountService {
     return await invoke("update_player_skin_offline_preset", {
       playerId,
       presetRole,
+    });
+  }
+
+  /**
+   * UPDATE the skin of an offline player using a local image file.
+   * @param {string} playerId - The player ID of the player to be updated.
+   * @param {string} imagePath - The local image file path of the new skin.
+   * @param {TextureType} textureType - The texture type ("skin" or "cape").
+   * @param {SkinModel} skinModel - The skin model ("slim" or "default") if the texture type is "skin".
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async updatePlayerSkinOfflineLocal(
+    playerId: string,
+    imagePath: string,
+    textureType: TextureType,
+    skinModel: SkinModel
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("update_player_skin_offline_local", {
+      playerId,
+      imagePath,
+      textureType,
+      skinModel,
     });
   }
 

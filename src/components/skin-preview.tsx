@@ -1,8 +1,8 @@
 import {
-  Box,
   BoxProps,
   Flex,
   HStack,
+  Icon,
   IconButton,
   Popover,
   PopoverBody,
@@ -11,8 +11,9 @@ import {
   Switch,
   Text,
   Tooltip,
+  VStack,
 } from "@chakra-ui/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BsPersonRaisedHand } from "react-icons/bs";
 import {
@@ -24,6 +25,7 @@ import {
 } from "react-icons/fa6";
 import {
   LuChevronUp,
+  LuCircleX,
   LuPause,
   LuPlay,
   LuRefreshCw,
@@ -31,6 +33,7 @@ import {
 } from "react-icons/lu";
 import * as skinview3d from "skinview3d";
 import { useLauncherConfig } from "@/contexts/config";
+import { SkinModel } from "@/enums/account";
 
 type AnimationType = "idle" | "walk" | "run" | "wave";
 type backgroundType = "none" | "black" | "panorama";
@@ -42,8 +45,12 @@ interface SkinPreviewProps extends Omit<BoxProps, "width" | "height"> {
   height?: number;
   animation?: AnimationType;
   canvasBg?: backgroundType;
-  showCape?: boolean;
+  isCapeVisible?: boolean;
+  onCapeVisibilityChange?: (show: boolean) => void;
+  errorMessage?: string | null;
+  onSkinError?: (msg: string | null) => void;
   showControlBar?: boolean;
+  skinModel?: SkinModel;
 }
 
 const SkinPreview: React.FC<SkinPreviewProps> = ({
@@ -53,38 +60,24 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
   height = 400,
   animation = "walk",
   canvasBg = "none",
-  showCape = true,
+  isCapeVisible = true,
+  onCapeVisibilityChange,
+  errorMessage,
+  onSkinError,
   showControlBar = true,
+  skinModel,
   ...props
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [skinViewer, setSkinViewer] = useState<skinview3d.SkinViewer | null>(
-    null
-  );
+  const skinViewerRef = useRef<skinview3d.SkinViewer | null>(null);
   const [currentAnimation, setCurrentAnimation] =
     useState<AnimationType>(animation);
   const [background, setBackground] = useState<backgroundType>(canvasBg);
   const [autoRotate, setAutoRotate] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isCapeVisible, setIsCapeVisible] = useState(showCape);
-
-  useEffect(() => {
-    setIsCapeVisible(showCape);
-  }, [showCape]);
-
-  useEffect(() => {
-    if (skinViewer && skinSrc) {
-      skinViewer.loadSkin(skinSrc);
-      if (isCapeVisible && capeSrc) {
-        skinViewer.loadCape(capeSrc);
-      } else {
-        skinViewer.loadCape(null);
-      }
-    }
-  }, [skinViewer, skinSrc, capeSrc, isCapeVisible]);
 
   // animation
   const animationList = useMemo(
@@ -108,33 +101,73 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
 
   const animationTypes = Object.keys(animationList) as AnimationType[];
 
-  useEffect(() => {
-    // create once
-    if (canvasRef.current && !skinViewer) {
-      const viewer = new skinview3d.SkinViewer({
-        canvas: canvasRef.current,
-        width: width,
-        height: height - 40, // Subtract height for control bar and top-margin
-      });
+  const initSkinViewer = useCallback(() => {
+    if (!canvasRef.current) return;
+    if (skinViewerRef.current) skinViewerRef.current.dispose();
+    skinViewerRef.current = new skinview3d.SkinViewer({
+      canvas: canvasRef.current,
+      width: width,
+      height: height - 40, // Subtract height for control bar and top-margin
+    });
 
-      viewer.zoom = 0.8;
-      viewer.controls.enableZoom = false;
-
-      setSkinViewer(viewer);
+    skinViewerRef.current.zoom = 0.8;
+    skinViewerRef.current.controls.enableZoom = false;
+    skinViewerRef.current.autoRotate = isPlaying && autoRotate;
+    if (isPlaying) {
+      skinViewerRef.current.animation =
+        animationList[currentAnimation].animation;
+    } else {
+      skinViewerRef.current.animation = null;
+      setAutoRotate(false);
     }
-  }, [width, height, showControlBar, skinViewer, animationList.walk.animation]);
+  }, [width, height, isPlaying, autoRotate, animationList, currentAnimation]);
 
   useEffect(() => {
-    if (skinViewer) {
-      skinViewer.autoRotate = isPlaying && autoRotate;
-      if (isPlaying) {
-        skinViewer.animation = animationList[currentAnimation].animation;
-      } else {
-        skinViewer.animation = null;
-        setAutoRotate(false);
+    initSkinViewer();
+  }, [initSkinViewer]);
+
+  useEffect(() => {
+    onCapeVisibilityChange?.(isCapeVisible);
+  }, [onCapeVisibilityChange, isCapeVisible]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (skinViewerRef.current && skinSrc) {
+          await skinViewerRef.current.loadSkin(skinSrc, {
+            model: skinModel
+              ? skinModel === SkinModel.Slim
+                ? "slim"
+                : "default"
+              : "auto-detect",
+          });
+          if (isCapeVisible && capeSrc) {
+            await skinViewerRef.current.loadCape(capeSrc);
+          } else {
+            skinViewerRef.current.resetCape();
+          }
+          onSkinError?.(null);
+        }
+      } catch (error) {
+        initSkinViewer(); // reset viewer on error
+        let errorMsg =
+          error instanceof Error
+            ? error.message
+            : t("SkinPreview.error.loadSkin");
+        onSkinError?.(errorMsg);
+        logger.error(`SkinPreview error: ${errorMsg}`);
       }
-    }
-  }, [skinViewer, autoRotate, currentAnimation, isPlaying, animationList]);
+    })();
+  }, [
+    skinViewerRef,
+    skinSrc,
+    capeSrc,
+    isCapeVisible,
+    t,
+    initSkinViewer,
+    skinModel,
+    onSkinError,
+  ]);
 
   // background
   const backgroundList = useMemo(
@@ -143,14 +176,15 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
         colorScheme: "black",
         btnVariant: "outline",
         operation: () => {
-          if (skinViewer) skinViewer.background = null;
+          if (skinViewerRef.current) skinViewerRef.current.background = null;
         },
       },
       black: {
         colorScheme: "gray",
         btnVariant: "solid",
         operation: () => {
-          if (skinViewer) skinViewer.background = "#2D3748";
+          if (skinViewerRef.current)
+            skinViewerRef.current.background = "#2D3748";
         },
       },
       panorama: {
@@ -158,11 +192,12 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
         colorScheme: "blackAlpha",
         btnVariant: "solid",
         operation: () => {
-          if (skinViewer) skinViewer.loadPanorama("/images/skins/panorama.jpg");
+          if (skinViewerRef.current)
+            skinViewerRef.current.loadPanorama("/images/skins/panorama.jpg");
         },
       },
     }),
-    [skinViewer]
+    [skinViewerRef]
   );
 
   const backgroundTypes = Object.keys(backgroundList) as backgroundType[];
@@ -229,10 +264,29 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
   }, [background, backgroundList]);
 
   return (
-    <Box {...props}>
-      <canvas ref={canvasRef} />
+    <VStack {...props} width={width} height={height}>
+      {errorMessage && (
+        <VStack
+          width={width}
+          height={height - 40}
+          justifyContent="center"
+          spacing={4}
+        >
+          <Icon as={LuCircleX} boxSize={12} color="red.500" />
+          <Text className="secondary-text">{errorMessage}</Text>
+        </VStack>
+      )}
+      <canvas
+        ref={canvasRef}
+        style={{ display: errorMessage ? "none" : undefined }}
+      />
       {showControlBar && (
-        <Flex alignItems="center" justifyContent="space-between" mt={2}>
+        <Flex
+          alignItems="center"
+          justifyContent="space-between"
+          mt={2}
+          width="100%"
+        >
           <HStack spacing={0}>
             <BackGroundSelector />
             <Tooltip label={t(`SkinPreview.animation.${currentAnimation}`)}>
@@ -279,13 +333,13 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
             <Text fontSize="sm">{t("SkinPreview.cape")}</Text>
             <Switch
               isChecked={isCapeVisible}
-              onChange={(e) => setIsCapeVisible(e.target.checked)}
+              onChange={(e) => onCapeVisibilityChange?.(e.target.checked)}
               colorScheme={primaryColor}
             />
           </HStack>
         </Flex>
       )}
-    </Box>
+    </VStack>
   );
 };
 
