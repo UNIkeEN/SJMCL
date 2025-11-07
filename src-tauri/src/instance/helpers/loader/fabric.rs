@@ -7,7 +7,7 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::client_json::{McClientInfo, PatchesInfo};
+use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::ModLoader;
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
@@ -49,12 +49,12 @@ pub async fn install_fabric_loader(
     .as_str()
     .ok_or(SJMCLError("missing mainClass.client".to_string()))?;
 
-  client_info.main_class = main_class.to_string();
+  client_info.main_class = Some(main_class.to_string());
 
-  let mut new_patch = PatchesInfo {
+  let mut new_patch = McClientInfo {
     id: "fabric".to_string(),
-    version: loader_ver.to_string(),
-    priority: 30000,
+    version: Some(loader_ver.to_string()),
+    priority: Some(30000),
     ..Default::default()
   };
 

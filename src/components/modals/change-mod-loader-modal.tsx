@@ -124,75 +124,77 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="80vh">
-        <ModalHeader>{t("ChangeModLoaderModal.header.title")}</ModalHeader>
+        <ModalHeader>
+          {t(
+            `ChangeModLoaderModal.header.title.${currentModLoader.loaderType === "Unknown" ? "install" : "change"}`
+          )}
+        </ModalHeader>
         <ModalCloseButton />
         <Flex flexDir="column" h="100%">
-          <Flex position="relative" align="center" justify="center" py={2}>
-            <Flex flex="1" justify="flex-end" pr={8}>
-              <OptionItem
-                prefixElement={
-                  currentModLoader.loaderType !== "Unknown" ? (
+          {currentModLoader.loaderType !== "Unknown" && (
+            <Flex position="relative" align="center" justify="center" py={2}>
+              <Flex flex="1" justify="flex-end" pr={8}>
+                <OptionItem
+                  prefixElement={
                     <Image
                       src={`/images/icons/${currentModLoader.loaderType}.png`}
                       alt={currentModLoader.loaderType}
                       boxSize="36px"
                       borderRadius="md"
                     />
-                  ) : (
-                    <Skeleton boxSize="36px" borderRadius="md" />
-                  )
-                }
-                title={
-                  <Text fontSize="sm" fontWeight="medium">
-                    {currentModLoader.loaderType}
-                  </Text>
-                }
-                description={
-                  <Text fontSize="xs" color="gray.500">
-                    {parseModLoaderVersion(currentModLoader.version)}
-                  </Text>
-                }
-              />
-            </Flex>
-
-            <Box position="absolute" left="50%" transform="translateX(-50%)">
-              <LuArrowRight size={18} />
-            </Box>
-
-            <Flex flex="1" justify="flex-start" pl={8}>
-              {isUnselected ? (
-                <OptionItem
-                  prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
-                  title={
-                    <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                      {t("ChangeModLoaderModal.notSelectedLoader")}
-                    </Text>
-                  }
-                />
-              ) : (
-                <OptionItem
-                  prefixElement={
-                    <Image
-                      src={`/images/icons/${selectedModLoader.loaderType}.png`}
-                      alt={selectedModLoader.loaderType}
-                      boxSize="36px"
-                      borderRadius="md"
-                    />
                   }
                   title={
                     <Text fontSize="sm" fontWeight="medium">
-                      {selectedModLoader.loaderType}
+                      {currentModLoader.loaderType}
                     </Text>
                   }
                   description={
                     <Text fontSize="xs" color="gray.500">
-                      {selectedModLoader.version}
+                      {parseModLoaderVersion(currentModLoader.version)}
                     </Text>
                   }
                 />
-              )}
+              </Flex>
+              <Box position="absolute" left="50%" transform="translateX(-50%)">
+                <LuArrowRight size={18} />
+              </Box>
+              <Flex flex="1" justify="flex-start" pl={8}>
+                {isUnselected ? (
+                  <OptionItem
+                    prefixElement={
+                      <Skeleton boxSize="36px" borderRadius="md" />
+                    }
+                    title={
+                      <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                        {t("ChangeModLoaderModal.notSelectedLoader")}
+                      </Text>
+                    }
+                  />
+                ) : (
+                  <OptionItem
+                    prefixElement={
+                      <Image
+                        src={`/images/icons/${selectedModLoader.loaderType}.png`}
+                        alt={selectedModLoader.loaderType}
+                        boxSize="36px"
+                        borderRadius="md"
+                      />
+                    }
+                    title={
+                      <Text fontSize="sm" fontWeight="medium">
+                        {selectedModLoader.loaderType}
+                      </Text>
+                    }
+                    description={
+                      <Text fontSize="xs" color="gray.500">
+                        {selectedModLoader.version}
+                      </Text>
+                    }
+                  />
+                )}
+              </Flex>
             </Flex>
-          </Flex>
+          )}
           <ModalBody>
             {summary?.version && (
               <ModLoaderSelector

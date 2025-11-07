@@ -44,6 +44,29 @@ To learn about how to use SJMCL’s features and browse frequently asked questio
 
 If you need to run SJMCL on Windows 7, please first [download the Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download) and install it. We recommend choosing the 'Evergreen Bootstrapper'.
 
+<details>
+<summary><h3>Install from Command Line</h3></summary>
+
+<details>
+<summary><h4>Arch Linux</h4></summary>
+
+SJMCL is available on the Arch User Repository (AUR). You can install it using a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
+
+```bash
+yay -S sjmcl-bin
+```
+
+Manual installation without an AUR helper:
+
+```bash
+git clone https://aur.archlinux.org/sjmcl-bin.git
+cd sjmcl-bin
+makepkg -si
+```
+
+</details>
+</details>
+
 ## Development and Contributing
 
 To get started, clone the repository and install the required dependencies:
@@ -83,7 +106,7 @@ By GPLv3 License term 7, we require that when you distribute a modified version 
 2. Mark clearly in your repository README file, your distribution website or thread, Support documents, About Page in the software that your program is based on SJMCL and give out the url of the origin repository.
 3. When your modifications to this software are limited solely to **adding** (without modifying or deleting) preset authentication servers (`src-tauri/src/account/helpers/authlib_injector/constants.rs`), the restrictions set forth in Clauses 1 above shall not apply. In this case, you may continue to compile and distribute the software under its original name.
 
-Besides, per term of use of our website, when distributing a modified version of the software, please send version numbers with prefix (more than two letters, e.g. `XX-0.0.1`) to our statistics server unless your modifications meets Clauses 3 above.
+Besides, per term of use of our website, when distributing a modified version of the software, please send version numbers with prefix (more than two letters, e.g. `XX-0.0.1`) to our statistics server (`src-tauri/src/utils/sys_info.rs`) unless your modifications meets Clauses 3 above.
 
 ## Contact Us
 

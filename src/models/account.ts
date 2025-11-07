@@ -1,15 +1,10 @@
-import { PlayerType } from "@/enums/account";
-
-export enum PresetSkinType {
-  Steve = "steve",
-  Alex = "alex",
-}
+import { PlayerType, PresetRole, SkinModel } from "@/enums/account";
 
 export interface Texture {
   textureType: string;
   image: string;
-  model: "default" | "slim";
-  preset?: PresetSkinType;
+  model: SkinModel;
+  preset?: PresetRole;
 }
 
 // player (frontend display format)

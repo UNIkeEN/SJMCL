@@ -4,7 +4,14 @@
       "title": "SJMCLについて",
       "settings": {
         "version": {
-          "title": "バージョン"
+          "title": "バージョン",
+          "foundNew": "アップデートがあります",
+          "checkUpdate": "アップデートを確認",
+          "checkToast": {
+            "loading": "アップデート確認中",
+            "up2date": "最新バージョンです",
+            "error": "アップデートの確認に失敗"
+          }
         },
         "contributors": {
           "title": "開発チーム"
@@ -193,6 +200,28 @@
       "usePasswordLogin": "アカウントとパスワードでログイン"
     }
   },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "前提リソースが存在"
+    },
+    "description": "すべての前提リソースがインストールされていることを確認するか、元のリソースのダウンロードを続行してください",
+    "button": {
+      "continue": "元のリソースのダウンロードを続行",
+      "cancel": "キャンセル"
+    },
+    "fallback": {
+      "title": "リソース ID: {{resourceId}}",
+      "description": "ネットワークからこのリソースの詳細を取得できません。ネットワーク接続を確認するか、後でもう一度お試しください。"
+    },
+    "dependencyType": {
+      "required": "必須",
+      "optional": "オプション",
+      "incompatible": "競合",
+      "embedded": "埋め込み",
+      "tool": "ツール",
+      "include": "含む"
+    }
+  },
   "AllInstancesPage": {
     "button": {
       "addAndImport": "追加/インポート",
@@ -215,9 +244,14 @@
         "colorMode": {
           "title": "カラーモード",
           "type": {
+            "system": "システムに従う",
             "light": "ライト",
             "dark": "ダーク"
           }
+        },
+        "useLiquidGlassDesign": {
+          "title": "リキッドグラス効果",
+          "description": "一部のUIで「リキッドグラス」効果が適用されます。パフォーマンスに影響する可能性があります"
         },
         "headNavStyle": {
           "title": "上部ナビゲーションバーのスタイル",
@@ -231,10 +265,14 @@
     "font": {
       "title": "フォント",
       "settings": {
+        "fontFamily": {
+          "title": "UIフォント",
+          "default": "デフォルト"
+        },
         "fontSize": {
           "title": "フォントサイズ",
-          "small": "小さい",
-          "large": "大きい"
+          "small": "あ",
+          "large": "あ"
         }
       }
     },
@@ -247,6 +285,12 @@
         "custom": {
           "title": "カスタム画像",
           "add": "追加"
+        },
+        "randomCustom": {
+          "title": "ランダムカスタム"
+        },
+        "autoDarken": {
+          "title": "ダークモード時にバックグラウンドを暗くする"
         }
       },
       "presetBgList": {
@@ -255,6 +299,9 @@
         },
         "SJTU-eastgate": {
           "name": "紫気東来（ SJTU 東門）"
+        },
+        "GNLXC": {
+          "name": "GNWork 理想郷"
         }
       }
     },
@@ -268,6 +315,46 @@
           "title": "コントラスト強化"
         }
       }
+    }
+  },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "モッドローダーを変更",
+        "install": "モッドローダーをインストール"
+      }
+    },
+    "notSelectedLoader": "新しいローダーが選択されていません",
+    "footer": {
+      "installFabricApi": "同時に Fabric API モッドをインストール"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "モッドの更新を確認"
+    },
+    "button": {
+      "update": "更新",
+      "cancel": "キャンセル"
+    },
+    "label": {
+      "noUpdate": "更新が必要なモッドはありません",
+      "loading": "更新を確認中... {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "モッド",
+      "currentVersion": "現在のバージョン",
+      "latestVersion": "最新バージョン",
+      "source": "ソース"
+    },
+    "error": {
+      "renameOldMod": "古いファイルの名前変更に失敗"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "ダウンロードキャッシュをクリア",
+      "content": "ダウンロードキャッシュをクリアしてもよろしいですか？この操作は元に戻せません。"
     }
   },
   "ComingSoonSign": {
@@ -319,7 +406,13 @@
       "loader": "モッドローダー選択",
       "skipped": "未選択",
       "info": "基本設定"
+    },
+    "footer": {
+      "installFabricApi": "同時に Fabric API をインストール"
     }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "このインスタンスの名前が変更されました。インスタンスリストを更新するか、ランチャーを再起動してから、起動ショートカットの追加を再試行してください。"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
@@ -331,10 +424,16 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "モッドを削除",
+      "content": "ゲームインスタンス「{{instanceName}}」のモッド「{{modName}}」を削除しますか。"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "キャラクターを削除",
-      "content": "このキャラクターを消去しますか。この操作は取り消せません！"
+      "content": "このキャラクターを削除しますか。この操作は取り消せません！"
     }
   },
   "DeleteAuthServerAlertDialog": {
@@ -343,11 +442,14 @@
       "content": "この認証サーバー「{{name}}」を削除しますか。「{{name}}」はサーバーリストの中から消えます。"
     }
   },
+  "DevToolbar": {
+    "tooltip": "開発ツールバー"
+  },
   "DiscoverPage": {
     "title": "ディスカバーページ",
-    "button": {
-      "sources": "データソース管理"
-    }
+    "noMore": "これ以上コンテンツはありません",
+    "sources": "データソース管理",
+    "NoSources": "データソースが追加されていません"
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -358,8 +460,19 @@
       "online": "オンライン"
     }
   },
-  "DownloadFloatButton": {
-    "tooltip": "ダウンロード中"
+  "DownloadJavaModal": {
+    "header": {
+      "title": "Java をダウンロード"
+    },
+    "selector": {
+      "vendor": "ディストリビューター",
+      "version": "バージョン",
+      "type": "タイプ"
+    },
+    "warning": {
+      "mojang": "Mojang によって配布される Java ランタイムは SJMCL によって特定のディレクトリにインストールされます",
+      "oracle": "Oracle ソースからのダウンロードにはログインの必要な場合があります"
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -374,7 +487,8 @@
       "world": "ワールド",
       "mod": "モッド",
       "resourcepack": "リソースパック",
-      "shader": "シェーダーパック"
+      "shader": "シェーダーパック",
+      "datapack": "データパック"
     }
   },
   "DownloadSettingPage": {
@@ -411,8 +525,12 @@
       "settings": {
         "directory": {
           "title": "ダウンロードキャッシュディレクトリ",
-          "select": "変更",
-          "open": "開く"
+          "select": "変更"
+        },
+        "clear": {
+          "title": "ダウンロードキャッシュをクリア",
+          "description": "キャッシュディレクトリのすべてのファイルをクリアします。ダウンロード済みのリソースファイルには影響しません",
+          "button": "クリア"
         }
       }
     },
@@ -434,17 +552,51 @@
       }
     }
   },
+  "DownloadSpecificResourceModal": {
+    "title": "リソースダウンロード - {{name}} - {{source}}",
+    "label": {
+      "all": "すべて",
+      "recommendedVersion": "推奨バージョン",
+      "currentModLoader": "現在のローダー"
+    },
+    "releaseType": {
+      "alpha": "アルファ版",
+      "beta": "ベータ版",
+      "release": "正式版"
+    }
+  },
   "DownloadTasksPage": {
     "title": "ダウンロードタスク",
     "button": {
       "settings": "ダウンロード設定",
       "pause": "一時停止",
       "begin": "開始",
-      "retry": "再試行"
+      "retry": "再試行",
+      "deleteRecord": "この記録を削除"
     },
     "label": {
       "paused": "一時停止中",
-      "error": "エラー"
+      "completed": "完了",
+      "error": "エラー",
+      "cancelled": "キャンセル済み"
+    },
+    "task": {
+      "game-client": "ゲームクライアント {{param}}",
+      "game-server": "ゲームサーバー {{param}}",
+      "change-mod-loader": "モッドローダーを変更 {{param}}",
+      "mod": "モッド",
+      "world": "ワールド",
+      "resourcepack": "リソースパック",
+      "shader": "シェーダーパック",
+      "modpack": "モッドパック",
+      "datapack": "データパック",
+      "patch-files": "ゲームファイルを修復 {{param}}",
+      "mod-update": "モッドを更新",
+      "retry": "再試行",
+      "neoforge-libraries": "NeoForge ランタイムライブラリ",
+      "forge-libraries": "Forge ランタイムライブラリ",
+      "launcher-update": "ランチャーを更新",
+      "mojang-java": "Java {{param}} ランタイム"
     }
   },
   "Editable": {
@@ -467,9 +619,6 @@
       "dirName": "ディレクトリ名称を入力してください",
       "dirPath": "ディレクトリパスを選択してください"
     },
-    "button": {
-      "browse": "参照"
-    },
     "dialog": {
       "browse": {
         "title": "ディレクトリパス選択"
@@ -488,12 +637,14 @@
     },
     "errorMessage": {
       "dirName": {
-        "empty": "ディレクトリ名称が必須",
-        "tooLong": "ディレクトリ名称は20文字以内にしてください",
-        "exist": "ディレクトリ名称が既に存在"
+        "tooLong": "ディレクトリ名は20文字以内にしてください",
+        "empty": "ディレクトリ名が必須",
+        "exist": "ディレクトリ名が既に存在",
+        "hasInvalidChar": "ディレクトリ名に無効な文字が含まれています"
       },
       "dirPath": {
-        "exist": "このディレクトリは既に存在"
+        "exist": "このディレクトリは既に存在",
+        "invalid": "ディレクトリパスが無効"
       }
     }
   },
@@ -613,7 +764,72 @@
       "javaVersion": "Java バージョン"
     },
     "crashDetails": {
-      "title": "クラッシュ情報"
+      "title": "クラッシュ情報",
+      "OPENJ9": "OpenJ9 JVM で実行できません。HotSpot JVM を使用してください。",
+      "NEED_JDK11": "現在の仮想マシンプラットフォームで実行できません。JDK 11 を選択して起動してください。",
+      "TOO_OLD_JAVA": "Java バージョンが古すぎます。最新の Java バージョンの使用をお勧めします。",
+      "JVM_32BIT": "ゲームメモリ割り当てが32ビット JVM の制限を超えています。64ビットシステムをお使いの場合は、64ビット Java をインストールしてください。",
+      "GL_OPERATION_FAILURE": "使用しているモッド/シェーダーパック/リソースパック/テクスチャパックに問題があります。使用しているモッド/シェーダーパック/リソースパック/テクスチャパックを無効にしてから再試行してください。",
+      "OPENGL_NOT_SUPPORTED": "グラフィックスドライバーが OpenGL をサポートしていません。グラフィックスドライバーを確認するか、他のレンダラーを使用してみてください。",
+      "GRAPHICS_DRIVER": "グラフィックスドライバーの問題によりクラッシュしました。グラフィックスドライバーを更新してください。",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "Apple Silicon プラットフォームで OpenGL ウィンドウの初期化に失敗しました。",
+      "OUT_OF_MEMORY": "メモリ不足によりクラッシュしました。ゲームメモリ割り当てを減らすか、他のプログラムを閉じてみてください。",
+      "MEMORY_EXCEEDED": "メモリ割り当てが制限を超えたためクラッシュしました。ゲームメモリ割り当てを減らすか、他のプログラムを閉じてみてください。",
+      "RESOLUTION_TOO_HIGH": "解像度が高すぎます。解像度の低いリソースパック/テクスチャパックを試してください。",
+      "JDK_9": "JDK 9 の機能を使用しているため実行できません。JDK 9 を選択して起動してください。",
+      "MAC_JDK_8U261": "Forge/OptiFine と Java が競合しているためクラッシュしました。Forge/OptiFine を更新するか、Java 8u251 以前のバージョンを使用して起動してください。",
+      "FILE_CHANGED": "ファイル検証が失敗しました。ファイルの整合性を確認してください。",
+      "NO_SUCH_METHOD_ERROR": "コードが不完全です。ゲームにモッドが不足しているか、一部のモッドファイルが不完全であるか、モッドとゲームのバージョンが一致していない可能性があります。ゲームとモッドを再インストールするか、サポートを問い合わせてください。",
+      "NO_CLASS_DEF_FOUND_ERROR": "コードが不完全です。ゲームにモッドが不足しているか、一部のモッドファイルが不完全であるか、モッドとゲームのバージョンが一致していない可能性があります。ゲームとモッドを再インストールするか、サポートを問い合わせてください。",
+      "ILLEGAL_ACCESS_ERROR": "一部のモッドの問題により実行できません。{{param1}} をご存知の場合は、対応するモッドを更新または削除してから再試行してください。",
+      "DUPLICATED_MOD": "モッド {{param1}} が重複してインストールされています。余分なモッドを削除してから再試行してください。",
+      "MOD_RESOLUTION": "モッドの依存関係の問題により実行できません。Fabric は次の情報を提供しています：{{param1}}",
+      "FORGEMOD_RESOLUTION": "モッドの依存関係の問題により実行できません。Forge/NeoForge は次の情報を提供しています：{{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "モッドが重複してインストールされているため実行できません。Forge/NeoForge は次の情報を提供しています：{{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "モッド {{param1}} と {{param2}} が競合しているため実行できません。",
+      "MOD_RESOLUTION_MISSING": "モッド {{param1}} に前提モッド {{param2}} が不足しています",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "モッド {{param1}} を実行するには Minecraft {{param2}} が必要です。",
+      "MOD_RESOLUTION_COLLECTION": "モッド {{param1}} に前提モッド {{param2}} が不足しています。",
+      "FILE_ALREADY_EXISTS": "{{param}} が既に存在するため実行できません。このファイルをバックアップ後に削除してゲームを再起動してみてください。",
+      "LOADING_CRASHED_FORGE": "モッド {{param1}} ({{param2}}) のエラーにより実行できません。このモッドを削除または更新して再起動してください。",
+      "BOOTSTRAP_FAILED": "モッド {{param1}} に問題があります。このモッドを削除または更新して再起動してください。",
+      "LOADING_CRASHED_FABRIC": "モッド {{param1}} のエラーにより実行できません。このモッドを削除または更新して再起動してください",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 以降は現在インストールされているモッドと互換性がない可能性があります。Fabric Loader を 0.11.7 にダウングレードする必要があります。",
+      "MODLAUNCHER_8": "Forge バージョンと Java が競合しているためクラッシュしました。Forge を 36.2.26 以降に更新するか、バージョン 1.8.0.320 より前の Java を使用してください。",
+      "DEBUG_CRASH": "現在のインスタンスは手動でクラッシュがトリガーされたため実行できません。",
+      "CONFIG": "モッド {{param1}} の設定ファイル {{param2}} を解析できないため実行できません。",
+      "FABRIC_WARNINGS": "Fabric は警告情報を提供しています：{{param1}}",
+      "ENTITY": "エンティティ（タイプ {{param1}}、位置 {{param2}}）が正常に動作しません。MCEdit でそのエンティティを削除するか、エンティティに対応するモッドを削除してみてください。",
+      "BLOCK": "ブロック（タイプ {{param1}}、位置 {{param2}}）が正常に動作しません。MCEdit でそのエンティティを削除するか、エンティティに対応するモッドを削除してみてください。",
+      "UNSATISFIED_LINK_ERROR": "ネイティブライブラリが不足しています：{{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "OptiFine と Forge が互換性がないため実行できません。OptiFine の最新バージョンを使用するか、OptiFine を使用しないでください。",
+      "MOD_FILES_ARE_DECOMPRESSED": "モッドファイルが解凍されているため実行できません。モッドファイルを解凍しなくモッドフォルダに直接配置してください。",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "OptiFine が原因で実行できません。この問題は特定の OptiFine バージョンでのみ発生します。",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "インストールされているモッドが多すぎてゲームの ID 制限を超えています。JEID などの修正モッドをインストールするか、一部のモッドを削除してみてください。",
+      "MODMIXIN_FAILURE": "一部のモッドの注入が失敗しました。モッドの互換性を確認するか、モッドを交換してみてください。",
+      "MIXIN_APPLY_MOD_FAILED": "Mixin をモッド {{param1}} に適用できません。このモッドを削除または更新して再起動してみてください。",
+      "FORGE_ERROR": "Forge/NeoForge はエラー情報を提供しています：{{param1}}",
+      "MOD_RESOLUTION0": "一部のモッドに問題があります。ログを確認してエラーのあるモッドを見つけてください。",
+      "FORGE_REPEAT_INSTALLATION": "Forge / NeoForge が重複してインストールされているため実行できません。このインスタンスを削除して再ダウンロードしてください。",
+      "OPTIFINE_REPEAT_INSTALLATION": "OptiFine が重複してインストールされているため実行できません。このインスタンスを削除して再ダウンロードしてください。",
+      "JAVA_VERSION_IS_TOO_HIGH": "Java バージョンが高すぎます。Java 8 以前のバージョンを使用してください。",
+      "INSTALL_MIXINBOOTSTRAP": "MixinBootstrap がインストールされていません。MixinBootstrap をインストールしてから再試行してください。",
+      "MOD_NAME": "モッドファイル名に問題があります。モッドファイル名には半角の文字 (Aa~Zz)、数字 (0~9)、ハイフン (-)、アンダースコア (_)、ドット (.) のみを使用してください。",
+      "INCOMPLETE_FORGE_INSTALLATION": "Forge のインストールが不完全です。Forge を再インストールしてみてください。",
+      "NIGHT_CONFIG_FIXES": "Night Config ライブラリの一部の問題により実行できません。Night Config Fixes モッドをインストールして再起動してみてください。",
+      "SHADERS_MOD": "OptiFine と Shaders モッドが同時にインストールされているため実行できません。Shaders モッドを削除してみてください。",
+      "RTSS_FOREST_SODIUM": "RTSS と Sodium が互換性がないため実行できません。",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "ネイティブライブラリとシステムアーキテクチャが互換性がないため実行できません。",
+      "MAC_DS_STORE": "Mac システムの .DS_Store ファイルによって問題が発生しました。ゲームパス下の .DS_Store ファイルを削除してから再試行してください。",
+      "LEVEL_DAT_CORRUPTED": "ワールドファイル level.dat が破損しています。ワールドを修復するか、バックアップから復元してみてください。",
+      "GL_OUT_OF_MEMORY": "OpenGL メモリが不足しています。ゲーム解像度を下げる、シェーダーをオフにする、または他のプログラムを閉じてみてください。",
+      "MOD_JAVA_VERSION_MISMATCH": "モッドと Java バージョンが一致しません。モッドが要求する Java バージョンを確認してください。",
+      "DUPLICATE_MOD_INSTALLED": "モッドが重複してインストールされているため実行できません。モッドリストを確認して重複するモッドを削除してください。",
+      "MOD_ZIP_CORRUPTED": "モッド圧縮ファイルが破損しています。モッドを再ダウンロードしてみてください。",
+      "MOD_INTERNET_ERROR": "モッドのダウンロードに失敗しました。ネットワーク接続を確認するか、ネットワークプロキシを使用してください。",
+      "VICS_MODERN_WARFARE_ERROR": "Vics Modern Warfare モッドのエラーにより実行できません。このモッドを更新または削除してみてください。",
+      "FORGE_LITELOADER_CONFLICT": "Forge と LiteLoader が競合しているため実行できません。LiteLoader を削除するか、Forge バージョンを変更してみてください。",
+      "UNKNOWN": "このエラーを一時的に分析できません。ゲームログを確認するか、エラークラッシュレポートをエクスポートしてください。"
     },
     "button": {
       "exportGameInfo": "クラッシュレポートをエクスポート",
@@ -625,7 +841,8 @@
   "GameLogPage": {
     "placeholder": "キーワードを入力して検索",
     "exportLogs": "ログをエクスポート",
-    "clearLogs": "すべてのログを消去"
+    "clearLogs": "すべてのログを削除",
+    "scrollToBottom": "一番下までスクロール"
   },
   "GameVersionSelector": {
     "old_beta": "レガシーバージョン",
@@ -636,6 +853,13 @@
   },
   "General": {
     "add": "追加",
+    "alert": {
+      "noFullLogin": {
+        "title": "この機能は現在利用できません",
+        "description": "この機能を使用するには、まず Microsoft アカウントでログインしてください。"
+      }
+    },
+    "browse": "参照",
     "cancel": "キャンセル",
     "close": "閉じる",
     "confirm": "OK",
@@ -654,14 +878,17 @@
     "delete": "削除",
     "dialog": {
       "filterName": {
-        "image": "図像ファイル"
+        "image": "図像ファイル",
+        "modpack": "モッドパック"
       }
     },
     "disable": "無効化",
+    "dontShowAgain": "今後表示しない",
     "download": "ダウンロード",
     "edit": "編集",
     "enable": "有効化",
     "finish": "完了",
+    "launch": "起動",
     "next": "次へ",
     "notice": "通知",
     "open": "開く",
@@ -670,6 +897,18 @@
     "refresh": "再読み込み",
     "revealFile": "{{opener}}で表示",
     "search": "サーチ",
+    "skip": "スキップ",
+    "share": {
+      "text": "共有",
+      "toast": {
+        "error": "共有に失敗"
+      }
+    },
+    "version": {
+      "dev": "開発版",
+      "nightly": "ナイトリービルド版",
+      "beta": "ベータ版"
+    },
     "viewOnWiki": "Minecraft Wiki へ"
   },
   "GeneralSettingsPage": {
@@ -694,12 +933,34 @@
         },
         "instancesNavType": {
           "title": "インスタンス分類",
+          "description": "インスタンスページの左側ナビゲーションバーの表示・グループ化方法を変更",
           "instance": "インスタンス順",
-          "directory": "ディレクトリ順"
+          "directory": "ディレクトリ順",
+          "hidden": "非表示"
         },
         "launchPageQuickSwitch": {
           "title": "クイックスイッチ",
           "description": "起動ページにアカウントとインスタンスの直接選択が可能。"
+        },
+        "resourceTranslation": {
+          "title": "リソース翻訳",
+          "description": "中国語のみ利用できます。"
+        },
+        "skipFirstScreenOptions": {
+          "title": "インスタンス言語を自動設定",
+          "description": "中国語のみ利用できます。"
+        }
+      }
+    },
+    "advanced": {
+      "title": "高度な設定",
+      "settings": {
+        "openConfigJson": {
+          "title": "ランチャー設定ファイル",
+          "description": "{{opener}}でランチャーの原始設定ファイルを表示"
+        },
+        "launcherLogDir": {
+          "title": "ランチャーログディレクトリ"
         }
       }
     }
@@ -711,6 +972,7 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "現在フォルダー",
+            "APP_DATA_SUBDIR": "SJMCL データフォルダー",
             "OFFICIAL_DIR": "公式ランチャーフォルダー"
           }
         }
@@ -801,6 +1063,20 @@
       }
     }
   },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "インスタンスページ",
+      "content": "ここで Minecraft ゲームインスタンスを追加して選択し、各種ゲームリソースをダウンロードして管理することができます。"
+    },
+    "step2": {
+      "title": "アカウントページ",
+      "content": "ここでアカウントを追加し、プレイしたいキャラクターを選択することができます。"
+    },
+    "step3": {
+      "title": "Minecraft、起動！",
+      "content": "インスタンスとキャラクターを選択し、関連設定を調整したら、起動ボタンをクリックしてゲームを楽しみましょう 🥳"
+    }
+  },
   "HeadNavBar": {
     "navList": {
       "launch": "起動",
@@ -847,9 +1123,27 @@
     "top": {
       "settings": {
         "LauncherDocs": {
-          "title": "SJMC Launcher ドキュメント"
+          "title": "SJMC Launcher ドキュメント（中国語）",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
         }
       }
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "モッドパックをインポート"
+    },
+    "label": {
+      "instanceSettings": "インスタンス設定",
+      "modpackInfo": "モッドパック情報",
+      "modpackName": "モッドパック名",
+      "modpackVersion": "モッドパックバージョン",
+      "author": "作者",
+      "modLoader": "モッドローダー",
+      "gameVersion": "ゲームバージョン"
+    },
+    "button": {
+      "import": "インポート"
     }
   },
   "InstanceBasicSettings": {
@@ -857,6 +1151,7 @@
   },
   "InstanceDetailsLayout": {
     "secMenu": {
+      "createShortcut": "起動ショートカットを作成",
       "exportModPack": "モッドパックエクスポート",
       "star": "このインスタンスをスター",
       "unstar": "このインスタンスを非スター"
@@ -919,7 +1214,13 @@
     "restoreSettingsDesc": "以下の設定をグローバル設定にリセット",
     "restore": "リセット",
     "errorMessage": {
-      "error-1": "インスタンス名称が必須"
+      "error-1": "インスタンス名称が必須",
+      "error-2": "インスタンス名が無効",
+      "error-3": "インスタンス名が長すぎる"
+    },
+    "tipsToGlobal": {
+      "part-1": "現在のインスタンスはインスタンス限定設定を有効にしていません。",
+      "part-2": "グローバルゲーム設定へ"
     }
   },
   "InstanceShaderPacksPage": {
@@ -974,7 +1275,8 @@
       },
       "gamemodeDesc": " ｜ {{gamemode}}",
       "difficultyDesc": " ｜ {{difficulty}}",
-      "viewLevelData": "セーブデータを見る"
+      "viewLevelData": "セーブデータを見る",
+      "launch": "このワールドをプレイ"
     },
     "serverList": {
       "title": "サーバー",
@@ -982,7 +1284,8 @@
       "tag": {
         "online": "オンライン",
         "offline": "オフライン"
-      }
+      },
+      "launch": "このサーバーをプレイ"
     }
   },
   "JavaSettingsPage": {
@@ -999,7 +1302,8 @@
       },
       "addFailed": {
         "title": "Java の追加に失敗",
-        "description": "無効な Java 実行ファイル"
+        "invalid": "無効な Java 実行ファイルであるか、現在のプラットフォームと互換性がありません",
+        "duplicated": "対象の Java パスは既に追加されています"
       }
     },
     "confirmDelete": {
@@ -1009,7 +1313,8 @@
   },
   "LaunchPage": {
     "button": {
-      "launch": "ゲーム起動"
+      "launch": "ゲーム起動",
+      "instanceSettings": "インスタンス設定"
     },
     "SwitchButton": {
       "tooltip": {
@@ -1042,16 +1347,27 @@
     "steve": "Steve",
     "alex": "Alex"
   },
-  "ViewSkinModal": {
-    "skinView": "スキンを見る"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Java を追加"
+    },
+    "label": {
+      "javaPath": "Java パス"
+    },
+    "placeholder": {
+      "javaPath": "Java 実行ファイルのパスを入力または選択してください"
+    }
   },
   "MemoryStatusProgress": {
     "title": "メモリ状況",
     "info": "使用済メモリ {{used}} / {{total}} GB",
     "label": {
       "now": "使用済",
-      "minAllocation": "Minecraft の最小割当量"
+      "maxAllocation": "Minecraft の最大割当量"
     }
+  },
+  "MenuSelector": {
+    "selectedCount": "{{count}} 個選択済み"
   },
   "ModLoaderCards": {
     "installed": "インストール済",
@@ -1067,12 +1383,24 @@
   "NotFoundPage": {
     "text": "ページが見つからない。 {{seconds}} 秒後でジャンプする"
   },
+  "NotifyNewVersionModal": {
+    "title": "新しいバージョンが利用可能"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "すべて表示（+{{left}}）"
+    }
+  },
   "PlayerMenu": {
     "label": {
       "manageSkin": "スキン管理",
       "viewSkin": "スキンを見る",
       "delete": "キャラクター削除",
       "copyUUID": "UUID コピー"
+    },
+    "toast": {
+      "refreshing": "キャラクター情報を更新中",
+      "deleting": "キャラクターを削除中"
     }
   },
   "PingTestPage": {
@@ -1083,16 +1411,20 @@
       "curseforge": "CurseForge",
       "modrinth": "Modrinth",
       "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
       "github": "GitHub",
       "sjmclapi": "SJMC Launcher API"
     }
   },
-  "ReLogin3rdPartyPlayerModal": {
+  "ReLoginPlayerModal": {
     "modal": {
       "title": "再ログイン"
     },
     "label": {
-      "user": "アカウント",
+      "user": "ユーザー名",
       "password": "パスワード"
     },
     "placeholder": {
@@ -1100,6 +1432,16 @@
     },
     "button": {
       "login": "ログイン"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "ランチャー更新",
+    "body": "新しいバージョンのダウンロードが完了しました。SJMCL を再起動して更新を完了してください",
+    "bodyMSI": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
+    "button": {
+      "restart": "再起動",
+      "install": "インストール",
+      "later": "後で"
     }
   },
   "ResourceDownloader": {
@@ -1119,23 +1461,52 @@
         "Addons": "アドオン",
         "Adventure and RPG": "冒険・RPG",
         "API and Library": "API・ライブラリ",
+        "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "ツール・武器・防具",
+        "Automation": "自動化",
+        "Auxiliary": "補助モッド",
+        "Biomes": "バイオーム",
+        "Blood Magic": "Blood Magic",
+        "Buildcraft": "Buildcraft",
         "Bug Fixes": "バグフィックス",
         "Cosmetic": "デコレーション",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "Create",
+        "Dimensions": "ディメンション",
         "Education": "教育",
+        "Energy": "エネルギー",
+        "Energy, Fluid, and Item Transport": "エネルギー・流体・アイテム輸送",
+        "Farming": "農業",
         "Food": "フード",
+        "Forestry": "Forestry",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "遺伝学",
+        "Industrial Craft": "Industrial Craft",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
         "Magic": "魔法",
         "Map and Information": "地図・情報",
         "MCreator": "MCreator",
         "Miscellaneous": "その他",
+        "Mobs": "モブ",
+        "Ores and Resources": "鉱石・資源",
         "Performance": "パフォーマンス",
+        "Player Transport": "プレイヤー輸送",
+        "Processing": "加工処理",
         "Redstone": "レッドストーン",
         "Server Utility": "サーバー向け",
+        "Skyblock": "スカイブロック",
         "Storage": "ストレージ",
+        "Structures": "構造物",
         "Technology": "テクノロジー",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's Construct",
+        "Twilight Forest": "Twilight Forest",
         "Twitch Integration": "Twitch",
         "Utility & QoL": "ユーティリティ・QoL",
-        "World Gen": "ワールド生成"
+        "World Gen": "ワールド生成",
+        "World": "ワールド"
       },
       "Modrinth": {
         "All": "すべて",
@@ -1145,7 +1516,7 @@
         "economy": "経済",
         "equipment": "器具",
         "food": "フード",
-        "game_mechanics": "ゲーム性",
+        "game-mechanics": "ゲームメカニクス",
         "library": "ライブラリ",
         "magic": "魔法",
         "management": "管理",
@@ -1157,7 +1528,7 @@
         "technology": "テクノロジー",
         "transportation": "運輸",
         "utility": "ユーティリティ",
-        "world_generation": "ワールド生成"
+        "worldgen": "ワールド生成"
       }
     },
     "worldTagList": {
@@ -1169,7 +1540,8 @@
         "Modded World": "モッド",
         "Parkour": "パルクール",
         "Puzzle": "パズル",
-        "Survival": "サバイバル"
+        "Survival": "サバイバル",
+        "Types": "タイプ"
       }
     },
     "resourcepackTagList": {
@@ -1181,7 +1553,9 @@
         "128x": "128x",
         "256x": "256x",
         "512x and Higher": "512x以上",
+        "Styles": "スタイル",
         "Animated": "動画",
+        "Special": "特殊",
         "Data Packs": "データパック",
         "Font Packs": "フォントパック",
         "Medieval": "中世",
@@ -1189,18 +1563,20 @@
         "Mod Support": "モッドサポート",
         "Modern": "モーデン",
         "Photo Realistic": "写実",
+        "Resolution": "解像度",
         "Steampunk": "スチームパンク",
         "Traditional": "伝統的"
       },
       "Modrinth": {
         "All": "すべて",
-        "8x or lower": "8x以下",
+        "8x-": "8x 以下",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
         "128x": "128x",
         "256x": "256x",
-        "512x or higher": "512x以上",
+        "512x+": "512x 以上",
+        "Styles": "スタイル",
         "audio": "オーディオ",
         "blocks": "ブロック",
         "core-shaders": "シェーダー",
@@ -1217,6 +1593,7 @@
         "decoration": "デコレーション",
         "modded": "モッド",
         "realistic": "写実",
+        "Resolution": "解像度",
         "simplistic": "ミニマル",
         "themed": "テーマ",
         "tweaks": "パフォーマンス",
@@ -1227,12 +1604,14 @@
     "shaderTagList": {
       "CurseForge": {
         "All": "すべて",
+        "Styles": "スタイル",
         "Fantasy": "幻想",
         "Realistic": "写実",
         "Vanilla": "バニラ"
       },
       "Modrinth": {
         "All": "すべて",
+        "Styles": "スタイル",
         "cartoon": "コミック",
         "cursed": "不気味",
         "fantasy": "幻想",
@@ -1246,12 +1625,19 @@
         "path-tracing": "パストレーシング",
         "pbr": "PBR",
         "reflections": "反射",
-        "shadows": "影"
+        "shadows": "影",
+        "potato": "##UNDONE 最低",
+        "performance": "パフォーマンス",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "screenshot": "スクリーンショット"
       }
     },
     "modpackTagList": {
       "CurseForge": {
         "All": "すべて",
+        "Styles": "スタイル",
         "Adventure and RPG": "冒険・RPG",
         "Combat / PvP": "コンバット・PvP",
         "Exploration": "探索",
@@ -1272,6 +1658,7 @@
       },
       "Modrinth": {
         "All": "すべて",
+        "styles": "スタイル",
         "adventure": "冒険",
         "challenging": "チャレンジ",
         "combat": "コンバット",
@@ -1284,9 +1671,45 @@
         "technology": "テクノロジー"
       }
     },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "すべて",
+        "Styles": "スタイル",
+        "Magic": "魔法",
+        "Miscellaneous": "その他",
+        "Fantasy": "幻想",
+        "Mod Support": "モッドサポート",
+        "Tech": "テクノロジー",
+        "Library": "ライブラリ",
+        "Utility": "ユーティリティ",
+        "Adventure": "冒険"
+      },
+      "Modrinth": {
+        "All": "すべて",
+        "styles": "スタイル",
+        "adventure": "冒険",
+        "cursed": "不気味",
+        "decoration": "デコレーション",
+        "economy": "経済",
+        "equipment": "器具",
+        "food": "フード",
+        "game-mechanics": "ゲームメカニクス",
+        "library": "ライブラリ",
+        "magic": "魔法",
+        "management": "管理",
+        "minigame": "ミニゲーム",
+        "mobs": "モブ",
+        "optimization": "パフォーマンス",
+        "social": "ソーシャル",
+        "storage": "ストレージ",
+        "technology": "テクノロジー",
+        "transportation": "運輸",
+        "utility": "ユーティリティ",
+        "worldgen": "ワールド生成"
+      }
+    },
     "sortByList": {
       "CurseForge": {
-        "Relevancy": "関連度順",
         "Popularity": "人気順",
         "Latest update": "更新日時順",
         "Creation date": "作成日順",
@@ -1296,7 +1719,7 @@
       "Modrinth": {
         "relevance": "関連度順",
         "downloads": "ダウンロード数順",
-        "followers": "フォロワー数順",
+        "follows": "フォロワー数順",
         "newest": "作成日順",
         "updated": "更新日時順"
       }
@@ -1308,6 +1731,9 @@
   "RestoreConfigConfirmDialog": {
     "title": "ランチャー設定復元",
     "body": "ランチャーの設定をデフォルトに復元しますか。"
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "原始設定ファイルの編集には注意してください。誤った形式は既存の設定が失われたり、ランチャーが正常に動作しなくなる可能性があります"
   },
   "ScreenshotPreviewModal": {
     "menu": {
@@ -1381,12 +1807,35 @@
           "title": "Java リストの取得に失敗"
         }
       },
+      "validateJava": {
+        "error": {
+          "title": "Java の検証に失敗",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java 実行ファイルが無効です"
+          }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Mojang Java ランタイムのダウンロードに失敗"
+        }
+      },
       "checkGameDirectory": {
         "error": {
           "title": "無効なゲームディレクトリ",
           "description": {
             "GAME_DIR_ALREADY_ADDED": "ゲームディレクトリを追加した",
             "GAME_DIR_NOT_EXIST": "ゲームディレクトリが存在しない"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "ダウンロードキャッシュをクリアしました",
+        "error": {
+          "title": "ダウンロードキャッシュのクリアに失敗",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "現在ダウンロードタスクが進行中です。後でもう一度お試しください",
+            "FILE_DELETION_FAILED": "キャッシュファイルを削除できません。ファイルが使用中の可能性があります"
           }
         }
       }
@@ -1402,7 +1851,8 @@
         "error": {
           "title": "オフラインキャラクターの追加に失敗",
           "description": {
-            "DUPLICATE": "キャラクターがすでに存在"
+            "DUPLICATE": "キャラクターがすでに存在",
+            "INVALID": "UUID が無効です"
           }
         }
       },
@@ -1427,8 +1877,23 @@
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "NOT_FOUND": "認証サーバーが見つからない",
             "CANCELLED": "キャンセルした",
-            "CREATE_WEBVIEW_ERROR": "WebView の作成に失敗",
-            "INVALID": "無効な認証サーバーアドレス"
+            "INVALID": "無効な認証サーバーアドレス",
+            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "キャラクターの再ログインに成功",
+        "error": {
+          "title": "キャラクターの再ログインに失敗",
+          "description": {
+            "NOT_FOUND": "キャラクターが存在しません",
+            "EXPIRED": "トークンの有効期限が切れました。再ログインしてください",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "認証サーバーに接続できません",
+            "INVALID": "オフラインキャラクターの更新に非対応",
+            "CANCELLED": "キャンセルしました",
+            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください"
           }
         }
       },
@@ -1441,7 +1906,21 @@
             "NETWORK_ERROR": "認証サーバーへの接続に失敗",
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "INVALID": "ログイン情報が間違っている",
-            "NOT_FOUND": "認証サーバーが見つからない"
+            "NOT_FOUND": "認証サーバーが見つからない",
+            "EXPIRED": "トークンの有効期限が切れました。再ログインしてください"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "キャラクターの再ログインに成功",
+        "error": {
+          "title": "キャラクターの再ログインに失敗",
+          "description": {
+            "NOT_FOUND": "キャラクターが存在しません",
+            "EXPIRED": "トークンの有効期限が切れました。再ログインしてください",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "認証サーバーへの接続に失敗",
+            "INVALID": "アカウントまたはパスワードが間違っています"
           }
         }
       },
@@ -1450,7 +1929,10 @@
         "error": {
           "title": "キャラクターの追加に失敗",
           "description": {
-            "DUPLICATE": "キャラクターがすでに存在"
+            "DUPLICATE": "キャラクターがすでに存在",
+            "NETWORK_ERROR": "認証サーバーに接続できません",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "EXPIRED": "トークンの有効期限が切れました。再ログインしてください"
           }
         }
       },
@@ -1487,19 +1969,6 @@
           }
         }
       },
-      "validatePlayer": {
-        "error": {
-          "title": "キャラクターの確認に失敗",
-          "description": {
-            "NOT_FOUND": "キャラクターが見つからない",
-            "EXPIRED": "アクセストークン有効期限切れ、再ログインしてください。",
-            "NETWORK_ERROR": "サーバーへの接続に失敗",
-            "PARSE_ERROR": "サーバー応答データ形式エラー",
-            "NO_DOWNLOAD_API": "Authlib-Injector のダウンロードに失敗しました。ネットワーク状況を確認してください。",
-            "SAVE_ERROR": "Authlib-Injector の保存に失敗"
-          }
-        }
-      },
       "retrieveAuthServerList": {
         "error": {
           "title": "認証サーバーリストの取得に失敗"
@@ -1510,7 +1979,8 @@
           "title": "認証サーバー情報の取得に失敗",
           "description": {
             "DUPLICATE": "認証サーバーがすでに存在",
-            "INVALID": "無効な認証サーバーアドレス"
+            "INVALID": "無効な認証サーバーアドレス",
+            "NOT_FOUND": "認証サーバーが存在しません"
           }
         }
       },
@@ -1520,7 +1990,8 @@
           "title": "認証サーバーの追加に失敗",
           "description": {
             "DUPLICATE": "認証サーバーがすでに存在",
-            "INVALID": "無効な認証サーバーアドレス"
+            "INVALID": "無効な認証サーバーアドレス",
+            "NOT_FOUND": "認証サーバーが存在しません"
           }
         }
       },
@@ -1534,12 +2005,69 @@
         }
       }
     },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "適切な Java ランタイムの選択に失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "NO_SUITABLE_JAVA": "選択可能な適切な Java ランタイムがありません",
+            "SELECTED_JAVA_UNAVAILABLE": "手動で選択した Java ランタイムが削除されたか利用できません"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "ゲームファイルの検証に失敗",
+          "description": {
+            "MOD_LOADER_NOT_INSTALLED": "モッドローダーのインストールが完了していません",
+            "MOD_LOADER_LIB_NOT_DOWNLOADED": "モッドローダーライブラリファイルがダウンロードされていません",
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "GAME_FILES_INCOMPLETE": "ゲームファイルが不完全しています",
+            "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "キャラクターの検証に失敗",
+          "description": {
+            "NOT_FOUND": "キャラクターが存在しません",
+            "EXPIRED": "アクセストークンの有効期限が切れました。再ログインしてください",
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "PARSE_ERROR": "サーバーが返したデータの形式が間違っています",
+            "NO_DOWNLOAD_API": "Authlib-Injector のダウンロードに失敗しました。ネットワーク接続を確認してください",
+            "SAVE_ERROR": "Authlib-Injector の保存に失敗",
+            "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "ゲームの起動に失敗",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"
+          }
+        }
+      }
+    },
     "resource": {
       "fetchGameVersionList": {
         "error": {
           "title": "ゲームバージョンリストの取得に失敗",
           "description": {
-            "PARSE_ERROR": "サーバー応答データ形式エラー"
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "ゲームバージョンメタ情報の取得に失敗",
+          "description": {
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "CLIENT_VERSION_NOT_FOUND": "指定されたゲームバージョンが存在しません"
           }
         }
       },
@@ -1548,7 +2076,57 @@
           "title": "MOD ローダーのリストの取得に失敗",
           "description": {
             "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません",
             "NO_DOWNLOAD_API": "利用可能なダウンロードポリシーがありません。ネットワーク状況を確認してください。"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "リソースリストの取得に失敗",
+          "description": {
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "NO_DOWNLOAD_API": "利用可能なダウンロード戦略がありません。ネットワーク接続を確認してください"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "リソースバージョンリストの取得に失敗",
+          "description": {
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "NO_DOWNLOAD_API": "利用可能なダウンロード戦略がありません。ネットワーク接続を確認してください"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "ゲームサーバーのダウンロードに失敗",
+          "description": {
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "リモートリソースの取得に失敗",
+          "description": {
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "NO_DOWNLOAD_API": "利用可能なダウンロード戦略がありません。ネットワーク接続を確認してください"
+          }
+        }
+      },
+      "updateMod": {
+        "error": {
+          "title": "モッドの更新に失敗",
+          "description": {
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "FILE_OPERATION_ERROR": "古いモッドファイルの名前を変更できません"
           }
         }
       }
@@ -1556,7 +2134,26 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "インスタンスリストの取得に失敗"
+          "title": "インスタンスリストの取得に失敗",
+          "description": {
+            "INVALID_NAME_ERROR": "インスタンス名が無効です",
+            "INVALID_SOURCE_PATH": "インスタンスディレクトリが無効です",
+            "CONFLICT_NAME_ERROR": "現在のインスタンスディレクトリに重複する名前のインスタンスが存在",
+            "FILE_MOVE_FAILED": "インスタンスディレクトリの移動に失敗"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "インスタンスダウンロードタスクの作成に失敗",
+          "description": {
+            "CONFLICT_NAME_ERROR": "現在のインスタンスディレクトリに重複する名前のインスタンスが存在",
+            "FOLDER_CREATION_FAILED": "ターゲットフォルダの作成に失敗",
+            "FILE_CREATION_FAILED": "ターゲットファイルの作成に失敗",
+            "NETWORK_ERROR": "ネットワークエラー",
+            "CLIENT_JSON_PARSE_ERROR": "インスタンスバージョン情報の解析エラー",
+            "ASSET_INDEX_PARSE_ERROR": "リソースインデックスファイルの解析エラー"
+          }
         }
       },
       "updateInstanceConfig": {
@@ -1581,17 +2178,16 @@
         "error": {
           "title": "インスタンスゲーム設定のリセットに失敗",
           "description": {
-            "INSTANCE_NOT_FOUND": "インスタンスが見つからない",
+            "INSTANCE_NOT_FOUND_BY_ID": "指定された ID のインスタンスが見つからない",
             "SAVE_ERROR": "インスタンス設定ファイルの保存に失敗"
           }
         }
       },
-      "openInstanceSubdir": {
+      "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "インスタンスディレクトリの表示に失敗",
+          "title": "インスタンスサブディレクトリの取得に失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "指定された ID のインスタンスが見つからない",
-            "EXEC_OPEN_DIR_ERROR": "コマンド実行に失敗"
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しないか、タイプが間違っています"
           }
         }
       },
@@ -1609,7 +2205,10 @@
           "title": "インスタンスの名前変更に失敗",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "指定された ID のインスタンスが見つからない",
-            "CONFLICT_NAME_ERROR": "現在のゲームディレクターにインスタンス名が重複"
+            "CONFLICT_NAME_ERROR": "現在のゲームディレクターにインスタンス名が重複",
+            "INVALID_NAME_ERROR": "インスタンス名が無効です",
+            "INVALID_SOURCE_PATH": "インスタンスディレクトリが無効です",
+            "FILE_MOVE_FAILED": "インスタンスディレクトリの移動に失敗"
           }
         }
       },
@@ -1651,6 +2250,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "MOD リストの取得に失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "指定された ID のインスタンスが見つかりません"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "リソースパックリストの取得に失敗"
@@ -1676,11 +2283,11 @@
           "title": "スクリーンショットリストの取得に失敗"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "MOD リストの取得に失敗",
+          "title": "MOD 状態のスイッチに失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "指定された ID のインスタンスが見つからない"
+            "FILE_NOT_FOUND_ERROR": "ファイルが見つからない。名前変更、移動、または削除された可能性があります"
           }
         }
       },
@@ -1694,12 +2301,74 @@
           }
         }
       },
-      "toggleModByExtension": {
+      "createLaunchDesktopShortcut": {
+        "success": "起動ショートカットをデスクトップに追加しました",
         "error": {
-          "title": "MOD 状態のスイッチに失敗",
+          "title": "起動ショートカットの作成に失敗",
           "description": {
-            "FILE_NOT_FOUND_ERROR": "ファイルが見つからない"
+            "SHORTCUT_CREATION_FAILED": "コマンドの実行に失敗",
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません"
           }
+        }
+      },
+      "finishModLoaderInstall": {
+        "loading": "{{instanceName}} にモッドローダーをインストール中",
+        "success": "モッドローダーのインストールが完了しました",
+        "error": {
+          "title": "モッドローダーのインストールに失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "INSTALLATION_DUPLICATED": "別のプロセスが既にインストール中です",
+            "MAIN_CLASS_NOT_FOUND": "メインクラスが見つかりません",
+            "PROCESSOR_EXECUTION_FAILED": "インストールタスクの実行に失敗"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "モッドローダーを変更できません",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "外部からインストールされたバージョンのため、アンインストールまたは変更できません"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "モッドローダーの変更に失敗",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "外部からインストールされたバージョンのため、アンインストールまたは変更できません"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "モッドパックリソース情報の取得に失敗",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "モッドパックファイルが存在しません。名前変更、移動、または削除された可能性があります",
+            "MODPACK_MANIFEST_PARSE_ERROR": "モッドパックマニフェストファイルの解析エラー"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "error": "タスクの作成に失敗"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "{{param}} ダウンロードタスクを開始しました",
+          "Failed": "{{param}} 一部のダウンロードに失敗しました。再試行してください",
+          "Completed": "{{param}} ダウンロードが完了しました",
+          "Stopped": "{{param}} ダウンロードタスクを一時停止しました",
+          "Cancelled": "{{param}} ダウンロードタスクをキャンセルしました"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "ファイルの削除に成功",
+        "error": {
+          "title": "ファイルの削除に失敗"
         }
       }
     }
@@ -1736,7 +2405,26 @@
     "input": {
       "placeholder": "メタサーチ"
     },
-    "tip": "ローカルファイルとオンラインゲームリソースを集中して検索"
+    "tip": "ローカルファイルとオンラインゲームリソースを集中して検索",
+    "empty": "検索結果なし",
+    "resource": {
+      "mod": "{{query}} に関するモッドを検索",
+      "world": "{{query}} に関するワールドを検索",
+      "resourcepack": "{{query}} に関するリソースパックを検索",
+      "shader": "{{query}} に関するシェーダーパックを検索",
+      "datapack": "{{query}} に関するデータパックを検索",
+      "modpack": "{{query}} に関するモッドパックを検索",
+      "curseforge": "CurseForge で",
+      "modrinth": "Modrinth で"
+    },
+    "result": {
+      "page": "ページ",
+      "recentViewed": "最近アクセス",
+      "instance": "インスタンス",
+      "player": "キャラクター",
+      "curseforge": "CurseForge で検索",
+      "modrinth": "Modrinth で検索"
+    }
   },
   "StarUsModal": {
     "header": {
@@ -1809,6 +2497,9 @@
       }
     }
   },
+  "ViewSkinModal": {
+    "skinView": "スキンを見る"
+  },
   "WelcomeAndTermsModal": {
     "header": {
       "title": "ようこそ！"
@@ -1817,6 +2508,9 @@
       "part1": "SJMCL をご利用いただき、ありがとうございます。開始前に、必ず下記の",
       "terms": "利用規約",
       "periods": "をお読みいただき、同意をお願いいたします。"
+    },
+    "warning": {
+      "unstableVersion": "{{versionLabel}}の SJMCL を使用しています。一部の機能が不安定または開発未完了の可能性があります。使用上の問題や機能の提案を報告いただければ幸いです。"
     },
     "button": {
       "exit": "アプリ終了",

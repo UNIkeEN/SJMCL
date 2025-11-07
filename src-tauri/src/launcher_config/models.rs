@@ -252,6 +252,10 @@ structstruck::strike! {
         #[default = true]
         pub resource_translation: bool, // only available in zh-Hans
         pub skip_first_screen_options: bool,  // only available in zh-Hans
+      },
+      pub advanced: struct GeneralConfigAdvanced {
+        #[default = true]
+        pub auto_purge_launcher_logs: bool,
       }
     },
     pub global_game_config: GameConfig,

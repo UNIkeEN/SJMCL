@@ -1,6 +1,6 @@
 [package]
 name = "SJMCL"
-version = "0.5.0"
+version = "0.5.1"
 description = "A Minecraft launcher from SJMC"
 authors = ["SJMCL Team"]
 license = "GNU General Public License v3.0 (with additional terms)"
@@ -37,6 +37,7 @@ tokio = { version = "1", features = ["full"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
 systemstat = "0.2.3"
 partial_derive = { path = "./libs/partial_derive" }
+serialize_skip_none_derive = { path = "./libs/serialize_skip_none_derive" }
 uuid = { version = "1.11.0", features = [
     "v4",
     "v5",
@@ -84,6 +85,10 @@ semver = "1"
 sysinfo = "0.36.0"
 config = "0.15.18"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
+rsa = "0.9.8"
+axum = "0.8.6"
+tower-http = { version = "0.6.6", features = ["cors"] }
+sha2 = "0.10.9"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

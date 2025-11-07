@@ -250,6 +250,26 @@ const GeneralSettingsPage = () => {
             </Button>
           ),
         },
+        {
+          title: t(
+            "GeneralSettingsPage.advanced.settings.autoPurgeLauncherLogs.title"
+          ),
+          description: t(
+            "GeneralSettingsPage.advanced.settings.autoPurgeLauncherLogs.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={generalConfigs.advanced.autoPurgeLauncherLogs}
+              onChange={(e) => {
+                update(
+                  "general.advanced.autoPurgeLauncherLogs",
+                  e.target.checked
+                );
+              }}
+            />
+          ),
+        },
       ],
     },
   ];

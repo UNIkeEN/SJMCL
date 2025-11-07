@@ -317,6 +317,18 @@
       }
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "修改模組載入器",
+        "install": "安裝模組載入器"
+      }
+    },
+    "notSelectedLoader": "未選擇新的載入器",
+    "footer": {
+      "installFabricApi": "同時安裝 Fabric API 模組"
+    }
+  },
   "CheckModUpdateModal": {
     "header": {
       "title": "檢查模組更新"
@@ -337,15 +349,6 @@
     },
     "error": {
       "renameOldMod": "重新命名舊檔案失敗"
-    }
-  },
-  "ChangeModLoaderModal": {
-    "header": {
-      "title": "修改模組載入器"
-    },
-    "notSelectedLoader": "未選擇新的載入器",
-    "footer": {
-      "installFabricApi": "同時安裝 Fabric API 模組"
     }
   },
   "ClearDownloadCacheAlertDialog": {
@@ -522,8 +525,7 @@
       "settings": {
         "directory": {
           "title": "下載快取目錄",
-          "select": "修改",
-          "open": "開啟"
+          "select": "修改"
         },
         "clear": {
           "title": "清除下載快取",
@@ -955,8 +957,10 @@
       "settings": {
         "openConfigJson": {
           "title": "啟動器設定檔案",
-          "description": "在{{opener}}中顯示啟動器的原始設定檔案",
-          "button": "開啟"
+          "description": "在{{opener}}中顯示啟動器的原始設定檔案"
+        },
+        "launcherLogDir": {
+          "title": "啟動器日誌目錄"
         }
       }
     }

@@ -20,6 +20,7 @@ pnpm-lock.yaml
 
 # production
 /build
+/target
 
 # misc
 .DS_Store

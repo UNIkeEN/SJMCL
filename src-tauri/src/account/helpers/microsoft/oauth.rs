@@ -7,7 +7,7 @@ use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
-  Texture,
+  PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
 use serde_json::{json, Value};
@@ -164,9 +164,9 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
     for skin in skins {
       if skin.state == "ACTIVE" {
         textures.push(Texture {
-          texture_type: "SKIN".to_string(),
+          texture_type: TextureType::Skin,
           image: fetch_image(app, skin.url.clone()).await?,
-          model: skin.variant.clone().unwrap_or("default".to_string()),
+          model: skin.variant.clone().unwrap_or_default(),
           preset: None,
         });
       }
@@ -176,9 +176,9 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
     for cape in capes {
       if cape.state == "ACTIVE" {
         textures.push(Texture {
-          texture_type: "CAPE".to_string(),
+          texture_type: TextureType::Cape,
           image: fetch_image(app, cape.url.clone()).await?,
-          model: "default".to_string(),
+          model: SkinModel::Default,
           preset: None,
         });
       }
@@ -187,7 +187,7 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
 
   if textures.is_empty() {
     // this player didn't have a texture, use preset Steve skin instead
-    textures = load_preset_skin(app, "steve".to_string())?;
+    textures = load_preset_skin(app, PresetRole::Steve)?;
   }
 
   Ok(

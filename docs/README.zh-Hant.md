@@ -42,7 +42,30 @@ SJMCL 目前支援以下平臺：
 
 ### Windows 7
 
-若您需要在 Windows 7 上執行 SJMCL，請先[下載 Microsoft Edge WebView2 運行時](https://developer.microsoft.com/zh-tw/microsoft-edge/webview2#download)並安裝，建議選擇「常青引導程式」。
+若您需要在 Windows 7 上執行 SJMCL，請先 [下載 Microsoft Edge WebView2 運行時](https://developer.microsoft.com/zh-tw/microsoft-edge/webview2#download) 並安裝，建議選擇「常青引導程式」。
+
+<details>
+<summary><h3>從命令列安裝</h3></summary>
+
+<details>
+<summary><h4>Arch Linux</h4></summary>
+
+SJMCL 已上傳至 Arch Linux 使用者套件庫（AUR）。您可以使用常見的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 安裝：
+
+```bash
+yay -S sjmcl-bin
+```
+
+若不使用 AUR 助手，您也可以手動安裝：
+
+```bash
+git clone https://aur.archlinux.org/sjmcl-bin.git
+cd sjmcl-bin
+makepkg -si
+```
+
+</details>
+</details>
 
 ## 開發與貢獻
 
@@ -81,10 +104,9 @@ npm run tauri dev
 
 1. 必須更換軟體名稱，禁止使用 SJMCL 或 SJMC Launcher；
 2. 在您的倉庫 README、分發網站或相關文件、軟體的關於頁面中，須明確標註您的程式基於 SJMCL，並註明原倉庫連結。
-3. 當對本軟件的修改僅限於**增加**（而非修改或刪除）預置認證伺服器（`src-tauri/src/account/helpers/authlib_injector/constants.rs`）時，前述第 1 條之限制不適用。在在此情形下，您得繼續使用原始軟體名稱進行編譯與分發。
+3. 當對本軟件的修改僅限於**增加**（而非修改或刪除）預置認證伺服器（`src-tauri/src/account/helpers/authlib_injector/constants.rs`）時，前述第 1 條之限制不適用。在此情形下，您得繼續使用原始軟體名稱進行編譯與分發。
 
-
-另根據我們網站的使用者協議，當您分發本軟體的修改版本時，請僅向我們的資訊統計伺服器傳送帶字首（不少於兩個字母，如 `XX-0.0.1`）的版本號，除非你的修改滿足上述第 3 條限制。
+另根據我們網站的使用者協議，當您分發本軟體的修改版本時，請僅向我們的資訊統計伺服器（`src-tauri/src/utils/sys_info.rs`）傳送帶字首（不少於兩個字母，如 `XX-0.0.1`）的版本號，除非您的修改滿足上述第 3 條限制。
 
 ## 聯絡我們
 
