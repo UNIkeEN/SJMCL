@@ -9,8 +9,8 @@ use tauri::AppHandle;
 use zip::ZipArchive;
 
 use crate::error::SJMCLResult;
-use crate::instance::helpers::modpack::misc::ModpackManifest;
-use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::instance::helpers::modpack::misc::{ModpackManifest, ModpackMetaInfo};
+use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
@@ -56,22 +56,24 @@ impl ModpackManifest for ModrinthManifest {
     Ok(manifest)
   }
 
-  fn get_meta_info(
-    &self,
-  ) -> (
-    String,
-    String,
-    Option<String>,
-    Option<String>,
-    OtherResourceSource,
-  ) {
-    (
-      self.name.clone(),
-      self.version_id.clone(),
-      self.summary.clone(),
-      None,
-      OtherResourceSource::Modrinth,
-    )
+  async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
+    let client_version = self.get_client_version()?;
+    let (loader_type, version) = self.get_mod_loader_type_version()?;
+    Ok(ModpackMetaInfo {
+      name: self.name.clone(),
+      version: self.version_id.clone(),
+      description: self.summary.clone(),
+      author: None,
+      modpack_source: OtherResourceSource::Modrinth,
+      client_version: client_version.clone(),
+      mod_loader: ModLoader {
+        loader_type,
+        version,
+        ..Default::default()
+      }
+      .with_branch(app, client_version)
+      .await?,
+    })
   }
 
   fn get_client_version(&self) -> SJMCLResult<String> {

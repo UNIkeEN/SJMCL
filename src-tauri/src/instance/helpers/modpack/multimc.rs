@@ -1,6 +1,6 @@
 use crate::error::SJMCLResult;
-use crate::instance::helpers::modpack::misc::ModpackManifest;
-use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::instance::helpers::modpack::misc::{ModpackManifest, ModpackMetaInfo};
+use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
 use async_trait::async_trait;
@@ -97,22 +97,24 @@ impl ModpackManifest for MultiMcManifest {
     Ok(manifest)
   }
 
-  fn get_meta_info(
-    &self,
-  ) -> (
-    String,
-    String,
-    Option<String>,
-    Option<String>,
-    OtherResourceSource,
-  ) {
-    (
-      self.cfg.get("name").cloned().unwrap_or_default(),
-      String::new(),
-      None,
-      None,
-      OtherResourceSource::MultiMc,
-    )
+  async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
+    let (loader_type, version) = self.get_mod_loader_type_version()?;
+    let client_version = self.get_client_version()?;
+    Ok(ModpackMetaInfo {
+      name: self.cfg.get("name").cloned().unwrap_or_default(),
+      version: String::new(),
+      description: None,
+      author: None,
+      modpack_source: OtherResourceSource::MultiMc,
+      client_version: client_version.clone(),
+      mod_loader: ModLoader {
+        loader_type,
+        version,
+        ..Default::default()
+      }
+      .with_branch(app, client_version)
+      .await?,
+    })
   }
 
   fn get_client_version(&self) -> SJMCLResult<String> {

@@ -21,15 +21,7 @@ pub trait ModpackManifest {
     Self: Sized;
   fn get_client_version(&self) -> SJMCLResult<String>;
   fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)>;
-  fn get_meta_info(
-    &self,
-  ) -> (
-    String,
-    String,
-    Option<String>,
-    Option<String>,
-    OtherResourceSource,
-  );
+  async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo>;
   async fn get_download_params(
     &self,
     app: &AppHandle,
@@ -94,25 +86,7 @@ impl ModpackMetaInfo {
   pub async fn from_archive(app: &AppHandle, file: &File) -> SJMCLResult<Self> {
     for parser in get_parsers() {
       if let Ok(manifest) = parser(file) {
-        let client_version = manifest.get_client_version()?;
-        let (loader_type, version) = manifest.get_mod_loader_type_version()?;
-        let (name, ver, description, author, modpack_source) = manifest.get_meta_info();
-
-        return Ok(ModpackMetaInfo {
-          modpack_source,
-          name,
-          version: ver,
-          description,
-          author,
-          client_version: client_version.clone(),
-          mod_loader: ModLoader {
-            loader_type,
-            version,
-            ..Default::default()
-          }
-          .with_branch(app, client_version)
-          .await?,
-        });
+        return manifest.get_meta_info(app).await;
       }
     }
 

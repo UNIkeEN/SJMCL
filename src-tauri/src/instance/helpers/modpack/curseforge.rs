@@ -10,8 +10,8 @@ use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::modpack::misc::ModpackManifest;
-use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::instance::helpers::modpack::misc::{ModpackManifest, ModpackMetaInfo};
+use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
 use crate::resource::helpers::curseforge::misc::CurseForgeProject;
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::download::DownloadParam;
@@ -85,22 +85,24 @@ impl ModpackManifest for CurseForgeManifest {
     Ok(manifest)
   }
 
-  fn get_meta_info(
-    &self,
-  ) -> (
-    String,
-    String,
-    Option<String>,
-    Option<String>,
-    OtherResourceSource,
-  ) {
-    (
-      self.name.clone(),
-      self.version.clone(),
-      None,
-      Some(self.author.clone()),
-      OtherResourceSource::CurseForge,
-    )
+  async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
+    let client_version = self.get_client_version()?;
+    let (loader_type, version) = self.get_mod_loader_type_version()?;
+    Ok(ModpackMetaInfo {
+      name: self.name.clone(),
+      version: self.version.clone(),
+      description: None,
+      author: Some(self.author.clone()),
+      modpack_source: OtherResourceSource::CurseForge,
+      client_version: client_version.clone(),
+      mod_loader: ModLoader {
+        loader_type,
+        version,
+        ..Default::default()
+      }
+      .with_branch(app, client_version)
+      .await?,
+    })
   }
 
   fn get_client_version(&self) -> SJMCLResult<String> {
@@ -108,18 +110,22 @@ impl ModpackManifest for CurseForgeManifest {
   }
 
   fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
-    for loader in self.minecraft.mod_loaders.clone() {
-      if loader.primary {
-        let Some((loader, version)) = loader.id.split_once('-') else {
-          return Err(InstanceError::ModLoaderVersionParseError.into());
-        };
-        return Ok((
-          ModLoaderType::from_str(loader).unwrap_or_default(),
-          version.to_string(),
-        ));
-      }
-    }
-    Err(InstanceError::ModLoaderVersionParseError.into())
+    let loader = self
+      .minecraft
+      .mod_loaders
+      .iter()
+      .find(|l| l.primary)
+      .ok_or(InstanceError::ModLoaderVersionParseError)?;
+
+    let Some((loader_type, version)) = loader.id.split_once('-') else {
+      return Err(InstanceError::ModLoaderVersionParseError.into());
+    };
+    Ok((
+      ModLoaderType::from_str(loader_type)
+        .ok()
+        .ok_or(InstanceError::ModLoaderVersionParseError)?,
+      version.to_string(),
+    ))
   }
 
   async fn get_download_params(
