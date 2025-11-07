@@ -8,12 +8,9 @@ use crate::instance::helpers::misc::{
   get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
   refresh_and_update_instances, unify_instance_name,
 };
-use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
 use crate::instance::helpers::modpack::misc::{
-  extract_overrides, ModpackManifest, ModpackMetaInfo,
+  extract_overrides, get_download_params, ModpackMetaInfo,
 };
-use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
-use crate::instance::helpers::modpack::multimc::MultiMcManifest;
 use crate::instance::helpers::mods::common::{
   add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
 };
@@ -979,18 +976,8 @@ pub async fn create_instance(
   if let Some(modpack_path) = modpack_path {
     let path = PathBuf::from(modpack_path);
     let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
-    if let Ok(manifest) = CurseForgeManifest::from_archive(&file) {
-      task_params.extend(manifest.get_download_params(&app, &version_path).await?);
-      extract_overrides(&format!("{}/", manifest.overrides), &file, &version_path)?;
-    } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
-      task_params.extend(manifest.get_download_params(&app, &version_path).await?);
-      extract_overrides(&String::from("overrides/"), &file, &version_path)?;
-    } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
-      let base_path = manifest.base_path;
-      extract_overrides(&format!("{}.minecraft/", base_path), &file, &version_path)?;
-    } else {
-      return Err(InstanceError::ModpackManifestParseError.into());
-    }
+    task_params.extend(get_download_params(&app, &file, &version_path).await?);
+    extract_overrides(&file, &version_path)?;
   }
 
   schedule_progressive_task_group(

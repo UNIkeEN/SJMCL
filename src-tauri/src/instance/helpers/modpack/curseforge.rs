@@ -3,6 +3,7 @@ use std::io::Read;
 use std::path::Path;
 use std::str::FromStr;
 
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -12,6 +13,7 @@ use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::modpack::misc::ModpackManifest;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::resource::helpers::curseforge::misc::CurseForgeProject;
+use crate::resource::models::OtherResourceSource;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 
@@ -69,6 +71,7 @@ pub struct CurseForgeProjectRes {
   pub data: CurseForgeProject,
 }
 
+#[async_trait]
 impl ModpackManifest for CurseForgeManifest {
   fn from_archive(file: &File) -> SJMCLResult<Self> {
     let mut archive = ZipArchive::new(file)?;
@@ -80,6 +83,24 @@ impl ModpackManifest for CurseForgeManifest {
     })?;
 
     Ok(manifest)
+  }
+
+  fn get_meta_info(
+    &self,
+  ) -> (
+    String,
+    String,
+    Option<String>,
+    Option<String>,
+    OtherResourceSource,
+  ) {
+    (
+      self.name.clone(),
+      self.version.clone(),
+      None,
+      Some(self.author.clone()),
+      OtherResourceSource::CurseForge,
+    )
   }
 
   fn get_client_version(&self) -> SJMCLResult<String> {
@@ -186,5 +207,9 @@ impl ModpackManifest for CurseForgeManifest {
       task_params.push(result?);
     }
     Ok(task_params)
+  }
+
+  fn get_overrides_path(&self) -> String {
+    self.overrides.clone()
   }
 }

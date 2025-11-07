@@ -88,6 +88,7 @@ rsa = "0.9.8"
 axum = "0.8.6"
 tower-http = { version = "0.6.6", features = ["cors"] }
 sha2 = "0.10.9"
+async-trait = "0.1.89"
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

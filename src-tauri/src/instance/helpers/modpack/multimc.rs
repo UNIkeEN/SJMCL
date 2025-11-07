@@ -1,7 +1,9 @@
 use crate::error::SJMCLResult;
 use crate::instance::helpers::modpack::misc::ModpackManifest;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
+use async_trait::async_trait;
 use config::Config;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -44,6 +46,7 @@ structstruck::strike! {
   }
 }
 
+#[async_trait]
 impl ModpackManifest for MultiMcManifest {
   fn from_archive(file: &File) -> SJMCLResult<Self> {
     let mut archive = ZipArchive::new(file)?;
@@ -94,6 +97,24 @@ impl ModpackManifest for MultiMcManifest {
     Ok(manifest)
   }
 
+  fn get_meta_info(
+    &self,
+  ) -> (
+    String,
+    String,
+    Option<String>,
+    Option<String>,
+    OtherResourceSource,
+  ) {
+    (
+      self.cfg.get("name").cloned().unwrap_or_default(),
+      String::new(),
+      None,
+      None,
+      OtherResourceSource::MultiMc,
+    )
+  }
+
   fn get_client_version(&self) -> SJMCLResult<String> {
     let component = self
       .components
@@ -126,6 +147,10 @@ impl ModpackManifest for MultiMcManifest {
   ) -> SJMCLResult<Vec<PTaskParam>> {
     // MultiMC Manifests do not include download parameters
     Ok(Vec::new())
+  }
+
+  fn get_overrides_path(&self) -> String {
+    format!("{}.minecraft/", self.base_path)
   }
 }
 

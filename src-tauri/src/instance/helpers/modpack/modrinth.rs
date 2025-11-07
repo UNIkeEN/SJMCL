@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use zip::ZipArchive;
@@ -10,6 +11,7 @@ use zip::ZipArchive;
 use crate::error::SJMCLResult;
 use crate::instance::helpers::modpack::misc::ModpackManifest;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::resource::models::OtherResourceSource;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 
@@ -41,6 +43,7 @@ pub struct ModrinthManifest {
   pub dependencies: HashMap<String, String>,
 }
 
+#[async_trait]
 impl ModpackManifest for ModrinthManifest {
   fn from_archive(file: &File) -> SJMCLResult<Self> {
     let mut archive = ZipArchive::new(file)?;
@@ -51,6 +54,24 @@ impl ModpackManifest for ModrinthManifest {
       eprintln!("{:?}", e);
     })?;
     Ok(manifest)
+  }
+
+  fn get_meta_info(
+    &self,
+  ) -> (
+    String,
+    String,
+    Option<String>,
+    Option<String>,
+    OtherResourceSource,
+  ) {
+    (
+      self.name.clone(),
+      self.version_id.clone(),
+      self.summary.clone(),
+      None,
+      OtherResourceSource::Modrinth,
+    )
   }
 
   fn get_client_version(&self) -> SJMCLResult<String> {
@@ -97,5 +118,9 @@ impl ModpackManifest for ModrinthManifest {
         }))
       })
       .collect::<SJMCLResult<Vec<_>>>()
+  }
+
+  fn get_overrides_path(&self) -> String {
+    "overrides/".to_string()
   }
 }
