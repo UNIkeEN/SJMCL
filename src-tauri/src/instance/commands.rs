@@ -1,6 +1,6 @@
 use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
+use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
 use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -910,9 +910,9 @@ pub async fn create_instance(
   version_info.jar = Some(name.clone());
 
   // convert vanilla version info to vanilla patch
-  let mut vanilla_patch: PatchesInfo = version_info.clone().into();
+  let mut vanilla_patch = version_info.clone();
   vanilla_patch.id = "game".to_string();
-  vanilla_patch.version = game.id.clone();
+  vanilla_patch.version = Some(game.id.clone());
   vanilla_patch.inherits_from = None;
   version_info.patches.push(vanilla_patch);
 
@@ -1187,7 +1187,7 @@ pub async fn change_mod_loader(
   }
   // construct new version info
   instance.mod_loader = mod_loader.clone();
-  let mut version_info: McClientInfo = vanilla_info.clone().into();
+  let mut version_info: McClientInfo = vanilla_info.clone();
   version_info.id = current_info.id.clone();
   version_info.jar = Some(instance.name.clone());
   version_info.java_version = current_info.java_version.clone();

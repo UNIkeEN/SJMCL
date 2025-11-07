@@ -346,7 +346,12 @@ pub async fn generate_launch_command(
   }
 
   // main class (after replace jvm args)
-  cmd.push(client_info.main_class.clone());
+  cmd.push(
+    client_info
+      .main_class
+      .ok_or(InstanceError::MainClassNotFound)?
+      .clone(),
+  );
 
   if let Some(client_args) = &client_info.arguments {
     let client_game_args = client_args.to_game_arguments(&launch_feature)?;

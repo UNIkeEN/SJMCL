@@ -80,7 +80,7 @@ pub async fn get_invalid_library_files(
     if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
       Ok(None)
     } else if artifact.url.is_empty() {
-      return Err(LaunchError::GameFilesIncomplete.into());
+      Err(LaunchError::GameFilesIncomplete.into())
     } else {
       let src = convert_url_to_target_source(
         &url::Url::parse(&artifact.url)?,

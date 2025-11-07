@@ -37,6 +37,7 @@ tokio = { version = "1", features = ["full"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
 systemstat = "0.2.3"
 partial_derive = { path = "./libs/partial_derive" }
+serialize_skip_none_derive = { path = "./libs/serialize_skip_none_derive" }
 uuid = { version = "1.11.0", features = [
     "v4",
     "v5",
