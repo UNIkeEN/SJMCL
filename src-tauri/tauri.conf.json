@@ -61,6 +61,7 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "category": "Game",
     "icon": [
       "assets/icons/32x32.png",
       "assets/icons/64x64.png",
