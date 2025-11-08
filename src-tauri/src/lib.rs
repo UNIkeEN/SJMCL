@@ -182,7 +182,10 @@ pub async fn run() {
 
       let account_info = AccountInfo::load().unwrap_or_default();
       app.manage(Mutex::new(account_info.clone()));
-      account_info.save().unwrap(); // TODO: add migration helper
+
+      // Migrate account info to new format
+      // TODO: will be removed after the new migration utils crate implemented
+      account_info.save().unwrap();
 
       let instances: HashMap<String, Instance> = HashMap::new();
       app.manage(Mutex::new(instances));
