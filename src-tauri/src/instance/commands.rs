@@ -44,6 +44,7 @@ use crate::utils::fs::{
   get_subdirectories,
 };
 use crate::utils::image::ImageWrapper;
+use image::imageops::FilterType;
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
@@ -624,7 +625,9 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src
+          .map(ImageWrapper::from)
+          .map(|img| img.resized(64, 64, FilterType::Nearest)),
         file_path: path.clone(),
       });
     }
@@ -639,7 +642,9 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src
+          .map(ImageWrapper::from)
+          .map(|img| img.resized(64, 64, FilterType::Nearest)),
         file_path: path.clone(),
       });
     }
@@ -676,7 +681,9 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src
+          .map(ImageWrapper::from)
+          .map(|img| img.resized(64, 64, FilterType::Nearest)),
         file_path: path.clone(),
       });
     }
@@ -692,7 +699,9 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src
+          .map(ImageWrapper::from)
+          .map(|img| img.resized(64, 64, FilterType::Nearest)),
         file_path: path.clone(),
       });
     }
