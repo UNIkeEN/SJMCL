@@ -1,6 +1,6 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::constants::{
-  RESOURCE_ICON_SIZE, TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME,
+  COMPRESSED_ICON_SIZE, TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME,
 };
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
@@ -84,8 +84,8 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
         .map(ImageWrapper::from)
         .map(|img| {
           img.resized(
-            RESOURCE_ICON_SIZE.0,
-            RESOURCE_ICON_SIZE.1,
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
             FilterType::Nearest,
           )
         })
@@ -114,8 +114,8 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
         .valid_logo_file
         .map(|img| {
           img.resized(
-            RESOURCE_ICON_SIZE.0,
-            RESOURCE_ICON_SIZE.1,
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
             FilterType::Nearest,
           )
         })
@@ -138,8 +138,8 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
         .map(ImageWrapper::from)
         .map(|img| {
           img.resized(
-            RESOURCE_ICON_SIZE.0,
-            RESOURCE_ICON_SIZE.1,
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
             FilterType::Nearest,
           )
         })
@@ -182,8 +182,8 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
         .map(ImageWrapper::from)
         .map(|img| {
           img.resized(
-            RESOURCE_ICON_SIZE.0,
-            RESOURCE_ICON_SIZE.1,
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
             FilterType::Nearest,
           )
         })
@@ -226,8 +226,8 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
         .map(ImageWrapper::from)
         .map(|img| {
           img.resized(
-            RESOURCE_ICON_SIZE.0,
-            RESOURCE_ICON_SIZE.1,
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
             FilterType::Nearest,
           )
         })
@@ -272,8 +272,8 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
         .map(ImageWrapper::from)
         .map(|img| {
           img.resized(
-            RESOURCE_ICON_SIZE.0,
-            RESOURCE_ICON_SIZE.1,
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
             FilterType::Nearest,
           )
         })
@@ -317,8 +317,8 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
         .map(ImageWrapper::from)
         .map(|img| {
           img.resized(
-            RESOURCE_ICON_SIZE.0,
-            RESOURCE_ICON_SIZE.1,
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
             FilterType::Nearest,
           )
         })
