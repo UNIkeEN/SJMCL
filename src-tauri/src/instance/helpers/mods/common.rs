@@ -252,7 +252,16 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
   if let Ok(mut meta) = forge::get_mod_metadata_from_dir(path).await {
     let first_mod = meta.mods.remove(0);
     return Ok(LocalModInfo {
-      icon_src: meta.valid_logo_file.unwrap_or_default(),
+      icon_src: meta
+        .valid_logo_file
+        .map(|img| {
+          img.resized(
+            COMPRESSED_ICON_SIZE.0,
+            COMPRESSED_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
+        .unwrap_or_default(),
       enabled,
       name: first_mod.display_name.unwrap_or_default(),
       translated_name: None,
