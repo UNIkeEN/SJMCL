@@ -626,7 +626,7 @@ pub async fn retrieve_resource_pack_list(
         description,
         icon_src: icon_src
           .map(ImageWrapper::from)
-          .map(|img| img.compress_to_icon()),
+          .map(|img| img.compress_icon()),
         file_path: path.clone(),
       });
     }
@@ -643,7 +643,7 @@ pub async fn retrieve_resource_pack_list(
         description,
         icon_src: icon_src
           .map(ImageWrapper::from)
-          .map(|img| img.compress_to_icon()),
+          .map(|img| img.compress_icon()),
         file_path: path.clone(),
       });
     }
@@ -682,7 +682,7 @@ pub async fn retrieve_server_resource_pack_list(
         description,
         icon_src: icon_src
           .map(ImageWrapper::from)
-          .map(|img| img.compress_to_icon()),
+          .map(|img| img.compress_icon()),
         file_path: path.clone(),
       });
     }
@@ -700,7 +700,7 @@ pub async fn retrieve_server_resource_pack_list(
         description,
         icon_src: icon_src
           .map(ImageWrapper::from)
-          .map(|img| img.compress_to_icon()),
+          .map(|img| img.compress_icon()),
         file_path: path.clone(),
       });
     }
