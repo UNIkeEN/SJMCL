@@ -1,6 +1,6 @@
 use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
-use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
+use crate::instance::constants::{RESOURCE_ICON_SIZE, TRANSLATION_CACHE_EXPIRY_HOURS};
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
 use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
@@ -625,9 +625,13 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.resized(64, 64, FilterType::Nearest)),
+        icon_src: icon_src.map(ImageWrapper::from).map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        }),
         file_path: path.clone(),
       });
     }
@@ -642,9 +646,13 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.resized(64, 64, FilterType::Nearest)),
+        icon_src: icon_src.map(ImageWrapper::from).map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        }),
         file_path: path.clone(),
       });
     }
@@ -681,9 +689,13 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.resized(64, 64, FilterType::Nearest)),
+        icon_src: icon_src.map(ImageWrapper::from).map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        }),
         file_path: path.clone(),
       });
     }
@@ -699,9 +711,13 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.resized(64, 64, FilterType::Nearest)),
+        icon_src: icon_src.map(ImageWrapper::from).map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        }),
         file_path: path.clone(),
       });
     }

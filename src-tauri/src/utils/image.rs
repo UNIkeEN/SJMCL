@@ -99,7 +99,7 @@ impl ImageWrapper {
   /// # Examples
   ///
   /// ```rust
-  /// let resized_img = img_wrapper.resized(100, 100, FilterType::Lanczos3);
+  /// let resized_img = img_wrapper.resized(100, 100, FilterType::Nearest);
   /// ```
   pub fn resized(&self, new_width: u32, new_height: u32, filter: FilterType) -> ImageWrapper {
     if self.image.width() == 0 || self.image.height() == 0 {
@@ -116,7 +116,7 @@ impl ImageWrapper {
   /// # Examples
   ///
   /// ```rust
-  /// let scaled_img = img_wrapper.scaled(0.5, FilterType::Lanczos3);
+  /// let scaled_img = img_wrapper.scaled(0.5, FilterType::Nearest);
   /// ```
   pub fn scaled(&self, scale: f32, filter: FilterType) -> ImageWrapper {
     if self.image.width() == 0 || self.image.height() == 0 || scale <= 0.0 {

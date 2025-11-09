@@ -1,5 +1,7 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::constants::{TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME};
+use crate::instance::constants::{
+  RESOURCE_ICON_SIZE, TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME,
+};
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::resource::helpers::curseforge::{
@@ -80,7 +82,13 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
     let icon_src = if let Some(icon) = meta.icon {
       load_image_from_jar(&mut jar, &icon)
         .map(ImageWrapper::from)
-        .map(|img| img.resized(64, 64, FilterType::Nearest))
+        .map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
         .unwrap_or_default()
     } else {
       Default::default()
@@ -104,7 +112,13 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
     return Ok(LocalModInfo {
       icon_src: meta
         .valid_logo_file
-        .map(|img| img.resized(64, 64, FilterType::Nearest))
+        .map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
         .unwrap_or_default(),
       enabled,
       name: first_mod.display_name.unwrap_or_default(),
@@ -122,7 +136,13 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
     let icon_src = if let Some(icon) = meta.logo_file {
       load_image_from_jar(&mut jar, &icon)
         .map(ImageWrapper::from)
-        .map(|img| img.resized(64, 64, FilterType::Nearest))
+        .map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
         .unwrap_or_default()
     } else {
       Default::default()
@@ -160,7 +180,13 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
     let icon_src = if let Some(icon) = meta.metadata.icon {
       load_image_from_jar(&mut jar, &icon)
         .map(ImageWrapper::from)
-        .map(|img| img.resized(64, 64, FilterType::Nearest))
+        .map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
         .unwrap_or_default()
     } else {
       Default::default()
@@ -197,11 +223,18 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
     let icon_src = if let Some(icon) = meta.icon {
       load_image_from_dir_async(&path.join(icon))
         .await
+        .map(ImageWrapper::from)
+        .map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
         .unwrap_or_default()
     } else {
       Default::default()
-    }
-    .into();
+    };
     return Ok(LocalModInfo {
       icon_src,
       enabled,
@@ -236,11 +269,18 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
     let icon_src = if let Some(icon) = meta.logo_file {
       load_image_from_dir_async(&path.join(icon))
         .await
+        .map(ImageWrapper::from)
+        .map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
         .unwrap_or_default()
     } else {
       Default::default()
-    }
-    .into();
+    };
     return Ok(LocalModInfo {
       icon_src,
       enabled,
@@ -274,11 +314,18 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
     let icon_src = if let Some(icon) = meta.metadata.icon {
       load_image_from_dir_async(&path.join(icon))
         .await
+        .map(ImageWrapper::from)
+        .map(|img| {
+          img.resized(
+            RESOURCE_ICON_SIZE.0,
+            RESOURCE_ICON_SIZE.1,
+            FilterType::Nearest,
+          )
+        })
         .unwrap_or_default()
     } else {
       Default::default()
-    }
-    .into();
+    };
     return Ok(LocalModInfo {
       icon_src,
       enabled,
