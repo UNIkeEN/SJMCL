@@ -60,11 +60,8 @@ pub struct LaunchArgumentTemplate {
   pub jvm: Vec<ArgumentsItem>,
 }
 
-#[serde_as]
-#[derive(Debug, Serialize, Default, Clone)]
-#[serde(rename_all = "camelCase", default)]
+#[derive(Debug, Default, Clone)]
 pub struct ArgumentsItem {
-  #[serde_as(as = "OneOrMany<_, PreferMany>")]
   pub value: Vec<String>,
   pub rules: Vec<InstructionRule>,
 }
@@ -96,6 +93,27 @@ impl<'de> Deserialize<'de> for ArgumentsItem {
       value: game.value,
       rules: game.rules,
     })
+  }
+}
+
+impl Serialize for ArgumentsItem {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    if self.rules.is_empty() {
+      if self.value.len() == 1 {
+        return serializer.serialize_str(&self.value[0]);
+      }
+      if self.value.is_empty() {
+        return serializer.serialize_str("");
+      }
+    }
+    let game = ArgumentsItemDefault {
+      value: self.value.clone(),
+      rules: self.rules.clone(),
+    };
+    game.serialize(serializer)
   }
 }
 
@@ -234,6 +252,7 @@ pub struct LibrariesValue {
   pub downloads: Option<LibrariesDownloads>,
   pub natives: Option<HashMap<String, String>>,
   pub extract: Option<LibrariesExtract>,
+  #[serde(skip_serializing_if = "Vec::is_empty", default)]
   pub rules: Vec<InstructionRule>,
 }
 

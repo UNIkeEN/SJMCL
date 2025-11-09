@@ -9,7 +9,7 @@ use crate::instance::models::misc::{
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
-use crate::storage::load_json_async;
+use crate::storage::{load_json_async, save_json_async};
 use sanitize_filename;
 use serde_json::Value;
 use std::collections::HashMap;
@@ -261,6 +261,15 @@ pub async fn refresh_instances(
     };
     // ignore error here, for now
     instance.save_json_cfg().await?;
+
+    // Migrate client info to new format
+    // TODO: will be removed after the new migration utils crate implemented
+    let client_info_dir = instance
+      .version_path
+      .join(format!("{}.json", instance.name));
+    let client_info = load_json_async::<McClientInfo>(&client_info_dir).await?;
+    save_json_async(&client_info, &client_info_dir).await?;
+
     instances.push(instance);
   }
 

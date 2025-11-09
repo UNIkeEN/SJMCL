@@ -962,6 +962,7 @@ pub async fn create_instance(
   vanilla_patch.id = "game".to_string();
   vanilla_patch.version = Some(game.id.clone());
   vanilla_patch.inherits_from = None;
+  vanilla_patch.priority = Some(0);
   version_info.patches.push(vanilla_patch);
 
   let mut task_params = Vec::<PTaskParam>::new();
