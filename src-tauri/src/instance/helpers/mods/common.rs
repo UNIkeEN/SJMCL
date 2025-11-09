@@ -67,17 +67,15 @@ impl LocalModTranslationEntry {
   }
 }
 
-impl ImageWrapper {
-  pub fn compress_icon(&self) -> Self {
-    let resized_image = image::imageops::resize(
-      &self.image,
-      COMPRESSED_ICON_SIZE.0,
-      COMPRESSED_ICON_SIZE.1,
-      FilterType::Nearest,
-    );
-    ImageWrapper {
-      image: resized_image,
-    }
+pub fn compress_icon(wrapper: ImageWrapper) -> ImageWrapper {
+  let resized_image = image::imageops::resize(
+    &wrapper.image,
+    COMPRESSED_ICON_SIZE.0,
+    COMPRESSED_ICON_SIZE.1,
+    FilterType::Nearest,
+  );
+  ImageWrapper {
+    image: resized_image,
   }
 }
 
@@ -96,7 +94,7 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
     let icon_src = if let Some(icon) = meta.icon {
       load_image_from_jar(&mut jar, &icon)
         .map(ImageWrapper::from)
-        .map(|img| img.compress_icon())
+        .map(compress_icon)
         .unwrap_or_default()
     } else {
       Default::default()
@@ -118,10 +116,7 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
   if let Ok(mut meta) = forge::get_mod_metadata_from_jar(&mut jar) {
     let first_mod = meta.mods.remove(0);
     return Ok(LocalModInfo {
-      icon_src: meta
-        .valid_logo_file
-        .map(|img| img.compress_icon())
-        .unwrap_or_default(),
+      icon_src: meta.valid_logo_file.map(compress_icon).unwrap_or_default(),
       enabled,
       name: first_mod.display_name.unwrap_or_default(),
       translated_name: None,
@@ -138,7 +133,7 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
     let icon_src = if let Some(icon) = meta.logo_file {
       load_image_from_jar(&mut jar, &icon)
         .map(ImageWrapper::from)
-        .map(|img| img.compress_icon())
+        .map(compress_icon)
         .unwrap_or_default()
     } else {
       Default::default()
@@ -176,7 +171,7 @@ pub async fn get_mod_info_from_jar(path: &PathBuf) -> SJMCLResult<LocalModInfo> 
     let icon_src = if let Some(icon) = meta.metadata.icon {
       load_image_from_jar(&mut jar, &icon)
         .map(ImageWrapper::from)
-        .map(|img| img.compress_icon())
+        .map(compress_icon)
         .unwrap_or_default()
     } else {
       Default::default()
@@ -214,7 +209,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       load_image_from_dir_async(&path.join(icon))
         .await
         .map(ImageWrapper::from)
-        .map(|img| img.compress_icon())
+        .map(compress_icon)
         .unwrap_or_default()
     } else {
       Default::default()
@@ -236,10 +231,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
   if let Ok(mut meta) = forge::get_mod_metadata_from_dir(path).await {
     let first_mod = meta.mods.remove(0);
     return Ok(LocalModInfo {
-      icon_src: meta
-        .valid_logo_file
-        .map(|img| img.compress_icon())
-        .unwrap_or_default(),
+      icon_src: meta.valid_logo_file.map(compress_icon).unwrap_or_default(),
       enabled,
       name: first_mod.display_name.unwrap_or_default(),
       translated_name: None,
@@ -257,7 +249,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       load_image_from_dir_async(&path.join(icon))
         .await
         .map(ImageWrapper::from)
-        .map(|img| img.compress_icon())
+        .map(compress_icon)
         .unwrap_or_default()
     } else {
       Default::default()
@@ -296,7 +288,7 @@ pub async fn get_mod_info_from_dir(path: &Path) -> SJMCLResult<LocalModInfo> {
       load_image_from_dir_async(&path.join(icon))
         .await
         .map(ImageWrapper::from)
-        .map(|img| img.compress_icon())
+        .map(compress_icon)
         .unwrap_or_default()
     } else {
       Default::default()

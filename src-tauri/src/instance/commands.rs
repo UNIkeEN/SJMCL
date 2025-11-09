@@ -13,7 +13,7 @@ use crate::instance::helpers::modpack::misc::{
   extract_overrides, get_download_params, ModpackMetaInfo,
 };
 use crate::instance::helpers::mods::common::{
-  add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
+  add_local_mod_translations, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
   LocalModTranslationEntry, LocalModTranslationsCache,
 };
 use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
@@ -624,9 +624,7 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.compress_icon()),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
@@ -641,9 +639,7 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.compress_icon()),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
@@ -680,9 +676,7 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.compress_icon()),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
@@ -698,9 +692,7 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src
-          .map(ImageWrapper::from)
-          .map(|img| img.compress_icon()),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
