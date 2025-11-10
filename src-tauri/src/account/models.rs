@@ -40,6 +40,7 @@ pub enum TextureType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Display, Default, EnumIter, EnumString)]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum SkinModel {
   #[default]
   Default,
