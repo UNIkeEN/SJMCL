@@ -1,4 +1,13 @@
+use crate::account::models::AccountError;
+use crate::account::models::PlayerInfo;
+use crate::account::models::PresetRole;
+use crate::account::models::SkinModel;
+use crate::account::models::Texture;
+use crate::error::SJMCLResult;
+use crate::utils::fs::get_app_resource_filepath;
 use image::RgbaImage;
+use std::path::{Path, PathBuf};
+use tauri::AppHandle;
 
 pub fn draw_avatar(size: u32, img: &RgbaImage) -> RgbaImage {
   let (skin_width, _) = img.dimensions();
@@ -51,4 +60,31 @@ fn draw_image_section(
       avatar_img.put_pixel(dest_rect[0] + x_offset, dest_rect[1] + y_offset, *pixel);
     }
   }
+}
+
+pub fn load_preset_skin_info(
+  app: &AppHandle,
+  preset_role: PresetRole,
+) -> SJMCLResult<(PathBuf, SkinModel)> {
+  let skin_path =
+    get_app_resource_filepath(app, &format!("assets/skins/{}.png", preset_role.clone()))
+      .map_err(|_| AccountError::TextureFormatIncorrect)?;
+  let skin_model = match preset_role {
+    PresetRole::Alex => SkinModel::Slim,
+    _ => SkinModel::Default,
+  };
+  Ok((skin_path, skin_model))
+}
+
+pub trait TextureOperation<T> {
+  async fn parse_skin(app: &AppHandle, profile: &T) -> SJMCLResult<Vec<Texture>>;
+  async fn upload_skin(
+    app: &AppHandle,
+    player: &PlayerInfo,
+    file_path: &Path,
+    model: SkinModel,
+  ) -> SJMCLResult<T>;
+  async fn delete_skin(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<T>;
+  async fn upload_cape(app: &AppHandle, player: &PlayerInfo, file_path: &Path) -> SJMCLResult<T>;
+  async fn delete_cape(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<T>;
 }

@@ -1,4 +1,8 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
   Button,
   FormControl,
@@ -32,27 +36,32 @@ import SkinPreview from "@/components/skin-preview";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
-import { PresetRole, SkinModel, TextureType } from "@/enums/account";
-import { Texture } from "@/models/account";
+import {
+  PlayerType,
+  PresetRole,
+  SkinModel,
+  TextureType,
+} from "@/enums/account";
+import { Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 import { base64ImgSrc } from "@/utils/string";
 
 type SkinType = PresetRole | "default" | "upload";
 
 interface ManageSkinModalProps extends Omit<ModalProps, "children"> {
-  playerId: string;
-  skin?: Texture;
-  cape?: Texture;
+  player: Player;
 }
 
 const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
-  playerId,
+  player,
   isOpen,
   onClose,
-  skin,
-  cape,
   ...modalProps
 }) => {
+  let playerId = player.id;
+  let skin = player.textures.find((t) => t.textureType === TextureType.Skin);
+  let cape = player.textures.find((t) => t.textureType === TextureType.Cape);
+
   const [selectedSkin, setSelectedSkin] = useState<SkinType>("default");
   const [uploadSkinFilePath, setUploadSkinFilePath] = useState<string>("");
   const [uploadCapeFilePath, setUploadCapeFilePath] = useState<string>("");
@@ -108,7 +117,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
     if (selectedSkin !== "upload") {
       setIsLoading(true);
       try {
-        const resp = await AccountService.updatePlayerSkinOfflinePreset(
+        const resp = await AccountService.updatePlayerTexturePreset(
           playerId,
           selectedSkin
         );
@@ -132,7 +141,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
     } else if (uploadSkinFilePath) {
       setIsLoading(true);
       try {
-        const skinResp = await AccountService.updatePlayerSkinOfflineLocal(
+        const skinResp = await AccountService.updatePlayerTextureLocal(
           playerId,
           uploadSkinFilePath,
           TextureType.Skin,
@@ -140,7 +149,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
         );
         if (skinResp.status === "success") {
           if (isCapeVisible && uploadCapeFilePath) {
-            const capeResp = await AccountService.updatePlayerSkinOfflineLocal(
+            const capeResp = await AccountService.updatePlayerTextureLocal(
               playerId,
               uploadCapeFilePath,
               TextureType.Cape,
@@ -307,30 +316,46 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
                       </IconButton>
                     </HStack>
                   </FormControl>
-                  <FormControl display="flex" gap={2} alignItems="center">
-                    <FormLabel htmlFor="cape" mb={0} minWidth="max-content">
-                      {t("ManageSkinModal.cape")}
-                    </FormLabel>
-                    <HStack id="cape" spacing={2} width="100%">
-                      <Input
-                        value={uploadCapeFilePath}
-                        onChange={(e) => setUploadCapeFilePath(e.target.value)}
-                        flex={1}
-                        variant="filled"
-                        disabled={!isCapeVisible}
-                      />
-                      <IconButton
-                        onClick={handleUploadCapeFile}
-                        variant="ghost"
-                        width="100%"
-                        aria-label={t("ManageSkinModal.upload")}
-                        flex={0}
-                        disabled={!isCapeVisible}
-                      >
-                        <LuFolderOpen />
-                      </IconButton>
-                    </HStack>
-                  </FormControl>
+                  {player.playerType === PlayerType.Microsoft ? (
+                    <Alert status="warning" borderRadius="md">
+                      <AlertIcon />
+                      <VStack spacing={0} align="start">
+                        <AlertTitle>
+                          {t("ManageSkinModal.alert.microsoftCape.title")}
+                        </AlertTitle>
+                        <AlertDescription>
+                          {t("ManageSkinModal.alert.microsoftCape.description")}
+                        </AlertDescription>
+                      </VStack>
+                    </Alert>
+                  ) : (
+                    <FormControl display="flex" gap={2} alignItems="center">
+                      <FormLabel htmlFor="cape" mb={0} minWidth="max-content">
+                        {t("ManageSkinModal.cape")}
+                      </FormLabel>
+                      <HStack id="cape" spacing={2} width="100%">
+                        <Input
+                          value={uploadCapeFilePath}
+                          onChange={(e) =>
+                            setUploadCapeFilePath(e.target.value)
+                          }
+                          flex={1}
+                          variant="filled"
+                          disabled={!isCapeVisible}
+                        />
+                        <IconButton
+                          onClick={handleUploadCapeFile}
+                          variant="ghost"
+                          width="100%"
+                          aria-label={t("ManageSkinModal.upload")}
+                          flex={0}
+                          disabled={!isCapeVisible}
+                        >
+                          <LuFolderOpen />
+                        </IconButton>
+                      </HStack>
+                    </FormControl>
+                  )}
                 </VStack>
               )}
             </VStack>
