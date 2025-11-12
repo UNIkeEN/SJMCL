@@ -1,8 +1,8 @@
 import { i18nConfig } from "../../next-i18next.config.mjs";
-import en_Qabs from "./en-Qabs.json";
 import en from "./en.json";
 import fr from "./fr.json";
 import ja from "./ja.json";
+import { generateUpsideDownTranslation } from "./upside-down-transformer";
 import zh_Hans from "./zh-Hans.json";
 import zh_Hant from "./zh-Hant.json";
 
@@ -35,7 +35,7 @@ export const localeResources: LocaleResources = {
     display_name: "繁體中文",
   },
   "en-Qabs": {
-    translation: en_Qabs,
+    translation: generateUpsideDownTranslation(en),
     display_name: "ɥsᴉꞁᵷuƎ (uʍoᗡ ǝpᴉsd∩)",
   },
 };
