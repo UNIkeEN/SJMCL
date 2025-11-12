@@ -16,7 +16,6 @@ import { LuCopy, LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
-import ViewSkinModal from "@/components/modals/view-skin-modal";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
@@ -123,9 +122,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
         ]),
     {
       icon: TbHanger,
-      label: t(
-        `PlayerMenu.label.${player.playerType === PlayerType.Offline ? "manageSkin" : "viewSkin"}`
-      ),
+      label: t("PlayerMenu.label.manageSkin"),
       onClick: onSkinModalOpen,
     },
     {
@@ -197,30 +194,11 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           ))}
         </HStack>
       )}
-      {player.playerType === PlayerType.Offline ? (
-        <ManageSkinModal
-          isOpen={isSkinModalOpen}
-          onClose={onSkinModalClose}
-          playerId={player.id}
-          skin={player.textures.find(
-            (texture) => texture.textureType === "SKIN"
-          )}
-          cape={player.textures.find(
-            (texture) => texture.textureType === "CAPE"
-          )}
-        />
-      ) : (
-        <ViewSkinModal
-          isOpen={isSkinModalOpen}
-          onClose={onSkinModalClose}
-          skin={player.textures.find(
-            (texture) => texture.textureType === "SKIN"
-          )}
-          cape={player.textures.find(
-            (texture) => texture.textureType === "CAPE"
-          )}
-        />
-      )}
+      <ManageSkinModal
+        isOpen={isSkinModalOpen}
+        onClose={onSkinModalClose}
+        player={player}
+      />
     </>
   );
 };

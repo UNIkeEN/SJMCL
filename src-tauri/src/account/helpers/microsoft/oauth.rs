@@ -3,11 +3,11 @@ use crate::account::helpers::microsoft::constants::{
   PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
 use crate::account::helpers::microsoft::models::{MinecraftProfile, XstsResponse};
-use crate::account::helpers::misc::{fetch_image, oauth_polling};
-use crate::account::helpers::offline::load_preset_skin;
+use crate::account::helpers::microsoft::texture::MicrosoftTextureOperation;
+use crate::account::helpers::misc::oauth_polling;
+use crate::account::helpers::texture::TextureOperation;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
-  PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
 use serde_json::{json, Value};
@@ -140,7 +140,7 @@ async fn fetch_minecraft_profile(
 
   let response = client
     .get(PROFILE_ENDPOINT)
-    .header("Authorization", format!("Bearer {}", minecraft_token))
+    .bearer_auth(minecraft_token)
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
@@ -159,37 +159,6 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
   let minecraft_token = fetch_minecraft_token(app, xsts_userhash, xsts_token).await?;
   let profile = fetch_minecraft_profile(app, minecraft_token.clone()).await?;
 
-  let mut textures = vec![];
-  if let Some(skins) = &profile.skins {
-    for skin in skins {
-      if skin.state == "ACTIVE" {
-        textures.push(Texture {
-          texture_type: TextureType::Skin,
-          image: fetch_image(app, skin.url.clone()).await?,
-          model: skin.variant.clone().unwrap_or_default(),
-          preset: None,
-        });
-      }
-    }
-  }
-  if let Some(capes) = &profile.capes {
-    for cape in capes {
-      if cape.state == "ACTIVE" {
-        textures.push(Texture {
-          texture_type: TextureType::Cape,
-          image: fetch_image(app, cape.url.clone()).await?,
-          model: SkinModel::Default,
-          preset: None,
-        });
-      }
-    }
-  }
-
-  if textures.is_empty() {
-    // this player didn't have a texture, use preset Steve skin instead
-    textures = load_preset_skin(app, PresetRole::Steve)?;
-  }
-
   Ok(
     PlayerInfo {
       id: "".to_string(),
@@ -199,7 +168,7 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
       auth_account: Some(profile.name.clone()),
       access_token: Some(minecraft_token.clone()),
       refresh_token: Some(tokens.refresh_token.clone()),
-      textures,
+      textures: MicrosoftTextureOperation::parse_skin(app, &profile).await?,
       auth_server_url: None,
     }
     .with_generated_id(),
@@ -250,10 +219,7 @@ pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool>
   let client = app.state::<reqwest::Client>();
   let response = client
     .get(PROFILE_ENDPOINT)
-    .header(
-      "Authorization",
-      format!("Bearer {}", player.access_token.clone().unwrap_or_default()),
-    )
+    .bearer_auth(player.access_token.clone().unwrap_or_default())
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;

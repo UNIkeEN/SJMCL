@@ -31,7 +31,7 @@ tauri-plugin-dialog = "2.1.0"
 tauri-plugin-fs = "2.0.1"
 tauri-plugin-log = "2"
 structstruck = "0.4.1"
-tauri-plugin-http = { version = "2", features = ["json", "stream"] }
+tauri-plugin-http = { version = "2", features = ["json", "stream", "multipart"] }
 tauri-plugin-os = "2"
 tokio = { version = "1", features = ["full"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }

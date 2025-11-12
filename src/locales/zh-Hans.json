@@ -1357,6 +1357,12 @@
       "label": "模型",
       "default": "宽型",
       "slim": "纤细"
+    },
+    "alert": {
+      "microsoftCape": {
+        "title": "披风更改暂不可用",
+        "description": "SJMCL 暂无法为微软账户提供披风上传服务。"
+      }
     }
   },
   "ManualAddJavaPathModal": {
@@ -1406,7 +1412,6 @@
   "PlayerMenu": {
     "label": {
       "manageSkin": "管理皮肤",
-      "viewSkin": "查看皮肤",
       "delete": "删除此角色",
       "copyUUID": "复制 UUID"
     },
@@ -1948,25 +1953,25 @@
           }
         }
       },
-      "updatePlayerSkinOfflinePreset": {
-        "success": "角色皮肤更新成功",
+      "updatePlayerTexturePreset": {
+        "success": "角色材质更新成功",
         "error": {
-          "title": "角色皮肤更新失败",
+          "title": "角色材质更新失败",
           "description": {
             "NOT_FOUND": "角色不存在",
-            "INVALID": "角色类型错误",
-            "TEXTURE_ERROR": "角色皮肤获取失败"
+            "TEXTURE_FORMAT_INCORRECT": "角色材质格式不正确",
+            "NO_TEXTURE_API": "暂不能使用该认证服务器的材质更改功能"
           }
         }
       },
-      "updatePlayerSkinOfflineLocal": {
-        "success": "角色皮肤更新成功",
+      "updatePlayerTextureLocal": {
+        "success": "角色材质更新成功",
         "error": {
-          "title": "角色皮肤更新失败",
+          "title": "角色材质更新失败",
           "description": {
             "NOT_FOUND": "角色不存在",
-            "INVALID": "角色类型错误",
-            "TEXTURE_ERROR": "角色皮肤获取失败"
+            "TEXTURE_FORMAT_INCORRECT": "角色材质格式不正确",
+            "NO_TEXTURE_API": "暂不能使用该认证服务器的材质更改功能"
           }
         }
       },
@@ -2523,9 +2528,6 @@
         "javaEdition": "Java版{{version}}"
       }
     }
-  },
-  "ViewSkinModal": {
-    "skinView": "查看皮肤"
   },
   "WelcomeAndTermsModal": {
     "header": {

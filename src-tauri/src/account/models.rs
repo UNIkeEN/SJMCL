@@ -1,6 +1,6 @@
 use crate::account::constants::ACCOUNTS_FILE_NAME;
 use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
-use crate::account::helpers::skin::draw_avatar;
+use crate::account::helpers::texture::draw_avatar;
 use crate::storage::Storage;
 use crate::utils::image::ImageWrapper;
 use crate::APP_DATA_DIR;
@@ -294,8 +294,8 @@ impl Default for AccountInfo {
 }
 
 impl AccountInfo {
-  pub fn get_player_by_id_mut(&mut self, id: String) -> Option<&mut PlayerInfo> {
-    self.players.iter_mut().find(|player| player.id == id)
+  pub fn get_player_by_id(&self, id: String) -> Option<&PlayerInfo> {
+    self.players.iter().find(|player| player.id == id)
   }
 }
 
@@ -312,13 +312,14 @@ pub enum AccountError {
   Expired,
   Invalid,
   NotFound,
-  TextureError,
+  TextureFormatIncorrect,
   NetworkError,
   ParseError,
   Cancelled,
   NoDownloadApi,
   SaveError,
   NoMinecraftProfile,
+  NoTextureApi,
 }
 
 impl std::error::Error for AccountError {}

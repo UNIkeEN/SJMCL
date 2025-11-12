@@ -5,3 +5,4 @@ pub mod jar;
 pub mod models;
 pub mod oauth;
 pub mod password;
+pub mod texture;

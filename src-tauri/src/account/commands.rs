@@ -2,16 +2,20 @@ use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
 use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
+use crate::account::helpers::authlib_injector::texture::AuthlibInjectorTextureOperation;
 use crate::account::helpers::authlib_injector::{self};
+use crate::account::helpers::microsoft::texture::MicrosoftTextureOperation;
+use crate::account::helpers::texture::{load_preset_skin_info, TextureOperation};
 use crate::account::helpers::{microsoft, misc, offline};
 use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
-  PresetRole, SkinModel, TextureType,
+  PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
 use crate::utils::fs::get_app_resource_filepath;
+use crate::utils::image::{load_image_from_dir, ImageWrapper};
 use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -33,7 +37,7 @@ pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {
 
 #[tauri::command]
 pub async fn add_player_offline(app: AppHandle, username: String, uuid: String) -> SJMCLResult<()> {
-  let new_player = offline::login(&app, username, uuid).await?;
+  let new_player = offline::login::login(&app, username, uuid).await?;
 
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
@@ -360,70 +364,149 @@ pub async fn add_player_from_selection(app: AppHandle, player: Player) -> SJMCLR
 }
 
 #[tauri::command]
-pub fn update_player_skin_offline_preset(
+pub async fn update_player_texture_preset(
   app: AppHandle,
   player_id: String,
   preset_role: PresetRole,
 ) -> SJMCLResult<()> {
   let account_binding = app.state::<Mutex<AccountInfo>>();
-  let mut account_state = account_binding.lock()?;
 
-  let player = account_state
-    .get_player_by_id_mut(player_id.clone())
-    .ok_or(AccountError::NotFound)?;
+  let player = {
+    let account_state = account_binding.lock()?;
+    account_state
+      .get_player_by_id(player_id.clone())
+      .ok_or(AccountError::NotFound)?
+      .clone()
+  };
 
-  if player.player_type != PlayerType::Offline {
-    return Err(AccountError::Invalid.into());
+  let (skin_path, model) = load_preset_skin_info(&app, preset_role.clone())?;
+
+  match player.player_type {
+    PlayerType::Offline => {}
+    PlayerType::ThirdParty => {
+      let _ = AuthlibInjectorTextureOperation::delete_cape(&app, &player).await;
+      AuthlibInjectorTextureOperation::upload_skin(&app, &player, &skin_path, model.clone())
+        .await?;
+    }
+    PlayerType::Microsoft => {
+      let _ = MicrosoftTextureOperation::delete_cape(&app, &player).await;
+      MicrosoftTextureOperation::upload_skin(&app, &player, &skin_path, model.clone()).await?;
+    }
+  };
+
+  {
+    let mut account_state = account_binding.lock()?;
+
+    if let Some(stored_player) = account_state.players.iter_mut().find(|p| p.id == player_id) {
+      stored_player.textures.clear();
+      stored_player.textures.push(Texture {
+        texture_type: TextureType::Skin,
+        image: load_image_from_dir(&skin_path)
+          .ok_or(AccountError::TextureFormatIncorrect)?
+          .into(),
+        model,
+        preset: Some(preset_role),
+      });
+      account_state.save()?;
+    }
   }
-
-  player.textures = offline::load_preset_skin(&app, preset_role)?;
-  account_state.save()?;
   Ok(())
 }
 
 #[tauri::command]
-pub fn update_player_skin_offline_local(
+pub async fn update_player_texture_local(
   app: AppHandle,
   player_id: String,
   image_path: String,
   texture_type: TextureType,
   skin_model: SkinModel,
 ) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+
+  let player = {
+    let account_state = account_binding.lock()?;
+    account_state
+      .get_player_by_id(player_id.clone())
+      .ok_or(AccountError::NotFound)?
+      .clone()
+  };
+
   let image_path = if image_path == "dummy" {
     // this is an Easter Egg :)
     get_app_resource_filepath(&app, "assets/skins/dummy.png")
-      .map_err(|_| AccountError::TextureError)?
+      .map_err(|_| AccountError::TextureFormatIncorrect)?
   } else {
     Path::new(&image_path).to_path_buf()
   };
-  let texture_img =
-    crate::utils::image::load_image_from_dir(&image_path).ok_or(AccountError::TextureError)?;
 
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let mut account_state = account_binding.lock()?;
+  let textures = match player.player_type {
+    PlayerType::Offline => {
+      let image: ImageWrapper = load_image_from_dir(&image_path)
+        .ok_or(AccountError::TextureFormatIncorrect)?
+        .into();
+      player
+        .textures
+        .iter()
+        .map(|texture| {
+          if texture.texture_type == texture_type {
+            Texture {
+              texture_type: texture_type.clone(),
+              image: image.clone(),
+              model: skin_model.clone(),
+              preset: None,
+            }
+          } else {
+            texture.clone()
+          }
+        })
+        .collect()
+    }
+    PlayerType::ThirdParty => {
+      AuthlibInjectorTextureOperation::parse_skin(
+        &app,
+        &match texture_type {
+          TextureType::Cape => {
+            AuthlibInjectorTextureOperation::upload_cape(&app, &player, &image_path).await?
+          }
+          TextureType::Skin => {
+            AuthlibInjectorTextureOperation::upload_skin(
+              &app,
+              &player,
+              &image_path,
+              skin_model.clone(),
+            )
+            .await?
+          }
+        },
+      )
+      .await?
+    }
+    PlayerType::Microsoft => {
+      MicrosoftTextureOperation::parse_skin(
+        &app,
+        &match texture_type {
+          TextureType::Cape => {
+            MicrosoftTextureOperation::upload_cape(&app, &player, &image_path).await?
+          }
+          TextureType::Skin => {
+            MicrosoftTextureOperation::upload_skin(&app, &player, &image_path, skin_model.clone())
+              .await?
+          }
+        },
+      )
+      .await?
+    }
+  };
 
-  let player = account_state
-    .get_player_by_id_mut(player_id.clone())
-    .ok_or(AccountError::NotFound)?;
+  {
+    let mut account_state = account_binding.lock()?;
 
-  if player.player_type != PlayerType::Offline {
-    return Err(AccountError::Invalid.into());
+    if let Some(stored_player) = account_state.players.iter_mut().find(|p| p.id == player_id) {
+      stored_player.textures.clear();
+      stored_player.textures.extend(textures);
+      account_state.save()?;
+    }
   }
-
-  // remove existing texture of the same type
-  player
-    .textures
-    .retain(|texture| texture.texture_type != texture_type);
-
-  // add the new texture
-  player.textures.push(crate::account::models::Texture {
-    texture_type: texture_type.clone(),
-    image: texture_img.into(),
-    model: skin_model.clone(),
-    preset: None,
-  });
-
-  account_state.save()?;
   Ok(())
 }
 
