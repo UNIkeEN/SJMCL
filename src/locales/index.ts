@@ -1,5 +1,5 @@
 import { i18nConfig } from "../../next-i18next.config.mjs";
-import en_ud from "./en-ud";
+import en_Qabs from "./en-Qabs";
 import en from "./en.json";
 import fr from "./fr.json";
 import ja from "./ja.json";
@@ -35,8 +35,8 @@ export const localeResources: LocaleResources = {
     display_name: "繁體中文",
   },
   // below are special locales
-  "en-ud": {
-    translation: en_ud,
+  "en-Qabs": {
+    translation: en_Qabs,
     display_name: "ɥsᴉꞁᵷuƎ (uʍoᗡ ǝpᴉsd∩)",
   },
 };
