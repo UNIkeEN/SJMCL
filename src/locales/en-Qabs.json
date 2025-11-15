@@ -1,0 +1,2552 @@
+{
+  "AboutSettingsPage": {
+    "about": {
+      "title": "ʇnoqⱯ",
+      "settings": {
+        "version": {
+          "title": "uoᴉsɹǝΛ",
+          "foundNew": "ǝꞁqɐꞁᴉɐʌⱯ uoᴉsɹǝΛ ʍǝN",
+          "checkUpdate": "sǝʇɐpd∩ ɹoɟ ʞɔǝɥƆ",
+          "checkToast": {
+            "loading": "sǝʇɐpdn ɹoɟ ᵷuᴉʞɔǝɥƆ",
+            "up2date": "ǝʇɐp oʇ dn ʎpɐǝɹꞁⱯ",
+            "error": "sǝʇɐpdn ɹoɟ ʞɔǝɥɔ oʇ pǝꞁᴉɐℲ"
+          }
+        },
+        "contributors": {
+          "title": "sɹoʇnqᴉɹʇuoƆ"
+        },
+        "reportIssue": {
+          "title": "ʇsǝnbǝᴚ ǝɹnʇɐǝℲ ɐ ʇᴉɯqnS ɹo ǝnssI uɐ ʇɹodǝᴚ"
+        },
+        "aboutSJMC": {
+          "title": "(ƆWſS) qnꞁƆ ʇɟɐɹɔǝuᴉW ∩⟘ſS ʇnoqⱯ"
+        }
+      }
+    },
+    "ack": {
+      "title": "ʇuǝɯǝᵷpǝꞁʍouʞɔⱯ",
+      "settings": {
+        "bmclapi": {
+          "title": "IԀⱯꞀƆWᗺ",
+          "description": "ɹoɹɹᴉɯ ǝɔɹnos pɐoꞁuʍop pǝǝds-ɥᵷᴉɥ ǝɥʇ ᵷuᴉpᴉʌoɹd ɹoɟ Ɛ6ᵷuɐqᵷuɐq@ oʇ sʞuɐɥ⟘"
+        },
+        "hmcl": {
+          "title": "ɹǝɥɔunɐꞀ ¡ʇɟɐɹɔǝuᴉW oꞁꞁǝH",
+          "description": "ʇɔǝɾoɹd sᴉɥʇ ɯoɹɟ pǝɔuǝɹǝɟǝɹ ǝɹɐ uoᴉʇɐʇuǝɯǝꞁdɯᴉ ǝpoɔ puɐ uᵷᴉsǝp ǝɯoS"
+        },
+        "littleskin": {
+          "title": "uᴉʞSǝꞁʇʇᴉꞀ",
+          "description": "uᵷᴉsǝp ssǝɔoɹd uᴉᵷoꞁ ǝɥʇ ɥʇᴉʍ dꞁǝɥ ɹᴉǝɥʇ ɹoɟ ƐᘔƖɥzbuʇ@ puɐ uᴉʞSǝꞁʇʇᴉꞀ oʇ sʞuɐɥ⟘"
+        },
+        "sinter": {
+          "title": "ɹǝʇuᴉS",
+          "description": "ǝsuǝɔᴉꞀ ꞀIS ǝɥʇ ɹǝpun 'sɯɹoɟʇɐꞁd xnuᴉꞀ puɐ sʍopuᴉM uo ʇuoɟ ǝɔɐɟɹǝʇuᴉ ǝɥʇ sɐ pǝs∩"
+        },
+        "skinview3d": {
+          "title": "pƐʍǝᴉʌuᴉʞs / ʎʇᴉunɯɯoɔ-sq",
+          "description": "ǝsuǝɔᴉꞀ ⟘IW ǝɥʇ ɹǝpun 'ʇɔǝɾoɹd ǝɔɹnos-uǝdo sᴉɥʇ uo pǝsɐq ʇꞁᴉnq sᴉ ʇuǝuodɯoɔ ʍǝᴉʌǝɹd uᴉʞs ɹnO"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "sǝɔᴉʇoN ꞁɐᵷǝꞀ",
+      "settings": {
+        "copyright": {
+          "title": "ʇɥᵷᴉɹʎdoƆ",
+          "description": "˙ɯɐǝ⟘ ꞀƆWſS ϛᘔ0ᘔ-ㄣᘔ0ᘔ © ʇɥᵷᴉɹʎdoƆ"
+        },
+        "userAgreement": {
+          "title": "ʇuǝɯǝǝɹᵷⱯ ɹǝs∩",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
+        },
+        "openSourceLicense": {
+          "title": "ǝsuǝɔᴉꞀ ǝɔɹnoS uǝdO",
+          "description": "˙sɯɹǝʇ ꞁɐuoᴉʇᴉppɐ ɥʇᴉʍ '0˙Ɛʌ ǝsuǝɔᴉꞀ ɔᴉꞁqnԀ ꞁɐɹǝuǝ⅁ ∩N⅁ ǝɥʇ ɹǝpun pǝsuǝɔᴉꞀ"
+        }
+      }
+    }
+  },
+  "AccountsPage": {
+    "button": {
+      "addPlayer": "ɹǝʎɐꞁԀ ppⱯ",
+      "add3rdPartyServer": "ɥʇnⱯ ʎʇɹɐd-pɹƐ ppⱯ",
+      "sourceHomepage": "ǝᵷɐdǝɯoH ʍǝᴉΛ",
+      "deleteServer": "ɹǝʌɹǝS ɥʇnⱯ ǝʇǝꞁǝᗡ"
+    },
+    "playerTypeList": {
+      "all": "ǝɔɹnoS ꞁꞁⱯ"
+    },
+    "viewTypeList": {
+      "grid": "ʍǝᴉΛ pᴉɹ⅁",
+      "list": "ʍǝᴉΛ ʇsᴉꞀ"
+    }
+  },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "ǝɔuɐʇsuI ʍǝN ꞁꞁɐʇsuI",
+        "description": "spoɯ puɐ sɹǝpɐoꞁ 'suoᴉsɹǝʌ ǝɯɐᵷ ꞁꞁɐʇsuᴉ puɐ ǝsooɥƆ"
+      },
+      "modpack": {
+        "title": "ʞɔɐdpoW ʇɹodɯI",
+        "description": "ʇǝuɹǝʇuᴉ ǝɥʇ ɹo sǝꞁᴉɟ ꞁɐɔoꞁ ɯoɹɟ (sʇɐɯɹoɟ ƆWᴉʇꞁnW ɹo ɥʇuᴉɹpoW 'ǝᵷɹoℲǝsɹnƆ) ʞɔɐdpoɯ ɐ ʇɹodɯI"
+      },
+      "manageDirs": {
+        "title": "sǝᴉɹoʇɔǝɹᴉᗡ ǝɯɐ⅁ ǝᵷɐuɐW",
+        "description": "sǝɔuɐʇsuᴉ pǝꞁꞁɐʇsuᴉ ppɐ oʇ sǝᴉɹoʇɔǝɹᴉp ǝᵷɐɹoʇs ǝɯɐᵷ ꞁɐɔoꞁ ǝᵷɐuɐW"
+      }
+    },
+    "modpackOperations": {
+      "fromdisk": "ʞsᴉᗡ ɯoɹɟ ʇɹodɯI",
+      "download": "ʞɔɐdpoW pɐoꞁuʍoᗡ"
+    },
+    "moreOptions": {
+      "title": "ǝɹoW",
+      "server": {
+        "title": "ɹǝʌɹǝS ǝɯɐ⅁ pɐoꞁuʍoᗡ",
+        "description": "suoᴉsɹǝʌ ʇuǝɹǝɟɟᴉp ɹoɟ sǝꞁᴉɟ ɹǝʌɹǝs ǝɯɐᵷ pɐoꞁuʍoᗡ"
+      }
+    }
+  },
+  "AddAuthServerModal": {
+    "header": {
+      "title": "ɹǝʌɹǝS uoᴉʇɐɔᴉʇuǝɥʇnⱯ ppⱯ"
+    },
+    "placeholder": {
+      "inputServerUrl": "Ꞁᴚ∩ ɹǝʌɹǝS"
+    },
+    "page1": {
+      "serverUrl": "Ꞁᴚ∩ ɹǝʌɹǝS",
+      "serverUrlRequired": "pǝɹᴉnbǝɹ sᴉ Ꞁᴚ∩ ɹǝʌɹǝS"
+    },
+    "page2": {
+      "name": "ǝɯɐN",
+      "serverUrl": "Ꞁᴚ∩ ɹǝʌɹǝS"
+    }
+  },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "ǝɔɹnoS ɐʇɐᗡ ppⱯ"
+    },
+    "label": {
+      "endpointUrl": "Ꞁᴚ∩ ʇuᴉodpuƎ"
+    },
+    "placeholder": {
+      "endpointUrl": "Ꞁᴚ∩ ʇuᴉodpuƎ"
+    }
+  },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "ɹǝʎɐꞁԀ ppⱯ"
+    },
+    "label": {
+      "playerType": "ǝdʎ⟘ ɹǝʎɐꞁԀ"
+    },
+    "offline": {
+      "playerName": {
+        "label": "ǝɯɐN ɹǝʎɐꞁԀ",
+        "placeholder": "ǝɯɐu ɹǝʎɐꞁԀ",
+        "errorMessage": "˙sɹǝʇɔɐɹɐɥɔ 9Ɩ uᴉɥʇᴉʍ 'sǝɹoɔsɹǝpun puɐ sɹǝqɯnu 'sɹǝʇʇǝꞁ uᴉɐʇuoɔ ʎꞁuo uɐƆ"
+      },
+      "advancedOptions": {
+        "title": "suoᴉʇdO pǝɔuɐʌpⱯ",
+        "uuid": {
+          "label": "ᗡI∩∩",
+          "placeholder": "(ꞀƆWſS ʎq pǝʇɐɹǝuǝ⅁)",
+          "errorMessage": "ᗡI∩∩ ɟo ɯɹoɟ pᴉꞁɐʌuI"
+        }
+      }
+    },
+    "3rdparty": {
+      "authServer": {
+        "label": "ǝɔɹnoS ɥʇnⱯ",
+        "selectSource": "ǝɔɹnoS ɥʇnⱯ ʇɔǝꞁǝS",
+        "noSource": "˙pǝppɐ ǝɔɹnos ɥʇnɐ oN",
+        "addSource": "ǝuo ppⱯ"
+      },
+      "email": {
+        "label": "ꞁᴉɐɯƎ",
+        "placeholder": "ꞁᴉɐɯƎ"
+      },
+      "emailOrPlayerName": {
+        "label": "ǝɯɐN ɹǝʎɐꞁԀ ɹo ꞁᴉɐɯƎ",
+        "placeholder": "ǝɯɐN ɹǝʎɐꞁԀ ɹo ꞁᴉɐɯƎ"
+      },
+      "password": {
+        "label": "pɹoʍssɐԀ",
+        "placeholder": "pɹoʍssɐԀ"
+      }
+    },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "ꞁɐsodoɹԀ ʇɔǝuuoƆ ꞁᴉsɐɹpᵷᵷʎ ǝɥʇ sʇɹoddns ǝɔɹnos ɥʇnɐ sᴉɥ⟘",
+          "microsoft": "ʍoꞁɟ ʇuɐɹᵷ uoᴉʇɐzᴉɹoɥʇnɐ ǝɔᴉʌǝp 0˙ᘔ ɥʇnⱯO ʇɟosoɹɔᴉW sʇɹoddnS"
+        },
+        "next": "(pǝᴉdoɔ ʎpɐǝɹꞁɐ) ǝʌoqɐ ǝpoɔ ǝɥʇ ʇnduᴉ puɐ uoʇʇnq ǝnuᴉʇuoƆ ǝɥʇ ʞɔᴉꞁɔ ǝsɐǝꞁԀ"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "uᴉᵷoꞀ ɥʇnⱯO ʇɹɐʇS",
+          "microsoft": "ɥʇnⱯO ʇɟosoɹɔᴉW ʇɹɐʇS"
+        },
+        "next": "ǝnuᴉʇuoƆ"
+      }
+    },
+    "button": {
+      "buyMinecraft": "ʇɟɐɹɔǝuᴉW ʎnᗺ",
+      "useOAuthLogin": "uᴉᵷoꞀ ɥʇnⱯO",
+      "usePasswordLogin": "uᴉᵷoꞀ pɹoʍssɐԀ & ʇunoɔɔⱯ"
+    }
+  },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "ʇsᴉxƎ sǝɔɹnosǝᴚ ʎɔuǝpuǝdǝᗡ"
+    },
+    "description": "˙ǝɔɹnosǝɹ ꞁɐuᴉᵷᴉɹo ǝɥʇ ᵷuᴉpɐoꞁuʍop ǝnuᴉʇuoɔ ɹo 'pǝꞁꞁɐʇsuᴉ ǝɹɐ sǝɔɹnosǝɹ pǝɹᴉnbǝɹ ꞁꞁɐ ʇɐɥʇ ɯɹᴉɟuoɔ ǝsɐǝꞁԀ",
+    "button": {
+      "continue": "ǝɔɹnosǝɹ ꞁɐuᴉᵷᴉɹo pɐoꞁuʍoᗡ",
+      "cancel": "ꞁǝɔuɐƆ"
+    },
+    "fallback": {
+      "title": "{{resourceId}} :ᗡI ǝɔɹnosǝᴚ",
+      "description": "˙ɹǝʇɐꞁ uᴉɐᵷɐ ʎɹʇ ɹo uoᴉʇɔǝuuoɔ ʞɹoʍʇǝu ɹnoʎ ʞɔǝɥɔ ǝsɐǝꞁd 'ǝʇoɯǝɹ ɯoɹɟ ǝɔɹnosǝɹ sᴉɥʇ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ"
+    },
+    "dependencyType": {
+      "required": "pǝɹᴉnbǝᴚ",
+      "optional": "ꞁɐuoᴉʇdO",
+      "incompatible": "ǝꞁqᴉʇɐdɯoɔuI",
+      "embedded": "pǝppǝqɯƎ",
+      "tool": "ꞁoo⟘",
+      "include": "ǝpnꞁɔuI"
+    }
+  },
+  "AllInstancesPage": {
+    "button": {
+      "addAndImport": "ʇɹodɯI & ppⱯ",
+      "globalSettings": "sᵷuᴉʇʇǝS ǝɯɐ⅁ ꞁɐqoꞁ⅁",
+      "launch": "ǝɯɐ⅁ ɥɔunɐꞀ"
+    },
+    "viewTypeList": {
+      "grid": "ʍǝᴉΛ pᴉɹ⅁",
+      "list": "ʍǝᴉΛ ʇsᴉꞀ"
+    },
+    "title": "sǝɔuɐʇsuI ꞁꞁⱯ"
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "ǝɯǝɥ⟘",
+      "settings": {
+        "primaryColor": {
+          "title": "ɹoꞁoƆ ʎɹɐɯᴉɹԀ ɹǝɥɔunɐꞀ"
+        },
+        "colorMode": {
+          "title": "ǝpoW ɹoꞁoƆ",
+          "type": {
+            "system": "ɯǝʇsʎS",
+            "light": "ʇɥᵷᴉꞀ",
+            "dark": "ʞɹɐᗡ"
+          }
+        },
+        "useLiquidGlassDesign": {
+          "title": "ʇɔǝɟɟƎ ssɐꞁ⅁ pᴉnbᴉꞀ",
+          "description": "˙ǝɔuɐɯɹoɟɹǝd ʇɔɐdɯᴉ ʎɐɯ ɥɔᴉɥʍ 'ʇɔǝɟɟǝ ,ssɐꞁ⅁ pᴉnbᴉꞀ, ǝɥʇ ǝsn ꞁꞁᴉʍ ǝɔɐɟɹǝʇuᴉ ǝɥʇ ɟo sʇɹɐd 'pǝꞁqɐuǝ uǝɥM"
+        },
+        "headNavStyle": {
+          "title": "ǝꞁʎʇS ɹɐᗺ uoᴉʇɐᵷᴉʌɐN",
+          "type": {
+            "standard": "pɹɐpuɐʇS",
+            "simplified": "pǝᴉɟᴉꞁdɯᴉS"
+          }
+        }
+      }
+    },
+    "font": {
+      "title": "ʇuoℲ",
+      "settings": {
+        "fontFamily": {
+          "title": "ʎꞁᴉɯɐℲ ʇuoℲ",
+          "default": "ʇꞁnɐɟǝᗡ"
+        },
+        "fontSize": {
+          "title": "ǝzᴉS ʇuoℲ",
+          "small": "T",
+          "large": "T"
+        }
+      }
+    },
+    "background": {
+      "title": "punoɹᵷʞɔɐᗺ",
+      "settings": {
+        "preset": {
+          "title": "sǝᵷɐɯI ʇǝsǝɹԀ"
+        },
+        "custom": {
+          "title": "sǝᵷɐɯI ɯoʇsnƆ",
+          "add": "ppⱯ"
+        },
+        "randomCustom": {
+          "title": "ǝᵷɐɯI ɯoʇsnƆ ɯopuɐᴚ"
+        },
+        "autoDarken": {
+          "title": "ǝpoW ʞɹɐᗡ uᴉ punoɹᵷʞɔɐᗺ ɯᴉᗡ"
+        }
+      },
+      "presetBgList": {
+        "Jokull": {
+          "name": "ǝᵷɐꞁꞁᴉΛ ꞁꞁnʞǫſ"
+        },
+        "SJTU-eastgate": {
+          "name": "ǝʇɐᵷʇsɐƎ ∩⟘ſS"
+        },
+        "GNLXC": {
+          "name": "ʎʇᴉƆ ʞɹoMN⅁"
+        }
+      }
+    },
+    "accessibility": {
+      "title": "ʎʇᴉꞁᴉqᴉssǝɔɔⱯ ʎɐꞁdsᴉᗡ",
+      "settings": {
+        "invertColors": {
+          "title": "sɹoꞁoƆ ʇɹǝʌuI"
+        },
+        "enhanceContrast": {
+          "title": "ʇsɐɹʇuoƆ ǝɔuɐɥuƎ"
+        }
+      }
+    }
+  },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "ɹǝpɐoꞀ poW ǝᵷuɐɥƆ",
+        "install": "ɹǝpɐoꞀ poW ꞁꞁɐʇsuI"
+      }
+    },
+    "notSelectedLoader": "pǝʇɔǝꞁǝs ɹǝpɐoꞁ ʍǝu oN",
+    "footer": {
+      "installFabricApi": "poW IԀⱯ ɔᴉɹqɐℲ ꞁꞁɐʇsuI"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "sǝʇɐpd∩ poW ʞɔǝɥƆ"
+    },
+    "button": {
+      "update": "ǝʇɐpd∩",
+      "cancel": "ꞁǝɔuɐƆ"
+    },
+    "label": {
+      "noUpdate": "ᵷuᴉʇɐpdn pǝǝu spoɯ oN",
+      "loading": "\u0000Ɩ\u0000/{{x}} ˙˙˙sǝʇɐpdn ɹoɟ ᵷuᴉʞɔǝɥƆ"
+    },
+    "updateList": {
+      "mod": "poW",
+      "currentVersion": "uoᴉsɹǝΛ ʇuǝɹɹnƆ",
+      "latestVersion": "uoᴉsɹǝΛ ʇsǝʇɐꞀ",
+      "source": "ǝɔɹnoS"
+    },
+    "error": {
+      "renameOldMod": "ǝꞁᴉɟ poɯ pꞁo ǝɯɐuǝɹ oʇ pǝꞁᴉɐℲ"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "ǝɥɔɐƆ pɐoꞁuʍoᗡ ɹɐǝꞁƆ",
+      "content": "˙ǝuopun ǝq ʇouuɐɔ uoᴉʇɔɐ sᴉɥ⟘ ¿ǝɥɔɐɔ pɐoꞁuʍop ǝɥʇ ɹɐǝꞁɔ oʇ ʇuɐʍ noʎ ǝɹns noʎ ǝɹⱯ"
+    }
+  },
+  "ComingSoonSign": {
+    "text": "¡uoos ᵷuᴉɯoɔ 'ʇǝʎ ǝꞁqɐꞁᴉɐʌɐ ʇou sᴉ ǝᵷɐd sᴉɥ⟘"
+  },
+  "ContributorsPage": {
+    "all": "ʇsᴉꞀ sɹoʇnqᴉɹʇuoƆ ꞁꞁⱯ",
+    "core": "sɹoʇnqᴉɹʇuoƆ uᴉɐW",
+    "contribution": {
+      "fullStackDev": "ʌǝᗡ ʞɔɐʇS ꞁꞁnℲ",
+      "frontendDev": "ʌǝᗡ puǝʇuoɹℲ",
+      "backendDev": "ʌǝᗡ puǝʞɔɐᗺ",
+      "externalAPI": "IԀⱯ ꞁɐuɹǝʇxƎ",
+      "doc": "uoᴉʇɐʇuǝɯnɔoᗡ",
+      "cicd": "ᗡƆ / IƆ",
+      "design": "uᵷᴉsǝᗡ ꞁɐnsᴉΛ",
+      "mascot": "ʇoɔsɐW ɯɐǝ⟘"
+    }
+  },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "ǝɔɹnosǝᴚ ǝʌoW ɹo ʎdoƆ"
+    },
+    "operation": {
+      "copy": "ʎdoƆ",
+      "move": "ǝʌoW"
+    },
+    "tag": {
+      "source": "ǝɔɹnoS"
+    },
+    "body": "oʇ",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "sʞɔɐԀ ǝɔɹnosǝᴚ",
+      "Saves": "pꞁɹoM",
+      "Schematics": "ɔᴉʇɐɯǝɥɔS",
+      "ShaderPacks": "sʞɔɐԀ ɹǝpɐɥS"
+    },
+    "error": {
+      "lackOfArguments": "ǝpoɔ ǝɥʇ ʞɔǝɥɔ ɹǝdoꞁǝʌǝp ǝɥʇ ǝʌɐɥ ǝsɐǝꞁԀ ˙sɹǝʇǝɯɐɹɐd ʎɹɐssǝɔǝu ᵷuᴉssᴉW"
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "ǝɔuɐʇsuI ʍǝN ǝʇɐǝɹƆ"
+    },
+    "stepper": {
+      "game": "ʇuǝᴉꞁƆ ǝɯɐ⅁",
+      "loader": "ɹǝpɐoꞀ poW",
+      "skipped": "pǝddᴉʞS",
+      "info": "sᵷuᴉʇʇǝS ɔᴉsɐᗺ"
+    },
+    "footer": {
+      "installFabricApi": "poW IԀⱯ ɔᴉɹqɐℲ ꞁꞁɐʇsuI"
+    }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "˙uᴉɐᵷɐ ʇnɔʇɹoɥs ɥɔunɐꞁ ɐ ppɐ oʇ ᵷuᴉʎɹʇ ǝɹoɟǝq ɹǝɥɔunɐꞁ ǝɥʇ ʇɹɐʇsǝɹ ɹo ʇsᴉꞁ ǝɔuɐʇsuᴉ ǝɥʇ ɥsǝɹɟǝɹ ǝsɐǝꞁԀ ˙pǝᵷuɐɥɔ uǝǝq ʎꞁʇuǝɔǝɹ sɐɥ ǝɔuɐʇsuᴉ sᴉɥʇ ɟo ǝɯɐu ǝɥ⟘"
+  },
+  "DeleteInstanceAlertDialog": {
+    "dialog": {
+      "title": "ǝɔuɐʇsuI ǝɯɐ⅁ ǝʇǝꞁǝᗡ",
+      "content": "(¡ǝɯᴉʇ ᵷuoꞁ Ɐ) ¡ɹǝʌǝɹoɟ ʇsoꞁ ǝq ꞁꞁᴉʍ ʇI ¿ \"{{instanceName}}\" ǝɔuɐʇsuᴉ ǝɯɐᵷ ǝɥʇ ǝʇǝꞁǝp ɯɹᴉɟuoƆ",
+      "warning": {
+        "withVerIso": "˙ʇsɹᴉɟ ʇᴉ ǝʇɐɹᵷᴉɯ ǝsɐǝꞁd 'ɐʇɐp sᴉɥʇ uᴉɐʇǝɹ oʇ ɥsᴉʍ noʎ ɟI ˙sǝꞁᴉɟ pǝʇɐᴉɔossɐ ɹǝɥʇo puɐ sǝʌɐs ǝʌoɯǝɹ osꞁɐ ꞁꞁᴉʍ ʇᴉ ᵷuᴉʇǝꞁǝp 'ǝɔuɐʇsuᴉ sᴉɥʇ ɹoɟ pǝꞁqɐuǝ sᴉ uoᴉʇɐꞁosᴉ uoᴉsɹǝʌ ǝɔuᴉs ʇɐɥʇ ǝʇou ǝsɐǝꞁԀ",
+        "woVerIso": "˙pǝʇǝꞁǝp ǝq osꞁɐ ꞁꞁᴉʍ sǝꞁᴉɟ ɹǝɥʇo puɐ sǝʌɐs pǝʇɐɹᵷᴉɯ-un ʎuɐ 'ǝɔuɐʇsuᴉ sᴉɥʇ ɹoɟ pǝꞁqɐuǝ ʎꞁsnoᴉʌǝɹd sɐʍ uoᴉʇɐꞁosᴉ uoᴉsɹǝʌ ɟᴉ ʇɐɥʇ ǝʇou ǝsɐǝꞁԀ"
+      }
+    }
+  },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "poW ǝʇǝꞁǝᗡ",
+      "content": "¿ \"\u0000Ɩ\u0000\" ǝɔuɐʇsuᴉ ǝɯɐᵷ ǝɥʇ uᴉ \"{{modName}}\" poɯ ǝɥʇ ǝʇǝꞁǝp ɯɹᴉɟuoƆ"
+    }
+  },
+  "DeletePlayerAlertDialog": {
+    "dialog": {
+      "title": "ɹǝʎɐꞁԀ ǝʇǝꞁǝᗡ",
+      "content": "¡ǝuopun ǝq ʇouuɐɔ sᴉɥ⟘ ¿ \"{{name}}\" ɹǝʎɐꞁd ǝɥʇ ǝʇǝꞁǝp ɯɹᴉɟuoƆ"
+    }
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "ɹǝʌɹǝS uoᴉʇɐɔᴉʇuǝɥʇnⱯ ǝʇǝꞁǝᗡ",
+      "content": "˙ʇsᴉꞁ ɹǝʌɹǝs ɹnoʎ ɯoɹɟ ʇᴉ ǝʌoɯǝɹ ꞁꞁᴉʍ sᴉɥ⟘ ¿ \"{{name}}\" ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ ǝɥʇ ǝʇǝꞁǝp ɯɹᴉɟuoƆ"
+    }
+  },
+  "DevToolbar": {
+    "tooltip": "ɹɐqꞁoo⟘ ʌǝᗡ"
+  },
+  "DiscoverPage": {
+    "title": "ɹǝʌoɔsᴉᗡ",
+    "noMore": "ǝɹoɯ oN",
+    "sources": "sǝɔɹnoS ǝᵷɐuɐW",
+    "NoSources": "pǝppɐ ǝɔɹnos oN"
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "ǝɔɹnoS ppⱯ",
+      "deleteSource": "ǝʇǝꞁǝᗡ"
+    },
+    "tag": {
+      "online": "ǝuᴉꞁuO"
+    }
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "ɐʌɐſ pɐoꞁuʍoᗡ"
+    },
+    "selector": {
+      "vendor": "ɹopuǝΛ",
+      "version": "uoᴉsɹǝΛ",
+      "type": "ǝdʎ⟘"
+    },
+    "warning": {
+      "mojang": "˙ʎɹoʇɔǝɹᴉp ɔᴉɟᴉɔǝds ɐ oʇuᴉ ꞀƆWſS ʎq pǝꞁꞁɐʇsuᴉ ǝq ꞁꞁᴉʍ ᵷuɐɾoW ɯoɹɟ ǝɯᴉʇunɹ ɐʌɐſ",
+      "oracle": "˙uᴉᵷoꞁ ǝɹᴉnbǝɹ ʎɐɯ ǝꞁɔɐɹO ɯoɹɟ ᵷuᴉpɐoꞁuʍoᗡ"
+    }
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "ʞɔɐdpoW pɐoꞁuʍoᗡ"
+    }
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "ǝɔɹnosǝᴚ pɐoꞁuʍoᗡ"
+    },
+    "resourceTypeList": {
+      "world": "spꞁɹoM",
+      "mod": "spoW",
+      "resourcepack": "sʞɔɐdǝɔɹnosǝᴚ",
+      "shader": "sʞɔɐdɹǝpɐɥS",
+      "datapack": "sʞɔɐdɐʇɐᗡ"
+    }
+  },
+  "DownloadSettingPage": {
+    "source": {
+      "title": "ǝɔɹnoS",
+      "settings": {
+        "strategy": {
+          "title": "ʎᵷǝʇɐɹʇS uoᴉʇɔǝꞁǝS ǝɔɹnoS pɐoꞁuʍoᗡ",
+          "auto": "ʇɔǝꞁǝS oʇnⱯ",
+          "official": "ǝɔɹnoS ꞁɐᴉɔᴉɟɟO ǝzᴉʇᴉɹoᴉɹԀ",
+          "mirror": "ǝɔɹnoS ɹoɹɹᴉW ǝzᴉʇᴉɹoᴉɹԀ"
+        }
+      }
+    },
+    "download": {
+      "title": "pɐoꞁuʍoᗡ",
+      "settings": {
+        "autoConcurrent": {
+          "title": "spɐǝɹɥ⟘ ʇuǝɹɹnɔuoƆ ɟo ɹǝqɯnN ǝɥʇ ʇɔǝꞁǝS oʇnⱯ"
+        },
+        "concurrentCount": {
+          "title": "ʇunoƆ pɐǝɹɥ⟘ ʇuǝɹɹnɔuoƆ"
+        },
+        "enableSpeedLimit": {
+          "title": "pǝǝdS pɐoꞁuʍoᗡ ʇᴉɯᴉꞀ"
+        },
+        "speedLimitValue": {
+          "title": "sᵷuᴉʇʇǝS ʇᴉɯᴉꞀ pǝǝdS"
+        }
+      }
+    },
+    "cache": {
+      "title": "ǝɥɔɐƆ",
+      "settings": {
+        "directory": {
+          "title": "ʎɹoʇɔǝɹᴉᗡ ǝɥɔɐƆ pɐoꞁuʍoᗡ",
+          "select": "ǝᵷuɐɥƆ"
+        },
+        "clear": {
+          "title": "ǝɥɔɐƆ pɐoꞁuʍoᗡ ɹɐǝꞁƆ",
+          "description": "˙sǝꞁᴉɟ ǝɔɹnosǝɹ pǝpɐoꞁuʍop ʇɔǝɟɟɐ ʇou ꞁꞁᴉʍ ɥɔᴉɥʍ 'ʎɹoʇɔǝɹᴉp ǝɥɔɐɔ ǝɥʇ uᴉ sǝꞁᴉɟ ꞁꞁɐ ɹɐǝꞁƆ",
+          "button": "ɹɐǝꞁƆ"
+        }
+      }
+    },
+    "proxy": {
+      "title": "ʎxoɹԀ",
+      "settings": {
+        "enabled": {
+          "title": "ʎxoɹԀ ǝꞁqɐuƎ"
+        },
+        "type": {
+          "title": "ǝdʎ⟘ ʎxoɹԀ"
+        },
+        "host": {
+          "title": "ʇsoH"
+        },
+        "port": {
+          "title": "ʇɹoԀ"
+        }
+      }
+    }
+  },
+  "DownloadSpecificResourceModal": {
+    "title": "\u0000Ɩ\u0000 - {{name}} - ǝɔɹnosǝᴚ pɐoꞁuʍoᗡ",
+    "label": {
+      "all": "ꞁꞁⱯ",
+      "recommendedVersion": "˙ɹǝΛ pǝpuǝɯɯoɔǝᴚ",
+      "currentModLoader": "ɹǝpɐoꞀ ʇuǝɹɹnƆ"
+    },
+    "releaseType": {
+      "alpha": "ɐɥdꞁⱯ",
+      "beta": "ɐʇǝᗺ",
+      "release": "ǝsɐǝꞁǝᴚ"
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "sʞsɐ⟘ pɐoꞁuʍoᗡ",
+    "button": {
+      "settings": "sᵷuᴉʇʇǝS pɐoꞁuʍoᗡ",
+      "pause": "ǝsnɐԀ",
+      "begin": "ʇɹɐʇS",
+      "retry": "ʎɹʇǝᴚ",
+      "deleteRecord": "pɹoɔǝᴚ sᴉɥʇ ǝʇǝꞁǝᗡ"
+    },
+    "label": {
+      "paused": "pǝsnɐԀ",
+      "completed": "pǝʇǝꞁdɯoƆ",
+      "error": "pǝꞁᴉɐℲ",
+      "cancelled": "pǝꞁꞁǝɔuɐƆ"
+    },
+    "task": {
+      "game-client": "{{param}} ʇuǝᴉꞁƆ ǝɯɐ⅁",
+      "game-server": "{{param}} ɹǝʌɹǝS ǝɯɐ⅁",
+      "change-mod-loader": "{{param}} ɹǝpɐoꞀ poW ǝᵷuɐɥƆ",
+      "mod": "poW",
+      "world": "pꞁɹoM",
+      "resourcepack": "ʞɔɐdǝɔɹnosǝᴚ",
+      "shader": "ʞɔɐdɹǝpɐɥS",
+      "modpack": "ʞɔɐdpoW",
+      "datapack": "ʞɔɐdɐʇɐᗡ",
+      "patch-files": "{{param}} sǝꞁᴉℲ ǝɯɐ⅁ ɥɔʇɐԀ",
+      "mod-update": "poW ǝʇɐpd∩",
+      "retry": "ʎɹʇǝᴚ",
+      "neoforge-libraries": "sǝᴉɹɐɹqᴉꞀ ǝᵷɹoℲoǝN",
+      "forge-libraries": "sǝᴉɹɐɹqᴉꞀ ǝᵷɹoℲ",
+      "launcher-update": "ɹǝɥɔunɐꞀ ǝʇɐpd∩",
+      "mojang-java": "ǝɯᴉʇunᴚ {{param}} ɐʌɐſ"
+    }
+  },
+  "Editable": {
+    "edit": "ʇᴉpƎ",
+    "save": "ǝʌɐS",
+    "cancel": "ꞁǝɔuɐƆ"
+  },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "ʎɹoʇɔǝɹᴉᗡ ǝɯɐ⅁ ppⱯ",
+        "edit": "ʎɹoʇɔǝɹᴉᗡ ǝɯɐ⅁ ʇᴉpƎ"
+      }
+    },
+    "label": {
+      "dirName": "ǝɯɐN",
+      "dirPath": "ʎɹoʇɔǝɹᴉᗡ ǝɯɐ⅁"
+    },
+    "placeholder": {
+      "dirName": "ǝɯɐN ʎɹoʇɔǝɹᴉᗡ",
+      "dirPath": "ʎɹoʇɔǝɹᴉp ǝɯɐᵷ ɐ ʇɔǝꞁǝS"
+    },
+    "dialog": {
+      "browse": {
+        "title": "ʎɹoʇɔǝɹᴉᗡ ʇɔǝꞁǝS"
+      },
+      "addSubDir": {
+        "title": "ʎɹoʇɔǝɹᴉpqnS ppⱯ",
+        "body": "¿ʎɹoʇɔǝɹᴉpqns ǝɥʇ ppɐ oʇ ʇuɐʍ noʎ oᗡ ˙punoɟ uǝǝq sɐɥ ʎɹoʇɔǝɹᴉpqns ʇɟɐɹɔǝuᴉW ᵷuᴉuᴉɐʇuoɔ-ǝɔuɐʇsuᴉ uⱯ",
+        "addOriginDir": "ʎɹoʇɔǝɹᴉᗡ uᴉᵷᴉɹO ppⱯ",
+        "addSubDir": "ʎɹoʇɔǝɹᴉpqnS ppⱯ"
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "ʎɹoʇɔǝɹᴉp ǝɯɐᵷ ppɐ oʇ pǝꞁᴉɐℲ"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "tooLong": "sɹǝʇɔɐɹɐɥɔ 0ᘔ uɐɥʇ ɹǝᵷuoꞁ ǝq ʇouuɐɔ ǝɯɐu ʎɹoʇɔǝɹᴉᗡ",
+        "empty": "ʎʇdɯǝ ǝq ʇouuɐɔ ǝɯɐu ʎɹoʇɔǝɹᴉᗡ",
+        "exist": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ǝɯɐu ʎɹoʇɔǝɹᴉᗡ",
+        "hasInvalidChar": "sɹǝʇɔɐɹɐɥɔ pᴉꞁɐʌuᴉ sɐɥ ǝɯɐu ʎɹoʇɔǝɹᴉᗡ"
+      },
+      "dirPath": {
+        "exist": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ʎɹoʇɔǝɹᴉᗡ",
+        "invalid": "pᴉꞁɐʌuᴉ sᴉ ɥʇɐd ʎɹoʇɔǝɹᴉᗡ"
+      }
+    }
+  },
+  "Empty": {
+    "noData": "ɐʇɐᗡ oN"
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "ʎɐɹ⅁",
+      "red": "pǝᴚ",
+      "orange": "ǝᵷuɐɹO",
+      "yellow": "ʍoꞁꞁǝʎ",
+      "green": "uǝǝɹ⅁",
+      "teal": "ꞁɐǝ⟘",
+      "blue": "ǝnꞁᗺ",
+      "cyan": "uɐʎƆ",
+      "purple": "ǝꞁdɹnԀ",
+      "pink": "ʞuᴉԀ"
+    },
+    "ctrlKey": {
+      "linux": "ꞁɹʇƆ",
+      "macos": "(⌃)ꞁoɹʇuoƆ",
+      "windows": "ꞁɹʇƆ"
+    },
+    "metaKey": {
+      "linux": "ɐʇǝW",
+      "macos": "(⌘)puɐɯɯoƆ",
+      "windows": "uᴉM"
+    },
+    "playerTypes": {
+      "microsoft": "ʇɟosoɹɔᴉW",
+      "offline": "ǝpoW ǝuᴉꞁɟɟO",
+      "3rdparty": "uoᴉʇɐɔᴉʇuǝɥʇnⱯ ʎʇɹɐd-pɹƐ",
+      "3rdpartyShort": "ɥʇnⱯ ʎʇɹɐd-pɹƐ"
+    },
+    "systemFileManager": {
+      "linux": "ɹǝᵷɐuɐW ǝꞁᴉℲ",
+      "macos": "ɹǝpuᴉℲ",
+      "windows": "ɹǝɹoꞁdxƎ ǝꞁᴉℲ"
+    }
+  },
+  "GameAdvancedSettingsPage": {
+    "title": "sᵷuᴉʇʇǝS pǝɔuɐʌpⱯ",
+    "topWarning": "˙ᵷuᴉop ǝɹ,noʎ ʇɐɥʍ ʍouʞ noʎ ssǝꞁun ʎɟᴉpoɯ ʇou oᗡ ˙ǝɯɐᵷ ǝɥʇ ʞɐǝɹq ʎɐɯ ɯǝɥʇ ᵷuᴉᵷuɐɥƆ ˙sɹǝsn ʇɹǝdxǝ ɹoɟ ǝɹɐ sᵷuᴉʇʇǝs pǝɔuɐʌpⱯ",
+    "customCommands": {
+      "title": "spuɐɯɯoƆ ɯoʇsnƆ",
+      "settings": {
+        "minecraftArgument": {
+          "title": "ʇuǝɯnᵷɹⱯ ɹǝɥɔunɐꞀ",
+          "placeholder": "ʇꞁnɐɟǝᗡ"
+        },
+        "precallCommand": {
+          "title": "puɐɯɯoƆ ɥɔunɐꞁ-ǝɹԀ",
+          "placeholder": "sǝɥɔunɐꞁ ǝɯɐᵷ ǝɥʇ ǝɹoɟǝq ǝʇnɔǝxǝ oʇ spuɐɯɯoƆ"
+        },
+        "wrapperLauncher": {
+          "title": "puɐɯɯoƆ ɹǝddɐɹM",
+          "placeholder": "xnuᴉꞀ uo \"unɹᴉʇdo\" ǝʞᴉꞁ ɯɐɹᵷoɹd ɹǝddɐɹʍ ɐɹʇxǝ uɐ ᵷuᴉsn ᵷuᴉɥɔunɐꞁ sʍoꞁꞁⱯ"
+        },
+        "postExitCommand": {
+          "title": "puɐɯɯoƆ ʇᴉxǝ-ʇsoԀ",
+          "placeholder": "sʇᴉxǝ ǝɯɐᵷ ɹǝʇɟɐ ǝʇnɔǝxǝ oʇ spuɐɯɯoƆ"
+        }
+      }
+    },
+    "jvm": {
+      "title": "suoᴉʇdO WΛ ɐʌɐſ",
+      "settings": {
+        "args": {
+          "title": "ʇuǝɯnᵷɹⱯ WΛ WΛſ"
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "ǝɔɐdS uǝ⅁ɯɹǝԀ",
+          "placeholder": "ᗺW uᴉ"
+        },
+        "environmentVariable": {
+          "title": "sǝꞁqɐᴉɹɐΛ ʇuǝɯuoɹᴉʌuƎ"
+        }
+      }
+    },
+    "workaround": {
+      "title": "punoɹɐʞɹoM",
+      "settings": {
+        "noJvmArgs": "sʇuǝɯnᵷɹɐ WΛ ɐʌɐſ ʇꞁnɐɟǝp ppɐ ʇou oᗡ",
+        "gameFileValidatePolicy": {
+          "title": "ʎɔᴉꞁoԀ uoᴉʇɐpᴉꞁɐΛ ǝꞁᴉℲ ǝɯɐ⅁",
+          "disable": "ʞɔǝɥƆ ǝꞁqɐsᴉᗡ",
+          "normal": "ʞɔǝɥƆ ꞁɐɯɹoN",
+          "full": "ʞɔǝɥƆ ꞁꞁnℲ"
+        },
+        "dontCheckJvmValidity": {
+          "title": "ʎʇᴉꞁᴉqᴉʇɐdɯoɔ WΛ ɐʌɐſ ʞɔǝɥɔ ʇou oᗡ"
+        },
+        "dontPatchNatives": {
+          "title": "sǝᴉɹɐɹqᴉꞁ ǝʌᴉʇɐu ǝɔɐꞁdǝɹ ʎꞁꞁɐɔᴉʇɐɯoʇnɐ oʇ ʇdɯǝʇʇɐ ʇou oᗡ"
+        },
+        "useNativeGlfw": {
+          "title": "(ʎꞁuO xnuᴉꞀ)MℲꞀ⅁ ɯǝʇsʎS ǝs∩"
+        },
+        "useNativeOpenal": {
+          "title": "(ʎꞁuO xnuᴉꞀ)ꞀⱯuǝdO ɯǝʇsʎS ǝs∩"
+        }
+      }
+    }
+  },
+  "GameErrorPage": {
+    "title": "˙ǝɔuɐʇsᴉssɐ ʞǝǝs ɹo sᵷoꞁ ǝɥʇ ʞɔǝɥƆ ˙ʎꞁpǝʇɔǝdxǝun pǝʇᴉxǝ ǝɯɐ⅁",
+    "basicInfo": {
+      "arch": "ɥɔɹⱯ",
+      "launcherVersion": "uoᴉsɹǝΛ ɹǝɥɔunɐꞀ",
+      "os": "OS"
+    },
+    "gameInfo": {
+      "gameVersion": "uoᴉsɹǝΛ ʇɟɐɹɔǝuᴉW"
+    },
+    "javaInfo": {
+      "javaVersion": "uoᴉsɹǝΛ ɐʌɐſ"
+    },
+    "crashDetails": {
+      "title": "sꞁᴉɐʇǝᗡ ɥsɐɹƆ",
+      "OPENJ9": "˙WΛſ ʇodSʇoH ǝsn ǝsɐǝꞁԀ ˙pǝʇɹoddns ʇou sᴉ WΛſ 6ſuǝdO",
+      "NEED_JDK11": "˙ɥɔunɐꞁ oʇ ƖƖ ʞᗡſ ʇɔǝꞁǝs ǝsɐǝꞁԀ ˙pǝɹᴉnbǝɹ ǝɹɐ sǝɹnʇɐǝɟ ƖƖ ʞᗡſ",
+      "TOO_OLD_JAVA": "˙uoᴉsɹǝʌ ɐʌɐſ ʇsǝʇɐꞁ ǝɥʇ ǝsn ǝsɐǝꞁԀ ˙pꞁo ooʇ sᴉ uoᴉsɹǝʌ ɐʌɐſ",
+      "JVM_32BIT": "˙ɐʌɐſ ʇᴉq-ㄣ9 ɐ ǝsn ǝsɐǝꞁd 'ʇᴉq-ㄣ9 sᴉ ɯǝʇsʎs ɹnoʎ ɟI ˙WΛſ ʇᴉq-ᘔƐ ɐ ɟo ʇᴉɯᴉꞁ ǝɥʇ spǝǝɔxǝ uoᴉʇɐɔoꞁꞁɐ ʎɹoɯǝW",
+      "GL_OPERATION_FAILURE": "˙uᴉɐᵷɐ ᵷuᴉɥɔunɐꞁ puɐ ɯǝɥʇ ᵷuᴉꞁqɐsᴉp ʎɹ⟘ ˙ɯǝꞁqoɹd ɐ pǝsnɐɔ ʞɔɐd ǝɹnʇxǝʇ ɹo 'ʞɔɐd ǝɔɹnosǝɹ 'ʞɔɐd ɹǝpɐɥs 'poɯ Ɐ",
+      "OPENGL_NOT_SUPPORTED": "˙ɹǝɹǝpuǝɹ ɹǝɥʇouɐ ʎɹʇ ɹo ɹǝʌᴉɹp sɔᴉɥdɐɹᵷ ɹnoʎ ʞɔǝɥɔ ǝsɐǝꞁԀ ˙Ꞁ⅁uǝdO ʇɹoddns ʇou sǝop ɹǝʌᴉɹp sɔᴉɥdɐɹᵷ ɹnoʎ",
+      "GRAPHICS_DRIVER": "˙ɹǝʌᴉɹp sɔᴉɥdɐɹᵷ ɹnoʎ ǝʇɐpdn ǝsɐǝꞁԀ ˙ɥsɐɹɔ ǝɥʇ pǝsnɐɔ ǝnssᴉ ɹǝʌᴉɹp sɔᴉɥdɐɹᵷ Ɐ",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "˙ɯɹoɟʇɐꞁd uoɔᴉꞁᴉS ǝꞁddⱯ uo ʍopuᴉʍ Ꞁ⅁uǝdO ǝɥʇ ǝzᴉꞁɐᴉʇᴉuᴉ oʇ pǝꞁᴉɐℲ",
+      "OUT_OF_MEMORY": "˙sɯɐɹᵷoɹd ɹǝɥʇo ᵷuᴉsoꞁɔ ɹo uoᴉʇɐɔoꞁꞁɐ ʎɹoɯǝɯ s,ǝɯɐᵷ ǝɥʇ ᵷuᴉɹǝʍoꞁ ʎɹ⟘ ˙ʎɹoɯǝɯ ʇuǝᴉɔᴉɟɟnsuI",
+      "MEMORY_EXCEEDED": "˙sɯɐɹᵷoɹd ɹǝɥʇo ᵷuᴉsoꞁɔ ɹo uoᴉʇɐɔoꞁꞁɐ ʎɹoɯǝɯ s,ǝɯɐᵷ ǝɥʇ ᵷuᴉɹǝʍoꞁ ʎɹ⟘ ˙ʇᴉɯᴉꞁ ǝɥʇ pǝpǝǝɔxǝ uoᴉʇɐɔoꞁꞁɐ ʎɹoɯǝW",
+      "RESOLUTION_TOO_HIGH": "˙ʞɔɐd ǝɹnʇxǝʇ/ǝɔɹnosǝɹ uoᴉʇnꞁosǝɹ ɹǝʍoꞁ ɐ ᵷuᴉsn ʎɹ⟘ ˙ɥᵷᴉɥ ooʇ sᴉ uoᴉʇnꞁosǝᴚ",
+      "JDK_9": "˙ɥɔunɐꞁ oʇ 6 ʞᗡſ ʇɔǝꞁǝs ǝsɐǝꞁԀ ˙pǝɹᴉnbǝɹ ǝɹɐ sǝɹnʇɐǝɟ 6 ʞᗡſ",
+      "MAC_JDK_8U261": "˙ɹǝᴉꞁɹɐǝ ɹo Ɩϛᘔn8 ɐʌɐſ ǝsn ɹo ǝuᴉℲᴉʇdO/ǝᵷɹoℲ ᵷuᴉʇɐpdn ʎɹ⟘ ˙ɥsɐɹɔ ǝɥʇ pǝsnɐɔ ɐʌɐſ puɐ ǝuᴉℲᴉʇdO/ǝᵷɹoℲ uǝǝʍʇǝq ʇɔᴉꞁɟuoɔ Ɐ",
+      "FILE_CHANGED": "˙ʎʇᴉɹᵷǝʇuᴉ ǝꞁᴉɟ ʞɔǝɥɔ ǝsɐǝꞁԀ ˙pǝꞁᴉɐɟ uoᴉʇɐɔᴉɟᴉɹǝʌ ǝꞁᴉℲ",
+      "NO_SUCH_METHOD_ERROR": "˙dꞁǝɥ ʞǝǝs ɹo spoɯ puɐ ǝɯɐᵷ ǝɥʇ ᵷuᴉꞁꞁɐʇsuᴉǝɹ ʎɹ⟘ ˙ǝꞁqᴉʇɐdɯoɔuᴉ ɹo 'ǝʇǝꞁdɯoɔuᴉ 'ᵷuᴉssᴉɯ ǝq ʎɐɯ poɯ Ɐ ˙pǝʇɔǝʇǝp ǝpoɔ ǝʇǝꞁdɯoɔuI",
+      "NO_CLASS_DEF_FOUND_ERROR": "˙dꞁǝɥ ʞǝǝs ɹo spoɯ puɐ ǝɯɐᵷ ǝɥʇ ᵷuᴉꞁꞁɐʇsuᴉǝɹ ʎɹ⟘ ˙ǝꞁqᴉʇɐdɯoɔuᴉ ɹo 'ǝʇǝꞁdɯoɔuᴉ 'ᵷuᴉssᴉɯ ǝq ʎɐɯ poɯ Ɐ ˙pǝʇɔǝʇǝp ǝpoɔ ǝʇǝꞁdɯoɔuI",
+      "ILLEGAL_ACCESS_ERROR": "˙poɯ ᵷuᴉpuodsǝɹɹoɔ ǝɥʇ ᵷuᴉʌoɯǝɹ ɹo ᵷuᴉʇɐpdn ʎɹʇ '{{param1}} ʍouʞ noʎ ɟI ˙ǝnssᴉ ssǝɔɔɐ uɐ pǝsnɐɔ poɯ Ɐ",
+      "DUPLICATED_MOD": "˙uᴉɐᵷɐ ʎɹʇ puɐ sǝʇɐɔᴉꞁdnp ǝʌoɯǝɹ ǝsɐǝꞁԀ ˙sǝɯᴉʇ ǝꞁdᴉʇꞁnɯ pǝꞁꞁɐʇsuᴉ sᴉ {{param1}} poɯ ǝɥ⟘",
+      "MOD_RESOLUTION": "{{param1}} :uoᴉʇɐɯɹoɟuᴉ ᵷuᴉʍoꞁꞁoɟ ǝɥʇ pǝpᴉʌoɹd ɔᴉɹqɐℲ ˙pǝʇɔǝʇǝp sǝnssᴉ ʎɔuǝpuǝdǝp poW",
+      "FORGEMOD_RESOLUTION": "{{param1}} :uoᴉʇɐɯɹoɟuᴉ ᵷuᴉʍoꞁꞁoɟ ǝɥʇ pǝpᴉʌoɹd ǝᵷɹoℲoǝN/ǝᵷɹoℲ ˙pǝʇɔǝʇǝp sǝnssᴉ ʎɔuǝpuǝdǝp poW",
+      "FORGE_FOUND_DUPLICATE_MODS": "{{param1}} :uoᴉʇɐɯɹoɟuᴉ ᵷuᴉʍoꞁꞁoɟ ǝɥʇ pǝpᴉʌoɹd ǝᵷɹoℲoǝN/ǝᵷɹoℲ ˙pǝʇɔǝʇǝp spoɯ ǝʇɐɔᴉꞁdnᗡ",
+      "MOD_RESOLUTION_CONFLICT": "˙\u0000Ɩ\u0000 puɐ {{param1}} poɯ uǝǝʍʇǝq sʇsᴉxǝ ʇɔᴉꞁɟuoɔ Ɐ",
+      "MOD_RESOLUTION_MISSING": "˙\u0000Ɩ\u0000 ʎɔuǝpuǝdǝp pǝɹᴉnbǝɹ ǝɥʇ ᵷuᴉssᴉɯ sᴉ {{param1}} poW",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "˙unɹ oʇ \u0000Ɩ\u0000 ʇɟɐɹɔǝuᴉW sǝɹᴉnbǝɹ {{param1}} poW",
+      "MOD_RESOLUTION_COLLECTION": "˙\u0000Ɩ\u0000 ʎɔuǝpuǝdǝp pǝɹᴉnbǝɹ ǝɥʇ ᵷuᴉssᴉɯ sᴉ {{param1}} poW",
+      "FILE_ALREADY_EXISTS": "˙ʇɹɐʇsǝɹ uǝɥʇ 'ʇᴉ ᵷuᴉʇǝꞁǝp puɐ dn ʇᴉ ᵷuᴉʞɔɐq ʎɹʇ 'pǝʇǝꞁǝp ǝq uɐɔ ǝꞁᴉɟ sᴉɥʇ ʞuᴉɥʇ noʎ ɟI ˙sʇsᴉxǝ ʎpɐǝɹꞁɐ {{param1}}",
+      "LOADING_CRASHED_FORGE": "˙poɯ sᴉɥʇ ᵷuᴉʇɐpdn ɹo ᵷuᴉʇǝꞁǝp ʎɹ⟘ ˙ɹoɹɹǝ uɐ pǝsnɐɔ (\u0000Ɩ\u0000) {{param1}} poW",
+      "BOOTSTRAP_FAILED": "˙poɯ sᴉɥʇ ᵷuᴉʇɐpdn ɹo ᵷuᴉʇǝꞁǝp ʎɹ⟘ ˙ǝnssᴉ dnʇɹɐʇs ɐ pǝsnɐɔ {{param1}} poW",
+      "LOADING_CRASHED_FABRIC": "˙poɯ sᴉɥʇ ᵷuᴉʇɐpdn ɹo ᵷuᴉʇǝꞁǝp ʎɹ⟘ ˙ɹoɹɹǝ uɐ pǝsnɐɔ {{param1}} poW",
+      "FABRIC_VERSION_0_12": "˙ㄥ˙ƖƖ˙0 oʇ ɹǝpɐoꞀ ɔᴉɹqɐℲ ǝpɐɹᵷuʍoᗡ ˙spoɯ pǝꞁꞁɐʇsuᴉ ǝɥʇ ɥʇᴉʍ ǝꞁqᴉʇɐdɯoɔ ǝq ʇou ʎɐɯ ǝʌoqɐ puɐ ᘔƖ˙0 ɹǝpɐoꞀ ɔᴉɹqɐℲ",
+      "MODLAUNCHER_8": "˙0ᘔƐ˙0˙8˙Ɩ ʍoꞁǝq ɐʌɐſ ǝsn ɹo 'ǝʌoqɐ ɹo 9ᘔ˙ᘔ˙9Ɛ oʇ ǝᵷɹoℲ ǝʇɐpd∩ ˙uoᴉsɹǝʌ ɐʌɐſ puɐ uoᴉsɹǝʌ ǝᵷɹoℲ ɹnoʎ uǝǝʍʇǝq sʇsᴉxǝ ʇɔᴉꞁɟuoɔ Ɐ",
+      "DEBUG_CRASH": "˙pǝɹǝᵷᵷᴉɹʇ sɐʍ ɥsɐɹɔ ꞁɐnuɐɯ Ɐ",
+      "CONFIG": "˙\u0000Ɩ\u0000 poɯ ɹoɟ {{param2}} ǝꞁᴉɟ uoᴉʇɐɹnᵷᴉɟuoɔ ǝɥʇ ǝsɹɐd oʇ pǝꞁᴉɐℲ",
+      "FABRIC_WARNINGS": "{{param1}} :sǝᵷɐssǝɯ ᵷuᴉuɹɐʍ ǝɯos pǝpᴉʌoɹd ɔᴉɹqɐℲ",
+      "ENTITY": "˙poɯ ᵷuᴉpuodsǝɹɹoɔ ǝɥʇ ǝʌoɯǝɹ ɹo ʇᴉpƎƆW ᵷuᴉsn ʎʇᴉʇuǝ ǝɥʇ ᵷuᴉʇǝꞁǝp ʎɹ⟘ ˙ʎꞁɹǝdoɹd ᵷuᴉʞɹoʍ ʇou sᴉ (\u0000Ɩ\u0000 ʇɐ '{{param1}} ǝdʎʇ) ʎʇᴉʇuǝ uⱯ",
+      "BLOCK": "˙poɯ ᵷuᴉpuodsǝɹɹoɔ ǝɥʇ ǝʌoɯǝɹ ɹo ʇᴉpƎƆW ᵷuᴉsn ʞɔoꞁq ǝɥʇ ᵷuᴉʇǝꞁǝp ʎɹ⟘ ˙ʎꞁɹǝdoɹd ᵷuᴉʞɹoʍ ʇou sᴉ (\u0000Ɩ\u0000 ʇɐ '{{param1}} ǝdʎʇ) ʞɔoꞁq Ɐ",
+      "UNSATISFIED_LINK_ERROR": "{{param1}} :sǝᴉɹɐɹqᴉꞁ ǝʌᴉʇɐu ᵷuᴉssᴉW",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "˙ǝuᴉℲᴉʇdO ǝsn ʇou op ɹo ǝuᴉℲᴉʇdO ʇsǝʇɐꞁ ǝɥʇ ǝs∩ ˙ǝᵷɹoℲ ɥʇᴉʍ ǝꞁqᴉʇɐdɯoɔ ʇou sᴉ ǝuᴉℲᴉʇdO",
+      "MOD_FILES_ARE_DECOMPRESSED": "˙ɹǝpꞁoɟ spoɯ ǝɥʇ oʇuᴉ ʎꞁʇɔǝɹᴉp ǝꞁᴉɟ poɯ ǝɹᴉʇuǝ ǝɥʇ ǝɔɐꞁԀ ˙pǝssǝɹdɯoɔǝp uǝǝq ǝʌɐɥ sǝꞁᴉɟ poW",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "˙suoᴉsɹǝʌ ɔᴉɟᴉɔǝds uᴉ sǝnssᴉ ᵷuᴉpɐoꞁ pꞁɹoʍ ǝsnɐɔ ʎɐɯ ǝuᴉℲᴉʇdO",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "˙spoɯ ǝᵷɹɐꞁ ǝɯos ǝʌoɯǝɹ ɹo 'spoɯ ɹɐꞁᴉɯᴉs ɹo ᗡIƎſ ᵷuᴉꞁꞁɐʇsuᴉ ʎɹ⟘ ˙ʇᴉɯᴉꞁ ᗡI s,ǝɯɐᵷ ǝɥʇ ᵷuᴉpǝǝɔxǝ 'pǝꞁꞁɐʇsuᴉ spoɯ ʎuɐɯ oo⟘",
+      "MODMIXIN_FAILURE": "˙spoɯ ᵷuᴉɔɐꞁdǝɹ ʎɹʇ ɹo ʎʇᴉꞁᴉqᴉʇɐdɯoɔ poɯ ʞɔǝɥƆ ˙pǝʇɔǝʇǝp ǝɹnꞁᴉɐɟ uoᴉʇɔǝɾuᴉ poW",
+      "MIXIN_APPLY_MOD_FAILED": "˙poɯ sᴉɥʇ ᵷuᴉʇɐpdn ɹo ᵷuᴉʇǝꞁǝp ʎɹ⟘ ˙{{param1}} poɯ oʇ ʎꞁddɐ oʇ pǝꞁᴉɐɟ uᴉxᴉW",
+      "FORGE_ERROR": "{{param1}} :ǝᵷɐssǝɯ ɹoɹɹǝ ᵷuᴉʍoꞁꞁoɟ ǝɥʇ pǝpᴉʌoɹd ǝᵷɹoℲoǝN/ǝᵷɹoℲ",
+      "MOD_RESOLUTION0": "˙poɯ ɔᴉʇɐɯǝꞁqoɹd ǝɥʇ puᴉɟ oʇ sᵷoꞁ ǝɥʇ ʞɔǝɥƆ ˙spoɯ ǝɯos ɥʇᴉʍ pǝʇɔǝʇǝp sǝnssI",
+      "FORGE_REPEAT_INSTALLATION": "˙ʎꞁꞁɐnuɐɯ ʇᴉ ꞁꞁɐʇsuᴉǝɹ puɐ ǝɔuɐʇsuᴉ ǝɥʇ ǝʇǝꞁǝp ǝsɐǝꞁԀ ˙pǝʇɔǝʇǝp ǝᵷɹoℲoǝN / ǝᵷɹoℲ ɟo uoᴉʇɐꞁꞁɐʇsuᴉ pǝʇɐǝdǝᴚ",
+      "OPTIFINE_REPEAT_INSTALLATION": "˙ʎꞁꞁɐnuɐɯ ʇᴉ ꞁꞁɐʇsuᴉǝɹ puɐ ǝɔuɐʇsuᴉ ǝɥʇ ǝʇǝꞁǝp ǝsɐǝꞁԀ ˙pǝʇɔǝʇǝp ǝuᴉℲᴉʇdO ɟo uoᴉʇɐꞁꞁɐʇsuᴉ pǝʇɐǝdǝᴚ",
+      "JAVA_VERSION_IS_TOO_HIGH": "˙ɹǝʍoꞁ ɹo 8 ɐʌɐſ ǝsn ǝsɐǝꞁԀ ˙ɥᵷᴉɥ ooʇ sᴉ uoᴉsɹǝʌ ɐʌɐſ",
+      "INSTALL_MIXINBOOTSTRAP": "˙uᴉɐᵷɐ ʎɹʇ puɐ dɐɹʇsʇooᗺuᴉxᴉW ꞁꞁɐʇsuᴉ ǝsɐǝꞁԀ ˙pǝꞁꞁɐʇsuᴉ ʇou sᴉ dɐɹʇsʇooᗺuᴉxᴉW",
+      "MOD_NAME": "˙ɹǝpꞁoɟ spoɯ ǝɥʇ uᴉ sǝꞁᴉɟ poɯ ʇuɐᴉꞁdɯoɔ-uou ꞁꞁɐ ǝɯɐuǝɹ ǝsɐǝꞁԀ ˙(˙) sʇop puɐ '(‾) sǝɹoɔsɹǝpun '(-) suǝɥdʎɥ '(6-0) sɹǝqɯnu '(z-ɐ 'Z-Ɐ) sɹǝʇʇǝꞁ ɥʇpᴉʍ-ɟꞁɐɥ ǝsn ʎꞁuo pꞁnoɥs sǝɯɐu ǝꞁᴉɟ poW",
+      "INCOMPLETE_FORGE_INSTALLATION": "˙ǝᵷɹoℲ ᵷuᴉꞁꞁɐʇsuᴉǝɹ ʎɹʇ ǝsɐǝꞁԀ ˙ǝʇǝꞁdɯoɔuᴉ sᴉ uoᴉʇɐꞁꞁɐʇsuᴉ ǝᵷɹoℲ",
+      "NIGHT_CONFIG_FIXES": "˙dꞁǝɥ ʎɐɯ poɯ sǝxᴉℲ ᵷᴉɟuoƆ ʇɥᵷᴉN ǝɥʇ ᵷuᴉꞁꞁɐʇsuI ˙ʎɹɐɹqᴉꞁ ᵷᴉɟuoƆ ʇɥᵷᴉN ǝɥʇ ɥʇᴉʍ pǝʇɔǝʇǝp sǝnssI",
+      "SHADERS_MOD": "˙poɯ sɹǝpɐɥS ǝɥʇ ǝʌoɯǝɹ ǝsɐǝꞁԀ ˙pǝꞁꞁɐʇsuᴉ ǝɹɐ poɯ sɹǝpɐɥS ǝɥʇ puɐ ǝuᴉℲᴉʇdO ɥʇoᗺ",
+      "RTSS_FOREST_SODIUM": "˙ɯnᴉpoS ɥʇᴉʍ ǝꞁqᴉʇɐdɯoɔ ʇou sᴉ SS⟘ᴚ",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "˙ǝɹnʇɔǝʇᴉɥɔɹɐ ɯǝʇsʎs ɹnoʎ ɥʇᴉʍ ǝꞁqᴉʇɐdɯoɔuᴉ ǝɹɐ ǝɯɐᵷ ǝɥʇ ʎq pǝsn sǝᴉɹɐɹqᴉꞁ ǝʌᴉʇɐu ǝɯoS",
+      "MAC_DS_STORE": "˙uᴉɐᵷɐ ʎɹʇ puɐ ɥʇɐd ǝɯɐᵷ ɹnoʎ uᴉ ǝꞁᴉɟ ǝɹoʇS‾Sᗡ˙ ǝɥʇ ǝʇǝꞁǝp ǝsɐǝꞁԀ ˙ɔɐW uo ǝꞁᴉɟ ǝɹoʇS‾Sᗡ˙ ɐ oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "LEVEL_DAT_CORRUPTED": "˙dnʞɔɐq ɯoɹɟ ǝɹoʇsǝɹ ɹo ǝʌɐs ǝɥʇ ɹᴉɐdǝɹ oʇ ʎɹʇ ǝsɐǝꞁԀ ˙ǝꞁᴉɟ ǝʌɐs ʇɐp˙ꞁǝʌǝꞁ pǝʇdnɹɹoɔ ɐ oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "GL_OUT_OF_MEMORY": "˙sɯɐɹᵷoɹd ɹǝɥʇo ᵷuᴉsoꞁɔ ɹo 'sɹǝpɐɥs ᵷuᴉꞁqɐsᴉp 'uoᴉʇnꞁosǝɹ ǝɯɐᵷ ᵷuᴉɹǝʍoꞁ ʎɹ⟘ ˙ʎɹoɯǝɯ ɟo ʇno Ꞁ⅁uǝdO oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "MOD_JAVA_VERSION_MISMATCH": "˙spoɯ ɹnoʎ ɹoɟ uoᴉsɹǝʌ ɐʌɐſ pǝɹᴉnbǝɹ ǝɥʇ ʞɔǝɥɔ ǝsɐǝꞁԀ ˙ɥɔʇɐɯsᴉɯ uoᴉsɹǝʌ ɐʌɐſ puɐ poɯ oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "DUPLICATE_MOD_INSTALLED": "˙sǝʇɐɔᴉꞁdnp ǝʌoɯǝɹ puɐ ʇsᴉꞁ poɯ ɹnoʎ ʞɔǝɥɔ ǝsɐǝꞁԀ ˙uoᴉʇɐꞁꞁɐʇsuᴉ poɯ ǝʇɐɔᴉꞁdnp oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "MOD_ZIP_CORRUPTED": "˙poɯ ǝɥʇ ᵷuᴉpɐoꞁuʍop-ǝɹ ʎɹʇ ǝsɐǝꞁԀ ˙ǝꞁᴉɟ dᴉz poɯ pǝʇdnɹɹoɔ ɐ oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "MOD_INTERNET_ERROR": "˙ʎxoɹd ɐ ǝsn ɹo uoᴉʇɔǝuuoɔ ʞɹoʍʇǝu ɹnoʎ ʞɔǝɥɔ ǝsɐǝꞁԀ ˙ǝɹnꞁᴉɐɟ pɐoꞁuʍop poɯ oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "VICS_MODERN_WARFARE_ERROR": "˙poɯ ǝɥʇ ᵷuᴉʌoɯǝɹ ɹo ᵷuᴉʇɐpdn ʎɹʇ ǝsɐǝꞁԀ ˙ɹoɹɹǝ poɯ ǝɹɐɟɹɐM uɹǝpoW s,ɔᴉΛ oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "FORGE_LITELOADER_CONFLICT": "˙uoᴉsɹǝʌ ǝᵷɹoℲ ᵷuᴉᵷuɐɥɔ ɹo ɹǝpɐoꞀǝʇᴉꞀ ᵷuᴉʌoɯǝɹ ʎɹʇ ǝsɐǝꞁԀ ˙ʇɔᴉꞁɟuoɔ ɹǝpɐoꞀǝʇᴉꞀ puɐ ǝᵷɹoℲ oʇ ǝnp ǝnuᴉʇuoɔ ʇouuɐɔ ǝɔuɐʇsuᴉ ǝɥ⟘",
+      "UNKNOWN": "˙ʇɹodǝɹ ɥsɐɹɔ ǝɥʇ ʇɹodxǝ ɹo sꞁᴉɐʇǝp ǝɹoɯ ɹoɟ sᵷoꞁ ǝɥʇ ʞɔǝɥɔ ǝsɐǝꞁԀ ˙ɥsɐɹɔ ǝɥʇ ɟo ǝsnɐɔ ǝɥʇ ǝuᴉɯɹǝʇǝp ʇouuɐƆ"
+    },
+    "button": {
+      "exportGameInfo": "ʇɹodǝᴚ ɥsɐɹƆ ʇɹodxƎ",
+      "gameLogs": "sᵷoꞀ ǝɯɐ⅁",
+      "help": "dꞁǝH"
+    },
+    "bottomAlert": "˙dꞁǝɥ ɹoɟ ǝᵷɐd sᴉɥʇ ɟo ʇoɥsuǝǝɹɔs ɐ ɟo pɐǝʇsuᴉ ʇɹodǝɹ ɥsɐɹɔ ǝɥʇ puǝs puɐ ʇɹodxƎ"
+  },
+  "GameLogPage": {
+    "placeholder": "ʇxǝ⟘ ʎq ɹǝʇꞁᴉℲ",
+    "exportLogs": "sᵷoꞀ ʇɹodxƎ",
+    "clearLogs": "sᵷoꞀ ꞁꞁⱯ ɹɐǝꞁƆ",
+    "scrollToBottom": "ɯoʇʇoᗺ oʇ ꞁꞁoɹɔS"
+  },
+  "GameVersionSelector": {
+    "old_beta": "ɐʇǝᗺ pꞁO",
+    "release": "ǝsɐǝꞁǝᴚ",
+    "snapshot": "ʇoɥsdɐuS",
+    "april_fools": "sꞁooℲ ꞁᴉɹdⱯ",
+    "searchPlaceholder": "ɥɔɹɐǝS"
+  },
+  "General": {
+    "add": "ppⱯ",
+    "alert": {
+      "noFullLogin": {
+        "title": "ʎꞁʇuǝɹɹnƆ ǝꞁqɐꞁᴉɐʌⱯ ʇoN sᴉ ǝɹnʇɐǝℲ sᴉɥ⟘",
+        "description": "˙ǝɹnʇɐǝɟ sᴉɥʇ ᵷuᴉssǝɔɔɐ ǝɹoɟǝq ʇunoɔɔɐ ʇɟosoɹɔᴉW ɹnoʎ ɥʇᴉʍ uᴉ ᵷoꞁ ǝsɐǝꞁԀ"
+      }
+    },
+    "browse": "ǝsʍoɹᗺ",
+    "cancel": "ꞁǝɔuɐƆ",
+    "close": "ǝsoꞁƆ",
+    "confirm": "OK",
+    "copy": {
+      "text": "ʎdoƆ",
+      "toast": {
+        "success": "pɹɐoqdᴉꞁɔ oʇ pǝᴉdoƆ",
+        "error": "pɹɐoqdᴉꞁɔ oʇ ʎdoɔ oʇ pǝꞁᴉɐℲ"
+      }
+    },
+    "copyOrMove": {
+      "linux": "ǝʌoW / ʎdoƆ",
+      "macos": "ǝʌoW / ʎdoƆ",
+      "windows": "ǝʌoW / ʎdoƆ"
+    },
+    "delete": "ǝʇǝꞁǝᗡ",
+    "dialog": {
+      "filterName": {
+        "image": "ǝᵷɐɯI",
+        "modpack": "ʞɔɐdpoW"
+      }
+    },
+    "disable": "ǝꞁqɐsᴉᗡ",
+    "dontShowAgain": "uᴉɐᵷⱯ ʍoɥS ʇ,uoᗡ",
+    "download": "pɐoꞁuʍoᗡ",
+    "edit": "ʇᴉpƎ",
+    "enable": "ǝꞁqɐuƎ",
+    "finish": "ɥsᴉuᴉℲ",
+    "launch": "ɥɔunɐꞀ",
+    "next": "ʇxǝN",
+    "notice": "ǝɔᴉʇoN",
+    "open": "uǝdO",
+    "openFolder": "ɹǝpꞁoℲ uǝdO",
+    "previous": "snoᴉʌǝɹԀ",
+    "refresh": "ɥsǝɹɟǝᴚ",
+    "revealFile": "{{opener}} uᴉ ꞁɐǝʌǝᴚ",
+    "search": "ɥɔɹɐǝS",
+    "skip": "dᴉʞS",
+    "share": {
+      "text": "ǝɹɐɥS",
+      "toast": {
+        "error": "ǝɹɐɥs oʇ pǝꞁᴉɐℲ"
+      }
+    },
+    "version": {
+      "dev": "uoᴉsɹǝʌ ʇuǝɯdoꞁǝʌǝp",
+      "nightly": "pꞁᴉnq ʎꞁʇɥᵷᴉu",
+      "beta": "uoᴉsɹǝʌ ɐʇǝq"
+    },
+    "viewOnWiki": "ᴉʞᴉM ʇɟɐɹɔǝuᴉW uo ʍǝᴉΛ"
+  },
+  "GeneralSettingsPage": {
+    "general": {
+      "title": "sᵷuᴉʇʇǝS ꞁɐɹǝuǝ⅁",
+      "settings": {
+        "language": {
+          "title": "ǝᵷɐnᵷuɐꞀ",
+          "communityAck": ""
+        }
+      }
+    },
+    "functions": {
+      "title": "ʎʇᴉꞁɐuoᴉʇɔunℲ",
+      "settings": {
+        "discoverPage": {
+          "title": "ǝᵷɐԀ ɹǝʌoɔsᴉᗡ",
+          "openNotice": {
+            "part-1": " ʇnɔʇɹoɥs pɹɐoqʎǝʞ ǝɥʇ ɥᵷnoɹɥʇ ,ɥɔɹɐǝS ꞁɐqoꞁ⅁, ǝɥʇ ᵷuᴉsn ǝnuᴉʇuoɔ uɐɔ noʎ ˙,ɹǝʌoɔsᴉᗡ, ɥʇᴉʍ pǝɔɐꞁdǝɹ uǝǝq sɐɥ ɹɐq uoᴉʇɐᵷᴉʌɐu doʇ ǝɥʇ uᴉ ,ɥɔɹɐǝS, ǝɥ⟘",
+            "part-2": "˙"
+          }
+        },
+        "instancesNavType": {
+          "title": "ǝpoW uoᴉʇɐᵷᴉʌɐN ǝᵷɐԀ ǝɔuɐʇsuI",
+          "description": "˙poɥʇǝɯ ᵷuᴉdnoɹᵷ sʇᴉ puɐ pǝʎɐꞁdsᴉp sᴉ ɹɐq uoᴉʇɐᵷᴉʌɐu ʇɟǝꞁ s,ǝᵷɐd ǝɔuɐʇsuᴉ ǝɥʇ ɹǝɥʇǝɥʍ ǝᵷuɐɥƆ",
+          "instance": "ǝɔuɐʇsuI ʎᗺ",
+          "directory": "ʎɹoʇɔǝɹᴉᗡ ʎᗺ",
+          "hidden": "uǝppᴉH"
+        },
+        "launchPageQuickSwitch": {
+          "title": "sǝɔuɐʇsuI & sʇunoɔɔⱯ ɹoɟ ɥɔʇᴉʍS ʞɔᴉnὊ",
+          "description": "˙ǝᵷɐd ɹǝɥʇouɐ oʇ ᵷuᴉʇɐᵷᴉʌɐu ɟo pɐǝʇsuᴉ sǝɔuɐʇsuᴉ puɐ sʇunoɔɔɐ ɟo uoᴉʇɔǝꞁǝs ʇɔǝɹᴉp sʍoꞁꞁɐ ǝᵷɐd ɥɔunɐꞁ ǝɥʇ uo uoʇʇnq ɥɔʇᴉʍs ǝɥʇ ᵷuᴉʞɔᴉꞁɔ 'pǝꞁqɐuǝ uǝɥM"
+        },
+        "resourceTranslation": {
+          "title": "uoᴉʇɐꞁsuɐɹ⟘ ǝɔɹnosǝᴚ",
+          "description": "suɐH-ɥz uᴉ ǝꞁqɐꞁᴉɐʌɐ ʎꞁuo%"
+        },
+        "skipFirstScreenOptions": {
+          "title": "suoᴉʇdO uǝǝɹɔS ɥɔunɐꞀ ʇsɹᴉℲ dᴉʞS",
+          "description": "suɐH-ɥz uᴉ ǝꞁqɐꞁᴉɐʌɐ ʎꞁuo%"
+        }
+      }
+    },
+    "advanced": {
+      "title": "pǝɔuɐʌpⱯ",
+      "settings": {
+        "openConfigJson": {
+          "title": "ǝꞁᴉℲ sᵷuᴉʇʇǝS ɹǝɥɔunɐꞀ",
+          "description": "˙{{opener}} uᴉ ǝꞁᴉɟ sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ʍɐɹ ǝɥʇ ꞁɐǝʌǝᴚ"
+        },
+        "launcherLogDir": {
+          "title": "ʎɹoʇɔǝɹᴉᗡ sᵷoꞀ ɹǝɥɔunɐꞀ"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "sᵷoꞀ ɹǝɥɔunɐꞀ ǝᵷɹnԀ oʇnⱯ",
+          "description": "sʎɐp 0Ɛ uɐɥʇ ɹǝpꞁo sǝꞁᴉɟ ᵷoꞁ ɹǝɥɔunɐꞁ ǝᵷɹnd ʎꞁꞁɐɔᴉʇɐɯoʇnⱯ"
+        }
+      }
+    }
+  },
+  "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "sǝᴉɹoʇɔǝɹᴉᗡ ǝɯɐ⅁",
+      "settings": {
+        "directories": {
+          "special": {
+            "CURRENT_DIR": "ʇuǝɹɹnƆ",
+            "APP_DATA_SUBDIR": "ɐʇɐᗡ ꞀƆWſS",
+            "OFFICIAL_DIR": "ɹǝɥɔunɐꞀ ꞁɐᴉɔᴉɟɟO"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "ʎɹoʇɔǝɹᴉᗡ ǝɯɐ⅁ ǝʇǝꞁǝᗡ",
+        "content": "(˙ʞsᴉp ǝɥʇ uo uᴉɐɯǝɹ sǝꞁᴉɟ ɹnoʎ ʇnq 'ʎɹoʇɔǝɹᴉp sᴉɥʇ uɐɔs ɹǝᵷuoꞁ ou ꞁꞁᴉʍ ꞀƆWſS) ¿ {{dirName}} ʎɹoʇɔǝɹᴉp ǝɯɐᵷ ɟo ꞁɐʌoɯǝɹ ǝɥʇ ɯɹᴉɟuoƆ"
+      },
+      "directoryNotExist": "˙uᴉɐᵷɐ ɥʇɐd ppɐ ǝsɐǝꞁd 'ʇsᴉxǝ ʇou sǝop ʎɹoʇɔǝɹᴉᗡ"
+    },
+    "gameJava": {
+      "title": "ɐʌɐſ ǝɯɐ⅁",
+      "settings": {
+        "autoSelect": {
+          "title": "ɐʌɐſ ǝɯɐ⅁ ǝsooɥƆ ʎꞁꞁɐɔᴉʇɐɯoʇnⱯ"
+        },
+        "execPath": {
+          "title": "uoᴉsɹǝΛ ɐʌɐſ ʎɟᴉɔǝdS"
+        }
+      }
+    },
+    "gameWindow": {
+      "title": "ʍopuᴉM ǝɯɐ⅁",
+      "settings": {
+        "resolution": {
+          "title": "uoᴉʇnꞁosǝᴚ ǝɯɐ⅁",
+          "switch": "uǝǝɹɔsꞁꞁnℲ"
+        },
+        "customTitle": {
+          "title": "ǝꞁʇᴉ⟘ ʍopuᴉM ɯoʇsnƆ"
+        },
+        "customInfo": {
+          "title": "uoᴉʇɐɯɹoɟuI ɯoʇsnƆ",
+          "description": "˙ǝᵷɐd ᵷuᴉᵷᵷnqǝp ƐℲ ǝɥʇ ɟo ɹǝuɹoɔ ʇɟǝꞁ doʇ ǝɥʇ puɐ uǝǝɹɔs uᴉɐɯ s,ǝɯɐᵷ ǝɥʇ ɟo ɹǝuɹoɔ ʇɟǝꞁ ɯoʇʇoq ǝɥʇ uᴉ pǝʎɐꞁdsᴉp sᴉ ʇI"
+        }
+      }
+    },
+    "performance": {
+      "title": "ǝɔuɐɯɹoɟɹǝԀ",
+      "settings": {
+        "autoMemAllocation": {
+          "title": "ʎꞁꞁɐɔᴉʇɐɯoʇnⱯ ʎɹoɯǝW ǝʇɐɔoꞁꞁⱯ"
+        },
+        "maxMemAllocation": {
+          "title": "uoᴉʇɐɔoꞁꞁⱯ ʎɹoɯǝW ɯnɯᴉxɐW"
+        },
+        "memoryUsage": {
+          "title": "ǝᵷɐs∩ ʎɹoɯǝW",
+          "description": "ᗺ⅁\u0000ᘔ\u0000 ʎɹoɯǝɯ ꞁɐʇo⟘ ⸵ᗺ⅁\u0000Ɩ\u0000 pǝʇɐɔoꞁꞁɐ ǝɯɐ⅁ ⸵ᗺ⅁{{usedMemory}} ʎɹoɯǝɯ pǝs∩"
+        },
+        "processPriority": {
+          "title": "ʎʇᴉɹoᴉɹԀ ssǝɔoɹԀ",
+          "low": "ʍoꞀ",
+          "belowNormal": "ꞁɐɯɹoN ʍoꞁǝᗺ",
+          "normal": "ꞁɐɯɹoN",
+          "aboveNormal": "ꞁɐɯɹoN ǝʌoqⱯ",
+          "high": "ɥᵷᴉH"
+        }
+      }
+    },
+    "versionIsolation": {
+      "settings": {
+        "title": "uoᴉʇɐꞁosI uoᴉsɹǝΛ ǝꞁqɐuƎ"
+      }
+    },
+    "moreOptions": {
+      "title": "suoᴉʇdO ǝɹoW",
+      "settings": {
+        "launcherVisibility": {
+          "title": "ʎʇᴉꞁᴉqᴉsᴉΛ ɹǝɥɔunɐꞀ",
+          "startHidden": "sʇɹɐʇS ǝɯɐ⅁ ɹǝʇɟɐ ɹǝɥɔunɐꞀ ǝpᴉH",
+          "runningHidden": "ᵷuᴉuunᴚ sᴉ ǝɯɐ⅁ ǝꞁᴉɥʍ ɹǝɥɔunɐꞀ ǝpᴉH",
+          "always": "ǝꞁqᴉsᴉΛ sʎɐʍꞁⱯ ɹǝɥɔunɐꞀ"
+        },
+        "autoJoinGameServer": {
+          "title": "ɹǝʌɹǝS ǝɯɐ⅁ uᴉoſ oʇnⱯ"
+        },
+        "serverUrl": {
+          "title": "Ꞁᴚ∩ ɹǝʌɹǝS"
+        },
+        "displayGameLog": {
+          "title": "sᵷoꞀ ǝɯɐ⅁ ʎɐꞁdsᴉᗡ"
+        },
+        "advancedOptions": {
+          "title": "suoᴉʇdO ɥɔunɐꞀ pǝɔuɐʌpⱯ",
+          "button": "suoᴉʇdO pǝɔuɐʌpⱯ ʇᴉpƎ"
+        }
+      }
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "ǝᵷɐԀ ǝɔuɐʇsuI",
+      "content": "˙sǝɔɹnosǝɹ ǝɯɐᵷ snoᴉɹɐʌ ǝᵷɐuɐɯ puɐ pɐoꞁuʍop sɐ ꞁꞁǝʍ sɐ 'sǝɔuɐʇsuᴉ ǝɯɐᵷ ʇɟɐɹɔǝuᴉW ɹnoʎ ʇɔǝꞁǝs puɐ ppɐ uɐɔ noʎ ǝɹǝH"
+    },
+    "step2": {
+      "title": "ǝᵷɐԀ sʇunoɔɔⱯ",
+      "content": "˙ʎɐꞁd oʇ ʇuɐʍ noʎ ɹǝʎɐꞁd ǝɥʇ ǝsooɥɔ puɐ sʇunoɔɔɐ ppɐ uɐɔ noʎ ǝɹǝH"
+    },
+    "step3": {
+      "title": "¡ʇɟɐɹɔǝuᴉW ɥɔunɐꞀ",
+      "content": "🥳 ¡ǝɯɐᵷ ǝɥʇ ʎoɾuǝ puɐ uoʇʇnq ɥɔunɐꞁ ǝɥʇ ʞɔᴉꞁɔ 'sᵷuᴉʇʇǝs ʇuɐʌǝꞁǝɹ ǝɥʇ ᵷuᴉʇsnɾpɐ puɐ ɹǝʎɐꞁd puɐ ǝɔuɐʇsuᴉ ɹnoʎ ᵷuᴉʇɔǝꞁǝs ɹǝʇɟⱯ"
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "ɥɔunɐꞀ",
+      "instances": "sǝɯɐ⅁",
+      "accounts": "sʇunoɔɔⱯ",
+      "discover": "ɹǝʌoɔsᴉᗡ",
+      "search": "ɥɔɹɐǝS",
+      "settings": "sᵷuᴉʇʇǝS"
+    }
+  },
+  "HelpSettingsPage": {
+    "community": {
+      "title": "ʎʇᴉunɯɯoƆ ɹǝʎɐꞁԀ ʎʇᴉsɹǝʌᴉu∩",
+      "settings": {
+        "MUA": {
+          "title": "(Ɐ∩W) ǝɔuɐᴉꞁꞁⱯ ʎʇᴉsɹǝʌᴉu∩ ʇɟɐɹɔǝuᴉW",
+          "description": "ɐuᴉɥƆ ssoɹɔɐ sɹǝʎɐꞁd ʎʇᴉsɹǝʌᴉun ɥʇᴉʍ ʎɐꞁԀ",
+          "url": "https://www.mualliance.cn/en"
+        },
+        "SJMC": {
+          "title": "(ƆWſS) qnꞁƆ ʇɟɐɹɔǝuᴉW ∩⟘ſS",
+          "url": "https://mc.sjtu.cn/en/"
+        }
+      }
+    },
+    "minecraft": {
+      "title": "ʇɟɐɹɔǝuᴉW",
+      "settings": {
+        "mcWiki": {
+          "title": "ᴉʞᴉM ʇɟɐɹɔǝuᴉW",
+          "description": "ɐᴉpǝdoꞁɔʎɔuǝ ʇɟɐɹɔǝuᴉW pǝꞁᴉɐʇǝp ʇsoɯ ǝɥ⟘",
+          "url": "https://minecraft.wiki/"
+        },
+        "mcMod": {
+          "title": "poWƆW",
+          "description": "ʇɟɐɹɔǝuᴉW ɹoɟ ɐᴉpǝdoꞁɔʎɔuǝ poɯ ǝsǝuᴉɥƆ Ɐ"
+        },
+        "curseforge": {
+          "title": "ǝᵷɹoℲǝsɹnƆ",
+          "description": "ʎɹoʇᴉsodǝɹ poɯ ʇɟɐɹɔǝuᴉW ʇsǝᵷɹɐꞁ s,pꞁɹoʍ ǝɥʇ ɹǝʌoɔsᴉᗡ"
+        }
+      }
+    },
+    "top": {
+      "settings": {
+        "LauncherDocs": {
+          "title": "uoᴉʇɐʇuǝɯnɔoᗡ ɹǝɥɔunɐꞀ ƆWſS",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        }
+      }
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "ʞɔɐdpoW ʇɹodɯI"
+    },
+    "label": {
+      "instanceSettings": "sᵷuᴉʇʇǝS ǝɔuɐʇsuI",
+      "modpackInfo": "uoᴉʇɐɯɹoɟuI ʞɔɐdpoW",
+      "modpackName": "ǝɯɐN ʞɔɐdpoW",
+      "modpackVersion": "uoᴉsɹǝΛ ʞɔɐdpoW",
+      "author": "ɹoɥʇnⱯ",
+      "modLoader": "ɹǝpɐoꞀ poW",
+      "gameVersion": "uoᴉsɹǝΛ ǝɯɐ⅁"
+    },
+    "button": {
+      "import": "ʇɹodɯI"
+    }
+  },
+  "InstanceBasicSettings": {
+    "selectDirectory": "ʎɹoʇɔǝɹᴉᗡ ǝɯɐ⅁ ʇɔǝꞁǝS"
+  },
+  "InstanceDetailsLayout": {
+    "secMenu": {
+      "createShortcut": "ʇnɔʇɹoɥS ɥɔunɐꞀ ǝʇɐǝɹƆ",
+      "exportModPack": "ʞɔɐdpoW sɐ ʇɹodxƎ",
+      "star": "ǝɔuɐʇsuᴉ sᴉɥʇ ɹɐʇS",
+      "unstar": "ɹɐʇsu∩"
+    },
+    "instanceTabList": {
+      "overview": "ʍǝᴉʌɹǝʌO",
+      "worlds": "spꞁɹoM",
+      "mods": "spoW",
+      "resourcepacks": "sʞɔɐԀ ǝɔɹnosǝᴚ",
+      "schematics": "sɔᴉʇɐɯǝɥɔS",
+      "shaderpacks": "sʞɔɐԀ ɹǝpɐɥS",
+      "screenshots": "sʇoɥsuǝǝɹɔS",
+      "settings": "sᵷuᴉʇʇǝS"
+    },
+    "button": {
+      "launch": "ǝɔuɐʇsuI ɥɔunɐꞀ"
+    }
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "sꞁᴉɐʇǝᗡ ǝɔuɐʇsuI",
+      "delete": "ǝʇǝꞁǝᗡ"
+    }
+  },
+  "InstanceModsPage": {
+    "modLoaderList": {
+      "title": "ɹǝpɐoꞀ poW"
+    },
+    "modList": {
+      "title": "spoW",
+      "warning": "ʎꞁɹǝdoɹd ʞɹoʍ ʇou ʎɐɯ spoɯ ǝsǝɥʇ 'punoɟ ʇou ɹǝpɐoꞁ poW",
+      "menu": {
+        "alert": "ǝꞁqᴉʇɐdɯoɔuᴉ ʎꞁꞁɐᴉʇuǝʇoԀ",
+        "info": "oɟuI poW",
+        "update": "ǝʇɐpd∩",
+        "search": "ɥɔɹɐǝS",
+        "placeholder": "˙˙˙spoɯ ɥɔɹɐǝS "
+      }
+    }
+  },
+  "InstanceResourcePacksPage": {
+    "resourcePackList": {
+      "title": "sʞɔɐԀ ǝɔɹnosǝᴚ ꞁɐqoꞁ⅁"
+    },
+    "serverResPackList": {
+      "title": "sʞɔɐԀ ǝɔɹnosǝᴚ ɹǝʌɹǝS"
+    }
+  },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "sꞁᴉɐʇǝᗡ"
+    }
+  },
+  "InstanceSettingsPage": {
+    "name": "ǝɯɐN ǝɔuɐʇsuI",
+    "description": "uoᴉʇdᴉɹɔsǝᗡ ǝɔuɐʇsuI",
+    "icon": "uoɔI ǝɔuɐʇsuI",
+    "applySettings": "sᵷuᴉʇʇǝs ɔᴉɟᴉɔǝds ᵷuᴉʍoꞁꞁoɟ ǝɥʇ ʎꞁddⱯ",
+    "restoreSettings": "sᵷuᴉʇʇǝs ʇꞁnɐɟǝp oʇ ǝɹoʇsǝᴚ",
+    "restoreSettingsDesc": "sǝnꞁɐʌ ʇꞁnɐɟǝp ɹᴉǝɥʇ oʇ sᵷuᴉʇʇǝs ɔᴉɟᴉɔǝds ᵷuᴉʍoꞁꞁoɟ ǝɥʇ ǝɹoʇsǝᴚ",
+    "restore": "ǝɹoʇsǝᴚ",
+    "errorMessage": {
+      "error-1": "ʎʇdɯǝ ǝq ʇouuɐɔ ǝɯɐu ǝɔuɐʇsuI",
+      "error-2": "pᴉꞁɐʌuᴉ sᴉ ǝɯɐu ǝɔuɐʇsuI",
+      "error-3": "ᵷuoꞁ ooʇ sᴉ ǝɯɐu ǝɔuɐʇsuI"
+    },
+    "tipsToGlobal": {
+      "part-1": " ˙sᵷuᴉʇʇǝs ɔᴉɟᴉɔǝds ᵷuᴉsn ʇou sᴉ ǝɔuɐʇsuᴉ sᴉɥ⟘",
+      "part-2": "sᵷuᴉʇʇǝS ǝɯɐ⅁ ꞁɐqoꞁ⅁ oʇ o⅁"
+    }
+  },
+  "InstanceShaderPacksPage": {
+    "shaderPackList": {
+      "title": "sʞɔɐԀ ɹǝpɐɥS"
+    }
+  },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "sɔᴉʇɐɯǝɥɔS",
+      "preview": "ʍǝᴉʌǝɹԀ"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "oɟuI ɔᴉsɐᗺ",
+      "gameVersion": "uoᴉsɹǝΛ",
+      "playTime": "ǝɯᴉʇʎɐꞁԀ"
+    },
+    "screenshots": {
+      "title": "sʇoɥsuǝǝɹɔS"
+    },
+    "mods": {
+      "title": "spoW",
+      "summary": "pǝꞁqɐuǝ \u0000Ɩ\u0000 'spoɯ {{totalMods}}",
+      "manage": "ǝᵷɐuɐW"
+    },
+    "lastPlayed": {
+      "title": "pǝʎɐꞁԀ ʇsɐꞀ",
+      "continuePlaying": "ǝnuᴉʇuoƆ"
+    },
+    "more": {
+      "title": "ǝɹoW"
+    }
+  },
+  "InstanceWorldsPage": {
+    "worldList": {
+      "title": "spꞁɹoM",
+      "lastPlayedAt": "pǝʎɐꞁd ʇsɐꞀ",
+      "difficulty": {
+        "peaceful": "ꞁnɟǝɔɐǝԀ",
+        "easy": "ʎsɐƎ",
+        "normal": "ꞁɐɯɹoN",
+        "hard": "pɹɐH",
+        "hardcore": "ǝɹoɔpɹɐH"
+      },
+      "gamemode": {
+        "survival": "ǝpoW ꞁɐʌᴉʌɹnS",
+        "creative": "ǝpoW ǝʌᴉʇɐǝɹƆ",
+        "adventure": "ǝpoW ǝɹnʇuǝʌpⱯ",
+        "spectator": "ǝpoW ɹoʇɐʇɔǝdS"
+      },
+      "gamemodeDesc": "{{gamemode}} '",
+      "difficultyDesc": "({{difficulty}} :ʎʇꞁnɔᴉɟɟᴉᗡ) ",
+      "viewLevelData": "ɐʇɐᗡ ꞁǝʌǝꞀ ʍǝᴉΛ",
+      "launch": "pꞁɹoM sᴉɥʇ ʎɐꞁԀ"
+    },
+    "serverList": {
+      "title": "sɹǝʌɹǝS",
+      "players": "sɹǝʎɐꞁԀ",
+      "tag": {
+        "online": "ǝuᴉꞁuO",
+        "offline": "ǝuᴉꞁɟɟO"
+      },
+      "launch": "ɹǝʌɹǝS sᴉɥʇ ʎɐꞁԀ"
+    }
+  },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "ʇuǝɯǝᵷɐuɐW ɐʌɐſ",
+      "download": "ɐʌɐſ pɐoꞁuʍoᗡ",
+      "add": "ɐʌɐſ ppⱯ",
+      "remove": "ɐʌɐſ sᴉɥʇ ǝʌoɯǝᴚ"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "ʎꞁꞁnɟssǝɔɔnS ɐʌɐſ ppⱯ",
+        "description": "ʎꞁꞁnɟssǝɔɔns pǝppɐ uǝǝq sɐɥ ɐʌɐſ"
+      },
+      "addFailed": {
+        "title": "ɐʌɐſ ppⱯ oʇ pǝꞁᴉɐℲ",
+        "invalid": "ɯɹoɟʇɐꞁd ʇuǝɹɹnɔ ǝɥʇ ɥʇᴉʍ ǝꞁqᴉʇɐdɯoɔuᴉ ɹo ǝꞁqɐʇnɔǝxǝ ɐʌɐſ pᴉꞁɐʌ ɐ ʇoN",
+        "duplicated": "pǝppɐ uǝǝq ʎpɐǝɹꞁɐ sɐɥ ɥʇɐd ʇǝᵷɹɐʇ ǝɥ⟘"
+      }
+    },
+    "confirmDelete": {
+      "title": "ɐʌɐſ ǝʇǝꞁǝᗡ",
+      "description": "(˙ʞsᴉp ǝɥʇ uo uᴉɐɯǝɹ sǝꞁᴉɟ ɹnoʎ ʇnq 'ʎɹoʇɔǝɹᴉp sᴉɥʇ uɐɔs ɹǝᵷuoꞁ ou ꞁꞁᴉʍ ꞀƆWſS) ¿ɐʌɐſ sᴉɥʇ ɟo ꞁɐʌoɯǝɹ ǝɥʇ ɯɹᴉɟuoƆ"
+    }
+  },
+  "LaunchPage": {
+    "button": {
+      "launch": "ǝɯɐ⅁ ɥɔunɐꞀ",
+      "instanceSettings": "sᵷuᴉʇʇǝS ǝɔuɐʇsuI"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchPlayer": "ɹǝʎɐꞁԀ ɥɔʇᴉʍS",
+        "switchGame": "ǝɯɐ⅁ ɥɔʇᴉʍS"
+      }
+    },
+    "Text": {
+      "noSelectedPlayer": "pǝʇɔǝꞁǝs ɹǝʎɐꞁd oN",
+      "noSelectedGame": "pǝʇɔǝꞁǝs ǝɔuɐʇsuᴉ ǝɯɐᵷ oN"
+    }
+  },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "{{name}} - ǝɯɐ⅁ ɥɔunɐꞀ"
+    },
+    "step": {
+      "selectSuitableJRE": "ǝɯᴉʇunᴚ ɐʌɐſ ǝꞁqɐʇᴉnS ʇɔǝꞁǝS",
+      "validateGameFiles": "sǝꞁᴉℲ ʎɔuǝpuǝdǝᗡ puɐ ǝɯɐ⅁ ǝʇɐpᴉꞁɐΛ",
+      "validateSelectedPlayer": "sꞁɐᴉʇuǝpǝɹƆ s,ɹǝʎɐꞁԀ ǝʇɐpᴉꞁɐΛ",
+      "launchGame": "ɥɔunɐꞀ oʇ ǝɯɐ⅁ ɹoɟ ᵷuᴉʇᴉɐM"
+    },
+    "toast": {
+      "noSelectedPlayer": "ʇsɹᴉɟ ɹǝʎɐꞁd ɐ ʇɔǝꞁǝs puɐ ppɐ ǝsɐǝꞁԀ"
+    }
+  },
+  "ManageSkinModal": {
+    "skinManage": "uᴉʞS ǝᵷɐuɐW",
+    "default": "ʇꞁnɐɟǝᗡ",
+    "steve": "ǝʌǝʇS",
+    "alex": "xǝꞁⱯ",
+    "upload": "pɐoꞁd∩",
+    "skin": "uᴉʞS",
+    "cape": "ǝdɐƆ",
+    "model": {
+      "label": "ꞁǝpoW",
+      "default": "ǝpᴉM",
+      "slim": "ɯᴉꞁS"
+    }
+  },
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "ɐʌɐſ ppⱯ"
+    },
+    "label": {
+      "javaPath": "ɥʇɐԀ ɐʌɐſ"
+    },
+    "placeholder": {
+      "javaPath": "ɥʇɐd ǝꞁᴉɟ ǝꞁqɐʇnɔǝxǝ ɐʌɐſ ǝɥʇ ʇɔǝꞁǝs ɹo ɹǝʇuǝ ǝsɐǝꞁԀ"
+    }
+  },
+  "MemoryStatusProgress": {
+    "title": "snʇɐʇS ʎɹoɯǝW",
+    "info": "pǝsn ᗺ⅁ \u0000Ɩ\u0000 / {{used}}",
+    "label": {
+      "now": "ǝsn uI",
+      "maxAllocation": "ʇɟɐɹɔǝuᴉW ɹoɟ pǝʇɐɔoꞁꞁɐ ɯnɯᴉxɐW"
+    }
+  },
+  "MenuSelector": {
+    "selectedCount": "pǝʇɔǝꞁǝs {{count}}"
+  },
+  "ModLoaderCards": {
+    "installed": "pǝꞁꞁɐʇsuI",
+    "unInstalled": "pǝꞁꞁɐʇsuI ʇoN",
+    "notCompatibleWith": "{{modLoader}} ɥʇᴉʍ ǝꞁqᴉʇɐdɯoɔ ʇoN",
+    "versionNotSelected": "pǝʇɔǝꞁǝs uoᴉsɹǝʌ oN"
+  },
+  "ModLoaderSelector": {
+    "stable": "ǝꞁqɐʇS",
+    "beta": "ɐʇǝᗺ",
+    "releaseDate": "{{date}} ʇɐ pǝsɐǝꞁǝᴚ"
+  },
+  "NotFoundPage": {
+    "text": "˙˙˙spuoɔǝs {{seconds}} uᴉ ǝᵷɐd ɥɔunɐꞁ oʇ ᵷuᴉʇɔǝɹᴉpǝɹ 'punoɟ ʇou ǝᵷɐԀ"
+  },
+  "NotifyNewVersionModal": {
+    "title": "ǝꞁqɐꞁᴉɐʌⱯ uoᴉsɹǝΛ ʍǝN"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "({{left}}+) ꞁꞁⱯ ʍoɥS"
+    }
+  },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "uᴉʞS ǝᵷɐuɐW",
+      "viewSkin": "uᴉʞS ʍǝᴉΛ",
+      "delete": "ǝʇǝꞁǝᗡ",
+      "copyUUID": "ᗡI∩∩ ʎdoƆ"
+    },
+    "toast": {
+      "refreshing": "oɟuᴉ ɹǝʎɐꞁd ᵷuᴉɥsǝɹɟǝᴚ",
+      "deleting": "ɹǝʎɐꞁd ᵷuᴉʇǝꞁǝᗡ"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "ʇsǝ⟘ ʎʇᴉʌᴉʇɔǝuuoƆ ǝɔᴉʌɹǝS",
+      "offline": "ǝuᴉꞁɟɟO",
+      "bmclapi": "IԀⱯꞀƆWᗺ",
+      "curseforge": "ǝᵷɹoℲǝsɹnƆ",
+      "modrinth": "ɥʇuᴉɹpoW",
+      "mojang": "ᵷuɐɾoW",
+      "forge": "ǝᵷɹoℲ",
+      "fabric": "ɔᴉɹqɐℲ",
+      "neoforge": "ǝᵷɹoℲoǝN",
+      "authlibInjector": "ɹoʇɔǝɾuI qᴉꞁɥʇnⱯ",
+      "github": "qnHʇᴉ⅁",
+      "sjmclapi": "IԀⱯ ɹǝɥɔunɐꞀ ƆWſS"
+    }
+  },
+  "ReLoginPlayerModal": {
+    "modal": {
+      "title": "uᴉᵷoꞁ-ǝᴚ"
+    },
+    "label": {
+      "user": "ǝɯɐuɹǝs∩",
+      "password": "pɹoʍssɐԀ"
+    },
+    "placeholder": {
+      "password": "pɹoʍssɐԀ"
+    },
+    "button": {
+      "login": "uᴉᵷoꞀ"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "ǝʇɐpd∩ ɹǝɥɔunɐꞀ",
+    "body": "˙ǝʇɐpdn ǝɥʇ ǝʇǝꞁdɯoɔ oʇ ꞀƆWſS ʇɹɐʇsǝᴚ ˙pǝpɐoꞁuʍop uǝǝq sɐɥ uoᴉsɹǝʌ ʍǝu ǝɥ⟘",
+    "bodyMSI": "˙ɹǝꞁꞁɐʇsuᴉ ǝɥʇ unɹ puɐ ꞀƆWſS ǝsoꞁɔ ꞁꞁᴉʍ ꞁꞁɐʇsuI ᵷuᴉʞɔᴉꞁƆ ˙pǝpɐoꞁuʍop uǝǝq sɐɥ uoᴉsɹǝʌ ʍǝu ǝɥ⟘",
+    "button": {
+      "restart": "ʇɹɐʇsǝᴚ",
+      "install": "ꞁꞁɐʇsuI",
+      "later": "ɹǝʇɐꞀ"
+    }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "ǝɔɹnoS",
+      "gameVer": "˙ɹǝΛ ǝɯɐ⅁",
+      "tag": "ǝdʎ⟘",
+      "sortBy": "ʎq ʇɹoS",
+      "name": "ǝɯɐN"
+    },
+    "button": {
+      "search": "ɥɔɹɐǝS"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "ꞁꞁⱯ",
+        "Addons": "suoppⱯ",
+        "Adventure and RPG": "⅁Ԁᴚ ǝɹnʇuǝʌpⱯ",
+        "API and Library": "ʎɹɐɹqᴉꞀ IԀⱯ",
+        "Applied Energistics 2": "ᘔ sɔᴉʇsᴉᵷɹǝuƎ pǝᴉꞁddⱯ",
+        "Armor, Tools, and Weapons": "suodɐǝM sꞁoo⟘ ɹoɯɹⱯ",
+        "Automation": "uoᴉʇɐɯoʇnⱯ",
+        "Auxiliary": "ʎɹɐᴉꞁᴉxnⱯ",
+        "Biomes": "sǝɯoᴉᗺ",
+        "Blood Magic": "ɔᴉᵷɐW pooꞁᗺ",
+        "Buildcraft": "ʇɟɐɹɔpꞁᴉnᗺ",
+        "Bug Fixes": "sǝxᴉℲ ᵷnᗺ",
+        "Cosmetic": "ɔᴉʇǝɯsoƆ",
+        "CraftTweaker": "ɹǝʞɐǝʍ⟘ʇɟɐɹƆ",
+        "Create": "ǝʇɐǝɹƆ",
+        "Dimensions": "suoᴉsuǝɯᴉᗡ",
+        "Education": "uoᴉʇɐɔnpƎ",
+        "Energy": "ʎᵷɹǝuƎ",
+        "Energy, Fluid, and Item Transport": "ʇɹodsuɐɹ⟘ ɯǝʇI pᴉnꞁℲ ʎᵷɹǝuƎ",
+        "Farming": "ᵷuᴉɯɹɐℲ",
+        "Food": "pooℲ",
+        "Forestry": "ʎɹʇsǝɹoℲ",
+        "Galacticraft": "ʇɟɐɹɔᴉʇɔɐꞁɐ⅁",
+        "Genetics": "sɔᴉʇǝuǝ⅁",
+        "Industrial Craft": "ʇɟɐɹƆ ꞁɐᴉɹʇsnpuI",
+        "Integrated Dynamics": "sɔᴉɯɐuʎᗡ pǝʇɐɹᵷǝʇuI",
+        "KubeJS": "Sſǝqnʞ",
+        "Magic": "ɔᴉᵷɐW",
+        "Map and Information": "uoᴉʇɐɯɹoɟuI dɐW",
+        "MCreator": "ɹoʇɐǝɹƆW",
+        "Miscellaneous": "˙ɔsᴉW",
+        "Mobs": "sqoW",
+        "Ores and Resources": "sǝɔɹnosǝᴚ sǝɹO",
+        "Performance": "ǝɔuɐɯɹoɟɹǝԀ",
+        "Player Transport": "ʇɹodsuɐɹ⟘ ɹǝʎɐꞁԀ",
+        "Processing": "ᵷuᴉssǝɔoɹԀ",
+        "Redstone": "ǝuoʇspǝᴚ",
+        "Server Utility": "ɹǝʌɹǝS",
+        "Skyblock": "ʞɔoꞁqʎʞS",
+        "Storage": "ǝᵷɐɹoʇS",
+        "Structures": "sǝɹnʇɔnɹʇS",
+        "Technology": "ʎᵷoꞁouɥɔǝ⟘",
+        "Thaumcraft": "ʇɟɐɹɔɯnɐɥ⟘",
+        "Thermal Expansion": "uoᴉsuɐdxƎ ꞁɐɯɹǝɥ⟘",
+        "Tinker's Construct": "ʇɔnɹʇsuoƆ s,ɹǝʞuᴉ⟘",
+        "Twilight Forest": "ʇsǝɹoℲ ʇɥᵷᴉꞁᴉʍ⟘",
+        "Twitch Integration": "ɥɔʇᴉʍ⟘",
+        "Utility & QoL": "ꞀoὊ ʎʇᴉꞁᴉʇ∩",
+        "World Gen": "uǝ⅁ pꞁɹoM",
+        "World": "pꞁɹoM"
+      },
+      "Modrinth": {
+        "All": "ꞁꞁⱯ",
+        "adventure": "ǝɹnʇuǝʌpⱯ",
+        "cursed": "pǝsɹnƆ",
+        "decoration": "uoᴉʇɐɹoɔǝᗡ",
+        "economy": "ʎɯouoɔƎ",
+        "equipment": "ʇuǝɯdᴉnbƎ",
+        "food": "pooℲ",
+        "game-mechanics": "sɔᴉuɐɥɔǝW ǝɯɐ⅁",
+        "library": "ʎɹɐɹqᴉꞀ",
+        "magic": "ɔᴉᵷɐW",
+        "management": "ʇuǝɯǝᵷɐuɐW",
+        "minigame": "ǝɯɐᵷᴉuᴉW",
+        "mobs": "sqoW",
+        "optimization": "uoᴉʇɐzᴉɯᴉʇdO",
+        "social": "ꞁɐᴉɔoS",
+        "storage": "ǝᵷɐɹoʇS",
+        "technology": "ʎᵷoꞁouɥɔǝ⟘",
+        "transportation": "uoᴉʇɐʇɹodsuɐɹ⟘",
+        "utility": "ʎʇᴉꞁᴉʇ∩",
+        "worldgen": "uǝ⅁ pꞁɹoM"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "ꞁꞁⱯ",
+        "Adventure": "ǝɹnʇuǝʌpⱯ",
+        "Creation": "uoᴉʇɐǝɹƆ",
+        "Game Map": "dɐW ǝɯɐ⅁",
+        "Modded World": "pꞁɹoM pǝppoW",
+        "Parkour": "ɹnoʞɹɐԀ",
+        "Puzzle": "ǝꞁzznԀ",
+        "Survival": "ꞁɐʌᴉʌɹnS",
+        "Types": "sǝdʎ⟘"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "ꞁꞁⱯ",
+        "16x": "x9Ɩ",
+        "32x": "xᘔƐ",
+        "64x": "xㄣ9",
+        "128x": "x8ᘔƖ",
+        "256x": "x9ϛᘔ",
+        "512x and Higher": "ɹǝɥᵷᴉH puɐ xᘔƖϛ",
+        "Styles": "sǝꞁʎʇS",
+        "Animated": "pǝʇɐɯᴉuⱯ",
+        "Special": "ꞁɐᴉɔǝdS",
+        "Data Packs": "sʞɔɐԀ ɐʇɐᗡ",
+        "Font Packs": "sʞɔɐԀ ʇuoℲ",
+        "Medieval": "ꞁɐʌǝᴉpǝW",
+        "Miscellaneous": "˙ɔsᴉW",
+        "Mod Support": "ʇɹoddnS poW",
+        "Modern": "uɹǝpoW",
+        "Photo Realistic": "ɔᴉʇsᴉꞁɐǝᴚ oʇoɥԀ",
+        "Resolution": "uoᴉʇnꞁosǝᴚ",
+        "Steampunk": "ʞundɯɐǝʇS",
+        "Traditional": "ꞁɐuoᴉʇᴉpɐɹ⟘"
+      },
+      "Modrinth": {
+        "All": "ꞁꞁⱯ",
+        "8x-": "ɹǝʍoꞀ ɹo x8",
+        "16x": "x9Ɩ",
+        "32x": "xᘔƐ",
+        "64x": "xㄣ9",
+        "128x": "x8ᘔƖ",
+        "256x": "x9ϛᘔ",
+        "512x+": "ɹǝɥᵷᴉH ɹo xᘔƖϛ",
+        "Styles": "sǝꞁʎʇS",
+        "audio": "oᴉpnⱯ",
+        "blocks": "sʞɔoꞁᗺ",
+        "core-shaders": "sɹǝpɐɥS ǝɹoƆ",
+        "entities": "sǝᴉʇᴉʇuƎ",
+        "environment": "ʇuǝɯuoɹᴉʌuƎ",
+        "equipment": "ʇuǝɯdᴉnbƎ",
+        "fonts": "sʇuoℲ",
+        "gui": "I∩⅁",
+        "items": "sɯǝʇI",
+        "locale": "ǝꞁɐɔoꞀ",
+        "models": "sꞁǝpoW",
+        "combat": "ʇɐqɯoƆ",
+        "cursed": "pǝsɹnƆ",
+        "decoration": "uoᴉʇɐɹoɔǝᗡ",
+        "modded": "pǝppoW",
+        "realistic": "ɔᴉʇsᴉꞁɐǝᴚ",
+        "Resolution": "uoᴉʇnꞁosǝᴚ",
+        "simplistic": "ɔᴉʇsᴉꞁdɯᴉS",
+        "themed": "pǝɯǝɥ⟘",
+        "tweaks": "sʞɐǝʍ⟘",
+        "utility": "ʎʇᴉꞁᴉʇ∩",
+        "vanilla-like": "ǝʞᴉꞁ-ɐꞁꞁᴉuɐΛ"
+      }
+    },
+    "shaderTagList": {
+      "CurseForge": {
+        "All": "ꞁꞁⱯ",
+        "Styles": "sǝꞁʎʇS",
+        "Fantasy": "ʎsɐʇuɐℲ",
+        "Realistic": "ɔᴉʇsᴉꞁɐǝᴚ",
+        "Vanilla": "ɐꞁꞁᴉuɐΛ"
+      },
+      "Modrinth": {
+        "All": "ꞁꞁⱯ",
+        "Styles": "sǝꞁʎʇS",
+        "cartoon": "uooʇɹɐƆ",
+        "cursed": "pǝsɹnƆ",
+        "fantasy": "ʎsɐʇuɐℲ",
+        "realistic": "ɔᴉʇsᴉꞁɐǝᴚ",
+        "semi-realistic": "ɔᴉʇsᴉꞁɐǝᴚ-ᴉɯǝS",
+        "vanilla-like": "ǝʞᴉꞁ-ɐꞁꞁᴉuɐΛ",
+        "atmosphere": "ǝɹǝɥdsoɯʇⱯ",
+        "bloom": "ɯooꞁᗺ",
+        "colored-lighting": "ᵷuᴉʇɥᵷᴉꞀ pǝɹoꞁoƆ",
+        "foliage": "ǝᵷɐᴉꞁoℲ",
+        "path-tracing": "ᵷuᴉɔɐɹ⟘ ɥʇɐԀ",
+        "pbr": "ᴚᗺԀ",
+        "reflections": "suoᴉʇɔǝꞁɟǝᴚ",
+        "shadows": "sʍopɐɥS",
+        "potato": "oʇɐʇoԀ",
+        "performance": "ǝɔuɐɯɹoɟɹǝԀ",
+        "low": "ʍoꞀ",
+        "medium": "ɯnᴉpǝW",
+        "high": "ɥᵷᴉH",
+        "screenshot": "ʇoɥsuǝǝɹɔS"
+      }
+    },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "ꞁꞁⱯ",
+        "Styles": "sǝꞁʎʇS",
+        "Adventure and RPG": "⅁Ԁᴚ ǝɹnʇuǝʌpⱯ",
+        "Combat / PvP": "ԀʌԀ ʇɐqɯoƆ",
+        "Exploration": "uoᴉʇɐɹoꞁdxƎ",
+        "Extra Large": "ǝᵷɹɐꞀ ɐɹʇxƎ",
+        "FTB Official Pack": "ᗺ⟘Ⅎ",
+        "Hardcore": "ǝɹoɔpɹɐH",
+        "Horror": "ɹoɹɹoH",
+        "Magic": "ɔᴉᵷɐW",
+        "Map Based": "pǝsɐᗺ dɐW",
+        "Mini Game": "ǝɯɐ⅁ ᴉuᴉW",
+        "Multiplayer": "ɹǝʎɐꞁdᴉʇꞁnW",
+        "Quests": "sʇsǝnὊ",
+        "Sci-Fi": "ᴉℲ-ᴉɔS",
+        "Skyblock": "ʞɔoꞁqʎʞS",
+        "Small / Light": "ʇɥᵷᴉꞀ ꞁꞁɐɯS",
+        "Tech": "ɥɔǝ⟘",
+        "Vanilla+": "+ɐꞁꞁᴉuɐΛ"
+      },
+      "Modrinth": {
+        "All": "ꞁꞁⱯ",
+        "styles": "sǝꞁʎʇS",
+        "adventure": "ǝɹnʇuǝʌpⱯ",
+        "challenging": "ᵷuᴉᵷuǝꞁꞁɐɥƆ",
+        "combat": "ʇɐqɯoƆ",
+        "kitchen-sink": "ʞuᴉS uǝɥɔʇᴉʞ",
+        "lightweight": "ʇɥᵷᴉǝʍʇɥᵷᴉꞀ",
+        "magic": "ɔᴉᵷɐW",
+        "multiplayer": "ɹǝʎɐꞁdᴉʇꞁnW",
+        "optimization": "uoᴉʇɐzᴉɯᴉʇdO",
+        "quests": "sʇsǝnὊ",
+        "technology": "ʎᵷoꞁouɥɔǝ⟘"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "ꞁꞁⱯ",
+        "Styles": "sǝꞁʎʇS",
+        "Magic": "ɔᴉᵷɐW",
+        "Miscellaneous": "˙ɔsᴉW",
+        "Fantasy": "ʎsɐʇuɐℲ",
+        "Mod Support": "ʇɹoddnS poW",
+        "Tech": "ɥɔǝ⟘",
+        "Library": "ʎɹɐɹqᴉꞀ",
+        "Utility": "ʎʇᴉꞁᴉʇ∩",
+        "Adventure": "ǝɹnʇuǝʌpⱯ"
+      },
+      "Modrinth": {
+        "All": "ꞁꞁⱯ",
+        "styles": "sǝꞁʎʇS",
+        "adventure": "ǝɹnʇuǝʌpⱯ",
+        "cursed": "pǝsɹnƆ",
+        "decoration": "uoᴉʇɐɹoɔǝᗡ",
+        "economy": "ʎɯouoɔƎ",
+        "equipment": "ʇuǝɯdᴉnbƎ",
+        "food": "pooℲ",
+        "game-mechanics": "sɔᴉuɐɥɔǝW ǝɯɐ⅁",
+        "library": "ʎɹɐɹqᴉꞀ",
+        "magic": "ɔᴉᵷɐW",
+        "management": "ʇuǝɯǝᵷɐuɐW",
+        "minigame": "ǝɯɐᵷᴉuᴉW",
+        "mobs": "sqoW",
+        "optimization": "uoᴉʇɐzᴉɯᴉʇdO",
+        "social": "ꞁɐᴉɔoS",
+        "storage": "ǝᵷɐɹoʇS",
+        "technology": "ʎᵷoꞁouɥɔǝ⟘",
+        "transportation": "uoᴉʇɐʇɹodsuɐɹ⟘",
+        "utility": "ʎʇᴉꞁᴉʇ∩",
+        "worldgen": "uǝ⅁ pꞁɹoM"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "ʎʇᴉɹɐꞁndoԀ",
+        "Latest update": "ǝʇɐpdn ʇsǝʇɐꞀ",
+        "Creation date": "ǝʇɐp uoᴉʇɐǝɹƆ",
+        "Total downloads": "spɐoꞁuʍop ꞁɐʇo⟘",
+        "A-Z": "Z-Ɐ"
+      },
+      "Modrinth": {
+        "relevance": "ǝɔuɐʌǝꞁǝᴚ",
+        "downloads": "spɐoꞁuʍoᗡ",
+        "follows": "sɹǝʍoꞁꞁoℲ",
+        "newest": "pǝɥsᴉꞁqnd ǝʇɐᗡ",
+        "updated": "pǝʇɐpdn ǝʇɐᗡ"
+      }
+    },
+    "versionList": {
+      "All": "ꞁꞁⱯ"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "sᵷuᴉʇʇǝS ɹǝɥɔunɐꞀ ǝɹoʇsǝᴚ",
+    "body": "¿pǝǝɔoɹd oʇ ʇuɐʍ noʎ ǝɹns noʎ ǝɹⱯ ˙sǝnꞁɐʌ ʇꞁnɐɟǝp ɹᴉǝɥʇ oʇ sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ꞁꞁɐ ǝɹoʇsǝɹ ꞁꞁᴉʍ uoᴉʇɔɐ sᴉɥ⟘"
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "˙ʎꞁɹǝdoɹd ᵷuᴉʞɹoʍ ɯoɹɟ ɹǝɥɔunɐꞁ ǝɥʇ ʇuǝʌǝɹd ɹo sᵷuᴉʇʇǝs ꞁɐuᴉᵷᴉɹo ɟo ssoꞁ ǝɥʇ oʇ pɐǝꞁ ʎɐɯ ᵷuᴉʇʇɐɯɹoɟ ʇɔǝɹɹoɔuI ˙ǝꞁᴉɟ sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ʍɐɹ ǝɥʇ ᵷuᴉʇᴉpǝ uǝɥʍ snoᴉʇnɐɔ ǝq ǝsɐǝꞁԀ"
+  },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "punoɹᵷʞɔɐᗺ ɹǝɥɔunɐꞀ sɐ ʇǝS"
+    }
+  },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "ppɐ oʇ ɹǝʎɐꞁd ɐ ʇɔǝꞁǝs ǝsɐǝꞁԀ"
+    }
+  },
+  "Services": {
+    "config": {
+      "retrieveLauncherConfig": {
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ʇǝᵷ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "updateLauncherConfig": {
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ǝʇɐpdn oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "restoreLauncherConfig": {
+        "success": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ pǝɹoʇsǝɹ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ǝɹoʇsǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "exportLauncherConfig": {
+        "success": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ pǝʇɹodxǝ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ʇɹodxǝ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "FETCH_ERROR": "ɹǝʌɹǝs ɐʇǝɯ ǝɥʇ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "importLauncherConfig": {
+        "success": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ pǝʇɹodɯᴉ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ʇɹodɯᴉ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "FETCH_ERROR": "ɹǝʌɹǝs ɐʇǝɯ ǝɥʇ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ",
+            "INVALID_CODE": "ǝpoɔ pᴉꞁɐʌuI",
+            "CODE_EXPIRED": "pǝɹᴉdxǝ ǝpoƆ",
+            "VERSION_MISMATCH": "ɥɔʇɐɯsᴉɯ uoᴉsɹǝʌ ɹǝɥɔunɐꞀ"
+          }
+        }
+      },
+      "retrieveCustomBackgroundList": {
+        "success": "ʇsᴉꞁ punoɹᵷʞɔɐq ɯoʇsnɔ pǝʌǝᴉɹʇǝɹ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ʇsᴉꞁ punoɹᵷʞɔɐq ɯoʇsnɔ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "addCustomBackground": {
+        "success": "punoɹᵷʞɔɐq ɯoʇsnɔ pǝppɐ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "punoɹᵷʞɔɐq ɯoʇsnɔ ppɐ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "deleteCustomBackground": {
+        "success": "punoɹᵷʞɔɐq ɯoʇsnɔ pǝʇǝꞁǝp ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "punoɹᵷʞɔɐq ɯoʇsnɔ ǝʇǝꞁǝp oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "retrieveJavaList": {
+        "error": {
+          "title": "ʇsᴉꞁ ɐʌɐſ pǝꞁꞁɐʇsuᴉ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "validateJava": {
+        "error": {
+          "title": "ɐʌɐſ ǝʇɐpᴉꞁɐʌ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "JAVA_EXEC_INVALID": "pᴉꞁɐʌuᴉ sᴉ ǝꞁqɐʇnɔǝxǝ ɐʌɐſ"
+          }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "ǝɯᴉʇunɹ ɐʌɐſ ᵷuɐɾoW pɐoꞁuʍop oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "ʎɹoʇɔǝɹᴉp ǝɯɐᵷ pᴉꞁɐʌuI",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "pǝppɐ uǝǝq ʎpɐǝɹꞁɐ sɐɥ ʎɹoʇɔǝɹᴉp ǝɥ⟘",
+            "GAME_DIR_NOT_EXIST": "ʇsᴉxǝ ʇou sǝop ʎɹoʇɔǝɹᴉp ǝɥ⟘"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "ǝɥɔɐɔ pɐoꞁuʍop pǝɹɐǝꞁɔ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ǝɥɔɐɔ pɐoꞁuʍop ɹɐǝꞁɔ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "˙ssǝɹᵷoɹd uᴉ sʞsɐʇ pɐoꞁuʍop ǝʌᴉʇɔɐ ǝɹɐ ǝɹǝɥ⟘",
+            "FILE_DELETION_FAILED": "˙ǝsn uᴉ ǝq ʎɐɯ ʎǝɥʇ 'sǝꞁᴉɟ ǝʇǝꞁǝp oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      }
+    },
+    "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "ʇsᴉꞁ ɹǝʎɐꞁd ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "addPlayerOffline": {
+        "success": "ɹǝʎɐꞁd ǝuᴉꞁɟɟo pǝppɐ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ɹǝʎɐꞁd ǝuᴉꞁɟɟo ppɐ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "DUPLICATE": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ɹǝʎɐꞁԀ",
+            "INVALID": "pᴉꞁɐʌuᴉ sᴉ ᗡI∩∩"
+          }
+        }
+      },
+      "fetchOAuthCode": {
+        "error": {
+          "title": "ǝpoɔ uoᴉʇɐɔᴉʇuǝɥʇnɐ ʇǝᵷ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ ǝꞁqɐu∩",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "INVALID": "pᴉꞁɐʌuᴉ sᴉ ǝdʎʇ ɹǝʎɐꞁd ǝɥ⟘",
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʌɹǝs ǝɥ⟘"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "ɹǝʎɐꞁd pǝppɐ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ɹǝʎɐꞁd ppɐ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "DUPLICATE": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ɹǝʎɐꞁԀ",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ ǝꞁqɐu∩",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ ǝɥ⟘",
+            "CANCELLED": "pǝꞁꞁǝɔuɐɔ uᴉᵷoꞁ ɥʇnⱯO",
+            "INVALID": "pᴉꞁɐʌuᴉ sᴉ ǝdʎʇ ɹǝʌɹǝs ǝɥ⟘",
+            "NO_MINECRAFT_PROFILE": "punoɟ ǝꞁᴉɟoɹd ʇɟɐɹɔǝuᴉW oN"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "uᴉ pǝᵷᵷoꞁ-ǝɹ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "uᴉᵷoꞁ-ǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʎɐꞁd ǝɥ⟘",
+            "EXPIRED": "uᴉᵷoꞁ-ǝɹ ǝsɐǝꞁd 'pǝɹᴉdxǝ sɐɥ uǝʞoʇ ssǝɔɔɐ ǝɥ⟘",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "INVALID": "pᴉꞁɐʌuᴉ sᴉ ǝdʎʇ ɹǝʎɐꞁd ǝɥ⟘",
+            "CANCELLED": "pǝꞁꞁǝɔuɐɔ uᴉᵷoꞁ-ǝɹ ɥʇnⱯO",
+            "NO_MINECRAFT_PROFILE": "punoɟ ǝꞁᴉɟoɹd ʇɟɐɹɔǝuᴉW oN"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "ɹǝʎɐꞁd pǝppɐ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ɹǝʎɐꞁd ppɐ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "DUPLICATE": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ɹǝʎɐꞁԀ",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ ǝꞁqɐu∩",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "INVALID": "pɹoʍssɐd ɹo ʇunoɔɔɐ ᵷuoɹM",
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʌɹǝs ǝɥ⟘",
+            "EXPIRED": "uᴉᵷoꞁ-ǝɹ ǝsɐǝꞁd 'pǝɹᴉdxǝ sɐɥ uǝʞoʇ ssǝɔɔɐ ǝɥ⟘"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "uᴉ pǝᵷᵷoꞁ-ǝɹ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "uᴉᵷoꞁ-ǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʎɐꞁd ǝɥ⟘",
+            "EXPIRED": "uᴉᵷoꞁ-ǝɹ ǝsɐǝꞁd 'pǝɹᴉdxǝ sɐɥ uǝʞoʇ ssǝɔɔɐ ǝɥ⟘",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "INVALID": "pɹoʍssɐd ɹo ʇunoɔɔɐ ᵷuoɹM"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "ɹǝʎɐꞁd pǝppɐ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ɹǝʎɐꞁd ppɐ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "DUPLICATE": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ɹǝʎɐꞁԀ",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "EXPIRED": "uᴉᵷoꞁ-ǝɹ ǝsɐǝꞁd 'pǝɹᴉdxǝ sɐɥ uǝʞoʇ ssǝɔɔɐ ǝɥ⟘"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "uᴉʞs ɹǝʎɐꞁd pǝʇɐpdn ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "uᴉʞs ɹǝʎɐꞁd ǝʇɐpdn oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʎɐꞁd ǝɥ⟘",
+            "INVALID": "pᴉꞁɐʌuᴉ sᴉ ǝdʎʇ ɹǝʎɐꞁd ǝɥ⟘",
+            "TEXTURE_ERROR": "ǝɹnʇxǝʇ ɹǝʎɐꞁd ʇǝᵷ oʇ ǝꞁqɐu∩"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "uᴉʞs ɹǝʎɐꞁd pǝʇɐpdn ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "uᴉʞs ɹǝʎɐꞁd ǝʇɐpdn oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʎɐꞁd ǝɥ⟘",
+            "INVALID": "pᴉꞁɐʌuᴉ sᴉ ǝdʎʇ ɹǝʎɐꞁd ǝɥ⟘",
+            "TEXTURE_ERROR": "ǝɹnʇxǝʇ ɹǝʎɐꞁd ʇǝᵷ oʇ ǝꞁqɐu∩"
+          }
+        }
+      },
+      "deletePlayer": {
+        "success": "ɹǝʎɐꞁd pǝʇǝꞁǝp ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ɹǝʎɐꞁd ǝʇǝꞁǝp oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʎɐꞁd ǝɥ⟘"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "oɟuᴉ ɹǝʎɐꞁd pǝɥsǝɹɟǝɹ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "oɟuᴉ ɹǝʎɐꞁd ɥsǝɹɟǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʎɐꞁd ǝɥ⟘",
+            "EXPIRED": "uᴉᵷoꞁ-ǝɹ ǝsɐǝꞁd 'pǝɹᴉdxǝ sɐɥ uǝʞoʇ ssǝɔɔɐ ǝɥ⟘",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "INVALID": "pᴉꞁɐʌuᴉ sᴉ ǝdʎʇ ɹǝʎɐꞁd ǝɥ⟘"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "ʇsᴉꞁ ɹǝʌɹǝs ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "fetchAuthServer": {
+        "error": {
+          "title": "uoᴉʇɐɯɹoɟuᴉ ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ ʇǝᵷ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "DUPLICATE": "pǝppɐ uǝǝq ʎpɐǝɹꞁɐ sɐɥ ɹǝʌɹǝs ǝɥ⟘",
+            "INVALID": "Ꞁᴚ∩ ɹǝʌɹǝs pᴉꞁɐʌuI",
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʌɹǝs ǝɥ⟘"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ pǝppɐ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ ppɐ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "DUPLICATE": "pǝppɐ uǝǝq ʎpɐǝɹꞁɐ sɐɥ ɹǝʌɹǝs ǝɥ⟘",
+            "INVALID": "Ꞁᴚ∩ ɹǝʌɹǝs pᴉꞁɐʌuI",
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʌɹǝs ǝɥ⟘"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ pǝʇǝꞁǝp ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ ǝʇǝꞁǝp oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʌɹǝs uoᴉʇɐɔᴉʇuǝɥʇnɐ ǝɥ⟘"
+          }
+        }
+      }
+    },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "Ǝᴚſ ǝꞁqɐʇᴉns ʇɔǝꞁǝs oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "NO_SUITABLE_JAVA": "punoɟ uoᴉsɹǝʌ ɐʌɐſ ǝꞁqɐʇᴉns oN",
+            "SELECTED_JAVA_UNAVAILABLE": "ǝꞁqɐꞁᴉɐʌɐun sᴉ ɹo pǝʌoɯǝɹ uǝǝq sɐɥ ǝɯᴉʇunɹ ɐʌɐſ pǝʇɔǝꞁǝs ʎꞁꞁɐnuɐɯ ǝɥ⟘"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "sǝꞁᴉɟ ǝɯɐᵷ ǝʇɐpᴉꞁɐʌ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "MOD_LOADER_NOT_INSTALLED": "pǝʇǝꞁdɯoɔ ʇou uoᴉʇɐꞁꞁɐʇsuᴉ ɹǝpɐoꞁ poW",
+            "MOD_LOADER_LIB_NOT_DOWNLOADED": "pǝpɐoꞁuʍop ʇou sǝꞁᴉɟ ʎɹɐɹqᴉꞁ ɹǝpɐoꞁ poW",
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "GAME_FILES_INCOMPLETE": "ǝʇǝꞁdɯoɔuᴉ ǝɹɐ sǝꞁᴉɟ ǝɯɐ⅁",
+            "LAUNCHING_STATE_NOT_FOUND": "punoɟ ʇou ǝʇɐʇs ᵷuᴉɥɔunɐꞀ"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "ɹǝʎɐꞁd ǝʇɐpᴉꞁɐʌ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_FOUND": "ʇsᴉxǝ ʇou sǝop ɹǝʎɐꞁd ǝɥ⟘",
+            "EXPIRED": "uᴉᵷoꞁ-ǝɹ ǝsɐǝꞁd 'pǝɹᴉdxǝ sɐɥ uǝʞoʇ ssǝɔɔɐ ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "AUTHLIB_INJECTOR_NOT_READY": "uoᴉʇɔǝuuoɔ ʇǝuɹǝʇuᴉ ʞɔǝɥɔ ǝsɐǝꞁd 'ɹoʇɔǝɾuI-qᴉꞁɥʇnⱯ pɐoꞁuʍop oʇ pǝꞁᴉɐℲ",
+            "SAVE_ERROR": "ɹoʇɔǝɾuI-qᴉꞁɥʇnⱯ ǝʌɐs oʇ pǝꞁᴉɐℲ",
+            "LAUNCHING_STATE_NOT_FOUND": "punoɟ ʇou ǝʇɐʇs ᵷuᴉɥɔunɐꞀ"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "ǝɯɐᵷ ɥɔunɐꞁ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "punoɟ ʇou ǝʇɐʇs ᵷuᴉɥɔunɐꞀ",
+            "AUTH_SERVER_NOT_FOUND": "punoɟ ʇou ɹǝʌɹǝs ɥʇnⱯ"
+          }
+        }
+      }
+    },
+    "resource": {
+      "fetchGameVersionList": {
+        "error": {
+          "title": "ʇsᴉꞁ uoᴉsɹǝʌ ǝɯɐᵷ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "ɐʇɐpɐʇǝɯ uoᴉsɹǝʌ ǝɯɐᵷ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "CLIENT_VERSION_NOT_FOUND": "ʇsᴉxǝ ʇou sǝop uoᴉsɹǝʌ ǝɯɐᵷ pǝʇsǝnbǝɹ ǝɥ⟘"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "ʇsᴉꞁ uoᴉsɹǝʌ ɹǝpɐoꞁ poɯ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "NO_DOWNLOAD_API": "uoᴉʇɔǝuuoɔ ʇǝuɹǝʇuᴉ ʞɔǝɥɔ ǝsɐǝꞁd 'ǝꞁqɐꞁᴉɐʌɐ ʎᵷǝʇɐɹʇs pɐoꞁuʍop oN"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "ʇsᴉꞁ ǝɔɹnosǝɹ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "NO_DOWNLOAD_API": "uoᴉʇɔǝuuoɔ ʇǝuɹǝʇuᴉ ʞɔǝɥɔ ǝsɐǝꞁd 'ǝꞁqɐꞁᴉɐʌɐ ʎᵷǝʇɐɹʇs pɐoꞁuʍop oN"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "ʇsᴉꞁ uoᴉsɹǝʌ ǝɔɹnosǝɹ ɥɔʇǝɟ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "NO_DOWNLOAD_API": "uoᴉʇɔǝuuoɔ ʇǝuɹǝʇuᴉ ʞɔǝɥɔ ǝsɐǝꞁd 'ǝꞁqɐꞁᴉɐʌɐ ʎᵷǝʇɐɹʇs pɐoꞁuʍop oN"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "ɹǝʌɹǝs ǝɯɐᵷ pɐoꞁuʍop oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "ǝɔɹnosǝɹ ǝʇoɯǝɹ ʇǝᵷ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "NO_DOWNLOAD_API": "uoᴉʇɔǝuuoɔ ʇǝuɹǝʇuᴉ ʞɔǝɥɔ ǝsɐǝꞁd 'ǝꞁqɐꞁᴉɐʌɐ ʎᵷǝʇɐɹʇs pɐoꞁuʍop oN"
+          }
+        }
+      },
+      "updateMod": {
+        "error": {
+          "title": "poɯ ʇsǝʇɐꞁ pɐoꞁuʍop oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "PARSE_ERROR": "ʇɐɯɹoɟ ʇɔǝɹɹoɔuᴉ uɐ uᴉ ɐʇɐp pǝuɹnʇǝɹ ɹǝʌɹǝs ǝɥ⟘",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "FILE_OPERATION_ERROR": "ǝꞁᴉɟ poɯ pꞁo ǝɯɐuǝɹ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      }
+    },
+    "instance": {
+      "retrieveInstanceList": {
+        "error": {
+          "title": "ʇsᴉꞁ ǝɔuɐʇsuᴉ ǝɯɐᵷ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INVALID_NAME_ERROR": "ǝɯɐu ǝɔuɐʇsuᴉ pᴉꞁɐʌuI",
+            "INVALID_SOURCE_PATH": "ɥʇɐd ǝɔɹnos pᴉꞁɐʌuI",
+            "CONFLICT_NAME_ERROR": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ǝɯɐu ǝɔuɐʇsuI",
+            "FILE_MOVE_FAILED": "sǝꞁᴉɟ ǝɔuɐʇsuᴉ ǝʌoɯ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "ʞsɐʇ pɐoꞁuʍop ǝɔuɐʇsuᴉ ǝʇɐǝɹɔ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "CONFLICT_NAME_ERROR": "sʇsᴉxǝ ʎpɐǝɹꞁɐ ǝɯɐu ǝɔuɐʇsuI",
+            "FOLDER_CREATION_FAILED": "ɹǝpꞁoɟ ʇǝᵷɹɐʇ ǝʇɐǝɹɔ oʇ pǝꞁᴉɐℲ",
+            "FILE_CREATION_FAILED": "ǝꞁᴉɟ ʇǝᵷɹɐʇ ǝʇɐǝɹɔ oʇ pǝꞁᴉɐℲ",
+            "NETWORK_ERROR": "ɹǝʌɹǝs ǝɥʇ oʇ ʇɔǝuuoɔ oʇ pǝꞁᴉɐℲ",
+            "CLIENT_JSON_PARSE_ERROR": "oɟuᴉ uoᴉsɹǝʌ ǝɔuɐʇsuᴉ ǝsɹɐd oʇ pǝꞁᴉɐℲ",
+            "ASSET_INDEX_PARSE_ERROR": "xǝpuᴉ ʇǝssɐ ǝsɹɐd oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ǝɔuɐʇsuᴉ ǝʇɐpdn oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "NOT_FOUND": "punoɟ ʇou ǝɔuɐʇsuI"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ǝɯɐᵷ ǝɔuɐʇsuᴉ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "sᵷuᴉʇʇǝs ǝɯɐᵷ ǝɔuɐʇsuᴉ ʇǝsǝɹ ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "sᵷuᴉʇʇǝs ǝɯɐᵷ ǝɔuɐʇsuᴉ ʇǝsǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "SAVE_ERROR": "sᵷuᴉʇʇǝs ǝɔuɐʇsuᴉ ǝʌɐs oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "retrieveInstanceSubdirPath": {
+        "error": {
+          "title": "ɥʇɐd ʎɹoʇɔǝɹᴉp ǝɔuɐʇsuᴉ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ɹoɹɹǝ ǝdʎʇ ɐ sɐɥ ɹo ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "ǝɔuɐʇsuᴉ pǝʇǝꞁǝp ʎꞁꞁnɟssǝɔɔnS",
+        "error": {
+          "title": "ǝɔuɐʇsuᴉ ǝʇǝꞁǝp oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI"
+          }
+        }
+      },
+      "renameInstance": {
+        "error": {
+          "title": "ǝɔuɐʇsuᴉ ǝɯɐuǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "CONFLICT_NAME_ERROR": "sʇsᴉxǝ ǝɯɐu ǝɔuɐʇsuᴉ ǝʇɐɔᴉꞁdnp Ɐ",
+            "INVALID_NAME_ERROR": "ǝɯɐu ǝɔuɐʇsuᴉ pᴉꞁɐʌuI",
+            "INVALID_SOURCE_PATH": "ɥʇɐd ǝɔɹnos pᴉꞁɐʌuI",
+            "FILE_MOVE_FAILED": "sǝꞁᴉɟ ǝɔuɐʇsuᴉ ǝʌoɯ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "ʎꞁꞁnɟssǝɔɔns pǝᴉdoɔ ǝɔɹnosǝᴚ",
+        "error": {
+          "title": "ǝɔɹnosǝɹ ʎdoɔ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ɹoɹɹǝ ǝdʎʇ ɹo ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "INVALID_SOURCE_PATH": "ɥʇɐd ǝɔɹnos pᴉꞁɐʌuI",
+            "ZIP_FILE_PROCESS_FAILED": "ǝꞁᴉɟ dᴉz ssǝɔoɹd oʇ pǝꞁᴉɐℲ",
+            "FILE_COPY_FAILED": "puɐɯɯoɔ ǝꞁᴉɟ ʎdoɔ ǝɥʇ ǝʇnɔǝxǝ oʇ pǝꞁᴉɐℲ",
+            "FOLDER_CREATION_FAILED": "ɹǝpꞁoɟ ʇǝᵷɹɐʇ ǝʇɐǝɹɔ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "ʎꞁꞁnɟssǝɔɔns pǝʌoɯ ǝɔɹnosǝᴚ",
+        "error": {
+          "title": "pǝꞁᴉɐɟ ǝɔɹnosǝɹ ǝʌoW",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ɹoɹɹǝ ǝdʎʇ ɹo ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "INVALID_SOURCE_PATH": "ɥʇɐd ǝɔɹnos pᴉꞁɐʌuI",
+            "FILE_MOVE_FAILED": "puɐɯɯoɔ ǝꞁᴉɟ ǝʌoɯ ǝɥʇ ǝʇnɔǝxǝ oʇ pǝꞁᴉɐℲ",
+            "FOLDER_CREATION_FAILED": "ɹǝpꞁoɟ ʇǝᵷɹɐʇ ǝʇɐǝɹɔ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "retrieveWorldList": {
+        "error": {
+          "title": "ʇsᴉꞁ pꞁɹoʍ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "ʇsᴉꞁ ɹǝʌɹǝs ǝɯɐᵷ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "pǝʇdnɹɹoɔ uǝǝq ǝʌɐɥ ʎɐɯ ʇɐp˙sɹǝʌɹǝs"
+          }
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "ʇsᴉꞁ poɯ ꞁɐɔoꞁ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "ʇsᴉꞁ ʞɔɐd ǝɔɹnosǝɹ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "sɹǝʌɹǝs ɯoɹɟ ʇsᴉꞁ ʞɔɐd ǝɔɹnosǝɹ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "retrieveSchematicList": {
+        "error": {
+          "title": "ʇsᴉꞁ ɔᴉʇɐɯǝɥɔs ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "retrieveShaderPackList": {
+        "error": {
+          "title": "ʇsᴉꞁ ʞɔɐd ɹǝpɐɥs ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "retrieveScreenshotList": {
+        "error": {
+          "title": "ʇsᴉꞁ ʇoɥsuǝǝɹɔs ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ"
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "pǝꞁᴉɐɟ ǝꞁᵷᵷoʇ ǝʇɐʇs poW",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "pǝʇǝꞁǝp ɹo 'pǝʌoɯ 'pǝɯɐuǝɹ uǝǝq ǝʌɐɥ ʎɐɯ ʇᴉ 'ʇsᴉxǝ ʇou sǝop ǝꞁᴉɟ poɯ ǝɥ⟘"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "ʇsᴉꞁ sꞁᴉɐʇǝp pꞁɹoʍ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "WORLD_NOT_EXSIT_ERROR": "ʇsᴉxǝ ʇou pꞁɹoM",
+            "LEVEL_NOT_EXSIT_ERROR": "ʇsᴉxǝ ʇou ɐʇɐp ꞁǝʌǝꞀ",
+            "LEVEL_PARSE_ERROR": "ɹoɹɹǝ ǝsɹɐd ɐʇɐp ꞁǝʌǝꞀ"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "doʇʞsǝp ǝɥʇ oʇ pǝppɐ uǝǝq sɐɥ ʇnɔʇɹoɥs ɥɔunɐꞀ",
+        "error": {
+          "title": "ʇnɔʇɹoɥs ɥɔunɐꞁ ǝʇɐǝɹɔ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "pǝꞁᴉɐɟ uoᴉʇnɔǝxǝ puɐɯɯoƆ",
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI"
+          }
+        }
+      },
+      "finishModLoaderInstall": {
+        "loading": "{{instanceName}} ɹoɟ ɹǝpɐoꞁ poɯ ᵷuᴉꞁꞁɐʇsuI",
+        "success": "ʎꞁꞁnɟssǝɔɔns pǝꞁꞁɐʇsuᴉ ɹǝpɐoꞁ poW",
+        "error": {
+          "title": "ɹǝpɐoꞁ poɯ ꞁꞁɐʇsuᴉ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ʇsᴉxǝ ʇou sǝop ᗡI ǝɔuɐʇsuI",
+            "INSTALLATION_DUPLICATED": "ssǝɹᵷoɹd uᴉ ʎpɐǝɹꞁɐ sᴉ ssǝɔoɹd uoᴉʇɐꞁꞁɐʇsuᴉ ɹǝɥʇouⱯ",
+            "MAIN_CLASS_NOT_FOUND": "uoᴉsɹǝʌ ɹǝpɐoꞁ poɯ ǝɥʇ uᴉ punoɟ ʇou ssɐꞁɔ uᴉɐW",
+            "PROCESSOR_EXECUTION_FAILED": "ssǝɔoɹd ꞁꞁɐʇsuᴉ ǝɥʇ ǝʇnɔǝxǝ oʇ pǝꞁᴉɐℲ"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "ɹǝpɐoꞀ poW ǝᵷuɐɥƆ oʇ ǝꞁqɐu∩",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "pǝɹnᵷᴉɟuoɔ ǝq ʇouuɐɔ ɥɔᴉɥʍ 'ssǝɔoɹd ꞁɐuɹǝʇxǝ ʎq pǝꞁꞁɐʇsuI"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "ɹǝpɐoꞀ poW ǝᵷuɐɥƆ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "pǝɹnᵷᴉɟuoɔ ǝq ʇouuɐɔ ɥɔᴉɥʍ 'ssǝɔoɹd ꞁɐuɹǝʇxǝ ʎq pǝꞁꞁɐʇsuI"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "oɟuᴉ ǝɔɹnosǝɹ ʞɔɐdpoɯ ǝʌǝᴉɹʇǝɹ oʇ pǝꞁᴉɐℲ",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "pǝʇǝꞁǝp ɹo pǝʌoɯ 'pǝɯɐuǝɹ uǝǝq ǝʌɐɥ ʎɐɯ ʇᴉ 'punoɟ ʇou ǝꞁᴉɟ ʞɔɐdpoW",
+            "MODPACK_MANIFEST_PARSE_ERROR": "ɹoɹɹǝ ǝsɹɐd ǝꞁᴉɟ ʇsǝɟᴉuɐɯ ʞɔɐdpoW"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "error": "ʞsɐʇ ǝʇɐǝɹɔ oʇ pǝꞁᴉɐℲ"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "pǝʇɹɐʇs sɐɥ pɐoꞁuʍop {{param}}",
+          "Failed": "ʎɹʇǝɹ ǝsɐǝꞁd 'pǝꞁᴉɐɟ ʎꞁꞁɐᴉʇɹɐd pɐoꞁuʍop {{param}}",
+          "Completed": "ʎꞁꞁnɟssǝɔɔns pǝpɐoꞁuʍop uǝǝq sɐɥ {{param}}",
+          "Stopped": "pǝddoʇs uǝǝq sɐɥ pɐoꞁuʍop {{param}}",
+          "Cancelled": "pǝꞁꞁǝɔuɐɔ uǝǝq sɐɥ pɐoꞁuʍop {{param}}"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "ʎꞁꞁnɟssǝɔɔns pǝʇǝꞁǝp ǝꞁᴉℲ",
+        "error": {
+          "title": "ǝꞁᴉɟ ǝʇǝꞁǝp oʇ pǝꞁᴉɐℲ"
+        }
+      }
+    }
+  },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "sᵷuᴉʇʇǝS ǝɯɐ⅁",
+      "java": "ɐʌɐſ",
+      "general": "ꞁɐɹǝuǝ⅁",
+      "appearance": "ǝɔuɐɹɐǝddⱯ",
+      "download": "pɐoꞁuʍoᗡ",
+      "sync-restore": "ǝɹoʇsǝᴚ & ɔuʎS",
+      "help": "dꞁǝH & sɔoᗡ",
+      "about": "ʇnoqⱯ",
+      "dev-test": "ǝᵷɐԀ ʇsǝ⟘ - ʌǝᗡ"
+    }
+  },
+  "SkinPreview": {
+    "cape": "ǝdɐƆ",
+    "animation": {
+      "idle": "ǝꞁpI",
+      "walk": "ʞꞁɐM",
+      "run": "unᴚ",
+      "wave": "ǝʌɐM"
+    },
+    "button": {
+      "enableRotation": "uoᴉʇɐʇoᴚ ǝꞁqɐuƎ",
+      "disableRotation": "uoᴉʇɐʇoᴚ ǝꞁqɐsᴉᗡ",
+      "play": "ʎɐꞁԀ",
+      "pause": "ǝsnɐԀ"
+    },
+    "error": {
+      "loadSkin": "uᴉʞs pɐoꞁ oʇ pǝꞁᴉɐℲ"
+    }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "ɥɔɹɐǝS ꞁɐqoꞁ⅁"
+    },
+    "tip": "ǝɔɐꞁd ǝuo uᴉ sǝɔɹnosǝɹ ǝɯɐᵷ ǝuᴉꞁuo puɐ ꞁɐɔoꞁ ɥɔɹɐǝS",
+    "empty": "punoɟ sʇꞁnsǝɹ oN",
+    "resource": {
+      "mod": "spoɯ {{query}} ɹoɟ ɥɔɹɐǝS",
+      "world": "spꞁɹoʍ {{query}} ɹoɟ ɥɔɹɐǝS",
+      "resourcepack": "sʞɔɐd ǝɔɹnosǝɹ {{query}} ɹoɟ ɥɔɹɐǝS",
+      "shader": "sʞɔɐd ɹǝpɐɥs {{query}} ɹoɟ ɥɔɹɐǝS",
+      "datapack": "sʞɔɐd ɐʇɐp {{query}} ɹoɟ ɥɔɹɐǝS",
+      "modpack": "sʞɔɐdpoɯ {{query}} ɹoɟ ɥɔɹɐǝS",
+      "curseforge": "ǝᵷɹoℲǝsɹnƆ uo",
+      "modrinth": "ɥʇuᴉɹpoW uo"
+    },
+    "result": {
+      "page": "ǝᵷɐԀ",
+      "recentViewed": "pǝʍǝᴉΛ ʇuǝɔǝᴚ",
+      "instance": "ǝɔuɐʇsuI",
+      "player": "ɹǝʎɐꞁԀ",
+      "curseforge": "ǝᵷɹoℲǝsɹnƆ uo ɥɔɹɐǝS",
+      "modrinth": "ɥʇuᴉɹpoW uo ɥɔɹɐǝS"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "qnHʇᴉ⅁ uo s∩ ɹɐʇS"
+    },
+    "body": "˙noʎ ɹoɟ sǝɔuǝᴉɹǝdxǝ puɐ sǝɹnʇɐǝɟ ʍǝu ᵷuᴉɹǝʌᴉꞁǝp ǝnuᴉʇuoɔ oʇ sn ǝʇɐʌᴉʇoɯ ꞁꞁᴉʍ puɐ sn oʇ ʇoꞁ ɐ suɐǝɯ uoᴉʇɔɐ ꞁꞁɐɯs sᴉɥ⟘ ¿qnHʇᴉ⅁ uo ɹɐʇs ɐ sn ǝʌᴉᵷ noʎ pꞁnoɔ 'sn ʇɹoddns oʇ ǝʞᴉꞁ pꞁnoʍ puɐ ʇɔnpoɹd ɹno ǝʌoꞁ noʎ ɟI",
+    "button": {
+      "later": "ɹǝʇɐꞀ",
+      "starUs": "s∩ ɹɐʇS"
+    }
+  },
+  "SyncAndRestoreSettingsPage": {
+    "launcherConfig": {
+      "title": "sᵷuᴉʇʇǝS ɹǝɥɔunɐꞀ",
+      "settings": {
+        "internetSync": {
+          "title": "ʇǝuɹǝʇuI ǝɥʇ ɥᵷnoɹɥʇ ɔuʎS",
+          "import": "ʇɹodɯI",
+          "export": "ʇɹodxƎ"
+        },
+        "restoreAll": {
+          "title": "sᵷuᴉʇʇǝS ꞁꞁⱯ ǝɹoʇsǝᴚ",
+          "description": "sǝnꞁɐʌ ʇꞁnɐɟǝp ɹᴉǝɥʇ oʇ sᵷuᴉʇʇǝs ɹǝɥɔunɐꞁ ꞁꞁɐ ǝɹoʇsǝᴚ",
+          "restore": "ǝɹoʇsǝᴚ"
+        }
+      }
+    }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "ʇɹodxƎ - sᵷuᴉʇʇǝS ɔuʎS"
+    },
+    "label": {
+      "token": "uǝʞo⟘"
+    },
+    "helper": "oʇ ʇɹodxǝ oʇ ǝɔᴉʌǝp ǝɥʇ oʇuᴉ ǝʌoqɐ uǝʞoʇ ǝɥʇ ɹǝʇuƎ",
+    "countdown": "ɥsǝɹɟǝɹ ꞁᴉʇun spuoɔǝs {{seconds}}"
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "ʇɹodɯI - sᵷuᴉʇʇǝS ɔuʎS"
+    },
+    "label": {
+      "token": "uǝʞo⟘"
+    },
+    "helper": "ɯoɹɟ ʇɹodɯᴉ oʇ ǝɔᴉʌǝp ǝɥʇ ʎq pǝʇɐɹǝuǝᵷ uǝʞoʇ ǝɥʇ ɹǝʇuƎ"
+  },
+  "Utils": {
+    "datetime": {
+      "formatRelativeTime": {
+        "now": "ʍou",
+        "minutes-ago": "oᵷɐ sǝʇnuᴉɯ {{count}}",
+        "last-hour": "ɹnoɥ ʇsɐꞁ",
+        "hours-ago": "oᵷɐ sɹnoɥ {{count}}",
+        "yesterday": "ʎɐpɹǝʇsǝʎ",
+        "others": "{{time}} uo"
+      }
+    },
+    "env": {
+      "checkFrontendCompatibility": {
+        "warning": {
+          "title": "˙ʎꞁʇɔǝɹɹoɔ ʎɐꞁdsᴉp ʇou ʎɐɯ sʇuǝɯǝꞁǝ I∩ ǝɯoS ˙pǝʇɐpʇno sᴉ uoᴉsɹǝʌ ʍǝᴉʌqǝʍ s,ɯǝʇsʎS"
+        }
+      }
+    },
+    "wiki": {
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "{{version}}‾uoᴉʇᴉpƎ‾ɐʌɐſ"
+      }
+    }
+  },
+  "ViewSkinModal": {
+    "skinView": "uᴉʞS ʍǝᴉΛ"
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "¡ǝɯoɔꞁǝM"
+    },
+    "body": {
+      "part1": " ɹno oʇ ǝǝɹᵷɐ puɐ pɐǝɹ oʇ ǝɹns ǝq ǝsɐǝꞁd 'ʇɹɐʇs noʎ ǝɹoɟǝᗺ ¡ꞀƆWſS oʇ ǝɯoɔꞁǝM",
+      "terms": "ʇuǝɯǝǝɹᵷⱯ ɹǝs∩",
+      "periods": "˙"
+    },
+    "warning": {
+      "unstableVersion": "˙ǝɯoɔꞁǝʍ ǝɹɐ sʇsǝnbǝɹ ǝɹnʇɐǝɟ puɐ sʇɹodǝɹ ᵷnᗺ ˙ǝʇǝꞁdɯoɔuᴉ ɹo ǝꞁqɐʇsun ǝq ʎɐɯ sǝɹnʇɐǝɟ ǝɯoS ˙ꞀƆWſS ɟo {{versionLabel}} ǝɥʇ ᵷuᴉsn ǝɹɐ noʎ"
+    },
+    "button": {
+      "exit": "ʇᴉxƎ",
+      "agree": "ǝǝɹᵷⱯ"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "{{worldName}} - ɐʇɐᗡ ꞁǝʌǝꞀ pꞁɹoM"
+    }
+  }
+}
