@@ -34,7 +34,8 @@ export const localeResources: LocaleResources = {
     translation: zh_Hant,
     display_name: "繁體中文",
   },
-  "en-Qabs": {
+  // below are special locales
+  "en-ud": {
     translation: en_ud,
     display_name: "ɥsᴉꞁᵷuƎ (uʍoᗡ ǝpᴉsd∩)",
   },
