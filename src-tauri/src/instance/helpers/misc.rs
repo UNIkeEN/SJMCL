@@ -261,15 +261,6 @@ pub async fn refresh_instances(
     };
     // ignore error here, for now
     instance.save_json_cfg().await?;
-
-    // Migrate client info to new format
-    // TODO: will be removed after the new migration utils crate implemented
-    let client_info_dir = instance
-      .version_path
-      .join(format!("{}.json", instance.name));
-    let client_info = load_json_async::<McClientInfo>(&client_info_dir).await?;
-    save_json_async(&client_info, &client_info_dir).await?;
-
     instances.push(instance);
   }
 
