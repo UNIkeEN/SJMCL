@@ -3,7 +3,7 @@
 [![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
 ![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)
-![Runs](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&label=runs&query=$.total_count&url=https%3A%2F%2Fmc.sjtu.cn%2Fapi-sjmcl%2Fcount)
+![Runs](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&label=runs&query=$.total_count_str&url=https%3A%2F%2Fmc.sjtu.cn%2Fapi-sjmcl%2Fcount)
 [![Deepwiki](https://img.shields.io/badge/Ask-DeepWiki-20B2AA?logo=&style=for-the-badge)](https://deepwiki.com/UNIkeEN/SJMCL)
 
 [English](../README.md) · **简体中文** · [繁體中文](README.zh-Hant.md)
@@ -44,6 +44,29 @@ SJMCL 目前支持以下平台：
 
 如果您需要在 Windows 7 运行 SJMCL，请先 [下载 Microsoft Edge WebView2 运行时](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2#download) 并安装之，推荐选择“常青引导程序”。
 
+<details>
+<summary><h3>从命令行安装</h3></summary>
+
+<details>
+<summary><h4>Arch Linux</h4></summary>
+
+SJMCL 已上传至 Arch Linux 用户仓库（AUR）。您可以使用常见的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 安装：
+
+```bash
+yay -S sjmcl-bin
+```
+
+如不使用 AUR 助手，您也可以手动安装：
+
+```bash
+git clone https://aur.archlinux.org/sjmcl-bin.git
+cd sjmcl-bin
+makepkg -si
+```
+
+</details>
+</details>
+
 ## 开发与贡献
 
 首先克隆本项目并安装前端依赖：
@@ -83,7 +106,7 @@ npm run tauri dev
 2. 在您的仓库 README、分发网站或相关文档、软件的关于页面中，须明确标注您的程序基于 SJMCL，并注明原仓库链接。
 3. 当对本软件的修改仅限于**增加**（而非修改或删除）预置认证服务器（`src-tauri/src/account/helpers/authlib_injector/constants.rs`）时，前述第 1 条限制不适用。在该情形下，您可继续使用原始的软件名称进行编译与分发。
 
-另根据我们网站的用户协议，当您分发本软件的修改版本时，请仅向我们的信息统计服务器发送带前缀（不少于两个字母，如 `XX-0.0.1`）的版本号，除非你的修改满足上述第 3 条限制。
+另根据我们网站的用户协议，当您分发本软件的修改版本时，请仅向我们的信息统计服务器（`src-tauri/src/utils/sys_info.rs`）发送带前缀（不少于两个字母，如 `XX-0.0.1`）的版本号，除非您的修改满足上述第 3 条限制。
 
 ## 联系我们
 

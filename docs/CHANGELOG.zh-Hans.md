@@ -2,6 +2,62 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 0.5.0
+
+`2025-10-20`
+
+- **🔥 支持更换或更新已安装实例的模组加载器。#943 #1083 #1085** @xunying123 @baiyuansjtu @UNIkeEN
+- **🔥 支持导入并安装 MultiMC 格式的整合包。#1040** @pynickle
+- **🔥 新增启动器自身日志系统。#1077 #1079 #1080** @ToolmanP @UNIkeEN
+- 🌟 自动检测 Windows 注册表中更多版本的 Java。#1031 @pynickle @UNIkeEN
+- 🌟 新增手动输入 Java 路径的对话框，便于 macOS 和 Linux 用户使用。#1074 @UNIkeEN @DragonRock37
+- 🐛 修复创建实例对话框中游戏版本列表的交互效果显示问题。#948 @Reqwey
+- 🐛 修复聚合搜索对话框的键盘快捷键失效的问题。#1081 @UNIkeEN
+- 🛠 现在中文界面下，启动器新版本介绍将优先显示中文。#1070 @pynickle
+- 🛠 优化资源搜索对话框与资源版本列表的显示效果。#1087 @SundayChen
+- 工作流：
+   - 修复繁体中文自动翻译脚本的问题。#1044 @HsxMark
+   - 删除已弃用的前端格式化命令，统一为开发指南推荐的命令。#1069 @OrzMiku
+
+## 0.4.4
+
+`2025-10-13`
+
+- 🌟 支持下载和识别 25w14craftmine 版本游戏的 NeoForge 加载器。#1033 @pynickle @UNIkeEN
+- 🌟 在聚合搜索中显示最匹配的热门资源搜索结果以快速跳转。#1049 @SundayChen
+- 🌟 优化提升 Minecraft 颜色字体的渲染，在浅色模式下提升可读性。#1065 @UNIkeEN @funkthesky-ops @RobertZhang0901
+- 🐛 修复从其他启动器导入的实例因库重复而无法启动的问题。#1039 @ModistAndrew @UNIkeEN
+- 🐛 修复导入整合包时潜在的安全性问题，避免恶意整合包攻击。#1043 @hans362
+- 🐛 修复 1.21.x 版本游戏“继续上次游玩”失效的问题。#1057 @pynickle
+- 🐛 修复重试下载任务名称前端显示错误的问题。#1060 @pynickle
+- 🛠 调整优化聚合搜索页面的条目展示顺序。#1049 @SundayChen
+- 🛠 调整优化启动器初始加载界面的布局。#1056 @HsxMark
+
+## 0.4.3
+
+`2025-10-6`
+
+- 🌟 在深色模式下支持自动调暗启动器壁纸。#983 @UNIkeEN
+- 🌟 优化 Windows 平台的 Java 扫描逻辑，增加更多的扫描位置。#1021 #1029 @UNIkeEN @pynickle
+- 🌟 优化繁体中文的 Minecraft Wiki 跳转链接。#1027 @pynickle
+- 🐛 修复 1.21.x 版本游戏“快速进入世界”失效的问题。#980 @pynickle
+- 🐛 修复模组列表、模组信息对话框与启动器设置界面的长文本显示问题。#984 #997 @1357310795
+- 🐛 修复部分游戏版本指向的错误 Minecraft Wiki 链接。#994 @pynickle
+- 🐛 修复当实例名称存在特定字符时的前端解析问题。#1005 @pynickle
+- 🐛 修复模组更新对话框部分文本在深色模式下的显示问题。#1007 @pynickle
+- 🐛 修复切换实例后，详情页服务器列表未正确刷新的问题。#1012 @1357310795
+- 🐛 修复模组信息、模组更新对话框对特殊模组的信息识别问题。#1016 @SundayChen
+- 🐛 修复对于早期游戏版本，自动设置语言为简体中文的功能失效的问题。#1019 @pynickle
+- 🐛 修复早期 macOS 平台下启动器白屏的问题。#1023 @1357310795 @hans362
+- 🐛 修复文档与帮助界面的错误 MUA 英文版官网链接。#1028 @pynickle
+- 🐛 修复 Windows 平台下自动更新可能失败的问题。#1038 @hans362 @1357310795
+- 🐛 修复使用 BMCLAPI 时 Forge 与 NeoForge 运行库下载失败的问题。#1042 @xunying123
+- 🛠 重构前端实例数据缓存模块以提升稳定性。#1012 @1357310795
+- 🛠 在安装 Fabric 时一并下载 Fabric API 模组现在是可选的。#1022 @Nova-Squ1 @UNIkeEN
+- 🛠 提前设置游戏进程的优先级以应用于游戏启动阶段。#1034 @pynickle
+- 工作流：
+   - 当 macOS 签名失败时将默认分发未签名版本并警告，而非抛出错误。#1010 @Minecrafter-Pythoner
+
 ## 0.4.2
 
 `2025-09-30`
@@ -29,8 +85,8 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
 `2025-09-27`
 
-- 🔥 支持启动器本体的自动更新。#918 #934 @UNIkeEN @hans362
-- 🔥 支持从 Mojang 源下载多版本的 Java 运行时。#926 @Nova-Squ1 @UNIkeEN
+- **🔥 支持启动器本体的自动更新。#918 #934** @UNIkeEN @hans362
+- **🔥 支持从 Mojang 源下载多版本的 Java 运行时。#926** @Nova-Squ1 @UNIkeEN
 - 🌟 在设置页面现可一键在文件资源管理器中显示以编辑启动器设置的原始 JSON 文件。#928 @UNIkeEN
 - 🌟 补全高级游戏启动选项的相关逻辑。#929 @xunying123
 - 🐛 修复模组信息对话框未显示关闭按钮的问题。#921 @SundayChen
@@ -40,7 +96,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 - 📦 移除未使用的微软客户端密钥环境变量。#949 @Reqwey
 - 网页与文档：
    - 更新开源协议的附加条款。#945 @UNIkeEN @ff98sha
-- 在网页添加最新与历史版本的下载页面。 @itray25 @xunying123
+   - 在网页添加最新与历史版本的下载页面。 @itray25 @xunying123
 - 工作流：
    - 修复编译工作流中 `rustfmt` 组件与 `i686-pc-windows-msvc` 目标未安装的问题。 @UNIkeEN
 
@@ -92,9 +148,9 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 - 🌟 支持 Windows Arm64 平台。#867 @Minecrafter-Pythoner
 - 🐛 修复联网配置同步时令牌计时更新失效的问题。#852 @Nova-Squ1
 - 🐛 修复因重试下载模组加载器导致启动参数重复的问题。#860 @Reqwey
-- 📦 更新前端依赖 next 至最新版本。#869 @dependabot[bot]
+- 📦 更新前端依赖 `next` 至最新版本。#869 @dependabot[bot]
 - 工作流:
-   - 同步前端的 npm 和 pnpm 锁定文件。#861 #862 @pangbo13 @Minecrafter-Pythoner
+   - 同步前端的 `npm` 和 `pnpm` 锁定文件。#861 #862 @pangbo13 @Minecrafter-Pythoner
 
 ## 0.2.0
 

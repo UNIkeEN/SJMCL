@@ -317,6 +317,18 @@
       }
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "修改模组加载器",
+        "install": "安装模组加载器"
+      }
+    },
+    "notSelectedLoader": "未选择新的加载器",
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
+    }
+  },
   "CheckModUpdateModal": {
     "header": {
       "title": "检查模组更新"
@@ -337,15 +349,6 @@
     },
     "error": {
       "renameOldMod": "重命名旧文件失败"
-    }
-  },
-  "ChangeModLoaderModal": {
-    "header": {
-      "title": "修改模组加载器"
-    },
-    "notSelectedLoader": "未选择新的加载器",
-    "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
     }
   },
   "ClearDownloadCacheAlertDialog": {
@@ -522,8 +525,7 @@
       "settings": {
         "directory": {
           "title": "下载缓存目录",
-          "select": "修改",
-          "open": "打开"
+          "select": "修改"
         },
         "clear": {
           "title": "清除下载缓存",
@@ -955,8 +957,14 @@
       "settings": {
         "openConfigJson": {
           "title": "启动器设置文件",
-          "description": "在{{opener}}中显示启动器的原始设置文件",
-          "button": "打开"
+          "description": "在{{opener}}中显示启动器的原始设置文件"
+        },
+        "launcherLogDir": {
+          "title": "启动器日志目录"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "自动清理启动器日志",
+          "description": "自动清理 30 天及以前的启动器日志文件"
         }
       }
     }
@@ -1269,7 +1277,8 @@
         "adventure": "冒险模式",
         "spectator": "观察者模式"
       },
-      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）",
+      "gamemodeDesc": "，{{gamemode}}",
+      "difficultyDesc": "（难度：{{difficulty}}）",
       "viewLevelData": "世界基础数据",
       "launch": "游玩此世界"
     },
@@ -1340,7 +1349,15 @@
     "skinManage": "管理皮肤",
     "default": "默认",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "本地上传",
+    "skin": "皮肤",
+    "cape": "披风",
+    "model": {
+      "label": "模型",
+      "default": "宽型",
+      "slim": "纤细"
+    }
   },
   "ManualAddJavaPathModal": {
     "modal": {
@@ -1942,6 +1959,17 @@
           }
         }
       },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "角色皮肤更新成功",
+        "error": {
+          "title": "角色皮肤更新失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "角色类型错误",
+            "TEXTURE_ERROR": "角色皮肤获取失败"
+          }
+        }
+      },
       "deletePlayer": {
         "success": "角色删除成功",
         "error": {
@@ -2031,7 +2059,7 @@
             "EXPIRED": "访问令牌已过期，请重新登录",
             "NETWORK_ERROR": "无法连接到服务器",
             "PARSE_ERROR": "服务器返回的数据格式错误",
-            "NO_DOWNLOAD_API": "下载 Authlib-Injector 失败，请检查网络连接",
+            "AUTHLIB_INJECTOR_NOT_READY": "下载 Authlib-Injector 失败，请检查网络连接",
             "SAVE_ERROR": "保存 Authlib-Injector 失败",
             "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
           }
@@ -2041,7 +2069,8 @@
         "error": {
           "title": "启动游戏失败",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
+            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失",
+            "AUTH_SERVER_NOT_FOUND": "认证服务器不存在"
           }
         }
       }
@@ -2394,6 +2423,9 @@
       "disableRotation": "禁用旋转",
       "play": "播放",
       "pause": "暂停"
+    },
+    "error": {
+      "loadSkin": "加载皮肤失败"
     }
   },
   "SpotlightSearchModal": {

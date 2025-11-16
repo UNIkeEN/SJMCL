@@ -7,7 +7,7 @@ use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
-use strum_macros::Display;
+use strum_macros::{Display, EnumIter, EnumString};
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -19,14 +19,58 @@ pub enum PlayerType {
   #[serde(rename = "microsoft")]
   Microsoft,
 }
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Display, Default, EnumIter)]
+#[serde(rename_all = "lowercase")]
+pub enum PresetRole {
+  #[default]
+  Steve,
+  Alex,
+}
+
+#[derive(
+  Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Display, Default, EnumIter, EnumString,
+)]
+#[serde(rename_all = "UPPERCASE")]
+#[strum(serialize_all = "UPPERCASE")]
+pub enum TextureType {
+  #[default]
+  Skin,
+  Cape,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Display, Default, EnumIter, EnumString)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum SkinModel {
+  #[default]
+  Default,
+  Slim,
+}
+
+impl<'de> Deserialize<'de> for SkinModel {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: serde::Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    match s.to_lowercase().as_str() {
+      "default" | "classic" => Ok(SkinModel::Default),
+      "slim" => Ok(SkinModel::Slim),
+      _ => Err(serde::de::Error::unknown_variant(
+        &s,
+        &["default", "classic", "slim"],
+      )),
+    }
+  }
+}
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Texture {
-  pub texture_type: String,
+  pub texture_type: TextureType,
   pub image: ImageWrapper,
-  pub model: String,
-  pub preset: Option<String>,
+  pub model: SkinModel,
+  pub preset: Option<PresetRole>,
 }
 
 // only for the client

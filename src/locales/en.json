@@ -319,7 +319,10 @@
   },
   "ChangeModLoaderModal": {
     "header": {
-      "title": "Change Mod Loader"
+      "title": {
+        "change": "Change Mod Loader",
+        "install": "Install Mod Loader"
+      }
     },
     "notSelectedLoader": "No new loader selected",
     "footer": {
@@ -522,8 +525,7 @@
       "settings": {
         "directory": {
           "title": "Download Cache Directory",
-          "select": "Change",
-          "open": "Open"
+          "select": "Change"
         },
         "clear": {
           "title": "Clear Download Cache",
@@ -955,8 +957,14 @@
       "settings": {
         "openConfigJson": {
           "title": "Launcher Settings File",
-          "description": "Reveal the raw launcher settings file in {{opener}}.",
-          "button": "Open"
+          "description": "Reveal the raw launcher settings file in {{opener}}."
+        },
+        "launcherLogDir": {
+          "title": "Launcher Logs Directory"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "Auto Purge Launcher Logs",
+          "description": "Automatically purge launcher log files older than 30 days"
         }
       }
     }
@@ -1269,7 +1277,8 @@
         "adventure": "Adventure Mode",
         "spectator": "Spectator Mode"
       },
-      "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
+      "gamemodeDesc": ", {{gamemode}}",
+      "difficultyDesc": " (Difficulty: {{difficulty}})",
       "viewLevelData": "View Level Data",
       "launch": "Play this World"
     },
@@ -1340,7 +1349,15 @@
     "skinManage": "Manage Skin",
     "default": "Default",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "Upload",
+    "skin": "Skin",
+    "cape": "Cape",
+    "model": {
+      "label": "Model",
+      "default": "Wide",
+      "slim": "Slim"
+    }
   },
   "ManualAddJavaPathModal": {
     "modal": {
@@ -1942,6 +1959,17 @@
           }
         }
       },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "Successfully updated player skin",
+        "error": {
+          "title": "Failed to update player skin",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The player type is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
+          }
+        }
+      },
       "deletePlayer": {
         "success": "Successfully deleted player",
         "error": {
@@ -2031,7 +2059,7 @@
             "EXPIRED": "The access token has expired, please re-login",
             "NETWORK_ERROR": "Failed to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NO_DOWNLOAD_API": "Failed to download Authlib-Injector, please check internet connection",
+            "AUTHLIB_INJECTOR_NOT_READY": "Failed to download Authlib-Injector, please check internet connection",
             "SAVE_ERROR": "Failed to save Authlib-Injector",
             "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
           }
@@ -2041,7 +2069,8 @@
         "error": {
           "title": "Failed to launch game",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found",
+            "AUTH_SERVER_NOT_FOUND": "Auth server not found"
           }
         }
       }
@@ -2307,7 +2336,7 @@
         }
       },
       "finishModLoaderInstall": {
-        "loading": "Installing mod loader for {{instanceId}}",
+        "loading": "Installing mod loader for {{instanceName}}",
         "success": "Mod loader installed successfully",
         "error": {
           "title": "Failed to install mod loader",
@@ -2394,6 +2423,9 @@
       "disableRotation": "Disable Rotation",
       "play": "Play",
       "pause": "Pause"
+    },
+    "error": {
+      "loadSkin": "Failed to load skin"
     }
   },
   "SpotlightSearchModal": {

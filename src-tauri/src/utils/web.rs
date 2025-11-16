@@ -1,17 +1,16 @@
-use reqwest_retry::{
-  default_on_request_failure, default_on_request_success, Retryable, RetryableStrategy,
-};
-use tauri::http::StatusCode;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest::header::HeaderMap;
-use tauri_plugin_http::reqwest::{Client, ClientBuilder, Proxy};
-
 use crate::launcher_config::models::{LauncherConfig, ProxyType};
 use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
 use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::RetryTransientMiddleware;
+use reqwest_retry::{
+  default_on_request_failure, default_on_request_success, Retryable, RetryableStrategy,
+};
 use std::sync::Mutex;
 use std::time::Duration;
+use tauri::http::StatusCode;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest::header::HeaderMap;
+use tauri_plugin_http::reqwest::{Client, ClientBuilder, Proxy};
 
 /// Builds a reqwest client with SJMCL version header and proxy support.
 /// Defaults to 10s timeout.
@@ -101,22 +100,22 @@ pub fn with_retry(client: Client) -> ClientWithMiddleware {
 pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
   let client = app.state::<Client>();
 
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-
-  let result = async {
-    let resp = client
-      .get("https://cloudflare.com/cdn-cgi/trace")
-      .send()
-      .await
-      .ok()?;
+  async fn fetch_and_extract_loc(client: &Client, url: &str) -> Option<String> {
+    let resp = client.get(url).send().await.ok()?;
     let text = resp.text().await.ok()?;
-    let loc_pair = text.split('\n').find(|line| line.starts_with("loc="))?;
-    let location = loc_pair.split('=').nth(1)?;
-    Some(location == "CN")
+    let loc_line = text.lines().find(|line| line.starts_with("loc="))?;
+    let loc = loc_line.split('=').nth(1)?.trim();
+    log::info!("Check location from {}, return {}", url, loc);
+    Some(loc.to_string())
   }
-  .await
-  .unwrap_or(false); // any failure → false
 
+  let (loc1, loc2) = tokio::join!(
+    fetch_and_extract_loc(&client, "https://cloudflare.com/cdn-cgi/trace"),
+    fetch_and_extract_loc(&client, "https://www.cloudflare-cn.com/cdn-cgi/trace")
+  );
+  let result = loc1.as_deref() == Some("CN") || loc2.as_deref() == Some("CN");
+
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
   match config_binding.lock() {
     Ok(mut config_state) => {
       let _ = config_state.partial_update(
@@ -125,9 +124,7 @@ pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
         &serde_json::to_string(&result).unwrap_or("false".to_string()),
       );
     }
-    Err(_) => {
-      return Some(false);
-    }
+    Err(_) => return Some(false),
   }
 
   Some(result)

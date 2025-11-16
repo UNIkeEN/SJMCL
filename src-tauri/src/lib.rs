@@ -11,8 +11,10 @@ mod tasks;
 mod utils;
 
 use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
+use account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
+use instance::helpers::mods::common::LocalModTranslationsCache;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
@@ -88,6 +90,7 @@ pub async fn run() {
       account::commands::relogin_player_3rdparty_password,
       account::commands::add_player_from_selection,
       account::commands::update_player_skin_offline_preset,
+      account::commands::update_player_skin_offline_local,
       account::commands::delete_player,
       account::commands::refresh_player,
       account::commands::retrieve_auth_server_list,
@@ -165,7 +168,7 @@ pub async fn run() {
         .expect("APP_DATA_DIR initialization failed");
 
       // Set up logging
-      utils::logging::setup_with_app(app.handle().clone())?;
+      utils::logging::setup_with_app(app.handle().clone()).unwrap();
 
       // Set the launcher config and other states
       // Also extract assets in `setup_with_app()` if the application is portable
@@ -174,6 +177,7 @@ pub async fn run() {
       launcher_config.save().unwrap();
       let version = launcher_config.basic_info.launcher_version.clone();
       let os = launcher_config.basic_info.platform.clone();
+      let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
@@ -191,11 +195,21 @@ pub async fn run() {
 
       app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
+      let local_mod_translations = LocalModTranslationsCache::load().unwrap_or_default();
+      app.manage(Mutex::new(local_mod_translations));
+
       let client = build_sjmcl_client(app.handle(), true, false);
       app.manage(client);
 
       let launching_queue = Vec::<LaunchingState>::new();
       app.manage(Mutex::new(launching_queue));
+
+      // start local yggdrasil server for offline accounts
+      let local_ygg_server = YggdrasilServer::new();
+      app.manage(Mutex::new(local_ygg_server.clone()));
+      tauri::async_runtime::spawn(async move {
+        local_ygg_server.run().await.unwrap_or_default();
+      });
 
       // check if full account feature (offline and 3rd-party login) is available
       let app_handle = app.handle().clone();
@@ -236,6 +250,19 @@ pub async fn run() {
         tasks::background::monitor_background_process(app_handle).await;
       });
 
+      // Send statistics
+      tokio::spawn(async move {
+        utils::sys_info::send_statistics(version, os).await;
+      });
+
+      // Auto purge launcher logs older than 30 days if enabled
+      if auto_purge_launcher_logs {
+        let app_handle = app.handle().clone();
+        tauri::async_runtime::spawn(async move {
+          let _ = utils::logging::purge_old_launcher_logs(app_handle, 30).await;
+        });
+      }
+
       // On platforms other than macOS, set the menu to empty to hide the default menu.
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
       #[cfg(not(target_os = "macos"))]
@@ -244,11 +271,6 @@ pub async fn run() {
         let menu = MenuBuilder::new(app).build()?;
         app.set_menu(menu)?;
       }
-
-      // Send statistics
-      tokio::spawn(async move {
-        utils::sys_info::send_statistics(version, os).await;
-      });
 
       // Registering the deep links at runtime on Linux and Windows
       // ref: https://v2.tauri.app/plugin/deep-linking/#registering-desktop-deep-links-at-runtime

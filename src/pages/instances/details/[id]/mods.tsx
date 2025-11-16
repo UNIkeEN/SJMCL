@@ -450,7 +450,7 @@ const InstanceModsPage = () => {
                   <Text
                     fontSize="xs-sm"
                     overflow="hidden"
-                    className="secondary-text ellipsis-text"
+                    className="ellipsis-text"
                   >
                     <Highlight
                       query={query.trim().toLowerCase().split(/\s+/)}

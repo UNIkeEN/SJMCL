@@ -1,4 +1,6 @@
 import { Badge, Button, Kbd, Switch, Text } from "@chakra-ui/react";
+import { appCacheDir } from "@tauri-apps/api/path";
+import { openPath } from "@tauri-apps/plugin-opener";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { MenuSelector } from "@/components/common/menu-selector";
@@ -227,8 +229,45 @@ const GeneralSettingsPage = () => {
                 })
               }
             >
-              {t("GeneralSettingsPage.advanced.settings.openConfigJson.button")}
+              {t("General.open")}
             </Button>
+          ),
+        },
+        {
+          title: t(
+            "GeneralSettingsPage.advanced.settings.launcherLogDir.title"
+          ),
+          children: (
+            <Button
+              variant="subtle"
+              size="xs"
+              onClick={async () => {
+                const _appCacheDir = await appCacheDir();
+                openPath(_appCacheDir + "/LauncherLogs");
+              }}
+            >
+              {t("General.open")}
+            </Button>
+          ),
+        },
+        {
+          title: t(
+            "GeneralSettingsPage.advanced.settings.autoPurgeLauncherLogs.title"
+          ),
+          description: t(
+            "GeneralSettingsPage.advanced.settings.autoPurgeLauncherLogs.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={generalConfigs.advanced.autoPurgeLauncherLogs}
+              onChange={(e) => {
+                update(
+                  "general.advanced.autoPurgeLauncherLogs",
+                  e.target.checked
+                );
+              }}
+            />
           ),
         },
       ],

@@ -28,7 +28,7 @@ pub fn add_library_entry(
     name: lib_path.to_string(),
     ..params.unwrap_or_default()
   };
-  *libraries = merge_library_lists(libraries, &vec![new_library]);
+  *libraries = merge_library_lists(libraries, &[new_library]);
   Ok(())
 }
 
@@ -84,7 +84,11 @@ pub async fn execute_processors(
     &game_config.game_java,
     &javas,
     instance,
-    client_info.java_version.major_version,
+    client_info
+      .java_version
+      .as_ref()
+      .ok_or(InstanceError::ProcessorExecutionFailed)?
+      .major_version,
   )
   .await?;
 

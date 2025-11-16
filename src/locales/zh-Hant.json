@@ -317,6 +317,18 @@
       }
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "修改模組載入器",
+        "install": "安裝模組載入器"
+      }
+    },
+    "notSelectedLoader": "未選擇新的載入器",
+    "footer": {
+      "installFabricApi": "同時安裝 Fabric API 模組"
+    }
+  },
   "CheckModUpdateModal": {
     "header": {
       "title": "檢查模組更新"
@@ -337,15 +349,6 @@
     },
     "error": {
       "renameOldMod": "重新命名舊檔案失敗"
-    }
-  },
-  "ChangeModLoaderModal": {
-    "header": {
-      "title": "修改模組載入器"
-    },
-    "notSelectedLoader": "未選擇新的載入器",
-    "footer": {
-      "installFabricApi": "同時安裝 Fabric API 模組"
     }
   },
   "ClearDownloadCacheAlertDialog": {
@@ -522,8 +525,7 @@
       "settings": {
         "directory": {
           "title": "下載快取目錄",
-          "select": "修改",
-          "open": "開啟"
+          "select": "修改"
         },
         "clear": {
           "title": "清除下載快取",
@@ -955,8 +957,14 @@
       "settings": {
         "openConfigJson": {
           "title": "啟動器設定檔案",
-          "description": "在{{opener}}中顯示啟動器的原始設定檔案",
-          "button": "開啟"
+          "description": "在{{opener}}中顯示啟動器的原始設定檔案"
+        },
+        "launcherLogDir": {
+          "title": "啟動器日誌目錄"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "自動清理啟動器日誌",
+          "description": "自動清理 30 天及以前的啟動器日誌檔案"
         }
       }
     }
@@ -1269,7 +1277,8 @@
         "adventure": "冒險模式",
         "spectator": "觀察者模式"
       },
-      "moreDesc": "，{{gamemode}}（難度：{{difficulty}}）",
+      "gamemodeDesc": "，{{gamemode}}",
+      "difficultyDesc": "（難度：{{difficulty}}）",
       "viewLevelData": "世界基礎資料",
       "launch": "遊玩此世界"
     },
@@ -1340,7 +1349,15 @@
     "skinManage": "管理皮膚",
     "default": "預設",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "本地上傳",
+    "skin": "皮膚",
+    "cape": "披風",
+    "model": {
+      "label": "模型",
+      "default": "寬型",
+      "slim": "纖細"
+    }
   },
   "ManualAddJavaPathModal": {
     "modal": {
@@ -1942,6 +1959,17 @@
           }
         }
       },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "角色皮膚更新成功",
+        "error": {
+          "title": "角色皮膚更新失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "角色型別錯誤",
+            "TEXTURE_ERROR": "角色皮膚獲取失敗"
+          }
+        }
+      },
       "deletePlayer": {
         "success": "角色刪除成功",
         "error": {
@@ -2031,7 +2059,7 @@
             "EXPIRED": "訪問令牌已過期，請重新登入",
             "NETWORK_ERROR": "無法連線到伺服器",
             "PARSE_ERROR": "伺服器返回的資料格式錯誤",
-            "NO_DOWNLOAD_API": "下載 Authlib-Injector 失敗，請檢查網路連線",
+            "AUTHLIB_INJECTOR_NOT_READY": "下載 Authlib-Injector 失敗，請檢查網路連線",
             "SAVE_ERROR": "儲存 Authlib-Injector 失敗",
             "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失"
           }
@@ -2041,7 +2069,8 @@
         "error": {
           "title": "啟動遊戲失敗",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失"
+            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失",
+            "AUTH_SERVER_NOT_FOUND": "認證伺服器不存在"
           }
         }
       }
@@ -2394,6 +2423,9 @@
       "disableRotation": "停用旋轉",
       "play": "播放",
       "pause": "暫停"
+    },
+    "error": {
+      "loadSkin": "載入皮膚失敗"
     }
   },
   "SpotlightSearchModal": {

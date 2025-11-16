@@ -3,11 +3,15 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use tauri::AppHandle;
 use zip::ZipArchive;
 
 use crate::error::SJMCLResult;
-use crate::instance::models::misc::{InstanceError, ModLoaderType};
+use crate::instance::helpers::modpack::misc::{ModpackManifest, ModpackMetaInfo};
+use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
+use crate::resource::models::OtherResourceSource;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 
@@ -39,8 +43,9 @@ pub struct ModrinthManifest {
   pub dependencies: HashMap<String, String>,
 }
 
-impl ModrinthManifest {
-  pub fn from_archive(file: &File) -> SJMCLResult<Self> {
+#[async_trait]
+impl ModpackManifest for ModrinthManifest {
+  fn from_archive(file: &File) -> SJMCLResult<Self> {
     let mut archive = ZipArchive::new(file)?;
     let mut manifest_file = archive.by_name("modrinth.index.json")?;
     let mut manifest_content = String::new();
@@ -51,7 +56,27 @@ impl ModrinthManifest {
     Ok(manifest)
   }
 
-  pub fn get_client_version(&self) -> SJMCLResult<String> {
+  async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
+    let client_version = self.get_client_version()?;
+    let (loader_type, version) = self.get_mod_loader_type_version()?;
+    Ok(ModpackMetaInfo {
+      name: self.name.clone(),
+      version: self.version_id.clone(),
+      description: self.summary.clone(),
+      author: None,
+      modpack_source: OtherResourceSource::Modrinth,
+      client_version: client_version.clone(),
+      mod_loader: ModLoader {
+        loader_type,
+        version,
+        ..Default::default()
+      }
+      .with_branch(app, client_version)
+      .await?,
+    })
+  }
+
+  fn get_client_version(&self) -> SJMCLResult<String> {
     Ok(
       self
         .dependencies
@@ -61,7 +86,7 @@ impl ModrinthManifest {
     )
   }
 
-  pub fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
+  fn get_mod_loader_type_version(&self) -> SJMCLResult<(ModLoaderType, String)> {
     for (key, val) in &self.dependencies {
       match key.as_str() {
         "minecraft" => continue,
@@ -74,7 +99,11 @@ impl ModrinthManifest {
     Err(InstanceError::ModpackManifestParseError.into())
   }
 
-  pub fn get_download_params(&self, instance_path: &Path) -> SJMCLResult<Vec<PTaskParam>> {
+  async fn get_download_params(
+    &self,
+    _app: &AppHandle,
+    instance_path: &Path,
+  ) -> SJMCLResult<Vec<PTaskParam>> {
     self
       .files
       .iter()
@@ -91,5 +120,9 @@ impl ModrinthManifest {
         }))
       })
       .collect::<SJMCLResult<Vec<_>>>()
+  }
+
+  fn get_overrides_path(&self) -> String {
+    "overrides/".to_string()
   }
 }

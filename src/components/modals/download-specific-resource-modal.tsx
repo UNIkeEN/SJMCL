@@ -520,7 +520,7 @@ const DownloadSpecificResourceModal: React.FC<
                   : resource.name
               }
               titleExtra={
-                <HStack spacing={1}>
+                <HStack spacing={1} wrap="wrap">
                   {resource.tags
                     .filter((t) =>
                       translateTag(t, resource.type, resource.source)

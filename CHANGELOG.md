@@ -2,6 +2,62 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 0.5.0
+
+`2025-10-20`
+
+- **🔥 Support changing or updating the mod loader of an existing instance. #943 #1083 #1085** @xunying123 @baiyuansjtu @UNIkeEN
+- **🔥 Support importing and installing MultiMC-format modpacks. #1040** @pynickle
+- **🔥 Add a new logging system for the launcher itself. #1077 #1079 #1080** @ToolmanP @UNIkeEN
+- 🌟 Automatically detect more versions of Java from the Windows registry. #1031 @pynickle @UNIkeEN
+- 🌟 Add a modal for manually entering Java paths, improving usability for macOS and Linux users. #1074 @UNIkeEN @DragonRock37
+- 🐛 Fix visual issue in the game version list within the create instance modal. #948 @Reqwey
+- 🐛 Fix issue where the keyboard shortcut for opening the aggregated search modal did not work. #1081 @UNIkeEN
+- 🛠 The launcher changelog will now prioritize displaying Chinese when using the Chinese UI. #1070 @pynickle
+- 🛠 Optimize the display of the resource search modal and the resource version list. #1087 @SundayChen
+- Workflow:
+   - Fix issue in the Traditional Chinese auto-translation script. #1044 @HsxMark
+   - Remove deprecated frontend linting commands and unify with those recommended in the contributing guideline. #1069 @OrzMiku
+
+## 0.4.4
+
+`2025-10-13`
+
+- 🌟 Support downloading and detecting the NeoForge loader for game version 25w14craftmine. #1033 @pynickle @UNIkeEN
+- 🌟 Display the most relevant popular online resource results in the global search modal for quick access. #1049 @SundayChen
+- 🌟 Improve rendering of Minecraft colored text, enhancing readability in light mode. #1065 @UNIkeEN @funkthesky-ops @RobertZhang0901
+- 🐛 Fix issue where imported instances from other launchers failed to start due to duplicate libraries. #1039 @ModistAndrew @UNIkeEN
+- 🐛 Fix potential security issue when importing modpacks to prevent malicious attacks. #1043 @hans362
+- 🐛 Fix issue where 'Continue Last Play' failed to work on 1.21.x game versions. #1057 @pynickle
+- 🐛 Fix incorrect frontend display of download task names when retrying. #1060 @pynickle
+- 🛠 Adjust and optimize the entry display order on the global search modal. #1049 @SundayChen
+- 🛠 Adjust and optimize the layout of the launcher's initial loading screen. #1056 @HsxMark
+
+## 0.4.3
+
+`2025-10-6`
+
+- 🌟 Support automatic dimming of the launcher background image in dark mode. #983 @UNIkeEN
+- 🌟 Optimize Java scanning logic on Windows, adding more search locations. #1021 #1029 @UNIkeEN @pynickle
+- 🌟 Optimize Traditional Chinese Minecraft Wiki links. #1027 @pynickle
+- 🐛 Fix issue where 'Quick Singleplayer' failed to work on 1.21.x game versions. #980 @pynickle
+- 🐛 Fix long text display issues in the mod list, mod info modal, and launcher settings page. #984 #997 @1357310795
+- 🐛 Fix incorrect Minecraft Wiki links for some game versions. #994 @pynickle
+- 🐛 Fix frontend parsing issue when instance names contain certain special characters. #1005 @pynickle
+- 🐛 Fix text color issue in the mod update modal under dark mode. #1007 @pynickle
+- 🐛 Fix issue where the server list on the details page did not refresh correctly after switching instances. #1012 @1357310795
+- 🐛 Fix information recognition issues for special mods in the mod info and mod update modals. #1016 @SundayChen
+- 🐛 Fix issue where the automatic language setting to Simplified Chinese failed on early game versions. #1019 @pynickle
+- 🐛 Fix white screen issue on early macOS versions. #1023 @1357310795 @hans362
+- 🐛 Fix incorrect MUA English website links in the Docs and Help pages. #1028 @pynickle
+- 🐛 Fix potential failure of auto-update on Windows platform. #1038 @hans362 @1357310795
+- 🐛 Fix failure to download Forge and NeoForge libraries when using BMCLAPI. #1042 @xunying123
+- 🛠 Refactor the frontend instance data caching module for better stability. #1012 @1357310795
+- 🛠 Make downloading the Fabric API mod optional when installing Fabric. #1022 @Nova-Squ1 @UNIkeEN
+- 🛠 Set game process priority earlier to apply it during the game startup phase. #1034 @pynickle
+- Workflow:
+   - Distribute unsigned macOS builds with warnings instead of failing the whole action when signing fails. #1010 @Minecrafter-Pythoner
+
 ## 0.4.2
 
 `2025-09-30`
@@ -12,7 +68,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🐛 Fix the issue where some third-party authentication sources could not log in with a password. #956 @Reqwey
 - 🐛 Fix text display issue on the launch screen when character names are too long. #957 @UNIkeEN
 - 🐛 Optimize account storage format to avoid potential security issues. #962 @Reqwey @hans362
-- 🐛 Fix display issue in the mod info dialog and improve information display in resource version list. #964 @SundayChen @UNIkeEN
+- 🐛 Fix display issue in the mod info modal and improve information display in resource version list. #964 @SundayChen @UNIkeEN
 - 🐛 Fix the issue where version lists of some resources from Modrinth could not be displayed properly. #968 @SundayChen
 - 🐛 Disable "check mod updates" button when the local mod list is empty. #977 @SundayChen
 - 💄 Refactor part of the codebase to improve style and maintainability. #935 #964 @baiyuansjtu @SundayChen
@@ -29,11 +85,11 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 `2025-09-27`
 
-- 🔥 Support auto-update of the launcher itself. #918 #934 @UNIkeEN @hans362
-- 🔥 Support downloading multiple versions of Java runtime from Mojang source. #926 @Nova-Squ1 @UNIkeEN
+- **🔥 Support auto-update of the launcher itself. #918 #934** @UNIkeEN @hans362
+- **🔥 Support downloading multiple versions of Java runtime from Mojang source. #926** @Nova-Squ1 @UNIkeEN
 - 🌟 Add one-click action in settings page to reveal and edit the raw JSON config file in file explorer. #928 @UNIkeEN
 - 🌟 Complete the logic for advanced game launch options. #929 @xunying123
-- 🐛 Fix missing close button in mod info dialog. #921 @SundayChen
+- 🐛 Fix missing close button in mod info modal. #921 @SundayChen
 - 🐛 Fix routing error when switching between instance detail pages. #942 @UNIkeEN
 - 🐛 Fix text overflow issue in instance detail, resource download and other pages under specific scenarios. #950 @1357310795
 - ⚡️ Avoid redundant version number fetching logic during main process startup. #937 @ModistAndrew
@@ -92,9 +148,9 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🌟 Support the Windows Arm64 platform. #867 @Minecrafter-Pythoner
 - 🐛 Fix issue of token refreshing in config synchronization. #852 @Nova-Squ1
 - 🐛 FIx issue of duplicate launch arguments caused by retrying mod loader downloads. #860 @Reqwey
-- 📦 Update the dependency next to the latest version. #869 @dependabot[bot]
+- 📦 Update the dependency `next` to the latest version. #869 @dependabot[bot]
 - Workflow:
-   - Synchronize the npm and pnpm lock files of frontend. #861 #862 @pangbo13 @Minecrafter-Pythoner
+   - Synchronize the `npm` and `pnpm` lock files of frontend. #861 #862 @pangbo13 @Minecrafter-Pythoner
 
 ## 0.2.0
 
