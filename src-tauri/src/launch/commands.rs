@@ -410,7 +410,7 @@ pub fn export_game_crash_info(
   )?;
 
   // crash report
-  let crash_report_opt = parse_crash_report_path_from_log(&game_log_path);
+  let crash_report_path = parse_crash_report_path_from_log(&game_log_path);
 
   // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
@@ -448,6 +448,6 @@ pub fn export_game_crash_info(
     launcher_log_path,
   ];
 
-  paths_to_zip.extend(crash_report_opt);
+  paths_to_zip.extend(crash_report_path);
   create_zip_from_dirs(paths_to_zip, zip_file_path.clone())
 }

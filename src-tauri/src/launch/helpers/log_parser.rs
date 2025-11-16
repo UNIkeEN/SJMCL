@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
@@ -20,26 +21,13 @@ pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<P
   let mut content = String::new();
   reader.read_to_string(&mut content).ok()?;
 
+  let re = Regex::new(r"^#@!@# Game crashed! Crash report saved to: #@!@# (.+)$").ok()?;
+
   // Scan backwards so the most recent crash report wins.
   for line in content.lines().rev() {
-    let lower = line.to_ascii_lowercase();
-    if !lower.contains("crash report saved to:") {
-      continue;
-    }
-
-    if let Some(idx) = lower.find("crash report saved to:") {
-      let path_part = line[idx + "crash report saved to:".len()..].trim_start();
-      let cleaned_path = path_part
-        .trim_start_matches(|c: char| matches!(c, '#' | '@' | '!' | '?'))
-        .trim_start();
-
-      if cleaned_path.is_empty() {
-        continue;
-      }
-
-      let path = PathBuf::from(cleaned_path);
-      if path.exists() {
-        return Some(path);
+    if let Some(cap) = re.captures(line) {
+      if let Some(m) = cap.get(1) {
+        return Some(PathBuf::from(m.as_str()));
       }
     }
   }
