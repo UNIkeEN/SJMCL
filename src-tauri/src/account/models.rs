@@ -47,8 +47,6 @@ pub enum SkinModel {
   Slim,
 }
 
-// Convert legacy version of skin model into the new format
-// TODO: will be removed after the new migration utils crate implemented
 impl<'de> Deserialize<'de> for SkinModel {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
   where
@@ -56,9 +54,12 @@ impl<'de> Deserialize<'de> for SkinModel {
   {
     let s = String::deserialize(deserializer)?;
     match s.to_lowercase().as_str() {
-      "default" => Ok(SkinModel::Default),
+      "default" | "classic" => Ok(SkinModel::Default),
       "slim" => Ok(SkinModel::Slim),
-      _ => Err(serde::de::Error::unknown_variant(&s, &["default", "slim"])),
+      _ => Err(serde::de::Error::unknown_variant(
+        &s,
+        &["default", "classic", "slim"],
+      )),
     }
   }
 }
