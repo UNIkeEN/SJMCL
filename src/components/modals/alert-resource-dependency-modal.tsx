@@ -197,28 +197,11 @@ const AlertResourceDependencyModal: React.FC<
     );
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const target = e.currentTarget;
-    const canScroll =
-      target.scrollHeight > target.clientHeight &&
-      ((e.deltaY > 0 &&
-        target.scrollTop + target.clientHeight < target.scrollHeight) ||
-        (e.deltaY < 0 && target.scrollTop > 0));
-
-    if (canScroll) {
-      e.stopPropagation();
-    }
-  };
-
   return (
-    <Modal
-      scrollBehavior="inside"
-      size={{ base: "md", lg: "lg", xl: "xl" }}
-      {...modalProps}
-    >
+    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
       <ModalOverlay />
-      <ModalContent display="flex" flexDirection="column">
-        <ModalHeader flexShrink={0}>
+      <ModalContent h="80%">
+        <ModalHeader>
           {t("AlertResourceDependencyModal.header.title")}
         </ModalHeader>
         <ModalCloseButton />
@@ -228,14 +211,21 @@ const AlertResourceDependencyModal: React.FC<
           display="flex"
           flexDirection="column"
           overflowY="auto"
-          onWheel={handleWheel}
+          onWheel={(e) => {
+            e.stopPropagation();
+          }}
         >
           {isLoading ? (
             <VStack mt={8}>
               <BeatLoader size={16} color="gray" />
             </VStack>
           ) : (
-            <VStack spacing={2} align="stretch">
+            <VStack
+              spacing={2}
+              align="stretch"
+              maxH={{ base: "sm", md: "md", lg: "lg" }}
+              overflowY="auto"
+            >
               <Text className="secondary-text" mb={2}>
                 {t("AlertResourceDependencyModal.description")}
               </Text>
