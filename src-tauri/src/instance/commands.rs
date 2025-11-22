@@ -34,7 +34,9 @@ use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialError, PartialUpdate};
 use crate::resource::helpers::misc::get_source_priority_list;
-use crate::resource::models::{GameClientResourceInfo, ModLoaderResourceInfo};
+use crate::resource::models::{
+  GameClientResourceInfo, ModLoaderResourceInfo, OptifineResourceInfo,
+};
 use crate::storage::{load_json_async, save_json_async, Storage};
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
@@ -935,6 +937,7 @@ pub async fn create_instance(
       },
       version: mod_loader.version.clone(),
       branch: mod_loader.branch.clone(),
+      optifine: mod_loader.optifine.clone(),
     },
     description,
     icon_src,
@@ -1209,6 +1212,7 @@ pub async fn change_mod_loader(
       ModLoaderStatus::NotDownloaded
     },
     branch: new_mod_loader.branch.clone(),
+    optifine: new_mod_loader.optifine.clone(),
   };
   let game_version = instance.version.clone();
   let subdirs = get_instance_subdir_paths(

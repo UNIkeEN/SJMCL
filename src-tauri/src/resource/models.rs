@@ -180,6 +180,15 @@ pub struct ModLoaderResourceInfo {
   pub description: String,
   pub stable: bool,
   pub branch: Option<String>,
+  pub optifine: Option<OptifineResourceInfo>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct OptifineResourceInfo {
+  pub filename: String,
+  pub patch: String,
+  pub r#type: String,
 }
 
 #[derive(Debug, Display)]

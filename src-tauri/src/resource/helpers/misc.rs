@@ -69,7 +69,7 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::FabricMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
       ResourceType::NeoforgeMetaForge | ResourceType::NeoforgeMetaNeoforge => Ok(Url::parse("https://bmclapi2.bangbang93.com/neoforge/")?),
       ResourceType::NeoforgeInstall => Ok(Url::parse("https://bmclapi2.bangbang93.com/neoforge/version/")?),
-      ResourceType::Optifine => Err(ResourceError::NoDownloadApi.into()),
+      ResourceType::Optifine => Ok(Url::parse("https://bmclapi2.bangbang93.com/optifine/")?),
       ResourceType::QuiltMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?),
     },
