@@ -39,7 +39,7 @@ pub fn extract_assets(app: &AppHandle) -> Result<(), io::Error> {
     let out_path = app
       .path()
       .resolve(file_in_zip.mangled_name(), BaseDirectory::AppData)
-      .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+      .map_err(io::Error::other)?;
 
     if file_in_zip.is_dir() {
       std::fs::create_dir_all(&out_path)?;

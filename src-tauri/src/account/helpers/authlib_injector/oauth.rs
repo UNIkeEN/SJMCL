@@ -1,6 +1,6 @@
-use super::common::{parse_profile, retrieve_profile};
-use super::constants::SCOPE;
-use super::models::MinecraftProfile;
+use crate::account::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
+use crate::account::helpers::authlib_injector::constants::SCOPE;
+use crate::account::helpers::authlib_injector::models::MinecraftProfile;
 use crate::account::helpers::misc::oauth_polling;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
@@ -139,7 +139,6 @@ async fn parse_token(
     Some(tokens.refresh_token.clone()),
     auth_server_url,
     Some(selected_profile.name.clone()),
-    None,
   )
   .await
 }

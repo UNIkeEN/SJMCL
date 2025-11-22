@@ -533,6 +533,20 @@ const AppearanceSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t(
+            "AppearanceSettingsPage.background.settings.autoDarken.title"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={appearanceConfigs.background.autoDarken}
+              onChange={(e) => {
+                update("appearance.background.autoDarken", e.target.checked);
+              }}
+            />
+          ),
+        },
       ],
     },
     {

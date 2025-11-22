@@ -6,14 +6,14 @@ use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
-use super::fabric::install_fabric_loader;
-use super::forge::{install_forge_loader, InstallProfile};
-use super::neoforge::install_neoforge_loader;
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
+use crate::instance::helpers::loader::fabric::install_fabric_loader;
+use crate::instance::helpers::loader::forge::{install_forge_loader, InstallProfile};
+use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
 use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
-use crate::launch::helpers::file_validator::{parse_library_name, LibraryParts};
+use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launcher_config::models::JavaInfo;
 use crate::resource::models::SourceType;
@@ -24,35 +24,11 @@ pub fn add_library_entry(
   lib_path: &str,
   params: Option<LibrariesValue>,
 ) -> SJMCLResult<()> {
-  let LibraryParts {
-    path,
-    pack_name,
-    pack_version: _pack_version,
-    classifier,
-    extension,
-  } = parse_library_name(lib_path, None)?;
-
-  if let Some(pos) = libraries.iter().position(|item| {
-    if let Ok(parts) = parse_library_name(&item.name, None) {
-      parts.path == path
-        && parts.pack_name == pack_name
-        && parts.classifier == classifier
-        && parts.extension == extension
-    } else {
-      false
-    }
-  }) {
-    libraries[pos] = LibrariesValue {
-      name: lib_path.to_string(),
-      ..params.unwrap_or_default()
-    }
-  } else {
-    libraries.push(LibrariesValue {
-      name: lib_path.to_string(),
-      ..params.unwrap_or_default()
-    });
-  }
-
+  let new_library = LibrariesValue {
+    name: lib_path.to_string(),
+    ..params.unwrap_or_default()
+  };
+  *libraries = merge_library_lists(libraries, &[new_library]);
   Ok(())
 }
 
@@ -65,6 +41,7 @@ pub async fn install_mod_loader(
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
   task_params: &mut Vec<PTaskParam>,
+  is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   match loader.loader_type {
     ModLoaderType::Fabric => {
@@ -77,6 +54,7 @@ pub async fn install_mod_loader(
         mods_dir,
         client_info,
         task_params,
+        is_install_fabric_api,
       )
       .await
     }
@@ -106,7 +84,11 @@ pub async fn execute_processors(
     &game_config.game_java,
     &javas,
     instance,
-    client_info.java_version.major_version,
+    client_info
+      .java_version
+      .as_ref()
+      .ok_or(InstanceError::ProcessorExecutionFailed)?
+      .major_version,
   )
   .await?;
 

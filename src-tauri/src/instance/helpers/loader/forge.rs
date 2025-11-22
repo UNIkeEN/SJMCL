@@ -10,11 +10,9 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
-use super::common::add_library_entry;
 use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::{
-  LaunchArgumentTemplate, LibrariesValue, McClientInfo, PatchesInfo,
-};
+use crate::instance::helpers::client_json::{LaunchArgumentTemplate, LibrariesValue, McClientInfo};
+use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
@@ -132,19 +130,15 @@ pub async fn download_forge_libraries(
   // Extract maven folder contents to lib_dir
   for i in 0..archive.len() {
     let mut file = archive.by_index(i)?;
-    let outpath = match file.enclosed_name() {
-      Some(path) => {
-        if path.starts_with("maven/") {
-          // Remove "maven/" prefix and join with lib_dir
-          let relative_path = path.strip_prefix("maven/").unwrap();
-          lib_dir.join(relative_path)
-        } else if path == PathBuf::from("data/client.lzma") {
-          bin_patch.clone()
-        } else {
-          continue;
-        }
-      }
-      None => continue,
+    let path = file.mangled_name();
+    let outpath = if path.starts_with("maven/") {
+      // Remove "maven/" prefix and join with lib_dir
+      let relative_path = path.strip_prefix("maven/").unwrap();
+      lib_dir.join(relative_path)
+    } else if path == *"data/client.lzma" {
+      bin_patch.clone()
+    } else {
+      continue;
     };
 
     if file.is_file() {
@@ -278,9 +272,7 @@ pub async fn download_forge_libraries(
     )?;
 
     let forge_info: McClientInfo = serde_json::from_str(&version)?;
-
-    let main_class = forge_info.main_class;
-    client_info.main_class = main_class.to_string();
+    client_info.main_class = forge_info.main_class.clone();
 
     for lib in forge_info.libraries.iter() {
       let name = &lib.name;
@@ -327,12 +319,12 @@ pub async fn download_forge_libraries(
     };
     client_info.arguments = arguments.clone();
     client_info.minecraft_arguments = minecraft_arguments.clone();
-    client_info.patches.push(PatchesInfo {
+    client_info.patches.push(McClientInfo {
       id: "forge".to_string(),
-      version: forge_info.id.clone(),
-      priority: 30000,
+      version: Some(forge_info.id.clone()),
+      priority: Some(30000),
       inherits_from: forge_info.inherits_from.clone(),
-      main_class: main_class.clone(),
+      main_class: forge_info.main_class.clone(),
       arguments,
       minecraft_arguments,
       ..Default::default()
@@ -376,13 +368,13 @@ pub async fn download_forge_libraries(
     let main_class = profile.version_info.main_class;
     let libraries = profile.version_info.libraries;
 
-    client_info.main_class = main_class.to_string();
+    client_info.main_class = Some(main_class.clone());
 
-    let mut new_patch = PatchesInfo {
+    let mut new_patch = McClientInfo {
       id: "forge".to_string(),
-      version: instance.mod_loader.version.clone(),
-      priority: 30000,
-      main_class: main_class.to_string(),
+      version: Some(instance.mod_loader.version.clone()),
+      priority: Some(30000),
+      main_class: Some(main_class.to_string()),
       inherits_from: Some(profile.version_info.inherits_from),
       arguments: None,
       minecraft_arguments: Some(profile.version_info.minecraft_arguments.clone()),

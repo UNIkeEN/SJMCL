@@ -153,6 +153,7 @@ export const GlobalDataContextProvider: React.FC<{
 
   const [getGameVersionList, isGameVersionListLoading] = usePromisedGetState(
     gameVersionList,
+    React.useRef("global"), // version is static as the data is not instance-specific
     handleFetchGameVersionList
   );
 

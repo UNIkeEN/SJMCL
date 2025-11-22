@@ -1,0 +1,105 @@
+name: Publish AUR Package
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      deb_hash:
+        description: "SHA512 hash of the .deb file"
+        required: true
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+    secrets:
+      AUR_SSH_PRIVATE_KEY:
+        description: "SSH private key for AUR"
+        required: true
+
+jobs:
+  publish_aur_package:
+    name: Publish AUR package
+    outputs:
+      version: ${{ steps.gen_template.outputs.version }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Download linux x86 artifacts
+        if: always() && ${{ inputs.deb_hash != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "SJMCL_${{ inputs.version }}_linux_x86_64"
+          path: artifacts
+          merge-multiple: true
+
+      - name: Calculate hashes
+        id: calculate_hashes
+        run: |
+          DEB_HASH=${{ inputs.deb_hash }} # Use input deb_hash if provided
+          if [[ -z "$DEB_HASH" ]]; then
+            ls -la artifacts
+            DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_x86_64.deb)
+          fi
+          echo "DEB_HASH=$DEB_HASH"
+          LICENSE_HASH=$(sha512sum LICENSE.EXTRA)
+          echo "LICENSE_HASH=$LICENSE_HASH"
+          echo "DEB_HASH=$DEB_HASH" >> $GITHUB_ENV
+          echo "deb_hash=$DEB_HASH" >> $GITHUB_OUTPUT
+          echo "LICENSE_HASH=$LICENSE_HASH" >> $GITHUB_ENV
+          echo "license_hash=$LICENSE_HASH" >> $GITHUB_OUTPUT
+
+      - name: Resolve latest tag
+        id: resolve_tag
+        run: |
+          LATEST_TAG=${{ inputs.version }}
+          if [[ -z "$LATEST_TAG" ]]; then
+            git fetch --tags
+            LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
+          else
+            LATEST_TAG=$(echo "$LATEST_TAG" | sed 's/-.*//')
+          fi
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "Latest tag: $LATEST_TAG"
+
+      - name: Generate PKGBUILD
+        id: gen_template
+        run: |
+          sed -i "s/^pkgver=.*/pkgver=$LATEST_TAG/" PKGBUILD
+          newsums="sha512sums=('${DEB_HASH%% *}'\n            '${LICENSE_HASH%% *}')"
+          awk -v sumtypes="sha512" -v newsums="$newsums" '
+            $0 ~"^[[:blank:]]*(" sumtypes ")sums(_[^=]+)?\\+?=", $0 ~ "\\)[[:blank:]]*(#.*)?$" {
+              if (!w) {
+                      print newsums
+                      w++
+              }
+              next
+            }
+
+            1
+            END { if (!w) print newsums }
+          ' PKGBUILD > PKGBUILD.tmp && mv PKGBUILD.tmp PKGBUILD
+
+          echo "PKGBUILD generated with version $LATEST_TAG"
+          cat PKGBUILD
+
+      - name: Publish SJMCL to the AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+        with:
+          pkgname: sjmcl-bin
+          pkgbuild: ${{ github.workspace }}/PKGBUILD
+          assets: ${{ github.workspace }}/LICENSE.EXTRA
+          commit_username: SJMC
+          commit_email: launcher@sjmc.club
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ steps.resolve_tag.outputs.latest }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519

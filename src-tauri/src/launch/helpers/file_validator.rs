@@ -1,9 +1,10 @@
 use crate::error::SJMCLResult;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
-  DownloadsArtifact, FeaturesInfo, IsAllowed, McClientInfo,
+  DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
 use crate::instance::models::misc::InstanceError;
+use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
@@ -11,14 +12,13 @@ use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
-use std::collections::HashSet;
+use semver::Version;
+use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use tauri::AppHandle;
 use tokio::fs;
 use zip::ZipArchive;
-
-use super::misc::get_natives_string;
 
 pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
@@ -80,7 +80,7 @@ pub async fn get_invalid_library_files(
     if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
       Ok(None)
     } else if artifact.url.is_empty() {
-      return Err(LaunchError::GameFilesIncomplete.into());
+      Err(LaunchError::GameFilesIncomplete.into())
     } else {
       let src = convert_url_to_target_source(
         &url::Url::parse(&artifact.url)?,
@@ -154,6 +154,59 @@ pub fn parse_library_name(name: &str, native: Option<String>) -> SJMCLResult<Lib
   }
 }
 
+#[derive(Debug, Hash, Eq, PartialEq)]
+struct LibraryKey {
+  path: String,
+  pack_name: String,
+  classifier: Option<String>,
+  extension: String,
+}
+
+// merge two vectors of libraries, remove duplicates by name, keep the one with the highest version. also remove libraries with invalid names
+pub fn merge_library_lists(
+  libraries_a: &[LibrariesValue],
+  libraries_b: &[LibrariesValue],
+) -> Vec<LibrariesValue> {
+  let mut library_map: HashMap<LibraryKey, LibrariesValue> = HashMap::new();
+
+  for library in libraries_a.iter().chain(libraries_b.iter()) {
+    if let Ok(library_parts) = parse_library_name(&library.name, None) {
+      let key = LibraryKey {
+        path: library_parts.path,
+        pack_name: library_parts.pack_name,
+        classifier: library_parts.classifier,
+        extension: library_parts.extension,
+      };
+
+      let new_version = library_parts.pack_version;
+
+      if let Some(existing_library) = library_map.get(&key) {
+        let existing_version = parse_library_name(&existing_library.name, None)
+          .map(|parts| parts.pack_version)
+          .unwrap_or("0.1.0".to_string());
+
+        if parse_sem_version(&new_version) > parse_sem_version(&existing_version) {
+          library_map.insert(key, library.clone());
+        }
+      } else {
+        library_map.insert(key, library.clone());
+      }
+    }
+  }
+
+  library_map.into_values().collect()
+}
+
+fn parse_sem_version(version: &str) -> Version {
+  Version::parse(version).unwrap_or({
+    let mut parts = version.split('.').collect::<Vec<_>>();
+    while parts.len() < 3 {
+      parts.push("0");
+    }
+    Version::parse(&parts[..3].join(".")).unwrap_or(Version::new(0, 1, 0))
+  })
+}
+
 pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCLResult<String> {
   let LibraryParts {
     path,
@@ -182,7 +235,7 @@ pub fn get_nonnative_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
 ) -> SJMCLResult<Vec<PathBuf>> {
-  let mut result = Vec::new();
+  let mut libraries = Vec::new();
   let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
     if !library.is_allowed(&feature).unwrap_or(false) {
@@ -191,6 +244,11 @@ pub fn get_nonnative_library_paths(
     if library.natives.is_some() {
       continue;
     }
+    libraries.push(library.clone());
+  }
+  libraries = merge_library_lists(&libraries, &[]); // remove duplicates to prevent launch errors
+  let mut result = Vec::new();
+  for library in libraries {
     result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
   }
   Ok(result)

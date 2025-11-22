@@ -51,6 +51,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   const renderCard = (type: ModLoaderType) => {
     const isSelected =
       type === currentType && currentType !== ModLoaderType.Unknown;
+
     return (
       <Card
         key={type}
@@ -116,9 +117,11 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   };
 
   return (
-    <Grid templateColumns="repeat(3, 1fr)" gap={3.5} {...boxProps}>
-      {loaderTypes.map(renderCard)}
-    </Grid>
+    <>
+      <Grid templateColumns="repeat(3, 1fr)" gap={3.5} {...boxProps}>
+        {loaderTypes.map(renderCard)}
+      </Grid>
+    </>
   );
 };
 

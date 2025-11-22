@@ -6,10 +6,10 @@ use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
-use super::common::add_library_entry;
-use super::forge::InstallProfile;
 use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::{LaunchArgumentTemplate, McClientInfo, PatchesInfo};
+use crate::instance::helpers::client_json::{LaunchArgumentTemplate, McClientInfo};
+use crate::instance::helpers::loader::common::add_library_entry;
+use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
@@ -114,19 +114,15 @@ pub async fn download_neoforge_libraries(
     // Extract maven folder contents to lib_dir
     for i in 0..archive.len() {
       let mut file = archive.by_index(i)?;
-      let outpath = match file.enclosed_name() {
-        Some(path) => {
-          if path.starts_with("maven/") {
-            // Remove "maven/" prefix and join with lib_dir
-            let relative_path = path.strip_prefix("maven/").unwrap();
-            lib_dir.join(relative_path)
-          } else if path == PathBuf::from("data/client.lzma") {
-            bin_patch.clone()
-          } else {
-            continue;
-          }
-        }
-        None => continue,
+      let path = file.mangled_name();
+      let outpath = if path.starts_with("maven/") {
+        // Remove "maven/" prefix and join with lib_dir
+        let relative_path = path.strip_prefix("maven/").unwrap();
+        lib_dir.join(relative_path)
+      } else if path == *"data/client.lzma" {
+        bin_patch.clone()
+      } else {
+        continue;
       };
 
       if file.name().ends_with('/') {
@@ -256,9 +252,7 @@ pub async fn download_neoforge_libraries(
   )?;
 
   let neoforge_info: McClientInfo = serde_json::from_str(&version)?;
-
-  let main_class = neoforge_info.main_class;
-  client_info.main_class = main_class.to_string();
+  client_info.main_class = neoforge_info.main_class.clone();
 
   for lib in neoforge_info.libraries.iter() {
     let name = &lib.name;
@@ -298,12 +292,12 @@ pub async fn download_neoforge_libraries(
     jvm: [v_args.jvm, nf_args.jvm].concat(),
   };
   client_info.arguments = Some(new_args.clone());
-  client_info.patches.push(PatchesInfo {
+  client_info.patches.push(McClientInfo {
     id: "neoforge".to_string(),
-    version: neoforge_info.id.clone(),
-    priority: 30000,
+    version: Some(neoforge_info.id.clone()),
+    priority: Some(30000),
     inherits_from: neoforge_info.inherits_from.clone(),
-    main_class: main_class.clone(),
+    main_class: neoforge_info.main_class.clone(),
     arguments: Some(new_args.clone()),
     ..Default::default()
   });

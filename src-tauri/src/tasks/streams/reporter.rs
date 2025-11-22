@@ -1,4 +1,4 @@
-use super::desc::PDesc;
+use crate::tasks::streams::desc::PDesc;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tauri::AppHandle;

@@ -1,13 +1,13 @@
-use super::constants::ACCOUNTS_FILE_NAME;
-use super::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
-use super::helpers::skin::draw_avatar;
+use crate::account::constants::ACCOUNTS_FILE_NAME;
+use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
+use crate::account::helpers::skin::draw_avatar;
 use crate::storage::Storage;
 use crate::utils::image::ImageWrapper;
 use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
-use strum_macros::Display;
+use strum_macros::{Display, EnumIter, EnumString};
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -19,19 +19,63 @@ pub enum PlayerType {
   #[serde(rename = "microsoft")]
   Microsoft,
 }
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Display, Default, EnumIter)]
+#[serde(rename_all = "lowercase")]
+pub enum PresetRole {
+  #[default]
+  Steve,
+  Alex,
+}
+
+#[derive(
+  Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Display, Default, EnumIter, EnumString,
+)]
+#[serde(rename_all = "UPPERCASE")]
+#[strum(serialize_all = "UPPERCASE")]
+pub enum TextureType {
+  #[default]
+  Skin,
+  Cape,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Display, Default, EnumIter, EnumString)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
+pub enum SkinModel {
+  #[default]
+  Default,
+  Slim,
+}
+
+impl<'de> Deserialize<'de> for SkinModel {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: serde::Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    match s.to_lowercase().as_str() {
+      "default" | "classic" => Ok(SkinModel::Default),
+      "slim" => Ok(SkinModel::Slim),
+      _ => Err(serde::de::Error::unknown_variant(
+        &s,
+        &["default", "classic", "slim"],
+      )),
+    }
+  }
+}
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct Texture {
-  pub texture_type: String,
+  pub texture_type: TextureType,
   pub image: ImageWrapper,
-  pub model: String,
-  pub preset: Option<String>,
+  pub model: SkinModel,
+  pub preset: Option<PresetRole>,
 }
 
 // only for the client
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct Player {
   pub id: String,
   pub name: String,
@@ -39,7 +83,6 @@ pub struct Player {
   pub avatar: ImageWrapper,
   pub player_type: PlayerType,
   pub auth_account: Option<String>,
-  pub password: Option<String>,
   pub auth_server: Option<AuthServer>,
   pub access_token: Option<String>,
   pub refresh_token: Option<String>,
@@ -70,7 +113,6 @@ impl From<PlayerInfo> for Player {
       avatar: draw_avatar(36, &player_info.textures[0].image.image).into(),
       player_type: player_info.player_type,
       auth_account: player_info.auth_account,
-      password: player_info.password,
       access_token: player_info.access_token,
       refresh_token: player_info.refresh_token,
       auth_server,
@@ -81,14 +123,13 @@ impl From<PlayerInfo> for Player {
 
 // for backend storage, without saving the whole auth server info
 #[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct PlayerInfo {
   pub id: String,
   pub name: String,
   pub uuid: Uuid,
   pub player_type: PlayerType,
   pub auth_account: Option<String>,
-  pub password: Option<String>,
   pub auth_server_url: Option<String>,
   pub access_token: Option<String>,
   pub refresh_token: Option<String>,
@@ -116,7 +157,6 @@ impl From<Player> for PlayerInfo {
       uuid: player.uuid,
       player_type: player.player_type,
       auth_account: player.auth_account,
-      password: player.password,
       textures: player.textures,
       access_token: player.access_token,
       refresh_token: player.refresh_token,

@@ -4,7 +4,14 @@
       "title": "关于",
       "settings": {
         "version": {
-          "title": "版本"
+          "title": "版本",
+          "foundNew": "有新版本",
+          "checkUpdate": "检查更新",
+          "checkToast": {
+            "loading": "正在检查更新",
+            "up2date": "当前已是最新版本",
+            "error": "检查更新失败"
+          }
         },
         "contributors": {
           "title": "开发者名单"
@@ -83,7 +90,7 @@
       },
       "modpack": {
         "title": "导入整合包",
-        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 HMCL 格式）"
+        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理游戏目录",
@@ -281,6 +288,9 @@
         },
         "randomCustom": {
           "title": "随机自定义"
+        },
+        "autoDarken": {
+          "title": "深色模式下调暗背景"
         }
       },
       "presetBgList": {
@@ -305,6 +315,18 @@
           "title": "增强对比度"
         }
       }
+    }
+  },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "修改模组加载器",
+        "install": "安装模组加载器"
+      }
+    },
+    "notSelectedLoader": "未选择新的加载器",
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
     }
   },
   "CheckModUpdateModal": {
@@ -384,6 +406,9 @@
       "loader": "选择加载器",
       "skipped": "不安装",
       "info": "基本设置"
+    },
+    "footer": {
+      "installFabricApi": "同时安装 Fabric API 模组"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -444,7 +469,10 @@
       "version": "版本",
       "type": "类型"
     },
-    "warning": "从 Oracle 源下载可能需要登录"
+    "warning": {
+      "mojang": "由 Mojang 分发的 Java 运行时将由 SJMCL 安装到特定目录",
+      "oracle": "从 Oracle 源下载可能需要登录"
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -497,8 +525,7 @@
       "settings": {
         "directory": {
           "title": "下载缓存目录",
-          "select": "修改",
-          "open": "打开"
+          "select": "修改"
         },
         "clear": {
           "title": "清除下载缓存",
@@ -556,6 +583,7 @@
     "task": {
       "game-client": "游戏客户端 {{param}}",
       "game-server": "游戏服务端 {{param}}",
+      "change-mod-loader": "修改模组加载器 {{param}}",
       "mod": "模组",
       "world": "存档",
       "resourcepack": "资源包",
@@ -566,7 +594,9 @@
       "mod-update": "更新模组",
       "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
-      "forge-libraries": "Forge 运行库"
+      "forge-libraries": "Forge 运行库",
+      "launcher-update": "更新启动器",
+      "mojang-java": "Java {{param}} 运行时"
     }
   },
   "Editable": {
@@ -588,9 +618,6 @@
     "placeholder": {
       "dirName": "请输入名称",
       "dirPath": "请选择游戏目录"
-    },
-    "button": {
-      "browse": "浏览"
     },
     "dialog": {
       "browse": {
@@ -822,13 +849,7 @@
     "release": "正式版",
     "snapshot": "测试版",
     "april_fools": "愚人节版",
-    "searchPlaceholder": "搜索版本",
-    "wikiKey": {
-      "release": "Java版",
-      "snapshot": "",
-      "old_beta": "Java版Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "搜索版本"
   },
   "General": {
     "add": "添加",
@@ -838,6 +859,7 @@
         "description": "请先登录微软账户后使用此功能。"
       }
     },
+    "browse": "浏览",
     "cancel": "取消",
     "close": "关闭",
     "confirm": "确定",
@@ -927,6 +949,22 @@
         "skipFirstScreenOptions": {
           "title": "自动设置实例语言",
           "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
+        }
+      }
+    },
+    "advanced": {
+      "title": "高级",
+      "settings": {
+        "openConfigJson": {
+          "title": "启动器设置文件",
+          "description": "在{{opener}}中显示启动器的原始设置文件"
+        },
+        "launcherLogDir": {
+          "title": "启动器日志目录"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "自动清理启动器日志",
+          "description": "自动清理 30 天及以前的启动器日志文件"
         }
       }
     }
@@ -1239,7 +1277,8 @@
         "adventure": "冒险模式",
         "spectator": "观察者模式"
       },
-      "moreDesc": "，{{gamemode}}（难度：{{difficulty}}）",
+      "gamemodeDesc": "，{{gamemode}}",
+      "difficultyDesc": "（难度：{{difficulty}}）",
       "viewLevelData": "世界基础数据",
       "launch": "游玩此世界"
     },
@@ -1310,10 +1349,26 @@
     "skinManage": "管理皮肤",
     "default": "默认",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "本地上传",
+    "skin": "皮肤",
+    "cape": "披风",
+    "model": {
+      "label": "模型",
+      "default": "宽型",
+      "slim": "纤细"
+    }
   },
-  "ViewSkinModal": {
-    "skinView": "查看皮肤"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "添加 Java"
+    },
+    "label": {
+      "javaPath": "Java 路径"
+    },
+    "placeholder": {
+      "javaPath": "请输入或选择 Java 可执行文件路径"
+    }
   },
   "MemoryStatusProgress": {
     "title": "内存状态",
@@ -1339,6 +1394,9 @@
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
+  },
+  "NotifyNewVersionModal": {
+    "title": "发现新版本"
   },
   "OptionItemGroup": {
     "button": {
@@ -1386,6 +1444,16 @@
     },
     "button": {
       "login": "登录"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "启动器更新",
+    "body": "新版本已完成下载，重新启动 SJMCL 以完成更新",
+    "bodyMSI": "新版本已完成下载，点击安装将关闭 SJMCL 并运行安装程序",
+    "button": {
+      "restart": "重新启动",
+      "install": "安装",
+      "later": "稍后"
     }
   },
   "ResourceDownloader": {
@@ -1676,6 +1744,9 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
+  },
   "ScreenshotPreviewModal": {
     "menu": {
       "setAsBg": "设置为启动器背景"
@@ -1754,6 +1825,11 @@
           "description": {
             "JAVA_EXEC_INVALID": "Java 可执行文件无效"
           }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Mojang Java 运行时下载失败"
         }
       },
       "checkGameDirectory": {
@@ -1842,7 +1918,8 @@
             "NETWORK_ERROR": "无法连接至认证服务器",
             "PARSE_ERROR": "服务器返回数据格式错误",
             "INVALID": "账号或密码错误",
-            "NOT_FOUND": "认证服务器不存在"
+            "NOT_FOUND": "认证服务器不存在",
+            "EXPIRED": "令牌已过期，请重新登录"
           }
         }
       },
@@ -1872,6 +1949,17 @@
         }
       },
       "updatePlayerSkinOfflinePreset": {
+        "success": "角色皮肤更新成功",
+        "error": {
+          "title": "角色皮肤更新失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "角色类型错误",
+            "TEXTURE_ERROR": "角色皮肤获取失败"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
         "success": "角色皮肤更新成功",
         "error": {
           "title": "角色皮肤更新失败",
@@ -1971,7 +2059,7 @@
             "EXPIRED": "访问令牌已过期，请重新登录",
             "NETWORK_ERROR": "无法连接到服务器",
             "PARSE_ERROR": "服务器返回的数据格式错误",
-            "NO_DOWNLOAD_API": "下载 Authlib-Injector 失败，请检查网络连接",
+            "AUTHLIB_INJECTOR_NOT_READY": "下载 Authlib-Injector 失败，请检查网络连接",
             "SAVE_ERROR": "保存 Authlib-Injector 失败",
             "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
           }
@@ -1981,7 +2069,8 @@
         "error": {
           "title": "启动游戏失败",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
+            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失",
+            "AUTH_SERVER_NOT_FOUND": "认证服务器不存在"
           }
         }
       }
@@ -2259,6 +2348,22 @@
           }
         }
       },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "无法更改模组加载器",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "修改模组加载器失败",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换"
+          }
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "获取整合包资源信息失败",
@@ -2318,6 +2423,9 @@
       "disableRotation": "禁用旋转",
       "play": "播放",
       "pause": "暂停"
+    },
+    "error": {
+      "loadSkin": "加载皮肤失败"
     }
   },
   "SpotlightSearchModal": {
@@ -2328,9 +2436,10 @@
     "empty": "无搜索结果",
     "resource": {
       "mod": "搜索关于 {{query}} 的模组",
-      "world": "搜索关于 {{query}} 的存档",
+      "world": "搜索关于 {{query}} 的世界",
       "resourcepack": "搜索关于 {{query}} 的资源包",
       "shader": "搜索关于 {{query}} 的光影",
+      "datapack": "搜索关于 {{query}} 的数据包",
       "modpack": "搜索关于 {{query}} 的整合包",
       "curseforge": "在 CurseForge 上",
       "modrinth": "在 Modrinth 上"
@@ -2409,8 +2518,14 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://zh.minecraft.wiki/w/"
+      "baseUrl": "https://zh.minecraft.wiki/w/{{key}}?variant=zh-cn",
+      "key": {
+        "javaEdition": "Java版{{version}}"
+      }
     }
+  },
+  "ViewSkinModal": {
+    "skinView": "查看皮肤"
   },
   "WelcomeAndTermsModal": {
     "header": {

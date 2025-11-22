@@ -43,6 +43,7 @@ export class InstanceService {
    * @param {GameClientResourceInfo} game - The game resource info of the instance.
    * @param {ModLoaderResourceInfo} modLoader - The mod loader info of the instance.
    * @param {string} [modpackPath] - Optional path to the modpack archive file.
+   * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
@@ -53,7 +54,8 @@ export class InstanceService {
     iconSrc: string,
     game: GameClientResourceInfo,
     modLoader: ModLoaderResourceInfo,
-    modpackPath?: string
+    modpackPath?: string,
+    isInstallFabricApi?: boolean
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_instance", {
       directory,
@@ -63,6 +65,7 @@ export class InstanceService {
       game,
       modLoader,
       modpackPath,
+      isInstallFabricApi,
     });
   }
 
@@ -380,6 +383,40 @@ export class InstanceService {
   ): Promise<InvokeResponse<void>> {
     return await invoke("finish_mod_loader_install", {
       instanceId,
+    });
+  }
+
+  /**
+   * CHECK whether the given instance supports mod loader change.
+   * @param {string} instanceId - The instance ID to check.
+   * @returns {Promise<InvokeResponse<boolean>>}
+   */
+  @responseHandler("instance")
+  static async checkChangeModLoaderAvailablity(
+    instanceId: string
+  ): Promise<InvokeResponse<boolean>> {
+    return await invoke("check_change_mod_loader_availablity", {
+      instanceId,
+    });
+  }
+
+  /**
+   * CHANGE the mod loader for a given instance.
+   * @param {string} instanceId - The ID of the instance to update.
+   * @param {ModLoaderResourceInfo} newModLoader - The new mod loader information.
+   * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async changeModLoader(
+    instanceId: string,
+    newModLoader: ModLoaderResourceInfo,
+    isInstallFabricApi?: boolean
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("change_mod_loader", {
+      instanceId,
+      newModLoader,
+      isInstallFabricApi,
     });
   }
 

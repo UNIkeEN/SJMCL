@@ -4,7 +4,14 @@
       "title": "About",
       "settings": {
         "version": {
-          "title": "Version"
+          "title": "Version",
+          "foundNew": "New Version Available",
+          "checkUpdate": "Check for Updates",
+          "checkToast": {
+            "loading": "Checking for updates",
+            "up2date": "Already up to date",
+            "error": "Failed to check for updates"
+          }
         },
         "contributors": {
           "title": "Contributors"
@@ -26,7 +33,7 @@
         },
         "hmcl": {
           "title": "Hello Minecraft! Launcher",
-          "description": "Some design and code implementation are referenced from this open-source project"
+          "description": "Some design and code implementation are referenced from this project"
         },
         "littleskin": {
           "title": "LittleSkin",
@@ -83,7 +90,7 @@
       },
       "modpack": {
         "title": "Import Modpack",
-        "description": "Import a modpack (CurseForge, Modrinth or HMCL formats) from local files or the internet"
+        "description": "Import a modpack (CurseForge, Modrinth or MultiMC formats) from local files or the internet"
       },
       "manageDirs": {
         "title": "Manage Game Directories",
@@ -281,6 +288,9 @@
         },
         "randomCustom": {
           "title": "Random Custom Image"
+        },
+        "autoDarken": {
+          "title": "Dim Background in Dark Mode"
         }
       },
       "presetBgList": {
@@ -305,6 +315,18 @@
           "title": "Enhance Contrast"
         }
       }
+    }
+  },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "Change Mod Loader",
+        "install": "Install Mod Loader"
+      }
+    },
+    "notSelectedLoader": "No new loader selected",
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
     }
   },
   "CheckModUpdateModal": {
@@ -384,6 +406,9 @@
       "loader": "Mod Loader",
       "skipped": "Skipped",
       "info": "Basic Settings"
+    },
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -444,7 +469,10 @@
       "version": "Version",
       "type": "Type"
     },
-    "warning": "Downloading from Oracle may require login."
+    "warning": {
+      "mojang": "Java runtime from Mojang will be installed by SJMCL into a specific directory.",
+      "oracle": "Downloading from Oracle may require login."
+    }
   },
   "DownloadModpackModal": {
     "header": {
@@ -497,8 +525,7 @@
       "settings": {
         "directory": {
           "title": "Download Cache Directory",
-          "select": "Change",
-          "open": "Open"
+          "select": "Change"
         },
         "clear": {
           "title": "Clear Download Cache",
@@ -556,6 +583,7 @@
     "task": {
       "game-client": "Game Client {{param}}",
       "game-server": "Game Server {{param}}",
+      "change-mod-loader": "Change Mod Loader {{param}}",
       "mod": "Mod",
       "world": "World",
       "resourcepack": "Resourcepack",
@@ -566,7 +594,9 @@
       "mod-update": "Update Mod",
       "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
-      "forge-libraries": "Forge Libraries"
+      "forge-libraries": "Forge Libraries",
+      "launcher-update": "Update Launcher",
+      "mojang-java": "Java {{param}} Runtime"
     }
   },
   "Editable": {
@@ -588,9 +618,6 @@
     "placeholder": {
       "dirName": "Directory Name",
       "dirPath": "Select a game directory"
-    },
-    "button": {
-      "browse": "Browse"
     },
     "dialog": {
       "browse": {
@@ -822,13 +849,7 @@
     "release": "Release",
     "snapshot": "Snapshot",
     "april_fools": "April Fools",
-    "searchPlaceholder": "Search",
-    "wikiKey": {
-      "release": "Java_Edition_",
-      "snapshot": "",
-      "old_beta": "Java_Edition_Beta_",
-      "april_fools": ""
-    }
+    "searchPlaceholder": "Search"
   },
   "General": {
     "add": "Add",
@@ -838,6 +859,7 @@
         "description": "Please log in with your Microsoft account before accessing this feature."
       }
     },
+    "browse": "Browse",
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "OK",
@@ -927,6 +949,22 @@
         "skipFirstScreenOptions": {
           "title": "Skip First Launch Screen Options",
           "description": "%only available in zh-Hans"
+        }
+      }
+    },
+    "advanced": {
+      "title": "Advanced",
+      "settings": {
+        "openConfigJson": {
+          "title": "Launcher Settings File",
+          "description": "Reveal the raw launcher settings file in {{opener}}."
+        },
+        "launcherLogDir": {
+          "title": "Launcher Logs Directory"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "Auto Purge Launcher Logs",
+          "description": "Automatically purge launcher log files older than 30 days"
         }
       }
     }
@@ -1060,7 +1098,7 @@
         "MUA": {
           "title": "Minecraft University Alliance (MUA)",
           "description": "Play with university players across China",
-          "url": " https://www.mualliance.cn/en"
+          "url": "https://www.mualliance.cn/en"
         },
         "SJMC": {
           "title": "SJTU Minecraft Club (SJMC)",
@@ -1239,7 +1277,8 @@
         "adventure": "Adventure Mode",
         "spectator": "Spectator Mode"
       },
-      "moreDesc": ", {{gamemode}} (Difficulty: {{difficulty}})",
+      "gamemodeDesc": ", {{gamemode}}",
+      "difficultyDesc": " (Difficulty: {{difficulty}})",
       "viewLevelData": "View Level Data",
       "launch": "Play this World"
     },
@@ -1310,10 +1349,26 @@
     "skinManage": "Manage Skin",
     "default": "Default",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "Upload",
+    "skin": "Skin",
+    "cape": "Cape",
+    "model": {
+      "label": "Model",
+      "default": "Wide",
+      "slim": "Slim"
+    }
   },
-  "ViewSkinModal": {
-    "skinView": "View Skin"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Add Java"
+    },
+    "label": {
+      "javaPath": "Java Path"
+    },
+    "placeholder": {
+      "javaPath": "Please enter or select the Java executable file path"
+    }
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
@@ -1339,6 +1394,9 @@
   },
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
+  },
+  "NotifyNewVersionModal": {
+    "title": "New Version Available"
   },
   "OptionItemGroup": {
     "button": {
@@ -1386,6 +1444,16 @@
     },
     "button": {
       "login": "Login"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Launcher Update",
+    "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
+    "bodyMSI": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
+    "button": {
+      "restart": "Restart",
+      "install": "Install",
+      "later": "Later"
     }
   },
   "ResourceDownloader": {
@@ -1676,6 +1744,9 @@
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
   },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
+  },
   "ScreenshotPreviewModal": {
     "menu": {
       "setAsBg": "Set as Launcher Background"
@@ -1752,8 +1823,13 @@
         "error": {
           "title": "Failed to validate Java",
           "description": {
-            "JAVA_EXEC_INVALID": "Java executable is invalid "
+            "JAVA_EXEC_INVALID": "Java executable is invalid"
           }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Failed to download Mojang Java runtime"
         }
       },
       "checkGameDirectory": {
@@ -1842,7 +1918,8 @@
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "INVALID": "Wrong account or password",
-            "NOT_FOUND": "The server does not exist"
+            "NOT_FOUND": "The server does not exist",
+            "EXPIRED": "The access token has expired, please re-login"
           }
         }
       },
@@ -1872,6 +1949,17 @@
         }
       },
       "updatePlayerSkinOfflinePreset": {
+        "success": "Successfully updated player skin",
+        "error": {
+          "title": "Failed to update player skin",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The player type is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
         "success": "Successfully updated player skin",
         "error": {
           "title": "Failed to update player skin",
@@ -1971,7 +2059,7 @@
             "EXPIRED": "The access token has expired, please re-login",
             "NETWORK_ERROR": "Failed to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NO_DOWNLOAD_API": "Failed to download Authlib-Injector, please check internet connection",
+            "AUTHLIB_INJECTOR_NOT_READY": "Failed to download Authlib-Injector, please check internet connection",
             "SAVE_ERROR": "Failed to save Authlib-Injector",
             "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
           }
@@ -1981,7 +2069,8 @@
         "error": {
           "title": "Failed to launch game",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found",
+            "AUTH_SERVER_NOT_FOUND": "Auth server not found"
           }
         }
       }
@@ -2247,7 +2336,7 @@
         }
       },
       "finishModLoaderInstall": {
-        "loading": "Installing mod loader for {{instanceId}}",
+        "loading": "Installing mod loader for {{instanceName}}",
         "success": "Mod loader installed successfully",
         "error": {
           "title": "Failed to install mod loader",
@@ -2256,6 +2345,22 @@
             "INSTALLATION_DUPLICATED": "Another installation process is already in progress",
             "MAIN_CLASS_NOT_FOUND": "Main class not found in the mod loader version",
             "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "Unable to Change Mod Loader",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "Failed to Change Mod Loader",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
           }
         }
       },
@@ -2318,6 +2423,9 @@
       "disableRotation": "Disable Rotation",
       "play": "Play",
       "pause": "Pause"
+    },
+    "error": {
+      "loadSkin": "Failed to load skin"
     }
   },
   "SpotlightSearchModal": {
@@ -2331,6 +2439,7 @@
       "world": "Search for {{query}} worlds",
       "resourcepack": "Search for {{query}} resource packs",
       "shader": "Search for {{query}} shader packs",
+      "datapack": "Search for {{query}} data packs",
       "modpack": "Search for {{query}} modpacks",
       "curseforge": "on CurseForge",
       "modrinth": "on Modrinth"
@@ -2409,8 +2518,14 @@
       }
     },
     "wiki": {
-      "baseUrl": "https://minecraft.wiki/w/"
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Java_Edition_{{version}}"
+      }
     }
+  },
+  "ViewSkinModal": {
+    "skinView": "View Skin"
   },
   "WelcomeAndTermsModal": {
     "header": {

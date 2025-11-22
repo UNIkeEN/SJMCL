@@ -82,6 +82,7 @@ export interface LauncherConfig {
     background: {
       choice: string;
       randomCustom: boolean;
+      autoDarken: boolean;
     };
     accessibility: {
       invertColors: boolean;
@@ -118,6 +119,9 @@ export interface LauncherConfig {
       launchPageQuickSwitch: boolean;
       resourceTranslation: boolean;
       skipFirstScreenOptions: boolean;
+    };
+    advanced: {
+      autoPurgeLauncherLogs: boolean;
     };
   };
   localGameDirectories: GameDirectory[];
@@ -230,6 +234,7 @@ export const defaultConfig: LauncherConfig = {
     background: {
       choice: "%built-in:Jokull",
       randomCustom: false,
+      autoDarken: true,
     },
     accessibility: {
       invertColors: false,
@@ -267,6 +272,9 @@ export const defaultConfig: LauncherConfig = {
       resourceTranslation: true,
       skipFirstScreenOptions: false,
     },
+    advanced: {
+      autoPurgeLauncherLogs: true,
+    },
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
@@ -300,4 +308,17 @@ export const defaultConfig: LauncherConfig = {
       accordionStates: [true, true],
     },
   },
+};
+
+export interface VersionMetaInfo {
+  version: string;
+  fileName: string;
+  releaseNotes?: string;
+  publishedAt?: string;
+}
+
+// empty release meta info indicating up-to-date or error.
+export const defaultVersionMetaInfo: VersionMetaInfo = {
+  version: "",
+  fileName: "",
 };

@@ -28,6 +28,7 @@ import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import ModLoaderCards from "@/components/mod-loader-cards";
+import { ChangeModLoaderModal } from "@/components/modals/change-mod-loader-modal";
 import CheckModUpdateModal from "@/components/modals/check-mod-update-modal";
 import ModInfoModal from "@/components/modals/mod-info-modal";
 import { useLauncherConfig } from "@/contexts/config";
@@ -66,10 +67,19 @@ const InstanceModsPage = () => {
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [targetLoaderType, setTargetLoaderType] = useState<ModLoaderType>(
+    ModLoaderType.Unknown
+  );
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [modInfoSelectedMod, setModInfoSelectedMod] =
     useState<LocalModInfo | null>(null);
+
+  const {
+    isOpen: isChangeModLoaderModalOpen,
+    onOpen: onChangeModLoaderModalOpen,
+    onClose: onChangeModLoaderModalClose,
+  } = useDisclosure();
 
   const {
     isOpen: isCheckUpdateModalOpen,
@@ -82,6 +92,32 @@ const InstanceModsPage = () => {
     onOpen: onModInfoModalOpen,
     onClose: onModInfoModalClose,
   } = useDisclosure();
+
+  const handleTypeSelect = async (type: ModLoaderType) => {
+    if (!summary?.id) return;
+
+    const response = await InstanceService.checkChangeModLoaderAvailablity(
+      summary.id
+    );
+
+    if (response.status === "success") {
+      if (response.data) {
+        setTargetLoaderType(type);
+        onChangeModLoaderModalOpen();
+      } else {
+        toast({
+          title: t("Services.instance.changeModLoader.error.title"),
+          status: "error",
+        });
+      }
+    } else {
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
+      });
+    }
+  };
 
   const getLocalModListWrapper = useCallback(
     (sync?: boolean) => {
@@ -236,9 +272,8 @@ const InstanceModsPage = () => {
     {
       icon: LuClockArrowUp,
       label: t("InstanceModsPage.modList.menu.update"),
-      onClick: () => {
-        if (!isLoading) onCheckUpdateModalOpen();
-      },
+      onClick: onCheckUpdateModalOpen,
+      disable: isLoading || localMods.length === 0,
     },
     {
       icon: "add",
@@ -325,6 +360,7 @@ const InstanceModsPage = () => {
           currentType={summary?.modLoader.loaderType || ModLoaderType.Unknown}
           currentVersion={summary?.modLoader.version}
           displayMode="entry"
+          onTypeSelect={handleTypeSelect}
         />
       </Section>
       <Section
@@ -355,6 +391,7 @@ const InstanceModsPage = () => {
                 size="xs"
                 fontSize="sm"
                 h={21}
+                isDisabled={btn.disable}
               />
             ))}
 
@@ -410,7 +447,11 @@ const InstanceModsPage = () => {
                 key={mod.fileName} // unique
                 childrenOnHover
                 title={
-                  <Text fontSize="xs-sm">
+                  <Text
+                    fontSize="xs-sm"
+                    overflow="hidden"
+                    className="ellipsis-text"
+                  >
                     <Highlight
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yello.200" }}
@@ -478,6 +519,7 @@ const InstanceModsPage = () => {
                     />
                   </Avatar>
                 }
+                titleLineWrap={false}
               >
                 <HStack spacing={0}>
                   {modItemMenuOperations(mod).map((item, index) => (
@@ -503,6 +545,12 @@ const InstanceModsPage = () => {
         summary={summary}
         localMods={localMods}
       />
+      <ChangeModLoaderModal
+        isOpen={isChangeModLoaderModalOpen}
+        onClose={onChangeModLoaderModalClose}
+        defaultSelectedType={targetLoaderType}
+      />
+
       {modInfoSelectedMod && (
         <ModInfoModal
           isOpen={isModInfoModalOpen}

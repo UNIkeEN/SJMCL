@@ -1,16 +1,18 @@
-use super::constants::TEXTURE_ROLES;
-use super::helpers::authlib_injector::info::{
+use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
-use super::helpers::authlib_injector::jar::check_authlib_jar;
-use super::helpers::authlib_injector::{self};
-use super::helpers::{microsoft, misc, offline};
-use super::models::{
+use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
+use crate::account::helpers::authlib_injector::{self};
+use crate::account::helpers::{microsoft, misc, offline};
+use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
+  PresetRole, SkinModel, TextureType,
 };
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
+use crate::utils::fs::get_app_resource_filepath;
+use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use url::Url;
@@ -215,7 +217,7 @@ pub async fn add_player_3rdparty_password(
 ) -> SJMCLResult<Vec<Player>> {
   let _ = check_authlib_jar(&app).await; // ignore the error when logging in
 
-  let mut new_players =
+  let (mut new_players, is_token_binded) =
     authlib_injector::password::login(&app, auth_server_url, username, password).await?;
 
   if new_players.is_empty() {
@@ -237,8 +239,10 @@ pub async fn add_player_3rdparty_password(
     Err(AccountError::Duplicate.into())
   } else if new_players.len() == 1 {
     // if only one player will be added, save it and return **an empty vector** to inform the frontend not to trigger selector.
-    let refreshed_player = authlib_injector::password::refresh(&app, &new_players[0], true).await?;
-
+    if !is_token_binded {
+      // if the token is not binded, refresh it to bind the token.
+      new_players[0] = authlib_injector::password::refresh(&app, &new_players[0], true).await?;
+    }
     {
       let account_binding = app.state::<Mutex<AccountInfo>>();
       let mut account_state = account_binding.lock()?;
@@ -248,9 +252,9 @@ pub async fn add_player_3rdparty_password(
       config_state.partial_update(
         &app,
         "states.shared.selected_player_id",
-        &serde_json::to_string(&refreshed_player.id).unwrap_or_default(),
+        &serde_json::to_string(&new_players[0].id).unwrap_or_default(),
       )?;
-      account_state.players.push(refreshed_player);
+      account_state.players.push(new_players[0].clone());
 
       account_state.save()?;
       config_state.save()?;
@@ -288,7 +292,7 @@ pub async fn relogin_player_3rdparty_password(
     return Err(AccountError::Invalid.into());
   }
 
-  let player_list = authlib_injector::password::login(
+  let (player_list, is_token_binded) = authlib_injector::password::login(
     &app,
     old_player.auth_server_url.clone().unwrap_or_default(),
     old_player.auth_account.clone().unwrap_or_default(),
@@ -296,12 +300,14 @@ pub async fn relogin_player_3rdparty_password(
   )
   .await?;
 
-  let new_player = player_list
+  let mut new_player = player_list
     .into_iter()
     .find(|player| player.uuid == old_player.uuid)
     .ok_or(AccountError::NotFound)?;
 
-  let refreshed_player = authlib_injector::password::refresh(&app, &new_player, true).await?;
+  if !is_token_binded {
+    new_player = authlib_injector::password::refresh(&app, &new_player, true).await?;
+  }
 
   {
     let mut account_state = account_binding.lock()?;
@@ -311,7 +317,7 @@ pub async fn relogin_player_3rdparty_password(
       .iter_mut()
       .find(|player| player.id == player_id)
     {
-      *player = refreshed_player;
+      *player = new_player;
       account_state.save()?;
     }
   }
@@ -357,7 +363,7 @@ pub async fn add_player_from_selection(app: AppHandle, player: Player) -> SJMCLR
 pub fn update_player_skin_offline_preset(
   app: AppHandle,
   player_id: String,
-  preset_role: String,
+  preset_role: PresetRole,
 ) -> SJMCLResult<()> {
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
@@ -370,11 +376,52 @@ pub fn update_player_skin_offline_preset(
     return Err(AccountError::Invalid.into());
   }
 
-  if TEXTURE_ROLES.contains(&preset_role.as_str()) {
-    player.textures = offline::load_preset_skin(&app, preset_role)?;
+  player.textures = offline::load_preset_skin(&app, preset_role)?;
+  account_state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub fn update_player_skin_offline_local(
+  app: AppHandle,
+  player_id: String,
+  image_path: String,
+  texture_type: TextureType,
+  skin_model: SkinModel,
+) -> SJMCLResult<()> {
+  let image_path = if image_path == "dummy" {
+    // this is an Easter Egg :)
+    get_app_resource_filepath(&app, "assets/skins/dummy.png")
+      .map_err(|_| AccountError::TextureError)?
   } else {
-    return Err(AccountError::TextureError.into());
+    Path::new(&image_path).to_path_buf()
+  };
+  let texture_img =
+    crate::utils::image::load_image_from_dir(&image_path).ok_or(AccountError::TextureError)?;
+
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  let player = account_state
+    .get_player_by_id_mut(player_id.clone())
+    .ok_or(AccountError::NotFound)?;
+
+  if player.player_type != PlayerType::Offline {
+    return Err(AccountError::Invalid.into());
   }
+
+  // remove existing texture of the same type
+  player
+    .textures
+    .retain(|texture| texture.texture_type != texture_type);
+
+  // add the new texture
+  player.textures.push(crate::account::models::Texture {
+    texture_type: texture_type.clone(),
+    image: texture_img.into(),
+    model: skin_model.clone(),
+    preset: None,
+  });
 
   account_state.save()?;
   Ok(())

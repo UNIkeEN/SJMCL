@@ -1,7 +1,8 @@
-import { Text, TextProps } from "@chakra-ui/react";
+import { Text, TextProps, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
 
-const colorMap: Record<string, string> = {
+// color map in dark mode, followed by the original Minecraft colors.
+const darkColorMap: Record<string, string> = {
   "0": "#000000", // Black
   "1": "#0000AA", // Dark Blue
   "2": "#00AA00", // Dark Green
@@ -20,7 +21,27 @@ const colorMap: Record<string, string> = {
   f: "", // White
 };
 
-function parseMCColorString(input: string) {
+// color map in light mode, adjusted for better readability.
+const lightColorMap: Record<string, string> = {
+  "0": "#000000", // Black
+  "1": "#0000AA", // Dark Blue
+  "2": "#2D6953", // Dark Green
+  "3": "#00AAAA", // Dark Aqua
+  "4": "#AA0000", // Dark Red
+  "5": "#AA00AA", // Dark Purple
+  "6": "#A58055", // Gold
+  "7": "#888888", // Gray
+  "8": "#404040", // Dark Gray
+  "9": "#5555FF", // Blue
+  a: "#05AA02", // Green
+  b: "#4A80B4", // Aqua
+  c: "#FF5555", // Red
+  d: "#C2618D", // Light Purple
+  e: "#EDB83F", // Yellow
+  f: "#D7D7D7", // White
+};
+
+function parseMCColorString(input: string, colorMap: Record<string, string>) {
   let currentColor = colorMap["f"];
   const segments: Array<{ text: string; color: string }> = [];
   let currentText = "";
@@ -56,8 +77,10 @@ export const FormattedMCText: React.FC<TextProps> = ({
   children,
   ...props
 }) => {
+  const currentColorMap = useColorModeValue(lightColorMap, darkColorMap);
+
   if (typeof children === "string") {
-    const segments = parseMCColorString(children);
+    const segments = parseMCColorString(children, currentColorMap);
     return (
       <Text {...props}>
         {segments.map((segment, index) => (
@@ -75,15 +98,3 @@ export const FormattedMCText: React.FC<TextProps> = ({
   }
   return <Text {...props}>{children}</Text>;
 };
-
-export function stripMCColorCodes(input: string): string {
-  let output = "";
-  for (let i = 0; i < input.length; i++) {
-    if (input[i] === "§" && i < input.length - 1) {
-      i++;
-    } else {
-      output += input[i];
-    }
-  }
-  return output;
-}

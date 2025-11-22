@@ -36,6 +36,7 @@ const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const {
+    instanceId,
     summary,
     openInstanceSubdir,
     handleImportResource,
@@ -74,8 +75,8 @@ const InstanceWorldsPage = () => {
 
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
-      if (summary?.id !== undefined) {
-        InstanceService.retrieveGameServerList(summary.id, queryOnline).then(
+      if (instanceId !== undefined) {
+        InstanceService.retrieveGameServerList(instanceId, queryOnline).then(
           (response) => {
             if (response.status === "success") {
               setGameServers(response.data);
@@ -90,7 +91,7 @@ const InstanceWorldsPage = () => {
         );
       }
     },
-    [toast, summary?.id]
+    [toast, instanceId]
   );
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const InstanceWorldsPage = () => {
       handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [summary?.id, handleRetrieveGameServerList]);
+  }, [instanceId, handleRetrieveGameServerList]);
 
   const worldSecMenuOperations = [
     {
@@ -171,8 +172,8 @@ const InstanceWorldsPage = () => {
             icon: "launch",
             onClick: () => {
               openSharedModal("launch", {
-                instanceId: summary?.id,
-                quickPlaySingleplayer: save.dirPath,
+                instanceId: instanceId,
+                quickPlaySingleplayer: save.name,
               });
             },
           },
@@ -215,20 +216,28 @@ const InstanceWorldsPage = () => {
         ) : worlds.length > 0 ? (
           <OptionItemGroup
             items={worlds.map((world) => {
-              const difficulty = t(
-                `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
-              );
               const gamemode = t(
                 `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
               );
+
+              const description = [
+                `${t("InstanceWorldsPage.worldList.lastPlayedAt")} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}`,
+                t("InstanceWorldsPage.worldList.gamemodeDesc", { gamemode }),
+                world.difficulty &&
+                  t("InstanceWorldsPage.worldList.difficultyDesc", {
+                    difficulty: t(
+                      `InstanceWorldsPage.worldList.difficulty.${world.difficulty}`
+                    ),
+                  }),
+              ]
+                .filter(Boolean)
+                .join("");
 
               return (
                 <OptionItem
                   key={world.name}
                   title={world.name}
-                  description={`${t(
-                    "InstanceWorldsPage.worldList.lastPlayedAt"
-                  )} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}${t("InstanceWorldsPage.worldList.moreDesc", { gamemode, difficulty })}`}
+                  description={description}
                   prefixElement={
                     <Image
                       src={convertFileSrc(world.iconSrc)}
@@ -259,7 +268,7 @@ const InstanceWorldsPage = () => {
       </Section>
 
       <WorldLevelDataModal
-        instanceId={summary?.id}
+        instanceId={instanceId}
         worldName={selectedWorldName || ""}
         isOpen={isWorldLevelDataModalOpen}
         onClose={onWorldLevelDataModalClose}
@@ -338,7 +347,7 @@ const InstanceWorldsPage = () => {
                     label={t("InstanceWorldsPage.serverList.launch")}
                     onClick={() => {
                       openSharedModal("launch", {
-                        instanceId: summary?.id,
+                        instanceId: instanceId,
                         quickPlayMultiplayer: server.ip,
                       });
                     }}

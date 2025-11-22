@@ -1,5 +1,5 @@
-use super::game_version::compare_game_versions;
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::models::misc::{Instance, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
 use crate::utils::fs::get_app_resource_filepath;
@@ -8,6 +8,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use serde_with::formats::PreferMany;
 use serde_with::{serde_as, OneOrMany};
+use serialize_skip_none_derive::serialize_skip_none;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs;
@@ -15,42 +16,18 @@ use std::str::FromStr;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 
+#[serialize_skip_none]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct McClientInfo {
   pub id: String,
+  pub version: Option<String>,
+  pub priority: Option<i64>,
   pub inherits_from: Option<String>,
 
   pub arguments: Option<LaunchArgumentTemplate>, // new version
   pub minecraft_arguments: Option<String>,       // old version
 
-  pub asset_index: AssetIndexInfo,
-  pub assets: String,
-  pub downloads: HashMap<String, DownloadsValue>,
-  pub libraries: Vec<LibrariesValue>,
-  pub logging: Logging,
-  pub java_version: JavaVersion,
-  #[serde(rename = "type")]
-  pub type_: String,
-  pub time: String,
-  pub release_time: String,
-  pub minimum_launcher_version: i64,
-  pub patches: Vec<PatchesInfo>,
-  pub main_class: String,
-  pub jar: Option<String>,
-  pub client_version: Option<String>,
-}
-
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
-#[serde(rename_all = "camelCase", default)]
-pub struct PatchesInfo {
-  pub id: String,
-  pub version: String,
-  pub priority: i64,
-  pub inherits_from: Option<String>,
-  pub arguments: Option<LaunchArgumentTemplate>,
-  pub minecraft_arguments: Option<String>,
-  pub main_class: String,
   pub asset_index: AssetIndexInfo,
   pub assets: String,
   pub downloads: HashMap<String, DownloadsValue>,
@@ -62,6 +39,11 @@ pub struct PatchesInfo {
   pub time: String,
   pub release_time: String,
   pub minimum_launcher_version: i64,
+  #[serde(skip_serializing_if = "Vec::is_empty", default)]
+  pub patches: Vec<McClientInfo>,
+  pub main_class: Option<String>,
+  pub jar: Option<String>,
+  pub client_version: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -78,11 +60,8 @@ pub struct LaunchArgumentTemplate {
   pub jvm: Vec<ArgumentsItem>,
 }
 
-#[serde_as]
-#[derive(Debug, Serialize, Default, Clone)]
-#[serde(rename_all = "camelCase", default)]
+#[derive(Debug, Default, Clone)]
 pub struct ArgumentsItem {
-  #[serde_as(as = "OneOrMany<_, PreferMany>")]
   pub value: Vec<String>,
   pub rules: Vec<InstructionRule>,
 }
@@ -117,6 +96,28 @@ impl<'de> Deserialize<'de> for ArgumentsItem {
   }
 }
 
+impl Serialize for ArgumentsItem {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    if self.rules.is_empty() {
+      if self.value.len() == 1 {
+        return serializer.serialize_str(&self.value[0]);
+      }
+      if self.value.is_empty() {
+        return serializer.serialize_str("");
+      }
+    }
+    let game = ArgumentsItemDefault {
+      value: self.value.clone(),
+      rules: self.rules.clone(),
+    };
+    game.serialize(serializer)
+  }
+}
+
+#[serialize_skip_none]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct InstructionRule {
@@ -204,6 +205,7 @@ impl InstructionRule {
   }
 }
 
+#[serialize_skip_none]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct OsInfo {
@@ -212,6 +214,7 @@ pub struct OsInfo {
   pub arch: Option<String>,
 }
 
+#[serialize_skip_none]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
 pub struct FeaturesInfo {
@@ -241,22 +244,31 @@ pub struct DownloadsValue {
   pub url: String,
 }
 
-structstruck::strike! {
-  #[strikethrough[derive(Debug, Deserialize, Serialize, Default, Clone)]]
-  #[strikethrough[serde(rename_all="camelCase", default)]]
-  pub struct LibrariesValue {
-    pub name: String,
-    pub downloads: Option<
-      pub struct{
-        pub artifact: Option<DownloadsArtifact>,
-        pub classifiers: Option<HashMap<String, DownloadsArtifact>>,
-      }>,
-    pub natives: Option<HashMap<String, String>>,
-    pub extract: Option<pub struct{
-      exclude: Option<Vec<String>>,
-    }>,
-    pub rules: Vec<InstructionRule>,
-  }
+#[serialize_skip_none]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LibrariesValue {
+  pub name: String,
+  pub downloads: Option<LibrariesDownloads>,
+  pub natives: Option<HashMap<String, String>>,
+  pub extract: Option<LibrariesExtract>,
+  #[serde(skip_serializing_if = "Vec::is_empty", default)]
+  pub rules: Vec<InstructionRule>,
+}
+
+#[serialize_skip_none]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LibrariesDownloads {
+  pub artifact: Option<DownloadsArtifact>,
+  pub classifiers: Option<HashMap<String, DownloadsArtifact>>,
+}
+
+#[serialize_skip_none]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LibrariesExtract {
+  pub exclude: Option<Vec<String>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, Hash)]
@@ -268,37 +280,44 @@ pub struct DownloadsArtifact {
   pub size: i64,
 }
 
-structstruck::strike! {
-  #[strikethrough[derive(Debug, Deserialize, Serialize, Default, Clone)]]
-  #[strikethrough[serde(rename_all="camelCase", default)]]
-  pub struct Logging {
-    pub client:
-      pub struct {
-        pub argument: String,
-        pub file: pub struct {
-          pub id: String,
-          pub url: String,
-          pub sha1: String,
-          pub size: i64,
-        },
-        #[serde(rename="type")]
-        pub type_: String,
-      },
-  }
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(rename_all = "camelCase", default)]
+pub struct Logging {
+  pub client: LoggingClient,
 }
 
-pub fn patches_to_info(patches: &[PatchesInfo]) -> (Option<String>, Option<String>, ModLoaderType) {
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LoggingClient {
+  pub argument: String,
+  pub file: LoggingFile,
+  #[serde(rename = "type")]
+  pub type_: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LoggingFile {
+  pub id: String,
+  pub url: String,
+  pub sha1: String,
+  pub size: i64,
+}
+
+pub fn patches_to_info(
+  patches: &[McClientInfo],
+) -> (Option<String>, Option<String>, ModLoaderType) {
   let mut loader_type = ModLoaderType::Unknown;
   let mut game_version = None;
   let mut loader_version = None;
   for patch in patches {
     if game_version.is_none() && patch.id == "game" {
-      game_version = Some(patch.version.clone());
+      game_version = patch.version.clone();
     }
     if loader_type == ModLoaderType::Unknown {
       if let Ok(found_loader_type) = ModLoaderType::from_str(&patch.id) {
         loader_type = found_loader_type;
-        loader_version = Some(patch.version.clone());
+        loader_version = patch.version.clone();
       }
     }
 
@@ -334,9 +353,27 @@ pub async fn libraries_to_info(
         loader_version = Some(v.to_string());
         break;
       }
-      ("net.neoforged", "neoforge") => {
+      ("net.neoforged.fancymodloader", _) | ("net.neoforged", "fancymodloader") => {
         loader_type = ModLoaderType::NeoForge;
-        loader_version = Some(v.to_string());
+        let arguments = client.arguments.clone();
+        // ref: https://github.com/HMCL-dev/HMCL/pull/3638/files
+        if let Some(args) = arguments {
+          for (i, item) in args.game.iter().enumerate() {
+            if item.value[0].contains("--fml.neoForgeVersion")
+              || item.value[0].contains("--fml.forgeVersion")
+            {
+              let next = args
+                .game
+                .get(i + 1)
+                .and_then(|it| it.value.first())
+                .cloned()
+                .unwrap_or_default();
+              if !next.is_empty() {
+                loader_version = Some(next);
+              }
+            }
+          }
+        }
         break;
       }
       ("net.minecraftforge", "forge") | ("net.minecraftforge", "fmlloader") => {

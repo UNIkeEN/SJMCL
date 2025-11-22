@@ -3,7 +3,7 @@
 [![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
 ![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)
-![Runs](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&label=runs&query=$.total_count&url=https%3A%2F%2Fmc.sjtu.cn%2Fapi-sjmcl%2Fcount)
+![Runs](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&label=runs&query=$.total_count_str&url=https%3A%2F%2Fmc.sjtu.cn%2Fapi-sjmcl%2Fcount)
 [![Deepwiki](https://img.shields.io/badge/Ask-DeepWiki-20B2AA?logo=&style=for-the-badge)](https://deepwiki.com/UNIkeEN/SJMCL)
 
 [English](../README.md) · [简体中文](README.zh-Hans.md) · **繁體中文**
@@ -28,17 +28,44 @@
 
 開始使用 SJMCL，只需前往 [官網](https://mc.sjtu.cn/sjmcl/en) 下載最新版即可。
 
-你也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 獲取所有版本，包括週期性構建。
+您也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 獲取所有版本，包括週期性構建。
 
 SJMCL 目前支援以下平臺：
 
 | 平臺    | 系統版本            | 架構               | 提供的的分發型別                              |
 |---------|---------------------|--------------------|--------------------------------------------|
-| Windows | 10 及以上           | `aarch64`, `i686`, `x86_64`   | `.msi`，便攜版 `.exe`                |
+| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`   | `.msi`，便攜版 `.exe`                |
 | macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`                   |
 | Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便攜版二進位制檔案 |
 
 瞭解更多功能與常見問題，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/zh/docs)。
+
+### Windows 7
+
+若您需要在 Windows 7 上執行 SJMCL，請先 [下載 Microsoft Edge WebView2 運行時](https://developer.microsoft.com/zh-tw/microsoft-edge/webview2#download) 並安裝，建議選擇「常青引導程式」。
+
+<details>
+<summary><h3>從命令列安裝</h3></summary>
+
+<details>
+<summary><h4>Arch Linux</h4></summary>
+
+SJMCL 已上傳至 Arch Linux 使用者套件庫（AUR）。您可以使用常見的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 安裝：
+
+```bash
+yay -S sjmcl-bin
+```
+
+若不使用 AUR 助手，您也可以手動安裝：
+
+```bash
+git clone https://aur.archlinux.org/sjmcl-bin.git
+cd sjmcl-bin
+makepkg -si
+```
+
+</details>
+</details>
 
 ## 開發與貢獻
 
@@ -59,7 +86,7 @@ npm run tauri dev
 
 * 在開始前，請先閱讀我們的 [貢獻指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（內含開發流程詳細說明）。
 * API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/zh/dev)。
-* 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享你的想法。
+* 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
 
 ### 倉庫活動
 
@@ -73,11 +100,19 @@ npm run tauri dev
 
 本專案基於 [GNU 通用公共許可證 v3.0](../LICENSE) 釋出。
 
-依據 GPLv3 第 7 條款，當你分發本軟體的修改版本時，除遵守 GPLv3 外，還須遵守以下 [附加條款](../LICENSE.EXTRA)：
+依據 GPLv3 第 7 條款，當您分發本軟體的修改版本時，除遵守 GPLv3 外，還須遵守以下 [附加條款](../LICENSE.EXTRA)：
 
 1. 必須更換軟體名稱，禁止使用 SJMCL 或 SJMC Launcher；
-2. 禁止移除向統計伺服器傳送資訊的功能（`src-tauri/src/utils/sys_info.rs`），且僅傳送帶字首（不少於兩個字母，如 `XX-0.0.1`）的版本號；
-3. 在你的倉庫 README、分發網站或相關文件、軟體的關於頁面中，須明確標註你的程式基於 SJMCL，並註明原倉庫連結。
+2. 在您的倉庫 README、分發網站或相關文件、軟體的關於頁面中，須明確標註您的程式基於 SJMCL，並註明原倉庫連結。
+3. 當對本軟件的修改僅限於**增加**（而非修改或刪除）預置認證伺服器（`src-tauri/src/account/helpers/authlib_injector/constants.rs`）時，前述第 1 條之限制不適用。在此情形下，您得繼續使用原始軟體名稱進行編譯與分發。
+
+另根據我們網站的使用者協議，當您分發本軟體的修改版本時，請僅向我們的資訊統計伺服器（`src-tauri/src/utils/sys_info.rs`）傳送帶字首（不少於兩個字母，如 `XX-0.0.1`）的版本號，除非您的修改滿足上述第 3 條限制。
+
+## 聯絡我們
+
+SJMCL 使用者 QQ 交流群：860851380
+
+您還可以傳送郵件至 [launcher@sjmc.club](mailto:launcher@sjmc.club) 來聯絡我們。
 
 ## 社群合作伙伴
 

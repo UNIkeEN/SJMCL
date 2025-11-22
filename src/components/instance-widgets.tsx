@@ -391,11 +391,13 @@ export const InstanceLastPlayedWidget = () => {
                     `InstanceWorldsPage.worldList.gamemode.${lastPlayedWorld.gamemode}`
                   )}
                 </Text>
-                <Text className="secondary-text" fontSize="xs">
-                  {t(
-                    `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
-                  )}
-                </Text>
+                {lastPlayedWorld.difficulty && (
+                  <Text className="secondary-text" fontSize="xs">
+                    {t(
+                      `InstanceWorldsPage.worldList.difficulty.${lastPlayedWorld.difficulty}`
+                    )}
+                  </Text>
+                )}
               </VStack>
             </Box>
           </HStack>
@@ -409,8 +411,8 @@ export const InstanceLastPlayedWidget = () => {
                 onClick={() => {
                   openSharedModal("launch", {
                     instanceId: summary?.id,
-                    ...(lastPlayedWorld?.dirPath && {
-                      quickPlaySingleplayer: lastPlayedWorld.dirPath,
+                    ...(lastPlayedWorld?.name && {
+                      quickPlaySingleplayer: lastPlayedWorld.name,
                     }),
                   });
                 }}

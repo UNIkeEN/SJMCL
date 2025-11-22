@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  Grid,
   HStack,
   Input,
   Menu,
@@ -42,6 +43,7 @@ import { InstanceSummary } from "@/models/instance/misc";
 import { GameClientResourceInfo, OtherResourceInfo } from "@/models/resource";
 import { ResourceService } from "@/services/resource";
 import { ISOToDate } from "@/utils/datetime";
+import { translateTag } from "@/utils/resource";
 import { formatDisplayCount } from "@/utils/string";
 
 interface ResourceDownloaderProps {
@@ -145,30 +147,6 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     null
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { t } = useTranslation();
-
-  const translateTag = (
-    tag: string,
-    resourceType: string,
-    downloadSource?: OtherResourceSource
-  ) => {
-    if (downloadSource) {
-      const tagList = (tagLists[resourceType] || modpackTagList)[
-        downloadSource
-      ];
-      let allTags: string[] = [];
-      if (typeof tagList === "object" && tagList !== null) {
-        const keys = Object.keys(tagList);
-        const values = Object.values(tagList).flat() as string[];
-        allTags = [...keys, ...values];
-      }
-      if (!allTags.includes(tag)) return "";
-      return t(
-        `ResourceDownloader.${resourceType}TagList.${downloadSource}.${tag}`
-      );
-    }
-    return tag;
-  };
 
   const buildOptionItems = (item: OtherResourceInfo): OptionItemProps => ({
     title: (
@@ -179,7 +157,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
       </Text>
     ),
     titleExtra: (
-      <HStack spacing={1}>
+      <HStack spacing={1} flex="0 0 auto">
         {(() => {
           const translatedTags = item.tags
             .map((t) => translateTag(t, item.type, item.source))
@@ -217,11 +195,15 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
         spacing={1}
         align="flex-start"
         w="100%"
+        mt={0.5}
       >
         <Text overflow="hidden" className="ellipsis-text">
           {(showZhTrans && item.translatedDescription) || item.description}
         </Text>
-        <HStack spacing={6}>
+        <Grid
+          templateColumns="repeat(3, 1fr)"
+          w={{ base: "sm", lg: "md", xl: "md" }}
+        >
           <HStack spacing={1}>
             <LuUpload />
             <Text>{ISOToDate(item.lastUpdated)}</Text>
@@ -236,7 +218,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
               <Text>{item.source}</Text>
             </HStack>
           )}
-        </HStack>
+        </Grid>
       </VStack>
     ),
     prefixElement: (

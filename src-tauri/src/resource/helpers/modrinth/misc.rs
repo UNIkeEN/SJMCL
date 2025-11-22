@@ -81,8 +81,8 @@ pub struct ModrinthProject {
   pub title: String,
   pub description: String,
   pub categories: Vec<String>,
-  pub downloads: u32,
-  pub icon_url: String,
+  pub downloads: u64,
+  pub icon_url: Option<String>,
   #[serde(alias = "updated")]
   pub date_modified: String,
 }
@@ -90,7 +90,7 @@ pub struct ModrinthProject {
 #[derive(Deserialize, Debug)]
 pub struct ModrinthSearchRes {
   pub hits: Vec<ModrinthProject>,
-  pub total_hits: u32,
+  pub total_hits: u64,
   pub offset: u32,
   pub limit: u32,
 }
@@ -111,14 +111,14 @@ structstruck::strike! {
   pub struct ModrinthVersionPack {
     pub project_id: String,
     pub dependencies: Vec<pub struct {
-      pub project_id: String,
+      pub project_id: Option<String>,
       pub dependency_type: String,
     }>,
     pub game_versions: Vec<String>,
     pub loaders: Vec<String>,
     pub name: String,
     pub date_published: String,
-    pub downloads: u32,
+    pub downloads: u64,
     pub version_type: String,
     pub files: Vec<ModrinthFileInfo>,
   }
@@ -215,7 +215,7 @@ impl From<ModrinthProject> for OtherResourceInfo {
       name: project.title,
       slug: project.slug.to_string(),
       description: project.description,
-      icon_src: project.icon_url,
+      icon_src: project.icon_url.unwrap_or_default(),
       website_url: format!("https://modrinth.com/mod/{}", project.slug),
       tags: project.categories,
       last_updated: project.date_modified,
@@ -244,7 +244,7 @@ impl From<(&ModrinthVersionPack, &ModrinthFileInfo, Option<String>)> for OtherRe
         .dependencies
         .iter()
         .map(|d| OtherResourceDependency {
-          resource_id: d.project_id.clone(),
+          resource_id: d.project_id.clone().unwrap_or_default(),
           relation: d.dependency_type.clone(),
         })
         .collect(),

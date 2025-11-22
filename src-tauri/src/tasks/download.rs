@@ -1,7 +1,11 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::commands::retrieve_launcher_config;
+use crate::tasks::streams::desc::{PDesc, PStatus};
+use crate::tasks::streams::reporter::Reporter;
+use crate::tasks::streams::ProgressStream;
+use crate::tasks::*;
 use crate::utils::fs::validate_sha1;
-
+use crate::utils::web::with_retry;
 use async_speed_limit::Limiter;
 use futures::stream::TryStreamExt;
 use futures::StreamExt;
@@ -17,12 +21,6 @@ use tauri_plugin_http::reqwest::header::RANGE;
 use tokio::io::AsyncSeekExt;
 use tokio_util::bytes;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
-
-use super::streams::desc::{PDesc, PStatus};
-use super::streams::reporter::Reporter;
-use super::streams::ProgressStream;
-use super::*;
-use crate::utils::web::with_retry;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]

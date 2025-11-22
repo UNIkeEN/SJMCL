@@ -1,9 +1,9 @@
-use super::events::{GEventStatus, PEvent};
-use super::streams::desc::PStatus;
 use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_launcher_config;
-
-use super::download::DownloadTask;
+use crate::tasks::download::DownloadTask;
+use crate::tasks::events::{GEvent, GEventStatus, PEvent, TEvent};
+use crate::tasks::streams::desc::PStatus;
+use crate::tasks::{SJMCLFuture, *};
 use async_speed_limit::Limiter;
 use flume::{Receiver as FlumeReceiver, Sender as FlumeSender};
 use glob::glob;
@@ -16,9 +16,6 @@ use std::vec::Vec;
 use tauri::async_runtime::JoinHandle;
 use tauri::AppHandle;
 use tokio::sync::Semaphore;
-
-use super::events::{GEvent, TEvent};
-use super::{SJMCLFuture, *};
 
 pub struct GroupMonitor {
   pub phs: HashMap<u32, Arc<RwLock<PTaskHandle>>>,
@@ -496,7 +493,7 @@ impl TaskMonitor {
       let desc = handle.read().unwrap();
       let status = &desc.desc.status;
       // check if the task is a download task and is in progress or waiting
-      if matches!(desc.desc.payload, super::PTaskParam::Download(_))
+      if matches!(desc.desc.payload, PTaskParam::Download(_))
         && (status.is_in_progress() || status.is_waiting())
       {
         return true;

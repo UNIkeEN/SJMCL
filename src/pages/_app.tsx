@@ -21,6 +21,7 @@ import { localeResources } from "@/locales";
 import chakraExtendTheme from "@/styles/chakra-theme";
 import "@/styles/globals.css";
 import { isProd } from "@/utils/env";
+import { setupLogger } from "@/utils/logging";
 
 i18n.use(initReactI18next).init({
   resources: localeResources,
@@ -35,6 +36,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   useEffect(() => {
+    // setup global logger
+    setupLogger();
+
     // forbid right mouse menu of webview
     if (isProd) {
       document.addEventListener("contextmenu", (event) => {

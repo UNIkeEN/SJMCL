@@ -34,7 +34,6 @@ cp .env.template .env
 ```
 
 The `.env` file contains required environment variables that are embedded into the Rust backend at compile time:
-- `SJMCL_MICROSOFT_CLIENT_SECRET`: Microsoft OAuth client secret
 - `SJMCL_CURSEFORGE_API_KEY`: CurseForge API key for mod downloads
 - `NEXT_PUBLIC_DEV_TOOLBAR`: Development toolbar toggle
 
@@ -116,7 +115,7 @@ npx tauri build
 The GitHub Actions pipeline validates:
 1. **Lint Job**: ESLint (frontend) + rustfmt (backend)
 2. **Build Job**: Multi-platform test builds (Ubuntu primarily in PR tests)
-3. **Environment**: Requires secrets for Microsoft OAuth and CurseForge API
+3. **Environment**: Requires secrets for CurseForge API
 
 **Important**: CI uses specific package versions and may work differently than local builds.
 

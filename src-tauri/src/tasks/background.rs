@@ -1,4 +1,4 @@
-use super::monitor::TaskMonitor;
+use crate::tasks::monitor::TaskMonitor;
 use std::pin::Pin;
 use tauri::{AppHandle, Manager};
 

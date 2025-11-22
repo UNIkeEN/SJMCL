@@ -11,8 +11,10 @@ mod tasks;
 mod utils;
 
 use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
+use account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
+use instance::helpers::mods::common::LocalModTranslationsCache;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
@@ -23,12 +25,10 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
 use storage::Storage;
 use tasks::monitor::TaskMonitor;
-use tauri_plugin_log::{Target, TargetKind};
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-use tauri::menu::MenuBuilder;
 use tauri::path::BaseDirectory;
 use tauri::Manager;
 
@@ -68,13 +68,18 @@ pub async fn run() {
       launcher_config::commands::restore_launcher_config,
       launcher_config::commands::export_launcher_config,
       launcher_config::commands::import_launcher_config,
+      launcher_config::commands::reveal_launcher_config,
       launcher_config::commands::retrieve_custom_background_list,
       launcher_config::commands::add_custom_background,
       launcher_config::commands::delete_custom_background,
       launcher_config::commands::retrieve_java_list,
       launcher_config::commands::validate_java,
+      launcher_config::commands::download_mojang_java,
       launcher_config::commands::check_game_directory,
       launcher_config::commands::clear_download_cache,
+      launcher_config::commands::check_launcher_update,
+      launcher_config::commands::download_launcher_update,
+      launcher_config::commands::install_launcher_update,
       account::commands::retrieve_player_list,
       account::commands::add_player_offline,
       account::commands::fetch_oauth_code,
@@ -85,6 +90,7 @@ pub async fn run() {
       account::commands::relogin_player_3rdparty_password,
       account::commands::add_player_from_selection,
       account::commands::update_player_skin_offline_preset,
+      account::commands::update_player_skin_offline_local,
       account::commands::delete_player,
       account::commands::refresh_player,
       account::commands::retrieve_auth_server_list,
@@ -113,6 +119,8 @@ pub async fn run() {
       instance::commands::toggle_mod_by_extension,
       instance::commands::create_launch_desktop_shortcut,
       instance::commands::finish_mod_loader_install,
+      instance::commands::check_change_mod_loader_availablity,
+      instance::commands::change_mod_loader,
       instance::commands::retrieve_modpack_meta_info,
       launch::commands::select_suitable_jre,
       launch::commands::validate_game_files,
@@ -154,30 +162,30 @@ pub async fn run() {
       utils::commands::check_service_availability,
     ])
     .setup(|app| {
-      let is_dev = cfg!(debug_assertions);
-
-      // Get version and os information
-      let version = match (is_dev, app.package_info().version.to_string().as_str()) {
-        (true, _) => "dev".to_string(),
-        (false, "0.0.0") => "nightly".to_string(),
-        (false, v) => v.to_string(),
-      };
-      let os = tauri_plugin_os::platform().to_string();
-
       // init APP_DATA_DIR
       APP_DATA_DIR
         .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
         .expect("APP_DATA_DIR initialization failed");
+
+      // Set up logging
+      utils::logging::setup_with_app(app.handle().clone()).unwrap();
 
       // Set the launcher config and other states
       // Also extract assets in `setup_with_app()` if the application is portable
       let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
       launcher_config.setup_with_app(app.handle()).unwrap();
       launcher_config.save().unwrap();
+      let version = launcher_config.basic_info.launcher_version.clone();
+      let os = launcher_config.basic_info.platform.clone();
+      let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
-      app.manage(Mutex::new(account_info));
+      app.manage(Mutex::new(account_info.clone()));
+
+      // Migrate account info to new format
+      // TODO: will be removed after the new migration utils crate implemented
+      account_info.save().unwrap();
 
       let instances: HashMap<String, Instance> = HashMap::new();
       app.manage(Mutex::new(instances));
@@ -190,11 +198,21 @@ pub async fn run() {
 
       app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
+      let local_mod_translations = LocalModTranslationsCache::load().unwrap_or_default();
+      app.manage(Mutex::new(local_mod_translations));
+
       let client = build_sjmcl_client(app.handle(), true, false);
       app.manage(client);
 
       let launching_queue = Vec::<LaunchingState>::new();
       app.manage(Mutex::new(launching_queue));
+
+      // start local yggdrasil server for offline accounts
+      let local_ygg_server = YggdrasilServer::new();
+      app.manage(Mutex::new(local_ygg_server.clone()));
+      tauri::async_runtime::spawn(async move {
+        local_ygg_server.run().await.unwrap_or_default();
+      });
 
       // check if full account feature (offline and 3rd-party login) is available
       let app_handle = app.handle().clone();
@@ -235,17 +253,27 @@ pub async fn run() {
         tasks::background::monitor_background_process(app_handle).await;
       });
 
-      // On platforms other than macOS, set the menu to empty to hide the default menu.
-      // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
-      if os.clone() != "macos" {
-        let menu = MenuBuilder::new(app).build()?;
-        app.set_menu(menu)?;
-      };
-
       // Send statistics
       tokio::spawn(async move {
         utils::sys_info::send_statistics(version, os).await;
       });
+
+      // Auto purge launcher logs older than 30 days if enabled
+      if auto_purge_launcher_logs {
+        let app_handle = app.handle().clone();
+        tauri::async_runtime::spawn(async move {
+          let _ = utils::logging::purge_old_launcher_logs(app_handle, 30).await;
+        });
+      }
+
+      // On platforms other than macOS, set the menu to empty to hide the default menu.
+      // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458
+      #[cfg(not(target_os = "macos"))]
+      {
+        use tauri::menu::MenuBuilder;
+        let menu = MenuBuilder::new(app).build()?;
+        app.set_menu(menu)?;
+      }
 
       // Registering the deep links at runtime on Linux and Windows
       // ref: https://v2.tauri.app/plugin/deep-linking/#registering-desktop-deep-links-at-runtime
@@ -253,19 +281,6 @@ pub async fn run() {
       {
         use tauri_plugin_deep_link::DeepLinkExt;
         app.deep_link().register_all()?;
-      }
-
-      // Log in debug mode
-      if is_dev {
-        app.handle().plugin(
-          tauri_plugin_log::Builder::default()
-            .level(log::LevelFilter::Info)
-            .targets([
-              Target::new(TargetKind::Stdout),
-              Target::new(TargetKind::Webview),
-            ])
-            .build(),
-        )?;
       }
 
       Ok(())

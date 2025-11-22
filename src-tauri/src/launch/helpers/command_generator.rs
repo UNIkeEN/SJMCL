@@ -1,5 +1,3 @@
-use super::file_validator::get_nonnative_library_paths;
-use super::misc::{get_separator, replace_arguments};
 use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
 use crate::account::models::{AccountError, PlayerType};
 use crate::error::{SJMCLError, SJMCLResult};
@@ -7,9 +5,11 @@ use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
+use crate::launch::helpers::file_validator::get_nonnative_library_paths;
+use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
-use crate::launcher_config::helpers::memory::get_memory_info;
 use crate::launcher_config::models::*;
+use crate::utils::sys_info::get_memory_info;
 use base64::engine::general_purpose;
 use base64::Engine;
 use serde::{self, Deserialize, Serialize};
@@ -266,17 +266,25 @@ pub async fn generate_launch_command(
 
   // TODO: lwjgl non-ASCII path fix (HMCL DefaultLauncher.java#L236)
 
-  // authlib-injector login
-  if selected_player.player_type == PlayerType::ThirdParty {
+  // login via authlib-injector
+  if matches!(
+    selected_player.player_type,
+    PlayerType::ThirdParty | PlayerType::Offline
+  ) && auth_server_meta.is_some()
+  {
+    let auth_server_url = selected_player
+      .auth_server_url
+      .clone()
+      .ok_or(LaunchError::AuthServerNotFound)?;
     cmd.push(format!(
       "-javaagent:{}={}",
       get_authlib_injector_jar_path(app)?.to_string_lossy(),
-      selected_player.auth_server_url.clone().unwrap_or_default()
+      auth_server_url
     ));
     cmd.push("-Dauthlibinjector.side=client".to_string());
     cmd.push(format!(
       "-Dauthlibinjector.yggdrasil.prefetched={}",
-      general_purpose::STANDARD.encode(&auth_server_meta)
+      general_purpose::STANDARD.encode(auth_server_meta.unwrap())
     ));
   }
 
@@ -338,7 +346,12 @@ pub async fn generate_launch_command(
   }
 
   // main class (after replace jvm args)
-  cmd.push(client_info.main_class.clone());
+  cmd.push(
+    client_info
+      .main_class
+      .ok_or(InstanceError::MainClassNotFound)?
+      .clone(),
+  );
 
   if let Some(client_args) = &client_info.arguments {
     let client_game_args = client_args.to_game_arguments(&launch_feature)?;
@@ -369,6 +382,21 @@ pub async fn generate_launch_command(
     cmd.push("--fullscreen".to_string());
   }
 
+  if !game_config
+    .advanced
+    .custom_commands
+    .minecraft_argument
+    .trim()
+    .is_empty()
+  {
+    match shlex::split(&game_config.advanced.custom_commands.minecraft_argument) {
+      Some(mut extra_args) => cmd.append(&mut extra_args),
+      None => {
+        eprintln!("[Warn] Failed to parse minecraftArgument");
+      }
+    }
+  }
+
   Ok(LaunchCommand {
     class_paths,
     args: cmd,
@@ -380,7 +408,7 @@ pub fn export_full_launch_command(
   args: &[String],
   java_exec_str: &str,
 ) -> String {
-  fn quote_or_raw(s: &str) -> Cow<str> {
+  fn quote_or_raw(s: &'_ str) -> Cow<'_, str> {
     try_quote(s).unwrap_or(Cow::Borrowed(s))
   }
 

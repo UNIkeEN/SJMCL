@@ -1,20 +1,23 @@
-use super::helpers::command_generator::{
-  export_full_launch_command, generate_launch_command, LaunchCommand,
-};
-use super::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
-};
-use super::helpers::jre_selector::select_java_runtime;
-use super::helpers::misc::get_separator;
-use super::helpers::process_monitor::{kill_process, monitor_process, set_process_priority};
-use super::models::{LaunchError, LaunchingState};
 use crate::account::helpers::misc::get_selected_player_info;
+use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
+use crate::launch::helpers::command_generator::{
+  export_full_launch_command, generate_launch_command, LaunchCommand,
+};
+use crate::launch::helpers::file_validator::{
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
+};
+use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::misc::get_separator;
+use crate::launch::helpers::process_monitor::{
+  kill_process, monitor_process, set_process_priority,
+};
+use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
 use crate::launcher_config::models::{
   FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity,
@@ -23,6 +26,8 @@ use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
+use crate::utils::logging::get_launcher_log_path;
+use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs;
@@ -67,7 +72,11 @@ pub async fn select_suitable_jre(
     &game_config.game_java,
     &javas,
     &instance,
-    client_info.java_version.major_version,
+    client_info
+      .java_version
+      .as_ref()
+      .ok_or(LaunchError::NoSuitableJava)?
+      .major_version,
   )
   .await?;
 
@@ -182,8 +191,32 @@ pub async fn validate_game_files(
 pub async fn validate_selected_player(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
+  local_ygg_server_state: State<'_, Mutex<YggdrasilServer>>,
 ) -> SJMCLResult<bool> {
-  let player = get_selected_player_info(&app)?;
+  let mut player = get_selected_player_info(&app)?.clone();
+
+  let metadata = if player.player_type == PlayerType::ThirdParty {
+    authlib_injector::jar::check_authlib_jar(&app)
+      .await
+      .map_err(|_| LaunchError::AuthlibInjectorNotReady)?;
+    Some(
+      authlib_injector::info::get_auth_server_info_by_url(
+        &app,
+        player.auth_server_url.clone().unwrap_or_default(),
+      )?
+      .metadata
+      .to_string(),
+    )
+  } else if player.player_type == PlayerType::Offline
+    && authlib_injector::jar::check_authlib_jar(&app).await.is_ok()
+  {
+    let local_ygg_server = local_ygg_server_state.lock()?;
+    player.auth_server_url = Some(local_ygg_server.root_url.clone());
+    local_ygg_server.apply_player(player.clone());
+    Some(local_ygg_server.metadata.to_string())
+  } else {
+    None
+  };
 
   {
     let mut launching_queue = launching_queue_state.lock()?;
@@ -192,24 +225,11 @@ pub async fn validate_selected_player(
       .ok_or(LaunchError::LaunchingStateNotFound)?;
     launching.current_step = 3;
     launching.selected_player = Some(player.clone());
-
-    if player.player_type == PlayerType::ThirdParty {
-      let meta = authlib_injector::info::get_auth_server_info_by_url(
-        &app,
-        player.auth_server_url.clone().unwrap_or_default(),
-      )?
-      .metadata
-      .to_string();
-
-      launching.auth_server_meta = meta;
-    }
+    launching.auth_server_meta = metadata;
   }
 
   match player.player_type {
-    PlayerType::ThirdParty => {
-      authlib_injector::jar::check_authlib_jar(&app).await?;
-      authlib_injector::common::validate(&app, &player).await
-    }
+    PlayerType::ThirdParty => authlib_injector::common::validate(&app, &player).await,
     PlayerType::Microsoft => microsoft::oauth::validate(&app, &player).await,
     PlayerType::Offline => Ok(true),
   }
@@ -248,10 +268,27 @@ pub async fn launch_game(
     class_paths,
     args: cmd_args,
   } = generate_launch_command(&app, quick_play_singleplayer, quick_play_multiplayer).await?;
-  let mut cmd_base = Command::new(selected_java.exec_path.clone());
+
+  let wrapper = game_config
+    .advanced
+    .custom_commands
+    .wrapper_launcher
+    .clone();
+
+  let mut cmd_base = if let Some(mut c) = split_command_line(&wrapper)? {
+    c.arg(&selected_java.exec_path);
+    c
+  } else {
+    Command::new(&selected_java.exec_path)
+  };
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
   println!("[Launch Command] {}", full_cmd);
+
+  let precall_cmd = game_config.advanced.custom_commands.precall_command.clone();
+  if !precall_cmd.trim().is_empty() {
+    let _ = execute_command_line(&precall_cmd);
+  }
 
   // execute launch command
   #[cfg(target_os = "windows")]
@@ -266,6 +303,10 @@ pub async fn launch_game(
     .spawn()?;
 
   let pid = child.id();
+
+  // set process priority (if error, keep silent)
+  let _ = set_process_priority(pid, &game_config.performance.process_priority);
+
   {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
@@ -286,12 +327,16 @@ pub async fn launch_game(
     &game_config.game_window.custom_title,
     game_config.launcher_visibility.clone(),
     tx,
+    Some(
+      game_config
+        .advanced
+        .custom_commands
+        .post_exit_command
+        .clone(),
+    ),
   )
   .await?;
   let _ = rx.recv();
-
-  // set process priority and window title (if error, keep slient)
-  let _ = set_process_priority(pid, &game_config.performance.process_priority);
 
   if game_config.launcher_visibility != LauncherVisiablity::Always {
     let _ = app
@@ -367,12 +412,12 @@ pub fn export_game_crash_info(
     BaseDirectory::AppCache,
   )?;
 
+  // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
   let launching = launching_queue
     .iter()
     .find(|l| l.id == launching_id)
     .ok_or(LaunchError::LaunchingStateNotFound)?;
-  // version json and sjmcl instance config
   let version_info_path = launching
     .selected_instance
     .version_path
@@ -390,6 +435,9 @@ pub fn export_game_crash_info(
   )?;
   fs::write(&launch_script_path, &launching.full_command)?;
 
+  // launcher log
+  let launcher_log_path = get_launcher_log_path(app.clone());
+
   let zip_file_path = PathBuf::from(save_path);
   create_zip_from_dirs(
     vec![
@@ -397,6 +445,7 @@ pub fn export_game_crash_info(
       version_info_path,
       version_config_path,
       launch_script_path,
+      launcher_log_path,
     ],
     zip_file_path.clone(),
   )

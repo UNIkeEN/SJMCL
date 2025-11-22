@@ -3,6 +3,7 @@ use crate::instance::models::misc::Instance;
 use crate::launch::constants::*;
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
+use crate::utils::shell::execute_command_line;
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs::File;
@@ -90,6 +91,7 @@ pub async fn monitor_process(
   custom_title: &str,
   launcher_visibility: LauncherVisiablity,
   ready_tx: Sender<()>,
+  post_exit_command: Option<String>,
 ) -> SJMCLResult<()> {
   // create unique log window
   let label = format!("game_log_{id}");
@@ -254,6 +256,10 @@ pub async fn monitor_process(
             .unwrap();
         }
       }
+    }
+
+    if let Some(cmdline) = post_exit_command.as_ref().filter(|s| !s.trim().is_empty()) {
+      let _ = execute_command_line(cmdline);
     }
   });
 

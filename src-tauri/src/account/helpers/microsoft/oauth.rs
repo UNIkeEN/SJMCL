@@ -1,13 +1,13 @@
-use super::constants::{
+use crate::account::helpers::microsoft::constants::{
   CLIENT_ID, DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, OAUTH_TOKEN_ENDPOINT,
   PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
-use super::models::{MinecraftProfile, XstsResponse};
+use crate::account::helpers::microsoft::models::{MinecraftProfile, XstsResponse};
 use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
-  Texture,
+  PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
 use serde_json::{json, Value};
@@ -164,9 +164,9 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
     for skin in skins {
       if skin.state == "ACTIVE" {
         textures.push(Texture {
-          texture_type: "SKIN".to_string(),
+          texture_type: TextureType::Skin,
           image: fetch_image(app, skin.url.clone()).await?,
-          model: skin.variant.clone().unwrap_or("default".to_string()),
+          model: skin.variant.clone().unwrap_or_default(),
           preset: None,
         });
       }
@@ -176,9 +176,9 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
     for cape in capes {
       if cape.state == "ACTIVE" {
         textures.push(Texture {
-          texture_type: "CAPE".to_string(),
+          texture_type: TextureType::Cape,
           image: fetch_image(app, cape.url.clone()).await?,
-          model: "default".to_string(),
+          model: SkinModel::Default,
           preset: None,
         });
       }
@@ -187,7 +187,7 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
 
   if textures.is_empty() {
     // this player didn't have a texture, use preset Steve skin instead
-    textures = load_preset_skin(app, "steve".to_string())?;
+    textures = load_preset_skin(app, PresetRole::Steve)?;
   }
 
   Ok(
@@ -201,7 +201,6 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
       refresh_token: Some(tokens.refresh_token.clone()),
       textures,
       auth_server_url: None,
-      password: None,
     }
     .with_generated_id(),
   )
@@ -212,7 +211,6 @@ pub async fn login(app: &AppHandle, auth_info: DeviceAuthResponseInfo) -> SJMCLR
   let sender = client.post(OAUTH_TOKEN_ENDPOINT).form(&[
     ("client_id", CLIENT_ID),
     ("device_code", &auth_info.device_code),
-    ("client_secret", env!("SJMCL_MICROSOFT_CLIENT_SECRET")),
     ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
   ]);
   let tokens = oauth_polling(app, sender, auth_info).await?;

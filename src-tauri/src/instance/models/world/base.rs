@@ -6,7 +6,7 @@ use std::path::PathBuf;
 pub struct WorldInfo {
   pub name: String,
   pub last_played_at: i64,
-  pub difficulty: String,
+  pub difficulty: Option<String>,
   pub gamemode: String,
   pub icon_src: PathBuf,
   pub dir_path: PathBuf,

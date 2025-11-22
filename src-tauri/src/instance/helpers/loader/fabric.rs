@@ -1,11 +1,14 @@
+use regex::Regex;
+use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use super::common::add_library_entry;
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::client_json::{McClientInfo, PatchesInfo};
+use crate::instance::helpers::client_json::McClientInfo;
+use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::ModLoader;
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
@@ -13,6 +16,7 @@ use crate::resource::helpers::modrinth::get_latest_fabric_api_mod_download;
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::utils::fs::get_files_with_regex;
 
 pub async fn install_fabric_loader(
   app: AppHandle,
@@ -23,6 +27,7 @@ pub async fn install_fabric_loader(
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
   task_params: &mut Vec<PTaskParam>,
+  is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let loader_ver = &loader.version;
@@ -44,12 +49,12 @@ pub async fn install_fabric_loader(
     .as_str()
     .ok_or(SJMCLError("missing mainClass.client".to_string()))?;
 
-  client_info.main_class = main_class.to_string();
+  client_info.main_class = Some(main_class.to_string());
 
-  let mut new_patch = PatchesInfo {
+  let mut new_patch = McClientInfo {
     id: "fabric".to_string(),
-    version: loader_ver.to_string(),
-    priority: 30000,
+    version: Some(loader_ver.to_string()),
+    priority: Some(30000),
     ..Default::default()
   };
 
@@ -105,11 +110,33 @@ pub async fn install_fabric_loader(
     }
   }
 
-  // Auto download Fabric API mod
-  if let Ok(Some(fabric_api_download)) =
-    get_latest_fabric_api_mod_download(&app, game_version, mods_dir).await
-  {
-    task_params.push(PTaskParam::Download(fabric_api_download));
+  // Download Fabric API mod
+  if is_install_fabric_api.unwrap_or(true) {
+    if let Ok(Some(fabric_api_download)) =
+      get_latest_fabric_api_mod_download(&app, game_version, mods_dir).await
+    {
+      task_params.push(PTaskParam::Download(fabric_api_download));
+    }
+  }
+
+  Ok(())
+}
+
+pub async fn remove_fabric_api_mods<P: AsRef<Path>>(mods_dir: P) -> SJMCLResult<()> {
+  let mods_dir = mods_dir.as_ref();
+  if !mods_dir.exists() {
+    return Ok(());
+  }
+  let re = Regex::new(r"(?i)^(fabric-api|quilted-fabric-api)-.*\.jar$")
+    .map_err(|e| SJMCLError(format!("Invalid regex: {}", e)))?;
+  let targets: Vec<PathBuf> = get_files_with_regex(mods_dir, &re).unwrap_or_default();
+  for p in targets {
+    let name = p
+      .file_name()
+      .and_then(|s| s.to_str())
+      .unwrap_or_default()
+      .to_string();
+    fs::remove_file(&p).map_err(|e| SJMCLError(format!("Failed to remove {}: {}", name, e)))?;
   }
 
   Ok(())

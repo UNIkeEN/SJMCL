@@ -1,4 +1,4 @@
-use super::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
+use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
 use crate::partial::PartialUpdate;
 use crate::storage::Storage;
 use crate::utils::string::snake_to_camel_case;
@@ -28,6 +28,16 @@ pub struct JavaInfo {
   pub major_version: i32, // major version + LTS flag
   pub is_lts: bool,
   pub is_user_added: bool,
+}
+
+// Info about the latest release version fetched from remote, shown to the user to update.
+#[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VersionMetaInfo {
+  pub version: String,
+  pub file_name: String,
+  pub release_notes: String,
+  pub published_at: String,
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/game/ProcessPriority.java#L20
@@ -194,6 +204,8 @@ structstruck::strike! {
         #[default = "%built-in:Jokull"]
         pub choice: String,
         pub random_custom: bool,
+        #[default = true]
+        pub auto_darken: bool,
       },
       pub accessibility: struct {
         pub invert_colors: bool,
@@ -240,6 +252,10 @@ structstruck::strike! {
         #[default = true]
         pub resource_translation: bool, // only available in zh-Hans
         pub skip_first_screen_options: bool,  // only available in zh-Hans
+      },
+      pub advanced: struct GeneralConfigAdvanced {
+        #[default = true]
+        pub auto_purge_launcher_logs: bool,
       }
     },
     pub global_game_config: GameConfig,
