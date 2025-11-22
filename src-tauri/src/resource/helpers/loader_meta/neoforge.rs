@@ -80,7 +80,7 @@ async fn get_neoforge_meta_by_game_version_official(
               description: String::new(),
               stable: versions
                 .get("is_snapshot")
-                .map_or(true, |v| !v.as_bool().unwrap_or(false)),
+                .is_none_or(|v| !v.as_bool().unwrap_or(false)),
               branch: None,
             },
           ));

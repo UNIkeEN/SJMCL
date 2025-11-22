@@ -370,20 +370,20 @@ pub async fn initialize_mod_db(app: &AppHandle) -> SJMCLResult<()> {
   Ok(())
 }
 
-pub async fn handle_search_query(app: &AppHandle, query: &String) -> SJMCLResult<String> {
+pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<String> {
   // Only process Chinese queries
   if !query.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
-    return Ok(query.clone());
+    return Ok(query.to_string());
   }
 
   let state = app.state::<Mutex<ModDataBase>>();
   let search_results = match state.lock() {
     Ok(cache) => cache.get_mods_by_chinese(query, 5),
-    Err(_) => return Ok(query.clone()),
+    Err(_) => return Ok(query.to_string()),
   };
 
   if search_results.is_empty() {
-    return Ok(query.clone());
+    return Ok(query.to_string());
   }
 
   // Count keyword frequency across all found mods
@@ -411,7 +411,7 @@ pub async fn handle_search_query(app: &AppHandle, query: &String) -> SJMCLResult
   }
 
   if keyword_count.is_empty() {
-    return Ok(query.clone());
+    return Ok(query.to_string());
   }
 
   // Calculate keyword scores: frequency / total_mods * length_bonus
@@ -454,7 +454,7 @@ pub async fn handle_search_query(app: &AppHandle, query: &String) -> SJMCLResult
   }
 
   if final_keywords.is_empty() {
-    return Ok(query.clone());
+    return Ok(query.to_string());
   }
 
   let result = final_keywords.join(" ");

@@ -9,7 +9,7 @@ use crate::instance::models::misc::{
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
-use crate::storage::{load_json_async, save_json_async};
+use crate::storage::load_json_async;
 use sanitize_filename;
 use serde_json::Value;
 use std::collections::HashMap;
