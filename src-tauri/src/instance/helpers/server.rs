@@ -66,42 +66,41 @@ pub async fn query_servers_online(
     return Ok(servers);
   }
 
-  let servers_clone = servers.clone();
+  let (results, mut servers): (
+    Vec<(ServerInfo, Result<ServerStatus, McError>)>,
+    Vec<GameServerInfo>,
+  ) = async_runtime::spawn_blocking(move || {
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let results = rt.block_on(async {
+      let client = McClient::new()
+        .with_timeout(Duration::from_secs(5))
+        .with_max_parallel(10);
 
-  let results: Vec<(ServerInfo, Result<ServerStatus, McError>)> =
-    async_runtime::spawn_blocking(move || {
-      let rt = tokio::runtime::Runtime::new().unwrap();
-      rt.block_on(async {
-        let client = McClient::new()
-          .with_timeout(Duration::from_secs(5))
-          .with_max_parallel(10);
+      let server_infos: Vec<ServerInfo> = servers
+        .iter()
+        .map(|sv| ServerInfo {
+          address: sv.ip.clone(),
+          edition: ServerEdition::Java,
+        })
+        .collect();
 
-        let server_infos: Vec<ServerInfo> = servers_clone
-          .iter()
-          .map(|sv| ServerInfo {
-            address: sv.ip.clone(),
-            edition: ServerEdition::Java,
-          })
-          .collect();
+      client.ping_many(&server_infos).await
+    });
+    (results, servers)
+  })
+  .await?;
 
-        client.ping_many(&server_infos).await
-      })
-    })
-    .await?;
+  for ((_, result), server) in results.into_iter().zip(servers.iter_mut()) {
+    server.is_queried = true;
 
-  for (i, (_, result)) in results.into_iter().enumerate() {
-    if let Some(server) = servers.get_mut(i) {
-      server.is_queried = true;
+    if let ServerData::Java(sv) = result?.data {
+      server.online = true;
+      server.players_online = sv.players.online as usize;
+      server.players_max = sv.players.max as usize;
+      server.description = sv.description.clone();
 
-      if let ServerData::Java(sv) = result?.data {
-        server.online = true;
-        server.players_online = sv.players.online as usize;
-        server.players_max = sv.players.max as usize;
-        server.description = sv.description.clone();
-
-        if let Some(favicon) = sv.favicon {
-          server.icon_src = favicon;
-        }
+      if let Some(favicon) = sv.favicon {
+        server.icon_src = favicon;
       }
     }
   }
