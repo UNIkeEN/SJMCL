@@ -512,6 +512,7 @@ const DownloadSpecificResourceModal: React.FC<
             py={2}
             fontWeight={400}
             flexDir="row"
+            justify="space-between"
           >
             <OptionItem
               title={
@@ -560,37 +561,39 @@ const DownloadSpecificResourceModal: React.FC<
               fontWeight={400}
               flex={1}
             />
-            {resource.websiteUrl && (
-              <HStack spacing={1}>
-                <LuExternalLink />
-                <Link
-                  fontSize="xs"
-                  color={`${primaryColor}.500`}
-                  onClick={() => {
-                    resource.websiteUrl && openUrl(resource.websiteUrl);
-                  }}
-                >
-                  {resource.source}
-                </Link>
-              </HStack>
-            )}
-            {resource.mcmodId !== 0 && (
-              <HStack spacing={1} ml={2}>
-                <LuExternalLink />
-                <Link
-                  fontSize="xs"
-                  color={`${primaryColor}.500`}
-                  onClick={() => {
-                    resource.mcmodId &&
-                      openUrl(
-                        `https://www.mcmod.cn/class/${resource.mcmodId}.html`
-                      );
-                  }}
-                >
-                  MCMod
-                </Link>
-              </HStack>
-            )}
+            <HStack gap={2}>
+              {resource.websiteUrl && (
+                <HStack spacing={1}>
+                  <LuExternalLink />
+                  <Link
+                    fontSize="xs"
+                    color={`${primaryColor}.500`}
+                    onClick={() => {
+                      resource.websiteUrl && openUrl(resource.websiteUrl);
+                    }}
+                  >
+                    {resource.source}
+                  </Link>
+                </HStack>
+              )}
+              {resource.mcmodId !== 0 && (
+                <HStack spacing={1}>
+                  <LuExternalLink />
+                  <Link
+                    fontSize="xs"
+                    color={`${primaryColor}.500`}
+                    onClick={() => {
+                      resource.mcmodId &&
+                        openUrl(
+                          `https://www.mcmod.cn/class/${resource.mcmodId}.html`
+                        );
+                    }}
+                  >
+                    MCMod
+                  </Link>
+                </HStack>
+              )}
+            </HStack>
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
             <MenuSelector
