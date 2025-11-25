@@ -57,6 +57,7 @@ pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
     log::LevelFilter::Info
   };
 
+  // filter out noisy debug logs
   const FILTERED_TARGETS_DEBUG: &[&str] = &["h2::", "hyper_util"];
 
   let p = tauri_plugin_log::Builder::default()
@@ -70,15 +71,16 @@ pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
           .any(|p| m.target().starts_with(p)))
     });
 
+  let time_format = format_description!("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]");
+
   let formatter = move |out: FormatCallback, message: &Arguments, record: &log::Record| {
-    let time_format = format_description!("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]");
     let now = TimezoneStrategy::UseLocal
       .get_now()
       .format(&time_format)
       .unwrap();
 
     if is_dev {
-      // if lino is present
+      // if line number is present
       if let Some(line) = record.line() {
         out.finish(format_args!(
           "{}[{}:{}][{}] {}",
