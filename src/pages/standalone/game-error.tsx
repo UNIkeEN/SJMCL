@@ -1,9 +1,11 @@
 import {
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
   Box,
   Button,
+  Center,
   Flex,
   HStack,
   Icon,
@@ -15,42 +17,22 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  List,
-  ListIcon,
-  ListItem,
-} from "@chakra-ui/react";
+import { Badge } from "@chakra-ui/react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen, LuSettings } from "react-icons/lu";
-import {
-  LuBot,
-  LuClipboardList,
-  LuFileText,
-  LuLightbulb,
-} from "react-icons/lu";
-import ReactMarkdown from "react-markdown";
+import { LuLightbulb } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
-import remarkGfm from "remark-gfm";
-import AddAIProviderModal, {
-  loadAIProvider,
-} from "@/components/modals/add-ai-provider-modal";
+import MarkdownContainer from "@/components/common/markdown-container";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { ChatMessage } from "@/models/ai";
 import { InstanceSummary } from "@/models/instance/misc";
 import { JavaInfo } from "@/models/system-info";
+import { AiService } from "@/services/ai";
 import { LaunchService } from "@/services/launch";
 import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
@@ -63,6 +45,8 @@ const GameErrorPage: React.FC = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
+  const { openSharedModal } = useSharedModals();
+
   const [basicInfoParams, setBasicInfoParams] = useState(
     new Map<string, string>()
   );
@@ -74,8 +58,6 @@ const GameErrorPage: React.FC = () => {
   const [gameLog, setGameLog] = useState<string>("");
   const [aiResult, setAiResult] = useState<string>("");
   const [aiLoading, setAiLoading] = useState<boolean>(false);
-  const [isAIProviderModalOpen, setAIProviderModalOpen] =
-    useState<boolean>(false);
   const [showAIResult, setShowAIResult] = useState<boolean>(false);
 
   const platformName = useCallback(() => {
@@ -191,23 +173,21 @@ const GameErrorPage: React.FC = () => {
   };
 
   function safeParseAI(content: string): {
-    primary: Array<{ reason: string; fix: string }>;
-    others_md: string;
+    reasons: Array<{ reason: string; fix: string }>;
     raw: string;
     isJSON: boolean;
   } {
     const raw = content ?? "";
     try {
       const obj = JSON.parse(raw);
-      if (Array.isArray(obj?.primary)) {
+      if (Array.isArray(obj?.reasons)) {
         return {
-          primary: obj.primary
+          reasons: obj.reasons
             .map((x: any) => ({
               reason: String(x?.reason ?? "").trim(),
               fix: String(x?.fix ?? "").trim(),
             }))
             .filter((x: { reason: any; fix: any }) => x.reason || x.fix),
-          others_md: String(obj?.others_md ?? "").trim(),
           raw,
           isJSON: true,
         };
@@ -218,15 +198,14 @@ const GameErrorPage: React.FC = () => {
     if (m) {
       try {
         const obj2 = JSON.parse(m[1]);
-        if (Array.isArray(obj2?.primary)) {
+        if (Array.isArray(obj2?.reasons)) {
           return {
-            primary: obj2.primary
+            reasons: obj2.reasons
               .map((x: any) => ({
                 reason: String(x?.reason ?? "").trim(),
                 fix: String(x?.fix ?? "").trim(),
               }))
               .filter((x: { reason: any; fix: any }) => x.reason || x.fix),
-            others_md: String(obj2?.others_md ?? "").trim(),
             raw,
             isJSON: true,
           };
@@ -234,80 +213,42 @@ const GameErrorPage: React.FC = () => {
       } catch {}
     }
 
-    return { primary: [], others_md: raw, raw, isJSON: false };
+    return { reasons: [], raw, isJSON: false };
   }
 
   async function callAIAnalyze(log: string) {
     setShowAIResult(true);
-    const provider = loadAIProvider();
-    if (!provider) {
-      setAIProviderModalOpen(true);
+    if (!config.aiChatConfig.enabled) {
+      openSharedModal("ai-provider-settings");
       return;
     }
-    const { baseURL, apiKey, model } = provider;
-
-    const prompt = `
-    你是 Minecraft 启动/崩溃诊断专家。请只按以下 JSON 模式输出，不要任何开头/结尾客套话、不要解释。
-
-    {
-      "primary": [            // 主要原因与解决方案（每条尽量短）
-        { "reason": "一句话原因", "fix": "一句话解决方案" }
-      ],
-     "others_md": "这里是较长说明，使用 Markdown 列表/小标题即可，可包含若干可能原因、定位思路、命令/路径等"
-    }
-
-    要求：
-    - 严禁输出 JSON 以外的内容。
-    - "primary" 2~5 条，每条各自 1 句中文（不超过30字）。
-    - "others_md" 可多段 Markdown，允许列表/代码块/链接。
-    - 聚焦本次日志，不要泛泛而谈。
-
-    以下是原始日志（可能很长）：
-    ${log}
-    `.trim();
 
     setAiLoading(true);
     setAiResult("");
 
-    try {
-      const resp = await fetch(
-        `${baseURL.replace(/\/+$/, "")}/v1/chat/completions`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              {
-                role: "system",
-                content: "你是精通 Minecraft 启动与崩溃问题的技术助手。",
-              },
-              { role: "user", content: prompt },
-            ],
-            temperature: 0.2,
-          }),
-        }
-      );
+    let messages: ChatMessage[] = [
+      {
+        role: "system",
+        content: t("GameErrorPage.aiAnalysis.systemPrompt"),
+      },
+      {
+        role: "user",
+        content: t("GameErrorPage.aiAnalysis.userPrompt", {
+          os: basicInfoParams.get("os") ?? t("General.unknown"),
+          javaVersion: javaInfo?.name ?? t("General.unknown"),
+          mcVersion: instanceInfo?.name ?? t("General.unknown"),
+          log,
+        }),
+      },
+    ];
 
-      if (!resp.ok) {
-        const text = await resp.text();
-        throw new Error(`HTTP ${resp.status}: ${text}`);
-      }
-      const data = await resp.json();
-
-      const content =
-        data?.choices?.[0]?.message?.content ??
-        data?.choices?.[0]?.text ??
-        JSON.stringify(data);
-      setAiResult(content || "（AI 未返回内容）");
-    } catch (e: any) {
-      setAiResult(`调用 AI 失败：${String(e?.message ?? e)}`);
-    } finally {
-      setAiLoading(false);
+    const resp = await AiService.retrieveAiChatResponse(messages);
+    if (resp.status === "success") {
+      setAiResult(resp.data);
+    } else {
+      setAiResult(resp.message + ": " + resp.details);
     }
+    setAiLoading(false);
   }
 
   return (
@@ -374,121 +315,69 @@ const GameErrorPage: React.FC = () => {
             })}
 
           <VStack spacing={1} align="stretch">
-            <Text fontSize="xs-sm">
-              {t("GameErrorPage.crashDetails.title")}
-            </Text>
-            <Text fontSize="md">{reason}</Text>
-          </VStack>
-
-          {showAIResult && (
-            <Card variant="outline" borderRadius="2xl" overflow="hidden">
-              <CardHeader pb={2}>
-                <HStack justify="space-between">
-                  <HStack>
-                    <Icon as={LuBot} />
-                    <Text fontSize="sm" fontWeight="bold">
-                      AI 分析结果
-                    </Text>
-                    <Badge colorScheme="purple" variant="subtle">
-                      BETA
-                    </Badge>
-                  </HStack>
-                  {aiLoading && <BeatLoader size={6} />}
-                </HStack>
-              </CardHeader>
-
-              <Divider />
-
-              <CardBody>
+            <HStack align="center">
+              <Text fontSize="xs-sm">
+                {!showAIResult
+                  ? t("GameErrorPage.crashDetails.title")
+                  : t("GameErrorPage.aiAnalysis.title")}
+              </Text>
+              {showAIResult && (
+                <Badge size="xs" colorScheme="purple">
+                  BETA
+                </Badge>
+              )}
+            </HStack>
+            {!showAIResult ? (
+              <Text fontSize="md">{reason}</Text>
+            ) : (
+              <>
                 {aiLoading ? (
-                  <Text fontSize="sm" color="gray.500">
-                    正在分析日志，请稍候…
-                  </Text>
+                  <Center>
+                    <BeatLoader size={16} color="gray" />
+                  </Center>
                 ) : (
                   (() => {
                     const parsed = safeParseAI(aiResult);
 
                     return (
-                      <VStack align="stretch" spacing={5}>
-                        <Box>
-                          <HStack mb={2}>
-                            <Icon as={LuLightbulb} />
-                            <Text fontSize="sm" fontWeight="semibold">
-                              主要原因与解决方案
-                            </Text>
-                          </HStack>
-
-                          {parsed.primary.length > 0 ? (
-                            <List spacing={1}>
-                              {parsed.primary.map((item, i) => (
-                                <ListItem key={i}>
-                                  <ListIcon as={LuClipboardList} />
-                                  <Text as="span" fontSize="sm">
-                                    {item.reason && (
-                                      <>
-                                        <b>原因：</b>
-                                        {item.reason}；
-                                      </>
-                                    )}
-                                    {item.fix && (
-                                      <>
-                                        <b>方案：</b>
-                                        {item.fix}
-                                      </>
-                                    )}
-                                  </Text>
-                                </ListItem>
-                              ))}
-                            </List>
-                          ) : (
+                      <>
+                        {parsed.reasons.length > 0 ? (
+                          parsed.reasons.map((item, i) => (
+                            <Alert key={i} status="info" borderRadius="md">
+                              <AlertIcon as={LuLightbulb} />
+                              <VStack spacing={0} align="start">
+                                <AlertTitle>{item.reason}</AlertTitle>
+                                <AlertDescription>
+                                  <MarkdownContainer>
+                                    {item.fix}
+                                  </MarkdownContainer>
+                                </AlertDescription>
+                              </VStack>
+                            </Alert>
+                          ))
+                        ) : (
+                          <>
                             <Text fontSize="sm" color="gray.500">
-                              未检测到结构化“主要原因”，已在下方给出完整
-                              Markdown。
+                              {t(
+                                "GameErrorPage.aiAnalysis.structureNotProcessed"
+                              )}
                             </Text>
-                          )}
-                        </Box>
-
-                        <Accordion allowToggle>
-                          <AccordionItem border="none">
-                            <AccordionButton px={0}>
-                              <HStack flex="1" textAlign="left">
-                                <Icon as={LuFileText} />
-                                <Text fontSize="sm" fontWeight="semibold">
-                                  其他可能原因
-                                </Text>
-                              </HStack>
-                              <AccordionIcon />
-                            </AccordionButton>
-                            <AccordionPanel px={0} pt={3}>
-                              <Box className="prose" fontSize="sm">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                  {parsed.others_md || parsed.raw || "（空）"}
-                                </ReactMarkdown>
-                              </Box>
-                            </AccordionPanel>
-                          </AccordionItem>
-                        </Accordion>
-
-                        {!parsed.isJSON && (
-                          <Box>
-                            <Divider my={3} />
-                            <Text fontSize="xs" color="gray.500">
-                              模型未按 JSON 返回，以下为原始 Markdown：
-                            </Text>
-                            <Box mt={2} className="prose" fontSize="sm">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {parsed.raw}
-                              </ReactMarkdown>
-                            </Box>
-                          </Box>
+                            <Alert status="info" borderRadius="md">
+                              <AlertDescription>
+                                <MarkdownContainer>
+                                  {parsed.raw}
+                                </MarkdownContainer>
+                              </AlertDescription>
+                            </Alert>
+                          </>
                         )}
-                      </VStack>
+                      </>
                     );
                   })()
                 )}
-              </CardBody>
-            </Card>
-          )}
+              </>
+            )}
+          </VStack>
         </VStack>
       </Box>
 
@@ -517,12 +406,14 @@ const GameErrorPage: React.FC = () => {
           variant="solid"
           onClick={() => callAIAnalyze(gameLog)}
           isLoading={aiLoading}
-          loadingText="分析中"
         >
-          AI Log 分析
+          {t("GameErrorPage.button.aiAnalysis")}
         </Button>
 
-        <Button variant="solid" onClick={() => setAIProviderModalOpen(true)}>
+        <Button
+          variant="solid"
+          onClick={() => openSharedModal("ai-provider-settings")}
+        >
           <Icon as={LuSettings} />
         </Button>
 
@@ -531,11 +422,6 @@ const GameErrorPage: React.FC = () => {
           {t("GameErrorPage.bottomAlert")}
         </Text>
       </HStack>
-
-      <AddAIProviderModal
-        isOpen={isAIProviderModalOpen}
-        onClose={() => setAIProviderModalOpen(false)}
-      />
     </Flex>
   );
 };
