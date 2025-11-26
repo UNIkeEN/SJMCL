@@ -410,7 +410,8 @@ pub fn export_game_crash_info(
   )?;
 
   // crash report
-  let crash_report_path = parse_crash_report_path_from_log(&game_log_path);
+  let crash_report_path =
+    parse_crash_report_path_from_log(&game_log_path).filter(|path| path.exists());
 
   // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;

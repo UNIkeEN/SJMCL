@@ -1,7 +1,13 @@
+use lazy_static::lazy_static;
 use regex::Regex;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
+
+lazy_static! {
+  static ref CRASH_REPORT_REGEX: Regex =
+    Regex::new(r"^#@!@# Game crashed! Crash report saved to: #@!@# (.+)$").unwrap();
+}
 
 /// Try to parse the crash report path from the game log.
 pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<PathBuf> {
@@ -21,13 +27,11 @@ pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<P
   let mut content = String::new();
   reader.read_to_string(&mut content).ok()?;
 
-  let re = Regex::new(r"^#@!@# Game crashed! Crash report saved to: #@!@# (.+)$").ok()?;
-
   // Scan backwards so the most recent crash report wins.
   for line in content.lines().rev() {
-    if let Some(cap) = re.captures(line) {
+    if let Some(cap) = CRASH_REPORT_REGEX.captures(line) {
       if let Some(m) = cap.get(1) {
-        return Some(PathBuf::from(m.as_str()));
+        return Some(PathBuf::from(m.as_str().trim()));
       }
     }
   }
