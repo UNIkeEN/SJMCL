@@ -20,12 +20,13 @@ use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
 use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
-use crate::instance::helpers::server::{load_servers_info_from_path, query_server_status};
+use crate::instance::helpers::server::{
+  load_servers_info_from_path, query_servers_online, GameServerInfo,
+};
 use crate::instance::helpers::world::{level_data_to_world_info, load_level_data_from_path};
 use crate::instance::models::misc::{
-  GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
-  ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
-  ShaderPackInfo,
+  Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
+  ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
 };
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::LevelData;
@@ -51,7 +52,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
-use tauri::{AppHandle, Manager, State};
+use tauri::State;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
 use tokio::sync::Semaphore;
@@ -407,7 +409,6 @@ pub async fn retrieve_game_server_list(
   query_online: bool,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   // query_online is false, return local data from nbt (servers.dat)
-  let mut game_servers: Vec<GameServerInfo> = Vec::new();
   let game_root_dir =
     match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
       Some(path) => path,
@@ -415,55 +416,16 @@ pub async fn retrieve_game_server_list(
     };
 
   let nbt_path = game_root_dir.join("servers.dat");
-  let servers = match load_servers_info_from_path(&nbt_path).await {
+  let mut game_servers = match load_servers_info_from_path(&nbt_path).await {
     Ok(servers) => servers,
     Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
-  for server in servers {
-    game_servers.push(GameServerInfo {
-      ip: server.ip,
-      name: server.name,
-      description: String::new(),
-      icon_src: server.icon.unwrap_or_default(),
-      is_queried: false,
-      players_max: 0,
-      players_online: 0,
-      online: false,
-    });
-  }
 
   // query_online is true, amend query and return player count and online status
   if query_online {
-    let query_tasks = game_servers.clone().into_iter().map(|mut server| {
-      tokio::spawn({
-        async move {
-          match query_server_status(&server.ip).await {
-            Ok(query_result) => {
-              server.is_queried = true;
-              server.players_online = query_result.players.online as usize;
-              server.players_max = query_result.players.max as usize;
-              server.online = query_result.online;
-              server.description = query_result.description.text.unwrap_or_default();
-              server.icon_src = query_result.favicon.unwrap_or_default();
-            }
-            Err(_) => {
-              server.is_queried = false;
-            }
-          }
-          server
-        }
-      })
-    });
-    let mut updated_servers = Vec::new();
-    for (prev, query) in game_servers.into_iter().zip(query_tasks) {
-      if let Ok(updated_server) = query.await {
-        updated_servers.push(updated_server);
-      } else {
-        updated_servers.push(prev); // query error, use local data
-      }
-    }
-    game_servers = updated_servers;
+    game_servers = query_servers_online(game_servers).await?;
   }
+
   Ok(game_servers)
 }
 

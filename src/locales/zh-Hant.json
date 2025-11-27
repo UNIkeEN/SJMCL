@@ -1890,7 +1890,7 @@
             "NOT_FOUND": "認證伺服器不存在",
             "CANCELLED": "已取消",
             "INVALID": "無效的認證伺服器地址",
-            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft"
+            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色"
           }
         }
       },
@@ -1905,7 +1905,7 @@
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "INVALID": "不支援離線角色重新整理",
             "CANCELLED": "已取消",
-            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft"
+            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色"
           }
         }
       },

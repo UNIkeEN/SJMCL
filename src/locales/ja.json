@@ -1893,7 +1893,7 @@
             "NETWORK_ERROR": "認証サーバーに接続できません",
             "INVALID": "オフラインキャラクターの更新に非対応",
             "CANCELLED": "キャンセルしました",
-            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください"
+            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入し、キャラクターを作成済みであることをご確認ください"
           }
         }
       },

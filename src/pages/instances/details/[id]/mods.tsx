@@ -463,7 +463,7 @@ const InstanceModsPage = () => {
                   </Text>
                 }
                 titleExtra={
-                  <HStack>
+                  <HStack flex="0 0 auto">
                     {mod.version && (
                       <Text fontSize="xs" className="secondary-text">
                         {mod.version}
