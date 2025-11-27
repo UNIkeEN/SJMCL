@@ -65,6 +65,24 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
   refresh_and_update_instances(&app, false).await; // firstly refresh and update
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let instances = binding.lock().unwrap().clone();
+
+  // Auto-select first instance if instances exist but none is selected or selection is invalid
+  if !instances.is_empty() {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+    let selected_id = &config_state.states.shared.selected_instance_id;
+    if selected_id.is_empty() || !instances.contains_key(selected_id) {
+      if let Some(first_id) = instances.keys().next().cloned() {
+        config_state.partial_update(
+          &app,
+          "states.shared.selected_instance_id",
+          &serde_json::to_string(&first_id).unwrap_or_default(),
+        )?;
+        config_state.save()?;
+      }
+    }
+  }
+
   let mut summary_list = Vec::new();
   let global_version_isolation = get_global_game_config(&app).version_isolation;
   for (id, instance) in instances.iter() {
