@@ -21,6 +21,7 @@ structstruck::strike! {
       pub role: String,
       pub content: String,
     }>,
+    pub stream: bool,
   }
 }
 

@@ -194,7 +194,8 @@ const GameErrorPage: React.FC = () => {
       }
     } catch {}
 
-    const m = raw.match(/```json\s*([\s\S]*?)\s*```/i);
+    // 支持其他语言或无语言标注的代码块
+    const m = raw.match(/```[\w-]*\s*([\s\S]*?)\s*```/i);
     if (m) {
       try {
         const obj2 = JSON.parse(m[1]);

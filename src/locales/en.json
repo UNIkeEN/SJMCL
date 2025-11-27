@@ -2067,6 +2067,7 @@
             "NETWORK_ERROR": "Network error",
             "NOT_ENABLED": "GenAI feature not enabled",
             "API_PARSE_ERROR": "Failed to parse service API",
+            "INVALID_API_KEY": "Invalid API key",
             "NO_RESPONSE": "No response received"
           }
         }
