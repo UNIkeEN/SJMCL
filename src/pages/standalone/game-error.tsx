@@ -39,6 +39,7 @@ import { parseModernWindowsVersion } from "@/utils/env";
 import { analyzeCrashReport } from "@/utils/game-error";
 import { capitalizeFirstLetter } from "@/utils/string";
 import { parseIdFromWindowLabel } from "@/utils/window";
+import { getLogLevel } from "./game-log";
 
 const GameErrorPage: React.FC = () => {
   const { t } = useTranslation();
@@ -100,16 +101,15 @@ const GameErrorPage: React.FC = () => {
 
     LaunchService.retrieveGameLog(launchingId).then((response) => {
       if (response.status === "success") {
-        const rawLines: string[] = Array.isArray(response.data)
-          ? response.data
-          : response.data
-            ? String(response.data).split(/\r?\n/)
-            : [];
+        const errorLogs = response.data.filter((line) => {
+          let level = getLogLevel(line);
+          return level == "ERROR" || level == "FATAL";
+        });
 
-        const raw = rawLines.join("\n");
-        setGameLog(raw);
+        const errorLog = errorLogs.join("\n");
+        setGameLog(errorLog);
 
-        const { key, params } = analyzeCrashReport(rawLines);
+        const { key, params } = analyzeCrashReport(errorLogs); // old analyzer powered by regex
         setReason(
           t(`GameErrorPage.crashDetails.${key}`, {
             param1: params[0],
