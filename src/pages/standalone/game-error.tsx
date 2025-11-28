@@ -194,7 +194,6 @@ const GameErrorPage: React.FC = () => {
       }
     } catch {}
 
-    // 支持其他语言或无语言标注的代码块
     const m = raw.match(/```[\w-]*\s*([\s\S]*?)\s*```/i);
     if (m) {
       try {

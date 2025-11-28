@@ -1,6 +1,7 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::utils::fs::get_files_with_regex;
 use regex::Regex;
+use std::fmt::Arguments;
 use std::sync::LazyLock;
 use std::{
   path::PathBuf,
@@ -8,6 +9,7 @@ use std::{
 };
 use tauri::Manager;
 use tauri::{path::BaseDirectory, AppHandle};
+use tauri_plugin_log::fern::FormatCallback;
 use tauri_plugin_log::{Target, TargetKind, TimezoneStrategy};
 use time::macros::format_description;
 use tokio::fs;
@@ -55,61 +57,58 @@ pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
     log::LevelFilter::Info
   };
 
+  // filter out noisy debug logs
+  const FILTERED_TARGETS_DEBUG: &[&str] = &["h2::", "hyper_util"];
+
   let p = tauri_plugin_log::Builder::default()
     .clear_targets()
     .level(level)
-    .targets(targetkinds.into_iter().map(Target::new));
+    .targets(targetkinds.into_iter().map(Target::new))
+    .filter(|m| {
+      !(m.level() == log::Level::Debug
+        && FILTERED_TARGETS_DEBUG
+          .iter()
+          .any(|p| m.target().starts_with(p)))
+    });
 
   let time_format = format_description!("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]");
 
-  app
-    .plugin(
-      if is_dev {
-        p.format(move |out, message, record| {
-          let lino = record.line();
-          match lino {
-            // if lino is present
-            Some(n) => out.finish(format_args!(
-              "{}[{}:{}][{}] {}",
-              TimezoneStrategy::UseLocal
-                .get_now()
-                .format(&time_format)
-                .unwrap(),
-              record.target(),
-              n,
-              record.level(),
-              message
-            )),
-            // otherwise
-            _ => out.finish(format_args!(
-              "{}[{}][{}] {}",
-              TimezoneStrategy::UseLocal
-                .get_now()
-                .format(&time_format)
-                .unwrap(),
-              record.target(),
-              record.level(),
-              message
-            )),
-          }
-        })
+  let formatter = move |out: FormatCallback, message: &Arguments, record: &log::Record| {
+    let now = TimezoneStrategy::UseLocal
+      .get_now()
+      .format(&time_format)
+      .unwrap();
+
+    if is_dev {
+      // if line number is present
+      if let Some(line) = record.line() {
+        out.finish(format_args!(
+          "{}[{}:{}][{}] {}",
+          now,
+          record.target(),
+          line,
+          record.level(),
+          message
+        ));
       } else {
-        // no module path logging, default strategy
-        p.format(move |out, message, record| {
-          out.finish(format_args!(
-            "{}[{}] {}",
-            TimezoneStrategy::UseLocal
-              .get_now()
-              .format(&time_format)
-              .unwrap(),
-            record.level(),
-            message
-          ))
-        })
+        out.finish(format_args!(
+          "{}[{}][{}] {}",
+          now,
+          record.target(),
+          record.level(),
+          message
+        ));
       }
-      .build(),
-    )
+    } else {
+      // no module path logging, default strategy
+      out.finish(format_args!("{}[{}] {}", now, record.level(), message));
+    }
+  };
+
+  app
+    .plugin(p.format(formatter).build())
     .map_err(|e| SJMCLError(format!("Failed to setup log plugin: {}", e)))?;
+
   Ok(())
 }
 

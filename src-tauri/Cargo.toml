@@ -83,6 +83,7 @@ murmur2 = "0.1"
 csv = "1.3"
 semver = "1"
 sysinfo = "0.36.0"
+mc-server-status = "1.0.0"
 config = "0.15.18"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
 rsa = "0.9.8"
