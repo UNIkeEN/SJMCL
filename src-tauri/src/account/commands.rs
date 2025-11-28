@@ -19,15 +19,33 @@ use url::Url;
 
 #[tauri::command]
 pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {
-  let binding = app.state::<Mutex<AccountInfo>>();
-  let state = binding.lock()?;
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let account_state = account_binding.lock()?;
 
-  let player_list: Vec<Player> = state
+  let player_list: Vec<Player> = account_state
     .clone()
     .players
     .into_iter()
     .map(Player::from)
     .collect();
+
+  // ensure a player is selected when player_list is not empty
+  if !player_list.is_empty() {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+    if !player_list
+      .iter()
+      .any(|player| player.id == config_state.states.shared.selected_player_id)
+    {
+      config_state.partial_update(
+        &app,
+        "states.shared.selected_player_id",
+        &serde_json::to_string(&player_list[0].id).unwrap_or_default(),
+      )?;
+      config_state.save()?;
+    }
+  }
+
   Ok(player_list)
 }
 

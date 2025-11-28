@@ -63,8 +63,8 @@ use zip::read::ZipArchive;
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
   refresh_and_update_instances(&app, false).await; // firstly refresh and update
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let instances = binding.lock().unwrap().clone();
+  let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
+  let instances = instance_binding.lock().unwrap().clone();
   let mut summary_list = Vec::new();
   let global_version_isolation = get_global_game_config(&app).version_isolation;
   for (id, instance) in instances.iter() {
@@ -100,6 +100,24 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
       is_version_isolated,
     });
   }
+
+  // ensure an instance is selected if instance list is not empty
+  if !summary_list.is_empty() {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+    if !summary_list
+      .iter()
+      .any(|instance| instance.id == config_state.states.shared.selected_instance_id)
+    {
+      config_state.partial_update(
+        &app,
+        "states.shared.selected_instance_id",
+        &serde_json::to_string(&summary_list[0].id).unwrap_or_default(),
+      )?;
+      config_state.save()?;
+    }
+  }
+
   Ok(summary_list)
 }
 
