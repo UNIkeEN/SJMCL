@@ -50,11 +50,11 @@ export default function App({ Component, pageProps }: AppProps) {
     document.addEventListener("keydown", (event) => {
       const disabledShortcuts =
         ["F3", "F5", "F7"].includes(event.key) ||
+        (event.shiftKey && event.key === "Escape") || // forbid Edge task manager
         (event.altKey && ["ArrowLeft", "ArrowRight"].includes(event.key)) ||
+        (event.ctrlKey && ["H", "Q"].includes(event.key.toUpperCase())) ||
         ((event.ctrlKey || event.metaKey) &&
-          ["F", "G", "H", "J", "P", "Q", "R", "U"].includes(
-            event.key.toUpperCase()
-          ));
+          ["F", "G", "J", "P", "R", "U"].includes(event.key.toUpperCase()));
       disabledShortcuts && event.preventDefault();
     });
   }, []);
