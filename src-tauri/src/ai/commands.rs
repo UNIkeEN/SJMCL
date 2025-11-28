@@ -47,7 +47,7 @@ pub async fn retrieve_ai_chat_response(
   app: AppHandle,
   messages: Vec<ChatMessage>,
 ) -> SJMCLResult<String> {
-  let client = app.state::<reqwest::Client>();
+  let client = reqwest::Client::new();
   let ai_chat_config = {
     let config_binding = app.state::<Mutex<LauncherConfig>>();
     let config_state = config_binding.lock()?;
@@ -62,6 +62,7 @@ pub async fn retrieve_ai_chat_response(
     .json(&ChatCompletionRequest {
       model: ai_chat_config.model.clone(),
       messages,
+      stream: false,
     })
     .send()
     .await

@@ -2067,6 +2067,7 @@
             "NETWORK_ERROR": "网络错误",
             "NOT_ENABLED": "生成式 AI 功能未启用",
             "API_PARSE_ERROR": "无法正常读取服务 API",
+            "INVALID_API_KEY": "API 密钥无效",
             "NO_RESPONSE": "没有返回任何内容"
           }
         }
