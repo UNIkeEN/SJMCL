@@ -1,8 +1,10 @@
 import {
+  Box,
   Button,
   HStack,
   IconButton,
   Image,
+  Switch,
   Tag,
   TagLabel,
   Text,
@@ -39,17 +41,34 @@ export const DiscoverSourcesPage = () => {
   const handleFetchNewsSourcesInfo = useCallback(() => {
     DiscoverService.fetchNewsSourcesInfo().then((response) => {
       if (response.status === "success") {
-        setSourcesInfo(response.data);
+        const enabledInfos = response.data;
+        setSourcesInfo((prev) => {
+          const byUrl = new Map<string, NewsSourceInfo>();
+          prev.forEach((s) => byUrl.set(s.endpointUrl, s));
+          enabledInfos.forEach((info) => {
+            const existing = byUrl.get(info.endpointUrl) || { endpointUrl: info.endpointUrl } as NewsSourceInfo;
+            byUrl.set(info.endpointUrl, { ...existing, ...info });
+          });
+          return sources.map(([url]) => byUrl.get(url) || { endpointUrl: url } as NewsSourceInfo);
+        });
         setIsLoading(false);
       }
       // no toast here, keep slient if no internet connection or etc.
     });
-  }, [setSourcesInfo]);
+  }, [sources]);
 
   const handleRemoveSource = (urlToRemove: string) => {
-    const updated = sources.filter((url) => url !== urlToRemove);
+    const updated = sources.filter(([url]) => url !== urlToRemove);
     update("discoverSourceEndpoints", updated);
-    setSourcesInfo(updated.map((url) => ({ endpointUrl: url })));
+    setSourcesInfo(updated.map(([url]) => ({ endpointUrl: url })));
+    handleFetchNewsSourcesInfo();
+  };
+
+  const handleToggleSource = (urlToToggle: string, enabled: boolean) => {
+    const updated = sources.map(([url, isEnabled]) => 
+      url === urlToToggle ? [url, enabled] : [url, isEnabled]
+    );
+    update("discoverSourceEndpoints", updated);
     handleFetchNewsSourcesInfo();
   };
 
@@ -57,7 +76,7 @@ export const DiscoverSourcesPage = () => {
     if (sources.length === 0) return;
     // iniailly load url from config
     setSourcesInfo(
-      sources.map((url) => ({
+      sources.map(([url]) => ({
         endpointUrl: url,
       }))
     );
@@ -117,6 +136,21 @@ export const DiscoverSourcesPage = () => {
                   </Tag>
                 )}
                 {isLoading && <BeatLoader size={6} color="grey" />}
+                <Tooltip label={t("DiscoverSourcesPage.toggleSource")}>
+                  <Box alignSelf="stretch" display="flex" alignItems="center">
+                    <Switch
+                      size="md"
+                      colorScheme={primaryColor}
+                      isChecked={
+                        sources.find(([url]) => url === source.endpointUrl)?.[1] ??
+                        true
+                      }
+                      onChange={(e) =>
+                        handleToggleSource(source.endpointUrl, e.target.checked)
+                      }
+                    />
+                  </Box>
+                </Tooltip>
                 <Tooltip label={t("DiscoverSourcesPage.button.deleteSource")}>
                   <IconButton
                     size="sm"

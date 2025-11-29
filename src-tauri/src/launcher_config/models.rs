@@ -5,7 +5,9 @@ use crate::utils::string::snake_to_camel_case;
 use crate::utils::sys_info;
 use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use partial_derive::Partial;
+use serde::de::{self, Deserializer};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use smart_default::SmartDefault;
 use std::path::PathBuf;
 use strum_macros::Display;
@@ -260,9 +262,14 @@ structstruck::strike! {
     },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,
-    #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(),
-    \"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string()]")]
-    pub discover_source_endpoints: Vec<String>,
+    // 将 string[] 改为 [string, boolean][]，并设置默认值为 true
+    #[serde(
+      default,
+      deserialize_with = "deserialize_discover_sources"
+    )]
+    #[default(_code="vec![(\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(), true),
+    (\"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string(), true)]")]
+    pub discover_source_endpoints: Vec<(String, bool)>,
     pub extra_java_paths: Vec<String>,
     pub suppressed_dialogs: Vec<String>,
     pub states: struct States {
@@ -348,3 +355,42 @@ pub enum LauncherConfigError {
 }
 
 impl std::error::Error for LauncherConfigError {}
+
+fn deserialize_discover_sources<'de, D>(deserializer: D) -> Result<Vec<(String, bool)>, D::Error>
+where
+  D: Deserializer<'de>,
+{
+  let v = Value::deserialize(deserializer)?;
+  let arr = v
+    .as_array()
+    .ok_or_else(|| de::Error::custom("discover_source_endpoints must be an array"))?;
+
+  let mut out = Vec::with_capacity(arr.len());
+  for item in arr {
+    if let Some(s) = item.as_str() {
+      out.push((s.to_string(), true));
+      continue;
+    }
+    if let Some(t) = item.as_array() {
+      if t.len() == 2 {
+        let url = t[0]
+          .as_str()
+          .ok_or_else(|| de::Error::custom("invalid url in tuple"))?;
+        let enabled = t[1]
+          .as_bool()
+          .ok_or_else(|| de::Error::custom("invalid enabled in tuple"))?;
+        out.push((url.to_string(), enabled));
+        continue;
+      }
+    }
+    if let Some(obj) = item.as_object() {
+      if let Some(url) = obj.get("url").and_then(|v| v.as_str()) {
+        let enabled = obj.get("enabled").and_then(|v| v.as_bool()).unwrap_or(true);
+        out.push((url.to_string(), enabled));
+        continue;
+      }
+    }
+    return Err(de::Error::custom("invalid discover_source_endpoints item"));
+  }
+  Ok(out)
+}

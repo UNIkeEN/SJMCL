@@ -370,7 +370,8 @@
     },
     "tag": {
       "online": "En ligne"
-    }
+    },
+    "toggleSource": "Activer/Désactiver la source"
   },
   "DownloadFloatButton": {
     "tooltip": "Téléchargement en cours"

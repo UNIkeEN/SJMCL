@@ -458,7 +458,8 @@
     },
     "tag": {
       "online": "線上"
-    }
+    },
+    "toggleSource": "啟用/停用資料來源"
   },
   "DownloadJavaModal": {
     "header": {
