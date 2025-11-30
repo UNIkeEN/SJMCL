@@ -17,7 +17,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 ## 0.6.1
 
-`2025-11-16`
+`2025-11-15`
 
 - 🌟 Support requesting microphone and camera permissions for mods on macOS. #1144 @UNIkeEN  
 - 🐛 Fix an issue where Minecraft accounts could not log in in certain cases. #1135 @Reqwey
