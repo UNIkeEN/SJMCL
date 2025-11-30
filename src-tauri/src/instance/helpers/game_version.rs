@@ -3,6 +3,7 @@ use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::helpers::version_manifest::get_game_version_manifest;
 use crate::utils::fs::get_app_resource_filepath;
 use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -85,6 +86,47 @@ pub async fn compare_game_versions(
     (Some(_), None) => Ordering::Less,
     (None, Some(_)) => Ordering::Greater,
     (None, None) => Ordering::Equal,
+  }
+}
+
+/// Build a comparator function for Minecraft version IDs based on
+/// the built-in or cached version list files.
+///
+/// The returned comparator can be used directly in sorting operations, e.g.:
+///
+/// # Examples
+/// ```
+/// let cmp_fn = build_game_version_cmp_fn(&app);
+/// summary_list.sort_by(|a, b| cmp_fn(&a.version, &b.version));
+/// ```
+///
+/// # Returns
+/// A closure suitable for `.sort_by()` or `.sort_by_key()` usage.
+///
+pub fn build_game_version_cmp_fn(app: &AppHandle) -> impl Fn(&str, &str) -> Ordering {
+  let mut versions = load_versions(app, "assets/game/versions.txt", false);
+
+  if versions.is_empty() {
+    versions = load_versions(app, "game_versions.txt", true);
+  }
+
+  let index_map: HashMap<String, usize> = versions
+    .into_iter()
+    .enumerate()
+    .map(|(i, v)| (v, i))
+    .collect();
+
+  // Return the comparator closure
+  move |a: &str, b: &str| {
+    let idx_a = index_map.get(a);
+    let idx_b = index_map.get(b);
+
+    match (idx_a, idx_b) {
+      (Some(&a), Some(&b)) => a.cmp(&b),
+      (Some(_), None) => Ordering::Less,
+      (None, Some(_)) => Ordering::Greater,
+      (None, None) => Ordering::Equal,
+    }
   }
 }
 

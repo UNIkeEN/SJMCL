@@ -1,8 +1,30 @@
-import { Box, Button, HStack, Icon } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuLayoutGrid, LuLayoutList, LuPlay, LuPlus } from "react-icons/lu";
+import {
+  LuArrowDown01,
+  LuArrowDown10,
+  LuArrowDownAZ,
+  LuLayoutGrid,
+  LuLayoutList,
+  LuListFilter,
+  LuPlay,
+  LuPlus,
+} from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
@@ -20,8 +42,9 @@ const InstanceListPage = () => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.allInstancesPage.viewType;
-  const { openSharedModal } = useSharedModals();
+  const selectedSortByType = config.states.allInstancesPage.sortBy;
 
+  const { openSharedModal } = useSharedModals();
   const { selectedInstance, getInstanceList } = useGlobalData();
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>([]);
 
@@ -49,6 +72,55 @@ const InstanceListPage = () => {
     },
   ];
 
+  const sortByTypeList = [
+    {
+      key: "versionAsc",
+      icon: <LuArrowDown01 />,
+    },
+    {
+      key: "versionDesc",
+      icon: <LuArrowDown10 />,
+    },
+    {
+      key: "name",
+      icon: <LuArrowDownAZ />,
+    },
+  ];
+
+  const FilterAndSortMenu = () => (
+    <Menu>
+      <Tooltip label={t("AllInstancesPage.button.sortAndFilter")}>
+        <MenuButton
+          as={IconButton}
+          size="xs"
+          fontSize="sm"
+          variant="ghost"
+          icon={<LuListFilter />}
+        ></MenuButton>
+      </Tooltip>
+      <MenuList>
+        <MenuOptionGroup
+          title={t("AllInstancesPage.sortBy")}
+          type="radio"
+          value={selectedSortByType}
+          onChange={(s) => {
+            update("states.allInstancesPage.sortBy", s as string);
+            getInstanceList(true);
+          }}
+        >
+          {sortByTypeList.map((item) => (
+            <MenuItemOption key={item.key} value={item.key} fontSize="xs">
+              <HStack spacing={2}>
+                {item.icon}
+                <Text>{t(`AllInstancesPage.sortByTypeList.${item.key}`)}</Text>
+              </HStack>
+            </MenuItemOption>
+          ))}
+        </MenuOptionGroup>
+      </MenuList>
+    </Menu>
+  );
+
   return (
     <Section
       display="flex"
@@ -67,6 +139,7 @@ const InstanceListPage = () => {
               setInstanceList(getInstanceList(true) || []);
             }}
           />
+          <FilterAndSortMenu />
           <SegmentedControl
             selected={selectedViewType}
             onSelectItem={(s) => {

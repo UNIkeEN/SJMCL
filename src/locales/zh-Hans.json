@@ -226,12 +226,19 @@
     "button": {
       "addAndImport": "添加与导入",
       "globalSettings": "全局游戏设置",
-      "launch": "启动游戏"
+      "launch": "启动游戏",
+      "sortAndFilter": "排序与筛选"
     },
     "viewTypeList": {
       "grid": "网格视图",
       "list": "列表视图"
     },
+    "sortByTypeList": {
+      "versionAsc": "游戏版本升序",
+      "versionDesc": "游戏版本降序",
+      "name": "实例名称"
+    },
+    "sortBy": "排序方式",
     "title": "全部实例"
   },
   "AppearanceSettingsPage": {

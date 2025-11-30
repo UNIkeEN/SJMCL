@@ -226,12 +226,19 @@
     "button": {
       "addAndImport": "Add & Import",
       "globalSettings": "Global Game Settings",
-      "launch": "Launch Game"
+      "launch": "Launch Game",
+      "sortAndFilter": "Sort and Filter"
     },
     "viewTypeList": {
       "grid": "Grid View",
       "list": "List View"
     },
+    "sortByTypeList": {
+      "versionAsc": "Game Version Ascending",
+      "versionDesc": "Game Version Descending",
+      "name": "Instance Name"
+    },
+    "sortBy": "Sort by",
     "title": "All Instances"
   },
   "AppearanceSettingsPage": {

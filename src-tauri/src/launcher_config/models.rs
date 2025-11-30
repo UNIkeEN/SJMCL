@@ -275,6 +275,8 @@ structstruck::strike! {
         pub view_type: String
       },
       pub all_instances_page: struct {
+        #[default = "versionAsc"]
+        pub sort_by: String,
         #[default = "list"]
         pub view_type: String
       },

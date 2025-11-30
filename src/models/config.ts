@@ -138,6 +138,7 @@ export interface LauncherConfig {
       viewType: string;
     };
     allInstancesPage: {
+      sortBy: string;
       viewType: string;
     };
     gameVersionSelector: {
@@ -293,6 +294,7 @@ export const defaultConfig: LauncherConfig = {
       viewType: "grid",
     },
     allInstancesPage: {
+      sortBy: "versionAsc",
       viewType: "list",
     },
     gameVersionSelector: {

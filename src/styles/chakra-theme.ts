@@ -99,6 +99,9 @@ const chakraExtendTheme = extendTheme({
     },
     Menu: {
       baseStyle: {
+        groupTitle: {
+          fontSize: "xs",
+        },
         list: {
           minWidth: "auto",
           py: 1,

@@ -2,7 +2,7 @@ use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
 use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
-use crate::instance::helpers::game_version::compare_game_versions;
+use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::{
@@ -63,10 +63,11 @@ use zip::read::ZipArchive;
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
   refresh_and_update_instances(&app, false).await; // firstly refresh and update
+  let global_version_isolation = get_global_game_config(&app).version_isolation;
+  let mut summary_list = Vec::new();
+
   let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let instances = instance_binding.lock().unwrap().clone();
-  let mut summary_list = Vec::new();
-  let global_version_isolation = get_global_game_config(&app).version_isolation;
   for (id, instance) in instances.iter() {
     // same as get_game_config(), but mannually here
     let is_version_isolated =
@@ -84,21 +85,34 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
       .push(InstanceSummary::from_instance(&app, id.clone(), instance, is_version_isolated).await);
   }
 
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let mut config_state = config_binding.lock()?;
+  // sort instances (starred instance will be pinned to top by frontend)
+  let version_cmp_fn = build_game_version_cmp_fn(&app);
+  match config_state.states.all_instances_page.sort_by.as_str() {
+    "versionAsc" => {
+      summary_list.sort_by(|a, b| version_cmp_fn(&a.version, &b.version));
+    }
+    "versionDesc" => {
+      summary_list.sort_by(|a, b| version_cmp_fn(&b.version, &a.version));
+    }
+    _ => {
+      summary_list.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    }
+  }
+
   // ensure an instance is selected if instance list is not empty
-  if !summary_list.is_empty() {
-    let config_binding = app.state::<Mutex<LauncherConfig>>();
-    let mut config_state = config_binding.lock()?;
-    if !summary_list
+  if !summary_list.is_empty()
+    && !summary_list
       .iter()
       .any(|instance| instance.id == config_state.states.shared.selected_instance_id)
-    {
-      config_state.partial_update(
-        &app,
-        "states.shared.selected_instance_id",
-        &serde_json::to_string(&summary_list[0].id).unwrap_or_default(),
-      )?;
-      config_state.save()?;
-    }
+  {
+    config_state.partial_update(
+      &app,
+      "states.shared.selected_instance_id",
+      &serde_json::to_string(&summary_list[0].id).unwrap_or_default(),
+    )?;
+    config_state.save()?;
   }
 
   Ok(summary_list)
