@@ -280,7 +280,7 @@ export const defaultConfig: LauncherConfig = {
   globalGameConfig: defaultGameConfig,
   discoverSourceEndpoints: [
     ["https://mc.sjtu.cn/api-sjmcl/article", true],
-    ["https://mc.sjtu.cn/api-sjmcl/article/mua", true]
+    ["https://mc.sjtu.cn/api-sjmcl/article/mua", true],
   ],
   extraJavaPaths: [],
   suppressedDialogs: [],

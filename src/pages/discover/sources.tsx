@@ -46,10 +46,15 @@ export const DiscoverSourcesPage = () => {
           const byUrl = new Map<string, NewsSourceInfo>();
           prev.forEach((s) => byUrl.set(s.endpointUrl, s));
           enabledInfos.forEach((info) => {
-            const existing = byUrl.get(info.endpointUrl) || { endpointUrl: info.endpointUrl } as NewsSourceInfo;
+            const existing =
+              byUrl.get(info.endpointUrl) ||
+              ({ endpointUrl: info.endpointUrl } as NewsSourceInfo);
             byUrl.set(info.endpointUrl, { ...existing, ...info });
           });
-          return sources.map(([url]) => byUrl.get(url) || { endpointUrl: url } as NewsSourceInfo);
+          return sources.map(
+            ([url]) =>
+              byUrl.get(url) || ({ endpointUrl: url } as NewsSourceInfo)
+          );
         });
         setIsLoading(false);
       }
@@ -65,7 +70,7 @@ export const DiscoverSourcesPage = () => {
   };
 
   const handleToggleSource = (urlToToggle: string, enabled: boolean) => {
-    const updated = sources.map(([url, isEnabled]) => 
+    const updated = sources.map(([url, isEnabled]) =>
       url === urlToToggle ? [url, enabled] : [url, isEnabled]
     );
     update("discoverSourceEndpoints", updated);
@@ -142,8 +147,9 @@ export const DiscoverSourcesPage = () => {
                       size="md"
                       colorScheme={primaryColor}
                       isChecked={
-                        sources.find(([url]) => url === source.endpointUrl)?.[1] ??
-                        true
+                        sources.find(
+                          ([url]) => url === source.endpointUrl
+                        )?.[1] ?? true
                       }
                       onChange={(e) =>
                         handleToggleSource(source.endpointUrl, e.target.checked)

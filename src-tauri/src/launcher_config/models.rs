@@ -262,7 +262,7 @@ structstruck::strike! {
     },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,
-    // 将 string[] 改为 [string, boolean][]，并设置默认值为 true
+    // Changed from Vec<String> to Vec<(String, bool)> with default enabled=true
     #[serde(
       default,
       deserialize_with = "deserialize_discover_sources"
