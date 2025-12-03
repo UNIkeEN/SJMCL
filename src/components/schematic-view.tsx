@@ -9,21 +9,15 @@ interface SchematicViewProps {
   height?: string | number;
 }
 
-// Static imports for litematic viewer resources
-declare global {
-  interface Window {
-    deepslate: any;
-    glMatrix: any;
-    loadDeepslateResources?: any;
-    readLitematicFromNBTData?: any;
-    structureFromLitematic?: any;
-    deepslateResources?: any;
-    assets?: any;
-    OPAQUE_BLOCKS?: any;
-    NON_SELF_CULLING?: any;
-    TRANSPARENT_BLOCKS?: any;
-  }
+interface LitematicViewerGlobals {
+  deepslate: any;
+  glMatrix: any;
+  assets?: any;
+  OPAQUE_BLOCKS?: Set<string>;
+  NON_SELF_CULLING?: Set<string>;
+  TRANSPARENT_BLOCKS?: Set<string>;
 }
+const getGlobals = () => window as unknown as Window & LitematicViewerGlobals;
 
 // Litematic utility classes and functions - ported from litematic-utils.js
 class Litematic {
@@ -172,25 +166,26 @@ const readLitematicFromNBTData = (nbtdata: any): Litematic => {
 const loadDeepslateResources = (textureImage: HTMLImageElement) => {
   console.log("loading resources...");
 
-  if (!window.deepslate || !window.assets) {
+  const globals = getGlobals();
+  if (!globals.deepslate || !globals.assets) {
     console.error("Deepslate or assets not loaded");
     return null;
   }
 
   const blockDefinitions: any = {};
-  Object.keys(window.assets.blockstates).forEach((id) => {
+  Object.keys(globals.assets.blockstates).forEach((id) => {
     blockDefinitions["minecraft:" + id] =
-      window.deepslate.BlockDefinition.fromJson(
+      globals.deepslate.BlockDefinition.fromJson(
         id,
-        window.assets.blockstates[id]
+        globals.assets!.blockstates[id]
       );
   });
 
   const blockModels: any = {};
-  Object.keys(window.assets.models).forEach((id) => {
-    blockModels["minecraft:" + id] = window.deepslate.BlockModel.fromJson(
+  Object.keys(globals.assets.models).forEach((id) => {
+    blockModels["minecraft:" + id] = globals.deepslate.BlockModel.fromJson(
       id,
-      window.assets.models[id]
+      globals.assets!.models[id]
     );
   });
 
@@ -217,8 +212,8 @@ const loadDeepslateResources = (textureImage: HTMLImageElement) => {
   const atlasData = atlasCtx.getImageData(0, 0, atlasSize, atlasSize);
 
   const idMap: any = {};
-  Object.keys(window.assets.textures).forEach((id) => {
-    const [u, v, du, dv] = window.assets.textures[id];
+  Object.keys(globals.assets.textures).forEach((id) => {
+    const [u, v, du, dv] = globals.assets!.textures[id];
     const dv2 = du !== dv && id.startsWith("block/") ? du : dv;
     idMap["minecraft:" + id] = [
       u / atlasSize,
@@ -228,7 +223,7 @@ const loadDeepslateResources = (textureImage: HTMLImageElement) => {
     ];
   });
 
-  const textureAtlas = new window.deepslate.TextureAtlas(atlasData, idMap);
+  const textureAtlas = new globals.deepslate.TextureAtlas(atlasData, idMap);
 
   return {
     getBlockDefinition(id: string) {
@@ -245,10 +240,10 @@ const loadDeepslateResources = (textureImage: HTMLImageElement) => {
     },
     getBlockFlags(id: string) {
       return {
-        opaque: window.OPAQUE_BLOCKS?.has(id.toString()) || false,
-        self_culling: !window.NON_SELF_CULLING?.has(id.toString()) || true,
+        opaque: globals.OPAQUE_BLOCKS?.has(id.toString()) || false,
+        self_culling: !globals.NON_SELF_CULLING?.has(id.toString()) || true,
         semi_transparent:
-          window.TRANSPARENT_BLOCKS?.has(id.toString()) || false,
+          globals.TRANSPARENT_BLOCKS?.has(id.toString()) || false,
       };
     },
     getBlockProperties() {
@@ -265,7 +260,8 @@ const structureFromLitematic = (
   y_min = 0,
   y_max = -1
 ) => {
-  if (!window.deepslate) {
+  const globals = getGlobals();
+  if (!globals.deepslate) {
     throw new Error("Deepslate not loaded");
   }
 
@@ -281,7 +277,7 @@ const structureFromLitematic = (
   }
   y_max = Math.min(y_max, height);
 
-  const structure = new window.deepslate.Structure([width, height, depth]);
+  const structure = new globals.deepslate.Structure([width, height, depth]);
 
   let blockCount = 0;
   console.log("Building blocks...");
@@ -391,7 +387,7 @@ const SchematicView: React.FC<SchematicViewProps> = ({
 
     updateCameraFromKeys();
 
-    const { mat4 } = window.glMatrix;
+    const { mat4 } = getGlobals().glMatrix;
     const camera = cameraRef.current;
 
     camera.yaw = camera.yaw % (Math.PI * 2);
@@ -483,7 +479,8 @@ const SchematicView: React.FC<SchematicViewProps> = ({
           attempts++;
 
           // Check if assets is available via eval (assets may be in global scope but not on window)
-          let assetsAvailable = !!window.assets;
+          const globals = getGlobals();
+          let assetsAvailable = !!globals.assets;
           if (!assetsAvailable) {
             try {
               // Check if assets exists globally
@@ -491,7 +488,7 @@ const SchematicView: React.FC<SchematicViewProps> = ({
                 'typeof assets !== "undefined" ? assets : null'
               );
               if (globalAssets) {
-                (window as any).assets = globalAssets;
+                (globals as any).assets = globalAssets;
                 assetsAvailable = true;
               }
             } catch (e) {
@@ -500,17 +497,17 @@ const SchematicView: React.FC<SchematicViewProps> = ({
           }
 
           console.log(
-            `Attempt ${attempts}: Checking window.deepslate=${!!window.deepslate}, assets=${!!assetsAvailable}`
+            `Attempt ${attempts}: Checking deepslate=${!!globals.deepslate}, assets=${!!assetsAvailable}`
           );
 
-          if (window.deepslate && assetsAvailable) {
+          if (globals.deepslate && assetsAvailable) {
             console.log("All resources available, proceeding...");
             break;
           }
 
           if (attempts >= maxAttempts) {
             throw new Error(
-              `Resources not available after ${maxAttempts} attempts. deepslate: ${!!window.deepslate}, assets: ${!!assetsAvailable}`
+              `Resources not available after ${maxAttempts} attempts. deepslate: ${!!globals.deepslate}, assets: ${!!assetsAvailable}`
             );
           }
         }
@@ -579,7 +576,9 @@ const SchematicView: React.FC<SchematicViewProps> = ({
         }
 
         const arrayBuffer = await response.arrayBuffer();
-        const nbtData = window.deepslate.readNbt(new Uint8Array(arrayBuffer));
+        const nbtData = getGlobals().deepslate.readNbt(
+          new Uint8Array(arrayBuffer)
+        );
 
         if (!nbtData || !nbtData.value) {
           throw new Error("Invalid schematic file format");
@@ -643,7 +642,8 @@ const SchematicView: React.FC<SchematicViewProps> = ({
           );
         }
 
-        rendererRef.current = new window.deepslate.StructureRenderer(
+        const { deepslate } = getGlobals();
+        rendererRef.current = new deepslate.StructureRenderer(
           webgl,
           structure,
           deepslateResourcesRef.current,
