@@ -51,6 +51,11 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
   const [modLoaders, setModLoaders] = useState<ModLoaderResourceInfo[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const expandedLoaderType =
+    selectedModLoader.loaderType !== "Unknown"
+      ? selectedModLoader.loaderType
+      : null;
+
   useEffect(() => {
     setLoading(true);
     ResourceService.fetchModLoaderVersionList(
@@ -128,6 +133,7 @@ export const ModLoaderSelector: React.FC<ModLoaderSelectorProps> = ({
         currentVersion={selectedModLoader.version}
         displayMode="selector"
         loading={loading}
+        expandedType={expandedLoaderType}
         onTypeSelect={(loaderType) => {
           if (loaderType !== selectedModLoader.loaderType) {
             onSelectModLoader({

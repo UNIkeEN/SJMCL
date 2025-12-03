@@ -23,6 +23,7 @@ interface ModLoaderCardsProps extends BoxProps {
   displayMode: "entry" | "selector";
   loading?: boolean;
   onTypeSelect?: (type: ModLoaderType) => void;
+  expandedType?: ModLoaderType | null;
 }
 
 const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
@@ -31,6 +32,7 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
   displayMode,
   loading = false,
   onTypeSelect,
+  expandedType,
   ...boxProps
 }) => {
   const { t } = useTranslation();
@@ -94,23 +96,27 @@ const ModLoaderCards: React.FC<ModLoaderCardsProps> = ({
               </Text>
             </VStack>
           </HStack>
-          <IconButton
-            aria-label={type}
-            icon={
-              <Icon
-                as={
-                  displayMode === "selector" && isSelected
-                    ? LuX
-                    : LuChevronRight
-                }
-                boxSize={3.5}
-              />
-            }
-            variant="ghost"
-            size="xs"
-            disabled={loading}
-            onClick={() => onTypeSelect?.(type)}
-          />
+          {displayMode === "selector" &&
+          expandedType !== null &&
+          expandedType !== type ? null : (
+            <IconButton
+              aria-label={type}
+              icon={
+                <Icon
+                  as={
+                    displayMode === "selector" && expandedType === type
+                      ? LuX
+                      : LuChevronRight
+                  }
+                  boxSize={3.5}
+                />
+              }
+              variant="ghost"
+              size="xs"
+              disabled={loading}
+              onClick={() => onTypeSelect?.(type)}
+            />
+          )}
         </Flex>
       </Card>
     );
