@@ -58,7 +58,7 @@ export const DiscoverSourcesPage = () => {
         });
         setIsLoading(false);
       }
-      // no toast here, keep slient if no internet connection or etc.
+      // no toast here, keep silent if no internet connection or etc.
     });
   }, [sources]);
 
