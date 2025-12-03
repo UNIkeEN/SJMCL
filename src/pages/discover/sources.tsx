@@ -79,7 +79,7 @@ export const DiscoverSourcesPage = () => {
 
   useEffect(() => {
     if (sources.length === 0) return;
-    // iniailly load url from config
+    // initially load url from config
     setSourcesInfo(
       sources.map(([url]) => ({
         endpointUrl: url,
