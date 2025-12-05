@@ -1377,6 +1377,11 @@
       "javaPath": "请输入或选择 Java 可执行文件路径"
     }
   },
+  "ViewSchematicModal":{
+      "header":{
+        "title":"查看原理图"
+      }
+    },
   "MemoryStatusProgress": {
     "title": "内存状态",
     "info": "{{used}} / {{total}} GB 已使用",
