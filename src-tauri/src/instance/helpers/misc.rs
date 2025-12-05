@@ -225,11 +225,12 @@ pub async fn refresh_instances(
       }
     }
 
-    let (mut game_version, loader_version, loader_type) = if !client_data.patches.is_empty() {
-      patches_to_info(&client_data.patches)
-    } else {
-      libraries_to_info(&client_data).await
-    };
+    let (mut game_version, loader_version, loader_type, optifine_info) =
+      if !client_data.patches.is_empty() {
+        patches_to_info(&client_data.patches)
+      } else {
+        libraries_to_info(&client_data).await
+      };
     // TODO: patches related logic
     if game_version.is_none() {
       let file = Cursor::new(tokio::fs::read(jar_path).await?);
@@ -255,6 +256,7 @@ pub async fn refresh_instances(
           version: loader_version.unwrap_or_default(),
           status: ModLoaderStatus::Installed,
           branch: None,
+          optifine: optifine_info.clone(),
         }
       },
       ..cfg_read

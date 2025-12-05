@@ -39,6 +39,7 @@ async fn get_forge_meta_by_game_version_bmcl(
                 description: info.modified,
                 stable: true,
                 branch: info.branch.and_then(|v| v.as_str().map(String::from)),
+                optifine: None,
               })
               .collect(),
           )
