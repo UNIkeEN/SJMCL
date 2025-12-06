@@ -126,7 +126,7 @@ export interface LauncherConfig {
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
-  discoverSourceEndpoints: string[];
+  discoverSourceEndpoints: [string, boolean][];
   extraJavaPaths: string[];
   suppressedDialogs: string[];
   states: {
@@ -280,8 +280,8 @@ export const defaultConfig: LauncherConfig = {
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
   discoverSourceEndpoints: [
-    "https://mc.sjtu.cn/api-sjmcl/article",
-    "https://mc.sjtu.cn/api-sjmcl/article/mua",
+    ["https://mc.sjtu.cn/api-sjmcl/article", true],
+    ["https://mc.sjtu.cn/api-sjmcl/article/mua", true],
   ],
   extraJavaPaths: [],
   suppressedDialogs: [],

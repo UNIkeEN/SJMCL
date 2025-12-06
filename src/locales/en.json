@@ -465,7 +465,8 @@
     },
     "tag": {
       "online": "Online"
-    }
+    },
+    "toggleSource": "Enable/Disable Source"
   },
   "DownloadJavaModal": {
     "header": {
