@@ -431,6 +431,9 @@ pub async fn retrieve_game_server_list(
     Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
 
+  // skip hidden servers
+  game_servers.retain(|server| !server.hidden);
+
   // query_online is true, amend query and return player count and online status
   if query_online {
     game_servers = query_servers_online(game_servers).await?;

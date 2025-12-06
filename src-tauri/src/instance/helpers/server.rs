@@ -12,6 +12,8 @@ pub struct GameServerInfo {
   pub icon_src: String,
   pub ip: String,
   pub name: String,
+  #[serde(default)]
+  pub hidden: bool,
   pub description: String,
   pub is_queried: bool, // if true, this is a complete result from a successful query
   pub players_online: usize,
@@ -24,6 +26,8 @@ pub struct NbtServerInfo {
   pub ip: String,
   pub icon: Option<String>,
   pub name: String,
+  #[serde(default)]
+  pub hidden: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -37,6 +41,7 @@ impl From<NbtServerInfo> for GameServerInfo {
       ip: nbt.ip,
       name: nbt.name,
       icon_src: nbt.icon.unwrap_or_default(),
+      hidden: nbt.hidden,
       ..Default::default()
     }
   }
