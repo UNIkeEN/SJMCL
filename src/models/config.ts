@@ -154,6 +154,12 @@ export interface LauncherConfig {
       accordionStates: boolean[];
     };
   };
+  aiChatConfig: {
+    enabled: boolean;
+    baseUrl: string;
+    apiKey: string;
+    model: string;
+  };
 }
 
 export const defaultGameConfig: GameConfig = {
@@ -309,6 +315,12 @@ export const defaultConfig: LauncherConfig = {
     instanceWorldsPage: {
       accordionStates: [true, true],
     },
+  },
+  aiChatConfig: {
+    enabled: false,
+    baseUrl: "",
+    apiKey: "",
+    model: "",
   },
 };
 

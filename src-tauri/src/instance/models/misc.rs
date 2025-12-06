@@ -80,7 +80,7 @@ pub enum ModLoaderStatus {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
+  #[strikethrough[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields, default)]]
   pub struct Instance {
     pub id: String,
