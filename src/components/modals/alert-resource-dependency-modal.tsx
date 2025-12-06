@@ -200,7 +200,7 @@ const AlertResourceDependencyModal: React.FC<
   return (
     <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent h="80%">
         <ModalHeader>
           {t("AlertResourceDependencyModal.header.title")}
         </ModalHeader>
@@ -211,6 +211,9 @@ const AlertResourceDependencyModal: React.FC<
           display="flex"
           flexDirection="column"
           overflowY="auto"
+          onWheel={(e) => {
+            e.stopPropagation();
+          }}
         >
           {isLoading ? (
             <VStack mt={8}>
