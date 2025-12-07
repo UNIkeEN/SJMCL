@@ -21,6 +21,7 @@ pub enum PlayerType {
 }
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Display, Default, EnumIter)]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum PresetRole {
   #[default]
   Steve,
