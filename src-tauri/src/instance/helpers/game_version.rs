@@ -136,7 +136,7 @@ pub fn build_game_version_cmp_fn(app: &AppHandle) -> impl Fn(&str, &str) -> Orde
 /// it returns the parsed major version (e.g., 1.7, 1.18, 26.1).
 /// Otherwise (e.g., snapshot format like "24w02a"), it will return the corresponding major version found from the list.
 ///
-/// It is noted that the version number system of Minecraft has a break change after 2026 ("1.x" to "YY.x")
+/// It is noted that the version number system of Minecraft has a breaking change starting in 2026 ("1.x" to "YY.x")
 /// ref: https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system
 ///
 /// # Examples
@@ -164,13 +164,13 @@ pub async fn get_major_game_version(
   version: &str,
   fallback_fetch_remote: bool,
 ) -> String {
-  fn is_sem_liked_version(version: &str) -> bool {
+  fn is_semver_like_version(version: &str) -> bool {
     lazy_static::lazy_static! {
-        static ref CLIENT_SEMVER_PREFIX: Regex = Regex::new(
+        static ref SEMVER_LIKE_PREFIX: Regex = Regex::new(
           r"^\d+\..+"
         ).unwrap();
     }
-    CLIENT_SEMVER_PREFIX.is_match(version.trim())
+    SEMVER_LIKE_PREFIX.is_match(version.trim())
   }
 
   fn extract_major_version(version: &str) -> String {
@@ -184,7 +184,7 @@ pub async fn get_major_game_version(
 
   fn find_closest_major_version(versions: &[String], idx: usize) -> String {
     for i in (0..idx).rev() {
-      if is_sem_liked_version(&versions[i]) {
+      if is_semver_like_version(&versions[i]) {
         return extract_major_version(&versions[i]);
       }
     }
@@ -196,7 +196,7 @@ pub async fn get_major_game_version(
   }
 
   // If the input version starts with "1.x" or "YY.x", return the major version directly (e.g., 1.21 from 1.21.4)
-  if is_sem_liked_version(version) {
+  if is_semver_like_version(version) {
     return extract_major_version(version);
   }
 
