@@ -12,7 +12,6 @@ pub struct GameServerInfo {
   pub icon_src: String,
   pub ip: String,
   pub name: String,
-  #[serde(default)]
   pub hidden: bool,
   pub description: String,
   pub is_queried: bool, // if true, this is a complete result from a successful query
