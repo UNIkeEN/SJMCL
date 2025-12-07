@@ -1871,7 +1871,8 @@
           "title": "Failed to add offline player",
           "description": {
             "DUPLICATE": "Player already exists",
-            "INVALID": "UUID is invalid"
+            "INVALID": "UUID is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
           }
         }
       },

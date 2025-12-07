@@ -1871,7 +1871,8 @@
           "title": "离线角色添加失败",
           "description": {
             "DUPLICATE": "角色已存在",
-            "INVALID": "UUID 无效"
+            "INVALID": "UUID 无效",
+            "TEXTURE_ERROR": "角色皮肤获取失败"
           }
         }
       },
