@@ -146,6 +146,13 @@ const chakraExtendTheme = extendTheme({
         isCentered: true,
       },
     },
+    Popover: {
+      baseStyle: {
+        content: {
+          boxShadow: "md",
+        },
+      },
+    },
     Switch: {
       defaultProps: {
         size: "sm",
@@ -161,13 +168,6 @@ const chakraExtendTheme = extendTheme({
       baseStyle: {
         userSelect: "none",
         fontSize: "xs-sm",
-      },
-    },
-    Popover: {
-      baseStyle: {
-        content: {
-          boxShadow: "md",
-        },
       },
     },
   },
