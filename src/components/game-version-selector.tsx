@@ -28,6 +28,7 @@ import {
   VirtualOptionItemGroup,
 } from "@/components/common/option-item-virtual";
 import { Section } from "@/components/common/section";
+import MCVersionNumberHelper from "@/components/mc-version-number-helper";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { GetStateFlag } from "@/hooks/get-state";
@@ -215,6 +216,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
             onChange={(e) => setSearchText(e.target.value)}
           />
         </InputGroup>
+        <MCVersionNumberHelper placement="bottom-end" />
         <IconButton
           aria-label="refresh"
           icon={<Icon as={LuRefreshCcw} boxSize={3.5} />}

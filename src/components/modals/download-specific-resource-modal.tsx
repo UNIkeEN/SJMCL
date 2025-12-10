@@ -36,6 +36,7 @@ import { MenuSelector } from "@/components/common/menu-selector";
 import NavMenu from "@/components/common/nav-menu";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import MCVersionNumberHelper from "@/components/mc-version-number-helper";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -596,16 +597,19 @@ const DownloadSpecificResourceModal: React.FC<
             </HStack>
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
-            <MenuSelector
-              options={versionLabels.map((item) => ({
-                value: item,
-                label: buildVersionLabelItem(item),
-              }))}
-              value={selectedVersionLabel}
-              onSelect={(value) => setSelectedVersionLabel(value as string)}
-              buttonProps={{ minW: "28" }}
-              menuListProps={{ maxH: "40vh", minW: 28, overflow: "auto" }}
-            />
+            <HStack>
+              <MenuSelector
+                options={versionLabels.map((item) => ({
+                  value: item,
+                  label: buildVersionLabelItem(item),
+                }))}
+                value={selectedVersionLabel}
+                onSelect={(value) => setSelectedVersionLabel(value as string)}
+                buttonProps={{ minW: "28" }}
+                menuListProps={{ maxH: "40vh", minW: 28, overflow: "auto" }}
+              />
+              <MCVersionNumberHelper placement="bottom-start" />
+            </HStack>
 
             <Box>
               {resource.type === OtherResourceType.Mod &&

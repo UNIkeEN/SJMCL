@@ -856,7 +856,7 @@
     "scrollToBottom": "Scroll to Bottom"
   },
   "GameVersionSelector": {
-    "old_beta": "Old Beta",
+    "old_beta": "Beta",
     "release": "Release",
     "snapshot": "Snapshot",
     "april_fools": "April Fools",
@@ -1380,6 +1380,11 @@
     "placeholder": {
       "javaPath": "Please enter or select the Java executable file path"
     }
+  },
+  "MCVersionNumberHelper": {
+    "content": "Starting in 2026, Minecraft adopts a new version numbering system. The version numbers will begin with the release year (e.g., 26.1), replacing the previous 1.x versioning scheme.",
+    "linkText": "Read the official article",
+    "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
