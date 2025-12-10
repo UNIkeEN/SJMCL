@@ -11,6 +11,7 @@ use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
 use crate::instance::helpers::loader::forge::{install_forge_loader, InstallProfile};
 use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
+use crate::instance::helpers::loader::optifine::install_optifine;
 use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::merge_library_lists;
@@ -59,7 +60,18 @@ pub async fn install_mod_loader(
       .await
     }
     ModLoaderType::Forge => {
-      install_forge_loader(priority, game_version, loader, lib_dir, task_params).await
+      install_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params).await?;
+      if loader.optifine.is_some() {
+        install_optifine(
+          priority,
+          game_version,
+          loader.optifine.as_ref().unwrap(),
+          lib_dir.clone(),
+          task_params,
+        )
+        .await?;
+      }
+      Ok(())
     }
     ModLoaderType::NeoForge => {
       install_neoforge_loader(priority, loader, lib_dir, task_params).await

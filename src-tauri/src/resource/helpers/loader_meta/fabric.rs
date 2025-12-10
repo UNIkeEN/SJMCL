@@ -47,6 +47,7 @@ pub async fn get_fabric_meta_by_game_version(
                   description: String::new(),
                   stable: info.loader.stable,
                   branch: None,
+                  optifine: None,
                 })
                 .collect(),
             );

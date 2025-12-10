@@ -1,7 +1,7 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::models::misc::{Instance, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
+use crate::resource::models::OptifineResourceInfo;
 use crate::utils::fs::get_app_resource_filepath;
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -306,10 +306,17 @@ pub struct LoggingFile {
 
 pub fn patches_to_info(
   patches: &[McClientInfo],
-) -> (Option<String>, Option<String>, ModLoaderType) {
+) -> (
+  Option<String>,
+  Option<String>,
+  ModLoaderType,
+  Option<OptifineResourceInfo>,
+) {
   let mut loader_type = ModLoaderType::Unknown;
   let mut game_version = None;
   let mut loader_version = None;
+  let mut optifine_info: Option<OptifineResourceInfo> = None;
+  println!("Patches_num: {}", patches.len());
   for patch in patches {
     if game_version.is_none() && patch.id == "game" {
       game_version = patch.version.clone();
@@ -320,18 +327,25 @@ pub fn patches_to_info(
         loader_version = patch.version.clone();
       }
     }
-
-    if game_version.is_some() && loader_type != ModLoaderType::Unknown {
-      break;
+    if patch.id == "optifine" {
+      optifine_info = Some(OptifineResourceInfo {
+        patch: "".to_string(),
+        filename: "".to_string(),
+        r#type: patch.version.clone().unwrap_or_default(),
+      });
     }
   }
-
-  (game_version, loader_version, loader_type)
+  (game_version, loader_version, loader_type, optifine_info)
 }
 
 pub async fn libraries_to_info(
   client: &McClientInfo,
-) -> (Option<String>, Option<String>, ModLoaderType) {
+) -> (
+  Option<String>,
+  Option<String>,
+  ModLoaderType,
+  Option<OptifineResourceInfo>,
+) {
   let game_version: Option<String> = client.client_version.clone();
   let mut loader_version: Option<String> = None;
   let mut loader_type = ModLoaderType::Unknown;
@@ -394,7 +408,7 @@ pub async fn libraries_to_info(
     }
   }
 
-  (game_version, loader_version, loader_type)
+  (game_version, loader_version, loader_type, None)
 }
 
 fn rules_is_allowed(rules: &Vec<InstructionRule>, feature: &FeaturesInfo) -> SJMCLResult<bool> {
