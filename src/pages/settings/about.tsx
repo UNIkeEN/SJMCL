@@ -38,6 +38,40 @@ const AboutSettingsPage = () => {
 
   const [checkingUpdate, setCheckingUpdate] = useState(false);
 
+  const ack = [
+    {
+      tit: "AboutSettingsPage.ack.settings.skinview3d.title",
+      des: "AboutSettingsPage.ack.settings.skinview3d.description",
+      labalin: "https://github.com/bs-community/skinview3d",
+    },
+    {
+      tit: "AboutSettingsPage.ack.settings.bmclapi.title",
+      des: "AboutSettingsPage.ack.settings.bmclapi.description",
+      labalin: "https://bmclapidoc.bangbang93.com/",
+    },
+    {
+      tit: "AboutSettingsPage.ack.settings.hmcl.title",
+      des: "AboutSettingsPage.ack.settings.hmcl.description",
+      labalin: "https://hmcl.huangyuhui.net/",
+    },
+    {
+      tit: "AboutSettingsPage.ack.settings.littleskin.title",
+      des: "AboutSettingsPage.ack.settings.littleskin.description",
+      labalin: "https://github.com/LittleSkinChina",
+    },
+    {
+      tit: "AboutSettingsPage.ack.settings.sinter.title",
+      des: "AboutSettingsPage.ack.settings.sinter.description",
+      labalin: "https://m.ui.cn/details/615564",
+    },
+    {
+      tit: "AboutSettingsPage.ack.settings.scl.title",
+      des: "AboutSettingsPage.ack.settings.scl.description",
+      labalin:
+        "https://suhang12332.github.io/swift-craft-launcher-web.github.io/",
+    },
+  ];
+
   const checkUpdate = useCallback(async () => {
     setCheckingUpdate(true);
     let checkingToast = toast({
@@ -151,7 +185,25 @@ const AboutSettingsPage = () => {
     },
     {
       title: t("AboutSettingsPage.ack.title"),
-      items: [
+      items: ack.map((iter) => {
+        return {
+          title: t(iter.tit),
+          description: t(iter.des),
+          children: (
+            <CommonIconButton
+              label={iter.labalin}
+              icon="external"
+              withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => {
+                openUrl(iter.labalin);
+              }}
+            />
+          ),
+        };
+      }),
+      /*[
         {
           title: t("AboutSettingsPage.ack.settings.skinview3d.title"),
           description: t(
@@ -254,7 +306,7 @@ const AboutSettingsPage = () => {
             />
           ),
         },
-      ],
+      ]*/
     },
     {
       title: t("AboutSettingsPage.legalInfo.title"),
