@@ -145,6 +145,7 @@ jobs:
           ls -la release-artifacts/
 
       - name: Upload artifacts to remote server
+        timeout-minutes: 10
         env:
           SJMC_SECRET_KEY: ${{ secrets.SJMC_DEPLOY_SECRET_KEY }}
           SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
