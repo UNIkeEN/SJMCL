@@ -38,37 +38,24 @@ const AboutSettingsPage = () => {
 
   const [checkingUpdate, setCheckingUpdate] = useState(false);
 
-  const ack = [
+  const ackList = [
     {
-      tit: "AboutSettingsPage.ack.settings.skinview3d.title",
-      des: "AboutSettingsPage.ack.settings.skinview3d.description",
-      labalin: "https://github.com/bs-community/skinview3d",
+      skinview3d: "https://github.com/bs-community/skinview3d",
     },
     {
-      tit: "AboutSettingsPage.ack.settings.bmclapi.title",
-      des: "AboutSettingsPage.ack.settings.bmclapi.description",
-      labalin: "https://bmclapidoc.bangbang93.com/",
+      bmclapi: "https://bmclapidoc.bangbang93.com/",
     },
     {
-      tit: "AboutSettingsPage.ack.settings.hmcl.title",
-      des: "AboutSettingsPage.ack.settings.hmcl.description",
-      labalin: "https://hmcl.huangyuhui.net/",
+      hmcl: "https://hmcl.huangyuhui.net/",
     },
     {
-      tit: "AboutSettingsPage.ack.settings.littleskin.title",
-      des: "AboutSettingsPage.ack.settings.littleskin.description",
-      labalin: "https://github.com/LittleSkinChina",
+      littleskin: "https://github.com/LittleSkinChina",
     },
     {
-      tit: "AboutSettingsPage.ack.settings.sinter.title",
-      des: "AboutSettingsPage.ack.settings.sinter.description",
-      labalin: "https://m.ui.cn/details/615564",
+      sinter: "https://m.ui.cn/details/615564",
     },
     {
-      tit: "AboutSettingsPage.ack.settings.scl.title",
-      des: "AboutSettingsPage.ack.settings.scl.description",
-      labalin:
-        "https://suhang12332.github.io/swift-craft-launcher-web.github.io/",
+      scl: "https://suhang12332.github.io/swift-craft-launcher-web.github.io/",
     },
   ];
 
@@ -185,19 +172,23 @@ const AboutSettingsPage = () => {
     },
     {
       title: t("AboutSettingsPage.ack.title"),
-      items: ack.map((iter) => {
+      items: ackList.map((iter) => {
         return {
-          title: t(iter.tit),
-          description: t(iter.des),
+          title: t(
+            `AboutSettingsPage.ack.settings.${Object.keys(iter)[0]}.title`
+          ),
+          description: t(
+            `AboutSettingsPage.ack.settings.${Object.keys(iter)[0]}.description`
+          ),
           children: (
             <CommonIconButton
-              label={iter.labalin}
+              label={Object.values(iter)[0]}
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               onClick={() => {
-                openUrl(iter.labalin);
+                openUrl(Object.values(iter)[0]);
               }}
             />
           ),
