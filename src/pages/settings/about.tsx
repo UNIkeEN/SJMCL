@@ -38,26 +38,14 @@ const AboutSettingsPage = () => {
 
   const [checkingUpdate, setCheckingUpdate] = useState(false);
 
-  const ackList = [
-    {
-      skinview3d: "https://github.com/bs-community/skinview3d",
-    },
-    {
-      bmclapi: "https://bmclapidoc.bangbang93.com/",
-    },
-    {
-      hmcl: "https://hmcl.huangyuhui.net/",
-    },
-    {
-      littleskin: "https://github.com/LittleSkinChina",
-    },
-    {
-      sinter: "https://m.ui.cn/details/615564",
-    },
-    {
-      scl: "https://suhang12332.github.io/swift-craft-launcher-web.github.io/",
-    },
-  ];
+  const ackList = {
+    skinview3d: "https://github.com/bs-community/skinview3d",
+    bmclapi: "https://bmclapidoc.bangbang93.com/",
+    hmcl: "https://hmcl.huangyuhui.net/",
+    littleskin: "https://github.com/LittleSkinChina",
+    sinter: "https://m.ui.cn/details/615564",
+    scl: "https://suhang12332.github.io/swift-craft-launcher-web.github.io/",
+  };
 
   const checkUpdate = useCallback(async () => {
     setCheckingUpdate(true);
@@ -172,23 +160,19 @@ const AboutSettingsPage = () => {
     },
     {
       title: t("AboutSettingsPage.ack.title"),
-      items: ackList.map((iter) => {
+      items: Object.entries(ackList).map(([id, url]) => {
         return {
-          title: t(
-            `AboutSettingsPage.ack.settings.${Object.keys(iter)[0]}.title`
-          ),
-          description: t(
-            `AboutSettingsPage.ack.settings.${Object.keys(iter)[0]}.description`
-          ),
+          title: t(`AboutSettingsPage.ack.settings.${id}.title`),
+          description: t(`AboutSettingsPage.ack.settings.${id}.description`),
           children: (
             <CommonIconButton
-              label={Object.values(iter)[0]}
+              label={url}
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               onClick={() => {
-                openUrl(Object.values(iter)[0]);
+                openUrl(url);
               }}
             />
           ),
