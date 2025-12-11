@@ -418,9 +418,10 @@ pub fn cvt_category_to_id(category: &str, class_id: u32) -> u32 {
   match CATEGORY_MAP.get(&(category.to_string(), class_id)) {
     Some(id) => *id,
     None => {
-      println!(
+      log::info!(
         "Category not found: {} with class_id {}",
-        category, class_id
+        category,
+        class_id
       );
       0
     }

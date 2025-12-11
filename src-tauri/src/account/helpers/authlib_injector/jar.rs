@@ -115,12 +115,12 @@ pub async fn check_authlib_jar(app: &AppHandle) -> SJMCLResult<()> {
 
   if let Ok(local_version) = get_local_version(app) {
     if local_version == latest_meta.version {
-      println!("Authlib-Injector up to date: {}", local_version);
+      log::info!("Authlib-Injector up to date: {}", local_version);
       return Ok(());
     }
   }
 
-  println!(
+  log::info!(
     "Authlib-Injector new version downloading: {}",
     latest_meta.version
   );

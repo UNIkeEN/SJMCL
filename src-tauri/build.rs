@@ -18,13 +18,13 @@ fn main() {
   // original naive impl, see: https://github.com/UNIkeEN/SJMCL/pull/412/files
   for (key, value) in env::vars() {
     if key.starts_with("SJMCL_") {
-      println!("cargo:rustc-env={}={}", key, value);
+      log::info("cargo:rustc-env={}={}", key, value);
     }
   }
 
   // Notify Cargo to auto re-run the build script if .env changes
-  println!("cargo:rerun-if-changed=.env");
-  println!("cargo:rerun-if-changed=.env.template");
+  log::info("cargo:rerun-if-changed=.env");
+  log::info("cargo:rerun-if-changed=.env.template");
 
   tauri_build::build()
 }

@@ -157,7 +157,7 @@ pub async fn refresh_instances(
     let client_data = match load_json_async::<McClientInfo>(&json_path).await {
       Ok(v) => v,
       Err(e) => {
-        println!("Failed to load client info for {}: {}", name, e);
+        log::error!("Failed to load client info for {}: {}", name, e);
         continue;
       }
     };
@@ -165,7 +165,7 @@ pub async fn refresh_instances(
       if let Ok(dst_dir) = unify_instance_name(&version_path, &client_data.id) {
         version_path = dst_dir;
       } else {
-        println!("Failed to unify instance name for {}", name);
+        log::error!("Failed to unify instance name for {}", name);
         continue;
       }
     }

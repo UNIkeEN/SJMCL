@@ -79,7 +79,7 @@ impl ModpackManifest for CurseForgeManifest {
     let mut manifest_content = String::new();
     manifest_file.read_to_string(&mut manifest_content)?;
     let manifest: Self = serde_json::from_str(&manifest_content).inspect_err(|e| {
-      eprintln!("{:?}", e);
+      log::error!("{:?}", e);
     })?;
 
     Ok(manifest)
@@ -170,7 +170,7 @@ impl ModpackManifest for CurseForgeManifest {
             return Err(InstanceError::NetworkError.into());
           }
           file_resp.json().await.map_err(|e| {
-            eprintln!("{:?}", e);
+            log::error!("{:?}", e);
             InstanceError::CurseForgeFileManifestParseError
           })?
         };

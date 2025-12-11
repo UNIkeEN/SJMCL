@@ -51,7 +51,7 @@ impl ModpackManifest for ModrinthManifest {
     let mut manifest_content = String::new();
     manifest_file.read_to_string(&mut manifest_content)?;
     let manifest: Self = serde_json::from_str(&manifest_content).inspect_err(|e| {
-      eprintln!("{:?}", e);
+      log::error!("{:?}", e);
     })?;
     Ok(manifest)
   }

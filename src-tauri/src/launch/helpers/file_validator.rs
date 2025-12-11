@@ -57,7 +57,7 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
           }
         }
       } else {
-        println!("natives is None");
+        log::info!("natives is None");
       }
     }
   }
@@ -269,7 +269,7 @@ pub fn get_native_library_paths(
         let path = convert_library_name_to_path(&library.name, Some(native))?;
         result.push(library_path.join(path));
       } else {
-        println!("natives is None");
+        log::info!("natives is None");
       }
     }
   }
@@ -303,7 +303,7 @@ pub async fn extract_native_libraries(
 
   for result in results {
     if let Err(e) = result {
-      println!("Error handling artifact: {:?}", e);
+      log::error!("Error handling artifact: {:?}", e);
       return Err(crate::error::SJMCLError::from(e)); // Assuming e is of type SJMCLResult
     }
   }

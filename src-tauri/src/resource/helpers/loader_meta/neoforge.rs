@@ -232,7 +232,7 @@ pub async fn get_neoforge_meta_by_game_version(
         }
       }
     }
-    println!("{:?} failed, fallback", source_type);
+    log::error!("{:?} failed, fallback", source_type);
   }
   Err(ResourceError::NetworkError.into())
 }

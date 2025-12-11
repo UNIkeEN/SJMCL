@@ -291,7 +291,7 @@ pub async fn launch_game(
   };
 
   let full_cmd = export_full_launch_command(&class_paths, &cmd_args, &selected_java.exec_path);
-  println!("[Launch Command] {}", full_cmd);
+  log::info!("[Launch Command] {}", full_cmd);
 
   let precall_cmd = game_config.advanced.custom_commands.precall_command.clone();
   if !precall_cmd.trim().is_empty() {
