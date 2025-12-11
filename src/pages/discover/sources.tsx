@@ -57,8 +57,8 @@ export const DiscoverSourcesPage = () => {
             byUrl.set(info.endpointUrl, { ...existing, ...info });
           });
           return sources.map(
-            ([url]) =>
-              byUrl.get(url) || ({ endpointUrl: url } as NewsSourceInfo)
+            ([url, enabled]) =>
+              byUrl.get(url) || ({ endpointUrl: url, enabled } as NewsSourceInfo)
           );
         });
         setIsLoading(false);
