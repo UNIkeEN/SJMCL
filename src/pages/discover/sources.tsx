@@ -189,7 +189,7 @@ export const DiscoverSourcesPage = () => {
                     onClick={() =>
                       handleToggleSource(
                         source.endpointUrl,
-                        source.enabled ? false : true
+                        !source.enabled
                       )
                     }
                   />
