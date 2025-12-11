@@ -160,10 +160,10 @@ const AboutSettingsPage = () => {
     },
     {
       title: t("AboutSettingsPage.ack.title"),
-      items: Object.entries(ackList).map(([id, url]) => {
+      items: Object.entries(ackList).map(([key, url]) => {
         return {
-          title: t(`AboutSettingsPage.ack.settings.${id}.title`),
-          description: t(`AboutSettingsPage.ack.settings.${id}.description`),
+          title: t(`AboutSettingsPage.ack.settings.${key}.title`),
+          description: t(`AboutSettingsPage.ack.settings.${key}.description`),
           children: (
             <CommonIconButton
               label={url}
