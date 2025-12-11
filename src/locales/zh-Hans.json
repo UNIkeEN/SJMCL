@@ -458,8 +458,7 @@
     },
     "tag": {
       "online": "在线"
-    },
-    "toggleSource": "启用/禁用数据源"
+    }
   },
   "DownloadJavaModal": {
     "header": {

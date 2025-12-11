@@ -458,8 +458,7 @@
     },
     "tag": {
       "online": "オンライン"
-    },
-    "toggleSource": "ソースの有効化/無効化"
+    }
   },
   "DownloadJavaModal": {
     "header": {

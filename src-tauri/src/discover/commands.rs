@@ -20,7 +20,6 @@ pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSour
 
   let tasks: Vec<_> = post_sources
     .into_iter()
-    .filter(|(_, enabled)| *enabled)
     .map(|(url, _)| {
       let client = client.clone();
       async move {

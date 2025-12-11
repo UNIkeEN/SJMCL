@@ -4,7 +4,6 @@ import {
   HStack,
   IconButton,
   Image,
-  Switch,
   Tag,
   TagLabel,
   Text,
@@ -13,7 +12,13 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCheck, LuPlus, LuTrash } from "react-icons/lu";
+import {
+  LuCheck,
+  LuCircleCheck,
+  LuCircleMinus,
+  LuPlus,
+  LuTrash,
+} from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -65,7 +70,9 @@ export const DiscoverSourcesPage = () => {
   const handleRemoveSource = (urlToRemove: string) => {
     const updated = sources.filter(([url]) => url !== urlToRemove);
     update("discoverSourceEndpoints", updated);
-    setSourcesInfo(updated.map(([url]) => ({ endpointUrl: url })));
+    setSourcesInfo(
+      updated.map(([endpointUrl, enabled]) => ({ endpointUrl, enabled }))
+    );
     handleFetchNewsSourcesInfo();
   };
 
@@ -81,8 +88,9 @@ export const DiscoverSourcesPage = () => {
     if (sources.length === 0) return;
     // initially load url from config
     setSourcesInfo(
-      sources.map(([url]) => ({
-        endpointUrl: url,
+      sources.map(([endpointUrl, enabled]) => ({
+        endpointUrl,
+        enabled,
       }))
     );
     // query details use invoke
@@ -117,13 +125,38 @@ export const DiscoverSourcesPage = () => {
                 </Text>
               }
               prefixElement={
-                <Image
-                  src={source.iconSrc}
-                  alt={source.iconSrc}
-                  boxSize="28px"
-                  style={{ borderRadius: "4px" }}
-                  fallbackSrc="/images/icons/UnknownWorld.webp"
-                />
+                <Box
+                  position="relative"
+                  width="28px"
+                  height="28px"
+                  style={{
+                    opacity: source.enabled ? 1 : 0.5,
+                    filter: source.enabled ? "none" : "grayscale(90%)",
+                  }}
+                >
+                  <Image
+                    src={source.iconSrc}
+                    alt={source.iconSrc}
+                    style={{ borderRadius: "4px" }}
+                    fallbackSrc="/images/icons/UnknownWorld.webp"
+                  />
+                  <Box
+                    position="absolute"
+                    bottom="-2px"
+                    right="-2px"
+                    boxSize="0.9em"
+                    bg={
+                      source.enabled
+                        ? source.name
+                          ? "green"
+                          : "orange"
+                        : "black"
+                    }
+                    borderRadius="full"
+                    borderWidth={2}
+                    borderColor="var(--chakra-colors-chakra-body-bg)"
+                  />
+                </Box>
               }
               description={
                 <Text fontSize="xs-sm" className="secondary-text">
@@ -141,21 +174,25 @@ export const DiscoverSourcesPage = () => {
                   </Tag>
                 )}
                 {isLoading && <BeatLoader size={6} color="grey" />}
-                <Tooltip label={t("DiscoverSourcesPage.toggleSource")}>
-                  <Box alignSelf="stretch" display="flex" alignItems="center">
-                    <Switch
-                      size="md"
-                      colorScheme={primaryColor}
-                      isChecked={
-                        sources.find(
-                          ([url]) => url === source.endpointUrl
-                        )?.[1] ?? true
-                      }
-                      onChange={(e) =>
-                        handleToggleSource(source.endpointUrl, e.target.checked)
-                      }
-                    />
-                  </Box>
+                <Tooltip
+                  label={t(
+                    source.enabled ? "General.disable" : "General.enable"
+                  )}
+                >
+                  <IconButton
+                    size="sm"
+                    aria-label="toggle-source"
+                    icon={
+                      source.enabled ? <LuCircleMinus /> : <LuCircleCheck />
+                    }
+                    variant="ghost"
+                    onClick={() =>
+                      handleToggleSource(
+                        source.endpointUrl,
+                        source.enabled ? false : true
+                      )
+                    }
+                  />
                 </Tooltip>
                 <Tooltip label={t("DiscoverSourcesPage.button.deleteSource")}>
                   <IconButton
