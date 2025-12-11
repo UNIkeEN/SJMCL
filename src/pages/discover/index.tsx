@@ -76,8 +76,9 @@ export const DiscoverPage = () => {
     }
   }, [isLoading, sourceCursors, config.discoverSourceEndpoints]);
 
-  const hasMore = Object.values(sourceCursors).some(
-    (cursor) => cursor !== null
+  const hasMore = config.discoverSourceEndpoints.some(
+    ([url, enabled]) =>
+      enabled && sourceCursors[url] !== undefined && sourceCursors[url] !== null
   );
 
   const secMenu = [

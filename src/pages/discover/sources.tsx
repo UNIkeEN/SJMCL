@@ -58,7 +58,8 @@ export const DiscoverSourcesPage = () => {
           });
           return sources.map(
             ([url, enabled]) =>
-              byUrl.get(url) || ({ endpointUrl: url, enabled } as NewsSourceInfo)
+              byUrl.get(url) ||
+              ({ endpointUrl: url, enabled } as NewsSourceInfo)
           );
         });
         setIsLoading(false);
@@ -187,10 +188,7 @@ export const DiscoverSourcesPage = () => {
                     }
                     variant="ghost"
                     onClick={() =>
-                      handleToggleSource(
-                        source.endpointUrl,
-                        !source.enabled
-                      )
+                      handleToggleSource(source.endpointUrl, !source.enabled)
                     }
                   />
                 </Tooltip>

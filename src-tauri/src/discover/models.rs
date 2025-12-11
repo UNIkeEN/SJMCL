@@ -9,6 +9,7 @@ pub struct NewsSourceInfo {
   pub full_name: String,
   pub endpoint_url: String,
   pub icon_src: String,
+  pub enabled: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
