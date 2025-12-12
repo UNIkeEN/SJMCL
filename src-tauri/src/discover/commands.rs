@@ -28,7 +28,6 @@ pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSour
           full_name: "".to_string(),
           endpoint_url: url.clone(),
           icon_src: "".to_string(),
-          enabled: true,
         };
 
         let response = client
