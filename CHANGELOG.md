@@ -2,6 +2,57 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 0.6.2
+
+`2025-11-26`
+
+- 🐛 Fix and refactor the logic for querying game server status, now supporting displaying an 'unknown player' count. #1061 #1157 @pynickle @UNIkeEN  
+- 🐛 Fix the client manifest JSON format issue when creating a modded instance. #1129 @Reqwey  
+- 🐛 Fix the issue where Mojang Java runtime downloaded by SJMCL on macOS lacked execution permissions. #1154 @UNIkeEN  
+- 🐛 Fix display issues in the resource download modal and the mod list. #1160 @1357310795  
+- 🛠 Provide more complete crash reports, including the game's native crash report files. #1121 @no6rainer  
+- 🛠 Update error messages shown during Microsoft account login to cover more scenarios. @HsxMark @Reqwey  
+- 💄 Refactor parts of the codebase for better style and maintainability. @UNIkeEN  
+- 📦 Update the frontend dependency `js-yaml` to its patch version. #1153 @dependabot[bot]
+
+## 0.6.1
+
+`2025-11-15`
+
+- 🌟 Support requesting microphone and camera permissions for mods on macOS. #1144 @UNIkeEN  
+- 🐛 Fix an issue where Minecraft accounts could not log in in certain cases. #1135 @Reqwey
+
+## 0.6.0
+
+`2025-11-9`
+
+- **🔥 Support changing custom skins for offline accounts from local files. #1084** @Reqwey  
+- 🌟 Automatically clean up older launcher log files. #1114 @UNIkeEN  
+- 🐛 Fix issue where the NeoForge loader could not be detected in certain cases. #1118 @xunying123  
+- 🐛 Fix issue where downloading the Forge loader could fail when installing modpacks under specific conditions. #1120 @Reqwey  
+- 🐛 Fix serialization issues when creating or modifying client manifest JSON files. #1127 @Reqwey  
+- 🐛 Fix display issue of category tabs in the resource download modal. #1132 @1357310795  
+- ⚡️ Improve performance of retrieving Simplified Chinese translations for instance mod lists and refactor the related caching mechanism. #1106 @Reqwey  
+- ⚡️ Support checking account feature availability from multiple sources to improve user experience in mainland China. #1110 @UNIkeEN  
+- ⚡️ Improve loading speed of instance mod lists and resource pack lists. #1131 @Reqwey  
+- 💄 Refactor parts of the codebase for better style and maintainability. @Reqwey @ToolmanP @UNIkeEN  
+- 🇯🇵 Update Japanese translations of the launcher interface locales. #1124 @LAR73  
+- 📦 Mark the launcher category as 'Game'. #1128 @hebingchang  
+- Workflow:  
+   - Update Rust dependency version to 1.91.0 due to the introduction of new `std` features. @UNIkeEN  
+
+## 0.5.1
+
+`2025-10-27`
+
+- 🐛 Do not display non-existent world difficulty options for game instances of version 14w02a and earlier. #1086 @pynickle  
+- 🐛 Fix issue where GitHub links inside the changelog in the check update modal could become invalid in certain cases. #1096 @baiyuansjtu 
+- 🐛 Fix incorrect display style of mod names in the instance mod list page. @UNIkeEN  
+- ⚡️ Improve performance when deleting instances. #1092 @pynickle  
+- 🛠 Adjust the display style of the change loader modal when no mod loader is installed. #1107 @Reqwey  
+- Workflow:  
+   - Add a new workflow to automatically upload releases to AUR (Arch User Repository). #1062 @KodateMitsuru  
+
 ## 0.5.0
 
 `2025-10-20`

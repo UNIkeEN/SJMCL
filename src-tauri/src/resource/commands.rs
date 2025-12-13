@@ -25,7 +25,7 @@ use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use std::sync::Mutex;
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
@@ -59,11 +59,11 @@ pub async fn fetch_mod_loader_version_list(
   app: AppHandle,
   game_version: String,
   mod_loader_type: ModLoaderType,
-  state: State<'_, Mutex<LauncherConfig>>,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   let priority_list = {
-    let state = state.lock()?;
-    get_source_priority_list(&state)
+    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
   };
   match mod_loader_type {
     ModLoaderType::Forge | ModLoaderType::LegacyForge => {

@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
         },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "Thanks to the SCL developers for the ongoing communication and mutual inspiration with us"
+        },
         "sinter": {
           "title": "Sinter",
           "description": "Used as the interface font on Windows and Linux platforms, under the SIL License"
@@ -226,12 +230,19 @@
     "button": {
       "addAndImport": "Add & Import",
       "globalSettings": "Global Game Settings",
-      "launch": "Launch Game"
+      "launch": "Launch Game",
+      "sortAndFilter": "Sort and Filter"
     },
     "viewTypeList": {
       "grid": "Grid View",
       "list": "List View"
     },
+    "sortByTypeList": {
+      "versionAsc": "Game Version Ascending",
+      "versionDesc": "Game Version Descending",
+      "name": "Instance Name"
+    },
+    "sortBy": "Sort by",
     "title": "All Instances"
   },
   "AppearanceSettingsPage": {
@@ -845,7 +856,7 @@
     "scrollToBottom": "Scroll to Bottom"
   },
   "GameVersionSelector": {
-    "old_beta": "Old Beta",
+    "old_beta": "Beta",
     "release": "Release",
     "snapshot": "Snapshot",
     "april_fools": "April Fools",
@@ -961,6 +972,10 @@
         },
         "launcherLogDir": {
           "title": "Launcher Logs Directory"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "Auto Purge Launcher Logs",
+          "description": "Automatically purge launcher log files older than 30 days"
         }
       }
     }
@@ -1210,8 +1225,8 @@
     "description": "Instance Description",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
-    "restoreSettings": "Restore to default settings",
-    "restoreSettingsDesc": "Restore the following specific settings to their default values",
+    "restoreSettings": "Reset specific settings",
+    "restoreSettingsDesc": "Reset the following specific settings to the global game settings.",
     "restore": "Restore",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
@@ -1345,7 +1360,15 @@
     "skinManage": "Manage Skin",
     "default": "Default",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "Upload",
+    "skin": "Skin",
+    "cape": "Cape",
+    "model": {
+      "label": "Model",
+      "default": "Wide",
+      "slim": "Slim"
+    }
   },
   "ManualAddJavaPathModal": {
     "modal": {
@@ -1357,6 +1380,11 @@
     "placeholder": {
       "javaPath": "Please enter or select the Java executable file path"
     }
+  },
+  "MCVersionNumberHelper": {
+    "content": "Starting in 2026, Minecraft adopts a new version numbering system. The version numbers will begin with the release year (e.g., 26.1), replacing the previous 1.x versioning scheme.",
+    "linkText": "Read the official article",
+    "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
@@ -1852,7 +1880,8 @@
           "title": "Failed to add offline player",
           "description": {
             "DUPLICATE": "Player already exists",
-            "INVALID": "UUID is invalid"
+            "INVALID": "UUID is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
           }
         }
       },
@@ -1937,6 +1966,17 @@
         }
       },
       "updatePlayerSkinOfflinePreset": {
+        "success": "Successfully updated player skin",
+        "error": {
+          "title": "Failed to update player skin",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The player type is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
         "success": "Successfully updated player skin",
         "error": {
           "title": "Failed to update player skin",
@@ -2036,7 +2076,7 @@
             "EXPIRED": "The access token has expired, please re-login",
             "NETWORK_ERROR": "Failed to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NO_DOWNLOAD_API": "Failed to download Authlib-Injector, please check internet connection",
+            "AUTHLIB_INJECTOR_NOT_READY": "Failed to download Authlib-Injector, please check internet connection",
             "SAVE_ERROR": "Failed to save Authlib-Injector",
             "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
           }
@@ -2046,7 +2086,8 @@
         "error": {
           "title": "Failed to launch game",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found",
+            "AUTH_SERVER_NOT_FOUND": "Auth server not found"
           }
         }
       }
@@ -2399,6 +2440,9 @@
       "disableRotation": "Disable Rotation",
       "play": "Play",
       "pause": "Pause"
+    },
+    "error": {
+      "loadSkin": "Failed to load skin"
     }
   },
   "SpotlightSearchModal": {

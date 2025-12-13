@@ -1,4 +1,5 @@
 use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
+use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
 use crate::launcher_config::models::GameConfig;
 use crate::storage::{load_json_async, save_json_async};
 use crate::utils::image::ImageWrapper;
@@ -7,6 +8,7 @@ use std::cmp::{Ord, Ordering, PartialOrd};
 use std::path::PathBuf;
 use std::str::FromStr;
 use strum_macros::Display;
+use tauri::AppHandle;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstanceSubdirType {
@@ -137,17 +139,33 @@ pub struct InstanceSummary {
   pub is_version_isolated: bool,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct GameServerInfo {
-  pub icon_src: String,
-  pub ip: String,
-  pub name: String,
-  pub description: String,
-  pub is_queried: bool, // if true, this is a complete result from a successful query
-  pub players_online: usize,
-  pub players_max: usize,
-  pub online: bool, // if false, it may be offline in the query result or failed in the query.
+impl InstanceSummary {
+  pub async fn from_instance(
+    app: &AppHandle,
+    id: String,
+    instance: &Instance,
+    is_version_isolated: bool,
+  ) -> Self {
+    InstanceSummary {
+      id,
+      name: instance.name.clone(),
+      description: instance.description.clone(),
+      icon_src: instance.icon_src.clone(),
+      starred: instance.starred,
+      play_time: instance.play_time,
+      version_path: instance.version_path.clone(),
+      version: instance.version.clone(),
+      mod_loader: instance.mod_loader.clone(),
+      // skip fallback remote fetch in `get_major_game_version` and `compare_game_versions` to avoid instance list load delay.
+      // ref: https://github.com/UNIkeEN/SJMCL/pull/799
+      major_version: get_major_game_version(app, &instance.version, false).await,
+      support_quick_play: compare_game_versions(app, &instance.version, "23w14a", false)
+        .await
+        .is_ge(),
+      use_spec_game_config: instance.use_spec_game_config,
+      is_version_isolated,
+    }
+  }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
@@ -250,6 +268,7 @@ pub enum InstanceError {
   MainClassNotFound,
   InstallationDuplicated,
   ProcessorExecutionFailed,
+  SemaphoreAcquireFailed,
 }
 
 impl std::error::Error for InstanceError {}

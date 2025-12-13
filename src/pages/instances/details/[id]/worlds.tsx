@@ -323,7 +323,9 @@ const InstanceWorldsPage = () => {
                   {!server.isQueried && <BeatLoader size={6} color="gray" />}
                   {server.isQueried && server.online && (
                     <Text fontSize="xs-sm" color="gray.500">
-                      {`${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
+                      {server.playersOnline === 0 && server.playersMax === 0
+                        ? "???"
+                        : `${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
                     </Text>
                   )}
                   {server.isQueried &&

@@ -56,6 +56,7 @@ STATUS_CODE=$(curl --tlsv1.2 --proto '=https' --location -X POST "$SJMC_DEPLOY_A
                 -F "deploy_artifact=@releases.zip" \
                 -sS \
                 -o /dev/null \
+                --max-time 600 \
                 -w "%{http_code}")
 
 CURL_EXIT_CODE=$?

@@ -426,3 +426,84 @@ pub fn create_zip_from_dirs(paths: Vec<PathBuf>, zip_file_path: PathBuf) -> SJMC
 
   Ok(zip_file_path.to_string_lossy().to_string())
 }
+
+/// Enum to define the permission operation
+#[derive(Debug)]
+pub enum PermissionOperation {
+  Upgrade,
+  Downgrade,
+  Exact,
+}
+
+/// Modify file permissions for UNIX-like systems (Linux/macOS).
+///
+/// # Parameters:
+/// - `path`: The path to the file whose permissions are being modified.
+/// - `perm_mask`: The permission mask (e.g., `0o111` for execute permissions).
+/// - `operation`: The operation to perform:
+///     - `PermissionOperation::Upgrade` adds permissions if missing,
+///     - `PermissionOperation::Downgrade` removes permissions if present,
+///     - `PermissionOperation::Exact` sets the permissions exactly to the specified mask.
+///
+/// # Examples
+/// ```rust
+/// manage_permissions_unix("/path/to/your/file", 0o111, PermissionOperation::Upgrade)?;
+/// manage_permissions_unix("/path/to/your/file", 0o111, PermissionOperation::Downgrade)?;
+/// manage_permissions_unix("/path/to/your/file", 0o755, PermissionOperation::Exact)?;
+/// ```
+pub fn manage_permissions_unix<P>(
+  path: P,
+  perm_mask: u32,
+  operation: PermissionOperation,
+) -> SJMCLResult<()>
+where
+  P: AsRef<Path>,
+{
+  #[cfg(target_os = "windows")]
+  {
+    // On Windows, simply return Ok(()) since no changes are made
+    return Ok(());
+  }
+
+  #[cfg(any(target_os = "linux", target_os = "macos"))]
+  {
+    use std::os::unix::fs::PermissionsExt;
+
+    let metadata = fs::metadata(&path)?;
+    let mut permissions = metadata.permissions();
+    let current_mode = permissions.mode();
+
+    match operation {
+      PermissionOperation::Upgrade => {
+        // "upgrade" operation: only add the permissions if they are missing
+        if current_mode & perm_mask != perm_mask {
+          let new_mode = current_mode | perm_mask;
+          permissions.set_mode(new_mode);
+          fs::set_permissions(&path, permissions)?;
+          log::info!("Upgraded permissions for {}", path.as_ref().display());
+        } else {
+          log::info!("No upgrade needed for {}", path.as_ref().display());
+        }
+      }
+      PermissionOperation::Downgrade => {
+        // "downgrade" operation: only remove the permissions if they are present
+        if current_mode & perm_mask != 0 {
+          let new_mode = current_mode & !perm_mask; // Clear the respective permission
+          permissions.set_mode(new_mode);
+          fs::set_permissions(&path, permissions)?;
+          log::info!("Downgraded permissions for {}", path.as_ref().display());
+        } else {
+          log::info!("No downgrade needed for {}", path.as_ref().display());
+        }
+      }
+      PermissionOperation::Exact => {
+        // "exact" operation: set the permissions exactly to the specified mask
+        permissions.set_mode(perm_mask);
+        fs::set_permissions(&path, permissions)?;
+        log::info!("Set exact permissions for {}", path.as_ref().display());
+      }
+    }
+  }
+
+  Ok(())
+}

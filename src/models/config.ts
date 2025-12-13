@@ -120,6 +120,9 @@ export interface LauncherConfig {
       resourceTranslation: boolean;
       skipFirstScreenOptions: boolean;
     };
+    advanced: {
+      autoPurgeLauncherLogs: boolean;
+    };
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
@@ -135,6 +138,7 @@ export interface LauncherConfig {
       viewType: string;
     };
     allInstancesPage: {
+      sortBy: string;
       viewType: string;
     };
     gameVersionSelector: {
@@ -269,6 +273,9 @@ export const defaultConfig: LauncherConfig = {
       resourceTranslation: true,
       skipFirstScreenOptions: false,
     },
+    advanced: {
+      autoPurgeLauncherLogs: true,
+    },
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
@@ -287,6 +294,7 @@ export const defaultConfig: LauncherConfig = {
       viewType: "grid",
     },
     allInstancesPage: {
+      sortBy: "versionAsc",
       viewType: "list",
     },
     gameVersionSelector: {

@@ -1,4 +1,5 @@
 use crate::account::helpers::misc::get_selected_player_info;
+use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
 use crate::error::SJMCLResult;
@@ -12,6 +13,7 @@ use crate::launch::helpers::file_validator::{
   extract_native_libraries, get_invalid_assets, get_invalid_library_files,
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
 use crate::launch::helpers::misc::get_separator;
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
@@ -24,7 +26,7 @@ use crate::launcher_config::models::{
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
-use crate::utils::fs::create_zip_from_dirs;
+use crate::utils::fs::{create_zip_from_dirs, manage_permissions_unix, PermissionOperation};
 use crate::utils::logging::get_launcher_log_path;
 use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
@@ -71,9 +73,20 @@ pub async fn select_suitable_jre(
     &game_config.game_java,
     &javas,
     &instance,
-    client_info.java_version.major_version,
+    client_info
+      .java_version
+      .as_ref()
+      .ok_or(LaunchError::NoSuitableJava)?
+      .major_version,
   )
   .await?;
+
+  // ensure execute permissions (for Linux and macOS)
+  manage_permissions_unix(
+    &selected_java.exec_path,
+    0o111,
+    PermissionOperation::Upgrade,
+  )?;
 
   let timestamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
   let mut launching = launching_queue_state.lock()?;
@@ -186,8 +199,32 @@ pub async fn validate_game_files(
 pub async fn validate_selected_player(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
+  local_ygg_server_state: State<'_, Mutex<YggdrasilServer>>,
 ) -> SJMCLResult<bool> {
-  let player = get_selected_player_info(&app)?;
+  let mut player = get_selected_player_info(&app)?.clone();
+
+  let metadata = if player.player_type == PlayerType::ThirdParty {
+    authlib_injector::jar::check_authlib_jar(&app)
+      .await
+      .map_err(|_| LaunchError::AuthlibInjectorNotReady)?;
+    Some(
+      authlib_injector::info::get_auth_server_info_by_url(
+        &app,
+        player.auth_server_url.clone().unwrap_or_default(),
+      )?
+      .metadata
+      .to_string(),
+    )
+  } else if player.player_type == PlayerType::Offline
+    && authlib_injector::jar::check_authlib_jar(&app).await.is_ok()
+  {
+    let local_ygg_server = local_ygg_server_state.lock()?;
+    player.auth_server_url = Some(local_ygg_server.root_url.clone());
+    local_ygg_server.apply_player(player.clone());
+    Some(local_ygg_server.metadata.to_string())
+  } else {
+    None
+  };
 
   {
     let mut launching_queue = launching_queue_state.lock()?;
@@ -196,24 +233,11 @@ pub async fn validate_selected_player(
       .ok_or(LaunchError::LaunchingStateNotFound)?;
     launching.current_step = 3;
     launching.selected_player = Some(player.clone());
-
-    if player.player_type == PlayerType::ThirdParty {
-      let meta = authlib_injector::info::get_auth_server_info_by_url(
-        &app,
-        player.auth_server_url.clone().unwrap_or_default(),
-      )?
-      .metadata
-      .to_string();
-
-      launching.auth_server_meta = meta;
-    }
+    launching.auth_server_meta = metadata;
   }
 
   match player.player_type {
-    PlayerType::ThirdParty => {
-      authlib_injector::jar::check_authlib_jar(&app).await?;
-      authlib_injector::common::validate(&app, &player).await
-    }
+    PlayerType::ThirdParty => authlib_injector::common::validate(&app, &player).await,
     PlayerType::Microsoft => microsoft::oauth::validate(&app, &player).await,
     PlayerType::Offline => Ok(true),
   }
@@ -396,6 +420,10 @@ pub fn export_game_crash_info(
     BaseDirectory::AppCache,
   )?;
 
+  // crash report
+  let crash_report_path =
+    parse_crash_report_path_from_log(&game_log_path).filter(|path| path.exists());
+
   // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
   let launching = launching_queue
@@ -423,14 +451,15 @@ pub fn export_game_crash_info(
   let launcher_log_path = get_launcher_log_path(app.clone());
 
   let zip_file_path = PathBuf::from(save_path);
-  create_zip_from_dirs(
-    vec![
-      game_log_path,
-      version_info_path,
-      version_config_path,
-      launch_script_path,
-      launcher_log_path,
-    ],
-    zip_file_path.clone(),
-  )
+
+  let mut paths_to_zip = vec![
+    game_log_path,
+    version_info_path,
+    version_config_path,
+    launch_script_path,
+    launcher_log_path,
+  ];
+
+  paths_to_zip.extend(crash_report_path);
+  create_zip_from_dirs(paths_to_zip, zip_file_path.clone())
 }

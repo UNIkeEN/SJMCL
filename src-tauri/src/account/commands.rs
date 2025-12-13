@@ -1,4 +1,3 @@
-use crate::account::constants::TEXTURE_ROLES;
 use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
@@ -7,25 +6,46 @@ use crate::account::helpers::authlib_injector::{self};
 use crate::account::helpers::{microsoft, misc, offline};
 use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
+  PresetRole, SkinModel, TextureType,
 };
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
+use crate::utils::fs::get_app_resource_filepath;
+use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use url::Url;
 
 #[tauri::command]
 pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {
-  let binding = app.state::<Mutex<AccountInfo>>();
-  let state = binding.lock()?;
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let account_state = account_binding.lock()?;
 
-  let player_list: Vec<Player> = state
+  let player_list: Vec<Player> = account_state
     .clone()
     .players
     .into_iter()
     .map(Player::from)
     .collect();
+
+  // ensure a player is selected when player_list is not empty
+  if !player_list.is_empty() {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+    if !player_list
+      .iter()
+      .any(|player| player.id == config_state.states.shared.selected_player_id)
+    {
+      config_state.partial_update(
+        &app,
+        "states.shared.selected_player_id",
+        &serde_json::to_string(&player_list[0].id).unwrap_or_default(),
+      )?;
+      config_state.save()?;
+    }
+  }
+
   Ok(player_list)
 }
 
@@ -361,7 +381,7 @@ pub async fn add_player_from_selection(app: AppHandle, player: Player) -> SJMCLR
 pub fn update_player_skin_offline_preset(
   app: AppHandle,
   player_id: String,
-  preset_role: String,
+  preset_role: PresetRole,
 ) -> SJMCLResult<()> {
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;
@@ -374,11 +394,52 @@ pub fn update_player_skin_offline_preset(
     return Err(AccountError::Invalid.into());
   }
 
-  if TEXTURE_ROLES.contains(&preset_role.as_str()) {
-    player.textures = offline::load_preset_skin(&app, preset_role)?;
+  player.textures = offline::load_preset_skin(&app, preset_role)?;
+  account_state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub fn update_player_skin_offline_local(
+  app: AppHandle,
+  player_id: String,
+  image_path: String,
+  texture_type: TextureType,
+  skin_model: SkinModel,
+) -> SJMCLResult<()> {
+  let image_path = if image_path == "dummy" {
+    // this is an Easter Egg :)
+    get_app_resource_filepath(&app, "assets/skins/dummy.png")
+      .map_err(|_| AccountError::TextureError)?
   } else {
-    return Err(AccountError::TextureError.into());
+    Path::new(&image_path).to_path_buf()
+  };
+  let texture_img =
+    crate::utils::image::load_image_from_dir(&image_path).ok_or(AccountError::TextureError)?;
+
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  let player = account_state
+    .get_player_by_id_mut(player_id.clone())
+    .ok_or(AccountError::NotFound)?;
+
+  if player.player_type != PlayerType::Offline {
+    return Err(AccountError::Invalid.into());
   }
+
+  // remove existing texture of the same type
+  player
+    .textures
+    .retain(|texture| texture.texture_type != texture_type);
+
+  // add the new texture
+  player.textures.push(crate::account::models::Texture {
+    texture_type: texture_type.clone(),
+    image: texture_img.into(),
+    model: skin_model.clone(),
+    preset: None,
+  });
 
   account_state.save()?;
   Ok(())

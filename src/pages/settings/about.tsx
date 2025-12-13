@@ -38,6 +38,15 @@ const AboutSettingsPage = () => {
 
   const [checkingUpdate, setCheckingUpdate] = useState(false);
 
+  const ackList = {
+    skinview3d: "https://github.com/bs-community/skinview3d",
+    bmclapi: "https://bmclapidoc.bangbang93.com/",
+    hmcl: "https://hmcl.huangyuhui.net/",
+    littleskin: "https://github.com/LittleSkinChina",
+    sinter: "https://m.ui.cn/details/615564",
+    scl: "https://suhang12332.github.io/swift-craft-launcher-web.github.io/",
+  };
+
   const checkUpdate = useCallback(async () => {
     setCheckingUpdate(true);
     let checkingToast = toast({
@@ -151,92 +160,24 @@ const AboutSettingsPage = () => {
     },
     {
       title: t("AboutSettingsPage.ack.title"),
-      items: [
-        {
-          title: t("AboutSettingsPage.ack.settings.skinview3d.title"),
-          description: t(
-            "AboutSettingsPage.ack.settings.skinview3d.description"
-          ),
+      items: Object.entries(ackList).map(([key, url]) => {
+        return {
+          title: t(`AboutSettingsPage.ack.settings.${key}.title`),
+          description: t(`AboutSettingsPage.ack.settings.${key}.description`),
           children: (
             <CommonIconButton
-              label="https://github.com/bs-community/skinview3d"
+              label={url}
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               onClick={() => {
-                openUrl("https://github.com/bs-community/skinview3d");
+                openUrl(url);
               }}
             />
           ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.bmclapi.title"),
-          description: t("AboutSettingsPage.ack.settings.bmclapi.description"),
-          children: (
-            <CommonIconButton
-              label="https://bmclapidoc.bangbang93.com/"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://bmclapidoc.bangbang93.com/");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.hmcl.title"),
-          description: t("AboutSettingsPage.ack.settings.hmcl.description"),
-          children: (
-            <CommonIconButton
-              label="https://hmcl.huangyuhui.net/"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://hmcl.huangyuhui.net/");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.littleskin.title"),
-          description: t(
-            "AboutSettingsPage.ack.settings.littleskin.description"
-          ),
-          children: (
-            <CommonIconButton
-              label="https://github.com/LittleSkinChina"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://github.com/LittleSkinChina");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.sinter.title"),
-          description: t("AboutSettingsPage.ack.settings.sinter.description"),
-          children: (
-            <CommonIconButton
-              label="https://m.ui.cn/details/615564"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://m.ui.cn/details/615564");
-              }}
-            />
-          ),
-        },
-      ],
+        };
+      }),
     },
     {
       title: t("AboutSettingsPage.legalInfo.title"),

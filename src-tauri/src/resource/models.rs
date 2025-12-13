@@ -42,6 +42,7 @@ pub enum OtherResourceSource {
   Unknown,
   CurseForge,
   Modrinth,
+  MultiMc,
 }
 
 impl FromStr for OtherResourceSource {
@@ -51,6 +52,7 @@ impl FromStr for OtherResourceSource {
     match input.to_lowercase().as_str() {
       "curseforge" => Ok(OtherResourceSource::CurseForge),
       "modrinth" => Ok(OtherResourceSource::Modrinth),
+      "multimc" => Ok(OtherResourceSource::MultiMc),
       _ => Err(format!("Unknown resource download type: {}", input)),
     }
   }

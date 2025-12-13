@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "感谢 LittleSkin 和 @tnqzh123 对登录流程设计的帮助"
         },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "感谢 SCL 开发团队与我们的持续交流与相互启发"
+        },
         "sinter": {
           "title": "Sinter",
           "description": "在 Windows 和 Linux 平台作为启动器界面字体，遵循 SIL 协议使用"
@@ -226,12 +230,19 @@
     "button": {
       "addAndImport": "添加与导入",
       "globalSettings": "全局游戏设置",
-      "launch": "启动游戏"
+      "launch": "启动游戏",
+      "sortAndFilter": "排序与筛选"
     },
     "viewTypeList": {
       "grid": "网格视图",
       "list": "列表视图"
     },
+    "sortByTypeList": {
+      "versionAsc": "游戏版本升序",
+      "versionDesc": "游戏版本降序",
+      "name": "实例名称"
+    },
+    "sortBy": "排序方式",
     "title": "全部实例"
   },
   "AppearanceSettingsPage": {
@@ -961,6 +972,10 @@
         },
         "launcherLogDir": {
           "title": "启动器日志目录"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "自动清理启动器日志",
+          "description": "自动清理 30 天及以前的启动器日志文件"
         }
       }
     }
@@ -1345,7 +1360,15 @@
     "skinManage": "管理皮肤",
     "default": "默认",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "本地上传",
+    "skin": "皮肤",
+    "cape": "披风",
+    "model": {
+      "label": "模型",
+      "default": "宽型",
+      "slim": "纤细"
+    }
   },
   "ManualAddJavaPathModal": {
     "modal": {
@@ -1357,6 +1380,11 @@
     "placeholder": {
       "javaPath": "请输入或选择 Java 可执行文件路径"
     }
+  },
+  "MCVersionNumberHelper": {
+    "content": "自 2026 年起，Minecraft 版本号采取新的命名规则，以年份作为版本号首位（如 26.1）以取代原有的 1.x 版本号规则。",
+    "linkText": "阅读官方文档",
+    "url": "https://www.minecraft.net/zh-hans/article/minecraft-new-version-numbering-system"
   },
   "MemoryStatusProgress": {
     "title": "内存状态",
@@ -1852,7 +1880,8 @@
           "title": "离线角色添加失败",
           "description": {
             "DUPLICATE": "角色已存在",
-            "INVALID": "UUID 无效"
+            "INVALID": "UUID 无效",
+            "TEXTURE_ERROR": "角色皮肤获取失败"
           }
         }
       },
@@ -1878,7 +1907,7 @@
             "NOT_FOUND": "认证服务器不存在",
             "CANCELLED": "已取消",
             "INVALID": "无效的认证服务器地址",
-            "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft"
+            "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft 并创建角色"
           }
         }
       },
@@ -1893,7 +1922,7 @@
             "NETWORK_ERROR": "无法连接至认证服务器",
             "INVALID": "不支持离线角色刷新",
             "CANCELLED": "已取消",
-            "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft"
+            "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft 并创建角色"
           }
         }
       },
@@ -1937,6 +1966,17 @@
         }
       },
       "updatePlayerSkinOfflinePreset": {
+        "success": "角色皮肤更新成功",
+        "error": {
+          "title": "角色皮肤更新失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "角色类型错误",
+            "TEXTURE_ERROR": "角色皮肤获取失败"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
         "success": "角色皮肤更新成功",
         "error": {
           "title": "角色皮肤更新失败",
@@ -2036,7 +2076,7 @@
             "EXPIRED": "访问令牌已过期，请重新登录",
             "NETWORK_ERROR": "无法连接到服务器",
             "PARSE_ERROR": "服务器返回的数据格式错误",
-            "NO_DOWNLOAD_API": "下载 Authlib-Injector 失败，请检查网络连接",
+            "AUTHLIB_INJECTOR_NOT_READY": "下载 Authlib-Injector 失败，请检查网络连接",
             "SAVE_ERROR": "保存 Authlib-Injector 失败",
             "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
           }
@@ -2046,7 +2086,8 @@
         "error": {
           "title": "启动游戏失败",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
+            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失",
+            "AUTH_SERVER_NOT_FOUND": "认证服务器不存在"
           }
         }
       }
@@ -2399,6 +2440,9 @@
       "disableRotation": "禁用旋转",
       "play": "播放",
       "pause": "暂停"
+    },
+    "error": {
+      "loadSkin": "加载皮肤失败"
     }
   },
   "SpotlightSearchModal": {

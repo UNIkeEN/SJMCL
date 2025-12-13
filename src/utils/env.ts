@@ -9,7 +9,7 @@ export const checkFrontendCompatibility = () => {
       check: () =>
         CSS.supports("backdrop-filter", "blur(1px)") ||
         CSS.supports("-webkit-backdrop-filter", "blur(1px)"),
-      //  NOTE: on Linux, gtk webkit does not support backdrop-filter rendering.
+      // NOTE: on Linux, gtk webkit does not support backdrop-filter rendering.
       // Seems like it's dead :( https://gitlab.gnome.org/GNOME/gtk/-/issues/3231
     },
   ];

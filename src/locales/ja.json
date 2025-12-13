@@ -1877,23 +1877,8 @@
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "NOT_FOUND": "認証サーバーが見つからない",
             "CANCELLED": "キャンセルした",
-            "INVALID": "無効な認証サーバーアドレス",
-            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください"
-          }
-        }
-      },
-      "reloginPlayerOAuth": {
-        "success": "キャラクターの再ログインに成功",
-        "error": {
-          "title": "キャラクターの再ログインに失敗",
-          "description": {
-            "NOT_FOUND": "キャラクターが存在しません",
-            "EXPIRED": "トークンの有効期限が切れました。再ログインしてください",
-            "PARSE_ERROR": "サーバー応答データ形式エラー",
-            "NETWORK_ERROR": "認証サーバーに接続できません",
-            "INVALID": "オフラインキャラクターの更新に非対応",
-            "CANCELLED": "キャンセルしました",
-            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください"
+            "CREATE_WEBVIEW_ERROR": "WebView の作成に失敗",
+            "INVALID": "無効な認証サーバーアドレス"
           }
         }
       },

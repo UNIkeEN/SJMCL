@@ -1,30 +1,32 @@
 use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo, PatchesInfo};
-use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
+use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
+use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
+use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::{
   get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
   refresh_and_update_instances, unify_instance_name,
 };
-use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
-use crate::instance::helpers::modpack::misc::{extract_overrides, ModpackMetaInfo};
-use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
-use crate::instance::helpers::modpack::multimc::MultiMcManifest;
+use crate::instance::helpers::modpack::misc::{
+  extract_overrides, get_download_params, ModpackMetaInfo,
+};
 use crate::instance::helpers::mods::common::{
-  add_local_mod_translations, get_mod_info_from_dir, get_mod_info_from_jar,
+  add_local_mod_translations, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
+  LocalModTranslationEntry, LocalModTranslationsCache,
 };
 use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
 use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
-use crate::instance::helpers::server::{load_servers_info_from_path, query_server_status};
+use crate::instance::helpers::server::{
+  load_servers_info_from_path, query_servers_online, GameServerInfo,
+};
 use crate::instance::helpers::world::{level_data_to_world_info, load_level_data_from_path};
 use crate::instance::models::misc::{
-  GameServerInfo, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
-  ModLoader, ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
-  ShaderPackInfo,
+  Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
+  ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
 };
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::LevelData;
@@ -48,21 +50,24 @@ use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
+use tauri::State;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
+use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
   refresh_and_update_instances(&app, false).await; // firstly refresh and update
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let instances = binding.lock().unwrap().clone();
-  let mut summary_list = Vec::new();
   let global_version_isolation = get_global_game_config(&app).version_isolation;
+  let mut summary_list = Vec::new();
+
+  let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
+  let instances = instance_binding.lock().unwrap().clone();
   for (id, instance) in instances.iter() {
     // same as get_game_config(), but mannually here
     let is_version_isolated =
@@ -76,26 +81,40 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
         global_version_isolation
       };
 
-    summary_list.push(InstanceSummary {
-      id: id.clone(),
-      name: instance.name.clone(),
-      description: instance.description.clone(),
-      icon_src: instance.icon_src.clone(),
-      starred: instance.starred,
-      play_time: instance.play_time,
-      version_path: instance.version_path.clone(),
-      version: instance.version.clone(),
-      mod_loader: instance.mod_loader.clone(),
-      // skip fallback remote fetch in `get_major_game_version` and `compare_game_versions` to avoid instance list load delay.
-      // ref: https://github.com/UNIkeEN/SJMCL/pull/799
-      major_version: get_major_game_version(&app, &instance.version, false).await,
-      support_quick_play: compare_game_versions(&app, &instance.version, "23w14a", false)
-        .await
-        .is_ge(),
-      use_spec_game_config: instance.use_spec_game_config,
-      is_version_isolated,
-    });
+    summary_list
+      .push(InstanceSummary::from_instance(&app, id.clone(), instance, is_version_isolated).await);
   }
+
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let mut config_state = config_binding.lock()?;
+  // sort instances (starred instance will be pinned to top by frontend)
+  let version_cmp_fn = build_game_version_cmp_fn(&app);
+  match config_state.states.all_instances_page.sort_by.as_str() {
+    "versionAsc" => {
+      summary_list.sort_by(|a, b| version_cmp_fn(&a.version, &b.version));
+    }
+    "versionDesc" => {
+      summary_list.sort_by(|a, b| version_cmp_fn(&b.version, &a.version));
+    }
+    _ => {
+      summary_list.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    }
+  }
+
+  // ensure an instance is selected if instance list is not empty
+  if !summary_list.is_empty()
+    && !summary_list
+      .iter()
+      .any(|instance| instance.id == config_state.states.shared.selected_instance_id)
+  {
+    config_state.partial_update(
+      &app,
+      "states.shared.selected_instance_id",
+      &serde_json::to_string(&summary_list[0].id).unwrap_or_default(),
+    )?;
+    config_state.save()?;
+  }
+
   Ok(summary_list)
 }
 
@@ -190,45 +209,40 @@ pub fn retrieve_instance_subdir_path(
 }
 
 #[tauri::command]
-pub async fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
-  let version_path = {
-    let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let instance_state = instance_binding.lock()?;
-
-    let instance = instance_state
-      .get(&instance_id)
-      .ok_or(InstanceError::InstanceNotFoundByID)?;
-
-    instance.version_path.clone()
-  };
-
-  let path = Path::new(&version_path);
-  if path.exists() {
-    tokio::fs::remove_dir_all(path).await?;
-  }
-
-  // not update instance state here. if send success to frontend, it will call retrieve_instance_list and update state there.
+pub fn delete_instance(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+  let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
+  let instance_state = instance_binding.lock().unwrap();
 
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   let mut config_state = config_binding.lock()?;
 
-  if instance_id == config_state.states.shared.selected_instance_id {
-    let instance_binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let instance_state = instance_binding.lock()?;
-    let new_selected_id = instance_state
-      .keys()
-      .next()
-      .cloned()
-      .unwrap_or_else(|| "".to_string());
+  let instance = instance_state
+    .get(&instance_id)
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
 
+  let version_path = &instance.version_path;
+  let path = Path::new(version_path);
+
+  if path.exists() {
+    fs::remove_dir_all(path)?;
+  }
+  // not update state here. if send success to frontend, it will call retrieve_instance_list and update state there.
+
+  if config_state.states.shared.selected_instance_id == instance_id {
     config_state.partial_update(
       &app,
       "states.shared.selected_instance_id",
-      &serde_json::to_string(&new_selected_id).unwrap_or_default(),
+      &serde_json::to_string(
+        &instance_state
+          .keys()
+          .next()
+          .cloned()
+          .unwrap_or_else(|| "".to_string()),
+      )
+      .unwrap_or_default(),
     )?;
     config_state.save()?;
   }
-
   Ok(())
 }
 
@@ -405,7 +419,6 @@ pub async fn retrieve_game_server_list(
   query_online: bool,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   // query_online is false, return local data from nbt (servers.dat)
-  let mut game_servers: Vec<GameServerInfo> = Vec::new();
   let game_root_dir =
     match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
       Some(path) => path,
@@ -413,55 +426,19 @@ pub async fn retrieve_game_server_list(
     };
 
   let nbt_path = game_root_dir.join("servers.dat");
-  let servers = match load_servers_info_from_path(&nbt_path).await {
+  let mut game_servers = match load_servers_info_from_path(&nbt_path).await {
     Ok(servers) => servers,
     Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
-  for server in servers {
-    game_servers.push(GameServerInfo {
-      ip: server.ip,
-      name: server.name,
-      description: String::new(),
-      icon_src: server.icon.unwrap_or_default(),
-      is_queried: false,
-      players_max: 0,
-      players_online: 0,
-      online: false,
-    });
-  }
+
+  // skip hidden servers
+  game_servers.retain(|server| !server.hidden);
 
   // query_online is true, amend query and return player count and online status
   if query_online {
-    let query_tasks = game_servers.clone().into_iter().map(|mut server| {
-      tokio::spawn({
-        async move {
-          match query_server_status(&server.ip).await {
-            Ok(query_result) => {
-              server.is_queried = true;
-              server.players_online = query_result.players.online as usize;
-              server.players_max = query_result.players.max as usize;
-              server.online = query_result.online;
-              server.description = query_result.description.text.unwrap_or_default();
-              server.icon_src = query_result.favicon.unwrap_or_default();
-            }
-            Err(_) => {
-              server.is_queried = false;
-            }
-          }
-          server
-        }
-      })
-    });
-    let mut updated_servers = Vec::new();
-    for (prev, query) in game_servers.into_iter().zip(query_tasks) {
-      if let Ok(updated_server) = query.await {
-        updated_servers.push(updated_server);
-      } else {
-        updated_servers.push(prev); // query error, use local data
-      }
-    }
-    game_servers = updated_servers;
+    game_servers = query_servers_online(game_servers).await?;
   }
+
   Ok(game_servers)
 }
 
@@ -469,6 +446,7 @@ pub async fn retrieve_game_server_list(
 pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
+  local_mod_translations_cache_state: State<'_, Mutex<LocalModTranslationsCache>>,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
@@ -483,8 +461,21 @@ pub async fn retrieve_local_mod_list(
 
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
   let mut tasks = Vec::new();
+  let semaphore = Arc::new(Semaphore::new(
+    std::thread::available_parallelism().unwrap().into(),
+  ));
   for path in mod_paths {
-    let task = tokio::spawn(async move { get_mod_info_from_jar(&path).await.ok() });
+    let permit = semaphore
+      .clone()
+      .acquire_owned()
+      .await
+      .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
+    let task = tokio::spawn(async move {
+      log::debug!("Load mod info from dir: {}", path.display());
+      let info = get_mod_info_from_jar(&path).await.ok();
+      drop(permit);
+      info
+    });
     tasks.push(task);
   }
   #[cfg(debug_assertions)]
@@ -492,7 +483,17 @@ pub async fn retrieve_local_mod_list(
     // mod information detection from folders is only used for debugging.
     let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
     for path in mod_paths {
-      let task = tokio::spawn(async move { get_mod_info_from_dir(&path).await.ok() });
+      let permit = semaphore
+        .clone()
+        .acquire_owned()
+        .await
+        .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
+      let task = tokio::spawn(async move {
+        log::debug!("Load mod info from dir: {}", path.display());
+        let info = get_mod_info_from_dir(&path).await.ok();
+        drop(permit);
+        info
+      });
       tasks.push(task);
     }
   }
@@ -530,8 +531,15 @@ pub async fn retrieve_local_mod_list(
   let mut translation_tasks = Vec::new();
   for mut mod_info in mod_infos {
     let app = app.clone();
+    let permit = semaphore
+      .clone()
+      .acquire_owned()
+      .await
+      .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
+      log::debug!("Translating mod: {}", mod_info.file_name);
       let _ = add_local_mod_translations(&app, &mut mod_info).await;
+      drop(permit);
       mod_info
     });
     translation_tasks.push(task);
@@ -542,9 +550,24 @@ pub async fn retrieve_local_mod_list(
       mod_infos.push(mod_info);
     }
   }
-
   // sort by name (and version)
   mod_infos.sort();
+  let mut cache = local_mod_translations_cache_state.lock()?;
+  for info in mod_infos.iter() {
+    if let Some(entry) = cache.translations.get(&info.file_name) {
+      if !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS) {
+        continue;
+      }
+    }
+    cache.translations.insert(
+      info.file_name.clone(),
+      LocalModTranslationEntry::new(
+        info.translated_name.clone(),
+        info.translated_description.clone(),
+      ),
+    );
+  }
+  cache.save()?;
 
   Ok(mod_infos)
 }
@@ -576,7 +599,7 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
@@ -591,7 +614,7 @@ pub async fn retrieve_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
@@ -628,7 +651,7 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
@@ -644,7 +667,7 @@ pub async fn retrieve_server_resource_pack_list(
       info_list.push(ResourcePackInfo {
         name,
         description,
-        icon_src: icon_src.map(ImageWrapper::from),
+        icon_src: icon_src.map(ImageWrapper::from).map(compress_icon),
         file_path: path.clone(),
       });
     }
@@ -910,10 +933,11 @@ pub async fn create_instance(
   version_info.jar = Some(name.clone());
 
   // convert vanilla version info to vanilla patch
-  let mut vanilla_patch: PatchesInfo = version_info.clone().into();
+  let mut vanilla_patch = version_info.clone();
   vanilla_patch.id = "game".to_string();
-  vanilla_patch.version = game.id.clone();
+  vanilla_patch.version = Some(game.id.clone());
   vanilla_patch.inherits_from = None;
+  vanilla_patch.priority = Some(0);
   version_info.patches.push(vanilla_patch);
 
   let mut task_params = Vec::<PTaskParam>::new();
@@ -977,18 +1001,8 @@ pub async fn create_instance(
   if let Some(modpack_path) = modpack_path {
     let path = PathBuf::from(modpack_path);
     let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
-    if let Ok(manifest) = CurseForgeManifest::from_archive(&file) {
-      task_params.extend(manifest.get_download_params(&app, &version_path).await?);
-      extract_overrides(&format!("{}/", manifest.overrides), &file, &version_path)?;
-    } else if let Ok(manifest) = ModrinthManifest::from_archive(&file) {
-      task_params.extend(manifest.get_download_params(&version_path)?);
-      extract_overrides(&String::from("overrides/"), &file, &version_path)?;
-    } else if let Ok(manifest) = MultiMcManifest::from_archive(&file) {
-      let base_path = manifest.base_path;
-      extract_overrides(&format!("{}.minecraft/", base_path), &file, &version_path)?;
-    } else {
-      return Err(InstanceError::ModpackManifestParseError.into());
-    }
+    task_params.extend(get_download_params(&app, &file, &version_path).await?);
+    extract_overrides(&file, &version_path)?;
   }
 
   schedule_progressive_task_group(
@@ -1187,7 +1201,7 @@ pub async fn change_mod_loader(
   }
   // construct new version info
   instance.mod_loader = mod_loader.clone();
-  let mut version_info: McClientInfo = vanilla_info.clone().into();
+  let mut version_info: McClientInfo = vanilla_info.clone();
   version_info.id = current_info.id.clone();
   version_info.jar = Some(instance.name.clone());
   version_info.java_version = current_info.java_version.clone();
@@ -1230,8 +1244,11 @@ pub async fn change_mod_loader(
 }
 
 #[tauri::command]
-pub async fn retrieve_modpack_meta_info(path: String) -> SJMCLResult<ModpackMetaInfo> {
+pub async fn retrieve_modpack_meta_info(
+  app: AppHandle,
+  path: String,
+) -> SJMCLResult<ModpackMetaInfo> {
   let path = PathBuf::from(path);
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
-  ModpackMetaInfo::from_archive(&file).await
+  ModpackMetaInfo::from_archive(&app, &file).await
 }

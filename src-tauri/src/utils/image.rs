@@ -1,5 +1,6 @@
 use base64::Engine;
 use image::codecs::png::PngEncoder;
+use image::imageops::{resize, FilterType};
 use image::{ImageEncoder, ImageError, ImageReader, RgbaImage};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fs;
@@ -89,5 +90,40 @@ impl<'de> Deserialize<'de> for ImageWrapper {
     let image = image::load_from_memory(&decoded_bytes).map_err(serde::de::Error::custom)?;
 
     Ok(image.into_rgba8().into())
+  }
+}
+
+impl ImageWrapper {
+  /// Return a new ImageWrapper resized to the given dimensions using the specified filter.
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// let resized_img = img_wrapper.resized(100, 100, FilterType::Nearest);
+  /// ```
+  pub fn resized(&self, new_width: u32, new_height: u32, filter: FilterType) -> ImageWrapper {
+    if self.image.width() == 0 || self.image.height() == 0 {
+      return self.clone();
+    }
+    let w = new_width.max(1);
+    let h = new_height.max(1);
+    let img = resize(&self.image, w, h, filter);
+    ImageWrapper::from(img)
+  }
+
+  /// Return a new ImageWrapper scaled by `scale` while preserving aspect ratio.
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// let scaled_img = img_wrapper.scaled(0.5, FilterType::Nearest);
+  /// ```
+  pub fn scaled(&self, scale: f32, filter: FilterType) -> ImageWrapper {
+    if self.image.width() == 0 || self.image.height() == 0 || scale <= 0.0 {
+      return self.clone();
+    }
+    let w = ((self.image.width() as f32) * scale).max(1.0) as u32;
+    let h = ((self.image.height() as f32) * scale).max(1.0) as u32;
+    self.resized(w, h, filter)
   }
 }

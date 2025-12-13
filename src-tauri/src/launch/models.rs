@@ -17,6 +17,8 @@ pub enum LaunchError {
   ChangeWindowTitleFailed,
   KillProcessFailed,
   LaunchingStateNotFound,
+  AuthlibInjectorNotReady,
+  AuthServerNotFound,
 }
 
 impl std::error::Error for LaunchError {}
@@ -33,7 +35,7 @@ pub struct LaunchingState {
   pub game_config: GameConfig,
   pub client_info: McClientInfo,
   pub selected_player: Option<PlayerInfo>, // use Option to avoid SmartDefault trait error
-  pub auth_server_meta: String,
+  pub auth_server_meta: Option<String>,
   pub full_command: String, // for export and debug
   #[default = 0] // default means not set yet
   pub pid: u32,

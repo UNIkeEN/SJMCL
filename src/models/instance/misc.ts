@@ -9,6 +9,13 @@ export enum ModLoaderStatus {
   Installed = "Installed",
 }
 
+export interface ModLoader {
+  status: ModLoaderStatus;
+  loaderType: ModLoaderType;
+  version?: string;
+  branch?: string;
+}
+
 export interface InstanceSummary {
   id: string;
   iconSrc: string;
@@ -19,11 +26,7 @@ export interface InstanceSummary {
   versionPath: string;
   version: string;
   majorVersion: string;
-  modLoader: {
-    loaderType: ModLoaderType;
-    version?: string;
-    status: ModLoaderStatus;
-  };
+  modLoader: ModLoader;
   supportQuickPlay: boolean;
   useSpecGameConfig: boolean;
   isVersionIsolated: boolean;
@@ -36,10 +39,7 @@ export interface ModpackMetaInfo {
   description?: string;
   modpackType: OtherResourceSource;
   clientVersion: string;
-  modLoader: {
-    loaderType: ModLoaderType;
-    version: string;
-  };
+  modLoader: ModLoader;
 }
 
 export interface GameServerInfo {

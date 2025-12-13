@@ -218,7 +218,7 @@ pub async fn refresh_instances(
           ModLoaderStatus::Installed => Ok(()),
         }
       } {
-        eprintln!("Failed to install mod loader for {}: {:?}", name, e);
+        log::warn!("Failed to install mod loader for {}: {:?}", name, e);
         cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
         cfg_read.save_json_cfg().await?;
         continue;

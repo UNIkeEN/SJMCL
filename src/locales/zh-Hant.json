@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "感謝 LittleSkin 和 @tnqzh123 對登入流程設計的幫助"
         },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "感謝 SCL 開發團隊與我們的持續交流與相互啟發"
+        },
         "sinter": {
           "title": "Sinter",
           "description": "在 Windows 和 Linux 平臺作為啟動器介面字型，遵循 SIL 協議使用"
@@ -226,12 +230,19 @@
     "button": {
       "addAndImport": "新增與匯入",
       "globalSettings": "全域性遊戲設定",
-      "launch": "啟動遊戲"
+      "launch": "啟動遊戲",
+      "sortAndFilter": "排序與篩選"
     },
     "viewTypeList": {
       "grid": "網格檢視",
       "list": "列表檢視"
     },
+    "sortByTypeList": {
+      "versionAsc": "遊戲版本升序",
+      "versionDesc": "遊戲版本降序",
+      "name": "例項名稱"
+    },
+    "sortBy": "排序方式",
     "title": "全部例項"
   },
   "AppearanceSettingsPage": {
@@ -961,6 +972,10 @@
         },
         "launcherLogDir": {
           "title": "啟動器日誌目錄"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "自動清理啟動器日誌",
+          "description": "自動清理 30 天及以前的啟動器日誌檔案"
         }
       }
     }
@@ -1345,7 +1360,15 @@
     "skinManage": "管理皮膚",
     "default": "預設",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "本地上傳",
+    "skin": "皮膚",
+    "cape": "披風",
+    "model": {
+      "label": "模型",
+      "default": "寬型",
+      "slim": "纖細"
+    }
   },
   "ManualAddJavaPathModal": {
     "modal": {
@@ -1852,7 +1875,8 @@
           "title": "離線角色新增失敗",
           "description": {
             "DUPLICATE": "角色已存在",
-            "INVALID": "UUID 無效"
+            "INVALID": "UUID 無效",
+            "TEXTURE_ERROR": "角色皮膚獲取失敗"
           }
         }
       },
@@ -1878,7 +1902,7 @@
             "NOT_FOUND": "認證伺服器不存在",
             "CANCELLED": "已取消",
             "INVALID": "無效的認證伺服器地址",
-            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft"
+            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色"
           }
         }
       },
@@ -1893,7 +1917,7 @@
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "INVALID": "不支援離線角色重新整理",
             "CANCELLED": "已取消",
-            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft"
+            "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色"
           }
         }
       },
@@ -1937,6 +1961,17 @@
         }
       },
       "updatePlayerSkinOfflinePreset": {
+        "success": "角色皮膚更新成功",
+        "error": {
+          "title": "角色皮膚更新失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "角色型別錯誤",
+            "TEXTURE_ERROR": "角色皮膚獲取失敗"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
         "success": "角色皮膚更新成功",
         "error": {
           "title": "角色皮膚更新失敗",
@@ -2036,7 +2071,7 @@
             "EXPIRED": "訪問令牌已過期，請重新登入",
             "NETWORK_ERROR": "無法連線到伺服器",
             "PARSE_ERROR": "伺服器返回的資料格式錯誤",
-            "NO_DOWNLOAD_API": "下載 Authlib-Injector 失敗，請檢查網路連線",
+            "AUTHLIB_INJECTOR_NOT_READY": "下載 Authlib-Injector 失敗，請檢查網路連線",
             "SAVE_ERROR": "儲存 Authlib-Injector 失敗",
             "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失"
           }
@@ -2046,7 +2081,8 @@
         "error": {
           "title": "啟動遊戲失敗",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失"
+            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失",
+            "AUTH_SERVER_NOT_FOUND": "認證伺服器不存在"
           }
         }
       }
@@ -2399,6 +2435,9 @@
       "disableRotation": "停用旋轉",
       "play": "播放",
       "pause": "暫停"
+    },
+    "error": {
+      "loadSkin": "載入皮膚失敗"
     }
   },
   "SpotlightSearchModal": {
