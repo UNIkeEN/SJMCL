@@ -2047,32 +2047,6 @@
         }
       }
     },
-    "ai": {
-      "checkAiServiceAvailability": {
-        "success": "生成式 AI 服务可用",
-        "error": {
-          "title": "生成式 AI 服务不可用",
-          "description": {
-            "NETWORK_ERROR": "网络错误",
-            "API_PARSE_ERROR": "无法正常读取服务 API",
-            "NO_SUCH_MODEL": "指定模型不存在，请检查名称是否正确",
-            "INVALID_API_KEY": "API 密钥无效"
-          }
-        }
-      },
-      "retrieveAiChatResponse": {
-        "error": {
-          "title": "获取 AI 聊天响应失败",
-          "description": {
-            "NETWORK_ERROR": "网络错误",
-            "NOT_ENABLED": "生成式 AI 功能未启用",
-            "API_PARSE_ERROR": "无法正常读取服务 API",
-            "INVALID_API_KEY": "API 密钥无效",
-            "NO_RESPONSE": "没有返回任何内容"
-          }
-        }
-      }
-    },
     "launch": {
       "selectSuitableJRE": {
         "error": {
@@ -2415,6 +2389,32 @@
           "description": {
             "FILE_NOT_FOUND_ERROR": "整合包文件不存在，可能已更名、移动或删除",
             "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误"
+          }
+        }
+      }
+    },
+    "intelligence": {
+      "checkLLMServiceAvailability": {
+        "success": "生成式 AI 服务可用",
+        "error": {
+          "title": "生成式 AI 服务不可用",
+          "description": {
+            "NETWORK_ERROR": "网络错误",
+            "API_PARSE_ERROR": "无法正常读取服务 API",
+            "NO_SUCH_MODEL": "指定模型不存在，请检查名称是否正确",
+            "INVALID_API_KEY": "API 密钥无效"
+          }
+        }
+      },
+      "fetchLLMChatResponse": {
+        "error": {
+          "title": "获取 AI 聊天响应失败",
+          "description": {
+            "NETWORK_ERROR": "网络错误",
+            "NOT_ENABLED": "生成式 AI 功能未启用",
+            "API_PARSE_ERROR": "无法正常读取服务 API",
+            "INVALID_API_KEY": "API 密钥无效",
+            "NO_RESPONSE": "没有返回任何内容"
           }
         }
       }

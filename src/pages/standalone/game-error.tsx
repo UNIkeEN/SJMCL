@@ -29,10 +29,10 @@ import { BeatLoader } from "react-spinners";
 import MarkdownContainer from "@/components/common/markdown-container";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { ChatMessage } from "@/models/ai";
 import { InstanceSummary } from "@/models/instance/misc";
+import { ChatMessage } from "@/models/intelligence";
 import { JavaInfo } from "@/models/system-info";
-import { AiService } from "@/services/ai";
+import { IntelligenceService } from "@/services/intelligence";
 import { LaunchService } from "@/services/launch";
 import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
@@ -218,7 +218,7 @@ const GameErrorPage: React.FC = () => {
 
   async function callAIAnalyze(log: string) {
     setShowAIResult(true);
-    if (!config.aiChatConfig.enabled) {
+    if (!config.intelligence.enabled) {
       openSharedModal("ai-provider-settings");
       return;
     }
@@ -242,7 +242,7 @@ const GameErrorPage: React.FC = () => {
       },
     ];
 
-    const resp = await AiService.retrieveAiChatResponse(messages);
+    const resp = await IntelligenceService.fetchLLMChatResponse(messages);
     if (resp.status === "success") {
       setAiResult(resp.data);
     } else {

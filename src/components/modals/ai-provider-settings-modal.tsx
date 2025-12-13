@@ -19,7 +19,9 @@ import {
 } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { AiService } from "@/services/ai";
+import { IntelligenceService } from "@/services/intelligence";
+
+// TODO: remove this modal, migrate to settings page
 
 interface AiProviderSettingsModalProps extends Omit<ModalProps, "children"> {}
 
@@ -29,6 +31,7 @@ const AiProviderSettingsModal: React.FC<AiProviderSettingsModalProps> = (
   const { t } = useTranslation();
   const toast = useToast();
   const { config, update } = useLauncherConfig();
+  const intelligenceCfg = config.intelligence;
   const primaryColor = config.appearance.theme.primaryColor;
 
   const { onClose } = modalProps;
@@ -38,30 +41,32 @@ const AiProviderSettingsModal: React.FC<AiProviderSettingsModalProps> = (
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setBaseURL(config.aiChatConfig.baseUrl);
-    setApiKey(config.aiChatConfig.apiKey);
-    setModel(config.aiChatConfig.model);
+    setBaseURL(intelligenceCfg.model.baseUrl);
+    setApiKey(intelligenceCfg.model.apiKey);
+    setModel(intelligenceCfg.model.model);
   }, [
-    config.aiChatConfig.apiKey,
-    config.aiChatConfig.baseUrl,
-    config.aiChatConfig.model,
+    intelligenceCfg.model.apiKey,
+    intelligenceCfg.model.baseUrl,
+    intelligenceCfg.model.model,
   ]);
 
   const handleSave = async () => {
     setIsSaving(true);
     // check service availability
-    let response = await AiService.checkAiServiceAvailability(
+    let response = await IntelligenceService.checkLLMServiceAvailability(
       baseUrl,
       apiKey,
       model
     );
     setIsSaving(false);
     if (response.status === "success") {
-      update("aiChatConfig", {
+      update("intelligence", {
         enabled: true,
-        baseUrl,
-        apiKey,
-        model,
+        model: {
+          baseUrl,
+          apiKey,
+          model,
+        },
       });
       toast({
         title: response.message,

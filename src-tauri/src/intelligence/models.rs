@@ -41,7 +41,7 @@ structstruck::strike! {
 
 #[derive(Debug, Display)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
-pub enum AiError {
+pub enum LLMServiceError {
   ApiParseError,
   InvalidAPIKey,
   NetworkError,
@@ -50,4 +50,4 @@ pub enum AiError {
   NoResponse,
 }
 
-impl std::error::Error for AiError {}
+impl std::error::Error for LLMServiceError {}

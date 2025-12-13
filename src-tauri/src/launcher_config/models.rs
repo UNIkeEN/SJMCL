@@ -259,6 +259,18 @@ structstruck::strike! {
       }
     },
     pub global_game_config: GameConfig,
+    pub intelligence: struct IntelligenceConfig {
+      pub enabled: bool,
+      pub model: struct LLMModelConfig {
+        pub base_url: String,
+        pub api_key: String,
+        pub model: String,
+      },
+      // pub chat: struct LLMChatConfig {
+      //   #[default = 0.7]
+      //   pub temperature: f32,
+      // }
+    },
     pub local_game_directories: Vec<GameDirectory>,
     #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(),
     \"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string()]")]
@@ -295,14 +307,6 @@ structstruck::strike! {
         pub accordion_states: [bool; 2],
       },
     },
-    pub ai_chat_config: struct {
-      pub enabled: bool,
-      pub base_url: String,
-      pub api_key: String,
-      pub model: String,
-      #[default = 0.7]
-      pub response_temperature: f32,
-    }
   }
 }
 
