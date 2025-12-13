@@ -845,10 +845,10 @@
     "scrollToBottom": "一番下までスクロール"
   },
   "GameVersionSelector": {
-    "old_beta": "レガシーバージョン",
+    "old_beta": "レガシー",
     "release": "正式版",
     "snapshot": "開発版",
-    "april_fools": "エイプリルフールバージョン",
+    "april_fools": "エイプリルフール",
     "searchPlaceholder": "バージョンを検索"
   },
   "General": {
