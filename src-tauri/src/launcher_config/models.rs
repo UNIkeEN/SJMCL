@@ -5,7 +5,9 @@ use crate::utils::string::snake_to_camel_case;
 use crate::utils::sys_info;
 use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use partial_derive::Partial;
+use serde::de::Deserializer;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use smart_default::SmartDefault;
 use std::path::PathBuf;
 use strum_macros::Display;
@@ -260,9 +262,14 @@ structstruck::strike! {
     },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,
-    #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(),
-    \"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string()]")]
-    pub discover_source_endpoints: Vec<String>,
+    // Changed from Vec<String> to Vec<(String, bool)> with default enabled=true
+    #[serde(
+      default,
+      deserialize_with = "deserialize_discover_sources"
+    )]
+    #[default(_code="vec![(\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(), true),
+    (\"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string(), true)]")]
+    pub discover_source_endpoints: Vec<(String, bool)>,
     pub extra_java_paths: Vec<String>,
     pub suppressed_dialogs: Vec<String>,
     pub states: struct States {
@@ -350,3 +357,39 @@ pub enum LauncherConfigError {
 }
 
 impl std::error::Error for LauncherConfigError {}
+
+// deserializing discover sources from old and new formats.
+// TODO: unify to migration system later.
+fn deserialize_discover_sources<'de, D>(deserializer: D) -> Result<Vec<(String, bool)>, D::Error>
+where
+  D: Deserializer<'de>,
+{
+  let v = match Value::deserialize(deserializer) {
+    Ok(v) => v,
+    Err(_) => return Ok(Vec::default()),
+  };
+
+  let arr = match v.as_array() {
+    Some(a) => a,
+    None => return Ok(Vec::default()),
+  };
+
+  fn parse_item(item: &Value) -> Option<(String, bool)> {
+    // old (<=0.6.3) format: String(url)
+    if let Some(s) = item.as_str() {
+      return Some((s.to_string(), true));
+    }
+
+    // new format: (String, bool)
+    let t = item.as_array()?;
+    if t.len() != 2 {
+      log::error!("Invalid discover source item format: {:?}", item);
+      return None;
+    }
+    let url = t[0].as_str()?;
+    let enabled = t[1].as_bool()?;
+    Some((url.to_string(), enabled))
+  }
+
+  Ok(arr.iter().filter_map(parse_item).collect())
+}

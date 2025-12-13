@@ -30,12 +30,12 @@ export const DiscoverPage = () => {
     setVisiblePosts([]);
     setIsLoading(true);
     try {
-      const sources: NewsPostRequest[] = config.discoverSourceEndpoints.map(
-        (url) => ({
+      const sources: NewsPostRequest[] = config.discoverSourceEndpoints
+        .filter(([, enabled]) => enabled)
+        .map(([url]) => ({
           url,
           cursor: null,
-        })
-      );
+        }));
 
       const response = await DiscoverService.fetchNewsPostSummaries(sources);
       if (response.status === "success") {
@@ -51,8 +51,14 @@ export const DiscoverPage = () => {
   const loadMore = useCallback(async () => {
     if (isLoading) return;
 
+    const enabledUrls = new Set(
+      config.discoverSourceEndpoints
+        .filter(([, enabled]) => enabled)
+        .map(([url]) => url)
+    );
+
     const pendingSources: NewsPostRequest[] = Object.entries(sourceCursors)
-      .filter(([, cursor]) => cursor !== null)
+      .filter(([url, cursor]) => cursor !== null && enabledUrls.has(url))
       .map(([url, cursor]) => ({ url, cursor }));
 
     if (pendingSources.length === 0) return;
@@ -68,10 +74,11 @@ export const DiscoverPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, sourceCursors]);
+  }, [isLoading, sourceCursors, config.discoverSourceEndpoints]);
 
-  const hasMore = Object.values(sourceCursors).some(
-    (cursor) => cursor !== null
+  const hasMore = config.discoverSourceEndpoints.some(
+    ([url, enabled]) =>
+      enabled && sourceCursors[url] !== undefined && sourceCursors[url] !== null
   );
 
   const secMenu = [
