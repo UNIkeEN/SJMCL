@@ -124,8 +124,16 @@ export interface LauncherConfig {
       autoPurgeLauncherLogs: boolean;
     };
   };
-  localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
+  intelligence: {
+    enabled: boolean;
+    model: {
+      baseUrl: string;
+      apiKey: string;
+      model: string;
+    };
+  };
+  localGameDirectories: GameDirectory[];
   discoverSourceEndpoints: string[];
   extraJavaPaths: string[];
   suppressedDialogs: string[];
@@ -277,8 +285,16 @@ export const defaultConfig: LauncherConfig = {
       autoPurgeLauncherLogs: true,
     },
   },
-  localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
+  intelligence: {
+    enabled: false,
+    model: {
+      baseUrl: "",
+      apiKey: "",
+      model: "gpt-3.5-turbo",
+    },
+  },
+  localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   discoverSourceEndpoints: [
     "https://mc.sjtu.cn/api-sjmcl/article",
     "https://mc.sjtu.cn/api-sjmcl/article/mua",

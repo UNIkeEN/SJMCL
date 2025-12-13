@@ -18,6 +18,29 @@ import { LaunchService } from "@/services/launch";
 import styles from "@/styles/game-log.module.css";
 import { parseIdFromWindowLabel } from "@/utils/window";
 
+export const getLogLevel = (log: string): string => {
+  let lastLevel: string = "INFO";
+  const match = log.match(
+    /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
+  );
+  if (match) {
+    lastLevel = match[1].toUpperCase();
+    return lastLevel;
+  }
+
+  if (/^\s+at /.test(log) || /^\s+Caused by:/.test(log) || /^\s+/.test(log)) {
+    return lastLevel;
+  }
+
+  if (/exception|error|invalid|failed|错误/i.test(log)) {
+    lastLevel = "ERROR";
+    return "ERROR";
+  }
+
+  lastLevel = lastLevel || "INFO";
+  return "INFO";
+};
+
 const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
@@ -58,30 +81,6 @@ const GameLogPage: React.FC = () => {
     });
     return () => unlisten();
   }, []);
-
-  let lastLevel: string = "INFO";
-
-  const getLogLevel = (log: string): string => {
-    const match = log.match(
-      /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
-    );
-    if (match) {
-      lastLevel = match[1].toUpperCase();
-      return lastLevel;
-    }
-
-    if (/^\s+at /.test(log) || /^\s+Caused by:/.test(log) || /^\s+/.test(log)) {
-      return lastLevel;
-    }
-
-    if (/exception|error|invalid|failed|错误/i.test(log)) {
-      lastLevel = "ERROR";
-      return "ERROR";
-    }
-
-    lastLevel = lastLevel || "INFO";
-    return "INFO";
-  };
 
   const filteredLogs = logs.filter((log) => {
     const level = getLogLevel(log);

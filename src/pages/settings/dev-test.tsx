@@ -1,8 +1,9 @@
 import { Alert, AlertIcon, Button, VStack } from "@chakra-ui/react";
 import { invoke } from "@tauri-apps/api/core";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import SkinPreview from "@/components/skin-preview";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { DownloadTaskParam, TaskParam, TaskTypeEnums } from "@/models/task";
 import { TaskService } from "@/services/task";
 import { isProd } from "@/utils/env";
@@ -21,7 +22,7 @@ const DevTestPage = () => {
     }
   }, [router]);
 
-  const [task_id, setTaskId] = useState<number | null>(null);
+  const { openSharedModal } = useSharedModals();
 
   return (
     <VStack align="start" spacing={4}>
@@ -58,6 +59,11 @@ const DevTestPage = () => {
       >
         Launch Game
       </Button>
+
+      <Button onClick={() => openSharedModal("ai-provider-settings")}>
+        Open AI Provider Settings Modal
+      </Button>
+
       <Button
         onClick={() => {
           console.log("Download button clicked");

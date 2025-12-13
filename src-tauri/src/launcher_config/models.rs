@@ -79,7 +79,7 @@ pub enum LauncherVisiablity {
 // assert!(config.access("114514").is_err())
 //
 structstruck::strike! {
-  #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
+  #[strikethrough[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   #[strikethrough[derive(SmartDefault)]]
   #[strikethrough[serde(default)]]
@@ -163,7 +163,7 @@ pub enum ProxyType {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
+  #[strikethrough[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
   #[strikethrough[derive(SmartDefault)]]
   #[strikethrough[serde(default)]]
@@ -259,6 +259,18 @@ structstruck::strike! {
       }
     },
     pub global_game_config: GameConfig,
+    pub intelligence: struct IntelligenceConfig {
+      pub enabled: bool,
+      pub model: struct LLMModelConfig {
+        pub base_url: String,
+        pub api_key: String,
+        pub model: String,
+      },
+      // pub chat: struct LLMChatConfig {
+      //   #[default = 0.7]
+      //   pub temperature: f32,
+      // }
+    },
     pub local_game_directories: Vec<GameDirectory>,
     #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(),
     \"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string()]")]
@@ -296,7 +308,7 @@ structstruck::strike! {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
-    }
+    },
   }
 }
 

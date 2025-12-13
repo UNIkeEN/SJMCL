@@ -2,6 +2,7 @@ mod account;
 mod discover;
 mod error;
 mod instance;
+mod intelligence;
 mod launch;
 mod launcher_config;
 mod partial;
@@ -142,6 +143,8 @@ pub async fn run() {
       resource::commands::fetch_remote_resource_by_id,
       discover::commands::fetch_news_sources_info,
       discover::commands::fetch_news_post_summaries,
+      intelligence::commands::check_llm_service_availability,
+      intelligence::commands::fetch_llm_chat_response,
       tasks::commands::schedule_progressive_task_group,
       tasks::commands::cancel_progressive_task,
       tasks::commands::resume_progressive_task,
