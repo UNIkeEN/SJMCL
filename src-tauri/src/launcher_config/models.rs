@@ -5,7 +5,7 @@ use crate::utils::string::snake_to_camel_case;
 use crate::utils::sys_info;
 use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use partial_derive::Partial;
-use serde::de::{self, Deserializer};
+use serde::de::Deserializer;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use smart_default::SmartDefault;
@@ -356,41 +356,38 @@ pub enum LauncherConfigError {
 
 impl std::error::Error for LauncherConfigError {}
 
+// deserializing discover sources from old and new formats.
+// TODO: unify to migration system later.
 fn deserialize_discover_sources<'de, D>(deserializer: D) -> Result<Vec<(String, bool)>, D::Error>
 where
   D: Deserializer<'de>,
 {
-  let v = Value::deserialize(deserializer)?;
-  let arr = v
-    .as_array()
-    .ok_or_else(|| de::Error::custom("discover_source_endpoints must be an array"))?;
+  let v = match Value::deserialize(deserializer) {
+    Ok(v) => v,
+    Err(_) => return Ok(Vec::default()),
+  };
 
-  let mut out = Vec::with_capacity(arr.len());
-  for item in arr {
+  let arr = match v.as_array() {
+    Some(a) => a,
+    None => return Ok(Vec::default()),
+  };
+
+  fn parse_item(item: &Value) -> Option<(String, bool)> {
+    // old (<=0.6.3) format: String(url)
     if let Some(s) = item.as_str() {
-      out.push((s.to_string(), true));
-      continue;
+      return Some((s.to_string(), true));
     }
-    if let Some(t) = item.as_array() {
-      if t.len() == 2 {
-        let url = t[0]
-          .as_str()
-          .ok_or_else(|| de::Error::custom("invalid url in tuple"))?;
-        let enabled = t[1]
-          .as_bool()
-          .ok_or_else(|| de::Error::custom("invalid enabled in tuple"))?;
-        out.push((url.to_string(), enabled));
-        continue;
-      }
+
+    // new format: (String, bool)
+    let t = item.as_array()?;
+    if t.len() != 2 {
+      log::error!("Invalid discover source item format: {:?}", item);
+      return None;
     }
-    if let Some(obj) = item.as_object() {
-      if let Some(url) = obj.get("url").and_then(|v| v.as_str()) {
-        let enabled = obj.get("enabled").and_then(|v| v.as_bool()).unwrap_or(true);
-        out.push((url.to_string(), enabled));
-        continue;
-      }
-    }
-    return Err(de::Error::custom("invalid discover_source_endpoints item"));
+    let url = t[0].as_str()?;
+    let enabled = t[1].as_bool()?;
+    Some((url.to_string(), enabled))
   }
-  Ok(out)
+
+  Ok(arr.iter().filter_map(parse_item).collect())
 }

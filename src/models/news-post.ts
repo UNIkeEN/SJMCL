@@ -16,7 +16,6 @@ export interface NewsSourceInfo {
   fullName?: string;
   endpointUrl: string; // If it only contains this field, it means the data source is offline or pending.
   iconSrc?: string;
-  enabled: boolean;
 }
 
 export interface NewsPostRequest {

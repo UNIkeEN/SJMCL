@@ -4,21 +4,16 @@ import {
   HStack,
   IconButton,
   Image,
+  Switch,
   Tag,
   TagLabel,
   Text,
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  LuCheck,
-  LuCircleCheck,
-  LuCircleMinus,
-  LuPlus,
-  LuTrash,
-} from "react-icons/lu";
+import { LuCheck, LuPlus, LuTrash } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -43,30 +38,19 @@ export const DiscoverSourcesPage = () => {
     onClose: onAddDiscoverSourceModalClose,
   } = useDisclosure();
 
+  const enabledByUrl = useMemo(() => {
+    return new Map(sources.map(([url, enabled]) => [url, enabled]));
+  }, [sources]);
+
   const handleFetchNewsSourcesInfo = useCallback(() => {
     DiscoverService.fetchNewsSourcesInfo().then((response) => {
       if (response.status === "success") {
-        const enabledInfos = response.data;
-        setSourcesInfo((prev) => {
-          const byUrl = new Map<string, NewsSourceInfo>();
-          prev.forEach((s) => byUrl.set(s.endpointUrl, s));
-          enabledInfos.forEach((info) => {
-            const existing =
-              byUrl.get(info.endpointUrl) ||
-              ({ endpointUrl: info.endpointUrl } as NewsSourceInfo);
-            byUrl.set(info.endpointUrl, { ...existing, ...info });
-          });
-          return sources.map(
-            ([url, enabled]) =>
-              byUrl.get(url) ||
-              ({ endpointUrl: url, enabled } as NewsSourceInfo)
-          );
-        });
+        setSourcesInfo(response.data);
         setIsLoading(false);
       }
       // no toast here, keep silent if no internet connection or etc.
     });
-  }, [sources]);
+  }, [setSourcesInfo]);
 
   const handleRemoveSource = (urlToRemove: string) => {
     const updated = sources.filter(([url]) => url !== urlToRemove);
@@ -116,95 +100,85 @@ export const DiscoverSourcesPage = () => {
     >
       {sourcesInfo.length > 0 ? (
         <OptionItemGroup
-          items={sourcesInfo.map((source) => (
-            <OptionItem
-              key={source.endpointUrl}
-              title={source.name || ""}
-              titleExtra={
-                <Text className="secondary-text" fontSize="xs-sm">
-                  {source.fullName}
-                </Text>
-              }
-              prefixElement={
-                <Box
-                  position="relative"
-                  width="28px"
-                  height="28px"
-                  style={{
-                    opacity: source.enabled ? 1 : 0.5,
-                    filter: source.enabled ? "none" : "grayscale(90%)",
-                  }}
-                >
-                  <Image
-                    src={source.iconSrc}
-                    alt={source.iconSrc}
-                    style={{ borderRadius: "4px" }}
-                    fallbackSrc="/images/icons/UnknownWorld.webp"
-                  />
+          items={sourcesInfo.map((source) => {
+            const enabled = enabledByUrl.get(source.endpointUrl) ?? true;
+
+            return (
+              <OptionItem
+                key={source.endpointUrl}
+                title={source.name || ""}
+                titleExtra={
+                  <Text className="secondary-text" fontSize="xs-sm">
+                    {source.fullName}
+                  </Text>
+                }
+                prefixElement={
                   <Box
-                    position="absolute"
-                    bottom="-2px"
-                    right="-2px"
-                    boxSize="0.9em"
-                    bg={
-                      source.enabled
-                        ? source.name
-                          ? "green"
-                          : "orange"
-                        : "black"
-                    }
-                    borderRadius="full"
-                    borderWidth={2}
-                    borderColor="var(--chakra-colors-chakra-body-bg)"
-                  />
-                </Box>
-              }
-              description={
-                <Text fontSize="xs-sm" className="secondary-text">
-                  {source.endpointUrl}
-                </Text>
-              }
-            >
-              <HStack>
-                {source.name && (
-                  <Tag colorScheme="green">
-                    <LuCheck />
-                    <TagLabel ml={0.5}>
-                      {t("DiscoverSourcesPage.tag.online")}
-                    </TagLabel>
-                  </Tag>
-                )}
-                {isLoading && <BeatLoader size={6} color="grey" />}
-                <Tooltip
-                  label={t(
-                    source.enabled ? "General.disable" : "General.enable"
+                    position="relative"
+                    width="28px"
+                    height="28px"
+                    style={{
+                      opacity: enabled ? 1 : 0.5,
+                      filter: enabled ? "none" : "grayscale(90%)",
+                    }}
+                  >
+                    <Image
+                      src={source.iconSrc}
+                      alt={source.iconSrc}
+                      style={{ borderRadius: "4px" }}
+                      fallbackSrc="/images/icons/UnknownWorld.webp"
+                    />
+                    <Box
+                      position="absolute"
+                      bottom="-2px"
+                      right="-2px"
+                      boxSize="0.9em"
+                      bg={
+                        enabled ? (source.name ? "green" : "orange") : "black"
+                      }
+                      borderRadius="full"
+                      borderWidth={2}
+                      borderColor="var(--chakra-colors-chakra-body-bg)"
+                    />
+                  </Box>
+                }
+                description={
+                  <Text fontSize="xs-sm" className="secondary-text">
+                    {source.endpointUrl}
+                  </Text>
+                }
+              >
+                <HStack>
+                  {source.name && (
+                    <Tag colorScheme="green">
+                      <LuCheck />
+                      <TagLabel ml={0.5}>
+                        {t("DiscoverSourcesPage.tag.online")}
+                      </TagLabel>
+                    </Tag>
                   )}
-                >
-                  <IconButton
-                    size="sm"
-                    aria-label="toggle-source"
-                    icon={
-                      source.enabled ? <LuCircleMinus /> : <LuCircleCheck />
+                  {isLoading && <BeatLoader size={6} color="grey" />}
+                  <Switch
+                    isChecked={enabled}
+                    onChange={() =>
+                      handleToggleSource(source.endpointUrl, !enabled)
                     }
-                    variant="ghost"
-                    onClick={() =>
-                      handleToggleSource(source.endpointUrl, !source.enabled)
-                    }
+                    ml={1.5}
                   />
-                </Tooltip>
-                <Tooltip label={t("DiscoverSourcesPage.button.deleteSource")}>
-                  <IconButton
-                    size="sm"
-                    aria-label="delete-source"
-                    icon={<LuTrash />}
-                    variant="ghost"
-                    colorScheme="red"
-                    onClick={() => handleRemoveSource(source.endpointUrl)}
-                  />
-                </Tooltip>
-              </HStack>
-            </OptionItem>
-          ))}
+                  <Tooltip label={t("DiscoverSourcesPage.button.deleteSource")}>
+                    <IconButton
+                      size="sm"
+                      aria-label="delete-source"
+                      icon={<LuTrash />}
+                      variant="ghost"
+                      colorScheme="red"
+                      onClick={() => handleRemoveSource(source.endpointUrl)}
+                    />
+                  </Tooltip>
+                </HStack>
+              </OptionItem>
+            );
+          })}
         />
       ) : (
         <Empty
