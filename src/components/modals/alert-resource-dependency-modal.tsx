@@ -198,9 +198,13 @@ const AlertResourceDependencyModal: React.FC<
   };
 
   return (
-    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
+    <Modal
+      scrollBehavior="inside"
+      size={{ base: "md", lg: "lg", xl: "xl" }}
+      {...modalProps}
+    >
       <ModalOverlay />
-      <ModalContent h="80%">
+      <ModalContent h="100%">
         <ModalHeader>
           {t("AlertResourceDependencyModal.header.title")}
         </ModalHeader>
