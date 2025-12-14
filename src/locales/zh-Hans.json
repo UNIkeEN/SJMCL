@@ -851,7 +851,7 @@
   },
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
-    "exportLogs": "导出日志",
+    "openRawLog": "打开原始日志文件",
     "clearLogs": "清除所有日志",
     "scrollToBottom": "滚动到底部"
   },

@@ -851,7 +851,7 @@
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
-    "exportLogs": "Export Logs",
+    "openRawLog": "Open Raw Log File",
     "clearLogs": "Clear All Logs",
     "scrollToBottom": "Scroll to Bottom"
   },

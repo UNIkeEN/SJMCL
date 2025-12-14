@@ -8,7 +8,9 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
+import { appLocalDataDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
@@ -58,6 +60,24 @@ const GameLogPage: React.FC = () => {
     });
     return () => unlisten();
   }, []);
+
+  const openRawLogFile = async () => {
+    try {
+      const launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
+      if (launchingId == null) return;
+
+      const baseDir = await appLocalDataDir();
+      const logFilePath = await join(
+        baseDir,
+        "GameLogs",
+        `game_log_${launchingId}.log`
+      );
+
+      await revealItemInDir(logFilePath);
+    } catch (err) {
+      console.error("Failed to open raw log file:", err);
+    }
+  };
 
   let lastLevel: string = "INFO";
 
@@ -167,14 +187,14 @@ const GameLogPage: React.FC = () => {
             {level} ({logCounts[level] || 0})
           </Button>
         ))}
-        <Tooltip label={t("GameLogPage.exportLogs")} placement="bottom">
+        <Tooltip label={t("GameLogPage.openRawLog")} placement="bottom">
           <IconButton
             icon={<LuFileInput />}
-            aria-label={t("GameLogPage.exportLogs")}
+            aria-label={t("GameLogPage.openRawLog")}
             variant="ghost"
             size="sm"
             colorScheme="gray"
-            isDisabled
+            onClick={openRawLogFile}
           />
         </Tooltip>
         <Tooltip label={t("GameLogPage.clearLogs")} placement="bottom">
