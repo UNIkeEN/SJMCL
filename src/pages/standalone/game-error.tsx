@@ -1,9 +1,11 @@
 import {
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
   Box,
   Button,
+  Center,
   Flex,
   HStack,
   Icon,
@@ -15,26 +17,36 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
+import { Badge } from "@chakra-ui/react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
+import { LuLightbulb } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
+import MarkdownContainer from "@/components/common/markdown-container";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSummary } from "@/models/instance/misc";
+import { ChatMessage } from "@/models/intelligence";
 import { JavaInfo } from "@/models/system-info";
+import { IntelligenceService } from "@/services/intelligence";
 import { LaunchService } from "@/services/launch";
 import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
 import { analyzeCrashReport } from "@/utils/game-error";
 import { capitalizeFirstLetter } from "@/utils/string";
 import { parseIdFromWindowLabel } from "@/utils/window";
+import { getLogLevel } from "./game-log";
 
 const GameErrorPage: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+
+  const { openSharedModal } = useSharedModals();
 
   const [basicInfoParams, setBasicInfoParams] = useState(
     new Map<string, string>()
@@ -43,6 +55,11 @@ const GameErrorPage: React.FC = () => {
   const [javaInfo, setJavaInfo] = useState<JavaInfo>();
   const [reason, setReason] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+
+  const [gameLog, setGameLog] = useState<string>("");
+  const [aiResult, setAiResult] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+  const [showAIResult, setShowAIResult] = useState<boolean>(false);
 
   const platformName = useCallback(() => {
     let name = config.basicInfo.platform
@@ -84,7 +101,15 @@ const GameErrorPage: React.FC = () => {
 
     LaunchService.retrieveGameLog(launchingId).then((response) => {
       if (response.status === "success") {
-        let { key, params } = analyzeCrashReport(response.data);
+        const errorLogs = response.data.filter((line) => {
+          let level = getLogLevel(line);
+          return level == "ERROR" || level == "FATAL";
+        });
+
+        const errorLog = errorLogs.join("\n");
+        setGameLog(errorLog);
+
+        const { key, params } = analyzeCrashReport(errorLogs); // old analyzer powered by regex
         setReason(
           t(`GameErrorPage.crashDetails.${key}`, {
             param1: params[0],
@@ -146,6 +171,85 @@ const GameErrorPage: React.FC = () => {
     }
     setIsLoading(false);
   };
+
+  function safeParseAI(content: string): {
+    reasons: Array<{ reason: string; fix: string }>;
+    raw: string;
+    isJSON: boolean;
+  } {
+    const raw = content ?? "";
+    try {
+      const obj = JSON.parse(raw);
+      if (Array.isArray(obj?.reasons)) {
+        return {
+          reasons: obj.reasons
+            .map((x: any) => ({
+              reason: String(x?.reason ?? "").trim(),
+              fix: String(x?.fix ?? "").trim(),
+            }))
+            .filter((x: { reason: any; fix: any }) => x.reason || x.fix),
+          raw,
+          isJSON: true,
+        };
+      }
+    } catch {}
+
+    const m = raw.match(/```[\w-]*\s*([\s\S]*?)\s*```/i);
+    if (m) {
+      try {
+        const obj2 = JSON.parse(m[1]);
+        if (Array.isArray(obj2?.reasons)) {
+          return {
+            reasons: obj2.reasons
+              .map((x: any) => ({
+                reason: String(x?.reason ?? "").trim(),
+                fix: String(x?.fix ?? "").trim(),
+              }))
+              .filter((x: { reason: any; fix: any }) => x.reason || x.fix),
+            raw,
+            isJSON: true,
+          };
+        }
+      } catch {}
+    }
+
+    return { reasons: [], raw, isJSON: false };
+  }
+
+  async function callAIAnalyze(log: string) {
+    if (!config.intelligence.enabled) {
+      // TODO: toast error, route to settings
+      return;
+    }
+
+    setShowAIResult(true);
+    setAiLoading(true);
+    setAiResult("");
+
+    let messages: ChatMessage[] = [
+      {
+        role: "system",
+        content: t("GameErrorPage.aiAnalysis.systemPrompt"),
+      },
+      {
+        role: "user",
+        content: t("GameErrorPage.aiAnalysis.userPrompt", {
+          os: basicInfoParams.get("os") ?? t("General.unknown"),
+          javaVersion: javaInfo?.name ?? t("General.unknown"),
+          mcVersion: instanceInfo?.name ?? t("General.unknown"),
+          log,
+        }),
+      },
+    ];
+
+    const resp = await IntelligenceService.fetchLLMChatResponse(messages);
+    if (resp.status === "success") {
+      setAiResult(resp.data);
+    } else {
+      setAiResult(resp.message + ": " + resp.details);
+    }
+    setAiLoading(false);
+  }
 
   return (
     <Flex direction="column" h="100vh">
@@ -209,11 +313,70 @@ const GameErrorPage: React.FC = () => {
                 </HStack>
               ),
             })}
+
           <VStack spacing={1} align="stretch">
-            <Text fontSize="xs-sm">
-              {t("GameErrorPage.crashDetails.title")}
-            </Text>
-            <Text fontSize="md">{reason}</Text>
+            <HStack align="center">
+              <Text fontSize="xs-sm">
+                {!showAIResult
+                  ? t("GameErrorPage.crashDetails.title")
+                  : t("GameErrorPage.aiAnalysis.title")}
+              </Text>
+              {showAIResult && (
+                <Badge size="xs" colorScheme="purple">
+                  BETA
+                </Badge>
+              )}
+            </HStack>
+            {!showAIResult ? (
+              <Text fontSize="md">{reason}</Text>
+            ) : (
+              <>
+                {aiLoading ? (
+                  <Center>
+                    <BeatLoader size={16} color="gray" />
+                  </Center>
+                ) : (
+                  (() => {
+                    const parsed = safeParseAI(aiResult);
+
+                    return (
+                      <>
+                        {parsed.reasons.length > 0 ? (
+                          parsed.reasons.map((item, i) => (
+                            <Alert key={i} status="info" borderRadius="md">
+                              <AlertIcon as={LuLightbulb} />
+                              <VStack spacing={0} align="start">
+                                <AlertTitle>{item.reason}</AlertTitle>
+                                <AlertDescription>
+                                  <MarkdownContainer>
+                                    {item.fix}
+                                  </MarkdownContainer>
+                                </AlertDescription>
+                              </VStack>
+                            </Alert>
+                          ))
+                        ) : (
+                          <>
+                            <Text fontSize="sm" color="gray.500">
+                              {t(
+                                "GameErrorPage.aiAnalysis.structureNotProcessed"
+                              )}
+                            </Text>
+                            <Alert status="info" borderRadius="md">
+                              <AlertDescription>
+                                <MarkdownContainer>
+                                  {parsed.raw}
+                                </MarkdownContainer>
+                              </AlertDescription>
+                            </Alert>
+                          </>
+                        )}
+                      </>
+                    );
+                  })()
+                )}
+              </>
+            )}
           </VStack>
         </VStack>
       </Box>
@@ -237,6 +400,18 @@ const GameErrorPage: React.FC = () => {
         <Button colorScheme={primaryColor} variant="solid">
           {t("GameErrorPage.button.help")}
         </Button>
+
+        {config.intelligence.enabled && (
+          <Button
+            colorScheme={primaryColor}
+            variant="solid"
+            onClick={() => callAIAnalyze(gameLog)}
+            isLoading={aiLoading}
+          >
+            {t("GameErrorPage.button.aiAnalysis")}
+          </Button>
+        )}
+
         <Icon ml={2} as={LuCircleAlert} color="red.500" />
         <Text fontSize="xs-sm" color="red.500">
           {t("GameErrorPage.bottomAlert")}

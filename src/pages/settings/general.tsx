@@ -22,7 +22,8 @@ const GeneralSettingsPage = () => {
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
   const { removeHistory } = useRoutingHistory();
-  const { openGenericConfirmDialog, closeSharedModal } = useSharedModals();
+  const { openGenericConfirmDialog, openSharedModal, closeSharedModal } =
+    useSharedModals();
 
   const instancesNavTypes = ["instance", "directory", "hidden"];
 

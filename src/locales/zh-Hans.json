@@ -840,14 +840,22 @@
       "MOD_INTERNET_ERROR": "当前实例由于模组下载失败，无法继续运行。请检查网络连接或使用网络代理。",
       "VICS_MODERN_WARFARE_ERROR": "当前实例由于 Vics Modern Warfare 模组错误，无法继续运行。请尝试更新或删除该模组。",
       "FORGE_LITELOADER_CONFLICT": "当前实例由于 Forge 与 LiteLoader 冲突，无法继续运行。请尝试删除 LiteLoader 或更换 Forge 版本。",
-      "UNKNOWN": "暂时无法分析该错误，请查看游戏日志或导出错误崩溃报告。"
+      "UNKNOWN": "暂时无法分析该错误，可尝试使用 AI 分析，或查看游戏日志、导出错误崩溃报告。"
     },
     "button": {
+      "aiAnalysis": "使用 AI 分析",
       "exportGameInfo": "导出游戏崩溃报告",
       "gameLogs": "游戏日志",
       "help": "帮助"
     },
-    "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图"
+    "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图",
+    "aiAnalysis": {
+      "otherInfo": "其他提示",
+      "structureNotProcessed": "AI 未能返回正确的 JSON 结构，下面是它的原始回复：",
+      "systemPrompt": "你是 Minecraft 启动/崩溃诊断专家。请只按以下 JSON 模式输出，不要任何开头/结尾客套话、不要解释。 \n\n    {\n      \"reasons\": [            // 主要原因与解决方案（每条不要重复）\n        { \"reason\": \"一句话原因\", \"fix\": \"简单解决方案，支持 Markdown 语法，可包含若干可能原因、定位思路、命令/路径等\" }\n      ]}\n\n    要求：\n    - 严禁输出 JSON 以外的内容。\n    - \"reasons\" 5 条以内，每条应当简单有效。\n    - 聚焦本次日志，不要泛泛而谈。\n    - 禁止输出与 SJMCL 启动器本身相关的问题猜测与解决方案。",
+      "title": "AI 崩溃分析",
+      "userPrompt": "玩家的游戏发生了崩溃。玩家使用 {{os}} 操作系统，Java 版本为 {{javaVersion}} ，Minecraft 版本为 {{mcVersion}}，且使用了 SJMCL 启动器。\n\n这是游戏崩溃日志的相关部分：\n\n{{log}}\n\n请根据日志内容，分析导致游戏崩溃的主要原因，并返回 JSON 格式的解决方案。"
+    }
   },
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
@@ -915,6 +923,7 @@
       }
     },
     "skip": "跳过",
+    "unknown": "未知",
     "version": {
       "dev": "开发版本",
       "nightly": "夜间构建版本",
@@ -941,6 +950,10 @@
             "part-1": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 ",
             "part-2": " 继续使用 “聚合搜索”。"
           }
+        },
+        "enableAiProvider": {
+          "title": "生成式 AI 功能",
+          "description": "启用后，可在游戏崩溃页面使用 AI 分析崩溃原因"
         },
         "instancesNavType": {
           "title": "实例页导航栏模式",
@@ -1301,6 +1314,31 @@
         "offline": "离线"
       },
       "launch": "游玩此服务器"
+    }
+  },
+  "IntelligenceSettingsPage": {
+    "masterSwitch": {
+      "title": "智能服务",
+      "description": "结合您提供的生成式语言模型，为 SJMCL 引入更多智能体验"
+    },
+    "model": {
+      "title": "模型",
+      "settings": {
+        "baseUrl": {
+          "title": "基础 URL"
+        },
+        "apiKey": {
+          "title": "API 密钥"
+        },
+        "model": {
+          "title": "模型名称"
+        },
+        "checkAvailability": {
+          "title": "模型服务可用性",
+          "available": "可用",
+          "unavailable": "不可用"
+        }
+      }
     }
   },
   "JavaSettingsPage": {
@@ -2391,6 +2429,32 @@
         }
       }
     },
+    "intelligence": {
+      "checkLLMServiceAvailability": {
+        "success": "生成式 AI 服务可用",
+        "error": {
+          "title": "生成式 AI 服务不可用",
+          "description": {
+            "NETWORK_ERROR": "网络错误",
+            "API_PARSE_ERROR": "无法正常读取服务 API",
+            "NO_SUCH_MODEL": "指定模型不存在，请检查名称是否正确",
+            "INVALID_API_KEY": "API 密钥无效"
+          }
+        }
+      },
+      "fetchLLMChatResponse": {
+        "error": {
+          "title": "获取 AI 聊天响应失败",
+          "description": {
+            "NETWORK_ERROR": "网络错误",
+            "NOT_ENABLED": "生成式 AI 功能未启用",
+            "API_PARSE_ERROR": "无法正常读取服务 API",
+            "INVALID_API_KEY": "API 密钥无效",
+            "NO_RESPONSE": "没有返回任何内容"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "任务创建失败"
@@ -2421,6 +2485,7 @@
       "general": "通用",
       "appearance": "外观",
       "download": "下载资源",
+      "intelligence": "智能",
       "sync-restore": "同步与还原",
       "help": "文档与帮助",
       "about": "关于",

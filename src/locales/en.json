@@ -840,14 +840,22 @@
       "MOD_INTERNET_ERROR": "The instance cannot continue due to mod download failure. Please check your network connection or use a proxy.",
       "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
       "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
-      "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
+      "UNKNOWN": "Cannot determine the cause of the crash. You can use AI analysis, or check the logs for more details and export the crash report."
     },
     "button": {
+      "aiAnalysis": "AI Analysis",
       "exportGameInfo": "Export Crash Report",
       "gameLogs": "Game Logs",
       "help": "Help"
     },
-    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
+    "aiAnalysis": {
+      "otherInfo": "Other Information",
+      "structureNotProcessed": "AI did not return a valid JSON structure, below is its original response:",
+      "systemPrompt": "You are a Minecraft launch/crash diagnostics expert. Only output in the following JSON format, with no greetings, explanations, or extra text before/after. \n\n    {\n      \"reasons\": [            // Main causes and solutions (keep different)\n        { \"reason\": \"One-sentence cause\", \"fix\": \"Simple solution, support Markdown syntax and may include possible causes, troubleshooting steps, commands/paths, etc.\" }\n      ]\n}\n\n    Requirements:\n    - Strictly output only JSON, nothing else.\n    - \"reasons\" should have less than 5 items, each  cause should be simple and effective.\n    - Focus on this log, do not give generic advice.\n    - Prevent outputting guesses and solutions to problems related to the SJMCL launcher itself.",
+      "title": "AI Crash Analysis",
+      "userPrompt": "The player's game has crashed. The player is using {{os}} operating system, Java version {{javaVersion}}, Minecraft version {{mcVersion}} and SJMCL launcher.\n\nHere is the relevant part of the game crash log:\n\n{{log}}\n\nBased on the log content, please analyze the main cause of the game crash and return a solution in JSON format."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
@@ -915,6 +923,7 @@
         "error": "Failed to share"
       }
     },
+    "unknown": "Unknown",
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -941,6 +950,10 @@
             "part-1": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut ",
             "part-2": "."
           }
+        },
+        "enableAiProvider": {
+          "title": "Generative AI Features",
+          "description": "When enabled, AI can analyze crash causes on the game crash page."
         },
         "instancesNavType": {
           "title": "Instance Page Navigation Mode",
@@ -1301,6 +1314,31 @@
         "offline": "Offline"
       },
       "launch": "Play this Server"
+    }
+  },
+  "IntelligenceSettingsPage": {
+    "masterSwitch": {
+      "title": "Intelligent Services",
+      "description": "Enhance SJMCL with intelligent features powered by user-provided generative language models"
+    },
+    "model": {
+      "title": "Model",
+      "settings": {
+        "baseUrl": {
+          "title": "Base URL"
+        },
+        "apiKey": {
+          "title": "API Key"
+        },
+        "model": {
+          "title": "Model Name"
+        },
+        "checkAvailability": {
+          "title": "Model Service Availability",
+          "available": "Available",
+          "unavailable": "Unavailable"
+        }
+      }
     }
   },
   "JavaSettingsPage": {
@@ -2391,6 +2429,32 @@
         }
       }
     },
+    "intelligence": {
+      "checkLLMServiceAvailability": {
+        "success": "GenAI service available",
+        "error": {
+          "title": "GenAI service unavailable",
+          "description": {
+            "NETWORK_ERROR": "Network error",
+            "API_PARSE_ERROR": "Failed to parse service API",
+            "NO_SUCH_MODEL": "The specified model does not exist, please check if the name is correct",
+            "INVALID_API_KEY": "Invalid API key"
+          }
+        }
+      },
+      "fetchLLMChatResponse": {
+        "error": {
+          "title": "Failed to retrieve AI chat response",
+          "description": {
+            "NETWORK_ERROR": "Network error",
+            "NOT_ENABLED": "GenAI feature not enabled",
+            "API_PARSE_ERROR": "Failed to parse service API",
+            "INVALID_API_KEY": "Invalid API key",
+            "NO_RESPONSE": "No response received"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "Failed to create task"
@@ -2421,6 +2485,7 @@
       "general": "General",
       "appearance": "Appearance",
       "download": "Download",
+      "intelligence": "Intelligence",
       "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
       "about": "About",
