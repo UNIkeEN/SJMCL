@@ -52,9 +52,11 @@ next-env.d.ts
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Rust
+src-tauri/libs/serialize_skip_none_derive/Cargo.lock
