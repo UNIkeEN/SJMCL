@@ -57,6 +57,3 @@ next-env.d.ts
 *.njsproj
 *.sln
 *.sw?
-
-# Rust
-src-tauri/libs/serialize_skip_none_derive/Cargo.lock
