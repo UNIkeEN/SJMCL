@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuArrowDown01,
@@ -48,16 +48,50 @@ const InstanceListPage = () => {
   const { selectedInstance, getInstanceList } = useGlobalData();
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>([]);
 
+  const comeBackRef = useRef(false);
+  const onceRef = useRef(false);
+
+  const filteredList = useMemo(() => {
+    const all = getInstanceList() || [];
+    const dirPrefix = Array.isArray(dir) ? dir.join("/") : dir;
+    return dirPrefix
+      ? all.filter((inst) => inst.id.startsWith(`${dirPrefix}:`))
+      : all;
+  }, [dir, getInstanceList]);
+
   useEffect(() => {
     if (!router.isReady) return;
+    if (
+      filteredList.length > 0 &&
+      router.asPath === "/instances/add-import" &&
+      !comeBackRef.current
+    ) {
+      comeBackRef.current = true;
+      router.replace({
+        pathname: dir ? "/instances/list/[dir]" : "/instances/list",
+        query: dir ? { dir } : {},
+      });
+    }
+    if (filteredList.length === 0) comeBackRef.current = false;
+  }, [filteredList.length, router.asPath, router.isReady, dir, router]);
 
-    setInstanceList(() => {
-      const all = getInstanceList() || [];
-      if (!dir) return all; // /instances/list, show all
-      const dirPrefix = Array.isArray(dir) ? dir.join("/") : dir;
-      return all.filter((inst) => inst.id.startsWith(`${dirPrefix}:`));
-    });
-  }, [dir, router.isReady, getInstanceList]);
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (
+      filteredList.length === 0 &&
+      !onceRef.current &&
+      (router.asPath === "/instances/list" ||
+        router.asPath.startsWith("/instances/list/"))
+    ) {
+      onceRef.current = true;
+      router.replace("/instances/add-import");
+    }
+    if (filteredList.length > 0) onceRef.current = false;
+  }, [filteredList.length, router, router.asPath, router.isReady]);
+
+  useEffect(() => {
+    setInstanceList(filteredList);
+  }, [filteredList]);
 
   const viewTypeList = [
     {
@@ -96,7 +130,7 @@ const InstanceListPage = () => {
           fontSize="sm"
           variant="ghost"
           icon={<LuListFilter />}
-        ></MenuButton>
+        />
       </Tooltip>
       <MenuList>
         <MenuOptionGroup
