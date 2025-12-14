@@ -1,6 +1,5 @@
 import DownloadSpecificResourceModal from "@/components//modals/download-specific-resource-modal";
 import AddAuthServerModal from "@/components/modals/add-auth-server-modal";
-import AiProviderSettingsModal from "@/components/modals/ai-provider-settings-modal";
 import AlertResourceDependencyModal from "@/components/modals/alert-resource-dependency-modal";
 import CopyOrMoveModal from "@/components/modals/copy-or-move-modal";
 import DeleteInstanceDialog from "@/components/modals/delete-instance-alert-dialog";
@@ -32,7 +31,6 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
 
   const modals: Record<string, React.FC<any>> = {
     "add-auth-server": AddAuthServerModal,
-    "ai-provider-settings": AiProviderSettingsModal,
     "alert-resource-dependency": AlertResourceDependencyModal,
     "copy-or-move": CopyOrMoveModal,
     "delete-instance-alert": DeleteInstanceDialog,

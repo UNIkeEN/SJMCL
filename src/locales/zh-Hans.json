@@ -200,12 +200,6 @@
       "usePasswordLogin": "账号密码登录"
     }
   },
-  "AiProviderSettingsModal": {
-    "title": "设置生成式 AI 服务",
-    "baseUrl": "服务网址",
-    "apiKey": "API 密钥",
-    "model": "模型名称"
-  },
   "AlertResourceDependencyModal": {
     "header": {
       "title": "存在前置资源"
@@ -1309,6 +1303,31 @@
         "offline": "离线"
       },
       "launch": "游玩此服务器"
+    }
+  },
+  "IntelligenceSettingsPage": {
+    "masterSwitch": {
+      "title": "智能服务",
+      "description": "结合您提供的生成式语言模型，为 SJMCL 引入更多智能体验"
+    },
+    "model": {
+      "title": "模型",
+      "settings": {
+        "baseUrl": {
+          "title": "基础 URL"
+        },
+        "apiKey": {
+          "title": "API 密钥"
+        },
+        "model": {
+          "title": "模型名称"
+        },
+        "checkAvailability": {
+          "title": "模型服务可用性",
+          "available": "可用",
+          "unavailable": "不可用"
+        }
+      }
     }
   },
   "JavaSettingsPage": {
@@ -2449,6 +2468,7 @@
       "general": "通用",
       "appearance": "外观",
       "download": "下载资源",
+      "intelligence": "智能",
       "sync-restore": "同步与还原",
       "help": "文档与帮助",
       "about": "关于",

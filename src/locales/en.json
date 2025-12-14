@@ -200,12 +200,6 @@
       "usePasswordLogin": "Account & Password Login"
     }
   },
-  "AiProviderSettingsModal": {
-    "title": "GenAI Service Settings",
-    "baseUrl": "Service URL",
-    "apiKey": "API Key",
-    "model": "Model Name"
-  },
   "AlertResourceDependencyModal": {
     "header": {
       "title": "Dependency Resources Exist"
@@ -1309,6 +1303,31 @@
         "offline": "Offline"
       },
       "launch": "Play this Server"
+    }
+  },
+  "IntelligenceSettingsPage": {
+    "masterSwitch": {
+      "title": "Intelligent Services",
+      "description": "Enhance SJMCL with intelligent features powered by user-provided generative language models"
+    },
+    "model": {
+      "title": "Model",
+      "settings": {
+        "baseUrl": {
+          "title": "Base URL"
+        },
+        "apiKey": {
+          "title": "API Key"
+        },
+        "model": {
+          "title": "Model Name"
+        },
+        "checkAvailability": {
+          "title": "Model Service Availability",
+          "available": "Available",
+          "unavailable": "Unavailable"
+        }
+      }
     }
   },
   "JavaSettingsPage": {
@@ -2449,6 +2468,7 @@
       "general": "General",
       "appearance": "Appearance",
       "download": "Download",
+      "intelligence": "Intelligence",
       "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
       "about": "About",

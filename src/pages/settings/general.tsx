@@ -1,18 +1,8 @@
-import {
-  Badge,
-  Button,
-  HStack,
-  Icon,
-  IconButton,
-  Kbd,
-  Switch,
-  Text,
-} from "@chakra-ui/react";
+import { Badge, Button, Kbd, Switch, Text } from "@chakra-ui/react";
 import { appCacheDir } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { LuSettings } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
@@ -94,40 +84,6 @@ const GeneralSettingsPage = () => {
                 }
               }}
             />
-          ),
-        },
-      ],
-    },
-    {
-      items: [
-        {
-          title: t(
-            "GeneralSettingsPage.functions.settings.enableAiProvider.title"
-          ),
-          titleExtra: <Badge colorScheme="purple">Beta</Badge>,
-          description: t(
-            "GeneralSettingsPage.functions.settings.enableAiProvider.description"
-          ),
-          children: (
-            <HStack>
-              <Switch
-                colorScheme={primaryColor}
-                isChecked={config.intelligence.enabled}
-                onChange={(e) => {
-                  update("intelligence.enabled", e.target.checked);
-                  if (e.target.checked) openSharedModal("ai-provider-settings");
-                }}
-              />
-              <IconButton
-                aria-label="AI Settings"
-                size="sm"
-                variant="ghost"
-                onClick={() => openSharedModal("ai-provider-settings")}
-                disabled={!config.intelligence.enabled}
-              >
-                <Icon as={LuSettings} />
-              </IconButton>
-            </HStack>
           ),
         },
       ],
