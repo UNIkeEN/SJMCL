@@ -28,9 +28,9 @@ const versions = {
   "Cargo.toml": cargoVersion,
 };
 
-console.log("Found versions:");
+logger.info("Found versions:");
 Object.entries(versions).forEach(([file, version]) => {
-  console.log(`${file}: ${version}`);
+  logger.info(`${file}: ${version}`);
 });
 
 // Check if all versions are the same
@@ -39,13 +39,13 @@ if (uniqueVersions.size !== 1) {
   console.error("\n❌ Version mismatch detected!");
   process.exit(1);
 } else {
-  console.log("\n✅ All versions match:", Object.values(versions)[0]);
+  logger.info("\n✅ All versions match:", Object.values(versions)[0]);
 }
 
 // Check whether package-lock.json is in sync
 try {
   execSync("git diff --exit-code package-lock.json");
-  console.log("\n✅ package-lock.json is in sync");
+  logger.info("\n✅ package-lock.json is in sync");
 } catch (error) {
   console.error("\n❌ package-lock.json is not in sync!");
   process.exit(1);

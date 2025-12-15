@@ -46,7 +46,7 @@ https
         fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 
         fs.writeFileSync(outputPath, text);
-        console.log(`Version list saved to: ${outputPath}`);
+        logger.info(`Version list saved to: ${outputPath}`);
       } catch (error) {
         console.error("Error parsing JSON:", error);
       }

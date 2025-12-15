@@ -60,7 +60,7 @@ const DevTestPage = () => {
       </Button>
       <Button
         onClick={() => {
-          console.log("Download button clicked");
+          logger.info("Download button clicked");
           let dl: DownloadTaskParam[] = [
             {
               src: "https://edge.forgecdn.net/files/3045/381/%5B___MixinCompat-0.8___%5D.jar",
