@@ -43,7 +43,7 @@ if (targets !== null && targets.length !== 0) {
   targets = targets.filter((target) => target !== base); // delete item same as base
   targets = [...new Set(targets)]; // delete duplicate item
   if (targets.length === 0) {
-    logger.info(
+    console.log(
       "The target language is provided, but it is identical to the base language. Exiting..."
     );
     process.exit(0);
@@ -106,13 +106,13 @@ function checkTodoValues(locale, localeName) {
   recursiveCheck(locale);
 
   if (todoValues.length > 0) {
-    logger.info(
+    console.log(
       chalk.hex("#FFA500")(
         `⚠️ Warning: '${localeName}.json' contains %TODO values:`
       )
     );
     todoValues.forEach((key) => {
-      logger.info(chalk.yellow(`  %TODO found: ${key}`));
+      console.log(chalk.yellow(`  %TODO found: ${key}`));
     });
     throw new Error("  %TODO values detected");
   }
@@ -127,7 +127,7 @@ function compareLocales(base, target) {
 
   const targetLocalePath = path.join(localesPath, `${target}.json`);
   if (!fs.existsSync(targetLocalePath)) {
-    logger.info(`Locale file '${target}.json' not found in: ${localesPath}`);
+    console.log(`Locale file '${target}.json' not found in: ${localesPath}`);
     return;
   }
   const targetLocale = loadLocaleFile(targetLocalePath);
@@ -136,18 +136,18 @@ function compareLocales(base, target) {
   const [missing, extra] = compareKeys(baseKeys, targetKeys);
 
   if (missing.length === 0 && extra.length === 0) {
-    logger.info(
+    console.log(
       chalk.green(`✅ '${target}.json' is identical to '${base}.json'.`)
     );
   } else {
-    logger.info(`Comparing ${target} to ${base}:`);
-    logger.info(`${missing.length} missing, ${extra.length} extra keys`);
+    console.log(`Comparing ${target} to ${base}:`);
+    console.log(`${missing.length} missing, ${extra.length} extra keys`);
 
     missing.forEach((key) => {
-      logger.info(chalk.red(`  Missing:   ${key}`));
+      console.log(chalk.red(`  Missing:   ${key}`));
     });
     extra.forEach((key) => {
-      logger.info(chalk.green(`  Extra:     ${key}`));
+      console.log(chalk.green(`  Extra:     ${key}`));
     });
 
     throw new Error("  Inconsistent locales detected");
@@ -155,7 +155,7 @@ function compareLocales(base, target) {
 
   checkTodoValues(targetLocale, target);
 
-  logger.info("-".repeat(40));
+  console.log("-".repeat(40));
 }
 
 function compareAll(baseLocaleName) {
@@ -163,7 +163,7 @@ function compareAll(baseLocaleName) {
   const baseLocalePath = path.join(localesPath, `${baseLocaleName}.json`);
 
   if (!fs.existsSync(baseLocalePath)) {
-    logger.info(
+    console.log(
       `Locale file '${baseLocaleName}.json' not found in: ${localesPath}`
     );
     return;

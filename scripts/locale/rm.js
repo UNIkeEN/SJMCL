@@ -21,7 +21,7 @@ const chalk = require("chalk");
 const keyPath = process.argv[3];
 if (!keyPath) {
   console.error(chalk.red("Error: Missing key path argument"));
-  logger.info("Usage: npm run locale rm <key_path> [locales]");
+  console.log("Usage: npm run locale rm <key_path> [locales]");
   process.exit(1);
 }
 
@@ -110,20 +110,20 @@ function processLocale(locale) {
 
     if (changed) {
       fs.writeFileSync(filePath, JSON.stringify(localeObj, null, 2) + "\n");
-      logger.info(chalk.green(`✅ Removed '${keyPath}' from ${locale}.json`));
+      console.log(chalk.green(`✅ Removed '${keyPath}' from ${locale}.json`));
     } else {
-      logger.info(chalk.dim(`- Key '${keyPath}' not found in ${locale}.json`));
+      console.log(chalk.dim(`- Key '${keyPath}' not found in ${locale}.json`));
     }
   } catch (error) {
     console.error(chalk.red(`Error processing ${locale}.json:`), error.message);
   }
 }
 
-logger.info(chalk.bold(`Removing key path: '${keyPath}'`));
-logger.info(chalk.dim(`Target locales: ${targetLocales.join(", ")}`));
-logger.info("-".repeat(40));
+console.log(chalk.bold(`Removing key path: '${keyPath}'`));
+console.log(chalk.dim(`Target locales: ${targetLocales.join(", ")}`));
+console.log("-".repeat(40));
 
 targetLocales.forEach(processLocale);
 
-logger.info("-".repeat(40));
-logger.info(chalk.bold("Operation completed"));
+console.log("-".repeat(40));
+console.log(chalk.bold("Operation completed"));

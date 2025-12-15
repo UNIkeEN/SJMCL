@@ -91,7 +91,7 @@ function generatePlaceholder(source, target) {
               console.error(`Error creating file ${targetFile}:`, writeErr);
               process.exit(1);
             }
-            logger.info(`New placeholder file created: ${targetFile}`);
+            console.log(`New placeholder file created: ${targetFile}`);
           }
         );
       } else {
@@ -125,7 +125,7 @@ function generatePlaceholder(source, target) {
                 console.error(`Error writing file ${targetFile}:`, writeErr);
                 process.exit(1);
               }
-              logger.info(`Placeholder file updated: ${targetFile}`);
+              console.log(`Placeholder file updated: ${targetFile}`);
             }
           );
         });

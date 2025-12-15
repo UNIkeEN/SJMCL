@@ -30,10 +30,10 @@ cargoToml = cargoToml.replace(
 );
 fs.writeFileSync(cargoTomlPath, cargoToml);
 
-logger.info(`✅ Updated all version numbers to ${newVersion}`);
+console.log(`✅ Updated all version numbers to ${newVersion}`);
 
 // Sync package-lock.json with package.json
-logger.info("\n🔄 Syncing package-lock.json with package.json...");
+console.log("\n🔄 Syncing package-lock.json with package.json...");
 try {
   execSync(
     "npm install --package-lock-only --no-audit --no-fund --ignore-scripts",
@@ -42,7 +42,7 @@ try {
       cwd: path.join(__dirname, "../../"),
     }
   );
-  logger.info("✅ package-lock.json synced successfully!");
+  console.log("✅ package-lock.json synced successfully!");
 } catch (error) {
   console.error("❌ Failed to sync package-lock.json:", error.message);
   process.exit(1);
