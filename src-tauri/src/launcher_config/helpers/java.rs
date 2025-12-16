@@ -298,7 +298,7 @@ fn scan_java_paths_in_sjmcl_data_directory(app: &AppHandle) -> Vec<String> {
   #[cfg(target_os = "macos")]
   {
     if let Ok(rt) = app.path().app_data_dir().map(|p| p.join("runtime")) {
-      for v in [8, 11, 17, 21] {
+      for v in [8, 11, 17, 21, 25] {
         java_paths.extend(search_java_homes_in_mac_java_virtual_machines(
           rt.join(format!("java-{v}")),
         ));
@@ -476,6 +476,7 @@ pub async fn build_mojang_java_download_params(
   let runtime_type = match version {
     "8" => "jre-legacy",
     "21" => "java-runtime-delta",
+    "25" => "java-runtime-epsilon",
     _ => "java-runtime-gamma",
   };
 

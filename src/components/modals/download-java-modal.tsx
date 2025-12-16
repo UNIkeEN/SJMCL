@@ -65,7 +65,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
       label: "Mojang",
       hasJre: true,
       archMap: { x86_64: "x64", aarch64: "arm64" },
-      versions: [...(os === "macos" ? [] : ["8"]), "17", "21"],
+      versions: [...(os === "macos" ? [] : ["8"]), "17", "21", "25"],
       getUrl: () => "",
     },
     zulu: {
@@ -185,6 +185,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
                     "11",
                     "17",
                     "21",
+                    "25",
                   ]
                 }
                 value={version}
