@@ -949,8 +949,8 @@ pub async fn create_instance(
     .ok_or(InstanceError::ClientJsonParseError)?;
 
   task_params.push(PTaskParam::Download(DownloadParam {
-    src: Url::parse(&client_download_info.url.clone())
-      .map_err(|_| InstanceError::ClientJsonParseError)?,
+    src: vec![Url::parse(&client_download_info.url.clone())
+      .map_err(|_| InstanceError::ClientJsonParseError)?],
     dest: instance.version_path.join(format!("{}.jar", name)),
     filename: None,
     sha1: Some(client_download_info.sha1.clone()),

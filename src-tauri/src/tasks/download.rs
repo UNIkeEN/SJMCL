@@ -5,7 +5,6 @@ use crate::tasks::streams::reporter::Reporter;
 use crate::tasks::streams::ProgressStream;
 use crate::tasks::*;
 use crate::utils::fs::validate_sha1;
-use crate::utils::web::with_retry;
 use async_speed_limit::Limiter;
 use futures::stream::TryStreamExt;
 use futures::StreamExt;
@@ -25,7 +24,7 @@ use tokio_util::compat::FuturesAsyncReadCompatExt;
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct DownloadParam {
-  pub src: Url,
+  pub src: Vec<Url>,
   pub dest: PathBuf,
   pub filename: Option<String>,
   pub sha1: Option<String>,
@@ -122,15 +121,15 @@ impl DownloadTask {
   async fn send_request(
     app_handle: &AppHandle,
     current: i64,
-    param: &DownloadParam,
+    src: Url,
   ) -> SJMCLResult<reqwest::Response> {
     let state = app_handle.state::<reqwest::Client>();
-    let client = with_retry(state.inner().clone());
+    let client = state.inner().clone();
     let request = if current == 0 {
-      client.get(param.src.clone())
+      client.get(src.clone())
     } else {
       client
-        .get(param.src.clone())
+        .get(src.clone())
         .header(RANGE, format!("bytes={current}-"))
     };
 
@@ -149,14 +148,14 @@ impl DownloadTask {
   async fn create_resp_stream(
     app_handle: &AppHandle,
     current: i64,
-    param: &DownloadParam,
+    src: Url,
   ) -> SJMCLResult<(
     impl Stream<Item = Result<bytes::Bytes, std::io::Error>> + Send,
     i64,
   )> {
-    let resp = Self::send_request(app_handle, current, param).await?;
+    let resp = Self::send_request(app_handle, current, src.clone()).await?;
     let total_progress = if current == 0 {
-      resp.content_length().unwrap() as i64
+      resp.content_length().unwrap_or(0) as i64
     } else {
       -1
     };
@@ -177,42 +176,69 @@ impl DownloadTask {
     impl Future<Output = SJMCLResult<()>> + Send,
     Arc<RwLock<PTaskHandle>>,
   )> {
-    let current = self.p_handle.desc.current;
     let handle = Arc::new(RwLock::new(self.p_handle));
     let task_handle = handle.clone();
     let param = self.param.clone();
     Ok((
       async move {
-        let (resp, total_progress) = Self::create_resp_stream(&app_handle, current, &param).await?;
-        let stream = ProgressStream::new(resp, task_handle.clone());
         tokio::fs::create_dir_all(&self.dest_path.parent().unwrap()).await?;
-        let mut file = if current == 0 {
-          tokio::fs::File::create(&self.dest_path).await?
-        } else {
-          let mut f = tokio::fs::OpenOptions::new().open(&self.dest_path).await?;
-          f.seek(std::io::SeekFrom::Start(current as u64)).await?;
-          f
-        };
-        {
-          let mut task_handle = task_handle.write().unwrap();
-          task_handle.set_total(total_progress);
-          task_handle.mark_started();
-        }
-        if let Some(lim) = limiter {
-          tokio::io::copy(&mut lim.limit(stream.into_async_read()).compat(), &mut file).await?;
-        } else {
-          tokio::io::copy(&mut stream.into_async_read().compat(), &mut file).await?;
-        }
-        drop(file);
-        if task_handle.read().unwrap().status().is_cancelled() {
-          tokio::fs::remove_file(&self.dest_path).await?;
-          Ok(())
-        } else {
-          match param.sha1 {
-            Some(truth) => validate_sha1(param.dest, truth),
-            None => Ok(()),
+        let mut last_err: Option<SJMCLError> = None;
+        for src in param.src.clone() {
+          let attempt = async {
+            let current = task_handle.read().unwrap().desc.current;
+            let (resp, total_progress) =
+              Self::create_resp_stream(&app_handle, current, src).await?;
+            let stream = ProgressStream::new(resp, task_handle.clone());
+            let mut file = if current == 0 {
+              tokio::fs::File::create(&self.dest_path).await?
+            } else {
+              let mut f = tokio::fs::OpenOptions::new().open(&self.dest_path).await?;
+              f.seek(std::io::SeekFrom::Start(current as u64)).await?;
+              f
+            };
+            {
+              let mut h = task_handle.write().unwrap();
+              h.set_total(total_progress);
+              h.mark_started();
+            }
+            if let Some(lim) = limiter.clone() {
+              tokio::io::copy(&mut lim.limit(stream.into_async_read()).compat(), &mut file).await?;
+            } else {
+              tokio::io::copy(&mut stream.into_async_read().compat(), &mut file).await?;
+            }
+            drop(file);
+            if task_handle.read().unwrap().status().is_cancelled() {
+              tokio::fs::remove_file(&self.dest_path).await?;
+              Ok(())
+            } else {
+              match &param.sha1 {
+                Some(truth) => validate_sha1(self.dest_path.clone(), truth.clone()),
+                None => Ok(()),
+              }
+            }
+          }
+          .await;
+
+          match attempt {
+            Ok(()) => {
+              if !task_handle.read().unwrap().status().is_cancelled() {
+                let mut h = task_handle.write().unwrap();
+                h.mark_completed();
+              }
+              return Ok(());
+            }
+            Err(e) => {
+              last_err = Some(e);
+              let _ = tokio::fs::remove_file(&self.dest_path).await;
+              {
+                let mut h = task_handle.write().unwrap();
+                h.desc.current = 0;
+              }
+              continue;
+            }
           }
         }
+        Err(last_err.unwrap_or_else(|| SJMCLError("All sources failed".into())))
       },
       handle,
     ))

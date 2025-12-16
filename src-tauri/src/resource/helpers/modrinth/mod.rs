@@ -223,7 +223,7 @@ pub async fn get_latest_fabric_api_mod_download(
   let dest_path = mods_dir.join(&filename);
 
   Ok(Some(DownloadParam {
-    src: download_url,
+    src: vec![download_url],
     dest: dest_path,
     filename: Some(filename),
     sha1: Some(latest_file.sha1.clone()),

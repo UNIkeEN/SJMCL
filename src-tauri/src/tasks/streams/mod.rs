@@ -71,8 +71,6 @@ where
       let mut h = p.handle.write().unwrap();
       if let Some(item) = &opt {
         h.report_progress(cx, item.unit_size());
-      } else {
-        h.mark_completed();
       }
       opt
     })
