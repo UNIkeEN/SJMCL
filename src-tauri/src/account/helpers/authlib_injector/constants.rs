@@ -1,6 +1,7 @@
-pub static PRESET_AUTH_SERVERS: [&str; 2] = [
+pub static PRESET_AUTH_SERVERS: [&str; 3] = [
   "https://skin.mc.sjtu.cn/api/yggdrasil",
   "https://skin.mualliance.ltd/api/yggdrasil",
+  "https://littleskin.cn/api/yggdrasil",
 ];
 pub static CLIENT_IDS: [(&str, &str); 3] = [
   ("skin.mc.sjtu.cn", "6"),
