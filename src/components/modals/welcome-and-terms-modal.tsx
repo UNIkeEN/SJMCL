@@ -43,6 +43,10 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
     unstableVersionLabels.find((k) => launcherVersion.includes(k)) ||
     (launcherVersion.startsWith("0.") ? "beta" : undefined);
 
+  const isWinArm64 =
+    config.basicInfo.platform === "windows" &&
+    config.basicInfo.arch === "aarch64";
+
   return (
     <Modal
       autoFocus={false}
@@ -83,6 +87,29 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
               {t("WelcomeAndTermsModal.warning.unstableVersion", {
                 versionLabel: t(`General.version.${matchedVersionLabel}`),
               })}
+            </Alert>
+          )}
+          {isWinArm64 && (
+            <Alert status="info" mt={3} fontSize="xs-sm" borderRadius="md">
+              <AlertIcon />
+              <Text>
+                <Trans
+                  i18nKey="WelcomeAndTermsModal.warning.winArm64Notice"
+                  components={{
+                    b: <b />,
+                    glpack: (
+                      <Link
+                        color={`${primaryColor}.500`}
+                        onClick={() => {
+                          openUrl(
+                            "ms-windows-store://pdp/?productid=9NQPSL29BFFF"
+                          );
+                        }}
+                      />
+                    ),
+                  }}
+                />
+              </Text>
             </Alert>
           )}
         </ModalBody>

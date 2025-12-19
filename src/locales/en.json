@@ -2552,7 +2552,8 @@
       "text": "Welcome to SJMCL! Before you start, please be sure to read and agree to our <terms>User Agreement</terms>."
     },
     "warning": {
-      "unstableVersion": "You are using the {{versionLabel}} of SJMCL. Some features may be unstable or incomplete. Bug reports and feature requests are welcome."
+      "unstableVersion": "You are using the {{versionLabel}} of SJMCL. Some features may be unstable or incomplete. Bug reports and feature requests are welcome.",
+      "winArm64Notice": "SJMCL now supports Windows on Arm. If you are using a <b>QUALCOMM</b> platform, you may need to install the <glpack>OpenGL Compatibility Pack</glpack> before launching the game."
     },
     "button": {
       "exit": "Exit",

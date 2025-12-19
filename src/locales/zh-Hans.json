@@ -2552,7 +2552,8 @@
       "text": "欢迎使用 SJMCL！在开始使用之前，请务必阅读并同意我们的<terms>用户协议</terms>。"
     },
     "warning": {
-      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不稳定或未开发完成，欢迎报告使用问题与功能建议。"
+      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不稳定或未开发完成，欢迎报告使用问题与功能建议。",
+      "winArm64Notice": "SJMCL 现已支持 Windows on Arm 平台。<br/>如您正在使用 <b>高通</b> 平台，您可能需要安装 <glpack>OpenGL 兼容包</glpack> 后才能进行游戏。"
     },
     "button": {
       "exit": "退出",
