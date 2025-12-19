@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import LanguageMenu from "@/components/language-menu";
 import { useGuidedTour } from "@/components/special/guided-tour-provider";
@@ -59,18 +59,23 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
         </ModalHeader>
         <ModalBody mt={-1}>
           <Text color="gray.500">
-            {t("WelcomeAndTermsModal.body.part1")}
-            <Link
-              color={`${primaryColor}.500`}
-              onClick={() => {
-                openUrl(
-                  t("AboutSettingsPage.legalInfo.settings.userAgreement.url")
-                );
+            <Trans
+              i18nKey="WelcomeAndTermsModal.body.text"
+              components={{
+                terms: (
+                  <Link
+                    color={`${primaryColor}.500`}
+                    onClick={() => {
+                      openUrl(
+                        t(
+                          "AboutSettingsPage.legalInfo.settings.userAgreement.url"
+                        )
+                      );
+                    }}
+                  />
+                ),
               }}
-            >
-              {t("WelcomeAndTermsModal.body.terms")}
-            </Link>
-            {t("WelcomeAndTermsModal.body.periods")}
+            />
           </Text>
           {matchedVersionLabel && (
             <Alert status="warning" mt={3} fontSize="xs-sm" borderRadius="md">

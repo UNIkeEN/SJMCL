@@ -2398,9 +2398,7 @@
       "title": "Bienvenue !"
     },
     "body": {
-      "part1": "Bienvenue sur SJMCL ! Avant de commencer, veuillez lire et accepter notre ",
-      "terms": "Accord d'utilisateur",
-      "periods": "."
+      "text": "Bienvenue sur SJMCL ! Avant de commencer, veuillez lire et accepter notre <terms>Accord d'utilisateur</terms>."
     },
     "button": {
       "exit": "Quitter",

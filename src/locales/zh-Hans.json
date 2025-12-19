@@ -2549,9 +2549,7 @@
       "title": "欢迎！"
     },
     "body": {
-      "part1": "欢迎使用 SJMCL！在开始使用之前，请务必阅读并同意我们的",
-      "terms": "用户协议",
-      "periods": "。"
+      "text": "欢迎使用 SJMCL！在开始使用之前，请务必阅读并同意我们的<terms>用户协议</terms>。"
     },
     "warning": {
       "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不稳定或未开发完成，欢迎报告使用问题与功能建议。"

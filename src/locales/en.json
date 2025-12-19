@@ -2549,9 +2549,7 @@
       "title": "Welcome!"
     },
     "body": {
-      "part1": "Welcome to SJMCL! Before you start, please be sure to read and agree to our ",
-      "terms": "User Agreement",
-      "periods": "."
+      "text": "Welcome to SJMCL! Before you start, please be sure to read and agree to our <terms>User Agreement</terms>."
     },
     "warning": {
       "unstableVersion": "You are using the {{versionLabel}} of SJMCL. Some features may be unstable or incomplete. Bug reports and feature requests are welcome."
