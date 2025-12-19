@@ -6,7 +6,6 @@ import {
   HStack,
   IconButton,
   IconButtonProps,
-  Image,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -21,6 +20,7 @@ import { useRouter } from "next/router";
 import { cloneElement, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeftRight, LuSettings } from "react-icons/lu";
+import AvatarWrapper from "@/components/common/avatar-wrapper";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { CompactButtonGroup } from "@/components/common/compact-button-group";
 import InstancesView from "@/components/instances-view";
@@ -33,7 +33,6 @@ import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
 import styles from "@/styles/launch.module.css";
-import { base64ImgSrc } from "@/utils/string";
 
 interface SwitchButtonProps extends Omit<IconButtonProps, "onClick"> {
   tooltip: string;
@@ -142,11 +141,10 @@ const LaunchPage = () => {
         <HStack spacing={2.5} h="100%" w="100%">
           {selectedPlayer ? (
             <>
-              <Image
+              <AvatarWrapper
                 boxSize="32px"
                 objectFit="cover"
-                src={base64ImgSrc(selectedPlayer.avatar)}
-                alt={selectedPlayer.name}
+                avatar={selectedPlayer.avatar}
               />
               <VStack spacing={0} align="left" mt={-2} minW={0}>
                 <Text

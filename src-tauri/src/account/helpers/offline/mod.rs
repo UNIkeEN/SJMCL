@@ -12,11 +12,8 @@ use tauri::AppHandle;
 use uuid::Uuid;
 
 pub fn load_preset_skin(app: &AppHandle, preset_role: PresetRole) -> SJMCLResult<Vec<Texture>> {
-  let texture_path = get_app_resource_filepath(
-    app,
-    &format!("assets/skins/{}.png", preset_role.to_string()),
-  )
-  .map_err(|_| AccountError::TextureError)?;
+  let texture_path = get_app_resource_filepath(app, &format!("assets/skins/{}.png", preset_role))
+    .map_err(|_| AccountError::TextureError)?;
 
   let texture_img = load_image_from_dir(&texture_path).ok_or(AccountError::TextureError)?;
 

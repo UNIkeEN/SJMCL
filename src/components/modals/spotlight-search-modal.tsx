@@ -24,6 +24,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSearch } from "react-icons/lu";
 import stringSimilarity from "string-similarity";
+import AvatarWrapper from "@/components/common/avatar-wrapper";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -37,11 +38,10 @@ import { ResourceService } from "@/services/resource";
 import { generatePlayerDesc } from "@/utils/account";
 import { generateInstanceDesc } from "@/utils/instance";
 import { translateTag } from "@/utils/resource";
-import { base64ImgSrc } from "@/utils/string";
 
 interface SearchResult {
   type: "page" | "instance" | "player" | "curseforge" | "modrinth";
-  icon: string;
+  icon?: string | React.ReactNode;
   title: string;
   description: string;
   url?: string;
@@ -118,7 +118,6 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
           ? [
               {
                 type: "page",
-                icon: "",
                 title: route,
                 description: t("SpotlightSearchModal.result.recentViewed"),
                 url: route,
@@ -140,7 +139,13 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             (player) =>
               ({
                 type: "player",
-                icon: base64ImgSrc(player.avatar),
+                icon: (
+                  <AvatarWrapper
+                    boxSize="28px"
+                    objectFit="cover"
+                    avatar={player.avatar}
+                  />
+                ),
                 title: player.name,
                 description: generatePlayerDesc(player, true),
                 url: `/accounts`,
@@ -194,7 +199,6 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         (platform: "curseforge" | "modrinth", source: OtherResourceSource) =>
         (type: OtherResourceType): SearchResult => ({
           type: platform,
-          icon: "",
           description: "",
           title: t(`SpotlightSearchModal.resource.${type}`, { query }),
           action: () =>
@@ -422,14 +426,16 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             </Text>
           }
           prefixElement={
-            res.icon ? (
+            typeof res.icon === "string" ? (
               <Image
                 boxSize="28px"
                 objectFit="cover"
                 src={res.icon}
                 alt={res.title}
               />
-            ) : null
+            ) : (
+              res.icon
+            )
           }
           isFullClickZone
           onClick={() => {
