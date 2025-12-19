@@ -167,8 +167,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
           });
         }
       } catch (e: any) {
-        logger.info(e);
-        error(e.message);
+        logger.error("Failed to upload skin or cape file", e);
       } finally {
         setIsLoading(false);
         getPlayerList(true);
