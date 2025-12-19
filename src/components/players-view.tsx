@@ -1,9 +1,9 @@
 import { Box, BoxProps, HStack, Radio, RadioGroup } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import AvatarWrapper from "@/components/common/avatar-wrapper";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
+import PlayerAvatar from "@/components/player-avatar";
 import PlayerMenu from "@/components/player-menu";
 import { useLauncherConfig } from "@/contexts/config";
 import { Player } from "@/models/account";
@@ -44,11 +44,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
           onClick={() => handleUpdateSelectedPlayer(player.id)}
           colorScheme={primaryColor}
         />
-        <AvatarWrapper
-          avatar={player.avatar}
-          boxSize="32px"
-          objectFit="cover"
-        />
+        <PlayerAvatar avatar={player.avatar} boxSize="32px" objectFit="cover" />
       </HStack>
     ),
     ...(withMenu
@@ -69,11 +65,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
       title: player.name,
       description: generatePlayerDesc(player, false),
       image: (
-        <AvatarWrapper
-          avatar={player.avatar}
-          boxSize="36px"
-          objectFit="cover"
-        />
+        <PlayerAvatar avatar={player.avatar} boxSize="36px" objectFit="cover" />
       ),
       ...(withMenu
         ? {

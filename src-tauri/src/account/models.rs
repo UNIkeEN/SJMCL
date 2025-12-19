@@ -81,7 +81,7 @@ pub struct Player {
   pub id: String,
   pub name: String,
   pub uuid: Uuid,
-  pub avatar: Vec<ImageWrapper>,
+  pub avatar: Vec<ImageWrapper>, // [face, hat]
   pub player_type: PlayerType,
   pub auth_account: Option<String>,
   pub auth_server: Option<AuthServer>,

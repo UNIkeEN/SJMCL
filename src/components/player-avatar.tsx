@@ -1,11 +1,11 @@
 import { Box, BoxProps, Image } from "@chakra-ui/react";
 import { base64ImgSrc } from "@/utils/string";
 
-interface AvatarWrapperProps extends BoxProps {
+interface PlayerAvatarProps extends BoxProps {
   avatar: Array<string>;
 }
 
-const AvatarWrapper: React.FC<AvatarWrapperProps> = ({ avatar, ...props }) => {
+const PlayerAvatar: React.FC<PlayerAvatarProps> = ({ avatar, ...props }) => {
   return (
     <Box position="relative" display="inline-block" {...props}>
       {!!avatar[0] && (
@@ -36,4 +36,4 @@ const AvatarWrapper: React.FC<AvatarWrapperProps> = ({ avatar, ...props }) => {
   );
 };
 
-export default AvatarWrapper;
+export default PlayerAvatar;

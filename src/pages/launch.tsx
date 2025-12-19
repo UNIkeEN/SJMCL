@@ -20,10 +20,10 @@ import { useRouter } from "next/router";
 import { cloneElement, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeftRight, LuSettings } from "react-icons/lu";
-import AvatarWrapper from "@/components/common/avatar-wrapper";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { CompactButtonGroup } from "@/components/common/compact-button-group";
 import InstancesView from "@/components/instances-view";
+import PlayerAvatar from "@/components/player-avatar";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -141,7 +141,7 @@ const LaunchPage = () => {
         <HStack spacing={2.5} h="100%" w="100%">
           {selectedPlayer ? (
             <>
-              <AvatarWrapper
+              <PlayerAvatar
                 boxSize="32px"
                 objectFit="cover"
                 avatar={selectedPlayer.avatar}

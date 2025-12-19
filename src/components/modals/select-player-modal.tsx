@@ -10,8 +10,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import AvatarWrapper from "@/components/common/avatar-wrapper";
 import { OptionItem } from "@/components/common/option-item";
+import PlayerAvatar from "@/components/player-avatar";
 import { Player } from "@/models/account";
 
 interface SelectPlayerModalProps extends Omit<ModalProps, "children"> {
@@ -44,7 +44,7 @@ const SelectPlayerModal: React.FC<SelectPlayerModalProps> = ({
                 }
                 w="full"
                 prefixElement={
-                  <AvatarWrapper
+                  <PlayerAvatar
                     avatar={player.avatar}
                     boxSize="32px"
                     objectFit="cover"

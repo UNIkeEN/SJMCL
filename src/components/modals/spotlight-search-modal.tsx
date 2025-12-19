@@ -24,10 +24,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSearch } from "react-icons/lu";
 import stringSimilarity from "string-similarity";
-import AvatarWrapper from "@/components/common/avatar-wrapper";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
+import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useRoutingHistory } from "@/contexts/routing-history";
@@ -140,7 +140,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               ({
                 type: "player",
                 icon: (
-                  <AvatarWrapper
+                  <PlayerAvatar
                     boxSize="28px"
                     objectFit="cover"
                     avatar={player.avatar}
