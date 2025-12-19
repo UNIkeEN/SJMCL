@@ -1,5 +1,6 @@
 import { Box, BoxProps, HStack, Radio, RadioGroup } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import AvatarWrapper from "@/components/common/avatar-wrapper";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
@@ -7,7 +8,6 @@ import PlayerMenu from "@/components/player-menu";
 import { useLauncherConfig } from "@/contexts/config";
 import { Player } from "@/models/account";
 import { generatePlayerDesc } from "@/utils/account";
-import AvatarWrapper from "./common/avatar-wrapper";
 
 interface PlayersViewProps extends BoxProps {
   players: Player[];
