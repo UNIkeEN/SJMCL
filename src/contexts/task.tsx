@@ -354,7 +354,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             case PTaskEventStatusEnums.Failed: {
-              console.error(
+              logger.error(
                 `Task ${payload.id} failed in group ${payload.taskGroup}: ${
                   (payload.event as FailedPTaskEventStatus).reason
                 }`

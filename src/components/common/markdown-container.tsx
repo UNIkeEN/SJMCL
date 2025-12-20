@@ -42,7 +42,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
               onClick={() =>
                 openUrl(
                   `https://github.com/UNIkeEN/SJMCL/pull/${issueNumber}`
-                ).catch(console.error)
+                ).catch(logger.error)
               }
             >
               {part}
@@ -56,7 +56,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
               key={idx}
               color={`${primaryColor}.500`}
               onClick={() =>
-                openUrl(`https://github.com/${username}`).catch(console.error)
+                openUrl(`https://github.com/${username}`).catch(logger.error)
               }
             >
               {part}

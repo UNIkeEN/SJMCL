@@ -48,14 +48,14 @@ export const useDeepLink = ({ trigger, onCall }: UseDeepLinkOptions) => {
             handleUrls(currentUrls);
           }
         } catch (err) {
-          console.error("getCurrent failed:", err);
+          logger.error("getCurrent failed:", err);
         }
       }
 
       try {
         unlistenRef.current = await onOpenUrl(handleUrls); // listen for deeplink when app is running
       } catch (err) {
-        console.error("Failed to listen to deep links:", err);
+        logger.error("Failed to listen to deep links:", err);
       }
     };
 
