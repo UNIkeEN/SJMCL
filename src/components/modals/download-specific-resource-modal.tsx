@@ -57,7 +57,7 @@ import { ResourceService } from "@/services/resource";
 import { TaskService } from "@/services/task";
 import { ISOToDate } from "@/utils/datetime";
 import { translateTag } from "@/utils/resource";
-import { formatDisplayCount } from "@/utils/string";
+import { formatDisplayCount, sanitizeFileName } from "@/utils/string";
 
 interface DownloadSpecificResourceModalProps
   extends Omit<ModalProps, "children"> {
@@ -197,9 +197,9 @@ const DownloadSpecificResourceModal: React.FC<
     translatedName?: string
   ) => {
     const dir = await getDefaultFilePath();
-    const fileName = translatedName
-      ? `[${translatedName}] ${item.fileName}`
-      : item.fileName;
+    const fileName = sanitizeFileName(
+      translatedName ? `[${translatedName}] ${item.fileName}` : item.fileName
+    );
     const savepath = await save({
       defaultPath: dir + "/" + fileName,
     });
