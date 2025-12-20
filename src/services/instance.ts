@@ -436,7 +436,7 @@ export class InstanceService {
 
   /**
    * ADD/REPLACE the custom instance icon.
-   * Backend will overwrite <version_path>/icon
+   * Backend will create (if missing) or replace (if existing) the custom icon file at <version_path>/icon.
    * @param {string} instanceId - The instance ID.
    * @param {string} sourceSrc - Local file path of the source image.
    * @returns {Promise<InvokeResponse<void>>}
