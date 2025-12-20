@@ -18,7 +18,7 @@ import InstanceMenu from "@/components/instance-menu";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { InstanceSummary } from "@/models/instance/misc";
-import { generateInstanceDesc } from "@/utils/instance";
+import { generateInstanceDesc, getInstanceIconSrc } from "@/utils/instance";
 
 interface InstancesViewProps extends BoxProps {
   instances: InstanceSummary[];
@@ -63,9 +63,9 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
         <Image
           boxSize="32px"
-          objectFit="cover"
-          src={instance.iconSrc}
+          src={getInstanceIconSrc(instance.iconSrc, instance.versionPath)}
           alt={instance.name}
+          fallbackSrc="/images/icons/JEIcon_Release.png"
         />
       </HStack>
     ),

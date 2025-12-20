@@ -1185,6 +1185,9 @@
       "launch": "启动实例"
     }
   },
+  "InstanceIconSelector": {
+    "customize": "自定义图像"
+  },
   "InstanceMenu": {
     "label": {
       "details": "实例详情",
@@ -2388,6 +2391,12 @@
             "FILE_NOT_FOUND_ERROR": "整合包文件不存在，可能已更名、移动或删除",
             "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误"
           }
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "自定义实例图标添加成功",
+        "error": {
+          "title": "自定义实例图标添加失败"
         }
       }
     },

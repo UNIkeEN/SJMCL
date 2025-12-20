@@ -1185,6 +1185,9 @@
       "launch": "Launch Instance"
     }
   },
+  "InstanceIconSelector": {
+    "customize": "Customize Icon"
+  },
   "InstanceMenu": {
     "label": {
       "details": "Instance Details",
@@ -2388,6 +2391,12 @@
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
             "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
           }
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "Successfully added custom instance icon",
+        "error": {
+          "title": "Failed to add custom instance icon"
         }
       }
     },

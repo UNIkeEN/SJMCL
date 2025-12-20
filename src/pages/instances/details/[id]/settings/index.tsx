@@ -23,6 +23,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
+import { getInstanceIconSrc } from "@/utils/instance";
 import { isFileNameSanitized } from "@/utils/string";
 
 const InstanceSettingsPage = () => {
@@ -108,16 +109,18 @@ const InstanceSettingsPage = () => {
           children: (
             <HStack>
               <Image
-                src={summary?.iconSrc}
+                src={getInstanceIconSrc(summary?.iconSrc, summary?.versionPath)}
                 alt={summary?.iconSrc}
                 boxSize="28px"
-                objectFit="cover"
+                fallbackSrc="/images/icons/JEIcon_Release.png"
               />
               <InstanceIconSelectorPopover
                 value={summary?.iconSrc}
                 onIconSelect={(value) => {
                   handleUpdateInstanceConfig("iconSrc", value);
                 }}
+                versionPath={summary?.versionPath}
+                instanceId={summary?.id}
               />
             </HStack>
           ),

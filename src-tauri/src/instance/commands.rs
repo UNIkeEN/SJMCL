@@ -1239,3 +1239,29 @@ pub async fn retrieve_modpack_meta_info(
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
   ModpackMetaInfo::from_archive(&app, &file).await
 }
+
+#[tauri::command]
+pub fn add_custom_instance_icon(
+  app: AppHandle,
+  instance_id: String,
+  source_src: String,
+) -> SJMCLResult<()> {
+  let version_path = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+    instance.version_path.clone()
+  };
+
+  let source_path = Path::new(&source_src);
+  if !source_path.exists() || !source_path.is_file() {
+    return Err(InstanceError::FileNotFoundError.into());
+  }
+
+  let dest_path = Path::new(&version_path).join("icon");
+  fs::copy(source_path, &dest_path)?;
+
+  Ok(())
+}

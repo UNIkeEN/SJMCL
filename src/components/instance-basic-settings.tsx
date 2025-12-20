@@ -1,3 +1,4 @@
+// This component is used in the create-instance modal, instead of instance settings page.
 import { Box, HStack, Image, Radio, VStack } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useEffect } from "react";
