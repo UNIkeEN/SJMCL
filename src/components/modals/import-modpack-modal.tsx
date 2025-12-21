@@ -25,11 +25,17 @@ import {
   OptionItemProps,
 } from "@/components/common/option-item";
 import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
-import { modLoaderTypesToIcon } from "@/components/modals/create-instance-modal";
+import {
+  gameTypesToIcon,
+  modLoaderTypesToIcon,
+} from "@/components/modals/create-instance-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ModpackMetaInfo } from "@/models/instance/misc";
-import { ModLoaderResourceInfo } from "@/models/resource";
+import {
+  ModLoaderResourceInfo,
+  defaultModLoaderResourceInfo,
+} from "@/models/resource";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
 import { getGameDirName } from "@/utils/instance";
@@ -153,9 +159,13 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
           },
           {
             title: t("ImportModpackModal.label.modLoader"),
-            children: `${modpack.modLoader.loaderType} ${modpack.modLoader.version} ${
-              modpack.modLoader.branch ? `(${modpack.modLoader.branch})` : ""
-            }`,
+            children: modpack.modLoader
+              ? `${modpack.modLoader.loaderType} ${modpack.modLoader.version} ${
+                  modpack.modLoader.branch
+                    ? `(${modpack.modLoader.branch})`
+                    : ""
+                }`
+              : "-",
           },
           {
             title: t("ImportModpackModal.label.gameVersion"),
@@ -201,13 +211,15 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
         description,
         iconSrc,
         clientResourceInfo,
-        {
-          loaderType: modpack.modLoader.loaderType,
-          version: modpack.modLoader.version,
-          branch: modpack.modLoader.branch,
-          description: "",
-          stable: true,
-        } as ModLoaderResourceInfo,
+        modpack.modLoader
+          ? ({
+              loaderType: modpack.modLoader.loaderType,
+              version: modpack.modLoader.version,
+              branch: modpack.modLoader.branch,
+              description: "",
+              stable: true,
+            } as ModLoaderResourceInfo)
+          : defaultModLoaderResourceInfo,
         path
       );
       if (createResp.status === "success") {
@@ -247,7 +259,9 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
           setName(sanitizeFileName(response.data.name));
           setDescription(response.data.description || "");
           setIconSrc(
-            modLoaderTypesToIcon[response.data.modLoader.loaderType] || ""
+            response.data.modLoader
+              ? modLoaderTypesToIcon[response.data.modLoader.loaderType]
+              : gameTypesToIcon["release"]
           );
         } else {
           toast({

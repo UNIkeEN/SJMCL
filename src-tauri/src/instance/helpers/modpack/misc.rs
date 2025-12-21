@@ -79,7 +79,7 @@ pub struct ModpackMetaInfo {
   pub author: Option<String>,
   pub modpack_source: OtherResourceSource,
   pub client_version: String,
-  pub mod_loader: ModLoader,
+  pub mod_loader: Option<ModLoader>,
 }
 
 impl ModpackMetaInfo {

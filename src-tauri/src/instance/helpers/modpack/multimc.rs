@@ -98,22 +98,28 @@ impl ModpackManifest for MultiMcManifest {
   }
 
   async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
-    let (loader_type, version) = self.get_mod_loader_type_version()?;
     let client_version = self.get_client_version()?;
+    let mod_loader = if let Ok((loader_type, version)) = self.get_mod_loader_type_version() {
+      Some(
+        ModLoader {
+          loader_type,
+          version,
+          ..Default::default()
+        }
+        .with_branch(app, client_version.clone())
+        .await?,
+      )
+    } else {
+      None
+    };
     Ok(ModpackMetaInfo {
       name: self.cfg.get("name").cloned().unwrap_or_default(),
       version: String::new(),
       description: None,
       author: None,
       modpack_source: OtherResourceSource::MultiMc,
-      client_version: client_version.clone(),
-      mod_loader: ModLoader {
-        loader_type,
-        version,
-        ..Default::default()
-      }
-      .with_branch(app, client_version)
-      .await?,
+      client_version,
+      mod_loader,
     })
   }
 
