@@ -183,6 +183,9 @@ impl DownloadTask {
       async move {
         tokio::fs::create_dir_all(&self.dest_path.parent().unwrap()).await?;
         let mut last_err: Option<SJMCLError> = None;
+        if param.src.is_empty() {
+          return Err(SJMCLError("No download sources provided".into()));
+        }
         for src in param.src.clone() {
           let attempt = async {
             let current = task_handle.read().unwrap().desc.current;
