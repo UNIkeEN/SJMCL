@@ -155,7 +155,10 @@ impl DownloadTask {
   )> {
     let resp = Self::send_request(app_handle, current, src.clone()).await?;
     let total_progress = if current == 0 {
-      resp.content_length().unwrap_or(0) as i64
+      match resp.content_length() {
+        Some(len) => len as i64,
+        None => -1,
+      }
     } else {
       -1
     };
