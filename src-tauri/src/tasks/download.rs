@@ -241,7 +241,10 @@ impl DownloadTask {
             }
           }
         }
-        Err(last_err.unwrap_or_else(|| SJMCLError("All sources failed".into())))
+        match last_err {
+          Some(e) => Err(SJMCLError(format!("All sources failed. Last error: {e}"))),
+          None => Err(SJMCLError("All sources failed".into())),
+        }
       },
       handle,
     ))
