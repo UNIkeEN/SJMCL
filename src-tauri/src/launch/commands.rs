@@ -27,7 +27,7 @@ use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::{create_zip_from_dirs, manage_permissions_unix, PermissionOperation};
-use crate::utils::logging::get_launcher_log_path;
+use crate::utils::logging::{get_game_log_path, get_launcher_log_path};
 use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
@@ -382,10 +382,7 @@ pub async fn open_game_log_window(app: AppHandle, launching_id: u64) -> SJMCLRes
 
 #[tauri::command]
 pub fn retrieve_game_log(app: AppHandle, launching_id: u64) -> SJMCLResult<Vec<String>> {
-  let log_file_dir = app.path().resolve::<PathBuf>(
-    format!("GameLogs/game_log_{launching_id}.log").into(),
-    BaseDirectory::AppCache,
-  )?;
+  let log_file_dir = get_game_log_path(&app, launching_id)?;
   Ok(
     BufReader::new(std::fs::OpenOptions::new().read(true).open(log_file_dir)?)
       .lines()
@@ -415,10 +412,7 @@ pub fn export_game_crash_info(
   save_path: String,
 ) -> SJMCLResult<String> {
   // game log
-  let game_log_path = app.path().resolve::<PathBuf>(
-    format!("GameLogs/game_log_{launching_id}.log").into(),
-    BaseDirectory::AppCache,
-  )?;
+  let game_log_path = get_game_log_path(&app, launching_id)?;
 
   // crash report
   let crash_report_path =
@@ -448,7 +442,7 @@ pub fn export_game_crash_info(
   fs::write(&launch_script_path, &launching.full_command)?;
 
   // launcher log
-  let launcher_log_path = get_launcher_log_path(app.clone());
+  let launcher_log_path = get_launcher_log_path(&app)?;
 
   let zip_file_path = PathBuf::from(save_path);
 

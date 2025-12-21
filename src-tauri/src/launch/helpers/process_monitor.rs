@@ -3,20 +3,19 @@ use crate::instance::models::misc::Instance;
 use crate::launch::constants::*;
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
+use crate::utils::logging::get_game_log_path;
 use crate::utils::shell::execute_command_line;
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader, Write};
-use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::Sender;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use std::{fs, thread};
-use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio;
 
@@ -95,10 +94,7 @@ pub async fn monitor_process(
 ) -> SJMCLResult<()> {
   // create unique log window
   let label = format!("game_log_{id}");
-  let log_file_path = app.path().resolve::<PathBuf>(
-    format!("GameLogs/{label}.log").into(),
-    BaseDirectory::AppCache,
-  )?;
+  let log_file_path = get_game_log_path(&app, id)?;
   if let Some(parent_dir) = log_file_path.parent() {
     fs::create_dir_all(parent_dir)?;
   }
