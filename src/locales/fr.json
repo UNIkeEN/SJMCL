@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Merci à LittleSkin et @tnqzh123 pour l'aide sur la conception du processus de connexion"
         },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "Merci aux développeurs de SCL pour la communication continue et l'inspiration mutuelle avec nous"
+        },
         "sinter": {
           "title": "Sinter",
           "description": "Utilisé comme police d'interface sur Windows et Linux, sous licence SIL"
@@ -46,10 +50,6 @@
         "skinview3d": {
           "title": "bs-community / skinview3d",
           "description": "Le composant d'aperçu de la peau est basé sur ce projet open source, sous licence MIT"
-        },
-        "scl": {
-          "title": "Swift Craft Launcher",
-          "description": "Merci aux développeurs de SCL pour la communication continue et l'inspiration mutuelle avec nous"
         }
       }
     },
@@ -204,6 +204,28 @@
       "usePasswordLogin": "Connexion par mot de passe"
     }
   },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "Des ressources prérequises sont manquantes"
+    },
+    "description": "Veuillez confirmer que toutes les ressources prérequises sont installées, ou continuez à télécharger la ressource d'origine.",
+    "button": {
+      "continue": "Continuer à télécharger la ressource d'origine",
+      "cancel": "Annuler"
+    },
+    "fallback": {
+      "title": "ID de la ressource : {{resourceId}}",
+      "description": "Impossible d'obtenir les détails de cette ressource depuis le réseau. Veuillez vérifier votre connexion Internet ou réessayer plus tard."
+    },
+    "dependencyType": {
+      "required": "Obligatoire",
+      "optional": "Optionnel",
+      "incompatible": "Conflit",
+      "embedded": "Intégré",
+      "tool": "Outil",
+      "include": "Inclus"
+    }
+  },
   "AllInstancesPage": {
     "button": {
       "addAndImport": "Ajouter et importer",
@@ -215,13 +237,13 @@
       "grid": "Vue en grille",
       "list": "Vue en liste"
     },
-    "title": "Toutes les instances",
     "sortByTypeList": {
       "versionAsc": "Trier par version du jeu (croissant)",
       "versionDesc": "Trier par version du jeu (décroissant)",
       "name": "Nom de l'instance"
     },
-    "sortBy": "Trier par"
+    "sortBy": "Trier par",
+    "title": "Toutes les instances"
   },
   "AppearanceSettingsPage": {
     "theme": {
@@ -233,9 +255,9 @@
         "colorMode": {
           "title": "Mode de couleur",
           "type": {
+            "system": "Suivre le paramètre du système",
             "light": "Clairs",
-            "dark": "Sombre",
-            "system": "Suivre le paramètre du système"
+            "dark": "Sombre"
           }
         },
         "useLiquidGlassDesign": {
@@ -306,6 +328,46 @@
       }
     }
   },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "Modifier le chargeur de mods",
+        "install": "Installer le chargeur de mods"
+      }
+    },
+    "notSelectedLoader": "Aucun nouveau chargeur sélectionné",
+    "footer": {
+      "installFabricApi": "Installer également le mod Fabric API"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "Vérifier les mises à jour des mods"
+    },
+    "button": {
+      "update": "Mise à jour",
+      "cancel": "Annuler"
+    },
+    "label": {
+      "noUpdate": "Aucun mod nécessite une mise à jour",
+      "loading": "Vérification des mises à jour en cours... {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "Mod",
+      "currentVersion": "Version actuelle",
+      "latestVersion": "dernière version",
+      "source": "Source"
+    },
+    "error": {
+      "renameOldMod": "Échec du renommage de l'ancien fichier"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "Effacer le cache de téléchargement",
+      "content": "Voulez-vous vraiment effacer le cache de téléchargement ? Cette action est irréversible."
+    }
+  },
   "ComingSoonSign": {
     "text": "Cette page n'est pas encore disponible, restez à l'écoute."
   },
@@ -373,6 +435,12 @@
       }
     }
   },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Supprimer le mod",
+      "content": "Voulez-vous vraiment supprimer le mod « {{modName}} » de l'instance de jeu « {{instanceName}} » ?"
+    }
+  },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Supprimer le joueur",
@@ -384,6 +452,9 @@
       "title": "Supprimer le serveur d'authentification",
       "content": "Êtes-vous sûr de vouloir supprimer le serveur d'authentification « {{name}} » ? Il ne figurera plus dans votre liste de serveurs."
     }
+  },
+  "DevToolbar": {
+    "tooltip": "Barre d'outils de développement"
   },
   "DiscoverPage": {
     "title": "Découvrir",
@@ -398,6 +469,20 @@
     },
     "tag": {
       "online": "En ligne"
+    }
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "Télécharger Java"
+    },
+    "selector": {
+      "vendor": "Éditeur",
+      "version": "Version",
+      "type": "Type"
+    },
+    "warning": {
+      "mojang": "Le runtime Java distribué par Mojang sera installé par SJMCL dans un répertoire spécifique.",
+      "oracle": "Le téléchargement à partir de la source Oracle peut nécessiter une connexion."
     }
   },
   "DownloadModpackModal": {
@@ -502,8 +587,8 @@
     },
     "label": {
       "paused": "En pause",
-      "error": "Erreur",
       "completed": "Terminé.",
+      "error": "Erreur",
       "cancelled": "Annulé."
     },
     "task": {
@@ -766,9 +851,9 @@
   },
   "GameLogPage": {
     "placeholder": "Filtrer par mot-clé",
+    "revealRawLog": "Afficher le fichier journal brut",
     "clearLogs": "Effacer tous les journaux",
-    "scrollToBottom": "Faire défiler vers le bas",
-    "revealRawLog": "Afficher le fichier journal brut"
+    "scrollToBottom": "Faire défiler vers le bas"
   },
   "GameVersionSelector": {
     "old_beta": "Ancienne bêta",
@@ -785,6 +870,7 @@
         "description": "Veuillez utiliser cette fonction avant de vous connecter à votre compte microsoft."
       }
     },
+    "browse": "Parcourir",
     "cancel": "Annuler",
     "close": "Fermer",
     "confirm": "Confirmer",
@@ -813,6 +899,7 @@
     "edit": "Éditer",
     "enable": "Activer",
     "finish": "Terminer",
+    "launch": "Démarrer",
     "next": "Suivant",
     "notice": "Remarque",
     "open": "Ouvrir",
@@ -821,9 +908,6 @@
     "refresh": "Rafraîchir",
     "revealFile": "Afficher dans {{opener}}",
     "search": "Rechercher",
-    "viewOnWiki": "Voir sur Minecraft Wiki",
-    "browse": "Parcourir",
-    "launch": "Démarrer",
     "share": {
       "text": "Partager",
       "toast": {
@@ -835,7 +919,8 @@
       "dev": "Version de développement",
       "nightly": "Version de construction nocturne",
       "beta": "Version de test"
-    }
+    },
+    "viewOnWiki": "Voir sur Minecraft Wiki"
   },
   "GeneralSettingsPage": {
     "general": {
@@ -993,6 +1078,20 @@
       }
     }
   },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "Page de l'instance",
+      "content": "Ajoutez et sélectionnez ici votre instance de jeu Minecraft pour télécharger et gérer toutes sortes de ressources de jeu."
+    },
+    "step2": {
+      "title": "Page du compte",
+      "content": "Ajoutez un compte ici et sélectionnez le personnage avec lequel vous souhaitez jouer."
+    },
+    "step3": {
+      "title": "Minecraft, démarre !",
+      "content": "Après avoir sélectionné l'instance et le personnage, et ajusté les paramètres, cliquez sur le bouton de démarrage pour profiter du jeu ! 🥳"
+    }
+  },
   "HeadNavBar": {
     "navList": {
       "launch": "Lancer",
@@ -1043,6 +1142,23 @@
           "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
         }
       }
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "Importer un pack de mods"
+    },
+    "label": {
+      "instanceSettings": "Paramètres de l'instance",
+      "modpackInfo": "Informations sur le pack de mods",
+      "modpackName": "Nom du pack de mods",
+      "modpackVersion": "Version du pack de mods",
+      "author": "Auteur",
+      "modLoader": "Chargeur de mods",
+      "gameVersion": "Version du jeu"
+    },
+    "button": {
+      "import": "Importer"
     }
   },
   "InstanceBasicSettings": {
@@ -1254,8 +1370,21 @@
       "slim": "Mince"
     }
   },
-  "ViewSkinModal": {
-    "skinView": "Voir le skin"
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Ajouter Java"
+    },
+    "label": {
+      "javaPath": "Chemin Java"
+    },
+    "placeholder": {
+      "javaPath": "Veuillez saisir ou sélectionner le chemin du fichier exécutable Java"
+    }
+  },
+  "MCVersionNumberHelper": {
+    "content": "À partir de 2026, Minecraft adopte un nouveau système de numérotation des versions. Les numéros de version commenceront par l'année de publication (ex: 26.1), remplaçant l'ancien système de version 1.x.",
+    "linkText": "Lisez l'article officiel.",
+    "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
   },
   "MemoryStatusProgress": {
     "title": "État de la mémoire",
@@ -1264,6 +1393,9 @@
       "now": "En cours d'utilisation",
       "maxAllocation": "Maximum alloué à Minecraft"
     }
+  },
+  "MenuSelector": {
+    "selectedCount": "{{count}} élément sélectionné"
   },
   "ModLoaderCards": {
     "installed": "Installé",
@@ -1278,6 +1410,9 @@
   },
   "NotFoundPage": {
     "text": "Page non trouvée, redirection dans {{seconds}} secondes"
+  },
+  "NotifyNewVersionModal": {
+    "title": "Nouvelle version détectée"
   },
   "OptionItemGroup": {
     "button": {
@@ -1325,6 +1460,16 @@
     },
     "button": {
       "login": "Connexion"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Mise à jour du lanceur",
+    "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour finaliser la mise à jour.",
+    "bodyMSI": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
+    "button": {
+      "restart": "Redémarrer",
+      "install": "Installer",
+      "later": "Plus tard"
     }
   },
   "ResourceDownloader": {
@@ -1554,25 +1699,6 @@
         "technology": "Technologie"
       }
     },
-    "sortByList": {
-      "CurseForge": {
-        "Popularity": "Popularité",
-        "Latest update": "Dernière mise à jour",
-        "Creation date": "Date de création",
-        "Total downloads": "Téléchargements",
-        "A-Z": "Nom"
-      },
-      "Modrinth": {
-        "relevance": "Pertinence",
-        "downloads": "Téléchargements",
-        "follows": "Abonnés",
-        "newest": "Date de publication",
-        "updated": "Date de mise à jour"
-      }
-    },
-    "versionList": {
-      "All": "Tous"
-    },
     "datapackTagList": {
       "CurseForge": {
         "All": "Tous",
@@ -1609,11 +1735,33 @@
         "utility": "Pratique",
         "worldgen": "Génération de monde"
       }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "Popularité",
+        "Latest update": "Dernière mise à jour",
+        "Creation date": "Date de création",
+        "Total downloads": "Téléchargements",
+        "A-Z": "Nom"
+      },
+      "Modrinth": {
+        "relevance": "Pertinence",
+        "downloads": "Téléchargements",
+        "follows": "Abonnés",
+        "newest": "Date de publication",
+        "updated": "Date de mise à jour"
+      }
+    },
+    "versionList": {
+      "All": "Tous"
     }
   },
   "RestoreConfigConfirmDialog": {
     "title": "Restaurer les paramètres du lanceur",
     "body": "Cette opération restaurera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Veuillez éditer le fichier de configuration original du lanceur avec précaution. Un format incorrect peut entraîner la perte des paramètres existants ou un dysfonctionnement du lanceur"
   },
   "ScreenshotPreviewModal": {
     "menu": {
@@ -1687,15 +1835,6 @@
           "title": "Échec de la récupération de la liste Java"
         }
       },
-      "checkGameDirectory": {
-        "error": {
-          "title": "Répertoire du jeu invalide",
-          "description": {
-            "GAME_DIR_ALREADY_ADDED": "Le répertoire du jeu a déjà été ajouté",
-            "GAME_DIR_NOT_EXIST": "Le répertoire du jeu n'existe pas"
-          }
-        }
-      },
       "validateJava": {
         "error": {
           "title": "Échec de la validation de Java",
@@ -1707,6 +1846,15 @@
       "downloadMojangJava": {
         "error": {
           "title": "Échec du téléchargement du runtime Java Mojang."
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "Répertoire du jeu invalide",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "Le répertoire du jeu a déjà été ajouté",
+            "GAME_DIR_NOT_EXIST": "Le répertoire du jeu n'existe pas"
+          }
         }
       },
       "clearDownloadCache": {
@@ -1763,6 +1911,21 @@
           }
         }
       },
+      "reloginPlayerOAuth": {
+        "success": "Reconnexion du joueur réussie",
+        "error": {
+          "title": "Échec de la reconnexion du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable",
+            "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "INVALID": "Impossible d'actualiser un joueur hors ligne",
+            "CANCELLED": "Annulé",
+            "NO_MINECRAFT_PROFILE": "Personnage non trouvé. Veuillez vérifier si vous avez acheté Minecraft et créé un personnage."
+          }
+        }
+      },
       "addPlayer3rdPartyPassword": {
         "success": "Joueur ajouté avec succès",
         "error": {
@@ -1774,6 +1937,19 @@
             "INVALID": "Nom d'utilisateur ou mot de passe incorrect",
             "NOT_FOUND": "Serveur d'authentification introuvable",
             "EXPIRED": "Le jeton a expiré. Veuillez vous reconnecter."
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Reconnexion du joueur réussie",
+        "error": {
+          "title": "Échec de la reconnexion du joueur",
+          "description": {
+            "NOT_FOUND": "Joueur introuvable",
+            "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
+            "INVALID": "Nom d'utilisateur ou mot de passe incorrect"
           }
         }
       },
@@ -1800,6 +1976,17 @@
           }
         }
       },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "La mise à jour du skin du personnage a réussi",
+        "error": {
+          "title": "Échec de la mise à jour du skin du personnage",
+          "description": {
+            "NOT_FOUND": "Le personnage n'existe pas",
+            "INVALID": "Le type de personnage est incorrect",
+            "TEXTURE_ERROR": "Échec de la récupération du skin du personnage"
+          }
+        }
+      },
       "deletePlayer": {
         "success": "Joueur supprimé avec succès",
         "error": {
@@ -1819,34 +2006,6 @@
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
             "INVALID": "Impossible d'actualiser un joueur hors ligne"
-          }
-        }
-      },
-      "reloginPlayerOAuth": {
-        "success": "Reconnexion du joueur réussie",
-        "error": {
-          "title": "Échec de la reconnexion du joueur",
-          "description": {
-            "NOT_FOUND": "Joueur introuvable",
-            "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
-            "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
-            "INVALID": "Impossible d'actualiser un joueur hors ligne",
-            "CANCELLED": "Annulé",
-            "NO_MINECRAFT_PROFILE": "Personnage non trouvé. Veuillez vérifier si vous avez acheté Minecraft et créé un personnage."
-          }
-        }
-      },
-      "reloginPlayer3rdPartyPassword": {
-        "success": "Reconnexion du joueur réussie",
-        "error": {
-          "title": "Échec de la reconnexion du joueur",
-          "description": {
-            "NOT_FOUND": "Joueur introuvable",
-            "EXPIRED": "Le jeton a expiré, veuillez vous reconnecter",
-            "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
-            "INVALID": "Nom d'utilisateur ou mot de passe incorrect"
           }
         }
       },
@@ -1884,17 +2043,6 @@
             "NOT_FOUND": "Serveur d'authentification introuvable"
           }
         }
-      },
-      "updatePlayerSkinOfflineLocal": {
-        "success": "La mise à jour du skin du personnage a réussi",
-        "error": {
-          "title": "Échec de la mise à jour du skin du personnage",
-          "description": {
-            "NOT_FOUND": "Le personnage n'existe pas",
-            "INVALID": "Le type de personnage est incorrect",
-            "TEXTURE_ERROR": "Échec de la récupération du skin du personnage"
-          }
-        }
       }
     },
     "launch": {
@@ -1912,9 +2060,9 @@
         "error": {
           "title": "Échec de la vérification des fichiers du jeu",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
             "MOD_LOADER_NOT_INSTALLED": "Le chargeur de mods n'est pas encore installé",
             "MOD_LOADER_LIB_NOT_DOWNLOADED": "Les fichiers de bibliothèque du chargeur de mods n'ont pas été téléchargés",
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
             "GAME_FILES_INCOMPLETE": "Les fichiers du jeu sont incomplets ou manquants",
             "LAUNCHING_STATE_NOT_FOUND": "L'état de démarrage est perdu"
           }
@@ -1928,8 +2076,8 @@
             "EXPIRED": "Le jeton d'accès a expiré, veuillez vous reconnecter",
             "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "SAVE_ERROR": "Échec de l'enregistrement d'Authlib-Injector",
             "AUTHLIB_INJECTOR_NOT_READY": "Échec du téléchargement d'Authlib-Injector. Veuillez vérifier votre connexion réseau.",
+            "SAVE_ERROR": "Échec de l'enregistrement d'Authlib-Injector",
             "LAUNCHING_STATE_NOT_FOUND": "L'état de démarrage est perdu"
           }
         }
@@ -1954,13 +2102,23 @@
           }
         }
       },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "Échec de la récupération des métadonnées de la version du jeu",
+          "description": {
+            "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
+            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "CLIENT_VERSION_NOT_FOUND": "La version du jeu spécifiée n'existe pas"
+          }
+        }
+      },
       "fetchModLoaderVersionList": {
         "error": {
           "title": "Échec de la récupération de la liste des chargeurs de mods",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
-            "NETWORK_ERROR": "Échec du démarrage du jeu"
+            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
       },
@@ -1969,8 +2127,8 @@
           "title": "Échec de la récupération de la liste des ressources",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
-            "NETWORK_ERROR": "Échec du démarrage du jeu"
+            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
       },
@@ -1979,18 +2137,8 @@
           "title": "Échec de la récupération de la liste des versions de la ressource",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
-            "NETWORK_ERROR": "Échec du démarrage du jeu"
-          }
-        }
-      },
-      "fetchGameVersionSpecific": {
-        "error": {
-          "title": "Échec de la récupération des métadonnées de la version du jeu",
-          "description": {
-            "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
             "NETWORK_ERROR": "Échec du démarrage du jeu",
-            "CLIENT_VERSION_NOT_FOUND": "La version du jeu spécifiée n'existe pas"
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
       },
@@ -2036,6 +2184,19 @@
           }
         }
       },
+      "createInstance": {
+        "error": {
+          "title": "Échec de la création de la tâche de téléchargement de l'instance",
+          "description": {
+            "CONFLICT_NAME_ERROR": "Un répertoire d'instance portant le même nom existe déjà pour l'instance actuelle",
+            "FOLDER_CREATION_FAILED": "Échec de la création du dossier cible",
+            "FILE_CREATION_FAILED": "Échec de la création du fichier cible",
+            "NETWORK_ERROR": "Erreur réseau",
+            "CLIENT_JSON_PARSE_ERROR": "Erreur d'analyse des informations de version de l'instance",
+            "ASSET_INDEX_PARSE_ERROR": "Erreur d'analyse du fichier d'index des ressources"
+          }
+        }
+      },
       "updateInstanceConfig": {
         "error": {
           "title": "Échec de la mise à jour des paramètres de l'instance",
@@ -2058,8 +2219,8 @@
         "error": {
           "title": "Échec de la réinitialisation des paramètres du jeu de l'instance",
           "description": {
-            "SAVE_ERROR": "Échec de l'enregistrement du fichier de paramètres de l'instance",
-            "INSTANCE_NOT_FOUND_BY_ID": "Aucune instance trouvée avec l'ID spécifié"
+            "INSTANCE_NOT_FOUND_BY_ID": "Aucune instance trouvée avec l'ID spécifié",
+            "SAVE_ERROR": "Échec de l'enregistrement du fichier de paramètres de l'instance"
           }
         }
       },
@@ -2130,6 +2291,14 @@
           }
         }
       },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des mods",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable"
+          }
+        }
+      },
       "retrieveResourcePackList": {
         "error": {
           "title": "Échec de la récupération de la liste des packs de ressources"
@@ -2155,11 +2324,11 @@
           "title": "Échec de la récupération de la liste des captures d'écran"
         }
       },
-      "retrieveLocalModList": {
+      "toggleModByExtension": {
         "error": {
-          "title": "Échec de la récupération de la liste des mods",
+          "title": "Échec du changement d'état du mod",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable"
+            "FILE_NOT_FOUND_ERROR": "Le fichier du mod est introuvable, il a peut-être été renommé, déplacé ou supprimé"
           }
         }
       },
@@ -2173,14 +2342,6 @@
           }
         }
       },
-      "toggleModByExtension": {
-        "error": {
-          "title": "Échec du changement d'état du mod",
-          "description": {
-            "FILE_NOT_FOUND_ERROR": "Le fichier du mod est introuvable, il a peut-être été renommé, déplacé ou supprimé"
-          }
-        }
-      },
       "createLaunchDesktopShortcut": {
         "success": "Raccourci de lancement ajouté au bureau",
         "error": {
@@ -2188,19 +2349,6 @@
           "description": {
             "SHORTCUT_CREATION_FAILED": "Échec de l'exécution de la commande",
             "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas"
-          }
-        }
-      },
-      "createInstance": {
-        "error": {
-          "title": "Échec de la création de la tâche de téléchargement de l'instance",
-          "description": {
-            "CONFLICT_NAME_ERROR": "Un répertoire d'instance portant le même nom existe déjà pour l'instance actuelle",
-            "FOLDER_CREATION_FAILED": "Échec de la création du dossier cible",
-            "FILE_CREATION_FAILED": "Échec de la création du fichier cible",
-            "NETWORK_ERROR": "Erreur réseau",
-            "CLIENT_JSON_PARSE_ERROR": "Erreur d'analyse des informations de version de l'instance",
-            "ASSET_INDEX_PARSE_ERROR": "Erreur d'analyse du fichier d'index des ressources"
           }
         }
       },
@@ -2240,6 +2388,12 @@
             "FILE_NOT_FOUND_ERROR": "Le fichier du pack de mods n'existe pas. Il a peut-être été renommé, déplacé ou supprimé",
             "MODPACK_MANIFEST_PARSE_ERROR": "Erreur d'analyse du fichier de manifeste du pack de mods"
           }
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "L’icône d’instance personnalisée a été ajoutée avec succès",
+        "error": {
+          "title": "Échec de l’ajout d’icônes d’instance personnalisées"
         }
       }
     },
@@ -2303,14 +2457,6 @@
     },
     "tip": "Recherchez du contenu local et des ressources en ligne au même endroit",
     "empty": "Aucun résultat de recherche",
-    "result": {
-      "instance": "Les exemples",
-      "player": "Les rôles",
-      "page": "Page",
-      "recentViewed": "Récemment visité",
-      "curseforge": "Rechercher sur CurseForge",
-      "modrinth": "Rechercher sur Modrinth"
-    },
     "resource": {
       "mod": "Rechercher des mods sur {{query}}",
       "world": "Rechercher des mondes sur {{query}}",
@@ -2320,6 +2466,14 @@
       "modpack": "Rechercher des packs de mods sur {{query}}",
       "curseforge": "Sur CurseForge",
       "modrinth": "Sur Modrinth"
+    },
+    "result": {
+      "page": "Page",
+      "recentViewed": "Récemment visité",
+      "instance": "Les exemples",
+      "player": "Les rôles",
+      "curseforge": "Rechercher sur CurseForge",
+      "modrinth": "Rechercher sur Modrinth"
     }
   },
   "StarUsModal": {
@@ -2393,6 +2547,9 @@
       }
     }
   },
+  "ViewSkinModal": {
+    "skinView": "Voir le skin"
+  },
   "WelcomeAndTermsModal": {
     "header": {
       "title": "Bienvenue !"
@@ -2400,12 +2557,13 @@
     "body": {
       "text": "Bienvenue sur SJMCL ! Avant de commencer, veuillez lire et accepter notre <terms>Accord d'utilisateur</terms>."
     },
+    "warning": {
+      "unstableVersion": "Vous utilisez actuellement SJMCL (version {{versionLabel}}). Certaines fonctionnalités peuvent être instables ou encore en développement. Nous vous invitons à signaler tout problème d'utilisation ou à soumettre vos suggestions d'amélioration.",
+      "winArm64Notice": "SJMCL prend désormais en charge la plateforme Windows on Arm. Si vous utilisez un appareil basé sur une plateforme <b>Qualcomm</b>, vous devrez peut-être installer le <glpack>Pack de compatibilité OpenGL</glpack> pour pouvoir jouer."
+    },
     "button": {
       "exit": "Quitter",
       "agree": "Accepter"
-    },
-    "warning": {
-      "unstableVersion": "Vous utilisez actuellement SJMCL (version {{versionLabel}}). Certaines fonctionnalités peuvent être instables ou encore en développement. Nous vous invitons à signaler tout problème d'utilisation ou à soumettre vos suggestions d'amélioration."
     }
   },
   "WorldLevelDataModal": {
@@ -2413,155 +2571,7 @@
       "title": "Données de base du monde - {{worldName}}"
     }
   },
-  "AlertResourceDependencyModal": {
-    "header": {
-      "title": "Des ressources prérequises sont manquantes"
-    },
-    "description": "Veuillez confirmer que toutes les ressources prérequises sont installées, ou continuez à télécharger la ressource d'origine.",
-    "button": {
-      "continue": "Continuer à télécharger la ressource d'origine",
-      "cancel": "Annuler"
-    },
-    "fallback": {
-      "title": "ID de la ressource : {{resourceId}}",
-      "description": "Impossible d'obtenir les détails de cette ressource depuis le réseau. Veuillez vérifier votre connexion Internet ou réessayer plus tard."
-    },
-    "dependencyType": {
-      "required": "Obligatoire",
-      "optional": "Optionnel",
-      "incompatible": "Conflit",
-      "embedded": "Intégré",
-      "tool": "Outil",
-      "include": "Inclus"
-    }
-  },
-  "ChangeModLoaderModal": {
-    "header": {
-      "title": {
-        "change": "Modifier le chargeur de mods",
-        "install": "安装模组加载器"
-      }
-    },
-    "notSelectedLoader": "Aucun nouveau chargeur sélectionné",
-    "footer": {
-      "installFabricApi": "Installer également le mod Fabric API"
-    }
-  },
-  "CheckModUpdateModal": {
-    "header": {
-      "title": "Vérifier les mises à jour des mods"
-    },
-    "button": {
-      "update": "Mise à jour",
-      "cancel": "Annuler"
-    },
-    "label": {
-      "noUpdate": "Aucun mod nécessite une mise à jour",
-      "loading": "Vérification des mises à jour en cours... {{x}}/{{y}}"
-    },
-    "updateList": {
-      "mod": "模组",
-      "currentVersion": "Version actuelle",
-      "latestVersion": "dernière version",
-      "source": "Source"
-    },
-    "error": {
-      "renameOldMod": "Échec du renommage de l'ancien fichier"
-    }
-  },
-  "ClearDownloadCacheAlertDialog": {
-    "dialog": {
-      "title": "Effacer le cache de téléchargement",
-      "content": "Voulez-vous vraiment effacer le cache de téléchargement ? Cette action est irréversible."
-    }
-  },
-  "DeleteModAlertDialog": {
-    "dialog": {
-      "title": "Supprimer le mod",
-      "content": "Voulez-vous vraiment supprimer le mod « {{modName}} » de l'instance de jeu « {{instanceName}} » ?"
-    }
-  },
-  "DevToolbar": {
-    "tooltip": "Barre d'outils de développement"
-  },
-  "DownloadJavaModal": {
-    "header": {
-      "title": "Télécharger Java"
-    },
-    "selector": {
-      "vendor": "Éditeur",
-      "version": "Version",
-      "type": "Type"
-    },
-    "warning": {
-      "mojang": "Le runtime Java distribué par Mojang sera installé par SJMCL dans un répertoire spécifique.",
-      "oracle": "Le téléchargement à partir de la source Oracle peut nécessiter une connexion."
-    }
-  },
-  "GuidedTourProvider": {
-    "step1": {
-      "title": "Page de l'instance",
-      "content": "Ajoutez et sélectionnez ici votre instance de jeu Minecraft pour télécharger et gérer toutes sortes de ressources de jeu."
-    },
-    "step2": {
-      "title": "Page du compte",
-      "content": "Ajoutez un compte ici et sélectionnez le personnage avec lequel vous souhaitez jouer."
-    },
-    "step3": {
-      "title": "Minecraft, démarre !",
-      "content": "Après avoir sélectionné l'instance et le personnage, et ajusté les paramètres, cliquez sur le bouton de démarrage pour profiter du jeu ! 🥳"
-    }
-  },
-  "ImportModpackModal": {
-    "header": {
-      "title": "Importer un pack de mods"
-    },
-    "label": {
-      "instanceSettings": "Paramètres de l'instance",
-      "modpackInfo": "Informations sur le pack de mods",
-      "modpackName": "Nom du pack de mods",
-      "modpackVersion": "Version du pack de mods",
-      "author": "Auteur",
-      "modLoader": "Chargeur de mods",
-      "gameVersion": "Version du jeu"
-    },
-    "button": {
-      "import": "Importer"
-    }
-  },
-  "ManualAddJavaPathModal": {
-    "modal": {
-      "header": "Ajouter Java"
-    },
-    "label": {
-      "javaPath": "Chemin Java"
-    },
-    "placeholder": {
-      "javaPath": "Veuillez saisir ou sélectionner le chemin du fichier exécutable Java"
-    }
-  },
-  "MenuSelector": {
-    "selectedCount": "{{count}} élément sélectionné"
-  },
-  "NotifyNewVersionModal": {
-    "title": "Nouvelle version détectée"
-  },
-  "RestartForUpdateConfirmDialog": {
-    "title": "Mise à jour du lanceur",
-    "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour finaliser la mise à jour.",
-    "bodyMSI": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
-    "button": {
-      "restart": "Redémarrer",
-      "install": "Installer",
-      "later": "Plus tard"
-    }
-  },
-  "RevealConfigJsonConfirmDialog": {
-    "body": "Veuillez éditer le fichier de configuration original du lanceur avec précaution. Un format incorrect peut entraîner la perte des paramètres existants ou un dysfonctionnement du lanceur"
-  },
-  "MCVersionNumberHelper": {
-    "content": "À partir de 2026, Minecraft adopte un nouveau système de numérotation des versions. Les numéros de version commenceront par l'année de publication (ex: 26.1), remplaçant l'ancien système de version 1.x.",
-    "linkText": "Lisez l'article officiel.",
-    "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
+  "InstanceIconSelector": {
+    "customize": "Personnaliser les images"
   }
 }
