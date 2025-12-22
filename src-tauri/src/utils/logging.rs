@@ -2,7 +2,7 @@ use crate::error::{SJMCLError, SJMCLResult};
 use crate::utils::fs::get_files_with_regex;
 use regex::Regex;
 use std::fmt::Arguments;
-use std::sync::LazyLock;
+use std::sync::{LazyLock, OnceLock};
 use std::{
   path::PathBuf,
   time::{SystemTime, UNIX_EPOCH},
@@ -22,11 +22,19 @@ static LOG_FILENAME: LazyLock<String> = LazyLock::new(|| {
   format!("launcher_log_{launching_id}")
 });
 
+static LAUNCHER_LOG_DIR: OnceLock<PathBuf> = OnceLock::new();
+
 pub fn get_launcher_logs_folder(app: &AppHandle) -> PathBuf {
+  if let Some(dir) = LAUNCHER_LOG_DIR.get() {
+    return dir.clone();
+  }
+
   let folder = app
     .path()
-    .resolve::<PathBuf>("LauncherLogs/".into(), BaseDirectory::AppCache)
+    .resolve::<PathBuf>("LauncherLogs/".into(), BaseDirectory::AppLog)
     .unwrap();
+  let _ = std::fs::create_dir_all(&folder);
+  let _ = LAUNCHER_LOG_DIR.set(folder.clone());
   folder
 }
 

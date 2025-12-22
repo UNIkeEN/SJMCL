@@ -384,7 +384,7 @@ pub async fn open_game_log_window(app: AppHandle, launching_id: u64) -> SJMCLRes
 pub fn retrieve_game_log(app: AppHandle, launching_id: u64) -> SJMCLResult<Vec<String>> {
   let log_file_dir = app.path().resolve::<PathBuf>(
     format!("GameLogs/game_log_{launching_id}.log").into(),
-    BaseDirectory::AppCache,
+    BaseDirectory::AppLog,
   )?;
   Ok(
     BufReader::new(std::fs::OpenOptions::new().read(true).open(log_file_dir)?)
@@ -417,7 +417,7 @@ pub fn export_game_crash_info(
   // game log
   let game_log_path = app.path().resolve::<PathBuf>(
     format!("GameLogs/game_log_{launching_id}.log").into(),
-    BaseDirectory::AppCache,
+    BaseDirectory::AppLog,
   )?;
 
   // crash report
