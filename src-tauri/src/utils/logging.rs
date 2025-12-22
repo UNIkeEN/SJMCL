@@ -22,38 +22,27 @@ static LOG_FILENAME: LazyLock<String> = LazyLock::new(|| {
   format!("launcher_log_{launching_id}")
 });
 
-fn get_app_logs_root(app: &AppHandle) -> SJMCLResult<PathBuf> {
+pub fn get_launcher_logs_folder(app: &AppHandle) -> PathBuf {
   let folder = app
     .path()
-    .resolve::<PathBuf>("".into(), BaseDirectory::AppLog)?;
-  std::fs::create_dir_all(&folder)?;
-  Ok(folder)
-}
-
-pub fn get_launcher_logs_folder(app: &AppHandle) -> SJMCLResult<PathBuf> {
-  let folder = get_app_logs_root(app)?.join("launcher");
-  std::fs::create_dir_all(&folder)?;
-  Ok(folder)
-}
-
-pub fn get_game_logs_folder(app: &AppHandle) -> SJMCLResult<PathBuf> {
-  let folder = get_app_logs_root(app)?.join("game");
-  std::fs::create_dir_all(&folder)?;
-  Ok(folder)
+    .resolve::<PathBuf>("LauncherLogs/".into(), BaseDirectory::AppCache)
+    .unwrap();
+  folder
 }
 
 // the path to the current launcher log file
-pub fn get_launcher_log_path(app: &AppHandle) -> SJMCLResult<PathBuf> {
-  Ok(get_launcher_logs_folder(app)?.join(format!("{}.log", *LOG_FILENAME)))
-}
-
-pub fn get_game_log_path(app: &AppHandle, launching_id: u64) -> SJMCLResult<PathBuf> {
-  Ok(get_game_logs_folder(app)?.join(format!("game_log_{launching_id}.log")))
+pub fn get_launcher_log_path(app: AppHandle) -> PathBuf {
+  let folder = get_launcher_logs_folder(&app);
+  PathBuf::from(format!(
+    "{}/{}.log",
+    folder.to_str().unwrap(),
+    *LOG_FILENAME
+  ))
 }
 
 pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
   let is_dev = cfg!(debug_assertions);
-  let folder = get_launcher_logs_folder(&app)?;
+  let folder = get_launcher_logs_folder(&app);
   let mut targetkinds = vec![
     TargetKind::Webview,
     TargetKind::Folder {
@@ -124,7 +113,7 @@ pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
 }
 
 pub async fn purge_old_launcher_logs(app: AppHandle, days: u64) -> SJMCLResult<()> {
-  let folder = get_launcher_logs_folder(&app)?;
+  let folder = get_launcher_logs_folder(&app);
   if !folder.exists() {
     return Ok(());
   }

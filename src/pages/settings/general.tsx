@@ -1,5 +1,5 @@
 import { Badge, Button, Kbd, Switch, Text } from "@chakra-ui/react";
-import { appLogDir, join } from "@tauri-apps/api/path";
+import { appCacheDir } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -242,9 +242,8 @@ const GeneralSettingsPage = () => {
               variant="subtle"
               size="xs"
               onClick={async () => {
-                const appLogsDir = await appLogDir();
-                const launcherLogDir = await join(appLogsDir, "launcher");
-                openPath(launcherLogDir);
+                const _appCacheDir = await appCacheDir();
+                openPath(_appCacheDir + "/LauncherLogs");
               }}
             >
               {t("General.open")}
