@@ -8,7 +8,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { appCacheDir, join } from "@tauri-apps/api/path";
+import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useEffect, useRef, useState } from "react";
@@ -70,10 +70,10 @@ const GameLogPage: React.FC = () => {
       const launchingId = launchingIdRef.current;
       if (launchingId == null) return;
 
-      const baseDir = await appCacheDir();
+      const baseDir = await appLogDir();
       const logFilePath = await join(
         baseDir,
-        "GameLogs",
+        "game",
         `game_log_${launchingId}.log`
       );
 

@@ -24,23 +24,9 @@ static LOG_FILENAME: LazyLock<String> = LazyLock::new(|| {
 
 static LAUNCHER_LOG_DIR: OnceLock<PathBuf> = OnceLock::new();
 
-pub fn get_launcher_logs_folder(app: &AppHandle) -> PathBuf {
-  if let Some(dir) = LAUNCHER_LOG_DIR.get() {
-    return dir.clone();
-  }
-
-  let folder = app
-    .path()
-    .resolve::<PathBuf>("LauncherLogs/".into(), BaseDirectory::AppLog)
-    .unwrap();
-  let _ = std::fs::create_dir_all(&folder);
-  let _ = LAUNCHER_LOG_DIR.set(folder.clone());
-  folder
-}
-
 // the path to the current launcher log file
 pub fn get_launcher_log_path(app: AppHandle) -> PathBuf {
-  let folder = get_launcher_logs_folder(&app);
+  let folder = LAUNCHER_LOG_DIR.get().unwrap();
   PathBuf::from(format!(
     "{}/{}.log",
     folder.to_str().unwrap(),
@@ -50,7 +36,12 @@ pub fn get_launcher_log_path(app: AppHandle) -> PathBuf {
 
 pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
   let is_dev = cfg!(debug_assertions);
-  let folder = get_launcher_logs_folder(&app);
+  let folder = app
+    .path()
+    .resolve::<PathBuf>("launcher/".into(), BaseDirectory::AppLog)
+    .unwrap();
+  let _ = std::fs::create_dir_all(&folder);
+  let _ = LAUNCHER_LOG_DIR.set(folder.clone());
   let mut targetkinds = vec![
     TargetKind::Webview,
     TargetKind::Folder {
@@ -121,7 +112,7 @@ pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
 }
 
 pub async fn purge_old_launcher_logs(app: AppHandle, days: u64) -> SJMCLResult<()> {
-  let folder = get_launcher_logs_folder(&app);
+  let folder = LAUNCHER_LOG_DIR.get().cloned().unwrap();
   if !folder.exists() {
     return Ok(());
   }
