@@ -1389,6 +1389,11 @@
     "linkText": "阅读官方文档",
     "url": "https://www.minecraft.net/zh-hans/article/minecraft-new-version-numbering-system"
   },
+  "ViewSchematicModal":{
+      "header":{
+        "title":"查看原理图"
+      }
+    },
   "MemoryStatusProgress": {
     "title": "内存状态",
     "info": "{{used}} / {{total}} GB 已使用",

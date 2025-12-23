@@ -1389,6 +1389,11 @@
     "linkText": "Read the official article",
     "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
   },
+  "ViewSchematicModal":{
+      "header":{
+        "title":"View Schematic"
+      }
+    },
   "MemoryStatusProgress": {
     "title": "Memory Status",
     "info": "{{used}} / {{total}} GB used",
