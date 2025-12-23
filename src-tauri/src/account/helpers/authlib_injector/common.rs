@@ -60,22 +60,24 @@ pub async fn parse_profile(
       .map(|b| b as char)
       .collect::<String>();
 
-    let texture_info_value: TextureInfo =
-      serde_json::from_str(&texture_info).map_err(|_| AccountError::ParseError)?;
+    if !texture_info.is_empty() {
+      let texture_info_value: TextureInfo =
+        serde_json::from_str(&texture_info).map_err(|_| AccountError::ParseError)?;
 
-    for texture_type in TextureType::iter() {
-      if let Some(skin) = texture_info_value.textures.get(&texture_type.to_string()) {
-        textures.push(Texture {
-          image: fetch_image(app, skin.url.clone()).await?,
-          texture_type,
-          model: skin
-            .metadata
-            .as_ref()
-            .and_then(|metadata| metadata.get("model").cloned())
-            .map(|model_str| SkinModel::from_str(&model_str).unwrap_or(SkinModel::Default))
-            .unwrap_or_default(),
-          preset: None,
-        });
+      for texture_type in TextureType::iter() {
+        if let Some(skin) = texture_info_value.textures.get(&texture_type.to_string()) {
+          textures.push(Texture {
+            image: fetch_image(app, skin.url.clone()).await?,
+            texture_type,
+            model: skin
+              .metadata
+              .as_ref()
+              .and_then(|metadata| metadata.get("model").cloned())
+              .map(|model_str| SkinModel::from_str(&model_str).unwrap_or(SkinModel::Default))
+              .unwrap_or_default(),
+            preset: None,
+          });
+        }
       }
     }
   }

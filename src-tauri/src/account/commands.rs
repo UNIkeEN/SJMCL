@@ -3,10 +3,11 @@ use crate::account::helpers::authlib_injector::info::{
 };
 use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
 use crate::account::helpers::authlib_injector::{self};
+use crate::account::helpers::misc::import_hmcl_accounts;
 use crate::account::helpers::{microsoft, misc, offline};
 use crate::account::models::{
-  AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
-  PresetRole, SkinModel, TextureType,
+  AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, LauncherType, Player, PlayerInfo,
+  PlayerType, PresetRole, SkinModel, TextureType,
 };
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
@@ -618,4 +619,15 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
   account_state.save()?;
   config_state.save()?;
   Ok(())
+}
+
+#[tauri::command]
+pub async fn import_accounts(
+  app: &AppHandle,
+  launcher_type: LauncherType,
+) -> SJMCLResult<AccountInfo> {
+  match launcher_type {
+    LauncherType::HMCL => import_hmcl_accounts(&app).await,
+    LauncherType::PCL => Ok(AccountInfo::default()),
+  }
 }

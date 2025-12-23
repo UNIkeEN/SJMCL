@@ -1,15 +1,16 @@
 use std::collections::HashMap;
 
-structstruck::strike! {
-  #[strikethrough[derive(serde::Deserialize, serde::Serialize)]]
-  pub struct MinecraftProfile {
-    pub id: String,
-    pub name: String,
-    pub properties: Option<Vec<pub struct {
-      pub name: String,
-      pub value: String,
-    }>>
-  }
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+pub struct MinecraftProfileProperty {
+  pub name: String,
+  pub value: String,
+}
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct MinecraftProfile {
+  pub id: String,
+  pub name: String,
+  pub properties: Option<Vec<MinecraftProfileProperty>>,
 }
 
 structstruck::strike! {
