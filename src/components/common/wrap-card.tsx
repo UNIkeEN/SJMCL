@@ -46,7 +46,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   variant = "normal",
   radioValue = "",
   isSelected = false,
-  onSelect = () => {},
+  onSelect,
   ...cardProps
 }) => {
   const { config } = useLauncherConfig();
@@ -95,20 +95,18 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   return (
     <Card
       className={themedStyles.card["card-front"]}
-      borderColor={`${primaryColor}.500`}
+      borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
       variant={isSelected ? "outline" : "elevated"}
       position="relative"
-      borderWidth={isSelected ? borderWidth : 0}
+      borderWidth={borderWidth}
       p={isSelected ? selectedPadding : basePadding}
       {...cardProps}
+      onClick={onSelect}
+      _hover={!!onSelect ? { boxShadow: "md", cursor: "pointer" } : undefined}
     >
       {variant === "radio" && (
         <Box position="absolute" top={2} left={2}>
-          <Radio
-            value={radioValue}
-            onClick={onSelect}
-            colorScheme={primaryColor}
-          />
+          <Radio value={radioValue} colorScheme={primaryColor} />
         </Box>
       )}
       {renderContent()}
@@ -165,7 +163,7 @@ export const WrapCardGroup: React.FC<WrapCardGroupProps> = ({
         initialIsOpen={props.initialIsOpen}
       >
         {items.length > 0 && (
-          <Wrap spacing={spacing} mb={0.5}>
+          <Wrap spacing={spacing} mb={1}>
             {/* add mb to show last row cards' bottom shadow */}
             {items.map((item, index) => {
               const validColSpan = Math.max(1, Math.floor(item.colSpan || 1));

@@ -47,17 +47,14 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         <PlayerAvatar avatar={player.avatar} boxSize="32px" objectFit="cover" />
       </HStack>
     ),
-    ...(withMenu
-      ? {}
-      : {
-          isFullClickZone: true,
-          onClick: () => handleUpdateSelectedPlayer(player.id),
-        }),
+    isFullClickZone: true,
+    onClick: () => handleUpdateSelectedPlayer(player.id),
     children: withMenu ? (
       <PlayerMenu player={player} variant="buttonGroup" />
     ) : (
       <></>
     ),
+    isChildrenIndependent: withMenu,
   }));
 
   const gridItems = players.map((player) => ({
