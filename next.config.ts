@@ -14,7 +14,12 @@ const nextConfig = {
   },
   // Configure assetPrefix or else the server won't properly resolve your assets.
   assetPrefix: isProd ? null : `http://${internalHost}:3000`,
+  // use reactCompiler for better performance
+  reactCompiler: true,
   devIndicators: false,
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
+  },
 };
 
 // Now can run `ANALYZE=true npm run build` to analyze frontend bundle size
