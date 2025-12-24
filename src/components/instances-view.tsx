@@ -86,7 +86,14 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     cardContent: {
       title: instance.name,
       description: generateInstanceDesc(instance) || String.fromCharCode(160),
-      image: instance.iconSrc,
+      image: (
+        <Image
+          boxSize="36px"
+          src={getInstanceIconSrc(instance.iconSrc, instance.versionPath)}
+          alt={instance.name}
+          fallbackSrc="/images/icons/JEIcon_Release.png"
+        />
+      ),
       extraContent: (
         <HStack spacing={1} position="absolute" top={0.5} right={1}>
           {instance.starred && <Icon as={FaStar} color="yellow.500" />}
