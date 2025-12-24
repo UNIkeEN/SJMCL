@@ -76,8 +76,7 @@ pub async fn select_suitable_jre(
     client_info
       .java_version
       .as_ref()
-      .ok_or(LaunchError::NoSuitableJava)?
-      .major_version,
+      .map_or(0i32, |v| v.major_version),
   )
   .await?;
 

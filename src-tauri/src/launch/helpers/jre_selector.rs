@@ -57,7 +57,7 @@ async fn get_minimum_java_version_by_game(app: &AppHandle, instance: &Instance) 
     return 25;
   }
   // 1.20.5(24w14a)+
-  if compare_game_versions(app, &instance.version, "24w14a", true).await >= Ordering::Equal {
+  if compare_game_versions(app, &instance.version, "24w14a", false).await >= Ordering::Equal {
     return 21;
   }
   // 1.18(1.18-pre2)+

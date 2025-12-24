@@ -87,8 +87,7 @@ pub async fn execute_processors(
     client_info
       .java_version
       .as_ref()
-      .ok_or(InstanceError::ProcessorExecutionFailed)?
-      .major_version,
+      .map_or(0i32, |v| v.major_version),
   )
   .await?;
 
