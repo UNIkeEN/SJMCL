@@ -938,8 +938,7 @@
         "discoverPage": {
           "title": "Discover Page",
           "openNotice": {
-            "part-1": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut ",
-            "part-2": "."
+            "content": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut <key>{{what}}</key> + <key>S</key>."
           }
         },
         "instancesNavType": {
@@ -1237,8 +1236,7 @@
       "error-3": "Instance name is too long"
     },
     "tipsToGlobal": {
-      "part-1": "This instance is not using specific settings. ",
-      "part-2": "Go to Global Game Settings"
+      "content": "This instance is not using specific settings.<terms> Go to Global Game Settings</terms>"
     }
   },
   "InstanceShaderPacksPage": {
