@@ -851,7 +851,7 @@
   },
   "GameLogPage": {
     "placeholder": "輸入關鍵詞篩選",
-    "exportLogs": "匯出日誌",
+    "revealRawLog": "顯示原始日誌檔案",
     "clearLogs": "清除所有日誌",
     "scrollToBottom": "滾動到底部"
   },
@@ -1380,6 +1380,11 @@
     "placeholder": {
       "javaPath": "請輸入或選擇 Java 可執行檔案路徑"
     }
+  },
+  "MCVersionNumberHelper": {
+    "content": "自 2026 年起，Minecraft 版本號採取新的命名規則，以年份作為版本號首位（如 26.1）以取代原有的 1.x 版本號規則。",
+    "linkText": "閱讀官方文件",
+    "url": "https://www.minecraft.net/zh-hans/article/minecraft-new-version-numbering-system"
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
@@ -2544,9 +2549,7 @@
       "title": "歡迎！"
     },
     "body": {
-      "part1": "歡迎使用 SJMCL！在開始使用之前，請務必閱讀並同意我們的",
-      "terms": "使用者協議",
-      "periods": "。"
+      "text": "歡迎使用 SJMCL！在開始使用之前，請務必閱讀並同意我們的<terms>使用者協議</terms>。"
     },
     "warning": {
       "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不穩定或未開發完成，歡迎報告使用問題與功能建議。"

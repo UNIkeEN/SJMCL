@@ -8,7 +8,9 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
+import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
@@ -35,13 +37,17 @@ const GameLogPage: React.FC = () => {
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
 
   const logContainerRef = useRef<HTMLDivElement>(null);
+  const launchingIdRef = useRef<number | null>(null);
 
   const clearLogs = () => setLogs([]);
 
   // invoke retrieve on first load
   useEffect(() => {
     (async () => {
-      let launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
+      launchingIdRef.current = parseIdFromWindowLabel(
+        getCurrentWebview().label
+      );
+      const launchingId = launchingIdRef.current;
       if (launchingId) {
         const res = await LaunchService.retrieveGameLog(launchingId);
         if (res.status === "success" && Array.isArray(res.data)) {
@@ -58,6 +64,24 @@ const GameLogPage: React.FC = () => {
     });
     return () => unlisten();
   }, []);
+
+  const revealRawLogFile = async () => {
+    try {
+      const launchingId = launchingIdRef.current;
+      if (launchingId == null) return;
+
+      const baseDir = await appLogDir();
+      const logFilePath = await join(
+        baseDir,
+        "game",
+        `game_log_${launchingId}.log`
+      );
+
+      await revealItemInDir(logFilePath);
+    } catch (err) {
+      logger.error("Failed to open raw log file:", err);
+    }
+  };
 
   let lastLevel: string = "INFO";
 
@@ -167,14 +191,14 @@ const GameLogPage: React.FC = () => {
             {level} ({logCounts[level] || 0})
           </Button>
         ))}
-        <Tooltip label={t("GameLogPage.exportLogs")} placement="bottom">
+        <Tooltip label={t("GameLogPage.revealRawLog")} placement="bottom">
           <IconButton
             icon={<LuFileInput />}
-            aria-label={t("GameLogPage.exportLogs")}
+            aria-label={t("GameLogPage.revealRawLog")}
             variant="ghost"
             size="sm"
             colorScheme="gray"
-            isDisabled
+            onClick={revealRawLogFile}
           />
         </Tooltip>
         <Tooltip label={t("GameLogPage.clearLogs")} placement="bottom">

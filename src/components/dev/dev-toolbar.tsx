@@ -86,14 +86,14 @@ const DevToolbarContent: React.FC = () => {
             } else if (inputType === "invoke") {
               try {
                 const res = await invoke(key, params);
-                console.log("Invoke result:", res);
+                logger.info("Invoke result:", res);
               } catch (err) {
-                console.error("Invoke error:", err);
+                logger.error("Invoke error:", err);
               }
             }
             setInputValue("");
           } catch (err) {
-            console.error("Failed to parse modal params:", err);
+            logger.error("Failed to parse modal params:", err);
           }
         }
       }

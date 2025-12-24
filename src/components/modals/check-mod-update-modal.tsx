@@ -119,7 +119,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           return candidateFiles[0];
         } else return undefined;
       } catch (error) {
-        console.error("Failed to fetch latest mod:", error);
+        logger.error("Failed to fetch latest mod:", error);
         return undefined;
       }
     },
@@ -227,7 +227,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           }
           return null;
         } catch (error) {
-          console.error(`Failed to check update for mod ${mod.name}:`, error);
+          logger.error(`Failed to check update for mod ${mod.name}:`, error);
           return null;
         }
       });
@@ -249,7 +249,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       setModsToUpdate(validUpdates.map((item) => item.mod));
       setUpdateList(validUpdates.map((item) => item.updateRecord));
     } catch (error) {
-      console.error("Failed to check mod updates:", error);
+      logger.error("Failed to check mod updates:", error);
     } finally {
       setIsCheckingUpdate(false);
     }

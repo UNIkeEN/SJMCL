@@ -12,7 +12,7 @@ export interface Player {
   id: string;
   name: string;
   uuid: string;
-  avatar: string;
+  avatar: Array<string>; // [face, hat]
   playerType: PlayerType;
   authServer?: AuthServer; // only from authlib-injector
   authAccount?: string; // only from authlib-injector

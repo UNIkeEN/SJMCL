@@ -22,7 +22,6 @@ import {
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import { error } from "@tauri-apps/plugin-log";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuFolderOpen } from "react-icons/lu";
@@ -167,8 +166,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
           });
         }
       } catch (e: any) {
-        console.log(e);
-        error(e.message);
+        logger.error("Failed to upload skin or cape file", e);
       } finally {
         setIsLoading(false);
         getPlayerList(true);

@@ -50,7 +50,7 @@ import {
   formatRelativeTime,
   formatTimeInterval,
 } from "@/utils/datetime";
-import { parseModLoaderVersion } from "@/utils/instance";
+import { getInstanceIconSrc, parseModLoaderVersion } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
 
 // All these widgets are used in InstanceContext with WarpCard wrapped.
@@ -133,7 +133,12 @@ export const InstanceBasicInfoWidget = () => {
           </VStack>
         }
         prefixElement={
-          <Image src={summary?.iconSrc} alt={summary?.iconSrc} boxSize="28px" />
+          <Image
+            src={getInstanceIconSrc(summary?.iconSrc, summary?.versionPath)}
+            alt={summary?.iconSrc}
+            boxSize="28px"
+            fallbackSrc="/images/icons/JEIcon_Release.png"
+          />
         }
         zIndex={998}
       />

@@ -1,20 +1,13 @@
-import {
-  Box,
-  BoxProps,
-  HStack,
-  Image,
-  Radio,
-  RadioGroup,
-} from "@chakra-ui/react";
+import { Box, BoxProps, HStack, Radio, RadioGroup } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { WrapCardGroup } from "@/components/common/wrap-card";
+import PlayerAvatar from "@/components/player-avatar";
 import PlayerMenu from "@/components/player-menu";
 import { useLauncherConfig } from "@/contexts/config";
 import { Player } from "@/models/account";
 import { generatePlayerDesc } from "@/utils/account";
-import { base64ImgSrc } from "@/utils/string";
 
 interface PlayersViewProps extends BoxProps {
   players: Player[];
@@ -51,12 +44,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
           onClick={() => handleUpdateSelectedPlayer(player.id)}
           colorScheme={primaryColor}
         />
-        <Image
-          boxSize="32px"
-          objectFit="cover"
-          src={base64ImgSrc(player.avatar)}
-          alt={player.name}
-        />
+        <PlayerAvatar avatar={player.avatar} boxSize="32px" objectFit="cover" />
       </HStack>
     ),
     ...(withMenu
@@ -76,7 +64,9 @@ const PlayersView: React.FC<PlayersViewProps> = ({
     cardContent: {
       title: player.name,
       description: generatePlayerDesc(player, false),
-      image: base64ImgSrc(player.avatar),
+      image: (
+        <PlayerAvatar avatar={player.avatar} boxSize="36px" objectFit="cover" />
+      ),
       ...(withMenu
         ? {
             extraContent: (

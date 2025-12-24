@@ -130,7 +130,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
                   onError: () => {
                     setErrorPaused(true);
                     setErrorDesc(response.details);
-                    console.error(response.details);
+                    logger.error(response.details);
                   },
                 });
               } else {
@@ -193,7 +193,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
           setErrorPaused(true);
           setErrorDesc(response.details);
           currentStep.onErrCallback(response);
-          console.error(response.details);
+          logger.error(response.details);
         }
       });
     }

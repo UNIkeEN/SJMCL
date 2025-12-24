@@ -27,6 +27,7 @@ import stringSimilarity from "string-similarity";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
+import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useRoutingHistory } from "@/contexts/routing-history";
@@ -37,11 +38,10 @@ import { ResourceService } from "@/services/resource";
 import { generatePlayerDesc } from "@/utils/account";
 import { generateInstanceDesc } from "@/utils/instance";
 import { translateTag } from "@/utils/resource";
-import { base64ImgSrc } from "@/utils/string";
 
 interface SearchResult {
   type: "page" | "instance" | "player" | "curseforge" | "modrinth";
-  icon: string;
+  icon?: string | React.ReactNode;
   title: string;
   description: string;
   url?: string;
@@ -118,7 +118,6 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
           ? [
               {
                 type: "page",
-                icon: "",
                 title: route,
                 description: t("SpotlightSearchModal.result.recentViewed"),
                 url: route,
@@ -140,7 +139,13 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             (player) =>
               ({
                 type: "player",
-                icon: base64ImgSrc(player.avatar),
+                icon: (
+                  <PlayerAvatar
+                    boxSize="28px"
+                    objectFit="cover"
+                    avatar={player.avatar}
+                  />
+                ),
                 title: player.name,
                 description: generatePlayerDesc(player, true),
                 url: `/accounts`,
@@ -194,7 +199,6 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         (platform: "curseforge" | "modrinth", source: OtherResourceSource) =>
         (type: OtherResourceType): SearchResult => ({
           type: platform,
-          icon: "",
           description: "",
           title: t(`SpotlightSearchModal.resource.${type}`, { query }),
           action: () =>
@@ -312,7 +316,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         return [...cfResults, ...mrResults];
       } catch (error) {
         if (!signal?.aborted) {
-          console.error("Network search error:", error);
+          logger.error("Network search error:", error);
         }
         return [];
       }
@@ -354,7 +358,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
         })
         .catch((error) => {
           if (!controller.signal.aborted) {
-            console.error("Network search error:", error);
+            logger.error("Network search error:", error);
             setNetworkSearchResults([]);
             setIsSearching(false);
             searchAbortControllerRef.current = null;
@@ -422,14 +426,16 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
             </Text>
           }
           prefixElement={
-            res.icon ? (
+            typeof res.icon === "string" ? (
               <Image
                 boxSize="28px"
                 objectFit="cover"
                 src={res.icon}
                 alt={res.title}
               />
-            ) : null
+            ) : (
+              res.icon
+            )
           }
           isFullClickZone
           onClick={() => {

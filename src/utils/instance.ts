@@ -1,3 +1,4 @@
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { t } from "i18next";
 import { ModLoaderType } from "@/enums/instance";
 import { GameDirectory } from "@/models/config";
@@ -34,6 +35,18 @@ export const getGameDirName = (dir: string | GameDirectory) => {
         `GlobalGameSettingsPage.directories.settings.directories.special.${name}`
       )
     : name;
+};
+
+export const getInstanceIconSrc = (
+  src?: string,
+  versionPath?: string
+): string => {
+  if (!src) return "";
+  if (!versionPath) return src;
+
+  return src === "custom"
+    ? convertFileSrc(`${versionPath}/icon`) + `?t=${Date.now()}`
+    : src;
 };
 
 export const parseModLoaderVersion = (version: string): string => {

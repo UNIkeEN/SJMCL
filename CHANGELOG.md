@@ -2,6 +2,43 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 0.6.5
+
+`2025-12-16`
+
+- 🌟 Support downloading Java 25 and improve compatibility with the new game version `26.1-snapshot-1`. #1213 @UNIkeEN
+- 🛠 Modify launcher config deserialization rules to improve forward compatibility.  @UNIkeEN 
+- 🇫🇷 Update French translations for the launcher UI. #1210 @LiulianQWQ001 @HsxMark 
+   
+## 0.6.4
+
+`2025-12-15`
+
+- 🌟 Support toggling the data source for the Discover page. #1176 @Dainsleif233 @UNIkeEN
+- 🌟 Add tooltips in certain interfaces to help users understand the new Minecraft versioning system. #1197 @UNIkeEN
+- 🌟 Support opening the raw log file directly from the game log window. #1206 @baiyuansjtu
+- 🐛 Fix the issue where the dependencies modal exceeded the window height and could not scroll when many mods were present. #1146 @baiyuansjtu
+- 💄 Refactor parts of the codebase for improved style and maintainability. #1195 @hbz114514
+- 🇯🇵 Update Japanese translations for the launcher interface to fix display issues on specific pages. #1204 @LAR73
+- 📦 Update the frontend dependency `next` to its patch version. #1199 @dependabot[bot]
+- Workflow:  
+   - Add a timeout to the release workflow to prevent blocking due to failed artifact uploads caused by network issues. #1196 @Minecrafter-Pythoner
+  
+## 0.6.3
+
+`2025-12-07`
+
+- 🌟 Support different sorting methods for the instance list, with the default being ascending by game version. #1179 @UNIkeEN
+- 🐛 Fix the issue where the instance list did not update after deleting an instance. @UNIkeEN
+- 🐛 Fix certain system shortcuts on macOS (such as `⌘`+`Q`), and block several Windows-specific shortcuts. #1175 @UNIkeEN
+- 🐛 Fix missing or incorrect toast texts and setting item descriptions. #1191 @Reqwey @UNIkeEN
+- 🐛 Fix the failure to create new offline players on Linux. #1191 @Reqwey
+- 🛠 Ensure that when the instance list or account list is not empty, at least one item is automatically selected. #1174 @UNIkeEN
+- 🛠 Update related logic to support the new Minecraft versioning system. #1187 @UNIkeEN
+- 🛠 Hide certain server information (such as direct-connect records) in the instance server list. #1189 @no6rainer
+- 💄 Refactor parts of the codebase for better code style and maintainability. @UNIkeEN
+- 📦 Update the frontend dependency `next` to its patch version. #1182 #1183 @dependabot[bot]
+  
 ## 0.6.2
 
 `2025-11-26`

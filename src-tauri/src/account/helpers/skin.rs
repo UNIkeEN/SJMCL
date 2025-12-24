@@ -1,12 +1,14 @@
+use crate::utils::image::ImageWrapper;
 use image::RgbaImage;
 
-pub fn draw_avatar(size: u32, img: &RgbaImage) -> RgbaImage {
+pub fn draw_avatar(size: u32, img: &RgbaImage) -> Vec<ImageWrapper> {
   let (skin_width, _) = img.dimensions();
 
   let scale = skin_width as f32 / 64.0;
   let face_offset = ((size as f32 / 18.0).round()) as u32;
 
-  let mut avatar_img = RgbaImage::new(size, size);
+  let mut avatar = vec![RgbaImage::new(size, size), RgbaImage::new(size, size)];
+
   // Draw face
   draw_image_section(
     img,
@@ -17,7 +19,7 @@ pub fn draw_avatar(size: u32, img: &RgbaImage) -> RgbaImage {
       size - 2 * face_offset,
       size - 2 * face_offset,
     ],
-    &mut avatar_img,
+    &mut avatar[0],
   );
 
   // Draw hat
@@ -25,10 +27,10 @@ pub fn draw_avatar(size: u32, img: &RgbaImage) -> RgbaImage {
     img,
     &[40.0 * scale, 8.0 * scale, 8.0 * scale, 8.0 * scale],
     &[0, 0, size, size],
-    &mut avatar_img,
+    &mut avatar[1],
   );
 
-  avatar_img
+  avatar.into_iter().map(ImageWrapper::from).collect()
 }
 
 fn draw_image_section(

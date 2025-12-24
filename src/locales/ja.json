@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "ログインフローの設計について LittleSkin 及び @tnqzh123 さんのご協力に感謝します。"
         },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "SCL開発者の皆さん、絶え間ない交流と相互の刺激に感謝。"
+        },
         "sinter": {
           "title": "Sinter",
           "description": "Windows 及び Linux プラットフォームのランチャーUIフォントが SIL に準拠して利用されています。"
@@ -226,12 +230,19 @@
     "button": {
       "addAndImport": "追加/インポート",
       "globalSettings": "グローバルゲーム設定",
-      "launch": "選択中のゲームを起動"
+      "launch": "選択中のゲームを起動",
+      "sortAndFilter": "並べ替えとフィルター"
     },
     "viewTypeList": {
       "grid": "グリッドビュー",
       "list": "リストビュー"
     },
+      "sortByTypeList": {
+      "versionAsc": "バージョン順（古い順）",
+      "versionDesc": "バージョン順（新しい順）",
+      "name": "インスタンス名称"
+    },
+    "sortBy": "並べ替え方法",
     "title": "すべてのインスタンス"
   },
   "AppearanceSettingsPage": {
@@ -637,8 +648,8 @@
     },
     "errorMessage": {
       "dirName": {
-        "tooLong": "ディレクトリ名は20文字以内にしてください",
         "empty": "ディレクトリ名が必須",
+        "tooLong": "ディレクトリ名は20文字以内にしてください",
         "exist": "ディレクトリ名が既に存在",
         "hasInvalidChar": "ディレクトリ名に無効な文字が含まれています"
       },
@@ -845,10 +856,10 @@
     "scrollToBottom": "一番下までスクロール"
   },
   "GameVersionSelector": {
-    "old_beta": "レガシーバージョン",
+    "old_beta": "レガシー",
     "release": "正式版",
     "snapshot": "開発版",
-    "april_fools": "エイプリルフールバージョン",
+    "april_fools": "エイプリルフール",
     "searchPlaceholder": "バージョンを検索"
   },
   "General": {
@@ -897,13 +908,13 @@
     "refresh": "再読み込み",
     "revealFile": "{{opener}}で表示",
     "search": "サーチ",
-    "skip": "スキップ",
     "share": {
       "text": "共有",
       "toast": {
         "error": "共有に失敗"
       }
     },
+        "skip": "スキップ",
     "version": {
       "dev": "開発版",
       "nightly": "ナイトリービルド版",
@@ -961,6 +972,10 @@
         },
         "launcherLogDir": {
           "title": "ランチャーログディレクトリ"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "起動ログの自動クリーンアップ",
+          "description": "30日以上前の起動ログファイルを自動削除"
         }
       }
     }
@@ -1345,7 +1360,15 @@
     "skinManage": "スキン管理",
     "default": "デフォルト",
     "steve": "Steve",
-    "alex": "Alex"
+    "alex": "Alex",
+    "upload": "ローカルアップロード",
+    "skin": "スキン",
+    "cape": "ケープ",
+    "model": {
+      "label": "モーダル",
+      "default": "デフォルト",
+      "slim": "スリム"
+    }
   },
   "ManualAddJavaPathModal": {
     "modal": {
@@ -1357,6 +1380,11 @@
     "placeholder": {
       "javaPath": "Java 実行ファイルのパスを入力または選択してください"
     }
+  },
+    "MCVersionNumberHelper": {
+    "content": "2026年より、Minecraftのバージョン番号は新しい命名規則を採用します。従来の1.x形式に代わり、西暦の下2桁をバージョン番号の先頭に配置します（例: 26.1）。",
+    "linkText": "公式ドキュメントを読む",
+    "url": "https://www.minecraft.net/zh-hans/article/minecraft-new-version-numbering-system"
   },
   "MemoryStatusProgress": {
     "title": "メモリ状況",
@@ -1464,7 +1492,6 @@
         "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "ツール・武器・防具",
         "Automation": "自動化",
-        "Auxiliary": "補助モッド",
         "Biomes": "バイオーム",
         "Blood Magic": "Blood Magic",
         "Buildcraft": "Buildcraft",
@@ -1506,6 +1533,7 @@
         "Twitch Integration": "Twitch",
         "Utility & QoL": "ユーティリティ・QoL",
         "World Gen": "ワールド生成",
+        "Auxiliary": "補助モッド",
         "World": "ワールド"
       },
       "Modrinth": {
@@ -1534,19 +1562,20 @@
     "worldTagList": {
       "CurseForge": {
         "All": "すべて",
+        "Types": "タイプ",
         "Adventure": "冒険",
         "Creation": "創造",
         "Game Map": "ミニゲーム",
         "Modded World": "モッド",
         "Parkour": "パルクール",
         "Puzzle": "パズル",
-        "Survival": "サバイバル",
-        "Types": "タイプ"
+        "Survival": "サバイバル"
       }
     },
     "resourcepackTagList": {
       "CurseForge": {
         "All": "すべて",
+        "Resolution": "解像度",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
@@ -1563,12 +1592,12 @@
         "Mod Support": "モッドサポート",
         "Modern": "モーデン",
         "Photo Realistic": "写実",
-        "Resolution": "解像度",
         "Steampunk": "スチームパンク",
         "Traditional": "伝統的"
       },
       "Modrinth": {
         "All": "すべて",
+        "Resolution": "解像度",
         "8x-": "8x 以下",
         "16x": "16x",
         "32x": "32x",
@@ -1593,7 +1622,6 @@
         "decoration": "デコレーション",
         "modded": "モッド",
         "realistic": "写実",
-        "Resolution": "解像度",
         "simplistic": "ミニマル",
         "themed": "テーマ",
         "tweaks": "パフォーマンス",
@@ -1852,7 +1880,8 @@
           "title": "オフラインキャラクターの追加に失敗",
           "description": {
             "DUPLICATE": "キャラクターがすでに存在",
-            "INVALID": "UUID が無効です"
+            "INVALID": "UUID が無効です",
+            "TEXTURE_ERROR": "キャラクタースキンの取得に失敗"
           }
         }
       },
@@ -1942,6 +1971,17 @@
           "title": "キャラクタースキンのアップデートに失敗",
           "description": {
             "NOT_FOUND": "キャラクターが見つからない",
+            "INVALID": "無効なキャラクタータイプ",
+            "TEXTURE_ERROR": "キャラクタースキンの取得に失敗"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "キャラクタースキンをアップデートした",
+        "error": {
+          "title": "キャラクタースキンのアップデートに失敗",
+          "description": {
+            "NOT_FOUND": "キャラクターが存在しません",
             "INVALID": "無効なキャラクタータイプ",
             "TEXTURE_ERROR": "キャラクタースキンの取得に失敗"
           }
@@ -2046,7 +2086,8 @@
         "error": {
           "title": "ゲームの起動に失敗",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"
+            "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました",
+            "AUTH_SERVER_NOT_FOUND": "認証サーバーが存在しません"
           }
         }
       }
@@ -2399,6 +2440,9 @@
       "disableRotation": "回転を無効化",
       "play": "再生",
       "pause": "一時停止"
+    },
+    "error": {
+      "loadSkin": "スキンのロードに失敗"
     }
   },
   "SpotlightSearchModal": {
@@ -2505,9 +2549,7 @@
       "title": "ようこそ！"
     },
     "body": {
-      "part1": "SJMCL をご利用いただき、ありがとうございます。開始前に、必ず下記の",
-      "terms": "利用規約",
-      "periods": "をお読みいただき、同意をお願いいたします。"
+      "text": "SJMCL をご利用いただき、ありがとうございます。開始前に、必ず下記の<terms>利用規約</terms>をお読みいただき、同意をお願いいたします。"
     },
     "warning": {
       "unstableVersion": "{{versionLabel}}の SJMCL を使用しています。一部の機能が不安定または開発未完了の可能性があります。使用上の問題や機能の提案を報告いただければ幸いです。"

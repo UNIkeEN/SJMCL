@@ -23,7 +23,7 @@ use crate::instance::helpers::resourcepack::{
 use crate::instance::helpers::server::{
   load_servers_info_from_path, query_servers_online, GameServerInfo,
 };
-use crate::instance::helpers::world::{level_data_to_world_info, load_level_data_from_path};
+use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
   ModLoaderStatus, ModLoaderType, ResourcePackInfo, SchematicInfo, ScreenshotInfo, ShaderPackInfo,
@@ -381,34 +381,21 @@ pub async fn retrieve_world_list(
     .await
     .is_ge();
 
+  let mut world_list: Vec<WorldInfo> = Vec::new();
+
   let worlds_dir =
     match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Saves) {
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
-  let world_dirs = match get_subdirectories(worlds_dir) {
-    Ok(val) => val,
-    Err(_) => return Ok(Vec::new()), // if dir not exists, no need to error
-  };
-
-  let mut world_list: Vec<WorldInfo> = Vec::new();
-  for path in world_dirs {
-    let name = path.file_name().unwrap().to_str().unwrap();
-    let icon_path = path.join("icon.png");
-    let nbt_path = path.join("level.dat");
-    if let Ok(level_data) = load_level_data_from_path(&nbt_path).await {
-      let (last_played, difficulty, gamemode) = level_data_to_world_info(&level_data)?;
-      world_list.push(WorldInfo {
-        name: name.to_string(),
-        last_played_at: last_played,
-        // newer game clients return a default "normal" difficulty when reading older worlds; older clients omit this field
-        difficulty: has_difficulty_support.then(|| difficulty.to_string()),
-        gamemode: gamemode.to_string(),
-        icon_src: icon_path,
-        dir_path: path,
-      });
+  if let Ok(world_paths) = get_subdirectories(worlds_dir) {
+    for path in world_paths {
+      if let Ok(info) = load_world_info_from_dir(&path, has_difficulty_support).await {
+        world_list.push(info);
+      }
     }
   }
+
   Ok(world_list)
 }
 
@@ -837,7 +824,7 @@ pub async fn retrieve_world_details(
   if tokio::fs::metadata(&level_path).await.is_err() {
     return Err(InstanceError::LevelNotExistError.into());
   }
-  if let Ok(level_data) = load_level_data_from_path(&level_path).await {
+  if let Ok(level_data) = load_level_data_from_nbt(&level_path).await {
     Ok(level_data)
   } else {
     Err(InstanceError::LevelParseError.into())
@@ -1251,4 +1238,30 @@ pub async fn retrieve_modpack_meta_info(
   let path = PathBuf::from(path);
   let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
   ModpackMetaInfo::from_archive(&app, &file).await
+}
+
+#[tauri::command]
+pub fn add_custom_instance_icon(
+  app: AppHandle,
+  instance_id: String,
+  source_src: String,
+) -> SJMCLResult<()> {
+  let version_path = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+    instance.version_path.clone()
+  };
+
+  let source_path = Path::new(&source_src);
+  if !source_path.exists() || !source_path.is_file() {
+    return Err(InstanceError::FileNotFoundError.into());
+  }
+
+  let dest_path = Path::new(&version_path).join("icon");
+  fs::copy(source_path, &dest_path)?;
+
+  Ok(())
 }

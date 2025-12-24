@@ -93,7 +93,7 @@ const DownloadSettingsPage = () => {
     if (selectedDirectory && typeof selectedDirectory === "string") {
       update("download.cache.directory", selectedDirectory);
     } else if (selectedDirectory === null) {
-      console.log("Directory selection was cancelled.");
+      logger.info("Directory selection was cancelled.");
     }
   };
 

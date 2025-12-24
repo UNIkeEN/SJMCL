@@ -39,7 +39,7 @@ export interface ModpackMetaInfo {
   description?: string;
   modpackType: OtherResourceSource;
   clientVersion: string;
-  modLoader: ModLoader;
+  modLoader?: ModLoader;
 }
 
 export interface GameServerInfo {

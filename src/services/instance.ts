@@ -433,4 +433,22 @@ export class InstanceService {
       path,
     });
   }
+
+  /**
+   * ADD/REPLACE the custom instance icon.
+   * Backend will create (if missing) or replace (if existing) the custom icon file at <version_path>/icon.
+   * @param {string} instanceId - The instance ID.
+   * @param {string} sourceSrc - Local file path of the source image.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async addCustomInstanceIcon(
+    instanceId: string,
+    sourceSrc: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_custom_instance_icon", {
+      instanceId,
+      sourceSrc,
+    });
+  }
 }

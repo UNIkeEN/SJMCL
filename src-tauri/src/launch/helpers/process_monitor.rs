@@ -95,10 +95,9 @@ pub async fn monitor_process(
 ) -> SJMCLResult<()> {
   // create unique log window
   let label = format!("game_log_{id}");
-  let log_file_path = app.path().resolve::<PathBuf>(
-    format!("GameLogs/{label}.log").into(),
-    BaseDirectory::AppCache,
-  )?;
+  let log_file_path = app
+    .path()
+    .resolve::<PathBuf>(format!("game/{label}.log").into(), BaseDirectory::AppLog)?;
   if let Some(parent_dir) = log_file_path.parent() {
     fs::create_dir_all(parent_dir)?;
   }

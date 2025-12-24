@@ -124,7 +124,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
       if (response.status === "success") {
-        console.log("Retrieved progressive tasks:", response.data);
+        logger.info("Retrieved progressive tasks:", response.data);
         // info(JSON.stringify(response.data));
         setTasks((prevTasks) => {
           let tasks = response.data
@@ -354,7 +354,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             case PTaskEventStatusEnums.Failed: {
-              console.error(
+              logger.error(
                 `Task ${payload.id} failed in group ${payload.taskGroup}: ${
                   (payload.event as FailedPTaskEventStatus).reason
                 }`
@@ -389,7 +389,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const unlisten = TaskService.onTaskGroupUpdate(
       (payload: GTaskEventPayload) => {
-        console.log(`Received task group update: ${payload.event}`);
+        logger.info(`Received task group update: ${payload.event}`);
         setTasks((prevTasks) => {
           let newTasks = prevTasks.map((task) => {
             if (task.taskGroup === payload.taskGroup) {

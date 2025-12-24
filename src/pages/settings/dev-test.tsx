@@ -49,7 +49,7 @@ const DevTestPage = () => {
           try {
             await invoke("launch_game", { instanceId: 4 });
           } catch (error) {
-            console.error("Error invoking launch_game:", error);
+            logger.error("Error invoking launch_game:", error);
             alert(
               "An error occurred while launching the game. Please try again."
             );
@@ -60,7 +60,7 @@ const DevTestPage = () => {
       </Button>
       <Button
         onClick={() => {
-          console.log("Download button clicked");
+          logger.info("Download button clicked");
           let dl: DownloadTaskParam[] = [
             {
               src: "https://edge.forgecdn.net/files/3045/381/%5B___MixinCompat-0.8___%5D.jar",
