@@ -58,13 +58,14 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
       const selected = await open({
         directory: false,
         multiple: false,
-        filters: [
-          {
-            name: "Java",
-            extensions:
-              config.basicInfo.platform === "windows" ? ["exe"] : [""],
-          },
-        ],
+        ...(config.basicInfo.platform === "windows" && {
+          filters: [
+            {
+              name: "Java",
+              extensions: ["exe"],
+            },
+          ],
+        }),
       });
 
       if (selected && typeof selected === "string") {

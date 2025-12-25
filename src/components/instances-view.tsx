@@ -69,12 +69,10 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       </HStack>
     ),
-    ...(withMenu
-      ? {}
-      : {
-          isFullClickZone: true,
-          onClick: () => handleUpdateSelectedInstance(instance),
-        }),
+    ...(!withMenu && {
+      isFullClickZone: true,
+      onClick: () => handleUpdateSelectedInstance(instance),
+    }),
     children: withMenu ? (
       <InstanceMenu instance={instance} variant="buttonGroup" />
     ) : (

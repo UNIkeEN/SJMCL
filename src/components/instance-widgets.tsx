@@ -207,7 +207,7 @@ export const InstanceScreenshotsWidget = () => {
     <InstanceWidgetBase
       title={t("InstanceWidgets.screenshots.title")}
       style={{ cursor: "pointer" }}
-      {...(hasScreenshots ? {} : { icon: LuFullscreen })}
+      {...(!hasScreenshots && { icon: LuFullscreen })}
     >
       {isLoading ? (
         <Center mt={4}>

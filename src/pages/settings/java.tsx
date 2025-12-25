@@ -61,13 +61,14 @@ const JavaSettingsPage = () => {
       newJavaPath = await open({
         multiple: false,
         directory: false,
-        filters: [
-          {
-            name: "Java",
-            extensions:
-              config.basicInfo.platform === "windows" ? ["exe"] : [""],
-          },
-        ],
+        ...(config.basicInfo.platform === "windows" && {
+          filters: [
+            {
+              name: "Java",
+              extensions: ["exe"],
+            },
+          ],
+        }),
       });
     }
 
