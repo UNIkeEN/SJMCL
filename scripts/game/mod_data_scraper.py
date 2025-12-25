@@ -1,11 +1,18 @@
-import requests
-import time
-import csv
-import re
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-import random
 import argparse
+import csv
+import os
+import random
+import re
+import time
+from pathlib import Path
+
+import requests
+from bs4 import BeautifulSoup
+
+MAX_AUTO_RANGE_BATCH = 300
+DEFAULT_OUTPUT = str(
+    Path(__file__).resolve().parents[2] / "src-tauri" / "assets" / "db" / "mod_data.csv"
+)
 
 
 class MCModScraper:
@@ -29,8 +36,17 @@ class MCModScraper:
 
         try:
             print(f"Scraping mod ID: {mod_id}")
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
+            for attempt in range(3):
+                try:
+                    response = self.session.get(url, timeout=10)
+                    response.raise_for_status()
+                    break
+                except requests.RequestException as e:
+                    print(f"Request failed (attempt {attempt + 1}/3): {e}")
+                    time.sleep(2)
+            else:
+                print(f"Failed to request mod {mod_id} after retries")
+                return None
             response.encoding = "utf-8"
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -78,7 +94,6 @@ class MCModScraper:
                 links = link_frame.find_all("a", href=True)
                 for link in links:
                     href = link.get("href", "")
-                    title = link.get("data-original-title", "").lower()
 
                     # Decode link
                     if "/target/" in href:
@@ -124,10 +139,11 @@ class MCModScraper:
             print(f"Failed to parse mod {mod_id} data: {e}")
             return None
 
-    def scrape_mods_streaming(self, start_id=1, end_id=10, filename="mod_data.csv"):
+    def scrape_mods_streaming(
+        self, start_id=1, end_id=10, filename="mod_data.csv", append=False
+    ):
         """Stream scraping mod information, write while scraping"""
-        # Initialize CSV file
-        self.init_csv_file(filename)
+        self.prepare_csv(filename, append)
 
         success_count = 0
         fail_count = 0
@@ -165,6 +181,58 @@ class MCModScraper:
         )
         return success_count, fail_count
 
+    def get_latest_mod_id_online(self):
+        """Fetch the newest mod id from mcmod list page"""
+        url = f"{self.base_url}/modlist.html?sort=createtime"
+        try:
+            response = self.session.get(url, timeout=10)
+            response.raise_for_status()
+            response.encoding = "utf-8"
+
+            soup = BeautifulSoup(response.text, "html.parser")
+            modlist_block = soup.find("div", class_="modlist-block")
+            if not modlist_block:
+                print("Failed to locate .modlist-block on page")
+                return None
+
+            anchor = modlist_block.find("a", href=re.compile(r"/class/\d+\.html"))
+            if not anchor:
+                print("Failed to locate mod anchor inside .modlist-block")
+                return None
+
+            match = re.search(r"/class/(\d+)\.html", anchor["href"])
+            if not match:
+                print("Failed to parse mod id from anchor href")
+                return None
+
+            latest_id = int(match.group(1))
+            print(f"Latest mod id online: {latest_id}")
+            return latest_id
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to fetch latest mod id: {e}")
+            return None
+
+    def get_last_recorded_id(self, filename):
+        """Read last recorded mcmod id from existing CSV"""
+        if not os.path.exists(filename):
+            return 0
+
+        last_id = 0
+        try:
+            with open(filename, newline="", encoding="utf-8-sig") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    try:
+                        last_id = int(row.get("mcmod_id", 0))
+                    except (TypeError, ValueError):
+                        continue
+        except Exception as exc:  # pragma: no cover - defensive
+            print(f"Failed to read existing CSV {filename}: {exc}")
+            return 0
+
+        print(f"Last recorded mod id in CSV: {last_id}")
+        return last_id
+
     def init_csv_file(self, filename="mcmod_data.csv"):
         """Initialize CSV file and write header"""
         fieldnames = [
@@ -182,6 +250,16 @@ class MCModScraper:
 
         print(f"CSV file initialized: {filename}")
 
+    def prepare_csv(self, filename, append=False):
+        """Create CSV if missing or truncation requested"""
+        directory = os.path.dirname(filename)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+
+        if append and os.path.exists(filename):
+            return
+        self.init_csv_file(filename)
+
     def append_to_csv(self, mod_data, filename="mcmod_data.csv"):
         """Append single data record to CSV file"""
         fieldnames = [
@@ -198,7 +276,12 @@ class MCModScraper:
             writer.writerow(mod_data)
 
 
-def main(start_id=1, end_id=10, filename="mod_data.csv"):
+def main(
+    start_id=1,
+    end_id=10,
+    filename=DEFAULT_OUTPUT,
+    append=False,
+):
     scraper = MCModScraper()
 
     print("Starting to scrape mcmod.cn data...")
@@ -206,7 +289,9 @@ def main(start_id=1, end_id=10, filename="mod_data.csv"):
     print(f"Output file: {filename}")
     print("-" * 50)
 
-    scraper.scrape_mods_streaming(start_id=start_id, end_id=end_id, filename=filename)
+    scraper.scrape_mods_streaming(
+        start_id=start_id, end_id=end_id, filename=filename, append=append
+    )
 
 
 if __name__ == "__main__":
@@ -215,10 +300,11 @@ if __name__ == "__main__":
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python mod_data_scraper.py                              # Use default values (1-10, mod_data.csv)
-  python mod_data_scraper.py --start 1 --end 100         # Scrape IDs 1-100
-  python mod_data_scraper.py --start 1000 --end 2000 --output mods.csv  # Custom range and file
-  python mod_data_scraper.py -s 1 -e 50 -o test.csv      # Using short options
+    python mod_data_scraper.py --auto-range                # Append new mods to default CSV
+    python mod_data_scraper.py                              # Use default values (1-10, default CSV)
+    python mod_data_scraper.py --start 1 --end 100         # Scrape IDs 1-100
+    python mod_data_scraper.py --start 1000 --end 2000 --output mods.csv  # Custom range and file
+    python mod_data_scraper.py -s 1 -e 50 -o test.csv      # Using short options
         """,
     )
 
@@ -234,19 +320,56 @@ Examples:
         "--output",
         "-o",
         type=str,
-        default="mod_data.csv",
-        help="Output CSV filename (default: mod_data.csv)",
+        default=DEFAULT_OUTPUT,
+        help=f"Output CSV filename (default: {DEFAULT_OUTPUT})",
+    )
+
+    parser.add_argument(
+        "--auto-range",
+        action="store_true",
+        help=(
+            "Automatically continue from last id in output file to latest id online. "
+            "Ignores --start/--end."
+        ),
     )
 
     args = parser.parse_args()
 
-    # Validate arguments
-    if args.start > args.end:
-        print("Error: Start ID must be less than or equal to End ID")
-        exit(1)
+    scraper = MCModScraper()
 
-    if args.start < 1:
-        print("Error: Start ID must be greater than 0")
-        exit(1)
+    if args.auto_range:
+        last_id = scraper.get_last_recorded_id(args.output)
+        latest_id = scraper.get_latest_mod_id_online()
+        if latest_id is None:
+            exit(1)
 
-    main(start_id=args.start, end_id=args.end, filename=args.output)
+        start = last_id + 1
+        end = latest_id
+
+        if start > end:
+            print(
+                f"No new mods to fetch. Local last id {last_id}, latest online {latest_id}."
+            )
+            exit(0)
+
+        # Limit batch size for CI safety
+        if end - start + 1 > MAX_AUTO_RANGE_BATCH:
+            original_end = end
+            end = start + MAX_AUTO_RANGE_BATCH - 1
+            print(f"Auto-range limited: {start}-{original_end} -> {start}-{end}")
+    else:
+        # Validate arguments
+        if args.start > args.end:
+            print("Error: Start ID must be less than or equal to End ID")
+            exit(1)
+
+        if args.start < 1:
+            print("Error: Start ID must be greater than 0")
+            exit(1)
+
+        start = args.start
+        end = args.end
+
+    append_mode = args.auto_range or start > 1
+
+    main(start_id=start, end_id=end, filename=args.output, append=append_mode)

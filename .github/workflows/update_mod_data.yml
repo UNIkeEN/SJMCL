@@ -1,0 +1,85 @@
+name: Update MCMod Data
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    - cron: "0 2 * * 1" # Every Monday at 02:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update-mod-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests beautifulsoup4
+
+      - name: Run mod data scraper
+        id: scrape
+        run: |
+          python scripts/game/mod_data_scraper.py --auto-range | tee scrape.log
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ -z "$(git status --porcelain src-tauri/assets/db/mod_data.csv)" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No data changes detected."
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Data changes detected."
+          fi
+
+      - name: Generate PR metadata
+        id: meta
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          ADDED_IDS=$(git diff src-tauri/assets/db/mod_data.csv \
+            | grep '^+[^+]' \
+            | cut -d',' -f1 \
+            | grep -E '^[0-9]+' \
+            || true)
+
+          COUNT=$(echo "$ADDED_IDS" | grep -c . || true)
+
+          if [ "$COUNT" -eq 1 ]; then
+            FIRST=$(echo "$ADDED_IDS" | head -n1)
+            TITLE="chore: auto update mcmod data, add $FIRST"
+          elif [ "$COUNT" -gt 1 ]; then
+            FIRST=$(echo "$ADDED_IDS" | head -n1)
+            LAST=$(echo "$ADDED_IDS" | tail -n1)
+            TITLE="chore: auto update mcmod data, add $FIRST-$LAST"
+          else
+            TITLE="chore: auto update mcmod data"
+          fi
+
+          echo "pr_title=$TITLE" >> $GITHUB_OUTPUT
+          echo "pr_body=$TITLE" >> $GITHUB_OUTPUT
+
+      - name: Create or update Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: ${{ steps.meta.outputs.pr_title }}
+          title: ${{ steps.meta.outputs.pr_title }}
+          body: ${{ steps.meta.outputs.pr_body }}
+          branch: auto/update-mcmod-data
+          base: main
+          delete-branch: true
