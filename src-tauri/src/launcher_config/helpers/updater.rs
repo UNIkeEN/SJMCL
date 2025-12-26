@@ -144,7 +144,7 @@ pub async fn download_target_version(
           app.clone(),
           format!("launcher-update?{}", fname),
           vec![PTaskParam::Download(DownloadParam {
-            src: url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?,
+            src: vec![url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?],
             dest: download_cache_dir.join(&fname),
             filename: Some(fname),
             sha1: None,

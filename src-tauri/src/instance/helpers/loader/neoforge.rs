@@ -59,7 +59,7 @@ pub async fn install_neoforge_loader(
   let installer_path = lib_dir.join(&installer_rel);
 
   task_params.push(PTaskParam::Download(DownloadParam {
-    src: installer_url,
+    src: vec![installer_url],
     dest: installer_path.clone(),
     filename: None,
     sha1: None,
@@ -198,7 +198,7 @@ pub async fn download_neoforge_libraries(
       if let Some(mojmaps) = args_map.get("{MOJMAPS}") {
         if let Some(client_mappings) = client_info.downloads.get("client_mappings") {
           task_params.push(PTaskParam::Download(DownloadParam {
-            src: client_mappings.url.parse()?,
+            src: vec![client_mappings.url.parse()?],
             dest: lib_dir.join(mojmaps),
             filename: None,
             sha1: Some(client_mappings.sha1.clone()),
@@ -269,11 +269,11 @@ pub async fn download_neoforge_libraries(
     }
 
     task_params.push(PTaskParam::Download(DownloadParam {
-      src: convert_url_to_target_source(
+      src: vec![convert_url_to_target_source(
         &Url::parse(url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
         &priority[0],
-      )?,
+      )?],
       dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
       filename: None,
       sha1: None,
@@ -317,11 +317,11 @@ pub async fn download_neoforge_libraries(
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
     task_params.push(PTaskParam::Download(DownloadParam {
-      src: convert_url_to_target_source(
+      src: vec![convert_url_to_target_source(
         &Url::parse(url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
         &priority[0],
-      )?,
+      )?],
       dest: lib_dir.join(&rel),
       filename: None,
       sha1: None,
