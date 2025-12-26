@@ -275,10 +275,17 @@ class MCModScraper:
                     continue
 
                 try:
-                    last_id = int(parts[0])
+                    row_iter = csv.reader([line])
+                    row = next(row_iter, None)
+                except csv.Error:
+                    continue
+                if not row:
+                    continue
+                try:
+                    last_id = int(row[0])
                     print(f"Last recorded mod id in CSV: {last_id}")
                     return last_id
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, IndexError):
                     continue
 
         except Exception as exc:  # pragma: no cover - defensive
