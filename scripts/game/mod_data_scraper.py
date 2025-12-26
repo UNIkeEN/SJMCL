@@ -9,7 +9,9 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 
-MAX_AUTO_RANGE_BATCH = 300
+MAX_AUTO_RANGE_BATCH = (
+    300  # Safety cap for "auto-range" scraping to keep CI jobs within time limits
+)
 DEFAULT_OUTPUT = str(
     Path(__file__).resolve().parents[2] / "src-tauri" / "assets" / "db" / "mod_data.csv"
 )
@@ -36,17 +38,11 @@ class MCModScraper:
 
         try:
             print(f"Scraping mod ID: {mod_id}")
-            for attempt in range(3):
-                try:
-                    response = self.session.get(url, timeout=10)
-                    response.raise_for_status()
-                    break
-                except requests.RequestException as e:
-                    print(f"Request failed (attempt {attempt + 1}/3): {e}")
-                    time.sleep(2)
-            else:
+            response = self._get_with_retries(url, context=f"mod {mod_id}")
+            if not response:
                 print(f"Failed to request mod {mod_id} after retries")
                 return None
+
             response.encoding = "utf-8"
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -184,54 +180,113 @@ class MCModScraper:
     def get_latest_mod_id_online(self):
         """Fetch the newest mod id from mcmod list page"""
         url = f"{self.base_url}/modlist.html?sort=createtime"
-        try:
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            response.encoding = "utf-8"
-
-            soup = BeautifulSoup(response.text, "html.parser")
-            modlist_block = soup.find("div", class_="modlist-block")
-            if not modlist_block:
-                print("Failed to locate .modlist-block on page")
-                return None
-
-            anchor = modlist_block.find("a", href=re.compile(r"/class/\d+\.html"))
-            if not anchor:
-                print("Failed to locate mod anchor inside .modlist-block")
-                return None
-
-            match = re.search(r"/class/(\d+)\.html", anchor["href"])
-            if not match:
-                print("Failed to parse mod id from anchor href")
-                return None
-
-            latest_id = int(match.group(1))
-            print(f"Latest mod id online: {latest_id}")
-            return latest_id
-        except requests.exceptions.RequestException as e:
-            print(f"Failed to fetch latest mod id: {e}")
+        response = self._get_with_retries(url, context="latest mod id")
+        if not response:
+            print("Failed to fetch latest mod id after multiple attempts")
             return None
+
+        response.encoding = "utf-8"
+        soup = BeautifulSoup(response.text, "html.parser")
+        modlist_block = soup.find("div", class_="modlist-block")
+        if not modlist_block:
+            print("Failed to locate .modlist-block on page")
+            return None
+        anchor = modlist_block.find("a", href=re.compile(r"/class/\d+\.html"))
+        if not anchor:
+            print("Failed to locate mod anchor inside .modlist-block")
+            return None
+        match = re.search(r"/class/(\d+)\.html", anchor["href"])
+        if not match:
+            print("Failed to parse mod id from anchor href")
+            return None
+        latest_id = int(match.group(1))
+        print(f"Latest mod id online: {latest_id}")
+        return latest_id
+
+    def _get_with_retries(
+        self,
+        url,
+        *,
+        context,
+        timeout=10,
+        max_retries=3,
+        backoff_base=1.0,
+        jitter=0.5,
+    ):
+        """Shared GET with exponential backoff to keep retry behavior consistent."""
+        for attempt in range(max_retries):
+            try:
+                response = self.session.get(url, timeout=timeout)
+                response.raise_for_status()
+                return response
+            except requests.RequestException as exc:
+                attempt_number = attempt + 1
+                print(
+                    f"Request for {context} failed (attempt {attempt_number}/{max_retries}): {exc}"
+                )
+                if attempt_number < max_retries:
+                    sleep_time = backoff_base * (2**attempt) + random.uniform(0, jitter)
+                    time.sleep(sleep_time)
+        return None
 
     def get_last_recorded_id(self, filename):
         """Read last recorded mcmod id from existing CSV"""
         if not os.path.exists(filename):
             return 0
 
-        last_id = 0
+        def _iter_lines_reverse(path, chunk_size=4096):
+            """Yield non-empty lines from end to start (binary-safe)."""
+            with open(path, "rb") as f:
+                f.seek(0, os.SEEK_END)
+                position = f.tell()
+                if position == 0:
+                    return
+
+                buffer = b""
+                while position > 0:
+                    read_size = min(chunk_size, position)
+                    position -= read_size
+                    f.seek(position)
+                    chunk = f.read(read_size)
+                    buffer = chunk + buffer
+                    lines = buffer.split(b"\n")
+                    buffer = lines[0]
+                    for line in reversed(lines[1:]):
+                        stripped = line.strip()
+                        if stripped:
+                            yield stripped
+
+                # Remaining buffer (first line)
+                if buffer.strip():
+                    yield buffer.strip()
+
         try:
-            with open(filename, newline="", encoding="utf-8-sig") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    try:
-                        last_id = int(row.get("mcmod_id", 0))
-                    except (TypeError, ValueError):
-                        continue
+            for raw_line in _iter_lines_reverse(filename):
+                try:
+                    line = raw_line.decode("utf-8-sig")
+                except UnicodeDecodeError:
+                    continue
+
+                if line.lower().startswith("mcmod_id"):
+                    continue  # skip header
+
+                parts = line.split(",")
+                if not parts:
+                    continue
+
+                try:
+                    last_id = int(parts[0])
+                    print(f"Last recorded mod id in CSV: {last_id}")
+                    return last_id
+                except (TypeError, ValueError):
+                    continue
+
         except Exception as exc:  # pragma: no cover - defensive
             print(f"Failed to read existing CSV {filename}: {exc}")
             return 0
 
-        print(f"Last recorded mod id in CSV: {last_id}")
-        return last_id
+        print("No valid id found in CSV, defaulting to 0")
+        return 0
 
     def init_csv_file(self, filename="mcmod_data.csv"):
         """Initialize CSV file and write header"""

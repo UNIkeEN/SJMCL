@@ -33,7 +33,7 @@ jobs:
       - name: Run mod data scraper
         id: scrape
         run: |
-          python scripts/game/mod_data_scraper.py --auto-range | tee scrape.log
+          python scripts/game/mod_data_scraper.py --auto-range
 
       - name: Check for changes
         id: changes
