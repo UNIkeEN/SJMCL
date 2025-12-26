@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import Editable from "@/components/common/editable";
 import {
   OptionItemGroup,
@@ -194,15 +194,19 @@ const InstanceSettingsPage = () => {
         ))}
         {!useSpecGameConfig && (
           <Text className="secondary-text" fontSize="xs-sm" textAlign="center">
-            {t("InstanceSettingsPage.tipsToGlobal.part-1")}
-            <Link
-              color={`${primaryColor}.500`}
-              onClick={() => {
-                router.push("/settings/global-game");
+            <Trans
+              i18nKey="InstanceSettingsPage.tipsToGlobal.content"
+              components={{
+                terms: (
+                  <Link
+                    color={`${primaryColor}.500`}
+                    onClick={() => {
+                      router.push("/settings/global-game");
+                    }}
+                  />
+                ),
               }}
-            >
-              {t("InstanceSettingsPage.tipsToGlobal.part-2")}
-            </Link>
+            />
           </Text>
         )}
       </VStack>

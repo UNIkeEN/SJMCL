@@ -938,8 +938,7 @@
         "discoverPage": {
           "title": "发现页",
           "openNotice": {
-            "part-1": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 ",
-            "part-2": " 继续使用 “聚合搜索”。"
+            "content": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键<key>{{what}}</key> + <key>S</key> 继续使用 “聚合搜索”。"
           }
         },
         "instancesNavType": {
@@ -1237,8 +1236,7 @@
       "error-3": "实例名称太长"
     },
     "tipsToGlobal": {
-      "part-1": "当前实例未启用特定游戏设置，",
-      "part-2": "前往全局游戏设置"
+      "content": "当前实例未启用特定游戏设置，<terms>前往全局游戏设置</terms>"
     }
   },
   "InstanceShaderPacksPage": {
