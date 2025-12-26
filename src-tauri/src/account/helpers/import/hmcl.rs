@@ -3,9 +3,6 @@ use crate::account::helpers::authlib_injector::info::fetch_auth_server_info;
 use crate::account::helpers::authlib_injector::models::{
   MinecraftProfile, MinecraftProfileProperty,
 };
-use crate::account::helpers::import::model::{
-  HmclAccountEntry, HmclMicrosoftAccount, HmclOfflineAccount, HmclThirdPartyAccount,
-};
 use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
@@ -14,12 +11,59 @@ use crate::account::models::{
   Texture, TextureType,
 };
 use crate::error::SJMCLResult;
+use serde::Deserialize;
 use std::collections::HashSet;
 use std::fs;
 use std::str::FromStr;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use uuid::Uuid;
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct HmclOfflineAccount {
+  pub uuid: String,
+  pub username: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HmclMicrosoftAccount {
+  pub uuid: String,
+  pub display_name: String,
+  pub token_type: String,
+  pub access_token: String,
+  pub refresh_token: String,
+  pub not_after: i64,
+  pub userid: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct HmclProfileProperties {
+  pub textures: Option<String>,
+}
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HmclThirdPartyAccount {
+  #[serde(rename = "serverBaseURL")]
+  pub server_base_url: String,
+  pub client_token: String,
+  pub display_name: String,
+  pub access_token: String,
+  pub profile_properties: HmclProfileProperties,
+  pub uuid: String,
+  pub username: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(tag = "type")]
+pub enum HmclAccountEntry {
+  #[serde(rename = "offline")]
+  Offline(HmclOfflineAccount),
+  #[serde(rename = "microsoft")]
+  Microsoft(HmclMicrosoftAccount),
+  #[serde(rename = "authlibInjector")]
+  ThirdParty(HmclThirdPartyAccount),
+}
 
 async fn offline_to_player(app: &AppHandle, acc: &HmclOfflineAccount) -> SJMCLResult<PlayerInfo> {
   let uuid = uuid::Uuid::parse_str(&acc.uuid).map_err(|_| AccountError::ParseError)?;
@@ -117,7 +161,7 @@ async fn thirdparty_to_player(
   Ok(p)
 }
 
-pub async fn import_hmcl_accounts(app: &AppHandle) -> SJMCLResult<AccountInfo> {
+pub async fn retrieve_hmcl_account_info(app: &AppHandle) -> SJMCLResult<AccountInfo> {
   let hmcl_json_path = if cfg!(target_os = "linux") {
     app
       .path()
