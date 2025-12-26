@@ -18,3 +18,9 @@ export enum TextureType {
   Skin = "SKIN",
   Cape = "CAPE",
 }
+
+export enum ImportLauncherType {
+  HMCL = "HMCL",
+  PCL = "PCL",
+  SCL = "SCL",
+}

@@ -3,6 +3,8 @@ use crate::account::helpers::authlib_injector::info::{
 };
 use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
 use crate::account::helpers::authlib_injector::{self};
+use crate::account::helpers::import::hmcl::retrieve_hmcl_account_info;
+use crate::account::helpers::import::ImportLauncherType;
 use crate::account::helpers::{microsoft, misc, offline};
 use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
@@ -617,5 +619,50 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
 
   account_state.save()?;
   config_state.save()?;
+  Ok(())
+}
+
+// Stage 1 of importing accounts (players and auth servers) from other launchers
+#[tauri::command]
+pub async fn retrieve_other_launcher_account_info(
+  app: AppHandle,
+  launcher_type: ImportLauncherType,
+) -> SJMCLResult<AccountInfo> {
+  match launcher_type {
+    ImportLauncherType::HMCL => retrieve_hmcl_account_info(&app).await,
+    _ => Ok(AccountInfo::default()),
+  }
+}
+
+// Stage 2 of importing accounts from other launchers
+#[tauri::command]
+pub fn import_external_account_info(app: AppHandle, account_info: AccountInfo) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  // add auth servers (same url will be overwritten)
+  for server in account_info.auth_servers {
+    if let Some(existing_server) = account_state
+      .auth_servers
+      .iter_mut()
+      .find(|s| s.auth_url == server.auth_url)
+    {
+      *existing_server = server;
+    } else {
+      account_state.auth_servers.push(server);
+    }
+  }
+
+  // add players (same id will be overwritten)
+  for player in account_info.players {
+    if let Some(existing_player) = account_state.players.iter_mut().find(|p| p.id == player.id) {
+      *existing_player = player;
+    } else {
+      account_state.players.push(player);
+    }
+  }
+
+  account_state.save()?;
+
   Ok(())
 }

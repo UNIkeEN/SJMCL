@@ -74,9 +74,10 @@
   "AccountsPage": {
     "button": {
       "addPlayer": "Add Player",
-      "add3rdPartyServer": "Add 3rd-party Auth",
+      "add3rdPartyServer": "Add auth server",
       "sourceHomepage": "View Homepage",
-      "deleteServer": "Delete Auth Server"
+      "deleteServer": "Delete Auth Server",
+      "importFromOtherLaunchers": "Import"
     },
     "playerTypeList": {
       "all": "All Source"
@@ -899,6 +900,7 @@
     "edit": "Edit",
     "enable": "Enable",
     "finish": "Finish",
+    "import": "Import",
     "launch": "Launch",
     "next": "Next",
     "notice": "Notice",
@@ -1144,6 +1146,11 @@
       }
     }
   },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "Import Players and Auth Servers"
+    }
+  },
   "ImportModpackModal": {
     "header": {
       "title": "Import Modpack"
@@ -1156,9 +1163,6 @@
       "author": "Author",
       "modLoader": "Mod Loader",
       "gameVersion": "Game Version"
-    },
-    "button": {
-      "import": "Import"
     }
   },
   "InstanceBasicSettings": {
