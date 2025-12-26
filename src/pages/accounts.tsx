@@ -18,6 +18,7 @@ import {
   LuCirclePlus,
   LuGrid2X2,
   LuHouse,
+  LuImport,
   LuLayoutGrid,
   LuLayoutList,
   LuLink2Off,
@@ -31,6 +32,7 @@ import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import SelectableButton from "@/components/common/selectable-button";
 import AddPlayerModal from "@/components/modals/add-player-modal";
+import ImportAccountInfoModal from "@/components/modals/import-account-info-modal";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -67,6 +69,12 @@ const AccountsPage = () => {
     isOpen: isAddPlayerModalOpen,
     onOpen: onAddPlayerModalOpen,
     onClose: onAddPlayerModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isImportAccountInfoModalOpen,
+    onOpen: onImportAccountInfoModalOpen,
+    onClose: onImportAccountInfoModalClose,
   } = useDisclosure();
 
   const playerTypeList = [
@@ -173,20 +181,32 @@ const AccountsPage = () => {
                 }))}
               />
             </Box>
-            <SelectableButton
-              mt="auto"
-              size="sm"
-              onClick={() => {
-                openSharedModal("add-auth-server", {});
-              }}
-            >
-              <HStack spacing={2} overflow="hidden">
-                <Icon as={LuCirclePlus} />
-                <Text fontSize="sm" className="ellipsis-text">
-                  {t("AccountsPage.button.add3rdPartyServer")}
-                </Text>
-              </HStack>
-            </SelectableButton>
+            <VStack mt="auto" align="stretch" spacing={0.5}>
+              <SelectableButton
+                size="sm"
+                onClick={onImportAccountInfoModalOpen}
+              >
+                <HStack spacing={2} overflow="hidden">
+                  <Icon as={LuImport} />
+                  <Text fontSize="sm" className="ellipsis-text">
+                    {t("AccountsPage.button.importFromOtherLaunchers")}
+                  </Text>
+                </HStack>
+              </SelectableButton>
+              <SelectableButton
+                size="sm"
+                onClick={() => {
+                  openSharedModal("add-auth-server", {});
+                }}
+              >
+                <HStack spacing={2} overflow="hidden">
+                  <Icon as={LuCirclePlus} />
+                  <Text fontSize="sm" className="ellipsis-text">
+                    {t("AccountsPage.button.add3rdPartyServer")}
+                  </Text>
+                </HStack>
+              </SelectableButton>
+            </VStack>
           </VStack>
         </GridItem>
         <GridItem className="content-full-y">
@@ -309,6 +329,10 @@ const AccountsPage = () => {
             ? ""
             : selectedPlayerType
         }
+      />
+      <ImportAccountInfoModal
+        isOpen={isImportAccountInfoModalOpen}
+        onClose={onImportAccountInfoModalClose}
       />
     </>
   );
