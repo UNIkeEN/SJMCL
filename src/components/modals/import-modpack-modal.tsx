@@ -315,7 +315,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
             onClick={() => handleImportModpack()}
             isLoading={isBtnLoading || isPageLoading}
           >
-            {t("ImportModpackModal.button.import")}
+            {t("General.import")}
           </Button>
         </ModalFooter>
       </ModalContent>
