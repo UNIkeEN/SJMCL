@@ -5,6 +5,7 @@ use crate::instance::helpers::client_json::{replace_native_libraries, McClientIn
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
 use crate::instance::helpers::loader::forge::InstallProfile;
+use crate::instance::helpers::loader::optifine::install_optifine;
 use crate::instance::helpers::misc::{
   get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
   refresh_and_update_instances, unify_instance_name,
@@ -35,7 +36,9 @@ use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialError, PartialUpdate};
 use crate::resource::helpers::misc::get_source_priority_list;
-use crate::resource::models::{GameClientResourceInfo, ModLoaderResourceInfo};
+use crate::resource::models::{
+  GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
+};
 use crate::storage::{load_json_async, save_json_async, Storage};
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
@@ -862,6 +865,7 @@ pub async fn create_instance(
   icon_src: String,
   game: GameClientResourceInfo,
   mod_loader: ModLoaderResourceInfo,
+  optifine: Option<OptiFineResourceInfo>,
   modpack_path: Option<String>,
   is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
@@ -898,6 +902,7 @@ pub async fn create_instance(
       version: mod_loader.version.clone(),
       branch: mod_loader.branch.clone(),
     },
+    optifine,
     description,
     icon_src,
     starred: false,
@@ -980,6 +985,17 @@ pub async fn create_instance(
       &mut version_info,
       &mut task_params,
       is_install_fabric_api,
+    )
+    .await?;
+  }
+
+  if let Some(optifine_info) = &instance.optifine {
+    install_optifine(
+      &priority_list,
+      &instance.version,
+      optifine_info,
+      libraries_dir.to_path_buf(),
+      &mut task_params,
     )
     .await?;
   }

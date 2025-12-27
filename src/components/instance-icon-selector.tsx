@@ -140,6 +140,7 @@ export const InstanceIconSelector: React.FC<InstanceIconSelectorProps> = ({
       "/images/icons/Fabric.png",
       "/images/icons/Anvil.png",
       "/images/icons/NeoForge.png",
+      "/images/icons/OptiFine.png",
       ...(instanceId
         ? [
             <Divider orientation="vertical" key="d2" />,

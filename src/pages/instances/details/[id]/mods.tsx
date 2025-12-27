@@ -27,7 +27,13 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import ModLoaderCards from "@/components/mod-loader-cards";
+import SelectableCard, {
+  SelectableCardProps,
+} from "@/components/common/selectable-card";
+import {
+  modLoaderTypes,
+  modLoaderTypesToIcon,
+} from "@/components/loader-selector";
 import { ChangeModLoaderModal } from "@/components/modals/change-mod-loader-modal";
 import CheckModUpdateModal from "@/components/modals/check-mod-update-modal";
 import ModInfoModal from "@/components/modals/mod-info-modal";
@@ -343,6 +349,20 @@ const InstanceModsPage = () => {
     },
   ];
 
+  const selectableCardItems = modLoaderTypes.map(
+    (type): SelectableCardProps => ({
+      title: type,
+      iconSrc: `/images/icons/${modLoaderTypesToIcon[type]}`,
+      description:
+        summary?.modLoader.loaderType === type
+          ? summary?.modLoader.version
+          : t("InstanceModsPage.modLoaderList.notInstalled"),
+      displayMode: "entry",
+      isSelected: summary?.modLoader.loaderType === type,
+      onSelect: () => handleTypeSelect(type),
+    })
+  );
+
   return (
     <>
       <Section
@@ -356,12 +376,17 @@ const InstanceModsPage = () => {
           );
         }}
       >
-        <ModLoaderCards
-          currentType={summary?.modLoader.loaderType || ModLoaderType.Unknown}
-          currentVersion={summary?.modLoader.version}
-          displayMode="entry"
-          onTypeSelect={handleTypeSelect}
-        />
+        <HStack spacing={3.5} w="100%">
+          {selectableCardItems.map((item, index) => (
+            <SelectableCard
+              key={index}
+              {...item}
+              flex={1}
+              minH="max-content"
+              h="100%"
+            />
+          ))}
+        </HStack>
       </Section>
       <Section
         title={t("InstanceModsPage.modList.title")}

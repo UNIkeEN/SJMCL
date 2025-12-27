@@ -1196,7 +1196,8 @@
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": "加载器"
+      "title": "加载器",
+      "notInstalled": "未安装"
     },
     "modList": {
       "title": "模组",
@@ -1359,6 +1360,13 @@
       "noSelectedPlayer": "请先添加并选择游戏角色"
     }
   },
+  "LoaderSelector": {
+    "stable": "正式版",
+    "beta": "测试版",
+    "releaseDate": "发布于 {{date}}",
+    "notCompatibleWith": "与 {{item}} 不兼容",
+    "noVersionSelected": "未选择版本"
+  },
   "ManageSkinModal": {
     "skinManage": "管理皮肤",
     "default": "默认",
@@ -1399,17 +1407,6 @@
   },
   "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
-  },
-  "ModLoaderCards": {
-    "installed": "已安装",
-    "unInstalled": "未安装",
-    "notCompatibleWith": "与 {{modLoader}} 不兼容",
-    "versionNotSelected": "未选择版本"
-  },
-  "ModLoaderSelector": {
-    "stable": "正式版",
-    "beta": "测试版",
-    "releaseDate": "发布于 {{date}}"
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"

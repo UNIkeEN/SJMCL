@@ -1,6 +1,7 @@
 use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
 use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
 use crate::launcher_config::models::GameConfig;
+use crate::resource::models::OptiFineResourceInfo;
 use crate::storage::{load_json_async, save_json_async};
 use crate::utils::image::ImageWrapper;
 use serde::{Deserialize, Serialize};
@@ -97,6 +98,7 @@ structstruck::strike! {
       pub version: String,
       pub branch: Option<String>, // Optional branch name for mod loaders like Forge
     },
+    pub optifine: Option<OptiFineResourceInfo>,
     // if true, use the spec_game_config, else use the global game config
     pub use_spec_game_config: bool,
     // if use_spec_game_config is false, this field is ignored
