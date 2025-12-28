@@ -37,7 +37,7 @@ const GameLogPage: React.FC = () => {
 
   const [logs, setLogs] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStates, setFilterStates] = useState<Record<LogLevel, boolean>>({
+  const [filterStates, setFilterStates] = useState<{ [key: string]: boolean }>({
     FATAL: true,
     ERROR: true,
     WARN: true,
@@ -118,7 +118,7 @@ const GameLogPage: React.FC = () => {
       lastLevelRef.current = level;
       return level;
     }
-    if (/^\s+/.test(log)) {
+    if (/^\s+at /.test(log) || /^\s+Caused by:/.test(log) || /^\s+/.test(log)) {
       return lastLevelRef.current;
     }
     if (/exception|error|invalid|failed|错误/i.test(log)) {
@@ -193,7 +193,7 @@ const GameLogPage: React.FC = () => {
 
   return (
     <Box p={4} h="100vh" display="flex" flexDirection="column">
-      <Flex align="center" mb={4}>
+      <Flex alignItems="center" mb={4}>
         <Input
           type="text"
           placeholder={t("GameLogPage.placeholder")}
@@ -212,10 +212,10 @@ const GameLogPage: React.FC = () => {
             size="xs"
             variant={filterStates[level] ? "solid" : "subtle"}
             onClick={() =>
-              setFilterStates((s) => ({
-                ...s,
-                [level]: !s[level],
-              }))
+              setFilterStates({
+                ...filterStates,
+                [level]: !filterStates[level],
+              })
             }
             mr={2}
             colorScheme={logLevelMap[level].colorScheme}
@@ -223,7 +223,6 @@ const GameLogPage: React.FC = () => {
             {level} ({logCounts[level] || 0})
           </Button>
         ))}
-
         <Tooltip label={t("GameLogPage.revealRawLog")} placement="bottom">
           <IconButton
             icon={<LuFileInput />}
