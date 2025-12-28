@@ -11,14 +11,24 @@ import {
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
+import {
+  AutoSizer,
+  CellMeasurer,
+  CellMeasurerCache,
+  List,
+  ListRowRenderer,
+} from "react-virtualized";
+import "react-virtualized/styles.css";
 import Empty from "@/components/common/empty";
 import { useLauncherConfig } from "@/contexts/config";
 import { LaunchService } from "@/services/launch";
 import styles from "@/styles/game-log.module.css";
 import { parseIdFromWindowLabel } from "@/utils/window";
+
+type LogLevel = "FATAL" | "ERROR" | "WARN" | "INFO" | "DEBUG";
 
 const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -26,18 +36,38 @@ const GameLogPage: React.FC = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [logs, setLogs] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filterStates, setFilterStates] = useState<{ [key: string]: boolean }>({
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [filterStates, setFilterStates] = useState<Record<LogLevel, boolean>>({
     FATAL: true,
     ERROR: true,
     WARN: true,
     INFO: true,
     DEBUG: true,
   });
+
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
 
-  const logContainerRef = useRef<HTMLDivElement>(null);
   const launchingIdRef = useRef<number | null>(null);
+  const listRef = useRef<List>(null);
+
+  const cacheRef = useRef(
+    new CellMeasurerCache({
+      fixedWidth: true,
+      defaultHeight: 20,
+    })
+  );
+
+  const logLevelMap: Record<
+    LogLevel,
+    { colorScheme: string; textColor: string }
+  > = {
+    FATAL: { colorScheme: "red", textColor: "red.500" },
+    ERROR: { colorScheme: "orange", textColor: "orange.500" },
+    WARN: { colorScheme: "yellow", textColor: "yellow.500" },
+    INFO: { colorScheme: "gray", textColor: "gray.600" },
+    DEBUG: { colorScheme: "blue", textColor: "blue.600" },
+  };
 
   const clearLogs = () => setLogs([]);
 
@@ -47,12 +77,11 @@ const GameLogPage: React.FC = () => {
       launchingIdRef.current = parseIdFromWindowLabel(
         getCurrentWebview().label
       );
-      const launchingId = launchingIdRef.current;
-      if (launchingId) {
-        const res = await LaunchService.retrieveGameLog(launchingId);
-        if (res.status === "success" && Array.isArray(res.data)) {
-          setLogs(res.data);
-        }
+      if (!launchingIdRef.current) return;
+
+      const res = await LaunchService.retrieveGameLog(launchingIdRef.current);
+      if (res.status === "success" && Array.isArray(res.data)) {
+        setLogs(res.data);
       }
     })();
   }, []);
@@ -60,184 +89,181 @@ const GameLogPage: React.FC = () => {
   // keep listening to game process output
   useEffect(() => {
     const unlisten = LaunchService.onGameProcessOutput((payload) => {
-      setLogs((prevLogs) => [...prevLogs, payload]);
+      setLogs((prev) => [...prev, payload]);
     });
     return () => unlisten();
   }, []);
 
   const revealRawLogFile = async () => {
-    try {
-      const launchingId = launchingIdRef.current;
-      if (launchingId == null) return;
+    if (!launchingIdRef.current) return;
 
-      const baseDir = await appLogDir();
-      const logFilePath = await join(
-        baseDir,
-        "game",
-        `game_log_${launchingId}.log`
-      );
+    const baseDir = await appLogDir();
+    const logFilePath = await join(
+      baseDir,
+      "game",
+      `game_log_${launchingIdRef.current}.log`
+    );
 
-      await revealItemInDir(logFilePath);
-    } catch (err) {
-      logger.error("Failed to open raw log file:", err);
-    }
+    await revealItemInDir(logFilePath);
   };
 
-  let lastLevel: string = "INFO";
+  const lastLevelRef = useRef<LogLevel>("INFO");
 
-  const getLogLevel = (log: string): string => {
+  const getLogLevel = useCallback((log: string): LogLevel => {
     const match = log.match(
       /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
     );
+
     if (match) {
-      lastLevel = match[1].toUpperCase();
-      return lastLevel;
+      const level = match[1].toUpperCase() as LogLevel;
+      lastLevelRef.current = level;
+      return level;
     }
-
-    if (/^\s+at /.test(log) || /^\s+Caused by:/.test(log) || /^\s+/.test(log)) {
-      return lastLevel;
+    if (/^\s+/.test(log)) {
+      return lastLevelRef.current;
     }
-
-    if (/exception|error|invalid|failed|错误/i.test(log)) {
-      lastLevel = "ERROR";
+    if (/exception|error|failed|错误/i.test(log)) {
+      lastLevelRef.current = "ERROR";
       return "ERROR";
     }
+    return lastLevelRef.current;
+  }, []);
 
-    lastLevel = lastLevel || "INFO";
-    return "INFO";
-  };
+  const logCounts = useMemo<Record<LogLevel, number>>(() => {
+    const counts: Record<LogLevel, number> = {
+      FATAL: 0,
+      ERROR: 0,
+      WARN: 0,
+      INFO: 0,
+      DEBUG: 0,
+    };
 
-  const filteredLogs = logs.filter((log) => {
-    const level = getLogLevel(log);
-    return (
-      filterStates[level] &&
-      log.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
-
-  const logLevelMap: {
-    [key: string]: { colorScheme: string; color: string };
-  } = {
-    FATAL: { colorScheme: "red", color: "red.500" },
-    ERROR: { colorScheme: "orange", color: "orange.500" },
-    WARN: { colorScheme: "yellow", color: "yellow.500" },
-    INFO: { colorScheme: "gray", color: "gray.600" },
-    DEBUG: { colorScheme: "gray", color: "blue.600" },
-  };
-
-  const logCounts = logs.reduce<{ [key: string]: number }>((acc, log) => {
-    const level = getLogLevel(log);
-    acc[level] = (acc[level] || 0) + 1;
-    return acc;
-  }, {});
-
-  // NOTE: smooth scroll may have delay, not always to bottom.
-  // const scrollToBottom = () => {
-  //   if (logContainerRef.current) {
-  //     logContainerRef.current.scrollTo({
-  //       top: logContainerRef.current.scrollHeight,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // };
-
-  const scrollToBottom = () => {
-    if (logContainerRef.current) {
-      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    for (const log of logs) {
+      const level = getLogLevel(log);
+      counts[level]++;
     }
+
+    return counts;
+  }, [logs, getLogLevel]);
+
+  const filteredLogs = useMemo(() => {
+    return logs.filter((log) => {
+      const level = getLogLevel(log);
+      return (
+        filterStates[level] &&
+        log.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  }, [logs, filterStates, searchTerm, getLogLevel]);
+
+  const rowRenderer: ListRowRenderer = ({ key, index, style, parent }) => {
+    const log = filteredLogs[index];
+    const level = getLogLevel(log);
+
+    return (
+      <CellMeasurer
+        key={key}
+        cache={cacheRef.current}
+        parent={parent}
+        rowIndex={index}
+        columnIndex={0}
+      >
+        <div style={style}>
+          <Text
+            className={styles["log-text"]}
+            color={logLevelMap[level].textColor}
+            fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
+            whiteSpace="pre-wrap"
+            wordBreak="break-word"
+            lineHeight="1.4"
+          >
+            {log}
+          </Text>
+        </div>
+      </CellMeasurer>
+    );
   };
 
-  const handleScroll = () => {
-    if (!logContainerRef.current) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = logContainerRef.current;
-    const atBottom = scrollHeight - scrollTop - clientHeight < 1;
-    setIsScrolledToBottom(atBottom);
-  };
-
-  // Auto scroll to bottom if user not interacted
   useEffect(() => {
-    if (isScrolledToBottom) scrollToBottom();
-  }, [filteredLogs, isScrolledToBottom]);
+    cacheRef.current.clearAll();
+    listRef.current?.recomputeRowHeights();
+  }, [filteredLogs]);
+
+  const levels = Object.keys(logLevelMap) as LogLevel[];
 
   return (
     <Box p={4} h="100vh" display="flex" flexDirection="column">
-      <Flex alignItems="center" mb={4}>
+      <Flex mb={4} align="center">
         <Input
-          type="text"
+          size="sm"
+          w="200px"
           placeholder={t("GameLogPage.placeholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          size="sm"
-          w="200px"
-          mr={4}
           focusBorderColor={`${primaryColor}.500`}
         />
         <Spacer />
-        {Object.keys(logLevelMap).map((level) => (
+
+        {levels.map((level) => (
           <Button
             key={level}
             size="xs"
-            variant={filterStates[level] ? "solid" : "subtle"}
-            onClick={() =>
-              setFilterStates({
-                ...filterStates,
-                [level]: !filterStates[level],
-              })
-            }
             mr={2}
+            variant={filterStates[level] ? "solid" : "subtle"}
             colorScheme={logLevelMap[level].colorScheme}
+            onClick={() =>
+              setFilterStates((s) => ({
+                ...s,
+                [level]: !s[level],
+              }))
+            }
           >
             {level} ({logCounts[level] || 0})
           </Button>
         ))}
-        <Tooltip label={t("GameLogPage.revealRawLog")} placement="bottom">
+
+        <Tooltip label={t("GameLogPage.revealRawLog")}>
           <IconButton
             icon={<LuFileInput />}
-            aria-label={t("GameLogPage.revealRawLog")}
-            variant="ghost"
+            aria-label="reveal"
             size="sm"
-            colorScheme="gray"
+            variant="ghost"
             onClick={revealRawLogFile}
           />
         </Tooltip>
-        <Tooltip label={t("GameLogPage.clearLogs")} placement="bottom">
+        <Tooltip label={t("GameLogPage.clearLogs")}>
           <IconButton
             icon={<LuTrash />}
-            aria-label={t("GameLogPage.clearLogs")}
-            variant="ghost"
+            aria-label="clear"
             size="sm"
-            colorScheme="gray"
+            variant="ghost"
             onClick={clearLogs}
           />
         </Tooltip>
       </Flex>
 
-      <Box
-        ref={logContainerRef}
-        borderWidth="1px"
-        borderRadius="md"
-        p={2}
-        flex="1"
-        className={`${styles["log-list-container"]}`}
-        onScroll={handleScroll}
-      >
-        {filteredLogs.length > 0 ? (
-          filteredLogs.map((log, index) => {
-            const level = getLogLevel(log);
-            return (
-              <Text
-                key={index}
-                className={`${styles["log-text"]}`}
-                color={logLevelMap[level].color}
-                fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
-              >
-                {log}
-              </Text>
-            );
-          })
+      <Box flex="1" borderWidth="1px" borderRadius="md" position="relative">
+        {filteredLogs.length === 0 ? (
+          <Empty withIcon={false} />
         ) : (
-          <Empty colorScheme="gray" withIcon={false} />
+          <AutoSizer>
+            {({ width, height }) => (
+              <List
+                ref={listRef}
+                width={width}
+                height={height}
+                rowCount={filteredLogs.length}
+                deferredMeasurementCache={cacheRef.current}
+                rowHeight={cacheRef.current.rowHeight}
+                rowRenderer={rowRenderer}
+                onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
+                  setIsScrolledToBottom(
+                    scrollHeight - scrollTop - clientHeight < 2
+                  );
+                }}
+              />
+            )}
+          </AutoSizer>
         )}
 
         {!isScrolledToBottom && (
@@ -248,10 +274,10 @@ const GameLogPage: React.FC = () => {
             size="sm"
             variant="subtle"
             boxShadow="md"
-            onClick={() => {
-              scrollToBottom();
-            }}
             leftIcon={<LuChevronsDown />}
+            onClick={() =>
+              listRef.current?.scrollToRow(filteredLogs.length - 1)
+            }
           >
             {t("GameLogPage.scrollToBottom")}
           </Button>
