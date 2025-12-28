@@ -36,7 +36,7 @@ const GameLogPage: React.FC = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [logs, setLogs] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterStates, setFilterStates] = useState<{ [key: string]: boolean }>({
     FATAL: true,
     ERROR: true,
@@ -112,15 +112,16 @@ const GameLogPage: React.FC = () => {
     const match = log.match(
       /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
     );
-
     if (match) {
       const level = match[1].toUpperCase() as LogLevel;
       lastLevelRef.current = level;
       return level;
     }
+
     if (/^\s+at /.test(log) || /^\s+Caused by:/.test(log) || /^\s+/.test(log)) {
       return lastLevelRef.current;
     }
+
     if (/exception|error|invalid|failed|错误/i.test(log)) {
       lastLevelRef.current = "ERROR";
       return "ERROR";
