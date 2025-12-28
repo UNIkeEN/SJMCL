@@ -37,7 +37,6 @@ const GameLogPage: React.FC = () => {
 
   const [logs, setLogs] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-
   const [filterStates, setFilterStates] = useState<Record<LogLevel, boolean>>({
     FATAL: true,
     ERROR: true,
@@ -45,7 +44,6 @@ const GameLogPage: React.FC = () => {
     INFO: true,
     DEBUG: true,
   });
-
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
 
   const launchingIdRef = useRef<number | null>(null);
@@ -77,11 +75,12 @@ const GameLogPage: React.FC = () => {
       launchingIdRef.current = parseIdFromWindowLabel(
         getCurrentWebview().label
       );
-      if (!launchingIdRef.current) return;
-
-      const res = await LaunchService.retrieveGameLog(launchingIdRef.current);
-      if (res.status === "success" && Array.isArray(res.data)) {
-        setLogs(res.data);
+      const launchingId = launchingIdRef.current;
+      if (launchingId) {
+        const res = await LaunchService.retrieveGameLog(launchingId);
+        if (res.status === "success" && Array.isArray(res.data)) {
+          setLogs(res.data);
+        }
       }
     })();
   }, []);
@@ -89,7 +88,7 @@ const GameLogPage: React.FC = () => {
   // keep listening to game process output
   useEffect(() => {
     const unlisten = LaunchService.onGameProcessOutput((payload) => {
-      setLogs((prev) => [...prev, payload]);
+      setLogs((prevLogs) => [...prevLogs, payload]);
     });
     return () => unlisten();
   }, []);
@@ -122,7 +121,7 @@ const GameLogPage: React.FC = () => {
     if (/^\s+/.test(log)) {
       return lastLevelRef.current;
     }
-    if (/exception|error|failed|错误/i.test(log)) {
+    if (/exception|error|invalid|failed|错误/i.test(log)) {
       lastLevelRef.current = "ERROR";
       return "ERROR";
     }
@@ -184,6 +183,7 @@ const GameLogPage: React.FC = () => {
     );
   };
 
+  // Reset list cache and recalculate row heights on filteredLogs update
   useEffect(() => {
     cacheRef.current.clearAll();
     listRef.current?.recomputeRowHeights();
@@ -193,13 +193,15 @@ const GameLogPage: React.FC = () => {
 
   return (
     <Box p={4} h="100vh" display="flex" flexDirection="column">
-      <Flex mb={4} align="center">
+      <Flex align="center" mb={4}>
         <Input
-          size="sm"
-          w="200px"
+          type="text"
           placeholder={t("GameLogPage.placeholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          size="sm"
+          w="200px"
+          mr={4}
           focusBorderColor={`${primaryColor}.500`}
         />
         <Spacer />
@@ -208,35 +210,37 @@ const GameLogPage: React.FC = () => {
           <Button
             key={level}
             size="xs"
-            mr={2}
             variant={filterStates[level] ? "solid" : "subtle"}
-            colorScheme={logLevelMap[level].colorScheme}
             onClick={() =>
               setFilterStates((s) => ({
                 ...s,
                 [level]: !s[level],
               }))
             }
+            mr={2}
+            colorScheme={logLevelMap[level].colorScheme}
           >
             {level} ({logCounts[level] || 0})
           </Button>
         ))}
 
-        <Tooltip label={t("GameLogPage.revealRawLog")}>
+        <Tooltip label={t("GameLogPage.revealRawLog")} placement="bottom">
           <IconButton
             icon={<LuFileInput />}
-            aria-label="reveal"
-            size="sm"
+            aria-label={t("GameLogPage.revealRawLog")}
             variant="ghost"
+            size="sm"
+            colorScheme="gray"
             onClick={revealRawLogFile}
           />
         </Tooltip>
-        <Tooltip label={t("GameLogPage.clearLogs")}>
+        <Tooltip label={t("GameLogPage.clearLogs")} placement="bottom">
           <IconButton
             icon={<LuTrash />}
-            aria-label="clear"
-            size="sm"
+            aria-label={t("GameLogPage.clearLogs")}
             variant="ghost"
+            size="sm"
+            colorScheme="gray"
             onClick={clearLogs}
           />
         </Tooltip>
