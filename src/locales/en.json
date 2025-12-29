@@ -396,7 +396,7 @@
     "tag": {
       "source": "Source"
     },
-    "body": "to",
+    "content": "{{type}}<b> {{name}} </b>to",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "Resource Packs",

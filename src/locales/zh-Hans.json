@@ -396,7 +396,7 @@
     "tag": {
       "source": "源"
     },
-    "body": "到",
+    "content": "{{type}}<b>{{name}}</b>到",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "资源包",

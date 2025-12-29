@@ -16,12 +16,11 @@ import {
   Radio,
   RadioGroup,
   Tag,
-  Text,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { LuCopy, LuScissors } from "react-icons/lu";
 import { OptionItemGroup } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
@@ -305,11 +304,14 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                     }))}
                     withTooltip={false}
                   />
-                  <Text>
-                    {t(`CopyOrMoveModal.resourceType.${_tgtDirType}`)}
-                  </Text>
-                  <Text fontWeight="bold" px={1.5}>{` ${srcResName} `}</Text>
-                  <Text>{t("CopyOrMoveModal.body")}</Text>
+                  <Trans
+                    i18nKey="CopyOrMoveModal.content"
+                    components={{ b: <b style={{ margin: "10px" }} /> }}
+                    values={{
+                      type: t(`CopyOrMoveModal.resourceType.${_tgtDirType}`),
+                      name: srcResName,
+                    }}
+                  />
                 </Flex>
               </VStack>
               <RadioGroup
