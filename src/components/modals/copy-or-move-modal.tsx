@@ -16,6 +16,7 @@ import {
   Radio,
   RadioGroup,
   Tag,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -31,7 +32,7 @@ import { InstanceSubdirType } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
 import { InstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
-import { generateInstanceDesc } from "@/utils/instance";
+import { generateInstanceDesc, getInstanceIconSrc } from "@/utils/instance";
 
 interface CopyOrMoveModalProps extends Omit<ModalProps, "children"> {
   srcResName: string;
@@ -254,10 +255,10 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
           />
         )}
         <Image
-          src={instance.iconSrc}
+          src={getInstanceIconSrc(instance.iconSrc, instance.versionPath)}
           alt={instance.name}
           boxSize="32px"
-          objectFit="cover"
+          fallbackSrc="/images/icons/JEIcon_Release.png"
         />
       </HStack>
     ),
@@ -304,14 +305,18 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                     }))}
                     withTooltip={false}
                   />
-                  <Trans
-                    i18nKey="CopyOrMoveModal.content"
-                    components={{ b: <b style={{ margin: "10px" }} /> }}
-                    values={{
-                      type: t(`CopyOrMoveModal.resourceType.${_tgtDirType}`),
-                      name: srcResName,
-                    }}
-                  />
+                  <Text>
+                    <Trans
+                      i18nKey="CopyOrMoveModal.content"
+                      components={{
+                        b: <b />,
+                      }}
+                      values={{
+                        type: t(`CopyOrMoveModal.resourceType.${_tgtDirType}`),
+                        name: srcResName,
+                      }}
+                    />
+                  </Text>
                 </Flex>
               </VStack>
               <RadioGroup

@@ -396,7 +396,7 @@
     "tag": {
       "source": "Source"
     },
-    "content": "{{type}}<b> {{name}} </b>to",
+    "content": "{{type}} <b>{{name}}</b> to",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "Resource Packs",
@@ -938,7 +938,7 @@
         "discoverPage": {
           "title": "Discover Page",
           "openNotice": {
-            "content": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut<key>{{what}}</key>+<key>S</key>. "
+            "content": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut <key>{{keyname}}</key> + <key>S</key>. "
           }
         },
         "instancesNavType": {

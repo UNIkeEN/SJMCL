@@ -23,11 +23,6 @@ const GeneralSettingsPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const { removeHistory } = useRoutingHistory();
   const { openGenericConfirmDialog, closeSharedModal } = useSharedModals();
-  const keyname = t(
-    `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${
-      config.basicInfo.osType
-    }`
-  );
 
   const instancesNavTypes = ["instance", "directory", "hidden"];
 
@@ -63,7 +58,13 @@ const GeneralSettingsPage = () => {
                       <Text>
                         <Trans
                           i18nKey="GeneralSettingsPage.functions.settings.discoverPage.openNotice.content"
-                          values={{ what: keyname }}
+                          values={{
+                            keyname: t(
+                              `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${
+                                config.basicInfo.osType
+                              }`
+                            ),
+                          }}
                           components={{ key: <Kbd /> }}
                         />
                       </Text>

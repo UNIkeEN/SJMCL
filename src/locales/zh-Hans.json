@@ -396,7 +396,7 @@
     "tag": {
       "source": "源"
     },
-    "content": "{{type}}<b>{{name}}</b>到",
+    "content": "{{type}} <b>{{name}}</b> 到",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "资源包",
@@ -938,7 +938,7 @@
         "discoverPage": {
           "title": "发现页",
           "openNotice": {
-            "content": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键<key>{{what}}</key> + <key>S</key> 继续使用 “聚合搜索”。"
+            "content": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 <key>{{keyname}}</key> + <key>S</key> 继续使用 “聚合搜索”。"
           }
         },
         "instancesNavType": {
