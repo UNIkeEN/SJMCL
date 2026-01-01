@@ -6,6 +6,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
@@ -92,6 +93,8 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
             </Center>
           )}
         </ModalBody>
+
+        <ModalFooter />
       </ModalContent>
     </Modal>
   );

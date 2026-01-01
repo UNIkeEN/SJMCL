@@ -33,7 +33,7 @@ const SelectPlayerModal: React.FC<SelectPlayerModalProps> = ({
         <ModalHeader>{t("SelectPlayerModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={4}>
-          <VStack spacing={2} alignItems="start" w="full">
+          <VStack spacing={0} alignItems="stretch">
             {candidatePlayers.map((player) => (
               <OptionItem
                 key={player.id}
