@@ -75,8 +75,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-          # targets: ${{ matrix.platform == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
 
       - name: Install Linux dependencies
         if: matrix.platform == 'linux'
@@ -111,6 +109,7 @@ jobs:
 
       - name: Patch portable executable
         if: matrix.platform == 'windows' || matrix.platform == 'linux'
+        shell: bash
         run: |
           if [ "${{ matrix.platform }}" = "windows" ]; then
             python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched.exe" "SJMCL.exe"
@@ -118,7 +117,8 @@ jobs:
             python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched" "SJMCL"
           fi
 
-      - name: Artifact name setup
+      - name: Setup artifact name
+        shell: bash
         run: |
           echo "ARTIFACT_NAME=SJMCL_${{ inputs.version }}_${{ matrix.platform }}_${{ matrix.arch }}" >> $GITHUB_ENV
 
