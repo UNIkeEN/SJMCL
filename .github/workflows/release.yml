@@ -166,12 +166,11 @@ jobs:
           echo "Core executable SHA256 checksums:"
           cat SHA256SUMS.txt
 
-          cp SHA256SUMS.txt release-artifacts/
-
           echo "Final release artifacts:"
           ls -la release-artifacts/
 
       # Only upload to SJMC server for the main repository
+      # We need to upload the SHA256SUMS file as well, but don't want to keep it in the release-artifacts folder
       - name: Upload artifacts to SJMC server
         if: github.repository == 'UNIkeEN/SJMCL'
         timeout-minutes: 10
@@ -180,7 +179,9 @@ jobs:
           SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
           SJMC_DEPLOY_PROJECT: ${{ secrets.SJMC_DEPLOY_PROJECT }}
         run: |
+          cp SHA256SUMS.txt release-artifacts/SHA256SUMS_${{env.VERSION}}.txt
           bash scripts/release/upload_to_sjmc_server.sh
+          rm release-artifacts/SHA256SUMS_${{env.VERSION}}.txt
         shell: bash
 
       - name: Generate Changelog
