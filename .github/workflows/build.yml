@@ -117,6 +117,25 @@ jobs:
           ARTIFACT_NAME="SJMCL_${{ env.VERSION }}_${{ matrix.platform }}_${{ matrix.arch }}"
           echo "Artifact Name: $ARTIFACT_NAME"
           mkdir artifacts
+          
+          # Calculate SHA256 of the core executable before bundling
+          CORE_EXECUTABLE=""
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            CORE_EXECUTABLE="src-tauri/target/${{ matrix.target }}/release/SJMCL.exe"
+          elif [ "${{ matrix.platform }}" = "macos" ]; then
+            CORE_EXECUTABLE="src-tauri/target/${{ matrix.target }}/release/bundle/macos/SJMCL.app/Contents/MacOS/SJMCL"
+          elif [ "${{ matrix.platform }}" = "linux" ]; then
+            CORE_EXECUTABLE="src-tauri/target/${{ matrix.target }}/release/SJMCL"
+          fi
+          
+          if [ -f "$CORE_EXECUTABLE" ]; then
+            EXECUTABLE_SHA256=$(sha256sum "$CORE_EXECUTABLE" | awk '{print $1}')
+            echo "Core executable SHA256: $EXECUTABLE_SHA256"
+            echo "$EXECUTABLE_SHA256  $ARTIFACT_NAME" > artifacts/"$ARTIFACT_NAME".sha256
+          else
+            echo "Warning: Core executable not found at $CORE_EXECUTABLE"
+          fi
+          
           if [ "${{ matrix.platform }}" = "windows" ]; then
             python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL.exe"
             # For Windows, copy the portable exe
