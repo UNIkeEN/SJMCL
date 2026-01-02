@@ -178,6 +178,7 @@ pub async fn run() {
       launcher_config.save().unwrap();
       let version = launcher_config.basic_info.launcher_version.clone();
       let os = launcher_config.basic_info.platform.clone();
+      let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
       let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
       app.manage(Mutex::new(launcher_config));
 
@@ -256,7 +257,7 @@ pub async fn run() {
 
       // Send statistics
       tokio::spawn(async move {
-        utils::sys_info::send_statistics(version, os).await;
+        utils::sys_info::send_statistics(version, os, exe_sha256).await;
       });
 
       // Auto purge launcher logs older than 30 days if enabled
