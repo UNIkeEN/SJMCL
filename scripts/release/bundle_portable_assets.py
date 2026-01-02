@@ -8,11 +8,13 @@ import struct
 import zipfile
 import argparse
 
-def bundle_assets(basepath, executable_name):
+def bundle_assets(basepath, executable_name, output_executable_name=None):
     assets_path = os.path.join(basepath, "assets")
     executable_path = os.path.join(basepath, executable_name)
-    name, ext = os.path.splitext(executable_name)
-    output_executable_path = os.path.join(basepath, f"{name}-patched{ext}")
+    if output_executable_name is None:
+        name, ext = os.path.splitext(executable_name)
+        output_executable_name = f"{name}_portable{ext}"
+    output_executable_path = os.path.join(basepath, output_executable_name)
 
     zip_stream = io.BytesIO()
 
@@ -40,6 +42,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Bundle assets into executable")
     parser.add_argument("executable_name", help="Name of the executable to patch")
     parser.add_argument("-p", "--path", default=".", help="Path to the executable and assets")
+    parser.add_argument("-o", "--output", default=None, help="Name of the output patched executable")
     args = parser.parse_args()
 
-    bundle_assets(args.path, args.executable_name)
+    bundle_assets(args.path, args.executable_name, args.output)
