@@ -13,14 +13,15 @@ use tauri_plugin_os::locale;
 /// # Examples
 ///
 /// ```rust
-/// send_statistics("1.0.0".to_string(), "windows".to_string()).await;
+/// send_statistics("1.0.0".to_string(), "windows".to_string(), "sha256".to_string()).await;
 /// ```
-pub async fn send_statistics(version: String, os: String) {
+pub async fn send_statistics(version: String, os: String, sha256: String) {
   _ = reqwest::Client::new()
     .post("https://mc.sjtu.cn/api-sjmcl/statistics")
     .json(&json!({
       "version": version,
       "os": os,
+      "exe_sha256": sha256,
     }))
     .send()
     .await;
