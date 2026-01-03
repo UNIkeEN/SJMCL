@@ -3,7 +3,8 @@ use crate::launcher_config::models::MemoryInfo;
 use serde_json::json;
 use std::net::{SocketAddr, TcpListener};
 use std::path::PathBuf;
-use sysinfo::{Disk, Disks};
+use std::sync::OnceLock;
+use sysinfo::{CpuRefreshKind, Disk, Disks, RefreshKind, System};
 use systemstat::{saturating_sub_bytes, Platform};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_os::locale;
@@ -150,4 +151,22 @@ pub fn find_free_port(start_port: Option<u16>) -> SJMCLResult<u16> {
 
   log::error!("No free port found.");
   Err(SJMCLError("No free port found".to_string()))
+}
+
+pub fn get_concurrent_limit(multiplier: f64) -> usize {
+  static CONCURRENT_LIMIT: OnceLock<usize> = OnceLock::new();
+
+  *CONCURRENT_LIMIT.get_or_init(|| {
+    let mut sys =
+      System::new_with_specifics(RefreshKind::nothing().with_cpu(CpuRefreshKind::everything()));
+    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+    sys.refresh_cpu_usage();
+    let cpu_count = sys.cpus().len() as f64;
+
+    let raw = cpu_count * multiplier;
+
+    let threads = raw.round() as usize;
+
+    threads.max(8).min(32)
+  })
 }
