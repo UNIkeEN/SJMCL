@@ -141,18 +141,47 @@ jobs:
             # Copy unsigned macOS artifacts
             find artifacts -name "SJMCL_${{ env.VERSION }}_macos_*" -exec cp {} release-artifacts/ \;
           fi
+
+          # Collect all SHA256 files into one summary
+          touch SHA256SUMS.txt
+          echo "# Version: ${{ env.VERSION }}" >> SHA256SUMS.txt
+          echo "# Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> SHA256SUMS.txt
+          echo "" >> SHA256SUMS.txt
           
+          # Collect SHA256 from downloaded artifacts
+          find artifacts -name "*.sha256" -type f | sort | while read sha256_file; do
+            cat "$sha256_file" >> SHA256SUMS.txt
+          done
+          
+          # Also collect from signed macOS artifacts if available
+          if [ "${{ env.SIGNING_SUCCESS }}" = "true" ] && [ -d artifacts-signed ]; then
+            find artifacts-signed -name "*.sha256" -type f | sort | while read sha256_file; do
+              cat "$sha256_file" >> SHA256SUMS.txt
+            done
+          fi
+
+          rm -f release-artifacts/*.sha256
+
+          echo ""
+          echo "Core executable SHA256 checksums:"
+          cat SHA256SUMS.txt
+
           echo "Final release artifacts:"
           ls -la release-artifacts/
 
-      - name: Upload artifacts to remote server
+      # Only upload to SJMC server for the main repository
+      # We need to upload the SHA256SUMS file as well, but don't want to keep it in the release-artifacts folder
+      - name: Upload artifacts to SJMC server
+        if: github.repository == 'UNIkeEN/SJMCL'
         timeout-minutes: 10
         env:
           SJMC_SECRET_KEY: ${{ secrets.SJMC_DEPLOY_SECRET_KEY }}
           SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
           SJMC_DEPLOY_PROJECT: ${{ secrets.SJMC_DEPLOY_PROJECT }}
         run: |
+          cp SHA256SUMS.txt release-artifacts/SHA256SUMS_${{env.VERSION}}.txt
           bash scripts/release/upload_to_sjmc_server.sh
+          rm release-artifacts/SHA256SUMS_${{env.VERSION}}.txt
         shell: bash
 
       - name: Generate Changelog

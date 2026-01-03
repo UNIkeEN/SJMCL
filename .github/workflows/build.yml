@@ -75,8 +75,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-          # targets: ${{ matrix.platform == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
 
       - name: Install Linux dependencies
         if: matrix.platform == 'linux'
@@ -109,35 +107,65 @@ jobs:
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
+      - name: Patch portable executable
+        if: matrix.platform == 'windows' || matrix.platform == 'linux'
+        shell: bash
+        run: |
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched.exe" "SJMCL.exe"
+          elif [ "${{ matrix.platform }}" = "linux" ]; then
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched" "SJMCL"
+          fi
+
+      - name: Setup artifact name
+        shell: bash
+        run: |
+          echo "ARTIFACT_NAME=SJMCL_${{ inputs.version }}_${{ matrix.platform }}_${{ matrix.arch }}" >> $GITHUB_ENV
+
+      - name: Calculate SHA256 checksums
+        shell: bash
+        run: |
+          ARTIFACT_NAME="${{ env.ARTIFACT_NAME }}"
+          touch "${ARTIFACT_NAME}.sha256"
+
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            echo "$(sha256sum src-tauri/target/${{ matrix.target }}/release/SJMCL.exe | awk '{print $1}') ${ARTIFACT_NAME}" >> "${ARTIFACT_NAME}.sha256"
+            echo "$(sha256sum "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched.exe" | awk '{print $1}') ${ARTIFACT_NAME}_portable" >> "${ARTIFACT_NAME}.sha256"
+          elif [ "${{ matrix.platform }}" = "macos" ]; then
+            echo "$(sha256sum src-tauri/target/${{ matrix.target }}/release/SJMCL | awk '{print $1}') ${ARTIFACT_NAME}_unsigned" >> "${ARTIFACT_NAME}.sha256"
+          elif [ "${{ matrix.platform }}" = "linux" ]; then
+            echo "$(sha256sum src-tauri/target/${{ matrix.target }}/release/SJMCL | awk '{print $1}') ${ARTIFACT_NAME}" >> "${ARTIFACT_NAME}.sha256"
+            echo "$(sha256sum "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched" | awk '{print $1}') ${ARTIFACT_NAME}_portable" >> "${ARTIFACT_NAME}.sha256"
+          fi
+
+          cat "${ARTIFACT_NAME}.sha256"
+
       - name: Prepare release artifact
         shell: bash
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          ARTIFACT_NAME="SJMCL_${{ env.VERSION }}_${{ matrix.platform }}_${{ matrix.arch }}"
+          ARTIFACT_NAME="${{ env.ARTIFACT_NAME }}"
           echo "Artifact Name: $ARTIFACT_NAME"
           mkdir artifacts
+
+          cp "${ARTIFACT_NAME}.sha256" artifacts/
+
           if [ "${{ matrix.platform }}" = "windows" ]; then
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL.exe"
-            # For Windows, copy the portable exe
             mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/nsis/"*.exe artifacts/"$ARTIFACT_NAME"_setup.exe
-            ls -la artifacts
           elif [ "${{ matrix.platform }}" = "macos" ]; then
             ls src-tauri/target/${{ matrix.target }}/release/bundle/macos
             # For MacOS, compress the .app folder
             tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "SJMCL.app"
-            ls -la artifacts
           elif [ "${{ matrix.platform }}" = "linux" ]; then
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" "SJMCL"
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/appimage/"*.AppImage artifacts/"$ARTIFACT_NAME".AppImage
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/deb/"*.deb artifacts/"$ARTIFACT_NAME".deb
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/rpm/"*.rpm artifacts/"$ARTIFACT_NAME".rpm
             mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched" artifacts/"$ARTIFACT_NAME"_portable
-            ls -la artifacts
           fi
-          
-          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+
+          ls -la artifacts
 
       - name: Upload artifact
         if: inputs.upload_artifacts

@@ -177,6 +177,7 @@ structstruck::strike! {
       pub arch: String,
       pub os_type: String,
       pub platform_version: String,
+      pub exe_sha256: String,
       pub is_portable: bool,
       #[default = false]
       pub is_china_mainland_ip: bool,
