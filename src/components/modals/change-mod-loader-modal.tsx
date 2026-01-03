@@ -21,7 +21,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
-import { ModLoaderSelector } from "@/components/mod-loader-selector";
+import { LoaderSelector } from "@/components/loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useToast } from "@/contexts/toast";
@@ -196,18 +196,19 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
             </Flex>
           )}
           <ModalBody>
-            {summary?.version && (
-              <ModLoaderSelector
-                selectedGameVersion={{
-                  id: summary.version,
-                  gameType: "release",
-                  releaseTime: new Date().toISOString(),
-                  url: "",
-                }}
-                selectedModLoader={selectedModLoader}
-                onSelectModLoader={setSelectedModLoader}
-              />
-            )}
+            {summary?.version &&
+              selectedModLoader.loaderType !== ModLoaderType.Unknown && (
+                <LoaderSelector
+                  selectedGameVersion={{
+                    id: summary.version,
+                    gameType: "release",
+                    releaseTime: new Date().toISOString(),
+                    url: "",
+                  }}
+                  selectedModLoader={selectedModLoader}
+                  onSelectModLoader={setSelectedModLoader}
+                />
+              )}
           </ModalBody>
           <ModalFooter>
             {selectedModLoader.loaderType === ModLoaderType.Fabric && (

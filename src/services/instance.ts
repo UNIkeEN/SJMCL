@@ -15,6 +15,7 @@ import { LevelData, WorldInfo } from "@/models/instance/world";
 import {
   GameClientResourceInfo,
   ModLoaderResourceInfo,
+  OptiFineResourceInfo,
 } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
@@ -42,6 +43,7 @@ export class InstanceService {
    * @param {string} iconSrc - The icon source of the instance.
    * @param {GameClientResourceInfo} game - The game resource info of the instance.
    * @param {ModLoaderResourceInfo} modLoader - The mod loader info of the instance.
+   * @param {OptiFineResourceInfo} [optifine] - Optional OptiFine installation.
    * @param {string} [modpackPath] - Optional path to the modpack archive file.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
    * @returns {Promise<InvokeResponse<null>>}
@@ -54,6 +56,7 @@ export class InstanceService {
     iconSrc: string,
     game: GameClientResourceInfo,
     modLoader: ModLoaderResourceInfo,
+    optifine?: OptiFineResourceInfo,
     modpackPath?: string,
     isInstallFabricApi?: boolean
   ): Promise<InvokeResponse<null>> {
@@ -64,6 +67,7 @@ export class InstanceService {
       iconSrc,
       game,
       modLoader,
+      optifine,
       modpackPath,
       isInstallFabricApi,
     });

@@ -135,6 +135,7 @@ pub async fn run() {
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_game_version_specific,
       resource::commands::fetch_mod_loader_version_list,
+      resource::commands::fetch_optifine_version_list,
       resource::commands::fetch_resource_list_by_name,
       resource::commands::fetch_resource_version_packs,
       resource::commands::download_game_server,

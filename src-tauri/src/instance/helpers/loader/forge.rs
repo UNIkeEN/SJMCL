@@ -95,8 +95,7 @@ pub async fn download_forge_libraries(
   app: &AppHandle,
   priority: &[SourceType],
   instance: &Instance,
-  client_info: &McClientInfo,
-  is_retry: bool, // do not modify client info, just download necessary files
+  client_info: &mut McClientInfo,
 ) -> SJMCLResult<()> {
   let subdirs = get_instance_subdir_paths(
     app,
@@ -108,8 +107,6 @@ pub async fn download_forge_libraries(
     return Err(InstanceError::InvalidSourcePath.into());
   };
   let mut task_params = vec![];
-
-  let mut client_info = client_info.clone();
 
   let installer_coord = format!(
     "net.minecraftforge:forge:{}-installer",
@@ -124,6 +121,9 @@ pub async fn download_forge_libraries(
     ),
     None,
   )?);
+  if !installer_path.exists() {
+    return Err(InstanceError::LoaderInstallerNotFound.into());
+  }
   let file = File::open(&installer_path)?;
   let mut archive = ZipArchive::new(file)?;
 
@@ -304,14 +304,14 @@ pub async fn download_forge_libraries(
       }));
     }
 
-    let (arguments, minecraft_arguments) = if let Some(v_args) = client_info.arguments {
+    let (arguments, minecraft_arguments) = if let Some(v_args) = &client_info.arguments {
       let nf_args = forge_info
         .arguments
         .ok_or(InstanceError::ModLoaderVersionParseError)?;
 
       let new_args = LaunchArgumentTemplate {
-        game: [v_args.game, nf_args.game].concat(),
-        jvm: [v_args.jvm, nf_args.jvm].concat(),
+        game: [v_args.game.clone(), nf_args.game.clone()].concat(),
+        jvm: [v_args.jvm.clone(), nf_args.jvm.clone()].concat(),
       };
       (Some(new_args), None)
     } else {
@@ -446,13 +446,6 @@ pub async fn download_forge_libraries(
     true,
   )
   .await?;
-
-  if !is_retry {
-    let vjson_path = instance
-      .version_path
-      .join(format!("{}.json", instance.name));
-    fs::write(vjson_path, serde_json::to_vec_pretty(&client_info)?)?;
-  }
 
   Ok(())
 }

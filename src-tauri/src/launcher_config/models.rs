@@ -296,7 +296,7 @@ structstruck::strike! {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
-      pub instance_resourcepack_page: struct {
+      pub instance_resource_packs_page: struct {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
@@ -304,6 +304,10 @@ structstruck::strike! {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
+      pub instance_shader_packs_page: struct {
+        #[default([true, true])]
+        pub accordion_states: [bool; 2],
+      }
     }
   }
 }

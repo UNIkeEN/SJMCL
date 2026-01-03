@@ -30,7 +30,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
-import { ModLoaderSelector } from "@/components/mod-loader-selector";
+import { LoaderSelector } from "@/components/loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
@@ -38,6 +38,7 @@ import { GameDirectory } from "@/models/config";
 import {
   GameClientResourceInfo,
   ModLoaderResourceInfo,
+  OptiFineResourceInfo,
   defaultModLoaderResourceInfo,
 } from "@/models/resource";
 import { InstanceService } from "@/services/instance";
@@ -49,11 +50,12 @@ export const gameTypesToIcon: Record<string, string> = {
   april_fools: "/images/icons/YellowGlazedTerracotta.png",
 };
 
-export const modLoaderTypesToIcon: Record<string, string> = {
+export const loaderTypesToIcon: Record<string, string> = {
   Unknown: "",
   Fabric: "/images/icons/Fabric.png",
   Forge: "/images/icons/Anvil.png", // differ from that in mod-loader-selector
   NeoForge: "/images/icons/NeoForge.png",
+  OptiFine: "/images/icons/OptiFine.png",
 };
 
 export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
@@ -74,6 +76,9 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     useState<GameClientResourceInfo>();
   const [selectedModLoader, setSelectedModLoader] =
     useState<ModLoaderResourceInfo>(defaultModLoaderResourceInfo);
+  const [selectedOptiFine, setSelectedOptiFine] = useState<
+    OptiFineResourceInfo | undefined
+  >(undefined);
   const [instanceName, setInstanceName] = useState("");
   const [instanceDescription, setInstanceDescription] = useState("");
   const [instanceIconSrc, setInstanceIconSrc] = useState("");
@@ -102,6 +107,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       instanceIconSrc,
       selectedGameVersion,
       selectedModLoader,
+      selectedOptiFine,
       undefined, // modpackPath
       isInstallFabricApi
     )
@@ -126,10 +132,11 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     instanceDescription,
     instanceIconSrc,
     selectedModLoader,
+    selectedOptiFine,
     isInstallFabricApi,
-    toast,
     modalProps,
     router,
+    toast,
   ]);
 
   const step1Content = useMemo(() => {
@@ -164,10 +171,12 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       selectedGameVersion && (
         <>
           <ModalBody>
-            <ModLoaderSelector
+            <LoaderSelector
               selectedGameVersion={selectedGameVersion}
               selectedModLoader={selectedModLoader}
               onSelectModLoader={setSelectedModLoader}
+              selectedOptiFine={selectedOptiFine}
+              onSelectOptiFine={setSelectedOptiFine}
             />
           </ModalBody>
           <ModalFooter>
@@ -198,7 +207,8 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
                 colorScheme={primaryColor}
                 onClick={() => {
                   if (!selectedModLoader.version) {
-                    setSelectedModLoader(defaultModLoaderResourceInfo); // if the user selected the loader but did not choose a version from the list
+                    // if the user selected the loader but did not choose a version from the list
+                    setSelectedModLoader(defaultModLoaderResourceInfo);
                     setInstanceName(selectedGameVersion.id);
                     setInstanceIconSrc(
                       gameTypesToIcon[selectedGameVersion.gameType]
@@ -208,8 +218,18 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
                       `${selectedGameVersion.id}-${selectedModLoader.loaderType}`
                     );
                     setInstanceIconSrc(
-                      modLoaderTypesToIcon[selectedModLoader.loaderType]
+                      loaderTypesToIcon[selectedModLoader.loaderType]
                     );
+                  }
+
+                  if (selectedOptiFine) {
+                    if (!selectedOptiFine.filename) {
+                      // if the user selected OptiFine but did not choose a version from the list
+                      setSelectedOptiFine(undefined);
+                    } else {
+                      setInstanceName((prev) => `${prev}-OptiFine`);
+                      setInstanceIconSrc(loaderTypesToIcon["OptiFine"]);
+                    }
                   }
                   setActiveStep(2);
                 }}
@@ -222,13 +242,14 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       )
     );
   }, [
-    modalProps.onClose,
-    primaryColor,
     selectedGameVersion,
     selectedModLoader,
+    selectedOptiFine,
+    primaryColor,
     isInstallFabricApi,
-    setActiveStep,
     t,
+    modalProps.onClose,
+    setActiveStep,
   ]);
 
   const step3Content = useMemo(() => {
@@ -289,10 +310,21 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       {
         key: "loader",
         content: step2Content,
-        description:
-          selectedModLoader.loaderType === ModLoaderType.Unknown
-            ? t("CreateInstanceModal.stepper.skipped")
-            : `${selectedModLoader.loaderType} ${selectedModLoader.version}`,
+        description: (() => {
+          if (selectedModLoader.loaderType === ModLoaderType.Unknown) {
+            return selectedOptiFine
+              ? "OptiFine"
+              : t("LoaderSelector.noVersionSelected");
+          } else {
+            let desc = `${selectedModLoader.loaderType} ${
+              selectedModLoader.version || t("LoaderSelector.noVersionSelected")
+            }`;
+            if (selectedOptiFine) {
+              desc += ` + OptiFine`;
+            }
+            return desc;
+          }
+        })(),
       },
       {
         key: "info",
@@ -302,12 +334,13 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     ],
     [
       step1Content,
+      selectedGameVersion,
+      t,
       step2Content,
       step3Content,
-      selectedGameVersion,
       selectedModLoader.loaderType,
       selectedModLoader.version,
-      t,
+      selectedOptiFine,
     ]
   );
 

@@ -414,7 +414,7 @@
     },
     "stepper": {
       "game": "Game Client",
-      "loader": "Mod Loader",
+      "loader": "Game Loader",
       "skipped": "Skipped",
       "info": "Basic Settings"
     },
@@ -1195,7 +1195,8 @@
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": "Mod Loader"
+      "title": "Mod Loader",
+      "notInstalled": "Not Installed"
     },
     "modList": {
       "title": "Mods",
@@ -1240,6 +1241,10 @@
     }
   },
   "InstanceShaderPacksPage": {
+    "shaderLoaderList": {
+      "title": "Loaders",
+      "notInstalled": "Not Installed"
+    },
     "shaderPackList": {
       "title": "Shader Packs"
     }
@@ -1359,6 +1364,13 @@
       "noSelectedPlayer": "Please add and select a player first"
     }
   },
+  "LoaderSelector": {
+    "stable": "Stable",
+    "beta": "Beta",
+    "releaseDate": "Released at {{date}}",
+    "notCompatibleWith": "Not compatible with {{item}}",
+    "noVersionSelected": "No version selected"
+  },
   "ManageSkinModal": {
     "skinManage": "Manage Skin",
     "default": "Default",
@@ -1399,17 +1411,6 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} selected"
-  },
-  "ModLoaderCards": {
-    "installed": "Installed",
-    "unInstalled": "Not Installed",
-    "notCompatibleWith": "Not compatible with {{modLoader}}",
-    "versionNotSelected": "No version selected"
-  },
-  "ModLoaderSelector": {
-    "stable": "Stable",
-    "beta": "Beta",
-    "releaseDate": "Released at {{date}}"
   },
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."

@@ -6,6 +6,7 @@ import {
   GameClientResourceInfo,
   ModLoaderResourceInfo,
   ModUpdateQuery,
+  OptiFineResourceInfo,
   OtherResourceFileInfo,
   OtherResourceInfo,
   OtherResourceSearchRes,
@@ -43,6 +44,8 @@ export class ResourceService {
 
   /**
    * FETCH the list of mode loader versions.
+   * @param {string} gameVersion - The game version to fetch mod loaders for.
+   * @param {ModLoaderType} modLoaderType - The type of mod loader to fetch.
    * @returns {Promise<InvokeResponse<ModLoaderResourceInfo[]>>}
    */
   @responseHandler("resource")
@@ -54,6 +57,18 @@ export class ResourceService {
       gameVersion,
       modLoaderType,
     });
+  }
+
+  /**
+   * FETCH the list of OptiFine versions.
+   * @param {string} gameVersion - The game version to fetch OptiFine versions for.
+   * @returns {Promise<InvokeResponse<OptiFineResourceInfo[]>>}
+   */
+  @responseHandler("resource")
+  static async fetchOptiFineVersionList(
+    gameVersion: string
+  ): Promise<InvokeResponse<OptiFineResourceInfo[]>> {
+    return await invoke("fetch_optifine_version_list", { gameVersion });
   }
 
   /**

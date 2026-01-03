@@ -147,10 +147,13 @@ export interface LauncherConfig {
     instanceModsPage: {
       accordionStates: boolean[];
     };
-    instanceResourcepackPage: {
+    instanceResourcePacksPage: {
       accordionStates: boolean[];
     };
     instanceWorldsPage: {
+      accordionStates: boolean[];
+    };
+    instanceShaderPacksPage: {
       accordionStates: boolean[];
     };
   };
@@ -303,10 +306,13 @@ export const defaultConfig: LauncherConfig = {
     instanceModsPage: {
       accordionStates: [true, true],
     },
-    instanceResourcepackPage: {
+    instanceResourcePacksPage: {
       accordionStates: [true, true],
     },
     instanceWorldsPage: {
+      accordionStates: [true, true],
+    },
+    instanceShaderPacksPage: {
       accordionStates: [true, true],
     },
   },

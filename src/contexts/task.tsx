@@ -437,6 +437,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 break;
               case "forge-libraries":
               case "neoforge-libraries":
+              case "optifine-libraries":
                 if (version) {
                   let instanceName = getInstanceList()?.find(
                     (i) => i.id === version
