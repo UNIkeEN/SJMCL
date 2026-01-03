@@ -1335,7 +1335,9 @@
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "Switch Player",
-        "switchGame": "Switch Game"
+        "addPlayer": "Add Player",
+        "switchInstance": "Switch Game Instance",
+        "addInstance": "Add Game Instance"
       }
     },
     "Text": {

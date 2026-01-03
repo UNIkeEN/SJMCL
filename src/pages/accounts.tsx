@@ -12,6 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import router from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -68,6 +69,14 @@ const AccountsPage = () => {
     onOpen: onAddPlayerModalOpen,
     onClose: onAddPlayerModalClose,
   } = useDisclosure();
+
+  useEffect(() => {
+    const { add } = router.query;
+    if (add) {
+      onAddPlayerModalOpen();
+      router.replace("/accounts", undefined, { shallow: true });
+    }
+  }, [onAddPlayerModalOpen]);
 
   const playerTypeList = [
     {

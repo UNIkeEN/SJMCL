@@ -19,7 +19,7 @@ import {
 import { useRouter } from "next/router";
 import { cloneElement, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuArrowLeftRight, LuSettings } from "react-icons/lu";
+import { LuArrowLeftRight, LuPlus, LuSettings } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { CompactButtonGroup } from "@/components/common/compact-button-group";
 import InstancesView from "@/components/instances-view";
@@ -34,16 +34,20 @@ import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
 import styles from "@/styles/launch.module.css";
 
-interface SwitchButtonProps extends Omit<IconButtonProps, "onClick"> {
+interface CustomButtonProps extends Omit<IconButtonProps, "onClick"> {
   tooltip: string;
   onClick: () => void;
   popoverContent: React.ReactElement;
+  showAdd?: boolean;
+  onAddClick?: () => void;
 }
 
-const SwitchButton: React.FC<SwitchButtonProps> = ({
+const ButtonWithPopover: React.FC<CustomButtonProps> = ({
   tooltip,
   popoverContent,
   onClick,
+  showAdd = false,
+  onAddClick,
   ...props
 }) => {
   const { config } = useLauncherConfig();
@@ -63,7 +67,7 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
 
   return (
     <Popover
-      isOpen={isOpen}
+      isOpen={showAdd ? false : isOpen}
       onClose={handleClose}
       placement="top-end"
       gutter={12} // add more gutter to show clear space from the launch button's shadow
@@ -74,23 +78,27 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
           <PopoverTrigger>
             <IconButton
               size="xs"
-              icon={<LuArrowLeftRight />}
+              icon={showAdd ? <LuPlus /> : <LuArrowLeftRight />}
               {...props}
               onClick={() => {
+                if (showAdd) return (onAddClick ?? onClick)();
                 quickSwitch ? onToggle() : onClick();
               }}
             />
           </PopoverTrigger>
         </Box>
       </Tooltip>
-      <PopoverContent maxH="3xs" overflow="auto">
-        <PopoverBody p={0}>
-          {cloneElement(popoverContent, {
-            // Delay close after selecting an item for better UX.
-            onSelectCallback: () => setTimeout(handleClose, 100),
-          })}
-        </PopoverBody>
-      </PopoverContent>
+
+      {!showAdd && (
+        <PopoverContent maxH="3xs" overflow="auto">
+          <PopoverBody p={0}>
+            {cloneElement(popoverContent, {
+              // Delay close after selecting an item for better UX.
+              onSelectCallback: () => setTimeout(handleClose, 100),
+            })}
+          </PopoverBody>
+        </PopoverContent>
+      )}
     </Popover>
   );
 };
@@ -115,6 +123,9 @@ const LaunchPage = () => {
     setInstanceList(getInstanceList() || []);
   }, [getInstanceList]);
 
+  const hasPlayers = playerList.length > 0;
+  const hasInstances = instanceList.length > 0;
+
   return (
     <HStack position="absolute" bottom={7} right={7} spacing={4}>
       <Card
@@ -123,9 +134,11 @@ const LaunchPage = () => {
         }
       >
         <Box position="absolute" top={1} right={1}>
-          <SwitchButton
-            tooltip={t("LaunchPage.SwitchButton.tooltip.switchPlayer")}
-            aria-label="switch-player"
+          <ButtonWithPopover
+            tooltip={t(
+              `LaunchPage.SwitchButton.tooltip.${hasPlayers ? "switchPlayer" : "addPlayer"}`
+            )}
+            aria-label="player"
             variant="subtle"
             popoverContent={
               <PlayersView
@@ -136,8 +149,11 @@ const LaunchPage = () => {
               />
             }
             onClick={() => router.push("/accounts")}
+            showAdd={!hasPlayers}
+            onAddClick={() => router.push("/accounts?add=true")}
           />
         </Box>
+
         <HStack spacing={2.5} h="100%" w="100%">
           {selectedPlayer ? (
             <>
@@ -176,6 +192,7 @@ const LaunchPage = () => {
           )}
         </HStack>
       </Card>
+
       <Box position="relative">
         <Button
           id="main-launch-button"
@@ -206,21 +223,26 @@ const LaunchPage = () => {
             colorScheme={useColorModeValue("blackAlpha", "gray")}
             size="xs"
           >
-            {selectedInstance && (
+            {selectedInstance && hasInstances && (
               <CommonIconButton
                 icon={LuSettings}
                 label={t("LaunchPage.button.instanceSettings")}
                 tooltipPlacement="top"
                 onClick={() =>
                   router.push(
-                    `/instances/details/${encodeURIComponent(selectedInstance.id)}/settings`
+                    `/instances/details/${encodeURIComponent(
+                      selectedInstance.id
+                    )}/settings`
                   )
                 }
               />
             )}
-            <SwitchButton
-              tooltip={t("LaunchPage.SwitchButton.tooltip.switchGame")}
-              aria-label="switch-game"
+
+            <ButtonWithPopover
+              tooltip={t(
+                `LaunchPage.SwitchButton.tooltip.${hasInstances ? "switchInstance" : "addInstance"}`
+              )}
+              aria-label="instance"
               popoverContent={
                 <InstancesView
                   instances={instanceList}
@@ -229,6 +251,8 @@ const LaunchPage = () => {
                 />
               }
               onClick={() => router.push("/instances/list")}
+              showAdd={!hasInstances}
+              onAddClick={() => router.push("/instances/add-import")}
               mt={-1} // prevent margin caused by Tooltip
             />
           </CompactButtonGroup>

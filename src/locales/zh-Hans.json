@@ -1335,7 +1335,9 @@
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "切换角色",
-        "switchGame": "切换游戏实例"
+        "addPlayer": "添加角色",
+        "switchInstance": "切换游戏实例",
+        "addInstance": "添加游戏实例"
       }
     },
     "Text": {
