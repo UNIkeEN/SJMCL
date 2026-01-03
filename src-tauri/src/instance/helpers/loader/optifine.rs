@@ -174,7 +174,6 @@ async fn download_optifine_libraries(
   add_library_entry(&mut client_info.libraries, &optifine_runtime_coord, None)?;
   let lw_main = "net.minecraft.launchwrapper.Launch".to_string();
 
-  // 是否需要考虑到已经有过了
   if let Some(v_args) = client_info.arguments.clone() {
     let mut g: Vec<ArgumentsItem> = v_args.game.clone();
     let flag = ArgumentsItem {
@@ -360,7 +359,7 @@ pub async fn finish_optifine_installer(
   let optifine_rel = convert_library_name_to_path(&optifine_coord, None)?;
   let optifine_path = libraries_dir.join(&optifine_rel);
   if !installer_path.exists() {
-    return Err(InstanceError::LoaderNotDownloaded.into());
+    return Err(InstanceError::LoaderInstallerNotFound.into());
   }
 
   let f = fs::File::open(&installer_path)?;

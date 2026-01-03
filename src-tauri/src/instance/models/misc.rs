@@ -272,7 +272,7 @@ pub enum InstanceError {
   InstallationDuplicated,
   ProcessorExecutionFailed,
   SemaphoreAcquireFailed,
-  LoaderNotDownloaded,
+  LoaderInstallerNotFound,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

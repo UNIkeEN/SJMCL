@@ -104,6 +104,9 @@ pub async fn download_neoforge_libraries(
     ),
     None,
   )?);
+  if !installer_path.exists() {
+    return Err(InstanceError::LoaderInstallerNotFound.into());
+  }
   let (content, version) = {
     let file = File::open(&installer_path)?;
     let mut archive = ZipArchive::new(file)?;

@@ -121,6 +121,9 @@ pub async fn download_forge_libraries(
     ),
     None,
   )?);
+  if !installer_path.exists() {
+    return Err(InstanceError::LoaderInstallerNotFound.into());
+  }
   let file = File::open(&installer_path)?;
   let mut archive = ZipArchive::new(file)?;
 
