@@ -1,5 +1,4 @@
 pub mod commands;
-pub mod exe_hash;
 pub mod fs;
 pub mod image;
 pub mod logging;

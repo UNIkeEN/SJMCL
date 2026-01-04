@@ -32,13 +32,9 @@ use utils::web::build_sjmcl_client;
 use tauri::path::BaseDirectory;
 use tauri::Manager;
 
-static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-  std::env::current_exe()
-    .unwrap()
-    .parent()
-    .unwrap()
-    .to_path_buf()
-});
+static EXE_PATH: LazyLock<PathBuf> = LazyLock::new(|| std::env::current_exe().unwrap());
+
+static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().to_path_buf());
 
 static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(false));
 
