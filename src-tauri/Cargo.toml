@@ -86,7 +86,7 @@ sysinfo = "0.36.0"
 mc-server-status = "1.0.0"
 config = "0.15.18"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
-rsa = "0.9.8"
+rsa = "0.9.10"
 axum = "0.8.6"
 tower-http = { version = "0.6.6", features = ["cors"] }
 sha2 = "0.10.9"
