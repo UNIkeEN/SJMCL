@@ -258,7 +258,7 @@ pub async fn refresh_instances(
       .as_ref()
       .is_some_and(|o| o.status == ModLoaderStatus::Installed);
     let optifine_filename = optifine_info.as_ref().map(|info| info.filename.clone());
-    let optifine_version = optifine_info.map(|info| format!("{}_{}", info.r#type, info.patch));
+    let optifine_version = optifine_info.map(|info| format!("{}", info.r#type));
     let instance = Instance {
       name,
       version: game_version.unwrap_or_default(),
