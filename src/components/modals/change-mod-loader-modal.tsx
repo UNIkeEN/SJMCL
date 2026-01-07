@@ -110,7 +110,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
 
   const isSameAsCurrent =
     selectedModLoader.loaderType === currentModLoader.loaderType &&
-    selectedModLoader.version ===
+    parseModLoaderVersion(selectedModLoader.version) ===
       parseModLoaderVersion(currentModLoader.version);
 
   return (
@@ -187,7 +187,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                     }
                     description={
                       <Text fontSize="xs" color="gray.500">
-                        {selectedModLoader.version}
+                        {parseModLoaderVersion(selectedModLoader.version)}
                       </Text>
                     }
                   />
@@ -196,19 +196,18 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
             </Flex>
           )}
           <ModalBody>
-            {summary?.version &&
-              selectedModLoader.loaderType !== ModLoaderType.Unknown && (
-                <LoaderSelector
-                  selectedGameVersion={{
-                    id: summary.version,
-                    gameType: "release",
-                    releaseTime: new Date().toISOString(),
-                    url: "",
-                  }}
-                  selectedModLoader={selectedModLoader}
-                  onSelectModLoader={setSelectedModLoader}
-                />
-              )}
+            {summary?.version && (
+              <LoaderSelector
+                selectedGameVersion={{
+                  id: summary.version,
+                  gameType: "release",
+                  releaseTime: new Date().toISOString(),
+                  url: "",
+                }}
+                selectedModLoader={selectedModLoader}
+                onSelectModLoader={setSelectedModLoader}
+              />
+            )}
           </ModalBody>
           <ModalFooter>
             {selectedModLoader.loaderType === ModLoaderType.Fabric && (

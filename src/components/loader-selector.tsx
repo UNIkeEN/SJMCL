@@ -80,7 +80,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
       setSelectedId(selectedModLoader.version);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedModLoader.loaderType]);
 
   function isModLoaderResourceInfo(
     version: ModLoaderResourceInfo | OptiFineResourceInfo
