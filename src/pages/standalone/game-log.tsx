@@ -62,7 +62,7 @@ const GameLogPage: React.FC = () => {
         }
       }
     })();
-  }, [t]);
+  }, []);
 
   // keep listening to game process output
   useEffect(() => {
