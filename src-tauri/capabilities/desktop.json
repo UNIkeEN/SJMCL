@@ -21,10 +21,10 @@
           "path": "**"
         },
         {
-          "path": "**/.minecraft"
+          "path": "**/.*"
         },
         {
-          "path": "**/.minecraft/**"
+          "path": "**/.*/**"
         }
       ]
     },

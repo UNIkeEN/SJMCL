@@ -53,7 +53,7 @@
         "enable": true,
         "scope": [
           "**",
-          "**/.minecraft/**"
+          "**/.*/**"
         ]
       }
     }
