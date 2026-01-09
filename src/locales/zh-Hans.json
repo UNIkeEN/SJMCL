@@ -1148,6 +1148,13 @@
   "ImportAccountInfoModal": {
     "header": {
       "title": "从其他启动器导入账户信息"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher"
+    },
+    "body": {
+      "authServers": "认证服务器",
+      "players": "角色"
     }
   },
   "ImportModpackModal": {

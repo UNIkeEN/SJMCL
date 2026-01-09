@@ -1,11 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { ImportLauncherType, SkinModel, TextureType } from "@/enums/account";
-import {
-  AccountInfo,
-  AuthServer,
-  DeviceAuthResponseInfo,
-  Player,
-} from "@/models/account";
+import { AuthServer, DeviceAuthResponseInfo, Player } from "@/models/account";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -252,12 +247,12 @@ export class AccountService {
   /**
    * RETRIEVE other launcher account info for importing (stage 1).
    * @param {ImportLauncherType} launcherType - The external launcher type (e.g., HMCL / PCL).
-   * @returns {Promise<InvokeResponse<AccountInfo>>} - The other launcher account info for user selection.
+   * @returns {Promise<InvokeResponse<[Player[], AuthServer[]]>>} - The other launcher account info for user selection.
    */
   @responseHandler("account")
   static async retrieveOtherLauncherAccountInfo(
     launcherType: ImportLauncherType
-  ): Promise<InvokeResponse<AccountInfo>> {
+  ): Promise<InvokeResponse<[Player[], AuthServer[]]>> {
     return await invoke("retrieve_other_launcher_account_info", {
       launcherType,
     });
@@ -265,15 +260,18 @@ export class AccountService {
 
   /**
    * IMPORT external account info into the current launcher (stage 2).
-   * @param {AccountInfo} accountInfo - The external account info to be imported.
+   * @param {Player[]} players - The array of players to be imported.
+   * @param {AuthServer[]} authServers - The array of authentication servers to be imported.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
   static async importExternalAccountInfo(
-    accountInfo: AccountInfo
+    players: Player[],
+    authServers: AuthServer[]
   ): Promise<InvokeResponse<void>> {
     return await invoke("import_external_account_info", {
-      accountInfo,
+      players,
+      authServers,
     });
   }
 }

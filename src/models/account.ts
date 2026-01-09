@@ -60,10 +60,3 @@ export interface DeviceAuthResponseInfo {
   interval?: number;
   expiresIn: number;
 }
-
-// backend storage format, used here for importing from other launchers
-export interface AccountInfo {
-  players: Array<PlayerInfo>;
-  authServers: Array<AuthServer>;
-  isOauthProcessing: boolean; // always mocked on frontend side
-}

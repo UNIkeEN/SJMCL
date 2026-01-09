@@ -1,5 +1,9 @@
 import {
   Button,
+  Center,
+  Checkbox,
+  Grid,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -8,24 +12,168 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  VStack,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BeatLoader } from "react-spinners";
+import Empty from "@/components/common/empty";
+import { OptionItemGroup } from "@/components/common/option-item";
+import { Section } from "@/components/common/section";
+import SelectableCard from "@/components/common/selectable-card";
+import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
-import { ImportLauncherType } from "@/enums/account";
+import { useGlobalData } from "@/contexts/global-data";
+import { useToast } from "@/contexts/toast";
+import { ImportLauncherType, PlayerType } from "@/enums/account";
+import { AuthServer, Player } from "@/models/account";
+import { AccountService } from "@/services/account";
+import { generatePlayerDesc } from "@/utils/account";
 
 const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
 }) => {
+  const toast = useToast();
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const { getPlayerList } = useGlobalData();
+
+  const [isRetrieving, setIsRetrieving] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [selectedType, setSelectedType] = useState<ImportLauncherType>(
+    ImportLauncherType.HMCL
+  );
+  const [extPlayers, setExtPlayers] = useState<Player[]>([]);
+  const [extAuthServers, setExtAuthServers] = useState<AuthServer[]>([]);
+
+  // checkbox state
+  const [serverChecked, setServerChecked] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [playerChecked, setPlayerChecked] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const importLauncherTypes = [
     ImportLauncherType.HMCL,
-    ...(config.basicInfo.osType === "windows" ? [ImportLauncherType.PCL] : []),
-    ...(config.basicInfo.osType === "macos" ? [ImportLauncherType.SCL] : []),
+    // ...(config.basicInfo.osType === "windows" ? [ImportLauncherType.PCL] : []),
+    // ...(config.basicInfo.osType === "macos" ? [ImportLauncherType.SCL] : []),
   ];
+
+  const isThirdParty = (p: Player) =>
+    p.playerType === PlayerType.ThirdParty && !!p.authServer?.authUrl;
+
+  const handleRetrieveOtherLauncherAccountInfo = useCallback(
+    (type: ImportLauncherType) => {
+      setIsRetrieving(true);
+      AccountService.retrieveOtherLauncherAccountInfo(type)
+        .then((res) => {
+          if (res.status === "success") {
+            const [players, authServers] = res.data;
+            setExtPlayers(players);
+            setExtAuthServers(authServers);
+
+            // default: select all servers
+            const nextServerChecked: Record<string, boolean> = {};
+            authServers.forEach((s) => {
+              nextServerChecked[s.authUrl] = true;
+            });
+            setServerChecked(nextServerChecked);
+
+            // default: select all players that are allowed
+            const nextPlayerChecked: Record<string, boolean> = {};
+            players.forEach((p) => {
+              const pid = String((p as any).id);
+              if (isThirdParty(p)) {
+                nextPlayerChecked[pid] =
+                  !!nextServerChecked[p.authServer!.authUrl];
+              } else {
+                nextPlayerChecked[pid] = true;
+              }
+            });
+            setPlayerChecked(nextPlayerChecked);
+          } else {
+            setExtPlayers([]);
+            setExtAuthServers([]);
+            setServerChecked({});
+            setPlayerChecked({});
+            toast({
+              status: "error",
+              title: res.message,
+              description: res.details,
+            });
+          }
+        })
+        .finally(() => setIsRetrieving(false));
+    },
+    [toast]
+  );
+
+  useEffect(() => {
+    handleRetrieveOtherLauncherAccountInfo(selectedType);
+  }, [selectedType, handleRetrieveOtherLauncherAccountInfo]);
+
+  // if a server is unchecked, all its players MUST be unchecked
+  useEffect(() => {
+    setPlayerChecked((prev) => {
+      let changed = false;
+      const next = { ...prev };
+
+      extPlayers.forEach((p) => {
+        const pid = String((p as any).id);
+        if (
+          isThirdParty(p) &&
+          !serverChecked[p.authServer!.authUrl] &&
+          next[pid]
+        ) {
+          next[pid] = false;
+          changed = true;
+        }
+      });
+
+      return changed ? next : prev;
+    });
+  }, [serverChecked, extPlayers]);
+
+  const selectedAuthServers = extAuthServers.filter(
+    (s) => serverChecked[s.authUrl]
+  );
+
+  const selectedPlayers = extPlayers.filter((p) => {
+    const pid = String((p as any).id);
+    if (!playerChecked[pid]) return false;
+
+    if (isThirdParty(p)) {
+      return !!serverChecked[p.authServer!.authUrl];
+    }
+    return true;
+  });
+
+  const handleImportExternalAccountInfo = useCallback(() => {
+    setIsImporting(true);
+    AccountService.importExternalAccountInfo(
+      selectedPlayers,
+      selectedAuthServers
+    )
+      .then((res) => {
+        if (res.status === "success") {
+          getPlayerList(true); // refresh player list
+          toast({
+            status: "success",
+            title: res.message,
+          });
+          props.onClose && props.onClose();
+        } else {
+          toast({
+            status: "error",
+            title: res.message,
+            description: res.details,
+          });
+        }
+      })
+      .finally(() => setIsImporting(false));
+  }, [props, toast, getPlayerList, selectedPlayers, selectedAuthServers]);
 
   return (
     <Modal
@@ -34,15 +182,124 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
       {...props}
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent h="80vh">
         <ModalHeader>{t("ImportAccountInfoModal.header.title")}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody></ModalBody>
+        <ModalBody overflow="hidden">
+          <Grid templateColumns={"3fr 5fr"} gap={4} h="100%">
+            <VStack minW="3xs" spacing={3.5} overflowY="auto" align="stretch">
+              {importLauncherTypes.map((type, index) => (
+                <SelectableCard
+                  key={index}
+                  title={type}
+                  description={t(`ImportAccountInfoModal.launcherDesc.${type}`)}
+                  iconSrc={`/images/icons/external/${type.toLowerCase()}.png`}
+                  displayMode="selector"
+                  isSelected={selectedType === type}
+                  onSelect={() => {
+                    selectedType !== type && setSelectedType(type);
+                  }}
+                />
+              ))}
+            </VStack>
+            <VStack overflow="auto" align="stretch" spacing={4} flex="1">
+              {isRetrieving ? (
+                <Center h="100%">
+                  <BeatLoader size={16} color="gray" />
+                </Center>
+              ) : (
+                <>
+                  <Section title={t("ImportAccountInfoModal.body.authServers")}>
+                    {extAuthServers.length === 0 ? (
+                      <Center>
+                        <Empty withIcon={false} size="sm" />
+                      </Center>
+                    ) : (
+                      <OptionItemGroup
+                        items={
+                          extAuthServers.map((s) => ({
+                            title: s.name,
+                            description: s.authUrl,
+                            prefixElement: (
+                              <Checkbox
+                                colorScheme={primaryColor}
+                                isChecked={!!serverChecked[s.authUrl]}
+                                onChange={(e) =>
+                                  setServerChecked((prev) => ({
+                                    ...prev,
+                                    [s.authUrl]: e.target.checked,
+                                  }))
+                                }
+                              />
+                            ),
+                            children: <></>,
+                          })) || []
+                        }
+                      />
+                    )}
+                  </Section>
+                  <Section title={t("ImportAccountInfoModal.body.players")}>
+                    {extPlayers.length === 0 ? (
+                      <Center>
+                        <Empty withIcon={false} size="sm" />
+                      </Center>
+                    ) : (
+                      <OptionItemGroup
+                        items={extPlayers.map((p) => {
+                          const pid = String(p.id);
+                          const serverEnabled =
+                            !isThirdParty(p) ||
+                            !!serverChecked[p.authServer!.authUrl];
+
+                          return {
+                            title: p.name,
+                            description: generatePlayerDesc(p, true),
+                            prefixElement: (
+                              <HStack spacing={3}>
+                                <Checkbox
+                                  colorScheme={primaryColor}
+                                  isChecked={!!playerChecked[pid]}
+                                  isDisabled={!serverEnabled}
+                                  onChange={(e) =>
+                                    setPlayerChecked((prev) => ({
+                                      ...prev,
+                                      [pid]: e.target.checked,
+                                    }))
+                                  }
+                                />
+                                <PlayerAvatar
+                                  avatar={p.avatar}
+                                  boxSize="32px"
+                                />
+                              </HStack>
+                            ),
+                            children: <></>,
+                          };
+                        })}
+                      />
+                    )}
+                  </Section>
+                </>
+              )}
+            </VStack>
+          </Grid>
+        </ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={props.onClose}>
             {t("General.cancel")}
           </Button>
-          <Button colorScheme={primaryColor}>{t("General.import")}</Button>
+          <Button
+            colorScheme={primaryColor}
+            isLoading={isImporting}
+            isDisabled={
+              isRetrieving ||
+              isImporting ||
+              (selectedAuthServers.length === 0 && selectedPlayers.length === 0)
+            }
+            onClick={handleImportExternalAccountInfo}
+          >
+            {t("General.import")}
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

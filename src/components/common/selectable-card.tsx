@@ -72,7 +72,6 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
               fontSize="xs-sm"
               fontWeight={isSelected ? "bold" : "normal"}
               color={isSelected ? `${primaryColor}.600` : "inherit"}
-              mt={displayMode === "entry" && isSelected ? -0.5 : 0}
             >
               {title}
             </Text>

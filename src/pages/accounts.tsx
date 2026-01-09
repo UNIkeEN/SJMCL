@@ -57,13 +57,13 @@ const AccountsPage = () => {
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
-  
+
   const {
     isOpen: isAddPlayerModalOpen,
     onOpen: onAddPlayerModalOpen,
     onClose: onAddPlayerModalClose,
   } = useDisclosure();
-  
+
   const {
     isOpen: isImportAccountInfoModalOpen,
     onOpen: onImportAccountInfoModalOpen,

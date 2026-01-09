@@ -7,7 +7,7 @@ use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
-  AccountError, AccountInfo, AuthServerInfo, PlayerInfo, PlayerType, PresetRole, SkinModel,
+  AccountError, AuthServer, AuthServerInfo, Player, PlayerInfo, PlayerType, PresetRole, SkinModel,
   Texture, TextureType,
 };
 use crate::error::SJMCLResult;
@@ -17,6 +17,7 @@ use std::fs;
 use std::str::FromStr;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
+use url::Url;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Deserialize)]
@@ -161,7 +162,9 @@ async fn thirdparty_to_player(
   Ok(p)
 }
 
-pub async fn retrieve_hmcl_account_info(app: &AppHandle) -> SJMCLResult<AccountInfo> {
+pub async fn retrieve_hmcl_account_info(
+  app: &AppHandle,
+) -> SJMCLResult<(Vec<PlayerInfo>, Vec<Url>)> {
   let hmcl_json_path = if cfg!(target_os = "linux") {
     app
       .path()
@@ -180,44 +183,34 @@ pub async fn retrieve_hmcl_account_info(app: &AppHandle) -> SJMCLResult<AccountI
       base.join(".hmcl").join("accounts.json")
     }
   };
+
   if !hmcl_json_path.is_file() {
-    return Ok(AccountInfo::default());
+    return Ok((vec![], vec![]));
   }
 
   let hmcl_json = fs::read_to_string(&hmcl_json_path).map_err(|_| AccountError::NotFound)?;
+
   let hmcl_entries: Vec<HmclAccountEntry> =
     serde_json::from_str(&hmcl_json).map_err(|_| AccountError::Invalid)?;
-  let mut players: Vec<PlayerInfo> = Vec::new();
-  let mut url_set: HashSet<String> = HashSet::new();
+  let mut player_infos: Vec<PlayerInfo> = Vec::new();
+  let mut url_set: HashSet<Url> = HashSet::new();
+
   for e in &hmcl_entries {
     match e {
       HmclAccountEntry::Offline(acc) => {
-        players.push(offline_to_player(app, acc).await?);
+        player_infos.push(offline_to_player(app, acc).await?);
       }
       HmclAccountEntry::Microsoft(acc) => {
-        players.push(microsoft_to_player(app, acc).await?);
+        player_infos.push(microsoft_to_player(app, acc).await?);
       }
       HmclAccountEntry::ThirdParty(acc) => {
-        url_set.insert(acc.server_base_url.clone());
-        players.push(thirdparty_to_player(app, acc).await?);
+        if let Ok(url) = Url::parse(&acc.server_base_url) {
+          url_set.insert(url);
+        }
+        player_infos.push(thirdparty_to_player(app, acc).await?);
       }
     }
   }
-  // urls fetch -> AuthServerInfo
-  let mut auth_servers: Vec<AuthServerInfo> = Vec::new();
-  for url in url_set {
-    let s = fetch_auth_server_info(app, url).await?;
-    auth_servers.push(AuthServerInfo {
-      auth_url: s.auth_url,
-      client_id: s.client_id,
-      metadata: s.metadata,
-      timestamp: s.timestamp,
-    });
-  }
 
-  Ok(AccountInfo {
-    players,
-    auth_servers,
-    is_oauth_processing: false,
-  })
+  Ok((player_infos, url_set.into_iter().collect()))
 }

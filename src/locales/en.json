@@ -1148,6 +1148,13 @@
   "ImportAccountInfoModal": {
     "header": {
       "title": "Import Players and Auth Servers"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher"
+    },
+    "body": {
+      "authServers": "Auth Servers",
+      "players": "Players"
     }
   },
   "ImportModpackModal": {
