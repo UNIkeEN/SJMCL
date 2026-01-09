@@ -74,6 +74,12 @@ export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
   stable: true,
 };
 
+export interface OptiFineResourceInfo {
+  filename: string;
+  patch: string;
+  type: string;
+}
+
 export interface ModUpdateRecord {
   name: string;
   curVersion: string;

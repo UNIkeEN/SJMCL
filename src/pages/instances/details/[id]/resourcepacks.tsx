@@ -31,7 +31,7 @@ const InstanceResourcePacksPage = () => {
     isServerResourcePackListLoading,
   } = useInstanceSharedData();
   const accordionStates =
-    config.states.instanceResourcepackPage.accordionStates;
+    config.states.instanceResourcePacksPage.accordionStates;
   const { openSharedModal } = useSharedModals();
 
   const [resourcePacks, setResourcePacks] = useState<ResourcePackInfo[]>([]);

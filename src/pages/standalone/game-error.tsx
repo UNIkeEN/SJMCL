@@ -15,7 +15,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
@@ -72,8 +72,18 @@ const GameErrorPage: React.FC = () => {
     setBasicInfoParams(infoList);
   }, [config.basicInfo, platformName]);
 
+  // set window title with i18n
   useEffect(() => {
-    let launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
+    (async () => {
+      await getCurrentWebviewWindow().setTitle(
+        t("Tauri.windowTitle.gameError")
+      );
+    })();
+  }, [t]);
+
+  // retrieve states and logs (for crash analysis)
+  useEffect(() => {
+    let launchingId = parseIdFromWindowLabel(getCurrentWebviewWindow().label);
 
     LaunchService.retrieveGameLaunchingState(launchingId).then((response) => {
       if (response.status === "success") {
@@ -122,7 +132,9 @@ const GameErrorPage: React.FC = () => {
   };
 
   const handleOpenLogWindow = async () => {
-    let launchingId = parseIdFromWindowLabel(getCurrentWebview()?.label || "");
+    let launchingId = parseIdFromWindowLabel(
+      getCurrentWebviewWindow()?.label || ""
+    );
     if (launchingId) {
       await LaunchService.openGameLogWindow(launchingId);
     }
@@ -137,7 +149,7 @@ const GameErrorPage: React.FC = () => {
     const savePath = await save({
       defaultPath: `minecraft-exported-crash-info-${timestamp}.zip`,
     });
-    let launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
+    let launchingId = parseIdFromWindowLabel(getCurrentWebviewWindow().label);
     if (!savePath || !launchingId) return;
     setIsLoading(true);
     const res = await LaunchService.exportGameCrashInfo(launchingId, savePath);

@@ -18,7 +18,7 @@ pub enum ResourceType {
   ForgeMavenNew,
   ForgeInstall,
   Liteloader,
-  Optifine,
+  OptiFine,
   AuthlibInjector,
   FabricMeta,
   FabricMaven,
@@ -180,6 +180,14 @@ pub struct ModLoaderResourceInfo {
   pub description: String,
   pub stable: bool,
   pub branch: Option<String>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct OptiFineResourceInfo {
+  pub filename: String,
+  pub patch: String,
+  pub r#type: String,
 }
 
 #[derive(Debug, Display)]

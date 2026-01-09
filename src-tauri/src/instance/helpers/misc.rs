@@ -4,7 +4,7 @@ use crate::instance::helpers::client_json::{libraries_to_info, patches_to_info, 
 use crate::instance::helpers::loader::forge::download_forge_libraries;
 use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
 use crate::instance::models::misc::{
-  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType,
+  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType, OptiFine,
 };
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
@@ -154,7 +154,7 @@ pub async fn refresh_instances(
       continue; // not a valid instance
     }
 
-    let client_data = match load_json_async::<McClientInfo>(&json_path).await {
+    let mut client_data = match load_json_async::<McClientInfo>(&json_path).await {
       Ok(v) => v,
       Err(e) => {
         println!("Failed to load client info for {}: {}", name, e);
@@ -186,25 +186,34 @@ pub async fn refresh_instances(
       };
       if let Err(e) = {
         match cfg_read.mod_loader.status {
-          ModLoaderStatus::NotDownloaded => match cfg_read.mod_loader.loader_type {
-            ModLoaderType::Forge => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
+          ModLoaderStatus::NotDownloaded => {
+            match cfg_read.mod_loader.loader_type {
+              ModLoaderType::Forge => {
+                cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+                download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+              }
+              ModLoaderType::NeoForge => {
+                cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+                download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data)
+                  .await?;
+              }
+              _ => {}
             }
-            ModLoaderType::NeoForge => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, false).await
-            }
-            _ => Ok(()),
-          },
+            let vjson_path = cfg_read
+              .version_path
+              .join(format!("{}.json", cfg_read.name));
+            fs::write(vjson_path, serde_json::to_vec_pretty(&client_data)?)?;
+
+            Ok(())
+          }
           ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
             ModLoaderType::Forge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_forge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
+              download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
             }
             ModLoaderType::NeoForge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_neoforge_libraries(app, &priority_list, &cfg_read, &client_data, true).await
+              download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
             }
             _ => Ok(()),
           },
@@ -225,11 +234,12 @@ pub async fn refresh_instances(
       }
     }
 
-    let (mut game_version, loader_version, loader_type) = if !client_data.patches.is_empty() {
-      patches_to_info(&client_data.patches)
-    } else {
-      libraries_to_info(&client_data).await
-    };
+    let (mut game_version, loader_version, loader_type, optifine_info) =
+      if !client_data.patches.is_empty() {
+        patches_to_info(&client_data.patches)
+      } else {
+        libraries_to_info(&client_data).await
+      };
     // TODO: patches related logic
     if game_version.is_none() {
       let file = Cursor::new(tokio::fs::read(jar_path).await?);
@@ -242,11 +252,18 @@ pub async fn refresh_instances(
       cfg_read.icon_src = loader_type.to_icon_path().to_string();
     }
 
+    let mod_loader_installed = cfg_read.mod_loader.status == ModLoaderStatus::Installed;
+    let optifine_installed = cfg_read
+      .optifine
+      .as_ref()
+      .is_some_and(|o| o.status == ModLoaderStatus::Installed);
+    let optifine_filename = optifine_info.as_ref().map(|info| info.filename.clone());
+    let optifine_version = optifine_info.map(|info| format!("{}", info.r#type));
     let instance = Instance {
       name,
       version: game_version.unwrap_or_default(),
       version_path,
-      mod_loader: if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
+      mod_loader: if !mod_loader_installed {
         // pass mod loader check if download is not ready
         cfg_read.mod_loader
       } else {
@@ -256,6 +273,15 @@ pub async fn refresh_instances(
           status: ModLoaderStatus::Installed,
           branch: None,
         }
+      },
+      optifine: if !optifine_installed {
+        cfg_read.optifine.clone()
+      } else {
+        Some(OptiFine {
+          filename: optifine_filename.unwrap_or_default(),
+          version: optifine_version.unwrap_or_default(),
+          status: ModLoaderStatus::Installed,
+        })
       },
       ..cfg_read
     };

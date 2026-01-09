@@ -2,7 +2,7 @@ import { Badge, Button, Kbd, Switch, Text } from "@chakra-ui/react";
 import { appLogDir } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
@@ -56,23 +56,17 @@ const GeneralSettingsPage = () => {
                     title: t("General.notice"),
                     body: (
                       <Text>
-                        {t(
-                          "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-1"
-                        )}
-                        <Kbd>
-                          {t(
-                            `Enums.${
-                              config.basicInfo.osType === "macos"
-                                ? "metaKey"
-                                : "ctrlKey"
-                            }.${config.basicInfo.osType}`
-                          )}
-                        </Kbd>
-                        {" + "}
-                        <Kbd>S</Kbd>
-                        {t(
-                          "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-2"
-                        )}
+                        <Trans
+                          i18nKey="GeneralSettingsPage.functions.settings.discoverPage.openNotice.content"
+                          values={{
+                            keyname: t(
+                              `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${
+                                config.basicInfo.osType
+                              }`
+                            ),
+                          }}
+                          components={{ key: <Kbd /> }}
+                        />
                       </Text>
                     ),
                     btnCancel: "",

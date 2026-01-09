@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SJMCL",
-  "version": "0.6.5",
+  "version": "0.7.0",
   "identifier": "SJMCL",
   "build": {
     "frontendDist": "../out",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "",
+        "title": " ",
         "url": "/",
         "width": 800,
         "height": 550,
@@ -53,14 +53,21 @@
         "enable": true,
         "scope": [
           "**",
-          "**/.minecraft/**"
+          "**/.*/**",
+          "**/.*/**/.*/**"
         ]
       }
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "deb",
+      "rpm",
+      "appimage",
+      "nsis",
+      "app"
+    ],
     "category": "Game",
     "icon": [
       "assets/icons/32x32.png",
@@ -82,6 +89,16 @@
         }
       },
       "entitlements": "Entitlements.plist"
+    },
+    "windows": {
+      "nsis": {
+        "installerIcon": "assets/icons/icon.ico",
+        "languages": [
+          "English",
+          "SimpChinese",
+          "TradChinese"
+        ]
+      }
     },
     "resources": [
       "assets/skins/*",

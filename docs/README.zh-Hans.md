@@ -34,9 +34,9 @@ SJMCL 目前支持以下平台：
 
 | 平台    | 系统版本            | 架构               | 提供的的分发类型                              |
 |---------|---------------------|--------------------|--------------------------------------------|
-| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`   | `.msi`，便携版 `.exe`                |
-| macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`                   |
-| Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便携版二进制文件 |
+| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`  | 安装版 `.exe`，便携版 `.exe` |
+| macOS   | 10.15 及以上        | `aarch64`, `x86_64` | `.app`，`.dmg`                   |
+| Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便携版二进制文件 |
 
 了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/zh/docs)。
 
@@ -94,7 +94,7 @@ npm run tauri dev
 
 ## 版权声明
 
-版权所有 © 2024-2025 SJMCL 团队。
+版权所有 © 2024-2026 SJMCL 团队。
 
 > 本软件并非官方 Minecraft 服务。未获得 Mojang 或 Microsoft 批准或关联许可。
 

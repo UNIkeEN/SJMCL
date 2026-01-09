@@ -12,6 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import router from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -56,6 +57,18 @@ const AccountsPage = () => {
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
+  
+  const {
+    isOpen: isAddPlayerModalOpen,
+    onOpen: onAddPlayerModalOpen,
+    onClose: onAddPlayerModalClose,
+  } = useDisclosure();
+  
+  const {
+    isOpen: isImportAccountInfoModalOpen,
+    onOpen: onImportAccountInfoModalOpen,
+    onClose: onImportAccountInfoModalClose,
+  } = useDisclosure();
 
   useEffect(() => {
     setPlayerList(getPlayerList() || []);
@@ -65,17 +78,13 @@ const AccountsPage = () => {
     setAuthServerList(getAuthServerList() || []);
   }, [getAuthServerList]);
 
-  const {
-    isOpen: isAddPlayerModalOpen,
-    onOpen: onAddPlayerModalOpen,
-    onClose: onAddPlayerModalClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isImportAccountInfoModalOpen,
-    onOpen: onImportAccountInfoModalOpen,
-    onClose: onImportAccountInfoModalClose,
-  } = useDisclosure();
+  useEffect(() => {
+    const { add } = router.query;
+    if (add) {
+      onAddPlayerModalOpen();
+      router.replace("/accounts", undefined, { shallow: true });
+    }
+  }, [onAddPlayerModalOpen]);
 
   const playerTypeList = [
     {

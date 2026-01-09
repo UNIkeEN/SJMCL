@@ -59,7 +59,7 @@ pub async fn install_mod_loader(
       .await
     }
     ModLoaderType::Forge => {
-      install_forge_loader(priority, game_version, loader, lib_dir, task_params).await
+      install_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params).await
     }
     ModLoaderType::NeoForge => {
       install_neoforge_loader(priority, loader, lib_dir, task_params).await

@@ -241,8 +241,20 @@ jobs:
           
           echo "=== Final signature verification ==="
           codesign --verify --deep --strict --verbose=2 SJMCL.app
-          
-          # Clean up extracted .app
+
+      - name: Calculate SHA256
+        working-directory: artifacts
+        run: |
+          CORE_EXECUTABLE="SJMCL.app/Contents/MacOS/SJMCL"
+          if [ -f "$CORE_EXECUTABLE" ]; then
+            EXECUTABLE_SHA256=$(shasum -a 256 "$CORE_EXECUTABLE" | awk '{print $1}')
+            echo "Signed core executable SHA256: $EXECUTABLE_SHA256"
+            ARTIFACT_NAME="SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}_signed"
+            echo "$EXECUTABLE_SHA256  $ARTIFACT_NAME" > "$ARTIFACT_NAME.sha256"
+          fi
+
+      - name: Cleanup artifacts
+        run: |
           rm -rf SJMCL.app
 
       - name: Cleanup keychain

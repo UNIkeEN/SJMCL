@@ -2,8 +2,9 @@ use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_custom_background_list;
 use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialAccess, PartialUpdate};
+use crate::utils::fs::calculate_sha256;
 use crate::utils::portable::extract_assets;
-use crate::{APP_DATA_DIR, IS_PORTABLE};
+use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use rand::Rng;
 use std::fs;
 use std::path::PathBuf;
@@ -102,6 +103,7 @@ impl LauncherConfig {
       arch: tauri_plugin_os::arch().to_string(),
       os_type: tauri_plugin_os::type_().to_string(),
       platform_version: tauri_plugin_os::version().to_string(),
+      exe_sha256: calculate_sha256(&EXE_PATH).unwrap_or_default(),
       is_portable: *IS_PORTABLE,
       // below set to default, will be updated later in first time calling `check_full_login_availability`
       is_china_mainland_ip: false,

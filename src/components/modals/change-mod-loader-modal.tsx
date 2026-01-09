@@ -21,7 +21,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
-import { ModLoaderSelector } from "@/components/mod-loader-selector";
+import { LoaderSelector } from "@/components/loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useToast } from "@/contexts/toast";
@@ -110,7 +110,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
 
   const isSameAsCurrent =
     selectedModLoader.loaderType === currentModLoader.loaderType &&
-    selectedModLoader.version ===
+    parseModLoaderVersion(selectedModLoader.version) ===
       parseModLoaderVersion(currentModLoader.version);
 
   return (
@@ -187,7 +187,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                     }
                     description={
                       <Text fontSize="xs" color="gray.500">
-                        {selectedModLoader.version}
+                        {parseModLoaderVersion(selectedModLoader.version)}
                       </Text>
                     }
                   />
@@ -197,7 +197,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
           )}
           <ModalBody>
             {summary?.version && (
-              <ModLoaderSelector
+              <LoaderSelector
                 selectedGameVersion={{
                   id: summary.version,
                   gameType: "release",

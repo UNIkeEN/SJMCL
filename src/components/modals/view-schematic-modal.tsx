@@ -28,7 +28,7 @@ const ViewSchematicModal: React.FC<ViewSchematicModalProps> = ({
       <ModalContent>
         <ModalHeader>{t("ViewSchematicModal.header.title")}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody pb={3}>
+        <ModalBody pb={4}>
           <Flex justify="center" align="center" width="100%" height="100%">
             {/* TODO */}
           </Flex>

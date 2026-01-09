@@ -2,7 +2,9 @@ use crate::error::{SJMCLError, SJMCLResult};
 use crate::IS_PORTABLE;
 use regex::Regex;
 use sha1::{Digest, Sha1};
+use sha2::Sha256;
 use std::ffi::OsStr;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 use tauri::path::BaseDirectory;
@@ -398,6 +400,44 @@ pub fn validate_sha1(dest_path: PathBuf, truth: String) -> SJMCLResult<()> {
     )))
   } else {
     Ok(())
+  }
+}
+
+/// Calculates the SHA256 hash of a file.
+///
+/// # Parameters
+/// - `path`: The file path to hash
+///
+/// # Returns
+/// - `SJMCLResult<String>`: The SHA256 hash as a hexadecimal string, or an error
+pub fn calculate_sha256(path: &Path) -> SJMCLResult<String> {
+  match std::fs::File::open(path) {
+    Ok(mut file) => {
+      let mut hasher = Sha256::new();
+      // Use an 8 KiB buffer as a common compromise between memory usage and I/O throughput.
+      let mut buffer = [0; 8192];
+
+      loop {
+        match file.read(&mut buffer) {
+          Ok(0) => break,
+          Ok(n) => hasher.update(&buffer[..n]),
+          Err(e) => {
+            return Err(SJMCLError(format!(
+              "Error reading file {} for hashing: {}",
+              path.display(),
+              e
+            )));
+          }
+        }
+      }
+
+      Ok(format!("{:x}", hasher.finalize()))
+    }
+    Err(e) => Err(SJMCLError(format!(
+      "Failed to open file {} for hashing: {}",
+      path.display(),
+      e
+    ))),
   }
 }
 

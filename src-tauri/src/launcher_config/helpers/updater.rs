@@ -39,7 +39,7 @@ fn build_resource_filename(ver: &str, os: &str, arch: &str, is_portable: bool) -
       if is_portable {
         "_portable.exe"
       } else {
-        ".msi"
+        "_setup.exe"
       }
     }
     "linux" => ".AppImage",

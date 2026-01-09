@@ -33,9 +33,12 @@ async fn get_neoforge_meta_by_game_version_official(
       RegexBuilder::new(r"^(?:1\.20\.1\-)?(\d+)\.(\d+)\.(\d+)$")
         .build()
         .unwrap();
-    static ref REGULAR_VERSION_REGEX: Regex = RegexBuilder::new(r"^(\d+)\.(\d+)\.(\d+)(-beta)?$")
-      .build()
-      .unwrap();
+    // Support 1.20.2+, 1.21 and 26.1+
+    static ref REGULAR_VERSION_REGEX: Regex = RegexBuilder::new(
+      r"^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?(?:-(alpha|beta|rc)(?:\.(\d+))?)?(?:\+(snapshot|pre|rc)-(\d+))?$"
+    )
+    .build()
+    .unwrap();
     // For April Fools' NeoForge versions (e.g., "0.25w14craftmine.3-beta" for 25w14craftmine)
     static ref APRIL_FOOLS_VERSION_REGEX: Regex =
       RegexBuilder::new(r"^0\.(\d+\w+)\.(\d+)(-beta)?$")
@@ -127,17 +130,45 @@ async fn get_neoforge_meta_by_game_version_official(
         let matches_game_version = if is_april_fools {
           *game_version == cap[1]
         } else {
-          game_version == format!("1.{}.{}", cap[1].parse::<i32>()?, cap[2].parse::<i32>()?)
+          let major: i32 = cap[1].parse()?;
+          let minor: i32 = cap[2].parse()?;
+          let patch: i32 = cap[3].parse()?;
+
+          if game_version.starts_with("1.") {
+            game_version == format!("1.{}.{}", major, minor)
+          } else {
+            let mut derived = if patch != 0 {
+              format!("{}.{}.{}", major, minor, patch)
+            } else {
+              format!("{}.{}", major, minor)
+            };
+
+            // cap[7]=snapshot|pre|rc, cap[8]=N
+            if let (Some(kind), Some(n)) = (cap.get(7), cap.get(8)) {
+              derived.push('-');
+              derived.push_str(kind.as_str());
+              derived.push('-');
+              derived.push_str(n.as_str());
+            }
+
+            game_version == derived
+          }
         };
 
         if matches_game_version {
           let sort_key: i32 = if is_april_fools {
             cap[2].parse()?
+          } else if let Some(m) = cap.get(4) {
+            m.as_str().parse()?
           } else {
             cap[3].parse()?
           };
 
-          let stable = cap.get(4).is_none(); // beta suffix
+          let stable = if is_april_fools {
+            cap.get(3).is_none()
+          } else {
+            cap.get(5).is_none()
+          };
 
           results.push((
             sort_key,
@@ -192,10 +223,11 @@ async fn get_neoforge_meta_by_game_version_bmcl(
             manifest
               .into_iter()
               .map(|info| {
-                let stable = !info.version.ends_with("beta");
+                let version = info.version;
+                let stable = !version.contains("beta") && !version.contains("alpha");
                 ModLoaderResourceInfo {
                   loader_type: ModLoaderType::NeoForge,
-                  version: info.version,
+                  version,
                   description: String::new(),
                   stable,
                   branch: None,

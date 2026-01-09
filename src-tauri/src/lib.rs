@@ -32,13 +32,9 @@ use utils::web::build_sjmcl_client;
 use tauri::path::BaseDirectory;
 use tauri::Manager;
 
-static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
-  std::env::current_exe()
-    .unwrap()
-    .parent()
-    .unwrap()
-    .to_path_buf()
-});
+static EXE_PATH: LazyLock<PathBuf> = LazyLock::new(|| std::env::current_exe().unwrap());
+
+static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().to_path_buf());
 
 static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(false));
 
@@ -137,6 +133,7 @@ pub async fn run() {
       resource::commands::fetch_game_version_list,
       resource::commands::fetch_game_version_specific,
       resource::commands::fetch_mod_loader_version_list,
+      resource::commands::fetch_optifine_version_list,
       resource::commands::fetch_resource_list_by_name,
       resource::commands::fetch_resource_version_packs,
       resource::commands::download_game_server,
@@ -180,6 +177,7 @@ pub async fn run() {
       launcher_config.save().unwrap();
       let version = launcher_config.basic_info.launcher_version.clone();
       let os = launcher_config.basic_info.platform.clone();
+      let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
       let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
       app.manage(Mutex::new(launcher_config));
 
@@ -258,7 +256,7 @@ pub async fn run() {
 
       // Send statistics
       tokio::spawn(async move {
-        utils::sys_info::send_statistics(version, os).await;
+        utils::sys_info::send_statistics(version, os, exe_sha256).await;
       });
 
       // Auto purge launcher logs older than 30 days if enabled

@@ -27,7 +27,7 @@ import {
 import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
 import {
   gameTypesToIcon,
-  modLoaderTypesToIcon,
+  loaderTypesToIcon,
 } from "@/components/modals/create-instance-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -220,6 +220,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
               stable: true,
             } as ModLoaderResourceInfo)
           : defaultModLoaderResourceInfo,
+        undefined,
         path
       );
       if (createResp.status === "success") {
@@ -260,7 +261,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
           setDescription(response.data.description || "");
           setIconSrc(
             response.data.modLoader
-              ? modLoaderTypesToIcon[response.data.modLoader.loaderType]
+              ? loaderTypesToIcon[response.data.modLoader.loaderType]
               : gameTypesToIcon["release"]
           );
         } else {

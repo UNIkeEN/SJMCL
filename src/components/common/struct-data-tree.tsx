@@ -12,7 +12,7 @@ interface StructDataTreeProps {
 const StructDataTree: React.FC<StructDataTreeProps> = ({
   data,
   depth = 0,
-  indentSize = 4,
+  indentSize = 2,
   titleProps = { fontWeight: "bold", fontSize: "sm" },
   valueProps = { fontWeight: "normal", fontSize: "sm" },
 }) => {

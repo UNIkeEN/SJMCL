@@ -16,6 +16,12 @@ export interface ModLoader {
   branch?: string;
 }
 
+export interface OptiFine {
+  filename: string;
+  version: string;
+  status: ModLoaderStatus;
+}
+
 export interface InstanceSummary {
   id: string;
   iconSrc: string;
@@ -27,6 +33,7 @@ export interface InstanceSummary {
   version: string;
   majorVersion: string;
   modLoader: ModLoader;
+  optifine?: OptiFine;
   supportQuickPlay: boolean;
   useSpecGameConfig: boolean;
   isVersionIsolated: boolean;

@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { LuCopy, LuScissors } from "react-icons/lu";
 import { OptionItemGroup } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
@@ -32,7 +32,7 @@ import { InstanceSubdirType } from "@/enums/instance";
 import { InstanceError } from "@/enums/service-error";
 import { InstanceSummary } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
-import { generateInstanceDesc } from "@/utils/instance";
+import { generateInstanceDesc, getInstanceIconSrc } from "@/utils/instance";
 
 interface CopyOrMoveModalProps extends Omit<ModalProps, "children"> {
   srcResName: string;
@@ -255,10 +255,10 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
           />
         )}
         <Image
-          src={instance.iconSrc}
+          src={getInstanceIconSrc(instance.iconSrc, instance.versionPath)}
           alt={instance.name}
           boxSize="32px"
-          objectFit="cover"
+          fallbackSrc="/images/icons/JEIcon_Release.png"
         />
       </HStack>
     ),
@@ -306,10 +306,17 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
                     withTooltip={false}
                   />
                   <Text>
-                    {t(`CopyOrMoveModal.resourceType.${_tgtDirType}`)}
+                    <Trans
+                      i18nKey="CopyOrMoveModal.content"
+                      components={{
+                        b: <b />,
+                      }}
+                      values={{
+                        type: t(`CopyOrMoveModal.resourceType.${_tgtDirType}`),
+                        name: srcResName,
+                      }}
+                    />
                   </Text>
-                  <Text fontWeight="bold" px={1.5}>{` ${srcResName} `}</Text>
-                  <Text>{t("CopyOrMoveModal.body")}</Text>
                 </Flex>
               </VStack>
               <RadioGroup

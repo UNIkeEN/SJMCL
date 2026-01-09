@@ -68,6 +68,10 @@ body img {
   text-overflow: ellipsis;
 }
 
+.force-break {
+  word-break: break-all;
+}
+
 
 /* card-style content container */
 .content-full-y {

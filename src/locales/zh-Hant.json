@@ -58,7 +58,7 @@
       "settings": {
         "copyright": {
           "title": "版權",
-          "description": "版權所有 © 2024-2025 SJMCL 開發團隊."
+          "description": "版權所有 © 2024-2026 SJMCL 開發團隊."
         },
         "userAgreement": {
           "title": "使用者協議",
@@ -396,7 +396,7 @@
     "tag": {
       "source": "源"
     },
-    "body": "到",
+    "content": "{{type}} <b>{{name}}</b> 到",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "資源包",
@@ -938,8 +938,7 @@
         "discoverPage": {
           "title": "發現頁",
           "openNotice": {
-            "part-1": "頂部導航欄的 “搜尋” 已替換為 “發現”，您可以透過鍵盤快捷鍵 ",
-            "part-2": " 繼續使用 “聚合搜尋”。"
+            "content": "頂部導航欄的 “搜尋” 已替換為 “發現”，您可以透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>S</key> 繼續使用 “聚合搜尋”。"
           }
         },
         "instancesNavType": {
@@ -1185,6 +1184,9 @@
       "launch": "啟動例項"
     }
   },
+  "InstanceIconSelector": {
+    "customize": "自定義影像"
+  },
   "InstanceMenu": {
     "label": {
       "details": "例項詳情",
@@ -1193,7 +1195,8 @@
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": "載入器"
+      "title": "載入器",
+      "notInstalled": "未安裝"
     },
     "modList": {
       "title": "模組",
@@ -1234,11 +1237,14 @@
       "error-3": "例項名稱太長"
     },
     "tipsToGlobal": {
-      "part-1": "當前例項未啟用特定遊戲設定，",
-      "part-2": "前往全域性遊戲設定"
+      "content": "當前例項未啟用特定遊戲設定，<terms>前往全域性遊戲設定</terms>"
     }
   },
   "InstanceShaderPacksPage": {
+    "shaderLoaderList": {
+      "title": "載入器",
+      "notInstalled": "未安裝"
+    },
     "shaderPackList": {
       "title": "光影包"
     }
@@ -1334,7 +1340,9 @@
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "切換角色",
-        "switchGame": "切換遊戲例項"
+        "addPlayer": "新增角色",
+        "switchInstance": "切換遊戲例項",
+        "addInstance": "新增遊戲例項"
       }
     },
     "Text": {
@@ -1355,6 +1363,13 @@
     "toast": {
       "noSelectedPlayer": "請先新增並選擇遊戲角色"
     }
+  },
+  "LoaderSelector": {
+    "stable": "正式版",
+    "beta": "測試版",
+    "releaseDate": "釋出於 {{date}}",
+    "notCompatibleWith": "與 {{item}} 不相容",
+    "noVersionSelected": "未選擇版本"
   },
   "ManageSkinModal": {
     "skinManage": "管理皮膚",
@@ -1396,17 +1411,6 @@
   },
   "MenuSelector": {
     "selectedCount": "已選 {{count}} 項"
-  },
-  "ModLoaderCards": {
-    "installed": "已安裝",
-    "unInstalled": "未安裝",
-    "notCompatibleWith": "與 {{modLoader}} 不相容",
-    "versionNotSelected": "未選擇版本"
-  },
-  "ModLoaderSelector": {
-    "stable": "正式版",
-    "beta": "測試版",
-    "releaseDate": "釋出於 {{date}}"
   },
   "NotFoundPage": {
     "text": "頁面不存在，即將在 {{seconds}} 秒後跳轉"
@@ -2361,7 +2365,8 @@
             "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
             "INSTALLATION_DUPLICATED": "檢測到另一個程序已在安裝中",
             "MAIN_CLASS_NOT_FOUND": "主類未找到",
-            "PROCESSOR_EXECUTION_FAILED": "安裝任務執行失敗"
+            "PROCESSOR_EXECUTION_FAILED": "安裝任務執行失敗",
+            "LOADER_INSTALLER_NOT_FOUND": "載入器安裝程式不存在"
           }
         }
       },
@@ -2388,6 +2393,12 @@
             "FILE_NOT_FOUND_ERROR": "整合包檔案不存在，可能已更名、移動或刪除",
             "MODPACK_MANIFEST_PARSE_ERROR": "整合包清單檔案解析錯誤"
           }
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "自定義例項圖示新增成功",
+        "error": {
+          "title": "自定義例項圖示新增失敗"
         }
       }
     },
@@ -2516,6 +2527,12 @@
     },
     "helper": "請輸入需同步裝置生成的令牌"
   },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "遊戲日誌",
+      "gameError": "哎呀！遊戲崩潰了"
+    }
+  },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
@@ -2552,7 +2569,8 @@
       "text": "歡迎使用 SJMCL！在開始使用之前，請務必閱讀並同意我們的<terms>使用者協議</terms>。"
     },
     "warning": {
-      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不穩定或未開發完成，歡迎報告使用問題與功能建議。"
+      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不穩定或未開發完成，歡迎報告使用問題與功能建議。",
+      "winArm64Notice": "SJMCL 現已支援 Windows on Arm 平臺。<br/>如您正在使用 <b>高通</b> 平臺，您可能需要安裝 <glpack>OpenGL 相容包</glpack> 後才能進行遊戲。"
     },
     "button": {
       "exit": "退出",

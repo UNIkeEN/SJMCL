@@ -543,7 +543,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
   },
   {
     type: OtherResourceType.Mod,
-    name: "Optifine",
+    name: "OptiFine",
     description: "A Minecraft mod that optimizes Minecraft's graphics.",
     iconSrc: "/images/icons/GrassBlock.png",
     tags: ["Graphics", "Optimization"],
@@ -589,7 +589,7 @@ export const mockDownloadResourceList: OtherResourceInfo[] = [
   },
   {
     type: OtherResourceType.Mod,
-    name: "Optifine",
+    name: "OptiFine",
     description: "A Minecraft mod that optimizes Minecraft's graphics.",
     iconSrc: "/images/icons/GrassBlock.png",
     tags: ["Graphics", "Optimization"],

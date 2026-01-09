@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { appLogDir, join } from "@tauri-apps/api/path";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -41,11 +41,18 @@ const GameLogPage: React.FC = () => {
 
   const clearLogs = () => setLogs([]);
 
+  // set window title with i18n
+  useEffect(() => {
+    (async () => {
+      await getCurrentWebviewWindow().setTitle(t("Tauri.windowTitle.gameLog"));
+    })();
+  }, [t]);
+
   // invoke retrieve on first load
   useEffect(() => {
     (async () => {
       launchingIdRef.current = parseIdFromWindowLabel(
-        getCurrentWebview().label
+        getCurrentWebviewWindow().label
       );
       const launchingId = launchingIdRef.current;
       if (launchingId) {
