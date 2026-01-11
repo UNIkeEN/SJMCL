@@ -107,9 +107,8 @@ jobs:
       - name: Extract and sign .app
         env:
           SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+        working-directory: artifacts
         run: |
-          cd artifacts
-          
           # Extract the .app from tar.gz
           tar -xzf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz
           
@@ -126,9 +125,8 @@ jobs:
           tar -czf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz SJMCL.app
 
       - name: Create DMG configuration
+        working-directory: artifacts
         run: |
-          cd artifacts
-          
           # Create appdmg configuration file
           cat > dmg-config.json << EOF
           {
@@ -163,9 +161,8 @@ jobs:
       - name: Create and sign DMG
         env:
           SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+        working-directory: artifacts
         run: |
-          cd artifacts
-          
           # Remove the original DMG if it exists (build workflow no longer creates DMG)
           rm -f SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
           
@@ -187,9 +184,8 @@ jobs:
           NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
           NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
           NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
+        working-directory: artifacts
         run: |
-          cd artifacts
-          
           # Extract .app for notarization
           tar -xzf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz
           
@@ -216,9 +212,8 @@ jobs:
           NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
           NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
           NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
+        working-directory: artifacts
         run: |
-          cd artifacts
-          
           # Submit DMG for notarization
           xcrun notarytool submit SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg \
             --apple-id "$NOTARY_APPLE_ID" \
@@ -230,9 +225,8 @@ jobs:
           xcrun stapler staple SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
 
       - name: Verify notarization
+        working-directory: artifacts
         run: |
-          cd artifacts
-          
           # Extract the notarized .app for verification
           tar -xzf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz
           
@@ -254,8 +248,10 @@ jobs:
           fi
 
       - name: Cleanup artifacts
+        working-directory: artifacts
         run: |
           rm -rf SJMCL.app
+          ls -la .
 
       - name: Cleanup keychain
         if: always()
