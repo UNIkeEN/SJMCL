@@ -204,7 +204,7 @@ jobs:
       - name: Cleanup artifacts directory
         working-directory: artifacts
         run: |
-          rm *.sha256
+          rm -f */*.sha256
           echo "Remaining artifacts:"
           ls -la ./*/*
 
