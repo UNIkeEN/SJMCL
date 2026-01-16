@@ -162,8 +162,12 @@ const InstanceModsPage = () => {
       const filtered = localMods.filter((mod) => {
         const name = mod.name?.toLowerCase() || "";
         const fileName = mod.fileName?.toLowerCase() || "";
+        const translatedName = mod.translatedName?.toLowerCase() || "";
         return keywords.some(
-          (kw) => name.includes(kw) || fileName.includes(kw)
+          (kw) =>
+            name.includes(kw) ||
+            fileName.includes(kw) ||
+            translatedName.includes(kw)
         );
       });
 
