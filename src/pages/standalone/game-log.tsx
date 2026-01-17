@@ -11,14 +11,24 @@ import {
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
+import {
+  AutoSizer,
+  CellMeasurer,
+  CellMeasurerCache,
+  List,
+  ListRowRenderer,
+} from "react-virtualized";
+import "react-virtualized/styles.css";
 import Empty from "@/components/common/empty";
 import { useLauncherConfig } from "@/contexts/config";
 import { LaunchService } from "@/services/launch";
 import styles from "@/styles/game-log.module.css";
 import { parseIdFromWindowLabel } from "@/utils/window";
+
+type LogLevel = "FATAL" | "ERROR" | "WARN" | "INFO" | "DEBUG";
 
 const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -36,8 +46,26 @@ const GameLogPage: React.FC = () => {
   });
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
 
-  const logContainerRef = useRef<HTMLDivElement>(null);
   const launchingIdRef = useRef<number | null>(null);
+  const listRef = useRef<List>(null);
+
+  const cacheRef = useRef(
+    new CellMeasurerCache({
+      fixedWidth: true,
+      defaultHeight: 20,
+    })
+  );
+
+  const logLevelMap: Record<
+    LogLevel,
+    { colorScheme: string; textColor: string }
+  > = {
+    FATAL: { colorScheme: "red", textColor: "red.500" },
+    ERROR: { colorScheme: "orange", textColor: "orange.500" },
+    WARN: { colorScheme: "yellow", textColor: "yellow.500" },
+    INFO: { colorScheme: "gray", textColor: "gray.600" },
+    DEBUG: { colorScheme: "blue", textColor: "blue.600" },
+  };
 
   const clearLogs = () => setLogs([]);
 
@@ -73,99 +101,103 @@ const GameLogPage: React.FC = () => {
   }, []);
 
   const revealRawLogFile = async () => {
-    try {
-      const launchingId = launchingIdRef.current;
-      if (launchingId == null) return;
+    if (!launchingIdRef.current) return;
 
-      const baseDir = await appLogDir();
-      const logFilePath = await join(
-        baseDir,
-        "game",
-        `game_log_${launchingId}.log`
-      );
+    const baseDir = await appLogDir();
+    const logFilePath = await join(
+      baseDir,
+      "game",
+      `game_log_${launchingIdRef.current}.log`
+    );
 
-      await revealItemInDir(logFilePath);
-    } catch (err) {
-      logger.error("Failed to open raw log file:", err);
-    }
+    await revealItemInDir(logFilePath);
   };
 
-  let lastLevel: string = "INFO";
+  const lastLevelRef = useRef<LogLevel>("INFO");
 
-  const getLogLevel = (log: string): string => {
+  const getLogLevel = useCallback((log: string): LogLevel => {
     const match = log.match(
       /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
     );
     if (match) {
-      lastLevel = match[1].toUpperCase();
-      return lastLevel;
+      const level = match[1].toUpperCase() as LogLevel;
+      lastLevelRef.current = level;
+      return level;
     }
 
     if (/^\s+at /.test(log) || /^\s+Caused by:/.test(log) || /^\s+/.test(log)) {
-      return lastLevel;
+      return lastLevelRef.current;
     }
 
     if (/exception|error|invalid|failed|错误/i.test(log)) {
-      lastLevel = "ERROR";
+      lastLevelRef.current = "ERROR";
       return "ERROR";
     }
+    return lastLevelRef.current;
+  }, []);
 
-    lastLevel = lastLevel || "INFO";
-    return "INFO";
-  };
+  const logCounts = useMemo<Record<LogLevel, number>>(() => {
+    const counts: Record<LogLevel, number> = {
+      FATAL: 0,
+      ERROR: 0,
+      WARN: 0,
+      INFO: 0,
+      DEBUG: 0,
+    };
 
-  const filteredLogs = logs.filter((log) => {
-    const level = getLogLevel(log);
-    return (
-      filterStates[level] &&
-      log.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
-
-  const logLevelMap: {
-    [key: string]: { colorScheme: string; color: string };
-  } = {
-    FATAL: { colorScheme: "red", color: "red.500" },
-    ERROR: { colorScheme: "orange", color: "orange.500" },
-    WARN: { colorScheme: "yellow", color: "yellow.500" },
-    INFO: { colorScheme: "gray", color: "gray.600" },
-    DEBUG: { colorScheme: "gray", color: "blue.600" },
-  };
-
-  const logCounts = logs.reduce<{ [key: string]: number }>((acc, log) => {
-    const level = getLogLevel(log);
-    acc[level] = (acc[level] || 0) + 1;
-    return acc;
-  }, {});
-
-  // NOTE: smooth scroll may have delay, not always to bottom.
-  // const scrollToBottom = () => {
-  //   if (logContainerRef.current) {
-  //     logContainerRef.current.scrollTo({
-  //       top: logContainerRef.current.scrollHeight,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // };
-
-  const scrollToBottom = () => {
-    if (logContainerRef.current) {
-      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    for (const log of logs) {
+      const level = getLogLevel(log);
+      counts[level]++;
     }
+
+    return counts;
+  }, [logs, getLogLevel]);
+
+  const filteredLogs = useMemo(() => {
+    return logs.filter((log) => {
+      const level = getLogLevel(log);
+      return (
+        filterStates[level] &&
+        log.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  }, [logs, filterStates, searchTerm, getLogLevel]);
+
+  const rowRenderer: ListRowRenderer = ({ key, index, style, parent }) => {
+    const log = filteredLogs[index];
+    const level = getLogLevel(log);
+
+    return (
+      <CellMeasurer
+        key={key}
+        cache={cacheRef.current}
+        parent={parent}
+        rowIndex={index}
+        columnIndex={0}
+      >
+        <div style={style}>
+          <Text
+            className={styles["log-text"]}
+            color={logLevelMap[level].textColor}
+            fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
+            whiteSpace="pre-wrap"
+            wordBreak="break-word"
+            lineHeight="1.4"
+          >
+            {log}
+          </Text>
+        </div>
+      </CellMeasurer>
+    );
   };
 
-  const handleScroll = () => {
-    if (!logContainerRef.current) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = logContainerRef.current;
-    const atBottom = scrollHeight - scrollTop - clientHeight < 1;
-    setIsScrolledToBottom(atBottom);
-  };
-
-  // Auto scroll to bottom if user not interacted
+  // Reset list cache and recalculate row heights on filteredLogs update
   useEffect(() => {
-    if (isScrolledToBottom) scrollToBottom();
-  }, [filteredLogs, isScrolledToBottom]);
+    cacheRef.current.clearAll();
+    listRef.current?.recomputeRowHeights();
+  }, [filteredLogs]);
+
+  const levels = Object.keys(logLevelMap) as LogLevel[];
 
   return (
     <Box p={4} h="100vh" display="flex" flexDirection="column">
@@ -181,7 +213,8 @@ const GameLogPage: React.FC = () => {
           focusBorderColor={`${primaryColor}.500`}
         />
         <Spacer />
-        {Object.keys(logLevelMap).map((level) => (
+
+        {levels.map((level) => (
           <Button
             key={level}
             size="xs"
@@ -220,31 +253,28 @@ const GameLogPage: React.FC = () => {
         </Tooltip>
       </Flex>
 
-      <Box
-        ref={logContainerRef}
-        borderWidth="1px"
-        borderRadius="md"
-        p={2}
-        flex="1"
-        className={`${styles["log-list-container"]}`}
-        onScroll={handleScroll}
-      >
-        {filteredLogs.length > 0 ? (
-          filteredLogs.map((log, index) => {
-            const level = getLogLevel(log);
-            return (
-              <Text
-                key={index}
-                className={`${styles["log-text"]}`}
-                color={logLevelMap[level].color}
-                fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
-              >
-                {log}
-              </Text>
-            );
-          })
+      <Box flex="1" borderWidth="1px" borderRadius="md" position="relative">
+        {filteredLogs.length === 0 ? (
+          <Empty withIcon={false} />
         ) : (
-          <Empty colorScheme="gray" withIcon={false} />
+          <AutoSizer>
+            {({ width, height }) => (
+              <List
+                ref={listRef}
+                width={width}
+                height={height}
+                rowCount={filteredLogs.length}
+                deferredMeasurementCache={cacheRef.current}
+                rowHeight={cacheRef.current.rowHeight}
+                rowRenderer={rowRenderer}
+                onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
+                  setIsScrolledToBottom(
+                    scrollHeight - scrollTop - clientHeight < 2
+                  );
+                }}
+              />
+            )}
+          </AutoSizer>
         )}
 
         {!isScrolledToBottom && (
@@ -255,10 +285,10 @@ const GameLogPage: React.FC = () => {
             size="sm"
             variant="subtle"
             boxShadow="md"
-            onClick={() => {
-              scrollToBottom();
-            }}
             leftIcon={<LuChevronsDown />}
+            onClick={() =>
+              listRef.current?.scrollToRow(filteredLogs.length - 1)
+            }
           >
             {t("GameLogPage.scrollToBottom")}
           </Button>
