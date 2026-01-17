@@ -95,9 +95,9 @@ jobs:
         id: gen_template
         run: |
           sed -i "s/^pkgver=.*/pkgver=$LATEST_TAG/" PKGBUILD
-          awk -v license_hash="$LICENSE_HASH" \
-              -v x86_64_hash="$X86_64_DEB_HASH" \
-              -v aarch64_hash="$AARCH64_DEB_HASH" '
+          awk -v license_hash="${LICENSE_HASH%% *}" \
+              -v x86_64_hash="${X86_64_DEB_HASH%% *}" \
+              -v aarch64_hash="${AARCH64_DEB_HASH%% *}" '
             BEGIN {
               sums["sha256sums"] = license_hash
               sums["sha256sums_x86_64"] = x86_64_hash
