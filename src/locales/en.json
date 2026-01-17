@@ -1155,6 +1155,10 @@
     "body": {
       "authServers": "Auth Servers",
       "players": "Players"
+    },
+    "tooltips": {
+      "existingServer": "Existing auth server data with the same address will be overwritten.",
+      "existingPlayer": "Existing player data with the same UUID will be overwritten."
     }
   },
   "ImportModpackModal": {
@@ -2057,6 +2061,20 @@
           "description": {
             "NOT_FOUND": "The authentication server does not exist"
           }
+        }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "Failed to retrieve external account information",
+          "description": {
+            "NOT_FOUND": "Failed to read the external account information file."
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "External players and auth servers imported successfully",
+        "error": {
+          "title": "Failed to import external players and auth servers"
         }
       }
     },

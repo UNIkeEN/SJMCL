@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Checkbox,
@@ -12,10 +13,12 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuTriangleAlert } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
@@ -30,7 +33,14 @@ import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
 import { generatePlayerDesc } from "@/utils/account";
 
-const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
+interface ImportAccountInfoModalProps extends Omit<ModalProps, "children"> {
+  currAuthServers?: AuthServer[];
+  currPlayers?: Player[];
+}
+
+const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
+  currAuthServers,
+  currPlayers,
   ...props
 }) => {
   const toast = useToast();
@@ -44,8 +54,10 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
   const [selectedType, setSelectedType] = useState<ImportLauncherType>(
     ImportLauncherType.HMCL
   );
-  const [extPlayers, setExtPlayers] = useState<Player[]>([]);
-  const [extAuthServers, setExtAuthServers] = useState<AuthServer[]>([]);
+
+  // new players and auth servers to be imported
+  const [newAuthServers, setNewAuthServers] = useState<AuthServer[]>([]);
+  const [newPlayers, setNewPlayers] = useState<Player[]>([]);
 
   // checkbox state
   const [serverChecked, setServerChecked] = useState<Record<string, boolean>>(
@@ -71,8 +83,8 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
         .then((res) => {
           if (res.status === "success") {
             const [players, authServers] = res.data;
-            setExtPlayers(players);
-            setExtAuthServers(authServers);
+            setNewPlayers(players);
+            setNewAuthServers(authServers);
 
             // default: select all servers
             const nextServerChecked: Record<string, boolean> = {};
@@ -94,8 +106,8 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
             });
             setPlayerChecked(nextPlayerChecked);
           } else {
-            setExtPlayers([]);
-            setExtAuthServers([]);
+            setNewPlayers([]);
+            setNewAuthServers([]);
             setServerChecked({});
             setPlayerChecked({});
             toast({
@@ -111,8 +123,9 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
   );
 
   useEffect(() => {
+    if (!props.isOpen) return;
     handleRetrieveOtherLauncherAccountInfo(selectedType);
-  }, [selectedType, handleRetrieveOtherLauncherAccountInfo]);
+  }, [selectedType, handleRetrieveOtherLauncherAccountInfo, props.isOpen]);
 
   // if a server is unchecked, all its players MUST be unchecked
   useEffect(() => {
@@ -120,7 +133,7 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
       let changed = false;
       const next = { ...prev };
 
-      extPlayers.forEach((p) => {
+      newPlayers.forEach((p) => {
         const pid = String((p as any).id);
         if (
           isThirdParty(p) &&
@@ -134,13 +147,13 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
 
       return changed ? next : prev;
     });
-  }, [serverChecked, extPlayers]);
+  }, [serverChecked, newPlayers]);
 
-  const selectedAuthServers = extAuthServers.filter(
+  const selectedAuthServers = newAuthServers.filter(
     (s) => serverChecked[s.authUrl]
   );
 
-  const selectedPlayers = extPlayers.filter((p) => {
+  const selectedPlayers = newPlayers.filter((p) => {
     const pid = String((p as any).id);
     if (!playerChecked[pid]) return false;
 
@@ -174,6 +187,29 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
       })
       .finally(() => setIsImporting(false));
   }, [props, toast, getPlayerList, selectedPlayers, selectedAuthServers]);
+
+  // check if auth server in curAuthServers
+  const isInCurAuthServers = useCallback(
+    (s: AuthServer) => {
+      if (!currAuthServers) return false;
+      return currAuthServers.some((cs) => cs.authUrl === s.authUrl);
+    },
+    [currAuthServers]
+  );
+
+  // check if player in curPlayers
+  const isInCurPlayers = useCallback(
+    (p: Player) => {
+      if (!currPlayers) return false;
+      return currPlayers.some(
+        (cp) =>
+          cp.uuid === p.uuid &&
+          cp.playerType === p.playerType &&
+          cp.authServer?.authUrl === p.authServer?.authUrl
+      );
+    },
+    [currPlayers]
+  );
 
   return (
     <Modal
@@ -210,14 +246,14 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
               ) : (
                 <>
                   <Section title={t("ImportAccountInfoModal.body.authServers")}>
-                    {extAuthServers.length === 0 ? (
+                    {newAuthServers.length === 0 ? (
                       <Center>
                         <Empty withIcon={false} size="sm" />
                       </Center>
                     ) : (
                       <OptionItemGroup
                         items={
-                          extAuthServers.map((s) => ({
+                          newAuthServers.map((s) => ({
                             title: s.name,
                             description: s.authUrl,
                             prefixElement: (
@@ -232,20 +268,30 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
                                 }
                               />
                             ),
-                            children: <></>,
+                            children: isInCurAuthServers(s) && (
+                              <Tooltip
+                                label={t(
+                                  "ImportAccountInfoModal.tooltips.existingServer"
+                                )}
+                              >
+                                <Box color="orange.500">
+                                  <LuTriangleAlert />
+                                </Box>
+                              </Tooltip>
+                            ),
                           })) || []
                         }
                       />
                     )}
                   </Section>
                   <Section title={t("ImportAccountInfoModal.body.players")}>
-                    {extPlayers.length === 0 ? (
+                    {newPlayers.length === 0 ? (
                       <Center>
                         <Empty withIcon={false} size="sm" />
                       </Center>
                     ) : (
                       <OptionItemGroup
-                        items={extPlayers.map((p) => {
+                        items={newPlayers.map((p) => {
                           const pid = String(p.id);
                           const serverEnabled =
                             !isThirdParty(p) ||
@@ -273,7 +319,17 @@ const ImportAccountInfoModal: React.FC<Omit<ModalProps, "children">> = ({
                                 />
                               </HStack>
                             ),
-                            children: <></>,
+                            children: isInCurPlayers(p) && (
+                              <Tooltip
+                                label={t(
+                                  "ImportAccountInfoModal.tooltips.existingPlayer"
+                                )}
+                              >
+                                <Box color="orange.500">
+                                  <LuTriangleAlert />
+                                </Box>
+                              </Tooltip>
+                            ),
                           };
                         })}
                       />

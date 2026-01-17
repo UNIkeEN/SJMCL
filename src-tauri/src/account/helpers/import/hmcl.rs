@@ -1,5 +1,4 @@
 use crate::account::helpers::authlib_injector::common::parse_profile;
-use crate::account::helpers::authlib_injector::info::fetch_auth_server_info;
 use crate::account::helpers::authlib_injector::models::{
   MinecraftProfile, MinecraftProfileProperty,
 };
@@ -7,8 +6,7 @@ use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
-  AccountError, AuthServer, AuthServerInfo, Player, PlayerInfo, PlayerType, PresetRole, SkinModel,
-  Texture, TextureType,
+  AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
 use serde::Deserialize;

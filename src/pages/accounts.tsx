@@ -342,6 +342,8 @@ const AccountsPage = () => {
       <ImportAccountInfoModal
         isOpen={isImportAccountInfoModalOpen}
         onClose={onImportAccountInfoModalClose}
+        currAuthServers={authServerList}
+        currPlayers={playerList}
       />
     </>
   );

@@ -1155,6 +1155,10 @@
     "body": {
       "authServers": "认证服务器",
       "players": "角色"
+    },
+    "tooltips": {
+      "existingServer": "已存在相同地址的认证服务器，导入将会覆盖数据",
+      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据"
     }
   },
   "ImportModpackModal": {
@@ -2057,6 +2061,20 @@
           "description": {
             "NOT_FOUND": "认证服务器不存在"
           }
+        }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "获取外部账号信息失败",
+          "description": {
+            "NOT_FOUND": "读取账号信息文件错误"
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "外部账户信息导入成功",
+        "error": {
+          "title": "外部账号信息导入失败"
         }
       }
     },
