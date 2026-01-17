@@ -82,8 +82,10 @@ jobs:
 
       - name: Generate PKGBUILD
         id: gen_template
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          sed -i "s/^pkgver=.*/pkgver=${{ inputs.version }}/" PKGBUILD
+          sed -i "s/^pkgver=.*/pkgver=${VERSION//-/}/" PKGBUILD
           awk -v license_hash="${LICENSE_HASH%% *}" \
               -v x86_64_hash="${X86_64_DEB_HASH%% *}" \
               -v aarch64_hash="${AARCH64_DEB_HASH%% *}" '
@@ -119,7 +121,7 @@ jobs:
             }
           ' PKGBUILD > PKGBUILD.tmp && mv PKGBUILD.tmp PKGBUILD
 
-          echo "PKGBUILD generated with version ${{ inputs.version }}"
+          echo "PKGBUILD generated with version ${VERSION//-/}"
           cat PKGBUILD
 
       - name: Publish SJMCL to the AUR
