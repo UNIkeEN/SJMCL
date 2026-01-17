@@ -6,8 +6,11 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      deb_hash:
-        description: "SHA512 hash of the .deb file"
+      deb_hash_x86_64:
+        description: "SHA512 hash of the .deb file for x86_64 architecture"
+        required: true
+      deb_hash_aarch64:
+        description: "SHA512 hash of the .deb file for aarch64 architecture"
         required: true
   workflow_call:
     inputs:
@@ -34,26 +37,43 @@ jobs:
           fetch-depth: 0
 
       - name: Download linux x86 artifacts
-        if: always() && ${{ inputs.deb_hash != '' }}
+        if: ${{ always() && inputs.deb_hash_x86_64 == '' }}
         uses: actions/download-artifact@v4
         with:
           pattern: "SJMCL_${{ inputs.version }}_linux_x86_64"
+          path: artifacts
+          merge-multiple: true
+      
+      - name: Download linux aarch64 artifacts
+        if: ${{ always() && inputs.deb_hash_aarch64 == '' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "SJMCL_${{ inputs.version }}_linux_aarch64"
           path: artifacts
           merge-multiple: true
 
       - name: Calculate hashes
         id: calculate_hashes
         run: |
-          DEB_HASH=${{ inputs.deb_hash }} # Use input deb_hash if provided
-          if [[ -z "$DEB_HASH" ]]; then
+          X86_64_DEB_HASH=${{ inputs.deb_hash_x86_64 }} # Use input deb_hash if provided
+          AARCH64_DEB_HASH=${{ inputs.deb_hash_aarch64 }} # Use input deb_hash if provided
+          if [[ -z "$X86_64_DEB_HASH" || -z "$AARCH64_DEB_HASH" ]]; then
             ls -la artifacts
-            DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_x86_64.deb)
+            if [[ -z "$X86_64_DEB_HASH" ]]; then
+              X86_64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_x86_64.deb)
+            fi
+            if [[ -z "$AARCH64_DEB_HASH" ]]; then
+              AARCH64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_aarch64.deb)
+            fi
           fi
-          echo "DEB_HASH=$DEB_HASH"
+          echo "X86_64_DEB_HASH=$X86_64_DEB_HASH"
+          echo "AARCH64_DEB_HASH=$AARCH64_DEB_HASH"
           LICENSE_HASH=$(sha512sum LICENSE.EXTRA)
           echo "LICENSE_HASH=$LICENSE_HASH"
-          echo "DEB_HASH=$DEB_HASH" >> $GITHUB_ENV
-          echo "deb_hash=$DEB_HASH" >> $GITHUB_OUTPUT
+          echo "X86_64_DEB_HASH=$X86_64_DEB_HASH" >> $GITHUB_ENV
+          echo "deb_hash_x86_64=$X86_64_DEB_HASH" >> $GITHUB_OUTPUT
+          echo "AARCH64_DEB_HASH=$AARCH64_DEB_HASH" >> $GITHUB_ENV
+          echo "deb_hash_aarch64=$AARCH64_DEB_HASH" >> $GITHUB_OUTPUT
           echo "LICENSE_HASH=$LICENSE_HASH" >> $GITHUB_ENV
           echo "license_hash=$LICENSE_HASH" >> $GITHUB_OUTPUT
 
@@ -75,18 +95,39 @@ jobs:
         id: gen_template
         run: |
           sed -i "s/^pkgver=.*/pkgver=$LATEST_TAG/" PKGBUILD
-          newsums="sha512sums=('${DEB_HASH%% *}'\n            '${LICENSE_HASH%% *}')"
-          awk -v sumtypes="sha512" -v newsums="$newsums" '
-            $0 ~"^[[:blank:]]*(" sumtypes ")sums(_[^=]+)?\\+?=", $0 ~ "\\)[[:blank:]]*(#.*)?$" {
-              if (!w) {
-                      print newsums
-                      w++
-              }
-              next
+          awk -v license_hash="$LICENSE_HASH" \
+              -v x86_64_hash="$X86_64_DEB_HASH" \
+              -v aarch64_hash="$AARCH64_DEB_HASH" '
+            BEGIN {
+              sums["sha256sums"] = license_hash
+              sums["sha256sums_x86_64"] = x86_64_hash
+              sums["sha256sums_aarch64"] = aarch64_hash
+              
+              processed["sha256sums"] = 0
+              processed["sha256sums_x86_64"] = 0
+              processed["sha256sums_aarch64"] = 0
             }
-
-            1
-            END { if (!w) print newsums }
+            
+            $0 ~ "^[[:blank:]]*[a-z0-9]+sums(_[^=]+)?\\+?=", $0 ~ "\\)[[:blank:]]*(#.*)?$" {
+              match($0, /^[[:blank:]]*([a-z0-9_]+)/, m)
+              varname = m[1]
+              
+              if (varname in sums) {
+                printf("%s=(\047%s\047)\n", varname, sums[varname])
+                processed[varname] = 1
+                next
+              }
+            }
+            
+            { print }
+            
+            END {
+              for (varname in sums) {
+                if (!processed[varname]) {
+                  printf("%s=(\047%s\047)\n", varname, sums[varname])
+                }
+              }
+            }
           ' PKGBUILD > PKGBUILD.tmp && mv PKGBUILD.tmp PKGBUILD
 
           echo "PKGBUILD generated with version $LATEST_TAG"

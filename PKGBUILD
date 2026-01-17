@@ -6,13 +6,19 @@ pkgname=sjmcl-bin
 pkgdesc='🌟 A Minecraft launcher from @SJMC-Dev'
 pkgver=0.0.0
 pkgrel=1
-arch=(x86_64)
+arch=('x86_64' 'aarch64')
 license=(GPL-3.0,custom:LICENSE.EXTRA)
 url='https://github.com/UNIkeEN/SJMCL'
-source=("https://github.com/UNIkeEN/SJMCL/releases/download/v${pkgver}/SJMCL_${pkgver}_linux_x86_64.deb"
-        'LICENSE.EXTRA')
-sha512sums=('SKIP'
-            'SKIP')
+_baseurl="${url}/releases/download/v${pkgver}"
+_source="SJMCL_${pkgver}_linux_${CARCH}.deb"
+
+sha256sums=('SKIP')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+
+source=('LICENSE.EXTRA')
+source_x86_64=("${_baseurl}/${_source}")
+source_aarch64=("${_baseurl}/${_source}")
 depends=('cairo' 'desktop-file-utils' 'gdk-pixbuf2' 'glib2' 'gtk3' 'hicolor-icon-theme' 'libsoup' 'pango' 'webkit2gtk-4.1')
 options=('!strip' '!emptydirs')
 provides=('sjmcl')
