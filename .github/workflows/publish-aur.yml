@@ -12,6 +12,9 @@ on:
       deb_hash_aarch64:
         description: "SHA512 hash of the .deb file for aarch64 architecture"
         required: true
+      version:
+        description: "Version to publish"
+        required: true
   workflow_call:
     inputs:
       version:
@@ -37,7 +40,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download linux x86 artifacts
-        if: ${{ always() && inputs.deb_hash_x86_64 == '' }}
+        if: ${{ inputs.deb_hash_x86_64 == '' }}
         uses: actions/download-artifact@v4
         with:
           pattern: "SJMCL_${{ inputs.version }}_linux_x86_64"
@@ -45,7 +48,7 @@ jobs:
           merge-multiple: true
       
       - name: Download linux aarch64 artifacts
-        if: ${{ always() && inputs.deb_hash_aarch64 == '' }}
+        if: ${{ inputs.deb_hash_aarch64 == '' }}
         uses: actions/download-artifact@v4
         with:
           pattern: "SJMCL_${{ inputs.version }}_linux_aarch64"
@@ -77,24 +80,10 @@ jobs:
           echo "LICENSE_HASH=$LICENSE_HASH" >> $GITHUB_ENV
           echo "license_hash=$LICENSE_HASH" >> $GITHUB_OUTPUT
 
-      - name: Resolve latest tag
-        id: resolve_tag
-        run: |
-          LATEST_TAG=${{ inputs.version }}
-          if [[ -z "$LATEST_TAG" ]]; then
-            git fetch --tags
-            LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')
-          else
-            LATEST_TAG=$(echo "$LATEST_TAG" | sed 's/-.*//')
-          fi
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
-          echo "latest=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "Latest tag: $LATEST_TAG"
-
       - name: Generate PKGBUILD
         id: gen_template
         run: |
-          sed -i "s/^pkgver=.*/pkgver=$LATEST_TAG/" PKGBUILD
+          sed -i "s/^pkgver=.*/pkgver=${{ inputs.version }}/" PKGBUILD
           awk -v license_hash="${LICENSE_HASH%% *}" \
               -v x86_64_hash="${X86_64_DEB_HASH%% *}" \
               -v aarch64_hash="${AARCH64_DEB_HASH%% *}" '
@@ -130,7 +119,7 @@ jobs:
             }
           ' PKGBUILD > PKGBUILD.tmp && mv PKGBUILD.tmp PKGBUILD
 
-          echo "PKGBUILD generated with version $LATEST_TAG"
+          echo "PKGBUILD generated with version ${{ inputs.version }}"
           cat PKGBUILD
 
       - name: Publish SJMCL to the AUR
@@ -142,5 +131,5 @@ jobs:
           commit_username: SJMC
           commit_email: launcher@sjmc.club
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: ${{ steps.resolve_tag.outputs.latest }}
+          commit_message: ${{ inputs.version }}
           ssh_keyscan_types: rsa,ecdsa,ed25519
