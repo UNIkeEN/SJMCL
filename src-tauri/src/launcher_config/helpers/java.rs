@@ -29,12 +29,28 @@ pub async fn refresh_and_update_javas(app: &AppHandle) {
 
   for java_exec_path in java_paths {
     let java_path_buf = PathBuf::from(&java_exec_path);
-    let (vendor, full_version) = match get_java_info_from_release_file(&java_exec_path)
-      .or_else(|| get_java_info_from_command(&java_exec_path))
-    {
-      Some(info) => info,
+    // get Java info from release file first, then supplement with command if needed
+    let (mut vendor, mut full_version) =
+      get_java_info_from_release_file(&java_exec_path).unwrap_or((None, None));
+
+    // try to get from command
+    if vendor.is_none() || full_version.is_none() {
+      if let Some((cmd_vendor, cmd_version)) = get_java_info_from_command(&java_exec_path) {
+        if vendor.is_none() {
+          vendor = cmd_vendor;
+        }
+        if full_version.is_none() {
+          full_version = cmd_version;
+        }
+      }
+    }
+
+    // skip if version is still unknown (both methods failed)
+    let full_version = match full_version {
+      Some(v) => v,
       None => continue,
     };
+    let vendor = vendor.unwrap_or_default();
 
     let java_bin_path = java_path_buf
       .parent()
@@ -365,7 +381,9 @@ fn scan_java_paths_in_windows_registry() -> Vec<String> {
     .collect()
 }
 
-pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, String)> {
+pub fn get_java_info_from_release_file(
+  java_path: &str,
+) -> Option<(Option<String>, Option<String>)> {
   // Typically, executable files are located in .../Home/bin/java, release file and bin folder are at the same level.
   let java_path_buf = PathBuf::from(java_path);
   let java_home = java_path_buf.parent()?.parent()?;
@@ -376,28 +394,27 @@ pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, Strin
   }
 
   let content = fs::read_to_string(release_file).ok()?;
-  let mut vendor = "Oracle Corporation".to_string();
-  let mut full_version = "0".to_string();
+  let mut vendor: Option<String> = None;
+  let mut full_version: Option<String> = None;
 
   // Try to parse info from release file
   for line in content.lines() {
     if line.starts_with("JAVA_VERSION=") {
-      let quoted = line.split('=').nth(1)?.trim().trim_matches('"');
-      full_version = quoted.to_string();
+      if let Some(quoted) = line.split('=').nth(1) {
+        full_version = Some(quoted.trim().trim_matches('"').to_string());
+      }
     } else if line.starts_with("IMPLEMENTOR=") {
-      let quoted = line.split('=').nth(1)?.trim().trim_matches('"');
-      vendor = quoted.to_string();
+      if let Some(quoted) = line.split('=').nth(1) {
+        vendor = Some(quoted.trim().trim_matches('"').to_string());
+      }
     }
   }
 
-  if full_version == "0" {
-    None
-  } else {
-    Some((vendor, full_version))
-  }
+  // Return Some even if partial info is available, None only if file couldn't be read
+  Some((vendor, full_version))
 }
 
-pub fn get_java_info_from_command(java_path: &str) -> Option<(String, String)> {
+pub fn get_java_info_from_command(java_path: &str) -> Option<(Option<String>, Option<String>)> {
   // use "java -version -XshowSettings:properties" command to get info
   #[cfg(target_os = "windows")]
   let output = Command::new(java_path)
@@ -419,15 +436,19 @@ pub fn get_java_info_from_command(java_path: &str) -> Option<(String, String)> {
   output_str.push_str(&String::from_utf8_lossy(&output.stdout));
   output_str.push_str(&String::from_utf8_lossy(&output.stderr));
 
-  let mut vendor = "Unknown".to_string();
-  let mut full_version = "0".to_string();
+  let mut vendor: Option<String> = None;
+  let mut full_version: Option<String> = None;
 
   for line in output_str.lines() {
     if line.trim().starts_with("java.vendor = ") {
-      vendor = line.split('=').nth(1)?.trim().trim_matches('"').to_string();
+      if let Some(v) = line.split('=').nth(1) {
+        vendor = Some(v.trim().trim_matches('"').to_string());
+      }
     }
     if line.trim().starts_with("java.version = ") {
-      full_version = line.split('=').nth(1)?.trim().trim_matches('"').to_string();
+      if let Some(v) = line.split('=').nth(1) {
+        full_version = Some(v.trim().trim_matches('"').to_string());
+      }
     }
   }
 
