@@ -147,7 +147,7 @@ pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
 }
 
 /// Normalizes a URL string for semantic equality comparison, including:
-/// - Lowercasing the scheme and the host (ref to RFC 3986)
+/// - Lowercasing the scheme and the host (ref to RFC 3986, impl by Url::parse)
 /// - Removing trailing slashes from paths (except for root `/`)
 /// - Removing default ports (e.g. 80 for HTTP, 443 for HTTPS)
 ///
@@ -160,13 +160,10 @@ pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
 /// A normalized URL string suitable for direct string comparison.
 /// If parsing fails, the original input string is returned unchanged.
 pub fn normalize_url(input: &str) -> String {
-  let Ok(url) = Url::parse(input) else {
-    return input.to_string();
+  let url = match Url::parse(input) {
+    Ok(url) if !url.cannot_be_a_base() && url.host_str().is_some() => url,
+    _ => return input.to_string(),
   };
-
-  // normalize scheme (Url already lowercases host)
-  // ref: https://www.rfc-editor.org/rfc/rfc3986
-  let scheme = url.scheme().to_lowercase();
 
   // remove trailing slash except for root
   let mut path = url.path().to_string();
@@ -180,8 +177,10 @@ pub fn normalize_url(input: &str) -> String {
     (p, _) => p,
   };
 
-  let Ok(mut normalized) = Url::parse(&format!("{}://{}", scheme, url.host_str().unwrap())) else {
-    return input.to_string();
+  let mut normalized = match Url::parse(&format!("{}://{}", url.scheme(), url.host_str().unwrap()))
+  {
+    Ok(u) => u,
+    Err(_) => return input.to_string(),
   };
 
   let _ = normalized.set_port(port);
