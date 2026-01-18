@@ -8,7 +8,7 @@ use systemstat::{saturating_sub_bytes, Platform};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_os::locale;
 
-/// Sends app version and OS type as statistic data to SJMC asynchronously.
+/// Sends app version, OS type and self SHA-256 as statistic data to SJMC asynchronously.
 ///
 /// # Examples
 ///

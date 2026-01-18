@@ -14,6 +14,7 @@ use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
 use crate::utils::fs::get_app_resource_filepath;
+use crate::utils::web::normalize_url;
 use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -636,11 +637,11 @@ pub async fn retrieve_other_launcher_account_info(
   // remove trailing slashes for deduplication
   let mut url_set = std::collections::HashSet::<String>::new();
   for u in urls {
-    url_set.insert(u.as_str().trim_end_matches('/').to_string());
+    url_set.insert(normalize_url(u.as_str()));
   }
   for p in &mut player_infos {
     if let Some(url) = p.auth_server_url.as_mut() {
-      *url = url.trim_end_matches('/').to_string();
+      *url = normalize_url(url);
     }
   }
 
