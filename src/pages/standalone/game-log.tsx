@@ -48,6 +48,7 @@ const GameLogPage: React.FC = () => {
 
   const launchingIdRef = useRef<number | null>(null);
   const listRef = useRef<List>(null);
+  const userScrolledRef = useRef(false);
 
   const cacheRef = useRef(
     new CellMeasurerCache({
@@ -92,6 +93,15 @@ const GameLogPage: React.FC = () => {
     });
     return () => unlisten();
   }, []);
+
+  // scroll to bottom on new log if unclicked
+  useEffect(() => {
+    if (userScrolledRef.current) return;
+
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToRow(logs.length - 1);
+    });
+  }, [logs.length]);
 
   const revealRawLogFile = async () => {
     if (!launchingIdRef.current) return;
