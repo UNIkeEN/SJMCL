@@ -64,7 +64,7 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
     // If user language is Chinese, swap to make Chinese part on top.
     const isZh = config.general.general.language.startsWith("zh");
     return m && isZh
-      ? `${m[1].trim()}\n${m[3].trim()}\n---\n${m[2].trim()}`
+      ? `${m[1].trim()}\n${m[3].trim()}\n---\n- ${m[2].trim()}`
       : raw;
   };
 
