@@ -229,7 +229,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
                   key={index}
                   title={type}
                   description={t(`ImportAccountInfoModal.launcherDesc.${type}`)}
-                  iconSrc={`/images/icons/external/${type.toLowerCase()}.png`}
+                  iconSrc={`/images/icons/external/${type}.png`}
                   displayMode="selector"
                   isSelected={selectedType === type}
                   onSelect={() => {
