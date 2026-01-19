@@ -69,7 +69,11 @@ pub async fn refresh_and_update_javas(app: &AppHandle) {
       major_version,
       is_lts,
       exec_path: java_exec_path.clone(),
-      vendor,
+      vendor: if java_exec_path.contains("runtime/java-") {
+        "Microsoft".to_string()
+      } else {
+        vendor
+      },
       is_user_added,
     };
 
