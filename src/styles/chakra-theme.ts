@@ -114,7 +114,7 @@ const chakraExtendTheme = extendTheme({
           header: {
             fontSize: "md",
             paddingLeft: 4,
-            paddingRight: 8, // place holder for close button (issue#1312)
+            paddingRight: 8, // placeholder for close button (issue#1312)
             paddingTop: 3,
             paddingBottom: 2,
             userSelect: "none",
