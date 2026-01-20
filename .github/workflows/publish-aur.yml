@@ -90,13 +90,13 @@ jobs:
               -v x86_64_hash="${X86_64_DEB_HASH%% *}" \
               -v aarch64_hash="${AARCH64_DEB_HASH%% *}" '
             BEGIN {
-              sums["sha256sums"] = license_hash
-              sums["sha256sums_x86_64"] = x86_64_hash
-              sums["sha256sums_aarch64"] = aarch64_hash
+              sums["sha512sums"] = license_hash
+              sums["sha512sums_x86_64"] = x86_64_hash
+              sums["sha512sums_aarch64"] = aarch64_hash
               
-              processed["sha256sums"] = 0
-              processed["sha256sums_x86_64"] = 0
-              processed["sha256sums_aarch64"] = 0
+              processed["sha512sums"] = 0
+              processed["sha512sums_x86_64"] = 0
+              processed["sha512sums_aarch64"] = 0
             }
             
             $0 ~ "^[[:blank:]]*[a-z0-9]+sums(_[^=]+)?\\+?=", $0 ~ "\\)[[:blank:]]*(#.*)?$" {
