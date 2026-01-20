@@ -1,6 +1,11 @@
 use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
 use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
+use crate::instance::export::{
+  collect_export_files, generate_curseforge_compat_manifest, generate_mcbbs_manifest,
+  generate_modrinth_manifest, generate_multimc_instance_cfg, generate_multimc_manifest,
+  validate_export_options, ExportFormat, ExportModpackOptions,
+};
 use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
@@ -1317,3 +1322,105 @@ pub fn add_custom_instance_icon(
 
   Ok(())
 }
+
+#[tauri::command]
+pub async fn export_modpack(
+  app: AppHandle,
+  instance_id: String,
+  save_path: String,
+  options: ExportModpackOptions,
+) -> SJMCLResult<()> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  validate_export_options(&instance, &options)?;
+
+  let mut files = collect_export_files(&instance, &options)?;
+
+  if files.is_empty() {
+    return Err(InstanceError::ModpackManifestParseError.into());
+  }
+
+  let (manifest_json, manifest_filename, overrides_prefix) = match options.format {
+    ExportFormat::Modrinth => {
+      let manifest = generate_modrinth_manifest(&instance, &options)?;
+      let json = serde_json::to_string_pretty(&manifest)
+        .map_err(|_| InstanceError::ModpackManifestParseError)?;
+      (json, "modrinth.index.json", "overrides")
+    }
+    ExportFormat::MCBBS => {
+      let manifest = generate_mcbbs_manifest(&instance, &options)?;
+      let json = serde_json::to_string_pretty(&manifest)
+        .map_err(|_| InstanceError::ModpackManifestParseError)?;
+      (json, "mcbbs.packmeta", "overrides")
+    }
+    ExportFormat::MultiMC => {
+      let manifest = generate_multimc_manifest(&instance, &options)?;
+      let json = serde_json::to_string_pretty(&manifest)
+        .map_err(|_| InstanceError::ModpackManifestParseError)?;
+      (json, "mmc-pack.json", ".minecraft")
+    }
+  };
+
+  // Create temporary directory for building the modpack
+  let temp_dir = std::env::temp_dir().join(format!("sjmcl_export_{}", instance.name));
+  if temp_dir.exists() {
+    tokio::fs::remove_dir_all(&temp_dir).await?;
+  }
+  tokio::fs::create_dir_all(&temp_dir).await?;
+
+  let manifest_path = temp_dir.join(manifest_filename);
+  tokio::fs::write(&manifest_path, manifest_json).await?;
+  files.push(manifest_path);
+
+  // For MCBBS, also create CurseForge compatible manifest.json
+  if let ExportFormat::MCBBS = options.format {
+    let compat_manifest = generate_curseforge_compat_manifest(&instance, &options)?;
+    let compat_json = serde_json::to_string_pretty(&compat_manifest)
+      .map_err(|_| InstanceError::ModpackManifestParseError)?;
+    let compat_path = temp_dir.join("manifest.json");
+    tokio::fs::write(&compat_path, compat_json).await?;
+    files.push(compat_path);
+  }
+
+  // For MultiMC, also create instance.cfg and .packignore
+  if let ExportFormat::MultiMC = options.format {
+    let instance_cfg = generate_multimc_instance_cfg(&instance, &options);
+    let instance_cfg_path = temp_dir.join("instance.cfg");
+    tokio::fs::write(&instance_cfg_path, instance_cfg).await?;
+    files.push(instance_cfg_path);
+
+    let packignore_path = temp_dir.join(".packignore");
+    tokio::fs::write(&packignore_path, "").await?;
+    files.push(packignore_path);
+  }
+
+  // Create ZIP file with manifest and overrides
+  let save_path_buf = PathBuf::from(&save_path);
+  let _ = tokio::task::spawn_blocking(move || {
+    crate::utils::fs::create_zip_with_files(
+      files,
+      &instance.version_path,
+      save_path_buf,
+      overrides_prefix,
+    )
+  })
+  .await
+  .map_err(|_| InstanceError::ModpackManifestParseError)?;
+
+  if temp_dir.exists() {
+    let _ = tokio::fs::remove_dir_all(&temp_dir).await;
+  }
+
+  Ok(())
+}
+
+// TODO: 文件选择逻辑
+// TODO: 导出格式规范
+// TODO: 进度反馈 or not
+// TODO: 测试

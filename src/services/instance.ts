@@ -455,4 +455,24 @@ export class InstanceService {
       sourceSrc,
     });
   }
+
+  /**
+   * Export the instance as a modpack.
+   * @param {string} instanceId - The ID of the instance to export.
+   * @param {string} savePath - The destination path for the exported modpack.
+   * @param {any} options - Export configuration options.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async exportModpack(
+    instanceId: string,
+    savePath: string,
+    options: any
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("export_modpack", {
+      instanceId,
+      savePath,
+      options,
+    });
+  }
 }

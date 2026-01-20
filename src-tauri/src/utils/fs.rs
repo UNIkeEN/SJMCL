@@ -467,6 +467,61 @@ pub fn create_zip_from_dirs(paths: Vec<PathBuf>, zip_file_path: PathBuf) -> SJMC
   Ok(zip_file_path.to_string_lossy().to_string())
 }
 
+/// Create a ZIP file with files in a hierarchical structure with a prefix
+/// Used for modpack export where files need to be placed under prefix="overrides" etc.
+pub fn create_zip_with_files(
+  files: Vec<PathBuf>,
+  base_path: &Path,
+  zip_file_path: PathBuf,
+  prefix: &str,
+) -> SJMCLResult<String> {
+  let zip_file = std::fs::File::create(&zip_file_path)
+    .map_err(|e| SJMCLError(format!("Failed to create zip file: {}", e)))?;
+  let mut zip = ZipWriter::new(zip_file);
+  let options = FileOptions::<ExtendedFileOptions>::default()
+    .compression_method(CompressionMethod::Deflated)
+    .unix_permissions(0o755);
+
+  for file_path in files {
+    if !file_path.is_file() {
+      continue;
+    }
+
+    let relative_path = file_path
+      .strip_prefix(base_path)
+      .map_err(|_| SJMCLError("Failed to strip prefix from file path".to_string()))?;
+
+    let archive_path = if prefix.is_empty() {
+      relative_path.to_string_lossy().replace("\\", "/")
+    } else {
+      format!(
+        "{}/{}",
+        prefix,
+        relative_path.to_string_lossy().replace("\\", "/")
+      )
+    };
+
+    zip
+      .start_file(&archive_path, options.clone())
+      .map_err(|e| SJMCLError(format!("Failed to start zip file entry: {}", e)))?;
+    let mut file = std::fs::File::open(&file_path).map_err(|e| {
+      SJMCLError(format!(
+        "Failed to open file {}: {}",
+        file_path.display(),
+        e
+      ))
+    })?;
+    std::io::copy(&mut file, &mut zip)
+      .map_err(|e| SJMCLError(format!("Failed to copy data to zip: {}", e)))?;
+  }
+
+  zip
+    .finish()
+    .map_err(|e| SJMCLError(format!("Failed to finalize zip file: {}", e)))?;
+
+  Ok(zip_file_path.to_string_lossy().to_string())
+}
+
 /// Enum to define the permission operation
 #[derive(Debug)]
 pub enum PermissionOperation {
