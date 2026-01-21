@@ -20,12 +20,10 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
 
-// 改为导入 InstanceService
-
 interface AddGameServerModalProps extends Omit<ModalProps, "children"> {
   presetUrl?: string;
-  instanceId: string; // 添加实例ID参数
-  onSuccess?: () => void; // 添加成功回调
+  instanceId: string;
+  onSuccess?: () => void;
 }
 
 const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
@@ -59,7 +57,6 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
   }, [isOpen, presetUrl]);
   const handleFinish = useCallback(() => {
     setIsLoading(true);
-    // 直接添加游戏服务器，不进行预查询（如果需要查询可以在后端进行）
     InstanceService.addGameServer(instanceId, serverUrl, serverName)
       .then((response) => {
         if (response.status === "success") {
@@ -91,7 +88,6 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
       serverUrl === presetUrl &&
       !hasAutoPresetRef.current
     ) {
-      // 自动填充时，如果没有提供服务器名称，则尝试从URL中提取
       if (!serverName) {
         const urlObj = new URL(presetUrl);
         const extractedName = urlObj.hostname || presetUrl;
