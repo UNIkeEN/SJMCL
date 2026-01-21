@@ -72,7 +72,6 @@ const InstanceWorldsPage = () => {
   useEffect(() => {
     getWorldListWrapper();
   }, [getWorldListWrapper]);
-
   const handleRetrieveGameServerList = useCallback(
     (queryOnline: boolean) => {
       if (instanceId !== undefined) {
@@ -93,7 +92,10 @@ const InstanceWorldsPage = () => {
     },
     [toast, instanceId]
   );
-
+  const refreshGameServers = useCallback(() => {
+    handleRetrieveGameServerList(false);
+    handleRetrieveGameServerList(true);
+  }, [handleRetrieveGameServerList]);
   useEffect(() => {
     handleRetrieveGameServerList(false);
     handleRetrieveGameServerList(true);
@@ -138,6 +140,21 @@ const InstanceWorldsPage = () => {
         getWorldListWrapper(true);
         setSelectedWorldName("");
       },
+    },
+  ];
+  const serverSecMenuOperations = [
+    {
+      icon: "add",
+      onClick: () => {
+        openSharedModal("add-game-server", {
+          instanceId,
+          onSuccess: refreshGameServers,
+        });
+      },
+    },
+    {
+      icon: "refresh",
+      onClick: refreshGameServers,
     },
   ];
 
@@ -286,16 +303,18 @@ const InstanceWorldsPage = () => {
           );
         }}
         headExtra={
-          <CommonIconButton
-            icon="refresh"
-            onClick={() => {
-              handleRetrieveGameServerList(false);
-              handleRetrieveGameServerList(true);
-            }}
-            size="xs"
-            fontSize="sm"
-            h={21}
-          />
+          <HStack spacing={2}>
+            {serverSecMenuOperations.map((btn, index) => (
+              <CommonIconButton
+                key={index}
+                icon={btn.icon}
+                onClick={btn.onClick}
+                size="xs"
+                fontSize="sm"
+                h={21}
+              />
+            ))}
+          </HStack>
         }
       >
         {gameServers.length > 0 ? (

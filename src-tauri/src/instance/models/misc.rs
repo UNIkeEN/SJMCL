@@ -250,6 +250,8 @@ pub enum InstanceError {
   FileMoveFailed,
   FolderCreationFailed,
   ShortcutCreationFailed,
+  ServerNbtWriteError,
+  DuplicateServerError,
   ZipFileProcessFailed,
   WorldNotExistError,
   LevelParseError,

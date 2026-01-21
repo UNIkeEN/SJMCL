@@ -140,6 +140,31 @@
       "endpointUrl": "源地址"
     }
   },
+  "AddGameServerModal": {
+    "header": {
+      "title": "添加游戏服务器"
+    },
+    "serverUrl": "服务器地址",
+    "serverName": "服务器名称",
+    "serverUrlRequired": "服务器地址不能为空",
+    "placeholder": {
+      "inputServerUrl": "例如：mc.example.com:25565",
+      "inputServerName": "例如：我的服务器"
+    },
+    "success": {
+      "title": "服务器添加成功",
+      "description": "服务器已成功添加到列表"
+    },
+    "error": {
+      "title": "添加失败",
+      "general": "无法添加服务器",
+      "network": "网络连接失败，请稍后重试",
+      "duplicate": "服务器地址已存在",
+      "invalidUrl": "无效的服务器地址",
+      "instanceNotFound": "找不到实例",
+      "fileWriteError": "无法保存服务器信息，请检查文件权限"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "添加角色"

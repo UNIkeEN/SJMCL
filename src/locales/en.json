@@ -140,6 +140,32 @@
       "endpointUrl": "Endpoint URL"
     }
   },
+
+  "AddGameServerModal": {
+    "header": {
+      "title": "Add Game Server"
+    },
+    "serverUrl": "Server Address",
+    "serverName": "Server Name",
+    "serverUrlRequired": "Server address is required",
+    "placeholder": {
+      "inputServerUrl": "e.g., mc.example.com:25565",
+      "inputServerName": "e.g., My Server"
+    },
+    "success": {
+      "title": "Server Added Successfully",
+      "description": "Server has been added to the list"
+    },
+    "error": {
+      "title": "Failed to Add Server",
+      "general": "Failed to add server",
+      "network": "Network connection failed, please try again later",
+      "duplicate": "Server address already exists",
+      "invalidUrl": "Invalid server address",
+      "instanceNotFound": "Instance not found",
+      "fileWriteError": "Unable to save server information, please check file permissions"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "Add Player"

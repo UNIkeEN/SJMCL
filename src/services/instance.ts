@@ -222,6 +222,25 @@ export class InstanceService {
       instanceId,
     });
   }
+  /**
+   * ADD a game server to the instance's servers.dat file.
+   * @param {string} instanceId - The ID of the instance.
+   * @param {string} serverUrl - The URL/IP of the game server.
+   * @param {string} serverName - The display name of the server.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async addGameServer(
+    instanceId: string,
+    serverUrl: string,
+    serverName: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_game_server", {
+      instanceId,
+      serverUrl,
+      serverName,
+    });
+  }
 
   /**
    * RETRIEVE the list of game servers.

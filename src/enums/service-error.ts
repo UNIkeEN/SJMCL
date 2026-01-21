@@ -20,6 +20,8 @@ export enum InstanceError {
   WorldNotExistError = "WORLD_NOT_EXSIT_ERROR",
   LevelNotExistError = "LEVEL_NOT_EXSIT_ERROR",
   LevelParseError = "LEVEL_PARSE_ERROR",
+  DuplicateServerError = "DUPLICATE_SERVER_ERROR",
+  ServerNbtWriteError = "SERVER_NBT_WRITE_ERROR",
 }
 
 export enum ConfigServiceError {

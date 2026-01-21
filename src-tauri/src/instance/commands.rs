@@ -46,6 +46,8 @@ use crate::utils::fs::{
 };
 use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
+use quartz_nbt::io::Flavor;
+use quartz_nbt::{NbtCompound, NbtList, NbtTag};
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::fs;
@@ -1265,3 +1267,109 @@ pub fn add_custom_instance_icon(
 
   Ok(())
 }
+// 在文件顶部添加必要的导入
+
+// 在文件末尾添加 add_game_server 函数
+#[tauri::command]
+pub async fn add_game_server(
+  app: AppHandle,
+  instance_id: String,
+  server_url: String,
+  server_name: String,
+) -> SJMCLResult<()> {
+  // 获取实例根目录
+  let game_root_dir =
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
+      Some(path) => path,
+      None => return Err(InstanceError::InstanceNotFoundByID.into()),
+    };
+
+  // 构建服务器文件路径
+  let servers_dat_path = game_root_dir.join("servers.dat");
+
+  // 创建或加载现有的服务器列表
+  let mut existing_servers = load_servers_info_from_path(&servers_dat_path).await?;
+
+  // 检查是否已存在相同URL的服务器
+  if existing_servers
+    .iter()
+    .any(|server| server.ip == server_url)
+  {
+    return Err(InstanceError::DuplicateServerError.into());
+  }
+
+  // 创建新的服务器信息
+  let new_server = GameServerInfo {
+    ip: server_url.clone(),
+    name: server_name.clone(),
+    icon_src: String::new(), // 默认为空，后续可添加图标
+    hidden: false,
+    description: String::new(), // 默认为空
+    is_queried: false,
+    players_online: 0,
+    players_max: 0,
+    online: false,
+  };
+
+  // 添加新服务器到列表
+  existing_servers.push(new_server.clone());
+
+  // 转换为NBT格式并保存
+  save_servers_to_nbt(&servers_dat_path, &existing_servers).await?;
+
+  Ok(())
+}
+
+/// 将服务器列表保存到NBT文件
+async fn save_servers_to_nbt(path: &PathBuf, servers: &[GameServerInfo]) -> SJMCLResult<()> {
+  // 创建主NBT复合标签
+  let mut root_compound = NbtCompound::new();
+
+  // 创建服务器列表
+  let mut servers_list = NbtList::new();
+
+  for server in servers {
+    // 创建单个服务器NBT条目
+    let mut server_compound = NbtCompound::new();
+
+    // 添加服务器IP (必需)
+    server_compound.insert("ip", server.ip.clone());
+
+    // 添加服务器名称 (必需)
+    server_compound.insert("name", server.name.clone());
+
+    // 添加图标（如果有）
+    if !server.icon_src.is_empty() {
+      server_compound.insert("icon", server.icon_src.clone());
+    }
+
+    // 添加hidden标志
+    server_compound.insert("hidden", if server.hidden { 1i8 } else { 0i8 });
+
+    // 将服务器条目添加到列表
+    servers_list.push(NbtTag::Compound(server_compound));
+  }
+
+  // 将服务器列表添加到根标签
+  root_compound.insert("servers", NbtTag::List(servers_list));
+
+  // 写入文件
+  let mut bytes = Vec::new();
+  quartz_nbt::io::write_nbt(&mut bytes, None, &root_compound, Flavor::Uncompressed).map_err(
+    |e| {
+      log::error!("Failed to write NBT: {}", e);
+      InstanceError::ServerNbtWriteError
+    },
+  )?;
+
+  tokio::fs::write(path, bytes).await.map_err(|e| {
+    log::error!("Failed to write file: {}", e);
+    InstanceError::ServerNbtWriteError
+  })?;
+
+  Ok(())
+}
+
+// 同时，我们需要修改 load_servers_info_from_path 函数以正确读取
+// 但这个函数已经在 server.rs 中，我们需要确保它正确处理现有的格式
+// 让我们也修改 server.rs 中的 NbtServersInfo 结构以匹配读取逻辑
