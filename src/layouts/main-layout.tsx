@@ -17,7 +17,6 @@ import StarUsModal from "@/components/modals/star-us-modal";
 import UnavailableExePathAlertDialog from "@/components/modals/unavailable-exe-path-alert-dialog";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
-import { useSharedModals } from "@/contexts/shared-modal";
 import { isDev } from "@/utils/env";
 
 interface MainLayoutProps {
@@ -31,7 +30,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const { colorMode } = useColorMode();
   const isDarkenBg =
     colorMode === "dark" && config.appearance.background.autoDarken;
-  const { openGenericConfirmDialog } = useSharedModals();
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
