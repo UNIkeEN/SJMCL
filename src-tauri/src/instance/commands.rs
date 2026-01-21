@@ -52,6 +52,8 @@ use crate::utils::fs::{
 };
 use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
+use quartz_nbt::io::Flavor;
+use quartz_nbt::{NbtCompound, NbtList, NbtTag};
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::fs;
@@ -433,6 +435,77 @@ pub async fn retrieve_game_server_list(
   }
 
   Ok(game_servers)
+}
+
+#[tauri::command]
+pub async fn add_game_server(
+  app: AppHandle,
+  instance_id: String,
+  server_url: String,
+  server_name: String,
+) -> SJMCLResult<()> {
+  let game_root_dir =
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
+      Some(path) => path,
+      None => return Err(InstanceError::InstanceNotFoundByID.into()),
+    };
+
+  let servers_dat_path = game_root_dir.join("servers.dat");
+
+  let mut existing_servers = load_servers_info_from_path(&servers_dat_path).await?;
+  if existing_servers
+    .iter()
+    .any(|server| server.ip == server_url)
+  {
+    return Err(InstanceError::DuplicateServer.into());
+  }
+
+  let new_server = GameServerInfo {
+    ip: server_url.clone(),
+    name: server_name.clone(),
+    icon_src: String::new(),
+    hidden: false,
+    description: String::new(),
+    is_queried: false,
+    players_online: 0,
+    players_max: 0,
+    online: false,
+  };
+  existing_servers.push(new_server.clone());
+  save_servers_to_nbt(&servers_dat_path, &existing_servers).await?;
+
+  Ok(())
+}
+
+async fn save_servers_to_nbt(path: &PathBuf, servers: &[GameServerInfo]) -> SJMCLResult<()> {
+  let mut root_compound = NbtCompound::new();
+  let mut servers_list = NbtList::new();
+
+  for server in servers {
+    let mut server_compound = NbtCompound::new();
+    server_compound.insert("ip", server.ip.clone());
+    server_compound.insert("name", server.name.clone());
+    if !server.icon_src.is_empty() {
+      server_compound.insert("icon", server.icon_src.clone());
+    }
+    server_compound.insert("hidden", if server.hidden { 1i8 } else { 0i8 });
+    servers_list.push(NbtTag::Compound(server_compound));
+  }
+  root_compound.insert("servers", NbtTag::List(servers_list));
+  let mut bytes = Vec::new();
+  quartz_nbt::io::write_nbt(&mut bytes, None, &root_compound, Flavor::Uncompressed).map_err(
+    |e| {
+      log::error!("Failed to write NBT: {}", e);
+      InstanceError::FileOperationError
+    },
+  )?;
+
+  tokio::fs::write(path, bytes).await.map_err(|e| {
+    log::error!("Failed to write file: {}", e);
+    InstanceError::FileOperationError
+  })?;
+
+  Ok(())
 }
 
 #[tauri::command]

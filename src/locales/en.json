@@ -1297,6 +1297,19 @@
     }
   },
   "InstanceWorldsPage": {
+    "addServerModal": {
+      "header": {
+        "title": "Add Game Server"
+      },
+      "label": {
+        "serverAddress": "Server Address",
+        "serverName": "Server Name"
+      },
+      "placeholder": {
+        "serverAddress": "Enter server address",
+        "serverName": "Enter server name"
+      }
+    },
     "worldList": {
       "title": "Worlds",
       "lastPlayedAt": "Last played",
@@ -2344,6 +2357,17 @@
       "retrieveServerResourcePackList": {
         "error": {
           "title": "Failed to retrieve resource pack list from servers"
+        }
+      },
+      "addGameServer": {
+        "success": "Game server added successfully",
+        "error": {
+          "title": "Failed to add game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "DUPLICATE_SERVER": "Server already exists"
+          }
         }
       },
       "retrieveSchematicList": {
