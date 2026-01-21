@@ -7,7 +7,7 @@ use crate::utils::portable::extract_assets;
 use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use rand::Rng;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{PathBuf, MAIN_SEPARATOR};
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
@@ -105,6 +105,7 @@ impl LauncherConfig {
       platform_version: tauri_plugin_os::version().to_string(),
       exe_sha256: calculate_sha256(&EXE_PATH).unwrap_or_default(),
       is_portable: *IS_PORTABLE,
+      is_exe_path_available: check_exe_path_availability(app),
       // below set to default, will be updated later in first time calling `check_full_login_availability`
       is_china_mainland_ip: false,
       allow_full_login_feature: false,
@@ -173,4 +174,57 @@ pub fn get_global_game_config(app: &AppHandle) -> GameConfig {
     .unwrap()
     .global_game_config
     .clone()
+}
+
+// Check if the executable is running from a temporary or non-persistent path
+pub fn check_exe_path_availability(app: &AppHandle) -> bool {
+  let exe_str = &*EXE_PATH.to_string_lossy();
+
+  for base in [BaseDirectory::Cache, BaseDirectory::Temp] {
+    if let Ok(base_path) = app.path().resolve::<PathBuf>("".into(), base) {
+      let base_str = base_path.to_string_lossy();
+      if exe_str.starts_with(&*base_str) {
+        return false;
+      }
+    }
+  }
+
+  // generic keywords and OS-specific hard rules
+  // modified from: https://github.com/HMCL-dev/HMCL/blob/0a0476b6d32ccd689c7166d25326c1a81cf64564/HMCL/src/main/java/org/jackhuang/hmcl/Launcher.java#L192
+  let exe_lower = exe_str.to_lowercase();
+  let keywords = ["temp", "cache", "caches"];
+  for k in keywords {
+    let needle = format!("{sep}{k}{sep}", sep = MAIN_SEPARATOR);
+    if exe_lower.contains(&needle) {
+      return false;
+    }
+  }
+
+  #[cfg(target_os = "windows")]
+  {
+    !(exe_str.contains("\\Temporary Internet Files\\")
+      || exe_str.contains("\\INetCache\\")
+      || exe_str.contains("\\$Recycle.Bin\\"))
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    !(exe_str.starts_with("/tmp/")
+      || exe_str.starts_with("/var/tmp/")
+      || exe_str.starts_with("/var/cache/")
+      || exe_str.starts_with("/dev/shm/")
+      || exe_str.starts_with("/run/")
+      || exe_str.contains("/Trash/"))
+  }
+
+  #[cfg(target_os = "macos")]
+  {
+    !(exe_str.starts_with("/var/folders/")
+      || exe_str.starts_with("/private/var/folders/")
+      || exe_str.starts_with("/tmp/")
+      || exe_str.starts_with("/var/tmp/")
+      || exe_str.starts_with("/private/tmp/")
+      || exe_str.starts_with("/private/var/tmp/")
+      || exe_str.contains("/.Trash/"))
+  }
 }

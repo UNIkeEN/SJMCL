@@ -899,6 +899,7 @@
     "download": "Download",
     "edit": "Edit",
     "enable": "Enable",
+    "exit": "Exit",
     "finish": "Finish",
     "import": "Import",
     "launch": "Launch",
@@ -2566,6 +2567,12 @@
       "gameError": "Oops! The Game Crashed."
     }
   },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "Unsafe Execution Path",
+      "content": "SJMCL is currently running from a temporary or invalid directory. Your settings and game data may be lost. Please move SJMCL to another location and run it again."
+    }
+  },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
@@ -2606,7 +2613,6 @@
       "winArm64Notice": "SJMCL now supports Windows on Arm. If you are using a <b>QUALCOMM</b> platform, you may need to install the <glpack>OpenGL Compatibility Pack</glpack> before launching the game."
     },
     "button": {
-      "exit": "Exit",
       "agree": "Agree"
     }
   },
