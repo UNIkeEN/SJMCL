@@ -22,8 +22,6 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 `2025-01-08`
 
-**All the best 2026. 新年快乐 🎉**
-
 - **🔥 Support downloading and installing the OptiFine loader when creating an instance. #1149 #1288** @xunying123 @Reqwey @UNIkeEN
 - **🔥 Add support for the Linux Arm64 platform. #1249** @pangbo13 @Minecrafter-Pythoner
 - 🌟 Add LittleSkin as a built-in third-party authentication server. #1214 @tnqzh123
