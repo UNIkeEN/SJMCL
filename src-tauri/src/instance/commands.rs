@@ -97,10 +97,16 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
   let version_cmp_fn = build_game_version_cmp_fn(&app);
   match config_state.states.all_instances_page.sort_by.as_str() {
     "versionAsc" => {
-      summary_list.sort_by(|a, b| version_cmp_fn(&a.version, &b.version));
+      summary_list.sort_by(|a, b| {
+        version_cmp_fn(&a.version, &b.version)
+          .then_with(|| a.name.to_lowercase().cmp(&b.name.to_lowercase()))
+      });
     }
     "versionDesc" => {
-      summary_list.sort_by(|a, b| version_cmp_fn(&b.version, &a.version));
+      summary_list.sort_by(|a, b| {
+        version_cmp_fn(&b.version, &a.version)
+          .then_with(|| a.name.to_lowercase().cmp(&b.name.to_lowercase()))
+      });
     }
     _ => {
       summary_list.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
