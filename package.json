@@ -47,7 +47,7 @@
     "@tauri-apps/plugin-process": "^2.3.0",
     "@tauri-apps/plugin-window-state": "^2.3.0",
     "i18next": "^24.0.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "masonic": "^4.0.1",
     "micromatch": "^4.0.8",
     "next": "15.5.9",
