@@ -158,7 +158,7 @@ async fn get_neoforge_meta_by_game_version_official(
         if matches_game_version {
           let sort_key: i32 = if is_april_fools {
             cap[2].parse()?
-          } else if let Some(m) = cap.get(4) {
+          } else if let Some(m) = cap.get(6) {
             m.as_str().parse()?
           } else {
             cap[3].parse()?
@@ -214,6 +214,7 @@ async fn get_neoforge_meta_by_game_version_bmcl(
               stripped
                 .split('.')
                 .flat_map(|part| part.split('-'))
+                .flat_map(|part| part.split('+'))
                 .map(|s| s.parse::<i32>().unwrap_or(0))
                 .collect::<Vec<_>>()
             };
