@@ -236,10 +236,13 @@ pub async fn generate_launch_command(
       cmd.extend(jvm.args.split_whitespace().map(|s| s.to_string()));
     }
   }
-  let native_openal = game_config.advanced.workaround.use_native_openal;
-  if native_openal {
-    cmd.push("-XX:+UnlockExperimentalVMOptions".to_string());
-    cmd.push("-Dorg.lwjgl.openal.libname=/usr/lib/libopenal.so".to_string());
+
+  #[cfg(target_os = "linux")]
+  {
+    if game_config.advanced.workaround.use_native_openal {
+      cmd.push("-XX:+UnlockExperimentalVMOptions".to_string());
+      cmd.push("-Dorg.lwjgl.openal.libname=/usr/lib/libopenal.so".to_string());
+    }
   }
 
   let encoding = "UTF-8"; // TODO: get from system
