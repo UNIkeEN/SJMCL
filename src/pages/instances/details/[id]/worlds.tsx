@@ -7,17 +7,18 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCheck, LuX } from "react-icons/lu";
+import { LuCheck, LuPlus, LuTrash2, LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import AddServerModal from "@/components/modals/add-server-modal";
 import WorldLevelDataModal from "@/components/modals/world-level-data-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
@@ -35,6 +36,8 @@ import { base64ImgSrc } from "@/utils/string";
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
+  const toast = useToast();
+  const { openSharedModal } = useSharedModals();
   const {
     instanceId,
     summary,
@@ -43,19 +46,73 @@ const InstanceWorldsPage = () => {
     getWorldList,
     isWorldListLoading: isLoading,
   } = useInstanceSharedData();
-  const accordionStates = config.states.instanceWorldsPage.accordionStates;
-  const toast = useToast();
-  const { openSharedModal } = useSharedModals();
 
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [selectedWorldName, setSelectedWorldName] = useState<string>();
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
 
+  const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const {
     isOpen: isWorldLevelDataModalOpen,
     onOpen: onWorldLevelDataModallOpen,
     onClose: onWorldLevelDataModalClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isAddServerOpen,
+    onOpen: onAddServerOpen,
+    onClose: onAddServerClose,
+  } = useDisclosure();
+
+  const handleAddServer = async (name: string, address: string) => {
+    const versionPath = (summary as any)?.versionPath;
+    if (!versionPath) return;
+
+    try {
+      await invoke("add_server_to_instance", {
+        instancePath: versionPath,
+        name,
+        address,
+      });
+      toast({ title: t("Common.success"), status: "success" });
+      onAddServerClose();
+      handleRetrieveGameServerList(false);
+    } catch (e) {
+      toast({
+        title: t("Common.error"),
+        description: String(e),
+        status: "error",
+      });
+    }
+  };
+
+  const handleDeleteServer = async (address: string) => {
+    const versionPath = (summary as any)?.versionPath;
+    if (!versionPath) return;
+
+    // confirm
+    if (
+      !window.confirm(
+        t("InstanceWorldsPage.serverList.deleteConfirm", { address })
+      )
+    )
+      return;
+
+    try {
+      await invoke("delete_server_from_instance", {
+        instancePath: versionPath,
+        address: address,
+      });
+      toast({ title: t("Common.deleteSuccess"), status: "success" });
+      handleRetrieveGameServerList(false);
+    } catch (e) {
+      toast({
+        title: t("Common.deleteFailed"),
+        description: String(e),
+        status: "error",
+      });
+    }
+  };
 
   const getWorldListWrapper = useCallback(
     (sync?: boolean) => {
@@ -97,40 +154,35 @@ const InstanceWorldsPage = () => {
   useEffect(() => {
     handleRetrieveGameServerList(false);
     handleRetrieveGameServerList(true);
-
-    // refresh every minute to query server info
     const intervalId = setInterval(async () => {
       handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
   }, [instanceId, handleRetrieveGameServerList]);
 
+  // UI
   const worldSecMenuOperations = [
     {
       icon: "openFolder",
-      onClick: () => {
-        openInstanceSubdir(InstanceSubdirType.Saves);
-      },
+      onClick: () => openInstanceSubdir(InstanceSubdirType.Saves),
     },
     {
       icon: "download",
-      onClick: () => {
+      onClick: () =>
         openSharedModal("download-resource", {
           initialResourceType: OtherResourceType.World,
-        });
-      },
+        }),
     },
     {
       icon: "add",
-      onClick: () => {
+      onClick: () =>
         handleImportResource({
           filterName: t("InstanceDetailsLayout.instanceTabList.worlds"),
           filterExt: ["zip"],
           tgtDirType: InstanceSubdirType.Saves,
           decompress: true,
           onSuccessCallback: () => getWorldListWrapper(true),
-        });
-      },
+        }),
     },
     {
       icon: "refresh",
@@ -145,18 +197,13 @@ const InstanceWorldsPage = () => {
     {
       label: "",
       icon: "copyOrMove",
-      onClick: () => {
+      onClick: () =>
         openSharedModal("copy-or-move", {
           srcResName: save.name,
           srcFilePath: save.dirPath,
-        });
-      },
+        }),
     },
-    {
-      label: "",
-      icon: "revealFile",
-      onClick: () => openPath(save.dirPath),
-    },
+    { label: "", icon: "revealFile", onClick: () => openPath(save.dirPath) },
     {
       label: t("InstanceWorldsPage.worldList.viewLevelData"),
       icon: "info",
@@ -183,6 +230,7 @@ const InstanceWorldsPage = () => {
 
   return (
     <>
+      {/* worldlist Section */}
       <Section
         isAccordion
         title={t("InstanceWorldsPage.worldList.title")}
@@ -219,7 +267,6 @@ const InstanceWorldsPage = () => {
               const gamemode = t(
                 `InstanceWorldsPage.worldList.gamemode.${world.gamemode}`
               );
-
               const description = [
                 `${t("InstanceWorldsPage.worldList.lastPlayedAt")} ${formatRelativeTime(UNIXToISOString(world.lastPlayedAt), t)}`,
                 t("InstanceWorldsPage.worldList.gamemodeDesc", { gamemode }),
@@ -232,7 +279,6 @@ const InstanceWorldsPage = () => {
               ]
                 .filter(Boolean)
                 .join("");
-
               return (
                 <OptionItem
                   key={world.name}
@@ -267,13 +313,7 @@ const InstanceWorldsPage = () => {
         )}
       </Section>
 
-      <WorldLevelDataModal
-        instanceId={instanceId}
-        worldName={selectedWorldName || ""}
-        isOpen={isWorldLevelDataModalOpen}
-        onClose={onWorldLevelDataModalClose}
-      />
-
+      {/* server list Section */}
       <Section
         isAccordion
         title={t("InstanceWorldsPage.serverList.title")}
@@ -286,16 +326,27 @@ const InstanceWorldsPage = () => {
           );
         }}
         headExtra={
-          <CommonIconButton
-            icon="refresh"
-            onClick={() => {
-              handleRetrieveGameServerList(false);
-              handleRetrieveGameServerList(true);
-            }}
-            size="xs"
-            fontSize="sm"
-            h={21}
-          />
+          <HStack spacing={2}>
+            {/* add server */}
+            <CommonIconButton
+              icon={LuPlus}
+              label="添加服务器"
+              onClick={onAddServerOpen}
+              size="xs"
+              fontSize="sm"
+              h={21}
+            />
+            <CommonIconButton
+              icon="refresh"
+              onClick={() => {
+                handleRetrieveGameServerList(false);
+                handleRetrieveGameServerList(true);
+              }}
+              size="xs"
+              fontSize="sm"
+              h={21}
+            />
+          </HStack>
         }
       >
         {gameServers.length > 0 ? (
@@ -319,7 +370,7 @@ const InstanceWorldsPage = () => {
                   />
                 }
               >
-                <HStack>
+                <HStack spacing={1}>
                   {!server.isQueried && <BeatLoader size={6} color="gray" />}
                   {server.isQueried && server.online && (
                     <Text fontSize="xs-sm" color="gray.500">
@@ -344,6 +395,16 @@ const InstanceWorldsPage = () => {
                         </TagLabel>
                       </Tag>
                     ))}
+
+                  {/* 删除按钮 */}
+                  <CommonIconButton
+                    icon={LuTrash2}
+                    label={t("Common.delete")}
+                    colorScheme="red"
+                    variant="ghost"
+                    onClick={() => handleDeleteServer(server.ip)}
+                  />
+
                   <CommonIconButton
                     icon="launch"
                     label={t("InstanceWorldsPage.serverList.launch")}
@@ -362,6 +423,19 @@ const InstanceWorldsPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
+
+      {}
+      <WorldLevelDataModal
+        instanceId={instanceId}
+        worldName={selectedWorldName || ""}
+        isOpen={isWorldLevelDataModalOpen}
+        onClose={onWorldLevelDataModalClose}
+      />
+      <AddServerModal
+        isOpen={isAddServerOpen}
+        onClose={onAddServerClose}
+        onAdd={handleAddServer}
+      />
     </>
   );
 };

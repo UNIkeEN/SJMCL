@@ -65,6 +65,9 @@ use tokio;
 use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
+// [new]
+//use base64::{Engine as _, engine::general_purpose};
+use serde::Serialize;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
@@ -97,16 +100,10 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
   let version_cmp_fn = build_game_version_cmp_fn(&app);
   match config_state.states.all_instances_page.sort_by.as_str() {
     "versionAsc" => {
-      summary_list.sort_by(|a, b| {
-        version_cmp_fn(&a.version, &b.version)
-          .then_with(|| a.name.to_lowercase().cmp(&b.name.to_lowercase()))
-      });
+      summary_list.sort_by(|a, b| version_cmp_fn(&a.version, &b.version));
     }
     "versionDesc" => {
-      summary_list.sort_by(|a, b| {
-        version_cmp_fn(&b.version, &a.version)
-          .then_with(|| a.name.to_lowercase().cmp(&b.name.to_lowercase()))
-      });
+      summary_list.sort_by(|a, b| version_cmp_fn(&b.version, &a.version));
     }
     _ => {
       summary_list.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
@@ -1322,4 +1319,147 @@ pub fn add_custom_instance_icon(
   fs::copy(source_path, &dest_path)?;
 
   Ok(())
+}
+
+// [New] add server to instance's servers.dat
+#[tauri::command]
+pub async fn add_server_to_instance(
+  instance_path: String,
+  name: String,
+  address: String,
+) -> Result<String, String> {
+  use quartz_nbt::io::{read_nbt, write_nbt, Flavor};
+  use quartz_nbt::{NbtCompound, NbtList};
+  use std::fs::File;
+  use std::path::PathBuf;
+
+  let mut dat_path = PathBuf::from(&instance_path);
+  dat_path.push("servers.dat");
+
+  let mut server_entry = NbtCompound::new();
+  server_entry.insert("name", name);
+  server_entry.insert("ip", address);
+  server_entry.insert("hiddenAddress", false);
+
+  let mut root = if dat_path.exists() {
+    let mut file = File::open(&dat_path).map_err(|e| e.to_string())?;
+
+    match read_nbt(&mut file, Flavor::Uncompressed) {
+      Ok((compound, _)) => compound,
+      Err(_) => {
+        let mut c = NbtCompound::new();
+        c.insert("servers", NbtList::new());
+        c
+      }
+    }
+  } else {
+    let mut c = NbtCompound::new();
+    c.insert("servers", NbtList::new());
+    c
+  };
+
+  if let Ok(servers_list) = root.get_mut::<_, &mut NbtList>("servers") {
+    servers_list.push(server_entry);
+  } else {
+    let mut new_list = NbtList::new();
+    new_list.push(server_entry);
+    root.insert("servers", new_list);
+  }
+
+  let mut file = File::create(&dat_path).map_err(|e| e.to_string())?;
+
+  write_nbt(&mut file, None, &root, Flavor::Uncompressed).map_err(|e| e.to_string())?;
+
+  Ok("OK".into())
+}
+
+// [New] delete server from instance's servers.dat
+#[tauri::command]
+pub async fn delete_server_from_instance(
+  instance_path: String,
+  address: String,
+) -> Result<(), String> {
+  use quartz_nbt::io::{read_nbt, write_nbt, Flavor};
+  use quartz_nbt::{NbtCompound, NbtList, NbtTag};
+  use std::fs::File;
+  use std::path::PathBuf;
+
+  let mut dat_path = PathBuf::from(&instance_path);
+  dat_path.push("servers.dat");
+
+  if !dat_path.exists() {
+    return Ok(());
+  }
+
+  let mut file = File::open(&dat_path).map_err(|e| e.to_string())?;
+  let (mut root, _) = read_nbt(&mut file, Flavor::Uncompressed).map_err(|e| e.to_string())?;
+
+  if let Ok(servers) = root.get_mut::<_, &mut NbtList>("servers") {
+    let mut new_servers = Vec::new();
+
+    for i in 0..servers.len() {
+      let mut should_keep = true;
+      if let Ok(entry) = servers.get::<&NbtCompound>(i) {
+        if let Ok(ip) = entry.get::<_, &str>("ip") {
+          if ip == address {
+            should_keep = false;
+          }
+        }
+      }
+
+      if should_keep {
+        // clone new entry
+        new_servers.push(servers[i].clone());
+      }
+    }
+    *servers = NbtList::from(new_servers);
+  }
+
+  let mut file = File::create(&dat_path).map_err(|e| e.to_string())?;
+  write_nbt(&mut file, None, &root, Flavor::Uncompressed).map_err(|e| e.to_string())?;
+
+  Ok(())
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PingResult {
+  pub motd: String,
+  pub version: String,
+  pub players: u32,
+  pub max_players: u32,
+  pub favicon: String,
+}
+
+#[tauri::command]
+pub async fn ping_server(address: String) -> Result<PingResult, String> {
+  let server_infos = vec![GameServerInfo {
+    name: "Preview".to_string(),
+    ip: address.clone(),
+    icon_src: String::new(),
+    hidden: false,
+    description: String::new(),
+    is_queried: false,
+    online: false,
+    players_max: 0,
+    players_online: 0,
+  }];
+
+  match query_servers_online(server_infos).await {
+    Ok(results) => {
+      if let Some(res) = results.first() {
+        Ok(PingResult {
+          // 映射结果
+          motd: res.description.clone(),
+          version: "Unknown".to_string(),
+          players: res.players_online as u32,
+          max_players: res.players_max as u32,
+          favicon: res.icon_src.clone(),
+        })
+      } else {
+        Err("服务器未响应".to_string())
+      }
+    }
+    Err(e) => Err(format!("查询失败: {:?}", e)),
+  }
 }
