@@ -1338,6 +1338,13 @@
         "online": "在线",
         "offline": "离线"
       },
+      "delete": "删除此服务器",
+      "deleteConfirm": {
+        "title": "删除服务器",
+        "message": "确定要删除此服务器吗？"
+      },
+      "deleteSuccess": "服务器删除成功",
+      "deleteError": "服务器删除失败",
       "launch": "游玩此服务器"
     }
   },

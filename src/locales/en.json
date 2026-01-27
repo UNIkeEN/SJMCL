@@ -1338,6 +1338,13 @@
         "online": "Online",
         "offline": "Offline"
       },
+      "delete": "Delete this Server",
+      "deleteConfirm": {
+        "title": "Delete Server",
+        "message": "Are you sure you want to delete this server?"
+      },
+      "deleteSuccess": "Server deleted successfully",
+      "deleteError": "Failed to delete server",
       "launch": "Play this Server"
     }
   },

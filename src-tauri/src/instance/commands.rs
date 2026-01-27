@@ -53,10 +53,12 @@ use crate::utils::fs::{
 use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
 use quartz_nbt::io::Flavor;
+use quartz_nbt::io::{read_nbt, write_nbt};
 use quartz_nbt::{NbtCompound, NbtList, NbtTag};
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
 use std::fs;
+use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
@@ -435,6 +437,30 @@ pub async fn retrieve_game_server_list(
   }
 
   Ok(game_servers)
+}
+
+#[tauri::command]
+pub async fn delete_game_server(
+  app: AppHandle,
+  instance_id: String,
+  server_ip: String,
+) -> SJMCLResult<()> {
+  let game_root_dir =
+    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
+      Some(path) => path,
+      None => return Err(InstanceError::InstanceNotFoundByID.into()),
+    };
+
+  let servers_dat_path = game_root_dir.join("servers.dat");
+
+  let mut existing_servers = load_servers_info_from_path(&servers_dat_path).await?;
+
+  let original_len = existing_servers.len();
+  existing_servers.retain(|server| server.ip != server_ip);
+
+  save_servers_to_nbt(&servers_dat_path, &existing_servers).await?;
+
+  Ok(())
 }
 
 #[tauri::command]
