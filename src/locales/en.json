@@ -1784,6 +1784,10 @@
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "Restore Instance Settings",
+    "body": "This action will restore the following settings of this instance to the global game settings. Are you sure you want to proceed?"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
   },
