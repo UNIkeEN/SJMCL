@@ -273,6 +273,42 @@ export class InstanceService {
   }
 
   /**
+   * ADD a game server to the instance's servers.dat.
+   * @param {string} instanceId - The ID of the instance.
+   * @param {string} serverAddress - The server address to add.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async addGameServer(
+    instanceId: string,
+    serverUrl: string,
+    serverName: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_game_server", {
+      instanceId,
+      serverUrl,
+      serverName,
+    });
+  }
+
+  /**
+   * DELETE a game server from the instance's servers.dat.
+   * @param {string} instanceId - The ID of the instance.
+   * @param {string} serverIp - The server IP to delete.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async deleteGameServer(
+    instanceId: string,
+    serverIp: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("delete_game_server", {
+      instanceId,
+      serverIp,
+    });
+  }
+
+  /**
    * RETRIEVE the list of resource packs.
    * @param {string} instanceId - The instance ID to retrieve the resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}

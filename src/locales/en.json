@@ -1298,6 +1298,20 @@
     }
   },
   "InstanceWorldsPage": {
+    "addServerModal": {
+      "header": {
+        "title": "Add Game Server"
+      },
+      "serverAddressRequired": "Server address is required",
+      "label": {
+        "serverAddress": "Server Address",
+        "serverName": "Server Name"
+      },
+      "placeholder": {
+        "serverAddress": "Enter server address",
+        "serverName": "Enter server name"
+      }
+    },
     "worldList": {
       "title": "Worlds",
       "lastPlayedAt": "Last played",
@@ -1325,6 +1339,11 @@
       "tag": {
         "online": "Online",
         "offline": "Offline"
+      },
+      "delete": "Delete this Server",
+      "deleteConfirm": {
+        "title": "Delete Server",
+        "message": "Are you sure you want to delete this server?"
       },
       "launch": "Play this Server"
     }
@@ -2345,6 +2364,28 @@
       "retrieveServerResourcePackList": {
         "error": {
           "title": "Failed to retrieve resource pack list from servers"
+        }
+      },
+      "addGameServer": {
+        "success": "Game server added successfully",
+        "error": {
+          "title": "Failed to add game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "DUPLICATE_SERVER": "Server already exists"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Game server deleted successfully",
+        "error": {
+          "title": "Failed to delete game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
+          }
         }
       },
       "retrieveSchematicList": {

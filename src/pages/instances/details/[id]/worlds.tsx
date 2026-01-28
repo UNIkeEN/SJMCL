@@ -1,7 +1,19 @@
 import {
+  Button,
   Center,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   HStack,
   Image,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Tag,
   TagLabel,
   Text,
@@ -32,6 +44,69 @@ import { InstanceService } from "@/services/instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
+function AddGameServerModal(props: any) {
+  const [isServerUrlTouched, setIsServerUrlTouched] = useState(false);
+  const isServerUrlInvalid = isServerUrlTouched && !props.serverAddress;
+  const { t } = useTranslation();
+  return (
+    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
+          {t("InstanceWorldsPage.addServerModal.header.title")}
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <FormControl isInvalid={isServerUrlInvalid} isRequired>
+            <FormLabel>
+              {t("InstanceWorldsPage.addServerModal.label.serverAddress")}
+            </FormLabel>
+            <Input
+              placeholder={t(
+                "InstanceWorldsPage.addServerModal.placeholder.serverAddress"
+              )}
+              value={props.serverAddress}
+              onChange={props.onAddressChange}
+              onBlur={() => setIsServerUrlTouched(true)}
+              autoFocus
+            />
+            {isServerUrlInvalid && (
+              <FormErrorMessage>
+                {t("InstanceWorldsPage.addServerModal.serverAddressRequired")}
+              </FormErrorMessage>
+            )}
+          </FormControl>
+          <FormControl isRequired mb={4}>
+            <FormLabel>
+              {t("InstanceWorldsPage.addServerModal.label.serverName")}
+            </FormLabel>
+            <Input
+              placeholder={t(
+                "InstanceWorldsPage.addServerModal.placeholder.serverName"
+              )}
+              value={props.serverName}
+              onChange={props.onNameChange}
+            />
+          </FormControl>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="ghost" onClick={props.onClose}>
+            {t("General.cancel")}
+          </Button>
+          <Button
+            colorScheme="blue"
+            onClick={props.handleAddGameServer}
+            isLoading={props.isAddingServer}
+            isDisabled={!props.serverName.trim() || !props.serverAddress.trim()}
+          >
+            {t("General.finish")}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
@@ -45,11 +120,22 @@ const InstanceWorldsPage = () => {
   } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
+  const {
+    isOpen: isAddServerModalOpen,
+    onOpen: onAddServerModalOpen,
+    onClose: onAddServerModalClose,
+  } = useDisclosure();
 
+  const [serverName, setServerName] = useState("");
+  const [serverAddress, setServerAddress] = useState("");
+  const [isAddingServer, setIsAddingServer] = useState(false);
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [selectedWorldName, setSelectedWorldName] = useState<string>();
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
+  const [serverToDelete, setServerToDelete] = useState<GameServerInfo | null>(
+    null
+  );
 
   const {
     isOpen: isWorldLevelDataModalOpen,
@@ -98,13 +184,34 @@ const InstanceWorldsPage = () => {
     handleRetrieveGameServerList(false);
     handleRetrieveGameServerList(true);
 
-    // refresh every minute to query server info
     const intervalId = setInterval(async () => {
       handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
   }, [instanceId, handleRetrieveGameServerList]);
 
+  const handleDeleteServer = useCallback(() => {
+    if (!serverToDelete || !instanceId) return;
+
+    InstanceService.deleteGameServer(instanceId, serverToDelete.ip).then(
+      (response) => {
+        if (response.status === "success") {
+          toast({
+            title: response.message,
+            status: "success",
+          });
+          handleRetrieveGameServerList(false);
+          handleRetrieveGameServerList(true);
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        }
+      }
+    );
+  }, [serverToDelete, instanceId, toast, handleRetrieveGameServerList]);
   const worldSecMenuOperations = [
     {
       icon: "openFolder",
@@ -137,6 +244,23 @@ const InstanceWorldsPage = () => {
       onClick: () => {
         getWorldListWrapper(true);
         setSelectedWorldName("");
+      },
+    },
+  ];
+  const serverSecMenuOperations = [
+    {
+      icon: "add",
+      onClick: () => {
+        setServerName("");
+        setServerAddress("");
+        onAddServerModalOpen();
+      },
+    },
+    {
+      icon: "refresh",
+      onClick: () => {
+        handleRetrieveGameServerList(false);
+        handleRetrieveGameServerList(true);
       },
     },
   ];
@@ -180,7 +304,43 @@ const InstanceWorldsPage = () => {
         ]
       : []),
   ];
-
+  const handleAddGameServer = useCallback(async () => {
+    if (!serverName.trim() || !serverAddress.trim() || !instanceId) return;
+    setIsAddingServer(true);
+    try {
+      const response = await InstanceService.addGameServer(
+        instanceId,
+        serverAddress.trim(),
+        serverName.trim()
+      );
+      if (response.status === "success") {
+        toast({
+          title: response.message,
+          status: "success",
+        });
+        onAddServerModalClose();
+        setServerName("");
+        setServerAddress("");
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    } finally {
+      setIsAddingServer(false);
+      handleRetrieveGameServerList(false);
+      handleRetrieveGameServerList(true);
+    }
+  }, [
+    instanceId,
+    serverName,
+    serverAddress,
+    toast,
+    onAddServerModalClose,
+    handleRetrieveGameServerList,
+  ]);
   return (
     <>
       <Section
@@ -286,16 +446,18 @@ const InstanceWorldsPage = () => {
           );
         }}
         headExtra={
-          <CommonIconButton
-            icon="refresh"
-            onClick={() => {
-              handleRetrieveGameServerList(false);
-              handleRetrieveGameServerList(true);
-            }}
-            size="xs"
-            fontSize="sm"
-            h={21}
-          />
+          <HStack spacing={2}>
+            {serverSecMenuOperations.map((btn, index) => (
+              <CommonIconButton
+                key={index}
+                icon={btn.icon}
+                onClick={btn.onClick}
+                size="xs"
+                fontSize="sm"
+                h={21}
+              />
+            ))}
+          </HStack>
         }
       >
         {gameServers.length > 0 ? (
@@ -345,6 +507,29 @@ const InstanceWorldsPage = () => {
                       </Tag>
                     ))}
                   <CommonIconButton
+                    icon="delete"
+                    label={t("InstanceWorldsPage.serverList.delete")}
+                    color="red"
+                    onClick={() => {
+                      openGenericConfirmDialog({
+                        title: t(
+                          "InstanceWorldsPage.serverList.deleteConfirm.title"
+                        ),
+                        body: t(
+                          "InstanceWorldsPage.serverList.deleteConfirm.message"
+                        ),
+                        btnOK: t("General.delete"),
+                        isAlert: true,
+                        onOKCallback: () => {
+                          setServerToDelete(server);
+                          handleDeleteServer();
+                        },
+                        showSuppressBtn: true,
+                        suppressKey: "deleteServerAlert",
+                      });
+                    }}
+                  />
+                  <CommonIconButton
                     icon="launch"
                     label={t("InstanceWorldsPage.serverList.launch")}
                     onClick={() => {
@@ -362,6 +547,16 @@ const InstanceWorldsPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
+      <AddGameServerModal
+        isOpen={isAddServerModalOpen}
+        onClose={onAddServerModalClose}
+        serverName={serverName}
+        onNameChange={(e: any) => setServerName(e.target.value)}
+        serverAddress={serverAddress}
+        onAddressChange={(e: any) => setServerAddress(e.target.value)}
+        isAddingServer={isAddingServer}
+        handleAddGameServer={handleAddGameServer}
+      />
     </>
   );
 };

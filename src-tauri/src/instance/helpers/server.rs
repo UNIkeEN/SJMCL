@@ -1,8 +1,11 @@
 use crate::error::SJMCLResult;
 use mc_server_status::{McClient, McError, ServerData, ServerEdition, ServerInfo, ServerStatus};
 use quartz_nbt::io::Flavor;
+use quartz_nbt::io::{read_nbt, write_nbt};
+use quartz_nbt::{NbtCompound, NbtList, NbtTag};
 use serde::{self, Deserialize, Serialize};
 use std::path::Path;
+use std::path::PathBuf;
 use std::time::Duration;
 use tauri::async_runtime;
 
@@ -113,4 +116,27 @@ pub async fn query_servers_online(
   }
 
   Ok(servers)
+}
+
+pub async fn save_servers_to_nbt(path: &PathBuf, servers: &[GameServerInfo]) -> SJMCLResult<()> {
+  let mut root_compound = NbtCompound::new();
+  let mut servers_list = NbtList::new();
+
+  for server in servers {
+    let mut server_compound = NbtCompound::new();
+    server_compound.insert("ip", server.ip.clone());
+    server_compound.insert("name", server.name.clone());
+    if !server.icon_src.is_empty() {
+      server_compound.insert("icon", server.icon_src.clone());
+    }
+    server_compound.insert("hidden", if server.hidden { 1i8 } else { 0i8 });
+    servers_list.push(NbtTag::Compound(server_compound));
+  }
+  root_compound.insert("servers", NbtTag::List(servers_list));
+  let mut bytes = Vec::new();
+  quartz_nbt::io::write_nbt(&mut bytes, None, &root_compound, Flavor::Uncompressed)?;
+
+  tokio::fs::write(path, bytes).await?;
+
+  Ok(())
 }
