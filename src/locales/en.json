@@ -1301,6 +1301,7 @@
       "header": {
         "title": "Add Game Server"
       },
+      "serverAddressRequired": "Server address is required",
       "label": {
         "serverAddress": "Server Address",
         "serverName": "Server Name"
@@ -1343,8 +1344,6 @@
         "title": "Delete Server",
         "message": "Are you sure you want to delete this server?"
       },
-      "deleteSuccess": "Server deleted successfully",
-      "deleteError": "Failed to delete server",
       "launch": "Play this Server"
     }
   },
@@ -2374,6 +2373,17 @@
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "FILE_OPERATION_ERROR": "Failed to write server info",
             "DUPLICATE_SERVER": "Server already exists"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Game server deleted successfully",
+        "error": {
+          "title": "Failed to delete game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
           }
         }
       },

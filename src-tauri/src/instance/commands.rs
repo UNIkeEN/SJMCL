@@ -24,7 +24,7 @@ use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
 use crate::instance::helpers::server::{
-  load_servers_info_from_path, query_servers_online, GameServerInfo,
+  load_servers_info_from_path, query_servers_online, save_servers_to_nbt, GameServerInfo,
 };
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
@@ -450,12 +450,8 @@ pub async fn delete_game_server(
       Some(path) => path,
       None => return Err(InstanceError::InstanceNotFoundByID.into()),
     };
-
   let servers_dat_path = game_root_dir.join("servers.dat");
-
   let mut existing_servers = load_servers_info_from_path(&servers_dat_path).await?;
-
-  let original_len = existing_servers.len();
   existing_servers.retain(|server| server.ip != server_ip);
 
   save_servers_to_nbt(&servers_dat_path, &existing_servers).await?;
@@ -499,37 +495,6 @@ pub async fn add_game_server(
   };
   existing_servers.push(new_server.clone());
   save_servers_to_nbt(&servers_dat_path, &existing_servers).await?;
-
-  Ok(())
-}
-
-async fn save_servers_to_nbt(path: &PathBuf, servers: &[GameServerInfo]) -> SJMCLResult<()> {
-  let mut root_compound = NbtCompound::new();
-  let mut servers_list = NbtList::new();
-
-  for server in servers {
-    let mut server_compound = NbtCompound::new();
-    server_compound.insert("ip", server.ip.clone());
-    server_compound.insert("name", server.name.clone());
-    if !server.icon_src.is_empty() {
-      server_compound.insert("icon", server.icon_src.clone());
-    }
-    server_compound.insert("hidden", if server.hidden { 1i8 } else { 0i8 });
-    servers_list.push(NbtTag::Compound(server_compound));
-  }
-  root_compound.insert("servers", NbtTag::List(servers_list));
-  let mut bytes = Vec::new();
-  quartz_nbt::io::write_nbt(&mut bytes, None, &root_compound, Flavor::Uncompressed).map_err(
-    |e| {
-      log::error!("Failed to write NBT: {}", e);
-      InstanceError::FileOperationError
-    },
-  )?;
-
-  tokio::fs::write(path, bytes).await.map_err(|e| {
-    log::error!("Failed to write file: {}", e);
-    InstanceError::FileOperationError
-  })?;
 
   Ok(())
 }

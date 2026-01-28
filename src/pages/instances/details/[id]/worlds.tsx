@@ -1,13 +1,8 @@
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Button,
   Center,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   Image,
@@ -26,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { openPath } from "@tauri-apps/plugin-opener";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -49,48 +44,68 @@ import { InstanceService } from "@/services/instance";
 import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
-const DeleteServerDialog: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  server: GameServerInfo | null;
-  onConfirm: () => void;
-}> = ({ isOpen, onClose, server, onConfirm }) => {
-  const cancelRef = useRef<HTMLButtonElement>(null);
+function AddGameServerModal(props: any) {
+  const [isServerUrlTouched, setIsServerUrlTouched] = useState(false);
+  const isServerUrlInvalid = isServerUrlTouched && !props.serverAddress;
   const { t } = useTranslation();
-
   return (
-    <AlertDialog
-      isOpen={isOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={onClose}
-    >
-      <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {t("InstanceWorldsPage.serverList.deleteConfirm.title")}
-          </AlertDialogHeader>
-
-          <AlertDialogBody>
-            {server &&
-              t("InstanceWorldsPage.serverList.deleteConfirm.message", {
-                name: server.name,
-                ip: server.ip,
-              })}
-          </AlertDialogBody>
-
-          <AlertDialogFooter>
-            <Button variant="ghost" onClick={onClose}>
-              {t("General.cancel")}
-            </Button>
-            <Button colorScheme="red" onClick={onConfirm} ml={3}>
-              {t("General.confirm")}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
-    </AlertDialog>
+    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
+          {t("InstanceWorldsPage.addServerModal.header.title")}
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <FormControl isInvalid={isServerUrlInvalid} isRequired>
+            <FormLabel>
+              {t("InstanceWorldsPage.addServerModal.label.serverAddress")}
+            </FormLabel>
+            <Input
+              placeholder={t(
+                "InstanceWorldsPage.addServerModal.placeholder.serverAddress"
+              )}
+              value={props.serverAddress}
+              onChange={props.onAddressChange}
+              onBlur={() => setIsServerUrlTouched(true)}
+              autoFocus
+            />
+            {isServerUrlInvalid && (
+              <FormErrorMessage>
+                {t("InstanceWorldsPage.addServerModal.serverAddressRequired")}
+              </FormErrorMessage>
+            )}
+          </FormControl>
+          <FormControl isRequired mb={4}>
+            <FormLabel>
+              {t("InstanceWorldsPage.addServerModal.label.serverName")}
+            </FormLabel>
+            <Input
+              placeholder={t(
+                "InstanceWorldsPage.addServerModal.placeholder.serverName"
+              )}
+              value={props.serverName}
+              onChange={props.onNameChange}
+            />
+          </FormControl>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="ghost" onClick={props.onClose}>
+            {t("General.cancel")}
+          </Button>
+          <Button
+            colorScheme="blue"
+            onClick={props.handleAddGameServer}
+            isLoading={props.isAddingServer}
+            isDisabled={!props.serverName.trim() || !props.serverAddress.trim()}
+          >
+            {t("General.finish")}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
-};
+}
 
 const InstanceWorldsPage = () => {
   const { t } = useTranslation();
@@ -105,17 +120,11 @@ const InstanceWorldsPage = () => {
   } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const {
     isOpen: isAddServerModalOpen,
     onOpen: onAddServerModalOpen,
     onClose: onAddServerModalClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isDeleteDialogOpen,
-    onOpen: onDeleteDialogOpen,
-    onClose: onDeleteDialogClose,
   } = useDisclosure();
 
   const [serverName, setServerName] = useState("");
@@ -181,47 +190,28 @@ const InstanceWorldsPage = () => {
     return () => clearInterval(intervalId);
   }, [instanceId, handleRetrieveGameServerList]);
 
-  const handleDeleteServer = useCallback(async () => {
+  const handleDeleteServer = useCallback(() => {
     if (!serverToDelete || !instanceId) return;
 
-    try {
-      const response = await InstanceService.deleteGameServer(
-        instanceId,
-        serverToDelete.ip
-      );
-
-      if (response.status === "success") {
-        toast({
-          title: t("InstanceWorldsPage.serverList.deleteSuccess"),
-          status: "success",
-        });
-        handleRetrieveGameServerList(false);
-        handleRetrieveGameServerList(true);
-      } else {
-        toast({
-          title: response.message,
-          description: response.details,
-          status: "error",
-        });
+    InstanceService.deleteGameServer(instanceId, serverToDelete.ip).then(
+      (response) => {
+        if (response.status === "success") {
+          toast({
+            title: response.message,
+            status: "success",
+          });
+          handleRetrieveGameServerList(false);
+          handleRetrieveGameServerList(true);
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        }
       }
-    } catch (error) {
-      toast({
-        title: t("InstanceWorldsPage.serverList.deleteError"),
-        status: "error",
-      });
-    } finally {
-      setServerToDelete(null);
-      onDeleteDialogClose();
-    }
-  }, [
-    instanceId,
-    serverToDelete,
-    toast,
-    t,
-    onDeleteDialogClose,
-    handleRetrieveGameServerList,
-  ]);
-
+    );
+  }, [serverToDelete, instanceId, toast, handleRetrieveGameServerList]);
   const worldSecMenuOperations = [
     {
       icon: "openFolder",
@@ -316,7 +306,6 @@ const InstanceWorldsPage = () => {
   ];
   const handleAddGameServer = useCallback(async () => {
     if (!serverName.trim() || !serverAddress.trim() || !instanceId) return;
-
     setIsAddingServer(true);
     try {
       const response = await InstanceService.addGameServer(
@@ -332,8 +321,6 @@ const InstanceWorldsPage = () => {
         onAddServerModalClose();
         setServerName("");
         setServerAddress("");
-        handleRetrieveGameServerList(false);
-        handleRetrieveGameServerList(true);
       } else {
         toast({
           title: response.message,
@@ -343,6 +330,8 @@ const InstanceWorldsPage = () => {
       }
     } finally {
       setIsAddingServer(false);
+      handleRetrieveGameServerList(false);
+      handleRetrieveGameServerList(true);
     }
   }, [
     instanceId,
@@ -522,8 +511,22 @@ const InstanceWorldsPage = () => {
                     label={t("InstanceWorldsPage.serverList.delete")}
                     color="red"
                     onClick={() => {
-                      setServerToDelete(server);
-                      onDeleteDialogOpen();
+                      openGenericConfirmDialog({
+                        title: t(
+                          "InstanceWorldsPage.serverList.deleteConfirm.title"
+                        ),
+                        body: t(
+                          "InstanceWorldsPage.serverList.deleteConfirm.message"
+                        ),
+                        btnOK: t("General.delete"),
+                        isAlert: true,
+                        onOKCallback: () => {
+                          setServerToDelete(server);
+                          handleDeleteServer();
+                        },
+                        showSuppressBtn: true,
+                        suppressKey: "deleteServerAlert",
+                      });
                     }}
                   />
                   <CommonIconButton
@@ -544,64 +547,15 @@ const InstanceWorldsPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
-      <Modal isOpen={isAddServerModalOpen} onClose={onAddServerModalClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            {t("InstanceWorldsPage.addServerModal.header.title")}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl isRequired mb={4}>
-              <FormLabel>
-                {t("InstanceWorldsPage.addServerModal.label.serverName")}
-              </FormLabel>
-              <Input
-                placeholder={t(
-                  "InstanceWorldsPage.addServerModal.placeholder.serverName"
-                )}
-                value={serverName}
-                onChange={(e) => setServerName(e.target.value)}
-                autoFocus
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>
-                {t("InstanceWorldsPage.addServerModal.label.serverAddress")}
-              </FormLabel>
-              <Input
-                placeholder={t(
-                  "InstanceWorldsPage.addServerModal.placeholder.serverAddress"
-                )}
-                value={serverAddress}
-                onChange={(e) => setServerAddress(e.target.value)}
-              />
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" onClick={onAddServerModalClose}>
-              {t("General.cancel")}
-            </Button>
-            <Button
-              colorScheme="blue"
-              onClick={handleAddGameServer}
-              isLoading={isAddingServer}
-              isDisabled={!serverName.trim() || !serverAddress.trim()}
-            >
-              {t("General.finish")}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      <DeleteServerDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => {
-          setServerToDelete(null);
-          onDeleteDialogClose();
-        }}
-        server={serverToDelete}
-        onConfirm={handleDeleteServer}
+      <AddGameServerModal
+        isOpen={isAddServerModalOpen}
+        onClose={onAddServerModalClose}
+        serverName={serverName}
+        onNameChange={(e: any) => setServerName(e.target.value)}
+        serverAddress={serverAddress}
+        onAddressChange={(e: any) => setServerAddress(e.target.value)}
+        isAddingServer={isAddingServer}
+        handleAddGameServer={handleAddGameServer}
       />
     </>
   );

@@ -1301,6 +1301,7 @@
       "header": {
         "title": "添加游戏服务器"
       },
+      "serverAddressRequired": "服务器地址不能为空",
       "label": {
         "serverAddress": "服务器地址",
         "serverName": "服务器名称"
@@ -1343,8 +1344,6 @@
         "title": "删除服务器",
         "message": "确定要删除此服务器吗？"
       },
-      "deleteSuccess": "服务器删除成功",
-      "deleteError": "服务器删除失败",
       "launch": "游玩此服务器"
     }
   },
@@ -2238,6 +2237,17 @@
             "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
             "FILE_OPERATION_ERROR": "写入服务器信息失败",
             "DUPLICATE_SERVER": "服务器已存在"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "游戏服务器删除成功",
+        "error": {
+          "title": "删除游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "SERVER_NOT_FOUND": "服务器不存在"
           }
         }
       },
