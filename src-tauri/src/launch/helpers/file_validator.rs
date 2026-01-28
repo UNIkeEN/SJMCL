@@ -257,6 +257,8 @@ pub fn get_nonnative_library_paths(
 pub fn get_native_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
+  use_native_glfw: bool,
+  use_native_openal: bool,
 ) -> SJMCLResult<Vec<PathBuf>> {
   let mut result = Vec::new();
   let feature = FeaturesInfo::default();
@@ -267,6 +269,15 @@ pub fn get_native_library_paths(
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
         let path = convert_library_name_to_path(&library.name, Some(native))?;
+        #[cfg(target_os = "linux")]
+        {
+          if use_native_glfw && library.name.to_lowercase().contains("glfw") {
+            continue;
+          }
+          if use_native_openal && library.name.to_lowercase().contains("openal") {
+            continue;
+          }
+        }
         result.push(library_path.join(path));
       } else {
         println!("natives is None");
@@ -280,11 +291,18 @@ pub async fn extract_native_libraries(
   client_info: &McClientInfo,
   library_path: &Path,
   natives_dir: &PathBuf,
+  use_native_glfw: bool,
+  use_native_openal: bool,
 ) -> SJMCLResult<()> {
   if !natives_dir.exists() {
     fs::create_dir(natives_dir).await?;
   }
-  let native_libraries = get_native_library_paths(client_info, library_path)?;
+  let native_libraries = get_native_library_paths(
+    client_info,
+    library_path,
+    use_native_glfw,
+    use_native_openal,
+  )?;
   let tasks: Vec<tokio::task::JoinHandle<SJMCLResult<()>>> = native_libraries
     .into_iter()
     .map(|library_path| {
