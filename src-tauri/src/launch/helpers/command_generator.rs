@@ -237,14 +237,6 @@ pub async fn generate_launch_command(
     }
   }
 
-  #[cfg(target_os = "linux")]
-  {
-    if game_config.advanced.workaround.use_native_openal {
-      cmd.push("-XX:+UnlockExperimentalVMOptions".to_string());
-      cmd.push("-Dorg.lwjgl.openal.libname=/usr/lib/libopenal.so".to_string());
-    }
-  }
-
   let encoding = "UTF-8"; // TODO: get from system
   cmd.push(format!("-Dfile.encoding={}", encoding));
   if selected_java.major_version < 19 {
