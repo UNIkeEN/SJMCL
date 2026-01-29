@@ -6,7 +6,7 @@ use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
-use crate::launch::helpers::misc::{get_separator, replace_arguments};
+use crate::launch::helpers::misc::{check_virtual_assets, get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::sys_info::get_memory_info;
@@ -23,6 +23,7 @@ use tauri::{AppHandle, Manager};
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchArguments {
   // basic game params
+  pub game_assets: String,
   pub assets_root: String,
   pub assets_index_name: String,
   pub game_directory: String,
@@ -167,8 +168,12 @@ pub async fn generate_launch_command(
   };
 
   let arguments_value = LaunchArguments {
+    game_assets: assets_dir
+      .join("virtual/legacy")
+      .to_string_lossy()
+      .to_string(),
     assets_root: assets_dir.to_string_lossy().to_string(),
-    assets_index_name: client_info.asset_index.id,
+    assets_index_name: client_info.asset_index.id.clone(),
     game_directory: root_dir.to_string_lossy().to_string(),
 
     version_name: selected_instance.name.clone(),
@@ -352,6 +357,8 @@ pub async fn generate_launch_command(
       .ok_or(InstanceError::MainClassNotFound)?
       .clone(),
   );
+
+  check_virtual_assets(root_dir, assets_dir, &client_info.asset_index.id).await?;
 
   if let Some(client_args) = &client_info.arguments {
     let client_game_args = client_args.to_game_arguments(&launch_feature)?;
