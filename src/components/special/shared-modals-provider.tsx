@@ -5,6 +5,7 @@ import CopyOrMoveModal from "@/components/modals/copy-or-move-modal";
 import DeleteInstanceDialog from "@/components/modals/delete-instance-alert-dialog";
 import DownloadModpackModal from "@/components/modals/download-modpack-modal";
 import DownloadResourceModal from "@/components/modals/download-resource-modal";
+import ExportModpackModal from "@/components/modals/export-modpack-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import ImportModpackModal from "@/components/modals/import-modpack-modal";
 import LaunchProcessModal from "@/components/modals/launch-process-modal";
@@ -37,6 +38,7 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
     "download-modpack": DownloadModpackModal,
     "download-resource": DownloadResourceModal,
     "download-specific-resource": DownloadSpecificResourceModal,
+    "export-modpack": ExportModpackModal,
     "generic-confirm": GenericConfirmDialog,
     "import-modpack": ImportModpackModal,
     launch: LaunchProcessModal,

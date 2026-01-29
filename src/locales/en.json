@@ -907,6 +907,7 @@
     "notice": "Notice",
     "open": "Open",
     "openFolder": "Open Folder",
+    "optional": "Optional",
     "previous": "Previous",
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
@@ -1202,6 +1203,43 @@
     },
     "button": {
       "launch": "Launch Instance"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "Export Modpack"
+    },
+    "label": {
+      "exportFormat": "Export Format",
+      "basicInfo": "Basic Information",
+      "modpackName": "Modpack Name",
+      "modpackVersion": "Modpack Version",
+      "author": "Author",
+      "description": "Description",
+      "includedFiles": "Included Files",
+      "exportOptions": "Export Options",
+      "packWithLauncher": "Pack With Launcher",
+      "minMemory": "Minimum Memory (MB)",
+      "noCreateRemoteFiles": "Disable Remote Files",
+      "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
+    },
+    "button": {
+      "export": "Export"
+    },
+    "error": {
+      "title": "Export Failed",
+      "invalidName": "Please enter a valid modpack name",
+      "invalidVersion": "Please enter a valid version number",
+      "noCategorySelected": "Please select at least one category to include"
+    },
+    "errorMessage": {
+      "1": "Name cannot be empty",
+      "2": "Name contains invalid characters",
+      "3": "Name is too long (max 255 characters)"
+    },
+    "success": {
+      "title": "Export Successful",
+      "description": "Modpack has been exported successfully"
     }
   },
   "InstanceIconSelector": {

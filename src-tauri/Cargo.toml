@@ -91,6 +91,8 @@ axum = "0.8.6"
 tower-http = { version = "0.6.6", features = ["cors"] }
 sha2 = "0.10.9"
 async-trait = "0.1.89"
+walkdir = "2.5.0"
+async_zip = { version = "0.0.18", features = ["tokio", "tokio-fs", "deflate"] }
 
 [target."cfg(windows)".dependencies]
 winreg = "0.55.0"

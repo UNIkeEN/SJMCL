@@ -121,6 +121,8 @@ pub async fn run() {
       instance::commands::change_mod_loader,
       instance::commands::retrieve_modpack_meta_info,
       instance::commands::add_custom_instance_icon,
+      instance::commands::list_modpack_files,
+      instance::commands::export_modpack,
       launch::commands::select_suitable_jre,
       launch::commands::validate_game_files,
       launch::commands::validate_selected_player,

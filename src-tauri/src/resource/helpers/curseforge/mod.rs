@@ -19,7 +19,6 @@ use murmur2::murmur2;
 use serde_json::json;
 use sha1::{Digest, Sha1};
 use std::collections::HashMap;
-use std::path::Path;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
@@ -148,12 +147,9 @@ pub async fn fetch_remote_resource_by_local_curseforge(
   app: &AppHandle,
   file_path: &str,
 ) -> SJMCLResult<OtherResourceFileInfo> {
-  let file_path = Path::new(file_path);
-  if !file_path.exists() {
-    return Err(ResourceError::ParseError.into());
-  }
-
-  let file_content = std::fs::read(file_path).map_err(|_| ResourceError::ParseError)?;
+  let file_content = tokio::fs::read(file_path)
+    .await
+    .map_err(|_| ResourceError::ParseError)?;
 
   // Calculate SHA1 hash of the local file for verification
   let mut hasher = Sha1::new();

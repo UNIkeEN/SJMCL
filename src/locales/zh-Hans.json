@@ -907,6 +907,7 @@
     "notice": "提示",
     "open": "打开",
     "openFolder": "打开文件夹",
+    "optional": "可选",
     "previous": "上一步",
     "refresh": "刷新",
     "revealFile": "在{{opener}}中显示",
@@ -1202,6 +1203,43 @@
     },
     "button": {
       "launch": "启动实例"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "导出整合包"
+    },
+    "label": {
+      "exportFormat": "导出格式",
+      "basicInfo": "基本信息",
+      "modpackName": "整合包名称",
+      "modpackVersion": "整合包版本",
+      "author": "作者",
+      "description": "描述",
+      "includedFiles": "包含文件",
+      "exportOptions": "导出选项",
+      "packWithLauncher": "打包启动器",
+      "minMemory": "最低内存 (MB)",
+      "noCreateRemoteFiles": "禁用远程文件",
+      "skipCurseForgeRemoteFiles": "跳过 CurseForge 远程文件"
+    },
+    "button": {
+      "export": "导出"
+    },
+    "error": {
+      "title": "导出失败",
+      "invalidName": "请输入有效的整合包名称",
+      "invalidVersion": "请输入有效的版本号",
+      "noCategorySelected": "请至少选择一个类别"
+    },
+    "errorMessage": {
+      "1": "名称不能为空",
+      "2": "名称包含无效字符",
+      "3": "名称过长（最多 255 个字符）"
+    },
+    "success": {
+      "title": "导出成功",
+      "description": "整合包已成功导出"
     }
   },
   "InstanceIconSelector": {
