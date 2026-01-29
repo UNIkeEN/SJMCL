@@ -1297,20 +1297,6 @@
     }
   },
   "InstanceWorldsPage": {
-    "addServerModal": {
-      "header": {
-        "title": "添加游戏服务器"
-      },
-      "serverAddressRequired": "服务器地址不能为空",
-      "label": {
-        "serverAddress": "服务器地址",
-        "serverName": "服务器名称"
-      },
-      "placeholder": {
-        "serverAddress": "请输入服务器地址",
-        "serverName": "请输入服务器名称"
-      }
-    },
     "worldList": {
       "title": "本地世界",
       "lastPlayedAt": "上次游玩于",
@@ -1339,10 +1325,10 @@
         "online": "在线",
         "offline": "离线"
       },
-      "delete": "删除此服务器",
-      "deleteConfirm": {
-        "title": "删除服务器",
-        "message": "确定要删除此服务器吗？"
+      "deleteGameServer": "删除此服务器",
+      "DeleteGameServerAlertDialog": {
+        "title": "删除游戏服务器",
+        "content": "确定要删除游戏服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
       },
       "launch": "游玩此服务器"
     }
@@ -2654,6 +2640,20 @@
   "WorldLevelDataModal": {
     "header": {
       "title": "世界基础数据 - {{worldName}}"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "添加游戏服务器"
+    },
+    "serverAddressRequired": "服务器地址不能为空",
+    "label": {
+      "serverAddress": "服务器地址",
+      "serverName": "服务器名称"
+    },
+    "placeholder": {
+      "serverAddress": "请输入服务器地址",
+      "serverName": "请输入服务器名称"
     }
   }
 }

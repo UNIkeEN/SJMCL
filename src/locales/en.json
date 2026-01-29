@@ -1297,20 +1297,6 @@
     }
   },
   "InstanceWorldsPage": {
-    "addServerModal": {
-      "header": {
-        "title": "Add Game Server"
-      },
-      "serverAddressRequired": "Server address is required",
-      "label": {
-        "serverAddress": "Server Address",
-        "serverName": "Server Name"
-      },
-      "placeholder": {
-        "serverAddress": "Enter server address",
-        "serverName": "Enter server name"
-      }
-    },
     "worldList": {
       "title": "Worlds",
       "lastPlayedAt": "Last played",
@@ -1339,10 +1325,10 @@
         "online": "Online",
         "offline": "Offline"
       },
-      "delete": "Delete this Server",
-      "deleteConfirm": {
-        "title": "Delete Server",
-        "message": "Are you sure you want to delete this server?"
+      "deleteGameServer": "Delete this Server",
+      "DeleteGameServerAlertDialog": {
+        "title": "Delete Game Server",
+        "content": "Confirm delete the game server \"{{name}}\" ? This will remove it from your server list."
       },
       "launch": "Play this Server"
     }
@@ -2654,6 +2640,20 @@
   "WorldLevelDataModal": {
     "header": {
       "title": "World Level Data - {{worldName}}"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Add Game Server"
+    },
+    "serverAddressRequired": "Server address is required",
+    "label": {
+      "serverAddress": "Server Address",
+      "serverName": "Server Name"
+    },
+    "placeholder": {
+      "serverAddress": "Enter server address",
+      "serverName": "Enter server name"
     }
   }
 }
