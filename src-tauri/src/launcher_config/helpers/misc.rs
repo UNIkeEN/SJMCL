@@ -180,7 +180,12 @@ pub fn get_global_game_config(app: &AppHandle) -> GameConfig {
 pub fn check_exe_path_availability(app: &AppHandle) -> bool {
   let exe_str = &*EXE_PATH.to_string_lossy();
 
-  for base in [BaseDirectory::Cache, BaseDirectory::Temp] {
+  #[cfg(windows)]
+  let bad_base_dirs = [BaseDirectory::Temp];
+  #[cfg(not(windows))]
+  let bad_base_dirs = [BaseDirectory::Cache, BaseDirectory::Temp];
+
+  for base in bad_base_dirs {
     if let Ok(base_path) = app.path().resolve::<PathBuf>("".into(), base) {
       let base_str = base_path.to_string_lossy();
       if exe_str.starts_with(&*base_str) {
