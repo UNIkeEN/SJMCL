@@ -899,6 +899,7 @@
     "download": "下載",
     "edit": "編輯",
     "enable": "啟用",
+    "exit": "退出",
     "finish": "完成",
     "import": "匯入",
     "launch": "啟動",
@@ -2566,6 +2567,12 @@
       "gameError": "哎呀！遊戲崩潰了"
     }
   },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "無效的執行路徑",
+      "content": "您正在臨時或非法目錄下執行 SJMCL，您的設定和遊戲資料可能丟失。請將 SJMCL 移動到其他位置後再次執行。"
+    }
+  },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
@@ -2606,7 +2613,6 @@
       "winArm64Notice": "SJMCL 現已支援 Windows on Arm 平臺。<br/>如您正在使用 <b>高通</b> 平臺，您可能需要安裝 <glpack>OpenGL 相容包</glpack> 後才能進行遊戲。"
     },
     "button": {
-      "exit": "退出",
       "agree": "同意並繼續"
     }
   },
