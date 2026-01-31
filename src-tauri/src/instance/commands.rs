@@ -168,8 +168,9 @@ pub async fn update_instance_config(
       }
     } else if key_path.starts_with("spec_game_config.") {
       let key = key_path.split_at("spec_game_config.".len()).1;
-      let game_config = instance.spec_game_config.as_mut().unwrap();
-      game_config.update(key, &value)?;
+      if let Some(game_config) = instance.spec_game_config.as_mut() {
+        game_config.update(key, &value)?;
+      }
     } else {
       return Err(PartialError::NotFound.into());
     }
