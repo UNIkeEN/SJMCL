@@ -82,7 +82,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                     router.push(
                       // across instances, not change subpath
                       // `${value}/${router.asPath.split("/").slice(4).join("/")}`
-                      `${value}/${router.pathname.split("/")[4]}`
+                      `${value}/${router.pathname.split("/")[4] ?? ""}`
                     );
                   } else {
                     router.push(value);
