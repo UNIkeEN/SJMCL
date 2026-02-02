@@ -371,6 +371,14 @@ pub async fn initialize_mod_db(app: &AppHandle) -> SJMCLResult<()> {
 }
 
 pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<String> {
+  let query = query
+    .trim()
+    .replace(char::is_whitespace, " ")
+    .split_whitespace()
+    .collect::<Vec<&str>>()
+    .join(" ")
+    .to_string();
+
   // Only process Chinese queries
   if !query.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
     return Ok(query.to_string());
@@ -378,12 +386,42 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
 
   let state = app.state::<Mutex<ModDataBase>>();
   let search_results = match state.lock() {
-    Ok(cache) => cache.get_mods_by_chinese(query, 5),
+    Ok(cache) => cache.get_mods_by_chinese(&query, 5),
     Err(_) => return Ok(query.to_string()),
   };
 
   if search_results.is_empty() {
     return Ok(query.to_string());
+  }
+
+  // Short-circuit: if we have a very confident match, search by its slug directly
+  let mut best_match: Option<(&MCModRecord, f64, bool)> = None;
+  for mod_record in &search_results {
+    let similarity = calculate_similarity(&mod_record.name, &query);
+    let absolute = mod_record.name == query;
+
+    if mod_record.curseforge_slug.is_none() && mod_record.modrinth_slug.is_none() {
+      continue;
+    }
+
+    match best_match {
+      Some((_, best_sim, _)) if similarity <= best_sim => {}
+      _ => {
+        best_match = Some((mod_record, similarity, absolute));
+      }
+    }
+  }
+
+  if let Some((mod_record, similarity, absolute)) = best_match {
+    if absolute || similarity >= 0.9 {
+      if let Some(subname) = mod_record
+        .subname
+        .as_ref()
+        .or_else(|| mod_record.modrinth_slug.as_ref())
+      {
+        return Ok(subname.clone());
+      }
+    }
   }
 
   // Count keyword frequency across all found mods
@@ -427,28 +465,33 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
 
   keyword_scores.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
-  // Select top keywords with high frequency (appear in >= 40% of results)
+  // Select keywords
   let min_frequency_threshold = (total_mods as f64 * 0.4).max(1.0) as usize;
+  let min_frequency_ratio = min_frequency_threshold as f64 / total_mods as f64;
   let mut final_keywords = Vec::new();
 
-  // First priority: high-frequency keywords
-  for (keyword, _score) in &keyword_scores {
-    if keyword_count.get(keyword).unwrap_or(&0) >= &min_frequency_threshold {
-      final_keywords.push(keyword.clone());
-      if final_keywords.len() >= 3 {
+  if let Some((primary_keyword, primary_score)) = keyword_scores.first().cloned() {
+    // Always keep the best one to anchor the query
+    final_keywords.push(primary_keyword.clone());
+
+    // Look for a second keyword, but only if it is reliable enough
+    for (keyword, score) in keyword_scores.iter().skip(1) {
+      if final_keywords.len() >= 2 {
         break;
       }
-    }
-  }
 
-  // Second priority: top-scored keywords if we need more
-  if final_keywords.len() < 3 {
-    for (keyword, _score) in &keyword_scores {
-      if !final_keywords.contains(keyword) {
+      let freq_ratio = *keyword_count.get(keyword).unwrap_or(&0) as f64 / total_mods as f64;
+
+      if freq_ratio < min_frequency_ratio {
+        continue;
+      }
+
+      let score_ratio = *score / primary_score.max(1e-6);
+      let is_long = keyword.len() > 12;
+      let required_ratio = if is_long { 0.7 } else { 0.5 };
+
+      if score_ratio >= required_ratio {
         final_keywords.push(keyword.clone());
-        if final_keywords.len() >= 5 {
-          break;
-        }
       }
     }
   }
