@@ -2252,7 +2252,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "例項遊戲設定已重置",
         "error": {
           "title": "例項遊戲設定重置失敗",

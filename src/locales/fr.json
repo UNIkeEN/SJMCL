@@ -2214,7 +2214,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "Paramètres du jeu de l'instance réinitialisés",
         "error": {
           "title": "Échec de la réinitialisation des paramètres du jeu de l'instance",

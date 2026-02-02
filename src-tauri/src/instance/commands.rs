@@ -195,7 +195,7 @@ pub fn retrieve_instance_game_config(
 }
 
 #[tauri::command]
-pub async fn reset_instance_game_config(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+pub async fn restore_instance_game_config(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
   let instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let mut state = binding.lock().unwrap();

@@ -21,6 +21,7 @@ import GameSettingsGroups from "@/components/game-settings-groups";
 import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
 import { getInstanceIconSrc } from "@/utils/instance";
@@ -32,6 +33,7 @@ const InstanceSettingsPage = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const { openGenericConfirmDialog } = useSharedModals();
 
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
@@ -41,7 +43,7 @@ const InstanceSettingsPage = () => {
     updateSummaryInContext,
     gameConfig: instanceGameConfig,
     handleUpdateInstanceConfig,
-    handleResetInstanceGameConfig,
+    handleRestoreInstanceGameConfig,
   } = useInstanceSharedData();
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
 
@@ -151,7 +153,14 @@ const InstanceSettingsPage = () => {
                     variant="subtle"
                     size="xs"
                     onClick={() => {
-                      handleResetInstanceGameConfig();
+                      openGenericConfirmDialog({
+                        title: t("RestoreInstanceConfigConfirmDialog.title"),
+                        body: t("RestoreInstanceConfigConfirmDialog.body"),
+                        isAlert: true,
+                        onOKCallback: handleRestoreInstanceGameConfig,
+                        showSuppressBtn: true,
+                        suppressKey: "restoreInstanceSpecConfig",
+                      });
                     }}
                   >
                     {t("InstanceSettingsPage.restore")}
