@@ -2257,7 +2257,7 @@
         }
       },
       "restoreInstanceGameConfig": {
-        "success": "Successfully restore instance game settings",
+        "success": "Successfully restored instance game settings",
         "error": {
           "title": "Failed to restore instance game settings",
           "description": {
