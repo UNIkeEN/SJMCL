@@ -108,7 +108,7 @@ pub async fn validate_game_files(
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (instance, mut client_info, validate_policy) = {
+  let (instance, mut client_info, workaround) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -117,12 +117,7 @@ pub async fn validate_game_files(
     (
       launching.selected_instance.clone(),
       launching.client_info.clone(),
-      launching
-        .game_config
-        .advanced
-        .workaround
-        .game_file_validate_policy
-        .clone(),
+      launching.game_config.advanced.workaround.clone(),
     )
   };
 
@@ -157,7 +152,14 @@ pub async fn validate_game_files(
   let [libraries_dir, natives_dir, assets_dir] = dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
-  extract_native_libraries(&client_info, libraries_dir, natives_dir).await?;
+  extract_native_libraries(
+    &client_info,
+    libraries_dir,
+    natives_dir,
+    workaround.use_native_glfw,
+    workaround.use_native_openal,
+  )
+  .await?;
 
   let priority_list = {
     let launcher_config = launcher_config_state.lock()?;
@@ -165,7 +167,7 @@ pub async fn validate_game_files(
   };
 
   // validate game files
-  let incomplete_files = match validate_policy {
+  let incomplete_files = match workaround.game_file_validate_policy {
     FileValidatePolicy::Disable => return Ok(()), // skip
     FileValidatePolicy::Normal => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
