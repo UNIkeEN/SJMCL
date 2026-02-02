@@ -2214,7 +2214,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "インスタンスゲーム設定をリセットした",
         "error": {
           "title": "インスタンスゲーム設定のリセットに失敗",

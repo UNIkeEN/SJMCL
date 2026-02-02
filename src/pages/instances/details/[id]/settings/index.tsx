@@ -43,7 +43,7 @@ const InstanceSettingsPage = () => {
     updateSummaryInContext,
     gameConfig: instanceGameConfig,
     handleUpdateInstanceConfig,
-    handleResetInstanceGameConfig,
+    handleRestoreInstanceGameConfig,
   } = useInstanceSharedData();
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
 
@@ -157,7 +157,9 @@ const InstanceSettingsPage = () => {
                         title: t("RestoreInstanceConfigConfirmDialog.title"),
                         body: t("RestoreInstanceConfigConfirmDialog.body"),
                         isAlert: true,
-                        onOKCallback: handleResetInstanceGameConfig,
+                        onOKCallback: handleRestoreInstanceGameConfig,
+                        showSuppressBtn: true,
+                        suppressKey: "restoreInstanceSpecConfig",
                       });
                     }}
                   >

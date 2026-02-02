@@ -1786,7 +1786,7 @@
   },
   "RestoreInstanceConfigConfirmDialog": {
     "title": "重置实例设置",
-    "body": "此操作将会重置实例的以下设置为全局游戏设置，您确定要继续吗？"
+    "body": "此操作将会重置本实例的游戏设置为当前全局游戏设置，您确定要继续吗？"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
@@ -2256,7 +2256,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "实例游戏设置已重置",
         "error": {
           "title": "实例游戏设置重置失败",

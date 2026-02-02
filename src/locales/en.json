@@ -1248,8 +1248,8 @@
     "description": "Instance Description",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
-    "restoreSettings": "Reset specific settings",
-    "restoreSettingsDesc": "Reset the following specific settings to the global game settings.",
+    "restoreSettings": "Restore specific settings",
+    "restoreSettingsDesc": "Restore the following specific settings to the global game settings.",
     "restore": "Restore",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
@@ -1786,7 +1786,7 @@
   },
   "RestoreInstanceConfigConfirmDialog": {
     "title": "Restore Instance Settings",
-    "body": "This action will restore the following settings of this instance to the global game settings. Are you sure you want to proceed?"
+    "body": "This action will restore this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
@@ -2256,10 +2256,10 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
-        "success": "Successfully reset instance game settings",
+      "restoreInstanceGameConfig": {
+        "success": "Successfully restore instance game settings",
         "error": {
-          "title": "Failed to reset instance game settings",
+          "title": "Failed to restore instance game settings",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"
