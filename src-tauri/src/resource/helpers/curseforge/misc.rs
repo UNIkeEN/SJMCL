@@ -91,6 +91,9 @@ structstruck::strike! {
       pub url: String,
     }>,
     pub date_modified: String,
+    pub authors: Vec<pub struct {
+      pub name: String,
+    }>,
   }
 }
 
@@ -247,6 +250,7 @@ impl From<CurseForgeProject> for OtherResourceInfo {
       source: OtherResourceSource::CurseForge,
       translated_name: None,
       translated_description: None,
+      author: project.authors.get(0).map(|author| author.name.clone()),
     }
   }
 }

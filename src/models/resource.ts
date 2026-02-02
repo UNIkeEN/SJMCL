@@ -26,6 +26,7 @@ export interface OtherResourceInfo {
   lastUpdated: string;
   downloads: number;
   source?: OtherResourceSource;
+  author?: string;
 }
 
 export interface OtherResourceSearchRes {

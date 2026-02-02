@@ -17,7 +17,13 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
+import {
+  LuChevronDown,
+  LuCircleUserRound,
+  LuDownload,
+  LuGlobe,
+  LuUpload,
+} from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItemProps } from "@/components/common/option-item";
@@ -201,8 +207,8 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
           {(showZhTrans && item.translatedDescription) || item.description}
         </Text>
         <Grid
-          templateColumns="repeat(3, 1fr)"
-          w={{ base: "sm", lg: "md", xl: "md" }}
+          templateColumns="repeat(4, 1fr)"
+          w={{ base: "lg", lg: "xl", xl: "xl" }}
         >
           <HStack spacing={1}>
             <LuUpload />
@@ -216,6 +222,12 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
             <HStack spacing={1}>
               <LuGlobe />
               <Text>{item.source}</Text>
+            </HStack>
+          )}
+          {item.author && (
+            <HStack spacing={1}>
+              <LuCircleUserRound />
+              <Text>{item.author}</Text>
             </HStack>
           )}
         </Grid>
