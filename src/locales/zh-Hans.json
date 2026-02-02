@@ -372,20 +372,6 @@
   "ComingSoonSign": {
     "text": "该页面暂未开放，敬请期待"
   },
-  "ContributorsPage": {
-    "all": "全部开发者名单",
-    "core": "主要开发者",
-    "contribution": {
-      "fullStackDev": "全栈开发",
-      "frontendDev": "前端开发",
-      "backendDev": "后端开发",
-      "externalAPI": "外部服务",
-      "doc": "文档",
-      "cicd": "CI / CD",
-      "design": "视觉设计",
-      "mascot": "吉祥物"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "复制或移动资源"

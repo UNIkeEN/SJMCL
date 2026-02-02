@@ -372,20 +372,6 @@
   "ComingSoonSign": {
     "text": "This page is not available yet, coming soon!"
   },
-  "ContributorsPage": {
-    "all": "All Contributors List",
-    "core": "Main Contributors",
-    "contribution": {
-      "fullStackDev": "Full Stack Dev",
-      "frontendDev": "Frontend Dev",
-      "backendDev": "Backend Dev",
-      "externalAPI": "External API",
-      "doc": "Documentation",
-      "cicd": "CI / CD",
-      "design": "Visual Design",
-      "mascot": "Team Mascot"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "Copy or Move Resource"
