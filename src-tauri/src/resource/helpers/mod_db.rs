@@ -232,12 +232,7 @@ impl ModDataBase {
       return Vec::new();
     }
 
-    let processed_query = query
-      .trim()
-      .replace(char::is_whitespace, " ")
-      .split_whitespace()
-      .collect::<Vec<&str>>()
-      .join(" ");
+    let processed_query = query.split_whitespace().collect::<Vec<&str>>().join(" ");
     if processed_query.is_empty() {
       return Vec::new();
     }
@@ -371,13 +366,7 @@ pub async fn initialize_mod_db(app: &AppHandle) -> SJMCLResult<()> {
 }
 
 pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<String> {
-  let query = query
-    .trim()
-    .replace(char::is_whitespace, " ")
-    .split_whitespace()
-    .collect::<Vec<&str>>()
-    .join(" ")
-    .to_string();
+  let query = query.split_whitespace().collect::<Vec<_>>().join(" ");
 
   // Only process Chinese queries
   if !query.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
@@ -394,15 +383,18 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
     return Ok(query.to_string());
   }
 
-  // Short-circuit: if we have a very confident match, search by its slug directly
+  // Short-circuit: if exists a very confident match, search by its name directly
   let mut best_match: Option<(&MCModRecord, f64, bool)> = None;
   for mod_record in &search_results {
-    let similarity = calculate_similarity(&mod_record.name, &query);
-    let absolute = mod_record.name == query;
-
-    if mod_record.curseforge_slug.is_none() && mod_record.modrinth_slug.is_none() {
+    if mod_record.subname.is_none()
+      && mod_record.curseforge_slug.is_none()
+      && mod_record.modrinth_slug.is_none()
+    {
       continue;
     }
+
+    let similarity = calculate_similarity(&mod_record.name, &query);
+    let absolute = mod_record.name.replace(" ", "") == query.replace(" ", "");
 
     match best_match {
       Some((_, best_sim, _)) if similarity <= best_sim => {}
@@ -414,12 +406,13 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
 
   if let Some((mod_record, similarity, absolute)) = best_match {
     if absolute || similarity >= 0.9 {
-      if let Some(subname) = mod_record
+      if let Some(exact_name) = mod_record
         .subname
         .as_ref()
+        .or_else(|| mod_record.curseforge_slug.as_ref())
         .or_else(|| mod_record.modrinth_slug.as_ref())
       {
-        return Ok(subname.clone());
+        return Ok(exact_name.to_string());
       }
     }
   }
@@ -487,10 +480,8 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
       }
 
       let score_ratio = *score / primary_score.max(1e-6);
-      let is_long = keyword.len() > 12;
-      let required_ratio = if is_long { 0.7 } else { 0.5 };
 
-      if score_ratio >= required_ratio {
+      if score_ratio >= 0.5 {
         final_keywords.push(keyword.clone());
       }
     }

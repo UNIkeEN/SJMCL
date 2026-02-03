@@ -301,7 +301,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const [isLoadingResourceList, setIsLoadingResourceList] =
     useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(20);
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const [gameVersion, setGameVersion] = useState<string>("");
