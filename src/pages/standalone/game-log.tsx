@@ -238,6 +238,7 @@ const GameLogPage: React.FC = () => {
                 className={`${styles["log-text"]}`}
                 color={logLevelMap[level].color}
                 fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
+                userSelect="text"
               >
                 {log}
               </Text>
