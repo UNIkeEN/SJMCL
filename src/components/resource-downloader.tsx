@@ -489,8 +489,13 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
         ...(Array.isArray(tags)
           ? tags
               .filter((item) => item !== "All")
-              .map((item, index) => (
-                <MenuItemOption key={index} value={item} fontSize="xs" pl={6}>
+              .map((item) => (
+                <MenuItemOption
+                  key={`tag-${group}-${item}`}
+                  value={item}
+                  fontSize="xs"
+                  pl={6}
+                >
                   {t(
                     `ResourceDownloader.${resourceType}TagList.${downloadSource}.${item}`
                   ) || item}
