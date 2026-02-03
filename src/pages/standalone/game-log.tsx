@@ -11,7 +11,7 @@ import {
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
 import {
@@ -97,7 +97,6 @@ const GameLogPage: React.FC = () => {
   // scroll to bottom on new log if unclicked
   useEffect(() => {
     if (userScrolledRef.current) return;
-
     requestAnimationFrame(() => {
       listRef.current?.scrollToRow(logs.length - 1);
     });
@@ -116,28 +115,35 @@ const GameLogPage: React.FC = () => {
     await revealItemInDir(logFilePath);
   };
 
-  const lastLevelRef = useRef<LogLevel>("INFO");
+  const logLevels = useMemo<LogLevel[]>(() => {
+    let lastLevel: LogLevel = "INFO";
 
-  const getLogLevel = useCallback((log: string): LogLevel => {
-    const match = log.match(
-      /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
-    );
-    if (match) {
-      const level = match[1].toUpperCase() as LogLevel;
-      lastLevelRef.current = level;
-      return level;
-    }
+    return logs.map((log) => {
+      const match = log.match(
+        /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
+      );
 
-    if (/^\s+at /.test(log) || /^\s+Caused by:/.test(log) || /^\s+/.test(log)) {
-      return lastLevelRef.current;
-    }
+      if (match) {
+        lastLevel = match[1].toUpperCase() as LogLevel;
+        return lastLevel;
+      }
 
-    if (/exception|error|invalid|failed|错误/i.test(log)) {
-      lastLevelRef.current = "ERROR";
-      return "ERROR";
-    }
-    return lastLevelRef.current;
-  }, []);
+      if (
+        /^\s+at /.test(log) ||
+        /^\s+Caused by:/.test(log) ||
+        /^\s+/.test(log)
+      ) {
+        return lastLevel;
+      }
+
+      if (/exception|error|invalid|failed|错误/i.test(log)) {
+        lastLevel = "ERROR";
+        return lastLevel;
+      }
+
+      return lastLevel;
+    });
+  }, [logs]);
 
   const logCounts = useMemo<Record<LogLevel, number>>(() => {
     const counts: Record<LogLevel, number> = {
@@ -148,27 +154,28 @@ const GameLogPage: React.FC = () => {
       DEBUG: 0,
     };
 
-    for (const log of logs) {
-      const level = getLogLevel(log);
+    logLevels.forEach((level) => {
       counts[level]++;
-    }
+    });
 
     return counts;
-  }, [logs, getLogLevel]);
+  }, [logLevels]);
 
   const filteredLogs = useMemo(() => {
-    return logs.filter((log) => {
-      const level = getLogLevel(log);
-      return (
-        filterStates[level] &&
-        log.toLowerCase().includes(searchTerm.toLowerCase())
+    return logs
+      .map((log, index) => ({
+        log,
+        level: logLevels[index],
+      }))
+      .filter(
+        ({ log, level }) =>
+          filterStates[level] &&
+          log.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    });
-  }, [logs, filterStates, searchTerm, getLogLevel]);
+  }, [logs, logLevels, filterStates, searchTerm]);
 
   const rowRenderer: ListRowRenderer = ({ key, index, style, parent }) => {
-    const log = filteredLogs[index];
-    const level = getLogLevel(log);
+    const { log, level } = filteredLogs[index];
 
     return (
       <CellMeasurer
@@ -186,6 +193,7 @@ const GameLogPage: React.FC = () => {
             whiteSpace="pre-wrap"
             wordBreak="break-word"
             lineHeight="1.4"
+            userSelect={"text"}
           >
             {log}
           </Text>
@@ -198,7 +206,7 @@ const GameLogPage: React.FC = () => {
   useEffect(() => {
     cacheRef.current.clearAll();
     listRef.current?.recomputeRowHeights();
-  }, [filteredLogs]);
+  }, [filterStates, searchTerm]);
 
   const levels = Object.keys(logLevelMap) as LogLevel[];
 
@@ -289,9 +297,12 @@ const GameLogPage: React.FC = () => {
             variant="subtle"
             boxShadow="md"
             leftIcon={<LuChevronsDown />}
-            onClick={() =>
-              listRef.current?.scrollToRow(filteredLogs.length - 1)
-            }
+            onClick={() => {
+              if (userScrolledRef.current) {
+                userScrolledRef.current = false;
+              }
+              listRef.current?.scrollToRow(filteredLogs.length - 1);
+            }}
           >
             {t("GameLogPage.scrollToBottom")}
           </Button>
