@@ -54,7 +54,7 @@ quartz_nbt = { version = "0.2.9", features = ["serde"] }
 regex = "1.11"
 toml = "0.8"
 lazy_static = "1.5"
-jsonwebtoken = "9.3.1"
+jsonwebtoken = "10.3.0"
 java-properties = "2.0.0"
 sha1 = "0.10.1"
 hex = "0.4.3"
