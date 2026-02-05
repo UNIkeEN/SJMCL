@@ -412,7 +412,7 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
         .or_else(|| mod_record.curseforge_slug.as_ref())
         .or_else(|| mod_record.modrinth_slug.as_ref())
       {
-        return Ok(exact_name.to_string());
+        return Ok(exact_name.chars().take(24).collect());
       }
     }
   }
@@ -469,7 +469,7 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
 
     // Look for a second keyword, but only if it is reliable enough
     for (keyword, score) in keyword_scores.iter().skip(1) {
-      if final_keywords.len() >= 2 {
+      if final_keywords.len() >= 2 || primary_keyword.len() >= 16 {
         break;
       }
 
