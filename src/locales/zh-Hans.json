@@ -443,6 +443,20 @@
   "DevToolbar": {
     "tooltip": "开发工具栏"
   },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "搜索",
+      "home": "主页",
+      "community-news": "社区新闻",
+      "minecraft-news": "Minecraft 新闻",
+      "modpack": "整合包",
+      "mod": "模组",
+      "world": "世界",
+      "resourcepack": "资源包",
+      "shader": "光影",
+      "datapack": "数据包"
+    }
+  },
   "DiscoverPage": {
     "title": "发现",
     "noMore": "无更多内容",

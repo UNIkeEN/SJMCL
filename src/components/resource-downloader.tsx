@@ -51,6 +51,7 @@ interface ResourceDownloaderProps {
   initialSearchQuery?: string;
   initialDownloadSource?: OtherResourceSource;
   curInstance?: InstanceSummary;
+  displayInModal?: boolean;
 }
 
 interface ResourceDownloaderMenuProps {
@@ -276,6 +277,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   initialSearchQuery = "",
   initialDownloadSource = OtherResourceSource.CurseForge,
   curInstance,
+  displayInModal = true,
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
@@ -502,6 +504,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           value={selectedTag}
           defaultValue={"All"}
           options={renderTagMenuOptions()}
+          width={displayInModal ? 28 : 20}
         />
 
         <ResourceDownloaderMenu
@@ -543,7 +546,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               {item}
             </MenuItemOption>
           ))}
-          width={28}
+          width={displayInModal ? 28 : 16}
         />
 
         <ResourceDownloaderMenu
@@ -563,7 +566,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               {t(`ResourceDownloader.sortByList.${downloadSource}.${item}`)}
             </MenuItemOption>
           ))}
-          width={24}
+          width={displayInModal ? 24 : 16}
         />
       </HStack>
 
