@@ -226,7 +226,8 @@ pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
 #[tauri::command]
 pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
   if get_java_info_from_release_file(&java_path)
-    .or_else(|| get_java_info_from_command(&java_path))
+    .1
+    .or_else(|| get_java_info_from_command(&java_path).1)
     .is_some()
   {
     Ok(())

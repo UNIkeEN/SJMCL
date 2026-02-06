@@ -26,7 +26,7 @@ use crate::launcher_config::models::{
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
-use crate::utils::fs::{create_zip_from_dirs, manage_permissions_unix, PermissionOperation};
+use crate::utils::fs::create_zip_from_dirs;
 use crate::utils::logging::get_launcher_log_path;
 use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
@@ -79,13 +79,6 @@ pub async fn select_suitable_jre(
       .map_or(0i32, |v| v.major_version),
   )
   .await?;
-
-  // ensure execute permissions (for Linux and macOS)
-  manage_permissions_unix(
-    &selected_java.exec_path,
-    0o111,
-    PermissionOperation::Upgrade,
-  )?;
 
   let timestamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
   let mut launching = launching_queue_state.lock()?;
