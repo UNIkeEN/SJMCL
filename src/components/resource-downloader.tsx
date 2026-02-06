@@ -19,10 +19,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuChevronDown,
-  LuCircleUserRound,
   LuDownload,
   LuGlobe,
   LuUpload,
+  LuUserRoundPen,
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
@@ -226,7 +226,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
           )}
           {item.author && (
             <HStack spacing={1}>
-              <LuCircleUserRound />
+              <LuUserRoundPen />
               <Text>{item.author}</Text>
             </HStack>
           )}
