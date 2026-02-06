@@ -279,9 +279,9 @@ const GameLogPage: React.FC = () => {
                 rowHeight={cacheRef.current.rowHeight}
                 rowRenderer={rowRenderer}
                 onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
-                  setIsScrolledToBottom(
-                    scrollHeight - scrollTop - clientHeight < 2
-                  );
+                  const atBottom = scrollHeight - scrollTop - clientHeight < 2;
+                  setIsScrolledToBottom(atBottom);
+                  userScrolledRef.current = !atBottom;
                 }}
               />
             )}
