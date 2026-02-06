@@ -125,7 +125,7 @@ pub async fn fetch_resource_list_by_name_curseforge(
       let title = resource
         .translated_name
         .as_deref()
-        .unwrap_or_else(|| resource.name.as_str());
+        .unwrap_or(resource.name.as_str());
       let lower_case_result = title.to_lowercase();
 
       let mut diff = levenshtein_distance(&lower_case_search_filter, &lower_case_result) as i64;

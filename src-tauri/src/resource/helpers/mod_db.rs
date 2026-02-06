@@ -409,8 +409,8 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
       if let Some(exact_name) = mod_record
         .subname
         .as_ref()
-        .or_else(|| mod_record.curseforge_slug.as_ref())
-        .or_else(|| mod_record.modrinth_slug.as_ref())
+        .or(mod_record.curseforge_slug.as_ref())
+        .or(mod_record.modrinth_slug.as_ref())
       {
         return Ok(exact_name.chars().take(24).collect());
       }

@@ -250,7 +250,7 @@ impl From<CurseForgeProject> for OtherResourceInfo {
       source: OtherResourceSource::CurseForge,
       translated_name: None,
       translated_description: None,
-      author: project.authors.get(0).map(|author| author.name.clone()),
+      author: project.authors.first().map(|author| author.name.clone()),
     }
   }
 }
