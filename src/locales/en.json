@@ -1312,6 +1312,11 @@
         "online": "Online",
         "offline": "Offline"
       },
+      "deleteGameServer": "Delete this Server",
+      "DeleteGameServerAlertDialog": {
+        "title": "Delete Game Server",
+        "content": "Confirm delete the game server \"{{name}}\" ? This will remove it from your server list."
+      },
       "launch": "Play this Server"
     }
   },
@@ -2337,6 +2342,28 @@
           "title": "Failed to retrieve resource pack list from servers"
         }
       },
+      "addGameServer": {
+        "success": "Game server added successfully",
+        "error": {
+          "title": "Failed to add game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "DUPLICATE_SERVER": "Server already exists"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Game server deleted successfully",
+        "error": {
+          "title": "Failed to delete game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
+          }
+        }
+      },
       "retrieveSchematicList": {
         "error": {
           "title": "Failed to retrieve schematic list"
@@ -2609,6 +2636,20 @@
   "WorldLevelDataModal": {
     "header": {
       "title": "World Level Data - {{worldName}}"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Add Game Server"
+    },
+    "serverAddressRequired": "Server address is required",
+    "label": {
+      "serverAddress": "Server Address",
+      "serverName": "Server Name"
+    },
+    "placeholder": {
+      "serverAddress": "Enter server address",
+      "serverName": "Enter server name"
     }
   }
 }
