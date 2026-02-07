@@ -93,6 +93,7 @@ pub struct OtherResourceInfo {
   pub downloads: u64,
   pub source: OtherResourceSource,
   pub website_url: String,
+  pub author: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
