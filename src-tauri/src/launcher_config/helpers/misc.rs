@@ -180,24 +180,18 @@ pub fn get_global_game_config(app: &AppHandle) -> GameConfig {
 pub fn check_exe_path_availability(app: &AppHandle) -> bool {
   let exe_str = &*EXE_PATH.to_string_lossy();
 
-  #[cfg(windows)]
-  let bad_base_dirs = [BaseDirectory::Temp];
-  #[cfg(not(windows))]
-  let bad_base_dirs = [BaseDirectory::Cache, BaseDirectory::Temp];
-
-  for base in bad_base_dirs {
-    if let Ok(base_path) = app.path().resolve::<PathBuf>("".into(), base) {
-      let base_str = base_path.to_string_lossy();
-      if exe_str.starts_with(&*base_str) {
-        return false;
-      }
-    }
+  if app
+    .path()
+    .resolve::<PathBuf>("".into(), BaseDirectory::Temp)
+    .is_ok_and(|temp| exe_str.starts_with(&*temp.to_string_lossy()))
+  {
+    return false;
   }
 
   // generic keywords and OS-specific hard rules
   // modified from: https://github.com/HMCL-dev/HMCL/blob/0a0476b6d32ccd689c7166d25326c1a81cf64564/HMCL/src/main/java/org/jackhuang/hmcl/Launcher.java#L192
   let exe_lower = exe_str.to_lowercase();
-  let keywords = ["temp", "cache", "caches"];
+  let keywords = ["temp", "cache", "caches", ".cache"];
   for k in keywords {
     let needle = format!("{sep}{k}{sep}", sep = MAIN_SEPARATOR);
     if exe_lower.contains(&needle) {
