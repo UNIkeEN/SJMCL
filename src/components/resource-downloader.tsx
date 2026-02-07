@@ -1,3 +1,4 @@
+import type { ResponsiveValue } from "@chakra-ui/react";
 import {
   Avatar,
   Box,
@@ -15,7 +16,13 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -61,7 +68,7 @@ interface ResourceDownloaderMenuProps {
   defaultValue: string;
   options: React.ReactNode;
   value: string;
-  width?: number;
+  width?: ResponsiveValue<number | string>;
 }
 
 interface ResourceDownloaderListProps {
@@ -96,7 +103,7 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
   defaultValue,
   options,
   value,
-  width = 28,
+  width = { base: 28 },
 }) => {
   return (
     <HStack>
@@ -311,6 +318,20 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const tagList = (tagLists[resourceType] || modpackTagList)[downloadSource];
   const sortByList = sortByLists[downloadSource];
 
+  const menuWidths = useMemo(
+    () => ({
+      tag: displayInModal ? { base: 28, lg: 32 } : { base: 20, lg: 28, xl: 32 },
+      version: { base: 20, lg: 28 },
+      source: displayInModal
+        ? { base: 28, lg: 32 }
+        : { base: 16, lg: 28, xl: 32 },
+      sortBy: displayInModal
+        ? { base: 24, lg: 28 }
+        : { base: 16, lg: 24, xl: 28 },
+    }),
+    [displayInModal]
+  );
+
   const onDownloadSourceChange = (e: string) => {
     setDownloadSource(e as OtherResourceSource);
     setSelectedTag("All");
@@ -504,7 +525,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           value={selectedTag}
           defaultValue={"All"}
           options={renderTagMenuOptions()}
-          width={displayInModal ? 28 : 20}
+          width={menuWidths.tag}
         />
 
         <ResourceDownloaderMenu
@@ -532,7 +553,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               </MenuItemOption>
             )
           }
-          width={20}
+          width={menuWidths.version}
         />
 
         <ResourceDownloaderMenu
@@ -546,7 +567,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               {item}
             </MenuItemOption>
           ))}
-          width={displayInModal ? 28 : 16}
+          width={menuWidths.source}
         />
 
         <ResourceDownloaderMenu
@@ -566,7 +587,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               {t(`ResourceDownloader.sortByList.${downloadSource}.${item}`)}
             </MenuItemOption>
           ))}
-          width={displayInModal ? 24 : 16}
+          width={menuWidths.sortBy}
         />
       </HStack>
 
