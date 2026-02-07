@@ -80,7 +80,6 @@ export const DiscoverSourcesPage = () => {
 
   return (
     <Section
-      className="content-full-y"
       title={t("DiscoverPage.sources")}
       withBackButton
       headExtra={
