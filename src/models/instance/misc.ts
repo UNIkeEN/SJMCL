@@ -49,6 +49,11 @@ export interface ModpackMetaInfo {
   modLoader?: ModLoader;
 }
 
+export interface ModpackFileList {
+  all: string[];
+  unchecked: string[];
+}
+
 export interface GameServerInfo {
   iconSrc: string;
   ip: string;

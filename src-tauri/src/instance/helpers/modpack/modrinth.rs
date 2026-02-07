@@ -1,3 +1,4 @@
+use smart_default::SmartDefault;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
@@ -5,6 +6,7 @@ use std::path::Path;
 
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use serialize_skip_none_derive::serialize_skip_none;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
@@ -16,15 +18,16 @@ use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 
 structstruck::strike! {
+#[strikethrough[serialize_skip_none]]
 #[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
 #[strikethrough[serde(rename_all = "camelCase")]]
 pub struct ModrinthFile {
   pub path: String,
-  pub hashes: struct {
+  pub hashes: struct ModrinthFileHashes {
     pub sha1: String,
     pub sha512: String,
   },
-  pub env: Option<pub struct {
+  pub env: Option<pub struct ModrinthFileEnv {
     pub client: String,
     pub server: String,
   }>,
@@ -33,9 +36,14 @@ pub struct ModrinthFile {
 }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serialize_skip_none]
+#[derive(Deserialize, Serialize, Debug, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
 pub struct ModrinthManifest {
+  #[default = 1]
+  pub format_version: u64,
+  #[default = "minecraft"]
+  pub game: String,
   pub version_id: String,
   pub name: String,
   pub summary: Option<String>,
