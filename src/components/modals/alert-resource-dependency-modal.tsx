@@ -28,10 +28,8 @@ import { ResourceService } from "@/services/resource";
 import { ISOToDate } from "@/utils/datetime";
 import { formatDisplayCount } from "@/utils/string";
 
-interface AlertResourceDependencyModalProps extends Omit<
-  ModalProps,
-  "children"
-> {
+interface AlertResourceDependencyModalProps
+  extends Omit<ModalProps, "children"> {
   dependencies: OtherResourceDependency[];
   downloadSource: OtherResourceSource;
   curInstanceMajorVersion?: string;

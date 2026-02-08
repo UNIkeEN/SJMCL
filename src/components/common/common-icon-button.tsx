@@ -25,10 +25,8 @@ import {
 } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 
-interface CommonIconButtonProps extends Omit<
-  IconButtonProps,
-  "icon" | "aria-label"
-> {
+interface CommonIconButtonProps
+  extends Omit<IconButtonProps, "icon" | "aria-label"> {
   icon: string | IconType;
   label?: string;
   withTooltip?: boolean;
