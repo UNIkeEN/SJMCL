@@ -5,9 +5,11 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use url::Url;
 
 #[derive(Serialize, Deserialize, Default)]
 struct VersionManifest {
+  #[serde(default)]
   pub latest: LatestVersion,
   pub versions: Vec<GameResource>,
 }
@@ -47,18 +49,31 @@ pub async fn get_game_version_manifest(
       Err(_) => return Err(ResourceError::ParseError.into()),
     };
 
-    save_version_list_to_cache(app, &manifest.versions);
+    let unlisted_url = Url::parse(
+      "https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto/version_manifest.json",
+    )
+    .or_else(|_| {
+      Url::parse("https://zkitefly.github.io/unlisted-versions-of-minecraft/version_manifest.json")
+    })?;
+    let unlisted_response = client.get(unlisted_url).send().await?;
+    let unlisted_manifest = unlisted_response.json::<VersionManifest>().await?;
+
+    let merged_manifest = merge_manifests(manifest, unlisted_manifest);
+
+    save_version_list_to_cache(app, &merged_manifest.versions);
     // update list saved in cache dir, may be used in version compare.
 
-    let game_info_list = manifest
+    let game_info_list = merged_manifest
       .versions
       .into_iter()
       .map(|info| {
-        let april_fool = info.release_time.contains("04-01");
+        let april_fool = info.release_time.contains("04-01") || info.id.contains("point");
         GameClientResourceInfo {
           id: info.id,
           game_type: if april_fool {
             "april_fools".to_string()
+          } else if info.game_type == "pending" {
+            "snapshot".to_string()
           } else {
             info.game_type
           },
@@ -72,6 +87,18 @@ pub async fn get_game_version_manifest(
   }
 
   Err(ResourceError::NetworkError.into())
+}
+
+fn merge_manifests(a: VersionManifest, b: VersionManifest) -> VersionManifest {
+  let mut versions = a.versions;
+  versions.extend(b.versions);
+
+  versions.sort_by(|x, y| y.release_time.cmp(&x.release_time));
+
+  VersionManifest {
+    latest: a.latest,
+    versions,
+  }
 }
 
 fn save_version_list_to_cache(app: &AppHandle, versions: &[GameResource]) {
