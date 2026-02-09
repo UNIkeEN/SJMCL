@@ -8,16 +8,19 @@ function removeExtraKeys(source, target) {
     return target;
   }
 
+  // If source is not an object structure, but target is an object,
+  // return empty object to prune all keys in target
+  if (typeof source !== "object" || source === null || Array.isArray(source)) {
+    return {};
+  }
+
   const result = {};
 
   // Only keep keys that exist in source
   for (const key in target) {
     if (key in source) {
-      // If both are objects (not arrays), recursively process them
+      // If target is an object (not array), recursively process it
       if (
-        typeof source[key] === "object" &&
-        source[key] !== null &&
-        !Array.isArray(source[key]) &&
         typeof target[key] === "object" &&
         target[key] !== null &&
         !Array.isArray(target[key])
@@ -116,7 +119,7 @@ function rmPlaceholder(source, target) {
 // Parse command-line arguments (skip node and the script path)
 const args = process.argv.slice(3);
 if (args.length < 2) {
-  console.error("Usage: npm run locale rm_placeholder <source> <target>");
+  console.error("Usage: npm run locale rm_redundancy <source> <target>");
   process.exit(1);
 }
 
