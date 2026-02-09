@@ -19,6 +19,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import {
   gameTypesToIcon,
   loaderTypesToIcon,
@@ -32,8 +33,7 @@ import {
 } from "@/models/resource";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
-import { isFileNameSanitized, sanitizeFileName } from "@/utils/string";
-import { InstanceBasicSettings } from "../instance-basic-settings";
+import { isDirNameInvalid, sanitizeFileName } from "@/utils/string";
 
 interface ImportModpackModalProps extends Omit<ModalProps, "children"> {
   path: string;
@@ -58,13 +58,6 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
   );
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [isBtnLoading, setIsBtnLoading] = useState(false);
-
-  const checkDirNameError = useCallback((value: string): number => {
-    if (value.trim() === "") return 1;
-    if (!isFileNameSanitized(value)) return 2;
-    if (value.length > 255) return 3;
-    return 0;
-  }, []);
 
   const modpackInfoGroup: OptionItemGroupProps[] = useMemo(() => {
     if (!modpack) return [];
@@ -104,7 +97,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
   }, [modpack]);
 
   const handleImportModpack = useCallback(async () => {
-    if (!modpack || checkDirNameError(name) !== 0 || !gameDirectory) return;
+    if (!modpack || isDirNameInvalid(name) !== 0 || !gameDirectory) return;
     try {
       setIsBtnLoading(true);
       // first get client resource info
@@ -156,7 +149,6 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
       setIsBtnLoading(false);
     }
   }, [
-    checkDirNameError,
     description,
     gameDirectory,
     iconSrc,

@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { ModLoaderType } from "@/enums/instance";
 import { GameDirectory } from "@/models/config";
 import { InstanceSummary } from "@/models/instance/misc";
-import { isDirNameInvalid } from "./string";
+import { isDirNameInvalid } from "@/utils/string";
 
 export const generateInstanceDesc = (instance: InstanceSummary) => {
   if (instance.modLoader.loaderType === ModLoaderType.Unknown) {
