@@ -73,7 +73,8 @@ export const sanitizeFileName = (str: string): string => {
   return sanitized;
 };
 
-export const isDirNameValid = (value: string): number => {
+export const isDirNameInvalid = (value: string): number => {
+  // return number as specific error index (e.g. for displaying error message in Editable)
   if (value.trim() === "") return 1;
   if (!isFileNameSanitized(value)) return 2;
   if (value.length > 255) return 3;

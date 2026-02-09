@@ -11,7 +11,7 @@ import {
 import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { GameDirectory } from "@/models/config";
-import { getGameDirName, isInstanceNameValid } from "@/utils/instance";
+import { getGameDirName, isInstanceNameInvalid } from "@/utils/instance";
 
 interface InstanceBasicSettingsProps {
   name: string;
@@ -55,7 +55,7 @@ export const InstanceBasicSettings: React.FC<InstanceBasicSettingsProps> = ({
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
-              checkError={isInstanceNameValid}
+              checkError={isInstanceNameInvalid}
               localeKey="InstanceSettingsPage.errorMessage"
             />
           ),

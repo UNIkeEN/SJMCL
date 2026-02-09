@@ -24,7 +24,7 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
-import { getInstanceIconSrc, isInstanceNameValid } from "@/utils/instance";
+import { getInstanceIconSrc, isInstanceNameInvalid } from "@/utils/instance";
 
 const InstanceSettingsPage = () => {
   const router = useRouter();
@@ -77,7 +77,7 @@ const InstanceSettingsPage = () => {
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
-              checkError={isInstanceNameValid}
+              checkError={isInstanceNameInvalid}
               localeKey="InstanceSettingsPage.errorMessage"
               flex={1}
             />
