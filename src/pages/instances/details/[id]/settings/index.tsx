@@ -24,8 +24,7 @@ import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
-import { getInstanceIconSrc } from "@/utils/instance";
-import { isFileNameSanitized } from "@/utils/string";
+import { getInstanceIconSrc, isInstanceNameInvalid } from "@/utils/instance";
 
 const InstanceSettingsPage = () => {
   const router = useRouter();
@@ -46,13 +45,6 @@ const InstanceSettingsPage = () => {
     handleRestoreInstanceGameConfig,
   } = useInstanceSharedData();
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
-
-  const checkDirNameError = (value: string): number => {
-    if (value.trim() === "") return 1;
-    if (!isFileNameSanitized(value)) return 2;
-    if (value.length > 255) return 3;
-    return 0;
-  };
 
   const handleRenameInstance = useCallback(
     (name: string) => {
@@ -85,7 +77,7 @@ const InstanceSettingsPage = () => {
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               formErrMsgProps={{ fontSize: "xs-sm" }}
-              checkError={checkDirNameError}
+              checkError={isInstanceNameInvalid}
               localeKey="InstanceSettingsPage.errorMessage"
               flex={1}
             />
