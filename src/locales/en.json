@@ -443,6 +443,17 @@
   "DevToolbar": {
     "tooltip": "Dev Toolbar"
   },
+  "DiscoverCommunityNewsPage": {
+    "title": "Discover",
+    "noMore": "No more",
+    "sources": "Manage Sources",
+    "NoSources": "No source added"
+  },
+    "DiscoverHomePage" : {
+    "minecraft-news": "Minecraft News",
+    "community-news": "Community News",
+    "hotModpacks": "Hot Modpacks from {{source}}"
+  },
   "DiscoverLayout": {
     "discoverDomainList": {
       "search": "Search",
@@ -456,12 +467,6 @@
       "shader": "Shader Packs",
       "datapack": "Data Packs"
     }
-  },
-  "DiscoverPage": {
-    "title": "Discover",
-    "noMore": "No more",
-    "sources": "Manage Sources",
-    "NoSources": "No source added"
   },
   "DiscoverSourcesPage": {
     "button": {

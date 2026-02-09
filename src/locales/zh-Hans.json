@@ -443,6 +443,17 @@
   "DevToolbar": {
     "tooltip": "开发工具栏"
   },
+  "DiscoverCommunityNewsPage": {
+    "title": "发现",
+    "noMore": "无更多内容",
+    "sources": "管理数据源",
+    "NoSources": "未添加数据源"
+  },
+  "DiscoverHomePage" : {
+    "minecraft-news": "Minecraft 新闻",
+    "community-news": "社区新闻",
+    "hotModpacks": "{{source}} 的热门整合包"
+  },
   "DiscoverLayout": {
     "discoverDomainList": {
       "search": "搜索",
@@ -456,12 +467,6 @@
       "shader": "光影",
       "datapack": "数据包"
     }
-  },
-  "DiscoverPage": {
-    "title": "发现",
-    "noMore": "无更多内容",
-    "sources": "管理数据源",
-    "NoSources": "未添加数据源"
   },
   "DiscoverSourcesPage": {
     "button": {

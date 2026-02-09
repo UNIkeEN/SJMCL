@@ -84,7 +84,7 @@ export const CommunityNewsPage = () => {
   const secMenu = [
     {
       icon: LuNewspaper,
-      label: t("DiscoverPage.sources"),
+      label: t("DiscoverCommunityNewsPage.sources"),
       onClick: () => {
         router.push("/discover/sources");
       },
@@ -153,7 +153,7 @@ export const CommunityNewsPage = () => {
               <BeatLoader size={16} color="gray" />
             ) : !hasMore ? (
               <Text fontSize="xs" className="secondary-text">
-                {t("DiscoverPage.noMore")}
+                {t("DiscoverCommunityNewsPage.noMore")}
               </Text>
             ) : null}
           </Center>
