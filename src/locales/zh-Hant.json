@@ -372,20 +372,6 @@
   "ComingSoonSign": {
     "text": "該頁面暫未開放，敬請期待"
   },
-  "ContributorsPage": {
-    "all": "全部開發者名單",
-    "core": "主要開發者",
-    "contribution": {
-      "fullStackDev": "全棧開發",
-      "frontendDev": "前端開發",
-      "backendDev": "後端開發",
-      "externalAPI": "外部服務",
-      "doc": "文件",
-      "cicd": "CI / CD",
-      "design": "視覺設計",
-      "mascot": "吉祥物"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "複製或移動資源"
@@ -1783,6 +1769,10 @@
   "RestoreConfigConfirmDialog": {
     "title": "還原啟動器設定",
     "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？"
+  },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "重置例項設定",
+    "body": "此操作將會重置本例項的遊戲設定為當前全域性遊戲設定，您確定要繼續嗎？"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "請謹慎編輯啟動器原始設定檔案，錯誤的格式可能導致原有設定丟失或啟動器無法正常工作"
