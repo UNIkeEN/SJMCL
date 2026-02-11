@@ -4,6 +4,7 @@ mod error;
 mod instance;
 mod launch;
 mod launcher_config;
+mod mcp_server;
 mod partial;
 mod resource;
 mod storage;
@@ -282,6 +283,11 @@ pub async fn run() {
       {
         use tauri_plugin_deep_link::DeepLinkExt;
         app.deep_link().register_all()?;
+      }
+
+      match mcp_server::spawn_http_server(app.handle().clone()) {
+        Ok(endpoint) => log::info!("MCP server endpoint: {}", endpoint),
+        Err(err) => log::error!("Failed to start MCP server: {}", err.0),
       }
 
       Ok(())
