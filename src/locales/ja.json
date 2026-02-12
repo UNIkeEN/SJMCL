@@ -76,7 +76,8 @@
       "addPlayer": "キャラクター追加",
       "add3rdPartyServer": "認証サーバー追加",
       "sourceHomepage": "ホームページへ",
-      "deleteServer": "サーバー削除"
+      "deleteServer": "サーバー削除",
+      "importFromOtherLaunchers": "他のランチャーからインポート"
     },
     "playerTypeList": {
       "all": "すべてのソース"
@@ -237,7 +238,7 @@
       "grid": "グリッドビュー",
       "list": "リストビュー"
     },
-      "sortByTypeList": {
+    "sortByTypeList": {
       "versionAsc": "バージョン順（古い順）",
       "versionDesc": "バージョン順（新しい順）",
       "name": "インスタンス名称"
@@ -371,20 +372,6 @@
   "ComingSoonSign": {
     "text": "このページは今準備中で、しばらくお待ちしてください。"
   },
-  "ContributorsPage": {
-    "all": "開発チームリスト",
-    "core": "メイン開発者",
-    "contribution": {
-      "fullStackDev": "フルスタック開発",
-      "frontendDev": "フロントエンド開発",
-      "backendDev": "バックエンド開発",
-      "externalAPI": "外部API",
-      "doc": "ドキュメント",
-      "cicd": " CI / CD",
-      "design": "ビジュアルデザイン",
-      "mascot": "マスコット"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "リソースコピー/移動"
@@ -396,7 +383,7 @@
     "tag": {
       "source": "ソース"
     },
-    "body": "を移動",
+    "content": "{{type}} <b>{{name}}</b> を",
     "resourceType": {
       "Root": " ",
       "ResourcePacks": "リソースパック",
@@ -851,7 +838,7 @@
   },
   "GameLogPage": {
     "placeholder": "キーワードを入力して検索",
-    "exportLogs": "ログをエクスポート",
+    "revealRawLog": "生ログファイルを表示",
     "clearLogs": "すべてのログを削除",
     "scrollToBottom": "一番下までスクロール"
   },
@@ -898,7 +885,9 @@
     "download": "ダウンロード",
     "edit": "編集",
     "enable": "有効化",
+    "exit": "終了",
     "finish": "完了",
+    "import": "インポート",
     "launch": "起動",
     "next": "次へ",
     "notice": "通知",
@@ -914,7 +903,7 @@
         "error": "共有に失敗"
       }
     },
-        "skip": "スキップ",
+    "skip": "スキップ",
     "version": {
       "dev": "開発版",
       "nightly": "ナイトリービルド版",
@@ -934,6 +923,10 @@
           "title": "リソース翻訳",
           "description": "中国語のみ利用できます。"
         },
+        "translatedFilenamePrefix": {
+          "title": "ダウンロードしたリソース名に翻訳プレフィックスを付与",
+          "description": "%zh-Hans でのみ利用可能"
+        },
         "skipFirstScreenOptions": {
           "title": "インスタンス言語を自動設定",
           "description": "中国語のみ利用できます。"
@@ -946,8 +939,7 @@
         "discoverPage": {
           "title": "ディスカバーページ",
           "openNotice": {
-            "part-1": "上部ナビゲーションバーの「メタサーチ」が「ディスカバー」に変更しました。ホットキー ",
-            "part-2": " で「メタサーチ」を利用できます。"
+            "content": "上部ナビゲーションバーの「検索」は「ディスカバー」に置き換えられました。キーボードショートカット <key>{{keyname}}</key> + <key>S</key> で「グローバル検索」を引き続き利用できます。"
           }
         },
         "instancesNavType": {
@@ -1144,6 +1136,22 @@
       }
     }
   },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "他のランチャーからアカウント情報をインポート"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher"
+    },
+    "body": {
+      "authServers": "認証サーバー",
+      "players": "キャラクター"
+    },
+    "tooltips": {
+      "existingServer": "同じアドレスの認証サーバーが既に存在するため、インポート時に上書きされます。",
+      "existingPlayer": "同じ UUID のキャラクターが既に存在するため、インポート時に上書きされます。"
+    }
+  },
   "ImportModpackModal": {
     "header": {
       "title": "モッドパックをインポート"
@@ -1156,9 +1164,6 @@
       "author": "作者",
       "modLoader": "モッドローダー",
       "gameVersion": "ゲームバージョン"
-    },
-    "button": {
-      "import": "インポート"
     }
   },
   "InstanceBasicSettings": {
@@ -1185,6 +1190,9 @@
       "launch": "インスタンスを起動"
     }
   },
+  "InstanceIconSelector": {
+    "customize": "アイコンをカスタマイズ"
+  },
   "InstanceMenu": {
     "label": {
       "details": "インスタンス情報",
@@ -1193,7 +1201,8 @@
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": "モッドローダー"
+      "title": "モッドローダー",
+      "notInstalled": "未インストール"
     },
     "modList": {
       "title": "モッド",
@@ -1234,11 +1243,14 @@
       "error-3": "インスタンス名が長すぎる"
     },
     "tipsToGlobal": {
-      "part-1": "現在のインスタンスはインスタンス限定設定を有効にしていません。",
-      "part-2": "グローバルゲーム設定へ"
+      "content": "このインスタンスでは個別設定が有効になっていません。<terms>グローバルゲーム設定へ</terms>"
     }
   },
   "InstanceShaderPacksPage": {
+    "shaderLoaderList": {
+      "title": "ローダー",
+      "notInstalled": "未インストール"
+    },
     "shaderPackList": {
       "title": "シェーダーパック"
     }
@@ -1334,7 +1346,9 @@
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "キャラクタースイッチ",
-        "switchGame": "インスタンススイッチ"
+        "addPlayer": "キャラクター追加",
+        "switchInstance": "ゲームインスタンス切り替え",
+        "addInstance": "ゲームインスタンス追加"
       }
     },
     "Text": {
@@ -1355,6 +1369,13 @@
     "toast": {
       "noSelectedPlayer": "キャラクターを追加して選択してください"
     }
+  },
+  "LoaderSelector": {
+    "stable": "リリース版",
+    "beta": "ベータ版",
+    "releaseDate": "リリース日 {{date}}",
+    "notCompatibleWith": "{{modLoader}} に非互換",
+    "noVersionSelected": "バージョンを選択していない"
   },
   "ManageSkinModal": {
     "skinManage": "スキン管理",
@@ -1381,7 +1402,7 @@
       "javaPath": "Java 実行ファイルのパスを入力または選択してください"
     }
   },
-    "MCVersionNumberHelper": {
+  "MCVersionNumberHelper": {
     "content": "2026年より、Minecraftのバージョン番号は新しい命名規則を採用します。従来の1.x形式に代わり、西暦の下2桁をバージョン番号の先頭に配置します（例: 26.1）。",
     "linkText": "公式ドキュメントを読む",
     "url": "https://www.minecraft.net/zh-hans/article/minecraft-new-version-numbering-system"
@@ -1396,17 +1417,6 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} 個選択済み"
-  },
-  "ModLoaderCards": {
-    "installed": "インストール済",
-    "unInstalled": "未インストール",
-    "notCompatibleWith": "{{modLoader}} に非互換",
-    "versionNotSelected": "バージョンを選択していない"
-  },
-  "ModLoaderSelector": {
-    "stable": "リリース版",
-    "beta": "ベータ版",
-    "releaseDate": "リリース日 {{date}}"
   },
   "NotFoundPage": {
     "text": "ページが見つからない。 {{seconds}} 秒後でジャンプする"
@@ -1760,6 +1770,10 @@
     "title": "ランチャー設定復元",
     "body": "ランチャーの設定をデフォルトに復元しますか。"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "インスタンス設定を復元",
+    "body": "この操作により、このインスタンスの個別ゲーム設定は現在のグローバル設定に復元されます。続行しますか？"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "原始設定ファイルの編集には注意してください。誤った形式は既存の設定が失われたり、ランチャーが正常に動作しなくなる可能性があります"
   },
@@ -2043,6 +2057,20 @@
             "NOT_FOUND": "認証サーバーが見つからない"
           }
         }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "外部アカウント情報の取得に失敗しました",
+          "description": {
+            "NOT_FOUND": "外部アカウント情報ファイルの読み取りに失敗しました。"
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "外部プレイヤーと認証サーバーのインポートに成功しました",
+        "error": {
+          "title": "外部プレイヤーと認証サーバーのインポートに失敗しました"
+        }
       }
     },
     "launch": {
@@ -2076,7 +2104,7 @@
             "EXPIRED": "アクセストークンの有効期限が切れました。再ログインしてください",
             "NETWORK_ERROR": "サーバーに接続できません",
             "PARSE_ERROR": "サーバーが返したデータの形式が間違っています",
-            "NO_DOWNLOAD_API": "Authlib-Injector のダウンロードに失敗しました。ネットワーク接続を確認してください",
+            "AUTHLIB_INJECTOR_NOT_READY": "Authlib-Injector のダウンロードに失敗しました。ネットワーク接続を確認してください",
             "SAVE_ERROR": "Authlib-Injector の保存に失敗",
             "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"
           }
@@ -2361,7 +2389,8 @@
             "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
             "INSTALLATION_DUPLICATED": "別のプロセスが既にインストール中です",
             "MAIN_CLASS_NOT_FOUND": "メインクラスが見つかりません",
-            "PROCESSOR_EXECUTION_FAILED": "インストールタスクの実行に失敗"
+            "PROCESSOR_EXECUTION_FAILED": "インストールタスクの実行に失敗",
+            "LOADER_INSTALLER_NOT_FOUND": "ローダーインストーラーのファイルが見つかりません"
           }
         }
       },
@@ -2388,6 +2417,12 @@
             "FILE_NOT_FOUND_ERROR": "モッドパックファイルが存在しません。名前変更、移動、または削除された可能性があります",
             "MODPACK_MANIFEST_PARSE_ERROR": "モッドパックマニフェストファイルの解析エラー"
           }
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "カスタムインスタンスアイコンを追加しました",
+        "error": {
+          "title": "カスタムインスタンスアイコンの追加に失敗しました"
         }
       }
     },
@@ -2516,6 +2551,18 @@
     },
     "helper": "同期対象デバイスで生成されたトーコンを入力してください"
   },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "ゲームログ",
+      "gameError": "おっと！ゲームがクラッシュしました。"
+    }
+  },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "安全でない実行パス",
+      "content": "SJMCL は一時ディレクトリまたは無効なディレクトリから実行されています。設定やゲームデータが失われる可能性があります。SJMCL を別の場所へ移動して再実行してください。"
+    }
+  },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
@@ -2552,10 +2599,10 @@
       "text": "SJMCL をご利用いただき、ありがとうございます。開始前に、必ず下記の<terms>利用規約</terms>をお読みいただき、同意をお願いいたします。"
     },
     "warning": {
-      "unstableVersion": "{{versionLabel}}の SJMCL を使用しています。一部の機能が不安定または開発未完了の可能性があります。使用上の問題や機能の提案を報告いただければ幸いです。"
+      "unstableVersion": "{{versionLabel}}の SJMCL を使用しています。一部の機能が不安定または開発未完了の可能性があります。使用上の問題や機能の提案を報告いただければ幸いです。",
+      "winArm64Notice": "SJMCL は Windows on Arm プラットフォームに対応しました。<br/> <b>Qualcomm</b> プラットフォームをご利用の場合、ゲームを起動する前に <glpack>OpenGL 互換パック</glpack> のインストールが必要な場合があります。"
     },
     "button": {
-      "exit": "アプリ終了",
       "agree": "同意して続ける"
     }
   },

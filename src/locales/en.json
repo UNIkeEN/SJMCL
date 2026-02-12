@@ -635,8 +635,8 @@
     },
     "errorMessage": {
       "dirName": {
-        "tooLong": "Directory name cannot be longer than 20 characters",
         "empty": "Directory name cannot be empty",
+        "tooLong": "Directory name cannot be longer than 20 characters",
         "exist": "Directory name already exists",
         "hasInvalidChar": "Directory name has invalid characters"
       },
@@ -897,13 +897,13 @@
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
-    "skip": "Skip",
     "share": {
       "text": "Share",
       "toast": {
         "error": "Failed to share"
       }
     },
+    "skip": "Skip",
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -1502,7 +1502,6 @@
         "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
         "Automation": "Automation",
-        "Auxiliary": "Auxiliary",
         "Biomes": "Biomes",
         "Blood Magic": "Blood Magic",
         "Buildcraft": "Buildcraft",
@@ -1544,6 +1543,7 @@
         "Twitch Integration": "Twitch",
         "Utility & QoL": "Utility QoL",
         "World Gen": "World Gen",
+        "Auxiliary": "Auxiliary",
         "World": "World"
       },
       "Modrinth": {
@@ -1572,19 +1572,20 @@
     "worldTagList": {
       "CurseForge": {
         "All": "All",
+        "Types": "Types",
         "Adventure": "Adventure",
         "Creation": "Creation",
         "Game Map": "Game Map",
         "Modded World": "Modded World",
         "Parkour": "Parkour",
         "Puzzle": "Puzzle",
-        "Survival": "Survival",
-        "Types": "Types"
+        "Survival": "Survival"
       }
     },
     "resourcepackTagList": {
       "CurseForge": {
         "All": "All",
+        "Resolution": "Resolution",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
@@ -1601,12 +1602,12 @@
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
-        "Resolution": "Resolution",
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
       "Modrinth": {
         "All": "All",
+        "Resolution": "Resolution",
         "8x-": "8x or Lower",
         "16x": "16x",
         "32x": "32x",
@@ -1631,7 +1632,6 @@
         "decoration": "Decoration",
         "modded": "Modded",
         "realistic": "Realistic",
-        "Resolution": "Resolution",
         "simplistic": "Simplistic",
         "themed": "Themed",
         "tweaks": "Tweaks",
