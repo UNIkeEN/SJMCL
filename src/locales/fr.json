@@ -1374,7 +1374,7 @@
     "stable": "Stable",
     "beta": "Bêta",
     "releaseDate": "Publié le {{date}}",
-    "notCompatibleWith": "Incompatible avec {{modLoader}}",
+    "notCompatibleWith": "Incompatible avec {{item}}",
     "noVersionSelected": "Version non sélectionnée"
   },
   "ManageSkinModal": {
