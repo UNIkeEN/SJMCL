@@ -37,7 +37,7 @@ function removeExtraKeys(source, target) {
   return result;
 }
 
-function rmPlaceholder(source, target) {
+function removeRedundantKeys(source, target) {
   // Define paths for source and target locale files
   const sourceFile = path.join(
     __dirname,
@@ -124,4 +124,4 @@ if (args.length < 2) {
 }
 
 const [source, target] = args;
-rmPlaceholder(source, target);
+removeRedundantKeys(source, target);
