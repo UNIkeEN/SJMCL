@@ -1315,6 +1315,24 @@
       "launch": "Play this Server"
     }
   },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL Intelligence",
+    "description": "Integrate AI models into your launcher and Minecraft gameplay experience.",
+    "mcpServer": {
+      "title": "MCP Service",
+      "headExtra": "Restart Required",
+      "settings": {
+        "enabled": {
+          "title": "Launcher MCP Service",
+          "description": "Enable the local MCP service to connect external agent applications (e.g., Claude) for automated launcher control."
+        },
+        "port": {
+          "title": "Port",
+          "description": "The fixed local port used by the launcher MCP service."
+        }
+      }
+    }
+  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Java Management",
@@ -2456,6 +2474,7 @@
       "general": "General",
       "appearance": "Appearance",
       "download": "Download",
+      "intelligence": "Intelligence",
       "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
       "about": "About",

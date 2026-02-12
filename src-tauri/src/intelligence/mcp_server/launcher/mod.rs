@@ -2,6 +2,7 @@ mod r#macro;
 pub mod tools;
 
 use crate::error::{SJMCLError, SJMCLResult};
+use crate::launcher_config::models::LauncherMcpServerConfig;
 use crate::utils::sys_info::find_free_port;
 use rmcp::handler::server::router::Router;
 use rmcp::model::{CallToolResult, Implementation, ServerCapabilities, ServerInfo};
@@ -14,7 +15,6 @@ use tauri::AppHandle;
 
 pub const MCP_HOST: &str = "127.0.0.1";
 pub const MCP_PATH: &str = "/mcp";
-pub const MCP_PORT_START: u16 = 18970;
 
 #[derive(Clone)]
 pub struct McpContext {
@@ -70,20 +70,63 @@ where
   Ok(CallToolResult::structured(structured_content))
 }
 
-pub fn spawn_http_server(app_handle: AppHandle) -> SJMCLResult<String> {
-  let port = find_free_port(Some(MCP_PORT_START))?;
-  let endpoint = format!("http://{MCP_HOST}:{port}{MCP_PATH}");
+pub fn run(app_handle: AppHandle, mcp_config: &LauncherMcpServerConfig) {
+  let enabled = mcp_config.enabled;
+  let port = mcp_config.port;
 
+  if !enabled {
+    return;
+  }
+
+  // bind preset fixed port.
+  match find_free_port(Some(port)) {
+    Ok(free_port) if free_port == port => {}
+    Ok(free_port) => {
+      log::warn!(
+        "MCP server unavailable, configured port {} is occupied (next free: {}).",
+        port,
+        free_port
+      );
+      return;
+    }
+    Err(err) => {
+      log::warn!(
+        "MCP server unavailable, failed to probe free port: {}",
+        err.0
+      );
+      return;
+    }
+  }
+
+  let bind_addr = format!("{MCP_HOST}:{port}");
+  let listener = (|| -> std::io::Result<tokio::net::TcpListener> {
+    let std_listener = std::net::TcpListener::bind(&bind_addr)?;
+    std_listener.set_nonblocking(true)?;
+    tokio::net::TcpListener::from_std(std_listener)
+  })();
+  let listener = match listener {
+    Ok(listener) => listener,
+    Err(err) => {
+      log::warn!("MCP server unavailable, failed to prepare listener on {bind_addr}: {err}");
+      return;
+    }
+  };
+
+  log::info!("MCP server endpoint: http://{bind_addr}{MCP_PATH}");
+
+  // spawn MCP server
   tauri::async_runtime::spawn(async move {
-    if let Err(e) = serve_http(app_handle.clone(), port).await {
+    if let Err(e) = serve(app_handle.clone(), listener, port).await {
       log::error!("MCP HTTP server exited with error: {}", e.0);
     }
   });
-
-  Ok(endpoint)
 }
 
-async fn serve_http(app_handle: AppHandle, port: u16) -> SJMCLResult<()> {
+async fn serve(
+  app_handle: AppHandle,
+  listener: tokio::net::TcpListener,
+  port: u16,
+) -> SJMCLResult<()> {
   let service_app_handle = app_handle.clone();
   let service: StreamableHttpService<Router<McpContext>, LocalSessionManager> =
     StreamableHttpService::new(
@@ -101,7 +144,6 @@ async fn serve_http(app_handle: AppHandle, port: u16) -> SJMCLResult<()> {
 
   let axum_router = axum::Router::new().nest_service(MCP_PATH, service);
   let bind_addr = format!("{MCP_HOST}:{port}");
-  let listener = tokio::net::TcpListener::bind(&bind_addr).await?;
 
   log::info!(
     "MCP HTTP server listening on http://{}{}",

@@ -2,9 +2,9 @@ mod account;
 mod discover;
 mod error;
 mod instance;
+mod intelligence;
 mod launch;
 mod launcher_config;
-mod mcp_server;
 mod partial;
 mod resource;
 mod storage;
@@ -180,6 +180,7 @@ pub async fn run() {
       let os = launcher_config.basic_info.platform.clone();
       let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
       let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
+      let launcher_mcp_config = launcher_config.intelligence.mcp_server.launcher.clone();
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
@@ -285,9 +286,9 @@ pub async fn run() {
         app.deep_link().register_all()?;
       }
 
-      match mcp_server::spawn_http_server(app.handle().clone()) {
-        Ok(endpoint) => log::info!("MCP server endpoint: {}", endpoint),
-        Err(err) => log::error!("Failed to start MCP server: {}", err.0),
+      // Start the launcher MCP server if enabled
+      if launcher_mcp_config.enabled {
+        intelligence::mcp_server::launcher::run(app.handle().clone(), &launcher_mcp_config);
       }
 
       Ok(())

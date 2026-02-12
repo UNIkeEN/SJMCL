@@ -127,6 +127,15 @@ export interface LauncherConfig {
       autoPurgeLauncherLogs: boolean;
     };
   };
+  intelligence: {
+    mcpServer: {
+      launcher: {
+        enabled: boolean;
+        port: number;
+        isAvailable: boolean;
+      };
+    };
+  };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
   discoverSourceEndpoints: [string, boolean][];
@@ -284,6 +293,15 @@ export const defaultConfig: LauncherConfig = {
     },
     advanced: {
       autoPurgeLauncherLogs: true,
+    },
+  },
+  intelligence: {
+    mcpServer: {
+      launcher: {
+        enabled: true,
+        port: 18970,
+        isAvailable: false,
+      },
     },
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],

@@ -1,4 +1,4 @@
-use crate::mcp_server::McpContext;
+use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::mcp_tool;
 use rmcp::handler::server::tool::ToolRoute;
 

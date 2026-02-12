@@ -266,6 +266,17 @@ structstruck::strike! {
         pub auto_purge_launcher_logs: bool,
       }
     },
+    pub intelligence: struct Intelligence {
+      pub mcp_server: struct {
+        pub launcher: struct LauncherMcpServerConfig{
+          #[default = true]
+          pub enabled: bool,
+          #[default = 18970]
+          pub port: u16,
+          pub is_available: bool,
+        },
+      }
+    },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,
     // Changed from Vec<String> to Vec<(String, bool)> with default enabled=true

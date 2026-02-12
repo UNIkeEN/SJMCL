@@ -9,13 +9,13 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
 
         async move {
           let app = context.service.app_handle.clone();
-          $crate::mcp_server::command_result_to_tool_result($command(app))
+          $crate::intelligence::mcp_server::launcher::command_result_to_tool_result($command(app))
         }
         .boxed()
       },
@@ -30,13 +30,13 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
 
         async move {
           let app = context.service.app_handle.clone();
-          $crate::mcp_server::command_result_to_tool_result($command(app).await)
+          $crate::intelligence::mcp_server::launcher::command_result_to_tool_result($command(app).await)
         }
         .boxed()
       },
@@ -56,7 +56,7 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
 
@@ -66,7 +66,7 @@ macro_rules! mcp_tool {
             context.arguments.take().unwrap_or_default(),
           )?;
           let app = context.service.app_handle.clone();
-          $crate::mcp_server::command_result_to_tool_result($command(app, $(params.$arg),*))
+          $crate::intelligence::mcp_server::launcher::command_result_to_tool_result($command(app, $(params.$arg),*))
         }
         .boxed()
       },
@@ -86,7 +86,7 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
 
@@ -96,7 +96,7 @@ macro_rules! mcp_tool {
             context.arguments.take().unwrap_or_default(),
           )?;
           let app = context.service.app_handle.clone();
-          $crate::mcp_server::command_result_to_tool_result(
+          $crate::intelligence::mcp_server::launcher::command_result_to_tool_result(
             $command(app, $(params.$arg),*).await,
           )
         }
@@ -113,7 +113,7 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
 
@@ -123,7 +123,7 @@ macro_rules! mcp_tool {
             context.arguments.take().unwrap_or_default(),
           )?;
           let $app = context.service.app_handle.clone();
-          $crate::mcp_server::command_result_to_tool_result($call.await)
+          $crate::intelligence::mcp_server::launcher::command_result_to_tool_result($call.await)
         }
         .boxed()
       },
@@ -138,7 +138,7 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
         $handler(context).boxed()
@@ -159,7 +159,7 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
 
@@ -194,7 +194,7 @@ macro_rules! mcp_tool {
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
-        $crate::mcp_server::McpContext,
+        $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
 
