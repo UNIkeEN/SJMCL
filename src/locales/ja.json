@@ -1374,7 +1374,7 @@
     "stable": "リリース版",
     "beta": "ベータ版",
     "releaseDate": "リリース日 {{date}}",
-    "notCompatibleWith": "{{modLoader}} に非互換",
+    "notCompatibleWith": "{{item}} に非互換",
     "noVersionSelected": "バージョンを選択していない"
   },
   "ManageSkinModal": {
