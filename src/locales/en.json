@@ -1149,7 +1149,8 @@
     },
     "tooltips": {
       "existingServer": "Existing auth server data with the same address will be overwritten.",
-      "existingPlayer": "Existing player data with the same UUID will be overwritten."
+      "existingPlayer": "Existing player data with the same UUID will be overwritten.",
+      "expired": "This player token has expired and cannot be imported."
     }
   },
   "ImportModpackModal": {
