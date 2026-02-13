@@ -1140,6 +1140,9 @@
     "header": {
       "title": "Import Players and Auth Servers"
     },
+    "labels": {
+      "expired": " (Expired)"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher"
     },

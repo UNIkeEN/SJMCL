@@ -2,6 +2,8 @@ import { t } from "i18next";
 import { PlayerType } from "@/enums/account";
 import { Player } from "@/models/account";
 
+export const EXPIRED_ACCESS_TOKEN_PLACEHOLDER = "%failed:access_token_expired%";
+
 export function isUuidValid(uuid: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
     uuid
