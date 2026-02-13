@@ -76,7 +76,8 @@
       "addPlayer": "Ajouter un joueur",
       "add3rdPartyServer": "Ajouter un serveur d'authentification",
       "sourceHomepage": "Visiter la page d'accueil",
-      "deleteServer": "Supprimer ce serveur"
+      "deleteServer": "Supprimer ce serveur",
+      "importFromOtherLaunchers": "Importer depuis d'autres launchers"
     },
     "playerTypeList": {
       "all": "Les sources"
@@ -371,20 +372,6 @@
   "ComingSoonSign": {
     "text": "Cette page n'est pas encore disponible, restez à l'écoute."
   },
-  "ContributorsPage": {
-    "all": "Tous les contributeurs",
-    "core": "Contributeurs principaux",
-    "contribution": {
-      "fullStackDev": "Développement full stack",
-      "frontendDev": "Développement front-end",
-      "backendDev": "Développement back-end",
-      "externalAPI": "Services externes",
-      "doc": "Documentation",
-      "cicd": "CI / CD",
-      "design": "Design visuel",
-      "mascot": "Mascotte"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "Copier ou déplacer la ressource"
@@ -396,7 +383,7 @@
     "tag": {
       "source": "Source"
     },
-    "body": "arriver à",
+    "content": "{{type}} <b>{{name}}</b> vers",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "Packs de ressources",
@@ -898,7 +885,9 @@
     "download": "Télécharger",
     "edit": "Éditer",
     "enable": "Activer",
+    "exit": "Quitter",
     "finish": "Terminer",
+    "import": "Importer",
     "launch": "Démarrer",
     "next": "Suivant",
     "notice": "Remarque",
@@ -934,6 +923,10 @@
           "title": "Afficher la traduction des ressources",
           "description": "%only available in zh-Hans"
         },
+        "translatedFilenamePrefix": {
+          "title": "Ajouter un préfixe traduit aux noms de fichiers des ressources",
+          "description": "%seulement disponible en zh-Hans"
+        },
         "skipFirstScreenOptions": {
           "title": "Définir automatiquement la langue de l'instance",
           "description": "%only available in zh-Hans"
@@ -946,8 +939,7 @@
         "discoverPage": {
           "title": "Page Découvrir",
           "openNotice": {
-            "part-1": "La barre de navigation supérieure 'Recherche' a été remplacée par 'Découvrir'. Vous pouvez toujours utiliser le raccourci clavier ",
-            "part-2": " pour continuer à utiliser la 'Recherche globale'."
+            "content": "Le bouton « Rechercher » de la barre supérieure a été remplacé par « Découvrir ». Vous pouvez toujours utiliser la « Recherche globale » avec <key>{{keyname}}</key> + <key>S</key>."
           }
         },
         "instancesNavType": {
@@ -1144,6 +1136,22 @@
       }
     }
   },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "Importer des comptes depuis d'autres launchers"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher"
+    },
+    "body": {
+      "authServers": "Serveurs d'authentification",
+      "players": "Joueurs"
+    },
+    "tooltips": {
+      "existingServer": "Les données d'un serveur d'authentification avec la même adresse existent déjà et seront écrasées.",
+      "existingPlayer": "Les données d'un joueur avec le même UUID existent déjà et seront écrasées."
+    }
+  },
   "ImportModpackModal": {
     "header": {
       "title": "Importer un pack de mods"
@@ -1156,9 +1164,6 @@
       "author": "Auteur",
       "modLoader": "Chargeur de mods",
       "gameVersion": "Version du jeu"
-    },
-    "button": {
-      "import": "Importer"
     }
   },
   "InstanceBasicSettings": {
@@ -1185,6 +1190,9 @@
       "launch": "Lancer l'instance"
     }
   },
+  "InstanceIconSelector": {
+    "customize": "Personnaliser les images"
+  },
   "InstanceMenu": {
     "label": {
       "details": "Détails de l'instance",
@@ -1193,7 +1201,8 @@
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": "Chargeur"
+      "title": "Chargeur",
+      "notInstalled": "Non installé"
     },
     "modList": {
       "title": "Mods",
@@ -1234,11 +1243,14 @@
       "error-3": "Le nom de l'instance est trop long"
     },
     "tipsToGlobal": {
-      "part-1": "L'instance actuelle n'a pas de paramètres de jeu spécifiques activés",
-      "part-2": "Aller aux paramètres généraux du jeu"
+      "content": "Cette instance n'utilise pas de paramètres spécifiques. <terms>Aller aux paramètres globaux du jeu</terms>"
     }
   },
   "InstanceShaderPacksPage": {
+    "shaderLoaderList": {
+      "title": "Loaders",
+      "notInstalled": "Non installé"
+    },
     "shaderPackList": {
       "title": "Packs de shaders"
     }
@@ -1334,7 +1346,9 @@
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "Changer de joueur",
-        "switchGame": "Changer d'instance de jeu"
+        "addPlayer": "Ajouter un joueur",
+        "switchInstance": "Changer d'instance de jeu",
+        "addInstance": "Ajouter une instance de jeu"
       }
     },
     "Text": {
@@ -1355,6 +1369,13 @@
     "toast": {
       "noSelectedPlayer": "Veuillez d'abord ajouter et sélectionner un joueur"
     }
+  },
+  "LoaderSelector": {
+    "stable": "Stable",
+    "beta": "Bêta",
+    "releaseDate": "Publié le {{date}}",
+    "notCompatibleWith": "Incompatible avec {{item}}",
+    "noVersionSelected": "Version non sélectionnée"
   },
   "ManageSkinModal": {
     "skinManage": "Gérer les skins",
@@ -1396,17 +1417,6 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} élément sélectionné"
-  },
-  "ModLoaderCards": {
-    "installed": "Installé",
-    "unInstalled": "Non installé",
-    "notCompatibleWith": "Incompatible avec {{modLoader}}",
-    "versionNotSelected": "Version non sélectionnée"
-  },
-  "ModLoaderSelector": {
-    "stable": "Stable",
-    "beta": "Bêta",
-    "releaseDate": "Publié le {{date}}"
   },
   "NotFoundPage": {
     "text": "Page non trouvée, redirection dans {{seconds}} secondes"
@@ -1760,6 +1770,10 @@
     "title": "Restaurer les paramètres du lanceur",
     "body": "Cette opération restaurera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "Restaurer les paramètres de l'instance",
+    "body": "Cette action restaurera les paramètres spécifiques de cette instance vers les paramètres globaux actuels. Voulez-vous continuer ?"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "Veuillez éditer le fichier de configuration original du lanceur avec précaution. Un format incorrect peut entraîner la perte des paramètres existants ou un dysfonctionnement du lanceur"
   },
@@ -2042,6 +2056,20 @@
           "description": {
             "NOT_FOUND": "Serveur d'authentification introuvable"
           }
+        }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "Échec de la récupération des informations de compte externe",
+          "description": {
+            "NOT_FOUND": "Échec de la lecture du fichier d'informations de compte externe."
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "Importation des joueurs et serveurs d'authentification externes réussie",
+        "error": {
+          "title": "Échec de l'importation des joueurs et serveurs d'authentification externes"
         }
       }
     },
@@ -2361,7 +2389,8 @@
             "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas",
             "INSTALLATION_DUPLICATED": "Un autre processus est déjà détecté en cours d'installation",
             "MAIN_CLASS_NOT_FOUND": "Classe principale non trouvée",
-            "PROCESSOR_EXECUTION_FAILED": "Échec de l'exécution de la tâche d'installation"
+            "PROCESSOR_EXECUTION_FAILED": "Échec de l'exécution de la tâche d'installation",
+            "LOADER_INSTALLER_NOT_FOUND": "Fichier d'installation du loader introuvable"
           }
         }
       },
@@ -2522,6 +2551,18 @@
     },
     "helper": "Veuillez saisir le jeton généré par l'appareil à synchroniser"
   },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "Journaux du jeu",
+      "gameError": "Oups ! Le jeu a planté."
+    }
+  },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "Chemin d'exécution non sûr",
+      "content": "SJMCL est actuellement exécuté depuis un répertoire temporaire ou invalide. Vos paramètres et données de jeu peuvent être perdus. Veuillez déplacer SJMCL vers un autre emplacement et le relancer."
+    }
+  },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
@@ -2562,7 +2603,6 @@
       "winArm64Notice": "SJMCL prend désormais en charge la plateforme Windows on Arm. Si vous utilisez un appareil basé sur une plateforme <b>Qualcomm</b>, vous devrez peut-être installer le <glpack>Pack de compatibilité OpenGL</glpack> pour pouvoir jouer."
     },
     "button": {
-      "exit": "Quitter",
       "agree": "Accepter"
     }
   },
@@ -2570,8 +2610,5 @@
     "header": {
       "title": "Données de base du monde - {{worldName}}"
     }
-  },
-  "InstanceIconSelector": {
-    "customize": "Personnaliser les images"
   }
 }
