@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuTriangleAlert } from "react-icons/lu";
+import { LuCircleX, LuTriangleAlert } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
@@ -305,11 +305,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
 
                           return {
                             title: p.name,
-                            description: `${generatePlayerDesc(p, true)}${
-                              isExpired(p)
-                                ? `${t("ImportAccountInfoModal.labels.expired")}`
-                                : ""
-                            }`,
+                            description: generatePlayerDesc(p, true),
                             prefixElement: (
                               <HStack spacing={3}>
                                 <Checkbox
@@ -329,16 +325,31 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
                                 />
                               </HStack>
                             ),
-                            children: isInCurPlayers(p) && (
-                              <Tooltip
-                                label={t(
-                                  "ImportAccountInfoModal.tooltips.existingPlayer"
+                            children: (
+                              <HStack>
+                                {isInCurPlayers(p) && (
+                                  <Tooltip
+                                    label={t(
+                                      "ImportAccountInfoModal.tooltips.existingPlayer"
+                                    )}
+                                  >
+                                    <Box color="orange.500">
+                                      <LuTriangleAlert />
+                                    </Box>
+                                  </Tooltip>
                                 )}
-                              >
-                                <Box color="orange.500">
-                                  <LuTriangleAlert />
-                                </Box>
-                              </Tooltip>
+                                {isExpired(p) && (
+                                  <Tooltip
+                                    label={t(
+                                      "ImportAccountInfoModal.tooltips.expired"
+                                    )}
+                                  >
+                                    <Box color="red.500">
+                                      <LuCircleX />
+                                    </Box>
+                                  </Tooltip>
+                                )}
+                              </HStack>
                             ),
                           };
                         })}
