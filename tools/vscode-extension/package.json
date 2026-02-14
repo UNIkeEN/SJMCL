@@ -1,0 +1,39 @@
+{
+  "name": "sjmcl-dev-extension",
+  "displayName": "SJMCL Dev Extension",
+  "description": "Developer extension for SJMCL workspace",
+  "icon": "logo.png",
+  "version": "0.1.0",
+  "publisher": "SJMCL-Team",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sjmclDevtools.invokeCommandJump.rebuildIndex",
+        "title": "SJMCL Dev Extension: Rebuild Invoke Command Index"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.15",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.5.4"
+  }
+}
