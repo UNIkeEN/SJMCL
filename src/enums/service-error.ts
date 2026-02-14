@@ -35,3 +35,7 @@ export enum ResourceServiceError {
   ParseError = "PARSE_ERROR",
   NoDownloadApi = "NO_DOWNLOAD_API",
 }
+
+export enum LaunchServiceError {
+  NoSuitableJava = "NO_SUITABLE_JAVA",
+}

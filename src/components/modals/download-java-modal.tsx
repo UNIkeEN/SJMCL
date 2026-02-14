@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
@@ -23,6 +23,9 @@ import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
 
 type VendorKey = "mojang" | "zulu" | "bellsoft" | "oracle";
+const DEFAULT_VENDOR: VendorKey = "mojang";
+const DEFAULT_VERSION = "25" as const;
+const DEFAULT_TYPE = "jre" as const;
 
 interface JavaVendor {
   label: string;
@@ -56,9 +59,11 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   const os = config.basicInfo.osType;
   const arch = config.basicInfo.arch;
 
-  const [vendor, setVendor] = useState<VendorKey | "">("");
-  const [version, setVersion] = useState<"" | "8" | "11" | "17" | "21">("");
-  const [type, setType] = useState<"" | "jdk" | "jre">("");
+  const [vendor, setVendor] = useState<VendorKey | "">(DEFAULT_VENDOR);
+  const [version, setVersion] = useState<"" | "8" | "11" | "17" | "21" | "25">(
+    DEFAULT_VERSION
+  );
+  const [type, setType] = useState<"" | "jdk" | "jre">(DEFAULT_TYPE);
 
   const VENDORS: Record<VendorKey, JavaVendor> = {
     mojang: {
@@ -113,6 +118,13 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
       },
     },
   };
+
+  useEffect(() => {
+    if (!props.isOpen) return;
+    setVendor(DEFAULT_VENDOR);
+    setVersion(DEFAULT_VERSION);
+    setType(DEFAULT_TYPE);
+  }, [props.isOpen]);
 
   const handleConfirm = async () => {
     if (!vendor || !version || !type) return;
