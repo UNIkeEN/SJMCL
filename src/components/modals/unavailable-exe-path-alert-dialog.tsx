@@ -48,9 +48,14 @@ const UnavailableExePathAlertDialog: React.FC<
               <LuLanguages />
               <LanguageMenu placement="top" />
             </HStack>
-            <Button ml="auto" colorScheme="red" onClick={() => exit(0)}>
-              {t("General.exit")}
-            </Button>
+            <HStack ml="auto" spacing={3}>
+              <Button variant="ghost" onClick={onClose}>
+                {t("UnavailableExePathAlertDialog.dialog.btnContinue")}
+              </Button>
+              <Button colorScheme="red" onClick={() => exit(0)}>
+                {t("General.exit")}
+              </Button>
+            </HStack>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialogOverlay>
