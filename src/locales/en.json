@@ -2090,7 +2090,6 @@
           "title": "Failed to validate game files",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "Mod loader library files not downloaded",
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "GAME_FILES_INCOMPLETE": "Game files are incomplete",
             "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
@@ -2365,8 +2364,8 @@
         "error": {
           "title": "Failed to retrieve world details list",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "World not exist",
-            "LEVEL_NOT_EXSIT_ERROR": "Level data not exist",
+            "WORLD_NOT_EXIST_ERROR": "World not exist",
+            "LEVEL_NOT_EXIST_ERROR": "Level data not exist",
             "LEVEL_PARSE_ERROR": "Level data parse error"
           }
         }
