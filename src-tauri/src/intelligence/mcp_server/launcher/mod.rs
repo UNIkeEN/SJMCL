@@ -40,7 +40,7 @@ impl ServerHandler for McpContext {
         website_url: None,
       },
       instructions: Some(
-        "Use tools to query launcher states. This server is intended for local trusted clients."
+        "Use tools to query launcher states. For tools requiring instance_id (for example retrieve_game_server_list), call retrieve_instance_list first and pass one returned id. This server is intended for local trusted clients."
           .to_string(),
       ),
       ..Default::default()
