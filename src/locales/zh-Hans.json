@@ -1324,7 +1324,12 @@
       "settings": {
         "enabled": {
           "title": "启动器 MCP 服务",
-          "description": "启用本地 MCP 服务，以连接外部 Agent 应用（如 Claude）实现启动器的自动化控制"
+          "description": "启用本地 MCP 服务，以连接外部 Agent 应用实现启动器的自动化控制"
+        },
+        "docs": {
+          "title": "使用指南",
+          "description": "了解如何将启动器连接到外部 Agent 应用（如 Claude, Cherry Studio 等）",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/intelligence/launcher-mcp"
         },
         "port": {
           "title": "端口",

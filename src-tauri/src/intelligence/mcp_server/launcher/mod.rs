@@ -13,8 +13,8 @@ use rmcp::{ErrorData as McpError, ServerHandler};
 use serde::Serialize;
 use tauri::AppHandle;
 
-pub const MCP_HOST: &str = "127.0.0.1";
-pub const MCP_PATH: &str = "/mcp";
+pub const MCP_SERVER_HOST: &str = "127.0.0.1";
+pub const MCP_SERVER_PATH: &str = "/mcp";
 
 #[derive(Clone)]
 pub struct McpContext {
@@ -35,12 +35,12 @@ impl ServerHandler for McpContext {
         name: "sjmcl-mcp".to_string(),
         title: Some("SJMCL MCP".to_string()),
         version: env!("CARGO_PKG_VERSION").to_string(),
-        description: Some("MCP tools exposed by SJMCL".to_string()),
+        description: Some("MCP tools exposed by SJMCL, a modern Minecraft launcher".to_string()),
         icons: None,
         website_url: None,
       },
       instructions: Some(
-        "Use tools to query launcher states. For tools requiring instance_id (for example retrieve_game_server_list), call retrieve_instance_list first and pass one returned id. This server is intended for local trusted clients."
+        "Use tools to query Minecraft instances and accounts managed by SJMC Launcher. For tools requiring instance_id (for example retrieve_game_server_list), call retrieve_instance_list first and pass one returned id. This server is intended for local trusted clients."
           .to_string(),
       ),
       ..Default::default()
@@ -98,7 +98,7 @@ pub fn run(app_handle: AppHandle, mcp_config: &LauncherMcpServerConfig) {
     }
   }
 
-  let bind_addr = format!("{MCP_HOST}:{port}");
+  let bind_addr = format!("{MCP_SERVER_HOST}:{port}");
   let listener = (|| -> std::io::Result<tokio::net::TcpListener> {
     let std_listener = std::net::TcpListener::bind(&bind_addr)?;
     std_listener.set_nonblocking(true)?;
@@ -112,7 +112,7 @@ pub fn run(app_handle: AppHandle, mcp_config: &LauncherMcpServerConfig) {
     }
   };
 
-  log::info!("MCP server endpoint: http://{bind_addr}{MCP_PATH}");
+  log::info!("MCP server endpoint: http://{bind_addr}{MCP_SERVER_PATH}");
 
   // spawn MCP server
   tauri::async_runtime::spawn(async move {
@@ -142,13 +142,13 @@ async fn serve(
       },
     );
 
-  let axum_router = axum::Router::new().nest_service(MCP_PATH, service);
-  let bind_addr = format!("{MCP_HOST}:{port}");
+  let axum_router = axum::Router::new().nest_service(MCP_SERVER_PATH, service);
+  let bind_addr = format!("{MCP_SERVER_HOST}:{port}");
 
   log::info!(
     "MCP HTTP server listening on http://{}{}",
     bind_addr,
-    MCP_PATH
+    MCP_SERVER_PATH
   );
 
   axum::serve(listener, axum_router)

@@ -273,7 +273,6 @@ structstruck::strike! {
           pub enabled: bool,
           #[default = 18970]
           pub port: u16,
-          pub is_available: bool,
         },
       }
     },

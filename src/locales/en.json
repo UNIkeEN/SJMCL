@@ -1324,7 +1324,12 @@
       "settings": {
         "enabled": {
           "title": "Launcher MCP Service",
-          "description": "Enable the local MCP service to connect external agent applications (e.g., Claude) for automated launcher control."
+          "description": "Enable the local MCP service to connect external agent applications for automated launcher control."
+        },
+        "docs": {
+          "title": "User Guide",
+          "description": "Learn how to connect the launcher to external agent applications (such as Claude, Cherry Studio, and more).",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
         },
         "port": {
           "title": "Port",

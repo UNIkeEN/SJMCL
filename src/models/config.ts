@@ -132,7 +132,6 @@ export interface LauncherConfig {
       launcher: {
         enabled: boolean;
         port: number;
-        isAvailable: boolean;
       };
     };
   };
@@ -300,7 +299,6 @@ export const defaultConfig: LauncherConfig = {
       launcher: {
         enabled: true,
         port: 18970,
-        isAvailable: false,
       },
     },
   },
