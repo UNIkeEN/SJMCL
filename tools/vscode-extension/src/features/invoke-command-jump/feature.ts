@@ -1,13 +1,12 @@
 import * as vscode from "vscode";
-
 import { ExtensionFeature, FeatureContext } from "../../core/feature";
-import { WorkspaceIndexManager } from "./index/workspace-index-manager";
-import { InvokeDefinitionProvider } from "./providers/invoke-definition-provider";
 import {
   COMMAND_REBUILD_INVOKE_COMMAND_INDEX,
   INVOKE_COMMAND_JUMP_FEATURE_ID,
   SUPPORTED_LANGUAGES,
 } from "./config";
+import { WorkspaceIndexManager } from "./index/workspace-index-manager";
+import { InvokeDefinitionProvider } from "./providers/invoke-definition-provider";
 
 export class InvokeCommandJumpFeature implements ExtensionFeature {
   readonly id = INVOKE_COMMAND_JUMP_FEATURE_ID;
@@ -38,10 +37,10 @@ export class InvokeCommandJumpFeature implements ExtensionFeature {
       vscode.commands.registerCommand(
         COMMAND_REBUILD_INVOKE_COMMAND_INDEX,
         async () => {
-        await indexManager.rebuildAll();
-        void vscode.window.showInformationMessage(
+          await indexManager.rebuildAll();
+          void vscode.window.showInformationMessage(
             "SJMCL Dev Extension: Invoke command index rebuilt."
-        );
+          );
         }
       )
     );

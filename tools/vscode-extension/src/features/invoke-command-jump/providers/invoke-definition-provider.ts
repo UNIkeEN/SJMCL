@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-
 import { INVOKE_FUNCTION_NAMES } from "../config";
 import { WorkspaceIndexManager } from "../index/workspace-index-manager";
 import { findInvokeCommandAtPosition } from "../parsers/invoke-parser";

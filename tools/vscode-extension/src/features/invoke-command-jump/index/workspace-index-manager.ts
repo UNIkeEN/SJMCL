@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-
 import { TauriCommandDefinition } from "../types";
 import { TauriCommandIndex } from "./tauri-command-index";
 

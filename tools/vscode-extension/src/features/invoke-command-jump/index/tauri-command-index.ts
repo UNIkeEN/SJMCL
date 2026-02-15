@@ -1,11 +1,7 @@
 import * as vscode from "vscode";
-
-import {
-  TAURI_SOURCE_EXCLUDE_GLOB,
-  TAURI_SOURCE_GLOB,
-} from "../config";
-import { TauriCommandDefinition } from "../types";
 import { TextOffsetMapper } from "../../../shared/text-offset-mapper";
+import { TAURI_SOURCE_EXCLUDE_GLOB, TAURI_SOURCE_GLOB } from "../config";
+import { TauriCommandDefinition } from "../types";
 
 const TAURI_COMMAND_AND_FN_PATTERN =
   /#\s*\[\s*tauri::command(?:\([^\)]*\))?\s*\][\s\S]*?(?:pub(?:\([^)]+\))?\s+)?(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/g;
@@ -69,7 +65,10 @@ export class TauriCommandIndex implements vscode.Disposable {
     const nextMap = new Map<string, TauriCommandDefinition[]>();
 
     for (const command of discoveredCommands) {
-      if (shouldFilterByGenerateHandler && !registeredCommands.has(command.name)) {
+      if (
+        shouldFilterByGenerateHandler &&
+        !registeredCommands.has(command.name)
+      ) {
         continue;
       }
 
@@ -110,7 +109,6 @@ export class TauriCommandIndex implements vscode.Disposable {
       void this.rebuild();
     }, 250);
   }
-
 }
 
 function collectGenerateHandlerCommands(

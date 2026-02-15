@@ -3,7 +3,7 @@
   "displayName": "SJMCL Dev Extension",
   "description": "Developer extension for SJMCL workspace",
   "icon": "logo.png",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "SJMCL-Team",
   "engines": {
     "vscode": "^1.90.0"

@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-
 import { ExtensionFeature, FeatureContext } from "./feature";
 
 export class FeatureRunner implements vscode.Disposable {

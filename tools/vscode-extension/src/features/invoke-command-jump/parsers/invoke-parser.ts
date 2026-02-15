@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-
 import { InvokeCommandMatch } from "../types";
 
 function escapeRegExp(source: string): string {
