@@ -9,7 +9,7 @@
           "checkUpdate": "檢查更新",
           "checkToast": {
             "loading": "正在檢查更新",
-            "up2date": "當前已是最新版本",
+            "up2date": "目前已是最新版本",
             "error": "檢查更新失敗"
           }
         },
@@ -49,7 +49,7 @@
         },
         "skinview3d": {
           "title": "bs-community / skinview3d",
-          "description": "皮膚預覽元件基於此開源專案實現，遵循 MIT 協議使用"
+          "description": "外觀預覽元件基於此開源專案實現，遵循 MIT 協議使用"
         }
       }
     },
@@ -75,7 +75,7 @@
     "button": {
       "addPlayer": "新增角色",
       "add3rdPartyServer": "新增認證伺服器",
-      "sourceHomepage": "訪問主頁",
+      "sourceHomepage": "訪問首頁",
       "deleteServer": "刪除此伺服器",
       "importFromOtherLaunchers": "從其他啟動器匯入"
     },
@@ -84,27 +84,27 @@
     },
     "viewTypeList": {
       "grid": "網格檢視",
-      "list": "列表檢視"
+      "list": "清單檢視"
     }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
-        "title": "安裝新例項",
+        "title": "安裝新實例",
         "description": "選擇並安裝遊戲版本、載入器與模組"
       },
       "modpack": {
-        "title": "匯入整合包",
-        "description": "從本地檔案或網際網路匯入整合包（CurseForge, Modrinth 或 MultiMC 格式）"
+        "title": "匯入模組包",
+        "description": "從本機檔案或網際網路匯入模組包（CurseForge, Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理遊戲目錄",
-        "description": "管理本地遊戲儲存目錄，以新增已安裝例項"
+        "description": "管理本機遊戲儲存目錄，以新增已安裝實例"
       }
     },
     "modpackOperations": {
-      "fromdisk": "從本地檔案匯入",
-      "download": "下載整合包"
+      "fromdisk": "從本機檔案匯入",
+      "download": "下載模組包"
     },
     "moreOptions": {
       "title": "更多",
@@ -146,13 +146,13 @@
       "header": "新增角色"
     },
     "label": {
-      "playerType": "角色型別"
+      "playerType": "角色類型"
     },
     "offline": {
       "playerName": {
         "label": "角色名稱",
         "placeholder": "請輸入角色名稱",
-        "errorMessage": "只能包含英文字母、數字和下劃線，不超過16個字元。"
+        "errorMessage": "只能包含英文字母、數字和底線，不超過 16 個字元。"
       },
       "advancedOptions": {
         "title": "高階選項",
@@ -171,12 +171,12 @@
         "addSource": "新增認證源"
       },
       "email": {
-        "label": "郵箱",
-        "placeholder": "請輸入郵箱"
+        "label": "信箱",
+        "placeholder": "請輸入信箱"
       },
       "emailOrPlayerName": {
-        "label": "郵箱或角色名稱",
-        "placeholder": "請輸入郵箱或角色名稱"
+        "label": "信箱或角色名稱",
+        "placeholder": "請輸入信箱或角色名稱"
       },
       "password": {
         "label": "密碼",
@@ -202,7 +202,7 @@
     "button": {
       "buyMinecraft": "購買 Minecraft",
       "useOAuthLogin": "OAuth 登入",
-      "usePasswordLogin": "賬號密碼登入"
+      "usePasswordLogin": "帳號密碼登入"
     }
   },
   "AlertResourceDependencyModal": {
@@ -236,15 +236,15 @@
     },
     "viewTypeList": {
       "grid": "網格檢視",
-      "list": "列表檢視"
+      "list": "清單檢視"
     },
     "sortByTypeList": {
       "versionAsc": "遊戲版本升序",
       "versionDesc": "遊戲版本降序",
-      "name": "例項名稱"
+      "name": "實例名稱"
     },
     "sortBy": "排序方式",
-    "title": "全部例項"
+    "title": "全部實例"
   },
   "AppearanceSettingsPage": {
     "theme": {
@@ -292,14 +292,14 @@
       "title": "背景",
       "settings": {
         "preset": {
-          "title": "預設影像"
+          "title": "預設圖像"
         },
         "custom": {
-          "title": "自定義影像",
+          "title": "自訂圖像",
           "add": "新增"
         },
         "randomCustom": {
-          "title": "隨機自定義"
+          "title": "隨機自訂"
         },
         "autoDarken": {
           "title": "深色模式下調暗背景"
@@ -318,7 +318,7 @@
       }
     },
     "accessibility": {
-      "title": "輔助顯示",
+      "title": "無障礙顯示",
       "settings": {
         "invertColors": {
           "title": "反轉顏色"
@@ -355,7 +355,7 @@
     },
     "updateList": {
       "mod": "模組",
-      "currentVersion": "當前版本",
+      "currentVersion": "目前版本",
       "latestVersion": "最新版本",
       "source": "來源"
     },
@@ -366,7 +366,7 @@
   "ClearDownloadCacheAlertDialog": {
     "dialog": {
       "title": "清除下載快取",
-      "content": "確定要清除下載快取嗎？此操作無法撤銷。"
+      "content": "確定要清除下載快取嗎？此操作無法復原。"
     }
   },
   "ComingSoonSign": {
@@ -397,7 +397,7 @@
   },
   "CreateInstanceModal": {
     "header": {
-      "title": "建立新例項"
+      "title": "建立新實例"
     },
     "stepper": {
       "game": "選擇遊戲版本",
@@ -410,38 +410,38 @@
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
-    "content": "您最近更改了此例項的名稱，請重新整理例項列表或重啟啟動器後，再次嘗試新增啟動快捷方式。"
+    "content": "您最近更改了此實例的名稱，請重新整理實例清單或重啟啟動器後，再次嘗試新增啟動捷徑。"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
-      "title": "刪除遊戲例項",
-      "content": "確定要刪除遊戲例項 “{{instanceName}}” 嗎？它將會永久消失！（真的很久！）",
+      "title": "刪除遊戲實例",
+      "content": "確定要刪除遊戲實例「{{instanceName}}」嗎？它將會永久消失！（真的很久！）",
       "warning": {
-        "withVerIso": "請注意，由於此例項已啟用版本隔離，刪除該例項將導致存檔等資料一同被刪除。如需保留相關資料，請先遷移。",
-        "woVerIso": "請注意，如果該例項此前啟用過版本隔離，未遷移的存檔等資料將一同被刪除。"
+        "withVerIso": "請注意，由於此實例已啟用實例隔離，刪除該實例將導致存檔等資料一同被刪除。如需保留相關資料，請先遷移。",
+        "woVerIso": "請注意，如果該實例此前啟用過實例隔離，未遷移的存檔等資料將一同被刪除。"
       }
     }
   },
   "DeleteModAlertDialog": {
     "dialog": {
       "title": "刪除模組",
-      "content": "確定要刪除遊戲例項 “{{instanceName}}” 中的模組 “{{modName}}” 嗎？"
+      "content": "確定要刪除遊戲實例「{{instanceName}}」中的模組「{{modName}}」嗎？"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "刪除角色",
-      "content": "確定要刪除角色 “{{name}}” 嗎？這一操作不可逆！"
+      "content": "確定要刪除角色「{{name}}」嗎？這一操作不可逆！"
     }
   },
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "刪除認證伺服器",
-      "content": "確定要刪除認證伺服器 “{{name}}” 嗎？它將不再出現在你的伺服器列表中。"
+      "content": "確定要刪除認證伺服器「{{name}}」嗎？它將不再出現在你的伺服器清單中。"
     }
   },
   "DevToolbar": {
-    "tooltip": "開發工具欄"
+    "tooltip": "開發工具列"
   },
   "DiscoverPage": {
     "title": "發現",
@@ -465,7 +465,7 @@
     "selector": {
       "vendor": "發行方",
       "version": "版本",
-      "type": "型別"
+      "type": "類型"
     },
     "warning": {
       "mojang": "由 Mojang 分發的 Java 執行時將由 SJMCL 安裝到特定目錄",
@@ -474,7 +474,7 @@
   },
   "DownloadModpackModal": {
     "header": {
-      "title": "下載整合包"
+      "title": "下載模組包"
     }
   },
   "DownloadResourceModal": {
@@ -497,7 +497,7 @@
           "title": "下載源選擇策略",
           "auto": "自動選擇",
           "official": "官方源優先",
-          "mirror": "映象源優先"
+          "mirror": "鏡像源優先"
         }
       }
     },
@@ -527,19 +527,19 @@
         },
         "clear": {
           "title": "清除下載快取",
-          "description": "清除下載快取目錄中的所有檔案，此操作不會清除已下載的資原始檔",
+          "description": "清除下載快取目錄中的所有檔案，此操作不會清除已下載的資源檔案",
           "button": "清除"
         }
       }
     },
     "proxy": {
-      "title": "代理",
+      "title": "Proxy",
       "settings": {
         "enabled": {
-          "title": "啟用代理"
+          "title": "啟用 Proxy"
         },
         "type": {
-          "title": "代理型別"
+          "title": "Proxy 類型"
         },
         "host": {
           "title": "伺服器"
@@ -555,12 +555,12 @@
     "label": {
       "all": "全部",
       "recommendedVersion": "推薦版本",
-      "currentModLoader": "當前載入器"
+      "currentModLoader": "目前載入器"
     },
     "releaseType": {
-      "alpha": "內測版",
-      "beta": "公測版",
-      "release": "正式版"
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "release": "Release"
     }
   },
   "DownloadTasksPage": {
@@ -579,14 +579,14 @@
       "cancelled": "已取消"
     },
     "task": {
-      "game-client": "遊戲客戶端 {{param}}",
+      "game-client": "遊戲用戶端 {{param}}",
       "game-server": "遊戲服務端 {{param}}",
       "change-mod-loader": "修改模組載入器 {{param}}",
       "mod": "模組",
       "world": "存檔",
       "resourcepack": "資源包",
       "shader": "光影",
-      "modpack": "整合包",
+      "modpack": "模組包",
       "datapack": "資料包",
       "patch-files": "修補遊戲檔案 {{param}}",
       "mod-update": "更新模組",
@@ -623,7 +623,7 @@
       },
       "addSubDir": {
         "title": "新增子目錄",
-        "body": "發現包含例項的 minecraft 子目錄，是否新增子目錄？",
+        "body": "發現包含實例的 minecraft 子目錄，是否新增子目錄？",
         "addOriginDir": "新增原始目錄",
         "addSubDir": "新增子目錄"
       }
@@ -673,7 +673,7 @@
       "windows": "Win"
     },
     "playerTypes": {
-      "microsoft": "微軟賬戶",
+      "microsoft": "微軟帳戶",
       "offline": "離線模式",
       "3rdparty": "第三方認證",
       "3rdpartyShort": "第三方認證"
@@ -681,29 +681,29 @@
     "systemFileManager": {
       "linux": "檔案管理器",
       "macos": "訪達",
-      "windows": "檔案資源管理器"
+      "windows": "檔案總管"
     }
   },
   "GameAdvancedSettingsPage": {
     "title": "高階遊戲設定",
     "topWarning": "高階遊戲設定僅提供給專業玩家使用。修改以下選項可能導致遊戲無法啟動。除非您充分了解其中的意義，否則請不要修改這些選項！",
     "customCommands": {
-      "title": "自定義命令",
+      "title": "自訂指令",
       "settings": {
         "minecraftArgument": {
           "title": "遊戲引數",
           "placeholder": "預設"
         },
         "precallCommand": {
-          "title": "遊戲啟動前執行命令",
+          "title": "遊戲啟動前執行指令",
           "placeholder": "將在遊戲啟動前呼叫"
         },
         "wrapperLauncher": {
-          "title": "包裝命令",
-          "placeholder": "如填寫\"optirun\"後，啟動命令將從\"java ...\"變為\"optirun java ...\""
+          "title": "包裝指令",
+          "placeholder": "如填寫「optirun」後，啟動指令將從「java ...」變為「optirun java ...」"
         },
         "postExitCommand": {
-          "title": "遊戲結束後執行命令",
+          "title": "遊戲結束後執行指令",
           "placeholder": "將在遊戲結束後呼叫"
         }
       }
@@ -712,7 +712,7 @@
       "title": "Java 虛擬機器設定",
       "settings": {
         "args": {
-          "title": "JVM 虛擬機器引數"
+          "title": "Java 虛擬機器引數"
         },
         "javaPermanentGenerationSpace": {
           "title": "記憶體永久儲存區域",
@@ -726,7 +726,7 @@
     "workaround": {
       "title": "除錯選項",
       "settings": {
-        "noJvmArgs": "不新增預設的 JVM 引數",
+        "noJvmArgs": "不新增預設的 Java 虛擬機器引數",
         "gameFileValidatePolicy": {
           "title": "遊戲檔案完整性檢查策略",
           "disable": "不檢查",
@@ -734,10 +734,10 @@
           "full": "增強檢查"
         },
         "dontCheckJvmValidity": {
-          "title": "不檢查 JVM 與遊戲的相容性"
+          "title": "不檢查 Java 虛擬機器與遊戲的相容性"
         },
         "dontPatchNatives": {
-          "title": "不嘗試自動替換本地庫"
+          "title": "不嘗試自動取代本機庫"
         },
         "useNativeGlfw": {
           "title": "使用系統 GLFW（僅 Linux）"
@@ -763,70 +763,70 @@
     },
     "crashDetails": {
       "title": "崩潰資訊",
-      "OPENJ9": "當前例項無法在 OpenJ9 JVM 上執行，請使用 HotSpot JVM。",
-      "NEED_JDK11": "當前例項使用了 JDK 11 特性，無法在當前虛擬機器平臺上執行，請選擇 JDK 11 啟動。",
-      "TOO_OLD_JAVA": "當前例項由於過舊的 Java 版本而無法執行，建議使用最新的 Java 版本。",
+      "OPENJ9": "目前實例無法在 OpenJ9 JVM 上執行，請使用 HotSpot JVM。",
+      "NEED_JDK11": "目前實例使用了 JDK 11 特性，無法在目前虛擬機器平臺上執行，請選擇 JDK 11 啟動。",
+      "TOO_OLD_JAVA": "目前實例由於過舊的 Java 版本而無法執行，建議使用最新的 Java 版本。",
       "JVM_32BIT": "遊戲記憶體分配過大，超過了 32 位 JVM 的限制。如果你的電腦是 64 位系統，請下載安裝並更換 64 位 Java。",
-      "GL_OPERATION_FAILURE": "當前例項由於你使用的某些模組/光影包/資源包/紋理包有問題，導致無法繼續執行。請先嚐試停用你所使用的模組/光影包/資源包/紋理包再試。",
-      "OPENGL_NOT_SUPPORTED": "當前例項由於你的顯示卡驅動不支援 OpenGL ，無法繼續執行。請檢查你的顯示卡驅動程式或嘗試使用其他渲染器。",
-      "GRAPHICS_DRIVER": "當前例項由於顯示卡驅動問題而崩潰，請更新顯示卡驅動程式。",
-      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "當前例項由於 Apple Silicon 平臺下初始化 OpenGL 視窗失敗，無法繼續執行。",
-      "OUT_OF_MEMORY": "當前例項由於記憶體不足而崩潰，請嘗試降低遊戲記憶體分配或關閉其他程式。",
-      "MEMORY_EXCEEDED": "當前例項由於記憶體分配超過限制而崩潰，請嘗試降低遊戲記憶體分配或關閉其他程式。",
-      "RESOLUTION_TOO_HIGH": "當前例項由於解析度過高而無法執行，請解析度更低的資源包/紋理包再試。",
-      "JDK_9": "當前例項使用了 JDK 9 特性，無法在當前虛擬機器平臺上執行，請選擇 JDK 9 啟動。",
-      "MAC_JDK_8U261": "當前例項由於你所使用的 Forge/OptiFine 與 Java 衝突而崩潰。請嘗試更新 Forge/OptiFine ，或使用 Java 8u251 及更早版本啟動。",
-      "FILE_CHANGED": "當前例項由於檔案校驗失敗而無法執行，請檢查檔案完整性。",
-      "NO_SUCH_METHOD_ERROR": "當前例項由於程式碼不完整，無法繼續執行。你的遊戲可能缺失了某個模組，或者某些模組檔案不完整，或者模組與遊戲的版本不匹配。你可能需要重新安裝遊戲和模組，或尋求他人幫助。",
-      "NO_CLASS_DEF_FOUND_ERROR": "當前例項由於程式碼不完整，無法繼續執行。你的遊戲可能缺失了某個模組，或者某些模組檔案不完整，或者模組與遊戲的版本不匹配。你可能需要重新安裝遊戲和模組，或尋求他人幫助。",
-      "ILLEGAL_ACCESS_ERROR": "當前例項由於某些模組的問題，無法繼續執行，如果你認識 {{param1}}，你可以更新或刪除對應模組再試。",
-      "DUPLICATED_MOD": "當前例項由於模組 {{param1}} 重複安裝，無法繼續執行。請刪除多餘的模組再試。",
-      "MOD_RESOLUTION": "當前例項由於模組依賴問題，無法繼續執行。Fabric 提供瞭如下資訊：{{param1}}",
-      "FORGEMOD_RESOLUTION": "當前例項由於模組依賴問題，無法繼續執行。Forge/NeoForge 提供瞭如下資訊：{{param1}}",
-      "FORGE_FOUND_DUPLICATE_MODS": "當前例項由於模組重複安裝，無法繼續執行，Forge/NeoForge 提供瞭如下資訊：{{param1}}",
-      "MOD_RESOLUTION_CONFLICT": "當前例項由於模組 {{param1}} 與 {{param2}} 衝突，無法繼續執行。",
-      "MOD_RESOLUTION_MISSING": "當前例項由於模組 {{param1}} 缺少前置模組 {{param2}}，無法繼續執行。",
-      "MOD_RESOLUTION_MISSING_MINECRAFT": "當前例項中模組 {{param1}} 需要 Minecraft {{param2}} 才能執行。",
-      "MOD_RESOLUTION_COLLECTION": "當前例項由於模組 {{param1}} 缺少前置模組 {{param2}}，無法繼續執行。",
-      "FILE_ALREADY_EXISTS": "當前例項由於 {{param}} 已經存在，無法繼續執行。如果你認為這個檔案可以刪除，你可以在備份這個檔案後嘗試刪除它，並重新啟動遊戲。",
-      "LOADING_CRASHED_FORGE": "當前例項由於模組 {{param1}} ({{param2}}) 錯誤，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
-      "BOOTSTRAP_FAILED": "當前例項由於模組 {{param1}} 出現問題，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
-      "LOADING_CRASHED_FABRIC": "當前例項由於模組 {{param1}} 錯誤，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
-      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 及更高版本與當前已經安裝的模組可能不相容，你需要將 Fabric Loader 降級至 0.11.7。",
-      "MODLAUNCHER_8": "當前例項由於你所使用的 Forge 版本與當前使用的 Java 衝突而崩潰，請嘗試更新 Forge 到 36.2.26 或更高版本或換用版本低於 1.8.0.320 的 Java。",
-      "DEBUG_CRASH": "當前例項由於手動觸發崩潰，無法繼續執行。",
-      "CONFIG": "當前例項由於無法解析模組 {{param1}} 的配置檔案 {{param2}}，無法繼續執行。",
+      "GL_OPERATION_FAILURE": "目前實例由於你使用的某些模組/光影包/資源包/紋理包有問題，導致無法繼續執行。請先嘗試停用你所使用的模組/光影包/資源包/紋理包再試。",
+      "OPENGL_NOT_SUPPORTED": "目前實例由於你的顯示卡驅動不支援 OpenGL ，無法繼續執行。請檢查你的顯示卡驅動程式或嘗試使用其他繪製器。",
+      "GRAPHICS_DRIVER": "目前實例由於顯示卡驅動問題而崩潰，請更新顯示卡驅動程式。",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "目前實例由於 Apple Silicon 平臺下初始化 OpenGL 視窗失敗，無法繼續執行。",
+      "OUT_OF_MEMORY": "目前實例由於記憶體不足而崩潰，請嘗試降低遊戲記憶體分配或關閉其他程式。",
+      "MEMORY_EXCEEDED": "目前實例由於記憶體分配超過限制而崩潰，請嘗試降低遊戲記憶體分配或關閉其他程式。",
+      "RESOLUTION_TOO_HIGH": "目前實例由於解析度過高而無法執行，請解析度更低的資源包/紋理包再試。",
+      "JDK_9": "目前實例使用了 JDK 9 特性，無法在目前虛擬機器平臺上執行，請選擇 JDK 9 啟動。",
+      "MAC_JDK_8U261": "目前實例由於你所使用的 Forge/OptiFine 與 Java 衝突而崩潰。請嘗試更新 Forge/OptiFine ，或使用 Java 8u251 及更早版本啟動。",
+      "FILE_CHANGED": "目前實例由於檔案校驗失敗而無法執行，請檢查檔案完整性。",
+      "NO_SUCH_METHOD_ERROR": "目前實例由於程式碼不完整，無法繼續執行。你的遊戲可能缺失了某個模組，或者某些模組檔案不完整，或者模組與遊戲的版本不匹配。你可能需要重新安裝遊戲和模組，或尋求他人幫助。",
+      "NO_CLASS_DEF_FOUND_ERROR": "目前實例由於程式碼不完整，無法繼續執行。你的遊戲可能缺失了某個模組，或者某些模組檔案不完整，或者模組與遊戲的版本不匹配。你可能需要重新安裝遊戲和模組，或尋求他人幫助。",
+      "ILLEGAL_ACCESS_ERROR": "目前實例由於某些模組的問題，無法繼續執行，如果你認識 {{param1}}，你可以更新或刪除對應模組再試。",
+      "DUPLICATED_MOD": "目前實例由於模組 {{param1}} 重複安裝，無法繼續執行。請刪除多餘的模組再試。",
+      "MOD_RESOLUTION": "目前實例由於模組依賴問題，無法繼續執行。Fabric 提供瞭如下資訊：{{param1}}",
+      "FORGEMOD_RESOLUTION": "目前實例由於模組依賴問題，無法繼續執行。Forge/NeoForge 提供瞭如下資訊：{{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "目前實例由於模組重複安裝，無法繼續執行，Forge/NeoForge 提供瞭如下資訊：{{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "目前實例由於模組 {{param1}} 與 {{param2}} 衝突，無法繼續執行。",
+      "MOD_RESOLUTION_MISSING": "目前實例由於模組 {{param1}} 缺少前置模組 {{param2}}，無法繼續執行。",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "目前實例中模組 {{param1}} 需要 Minecraft {{param2}} 才能執行。",
+      "MOD_RESOLUTION_COLLECTION": "目前實例由於模組 {{param1}} 缺少前置模組 {{param2}}，無法繼續執行。",
+      "FILE_ALREADY_EXISTS": "目前實例由於 {{param}} 已經存在，無法繼續執行。如果你認為這個檔案可以刪除，你可以在備份這個檔案後嘗試刪除它，並重新啟動遊戲。",
+      "LOADING_CRASHED_FORGE": "目前實例由於模組 {{param1}} ({{param2}}) 錯誤，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
+      "BOOTSTRAP_FAILED": "目前實例由於模組 {{param1}} 出現問題，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
+      "LOADING_CRASHED_FABRIC": "目前實例由於模組 {{param1}} 錯誤，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 及更高版本與目前已經安裝的模組可能不相容，你需要將 Fabric Loader 降級至 0.11.7。",
+      "MODLAUNCHER_8": "目前實例由於你所使用的 Forge 版本與目前使用的 Java 衝突而崩潰，請嘗試更新 Forge 到 36.2.26 或更高版本或換用版本低於 1.8.0.320 的 Java。",
+      "DEBUG_CRASH": "目前實例由於手動觸發崩潰，無法繼續執行。",
+      "CONFIG": "目前實例由於無法解析模組 {{param1}} 的配置檔案 {{param2}}，無法繼續執行。",
       "FABRIC_WARNINGS": "Fabric 提供了一些警告資訊：{{param1}}",
-      "ENTITY": "當前例項由於某個實體（型別為 {{param1}}，位於 {{param2}}）不能正常工作，無法繼續執行。你可以嘗試透過 MCEdit 工具刪除該實體，或者直接刪除相應的模組。",
-      "BLOCK": "當前例項由於某個方塊（型別為 {{param1}}，位於 {{param2}}）不能正常工作，無法繼續執行。你可以嘗試透過 MCEdit 工具刪除該方塊，或者直接刪除相應的模組。",
-      "UNSATISFIED_LINK_ERROR": "當前例項由於缺少本地庫，無法繼續執行。這些缺失檔案包括：{{param1}}",
-      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "當前例項由於 OptiFine 與 Forge 不相容，無法繼續執行。請嘗試使用 OptiFine 的最新版本或不使用 OptiFine。",
-      "MOD_FILES_ARE_DECOMPRESSED": "當前例項由於模組檔案已被解壓縮，無法繼續執行。請直接把整個模組檔案放進模組資料夾中即可。",
-      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "當前例項可能由於 OptiFine 而無法繼續執行。該問題只在特定 OptiFine 版本中出現。",
-      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "當前例項由於你所安裝的模組過多，超出了遊戲的 ID 限制，無法繼續執行。請嘗試安裝 JEID 等修復模組，或刪除部分大型模組。",
-      "MODMIXIN_FAILURE": "當前例項由於某些模組注入失敗，無法繼續執行。請檢查模組相容性或嘗試更換模組。",
-      "MIXIN_APPLY_MOD_FAILED": "當前例項由於 Mixin 無法應用於模組 {{param1}}，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
+      "ENTITY": "目前實例由於某個實體（類型為 {{param1}}，位於 {{param2}}）不能正常工作，無法繼續執行。你可以嘗試透過 MCEdit 工具刪除該實體，或者直接刪除相應的模組。",
+      "BLOCK": "目前實例由於某個方塊（類型為 {{param1}}，位於 {{param2}}）不能正常工作，無法繼續執行。你可以嘗試透過 MCEdit 工具刪除該方塊，或者直接刪除相應的模組。",
+      "UNSATISFIED_LINK_ERROR": "目前實例由於缺少本機庫，無法繼續執行。這些缺失檔案包括：{{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "目前實例由於 OptiFine 與 Forge 不相容，無法繼續執行。請嘗試使用 OptiFine 的最新版本或不使用 OptiFine。",
+      "MOD_FILES_ARE_DECOMPRESSED": "目前實例由於模組檔案已被解壓縮，無法繼續執行。請直接把整個模組檔案放進模組目錄中即可。",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "目前實例可能由於 OptiFine 而無法繼續執行。該問題只在特定 OptiFine 版本中出現。",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "目前實例由於你所安裝的模組過多，超出了遊戲的 ID 限制，無法繼續執行。請嘗試安裝 JEID 等修復模組，或刪除部分大型模組。",
+      "MODMIXIN_FAILURE": "目前實例由於某些模組注入失敗，無法繼續執行。請檢查模組相容性或嘗試更換模組。",
+      "MIXIN_APPLY_MOD_FAILED": "目前實例由於 Mixin 無法應用於模組 {{param1}}，無法繼續執行。你可以嘗試刪除或更新該模組以解決問題。",
       "FORGE_ERROR": "Forge/NeoForge 提供了錯誤資訊：{{param1}}",
-      "MOD_RESOLUTION0": "當前例項由於一些模組出現問題，無法繼續執行。你可以檢視日誌尋找出錯模組。",
-      "FORGE_REPEAT_INSTALLATION": "當前例項由於 Forge / NeoForge 重複安裝，無法繼續執行。請刪除此例項後重新下載。",
-      "OPTIFINE_REPEAT_INSTALLATION": "當前例項由於 OptiFine 重複安裝，無法繼續執行。請刪除此例項後重新下載。",
-      "JAVA_VERSION_IS_TOO_HIGH": "當前例項由於 Java 版本過高，無法繼續執行。請使用 Java 8 或更低版本。",
-      "INSTALL_MIXINBOOTSTRAP": "當前例項由於 MixinBootstrap 未安裝，無法繼續執行。請安裝 MixinBootstrap 並重試。",
-      "MOD_NAME": "當前例項由於模組檔名稱問題，無法繼續執行。模組檔名稱應只使用半形的大小寫字母 (Aa~Zz)、數字 (0~9)、橫線 (-)、下劃線 (_)和點 (.)。請到模組資料夾中將所有不合規的模組檔名修改為上述合規字元。",
-      "INCOMPLETE_FORGE_INSTALLATION": "當前例項由於 Forge 安裝不完整，無法繼續執行。請嘗試重新安裝 Forge。",
-      "NIGHT_CONFIG_FIXES": "當前例項由於 Night Config 庫的一些問題，無法繼續執行。安裝 Night Config Fixes 模組或許能幫助你解決這個問題。",
-      "SHADERS_MOD": "當前例項由於同時安裝了 OptiFine 和 Shaders 模組，無法繼續執行。請嘗試刪除 Shaders 模組。",
-      "RTSS_FOREST_SODIUM": "當前例項由於 RTSS 與 Sodium 不相容，無法繼續執行。",
-      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "當前例項由於本地庫與系統架構不相容，無法繼續執行。",
-      "MAC_DS_STORE": "當前例項由於 Mac 系統的 .DS_Store 檔案導致問題，無法繼續執行。請刪除遊戲路徑下的 .DS_Store 檔案後重試。",
-      "LEVEL_DAT_CORRUPTED": "當前例項由於存檔檔案 level.dat 損壞，無法繼續執行。請嘗試修復存檔或從備份中恢復。",
-      "GL_OUT_OF_MEMORY": "當前例項由於 OpenGL 記憶體不足，無法繼續執行。請嘗試降低遊戲解析度、關閉光影或關閉其他程式。",
-      "MOD_JAVA_VERSION_MISMATCH": "當前例項由於模組與 Java 版本不匹配，無法繼續執行。請檢查模組要求的 Java 版本並進行相應調整。",
-      "DUPLICATE_MOD_INSTALLED": "當前例項由於重複安裝模組而無法繼續執行。請檢查模組列表並移除重複的模組。",
-      "MOD_ZIP_CORRUPTED": "當前例項由於模組壓縮包損壞，無法繼續執行。請嘗試重新下載模組。",
-      "MOD_INTERNET_ERROR": "當前例項由於模組下載失敗，無法繼續執行。請檢查網路連線或使用網路代理。",
-      "VICS_MODERN_WARFARE_ERROR": "當前例項由於 Vics Modern Warfare 模組錯誤，無法繼續執行。請嘗試更新或刪除該模組。",
-      "FORGE_LITELOADER_CONFLICT": "當前例項由於 Forge 與 LiteLoader 衝突，無法繼續執行。請嘗試刪除 LiteLoader 或更換 Forge 版本。",
+      "MOD_RESOLUTION0": "目前實例由於一些模組出現問題，無法繼續執行。你可以檢視日誌尋找出錯模組。",
+      "FORGE_REPEAT_INSTALLATION": "目前實例由於 Forge / NeoForge 重複安裝，無法繼續執行。請刪除此實例後重新下載。",
+      "OPTIFINE_REPEAT_INSTALLATION": "目前實例由於 OptiFine 重複安裝，無法繼續執行。請刪除此實例後重新下載。",
+      "JAVA_VERSION_IS_TOO_HIGH": "目前實例由於 Java 版本過高，無法繼續執行。請使用 Java 8 或更低版本。",
+      "INSTALL_MIXINBOOTSTRAP": "目前實例由於 MixinBootstrap 未安裝，無法繼續執行。請安裝 MixinBootstrap 並重試。",
+      "MOD_NAME": "目前實例由於模組檔名稱問題，無法繼續執行。模組檔名稱應只使用半形的大小寫字母 (Aa~Zz)、數字 (0~9)、橫線 (-)、底線 (_)和點 (.)。請到模組目錄中將所有不合規的模組檔名修改為上述合規字元。",
+      "INCOMPLETE_FORGE_INSTALLATION": "目前實例由於 Forge 安裝不完整，無法繼續執行。請嘗試重新安裝 Forge。",
+      "NIGHT_CONFIG_FIXES": "目前實例由於 Night Config 庫的一些問題，無法繼續執行。安裝 Night Config Fixes 模組或許能幫助你解決這個問題。",
+      "SHADERS_MOD": "目前實例由於同時安裝了 OptiFine 和 Shaders 模組，無法繼續執行。請嘗試刪除 Shaders 模組。",
+      "RTSS_FOREST_SODIUM": "目前實例由於 RTSS 與 Sodium 不相容，無法繼續執行。",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "目前實例由於本機庫與系統架構不相容，無法繼續執行。",
+      "MAC_DS_STORE": "目前實例由於 Mac 系統的 .DS_Store 檔案導致問題，無法繼續執行。請刪除遊戲路徑下的 .DS_Store 檔案後重試。",
+      "LEVEL_DAT_CORRUPTED": "目前實例由於存檔檔案 level.dat 損壞，無法繼續執行。請嘗試修復存檔或從備份中復原。",
+      "GL_OUT_OF_MEMORY": "目前實例由於 OpenGL 記憶體不足，無法繼續執行。請嘗試降低遊戲解析度、關閉光影或關閉其他程式。",
+      "MOD_JAVA_VERSION_MISMATCH": "目前實例由於模組與 Java 版本不匹配，無法繼續執行。請檢查模組要求的 Java 版本並進行相應調整。",
+      "DUPLICATE_MOD_INSTALLED": "目前實例由於重複安裝模組而無法繼續執行。請檢查模組清單並移除重複的模組。",
+      "MOD_ZIP_CORRUPTED": "目前實例由於模組壓縮檔損壞，無法繼續執行。請嘗試重新下載模組。",
+      "MOD_INTERNET_ERROR": "目前實例由於模組下載失敗，無法繼續執行。請檢查網路連線或使用 Proxy。",
+      "VICS_MODERN_WARFARE_ERROR": "目前實例由於 Vics Modern Warfare 模組錯誤，無法繼續執行。請嘗試更新或刪除該模組。",
+      "FORGE_LITELOADER_CONFLICT": "目前實例由於 Forge 與 LiteLoader 衝突，無法繼續執行。請嘗試刪除 LiteLoader 或更換 Forge 版本。",
       "UNKNOWN": "暫時無法分析該錯誤，請檢視遊戲日誌或匯出錯誤崩潰報告。"
     },
     "button": {
@@ -837,7 +837,7 @@
     "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖"
   },
   "GameLogPage": {
-    "placeholder": "輸入關鍵詞篩選",
+    "placeholder": "輸入關鍵字篩選",
     "revealRawLog": "顯示原始日誌檔案",
     "clearLogs": "清除所有日誌",
     "scrollToBottom": "滾動到底部"
@@ -853,8 +853,8 @@
     "add": "新增",
     "alert": {
       "noFullLogin": {
-        "title": "當前功能暫不可用",
-        "description": "請先登入微軟賬戶後使用此功能。"
+        "title": "目前功能暫不可用",
+        "description": "請先登入微軟帳戶後使用此功能。"
       }
     },
     "browse": "瀏覽",
@@ -877,7 +877,7 @@
     "dialog": {
       "filterName": {
         "image": "圖片檔案",
-        "modpack": "整合包"
+        "modpack": "模組包"
       }
     },
     "disable": "停用",
@@ -892,7 +892,7 @@
     "next": "下一步",
     "notice": "提示",
     "open": "開啟",
-    "openFolder": "開啟資料夾",
+    "openFolder": "開啟目錄",
     "previous": "上一步",
     "refresh": "重新整理",
     "revealFile": "在{{opener}}中顯示",
@@ -924,12 +924,12 @@
           "description": "啟用後，在資源下載介面嘗試顯示名稱或描述的簡體中文翻譯（如資料可用）"
         },
         "translatedFilenamePrefix": {
-          "title": "資原始檔名新增翻譯字首",
-          "description": "啟用後，下載與更新資源時將在檔名新增簡體中文譯名字首（如“[地圖] map.jar”）"
+          "title": "資源檔名新增譯名字首",
+          "description": "啟用後，下載與更新資源時將在檔名新增簡體中文譯名字首（如「[地圖] map.jar」）"
         },
         "skipFirstScreenOptions": {
-          "title": "自動設定例項語言",
-          "description": "啟用後，新建例項的語言將自動設定為簡體中文，這將同時跳過輔助功能設定"
+          "title": "自動設定實例語言",
+          "description": "啟用後，建立實例的語言將自動設定為簡體中文，這將同時跳過無障礙功能設定"
         }
       }
     },
@@ -939,19 +939,19 @@
         "discoverPage": {
           "title": "發現頁",
           "openNotice": {
-            "content": "頂部導航欄的 “搜尋” 已替換為 “發現”，您可以透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>S</key> 繼續使用 “聚合搜尋”。"
+            "content": "頂部導航欄的「搜尋」已取代為「發現」，您可以透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>S</key> 繼續使用「聚合搜尋」。"
           }
         },
         "instancesNavType": {
-          "title": "例項頁導航欄模式",
-          "description": "更改例項頁左側導航欄是否顯示、分組方式",
-          "instance": "按例項",
+          "title": "實例頁導航欄模式",
+          "description": "更改實例頁左側導航欄是否顯示、分組方式",
+          "instance": "按實例",
           "directory": "按目錄",
           "hidden": "隱藏"
         },
         "launchPageQuickSwitch": {
-          "title": "快捷切換例項與賬戶",
-          "description": "啟用後，點選啟動頁的切換按鈕可直接選擇賬戶或例項，而無需跳轉頁面"
+          "title": "快捷切換實例與帳戶",
+          "description": "啟用後，點選啟動頁的切換按鈕可直接選擇帳戶或實例，而無需跳轉頁面"
         }
       }
     },
@@ -978,9 +978,9 @@
       "settings": {
         "directories": {
           "special": {
-            "CURRENT_DIR": "當前資料夾",
-            "APP_DATA_SUBDIR": "SJMCL 資料資料夾",
-            "OFFICIAL_DIR": "官方啟動器資料夾"
+            "CURRENT_DIR": "目前目錄",
+            "APP_DATA_SUBDIR": "SJMCL 資料目錄",
+            "OFFICIAL_DIR": "官方啟動器目錄"
           }
         }
       },
@@ -1006,13 +1006,13 @@
       "settings": {
         "resolution": {
           "title": "遊戲解析度",
-          "switch": "全屏"
+          "switch": "全螢幕"
         },
         "customTitle": {
-          "title": "自定義視窗標題"
+          "title": "自訂視窗標題"
         },
         "customInfo": {
-          "title": "自定義資訊",
+          "title": "自訂資訊",
           "description": "將顯示在遊戲主介面左下角與 F3 除錯頁面左上角"
         }
       }
@@ -1028,10 +1028,10 @@
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
-          "description": "已用記憶體{{usedMemory}}GB；遊戲分配{{allocatedMemory}}GB；總記憶體{{totalMemory}}GB"
+          "description": "已用記憶體 {{usedMemory}} GB；遊戲分配 {{allocatedMemory}} GB；總記憶體 {{totalMemory}} GB"
         },
         "processPriority": {
-          "title": "程序優先順序",
+          "title": "處理程式優先度",
           "low": "低",
           "belowNormal": "較低",
           "normal": "中",
@@ -1042,7 +1042,7 @@
     },
     "versionIsolation": {
       "settings": {
-        "title": "啟用版本隔離"
+        "title": "啟用實例隔離"
       }
     },
     "moreOptions": {
@@ -1072,23 +1072,23 @@
   },
   "GuidedTourProvider": {
     "step1": {
-      "title": "例項頁",
-      "content": "在此處新增並選擇您的 Minecraft 遊戲例項，下載和管理各類遊戲資源"
+      "title": "實例頁",
+      "content": "在此處新增並選擇您的 Minecraft 遊戲實例，下載和管理各類遊戲資源"
     },
     "step2": {
-      "title": "賬戶頁",
-      "content": "在此處新增賬戶，選擇您想要遊玩的角色"
+      "title": "帳戶頁",
+      "content": "在此處新增帳戶，選擇您想要遊玩的角色"
     },
     "step3": {
       "title": "Minecraft，啟動！",
-      "content": "選中例項與角色、調整好相關設定後，點選啟動按鈕享受遊戲吧 🥳"
+      "content": "選中實例與角色、調整好相關設定後，點選啟動按鈕享受遊戲吧 🥳"
     }
   },
   "HeadNavBar": {
     "navList": {
       "launch": "啟動",
-      "instances": "例項",
-      "accounts": "賬戶",
+      "instances": "實例",
+      "accounts": "帳戶",
       "discover": "發現",
       "search": "搜尋",
       "settings": "設定"
@@ -1138,7 +1138,7 @@
   },
   "ImportAccountInfoModal": {
     "header": {
-      "title": "從其他啟動器匯入賬戶資訊"
+      "title": "從其他啟動器匯入帳戶資訊"
     },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher"
@@ -1148,19 +1148,19 @@
       "players": "角色"
     },
     "tooltips": {
-      "existingServer": "已存在相同地址的認證伺服器，匯入將會覆蓋資料",
-      "existingPlayer": "已存在相同 UUID 的角色，匯入將會覆蓋資料"
+      "existingServer": "已存在相同地址的認證伺服器，匯入將會覆寫資料",
+      "existingPlayer": "已存在相同 UUID 的角色，匯入將會覆寫資料"
     }
   },
   "ImportModpackModal": {
     "header": {
-      "title": "匯入整合包"
+      "title": "匯入模組包"
     },
     "label": {
-      "instanceSettings": "例項設定",
-      "modpackInfo": "整合包資訊",
-      "modpackName": "整合包名稱",
-      "modpackVersion": "整合包版本",
+      "instanceSettings": "實例設定",
+      "modpackInfo": "模組包資訊",
+      "modpackName": "模組包名稱",
+      "modpackVersion": "模組包版本",
       "author": "作者",
       "modLoader": "模組載入器",
       "gameVersion": "遊戲版本"
@@ -1171,9 +1171,9 @@
   },
   "InstanceDetailsLayout": {
     "secMenu": {
-      "createShortcut": "建立啟動快捷方式",
-      "exportModPack": "匯出為整合包",
-      "star": "星標此例項",
+      "createShortcut": "建立啟動捷徑",
+      "exportModPack": "匯出為模組包",
+      "star": "星標此實例",
       "unstar": "取消星標"
     },
     "instanceTabList": {
@@ -1187,16 +1187,16 @@
       "settings": "設定"
     },
     "button": {
-      "launch": "啟動例項"
+      "launch": "啟動實例"
     }
   },
   "InstanceIconSelector": {
-    "customize": "自定義影像"
+    "customize": "自訂圖像"
   },
   "InstanceMenu": {
     "label": {
-      "details": "例項詳情",
-      "delete": "刪除例項"
+      "details": "實例詳情",
+      "delete": "刪除實例"
     }
   },
   "InstanceModsPage": {
@@ -1230,20 +1230,20 @@
     }
   },
   "InstanceSettingsPage": {
-    "name": "例項名稱",
-    "description": "例項描述",
-    "icon": "例項圖示",
+    "name": "實例名稱",
+    "description": "實例描述",
+    "icon": "實例圖示",
     "applySettings": "啟用特定遊戲設定",
-    "restoreSettings": "重置以下特定設定",
-    "restoreSettingsDesc": "將以下特定設定重置為全域性遊戲設定",
-    "restore": "重置",
+    "restoreSettings": "重設以下特定設定",
+    "restoreSettingsDesc": "將以下特定設定重設為全域性遊戲設定",
+    "restore": "重設",
     "errorMessage": {
-      "error-1": "例項名稱不能為空",
-      "error-2": "例項名稱不合法",
-      "error-3": "例項名稱太長"
+      "error-1": "實例名稱不能為空",
+      "error-2": "實例名稱不合法",
+      "error-3": "實例名稱太長"
     },
     "tipsToGlobal": {
-      "content": "當前例項未啟用特定遊戲設定，<terms>前往全域性遊戲設定</terms>"
+      "content": "目前實例未啟用特定遊戲設定，<terms>前往全域性遊戲設定</terms>"
     }
   },
   "InstanceShaderPacksPage": {
@@ -1285,7 +1285,7 @@
   },
   "InstanceWorldsPage": {
     "worldList": {
-      "title": "本地世界",
+      "title": "本機世界",
       "lastPlayedAt": "上次遊玩於",
       "difficulty": {
         "peaceful": "和平",
@@ -1298,11 +1298,11 @@
         "survival": "生存模式",
         "creative": "創造模式",
         "adventure": "冒險模式",
-        "spectator": "觀察者模式"
+        "spectator": "旁觀者模式"
       },
       "gamemodeDesc": "，{{gamemode}}",
-      "difficultyDesc": "（難度：{{difficulty}}）",
-      "viewLevelData": "世界基礎資料",
+      "difficultyDesc": "（難易度：{{difficulty}}）",
+      "viewLevelData": "世界基本資料",
       "launch": "遊玩此世界"
     },
     "serverList": {
@@ -1325,11 +1325,11 @@
     "toast": {
       "addSuccess": {
         "title": "新增 Java 成功",
-        "description": "新增自定義 Java 路徑成功"
+        "description": "新增自訂 Java 路徑成功"
       },
       "addFailed": {
         "title": "新增 Java 失敗",
-        "invalid": "不是有效的 Java 可執行檔案或與當前平臺不相容",
+        "invalid": "不是有效的 Java 可執行檔案或與目前平臺不相容",
         "duplicated": "目標 Java 路徑已新增"
       }
     },
@@ -1341,19 +1341,19 @@
   "LaunchPage": {
     "button": {
       "launch": "啟動遊戲",
-      "instanceSettings": "例項設定"
+      "instanceSettings": "實例設定"
     },
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "切換角色",
         "addPlayer": "新增角色",
-        "switchInstance": "切換遊戲例項",
-        "addInstance": "新增遊戲例項"
+        "switchInstance": "切換遊戲實例",
+        "addInstance": "新增遊戲實例"
       }
     },
     "Text": {
       "noSelectedPlayer": "尚未選擇角色",
-      "noSelectedGame": "尚未選擇遊戲例項"
+      "noSelectedGame": "尚未選擇遊戲實例"
     }
   },
   "LaunchProcessModal": {
@@ -1361,9 +1361,9 @@
       "title": "啟動遊戲 - {{name}}"
     },
     "step": {
-      "selectSuitableJRE": "選擇合適 Java 執行時",
+      "selectSuitableJRE": "選擇合適的 Java 執行時",
       "validateGameFiles": "驗證遊戲與依賴檔案完整性",
-      "validateSelectedPlayer": "驗證賬戶狀態",
+      "validateSelectedPlayer": "驗證帳戶狀態",
       "launchGame": "等待遊戲啟動"
     },
     "toast": {
@@ -1378,12 +1378,12 @@
     "noVersionSelected": "未選擇版本"
   },
   "ManageSkinModal": {
-    "skinManage": "管理皮膚",
+    "skinManage": "管理外觀",
     "default": "預設",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "本地上傳",
-    "skin": "皮膚",
+    "upload": "本機上傳",
+    "skin": "外觀",
     "cape": "披風",
     "model": {
       "label": "模型",
@@ -1431,8 +1431,8 @@
   },
   "PlayerMenu": {
     "label": {
-      "manageSkin": "管理皮膚",
-      "viewSkin": "檢視皮膚",
+      "manageSkin": "管理外觀",
+      "viewSkin": "檢視外觀",
       "delete": "刪除此角色",
       "copyUUID": "複製 UUID"
     },
@@ -1474,7 +1474,7 @@
   },
   "RestartForUpdateConfirmDialog": {
     "title": "啟動器更新",
-    "body": "新版本已完成下載，重新啟動 SJMCL 以完成更新",
+    "body": "新版本已完成下載，重新開啟 SJMCL 以完成更新",
     "bodyMSI": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
     "button": {
       "restart": "重新啟動",
@@ -1486,7 +1486,7 @@
     "label": {
       "source": "下載源",
       "gameVer": "遊戲版本",
-      "tag": "型別",
+      "tag": "類型",
       "sortBy": "排序",
       "name": "名稱"
     },
@@ -1499,7 +1499,7 @@
         "Addons": "附屬模組",
         "Adventure and RPG": "冒險 RPG",
         "API and Library": "支援庫",
-        "Applied Energistics 2": "應用能源2",
+        "Applied Energistics 2": "應用能源 2",
         "Armor, Tools, and Weapons": "裝備 武器",
         "Automation": "自動化",
         "Biomes": "生物群系",
@@ -1518,7 +1518,7 @@
         "Forestry": "林業",
         "Galacticraft": "星系",
         "Genetics": "遺傳學",
-        "Industrial Craft": "工業時代2",
+        "Industrial Craft": "工業時代 2",
         "Integrated Dynamics": "整合動力",
         "KubeJS": "KubeJS",
         "Magic": "魔法",
@@ -1540,7 +1540,7 @@
         "Thermal Expansion": "熱力膨脹",
         "Tinker's Construct": "匠魂",
         "Twilight Forest": "暮色森林",
-        "Twitch Integration": "Twitch整合",
+        "Twitch Integration": "Twitch 整合",
         "Utility & QoL": "實用功能與最佳化",
         "World Gen": "世界生成",
         "Auxiliary": "輔助模組",
@@ -1572,7 +1572,7 @@
     "worldTagList": {
       "CurseForge": {
         "All": "全部",
-        "Types": "型別",
+        "Types": "類型",
         "Adventure": "冒險模式",
         "Creation": "創造模式",
         "Game Map": "遊戲挑戰",
@@ -1625,7 +1625,7 @@
         "fonts": "字型",
         "gui": "使用者介面",
         "items": "物品",
-        "locale": "本地化",
+        "locale": "在地化",
         "models": "模型",
         "combat": "戰鬥",
         "cursed": "詛咒",
@@ -1771,11 +1771,11 @@
     "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？"
   },
   "RestoreInstanceConfigConfirmDialog": {
-    "title": "重置例項設定",
-    "body": "此操作將會重置本例項的遊戲設定為當前全域性遊戲設定，您確定要繼續嗎？"
+    "title": "重設實例設定",
+    "body": "此操作將會重設本實例的遊戲設定為目前全域性遊戲設定，您確定要繼續嗎？"
   },
   "RevealConfigJsonConfirmDialog": {
-    "body": "請謹慎編輯啟動器原始設定檔案，錯誤的格式可能導致原有設定丟失或啟動器無法正常工作"
+    "body": "請謹慎編輯啟動器原始設定檔案，錯誤的格式可能導致原有設定遺失或啟動器無法正常工作"
   },
   "ScreenshotPreviewModal": {
     "menu": {
@@ -1827,26 +1827,26 @@
         }
       },
       "retrieveCustomBackgroundList": {
-        "success": "自定義背景列表獲取成功",
+        "success": "自訂背景清單獲取成功",
         "error": {
-          "title": "自定義背景列表獲取失敗"
+          "title": "自訂背景清單獲取失敗"
         }
       },
       "addCustomBackground": {
-        "success": "自定義背景新增成功",
+        "success": "自訂背景新增成功",
         "error": {
-          "title": "自定義背景新增失敗"
+          "title": "自訂背景新增失敗"
         }
       },
       "deleteCustomBackground": {
-        "success": "自定義背景刪除成功",
+        "success": "自訂背景刪除成功",
         "error": {
-          "title": "自定義背景刪除失敗"
+          "title": "自訂背景刪除失敗"
         }
       },
       "retrieveJavaList": {
         "error": {
-          "title": "Java 列表獲取失敗"
+          "title": "Java 清單獲取失敗"
         }
       },
       "validateJava": {
@@ -1876,7 +1876,7 @@
         "error": {
           "title": "清除下載快取失敗",
           "description": {
-            "HAS_ACTIVE_DOWNLOAD_TASKS": "當前有下載任務正在進行中，請稍後再試",
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "目前有下載任務正在進行中，請稍後再試",
             "FILE_DELETION_FAILED": "無法刪除快取檔案，可能是檔案正在被使用"
           }
         }
@@ -1885,7 +1885,7 @@
     "account": {
       "retrievePlayerList": {
         "error": {
-          "title": "獲取角色列表失敗"
+          "title": "獲取角色清單失敗"
         }
       },
       "addPlayerOffline": {
@@ -1895,17 +1895,17 @@
           "description": {
             "DUPLICATE": "角色已存在",
             "INVALID": "UUID 無效",
-            "TEXTURE_ERROR": "角色皮膚獲取失敗"
+            "TEXTURE_ERROR": "角色外觀獲取失敗"
           }
         }
       },
       "fetchOAuthCode": {
         "error": {
-          "title": "獲取認證程式碼失敗",
+          "title": "獲取認證代碼失敗",
           "description": {
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
-            "INVALID": "伺服器型別錯誤",
+            "INVALID": "伺服器類型錯誤",
             "NOT_FOUND": "認證伺服器不存在"
           }
         }
@@ -1934,7 +1934,7 @@
             "EXPIRED": "令牌已過期，請重新登入",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線至認證伺服器",
-            "INVALID": "不支援離線角色重新整理",
+            "INVALID": "離線角色不支援重新整理",
             "CANCELLED": "已取消",
             "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色"
           }
@@ -1948,7 +1948,7 @@
             "DUPLICATE": "角色已存在",
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
-            "INVALID": "賬號或密碼錯誤",
+            "INVALID": "帳號或密碼錯誤",
             "NOT_FOUND": "認證伺服器不存在",
             "EXPIRED": "令牌已過期，請重新登入"
           }
@@ -1963,7 +1963,7 @@
             "EXPIRED": "令牌已過期，請重新登入",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "連線認證伺服器失敗",
-            "INVALID": "賬號或密碼錯誤"
+            "INVALID": "帳號或密碼錯誤"
           }
         }
       },
@@ -1980,24 +1980,24 @@
         }
       },
       "updatePlayerSkinOfflinePreset": {
-        "success": "角色皮膚更新成功",
+        "success": "角色外觀更新成功",
         "error": {
-          "title": "角色皮膚更新失敗",
+          "title": "角色外觀更新失敗",
           "description": {
             "NOT_FOUND": "角色不存在",
-            "INVALID": "角色型別錯誤",
-            "TEXTURE_ERROR": "角色皮膚獲取失敗"
+            "INVALID": "角色類型錯誤",
+            "TEXTURE_ERROR": "角色外觀獲取失敗"
           }
         }
       },
       "updatePlayerSkinOfflineLocal": {
-        "success": "角色皮膚更新成功",
+        "success": "角色外觀更新成功",
         "error": {
-          "title": "角色皮膚更新失敗",
+          "title": "角色外觀更新失敗",
           "description": {
             "NOT_FOUND": "角色不存在",
-            "INVALID": "角色型別錯誤",
-            "TEXTURE_ERROR": "角色皮膚獲取失敗"
+            "INVALID": "角色類型錯誤",
+            "TEXTURE_ERROR": "角色外觀獲取失敗"
           }
         }
       },
@@ -2019,13 +2019,13 @@
             "EXPIRED": "令牌已過期，請重新登入",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線至認證伺服器",
-            "INVALID": "不支援離線角色重新整理"
+            "INVALID": "離線角色不支援重新整理"
           }
         }
       },
       "retrieveAuthServerList": {
         "error": {
-          "title": "獲取認證伺服器列表失敗"
+          "title": "獲取認證伺服器清單失敗"
         }
       },
       "fetchAuthServer": {
@@ -2060,25 +2060,25 @@
       },
       "retrieveOtherLauncherAccountInfo": {
         "error": {
-          "title": "獲取外部賬號資訊失敗",
+          "title": "獲取外部帳戶資訊失敗",
           "description": {
-            "NOT_FOUND": "讀取賬號資訊檔案錯誤"
+            "NOT_FOUND": "讀取帳戶資訊檔案錯誤"
           }
         }
       },
       "importExternalAccountInfo": {
-        "success": "外部賬戶資訊匯入成功",
+        "success": "外部帳戶資訊匯入成功",
         "error": {
-          "title": "外部賬號資訊匯入失敗"
+          "title": "外部帳戶資訊匯入失敗"
         }
       }
     },
     "launch": {
       "selectSuitableJRE": {
         "error": {
-          "title": "選擇合適 Java 執行時失敗",
+          "title": "選擇合適的 Java 執行時失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
             "NO_SUITABLE_JAVA": "沒有合適的 Java 執行時可供選擇",
             "SELECTED_JAVA_UNAVAILABLE": "手動選擇的 Java 執行時已移除或不可用"
           }
@@ -2090,9 +2090,9 @@
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模組載入器未完成安裝",
             "MOD_LOADER_LIB_NOT_DOWNLOADED": "模組載入器庫檔案未下載",
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "遊戲檔案不完整或缺失",
-            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失"
+            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態遺失"
           }
         }
       },
@@ -2106,7 +2106,7 @@
             "PARSE_ERROR": "伺服器返回的資料格式錯誤",
             "AUTHLIB_INJECTOR_NOT_READY": "下載 Authlib-Injector 失敗，請檢查網路連線",
             "SAVE_ERROR": "儲存 Authlib-Injector 失敗",
-            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失"
+            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態遺失"
           }
         }
       },
@@ -2114,7 +2114,7 @@
         "error": {
           "title": "啟動遊戲失敗",
           "description": {
-            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態丟失",
+            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態遺失",
             "AUTH_SERVER_NOT_FOUND": "認證伺服器不存在"
           }
         }
@@ -2123,7 +2123,7 @@
     "resource": {
       "fetchGameVersionList": {
         "error": {
-          "title": "獲取遊戲版本列表失敗",
+          "title": "獲取遊戲版本清單失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器"
@@ -2132,7 +2132,7 @@
       },
       "fetchGameVersionSpecific": {
         "error": {
-          "title": "獲取遊戲版本元資訊失敗",
+          "title": "獲取遊戲版本中繼資料失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器",
@@ -2142,7 +2142,7 @@
       },
       "fetchModLoaderVersionList": {
         "error": {
-          "title": "獲取模組載入器列表失敗",
+          "title": "獲取模組載入器清單失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器",
@@ -2152,7 +2152,7 @@
       },
       "fetchResourceListByName": {
         "error": {
-          "title": "獲取資源列表失敗",
+          "title": "獲取資源清單失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器",
@@ -2162,7 +2162,7 @@
       },
       "fetchResourceVersionPacks": {
         "error": {
-          "title": "獲取資源版本列表失敗",
+          "title": "獲取資源版本清單失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器",
@@ -2203,81 +2203,81 @@
     "instance": {
       "retrieveInstanceList": {
         "error": {
-          "title": "獲取例項列表失敗",
+          "title": "獲取實例清單失敗",
           "description": {
-            "INVALID_NAME_ERROR": "例項名稱無效",
-            "INVALID_SOURCE_PATH": "例項目錄無效",
-            "CONFLICT_NAME_ERROR": "當前例項目錄存在重名例項",
-            "FILE_MOVE_FAILED": "例項目錄移動失敗"
+            "INVALID_NAME_ERROR": "實例名稱無效",
+            "INVALID_SOURCE_PATH": "實例目錄無效",
+            "CONFLICT_NAME_ERROR": "目前實例目錄存在重名實例",
+            "FILE_MOVE_FAILED": "實例目錄移動失敗"
           }
         }
       },
       "createInstance": {
         "error": {
-          "title": "例項下載任務建立失敗",
+          "title": "實例下載任務建立失敗",
           "description": {
-            "CONFLICT_NAME_ERROR": "當前例項目錄存在重名例項",
-            "FOLDER_CREATION_FAILED": "目標資料夾建立失敗",
+            "CONFLICT_NAME_ERROR": "目前實例目錄存在重名實例",
+            "FOLDER_CREATION_FAILED": "目標目錄建立失敗",
             "FILE_CREATION_FAILED": "目標檔案建立失敗",
             "NETWORK_ERROR": "網路錯誤",
-            "CLIENT_JSON_PARSE_ERROR": "例項版本資訊解析錯誤",
+            "CLIENT_JSON_PARSE_ERROR": "實例版本資訊解析錯誤",
             "ASSET_INDEX_PARSE_ERROR": "資源索引檔案解析錯誤"
           }
         }
       },
       "updateInstanceConfig": {
         "error": {
-          "title": "例項設定更新失敗",
+          "title": "實例設定更新失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
-            "NOT_FOUND": "例項不存在"
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "NOT_FOUND": "實例不存在"
           }
         }
       },
       "retrieveInstanceGameConfig": {
         "error": {
-          "title": "例項遊戲設定獲取失敗",
+          "title": "實例遊戲設定獲取失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
           }
         }
       },
       "restoreInstanceGameConfig": {
-        "success": "例項遊戲設定已重置",
+        "success": "實例遊戲設定已重設",
         "error": {
-          "title": "例項遊戲設定重置失敗",
+          "title": "實例遊戲設定重設失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "未找到指定 ID 的例項",
-            "SAVE_ERROR": "儲存例項設定檔案失敗"
+            "INSTANCE_NOT_FOUND_BY_ID": "未找到指定 ID 的實例",
+            "SAVE_ERROR": "儲存實例設定檔案失敗"
           }
         }
       },
       "retrieveInstanceSubdirPath": {
         "error": {
-          "title": "獲取例項子目錄失敗",
+          "title": "獲取實例子目錄失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤"
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在或類型錯誤"
           }
         }
       },
       "deleteInstance": {
-        "success": "例項刪除成功",
+        "success": "實例刪除成功",
         "error": {
-          "title": "例項刪除失敗",
+          "title": "實例刪除失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
           }
         }
       },
       "renameInstance": {
         "error": {
-          "title": "例項重新命名失敗",
+          "title": "實例重新命名失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
-            "CONFLICT_NAME_ERROR": "當前例項目錄存在重名例項",
-            "INVALID_NAME_ERROR": "例項名稱無效",
-            "INVALID_SOURCE_PATH": "例項目錄無效",
-            "FILE_MOVE_FAILED": "例項目錄移動失敗"
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "CONFLICT_NAME_ERROR": "目前實例目錄存在重名實例",
+            "INVALID_NAME_ERROR": "實例名稱無效",
+            "INVALID_SOURCE_PATH": "實例目錄無效",
+            "FILE_MOVE_FAILED": "實例目錄移動失敗"
           }
         }
       },
@@ -2286,11 +2286,11 @@
         "error": {
           "title": "複製資源失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在或類型錯誤",
             "INVALID_SOURCE_PATH": "無效的源路徑",
             "ZIP_FILE_PROCESS_FAILED": "壓縮檔案讀取或解壓失敗",
-            "FILE_COPY_FAILED": "複製檔案命令執行失敗",
-            "FOLDER_CREATION_FAILED": "目標資料夾建立失敗"
+            "FILE_COPY_FAILED": "複製檔案指令執行失敗",
+            "FOLDER_CREATION_FAILED": "目標目錄建立失敗"
           }
         }
       },
@@ -2299,21 +2299,21 @@
         "error": {
           "title": "移動資源失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在或型別錯誤",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在或類型錯誤",
             "INVALID_SOURCE_PATH": "無效的源路徑",
-            "FILE_MOVE_FAILED": "移動檔案命令執行失敗",
-            "FOLDER_CREATION_FAILED": "目標資料夾建立失敗"
+            "FILE_MOVE_FAILED": "移動檔案指令執行失敗",
+            "FOLDER_CREATION_FAILED": "目標目錄建立失敗"
           }
         }
       },
       "retrieveWorldList": {
         "error": {
-          "title": "獲取世界列表失敗"
+          "title": "獲取世界清單失敗"
         }
       },
       "retrieveGameServerList": {
         "error": {
-          "title": "獲取伺服器列表失敗",
+          "title": "獲取伺服器清單失敗",
           "description": {
             "SERVER_NBT_READ_ERROR": "servers.dat 可能已損壞"
           }
@@ -2321,35 +2321,35 @@
       },
       "retrieveLocalModList": {
         "error": {
-          "title": "獲取模組列表失敗",
+          "title": "獲取模組清單失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
           }
         }
       },
       "retrieveResourcePackList": {
         "error": {
-          "title": "獲取資源包列表失敗"
+          "title": "獲取資源包清單失敗"
         }
       },
       "retrieveServerResourcePackList": {
         "error": {
-          "title": "獲取伺服器資源包列表失敗"
+          "title": "獲取伺服器資源包清單失敗"
         }
       },
       "retrieveSchematicList": {
         "error": {
-          "title": "獲取原理圖列表失敗"
+          "title": "獲取原理圖清單失敗"
         }
       },
       "retrieveShaderPackList": {
         "error": {
-          "title": "獲取著色器包列表失敗"
+          "title": "獲取著色器包清單失敗"
         }
       },
       "retrieveScreenshotList": {
         "error": {
-          "title": "獲取截圖列表失敗"
+          "title": "獲取截圖清單失敗"
         }
       },
       "toggleModByExtension": {
@@ -2371,12 +2371,12 @@
         }
       },
       "createLaunchDesktopShortcut": {
-        "success": "啟動快捷方式已新增到桌面",
+        "success": "啟動捷徑已新增到桌面",
         "error": {
-          "title": "啟動快捷方式建立失敗",
+          "title": "啟動捷徑建立失敗",
           "description": {
-            "SHORTCUT_CREATION_FAILED": "命令執行失敗",
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在"
+            "SHORTCUT_CREATION_FAILED": "指令執行失敗",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在"
           }
         }
       },
@@ -2386,8 +2386,8 @@
         "error": {
           "title": "模組載入器安裝失敗",
           "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例項 ID 不存在",
-            "INSTALLATION_DUPLICATED": "檢測到另一個程序已在安裝中",
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "INSTALLATION_DUPLICATED": "檢測到另一個程式已在安裝中",
             "MAIN_CLASS_NOT_FOUND": "主類未找到",
             "PROCESSOR_EXECUTION_FAILED": "安裝任務執行失敗",
             "LOADER_INSTALLER_NOT_FOUND": "載入器安裝程式不存在"
@@ -2398,7 +2398,7 @@
         "error": {
           "title": "無法更改模組載入器",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安裝的版本，無法解除安裝或更換"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由第三者安裝的版本，無法解除安裝或更換"
           }
         }
       },
@@ -2406,23 +2406,23 @@
         "error": {
           "title": "修改模組載入器失敗",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安裝的版本，無法解除安裝或更換"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由第三者安裝的版本，無法解除安裝或更換"
           }
         }
       },
       "retrieveModpackMetaInfo": {
         "error": {
-          "title": "獲取整合包資源資訊失敗",
+          "title": "獲取模組包資源資訊失敗",
           "description": {
-            "FILE_NOT_FOUND_ERROR": "整合包檔案不存在，可能已更名、移動或刪除",
-            "MODPACK_MANIFEST_PARSE_ERROR": "整合包清單檔案解析錯誤"
+            "FILE_NOT_FOUND_ERROR": "模組包檔案不存在，可能已更名、移動或刪除",
+            "MODPACK_MANIFEST_PARSE_ERROR": "模組包清單檔案解析錯誤"
           }
         }
       },
       "addCustomInstanceIcon": {
-        "success": "自定義例項圖示新增成功",
+        "success": "自訂實例圖示新增成功",
         "error": {
-          "title": "自定義例項圖示新增失敗"
+          "title": "自訂實例圖示新增失敗"
         }
       }
     },
@@ -2453,7 +2453,7 @@
     "settingsDomainList": {
       "global-game": "全域性遊戲設定",
       "java": "Java",
-      "general": "通用",
+      "general": "一般",
       "appearance": "外觀",
       "download": "下載資源",
       "sync-restore": "同步與還原",
@@ -2477,14 +2477,14 @@
       "pause": "暫停"
     },
     "error": {
-      "loadSkin": "載入皮膚失敗"
+      "loadSkin": "載入外觀失敗"
     }
   },
   "SpotlightSearchModal": {
     "input": {
       "placeholder": "聚合搜尋"
     },
-    "tip": "集中一處搜尋本地內容與線上遊戲資源",
+    "tip": "集中一處搜尋本機內容與線上遊戲資源",
     "empty": "無搜尋結果",
     "resource": {
       "mod": "搜尋關於 {{query}} 的模組",
@@ -2492,17 +2492,17 @@
       "resourcepack": "搜尋關於 {{query}} 的資源包",
       "shader": "搜尋關於 {{query}} 的光影",
       "datapack": "搜尋關於 {{query}} 的資料包",
-      "modpack": "搜尋關於 {{query}} 的整合包",
+      "modpack": "搜尋關於 {{query}} 的模組包",
       "curseforge": "在 CurseForge 上",
       "modrinth": "在 Modrinth 上"
     },
     "result": {
       "page": "頁面",
       "recentViewed": "最近訪問過",
-      "instance": "例項",
+      "instance": "實例",
       "player": "角色",
-      "curseforge": "在 CurseForge 上搜索",
-      "modrinth": "在 Modrinth 上搜索"
+      "curseforge": "在 CurseForge 上搜尋",
+      "modrinth": "在 Modrinth 上搜尋"
     }
   },
   "StarUsModal": {
@@ -2560,7 +2560,7 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "無效的執行路徑",
-      "content": "您正在臨時或非法目錄下執行 SJMCL，您的設定和遊戲資料可能丟失。請將 SJMCL 移動到其他位置後再次執行。"
+      "content": "您正在暫存或非法目錄下執行 SJMCL，您的設定和遊戲資料可能遺失。請將 SJMCL 移動到其他位置後再次執行。"
     }
   },
   "Utils": {
@@ -2589,7 +2589,7 @@
     }
   },
   "ViewSkinModal": {
-    "skinView": "檢視皮膚"
+    "skinView": "檢視外觀"
   },
   "WelcomeAndTermsModal": {
     "header": {
@@ -2608,7 +2608,7 @@
   },
   "WorldLevelDataModal": {
     "header": {
-      "title": "世界基礎資料 - {{worldName}}"
+      "title": "世界基本資料 - {{worldName}}"
     }
   }
 }
