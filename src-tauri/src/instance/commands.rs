@@ -928,7 +928,10 @@ pub async fn create_instance(
 
   // Download version info
   let mut version_info = client
-    .get(&game.url)
+    .get(&game.url.replace(
+      "zkitefly.github.io/unlisted-versions-of-minecraft",
+      "alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto",
+    ))
     .send()
     .await
     .map_err(|_| InstanceError::NetworkError)?
@@ -956,8 +959,11 @@ pub async fn create_instance(
     .ok_or(InstanceError::ClientJsonParseError)?;
 
   task_params.push(PTaskParam::Download(DownloadParam {
-    src: Url::parse(&client_download_info.url.clone())
-      .map_err(|_| InstanceError::ClientJsonParseError)?,
+    src: Url::parse(&client_download_info.url.replace(
+      "zkitefly.github.io/unlisted-versions-of-minecraft",
+      "alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto",
+    ))
+    .map_err(|_| InstanceError::ClientJsonParseError)?,
     dest: instance.version_path.join(format!("{}.jar", name)),
     filename: None,
     sha1: Some(client_download_info.sha1.clone()),
