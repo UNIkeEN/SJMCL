@@ -116,7 +116,14 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       icon: LuPackagePlus,
       label: t("InstanceDetailsLayout.secMenu.exportModPack"),
       danger: false,
-      onClick: () => {},
+      onClick: () => {
+        if (summary) {
+          openSharedModal("export-modpack", {
+            instanceId: summary.id,
+            instanceName: summary.name,
+          });
+        }
+      },
     },
     {
       icon: "delete",

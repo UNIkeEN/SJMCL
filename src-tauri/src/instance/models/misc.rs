@@ -284,3 +284,10 @@ pub struct OptiFine {
 }
 
 impl std::error::Error for InstanceError {}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModpackFileList {
+  pub all: Vec<String>,
+  pub unchecked: Vec<String>,
+}
