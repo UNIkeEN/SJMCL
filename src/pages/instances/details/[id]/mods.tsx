@@ -575,11 +575,13 @@ const InstanceModsPage = () => {
         summary={summary}
         localMods={localMods}
       />
-      <ChangeModLoaderModal
-        isOpen={isChangeModLoaderModalOpen}
-        onClose={onChangeModLoaderModalClose}
-        defaultSelectedType={targetLoaderType}
-      />
+      {isChangeModLoaderModalOpen && (
+        <ChangeModLoaderModal
+          isOpen={isChangeModLoaderModalOpen}
+          onClose={onChangeModLoaderModalClose}
+          defaultSelectedType={targetLoaderType}
+        />
+      )}
 
       {modInfoSelectedMod && (
         <ModInfoModal
