@@ -30,13 +30,11 @@ use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub async fn fetch_game_version_list(
-  app: AppHandle,
-  state: State<'_, Mutex<LauncherConfig>>,
-) -> SJMCLResult<Vec<GameClientResourceInfo>> {
+pub async fn fetch_game_version_list(app: AppHandle) -> SJMCLResult<Vec<GameClientResourceInfo>> {
   let priority_list = {
-    let state = state.lock()?;
-    get_source_priority_list(&state)
+    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
   };
   get_game_version_manifest(&app, &priority_list).await
 }
@@ -44,10 +42,9 @@ pub async fn fetch_game_version_list(
 #[tauri::command]
 pub async fn fetch_game_version_specific(
   app: AppHandle,
-  state: State<'_, Mutex<LauncherConfig>>,
   game_version: String,
 ) -> SJMCLResult<GameClientResourceInfo> {
-  let all_versions = fetch_game_version_list(app.clone(), state).await?;
+  let all_versions = fetch_game_version_list(app.clone()).await?;
 
   all_versions
     .into_iter()
