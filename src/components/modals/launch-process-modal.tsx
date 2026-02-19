@@ -31,6 +31,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { LaunchServiceError } from "@/enums/service-error";
 import { InstanceSummary } from "@/models/instance/misc";
 import { ResponseError } from "@/models/response";
 import { AccountService } from "@/services/account";
@@ -55,7 +56,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { selectedPlayer, getInstanceList } = useGlobalData();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog, closeSharedModal } =
+    useSharedModals();
 
   const [launchingInstance, setLaunchingInstance] = useState<InstanceSummary>();
   const [errorPaused, setErrorPaused] = useState<boolean>(false);
@@ -88,7 +90,18 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         function: () => LaunchService.selectSuitableJRE(instanceId),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
-        onErrCallback: (error: ResponseError) => {}, // TODO
+        onErrCallback: (error: ResponseError) => {
+          if (error.raw_error === LaunchServiceError.NoSuitableJava) {
+            openGenericConfirmDialog({
+              title: t("NoSuitableJavaDialog.title"),
+              body: t("NoSuitableJavaDialog.body"),
+              onOKCallback: () => {
+                router.push("/settings/java");
+                closeSharedModal("launch");
+              },
+            });
+          }
+        },
       },
       {
         label: "validateGameFiles",
@@ -152,13 +165,16 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
     ],
     [
       activeStep,
+      closeSharedModal,
       handleCloseModalWithCancel,
       instanceId,
+      openGenericConfirmDialog,
       openSharedModal,
       quickPlaySingleplayer,
       quickPlayMultiplayer,
       router,
       selectedPlayer,
+      t,
       toast,
     ]
   );
