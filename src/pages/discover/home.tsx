@@ -18,26 +18,21 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  LuChevronLeft,
-  LuChevronRight,
-  LuDownload,
-  LuRefreshCcw,
-  LuSparkles,
-} from "react-icons/lu";
+import { LuDownload, LuRefreshCcw, LuSparkles } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { OptionItem } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { NewsPostSummary } from "@/models/news-post";
 import { OtherResourceInfo } from "@/models/resource";
 import { DiscoverService } from "@/services/discover";
 import { ResourceService } from "@/services/resource";
 import { ISOToDate, formatRelativeTime } from "@/utils/datetime";
 import { translateTag } from "@/utils/resource";
-import { formatDisplayCount } from "@/utils/string";
+import { cleanHtmlText, formatDisplayCount } from "@/utils/string";
 
 type NewsCarouselProps = {
   title: string;
@@ -47,11 +42,39 @@ type NewsCarouselProps = {
   accentColor: string;
 };
 
+type IconProps = {
+  size: number;
+  direction: "left" | "right";
+  color?: string;
+  strokeWidth?: number;
+};
+
+const LongChevron = ({
+  size,
+  direction,
+  color = "currentColor",
+  strokeWidth = 2,
+}: IconProps) => {
+  const path =
+    direction === "left" ? "M10 5 L2 20 L10 35" : "M2 5 L10 20 L2 35";
+
+  return (
+    <svg width={size / 5} height={size} viewBox="0 0 12 40" fill="none">
+      <path
+        d={path}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+};
+
 const NewsCard = ({ post }: { post: NewsPostSummary | null }) => {
-  const surface = useColorModeValue("chakra-body-bg", "blackAlpha.300");
-  const stroke = useColorModeValue("gray.200", "whiteAlpha.200");
   const bannerHeight = useBreakpointValue(
-    { base: "32", lg: "48" },
+    { base: "32", lg: "40", xl: "48" },
     {
       fallback: "base",
     }
@@ -62,22 +85,20 @@ const NewsCard = ({ post }: { post: NewsPostSummary | null }) => {
       : undefined;
 
   const { t } = useTranslation();
+  const themedStyles = useThemedCSSStyle();
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   return (
     <Card
-      bg={surface}
-      borderWidth="1px"
-      borderColor={stroke}
-      borderRadius="xl"
-      overflow="hidden"
-      h="full"
-      display="flex"
-      flexDirection="column"
+      className={themedStyles.card["card-front"]}
+      h="100%"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
         openUrl(post?.link || "");
       }}
     >
-      <HStack align="center" justify="space-between" p={2}>
+      <HStack align="center" justify="space-between" mb={1.5}>
         <HStack spacing={1.5} align="center">
           <Avatar
             size="xs"
@@ -110,9 +131,35 @@ const NewsCard = ({ post }: { post: NewsPostSummary | null }) => {
           opacity={0.2}
         />
       )}
-      <Text fontSize="sm" noOfLines={2} m={2.5}>
-        {post?.title}
-      </Text>
+      <Box position="relative" px={1.5} pt={1.5} bg="inherit">
+        <Text fontSize="sm" noOfLines={2} visibility="hidden">
+          {post?.title}
+        </Text>
+        <Box
+          position="absolute"
+          insetX={0}
+          bottom={0}
+          bg="inherit"
+          transition="transform 200ms ease"
+          pt={1.5}
+        >
+          <Text fontSize="sm" noOfLines={2}>
+            {post?.title}
+          </Text>
+          <Text
+            fontSize="xs"
+            className="secondary-text"
+            noOfLines={4}
+            mt={isHovered ? 1 : 0}
+            opacity={isHovered ? 1 : 0}
+            maxH={isHovered ? "6em" : "0"}
+            overflow="hidden"
+            transition="opacity 180ms ease, max-height 180ms ease, margin-top 180ms ease"
+          >
+            {cleanHtmlText(post?.abstract || "")}
+          </Text>
+        </Box>
+      </Box>
     </Card>
   );
 };
@@ -124,9 +171,13 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
   onRefresh,
   accentColor,
 }) => {
-  const [page, setPage] = useState(0);
-  const itemsPerPage =
-    useBreakpointValue({ base: 1, md: 2, xl: 3 }, { fallback: "base" }) ?? 1;
+  const arrowHoverColor = useColorModeValue("gray.500", "gray.500");
+  const arrowColor = useColorModeValue("gray.400", "gray.600");
+  const arrowDisabledColor = useColorModeValue("gray.300", "gray.700");
+
+  const [page, setPage] = useState<number>(0);
+  const itemsPerPage = useBreakpointValue({ base: 2, xl: 3 }) ?? 2;
+  const longChevronSize = useBreakpointValue({ base: 80, xl: 100 }) ?? 80;
 
   const slides = useMemo(() => {
     const baseItems = posts.length > 0 ? posts : [];
@@ -147,10 +198,6 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
     return groups;
   }, [posts, itemsPerPage]);
 
-  useEffect(() => {
-    setPage(0);
-  }, [posts, itemsPerPage]);
-
   const trackWidth = `${slides.length * 100}%`;
   const pageWidth = slides.length > 0 ? 100 / slides.length : 100;
 
@@ -158,24 +205,19 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
   const canNext = page < slides.length - 1;
   const showArrows = slides.length > 1;
 
+  useEffect(() => {
+    setPage(0);
+  }, [posts, itemsPerPage]);
+
   return (
-    <Card
-      p={4}
-      borderRadius="xl"
-      bg={useColorModeValue("chakra-body-bg", "blackAlpha.400")}
-      borderWidth="1px"
-      borderColor={useColorModeValue("gray.200", "whiteAlpha.200")}
-      h="100%"
-    >
-      <Flex align="center" mb={4} gap={2}>
-        <VStack align="start" spacing={0} flex={1}>
-          <HStack spacing={2} align="center">
-            <Icon as={LuSparkles} color={accentColor} />
-            <Text fontSize="lg" fontWeight="bold">
-              {title}
-            </Text>
-          </HStack>
-        </VStack>
+    <Box h="100%">
+      <Flex align="center" mb={1}>
+        <HStack spacing={2} align="center" flex={1}>
+          <Icon as={LuSparkles} color={accentColor} />
+          <Text fontSize="md" fontWeight="bold">
+            {title}
+          </Text>
+        </HStack>
         <CommonIconButton
           icon={LuRefreshCcw}
           label="refresh"
@@ -192,7 +234,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
             w={trackWidth}
             transform={`translateX(-${page * pageWidth}%)`}
             transition="transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)"
-            gap={4}
+            gap={0}
           >
             {slides.map((group, index) => (
               <Grid
@@ -200,6 +242,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
                 templateColumns={`repeat(${itemsPerPage}, minmax(0, 1fr))`}
                 gap={4}
                 w={`${pageWidth}%`}
+                flex={`0 0 ${pageWidth}%`}
               >
                 {group.map((item, idx) => (
                   <Box
@@ -208,6 +251,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
                     onClick={() => {
                       if (item?.link) window.open(item.link, "_blank");
                     }}
+                    p={0.5}
                   >
                     <NewsCard post={item} />
                   </Box>
@@ -221,38 +265,48 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
           <>
             <IconButton
               aria-label="previous"
-              icon={<LuChevronLeft />}
-              size="sm"
-              variant="ghost"
+              icon={LongChevron({
+                size: longChevronSize,
+                direction: "left",
+              })}
+              variant="unstyled"
               position="absolute"
-              top="50%"
-              left={0}
-              transform="translateY(-50%)"
-              px={2}
+              top={0}
+              bottom={0}
+              h="100%"
+              left={-7}
               onClick={() => canPrev && setPage((p) => Math.max(0, p - 1))}
               isDisabled={!canPrev}
               zIndex={1}
+              color={arrowColor}
+              _hover={{ color: arrowHoverColor }}
+              _disabled={{ color: arrowDisabledColor, cursor: "not-allowed" }}
             />
             <IconButton
               aria-label="next"
-              icon={<LuChevronRight />}
-              size="sm"
-              variant="ghost"
+              icon={LongChevron({
+                size: longChevronSize,
+                direction: "right",
+              })}
+              variant="unstyled"
               position="absolute"
-              top="50%"
-              right={0}
-              transform="translateY(-50%)"
-              px={2}
+              top={0}
+              bottom={0}
+              h="100%"
+              right={-10}
               onClick={() =>
                 canNext && setPage((p) => Math.min(slides.length - 1, p + 1))
               }
               isDisabled={!canNext}
               zIndex={1}
+              color={arrowColor}
+              _hover={{ color: arrowHoverColor }}
+              _disabled={{ color: arrowDisabledColor, cursor: "not-allowed" }}
             />
           </>
         )}
       </Box>
-    </Card>
+    </Box>
   );
 };
 
@@ -441,7 +495,7 @@ export const HomePage = () => {
   }, [fetchCommunityNews, fetchMinecraftNews, fetchHotModpacks]);
 
   return (
-    <Section title={t("DiscoverLayout.discoverDomainList.home")}>
+    <Section title={t("DiscoverLayout.discoverDomainList.home")} px={4}>
       <VStack align="stretch" spacing={6} pb={4}>
         <VStack spacing={5} align="stretch">
           <NewsCarousel
