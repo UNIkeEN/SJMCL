@@ -17,49 +17,24 @@ def is_preserved(text):
     # URLs and Deeplinks
     return text.startswith(('http://', 'https://', 'ftp://', '//', 'sjmcl://', 'mailto:'))
 
-def convert_simplified_to_traditional(obj, existing_obj=None):
+def convert_simplified_to_traditional(obj, existing_obj=None, align_only=False):
     if isinstance(obj, dict):
         existing_dict = existing_obj if isinstance(existing_obj, dict) else {}
-        return {key: convert_simplified_to_traditional(value, existing_dict.get(key)) for key, value in obj.items()}
+        return {key: convert_simplified_to_traditional(value, existing_dict.get(key), align_only) for key, value in obj.items()}
     elif isinstance(obj, list):
         existing_list = existing_obj if isinstance(existing_obj, list) else []
-        return [convert_simplified_to_traditional(element, existing_list[i] if i < len(existing_list) else None) for i, element in enumerate(obj)]
+        return [convert_simplified_to_traditional(element, existing_list[i] if i < len(existing_list) else None, align_only) for i, element in enumerate(obj)]
     elif isinstance(obj, str):
+        if align_only and existing_obj is not None:
+            return existing_obj
         if is_preserved(obj):
             if existing_obj and isinstance(existing_obj, str) and is_preserved(existing_obj):
                 return existing_obj
             return obj
         return converter.convert(obj)
     else:
-        return obj
-
-def align_traditional(obj, existing_obj):
-    """Align only: keep existing values, add missing keys (via OpenCC), remove extra keys."""
-    if isinstance(obj, dict):
-        existing_dict = existing_obj if isinstance(existing_obj, dict) else {}
-        result = {}
-        for key, value in obj.items():
-            if key in existing_dict:
-                result[key] = align_traditional(value, existing_dict[key])
-            else:
-                result[key] = convert_simplified_to_traditional(value)
-        return result
-    elif isinstance(obj, list):
-        existing_list = existing_obj if isinstance(existing_obj, list) else []
-        result = []
-        for i, element in enumerate(obj):
-            if i < len(existing_list):
-                result.append(align_traditional(element, existing_list[i]))
-            else:
-                result.append(convert_simplified_to_traditional(element))
-        return result
-    else:
-        if existing_obj is not None:
+        if align_only and existing_obj is not None:
             return existing_obj
-        if isinstance(obj, str):
-            if is_preserved(obj):
-                return obj
-            return converter.convert(obj)
         return obj
 
 converter = OpenCC('s2twp')  # Conversion mode: 's2twp', Simplified Chinese to Traditional Chinese (Taiwan Standard) with Taiwanese idiom
@@ -86,10 +61,7 @@ if os.path.exists(output_path):
 with open(input_path, 'r', encoding='utf-8') as f:
     simplified_data = json.load(f)
 
-if args.align:
-    traditional_data = align_traditional(simplified_data, existing_traditional_data)
-else:
-    traditional_data = convert_simplified_to_traditional(simplified_data, existing_traditional_data)
+traditional_data = convert_simplified_to_traditional(simplified_data, existing_traditional_data, align_only=args.align)
 
 with open(output_path, 'w', encoding='utf-8') as f:
     json.dump(traditional_data, f, ensure_ascii=False, indent=2)
