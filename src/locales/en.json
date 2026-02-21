@@ -443,11 +443,30 @@
   "DevToolbar": {
     "tooltip": "Dev Toolbar"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "Discover",
     "noMore": "No more",
     "sources": "Manage Sources",
     "NoSources": "No source added"
+  },
+    "DiscoverHomePage" : {
+    "minecraft-news": "Minecraft News",
+    "community-news": "Community News",
+    "hotModpacks": "Hot Modpacks from {{source}}"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "Search",
+      "home": "Home",
+      "community-news": "Community",
+      "minecraft-news": "Minecraft News",
+      "modpack": "Modpacks",
+      "mod": "Mods",
+      "world": "Worlds",
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -484,9 +503,9 @@
     "resourceTypeList": {
       "world": "Worlds",
       "mod": "Mods",
-      "resourcepack": "Resourcepacks",
-      "shader": "Shaderpacks",
-      "datapack": "Datapacks"
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
     }
   },
   "DownloadSettingPage": {

@@ -13,6 +13,7 @@ import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { TaskContextProvider } from "@/contexts/task";
 import { ToastContextProvider } from "@/contexts/toast";
+import DiscoverLayout from "@/layouts/discover-layout";
 import InstanceDetailsLayout from "@/layouts/instance-details-layout";
 import InstancesLayout from "@/layouts/instances-layout";
 import MainLayout from "@/layouts/main-layout";
@@ -64,6 +65,7 @@ export default function App({ Component, pageProps }: AppProps) {
     key: string;
   }[] = useMemo(
     () => [
+      { prefix: "/discover", key: "discover" },
       { prefix: "/settings", key: "settings" },
       {
         prefix: "/instances/details",
@@ -79,6 +81,7 @@ export default function App({ Component, pageProps }: AppProps) {
     React.ComponentType<{ children: React.ReactNode }>[]
   > = useMemo(
     () => ({
+      discover: [DiscoverLayout],
       settings: [SettingsLayout],
       "instances-details": [InstancesLayout, InstanceDetailsLayout],
       instances: [InstancesLayout],
