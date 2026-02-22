@@ -141,6 +141,20 @@
       "endpointUrl": "Endpoint URL"
     }
   },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Add Game Server"
+    },
+    "serverAddressRequired": "Server address is required",
+    "label": {
+      "serverAddress": "Server Address",
+      "serverName": "Server Name"
+    },
+    "placeholder": {
+      "serverAddress": "Enter server address",
+      "serverName": "Minecraft Server"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "Add Player"
@@ -412,6 +426,16 @@
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Delete Authentication Server",
+      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "Delete Game Server",
+    "content": "Confirm delete the game server \"{{name}}\" ({{addr}}) ? It will be lost forever! (A long time!)"
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
@@ -432,12 +456,6 @@
     "dialog": {
       "title": "Delete Player",
       "content": "Confirm delete the player \"{{name}}\" ? This cannot be undone!"
-    }
-  },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "Delete Authentication Server",
-      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
   "DevToolbar": {
@@ -2316,6 +2334,28 @@
           "title": "Failed to retrieve game server list",
           "description": {
             "SERVER_NBT_READ_ERROR": "servers.dat may have been corrupted"
+          }
+        }
+      },
+      "addGameServer": {
+        "success": "Game server added successfully",
+        "error": {
+          "title": "Failed to add game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "DUPLICATE_SERVER": "Server already exists"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Game server deleted successfully",
+        "error": {
+          "title": "Failed to delete game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
           }
         }
       },

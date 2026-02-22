@@ -1,10 +1,15 @@
 use crate::error::SJMCLResult;
+use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
+use crate::instance::models::misc::InstanceSubdirType;
 use mc_server_status::{McClient, McError, ServerData, ServerEdition, ServerInfo, ServerStatus};
 use quartz_nbt::io::Flavor;
 use serde::{self, Deserialize, Serialize};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tauri::async_runtime;
+use tauri::AppHandle;
+
+pub const SERVERS_DAT_FILENAME: &str = "servers.dat";
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -46,7 +51,37 @@ impl From<NbtServerInfo> for GameServerInfo {
   }
 }
 
-pub async fn load_servers_info_from_path(path: &Path) -> SJMCLResult<Vec<GameServerInfo>> {
+impl From<GameServerInfo> for NbtServerInfo {
+  fn from(server: GameServerInfo) -> Self {
+    Self {
+      ip: server.ip,
+      icon: (!server.icon_src.is_empty()).then_some(server.icon_src),
+      name: server.name,
+      hidden: server.hidden,
+    }
+  }
+}
+
+impl From<&GameServerInfo> for NbtServerInfo {
+  fn from(server: &GameServerInfo) -> Self {
+    Self {
+      ip: server.ip.clone(),
+      icon: (!server.icon_src.is_empty()).then_some(server.icon_src.clone()),
+      name: server.name.clone(),
+      hidden: server.hidden,
+    }
+  }
+}
+
+pub fn get_servers_nbt_path_by_instance_id(
+  app: &AppHandle,
+  instance_id: &String,
+) -> Option<PathBuf> {
+  let game_root_dir = get_instance_subdir_path_by_id(app, instance_id, &InstanceSubdirType::Root)?;
+  Some(game_root_dir.join(SERVERS_DAT_FILENAME))
+}
+
+pub async fn load_servers_info_from_nbt(path: &Path) -> SJMCLResult<Vec<GameServerInfo>> {
   if !path.exists() {
     return Ok(Vec::new());
   }
@@ -60,6 +95,16 @@ pub async fn load_servers_info_from_path(path: &Path) -> SJMCLResult<Vec<GameSer
     .collect();
 
   Ok(game_server_list)
+}
+
+pub async fn save_servers_to_nbt(path: &Path, servers: &[GameServerInfo]) -> SJMCLResult<()> {
+  let servers_info = NbtServersInfo {
+    servers: servers.iter().map(NbtServerInfo::from).collect(),
+  };
+  let bytes = quartz_nbt::serde::serialize(&servers_info, None, Flavor::Uncompressed)?;
+  tokio::fs::write(path, bytes).await?;
+
+  Ok(())
 }
 
 /// Query multiple servers online status in parallel.

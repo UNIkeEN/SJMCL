@@ -15,11 +15,13 @@ export enum AccountServiceError {
 export enum InstanceError {
   InstanceNotFoundById = "INSTANCE_NOT_FOUND_BY_ID",
   ServerNbtReadError = "SERVER_NBT_READ_ERROR",
+  DuplicateServer = "DUPLICATE_SERVER",
   FileNotFoundError = "FILE_NOT_FOUND_ERROR",
   InvalidSourcePath = "INVALID_SOURCE_PATH",
   FileCreationFailed = "FILE_CREATION_FAILED",
   FileCopyFailed = "FILE_COPY_FAILED",
   FileMoveFailed = "FILE_MOVE_FAILED",
+  FileOperationError = "FILE_OPERATION_ERROR",
   FolderCreationFailed = "FOLDER_CREATION_FAILED",
   ShortcutCreationFailed = "SHORTCUT_CREATION_FAILED",
   ZipFileProcessFailed = "ZIP_FILE_PROCESS_FAILED",

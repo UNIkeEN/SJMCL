@@ -24,7 +24,8 @@ use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
 use crate::instance::helpers::server::{
-  load_servers_info_from_path, query_servers_online, GameServerInfo,
+  get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt, query_servers_online,
+  save_servers_to_nbt, GameServerInfo,
 };
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
@@ -419,14 +420,11 @@ pub async fn retrieve_game_server_list(
   query_online: bool,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   // query_online is false, return local data from nbt (servers.dat)
-  let game_root_dir =
-    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
-      Some(path) => path,
-      None => return Ok(Vec::new()),
-    };
-
-  let nbt_path = game_root_dir.join("servers.dat");
-  let mut game_servers = match load_servers_info_from_path(&nbt_path).await {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Ok(Vec::new()),
+  };
+  let mut game_servers = match load_servers_info_from_nbt(&nbt_path).await {
     Ok(servers) => servers,
     Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
@@ -440,6 +438,58 @@ pub async fn retrieve_game_server_list(
   }
 
   Ok(game_servers)
+}
+
+#[tauri::command]
+pub async fn delete_game_server(
+  app: AppHandle,
+  instance_id: String,
+  server_addr: String,
+) -> SJMCLResult<()> {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
+
+  existing_servers.retain(|server| server.ip != server_addr);
+  save_servers_to_nbt(&nbt_path, &existing_servers)
+    .await
+    .map_err(|_| InstanceError::FileOperationError)?;
+
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn add_game_server(
+  app: AppHandle,
+  instance_id: String,
+  server_addr: String,
+  server_name: String,
+) -> SJMCLResult<()> {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
+
+  if existing_servers
+    .iter()
+    .any(|server| server.ip == server_addr)
+  {
+    return Err(InstanceError::DuplicateServer.into());
+  }
+
+  existing_servers.push(GameServerInfo {
+    ip: server_addr,
+    name: server_name,
+    ..Default::default()
+  });
+  save_servers_to_nbt(&nbt_path, &existing_servers)
+    .await
+    .map_err(|_| InstanceError::FileOperationError)?;
+
+  Ok(())
 }
 
 #[tauri::command]

@@ -108,6 +108,8 @@ pub async fn run() {
       instance::commands::retrieve_world_list,
       instance::commands::retrieve_world_details,
       instance::commands::retrieve_game_server_list,
+      instance::commands::add_game_server,
+      instance::commands::delete_game_server,
       instance::commands::retrieve_local_mod_list,
       instance::commands::retrieve_resource_pack_list,
       instance::commands::retrieve_server_resource_pack_list,
