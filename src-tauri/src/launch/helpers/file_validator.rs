@@ -1,5 +1,6 @@
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::asset_index::load_asset_index;
+use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
@@ -8,10 +9,12 @@ use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
+use crate::storage::load_json_async;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
+use futures::stream::{self, StreamExt, TryStreamExt};
 use semver::Version;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
@@ -357,4 +360,43 @@ pub async fn get_invalid_assets(
     }
   }
   Ok(params)
+}
+
+pub async fn prepare_legacy_assets(
+  root_dir: &Path,
+  assets_dir: &Path,
+  assets_index_name: &str,
+) -> SJMCLResult<()> {
+  let target_root = match assets_index_name {
+    "legacy" => assets_dir.join("virtual/legacy"),
+    "pre-1.6" => root_dir.join("resources"),
+    _ => return Ok(()),
+  };
+
+  let objects_dir = assets_dir.join("objects");
+  let asset_index =
+    load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
+      .await?;
+
+  stream::iter(asset_index.objects.into_iter())
+    .map(Ok::<_, SJMCLError>)
+    .try_for_each_concurrent(None, move |(name, item)| {
+      let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));
+      let target = target_root.join(name);
+
+      async move {
+        if !fs::try_exists(&origin).await? || fs::try_exists(&target).await? {
+          return Ok::<(), SJMCLError>(());
+        }
+
+        if let Some(parent) = target.parent() {
+          fs::create_dir_all(parent).await?;
+        }
+        fs::copy(&origin, &target).await?;
+        Ok(())
+      }
+    })
+    .await?;
+
+  Ok(())
 }

@@ -1,55 +1,6 @@
-use futures::future::join_all;
 use lazy_static;
 use regex::Regex;
 use std::collections::HashMap;
-use std::path::Path;
-use tokio::fs;
-
-use crate::error::SJMCLResult;
-use crate::instance::helpers::asset_index::AssetIndex;
-use crate::storage::load_json_async;
-
-pub async fn check_virtual_assets(
-  root_dir: &Path,
-  assets_dir: &Path,
-  assets_index_name: &str,
-) -> SJMCLResult<()> {
-  if assets_index_name != "legacy" && assets_index_name != "pre-1.6" {
-    return Ok(());
-  }
-  let asset_index =
-    load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
-      .await?;
-
-  let futs = asset_index
-    .objects
-    .into_iter()
-    .map(|(name, item)| async move {
-      let path_in_repo = format!("{}/{}", &item.hash[..2], item.hash);
-      let origin = assets_dir.join(format!("objects/{}", path_in_repo));
-      let target = match assets_index_name {
-        "legacy" => assets_dir.join(format!("virtual/legacy/{}", name)),
-        "pre-1.6" => root_dir.join(format!("resources/{}", name)),
-        _ => unreachable!(),
-      };
-
-      if fs::try_exists(&origin).await? {
-        if !fs::try_exists(&target).await? {
-          copy_with_dirs(&origin, &target).await?;
-        }
-      }
-      Ok(())
-    });
-  let _: Vec<SJMCLResult<()>> = join_all(futs).await;
-  Ok(())
-}
-
-async fn copy_with_dirs(origin: &Path, target: &Path) -> std::io::Result<u64> {
-  if let Some(parent) = target.parent() {
-    fs::create_dir_all(parent).await?;
-  }
-  fs::copy(origin, target).await
-}
 
 pub fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Vec<String> {
   lazy_static::lazy_static!(

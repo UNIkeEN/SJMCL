@@ -6,7 +6,7 @@ use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
-use crate::launch::helpers::misc::{check_virtual_assets, get_separator, replace_arguments};
+use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::sys_info::get_memory_info;
@@ -357,8 +357,6 @@ pub async fn generate_launch_command(
       .ok_or(InstanceError::MainClassNotFound)?
       .clone(),
   );
-
-  check_virtual_assets(root_dir, assets_dir, &client_info.asset_index.id).await?;
 
   if let Some(client_args) = &client_info.arguments {
     let client_game_args = client_args.to_game_arguments(&launch_feature)?;
