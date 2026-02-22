@@ -8,7 +8,6 @@ import {
   Icon,
   IconButton,
   SimpleGrid,
-  Skeleton,
   Tag,
   Text,
   VStack,
@@ -18,11 +17,13 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuDownload, LuRefreshCcw, LuSparkles } from "react-icons/lu";
+import { LuDownload, LuRefreshCcw, LuSparkles, LuUpload } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { OptionItem } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
@@ -34,9 +35,21 @@ import { ISOToDate, formatRelativeTime } from "@/utils/datetime";
 import { translateTag } from "@/utils/resource";
 import { cleanHtmlText, formatDisplayCount } from "@/utils/string";
 
+// Number of items to display in HotModpackGrid and NewsCarousel
+const MAX_MODPACK_NUM = 6;
+const MAX_NEWS_POST_NUM = 6;
+
 type NewsCarouselProps = {
   title: string;
   posts: NewsPostSummary[];
+  loading: boolean;
+  onRefresh: () => void;
+  accentColor: string;
+};
+
+type HotModpackGridProps = {
+  title: string;
+  items: OtherResourceInfo[];
   loading: boolean;
   onRefresh: () => void;
   accentColor: string;
@@ -72,13 +85,9 @@ const LongChevron = ({
   );
 };
 
-const NewsCard = ({ post }: { post: NewsPostSummary | null }) => {
-  const bannerHeight = useBreakpointValue(
-    { base: "32", lg: "40", xl: "48" },
-    {
-      fallback: "base",
-    }
-  );
+const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
+  const bannerHeight =
+    useBreakpointValue({ base: "32", lg: "40", xl: "48" }) ?? "32";
   const banner =
     post?.imageSrc && Array.isArray(post.imageSrc)
       ? post.imageSrc[0]
@@ -150,10 +159,8 @@ const NewsCard = ({ post }: { post: NewsPostSummary | null }) => {
             fontSize="xs"
             className="secondary-text"
             noOfLines={4}
-            mt={isHovered ? 1 : 0}
-            opacity={isHovered ? 1 : 0}
+            mt={1}
             maxH={isHovered ? "6em" : "0"}
-            overflow="hidden"
             transition="opacity 180ms ease, max-height 180ms ease, margin-top 180ms ease"
           >
             {cleanHtmlText(post?.abstract || "")}
@@ -211,16 +218,15 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
 
   return (
     <Box h="100%">
-      <Flex align="center" mb={1}>
+      <Flex align="center" mb={2.5}>
         <HStack spacing={2} align="center" flex={1}>
           <Icon as={LuSparkles} color={accentColor} />
-          <Text fontSize="md" fontWeight="bold">
+          <Text fontSize="sm" fontWeight="bold">
             {title}
           </Text>
         </HStack>
         <CommonIconButton
           icon={LuRefreshCcw}
-          label="refresh"
           onClick={onRefresh}
           size="sm"
           fontSize="sm"
@@ -240,7 +246,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
               <Grid
                 key={index}
                 templateColumns={`repeat(${itemsPerPage}, minmax(0, 1fr))`}
-                gap={4}
+                gap={2}
                 w={`${pageWidth}%`}
                 flex={`0 0 ${pageWidth}%`}
               >
@@ -248,9 +254,6 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
                   <Box
                     key={`${index}-${idx}`}
                     cursor={item?.link ? "pointer" : "default"}
-                    onClick={() => {
-                      if (item?.link) window.open(item.link, "_blank");
-                    }}
                     p={0.5}
                   >
                     <NewsCard post={item} />
@@ -310,43 +313,45 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
   );
 };
 
-const HotModpackGrid = ({
+const HotModpackGrid: React.FC<HotModpackGridProps> = ({
+  title,
   items,
   loading,
+  onRefresh,
   accentColor,
-}: {
-  items: OtherResourceInfo[];
-  loading: boolean;
-  accentColor: string;
 }) => {
-  const surface = useColorModeValue("chakra-body-bg", "blackAlpha.500");
-  const stroke = useColorModeValue("gray.200", "whiteAlpha.200");
+  const { openSharedModal } = useSharedModals();
+  const themedStyles = useThemedCSSStyle();
+  const { config } = useLauncherConfig();
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
-  const renderItem = (item?: OtherResourceInfo, index?: number) => (
-    <Card
-      key={item?.id || index}
-      bg={surface}
-      borderWidth="1px"
-      borderColor={stroke}
-      borderRadius="xl"
-      boxShadow="sm"
-      p={4}
-    >
+  const renderItem = (item: OtherResourceInfo) => (
+    <Card className={themedStyles.card["card-front"]}>
       <OptionItem
         prefixElement={
-          <Skeleton isLoaded={!loading} borderRadius="md">
-            <Avatar
-              src={item?.iconSrc}
-              name={item?.name}
-              boxSize={12}
-              borderRadius="md"
-            />
-          </Skeleton>
+          <Avatar
+            src={item?.iconSrc}
+            name={item?.name}
+            boxSize={12}
+            borderRadius="md"
+          />
         }
-        title={item?.name}
+        title={
+          <Text fontSize="xs-sm" noOfLines={1}>
+            {item?.name}
+          </Text>
+        } // No translation for name of modpacks
         titleExtra={
           item && (
-            <Tag size="sm" colorScheme={accentColor} variant="subtle">
+            <Tag
+              size="sm"
+              colorScheme={accentColor}
+              variant="subtle"
+              whiteSpace="nowrap"
+              flexShrink={0}
+            >
               {translateTag(
                 item.tags.filter((tag) =>
                   translateTag(tag, item.type, item.source)
@@ -358,46 +363,64 @@ const HotModpackGrid = ({
           )
         }
         description={
-          <Skeleton isLoaded={!loading} borderRadius="md">
-            <Text fontSize="xs" className="secondary-text" noOfLines={2}>
-              {item?.description}
+          <VStack
+            fontSize="xs"
+            className="secondary-text"
+            spacing={1}
+            align="flex-start"
+            w="100%"
+            mt={0.5}
+          >
+            <Text overflow="hidden" className="ellipsis-text">
+              {(showZhTrans && item.translatedDescription) || item.description}
             </Text>
-          </Skeleton>
+            <Flex align="center" w="100%">
+              <HStack spacing={1} w="50%">
+                <LuUpload />
+                <Text>{ISOToDate(item.lastUpdated)}</Text>
+              </HStack>
+              <HStack spacing={1} w="50%">
+                <LuDownload />
+                <Text>{formatDisplayCount(item.downloads)}</Text>
+              </HStack>
+            </Flex>
+          </VStack>
         }
         titleLineWrap={false}
         isFullClickZone
-        onClick={() => {
-          if (item?.websiteUrl) window.open(item.websiteUrl, "_blank");
-        }}
-        maxDescriptionLines={2}
-        isChildrenIndependent
+        onClick={() =>
+          openSharedModal("download-specific-resource", {
+            resource: item,
+          })
+        }
+        fontWeight="400"
       />
-      <HStack spacing={3} align="center">
-        <Skeleton isLoaded={!loading} borderRadius="md">
-          <HStack spacing={1} fontSize="xs" className="secondary-text">
-            <Icon as={LuDownload} />
-            <Text>{formatDisplayCount(item?.downloads ?? 0)}</Text>
-          </HStack>
-        </Skeleton>
-        <Skeleton isLoaded={!loading} borderRadius="md">
-          <Text fontSize="xs" className="secondary-text">
-            {item?.lastUpdated ? ISOToDate(item.lastUpdated) : ""}
-          </Text>
-        </Skeleton>
-      </HStack>
     </Card>
   );
 
-  const skeletons = Array.from({ length: 6 }, (_, i) =>
-    renderItem(undefined, i)
-  );
-
   return (
-    <SimpleGrid columns={{ base: 1, lg: 2 }} gap={4} w="100%">
-      {loading
-        ? skeletons
-        : items.map((item, index) => renderItem(item, index))}
-    </SimpleGrid>
+    <Section
+      title={title}
+      headExtra={
+        <CommonIconButton
+          icon={LuRefreshCcw}
+          onClick={onRefresh}
+          size="sm"
+          fontSize="sm"
+          isDisabled={loading}
+        />
+      }
+    >
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} gap={3} w="100%">
+        {loading ? (
+          <VStack gridColumn="1 / -1" my={6}>
+            <BeatLoader size={16} color="gray" />
+          </VStack>
+        ) : (
+          items.map(renderItem)
+        )}
+      </SimpleGrid>
+    </Section>
   );
 };
 
@@ -433,7 +456,7 @@ export const HomePage = () => {
 
       const response = await DiscoverService.fetchNewsPostSummaries(sources);
       if (response.status === "success") {
-        setCommunityPosts(response.data.posts.slice(0, 6));
+        setCommunityPosts(response.data.posts.slice(0, MAX_NEWS_POST_NUM));
       }
     } finally {
       setIsLoadingCommunity(false);
@@ -465,7 +488,7 @@ export const HomePage = () => {
             : "relevance",
           source,
           0,
-          6
+          MAX_MODPACK_NUM
         );
         if (response.status === "success") {
           source === OtherResourceSource.CurseForge
@@ -497,7 +520,7 @@ export const HomePage = () => {
   return (
     <Section title={t("DiscoverLayout.discoverDomainList.home")} px={4}>
       <VStack align="stretch" spacing={6} pb={4}>
-        <VStack spacing={5} align="stretch">
+        <VStack spacing={6} align="stretch">
           <NewsCarousel
             title={t("DiscoverHomePage.minecraft-news")}
             posts={mcPosts}
@@ -514,48 +537,21 @@ export const HomePage = () => {
           />
         </VStack>
 
-        <VStack spacing={5} align="stretch">
-          <Section
+        <VStack spacing={6} align="stretch">
+          <HotModpackGrid
             title={t("DiscoverHomePage.hotModpacks", { source: "CurseForge" })}
-            headExtra={
-              <CommonIconButton
-                icon={LuRefreshCcw}
-                label="refresh-cf-modpacks"
-                onClick={() => fetchHotModpacks(OtherResourceSource.CurseForge)}
-                size="sm"
-                fontSize="sm"
-                isDisabled={isLoadingCfModpacks}
-              />
-            }
-            mt={1}
-          >
-            <HotModpackGrid
-              items={cfModpacks}
-              loading={isLoadingCfModpacks}
-              accentColor={primaryColor}
-            />
-          </Section>
-
-          <Section
+            items={cfModpacks}
+            loading={isLoadingCfModpacks}
+            onRefresh={() => fetchHotModpacks(OtherResourceSource.CurseForge)}
+            accentColor={primaryColor}
+          />
+          <HotModpackGrid
             title={t("DiscoverHomePage.hotModpacks", { source: "Modrinth" })}
-            headExtra={
-              <CommonIconButton
-                icon={LuRefreshCcw}
-                label="refresh-mr-modpacks"
-                onClick={() => fetchHotModpacks(OtherResourceSource.Modrinth)}
-                size="sm"
-                fontSize="sm"
-                isDisabled={isLoadingMrModpacks}
-              />
-            }
-            mt={1}
-          >
-            <HotModpackGrid
-              items={mrModpacks}
-              loading={isLoadingMrModpacks}
-              accentColor={primaryColor}
-            />
-          </Section>
+            items={mrModpacks}
+            loading={isLoadingMrModpacks}
+            onRefresh={() => fetchHotModpacks(OtherResourceSource.Modrinth)}
+            accentColor={primaryColor}
+          />
         </VStack>
       </VStack>
     </Section>
