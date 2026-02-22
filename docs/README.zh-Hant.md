@@ -11,14 +11,14 @@
 ## 功能特性
 
 * **跨平臺支援**：相容 Windows 10/11、macOS 與 Linux。
-* **高效的例項管理**：支援多個遊戲目錄與例項，集中管理所有例項資源（如存檔、模組、資源包、光影包、截圖等）與設定。
-* **便捷的資源下載**：支援從 CurseForge 與 Modrinth 等源下載遊戲客戶端、Mod 載入器、各類遊戲資源與整合包。
-* **多賬戶系統支援**：內建 Microsoft 登入與第三方認證伺服器支援，相容 Yggdrasil Connect 的 OAuth 登入流程規範提案。
-* **深度連結整合**：可與外部網站與工具集聯動，支援透過系統深度連結、桌面快捷方式一鍵啟動例項等便捷功能。
+* **高效的實例管理**：支援多個遊戲目錄與實例，集中管理所有實例資源（如存檔、模組、資源包、光影包、截圖等）與設定。
+* **便捷的資源下載**：支援從 CurseForge 與 Modrinth 等源下載遊戲用戶端、模組載入器、各類遊戲資源與模組包。
+* **多帳戶系統支援**：內建 Microsoft 登入與第三方認證伺服器支援，相容 Yggdrasil Connect 的 OAuth 登入流程規範提案。
+* **深度連結整合**：可與外部網站與工具集同步，支援透過系統深度連結、桌面捷徑一鍵啟動實例等便捷功能。
 
-> 注意：部分功能可能受地區、執行平臺或程式分發型別限制。
+> 注意：部分功能可能受地區、執行平臺或程式發行類型限制。
 
-### 技術棧
+### 技術堆疊
 
 [![Tauri](https://img.shields.io/badge/Tauri-v2-FFC131?style=for-the-badge&logo=tauri&logoColor=white&labelColor=24C8DB)](https://tauri.app/)
 [![Next JS](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
@@ -32,17 +32,17 @@
 
 SJMCL 目前支援以下平臺：
 
-| 平臺    | 系統版本            | 架構               | 提供的的分發型別                              |
+| 平臺    | 系統版本            | 架構               | 提供的的發行類型                              |
 |---------|---------------------|--------------------|--------------------------------------------|
 | Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`   | 安裝版 `.exe`，便攜版 `.exe` |
 | macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`                   |
 | Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便攜版二進位制檔案 |
 
-瞭解更多功能與常見問題，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/zh/docs)。
+了解更多功能與常見問題，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/zh/docs)。
 
 ### Windows 7
 
-若您需要在 Windows 7 上執行 SJMCL，請先 [下載 Microsoft Edge WebView2 運行時](https://developer.microsoft.com/zh-tw/microsoft-edge/webview2#download) 並安裝，建議選擇「常青引導程式」。
+若您需要在 Windows 7 上執行 SJMCL，請先 [下載 Microsoft Edge WebView2 執行時](https://developer.microsoft.com/zh-tw/microsoft-edge/webview2#download) 並安裝，建議選擇「常青引導程式」。
 
 <details>
 <summary><h3>從命令列安裝</h3></summary>
@@ -69,7 +69,7 @@ makepkg -si
 
 ## 開發與貢獻
 
-首先克隆本專案並安裝前端依賴：
+首先複製（clone）本專案並安裝前端依賴：
 
 ```bash
 git clone git@github.com:UNIkeEN/SJMCL.git
@@ -88,9 +88,9 @@ npm run tauri dev
 * API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/zh/dev)。
 * 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
 
-### 倉庫活動
+### 專案活動
 
-![倉庫活動](https://repobeats.axiom.co/api/embed/ee2f4be0fbc708179a6b40c83cd8ce80702fe6fe.svg "Repobeats analytics image")
+![專案活動](https://repobeats.axiom.co/api/embed/ee2f4be0fbc708179a6b40c83cd8ce80702fe6fe.svg "Repobeats analytics image")
 
 ## 版權宣告
 
@@ -98,13 +98,13 @@ npm run tauri dev
 
 > 本軟體並非官方 Minecraft 服務。未獲得 Mojang 或 Microsoft 批准或關聯許可。
 
-本專案基於 [GNU 通用公共許可證 v3.0](../LICENSE) 釋出。
+本專案基於 [GNU 通用公眾授權條款 v3.0](../LICENSE) 釋出。
 
 依據 GPLv3 第 7 條款，當您分發本軟體的修改版本時，除遵守 GPLv3 外，還須遵守以下 [附加條款](../LICENSE.EXTRA)：
 
 1. 必須更換軟體名稱，禁止使用 SJMCL 或 SJMC Launcher；
-2. 在您的倉庫 README、分發網站或相關文件、軟體的關於頁面中，須明確標註您的程式基於 SJMCL，並註明原倉庫連結。
-3. 當對本軟件的修改僅限於**增加**（而非修改或刪除）預置認證伺服器（`src-tauri/src/account/helpers/authlib_injector/constants.rs`）時，前述第 1 條之限制不適用。在此情形下，您得繼續使用原始軟體名稱進行編譯與分發。
+2. 在您的專案 README、分發網站或相關文件、軟體的關於頁面中，須明確標註您的程式基於 SJMCL，並註明原專案連結。
+3. 當對本軟體的修改僅限於**增加**（而非修改或刪除）預置認證伺服器（`src-tauri/src/account/helpers/authlib_injector/constants.rs`）時，前述第 1 條之限制不適用。在此情形下，您得繼續使用原始軟體名稱進行編譯與分發。
 
 另根據我們網站的使用者協議，當您分發本軟體的修改版本時，請僅向我們的資訊統計伺服器（`src-tauri/src/utils/sys_info.rs`）傳送帶字首（不少於兩個字母，如 `XX-0.0.1`）的版本號，除非您的修改滿足上述第 3 條限制。
 

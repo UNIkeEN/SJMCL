@@ -14,6 +14,7 @@ import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
 import HeadNavBar from "@/components/head-navbar";
 import StarUsModal from "@/components/modals/star-us-modal";
+import UnavailableExePathAlertDialog from "@/components/modals/unavailable-exe-path-alert-dialog";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { isDev } from "@/utils/env";
@@ -24,6 +25,7 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
+  const isStandAlone = router.pathname.startsWith("/standalone");
   const { config, update } = useLauncherConfig();
   const { colorMode } = useColorMode();
   const isDarkenBg =
@@ -31,7 +33,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
-  const isStandAlone = router.pathname.startsWith("/standalone");
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -45,8 +46,20 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onClose: onStarUsModalClose,
   } = useDisclosure();
 
-  // update run count, conditionally show some modals.
+  const {
+    isOpen: isUnavailableExePathAlertDialogOpen,
+    onOpen: onUnavailableExePathAlertDialogOpen,
+    onClose: onUnavailableExePathAlertDialogClose,
+  } = useDisclosure();
+
   useEffect(() => {
+    // running in unavailable path, show alert dialog.
+    if (!config.mocked && !config.basicInfo.isExePathAvailable) {
+      onUnavailableExePathAlertDialogOpen();
+      isCheckedRunCount.current = true; // skip run count check below
+    }
+
+    // update run count, conditionally show some modals.
     if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
       if (!config.runCount) {
         setTimeout(() => {
@@ -66,7 +79,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   }, [
     config.mocked,
     config.runCount,
+    config.basicInfo.isExePathAvailable,
     isStandAlone,
+    onUnavailableExePathAlertDialogOpen,
     onWelcomeAndTermsModalOpen,
     onStarUsModalOpen,
     update,
@@ -202,6 +217,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         onClose={onWelcomeAndTermsModalClose}
       />
       <StarUsModal isOpen={isStarUsModalOpen} onClose={onStarUsModalClose} />
+      <UnavailableExePathAlertDialog
+        isOpen={isUnavailableExePathAlertDialogOpen}
+        onClose={onUnavailableExePathAlertDialogClose}
+      />
 
       {isDev && <DevToolbar />}
     </Flex>

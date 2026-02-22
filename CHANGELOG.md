@@ -2,6 +2,53 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 0.8.0
+
+`2025-01-19`
+
+- 🔥 Support importing profiles and authentication server information from HMCL (experimental). #1255 @xunying123 @UNIkeEN
+- 🌟 Support choosing whether to prepend Simplified Chinese translated prefixes to filenames when downloading and updating resources. #1299 @SundayChen
+- 🌟 Support searching by Chinese translated names in the instance mod list page. #1305 @icgnos
+- 🛠 Optimize the ordering of options in the general settings page. #1299 @UNIkeEN @funkthesky-ops @RobertZhang0901
+- 🐛 Fix an issue where duplicate authentication servers could be added, by applying stricter address duplication checks. #1309 @UNIkeEN
+- 🐛 Fix formatting issues in the changelog under Simplified Chinese. #1313 @icgnos
+- 🐛 Fix an issue where the close button of the launch modal was obscured for instances with long names. #1314 @UNIkeEN
+- 📦 Bundle dedicated OAuth client IDs for some MUA university authentication servers.
+- Workflow:
+   - Fix a series of issues in the release workflow. #1293 #1300 @pangbo13
+   - Add Arm64 distribution support for AUR and fix related issues. #1307 #1308 @KodateMitsuru
+
+## 0.7.0
+
+`2025-01-08`
+
+- **🔥 Support downloading and installing the OptiFine loader when creating an instance. #1149 #1288** @xunying123 @Reqwey @UNIkeEN
+- **🔥 Add support for the Linux Arm64 platform. #1249** @pangbo13 @Minecrafter-Pythoner
+- 🌟 Add LittleSkin as a built-in third-party authentication server. #1214 @tnqzh123
+- 🌟 Add an OpenGL compatibility notice on first launch on Windows on Arm platforms. #1225 #1263 @UNIkeEN
+- 🌟 Add a layered, pseudo-3D visual effect to player avatars. #1227 @Reqwey
+- 🌟 Support replacing instance icons with custom images. #1228 #1244 @UNIkeEN
+- 🌟 Support importing special modpacks without a mod loader. #1235 @Reqwey
+- 🌟 When no instances or accounts exist, allow quickly adding an instance or account directly from the launch page. #1269 @UNIkeEN @RobertZhang0901 @funkthesky-ops
+- 🌟 Add dynamic multi-language support to the titles of the game log and crash report windows. #1282 @UNIkeEN
+- 🐛 Filter out certain invalid filenames before downloading resources. #1229 @UNIkeEN
+- 🐛 Fix an issue where some external instances failed to launch due to a missing `java_version` field in the version metadata file. #1242 @UNIkeEN
+- 🐛 Fix an issue on macOS and Linux where the add Java dialog could not select the target file. #1248 @UNIkeEN
+- 🐛 Fix an issue for game version `26.1-snapshot.1` where the corresponding NeoForge version could not be fetched from official sources and was incorrectly shown as a stable release. #1260 @UNIkeEN
+- 🐛 Fix display issues in the level data modal. #1264 @UNIkeEN
+- 🐛 Fix an issue on Windows where the launcher window position could not be recognized or captured by QQNT. #1270 @HsxMark
+- 🐛 Fix display and logic issues related to loader version numbers in mod loader switching and instance creation modals. #1287 @UNIkeEN
+- 🐛 Fix an issue on Linux where custom launcher background image could not be displayed. #1292 @UNIkeEN @KodateMitsuru
+- 🐛 Fix issues on macOS and Linux where certain game or resource directories could not be opened. #1292 @UNIkeEN @Stya-hr
+- 🛠 For Simplified Chinese users, set the “Automatically set instance language” option to enabled by default. #1234 @Nova-Squ1
+- 🛠 Adjust the storage locations for launcher logs and game logs. #1238 @UNIkeEN
+- 🛠 Compute and include the launcher's own SHA-256 hash when sending statistics. #1267 @pangbo13
+- 💄 Refactor parts of the codebase to improve code style and maintainability. #1208 #1224 #1247 @UNIkeEN @hbz114514
+- 🇫🇷 Update French translations for the launcher UI. #1236 @HsxMark
+- 📦 Replace the bundle format for the non-portable version on Windows, switching from MSI to NSIS. #1257 @pangbo13
+- Workflow:
+   - Automatically update the MCMod data cache. #1250 @SundayChen  
+
 ## 0.6.5
 
 `2025-12-16`

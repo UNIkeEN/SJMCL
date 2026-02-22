@@ -4,8 +4,12 @@ export enum AccountServiceError {
   Invalid = "INVALID",
   NotFound = "NOT_FOUND",
   TextureError = "TEXTURE_ERROR",
-  AuthServerError = "AUTH_SERVER_ERROR",
+  NetworkError = "NETWORK_ERROR",
+  ParseError = "PARSE_ERROR",
   Cancelled = "CANCELLED",
+  NoDownloadApi = "NO_DOWNLOAD_API",
+  SaveError = "SAVE_ERROR",
+  NoMinecraftProfile = "NO_MINECRAFT_PROFILE",
 }
 
 export enum InstanceError {
@@ -14,14 +18,32 @@ export enum InstanceError {
   DuplicateServer = "DUPLICATE_SERVER",
   FileNotFoundError = "FILE_NOT_FOUND_ERROR",
   InvalidSourcePath = "INVALID_SOURCE_PATH",
+  FileCreationFailed = "FILE_CREATION_FAILED",
   FileCopyFailed = "FILE_COPY_FAILED",
   FileMoveFailed = "FILE_MOVE_FAILED",
   FileOperationError = "FILE_OPERATION_ERROR",
   FolderCreationFailed = "FOLDER_CREATION_FAILED",
-  WorldNotExistError = "WORLD_NOT_EXSIT_ERROR",
-  LevelNotExistError = "LEVEL_NOT_EXSIT_ERROR",
+  ShortcutCreationFailed = "SHORTCUT_CREATION_FAILED",
+  ZipFileProcessFailed = "ZIP_FILE_PROCESS_FAILED",
+  WorldNotExistError = "WORLD_NOT_EXIST_ERROR",
   LevelParseError = "LEVEL_PARSE_ERROR",
+  LevelNotExistError = "LEVEL_NOT_EXIST_ERROR",
   ConflictNameError = "CONFLICT_NAME_ERROR",
+  InvalidNameError = "INVALID_NAME_ERROR",
+  ClientJsonParseError = "CLIENT_JSON_PARSE_ERROR",
+  AssetIndexParseError = "ASSET_INDEX_PARSE_ERROR",
+  InstallProfileParseError = "INSTALL_PROFILE_PARSE_ERROR",
+  ModLoaderVersionParseError = "MOD_LOADER_VERSION_PARSE_ERROR",
+  ModpackManifestParseError = "MODPACK_MANIFEST_PARSE_ERROR",
+  CurseForgeFileManifestParseError = "CURSE_FORGE_FILE_MANIFEST_PARSE_ERROR",
+  NetworkError = "NETWORK_ERROR",
+  UnsupportedModLoader = "UNSUPPORTED_MOD_LOADER",
+  NotSupportChangeModLoader = "NOT_SUPPORT_CHANGE_MOD_LOADER",
+  MainClassNotFound = "MAIN_CLASS_NOT_FOUND",
+  InstallationDuplicated = "INSTALLATION_DUPLICATED",
+  ProcessorExecutionFailed = "PROCESSOR_EXECUTION_FAILED",
+  SemaphoreAcquireFailed = "SEMAPHORE_ACQUIRE_FAILED",
+  LoaderInstallerNotFound = "LOADER_INSTALLER_NOT_FOUND",
 }
 
 export enum ConfigServiceError {
@@ -31,9 +53,28 @@ export enum ConfigServiceError {
   VersionMismatch = "VERSION_MISMATCH",
   GameDirAlreadyAdded = "GAME_DIR_ALREADY_ADDED",
   GameDirNotExist = "GAME_DIR_NOT_EXIST",
+  JavaExecInvalid = "JAVA_EXEC_INVALID",
+  HasActiveDownloadTasks = "HAS_ACTIVE_DOWNLOAD_TASKS",
+  FileDeletionFailed = "FILE_DELETION_FAILED",
 }
 
 export enum ResourceServiceError {
   ParseError = "PARSE_ERROR",
   NoDownloadApi = "NO_DOWNLOAD_API",
+  NetworkError = "NETWORK_ERROR",
+  FileOperationError = "FILE_OPERATION_ERROR",
+  ClientVersionNotFound = "CLIENT_VERSION_NOT_FOUND",
+}
+
+export enum LaunchServiceError {
+  ModLoaderNotInstalled = "MOD_LOADER_NOT_INSTALLED",
+  NoSuitableJava = "NO_SUITABLE_JAVA",
+  SelectedJavaUnavailable = "SELECTED_JAVA_UNAVAILABLE",
+  GameFilesIncomplete = "GAME_FILES_INCOMPLETE",
+  SetProcessPriorityFailed = "SET_PROCESS_PRIORITY_FAILED",
+  ChangeWindowTitleFailed = "CHANGE_WINDOW_TITLE_FAILED",
+  KillProcessFailed = "KILL_PROCESS_FAILED",
+  LaunchingStateNotFound = "LAUNCHING_STATE_NOT_FOUND",
+  AuthlibInjectorNotReady = "AUTHLIB_INJECTOR_NOT_READY",
+  AuthServerNotFound = "AUTH_SERVER_NOT_FOUND",
 }

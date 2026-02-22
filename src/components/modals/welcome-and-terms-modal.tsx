@@ -120,7 +120,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
           </HStack>
           <HStack spacing={3} ml="auto">
             <Button variant="ghost" onClick={() => exit(0)}>
-              {t("WelcomeAndTermsModal.button.exit")}
+              {t("General.exit")}
             </Button>
             <Button colorScheme={primaryColor} onClick={handleAgree}>
               {t("WelcomeAndTermsModal.button.agree")}

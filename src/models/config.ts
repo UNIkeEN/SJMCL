@@ -62,7 +62,9 @@ export interface LauncherConfig {
     arch: string;
     osType: string;
     platformVersion: string;
+    exeSha256: string;
     isPortable: boolean;
+    isExePathAvailable: boolean;
     isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
   };
@@ -219,7 +221,9 @@ export const defaultConfig: LauncherConfig = {
     arch: "",
     osType: "",
     platformVersion: "",
+    exeSha256: "",
     isPortable: false,
+    isExePathAvailable: true,
     isChinaMainlandIp: false,
     allowFullLoginFeature: false,
   },

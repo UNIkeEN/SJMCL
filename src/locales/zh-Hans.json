@@ -386,20 +386,6 @@
   "ComingSoonSign": {
     "text": "该页面暂未开放，敬请期待"
   },
-  "ContributorsPage": {
-    "all": "全部开发者名单",
-    "core": "主要开发者",
-    "contribution": {
-      "fullStackDev": "全栈开发",
-      "frontendDev": "前端开发",
-      "backendDev": "后端开发",
-      "externalAPI": "外部服务",
-      "doc": "文档",
-      "cicd": "CI / CD",
-      "design": "视觉设计",
-      "mascot": "吉祥物"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "复制或移动资源"
@@ -917,6 +903,7 @@
     "download": "下载",
     "edit": "编辑",
     "enable": "启用",
+    "exit": "退出",
     "finish": "完成",
     "import": "导入",
     "launch": "启动",
@@ -1180,7 +1167,8 @@
     },
     "tooltips": {
       "existingServer": "已存在相同地址的认证服务器，导入将会覆盖数据",
-      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据"
+      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据",
+      "expired": "登录令牌已过期，无法导入此角色"
     }
   },
   "ImportModpackModal": {
@@ -1801,6 +1789,10 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "重置实例设置",
+    "body": "此操作将会重置本实例的游戏设置为当前全局游戏设置，您确定要继续吗？"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
   },
@@ -2116,7 +2108,6 @@
           "title": "验证游戏文件失败",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模组加载器未完成安装",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "模组加载器库文件未下载",
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "游戏文件不完整或缺失",
             "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
@@ -2291,7 +2282,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "实例游戏设置已重置",
         "error": {
           "title": "实例游戏设置重置失败",
@@ -2413,8 +2404,8 @@
         "error": {
           "title": "获取世界详细信息失败",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
-            "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
+            "WORLD_NOT_EXIST_ERROR": "世界不存在",
+            "LEVEL_NOT_EXIST_ERROR": "存档数据文件不存在",
             "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
           }
         }
@@ -2606,6 +2597,13 @@
       "gameError": "哎呀！游戏崩溃了"
     }
   },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "无效的运行路径",
+      "content": "您正在临时或非法目录下运行 SJMCL，您的设置和游戏数据可能丢失。请将 SJMCL 移动到其他位置后再次运行。",
+      "btnContinue": "仍要运行"
+    }
+  },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
@@ -2646,7 +2644,6 @@
       "winArm64Notice": "SJMCL 现已支持 Windows on Arm 平台。<br/>如您正在使用 <b>高通</b> 平台，您可能需要安装 <glpack>OpenGL 兼容包</glpack> 后才能进行游戏。"
     },
     "button": {
-      "exit": "退出",
       "agree": "同意并继续"
     }
   },

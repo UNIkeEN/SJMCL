@@ -109,15 +109,15 @@ export class InstanceService {
   }
 
   /**
-   * RESET the instance game config to use global default game config.
+   * RESTORE the instance game config to use current global game config.
    * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async resetInstanceGameConfig(
+  static async restoreInstanceGameConfig(
     instanceId: string
   ): Promise<InvokeResponse<void>> {
-    return await invoke("reset_instance_game_config", {
+    return await invoke("restore_instance_game_config", {
       instanceId,
     });
   }

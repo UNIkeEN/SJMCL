@@ -3,7 +3,6 @@ import {
   AvatarGroup,
   Button,
   HStack,
-  Icon,
   Text,
   useToast as useChakraToast,
 } from "@chakra-ui/react";
@@ -11,7 +10,6 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuArrowRight } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import {
   OptionItemGroup,
@@ -21,7 +19,6 @@ import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { CoreContributorsList } from "@/pages/settings/contributors";
 import { isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
@@ -69,6 +66,8 @@ const AboutSettingsPage = () => {
     setCheckingUpdate(false);
   }, [handleCheckLauncherUpdate, t, toast, closeToast, openSharedModal]);
 
+  const avatarUserList = ["UNIkeEN", "Reqwey", "SundayChen"];
+
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
       title: t("AboutSettingsPage.about.title"),
@@ -110,19 +109,29 @@ const AboutSettingsPage = () => {
           children: (
             <HStack spacing={2.5}>
               <AvatarGroup size="xs" spacing={-2}>
-                {CoreContributorsList.slice(0, 3).map((item) => (
+                {avatarUserList.map((username) => (
                   <Avatar
-                    key={item.username}
-                    name={item.username}
-                    src={`https://avatars.githubusercontent.com/${item.username}`}
+                    key={username}
+                    name={username}
+                    src={`https://avatars.githubusercontent.com/${username}`}
                   />
                 ))}
               </AvatarGroup>
-              <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
+              <CommonIconButton
+                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                icon="external"
+                withTooltip
+                tooltipPlacement="bottom-end"
+                size="xs"
+                h={18}
+                onClick={() => {
+                  openUrl(
+                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                  );
+                }}
+              />
             </HStack>
           ),
-          isFullClickZone: true,
-          onClick: () => router.push("/settings/contributors"),
         },
         {
           title: t("AboutSettingsPage.about.settings.reportIssue.title"),

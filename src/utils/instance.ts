@@ -3,6 +3,7 @@ import { t } from "i18next";
 import { ModLoaderType } from "@/enums/instance";
 import { GameDirectory } from "@/models/config";
 import { InstanceSummary } from "@/models/instance/misc";
+import { isDirNameInvalid } from "@/utils/string";
 
 export const generateInstanceDesc = (instance: InstanceSummary) => {
   if (instance.modLoader.loaderType === ModLoaderType.Unknown) {
@@ -71,4 +72,10 @@ export const parseModLoaderVersion = (version: string): string => {
   }
 
   return version;
+};
+
+export const isInstanceNameInvalid = (value: string): number => {
+  // return number as specific error index (e.g. for displaying error message in Editable)
+  if (value.toLowerCase() === "sjmclcfg") return 2;
+  return isDirNameInvalid(value);
 };

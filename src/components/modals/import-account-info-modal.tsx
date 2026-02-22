@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuTriangleAlert } from "react-icons/lu";
+import { LuCircleX, LuTriangleAlert } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
@@ -31,7 +31,10 @@ import { useToast } from "@/contexts/toast";
 import { ImportLauncherType, PlayerType } from "@/enums/account";
 import { AuthServer, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
-import { generatePlayerDesc } from "@/utils/account";
+import {
+  EXPIRED_ACCESS_TOKEN_PLACEHOLDER,
+  generatePlayerDesc,
+} from "@/utils/account";
 
 interface ImportAccountInfoModalProps extends Omit<ModalProps, "children"> {
   currAuthServers?: AuthServer[];
@@ -75,6 +78,8 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
 
   const isThirdParty = (p: Player) =>
     p.playerType === PlayerType.ThirdParty && !!p.authServer?.authUrl;
+  const isExpired = (p: Player) =>
+    p.accessToken === EXPIRED_ACCESS_TOKEN_PLACEHOLDER;
 
   const handleRetrieveOtherLauncherAccountInfo = useCallback(
     (type: ImportLauncherType) => {
@@ -99,9 +104,9 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
               const pid = String((p as any).id);
               if (isThirdParty(p)) {
                 nextPlayerChecked[pid] =
-                  !!nextServerChecked[p.authServer!.authUrl];
+                  !!nextServerChecked[p.authServer!.authUrl] && !isExpired(p);
               } else {
-                nextPlayerChecked[pid] = true;
+                nextPlayerChecked[pid] = !isExpired(p);
               }
             });
             setPlayerChecked(nextPlayerChecked);
@@ -156,6 +161,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
   const selectedPlayers = newPlayers.filter((p) => {
     const pid = String((p as any).id);
     if (!playerChecked[pid]) return false;
+    if (isExpired(p)) return false;
 
     if (isThirdParty(p)) {
       return !!serverChecked[p.authServer!.authUrl];
@@ -305,7 +311,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
                                 <Checkbox
                                   colorScheme={primaryColor}
                                   isChecked={!!playerChecked[pid]}
-                                  isDisabled={!serverEnabled}
+                                  isDisabled={!serverEnabled || isExpired(p)}
                                   onChange={(e) =>
                                     setPlayerChecked((prev) => ({
                                       ...prev,
@@ -319,16 +325,31 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
                                 />
                               </HStack>
                             ),
-                            children: isInCurPlayers(p) && (
-                              <Tooltip
-                                label={t(
-                                  "ImportAccountInfoModal.tooltips.existingPlayer"
+                            children: (
+                              <HStack>
+                                {isInCurPlayers(p) && (
+                                  <Tooltip
+                                    label={t(
+                                      "ImportAccountInfoModal.tooltips.existingPlayer"
+                                    )}
+                                  >
+                                    <Box color="orange.500">
+                                      <LuTriangleAlert />
+                                    </Box>
+                                  </Tooltip>
                                 )}
-                              >
-                                <Box color="orange.500">
-                                  <LuTriangleAlert />
-                                </Box>
-                              </Tooltip>
+                                {isExpired(p) && (
+                                  <Tooltip
+                                    label={t(
+                                      "ImportAccountInfoModal.tooltips.expired"
+                                    )}
+                                  >
+                                    <Box color="red.500">
+                                      <LuCircleX />
+                                    </Box>
+                                  </Tooltip>
+                                )}
+                              </HStack>
                             ),
                           };
                         })}

@@ -1,8 +1,6 @@
 import {
   Button,
   Center,
-  HStack,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -11,20 +9,17 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  Radio,
   VStack,
 } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BeatLoader } from "react-spinners";
-import Editable from "@/components/common/editable";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
-  OptionItemProps,
 } from "@/components/common/option-item";
-import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
+import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import {
   gameTypesToIcon,
   loaderTypesToIcon,
@@ -38,8 +33,7 @@ import {
 } from "@/models/resource";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
-import { getGameDirName } from "@/utils/instance";
-import { isFileNameSanitized, sanitizeFileName } from "@/utils/string";
+import { isDirNameInvalid, sanitizeFileName } from "@/utils/string";
 
 interface ImportModpackModalProps extends Omit<ModalProps, "children"> {
   path: string;
@@ -65,83 +59,9 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [isBtnLoading, setIsBtnLoading] = useState(false);
 
-  const checkDirNameError = useCallback((value: string): number => {
-    if (value.trim() === "") return 1;
-    if (!isFileNameSanitized(value)) return 2;
-    if (value.length > 255) return 3;
-    return 0;
-  }, []);
-
   const modpackInfoGroup: OptionItemGroupProps[] = useMemo(() => {
     if (!modpack) return [];
     return [
-      {
-        title: t("ImportModpackModal.label.instanceSettings"),
-        items: [
-          {
-            title: t("InstanceSettingsPage.name"),
-            children: (
-              <Editable
-                isTextArea={false}
-                value={name}
-                onEditSubmit={setName}
-                textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
-                inputProps={{ fontSize: "xs-sm" }}
-                formErrMsgProps={{ fontSize: "xs-sm" }}
-                checkError={checkDirNameError}
-                localeKey="InstanceSettingsPage.errorMessage"
-              />
-            ),
-          },
-          {
-            title: t("InstanceSettingsPage.description"),
-            children: (
-              <Editable
-                isTextArea={true}
-                value={description}
-                onEditSubmit={setDescription}
-                textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
-                inputProps={{ fontSize: "xs-sm" }}
-              />
-            ),
-          },
-          {
-            title: t("InstanceSettingsPage.icon"),
-            children: (
-              <HStack>
-                <Image
-                  src={iconSrc}
-                  alt={iconSrc}
-                  boxSize="28px"
-                  objectFit="cover"
-                />
-                <InstanceIconSelectorPopover
-                  value={iconSrc}
-                  onIconSelect={setIconSrc}
-                />
-              </HStack>
-            ),
-          },
-        ],
-      },
-      {
-        title: t("InstanceBasicSettings.selectDirectory"),
-        items: config.localGameDirectories.map(
-          (directory): OptionItemProps => ({
-            title: getGameDirName(directory),
-            description: directory.dir,
-            prefixElement: (
-              <Radio
-                isChecked={directory.dir === gameDirectory?.dir}
-                onChange={() => {
-                  setGameDirectory(directory);
-                }}
-              />
-            ),
-            children: <></>,
-          })
-        ),
-      },
       {
         title: t("ImportModpackModal.label.modpackInfo"),
         items: [
@@ -174,20 +94,10 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
         ],
       },
     ];
-  }, [
-    modpack,
-    name,
-    description,
-    iconSrc,
-    gameDirectory,
-    config.localGameDirectories,
-    checkDirNameError,
-    setDescription,
-    setGameDirectory,
-  ]);
+  }, [modpack]);
 
   const handleImportModpack = useCallback(async () => {
-    if (!modpack || checkDirNameError(name) !== 0 || !gameDirectory) return;
+    if (!modpack || isDirNameInvalid(name) !== 0 || !gameDirectory) return;
     try {
       setIsBtnLoading(true);
       // first get client resource info
@@ -239,7 +149,6 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
       setIsBtnLoading(false);
     }
   }, [
-    checkDirNameError,
     description,
     gameDirectory,
     iconSrc,
@@ -299,6 +208,16 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
             </Center>
           ) : (
             <VStack w="100%" spacing={4}>
+              <InstanceBasicSettings
+                name={name}
+                setName={setName}
+                description={description}
+                setDescription={setDescription}
+                iconSrc={iconSrc}
+                setIconSrc={setIconSrc}
+                gameDirectory={gameDirectory}
+                setGameDirectory={setGameDirectory}
+              />
               {modpackInfoGroup.map((group, index) => (
                 <OptionItemGroup
                   title={group.title}

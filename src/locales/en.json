@@ -386,20 +386,6 @@
   "ComingSoonSign": {
     "text": "This page is not available yet, coming soon!"
   },
-  "ContributorsPage": {
-    "all": "All Contributors List",
-    "core": "Main Contributors",
-    "contribution": {
-      "fullStackDev": "Full Stack Dev",
-      "frontendDev": "Frontend Dev",
-      "backendDev": "Backend Dev",
-      "externalAPI": "External API",
-      "doc": "Documentation",
-      "cicd": "CI / CD",
-      "design": "Visual Design",
-      "mascot": "Team Mascot"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "Copy or Move Resource"
@@ -667,8 +653,8 @@
     },
     "errorMessage": {
       "dirName": {
-        "tooLong": "Directory name cannot be longer than 20 characters",
         "empty": "Directory name cannot be empty",
+        "tooLong": "Directory name cannot be longer than 20 characters",
         "exist": "Directory name already exists",
         "hasInvalidChar": "Directory name has invalid characters"
       },
@@ -917,6 +903,7 @@
     "download": "Download",
     "edit": "Edit",
     "enable": "Enable",
+    "exit": "Exit",
     "finish": "Finish",
     "import": "Import",
     "launch": "Launch",
@@ -928,13 +915,13 @@
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
-    "skip": "Skip",
     "share": {
       "text": "Share",
       "toast": {
         "error": "Failed to share"
       }
     },
+    "skip": "Skip",
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -1180,7 +1167,8 @@
     },
     "tooltips": {
       "existingServer": "Existing auth server data with the same address will be overwritten.",
-      "existingPlayer": "Existing player data with the same UUID will be overwritten."
+      "existingPlayer": "Existing player data with the same UUID will be overwritten.",
+      "expired": "This player token has expired and cannot be imported."
     }
   },
   "ImportModpackModal": {
@@ -1265,8 +1253,8 @@
     "description": "Instance Description",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
-    "restoreSettings": "Reset specific settings",
-    "restoreSettingsDesc": "Reset the following specific settings to the global game settings.",
+    "restoreSettings": "Restore specific settings",
+    "restoreSettingsDesc": "Restore the following specific settings to the global game settings.",
     "restore": "Restore",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
@@ -1533,7 +1521,6 @@
         "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
         "Automation": "Automation",
-        "Auxiliary": "Auxiliary",
         "Biomes": "Biomes",
         "Blood Magic": "Blood Magic",
         "Buildcraft": "Buildcraft",
@@ -1575,6 +1562,7 @@
         "Twitch Integration": "Twitch",
         "Utility & QoL": "Utility QoL",
         "World Gen": "World Gen",
+        "Auxiliary": "Auxiliary",
         "World": "World"
       },
       "Modrinth": {
@@ -1603,19 +1591,20 @@
     "worldTagList": {
       "CurseForge": {
         "All": "All",
+        "Types": "Types",
         "Adventure": "Adventure",
         "Creation": "Creation",
         "Game Map": "Game Map",
         "Modded World": "Modded World",
         "Parkour": "Parkour",
         "Puzzle": "Puzzle",
-        "Survival": "Survival",
-        "Types": "Types"
+        "Survival": "Survival"
       }
     },
     "resourcepackTagList": {
       "CurseForge": {
         "All": "All",
+        "Resolution": "Resolution",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
@@ -1632,12 +1621,12 @@
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
-        "Resolution": "Resolution",
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
       "Modrinth": {
         "All": "All",
+        "Resolution": "Resolution",
         "8x-": "8x or Lower",
         "16x": "16x",
         "32x": "32x",
@@ -1662,7 +1651,6 @@
         "decoration": "Decoration",
         "modded": "Modded",
         "realistic": "Realistic",
-        "Resolution": "Resolution",
         "simplistic": "Simplistic",
         "themed": "Themed",
         "tweaks": "Tweaks",
@@ -1800,6 +1788,10 @@
   "RestoreConfigConfirmDialog": {
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
+  },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "Restore Instance Settings",
+    "body": "This action will restore this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
@@ -2116,7 +2108,6 @@
           "title": "Failed to validate game files",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "Mod loader library files not downloaded",
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "GAME_FILES_INCOMPLETE": "Game files are incomplete",
             "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
@@ -2269,10 +2260,10 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
-        "success": "Successfully reset instance game settings",
+      "restoreInstanceGameConfig": {
+        "success": "Successfully restored instance game settings",
         "error": {
-          "title": "Failed to reset instance game settings",
+          "title": "Failed to restore instance game settings",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"
@@ -2413,8 +2404,8 @@
         "error": {
           "title": "Failed to retrieve world details list",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "World not exist",
-            "LEVEL_NOT_EXSIT_ERROR": "Level data not exist",
+            "WORLD_NOT_EXIST_ERROR": "World not exist",
+            "LEVEL_NOT_EXIST_ERROR": "Level data not exist",
             "LEVEL_PARSE_ERROR": "Level data parse error"
           }
         }
@@ -2606,6 +2597,13 @@
       "gameError": "Oops! The Game Crashed."
     }
   },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "Unsafe Execution Path",
+      "content": "SJMCL is currently running from a temporary or invalid directory. Your settings and game data may be lost. Please move SJMCL to another location and run it again.",
+      "btnContinue": "Run Anyway"
+    }
+  },
   "Utils": {
     "datetime": {
       "formatRelativeTime": {
@@ -2646,7 +2644,6 @@
       "winArm64Notice": "SJMCL now supports Windows on Arm. If you are using a <b>QUALCOMM</b> platform, you may need to install the <glpack>OpenGL Compatibility Pack</glpack> before launching the game."
     },
     "button": {
-      "exit": "Exit",
       "agree": "Agree"
     }
   },

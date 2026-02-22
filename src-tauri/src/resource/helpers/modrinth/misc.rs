@@ -85,6 +85,7 @@ pub struct ModrinthProject {
   pub icon_url: Option<String>,
   #[serde(alias = "updated")]
   pub date_modified: String,
+  pub author: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -223,6 +224,7 @@ impl From<ModrinthProject> for OtherResourceInfo {
       source: OtherResourceSource::Modrinth,
       translated_name: None,
       translated_description: None,
+      author: project.author,
     }
   }
 }
