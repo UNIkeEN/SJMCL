@@ -381,28 +381,33 @@ pub async fn prepare_legacy_assets(
     load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
       .await?;
 
-  for target_root in target_roots {
-    let objects_dir = objects_dir.clone();
-    stream::iter(asset_index.objects.iter())
-      .map(Ok::<_, SJMCLError>)
-      .try_for_each_concurrent(None, move |(name, item)| {
-        let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));
-        let target = target_root.join(name);
+  stream::iter(asset_index.objects.into_iter())
+    .map(Ok::<_, SJMCLError>)
+    .try_for_each_concurrent(None, move |(name, item)| {
+      let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));
+      let targets = target_roots
+        .iter()
+        .map(|target_root| target_root.join(&name))
+        .collect::<Vec<_>>();
 
-        async move {
-          if !fs::try_exists(&origin).await? || fs::try_exists(&target).await? {
-            return Ok::<(), SJMCLError>(());
+      async move {
+        if !fs::try_exists(&origin).await? {
+          return Ok::<(), SJMCLError>(());
+        }
+
+        for target in targets {
+          if fs::try_exists(&target).await? {
+            continue;
           }
-
           if let Some(parent) = target.parent() {
             fs::create_dir_all(parent).await?;
           }
           fs::copy(&origin, &target).await?;
-          Ok(())
         }
-      })
-      .await?;
-  }
+        Ok(())
+      }
+    })
+    .await?;
 
   Ok(())
 }
