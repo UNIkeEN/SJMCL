@@ -246,11 +246,13 @@ pub struct ScreenshotInfo {
 pub enum InstanceError {
   InstanceNotFoundByID,
   ServerNbtReadError,
+  DuplicateServer,
   FileNotFoundError,
   InvalidSourcePath,
   FileCreationFailed,
   FileCopyFailed,
   FileMoveFailed,
+  FileOperationError,
   FolderCreationFailed,
   ShortcutCreationFailed,
   ZipFileProcessFailed,
@@ -273,8 +275,6 @@ pub enum InstanceError {
   ProcessorExecutionFailed,
   SemaphoreAcquireFailed,
   LoaderInstallerNotFound,
-  DuplicateServer,
-  FileOperationError,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

@@ -141,6 +141,20 @@
       "endpointUrl": "Endpoint URL"
     }
   },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Add Game Server"
+    },
+    "serverAddressRequired": "Server address is required",
+    "label": {
+      "serverAddress": "Server Address",
+      "serverName": "Server Name"
+    },
+    "placeholder": {
+      "serverAddress": "Enter server address",
+      "serverName": "Minecraft Server"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "Add Player"
@@ -426,6 +440,16 @@
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Delete Authentication Server",
+      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "Delete Game Server",
+    "content": "Confirm delete the game server \"{{name}}\" ({{addr}}) ? It will be lost forever! (A long time!)"
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
@@ -446,12 +470,6 @@
     "dialog": {
       "title": "Delete Player",
       "content": "Confirm delete the player \"{{name}}\" ? This cannot be undone!"
-    }
-  },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "Delete Authentication Server",
-      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
   "DevToolbar": {
@@ -1324,11 +1342,6 @@
       "tag": {
         "online": "Online",
         "offline": "Offline"
-      },
-      "deleteGameServer": "Delete this Server",
-      "DeleteGameServerAlertDialog": {
-        "title": "Delete Game Server",
-        "content": "Confirm delete the game server \"{{name}}\" ? This will remove it from your server list."
       },
       "launch": "Play this Server"
     }
@@ -2640,20 +2653,6 @@
   "WorldLevelDataModal": {
     "header": {
       "title": "World Level Data - {{worldName}}"
-    }
-  },
-  "AddGameServerModal": {
-    "header": {
-      "title": "Add Game Server"
-    },
-    "serverAddressRequired": "Server address is required",
-    "label": {
-      "serverAddress": "Server Address",
-      "serverName": "Server Name"
-    },
-    "placeholder": {
-      "serverAddress": "Enter server address",
-      "serverName": "Enter server name"
     }
   }
 }

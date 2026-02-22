@@ -50,10 +50,7 @@ const InstanceWorldsPage = () => {
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [selectedWorldName, setSelectedWorldName] = useState<string>();
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
-  const [serverToDelete, setServerToDelete] = useState<GameServerInfo | null>(
-    null
-  );
-  useSharedModals();
+
   const {
     isOpen: isAddGameServerModalOpen,
     onOpen: onAddGameServerModalOpen,
@@ -103,43 +100,46 @@ const InstanceWorldsPage = () => {
     [toast, instanceId]
   );
 
-  useEffect(() => {
+  // First fetch from local nbt (queryOnline=false) for instant feedback,
+  // then query online status to avoid long wait harming UX.
+  const refreshGameServerList = useCallback(() => {
     handleRetrieveGameServerList(false);
     handleRetrieveGameServerList(true);
+  }, [handleRetrieveGameServerList]);
+
+  useEffect(() => {
+    refreshGameServerList();
     // refresh every minute to query server info
     const intervalId = setInterval(async () => {
       handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [instanceId, handleRetrieveGameServerList]);
+  }, [instanceId, handleRetrieveGameServerList, refreshGameServerList]);
 
-  const handleDeleteServer = useCallback(() => {
-    if (!serverToDelete || !instanceId) return;
-
-    InstanceService.deleteGameServer(instanceId, serverToDelete.ip).then(
-      (response) => {
-        if (response.status === "success") {
-          toast({
-            title: response.message,
-            status: "success",
-          });
-          handleRetrieveGameServerList(false);
-          handleRetrieveGameServerList(true);
-        } else {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
+  const handleDeleteServer = useCallback(
+    (server: GameServerInfo) => {
+      if (!instanceId) return;
+      InstanceService.deleteGameServer(instanceId, server.ip).then(
+        (response) => {
+          if (response.status === "success") {
+            toast({
+              title: response.message,
+              status: "success",
+            });
+            refreshGameServerList();
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
         }
-      }
-    );
-  }, [serverToDelete, instanceId, toast, handleRetrieveGameServerList]);
-  useEffect(() => {
-    if (serverToDelete) {
-      handleDeleteServer();
-    }
-  }, [serverToDelete, handleDeleteServer]);
+      );
+    },
+    [instanceId, toast, refreshGameServerList]
+  );
+
   const worldSecMenuOperations = [
     {
       icon: "openFolder",
@@ -175,6 +175,7 @@ const InstanceWorldsPage = () => {
       },
     },
   ];
+
   const serverSecMenuOperations = [
     {
       icon: "add",
@@ -185,8 +186,7 @@ const InstanceWorldsPage = () => {
     {
       icon: "refresh",
       onClick: () => {
-        handleRetrieveGameServerList(false);
-        handleRetrieveGameServerList(true);
+        refreshGameServerList();
       },
     },
   ];
@@ -229,6 +229,40 @@ const InstanceWorldsPage = () => {
           },
         ]
       : []),
+  ];
+
+  const serverItemMenuOperations = (server: GameServerInfo) => [
+    {
+      icon: "delete",
+      danger: true,
+      onClick: () => {
+        openGenericConfirmDialog({
+          title: t("DeleteGameServerAlertDialog.title"),
+          body: t("DeleteGameServerAlertDialog.content", {
+            name: server.name,
+            addr: server.ip,
+          }),
+          btnOK: t("General.delete"),
+          isAlert: true,
+          onOKCallback: () => {
+            handleDeleteServer(server);
+          },
+          showSuppressBtn: true,
+          suppressKey: "deleteGameServerAlert",
+        });
+      },
+    },
+    {
+      icon: "launch",
+      label: t("InstanceWorldsPage.serverList.launch"),
+      danger: false,
+      onClick: () => {
+        openSharedModal("launch", {
+          instanceId: instanceId,
+          quickPlayMultiplayer: server.ip,
+        });
+      },
+    },
   ];
 
   return (
@@ -396,38 +430,17 @@ const InstanceWorldsPage = () => {
                         </TagLabel>
                       </Tag>
                     ))}
-                  <CommonIconButton
-                    icon="delete"
-                    label={t("InstanceWorldsPage.serverList.deleteGameServer")}
-                    color="red"
-                    onClick={() => {
-                      openGenericConfirmDialog({
-                        title: t(
-                          "InstanceWorldsPage.serverList.DeleteGameServerAlertDialog.title"
-                        ),
-                        body: t(
-                          "InstanceWorldsPage.serverList.DeleteGameServerAlertDialog.content",
-                          { name: server.name }
-                        ),
-                        btnOK: t("General.delete"),
-                        onOKCallback: () => {
-                          setServerToDelete(server);
-                        },
-                        showSuppressBtn: true,
-                        suppressKey: "deleteServerAlert",
-                      });
-                    }}
-                  />
-                  <CommonIconButton
-                    icon="launch"
-                    label={t("InstanceWorldsPage.serverList.launch")}
-                    onClick={() => {
-                      openSharedModal("launch", {
-                        instanceId: instanceId,
-                        quickPlayMultiplayer: server.ip,
-                      });
-                    }}
-                  />
+                  <HStack spacing={0}>
+                    {serverItemMenuOperations(server).map((item, index) => (
+                      <CommonIconButton
+                        key={index}
+                        icon={item.icon}
+                        label={item.label}
+                        colorScheme={item.danger ? "red" : "gray"}
+                        onClick={item.onClick}
+                      />
+                    ))}
+                  </HStack>
                 </HStack>
               </OptionItem>
             ))}
@@ -436,15 +449,16 @@ const InstanceWorldsPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
-      <AddGameServerModal
-        instanceId={instanceId}
-        isOpen={isAddGameServerModalOpen}
-        onClose={() => {
-          onAddGameServerModalClose();
-          handleRetrieveGameServerList(false);
-          handleRetrieveGameServerList(true);
-        }}
-      />
+      {instanceId && (
+        <AddGameServerModal
+          instanceId={instanceId}
+          isOpen={isAddGameServerModalOpen}
+          onClose={() => {
+            onAddGameServerModalClose();
+            refreshGameServerList();
+          }}
+        />
+      )}
     </>
   );
 };

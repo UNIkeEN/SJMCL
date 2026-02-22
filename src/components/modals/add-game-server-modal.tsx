@@ -22,7 +22,7 @@ import { InstanceService } from "@/services/instance";
 
 interface AddGameServerModalProps extends Omit<ModalProps, "children"> {
   presetUrl?: string;
-  instanceId: string | undefined;
+  instanceId: string;
 }
 
 const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
@@ -44,6 +44,7 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
 
   const [isServerUrlTouched, setIsServerUrlTouched] = useState(false);
   const isServerUrlInvalid = isServerUrlTouched && !serverUrl;
+  const serverNamePlaceholder = t("AddGameServerModal.placeholder.serverName");
 
   useEffect(() => {
     if (isOpen) {
@@ -56,8 +57,9 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
 
   const handleAddGameServer = useCallback(
     (instanceId: string) => {
+      const finalServerName = serverName.trim() || serverNamePlaceholder;
       setIsLoading(true);
-      InstanceService.addGameServer(instanceId, serverUrl, serverName)
+      InstanceService.addGameServer(instanceId, serverUrl, finalServerName)
         .then((response) => {
           if (response.status === "success") {
             toast({
@@ -77,7 +79,7 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
           setIsLoading(false);
         });
     },
-    [serverUrl, serverName, toast, onClose]
+    [serverUrl, serverName, serverNamePlaceholder, toast, onClose]
   );
 
   useEffect(() => {
@@ -136,7 +138,7 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
               <Input
                 id="serverName"
                 type="text"
-                placeholder={t("AddGameServerModal.placeholder.serverName")}
+                placeholder={serverNamePlaceholder}
                 value={serverName}
                 onChange={(e) => setServerName(e.target.value)}
                 focusBorderColor={`${primaryColor}.500`}
@@ -158,9 +160,8 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
             }}
             isLoading={isLoading}
             isDisabled={!serverUrl}
-            ml={3}
           >
-            {t("General.finish")}
+            {t("General.confirm")}
           </Button>
         </ModalFooter>
       </ModalContent>

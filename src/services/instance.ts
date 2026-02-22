@@ -273,20 +273,22 @@ export class InstanceService {
   }
 
   /**
-   * ADD a game server to the instance's servers.dat.
-   * @param {string} instanceId - The ID of the instance.
-   * @param {string} serverAddress - The server address to add.
+   * ADD a game server entry into the instance's `servers.dat`.
+   * The command rejects duplicate `serverAddr` values in the same instance.
+   * @param {string} instanceId - The target instance ID.
+   * @param {string} serverAddr - The server address (for example: `example.com` or `example.com:25565`).
+   * @param {string} serverName - The display name stored in `servers.dat`.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async addGameServer(
     instanceId: string,
-    serverUrl: string,
+    serverAddr: string,
     serverName: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("add_game_server", {
       instanceId,
-      serverUrl,
+      serverAddr,
       serverName,
     });
   }
@@ -294,17 +296,17 @@ export class InstanceService {
   /**
    * DELETE a game server from the instance's servers.dat.
    * @param {string} instanceId - The ID of the instance.
-   * @param {string} serverIp - The server IP to delete.
+   * @param {string} serverAddr - The server address (IP) to delete.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async deleteGameServer(
     instanceId: string,
-    serverIp: string
+    serverAddr: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("delete_game_server", {
       instanceId,
-      serverIp,
+      serverAddr,
     });
   }
 
