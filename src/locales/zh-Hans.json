@@ -1437,6 +1437,10 @@
   "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
   },
+  "NoSuitableJavaDialog": {
+    "title": "未找到合适的 Java 运行时",
+    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击 “确定” 以前往 Java 管理页面手动添加或下载 Java。"
+  },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
   },

@@ -1437,6 +1437,10 @@
   "MenuSelector": {
     "selectedCount": "{{count}} selected"
   },
+  "NoSuitableJavaDialog": {
+    "title": "No suitable Java runtime found for this instance",
+    "body": "No suitable Java runtime is available for this instance. Click \"Confirm\" to open Java Management page and add or download Java manually."
+  },
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
   },
