@@ -367,9 +367,12 @@ pub async fn prepare_legacy_assets(
   assets_dir: &Path,
   assets_index_name: &str,
 ) -> SJMCLResult<()> {
-  let target_root = match assets_index_name {
-    "legacy" => assets_dir.join("virtual/legacy"),
-    "pre-1.6" => root_dir.join("resources"),
+  let target_roots = match assets_index_name {
+    "legacy" => vec![assets_dir.join("virtual/legacy")],
+    "pre-1.6" => vec![
+      assets_dir.join("virtual/legacy"),
+      root_dir.join("resources"),
+    ],
     _ => return Ok(()),
   };
 
@@ -378,25 +381,28 @@ pub async fn prepare_legacy_assets(
     load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
       .await?;
 
-  stream::iter(asset_index.objects.into_iter())
-    .map(Ok::<_, SJMCLError>)
-    .try_for_each_concurrent(None, move |(name, item)| {
-      let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));
-      let target = target_root.join(name);
+  for target_root in target_roots {
+    let objects_dir = objects_dir.clone();
+    stream::iter(asset_index.objects.iter())
+      .map(Ok::<_, SJMCLError>)
+      .try_for_each_concurrent(None, move |(name, item)| {
+        let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));
+        let target = target_root.join(name);
 
-      async move {
-        if !fs::try_exists(&origin).await? || fs::try_exists(&target).await? {
-          return Ok::<(), SJMCLError>(());
-        }
+        async move {
+          if !fs::try_exists(&origin).await? || fs::try_exists(&target).await? {
+            return Ok::<(), SJMCLError>(());
+          }
 
-        if let Some(parent) = target.parent() {
-          fs::create_dir_all(parent).await?;
+          if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent).await?;
+          }
+          fs::copy(&origin, &target).await?;
+          Ok(())
         }
-        fs::copy(&origin, &target).await?;
-        Ok(())
-      }
-    })
-    .await?;
+      })
+      .await?;
+  }
 
   Ok(())
 }
