@@ -23,6 +23,7 @@ use tauri::{AppHandle, Manager};
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchArguments {
   // basic game params
+  pub game_assets: String,
   pub assets_root: String,
   pub assets_index_name: String,
   pub game_directory: String,
@@ -167,8 +168,12 @@ pub async fn generate_launch_command(
   };
 
   let arguments_value = LaunchArguments {
+    game_assets: assets_dir
+      .join("virtual/legacy")
+      .to_string_lossy()
+      .to_string(),
     assets_root: assets_dir.to_string_lossy().to_string(),
-    assets_index_name: client_info.asset_index.id,
+    assets_index_name: client_info.asset_index.id.clone(),
     game_directory: root_dir.to_string_lossy().to_string(),
 
     version_name: selected_instance.name.clone(),

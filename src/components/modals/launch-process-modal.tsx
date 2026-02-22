@@ -31,6 +31,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { LaunchServiceError } from "@/enums/service-error";
 import { InstanceSummary } from "@/models/instance/misc";
 import { ResponseError } from "@/models/response";
 import { AccountService } from "@/services/account";
@@ -96,13 +97,15 @@ const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
         isOK: (data: any) => true,
         onResCallback: (data: any) => {}, // TODO
         onErrCallback: (error: ResponseError) => {
-          handleCloseModalWithCancel();
           toast({
             title: error.message,
             description: error.details,
             status: "error",
           });
-          router.push("/downloads");
+          if (error.raw_error === LaunchServiceError.GameFilesIncomplete) {
+            handleCloseModalWithCancel();
+            router.push("/downloads");
+          }
         },
       },
       {
