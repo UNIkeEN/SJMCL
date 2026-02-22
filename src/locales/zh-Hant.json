@@ -141,6 +141,20 @@
       "endpointUrl": "源地址"
     }
   },
+  "AddGameServerModal": {
+    "header": {
+      "title": "新增遊戲伺服器"
+    },
+    "serverAddrRequired": "伺服器地址不能為空",
+    "label": {
+      "serverAddr": "伺服器地址",
+      "serverName": "伺服器名稱"
+    },
+    "placeholder": {
+      "serverAddr": "請輸入伺服器地址",
+      "serverName": "Minecraft 伺服器"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "新增角色"
@@ -412,6 +426,16 @@
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "您最近更改了此實例的名稱，請重新整理實例清單或重啟啟動器後，再次嘗試新增啟動捷徑。"
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "刪除認證伺服器",
+      "content": "確定要刪除認證伺服器「{{name}}」嗎？它將不再出現在你的伺服器清單中。"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "刪除遊戲伺服器",
+    "content": "確定要刪除遊戲伺服器「{{name}}」（{{addr}}）嗎？它將會永久消失！（真的很久！）"
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "刪除遊戲實例",
@@ -432,12 +456,6 @@
     "dialog": {
       "title": "刪除角色",
       "content": "確定要刪除角色「{{name}}」嗎？這一操作不可逆！"
-    }
-  },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "刪除認證伺服器",
-      "content": "確定要刪除認證伺服器「{{name}}」嗎？它將不再出現在你的伺服器清單中。"
     }
   },
   "DevToolbar": {
@@ -1418,6 +1436,10 @@
   "MenuSelector": {
     "selectedCount": "已選 {{count}} 項"
   },
+  "NoSuitableJavaDialog": {
+    "title": "未找到合適的 Java 執行時",
+    "body": "對於目前實例，沒有合適的 Java 執行時可供選擇。點擊「確定」以前往 Java 管理頁面手動新增或下載 Java。"
+  },
   "NotFoundPage": {
     "text": "頁面不存在，即將在 {{seconds}} 秒後跳轉"
   },
@@ -2316,6 +2338,28 @@
           "title": "獲取伺服器清單失敗",
           "description": {
             "SERVER_NBT_READ_ERROR": "servers.dat 可能已損壞"
+          }
+        }
+      },
+      "addGameServer": {
+        "success": "遊戲伺服器新增成功",
+        "error": {
+          "title": "新增遊戲伺服器失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_OPERATION_ERROR": "寫入伺服器資訊失敗",
+            "DUPLICATE_SERVER": "伺服器已存在"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "遊戲伺服器刪除成功",
+        "error": {
+          "title": "刪除遊戲伺服器失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_OPERATION_ERROR": "寫入伺服器資訊失敗",
+            "SERVER_NOT_FOUND": "伺服器不存在"
           }
         }
       },
