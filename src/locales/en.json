@@ -2337,24 +2337,6 @@
           }
         }
       },
-      "retrieveLocalModList": {
-        "error": {
-          "title": "Failed to retrieve local mod list",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
-          }
-        }
-      },
-      "retrieveResourcePackList": {
-        "error": {
-          "title": "Failed to retrieve resource pack list"
-        }
-      },
-      "retrieveServerResourcePackList": {
-        "error": {
-          "title": "Failed to retrieve resource pack list from servers"
-        }
-      },
       "addGameServer": {
         "success": "Game server added successfully",
         "error": {
@@ -2375,6 +2357,24 @@
             "FILE_OPERATION_ERROR": "Failed to write server info",
             "SERVER_NOT_FOUND": "Server not found"
           }
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Failed to retrieve local mod list",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "Failed to retrieve resource pack list"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "Failed to retrieve resource pack list from servers"
         }
       },
       "retrieveSchematicList": {
