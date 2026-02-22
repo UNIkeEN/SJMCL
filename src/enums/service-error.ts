@@ -78,16 +78,3 @@ export enum LaunchServiceError {
   AuthlibInjectorNotReady = "AUTHLIB_INJECTOR_NOT_READY",
   AuthServerNotFound = "AUTH_SERVER_NOT_FOUND",
 }
-
-export enum LaunchServiceError {
-  ModLoaderNotInstalled = "MOD_LOADER_NOT_INSTALLED",
-  NoSuitableJava = "NO_SUITABLE_JAVA",
-  SelectedJavaUnavailable = "SELECTED_JAVA_UNAVAILABLE",
-  GameFilesIncomplete = "GAME_FILES_INCOMPLETE",
-  SetProcessPriorityFailed = "SET_PROCESS_PRIORITY_FAILED",
-  ChangeWindowTitleFailed = "CHANGE_WINDOW_TITLE_FAILED",
-  KillProcessFailed = "KILL_PROCESS_FAILED",
-  LaunchingStateNotFound = "LAUNCHING_STATE_NOT_FOUND",
-  AuthlibInjectorNotReady = "AUTHLIB_INJECTOR_NOT_READY",
-  AuthServerNotFound = "AUTH_SERVER_NOT_FOUND",
-}
