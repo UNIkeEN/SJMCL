@@ -145,13 +145,13 @@
     "header": {
       "title": "Add Game Server"
     },
-    "serverAddressRequired": "Server address is required",
+    "serverAddrRequired": "Server address is required",
     "label": {
-      "serverAddress": "Server Address",
+      "serverAddr": "Server Address",
       "serverName": "Server Name"
     },
     "placeholder": {
-      "serverAddress": "Enter server address",
+      "serverAddr": "Enter server address",
       "serverName": "Minecraft Server"
     }
   },

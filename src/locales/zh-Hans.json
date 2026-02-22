@@ -145,13 +145,13 @@
     "header": {
       "title": "添加游戏服务器"
     },
-    "serverAddressRequired": "服务器地址不能为空",
+    "serverAddrRequired": "服务器地址不能为空",
     "label": {
-      "serverAddress": "服务器地址",
+      "serverAddr": "服务器地址",
       "serverName": "服务器名称"
     },
     "placeholder": {
-      "serverAddress": "请输入服务器地址",
+      "serverAddr": "请输入服务器地址",
       "serverName": "Minecraft 服务器"
     }
   },

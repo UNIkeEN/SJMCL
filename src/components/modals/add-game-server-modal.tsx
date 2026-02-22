@@ -21,12 +21,12 @@ import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
 
 interface AddGameServerModalProps extends Omit<ModalProps, "children"> {
-  presetUrl?: string;
+  presetAddr?: string;
   instanceId: string;
 }
 
 const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
-  presetUrl = "",
+  presetAddr = "",
   instanceId,
   ...modalProps
 }) => {
@@ -38,28 +38,33 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
   const initialRef = useRef(null);
   const hasAutoPresetRef = useRef(false);
 
-  const [serverUrl, setServerUrl] = useState<string>("");
+  const [serverAddr, setServerAddr] = useState<string>("");
   const [serverName, setServerName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [isServerUrlTouched, setIsServerUrlTouched] = useState(false);
-  const isServerUrlInvalid = isServerUrlTouched && !serverUrl;
+  const [isServerAddrTouched, setIsServerAddrTouched] = useState(false);
+  const trimmedServerAddr = serverAddr.trim();
+  const isServerAddrInvalid = isServerAddrTouched && !trimmedServerAddr;
   const serverNamePlaceholder = t("AddGameServerModal.placeholder.serverName");
 
   useEffect(() => {
     if (isOpen) {
       hasAutoPresetRef.current = false;
-      setServerUrl(presetUrl);
+      setServerAddr(presetAddr);
       setServerName("");
-      setIsServerUrlTouched(false);
+      setIsServerAddrTouched(false);
     }
-  }, [isOpen, presetUrl]);
+  }, [isOpen, presetAddr]);
 
   const handleAddGameServer = useCallback(
     (instanceId: string) => {
       const finalServerName = serverName.trim() || serverNamePlaceholder;
       setIsLoading(true);
-      InstanceService.addGameServer(instanceId, serverUrl, finalServerName)
+      InstanceService.addGameServer(
+        instanceId,
+        trimmedServerAddr,
+        finalServerName
+      )
         .then((response) => {
           if (response.status === "success") {
             toast({
@@ -79,7 +84,7 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
           setIsLoading(false);
         });
     },
-    [serverUrl, serverName, serverNamePlaceholder, toast, onClose]
+    [trimmedServerAddr, serverName, serverNamePlaceholder, toast, onClose]
   );
 
   return (
@@ -94,23 +99,23 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4} align="stretch">
-            <FormControl isInvalid={isServerUrlInvalid} isRequired>
-              <FormLabel htmlFor="serverUrl">
-                {t("AddGameServerModal.label.serverAddress")}
+            <FormControl isInvalid={isServerAddrInvalid} isRequired>
+              <FormLabel htmlFor="serverAddr">
+                {t("AddGameServerModal.label.serverAddr")}
               </FormLabel>
               <Input
-                id="serverUrl"
+                id="serverAddr"
                 type="url"
-                placeholder={t("AddGameServerModal.placeholder.serverAddress")}
-                value={serverUrl}
-                onChange={(e) => setServerUrl(e.target.value)}
-                onBlur={() => setIsServerUrlTouched(true)}
+                placeholder={t("AddGameServerModal.placeholder.serverAddr")}
+                value={serverAddr}
+                onChange={(e) => setServerAddr(e.target.value)}
+                onBlur={() => setIsServerAddrTouched(true)}
                 ref={initialRef}
                 focusBorderColor={`${primaryColor}.500`}
               />
-              {isServerUrlInvalid && (
+              {isServerAddrInvalid && (
                 <FormErrorMessage>
-                  {t("AddGameServerModal.serverAddressRequired")}
+                  {t("AddGameServerModal.serverAddrRequired")}
                 </FormErrorMessage>
               )}
             </FormControl>
@@ -143,7 +148,7 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
               }
             }}
             isLoading={isLoading}
-            isDisabled={!serverUrl}
+            isDisabled={!trimmedServerAddr}
           >
             {t("General.confirm")}
           </Button>
