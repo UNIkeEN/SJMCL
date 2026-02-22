@@ -82,22 +82,6 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
     [serverUrl, serverName, serverNamePlaceholder, toast, onClose]
   );
 
-  useEffect(() => {
-    if (
-      isOpen &&
-      presetUrl &&
-      serverUrl === presetUrl &&
-      !hasAutoPresetRef.current
-    ) {
-      if (!serverName) {
-        const urlObj = new URL(presetUrl);
-        const extractedName = urlObj.hostname || presetUrl;
-        setServerName(extractedName);
-      }
-      hasAutoPresetRef.current = true;
-    }
-  }, [isOpen, presetUrl, serverUrl, serverName]);
-
   return (
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
