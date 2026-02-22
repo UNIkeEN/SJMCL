@@ -73,6 +73,14 @@ export const sanitizeFileName = (str: string): string => {
   return sanitized;
 };
 
+export const isDirNameInvalid = (value: string): number => {
+  // return number as specific error index (e.g. for displaying error message in Editable)
+  if (value.trim() === "") return 1;
+  if (!isFileNameSanitized(value)) return 2;
+  if (value.length > 255) return 3;
+  return 0;
+};
+
 export const isPathSanitized = (path: string, maxLength = 255): boolean => {
   const forbiddenChars = /[<>:"|?*\0]/;
   const reservedNames = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i;

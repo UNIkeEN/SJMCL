@@ -49,11 +49,11 @@ jobs:
             target: x86_64-apple-darwin
             platform: macos
             arch: x86_64
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             platform: linux
             arch: x86_64
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-22.04-arm
             target: aarch64-unknown-linux-gnu
             platform: linux
             arch: aarch64
@@ -100,7 +100,7 @@ jobs:
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
-          key: ${{ matrix.platform }}-${{ matrix.target }}
+          key: ${{ matrix.os }}-${{ matrix.target }}
 
       - name: Build the app
         run: npm run tauri build -- --target ${{ matrix.target }}

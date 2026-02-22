@@ -141,6 +141,20 @@
       "endpointUrl": "源地址"
     }
   },
+  "AddGameServerModal": {
+    "header": {
+      "title": "添加游戏服务器"
+    },
+    "serverAddrRequired": "服务器地址不能为空",
+    "label": {
+      "serverAddr": "服务器地址",
+      "serverName": "服务器名称"
+    },
+    "placeholder": {
+      "serverAddr": "请输入服务器地址",
+      "serverName": "Minecraft 服务器"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "添加角色"
@@ -372,20 +386,6 @@
   "ComingSoonSign": {
     "text": "该页面暂未开放，敬请期待"
   },
-  "ContributorsPage": {
-    "all": "全部开发者名单",
-    "core": "主要开发者",
-    "contribution": {
-      "fullStackDev": "全栈开发",
-      "frontendDev": "前端开发",
-      "backendDev": "后端开发",
-      "externalAPI": "外部服务",
-      "doc": "文档",
-      "cicd": "CI / CD",
-      "design": "视觉设计",
-      "mascot": "吉祥物"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "复制或移动资源"
@@ -426,6 +426,16 @@
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "删除认证服务器",
+      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "删除游戏服务器",
+    "content": "确定要删除游戏服务器 “{{name}}”（{{addr}}） 吗？它将会永久消失！（真的很久！）"
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
@@ -446,12 +456,6 @@
     "dialog": {
       "title": "删除角色",
       "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
-    }
-  },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
   "DevToolbar": {
@@ -1163,7 +1167,8 @@
     },
     "tooltips": {
       "existingServer": "已存在相同地址的认证服务器，导入将会覆盖数据",
-      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据"
+      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据",
+      "expired": "登录令牌已过期，无法导入此角色"
     }
   },
   "ImportModpackModal": {
@@ -1784,6 +1789,10 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "重置实例设置",
+    "body": "此操作将会重置本实例的游戏设置为当前全局游戏设置，您确定要继续吗？"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
   },
@@ -2099,7 +2108,6 @@
           "title": "验证游戏文件失败",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模组加载器未完成安装",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "模组加载器库文件未下载",
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "游戏文件不完整或缺失",
             "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
@@ -2252,7 +2260,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "实例游戏设置已重置",
         "error": {
           "title": "实例游戏设置重置失败",
@@ -2329,6 +2337,28 @@
           }
         }
       },
+      "addGameServer": {
+        "success": "游戏服务器添加成功",
+        "error": {
+          "title": "添加游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "DUPLICATE_SERVER": "服务器已存在"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "游戏服务器删除成功",
+        "error": {
+          "title": "删除游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "SERVER_NOT_FOUND": "服务器不存在"
+          }
+        }
+      },
       "retrieveLocalModList": {
         "error": {
           "title": "获取模组列表失败",
@@ -2374,8 +2404,8 @@
         "error": {
           "title": "获取世界详细信息失败",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
-            "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
+            "WORLD_NOT_EXIST_ERROR": "世界不存在",
+            "LEVEL_NOT_EXIST_ERROR": "存档数据文件不存在",
             "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
           }
         }
@@ -2570,7 +2600,8 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "无效的运行路径",
-      "content": "您正在临时或非法目录下运行 SJMCL，您的设置和游戏数据可能丢失。请将 SJMCL 移动到其他位置后再次运行。"
+      "content": "您正在临时或非法目录下运行 SJMCL，您的设置和游戏数据可能丢失。请将 SJMCL 移动到其他位置后再次运行。",
+      "btnContinue": "仍要运行"
     }
   },
   "Utils": {

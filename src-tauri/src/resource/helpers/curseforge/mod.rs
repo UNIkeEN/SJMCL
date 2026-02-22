@@ -25,6 +25,35 @@ use tauri_plugin_http::reqwest;
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";
+const WORD_PERFECT_MATCH_WEIGHT: usize = 10;
+
+fn tokenize_words(text: &str) -> impl Iterator<Item = &str> {
+  text
+    .split(|c: char| !c.is_alphanumeric())
+    .filter(|token| !token.is_empty())
+}
+
+fn levenshtein_distance(a: &str, b: &str) -> usize {
+  let b_chars: Vec<char> = b.chars().collect();
+  let mut prev: Vec<usize> = (0..=b_chars.len()).collect();
+
+  for (i, a_ch) in a.chars().enumerate() {
+    let mut current = Vec::with_capacity(b_chars.len() + 1);
+    current.push(i + 1);
+
+    for (j, b_ch) in b_chars.iter().enumerate() {
+      let cost = if a_ch == *b_ch { 0 } else { 1 };
+      let insertion = current[j] + 1;
+      let deletion = prev[j + 1] + 1;
+      let substitution = prev[j] + cost;
+      current.push(insertion.min(deletion).min(substitution));
+    }
+
+    prev = current;
+  }
+
+  *prev.last().unwrap_or(&0)
+}
 
 pub async fn fetch_resource_list_by_name_curseforge(
   app: &AppHandle,
@@ -56,7 +85,7 @@ pub async fn fetch_resource_list_by_name_curseforge(
   let mut params = HashMap::new();
   params.insert("gameId".to_string(), MINECRAFT_GAME_ID.to_string());
   params.insert("classId".to_string(), class_id.to_string());
-  params.insert("searchFilter".to_string(), handled_search_query);
+  params.insert("searchFilter".to_string(), handled_search_query.clone());
   if game_version != ALL_FILTER {
     params.insert("gameVersion".to_string(), game_version.to_string());
   }
@@ -80,6 +109,43 @@ pub async fn fetch_resource_list_by_name_curseforge(
   .await?;
 
   let mut search_result: OtherResourceSearchRes = results.into();
+
+  let lower_case_search_filter = handled_search_query.to_lowercase();
+  let mut search_filter_words = HashMap::new();
+  for token in tokenize_words(&lower_case_search_filter) {
+    *search_filter_words
+      .entry(token.to_string())
+      .or_insert(0usize) += 1;
+  }
+
+  let mut scored_results: Vec<(OtherResourceInfo, i64)> = search_result
+    .list
+    .into_iter()
+    .map(|resource| {
+      let title = resource
+        .translated_name
+        .as_deref()
+        .unwrap_or(resource.name.as_str());
+      let lower_case_result = title.to_lowercase();
+
+      let mut diff = levenshtein_distance(&lower_case_search_filter, &lower_case_result) as i64;
+
+      for token in tokenize_words(&lower_case_result) {
+        if let Some(count) = search_filter_words.get(token) {
+          diff -= (WORD_PERFECT_MATCH_WEIGHT * *count * token.len()) as i64;
+        }
+      }
+
+      (resource, diff)
+    })
+    .collect();
+
+  scored_results.sort_by_key(|(_, diff)| *diff);
+  search_result.list = scored_results
+    .into_iter()
+    .map(|(resource, _)| resource)
+    .collect();
+
   for resource_info in &mut search_result.list {
     let _ = apply_other_resource_enhancements(app, resource_info).await;
   }

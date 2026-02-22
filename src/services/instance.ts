@@ -109,15 +109,15 @@ export class InstanceService {
   }
 
   /**
-   * RESET the instance game config to use global default game config.
+   * RESTORE the instance game config to use current global game config.
    * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async resetInstanceGameConfig(
+  static async restoreInstanceGameConfig(
     instanceId: string
   ): Promise<InvokeResponse<void>> {
-    return await invoke("reset_instance_game_config", {
+    return await invoke("restore_instance_game_config", {
       instanceId,
     });
   }
@@ -269,6 +269,44 @@ export class InstanceService {
   ): Promise<InvokeResponse<ResourcePackInfo[]>> {
     return await invoke("retrieve_server_resource_pack_list", {
       instanceId,
+    });
+  }
+
+  /**
+   * ADD a game server entry into the instance's `servers.dat`.
+   * The command rejects duplicate `serverAddr` values in the same instance.
+   * @param {string} instanceId - The target instance ID.
+   * @param {string} serverAddr - The server address (for example: `example.com` or `example.com:25565`).
+   * @param {string} serverName - The display name stored in `servers.dat`.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async addGameServer(
+    instanceId: string,
+    serverAddr: string,
+    serverName: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_game_server", {
+      instanceId,
+      serverAddr,
+      serverName,
+    });
+  }
+
+  /**
+   * DELETE a game server from the instance's servers.dat.
+   * @param {string} instanceId - The ID of the instance.
+   * @param {string} serverAddr - The server address (IP) to delete.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async deleteGameServer(
+    instanceId: string,
+    serverAddr: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("delete_game_server", {
+      instanceId,
+      serverAddr,
     });
   }
 
