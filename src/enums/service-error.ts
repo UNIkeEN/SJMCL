@@ -78,7 +78,3 @@ export enum LaunchServiceError {
   AuthlibInjectorNotReady = "AUTHLIB_INJECTOR_NOT_READY",
   AuthServerNotFound = "AUTH_SERVER_NOT_FOUND",
 }
-
-export enum LaunchServiceError {
-  NoSuitableJava = "NO_SUITABLE_JAVA",
-}
