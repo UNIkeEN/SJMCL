@@ -18,6 +18,7 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import AddGameServerModal from "@/components/modals/add-game-server-modal";
 import WorldLevelDataModal from "@/components/modals/world-level-data-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
@@ -45,11 +46,16 @@ const InstanceWorldsPage = () => {
   } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
-  const { openSharedModal } = useSharedModals();
-
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [selectedWorldName, setSelectedWorldName] = useState<string>();
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
+
+  const {
+    isOpen: isAddGameServerModalOpen,
+    onOpen: onAddGameServerModalOpen,
+    onClose: onAddGameServerModalClose,
+  } = useDisclosure();
 
   const {
     isOpen: isWorldLevelDataModalOpen,
@@ -94,16 +100,45 @@ const InstanceWorldsPage = () => {
     [toast, instanceId]
   );
 
-  useEffect(() => {
+  // First fetch from local nbt (queryOnline=false) for instant feedback,
+  // then query online status to avoid long wait harming UX.
+  const refreshGameServerList = useCallback(() => {
     handleRetrieveGameServerList(false);
     handleRetrieveGameServerList(true);
+  }, [handleRetrieveGameServerList]);
 
+  useEffect(() => {
+    refreshGameServerList();
     // refresh every minute to query server info
     const intervalId = setInterval(async () => {
       handleRetrieveGameServerList(true);
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [instanceId, handleRetrieveGameServerList]);
+  }, [instanceId, handleRetrieveGameServerList, refreshGameServerList]);
+
+  const handleDeleteServer = useCallback(
+    (server: GameServerInfo) => {
+      if (!instanceId) return;
+      InstanceService.deleteGameServer(instanceId, server.ip).then(
+        (response) => {
+          if (response.status === "success") {
+            toast({
+              title: response.message,
+              status: "success",
+            });
+            refreshGameServerList();
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
+        }
+      );
+    },
+    [instanceId, toast, refreshGameServerList]
+  );
 
   const worldSecMenuOperations = [
     {
@@ -137,6 +172,21 @@ const InstanceWorldsPage = () => {
       onClick: () => {
         getWorldListWrapper(true);
         setSelectedWorldName("");
+      },
+    },
+  ];
+
+  const serverSecMenuOperations = [
+    {
+      icon: "add",
+      onClick: () => {
+        onAddGameServerModalOpen();
+      },
+    },
+    {
+      icon: "refresh",
+      onClick: () => {
+        refreshGameServerList();
       },
     },
   ];
@@ -179,6 +229,40 @@ const InstanceWorldsPage = () => {
           },
         ]
       : []),
+  ];
+
+  const serverItemMenuOperations = (server: GameServerInfo) => [
+    {
+      icon: "delete",
+      danger: true,
+      onClick: () => {
+        openGenericConfirmDialog({
+          title: t("DeleteGameServerAlertDialog.title"),
+          body: t("DeleteGameServerAlertDialog.content", {
+            name: server.name,
+            addr: server.ip,
+          }),
+          btnOK: t("General.delete"),
+          isAlert: true,
+          onOKCallback: () => {
+            handleDeleteServer(server);
+          },
+          showSuppressBtn: true,
+          suppressKey: "deleteGameServerAlert",
+        });
+      },
+    },
+    {
+      icon: "launch",
+      label: t("InstanceWorldsPage.serverList.launch"),
+      danger: false,
+      onClick: () => {
+        openSharedModal("launch", {
+          instanceId: instanceId,
+          quickPlayMultiplayer: server.ip,
+        });
+      },
+    },
   ];
 
   return (
@@ -286,16 +370,18 @@ const InstanceWorldsPage = () => {
           );
         }}
         headExtra={
-          <CommonIconButton
-            icon="refresh"
-            onClick={() => {
-              handleRetrieveGameServerList(false);
-              handleRetrieveGameServerList(true);
-            }}
-            size="xs"
-            fontSize="sm"
-            h={21}
-          />
+          <HStack spacing={2}>
+            {serverSecMenuOperations.map((btn, index) => (
+              <CommonIconButton
+                key={index}
+                icon={btn.icon}
+                onClick={btn.onClick}
+                size="xs"
+                fontSize="sm"
+                h={21}
+              />
+            ))}
+          </HStack>
         }
       >
         {gameServers.length > 0 ? (
@@ -344,16 +430,17 @@ const InstanceWorldsPage = () => {
                         </TagLabel>
                       </Tag>
                     ))}
-                  <CommonIconButton
-                    icon="launch"
-                    label={t("InstanceWorldsPage.serverList.launch")}
-                    onClick={() => {
-                      openSharedModal("launch", {
-                        instanceId: instanceId,
-                        quickPlayMultiplayer: server.ip,
-                      });
-                    }}
-                  />
+                  <HStack spacing={0}>
+                    {serverItemMenuOperations(server).map((item, index) => (
+                      <CommonIconButton
+                        key={index}
+                        icon={item.icon}
+                        label={item.label}
+                        colorScheme={item.danger ? "red" : "gray"}
+                        onClick={item.onClick}
+                      />
+                    ))}
+                  </HStack>
                 </HStack>
               </OptionItem>
             ))}
@@ -362,6 +449,16 @@ const InstanceWorldsPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
+      {instanceId && (
+        <AddGameServerModal
+          instanceId={instanceId}
+          isOpen={isAddGameServerModalOpen}
+          onClose={() => {
+            onAddGameServerModalClose();
+            refreshGameServerList();
+          }}
+        />
+      )}
     </>
   );
 };
