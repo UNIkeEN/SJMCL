@@ -4,7 +4,7 @@
   overflow: hidden;
 
   box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
-  background: rgba(0, 0, 0, 0.83);
+  background: rgba(0, 0, 0, 0.78);
   border-radius: 1rem;
 }
 
@@ -13,7 +13,7 @@
   z-index: 0;
   inset: 0;
 
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   filter: url(#glass-distortion);
   overflow: hidden;
   isolation: isolate;
