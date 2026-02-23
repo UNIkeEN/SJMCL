@@ -1,5 +1,8 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::IS_PORTABLE;
+use async_zip::tokio::write::ZipFileWriter;
+use async_zip::Compression;
+use async_zip::ZipEntryBuilder;
 use regex::Regex;
 use sha1::{Digest, Sha1};
 use sha2::Sha256;
@@ -9,6 +12,7 @@ use std::path::{Path, PathBuf};
 use std::{fs, io};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
+use tokio_util::compat::TokioAsyncReadCompatExt;
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
 
@@ -465,6 +469,31 @@ pub fn create_zip_from_dirs(paths: Vec<PathBuf>, zip_file_path: PathBuf) -> SJMC
     .map_err(|e| SJMCLError(format!("Failed to finalize zip file: {}", e)))?;
 
   Ok(zip_file_path.to_string_lossy().to_string())
+}
+
+pub async fn create_modpack_zip(
+  save_path: &str,
+  overrides_prefix: &str,
+  overrides_files: Vec<(String, PathBuf)>,
+  extra_files: Vec<(String, String)>,
+) -> SJMCLResult<()> {
+  let output = tokio::fs::File::create(save_path).await?;
+  let mut writer = ZipFileWriter::with_tokio(output);
+  for (name, content) in extra_files {
+    let entry = ZipEntryBuilder::new(name.into(), Compression::Deflate);
+    writer.write_entry_whole(entry, content.as_bytes()).await?;
+  }
+
+  for (rel, full) in overrides_files {
+    let file = tokio::fs::File::open(&full).await?.compat();
+    let entry_path = format!("{}/{}", overrides_prefix, rel);
+    let entry = ZipEntryBuilder::new(entry_path.into(), Compression::Deflate);
+    let mut entry_writer = writer.write_entry_stream(entry).await?;
+    futures::io::copy(file, &mut entry_writer).await?;
+    entry_writer.close().await?;
+  }
+  writer.close().await?;
+  Ok(())
 }
 
 /// Enum to define the permission operation

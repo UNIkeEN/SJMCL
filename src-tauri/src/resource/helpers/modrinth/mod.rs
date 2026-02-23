@@ -16,7 +16,6 @@ use misc::{
 };
 use sha1::{Digest, Sha1};
 use std::collections::HashMap;
-use std::fs;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -128,7 +127,9 @@ pub async fn fetch_remote_resource_by_local_modrinth(
   app: &AppHandle,
   file_path: &str,
 ) -> SJMCLResult<OtherResourceFileInfo> {
-  let file_content = fs::read(file_path).map_err(|_| ResourceError::ParseError)?;
+  let file_content = tokio::fs::read(file_path)
+    .await
+    .map_err(|_| ResourceError::ParseError)?;
 
   let mut hasher = Sha1::new();
   hasher.update(&file_content);

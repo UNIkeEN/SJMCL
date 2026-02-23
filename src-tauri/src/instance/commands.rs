@@ -12,6 +12,11 @@ use crate::instance::helpers::misc::{
   get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
   refresh_and_update_instances, unify_instance_name,
 };
+use crate::instance::helpers::modpack::export::{
+  collect_modrinth_files, generate_modrinth_manifest, generate_multimc_instance_cfg,
+  generate_multimc_manifest, list_files, validate_export_options, ExportFormat,
+  ExportModpackOptions,
+};
 use crate::instance::helpers::modpack::misc::{
   extract_overrides, get_download_params, ModpackMetaInfo,
 };
@@ -30,8 +35,8 @@ use crate::instance::helpers::server::{
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
-  ModLoaderStatus, ModLoaderType, OptiFine, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
-  ShaderPackInfo,
+  ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo, SchematicInfo,
+  ScreenshotInfo, ShaderPackInfo,
 };
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::LevelData;
@@ -48,8 +53,8 @@ use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::{
-  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
-  get_subdirectories,
+  copy_whole_dir, create_modpack_zip, create_url_shortcut, generate_unique_filename,
+  get_files_with_regex, get_subdirectories,
 };
 use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
@@ -1371,6 +1376,100 @@ pub fn add_custom_instance_icon(
 
   let dest_path = Path::new(&version_path).join("icon");
   fs::copy(source_path, &dest_path)?;
+
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn list_modpack_files(
+  app: AppHandle,
+  instance_id: String,
+) -> SJMCLResult<ModpackFileList> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  tokio::task::spawn_blocking(move || list_files(&instance)).await?
+}
+
+#[tauri::command]
+pub async fn export_modpack(
+  app: AppHandle,
+  instance_id: String,
+  save_path: String,
+  options: ExportModpackOptions,
+  files: Vec<String>,
+) -> SJMCLResult<()> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  validate_export_options(&instance, &options)?;
+
+  let base_path = instance.version_path.clone();
+
+  let mut selected_files = Vec::new();
+  for rel in files {
+    let full = base_path.join(&rel);
+    if tokio::fs::try_exists(&full).await.unwrap_or(false) {
+      selected_files.push((rel, full));
+    }
+  }
+
+  if selected_files.is_empty() {
+    return Err(InstanceError::ModpackManifestParseError.into());
+  }
+
+  let no_create_remote_files = options.no_create_remote_files.unwrap_or(false);
+  let skip_curseforge = options.skip_curseforge_remote_files.unwrap_or(false);
+
+  let (overrides_prefix, overrides_files, extra_files) = match options.format {
+    ExportFormat::Modrinth => {
+      let mut manifest = generate_modrinth_manifest(&instance, &options)?;
+      let (modrinth_files, override_files) = collect_modrinth_files(
+        &app,
+        &selected_files,
+        no_create_remote_files,
+        skip_curseforge,
+      )
+      .await?;
+
+      manifest.files = modrinth_files;
+      let json = serde_json::to_string_pretty(&manifest)
+        .map_err(|_| InstanceError::ModpackManifestParseError)?;
+      (
+        "overrides".to_string(),
+        override_files,
+        vec![("modrinth.index.json".to_string(), json)],
+      )
+    }
+    ExportFormat::MultiMC => {
+      let manifest = generate_multimc_manifest(&instance, &options)?;
+      let json = serde_json::to_string_pretty(&manifest)
+        .map_err(|_| InstanceError::ModpackManifestParseError)?;
+      let extras = vec![
+        ("mmc-pack.json".to_string(), json),
+        (
+          "instance.cfg".to_string(),
+          generate_multimc_instance_cfg(&instance, &options),
+        ),
+        (".packignore".to_string(), String::new()),
+      ];
+      (".minecraft".to_string(), selected_files, extras)
+    }
+  };
+
+  create_modpack_zip(&save_path, &overrides_prefix, overrides_files, extra_files)
+    .await
+    .map_err(|_| InstanceError::ZipFileProcessFailed)?;
 
   Ok(())
 }
