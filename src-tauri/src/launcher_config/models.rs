@@ -249,7 +249,6 @@ structstruck::strike! {
         pub language: String,
       },
       pub functionality: struct {
-        pub discover_page: bool,
         #[default = "instance"]
         pub instances_nav_type: String,
         #[default = true]

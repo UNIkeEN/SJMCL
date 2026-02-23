@@ -1,4 +1,12 @@
-import { Grid, GridItem, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Grid,
+  GridItem,
+  HStack,
+  Icon,
+  Kbd,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +24,7 @@ import {
   LuSquareLibrary,
 } from "react-icons/lu";
 import NavMenu, { MenuItem } from "@/components/common/nav-menu";
+import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 
 interface DiscoverMenuItemConfig {
@@ -31,6 +40,7 @@ const DiscoverLayout: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const { t } = useTranslation();
   const { openSharedModal } = useSharedModals();
+  const { config } = useLauncherConfig();
 
   const handleSearch = () => {
     openSharedModal("spotlight-search");
@@ -88,11 +98,23 @@ const DiscoverLayout: React.FC<{ children: React.ReactNode }> = ({
   ): Array<MenuItem & { route?: string; onClick?: () => void }> => {
     return items.map((item) => ({
       label: (
-        <HStack spacing={2} overflow="hidden">
+        <HStack spacing={2} overflow="hidden" w="100%">
           <Icon as={item.icon} />
           <Text fontSize="sm" className="ellipsis-text">
             {t(`DiscoverLayout.discoverDomainList.${item.key}`)}
           </Text>
+          {item.key === "search" && (
+            <HStack spacing={0.5} ml="auto">
+              <Kbd>
+                {t(
+                  `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}Short.${
+                    config.basicInfo.osType
+                  }`
+                )}
+              </Kbd>
+              <Kbd>S</Kbd>
+            </HStack>
+          )}
         </HStack>
       ),
       value: item.route || item.key,
@@ -108,6 +130,8 @@ const DiscoverLayout: React.FC<{ children: React.ReactNode }> = ({
       router.push(item.route);
     }
   };
+
+  const isAtHomePage = router.pathname === "/discover/home";
 
   return (
     <Grid templateColumns="1fr 3fr" gap={4} h="100%">
@@ -136,7 +160,11 @@ const DiscoverLayout: React.FC<{ children: React.ReactNode }> = ({
           })}
         </VStack>
       </GridItem>
-      <GridItem className="content-full-y" key={router.asPath}>
+      <GridItem
+        className="content-full-y"
+        key={router.asPath}
+        ml={isAtHomePage ? -4 : 0}
+      >
         <VStack align="stretch" spacing={4} h="100%">
           {children}
         </VStack>

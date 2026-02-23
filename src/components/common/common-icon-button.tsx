@@ -11,6 +11,7 @@ import {
   LuArrowDownToLine,
   LuCircleHelp,
   LuCopy,
+  LuEllipsis,
   LuExternalLink,
   LuFiles,
   LuFolderOpen,
@@ -55,6 +56,7 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     external: <LuExternalLink size="14" />, // keep the same as deprecated link-icon-button
     info: <LuInfo />,
     launch: <LuPlay />,
+    more: <LuEllipsis />,
     open: <LuFolderOpen />,
     openFolder: <LuFolderOpen />,
     refresh: <LuRefreshCcw />,

@@ -15,9 +15,10 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuDownload, LuRefreshCcw, LuSparkles, LuUpload } from "react-icons/lu";
+import { LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { OptionItem } from "@/components/common/option-item";
@@ -45,6 +46,7 @@ type NewsCarouselProps = {
   posts: NewsPostSummary[];
   loading: boolean;
   onRefresh: () => void;
+  onMore: () => void;
   accentColor: string;
 };
 
@@ -181,6 +183,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
   posts,
   loading,
   onRefresh,
+  onMore,
   accentColor,
 }) => {
   const arrowHoverColor = useColorModeValue("gray.500", "gray.500");
@@ -216,6 +219,17 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
   const canPrev = page > 0;
   const canNext = page < slides.length - 1;
   const showArrows = slides.length > 1;
+  const secMenu = [
+    {
+      icon: "refresh",
+      onClick: onRefresh,
+      isDisabled: loading,
+    },
+    {
+      icon: "more",
+      onClick: onMore,
+    },
+  ];
 
   useEffect(() => {
     setPage(0);
@@ -225,19 +239,24 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
     <Box h="100%">
       <Flex align="center" mb={2.5}>
         <HStack spacing={2} align="center" flex={1}>
-          <Icon as={LuSparkles} color={accentColor} />
+          <Icon as={LuGlobe} color={accentColor} />
           <Text fontSize="sm" fontWeight="bold">
             {title}
           </Text>
         </HStack>
-        <CommonIconButton
-          icon={LuRefreshCcw}
-          onClick={onRefresh}
-          size="sm"
-          fontSize="sm"
-          isDisabled={loading}
-          h={21}
-        />
+        <HStack spacing={2}>
+          {secMenu.map((btn, index) => (
+            <CommonIconButton
+              key={index}
+              icon={btn.icon}
+              onClick={btn.onClick}
+              isDisabled={btn.isDisabled}
+              size="xs"
+              fontSize="sm"
+              h={21}
+            />
+          ))}
+        </HStack>
       </Flex>
 
       <Box position="relative">
@@ -411,7 +430,7 @@ const HotModpackGrid: React.FC<HotModpackGridProps> = ({
       title={title}
       headExtra={
         <CommonIconButton
-          icon={LuRefreshCcw}
+          icon="refresh"
           onClick={onRefresh}
           size="sm"
           fontSize="sm"
@@ -433,12 +452,13 @@ const HotModpackGrid: React.FC<HotModpackGridProps> = ({
   );
 };
 
-export const HomePage = () => {
+export const DiscoverHomePage = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const accentColor = `var(--chakra-colors-${primaryColor}-400)`;
+  const router = useRouter();
 
   const [communityPosts, setCommunityPosts] = useState<NewsPostSummary[]>([]);
   const [mcPosts, setMcPosts] = useState<NewsPostSummary[]>([]);
@@ -545,6 +565,7 @@ export const HomePage = () => {
             posts={mcPosts}
             loading={isLoadingMC}
             onRefresh={fetchMinecraftNews}
+            onMore={() => router.push("/discover/minecraft-news")}
             accentColor={accentColor}
           />
           <NewsCarousel
@@ -552,6 +573,7 @@ export const HomePage = () => {
             posts={communityPosts}
             loading={isLoadingCommunity}
             onRefresh={fetchCommunityNews}
+            onMore={() => router.push("/discover/community-news")}
             accentColor={accentColor}
           />
         </VStack>
@@ -577,4 +599,4 @@ export const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default DiscoverHomePage;
