@@ -33,7 +33,7 @@ tauri-plugin-http = { version = "2.5.6", features = ["json", "stream"] }
 tauri-plugin-log = "2.8.0"
 structstruck = "0.4.1"
 tauri-plugin-os = "2.3.2"
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util", "net", "sync", "time"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
 systemstat = "0.2.3"
 partial_derive = { path = "./libs/partial_derive" }
@@ -47,9 +47,9 @@ uuid = { version = "1.11.0", features = [
 tauri-plugin-process = "2.3.1"
 tauri-plugin-opener = "2.5.3"
 base64 = "0.22.1"
-image = { version = "0.25.5", features = ["serde"] }
+image = { version = "0.25.5", default-features = false, features = ["serde", "png", "jpeg", "gif", "ico", "webp"] }
 rand = "0.9.0"
-zip = "2.3"
+zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
 regex = "1.11"
 toml = "0.8"
