@@ -22,8 +22,8 @@ export const CommunityNewsPage = () => {
   const [sourceCursors, setSourceCursors] = useState<
     Record<string, number | null>
   >({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [masonryKey, setMasonryKey] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [masonryKey, setMasonryKey] = useState<number>(0);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const fetchFirstPage = useCallback(async () => {

@@ -29,6 +29,7 @@ import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { NewsPostSummary } from "@/models/news-post";
 import { OtherResourceInfo } from "@/models/resource";
+import { MC_NEWS_SOURCE_URL } from "@/pages/discover/minecraft-news";
 import { DiscoverService } from "@/services/discover";
 import { ResourceService } from "@/services/resource";
 import { ISOToDate, formatRelativeTime } from "@/utils/datetime";
@@ -465,11 +466,21 @@ export const HomePage = () => {
 
   const fetchMinecraftNews = useCallback(async () => {
     setIsLoadingMC(true);
-    // Placeholder: real Minecraft news feed to be wired later.
-    setTimeout(() => {
-      setMcPosts([]);
+    try {
+      const source = [
+        {
+          url: MC_NEWS_SOURCE_URL,
+          cursor: null,
+        },
+      ];
+
+      const response = await DiscoverService.fetchNewsPostSummaries(source);
+      if (response.status === "success") {
+        setMcPosts(response.data.posts.slice(0, MAX_NEWS_POST_NUM));
+      }
+    } finally {
       setIsLoadingMC(false);
-    }, 400);
+    }
   }, []);
 
   const fetchHotModpacks = useCallback(
