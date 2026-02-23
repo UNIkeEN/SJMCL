@@ -36,6 +36,9 @@ const PosterCard = ({ data }: PosterCardProps) => {
   const { title, abstract, keywords, imageSrc, source, createAt, link } = data;
   const [isHovered, setIsHovered] = useState(false);
   const [src, width, height] = imageSrc || [];
+  const validWidth = typeof width === "number" && width > 0 ? width : undefined;
+  const validHeight =
+    typeof height === "number" && height > 0 ? height : undefined; // Images from mc news don't provide dimensions, let it be auto
 
   return (
     <Card
@@ -57,8 +60,8 @@ const PosterCard = ({ data }: PosterCardProps) => {
             objectFit="cover"
             src={src}
             alt={title}
-            width={width}
-            height={height}
+            width={validWidth}
+            height={validHeight}
             style={{ height: "auto" }}
           />
         </Skeleton>

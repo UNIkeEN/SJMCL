@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   HStack,
+  Kbd,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -29,7 +30,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 
 export type Placement = "top" | "right" | "bottom" | "left";
@@ -117,10 +118,28 @@ export const GuidedTourProvider: React.FC<TourProviderProps> = ({
       placement: "bottom",
     },
     {
-      id: "main-launch-button",
+      id: "head-navbar-tab-discover",
       title: t("GuidedTourProvider.step3.title"),
-      content: t("GuidedTourProvider.step3.content"),
+      content: (
+        <Trans
+          i18nKey="GuidedTourProvider.step3.content"
+          components={{ key: <Kbd /> }}
+          values={{
+            keyname: t(
+              `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${
+                config.basicInfo.osType
+              }`
+            ),
+          }}
+        />
+      ),
       placement: "bottom",
+    },
+    {
+      id: "main-launch-button",
+      title: t("GuidedTourProvider.step4.title"),
+      content: t("GuidedTourProvider.step4.content"),
+      placement: "top",
     },
   ];
 

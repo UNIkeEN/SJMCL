@@ -116,7 +116,6 @@ export interface LauncherConfig {
       language: string;
     };
     functionality: {
-      discoverPage: boolean;
       instancesNavType: string;
       launchPageQuickSwitch: boolean;
       resourceTranslation: boolean;
@@ -275,7 +274,6 @@ export const defaultConfig: LauncherConfig = {
       language: "zh-Hans",
     },
     functionality: {
-      discoverPage: false,
       instancesNavType: "instance",
       launchPageQuickSwitch: true,
       resourceTranslation: true,

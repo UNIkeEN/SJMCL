@@ -461,11 +461,30 @@
   "DevToolbar": {
     "tooltip": "开发工具栏"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "发现",
     "noMore": "无更多内容",
     "sources": "管理数据源",
     "NoSources": "未添加数据源"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft 新闻",
+    "community-news": "社区新闻",
+    "hotModpacks": "{{source}} 的热门整合包"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "搜索",
+      "home": "主页",
+      "community-news": "社区新闻",
+      "minecraft-news": "Minecraft 新闻",
+      "modpack": "整合包",
+      "mod": "模组",
+      "world": "世界",
+      "resourcepack": "资源包",
+      "shader": "光影",
+      "datapack": "数据包"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -685,9 +704,19 @@
       "macos": "Control(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -907,6 +936,7 @@
     "finish": "完成",
     "import": "导入",
     "launch": "启动",
+    "more": "更多",
     "next": "下一步",
     "notice": "提示",
     "open": "打开",
@@ -954,12 +984,6 @@
     "functions": {
       "title": "功能",
       "settings": {
-        "discoverPage": {
-          "title": "发现页",
-          "openNotice": {
-            "content": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 <key>{{keyname}}</key> + <key>S</key> 继续使用 “聚合搜索”。"
-          }
-        },
         "instancesNavType": {
           "title": "实例页导航栏模式",
           "description": "更改实例页左侧导航栏是否显示、分组方式",
@@ -1098,6 +1122,10 @@
       "content": "在此处添加账户，选择您想要游玩的角色"
     },
     "step3": {
+      "title": "发现页",
+      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>S</key> 快速打开 “聚合搜索”。"
+    },
+    "step4": {
       "title": "Minecraft，启动！",
       "content": "选中实例与角色、调整好相关设置后，点击启动按钮享受游戏吧 🥳"
     }

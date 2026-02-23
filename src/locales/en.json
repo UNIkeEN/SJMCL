@@ -461,11 +461,30 @@
   "DevToolbar": {
     "tooltip": "Dev Toolbar"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "Discover",
     "noMore": "No more",
     "sources": "Manage Sources",
     "NoSources": "No source added"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft News",
+    "community-news": "Community News",
+    "hotModpacks": "Hot Modpacks from {{source}}"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "Search",
+      "home": "Home",
+      "community-news": "Community",
+      "minecraft-news": "Minecraft News",
+      "modpack": "Modpacks",
+      "mod": "Mods",
+      "world": "Worlds",
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -502,9 +521,9 @@
     "resourceTypeList": {
       "world": "Worlds",
       "mod": "Mods",
-      "resourcepack": "Resourcepacks",
-      "shader": "Shaderpacks",
-      "datapack": "Datapacks"
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
     }
   },
   "DownloadSettingPage": {
@@ -685,9 +704,19 @@
       "macos": "Control(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -907,6 +936,7 @@
     "finish": "Finish",
     "import": "Import",
     "launch": "Launch",
+    "more": "More",
     "next": "Next",
     "notice": "Notice",
     "open": "Open",
@@ -954,12 +984,6 @@
     "functions": {
       "title": "Functionality",
       "settings": {
-        "discoverPage": {
-          "title": "Discover Page",
-          "openNotice": {
-            "content": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut <key>{{keyname}}</key> + <key>S</key>."
-          }
-        },
         "instancesNavType": {
           "title": "Instance Page Navigation Mode",
           "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
@@ -1098,6 +1122,10 @@
       "content": "Here you can add accounts and choose the player you want to play."
     },
     "step3": {
+      "title": "Discover Page",
+      "content": "Here you can browse Minecraft and community news, discover and download various related resources such as mods, maps, and modpacks.<br/>You can also quickly open \"Global Search\" with the keyboard shortcut <key>{{keyname}}</key> + <key>S</key>."
+    },
+    "step4": {
       "title": "Launch Minecraft!",
       "content": "After selecting your instance and player and adjusting the relevant settings, click the launch button and enjoy the game! 🥳"
     }

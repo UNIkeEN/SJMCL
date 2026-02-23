@@ -80,8 +80,7 @@ export const DiscoverSourcesPage = () => {
 
   return (
     <Section
-      className="content-full-y"
-      title={t("DiscoverPage.sources")}
+      title={t("DiscoverCommunityNewsPage.sources")}
       withBackButton
       headExtra={
         <Button
@@ -180,7 +179,7 @@ export const DiscoverSourcesPage = () => {
         <Empty
           withIcon={false}
           size="sm"
-          description={t("DiscoverPage.NoSources")}
+          description={t("DiscoverCommunityNewsPage.NoSources")}
         />
       )}
       <AddDiscoverSourceModal

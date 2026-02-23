@@ -17,7 +17,6 @@ import {
   LuBox,
   LuCircleUserRound,
   LuCompass,
-  LuSearch,
   LuSettings,
   LuZap,
 } from "react-icons/lu";
@@ -58,18 +57,7 @@ const HeadNavBar = () => {
     { icon: LuZap, label: "launch", path: "/launch" },
     { icon: LuBox, label: "instances", path: "/instances" },
     { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
-    ...(config.general.functionality.discoverPage
-      ? [{ icon: LuCompass, label: "discover", path: "/discover" }]
-      : [
-          {
-            icon: LuSearch,
-            label: "search",
-            path: "%not-page",
-            onNav: () => {
-              openSharedModal("spotlight-search");
-            },
-          },
-        ]),
+    { icon: LuCompass, label: "discover", path: "/discover" },
     { icon: LuSettings, label: "settings", path: "/settings" },
   ];
 
@@ -79,7 +67,7 @@ const HeadNavBar = () => {
 
   const handleTabChange = (index: number) => {
     const target = navList[index];
-    target.path === "%not-page" ? target.onNav?.() : router.push(target.path);
+    router.push(target.path);
   };
 
   return (

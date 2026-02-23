@@ -1,0 +1,602 @@
+import {
+  Avatar,
+  Box,
+  Card,
+  Flex,
+  Grid,
+  HStack,
+  Icon,
+  IconButton,
+  SimpleGrid,
+  Tag,
+  Text,
+  VStack,
+  useBreakpointValue,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
+import { CommonIconButton } from "@/components/common/common-icon-button";
+import { OptionItem } from "@/components/common/option-item";
+import { Section } from "@/components/common/section";
+import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
+import { useToast } from "@/contexts/toast";
+import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
+import { useThemedCSSStyle } from "@/hooks/themed-css";
+import { NewsPostSummary } from "@/models/news-post";
+import { OtherResourceInfo } from "@/models/resource";
+import { MC_NEWS_SOURCE_URL } from "@/pages/discover/minecraft-news";
+import { DiscoverService } from "@/services/discover";
+import { ResourceService } from "@/services/resource";
+import { ISOToDate, formatRelativeTime } from "@/utils/datetime";
+import { translateTag } from "@/utils/resource";
+import { cleanHtmlText, formatDisplayCount } from "@/utils/string";
+
+// Number of items to display in HotModpackGrid and NewsCarousel
+const MAX_MODPACK_NUM = 6;
+const MAX_NEWS_POST_NUM = 6;
+
+type NewsCarouselProps = {
+  title: string;
+  posts: NewsPostSummary[];
+  loading: boolean;
+  onRefresh: () => void;
+  onMore: () => void;
+  accentColor: string;
+};
+
+type HotModpackGridProps = {
+  title: string;
+  items: OtherResourceInfo[];
+  loading: boolean;
+  onRefresh: () => void;
+  accentColor: string;
+};
+
+type IconProps = {
+  size: number;
+  direction: "left" | "right";
+  color?: string;
+  strokeWidth?: number;
+};
+
+const LongChevron = ({
+  size,
+  direction,
+  color = "currentColor",
+  strokeWidth = 2,
+}: IconProps) => {
+  const path =
+    direction === "left" ? "M10 5 L2 20 L10 35" : "M2 5 L10 20 L2 35";
+
+  return (
+    <svg width={size / 5} height={size} viewBox="0 0 12 40" fill="none">
+      <path
+        d={path}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+};
+
+const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
+  const bannerHeight =
+    useBreakpointValue({ base: "32", lg: "40", xl: "48" }) ?? "32";
+  const banner =
+    post?.imageSrc && Array.isArray(post.imageSrc)
+      ? post.imageSrc[0]
+      : undefined;
+
+  const { t } = useTranslation();
+  const themedStyles = useThemedCSSStyle();
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+
+  return (
+    <Card
+      className={themedStyles.card["card-front"]}
+      h="100%"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={
+        post?.link
+          ? () => {
+              openUrl(post.link);
+            }
+          : undefined
+      }
+    >
+      <HStack align="center" justify="space-between" mb={1.5}>
+        <HStack spacing={1.5} align="center">
+          <Avatar
+            size="xs"
+            name={post?.source?.name}
+            src={post?.source?.iconSrc}
+          />
+          <Text fontSize="sm">{post?.source?.name}</Text>
+        </HStack>
+        {post?.createAt && (
+          <Text fontSize="xs" className="secondary-text">
+            {formatRelativeTime(post.createAt, t).replace("on", "")}
+          </Text>
+        )}
+      </HStack>
+      {banner ? (
+        <Box
+          h={bannerHeight}
+          position="relative"
+          overflow="hidden"
+          bgImage={`url(${banner})`}
+          bgSize="cover"
+          bgPos="center"
+        />
+      ) : (
+        <Box
+          h={bannerHeight}
+          position="relative"
+          overflow="hidden"
+          bg="gray.500"
+          opacity={0.2}
+        />
+      )}
+      <Box position="relative" pt={3} bg="inherit">
+        <Text fontSize="sm" noOfLines={2} visibility="hidden">
+          {post?.title}
+        </Text>
+        <Box
+          position="absolute"
+          insetX={0}
+          bottom={0}
+          bg="inherit"
+          transition="transform 200ms ease"
+          pt={1.5}
+        >
+          <Text fontSize="sm" noOfLines={2}>
+            {post?.title}
+          </Text>
+          <Text
+            fontSize="xs"
+            className="secondary-text"
+            noOfLines={4}
+            mt={1}
+            maxH={isHovered ? "6em" : "0"}
+            transition="max-height 180ms ease"
+          >
+            {cleanHtmlText(post?.abstract || "")}
+          </Text>
+        </Box>
+      </Box>
+    </Card>
+  );
+};
+
+const NewsCarousel: React.FC<NewsCarouselProps> = ({
+  title,
+  posts,
+  loading,
+  onRefresh,
+  onMore,
+  accentColor,
+}) => {
+  const arrowHoverColor = useColorModeValue("gray.500", "gray.500");
+  const arrowColor = useColorModeValue("gray.400", "gray.600");
+  const arrowDisabledColor = useColorModeValue("gray.300", "gray.700");
+
+  const [page, setPage] = useState<number>(0);
+  const itemsPerPage = useBreakpointValue({ base: 2, xl: 3 }) ?? 2;
+  const longChevronSize = useBreakpointValue({ base: 80, xl: 100 }) ?? 80;
+
+  const slides = useMemo(() => {
+    const baseItems = posts.length > 0 ? posts : [];
+    const placeholders: Array<NewsPostSummary | null> = Array.from(
+      { length: Math.max(itemsPerPage - baseItems.length, 0) },
+      () => null
+    );
+    const padded = [...baseItems, ...placeholders];
+    const groups: Array<Array<NewsPostSummary | null>> = [];
+    const totalGroups = Math.max(1, Math.ceil(padded.length / itemsPerPage));
+
+    for (let i = 0; i < totalGroups; i += 1) {
+      const slice = padded.slice(i * itemsPerPage, (i + 1) * itemsPerPage);
+      while (slice.length < itemsPerPage) slice.push(null);
+      groups.push(slice);
+    }
+
+    return groups;
+  }, [posts, itemsPerPage]);
+
+  const trackWidth = `${slides.length * 100}%`;
+  const pageWidth = slides.length > 0 ? 100 / slides.length : 100;
+
+  const canPrev = page > 0;
+  const canNext = page < slides.length - 1;
+  const showArrows = slides.length > 1;
+  const secMenu = [
+    {
+      icon: "refresh",
+      onClick: onRefresh,
+      isDisabled: loading,
+    },
+    {
+      icon: "more",
+      onClick: onMore,
+    },
+  ];
+
+  useEffect(() => {
+    setPage(0);
+  }, [posts, itemsPerPage]);
+
+  return (
+    <Box h="100%">
+      <Flex align="center" mb={2.5}>
+        <HStack spacing={2} align="center" flex={1}>
+          <Icon as={LuGlobe} color={accentColor} />
+          <Text fontSize="sm" fontWeight="bold">
+            {title}
+          </Text>
+        </HStack>
+        <HStack spacing={2}>
+          {secMenu.map((btn, index) => (
+            <CommonIconButton
+              key={index}
+              icon={btn.icon}
+              onClick={btn.onClick}
+              isDisabled={btn.isDisabled}
+              size="xs"
+              fontSize="sm"
+              h={21}
+            />
+          ))}
+        </HStack>
+      </Flex>
+
+      <Box position="relative">
+        <Box overflow="hidden">
+          <Flex
+            w={trackWidth}
+            transform={`translateX(-${page * pageWidth}%)`}
+            transition="transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)"
+            gap={0}
+          >
+            {slides.map((group, index) => (
+              <Grid
+                key={index}
+                templateColumns={`repeat(${itemsPerPage}, minmax(0, 1fr))`}
+                gap={2}
+                w={`${pageWidth}%`}
+                flex={`0 0 ${pageWidth}%`}
+              >
+                {group.map((item, idx) => (
+                  <Box
+                    key={`${index}-${idx}`}
+                    cursor={item?.link ? "pointer" : "default"}
+                    p={0.5}
+                  >
+                    <NewsCard post={item} />
+                  </Box>
+                ))}
+              </Grid>
+            ))}
+          </Flex>
+        </Box>
+
+        {showArrows && (
+          <>
+            <IconButton
+              aria-label="previous"
+              icon={LongChevron({
+                size: longChevronSize,
+                direction: "left",
+              })}
+              variant="unstyled"
+              position="absolute"
+              top={0}
+              bottom={0}
+              h="100%"
+              minW="auto"
+              left={{ base: -6, lg: -7 }}
+              onClick={() => canPrev && setPage((p) => Math.max(0, p - 1))}
+              isDisabled={!canPrev}
+              zIndex={1}
+              color={arrowColor}
+              _hover={{ color: arrowHoverColor }}
+              _disabled={{ color: arrowDisabledColor, cursor: "not-allowed" }}
+            />
+            <IconButton
+              aria-label="next"
+              icon={LongChevron({
+                size: longChevronSize,
+                direction: "right",
+              })}
+              variant="unstyled"
+              position="absolute"
+              top={0}
+              bottom={0}
+              h="100%"
+              minW="auto"
+              right={{ base: -6, lg: -7 }}
+              onClick={() =>
+                canNext && setPage((p) => Math.min(slides.length - 1, p + 1))
+              }
+              isDisabled={!canNext}
+              zIndex={1}
+              color={arrowColor}
+              _hover={{ color: arrowHoverColor }}
+              _disabled={{ color: arrowDisabledColor, cursor: "not-allowed" }}
+            />
+          </>
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+const HotModpackGrid: React.FC<HotModpackGridProps> = ({
+  title,
+  items,
+  loading,
+  onRefresh,
+  accentColor,
+}) => {
+  const { openSharedModal } = useSharedModals();
+  const themedStyles = useThemedCSSStyle();
+  const { config } = useLauncherConfig();
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
+
+  const renderItem = (item: OtherResourceInfo) => (
+    <Card className={themedStyles.card["card-front"]}>
+      <OptionItem
+        prefixElement={
+          <Avatar
+            src={item?.iconSrc}
+            name={item?.name}
+            boxSize={12}
+            borderRadius="md"
+          />
+        }
+        title={
+          <Text fontSize="xs-sm" noOfLines={1}>
+            {item?.name}
+          </Text>
+        } // No translation for name of modpacks
+        titleExtra={
+          item && (
+            <Tag
+              size="sm"
+              colorScheme={accentColor}
+              variant="subtle"
+              whiteSpace="nowrap"
+              flexShrink={0}
+            >
+              {translateTag(
+                item.tags.filter((tag) =>
+                  translateTag(tag, item.type, item.source)
+                )[0],
+                item.type,
+                item.source
+              )}
+            </Tag>
+          )
+        }
+        description={
+          <VStack
+            fontSize="xs"
+            className="secondary-text"
+            spacing={1}
+            align="flex-start"
+            w="100%"
+            mt={0.5}
+          >
+            <Text overflow="hidden" className="ellipsis-text">
+              {(showZhTrans && item.translatedDescription) || item.description}
+            </Text>
+            <Flex align="center" w="100%">
+              <HStack spacing={1} w="50%">
+                <LuUpload />
+                <Text>{ISOToDate(item.lastUpdated)}</Text>
+              </HStack>
+              <HStack spacing={1} w="50%">
+                <LuDownload />
+                <Text>{formatDisplayCount(item.downloads)}</Text>
+              </HStack>
+            </Flex>
+          </VStack>
+        }
+        titleLineWrap={false}
+        isFullClickZone
+        onClick={() =>
+          openSharedModal("download-specific-resource", {
+            resource: item,
+          })
+        }
+        fontWeight="400"
+      />
+    </Card>
+  );
+
+  return (
+    <Section
+      title={title}
+      headExtra={
+        <CommonIconButton
+          icon="refresh"
+          onClick={onRefresh}
+          size="sm"
+          fontSize="sm"
+          isDisabled={loading}
+          h={21}
+        />
+      }
+    >
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} gap={3} w="100%">
+        {loading ? (
+          <VStack gridColumn="1 / -1" my={6}>
+            <BeatLoader size={16} color="gray" />
+          </VStack>
+        ) : (
+          items.map(renderItem)
+        )}
+      </SimpleGrid>
+    </Section>
+  );
+};
+
+export const DiscoverHomePage = () => {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const { config } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
+  const accentColor = `var(--chakra-colors-${primaryColor}-400)`;
+  const router = useRouter();
+
+  const [communityPosts, setCommunityPosts] = useState<NewsPostSummary[]>([]);
+  const [mcPosts, setMcPosts] = useState<NewsPostSummary[]>([]);
+  const [cfModpacks, setCfModpacks] = useState<OtherResourceInfo[]>([]);
+  const [mrModpacks, setMrModpacks] = useState<OtherResourceInfo[]>([]);
+  const [isLoadingCommunity, setIsLoadingCommunity] = useState<boolean>(false);
+  const [isLoadingMC, setIsLoadingMC] = useState<boolean>(false);
+  const [isLoadingCfModpacks, setIsLoadingCfModpacks] =
+    useState<boolean>(false);
+  const [isLoadingMrModpacks, setIsLoadingMrModpacks] =
+    useState<boolean>(false);
+
+  const fetchCommunityNews = useCallback(async () => {
+    setIsLoadingCommunity(true);
+    try {
+      const sources = config.discoverSourceEndpoints
+        .filter(([, enabled]) => enabled)
+        .map(([url]) => ({ url, cursor: null }));
+
+      if (sources.length === 0) {
+        setCommunityPosts([]);
+        return;
+      }
+
+      const response = await DiscoverService.fetchNewsPostSummaries(sources);
+      if (response.status === "success") {
+        setCommunityPosts(response.data.posts.slice(0, MAX_NEWS_POST_NUM));
+      }
+    } finally {
+      setIsLoadingCommunity(false);
+    }
+  }, [config.discoverSourceEndpoints]);
+
+  const fetchMinecraftNews = useCallback(async () => {
+    setIsLoadingMC(true);
+    try {
+      const source = [
+        {
+          url: MC_NEWS_SOURCE_URL,
+          cursor: null,
+        },
+      ];
+
+      const response = await DiscoverService.fetchNewsPostSummaries(source);
+      if (response.status === "success") {
+        setMcPosts(response.data.posts.slice(0, MAX_NEWS_POST_NUM));
+      }
+    } finally {
+      setIsLoadingMC(false);
+    }
+  }, []);
+
+  const fetchHotModpacks = useCallback(
+    async (source: OtherResourceSource) => {
+      source === OtherResourceSource.CurseForge
+        ? setIsLoadingCfModpacks(true)
+        : setIsLoadingMrModpacks(true);
+      try {
+        const response = await ResourceService.fetchResourceListByName(
+          OtherResourceType.ModPack,
+          "",
+          "All",
+          "All",
+          source === OtherResourceSource.CurseForge
+            ? "Popularity"
+            : "relevance",
+          source,
+          0,
+          MAX_MODPACK_NUM
+        );
+        if (response.status === "success") {
+          source === OtherResourceSource.CurseForge
+            ? setCfModpacks(response.data.list)
+            : setMrModpacks(response.data.list);
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        }
+      } finally {
+        source === OtherResourceSource.CurseForge
+          ? setIsLoadingCfModpacks(false)
+          : setIsLoadingMrModpacks(false);
+      }
+    },
+    [toast]
+  );
+
+  useEffect(() => {
+    fetchCommunityNews();
+    fetchMinecraftNews();
+    fetchHotModpacks(OtherResourceSource.CurseForge);
+    fetchHotModpacks(OtherResourceSource.Modrinth);
+  }, [fetchCommunityNews, fetchMinecraftNews, fetchHotModpacks]);
+
+  return (
+    <Section px={{ base: 4, lg: 6 }}>
+      <VStack align="stretch" spacing={6} pb={4}>
+        <VStack spacing={6} align="stretch">
+          <NewsCarousel
+            title={t("DiscoverHomePage.minecraft-news")}
+            posts={mcPosts}
+            loading={isLoadingMC}
+            onRefresh={fetchMinecraftNews}
+            onMore={() => router.push("/discover/minecraft-news")}
+            accentColor={accentColor}
+          />
+          <NewsCarousel
+            title={t("DiscoverHomePage.community-news")}
+            posts={communityPosts}
+            loading={isLoadingCommunity}
+            onRefresh={fetchCommunityNews}
+            onMore={() => router.push("/discover/community-news")}
+            accentColor={accentColor}
+          />
+        </VStack>
+
+        <VStack spacing={6} align="stretch">
+          <HotModpackGrid
+            title={t("DiscoverHomePage.hotModpacks", { source: "CurseForge" })}
+            items={cfModpacks}
+            loading={isLoadingCfModpacks}
+            onRefresh={() => fetchHotModpacks(OtherResourceSource.CurseForge)}
+            accentColor={primaryColor}
+          />
+          <HotModpackGrid
+            title={t("DiscoverHomePage.hotModpacks", { source: "Modrinth" })}
+            items={mrModpacks}
+            loading={isLoadingMrModpacks}
+            onRefresh={() => fetchHotModpacks(OtherResourceSource.Modrinth)}
+            accentColor={primaryColor}
+          />
+        </VStack>
+      </VStack>
+    </Section>
+  );
+};
+
+export default DiscoverHomePage;
