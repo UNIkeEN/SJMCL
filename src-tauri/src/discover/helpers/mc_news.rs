@@ -5,6 +5,8 @@ use serde::Deserialize;
 
 pub const MC_NEWS_ENDPOINT: &str = "https://net-secondary.web.minecraft-services.net/api/v1.0";
 pub const MC_NEWS_DEFAULT_PAGE_SIZE: u32 = 12;
+pub const MC_NET_ICON: &str =
+  "https://www.minecraft.net/etc.clientlibs/minecraftnet/clientlibs/clientlib-site/resources/favicon.ico";
 
 #[derive(Debug, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -53,9 +55,7 @@ fn mc_news_source_info(endpoint_url: String) -> NewsSourceInfo {
     name: "Minecraft.net".to_string(),
     full_name: "Minecraft Official News".to_string(),
     endpoint_url,
-    icon_src:
-      "https://www.minecraft.net/etc.clientlibs/minecraftnet/clientlibs/clientlib-site/resources/favicon.ico"
-        .to_string(),
+    icon_src: MC_NET_ICON.to_string(),
   }
 }
 

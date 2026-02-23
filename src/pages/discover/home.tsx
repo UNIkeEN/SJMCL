@@ -141,7 +141,7 @@ const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
           opacity={0.2}
         />
       )}
-      <Box position="relative" px={1.5} pt={1.5} bg="inherit">
+      <Box position="relative" pt={3} bg="inherit">
         <Text fontSize="sm" noOfLines={2} visibility="hidden">
           {post?.title}
         </Text>
@@ -232,6 +232,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
           size="sm"
           fontSize="sm"
           isDisabled={loading}
+          h={21}
         />
       </Flex>
 
@@ -278,7 +279,8 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
               top={0}
               bottom={0}
               h="100%"
-              left={-7}
+              minW="auto"
+              left={{ base: -6, lg: -7 }}
               onClick={() => canPrev && setPage((p) => Math.max(0, p - 1))}
               isDisabled={!canPrev}
               zIndex={1}
@@ -297,7 +299,8 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
               top={0}
               bottom={0}
               h="100%"
-              right={-10}
+              minW="auto"
+              right={{ base: -6, lg: -7 }}
               onClick={() =>
                 canNext && setPage((p) => Math.min(slides.length - 1, p + 1))
               }
@@ -409,6 +412,7 @@ const HotModpackGrid: React.FC<HotModpackGridProps> = ({
           size="sm"
           fontSize="sm"
           isDisabled={loading}
+          h={21}
         />
       }
     >
@@ -529,7 +533,7 @@ export const HomePage = () => {
   }, [fetchCommunityNews, fetchMinecraftNews, fetchHotModpacks]);
 
   return (
-    <Section title={t("DiscoverLayout.discoverDomainList.home")} px={4}>
+    <Section px={{ base: 4, lg: 6 }}>
       <VStack align="stretch" spacing={6} pb={4}>
         <VStack spacing={6} align="stretch">
           <NewsCarousel

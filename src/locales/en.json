@@ -449,7 +449,7 @@
     "sources": "Manage Sources",
     "NoSources": "No source added"
   },
-    "DiscoverHomePage" : {
+  "DiscoverHomePage": {
     "minecraft-news": "Minecraft News",
     "community-news": "Community News",
     "hotModpacks": "Hot Modpacks from {{source}}"

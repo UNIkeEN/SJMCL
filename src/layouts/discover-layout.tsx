@@ -47,14 +47,14 @@ const DiscoverLayout: React.FC<{ children: React.ReactNode }> = ({
     ],
     [
       {
-        key: "community-news",
-        icon: LuMessagesSquare,
-        route: "/discover/community-news",
-      },
-      {
         key: "minecraft-news",
         icon: LuNewspaper,
         route: "/discover/minecraft-news",
+      },
+      {
+        key: "community-news",
+        icon: LuMessagesSquare,
+        route: "/discover/community-news",
       },
     ],
     [

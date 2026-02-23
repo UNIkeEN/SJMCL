@@ -449,7 +449,7 @@
     "sources": "管理数据源",
     "NoSources": "未添加数据源"
   },
-  "DiscoverHomePage" : {
+  "DiscoverHomePage": {
     "minecraft-news": "Minecraft 新闻",
     "community-news": "社区新闻",
     "hotModpacks": "{{source}} 的热门整合包"

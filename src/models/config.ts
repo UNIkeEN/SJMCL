@@ -275,7 +275,7 @@ export const defaultConfig: LauncherConfig = {
       language: "zh-Hans",
     },
     functionality: {
-      discoverPage: false,
+      discoverPage: true,
       instancesNavType: "instance",
       launchPageQuickSwitch: true,
       resourceTranslation: true,

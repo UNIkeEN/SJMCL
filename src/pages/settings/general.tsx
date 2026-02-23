@@ -1,8 +1,7 @@
-import { Badge, Button, Kbd, Switch, Text } from "@chakra-ui/react";
+import { Button, Switch } from "@chakra-ui/react";
 import { appLogDir } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
-import React from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
@@ -117,47 +116,6 @@ const GeneralSettingsPage = () => {
       : []),
     {
       title: t("GeneralSettingsPage.functions.title"),
-      items: [
-        {
-          title: t("GeneralSettingsPage.functions.settings.discoverPage.title"),
-          titleExtra: <Badge colorScheme="purple">Beta</Badge>,
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={generalConfigs.functionality.discoverPage}
-              onChange={(e) => {
-                update("general.functionality.discoverPage", e.target.checked);
-                if (e.target.checked) {
-                  openGenericConfirmDialog({
-                    title: t("General.notice"),
-                    body: (
-                      <Text>
-                        <Trans
-                          i18nKey="GeneralSettingsPage.functions.settings.discoverPage.openNotice.content"
-                          values={{
-                            keyname: t(
-                              `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${
-                                config.basicInfo.osType
-                              }`
-                            ),
-                          }}
-                          components={{ key: <Kbd /> }}
-                        />
-                      </Text>
-                    ),
-                    btnCancel: "",
-                    onOKCallback: () => {
-                      closeSharedModal("generic-confirm");
-                    },
-                  });
-                }
-              }}
-            />
-          ),
-        },
-      ],
-    },
-    {
       items: [
         {
           title: t(
