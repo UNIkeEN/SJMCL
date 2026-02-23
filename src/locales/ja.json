@@ -338,7 +338,8 @@
     },
     "notSelectedLoader": "新しいローダーが選択されていません",
     "footer": {
-      "installFabricApi": "同時に Fabric API モッドをインストール"
+      "installFabricApi": "同時に Fabric API モッドをインストール",
+      "reinstall": "再インストール"
     }
   },
   "CheckModUpdateModal": {
