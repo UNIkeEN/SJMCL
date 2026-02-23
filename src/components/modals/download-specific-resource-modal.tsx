@@ -620,8 +620,8 @@ const DownloadSpecificResourceModal: React.FC<
               <MCVersionNumberHelper placement="bottom-start" />
               <IconButton
                 aria-label="refresh-version-packs"
-                icon={<LuRefreshCw />}
-                size="sm"
+                icon={<LuRefreshCw size={14} />}
+                size="xs"
                 variant="ghost"
                 onClick={() => {
                   fetchVersionLabels();
