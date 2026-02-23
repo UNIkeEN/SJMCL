@@ -41,7 +41,7 @@ export interface InstanceSummary {
 
 export interface ModpackMetaInfo {
   name: string;
-  version: string;
+  version?: string;
   author?: string;
   description?: string;
   modpackType: OtherResourceSource;

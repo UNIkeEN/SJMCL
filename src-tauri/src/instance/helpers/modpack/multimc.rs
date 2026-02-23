@@ -114,7 +114,7 @@ impl ModpackManifest for MultiMcManifest {
     };
     Ok(ModpackMetaInfo {
       name: self.cfg.get("name").cloned().unwrap_or_default(),
-      version: String::new(),
+      version: None,
       description: None,
       author: None,
       modpack_source: OtherResourceSource::MultiMc,

@@ -71,7 +71,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
           },
           {
             title: t("ImportModpackModal.label.modpackVersion"),
-            children: modpack.version,
+            children: modpack.version || "-",
           },
           {
             title: t("ImportModpackModal.label.author"),

@@ -74,7 +74,7 @@ impl ModLoader {
 #[serde(rename_all = "camelCase")]
 pub struct ModpackMetaInfo {
   pub name: String,
-  pub version: String,
+  pub version: Option<String>,
   pub description: Option<String>,
   pub author: Option<String>,
   pub modpack_source: OtherResourceSource,
