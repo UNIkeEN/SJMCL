@@ -104,9 +104,13 @@ const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
       h="100%"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => {
-        openUrl(post?.link || "");
-      }}
+      onClick={
+        post?.link
+          ? () => {
+              openUrl(post.link);
+            }
+          : undefined
+      }
     >
       <HStack align="center" justify="space-between" mb={1.5}>
         <HStack spacing={1.5} align="center">
@@ -162,7 +166,7 @@ const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
             noOfLines={4}
             mt={1}
             maxH={isHovered ? "6em" : "0"}
-            transition="opacity 180ms ease, max-height 180ms ease, margin-top 180ms ease"
+            transition="max-height 180ms ease"
           >
             {cleanHtmlText(post?.abstract || "")}
           </Text>

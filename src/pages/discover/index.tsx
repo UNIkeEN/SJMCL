@@ -9,7 +9,7 @@ export default function DiscoverIndexPage() {
   useEffect(() => {
     let lastRecord =
       [...history].reverse().find((route) => route.startsWith("/discover/")) ||
-      "/discover/community-news";
+      "/discover/home";
     if (lastRecord.endsWith("discover/sources"))
       lastRecord = lastRecord.replace(
         "discover/sources",
