@@ -11,7 +11,7 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronRight, LuSettings } from "react-icons/lu";
+import { LuChevronRight, LuSettings, LuTrash2 } from "react-icons/lu";
 import {
   LuChevronDown,
   LuPause,
@@ -46,6 +46,7 @@ export const DownloadTasksPage = () => {
     handleCancelProgressiveTaskGroup,
     handleStopProgressiveTaskGroup,
     handleResumeProgressiveTaskGroup,
+    handleClearHistoryTaskGroups,
   } = useTaskContext();
 
   const [taskGroupList, setTaskGroupList] = useState<
@@ -101,16 +102,31 @@ export const DownloadTasksPage = () => {
       title={t("DownloadTasksPage.title")}
       withBackButton
       headExtra={
-        <CommonIconButton
-          icon={LuSettings}
-          label={t("DownloadTasksPage.button.settings")}
-          onClick={() => {
-            router.push("/settings/download");
-          }}
-          size="xs"
-          fontSize="sm"
-          h={21}
-        />
+        <HStack spacing={1}>
+          <CommonIconButton
+            icon={LuTrash2}
+            label={t("DownloadTasksPage.button.clearHistory")}
+            onClick={handleClearHistoryTaskGroups}
+            isDisabled={tasks.every(
+              (t) =>
+                t.status === GTaskEventStatusEnums.Started ||
+                t.status === GTaskEventStatusEnums.Stopped
+            )}
+            size="xs"
+            fontSize="sm"
+            h={21}
+          />
+          <CommonIconButton
+            icon={LuSettings}
+            label={t("DownloadTasksPage.button.settings")}
+            onClick={() => {
+              router.push("/settings/download");
+            }}
+            size="xs"
+            fontSize="sm"
+            h={21}
+          />
+        </HStack>
       }
     >
       <VStack align="stretch" px="10%" spacing={4}>

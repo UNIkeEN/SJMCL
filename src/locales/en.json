@@ -608,7 +608,8 @@
       "pause": "Pause",
       "begin": "Start",
       "retry": "Retry",
-      "deleteRecord": "Delete this Record"
+      "deleteRecord": "Delete this Record",
+      "clearHistory": "Clear History"
     },
     "label": {
       "paused": "Paused",

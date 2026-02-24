@@ -608,7 +608,8 @@
       "pause": "暂停",
       "begin": "开始",
       "retry": "重试",
-      "deleteRecord": "删除此记录"
+      "deleteRecord": "删除此记录",
+      "clearHistory": "清空历史"
     },
     "label": {
       "paused": "已暂停",

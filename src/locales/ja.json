@@ -571,7 +571,8 @@
       "pause": "一時停止",
       "begin": "開始",
       "retry": "再試行",
-      "deleteRecord": "この記録を削除"
+      "deleteRecord": "この記録を削除",
+      "clearHistory": "履歴を削除"
     },
     "label": {
       "paused": "一時停止中",

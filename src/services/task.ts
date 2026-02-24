@@ -84,6 +84,19 @@ export class TaskService {
   }
 
   /**
+   * Delete a task group record (only non-active groups).
+   * @param taskGroup - The name of the task group to be deleted.
+   * @returns {Promise<InvokeResponse<null>>}
+   *
+   */
+  @responseHandler("task")
+  static async deleteProgressiveTaskGroup(
+    taskGroup: string
+  ): Promise<InvokeResponse<null>> {
+    return await invoke("delete_progressive_task_group", { taskGroup });
+  }
+
+  /**
    * Cancel a task group.
    * @param taskGroup - The name of the task group to be cancelled.
    * @returns {Promise<InvokeResponse<null>>}

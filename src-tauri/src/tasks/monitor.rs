@@ -401,6 +401,15 @@ impl TaskMonitor {
     self.ths.read().unwrap().get(&task_id).cloned()
   }
 
+  pub fn delete_progressive_task_group(&self, task_group: String) {
+    let mut group_map = self.group_map.write().unwrap();
+    if let Some(group) = group_map.get(&task_group) {
+      if group.status != GEventStatus::Started {
+        group_map.remove(&task_group);
+      }
+    }
+  }
+
   pub fn cancel_progressive_task_group(&self, task_group: String) {
     if let Some(group) = self.group_map.write().unwrap().remove(&task_group) {
       for handle in group.phs.values() {

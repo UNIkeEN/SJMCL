@@ -41,6 +41,7 @@ interface TaskContextType {
   handleCancelProgressiveTaskGroup: (taskGroup: string) => void;
   handleResumeProgressiveTaskGroup: (taskGroup: string) => void;
   handleStopProgressiveTaskGroup: (taskGroup: string) => void;
+  handleClearHistoryTaskGroups: () => void;
 }
 
 export const TaskContext = createContext<TaskContextType | undefined>(
@@ -222,6 +223,21 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     [toast]
   );
+
+  const isActiveGroup = (t: TaskGroupDesc) =>
+    t.status === GTaskEventStatusEnums.Started ||
+    t.status === GTaskEventStatusEnums.Stopped;
+
+  const handleClearHistoryTaskGroups = useCallback(() => {
+    setTasks((prev) => {
+      prev
+        .filter((t) => !isActiveGroup(t))
+        .forEach((group) => {
+          TaskService.deleteProgressiveTaskGroup(group.taskGroup);
+        });
+      return prev.filter(isActiveGroup);
+    });
+  }, []);
 
   useEffect(() => {
     const unlisten = TaskService.onProgressiveTaskUpdate(
@@ -606,6 +622,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         handleCancelProgressiveTaskGroup,
         handleResumeProgressiveTaskGroup,
         handleStopProgressiveTaskGroup,
+        handleClearHistoryTaskGroups,
       }}
     >
       {children}

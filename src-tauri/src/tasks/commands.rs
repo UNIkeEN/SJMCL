@@ -124,6 +124,13 @@ pub fn stop_progressive_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
+pub fn delete_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
+  monitor.delete_progressive_task_group(task_group);
+  Ok(())
+}
+
+#[tauri::command]
 pub fn cancel_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
   monitor.cancel_progressive_task_group(task_group);
