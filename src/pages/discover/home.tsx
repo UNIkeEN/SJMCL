@@ -8,6 +8,8 @@ import {
   Icon,
   IconButton,
   SimpleGrid,
+  Skeleton,
+  SkeletonCircle,
   Tag,
   Text,
   VStack,
@@ -21,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import Empty from "@/components/common/empty";
 import { OptionItem } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
@@ -193,6 +196,10 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
   const [page, setPage] = useState<number>(0);
   const itemsPerPage = useBreakpointValue({ base: 2, xl: 3 }) ?? 2;
   const longChevronSize = useBreakpointValue({ base: 80, xl: 100 }) ?? 80;
+  const skeletonBannerHeight =
+    useBreakpointValue({ base: "32", lg: "40", xl: "48" }) ?? "32";
+  const isEmpty = !loading && posts.length === 0;
+  const themedStyles = useThemedCSSStyle();
 
   const slides = useMemo(() => {
     const baseItems = posts.length > 0 ? posts : [];
@@ -260,79 +267,117 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
       </Flex>
 
       <Box position="relative">
-        <Box overflow="hidden">
-          <Flex
-            w={trackWidth}
-            transform={`translateX(-${page * pageWidth}%)`}
-            transition="transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)"
-            gap={0}
+        {loading ? (
+          <Grid
+            templateColumns={`repeat(${itemsPerPage}, minmax(0, 1fr))`}
+            gap={2}
           >
-            {slides.map((group, index) => (
-              <Grid
-                key={index}
-                templateColumns={`repeat(${itemsPerPage}, minmax(0, 1fr))`}
-                gap={2}
-                w={`${pageWidth}%`}
-                flex={`0 0 ${pageWidth}%`}
-              >
-                {group.map((item, idx) => (
-                  <Box
-                    key={`${index}-${idx}`}
-                    cursor={item?.link ? "pointer" : "default"}
-                    p={0.5}
-                  >
-                    <NewsCard post={item} />
-                  </Box>
-                ))}
-              </Grid>
+            {Array.from({ length: itemsPerPage }).map((_, index) => (
+              <Box key={index} p={0.5}>
+                <Card className={themedStyles.card["card-front"]} h="100%">
+                  <HStack spacing={1.5} mb={1.5} align="center">
+                    <SkeletonCircle size="6" />
+                    <Skeleton h={3} w={24} />
+                  </HStack>
+                  <Skeleton
+                    h={skeletonBannerHeight}
+                    w="100%"
+                    borderRadius="md"
+                  />
+                  <VStack align="stretch" spacing={2} pt={3} pb={0.5}>
+                    <Skeleton h={4} />
+                    <Skeleton h={4} />
+                  </VStack>
+                </Card>
+              </Box>
             ))}
-          </Flex>
-        </Box>
-
-        {showArrows && (
+          </Grid>
+        ) : isEmpty ? (
+          <Empty py={4} withIcon={false} size="sm" />
+        ) : (
           <>
-            <IconButton
-              aria-label="previous"
-              icon={LongChevron({
-                size: longChevronSize,
-                direction: "left",
-              })}
-              variant="unstyled"
-              position="absolute"
-              top={0}
-              bottom={0}
-              h="100%"
-              minW="auto"
-              left={{ base: -6, lg: -7 }}
-              onClick={() => canPrev && setPage((p) => Math.max(0, p - 1))}
-              isDisabled={!canPrev}
-              zIndex={1}
-              color={arrowColor}
-              _hover={{ color: arrowHoverColor }}
-              _disabled={{ color: arrowDisabledColor, cursor: "not-allowed" }}
-            />
-            <IconButton
-              aria-label="next"
-              icon={LongChevron({
-                size: longChevronSize,
-                direction: "right",
-              })}
-              variant="unstyled"
-              position="absolute"
-              top={0}
-              bottom={0}
-              h="100%"
-              minW="auto"
-              right={{ base: -6, lg: -7 }}
-              onClick={() =>
-                canNext && setPage((p) => Math.min(slides.length - 1, p + 1))
-              }
-              isDisabled={!canNext}
-              zIndex={1}
-              color={arrowColor}
-              _hover={{ color: arrowHoverColor }}
-              _disabled={{ color: arrowDisabledColor, cursor: "not-allowed" }}
-            />
+            <Box overflow="hidden">
+              <Flex
+                w={trackWidth}
+                transform={`translateX(-${page * pageWidth}%)`}
+                transition="transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)"
+                gap={0}
+              >
+                {slides.map((group, index) => (
+                  <Grid
+                    key={index}
+                    templateColumns={`repeat(${itemsPerPage}, minmax(0, 1fr))`}
+                    gap={2}
+                    w={`${pageWidth}%`}
+                    flex={`0 0 ${pageWidth}%`}
+                  >
+                    {group.map((item, idx) => (
+                      <Box
+                        key={`${index}-${idx}`}
+                        cursor={item?.link ? "pointer" : "default"}
+                        p={0.5}
+                      >
+                        <NewsCard post={item} />
+                      </Box>
+                    ))}
+                  </Grid>
+                ))}
+              </Flex>
+            </Box>
+
+            {showArrows && (
+              <>
+                <IconButton
+                  aria-label="previous"
+                  icon={LongChevron({
+                    size: longChevronSize,
+                    direction: "left",
+                  })}
+                  variant="unstyled"
+                  position="absolute"
+                  top={0}
+                  bottom={0}
+                  h="100%"
+                  minW="auto"
+                  left={{ base: -6, lg: -7 }}
+                  onClick={() => canPrev && setPage((p) => Math.max(0, p - 1))}
+                  isDisabled={!canPrev}
+                  zIndex={1}
+                  color={arrowColor}
+                  _hover={{ color: arrowHoverColor }}
+                  _disabled={{
+                    color: arrowDisabledColor,
+                    cursor: "not-allowed",
+                  }}
+                />
+                <IconButton
+                  aria-label="next"
+                  icon={LongChevron({
+                    size: longChevronSize,
+                    direction: "right",
+                  })}
+                  variant="unstyled"
+                  position="absolute"
+                  top={0}
+                  bottom={0}
+                  h="100%"
+                  minW="auto"
+                  right={{ base: -6, lg: -7 }}
+                  onClick={() =>
+                    canNext &&
+                    setPage((p) => Math.min(slides.length - 1, p + 1))
+                  }
+                  isDisabled={!canNext}
+                  zIndex={1}
+                  color={arrowColor}
+                  _hover={{ color: arrowHoverColor }}
+                  _disabled={{
+                    color: arrowDisabledColor,
+                    cursor: "not-allowed",
+                  }}
+                />
+              </>
+            )}
           </>
         )}
       </Box>
@@ -444,6 +489,8 @@ const HotModpackGrid: React.FC<HotModpackGridProps> = ({
           <VStack gridColumn="1 / -1" my={6}>
             <BeatLoader size={16} color="gray" />
           </VStack>
+        ) : items.length === 0 ? (
+          <Empty gridColumn="1 / -1" py={6} withIcon={false} size="sm" />
         ) : (
           items.map(renderItem)
         )}
