@@ -352,7 +352,8 @@
     },
     "notSelectedLoader": "未选择新的加载器",
     "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
+      "installFabricApi": "同时安装 Fabric API 模组",
+      "reinstall": "重新安装"
     }
   },
   "CheckModUpdateModal": {

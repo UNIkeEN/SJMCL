@@ -352,7 +352,8 @@
     },
     "notSelectedLoader": "No new loader selected",
     "footer": {
-      "installFabricApi": "Install Fabric API Mod"
+      "installFabricApi": "Install Fabric API Mod",
+      "reinstall": "Reinstall"
     }
   },
   "CheckModUpdateModal": {

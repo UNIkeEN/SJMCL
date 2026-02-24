@@ -232,9 +232,11 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                 colorScheme={primaryColor}
                 onClick={handleChangeModLoader}
                 isLoading={isLoading}
-                isDisabled={isUnselected || isSameAsCurrent}
+                isDisabled={isUnselected}
               >
-                {t("General.confirm")}
+                {isSameAsCurrent
+                  ? t("ChangeModLoaderModal.footer.reinstall")
+                  : t("General.confirm")}
               </Button>
             </HStack>
           </ModalFooter>
