@@ -13,8 +13,8 @@ name = "app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.0.2", features = [] }
 dotenvy = "0.15.7"
+tauri-build = { version = "2.0.2", features = [] }
 
 [profile.release]
 opt-level = 3   # as default
@@ -23,80 +23,80 @@ lto = true
 panic = "abort"
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
+async-speed-limit = "0.4.2"
+async-trait = "0.1.89"
+axum = "0.8.6"
+base64 = "0.22.1"
+cafebabe = "0.8.1"
+chrono = "0.4.40"
+config = "0.15.18"
+csv = "1.3"
+flume = { version = "0.11.1", features = ["async", "select"] }
+font-loader = "0.11.0"
+futures = "0.3.31"
+glob = "0.3.2"
+hex = "0.4.3"
+image = { version = "0.25.5", default-features = false, features = ["serde", "png", "jpeg", "gif", "ico", "webp"] }
+java-properties = "2.0.0"
+jsonwebtoken = { version = "10.3.0", features = ["aws_lc_rs"] }
+lazy_static = "1.5"
 log = "0.4"
+mc-server-status = "1.0.0"
+murmur2 = "0.1"
+partial_derive = { path = "./libs/partial_derive" }
+pin-project = "1.1.8"
+quartz_nbt = { version = "0.2.9", features = ["serde"] }
+rand = "0.9.0"
+regex = "1.11"
+reqwest-middleware = "0.4.2"
+reqwest-retry = "0.7.0"
+rmcp = { version = "0.15.0", features = ["server", "transport-streamable-http-server"] }
+rsa = "0.9.10"
+sanitize-filename = "0.6.0"
+schemars = "1.0.4"
+semver = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_with = "3.12.0"
+serialize_skip_none_derive = { path = "./libs/serialize_skip_none_derive" }
+sha1 = "0.10.1"
+sha2 = "0.10.9"
+shlex = "1.3.0"
+smart-default = "0.7.1"
+structstruck = "0.4.1"
+strum = "0.27.1"
+strum_macros = "0.27.1"
+sysinfo = "0.36.0"
+systemstat = "0.2.3"
 tauri = { version = "2.9.5", features = ["protocol-asset"] }
+tauri-plugin-clipboard-manager = "2.3.2"
+tauri-plugin-deep-link = "2.4.6"
 tauri-plugin-dialog = "2.6.0"
 tauri-plugin-fs = "2.4.5"
 tauri-plugin-http = { version = "2.5.6", features = ["json", "stream"] }
 tauri-plugin-log = "2.8.0"
-structstruck = "0.4.1"
+tauri-plugin-opener = "2.5.3"
 tauri-plugin-os = "2.3.2"
-tokio = { version = "1", features = ["full"] }
+tauri-plugin-process = "2.3.1"
+tauri-utils = "2.2.0"
+time = { version = "0.3", features = ["formatting", "local-offset"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util", "net", "sync", "time"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
-systemstat = "0.2.3"
-partial_derive = { path = "./libs/partial_derive" }
-serialize_skip_none_derive = { path = "./libs/serialize_skip_none_derive" }
+toml = "0.8"
+tower-http = { version = "0.6.6", features = ["cors"] }
+url = "2.5.4"
+urlencoding = "2.1.3"
 uuid = { version = "1.11.0", features = [
     "v4",
     "v5",
     "fast-rng",
     "macro-diagnostics",
 ] }
-tauri-plugin-process = "2.3.1"
-tauri-plugin-opener = "2.5.3"
-base64 = "0.22.1"
-image = { version = "0.25.5", features = ["serde"] }
-rand = "0.9.0"
-zip = "2.3"
-quartz_nbt = { version = "0.2.9", features = ["serde"] }
-regex = "1.11"
-toml = "0.8"
-lazy_static = "1.5"
-jsonwebtoken = { version = "10.3.0", features = ["aws_lc_rs"] }
-java-properties = "2.0.0"
-sha1 = "0.10.1"
-hex = "0.4.3"
-url = "2.5.4"
-urlencoding = "2.1.3"
-shlex = "1.3.0"
-glob = "0.3.2"
-pin-project = "1.1.8"
-futures = "0.3.31"
-strum = "0.27.1"
-strum_macros = "0.27.1"
-smart-default = "0.7.1"
-tauri-plugin-clipboard-manager = "2.3.2"
-serde_with = "3.12.0"
-chrono = "0.4.40"
-sanitize-filename = "0.6.0"
-cafebabe = "0.8.1"
-tauri-plugin-deep-link = "2.4.6"
-flume = { version = "0.11.1", features = ["async", "select"] }
-tauri-utils = "2.2.0"
-font-loader = "0.11.0"
-async-speed-limit = "0.4.2"
-reqwest-middleware = "0.4.2"
-reqwest-retry = "0.7.0"
-murmur2 = "0.1"
-csv = "1.3"
-semver = "1"
-sysinfo = "0.36.0"
-mc-server-status = "1.0.0"
-config = "0.15.18"
-time = { version = "0.3", features = ["formatting", "local-offset"] }
-rsa = "0.9.10"
-axum = "0.8.6"
-tower-http = { version = "0.6.6", features = ["cors"] }
-sha2 = "0.10.9"
-async-trait = "0.1.89"
-schemars = "1.0.4"
-rmcp = { version = "0.15.0", features = ["server", "transport-streamable-http-server"] }
+zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
 
 [target."cfg(windows)".dependencies]
-winreg = "0.55.0"
 winapi = { version = "0.3", features = ["processthreadsapi", "winnt", "handleapi", "winuser", "windef"] }
+winreg = "0.55.0"
 
 [target."cfg(target_os = \"macos\")".dependencies]
 plist = "1"
