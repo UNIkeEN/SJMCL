@@ -2,6 +2,7 @@ mod account;
 mod discover;
 mod error;
 mod instance;
+mod intelligence;
 mod launch;
 mod launcher_config;
 mod partial;
@@ -181,6 +182,7 @@ pub async fn run() {
       let os = launcher_config.basic_info.platform.clone();
       let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
       let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
+      let launcher_mcp_config = launcher_config.intelligence.mcp_server.launcher.clone();
       app.manage(Mutex::new(launcher_config));
 
       let account_info = AccountInfo::load().unwrap_or_default();
@@ -284,6 +286,11 @@ pub async fn run() {
       {
         use tauri_plugin_deep_link::DeepLinkExt;
         app.deep_link().register_all()?;
+      }
+
+      // Start the launcher MCP server if enabled
+      if launcher_mcp_config.enabled {
+        intelligence::mcp_server::launcher::run(app.handle().clone(), &launcher_mcp_config);
       }
 
       Ok(())

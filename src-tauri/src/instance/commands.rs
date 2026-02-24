@@ -59,7 +59,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
-use tauri::State;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
@@ -496,7 +495,6 @@ pub async fn add_game_server(
 pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
-  local_mod_translations_cache_state: State<'_, Mutex<LocalModTranslationsCache>>,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
@@ -602,6 +600,7 @@ pub async fn retrieve_local_mod_list(
   }
   // sort by name (and version)
   mod_infos.sort();
+  let local_mod_translations_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
     if let Some(entry) = cache.translations.get(&info.file_name) {

@@ -1362,6 +1362,29 @@
       "launch": "游玩此服务器"
     }
   },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL 智能",
+    "description": "将人工智能模型整合进您的启动器使用与 Minecraft 游玩体验",
+    "mcpServer": {
+      "title": "MCP 服务",
+      "headExtra": "以下设置重启后生效",
+      "settings": {
+        "enabled": {
+          "title": "启动器 MCP 服务",
+          "description": "启用本地 MCP 服务，以连接外部 Agent 应用实现启动器的自动化控制"
+        },
+        "docs": {
+          "title": "使用指南",
+          "description": "了解如何将启动器连接到外部 Agent 应用（如 Claude, Cherry Studio 等）",
+          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "端口",
+          "description": "启动器 MCP 服务使用的固定本地端口"
+        }
+      }
+    }
+  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Java 管理",
@@ -2528,6 +2551,7 @@
       "general": "通用",
       "appearance": "外观",
       "download": "下载资源",
+      "intelligence": "智能",
       "sync-restore": "同步与还原",
       "help": "文档与帮助",
       "about": "关于",
