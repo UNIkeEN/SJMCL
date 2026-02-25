@@ -401,15 +401,6 @@ impl TaskMonitor {
     self.ths.read().unwrap().get(&task_id).cloned()
   }
 
-  pub fn delete_progressive_task_group(&self, task_group: String) {
-    let mut group_map = self.group_map.write().unwrap();
-    if let Some(group) = group_map.get(&task_group) {
-      if group.status != GEventStatus::Started {
-        group_map.remove(&task_group);
-      }
-    }
-  }
-
   pub fn cancel_progressive_task_group(&self, task_group: String) {
     if let Some(group) = self.group_map.write().unwrap().remove(&task_group) {
       for handle in group.phs.values() {
@@ -424,6 +415,19 @@ impl TaskMonitor {
         }
       }
       GEvent::emit_group_cancelled(&self.app_handle, &task_group);
+    }
+  }
+
+  pub fn stop_progressive_task_group(&self, task_group: String) {
+    if let Some(group) = self.group_map.write().unwrap().get_mut(&task_group) {
+      group.status = GEventStatus::Stopped;
+      for handle in group.phs.values() {
+        let status = handle.read().unwrap().desc.status.clone();
+        if status.is_in_progress() || status.is_waiting() {
+          handle.write().unwrap().mark_stopped();
+        }
+      }
+      GEvent::emit_group_stopped(&self.app_handle, &task_group);
     }
   }
 
@@ -465,16 +469,13 @@ impl TaskMonitor {
     GEvent::emit_group_started(&self.app_handle, &task_group);
   }
 
-  pub fn stop_progressive_task_group(&self, task_group: String) {
-    if let Some(group) = self.group_map.write().unwrap().get_mut(&task_group) {
-      group.status = GEventStatus::Stopped;
-      for handle in group.phs.values() {
-        let status = handle.read().unwrap().desc.status.clone();
-        if status.is_in_progress() || status.is_waiting() {
-          handle.write().unwrap().mark_stopped();
-        }
+  pub fn delete_progressive_task_group(&self, task_group: String) {
+    let mut group_map = self.group_map.write().unwrap();
+    if let Some(group) = group_map.get(&task_group) {
+      // Only delete non-active groups (not Started/Stopped); backend status is authoritative for race-condition protection.
+      if group.status != GEventStatus::Started && group.status != GEventStatus::Stopped {
+        group_map.remove(&task_group);
       }
-      GEvent::emit_group_stopped(&self.app_handle, &task_group);
     }
   }
 

@@ -39,8 +39,8 @@ interface TaskContextType {
     params: TaskParam[]
   ) => void;
   handleCancelProgressiveTaskGroup: (taskGroup: string) => void;
-  handleResumeProgressiveTaskGroup: (taskGroup: string) => void;
   handleStopProgressiveTaskGroup: (taskGroup: string) => void;
+  handleResumeProgressiveTaskGroup: (taskGroup: string) => void;
   handleClearHistoryTaskGroups: () => void;
 }
 
@@ -194,9 +194,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     [toast]
   );
 
-  const handleResumeProgressiveTaskGroup = useCallback(
+  const handleStopProgressiveTaskGroup = useCallback(
     (taskGroup: string) => {
-      TaskService.resumeProgressiveTaskGroup(taskGroup).then((response) => {
+      TaskService.stopProgressiveTaskGroup(taskGroup).then((response) => {
         if (response.status !== "success") {
           toast({
             title: response.message,
@@ -209,9 +209,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     [toast]
   );
 
-  const handleStopProgressiveTaskGroup = useCallback(
+  const handleResumeProgressiveTaskGroup = useCallback(
     (taskGroup: string) => {
-      TaskService.stopProgressiveTaskGroup(taskGroup).then((response) => {
+      TaskService.resumeProgressiveTaskGroup(taskGroup).then((response) => {
         if (response.status !== "success") {
           toast({
             title: response.message,
@@ -620,8 +620,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         generalPercent,
         handleScheduleProgressiveTaskGroup,
         handleCancelProgressiveTaskGroup,
-        handleResumeProgressiveTaskGroup,
         handleStopProgressiveTaskGroup,
+        handleResumeProgressiveTaskGroup,
         handleClearHistoryTaskGroups,
       }}
     >

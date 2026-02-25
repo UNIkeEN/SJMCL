@@ -102,7 +102,7 @@ export const DownloadTasksPage = () => {
       title={t("DownloadTasksPage.title")}
       withBackButton
       headExtra={
-        <HStack spacing={1}>
+        <HStack>
           <CommonIconButton
             icon={LuTrash2}
             label={t("DownloadTasksPage.button.clearHistory")}
