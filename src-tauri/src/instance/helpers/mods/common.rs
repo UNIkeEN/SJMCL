@@ -206,12 +206,15 @@ pub async fn get_mod_info_from_jar(
   prior_loader_type: Option<ModLoaderType>,
 ) -> SJMCLResult<LocalModInfo> {
   let file = Cursor::new(tokio::fs::read(path).await?);
-  let file_name = path.file_name().unwrap().to_string_lossy().to_string();
-  let file_stem = PathBuf::from(file_name.strip_suffix(".disabled").unwrap_or(&file_name))
+  let file_name = path
+    .file_name()
+    .map(|name| name.to_string_lossy().to_string())
+    .ok_or_else(|| SJMCLError(format!("invalid mod file path: {}", path.display())))?;
+  let normalized_file_name = file_name.strip_suffix(".disabled").unwrap_or(&file_name);
+  let file_stem = Path::new(normalized_file_name)
     .file_stem()
-    .unwrap()
-    .to_string_lossy()
-    .to_string();
+    .map(|stem| stem.to_string_lossy().to_string())
+    .unwrap_or_else(|| normalized_file_name.to_string());
   let file_path = path.clone();
   let enabled = !file_name.ends_with(".disabled");
   let mut jar = ZipArchive::new(file)?;
@@ -235,7 +238,10 @@ pub async fn get_mod_info_from_dir(
   path: &Path,
   prior_loader_type: Option<ModLoaderType>,
 ) -> SJMCLResult<LocalModInfo> {
-  let dir_name = path.file_name().unwrap().to_string_lossy().to_string();
+  let dir_name = path
+    .file_name()
+    .map(|name| name.to_string_lossy().to_string())
+    .unwrap_or_else(|| path.to_string_lossy().to_string());
   // only remove .disabled suffix if exists, not consider other extension-like suffix in dir name.
   let dir_stem = dir_name
     .strip_suffix(".disabled")

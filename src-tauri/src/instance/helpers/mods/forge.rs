@@ -42,8 +42,8 @@ pub struct ForgeModSubItem {
 }
 
 impl From<ForgeModMetadata> for LocalModInfo {
-  fn from(mut meta: ForgeModMetadata) -> Self {
-    let first_mod = meta.mods.remove(0);
+  fn from(meta: ForgeModMetadata) -> Self {
+    let first_mod = meta.mods.into_iter().next().unwrap_or_default();
     Self {
       name: first_mod.display_name.unwrap_or_default(),
       version: first_mod.version.unwrap_or_default(),
@@ -109,7 +109,11 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
       }
     }
     // fallback to get version
-    if let Some(ref mut version) = meta.mods[0].version {
+    if let Some(version) = meta
+      .mods
+      .first_mut()
+      .and_then(|first_mod| first_mod.version.as_mut())
+    {
       if version == "${file.jarVersion}" {
         if let Ok(mf_file) = jar.by_name("META-INF/MANIFEST.MF") {
           if let Ok(mf) = java_properties::read(mf_file) {
@@ -166,7 +170,11 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
       }
     }
     // fallback to get version
-    if let Some(ref mut version) = meta.mods[0].version {
+    if let Some(version) = meta
+      .mods
+      .first_mut()
+      .and_then(|first_mod| first_mod.version.as_mut())
+    {
       if version == "${file.jarVersion}" {
         if let Ok(mf_string) =
           tokio::fs::read_to_string(dir_path.join("META-INF/MANIFEST.MF")).await
