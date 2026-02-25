@@ -571,8 +571,7 @@
       "pause": "Pause",
       "begin": "Démarrer",
       "retry": "Réessayer",
-      "deleteRecord": "Supprimer cet enregistrement.",
-      "clearHistory": "Effacer l'historique"
+      "deleteRecord": "Supprimer cet enregistrement."
     },
     "label": {
       "paused": "En pause",

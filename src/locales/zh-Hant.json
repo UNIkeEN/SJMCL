@@ -589,8 +589,7 @@
       "pause": "暫停",
       "begin": "開始",
       "retry": "重試",
-      "deleteRecord": "刪除此記錄",
-      "clearHistory": "清空歷史"
+      "deleteRecord": "刪除此記錄"
     },
     "label": {
       "paused": "已暫停",
