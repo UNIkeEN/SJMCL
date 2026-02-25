@@ -1,7 +1,8 @@
 import { Box, BoxProps, Card } from "@chakra-ui/react";
 import React, { forwardRef } from "react";
 import { useLauncherConfig } from "@/contexts/config";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import cardStyles from "@/styles/card.module.css";
+import liquidGlassStyles from "@/styles/liquid-glass.module.css";
 
 interface AdvancedCardProps extends Omit<BoxProps, "children"> {
   variant?: string;
@@ -12,8 +13,6 @@ interface AdvancedCardProps extends Omit<BoxProps, "children"> {
 const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
   ({ variant = "", level = "back", children, ...props }, ref) => {
     const { config } = useLauncherConfig();
-    const themedStyles = useThemedCSSStyle();
-
     const _variant =
       variant ||
       (config.appearance.theme.useLiquidGlassDesign
@@ -26,7 +25,7 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
           ref={ref}
           variant={_variant}
           {...props}
-          className={`${themedStyles.card[`card-${level}`]} ${props.className || ""}`}
+          className={`${cardStyles[`card-${level}`]} ${props.className || ""}`}
         >
           {children}
         </Card>
@@ -38,10 +37,10 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
         <Box
           ref={ref}
           {...props}
-          className={`${themedStyles.liquidGlass["wrapper"]} ${props.className || ""}`}
+          className={`${liquidGlassStyles["wrapper"]} ${props.className || ""}`}
         >
-          <div className={themedStyles.liquidGlass["effect"]} />
-          <div className={themedStyles.liquidGlass["shine"]} />
+          <div className={liquidGlassStyles["effect"]} />
+          <div className={liquidGlassStyles["shine"]} />
           <Box position="relative" zIndex={3} height="100%" width="100%">
             {children}
           </Box>
@@ -53,7 +52,7 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
       <Card
         ref={ref}
         {...props}
-        className={`${themedStyles.card[`card-${level}`]} ${props.className || ""}`}
+        className={`${cardStyles[`card-${level}`]} ${props.className || ""}`}
       >
         {children}
       </Card>

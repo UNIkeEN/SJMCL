@@ -13,7 +13,7 @@ import {
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import cardStyles from "@/styles/card.module.css";
 
 type WrapCardContentObject = {
   title: string;
@@ -51,8 +51,6 @@ export const WrapCard: React.FC<WrapCardProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const themedStyles = useThemedCSSStyle();
-
   const borderWidth = "1px";
   const basePadding = cardProps.padding || "12px";
   const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
@@ -94,7 +92,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
 
   return (
     <Card
-      className={themedStyles.card["card-front"]}
+      className={cardStyles["card-front"]}
       borderColor={`${primaryColor}.500`}
       variant={isSelected ? "outline" : "elevated"}
       position="relative"
