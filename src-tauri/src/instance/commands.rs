@@ -16,8 +16,10 @@ use crate::instance::helpers::modpack::misc::{
   extract_overrides, get_download_params, ModpackMetaInfo,
 };
 use crate::instance::helpers::mods::common::{
-  add_local_mod_translations, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
-  LocalModTranslationEntry, LocalModTranslationsCache,
+  compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
+};
+use crate::instance::helpers::mods::translation::{
+  add_local_mod_translations, LocalModTranslationEntry, LocalModTranslationsCache,
 };
 use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
 use crate::instance::helpers::resourcepack::{
