@@ -46,6 +46,14 @@ body img {
   background-color: var(--chakra-colors-blackAlpha-500);
 }
 
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: var(--chakra-colors-whiteAlpha-500);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--chakra-colors-whiteAlpha-700);
+}
+
 
 /* text */
 .subtitle {
