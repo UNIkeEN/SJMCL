@@ -498,6 +498,20 @@ pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
+  let expected_loader_type = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock().unwrap();
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
+      Some(instance.mod_loader.loader_type.clone())
+    } else {
+      None
+    }
+  };
+
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
     Some(path) => path,
@@ -515,6 +529,7 @@ pub async fn retrieve_local_mod_list(
     std::thread::available_parallelism().unwrap().into(),
   ));
   for path in mod_paths {
+    let expected_loader_type = expected_loader_type.clone();
     let permit = semaphore
       .clone()
       .acquire_owned()
@@ -522,7 +537,9 @@ pub async fn retrieve_local_mod_list(
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
       log::debug!("Load mod info from dir: {}", path.display());
-      let info = get_mod_info_from_jar(&path).await.ok();
+      let info = get_mod_info_from_jar(&path, expected_loader_type)
+        .await
+        .ok();
       drop(permit);
       info
     });
@@ -533,6 +550,7 @@ pub async fn retrieve_local_mod_list(
     // mod information detection from folders is only used for debugging.
     let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
     for path in mod_paths {
+      let expected_loader_type = expected_loader_type.clone();
       let permit = semaphore
         .clone()
         .acquire_owned()
@@ -540,7 +558,9 @@ pub async fn retrieve_local_mod_list(
         .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
       let task = tokio::spawn(async move {
         log::debug!("Load mod info from dir: {}", path.display());
-        let info = get_mod_info_from_dir(&path).await.ok();
+        let info = get_mod_info_from_dir(&path, expected_loader_type)
+          .await
+          .ok();
         drop(permit);
         info
       });
@@ -555,22 +575,8 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  let incompatible_loader_type = {
-    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let state = binding.lock().unwrap();
-    let instance = state
-      .get(&instance_id)
-      .ok_or(InstanceError::InstanceNotFoundByID)?;
-
-    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
-      Some(instance.mod_loader.loader_type.clone())
-    } else {
-      None
-    }
-  };
-
   mod_infos.iter_mut().for_each(|mod_info| {
-    if let Some(loader_type) = &incompatible_loader_type {
+    if let Some(loader_type) = &expected_loader_type {
       mod_info.potential_incompatibility = mod_info.loader_type != *loader_type;
     } else {
       mod_info.potential_incompatibility = false;
