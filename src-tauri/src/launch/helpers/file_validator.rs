@@ -97,7 +97,7 @@ pub async fn get_invalid_library_files(
         &source,
       )?;
       Ok(Some(PTaskParam::Download(DownloadParam {
-        src,
+        src: vec![src],
         dest: file_path,
         filename: None,
         sha1: Some(artifact.sha1.clone()),
@@ -363,7 +363,7 @@ pub async fn get_invalid_assets(
           .join(&path_in_repo)
           .map_err(crate::error::SJMCLError::from)?;
         Ok(Some(PTaskParam::Download(DownloadParam {
-          src,
+          src: vec![src],
           dest,
           filename: None,
           sha1: Some(item.hash.clone()),

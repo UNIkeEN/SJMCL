@@ -146,7 +146,7 @@ pub async fn download_game_server(
     app,
     format!("game-server?{}", resource_info.id),
     vec![PTaskParam::Download(DownloadParam {
-      src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
+      src: vec![url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?],
       dest: dest.clone().into(),
       filename: None,
       sha1: Some(download_info.sha1.clone()),
@@ -195,7 +195,7 @@ pub async fn update_mods(
   for query in &queries {
     let file_path = mods_dir.join(&query.file_name);
     let download_param = DownloadParam {
-      src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
+      src: vec![url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?],
       dest: file_path,
       filename: None,
       sha1: Some(query.sha1.clone()),

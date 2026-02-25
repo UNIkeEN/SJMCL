@@ -214,7 +214,7 @@ const DownloadSpecificResourceModal: React.FC<
     if (!savepath) return;
     handleScheduleProgressiveTaskGroup(resource.type, [
       {
-        src: item.downloadUrl,
+        src: [item.downloadUrl],
         dest: savepath,
         sha1: item.sha1,
         taskType: TaskTypeEnums.Download,

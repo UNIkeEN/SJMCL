@@ -86,7 +86,7 @@ pub async fn install_fabric_loader(
       &priority[0],
     )?;
     task_params.push(PTaskParam::Download(DownloadParam {
-      src,
+      src: vec![src],
       dest: lib_dir.join(&rel),
       filename: None,
       sha1: None,
