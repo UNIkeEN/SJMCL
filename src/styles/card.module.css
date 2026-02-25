@@ -7,3 +7,11 @@
   background-color: #FAFAFA !important;
   padding: var(--chakra-space-3);
 }
+
+:global([data-theme="dark"]) .card-back {
+  background-color: rgba(0, 0, 0, 0.83) !important;
+}
+
+:global([data-theme="dark"]) .card-front {
+  background-color: #2E2E2E !important;
+}

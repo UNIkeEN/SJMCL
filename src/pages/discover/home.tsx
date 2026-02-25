@@ -30,12 +30,12 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { NewsPostSummary } from "@/models/news-post";
 import { OtherResourceInfo } from "@/models/resource";
 import { MC_NEWS_SOURCE_URL } from "@/pages/discover/minecraft-news";
 import { DiscoverService } from "@/services/discover";
 import { ResourceService } from "@/services/resource";
+import cardStyles from "@/styles/card.module.css";
 import { ISOToDate, formatRelativeTime } from "@/utils/datetime";
 import { translateTag } from "@/utils/resource";
 import { cleanHtmlText, formatDisplayCount } from "@/utils/string";
@@ -100,12 +100,11 @@ const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
       : undefined;
 
   const { t } = useTranslation();
-  const themedStyles = useThemedCSSStyle();
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   return (
     <Card
-      className={themedStyles.card["card-front"]}
+      className={cardStyles["card-front"]}
       h="100%"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -199,8 +198,6 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
   const skeletonBannerHeight =
     useBreakpointValue({ base: "32", lg: "40", xl: "48" }) ?? "32";
   const isEmpty = !loading && posts.length === 0;
-  const themedStyles = useThemedCSSStyle();
-
   const slides = useMemo(() => {
     const baseItems = posts.length > 0 ? posts : [];
     const placeholders: Array<NewsPostSummary | null> = Array.from(
@@ -274,7 +271,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({
           >
             {Array.from({ length: itemsPerPage }).map((_, index) => (
               <Box key={index} p={0.5}>
-                <Card className={themedStyles.card["card-front"]} h="100%">
+                <Card className={cardStyles["card-front"]} h="100%">
                   <HStack spacing={1.5} mb={1.5} align="center">
                     <SkeletonCircle size="6" />
                     <Skeleton h={3} w={24} />
@@ -393,14 +390,13 @@ const HotModpackGrid: React.FC<HotModpackGridProps> = ({
   accentColor,
 }) => {
   const { openSharedModal } = useSharedModals();
-  const themedStyles = useThemedCSSStyle();
   const { config } = useLauncherConfig();
   const showZhTrans =
     config.general.general.language === "zh-Hans" &&
     config.general.functionality.resourceTranslation;
 
   const renderItem = (item: OtherResourceInfo) => (
-    <Card className={themedStyles.card["card-front"]}>
+    <Card className={cardStyles["card-front"]}>
       <OptionItem
         prefixElement={
           <Avatar
