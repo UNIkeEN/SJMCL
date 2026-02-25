@@ -45,7 +45,54 @@ pub trait LocalModMetadataParser {
   }
 }
 
-pub type LocalModParser = (
+struct FallbackManifestModMetadataParser;
+
+fn build_fallback_manifest_local_mod_info<F>(mut get: F) -> LocalModInfo
+where
+  F: FnMut(&str) -> Option<String>,
+{
+  let pick = |keys: &[&str], get: &mut F| -> String {
+    keys.iter().find_map(|key| get(key)).unwrap_or_default()
+  };
+  LocalModInfo {
+    name: pick(
+      &["Implementation-Title", "Specification-Title", "Bundle-Name"],
+      &mut get,
+    ),
+    version: pick(
+      &["Implementation-Version", "Specification-Version"],
+      &mut get,
+    ),
+    description: pick(&["Implementation-Vendor", "Specification-Vendor"], &mut get),
+    loader_type: ModLoaderType::Unknown,
+    ..Default::default()
+  }
+}
+
+#[async_trait]
+impl LocalModMetadataParser for FallbackManifestModMetadataParser {
+  type Metadata = LocalModInfo;
+
+  fn get_mod_metadata_from_jar<R: Read + Seek>(
+    jar: &mut ZipArchive<R>,
+  ) -> SJMCLResult<Self::Metadata> {
+    let manifest_file = jar.by_name("META-INF/MANIFEST.MF")?;
+    let manifest = java_properties::read(manifest_file)?;
+    Ok(build_fallback_manifest_local_mod_info(|key| {
+      manifest.get(key).cloned()
+    }))
+  }
+
+  async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<Self::Metadata> {
+    let manifest_string = tokio::fs::read_to_string(dir_path.join("META-INF/MANIFEST.MF")).await?;
+    let manifest = java_properties::read(Cursor::new(manifest_string))?;
+    Ok(build_fallback_manifest_local_mod_info(|key| {
+      manifest.get(key).cloned()
+    }))
+  }
+}
+
+type ParserFuncTuple = (
   fn(&mut ZipArchive<Cursor<Vec<u8>>>) -> Option<LocalModInfo>,
   for<'a> fn(&'a Path) -> Pin<Box<dyn Future<Output = Option<LocalModInfo>> + Send + 'a>>,
 );
@@ -79,7 +126,7 @@ where
   })
 }
 
-pub const DEFAULT_MOD_LOADER_PRIORITY_LIST: [(ModLoaderType, LocalModParser); 5] = [
+const DEFAULT_MOD_LOADER_PRIORITY_LIST: [(ModLoaderType, ParserFuncTuple); 6] = [
   (
     ModLoaderType::Fabric,
     (
@@ -115,10 +162,17 @@ pub const DEFAULT_MOD_LOADER_PRIORITY_LIST: [(ModLoaderType, LocalModParser); 5]
       parse_mod_info_from_dir::<quilt::QuiltModMetadataParser>,
     ),
   ),
+  (
+    ModLoaderType::Unknown,
+    (
+      parse_mod_info_from_jar::<FallbackManifestModMetadataParser>,
+      parse_mod_info_from_dir::<FallbackManifestModMetadataParser>,
+    ),
+  ),
 ];
 
 // first try to get metadata from target mod loader.
-pub fn build_priority_parser_list(loader_type: Option<ModLoaderType>) -> Vec<LocalModParser> {
+fn build_priority_parser_list(loader_type: Option<ModLoaderType>) -> Vec<ParserFuncTuple> {
   let preferred_loader = match loader_type {
     Some(ModLoaderType::NeoForge) => Some(ModLoaderType::Forge),
     Some(ModLoaderType::Unknown) | None => None,

@@ -536,7 +536,7 @@ pub async fn retrieve_local_mod_list(
       .await
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
-      log::debug!("Load mod info from dir: {}", path.display());
+      log::debug!("Load mod info from jar: {}", path.display());
       let info = get_mod_info_from_jar(&path, expected_loader_type)
         .await
         .ok();
