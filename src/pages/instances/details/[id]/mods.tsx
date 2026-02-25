@@ -575,6 +575,7 @@ const InstanceModsPage = () => {
         summary={summary}
         localMods={localMods}
       />
+
       <ChangeModLoaderModal
         isOpen={isChangeModLoaderModalOpen}
         onClose={onChangeModLoaderModalClose}

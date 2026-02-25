@@ -62,7 +62,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     } else {
       setSelectedModLoader(defaultModLoaderResourceInfo);
     }
-  }, [summary?.version, defaultSelectedType]);
+  }, [modalProps.isOpen, summary?.version, defaultSelectedType]);
 
   const currentModLoader: ModLoaderResourceInfo = useMemo(() => {
     if (!summary?.modLoader)
