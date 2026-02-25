@@ -2,6 +2,55 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 0.8.3
+
+`2025-02-23`
+
+- 🌟 Support adding and removing game servers directly within the launcher. #1328 @hbz114514 @UNIkeEN @zaixizaiximeow
+- 🐛 Fix missing game assets in certain early game versions. #1341 @icgnos @UNIkeEN
+- 🐛 Fix failures when importing account information from other launchers due to expired Microsoft accounts. #1368 @xunying123 @UNIkeEN
+- 🐛 Fix potential issues with server address validation in the add authentication server modal. #1388 @UNIkeEN
+- ⚡️ Improve the startup user experience by guiding users to download Java runtime when it is missing. #1376 @UNIkeEN
+- 🛠 Allow users to ignore runtime path checks and close the warning modal. #1375 @UNIkeEN
+- 🌐 Update French and Japanese translations of the launcher UI. #1371 @Codex
+- 🌐 Update Traditional Chinese translations for the launcher UI and related documentation. #1381 #1383 #1390 @3gf8jv4dv
+- 📦 Update multiple dependencies to patch versions. #1387 @dependabot[bot]
+- Workflow:
+   - Update internationalization tool scripts. #1122 #1384 @HsxMark
+   - Add an experimental VSCode extension providing development helper features tailored for this project. @UNIkeEN
+
+## 0.8.2
+
+`2025-02-09`
+
+- 🌟 Support launching the game on Linux using the system-provided OpenAL and GLFW. #1336 @xunying123 @UNIkeEN
+- 🐛 Fix an issue where runtime path checks could fail on Windows and Linux. #1347 #1363 @pangbo13 @UNIkeEN
+- 🐛 Fix duplicate items in the tag list within the resource search modal. #1354 @SundayChen
+- 🐛 Fix incorrect detection of local Java information in certain scenarios. #1360 @UNIkeEN @HsxMark
+- 🐛 Fix validation logic for instance names. #1364 @hbz114514 @UNIkeEN
+- ⚡️ Optimize rendering performance of the game log window, reducing UI stutter when large amounts of logs are present. #1256 @baiyuansjtu
+- ⚡️ Improve the Chinese resource search experience; display resource author information and support refresh of resource version lists. #1354 @SundayChen @funkthesky-ops @RobertZhang0901
+- ⚡️ Improve the CurseForge resource search experience by ranking results based on both relevance and popularity. #1354 @SundayChen
+- 🛠 Add a secondary confirmation when resetting instance-specific game settings. #1337 @icgnos
+- 🛠 The game crash window now displays the instance’s client and loader versions instead of the instance name. #1352 @UNIkeEN
+- 🛠 Remove the contributor list page from the launcher. @UNIkeEN
+- 📦 Update multiple dependencies to patch versions. #1356 #1357 @dependabot[bot]
+- 📦 Downgrade the release worker to Ubuntu 22.04 to support Linux distributions with `glibc` versions lower than 2.39. #1361 @pangbo13 @Minecrafter-Pythoner
+   
+## 0.8.1
+
+`2025-01-31`
+
+- 🌟 Show a modal warning when the launcher is run from a temporary directory. #1326 @UNIkeEN
+- 🐛 Fix missing icon assets in the 'Import account information' feature. #1318 @zaixizaiximeow
+- 🐛 Fix an issue where the NeoForge resource version list was not sorted by release date. #1327 @icgnos
+- 🐛 Fix inconsistent sorting order in the instance list. #1332 @icgnos
+- 🐛 Fix a potential launcher crash caused by the Advanced settings page under specific game settings for instances. #1345 #1346 @icgnos @UNIkeEN
+- 📦 Add a sidebar image to the non-portable installer on Windows. #1333 @pangbo13 @Neuteria
+- 📦 Update Tauri core libraries and plugins, and update the frontend dependency `next` to a patch version. @UNIkeEN @dependabot[bot]
+- Workflow:
+   - Fix a series of issues in the AUR release workflow. #1319 @KodateMitsuru
+   
 ## 0.8.0
 
 `2025-01-19`
@@ -9,10 +58,10 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - 🔥 Support importing profiles and authentication server information from HMCL (experimental). #1255 @xunying123 @UNIkeEN
 - 🌟 Support choosing whether to prepend Simplified Chinese translated prefixes to filenames when downloading and updating resources. #1299 @SundayChen
 - 🌟 Support searching by Chinese translated names in the instance mod list page. #1305 @icgnos
-- 🛠 Optimize the ordering of options in the general settings page. #1299 @UNIkeEN @funkthesky-ops @RobertZhang0901
 - 🐛 Fix an issue where duplicate authentication servers could be added, by applying stricter address duplication checks. #1309 @UNIkeEN
 - 🐛 Fix formatting issues in the changelog under Simplified Chinese. #1313 @icgnos
 - 🐛 Fix an issue where the close button of the launch modal was obscured for instances with long names. #1314 @UNIkeEN
+- 🛠 Optimize the ordering of options in the general settings page. #1299 @UNIkeEN @funkthesky-ops @RobertZhang0901
 - 📦 Bundle dedicated OAuth client IDs for some MUA university authentication servers.
 - Workflow:
    - Fix a series of issues in the release workflow. #1293 #1300 @pangbo13
