@@ -2522,6 +2522,36 @@
         }
       }
     },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "Failed to retrieve extension list"
+        }
+      },
+      "addExtension": {
+        "success": "Successfully added extension",
+        "error": {
+          "title": "Failed to add extension",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "The extension package content format is invalid",
+            "INVALID_IDENTIFIER": "Extension identifier is invalid",
+            "INVALID_NAME": "Extension name is invalid",
+            "DUPLICATE_IDENTIFIER": "Extension already exists",
+            "EXTENSION_NOT_FOUND": "Target package file not found"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "Successfully deleted extension",
+        "error": {
+          "title": "Failed to delete extension",
+          "description": {
+            "INVALID_IDENTIFIER": "Extension identifier is invalid",
+            "EXTENSION_NOT_FOUND": "Extension not found"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "Failed to create task"
@@ -2553,10 +2583,10 @@
       "appearance": "Appearance",
       "download": "Download",
       "intelligence": "Intelligence",
+      "extension": "Extension",
       "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
-      "about": "About",
-      "dev-test": "Dev - Test Page"
+      "about": "About"
     }
   },
   "SkinPreview": {

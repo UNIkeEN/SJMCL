@@ -2522,6 +2522,36 @@
         }
       }
     },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "获取扩展插件列表失败"
+        }
+      },
+      "addExtension": {
+        "success": "扩展插件添加成功",
+        "error": {
+          "title": "扩展插件添加失败",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "扩展包内容格式无效",
+            "INVALID_IDENTIFIER": "扩展标识符无效",
+            "INVALID_NAME": "扩展名称无效",
+            "DUPLICATE_IDENTIFIER": "已存在相同标识符的扩展插件",
+            "EXTENSION_NOT_FOUND": "未找到待添加文件"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "扩展插件删除成功",
+        "error": {
+          "title": "扩展插件删除失败",
+          "description": {
+            "INVALID_IDENTIFIER": "扩展标识符无效",
+            "EXTENSION_NOT_FOUND": "未找到对应扩展插件"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "任务创建失败"
@@ -2553,10 +2583,10 @@
       "appearance": "外观",
       "download": "下载资源",
       "intelligence": "智能",
+      "extension": "扩展插件",
       "sync-restore": "同步与还原",
       "help": "文档与帮助",
-      "about": "关于",
-      "dev-test": "开发 - 测试页"
+      "about": "关于"
     }
   },
   "SkinPreview": {
