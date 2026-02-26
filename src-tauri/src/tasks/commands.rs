@@ -131,6 +131,13 @@ pub fn cancel_progressive_task_group(app: AppHandle, task_group: String) -> SJMC
 }
 
 #[tauri::command]
+pub fn stop_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
+  monitor.stop_progressive_task_group(task_group);
+  Ok(())
+}
+
+#[tauri::command]
 pub async fn resume_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
   monitor.resume_progressive_task_group(task_group).await;
@@ -138,9 +145,9 @@ pub async fn resume_progressive_task_group(app: AppHandle, task_group: String) -
 }
 
 #[tauri::command]
-pub fn stop_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
+pub fn delete_progressive_task_group(app: AppHandle, task_group: String) -> SJMCLResult<()> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();
-  monitor.stop_progressive_task_group(task_group);
+  monitor.delete_progressive_task_group(task_group);
   Ok(())
 }
 
