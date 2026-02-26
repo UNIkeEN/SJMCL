@@ -13,7 +13,13 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuArrowLeft, LuCode, LuRotateCw, LuX } from "react-icons/lu";
+import {
+  LuArrowLeft,
+  LuCode,
+  LuFlaskConical,
+  LuRotateCw,
+  LuX,
+} from "react-icons/lu";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { isProd } from "@/utils/env";
 
@@ -149,6 +155,12 @@ const DevToolbarContent: React.FC = () => {
           {loadTime} ms
         </Text>
       )}
+      <IconButton
+        icon={<LuFlaskConical />}
+        aria-label="Open dev test page"
+        variant="ghost"
+        onClick={() => router.push("/dev-test")}
+      />
     </HStack>
   );
 };

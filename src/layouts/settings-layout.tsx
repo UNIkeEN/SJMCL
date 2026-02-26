@@ -7,8 +7,8 @@ import {
   LuCircleHelp,
   LuCloudDownload,
   LuCoffee,
-  LuFlaskConical,
   LuGamepad2,
+  LuGrid2X2Plus,
   LuInfo,
   LuPalette,
   LuRefreshCcw,
@@ -16,7 +16,6 @@ import {
   LuSparkles,
 } from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
-import { isDev } from "@/utils/env";
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
@@ -36,11 +35,13 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
       { key: "appearance", icon: LuPalette },
       { key: "download", icon: LuCloudDownload },
       { key: "intelligence", icon: LuSparkles },
+      { key: "extension", icon: LuGrid2X2Plus },
       { key: "sync-restore", icon: LuRefreshCcw },
+    ],
+    [
       { key: "help", icon: LuCircleHelp },
       { key: "about", icon: LuInfo },
     ],
-    ...(isDev ? [[{ key: "dev-test", icon: LuFlaskConical }]] : []),
   ];
 
   return (
