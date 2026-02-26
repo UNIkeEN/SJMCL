@@ -121,8 +121,8 @@ export default function App({ Component, pageProps }: AppProps) {
       <ToastContextProvider>
         <RoutingHistoryContextProvider>
           <LauncherConfigContextProvider>
-            <ExtensionHostContextProvider>
-              <GlobalDataContextProvider>
+            <GlobalDataContextProvider>
+              <ExtensionHostContextProvider>
                 <GuidedTourProvider>
                   <SharedModalsProvider>
                     <TaskContextProvider>
@@ -138,8 +138,8 @@ export default function App({ Component, pageProps }: AppProps) {
                     </TaskContextProvider>
                   </SharedModalsProvider>
                 </GuidedTourProvider>
-              </GlobalDataContextProvider>
-            </ExtensionHostContextProvider>
+              </ExtensionHostContextProvider>
+            </GlobalDataContextProvider>
           </LauncherConfigContextProvider>
         </RoutingHistoryContextProvider>
       </ToastContextProvider>

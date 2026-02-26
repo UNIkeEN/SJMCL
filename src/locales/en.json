@@ -2536,7 +2536,6 @@
             "INVALID_PACKAGE_FORMAT": "The extension package content format is invalid",
             "INVALID_IDENTIFIER": "Extension identifier is invalid",
             "INVALID_NAME": "Extension name is invalid",
-            "DUPLICATE_IDENTIFIER": "Extension already exists",
             "EXTENSION_NOT_FOUND": "Target package file not found"
           }
         }

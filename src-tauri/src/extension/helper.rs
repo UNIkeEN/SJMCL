@@ -11,7 +11,7 @@ use zip::read::ZipArchive;
 
 const EXTENSIONS_DIR_RELATIVE_PATH: &str = "UserContent/Extensions";
 const METADATA_FILE_NAME: &str = "sjmcl.ext.json";
-const LOGO_FILE_NAME: &str = "logo.png";
+const LOGO_FILE_NAME: &str = "icon.png";
 const ICON_MAX_SIZE: u32 = 64;
 
 pub fn get_extensions_dir(app: &AppHandle) -> SJMCLResult<PathBuf> {

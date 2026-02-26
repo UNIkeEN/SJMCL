@@ -2536,7 +2536,6 @@
             "INVALID_PACKAGE_FORMAT": "扩展包内容格式无效",
             "INVALID_IDENTIFIER": "扩展标识符无效",
             "INVALID_NAME": "扩展名称无效",
-            "DUPLICATE_IDENTIFIER": "已存在相同标识符的扩展插件",
             "EXTENSION_NOT_FOUND": "未找到待添加文件"
           }
         }

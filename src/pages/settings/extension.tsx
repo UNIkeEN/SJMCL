@@ -140,7 +140,6 @@ const ExtensionSettingsPage = () => {
             borderRadius="4px"
             src={base64ImgSrc(extension.iconSrc)}
             name={extension.name}
-            bg="transparent"
             style={{
               filter: enabledSet.has(extension.identifier)
                 ? "none"

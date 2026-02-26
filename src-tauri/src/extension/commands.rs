@@ -66,8 +66,13 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
     let info = read_extension_info(&temp_dir)?;
     let extension_dir = extensions_dir.join(&info.metadata.identifier);
 
+    // Existing file/folder with the same name(identifier), replace it directly.
     if extension_dir.exists() {
-      return Err(ExtensionError::DuplicateIdentifier.into());
+      if extension_dir.is_dir() {
+        fs::remove_dir_all(&extension_dir)?;
+      } else {
+        fs::remove_file(&extension_dir)?;
+      }
     }
 
     fs::rename(&temp_dir, &extension_dir)?;
@@ -88,10 +93,6 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
 
     Ok(info)
   })();
-
-  if temp_dir.exists() {
-    let _ = fs::remove_dir_all(&temp_dir);
-  }
 
   register_result
 }
