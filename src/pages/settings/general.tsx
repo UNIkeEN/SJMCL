@@ -1,6 +1,7 @@
-import { Button, Switch } from "@chakra-ui/react";
+import { Button, HStack, Switch, useDisclosure } from "@chakra-ui/react";
 import { appLogDir } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
@@ -9,6 +10,10 @@ import {
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import LanguageMenu from "@/components/language-menu";
+import {
+  SyncConfigExportModal,
+  SyncConfigImportModal,
+} from "@/components/modals/sync-config-modals";
 import { useLauncherConfig } from "@/contexts/config";
 import { useRoutingHistory } from "@/contexts/routing-history";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -18,13 +23,43 @@ import { ConfigService } from "@/services/config";
 const GeneralSettingsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
-  const { config, update } = useLauncherConfig();
+  const { config, setConfig, update } = useLauncherConfig();
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
   const { removeHistory } = useRoutingHistory();
   const { openGenericConfirmDialog, closeSharedModal } = useSharedModals();
 
+  const {
+    isOpen: isSyncConfigExportModalOpen,
+    onOpen: onSyncConfigExportModalOpen,
+    onClose: onSyncConfigExportModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isSyncConfigImportModalOpen,
+    onOpen: onSyncConfigImportModalOpen,
+    onClose: onSyncConfigImportModalClose,
+  } = useDisclosure();
+
   const instancesNavTypes = ["instance", "directory", "hidden"];
+
+  const handleRestoreLauncherConfig = useCallback(async () => {
+    ConfigService.restoreLauncherConfig().then((response) => {
+      if (response.status === "success") {
+        setConfig(response.data);
+        toast({
+          title: response.message,
+          status: "success",
+        });
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    });
+    closeSharedModal("generic-confirm");
+  }, [setConfig, toast, closeSharedModal]);
 
   const generalSettingGroups: OptionItemGroupProps[] = [
     // Frontend grouping was modified after discussions in PR#1299
@@ -172,6 +207,32 @@ const GeneralSettingsPage = () => {
       ],
     },
     {
+      title: t("GeneralSettingsPage.sync.title"),
+      items: [
+        {
+          title: t("GeneralSettingsPage.sync.settings.internetSync.title"),
+          children: (
+            <HStack>
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={onSyncConfigExportModalOpen}
+              >
+                {t("GeneralSettingsPage.sync.settings.internetSync.export")}
+              </Button>
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={onSyncConfigImportModalOpen}
+              >
+                {t("GeneralSettingsPage.sync.settings.internetSync.import")}
+              </Button>
+            </HStack>
+          ),
+        },
+      ],
+    },
+    {
       title: t("GeneralSettingsPage.advanced.title"),
       items: [
         {
@@ -248,6 +309,29 @@ const GeneralSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t("GeneralSettingsPage.advanced.settings.restoreAll.title"),
+          description: t(
+            "GeneralSettingsPage.advanced.settings.restoreAll.description"
+          ),
+          children: (
+            <Button
+              colorScheme="red"
+              variant="subtle"
+              size="xs"
+              onClick={() => {
+                openGenericConfirmDialog({
+                  title: t("RestoreConfigConfirmDialog.title"),
+                  body: t("RestoreConfigConfirmDialog.body"),
+                  isAlert: true,
+                  onOKCallback: handleRestoreLauncherConfig,
+                });
+              }}
+            >
+              {t("GeneralSettingsPage.advanced.settings.restoreAll.restore")}
+            </Button>
+          ),
+        },
       ],
     },
   ];
@@ -257,6 +341,15 @@ const GeneralSettingsPage = () => {
       {generalSettingGroups.map((group, index) => (
         <OptionItemGroup title={group.title} items={group.items} key={index} />
       ))}
+
+      <SyncConfigExportModal
+        isOpen={isSyncConfigExportModalOpen}
+        onClose={onSyncConfigExportModalClose}
+      />
+      <SyncConfigImportModal
+        isOpen={isSyncConfigImportModalOpen}
+        onClose={onSyncConfigImportModalClose}
+      />
     </>
   );
 };

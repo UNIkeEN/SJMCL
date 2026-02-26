@@ -141,6 +141,20 @@
       "endpointUrl": "Adresse de la source"
     }
   },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Ajouter un serveur de jeu"
+    },
+    "serverAddrRequired": "L'adresse du serveur est requise",
+    "label": {
+      "serverAddr": "Adresse du serveur",
+      "serverName": "Nom du serveur"
+    },
+    "placeholder": {
+      "serverAddr": "Saisissez l'adresse du serveur",
+      "serverName": "Serveur Minecraft"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "Ajouter un joueur"
@@ -413,6 +427,16 @@
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "Vous avez récemment renommé cette instance. Veuillez actualiser la liste des instances ou redémarrer le lanceur, puis réessayez d'ajouter le raccourci."
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Supprimer le serveur d'authentification",
+      "content": "Êtes-vous sûr de vouloir supprimer le serveur d'authentification « {{name}} » ? Il ne figurera plus dans votre liste de serveurs."
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "Supprimer le serveur de jeu",
+    "content": "Confirmer la suppression du serveur de jeu \"{{name}}\" ({{addr}}) ? Cette action est irréversible."
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "Supprimer l'instance du jeu",
@@ -435,20 +459,33 @@
       "content": "Êtes-vous sûr de vouloir supprimer le joueur « {{name}} » ? Cette action est irréversible !"
     }
   },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "Supprimer le serveur d'authentification",
-      "content": "Êtes-vous sûr de vouloir supprimer le serveur d'authentification « {{name}} » ? Il ne figurera plus dans votre liste de serveurs."
-    }
-  },
   "DevToolbar": {
     "tooltip": "Barre d'outils de développement"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "Découvrir",
-    "noMore": "Pas de contenu supplémentaire.",
-    "sources": "Gérer les sources de données.",
-    "NoSources": "Aucune source de données ajoutée."
+    "noMore": "Plus de contenu",
+    "sources": "Gérer les sources",
+    "NoSources": "Aucune source ajoutée"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Actualités Minecraft",
+    "community-news": "Actualités de la communauté",
+    "hotModpacks": "Modpacks populaires de {{source}}"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "Recherche",
+      "home": "Accueil",
+      "community-news": "Communauté",
+      "minecraft-news": "Actualités Minecraft",
+      "modpack": "Modpacks",
+      "mod": "Mods",
+      "world": "Mondes",
+      "resourcepack": "Packs de ressources",
+      "shader": "Packs de shaders",
+      "datapack": "Packs de données"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -571,7 +608,7 @@
       "pause": "Pause",
       "begin": "Démarrer",
       "retry": "Réessayer",
-      "deleteRecord": "Supprimer cet enregistrement."
+      "clearHistory": "Effacer l'historique"
     },
     "label": {
       "paused": "En pause",
@@ -668,9 +705,19 @@
       "macos": "Contrôle(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Commande(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -890,6 +937,7 @@
     "finish": "Terminer",
     "import": "Importer",
     "launch": "Démarrer",
+    "more": "Plus",
     "next": "Suivant",
     "notice": "Remarque",
     "open": "Ouvrir",
@@ -937,12 +985,6 @@
     "functions": {
       "title": "Fonctionnalités",
       "settings": {
-        "discoverPage": {
-          "title": "Page Découvrir",
-          "openNotice": {
-            "content": "Le bouton « Rechercher » de la barre supérieure a été remplacé par « Découvrir ». Vous pouvez toujours utiliser la « Recherche globale » avec <key>{{keyname}}</key> + <key>S</key>."
-          }
-        },
         "instancesNavType": {
           "title": "Mode de la barre latérale des instances",
           "description": "Modifier l'affichage et le mode de regroupement de la barre latérale des instances",
@@ -953,6 +995,16 @@
         "launchPageQuickSwitch": {
           "title": "Basculement rapide entre instances et comptes",
           "description": "Si activé, cliquer sur le bouton de changement de la page de lancement permet de choisir directement un compte ou une instance sans changer de page"
+        }
+      }
+    },
+    "sync": {
+      "title": "Synchronisation",
+      "settings": {
+        "internetSync": {
+          "title": "Synchronisation en ligne des paramètres du lanceur",
+          "import": "Importer",
+          "export": "Exporter"
         }
       }
     },
@@ -969,6 +1021,11 @@
         "autoPurgeLauncherLogs": {
           "title": "Nettoyage automatique des journaux du lanceur",
           "description": "Nettoyage automatique des fichiers journaux du lanceur datant de 30 jours ou plus"
+        },
+        "restoreAll": {
+          "title": "Restaurer tous les paramètres",
+          "description": "Restaurer tous les paramètres du lanceur à leur valeur par défaut",
+          "restore": "Restaurer"
         }
       }
     }
@@ -1083,6 +1140,10 @@
     "step3": {
       "title": "Minecraft, démarre !",
       "content": "Après avoir sélectionné l'instance et le personnage, et ajusté les paramètres, cliquez sur le bouton de démarrage pour profiter du jeu ! 🥳"
+    },
+    "step4": {
+      "title": "Lancer Minecraft !",
+      "content": "Après avoir sélectionné votre instance et votre joueur, puis ajusté les paramètres nécessaires, cliquez sur le bouton de lancement et profitez du jeu ! 🥳"
     }
   },
   "HeadNavBar": {
@@ -1150,7 +1211,8 @@
     },
     "tooltips": {
       "existingServer": "Les données d'un serveur d'authentification avec la même adresse existent déjà et seront écrasées.",
-      "existingPlayer": "Les données d'un joueur avec le même UUID existent déjà et seront écrasées."
+      "existingPlayer": "Les données d'un joueur avec le même UUID existent déjà et seront écrasées.",
+      "expired": "Le jeton de ce joueur a expiré et ne peut pas être importé."
     }
   },
   "ImportModpackModal": {
@@ -1316,6 +1378,29 @@
       "launch": "Jouer sur ce serveur"
     }
   },
+  "IntelligenceSettingsPage": {
+    "title": "Intelligence SJMCL",
+    "description": "Intégrez des modèles d'IA à votre lanceur et à votre expérience de jeu Minecraft.",
+    "mcpServer": {
+      "title": "Service MCP",
+      "headExtra": "Redémarrage requis",
+      "settings": {
+        "enabled": {
+          "title": "Service MCP du lanceur",
+          "description": "Activez le service MCP local pour connecter des applications d'agent externes et automatiser le contrôle du lanceur."
+        },
+        "docs": {
+          "title": "Guide d'utilisation",
+          "description": "Découvrez comment connecter le lanceur à des applications d'agent externes (comme Claude, Cherry Studio, etc.).",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "Port",
+          "description": "Port local fixe utilisé par le service MCP du lanceur."
+        }
+      }
+    }
+  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Gestion Java",
@@ -1418,6 +1503,10 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} élément sélectionné"
+  },
+  "NoSuitableJavaDialog": {
+    "title": "Aucun environnement Java compatible trouvé pour cette instance",
+    "body": "Aucun environnement Java compatible n'est disponible pour cette instance. Cliquez sur « Confirmer » pour ouvrir la page de gestion Java et ajouter ou télécharger Java manuellement."
   },
   "NotFoundPage": {
     "text": "Page non trouvée, redirection dans {{seconds}} secondes"
@@ -2090,7 +2179,6 @@
           "title": "Échec de la vérification des fichiers du jeu",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Le chargeur de mods n'est pas encore installé",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "Les fichiers de bibliothèque du chargeur de mods n'ont pas été téléchargés",
             "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
             "GAME_FILES_INCOMPLETE": "Les fichiers du jeu sont incomplets ou manquants",
             "LAUNCHING_STATE_NOT_FOUND": "L'état de démarrage est perdu"
@@ -2320,6 +2408,28 @@
           }
         }
       },
+      "addGameServer": {
+        "success": "Serveur de jeu ajouté avec succès",
+        "error": {
+          "title": "Échec de l'ajout du serveur de jeu",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance n'existe pas",
+            "FILE_OPERATION_ERROR": "Échec de l'écriture des informations du serveur",
+            "DUPLICATE_SERVER": "Le serveur existe déjà"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Serveur de jeu supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression du serveur de jeu",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance n'existe pas",
+            "FILE_OPERATION_ERROR": "Échec de l'écriture des informations du serveur",
+            "SERVER_NOT_FOUND": "Serveur introuvable"
+          }
+        }
+      },
       "retrieveLocalModList": {
         "error": {
           "title": "Échec de la récupération de la liste des mods",
@@ -2365,8 +2475,8 @@
         "error": {
           "title": "Échec de la récupération des détails du monde",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "Monde introuvable",
-            "LEVEL_NOT_EXSIT_ERROR": "Fichier de données de sauvegarde introuvable",
+            "WORLD_NOT_EXIST_ERROR": "Le monde n'existe pas",
+            "LEVEL_NOT_EXIST_ERROR": "Les données du niveau n'existent pas",
             "LEVEL_PARSE_ERROR": "Erreur d'analyse du fichier de données de sauvegarde"
           }
         }
@@ -2457,7 +2567,7 @@
       "general": "Général",
       "appearance": "Apparence",
       "download": "Téléchargement",
-      "sync-restore": "Sync et Resta",
+      "intelligence": "IA",
       "help": "Aide & Doc",
       "about": "À propos",
       "dev-test": "Développement - Page de test"
@@ -2516,23 +2626,6 @@
       "starUs": "Étoiler"
     }
   },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "Paramètres du lanceur",
-      "settings": {
-        "internetSync": {
-          "title": "Synchronisation en ligne",
-          "import": "Importer",
-          "export": "Exporter"
-        },
-        "restoreAll": {
-          "title": "Restaurer tous les paramètres",
-          "description": "Restaurer tous les paramètres du lanceur à leur valeur par défaut",
-          "restore": "Restaurer"
-        }
-      }
-    }
-  },
   "SyncConfigExportModal": {
     "header": {
       "title": "Synchronisation des paramètres - Exporter"
@@ -2561,7 +2654,8 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "Chemin d'exécution non sûr",
-      "content": "SJMCL est actuellement exécuté depuis un répertoire temporaire ou invalide. Vos paramètres et données de jeu peuvent être perdus. Veuillez déplacer SJMCL vers un autre emplacement et le relancer."
+      "content": "SJMCL est actuellement exécuté depuis un répertoire temporaire ou invalide. Vos paramètres et données de jeu peuvent être perdus. Veuillez déplacer SJMCL vers un autre emplacement et le relancer.",
+      "btnContinue": "Continuer quand même"
     }
   },
   "Utils": {

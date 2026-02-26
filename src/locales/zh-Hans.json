@@ -998,6 +998,16 @@
         }
       }
     },
+    "sync": {
+      "title": "同步",
+      "settings": {
+        "internetSync": {
+          "title": "联网同步启动器设置",
+          "import": "导入",
+          "export": "导出"
+        }
+      }
+    },
     "advanced": {
       "title": "高级",
       "settings": {
@@ -1011,6 +1021,11 @@
         "autoPurgeLauncherLogs": {
           "title": "自动清理启动器日志",
           "description": "自动清理 30 天及以前的启动器日志文件"
+        },
+        "restoreAll": {
+          "title": "还原所有设置",
+          "description": "将所有启动器设置还原为默认值",
+          "restore": "还原"
         }
       }
     }
@@ -2553,7 +2568,6 @@
       "appearance": "外观",
       "download": "下载资源",
       "intelligence": "智能",
-      "sync-restore": "同步与还原",
       "help": "文档与帮助",
       "about": "关于",
       "dev-test": "开发 - 测试页"
@@ -2610,23 +2624,6 @@
     "button": {
       "later": "稍后",
       "starUs": "点亮星标"
-    }
-  },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "启动器设置",
-      "settings": {
-        "internetSync": {
-          "title": "联网同步",
-          "import": "导入",
-          "export": "导出"
-        },
-        "restoreAll": {
-          "title": "还原所有设置",
-          "description": "将所有启动器设置还原为默认值",
-          "restore": "还原"
-        }
-      }
     }
   },
   "SyncConfigExportModal": {

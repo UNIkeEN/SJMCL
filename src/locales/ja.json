@@ -141,6 +141,20 @@
       "endpointUrl": "エンドポイント url"
     }
   },
+  "AddGameServerModal": {
+    "header": {
+      "title": "ゲームサーバーを追加"
+    },
+    "serverAddrRequired": "サーバーアドレスは必須です",
+    "label": {
+      "serverAddr": "サーバーアドレス",
+      "serverName": "サーバー名"
+    },
+    "placeholder": {
+      "serverAddr": "サーバーアドレスを入力",
+      "serverName": "Minecraft サーバー"
+    }
+  },
   "AddPlayerModal": {
     "modal": {
       "header": "キャラクター追加"
@@ -413,6 +427,16 @@
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "このインスタンスの名前が変更されました。インスタンスリストを更新するか、ランチャーを再起動してから、起動ショートカットの追加を再試行してください。"
   },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "認証サーバーを削除",
+      "content": "この認証サーバー「{{name}}」を削除しますか。「{{name}}」はサーバーリストの中から消えます。"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "ゲームサーバーを削除",
+    "content": "ゲームサーバー「{{name}}」（{{addr}}）を削除しますか？この操作は取り消せません。"
+  },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "インスタンス削除",
@@ -435,20 +459,33 @@
       "content": "このキャラクターを削除しますか。この操作は取り消せません！"
     }
   },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "認証サーバーを削除",
-      "content": "この認証サーバー「{{name}}」を削除しますか。「{{name}}」はサーバーリストの中から消えます。"
-    }
-  },
   "DevToolbar": {
     "tooltip": "開発ツールバー"
   },
-  "DiscoverPage": {
-    "title": "ディスカバーページ",
-    "noMore": "これ以上コンテンツはありません",
-    "sources": "データソース管理",
-    "NoSources": "データソースが追加されていません"
+  "DiscoverCommunityNewsPage": {
+    "title": "ディスカバー",
+    "noMore": "これ以上ありません",
+    "sources": "ソース管理",
+    "NoSources": "ソースが追加されていません"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft ニュース",
+    "community-news": "コミュニティニュース",
+    "hotModpacks": "{{source}} の人気 Modpack"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "検索",
+      "home": "ホーム",
+      "community-news": "コミュニティ",
+      "minecraft-news": "Minecraft ニュース",
+      "modpack": "Modpack",
+      "mod": "Mod",
+      "world": "ワールド",
+      "resourcepack": "リソースパック",
+      "shader": "シェーダーパック",
+      "datapack": "データパック"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -571,7 +608,7 @@
       "pause": "一時停止",
       "begin": "開始",
       "retry": "再試行",
-      "deleteRecord": "この記録を削除"
+      "clearHistory": "履歴をクリア"
     },
     "label": {
       "paused": "一時停止中",
@@ -668,9 +705,19 @@
       "macos": "Control(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -890,6 +937,7 @@
     "finish": "完了",
     "import": "インポート",
     "launch": "起動",
+    "more": "もっと",
     "next": "次へ",
     "notice": "通知",
     "open": "開く",
@@ -937,12 +985,6 @@
     "functions": {
       "title": "機能設定",
       "settings": {
-        "discoverPage": {
-          "title": "ディスカバーページ",
-          "openNotice": {
-            "content": "上部ナビゲーションバーの「検索」は「ディスカバー」に置き換えられました。キーボードショートカット <key>{{keyname}}</key> + <key>S</key> で「グローバル検索」を引き続き利用できます。"
-          }
-        },
         "instancesNavType": {
           "title": "インスタンス分類",
           "description": "インスタンスページの左側ナビゲーションバーの表示・グループ化方法を変更",
@@ -953,6 +995,16 @@
         "launchPageQuickSwitch": {
           "title": "クイックスイッチ",
           "description": "起動ページにアカウントとインスタンスの直接選択が可能。"
+        }
+      }
+    },
+    "sync": {
+      "title": "同期",
+      "settings": {
+        "internetSync": {
+          "title": "ランチャー設定のインターネット同期",
+          "import": "インポート",
+          "export": "エクスポート"
         }
       }
     },
@@ -969,6 +1021,11 @@
         "autoPurgeLauncherLogs": {
           "title": "起動ログの自動クリーンアップ",
           "description": "30日以上前の起動ログファイルを自動削除"
+        },
+        "restoreAll": {
+          "title": "すべての設定を復元",
+          "description": "すべてのランチャー設定をデフォルトに復元",
+          "restore": "復元"
         }
       }
     }
@@ -1083,6 +1140,10 @@
     "step3": {
       "title": "Minecraft、起動！",
       "content": "インスタンスとキャラクターを選択し、関連設定を調整したら、起動ボタンをクリックしてゲームを楽しみましょう 🥳"
+    },
+    "step4": {
+      "title": "Minecraft を起動！",
+      "content": "インスタンスとプレイヤーを選択し、必要な設定を調整したら、起動ボタンをクリックしてゲームを楽しみましょう！ 🥳"
     }
   },
   "HeadNavBar": {
@@ -1150,7 +1211,8 @@
     },
     "tooltips": {
       "existingServer": "同じアドレスの認証サーバーが既に存在するため、インポート時に上書きされます。",
-      "existingPlayer": "同じ UUID のキャラクターが既に存在するため、インポート時に上書きされます。"
+      "existingPlayer": "同じ UUID のキャラクターが既に存在するため、インポート時に上書きされます。",
+      "expired": "このプレイヤートークンは期限切れのため、インポートできません。"
     }
   },
   "ImportModpackModal": {
@@ -1316,6 +1378,29 @@
       "launch": "このサーバーをプレイ"
     }
   },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL AI",
+    "description": "AI モデルをランチャーと Minecraft の体験に統合します。",
+    "mcpServer": {
+      "title": "MCP サービス",
+      "headExtra": "再起動が必要",
+      "settings": {
+        "enabled": {
+          "title": "ランチャー MCP サービス",
+          "description": "外部エージェントアプリと接続してランチャー操作を自動化するため、ローカル MCP サービスを有効化します。"
+        },
+        "docs": {
+          "title": "ユーザーガイド",
+          "description": "ランチャーを外部エージェントアプリ（Claude、Cherry Studio など）に接続する方法を確認します。",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "ポート",
+          "description": "ランチャー MCP サービスで使用する固定ローカルポートです。"
+        }
+      }
+    }
+  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Java 管理",
@@ -1418,6 +1503,10 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} 個選択済み"
+  },
+  "NoSuitableJavaDialog": {
+    "title": "このインスタンスに適した Java ランタイムが見つかりません",
+    "body": "このインスタンスで利用可能な適切な Java ランタイムがありません。「確認」をクリックして Java 管理ページを開き、Java を手動で追加またはダウンロードしてください。"
   },
   "NotFoundPage": {
     "text": "ページが見つからない。 {{seconds}} 秒後でジャンプする"
@@ -2090,7 +2179,6 @@
           "title": "ゲームファイルの検証に失敗",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "モッドローダーのインストールが完了していません",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "モッドローダーライブラリファイルがダウンロードされていません",
             "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
             "GAME_FILES_INCOMPLETE": "ゲームファイルが不完全しています",
             "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"
@@ -2320,6 +2408,28 @@
           }
         }
       },
+      "addGameServer": {
+        "success": "ゲームサーバーを追加しました",
+        "error": {
+          "title": "ゲームサーバーの追加に失敗しました",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "FILE_OPERATION_ERROR": "サーバー情報の書き込みに失敗しました",
+            "DUPLICATE_SERVER": "サーバーは既に存在します"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "ゲームサーバーを削除しました",
+        "error": {
+          "title": "ゲームサーバーの削除に失敗しました",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "FILE_OPERATION_ERROR": "サーバー情報の書き込みに失敗しました",
+            "SERVER_NOT_FOUND": "サーバーが見つかりません"
+          }
+        }
+      },
       "retrieveLocalModList": {
         "error": {
           "title": "MOD リストの取得に失敗",
@@ -2365,8 +2475,8 @@
         "error": {
           "title": "ワールド情報の取得に失敗",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "ワールドが存在しない",
-            "LEVEL_NOT_EXSIT_ERROR": "サーブデータファイルが存在しない",
+            "WORLD_NOT_EXIST_ERROR": "ワールドが存在しません",
+            "LEVEL_NOT_EXIST_ERROR": "レベルデータが存在しません",
             "LEVEL_PARSE_ERROR": "セーブデータファイルの解読に失敗"
           }
         }
@@ -2457,7 +2567,7 @@
       "general": "一般設定",
       "appearance": "表示",
       "download": "ダウンロード",
-      "sync-restore": "同期と復元",
+      "intelligence": "AI",
       "help": "マニュアルとヘルプ",
       "about": "バージョン情報",
       "dev-test": "開発・テストページ"
@@ -2516,23 +2626,6 @@
       "starUs": "スターを付与"
     }
   },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "ランチャー設定",
-      "settings": {
-        "internetSync": {
-          "title": "インタネット同期",
-          "import": "インポート",
-          "export": "エクスポート"
-        },
-        "restoreAll": {
-          "title": "すべての設定を復元",
-          "description": "すべてのランチャー設定をデフォルトに復元",
-          "restore": "復元"
-        }
-      }
-    }
-  },
   "SyncConfigExportModal": {
     "header": {
       "title": "同期設定 - エクスポート"
@@ -2561,7 +2654,8 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "安全でない実行パス",
-      "content": "SJMCL は一時ディレクトリまたは無効なディレクトリから実行されています。設定やゲームデータが失われる可能性があります。SJMCL を別の場所へ移動して再実行してください。"
+      "content": "SJMCL は一時ディレクトリまたは無効なディレクトリから実行されています。設定やゲームデータが失われる可能性があります。SJMCL を別の場所へ移動して再実行してください。",
+      "btnContinue": "このまま実行"
     }
   },
   "Utils": {

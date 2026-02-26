@@ -998,6 +998,16 @@
         }
       }
     },
+    "sync": {
+      "title": "Sync",
+      "settings": {
+        "internetSync": {
+          "title": "Sync Launcher Settings via Internet",
+          "import": "Import",
+          "export": "Export"
+        }
+      }
+    },
     "advanced": {
       "title": "Advanced",
       "settings": {
@@ -1011,6 +1021,11 @@
         "autoPurgeLauncherLogs": {
           "title": "Auto Purge Launcher Logs",
           "description": "Automatically purge launcher log files older than 30 days"
+        },
+        "restoreAll": {
+          "title": "Restore All Settings",
+          "description": "Restore all launcher settings to their default values",
+          "restore": "Restore"
         }
       }
     }
@@ -2553,7 +2568,6 @@
       "appearance": "Appearance",
       "download": "Download",
       "intelligence": "Intelligence",
-      "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
       "about": "About",
       "dev-test": "Dev - Test Page"
@@ -2610,23 +2624,6 @@
     "button": {
       "later": "Later",
       "starUs": "Star Us"
-    }
-  },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "Launcher Settings",
-      "settings": {
-        "internetSync": {
-          "title": "Sync through the Internet",
-          "import": "Import",
-          "export": "Export"
-        },
-        "restoreAll": {
-          "title": "Restore All Settings",
-          "description": "Restore all launcher settings to their default values",
-          "restore": "Restore"
-        }
-      }
     }
   },
   "SyncConfigExportModal": {
