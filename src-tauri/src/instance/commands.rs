@@ -1124,6 +1124,10 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
       .ok_or(InstanceError::InstanceNotFoundByID)?
       .clone()
   };
+  let client_info_dir = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+  let client_info = load_json_async::<McClientInfo>(&client_info_dir).await?;
 
   match instance.mod_loader.status {
     // prevent duplicated installation
@@ -1133,31 +1137,56 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
     ModLoaderStatus::Installing => {
       return Err(InstanceError::InstallationDuplicated.into());
     }
-    ModLoaderStatus::Installed => {
-      return Ok(());
+    ModLoaderStatus::Downloading => {
+      {
+        let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+        let mut state = binding.lock()?;
+        let instance = state
+          .get_mut(&instance_id)
+          .ok_or(InstanceError::InstanceNotFoundByID)?;
+        instance.mod_loader.status = ModLoaderStatus::Installing;
+      };
+
+      let install_profile_dir = instance.version_path.join("install_profile.json");
+      if install_profile_dir.exists() {
+        let install_profile = load_json_async::<InstallProfile>(&install_profile_dir).await?;
+        execute_processors(&app, &instance, &client_info, &install_profile).await?;
+      }
     }
     _ => {}
   }
 
-  {
+  let instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let mut state = binding.lock()?;
     let instance = state
       .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
-    instance.mod_loader.status = ModLoaderStatus::Installing;
+    instance.mod_loader.status = ModLoaderStatus::Installed;
+    instance.clone()
   };
+  instance.save_json_cfg().await?;
 
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn finish_optifine_loader_install(
+  app: AppHandle,
+  instance_id: String,
+) -> SJMCLResult<()> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
   let client_info_dir = instance
     .version_path
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_info_dir).await?;
-
-  let install_profile_dir = instance.version_path.join("install_profile.json");
-  if install_profile_dir.exists() {
-    let install_profile = load_json_async::<InstallProfile>(&install_profile_dir).await?;
-    execute_processors(&app, &instance, &client_info, &install_profile).await?;
-  }
 
   if let Some(optifine) = &instance.optifine {
     match optifine.status {
@@ -1168,29 +1197,26 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
       ModLoaderStatus::Installing => {
         return Err(InstanceError::InstallationDuplicated.into());
       }
-      ModLoaderStatus::Installed => {
-        return Ok(());
+      ModLoaderStatus::Downloading => {
+        {
+          let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+          let mut state = binding.lock()?;
+          let instance = state
+            .get_mut(&instance_id)
+            .ok_or(InstanceError::InstanceNotFoundByID)?;
+          instance.optifine.as_mut().unwrap().status = ModLoaderStatus::Installing;
+        };
+        finish_optifine_install(&app, &instance, &client_info).await?;
       }
       _ => {}
     }
-    {
-      let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-      let mut state = binding.lock()?;
-      let instance = state
-        .get_mut(&instance_id)
-        .ok_or(InstanceError::InstanceNotFoundByID)?;
-      instance.optifine.as_mut().unwrap().status = ModLoaderStatus::Installing;
-    };
-    finish_optifine_install(&app, &instance, &client_info).await?;
   }
-
   let instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let mut state = binding.lock()?;
     let instance = state
       .get_mut(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
-    instance.mod_loader.status = ModLoaderStatus::Installed;
     if let Some(optifine) = &mut instance.optifine {
       optifine.status = ModLoaderStatus::Installed;
     }
