@@ -7,7 +7,7 @@ use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use serde_with::formats::PreferMany;
-use serde_with::{serde_as, OneOrMany};
+use serde_with::{serde_as, DisplayFromStr, OneOrMany, PickFirst};
 use serialize_skip_none_derive::serialize_skip_none;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -236,10 +236,12 @@ pub struct AssetIndexInfo {
   pub url: String,
 }
 
+#[serde_as]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]
 pub struct DownloadsValue {
   pub sha1: String,
+  #[serde_as(as = "PickFirst<(_, DisplayFromStr)>")]
   pub size: i64,
   pub url: String,
 }
