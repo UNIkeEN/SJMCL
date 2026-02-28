@@ -407,10 +407,12 @@ export class InstanceService {
    */
   @responseHandler("instance")
   static async createLaunchDesktopShortcut(
-    instanceId: string
+    instanceId: string,
+    iconSrc: string
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_launch_desktop_shortcut", {
       instanceId,
+      iconSrc,
     });
   }
 

@@ -59,6 +59,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
+use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
@@ -894,7 +895,11 @@ pub async fn retrieve_world_details(
 }
 
 #[tauri::command]
-pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+pub fn create_launch_desktop_shortcut(
+  app: AppHandle,
+  instance_id: String,
+  icon_src: String,
+) -> SJMCLResult<()> {
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let state = binding
     .lock()
@@ -910,7 +915,28 @@ pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJ
     .replace("+", "%20");
   let url = format!("sjmcl://launch?{}", encoded_id);
 
-  create_url_shortcut(&app, name, url, None).map_err(|_| InstanceError::ShortcutCreationFailed)?;
+  let mut img = if icon_src == "custom" {
+    image::ImageReader::open(instance.version_path.join("icon"))?
+      .with_guessed_format()?
+      .decode()?
+  } else {
+    let asset = app.asset_resolver().get(icon_src).unwrap();
+    image::load_from_memory(asset.bytes())?
+  };
+  img = img.resize_exact(128, 128, image::imageops::FilterType::Nearest);
+  let appdata_path = app.path().resolve("", BaseDirectory::AppData)?;
+  let ico = image::open(appdata_path.join("assets/icons/icon-sq.png"))?;
+  image::imageops::overlay(&mut img, &ico, 80, 80);
+  let extension = if cfg!(target_os = "windows") {
+    "ico"
+  } else {
+    "png"
+  };
+  let icon_path = instance.version_path.join(format!("icon.{}", extension));
+  img.save(&icon_path)?;
+
+  create_url_shortcut(&app, name, url, Some(icon_path))
+    .map_err(|_| InstanceError::ShortcutCreationFailed)?;
 
   Ok(())
 }
