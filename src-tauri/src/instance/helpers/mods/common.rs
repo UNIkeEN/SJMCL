@@ -179,29 +179,6 @@ impl ModLoaderTypeParserDispatch for ModLoaderType {
   }
 }
 
-// first try to get metadata from target mod loader.
-fn build_priority_loader_type_list(loader_type: Option<ModLoaderType>) -> Vec<ModLoaderType> {
-  let preferred_loader = match loader_type {
-    Some(ModLoaderType::NeoForge) => Some(ModLoaderType::Forge),
-    Some(ModLoaderType::Unknown) | None => None,
-    other => other,
-  };
-
-  let mut result = Vec::with_capacity(DEFAULT_MOD_LOADER_PRIORITY_LIST.len());
-  let mut fallbacks = Vec::with_capacity(DEFAULT_MOD_LOADER_PRIORITY_LIST.len());
-
-  for loader in DEFAULT_MOD_LOADER_PRIORITY_LIST {
-    if Some(loader) == preferred_loader {
-      result.push(loader);
-    } else {
-      fallbacks.push(loader);
-    }
-  }
-
-  result.extend(fallbacks);
-  result
-}
-
 pub async fn get_mod_info_from_jar(
   path: &PathBuf,
   prior_loader_type: Option<ModLoaderType>,
@@ -220,7 +197,10 @@ pub async fn get_mod_info_from_jar(
   let enabled = !file_name.ends_with(".disabled");
   let mut jar = ZipArchive::new(file)?;
 
-  for loader_type in build_priority_loader_type_list(prior_loader_type) {
+  for loader_type in prior_loader_type
+    .into_iter()
+    .chain(DEFAULT_MOD_LOADER_PRIORITY_LIST)
+  {
     if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_jar(&mut jar) {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = file_stem.clone();
@@ -250,7 +230,10 @@ pub async fn get_mod_info_from_dir(
     .to_string();
   let enabled = !dir_name.ends_with(".disabled");
 
-  for loader_type in build_priority_loader_type_list(prior_loader_type) {
+  for loader_type in prior_loader_type
+    .into_iter()
+    .chain(DEFAULT_MOD_LOADER_PRIORITY_LIST)
+  {
     if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_dir(path).await {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = dir_stem.clone();
