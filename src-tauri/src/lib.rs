@@ -15,7 +15,7 @@ use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
 use account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
-use instance::helpers::mods::common::LocalModTranslationsCache;
+use instance::helpers::mods::translation::LocalModTranslationsCache;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
