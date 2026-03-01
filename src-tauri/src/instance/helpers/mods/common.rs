@@ -33,14 +33,14 @@ pub trait LocalModMetadataParser {
 
   async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<Self::Metadata>;
 
-  fn wrap_icon_from_jar<R: Read + Seek>(
+  fn get_icon_from_jar<R: Read + Seek>(
     _meta: &mut Self::Metadata,
     _jar: &mut ZipArchive<R>,
   ) -> ImageWrapper {
     ImageWrapper::default()
   }
 
-  async fn wrap_icon_from_dir(_meta: &mut Self::Metadata, _dir_path: &Path) -> ImageWrapper {
+  async fn get_icon_from_dir(_meta: &mut Self::Metadata, _dir_path: &Path) -> ImageWrapper {
     ImageWrapper::default()
   }
 }
@@ -92,18 +92,13 @@ impl LocalModMetadataParser for FallbackManifestModMetadataParser {
   }
 }
 
-type ParserFuncTuple = (
-  fn(&mut ZipArchive<Cursor<Vec<u8>>>) -> Option<LocalModInfo>,
-  for<'a> fn(&'a Path) -> Pin<Box<dyn Future<Output = Option<LocalModInfo>> + Send + 'a>>,
-);
-
 fn parse_mod_info_from_jar<P>(jar: &mut ZipArchive<Cursor<Vec<u8>>>) -> Option<LocalModInfo>
 where
   P: LocalModMetadataParser,
   LocalModInfo: From<P::Metadata>,
 {
   let mut meta = P::get_mod_metadata_from_jar(jar).ok()?;
-  let icon_src = P::wrap_icon_from_jar(&mut meta, jar);
+  let icon_src = P::get_icon_from_jar(&mut meta, jar);
   let mut local_mod_info = LocalModInfo::from(meta);
   local_mod_info.icon_src = icon_src;
   Some(local_mod_info)
@@ -119,86 +114,92 @@ where
 {
   Box::pin(async move {
     let mut meta = P::get_mod_metadata_from_dir(dir_path).await.ok()?;
-    let icon_src = P::wrap_icon_from_dir(&mut meta, dir_path).await;
+    let icon_src = P::get_icon_from_dir(&mut meta, dir_path).await;
     let mut local_mod_info = LocalModInfo::from(meta);
     local_mod_info.icon_src = icon_src;
     Some(local_mod_info)
   })
 }
 
-const DEFAULT_MOD_LOADER_PRIORITY_LIST: [(ModLoaderType, ParserFuncTuple); 6] = [
-  (
-    ModLoaderType::Fabric,
-    (
-      parse_mod_info_from_jar::<fabric::FabricModMetadataParser>,
-      parse_mod_info_from_dir::<fabric::FabricModMetadataParser>,
-    ),
-  ),
-  (
-    ModLoaderType::Forge,
-    (
-      parse_mod_info_from_jar::<forge::ForgeModMetadataParser>,
-      parse_mod_info_from_dir::<forge::ForgeModMetadataParser>,
-    ),
-  ),
-  (
-    ModLoaderType::LegacyForge,
-    (
-      parse_mod_info_from_jar::<legacy_forge::LegacyForgeModMetadataParser>,
-      parse_mod_info_from_dir::<legacy_forge::LegacyForgeModMetadataParser>,
-    ),
-  ),
-  (
-    ModLoaderType::LiteLoader,
-    (
-      parse_mod_info_from_jar::<liteloader::LiteLoaderModMetadataParser>,
-      parse_mod_info_from_dir::<liteloader::LiteLoaderModMetadataParser>,
-    ),
-  ),
-  (
-    ModLoaderType::Quilt,
-    (
-      parse_mod_info_from_jar::<quilt::QuiltModMetadataParser>,
-      parse_mod_info_from_dir::<quilt::QuiltModMetadataParser>,
-    ),
-  ),
-  (
-    ModLoaderType::Unknown,
-    (
-      parse_mod_info_from_jar::<FallbackManifestModMetadataParser>,
-      parse_mod_info_from_dir::<FallbackManifestModMetadataParser>,
-    ),
-  ),
+const DEFAULT_MOD_LOADER_PRIORITY_LIST: [ModLoaderType; 6] = [
+  ModLoaderType::Fabric,
+  ModLoaderType::Forge,
+  ModLoaderType::LegacyForge,
+  ModLoaderType::LiteLoader,
+  ModLoaderType::Quilt,
+  ModLoaderType::Unknown,
 ];
 
+#[async_trait]
+trait ModLoaderTypeParserDispatch {
+  fn parse_mod_info_from_jar(self, jar: &mut ZipArchive<Cursor<Vec<u8>>>) -> Option<LocalModInfo>;
+  async fn parse_mod_info_from_dir(self, dir_path: &Path) -> Option<LocalModInfo>;
+}
+
+#[async_trait]
+impl ModLoaderTypeParserDispatch for ModLoaderType {
+  fn parse_mod_info_from_jar(self, jar: &mut ZipArchive<Cursor<Vec<u8>>>) -> Option<LocalModInfo> {
+    match self {
+      ModLoaderType::Fabric => parse_mod_info_from_jar::<fabric::FabricModMetadataParser>(jar),
+      ModLoaderType::Forge | ModLoaderType::NeoForge => {
+        parse_mod_info_from_jar::<forge::ForgeModMetadataParser>(jar)
+      }
+      ModLoaderType::LegacyForge => {
+        parse_mod_info_from_jar::<legacy_forge::LegacyForgeModMetadataParser>(jar)
+      }
+      ModLoaderType::LiteLoader => {
+        parse_mod_info_from_jar::<liteloader::LiteLoaderModMetadataParser>(jar)
+      }
+      ModLoaderType::Quilt => parse_mod_info_from_jar::<quilt::QuiltModMetadataParser>(jar),
+      ModLoaderType::Unknown => parse_mod_info_from_jar::<FallbackManifestModMetadataParser>(jar),
+    }
+  }
+
+  async fn parse_mod_info_from_dir(self, dir_path: &Path) -> Option<LocalModInfo> {
+    match self {
+      ModLoaderType::Fabric => {
+        parse_mod_info_from_dir::<fabric::FabricModMetadataParser>(dir_path).await
+      }
+      ModLoaderType::Forge | ModLoaderType::NeoForge => {
+        parse_mod_info_from_dir::<forge::ForgeModMetadataParser>(dir_path).await
+      }
+      ModLoaderType::LegacyForge => {
+        parse_mod_info_from_dir::<legacy_forge::LegacyForgeModMetadataParser>(dir_path).await
+      }
+      ModLoaderType::LiteLoader => {
+        parse_mod_info_from_dir::<liteloader::LiteLoaderModMetadataParser>(dir_path).await
+      }
+      ModLoaderType::Quilt => {
+        parse_mod_info_from_dir::<quilt::QuiltModMetadataParser>(dir_path).await
+      }
+      ModLoaderType::Unknown => {
+        parse_mod_info_from_dir::<FallbackManifestModMetadataParser>(dir_path).await
+      }
+    }
+  }
+}
+
 // first try to get metadata from target mod loader.
-fn build_priority_parser_list(loader_type: Option<ModLoaderType>) -> Vec<ParserFuncTuple> {
+fn build_priority_loader_type_list(loader_type: Option<ModLoaderType>) -> Vec<ModLoaderType> {
   let preferred_loader = match loader_type {
     Some(ModLoaderType::NeoForge) => Some(ModLoaderType::Forge),
     Some(ModLoaderType::Unknown) | None => None,
     other => other,
   };
-  let mut priority_list = DEFAULT_MOD_LOADER_PRIORITY_LIST
-    .iter()
-    .map(|(loader_type, parser)| (loader_type.clone(), *parser))
-    .collect::<Vec<_>>();
-  if let Some(loader) = preferred_loader {
-    let mut target = Vec::with_capacity(1);
-    priority_list.retain(|(loader_type, parser)| {
-      if *loader_type == loader {
-        target.push(*parser);
-        false
-      } else {
-        true
-      }
-    });
-    target.extend(priority_list.into_iter().map(|(_, parser)| parser));
-    return target;
+
+  let mut result = Vec::with_capacity(DEFAULT_MOD_LOADER_PRIORITY_LIST.len());
+  let mut fallbacks = Vec::with_capacity(DEFAULT_MOD_LOADER_PRIORITY_LIST.len());
+
+  for loader in DEFAULT_MOD_LOADER_PRIORITY_LIST {
+    if Some(loader) == preferred_loader {
+      result.push(loader);
+    } else {
+      fallbacks.push(loader);
+    }
   }
-  priority_list
-    .into_iter()
-    .map(|(_, parser)| parser)
-    .collect()
+
+  result.extend(fallbacks);
+  result
 }
 
 pub async fn get_mod_info_from_jar(
@@ -219,8 +220,8 @@ pub async fn get_mod_info_from_jar(
   let enabled = !file_name.ends_with(".disabled");
   let mut jar = ZipArchive::new(file)?;
 
-  for parser in build_priority_parser_list(prior_loader_type) {
-    if let Some(mut local_mod_info) = (parser.0)(&mut jar) {
+  for loader_type in build_priority_loader_type_list(prior_loader_type) {
+    if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_jar(&mut jar) {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = file_stem.clone();
       local_mod_info.file_path = file_path.clone();
@@ -249,8 +250,8 @@ pub async fn get_mod_info_from_dir(
     .to_string();
   let enabled = !dir_name.ends_with(".disabled");
 
-  for parser in build_priority_parser_list(prior_loader_type) {
-    if let Some(mut local_mod_info) = (parser.1)(path).await {
+  for loader_type in build_priority_loader_type_list(prior_loader_type) {
+    if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_dir(path).await {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = dir_stem.clone();
       local_mod_info.file_path = path.to_path_buf();

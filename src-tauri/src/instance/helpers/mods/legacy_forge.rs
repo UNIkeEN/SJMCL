@@ -77,7 +77,7 @@ impl LocalModMetadataParser for LegacyForgeModMetadataParser {
     Ok(meta.remove(0))
   }
 
-  fn wrap_icon_from_jar<R: Read + Seek>(
+  fn get_icon_from_jar<R: Read + Seek>(
     meta: &mut Self::Metadata,
     jar: &mut ZipArchive<R>,
   ) -> ImageWrapper {
@@ -90,7 +90,7 @@ impl LocalModMetadataParser for LegacyForgeModMetadataParser {
     ImageWrapper::default()
   }
 
-  async fn wrap_icon_from_dir(meta: &mut Self::Metadata, dir_path: &Path) -> ImageWrapper {
+  async fn get_icon_from_dir(meta: &mut Self::Metadata, dir_path: &Path) -> ImageWrapper {
     if let Some(icon) = meta.logo_file.as_deref() {
       return load_image_from_dir_async(&dir_path.join(icon))
         .await

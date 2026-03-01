@@ -190,7 +190,7 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
     Ok(meta)
   }
 
-  fn wrap_icon_from_jar<R: Read + Seek>(
+  fn get_icon_from_jar<R: Read + Seek>(
     meta: &mut Self::Metadata,
     _jar: &mut ZipArchive<R>,
   ) -> ImageWrapper {
@@ -201,7 +201,7 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
       .unwrap_or_default()
   }
 
-  async fn wrap_icon_from_dir(meta: &mut Self::Metadata, _dir_path: &Path) -> ImageWrapper {
+  async fn get_icon_from_dir(meta: &mut Self::Metadata, _dir_path: &Path) -> ImageWrapper {
     meta
       .valid_logo_file
       .take()
