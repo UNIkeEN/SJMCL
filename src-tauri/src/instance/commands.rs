@@ -917,7 +917,7 @@ pub fn create_launch_desktop_shortcut(
   #[cfg(any(target_os = "windows", target_os = "linux"))]
   let icon_path = {
     use crate::instance::helpers::misc::create_launch_shortcut_icon;
-    Some(create_launch_shortcut_icon(&app, instance, &icon_src)?)
+    create_launch_shortcut_icon(&app, instance, &icon_src).ok()
   };
   #[cfg(target_os = "macos")]
   let icon_path = {
