@@ -1,6 +1,6 @@
 {
   "name": "sjmcl",
-  "version": "0.8.3",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
