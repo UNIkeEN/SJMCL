@@ -59,7 +59,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
-use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
@@ -915,27 +914,18 @@ pub fn create_launch_desktop_shortcut(
     .replace("+", "%20");
   let url = format!("sjmcl://launch?{}", encoded_id);
 
-  let mut img = if icon_src == "custom" {
-    image::ImageReader::open(instance.version_path.join("icon"))?
-      .with_guessed_format()?
-      .decode()?
-  } else {
-    let asset = app.asset_resolver().get(icon_src).unwrap();
-    image::load_from_memory(asset.bytes())?
+  #[cfg(any(target_os = "windows", target_os = "linux"))]
+  let icon_path = {
+    use crate::instance::helpers::misc::create_launch_shortcut_icon;
+    Some(create_launch_shortcut_icon(&app, instance, &icon_src)?)
   };
-  img = img.resize_exact(128, 128, image::imageops::FilterType::Nearest);
-  let appdata_path = app.path().resolve("", BaseDirectory::AppData)?;
-  let ico = image::open(appdata_path.join("assets/icons/icon-sq.png"))?;
-  image::imageops::overlay(&mut img, &ico, 80, 80);
-  let extension = if cfg!(target_os = "windows") {
-    "ico"
-  } else {
-    "png"
+  #[cfg(target_os = "macos")]
+  let icon_path = {
+    let _ = icon_src; // explicitly consume to avoid warning
+    None
   };
-  let icon_path = instance.version_path.join(format!("icon.{}", extension));
-  img.save(&icon_path)?;
 
-  create_url_shortcut(&app, name, url, Some(icon_path))
+  create_url_shortcut(&app, name, url, icon_path)
     .map_err(|_| InstanceError::ShortcutCreationFailed)?;
 
   Ok(())
