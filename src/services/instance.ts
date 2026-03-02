@@ -403,7 +403,7 @@ export class InstanceService {
   /**
    * CREATE a desktop shortcut for launching a specific instance.
    * @param {string} instanceId - The instance ID for which to create the shortcut.
-   * @param {string} iconSrc - Local file path of the shortcut icon.
+   * @param {string} iconSrc - Instance icon src (file path or base64), will be a component of shortcut icon.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")

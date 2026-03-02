@@ -506,7 +506,7 @@ pub async fn retrieve_local_mod_list(
       .ok_or(InstanceError::InstanceNotFoundByID)?;
 
     if instance.mod_loader.loader_type != ModLoaderType::Unknown {
-      Some(instance.mod_loader.loader_type.clone())
+      Some(instance.mod_loader.loader_type)
     } else {
       None
     }
@@ -529,7 +529,6 @@ pub async fn retrieve_local_mod_list(
     std::thread::available_parallelism().unwrap().into(),
   ));
   for path in mod_paths {
-    let expected_loader_type = expected_loader_type.clone();
     let permit = semaphore
       .clone()
       .acquire_owned()
@@ -550,7 +549,6 @@ pub async fn retrieve_local_mod_list(
     // mod information detection from folders is only used for debugging.
     let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
     for path in mod_paths {
-      let expected_loader_type = expected_loader_type.clone();
       let permit = semaphore
         .clone()
         .acquire_owned()
@@ -924,8 +922,8 @@ pub fn create_launch_desktop_shortcut(
 
   #[cfg(any(target_os = "windows", target_os = "linux"))]
   let icon_path = {
-    use crate::instance::helpers::misc::create_launch_shortcut_icon;
-    create_launch_shortcut_icon(&app, instance, &icon_src).ok()
+    use crate::instance::helpers::misc::create_instance_shortcut_icon;
+    create_instance_shortcut_icon(&app, instance, &icon_src).ok()
   };
   #[cfg(target_os = "macos")]
   let icon_path = {
@@ -978,7 +976,7 @@ pub async fn create_instance(
     version: game.id.clone(),
     version_path: version_path.clone(),
     mod_loader: ModLoader {
-      loader_type: mod_loader.loader_type.clone(),
+      loader_type: mod_loader.loader_type,
       status: if matches!(
         mod_loader.loader_type,
         ModLoaderType::Unknown | ModLoaderType::Fabric
@@ -1292,7 +1290,7 @@ pub async fn change_mod_loader(
     .ok_or(InstanceError::NotSupportChangeModLoader)?;
 
   let mod_loader = ModLoader {
-    loader_type: new_mod_loader.loader_type.clone(),
+    loader_type: new_mod_loader.loader_type,
     version: new_mod_loader.version.clone(),
     status: if matches!(
       new_mod_loader.loader_type,
