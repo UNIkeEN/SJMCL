@@ -344,7 +344,10 @@ pub fn create_instance_shortcut_icon(
       .with_guessed_format()?
       .decode()?
   } else {
-    let asset = app.asset_resolver().get(icon_src.to_string()).unwrap();
+    let asset = app
+      .asset_resolver()
+      .get(icon_src.to_string())
+      .ok_or_else(|| crate::error::SJMCLError(format!("Icon asset not found: {}", icon_src)))?;
     image::load_from_memory(asset.bytes())?
   };
 
