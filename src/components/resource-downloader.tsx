@@ -217,6 +217,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
         <Grid
           templateColumns="repeat(4, 1fr)"
           w={{ base: "lg", lg: "xl", xl: "xl" }}
+          maxW="100%"
         >
           <HStack spacing={1}>
             <LuUpload />
