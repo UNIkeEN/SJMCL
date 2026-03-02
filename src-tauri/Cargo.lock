@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "SJMCL"
-version = "0.8.3"
+version = "1.0.0-beta.1"
 dependencies = [
  "async-speed-limit",
  "async-trait",
