@@ -76,22 +76,23 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      InstanceService.createLaunchDesktopShortcut(instanceId).then(
-        (response) => {
-          if (response.status === "success") {
-            toast({
-              title: response.message,
-              status: "success",
-            });
-          } else {
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-          }
+      InstanceService.createLaunchDesktopShortcut(
+        instanceId,
+        summary.iconSrc
+      ).then((response) => {
+        if (response.status === "success") {
+          toast({
+            title: response.message,
+            status: "success",
+          });
+        } else {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
         }
-      );
+      });
     },
     [summary, toast, closeSharedModal, openGenericConfirmDialog, t]
   );

@@ -90,6 +90,39 @@ pub fn get_instance_subdir_path_by_id(
   get_instance_subdir_paths(app, instance, &[directory_type]).and_then(|mut paths| paths.pop())
 }
 
+#[cfg(any(target_os = "windows", target_os = "linux"))]
+pub fn create_launch_shortcut_icon(
+  app: &AppHandle,
+  instance: &Instance,
+  icon_src: &str,
+) -> SJMCLResult<PathBuf> {
+  use crate::utils::fs::get_app_resource_filepath;
+
+  let mut img = if icon_src == "custom" {
+    image::ImageReader::open(instance.version_path.join("icon"))?
+      .with_guessed_format()?
+      .decode()?
+  } else {
+    let asset = app.asset_resolver().get(icon_src.to_string()).unwrap();
+    image::load_from_memory(asset.bytes())?
+  };
+
+  // combine instance icon with square overlay of the launcher icon's variant. (see #448)
+  img = img.resize_exact(128, 128, image::imageops::FilterType::Nearest);
+  let overlay = get_app_resource_filepath(app, "assets/icons/variants/square.png")?;
+  let square = image::open(overlay)?.resize_exact(42, 42, image::imageops::FilterType::Lanczos3);
+  image::imageops::overlay(&mut img, &square, 80, 80);
+
+  #[cfg(target_os = "windows")]
+  let icon_name = "icon.ico";
+  #[cfg(target_os = "linux")]
+  let icon_name = "icon.png";
+
+  let icon_path = instance.version_path.join(icon_name);
+  img.save(&icon_path)?;
+  Ok(icon_path)
+}
+
 pub fn unify_instance_name(src_version_path: &PathBuf, tgt_name: &String) -> SJMCLResult<PathBuf> {
   if !sanitize_filename::is_sanitized(tgt_name) {
     return Err(InstanceError::InvalidNameError.into());
