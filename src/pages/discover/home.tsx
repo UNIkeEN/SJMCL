@@ -7,6 +7,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  Image,
   SimpleGrid,
   Skeleton,
   SkeletonCircle,
@@ -132,14 +133,16 @@ const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
         )}
       </HStack>
       {banner ? (
-        <Box
-          h={bannerHeight}
-          position="relative"
-          overflow="hidden"
-          bgImage={`url(${banner})`}
-          bgSize="cover"
-          bgPos="center"
-        />
+        <Box h={bannerHeight} position="relative" overflow="hidden">
+          <Image
+            src={banner}
+            alt={post?.title || "news-banner"}
+            w="100%"
+            h="100%"
+            objectFit="cover"
+            loading="lazy"
+          />
+        </Box>
       ) : (
         <Box
           h={bannerHeight}
