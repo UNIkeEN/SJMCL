@@ -120,6 +120,22 @@ const InstanceSettingsPage = () => {
           ),
         },
         {
+          title: t("InstanceDetailsLayout.secMenu.star"),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={Boolean(summary?.starred)}
+              onChange={(event) => {
+                handleUpdateInstanceConfig("starred", event.target.checked);
+              }}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      items: [
+        {
           title: t("InstanceSettingsPage.applySettings"),
           children: (
             <Switch
