@@ -37,6 +37,7 @@ const IntelligenceSettingsPage = () => {
   const [apiKey, setApiKey] = useState<string>(
     intelligenceConfigs.model.apiKey || ""
   );
+  const [isApiKeyEditing, setIsApiKeyEditing] = useState<boolean>(false);
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [model, setModel] = useState<string | null>(
     intelligenceConfigs.model.model || null
@@ -45,6 +46,11 @@ const IntelligenceSettingsPage = () => {
   const [modelAvailability, setModelAvailability] = useState<boolean | null>(
     null
   );
+
+  const maskedApiKey = useMemo(() => {
+    if (!apiKey) return "";
+    return "*".repeat(Math.max(2, apiKey.length));
+  }, [apiKey]);
 
   const SparklesIconBox = () => {
     const bg = useColorModeValue(
@@ -220,11 +226,16 @@ const IntelligenceSettingsPage = () => {
                     size="xs"
                     w="60%"
                     focusBorderColor={`${primaryColor}.500`}
-                    value={apiKey}
+                    value={isApiKeyEditing ? apiKey : maskedApiKey}
                     onChange={(event) => {
+                      if (!isApiKeyEditing) return;
                       setApiKey(event.target.value);
                     }}
+                    onFocus={() => {
+                      setIsApiKeyEditing(true);
+                    }}
                     onBlur={() => {
+                      setIsApiKeyEditing(false);
                       update("intelligence.model.apiKey", apiKey);
                     }}
                   />

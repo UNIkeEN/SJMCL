@@ -1,4 +1,5 @@
 import {
+  Box,
   Center,
   Flex,
   useColorMode,
@@ -8,7 +9,7 @@ import {
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import AgentHostess from "@/components/agent-hostess";
 import AdvancedCard from "@/components/common/advanced-card";
@@ -17,6 +18,7 @@ import HeadNavBar from "@/components/head-navbar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { isDev } from "@/utils/env";
 
 interface MainLayoutProps {
@@ -26,13 +28,27 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const { config, update } = useLauncherConfig();
+  const { openSharedModal } = useSharedModals();
   const { colorMode } = useColorMode();
   const isDarkenBg =
     colorMode === "dark" && config.appearance.background.autoDarken;
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
+  const [isAgentChatOpen, setIsAgentChatOpen] = useState(false);
+  const agentChatFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isCheckedRunCount = useRef(false);
   const isStandAlone = router.pathname.startsWith("/standalone");
+  const isLaunchPage = router.pathname === "/launch";
+  const agentChatPanelRatio = 0.35;
+  const agentChatPanelWidth = `${agentChatPanelRatio * 100}vw`;
+  const agentChatPanelTransform =
+    isLaunchPage && isAgentChatOpen ? "translateX(0)" : "translateX(-100%)";
+  const launchContentOffset =
+    isLaunchPage && isAgentChatOpen ? agentChatPanelWidth : "0px";
+  const headNavOffset =
+    isLaunchPage && isAgentChatOpen
+      ? `${(agentChatPanelRatio * 100) / 2}vw`
+      : "0px";
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -107,6 +123,28 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     }
   }, [config.appearance.font.fontFamily]);
 
+  // Bridge MiuChat iframe events to top-level shared modal system.
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const data = event.data;
+      if (data?.type !== "sjmcl:miuchat-launch-instance") {
+        return;
+      }
+
+      const instanceId = data?.payload?.instanceId;
+      if (typeof instanceId !== "string" || !instanceId) {
+        return;
+      }
+
+      openSharedModal("launch", { instanceId });
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [openSharedModal]);
+
   // update font size to body CSS by config.
   useEffect(() => {
     const root = document.documentElement;
@@ -149,6 +187,47 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     "var(--chakra-colors-gray-900)"
   );
 
+  const notifyAgentChatTextVisibility = useCallback((visible: boolean) => {
+    agentChatFrameRef.current?.contentWindow?.postMessage(
+      {
+        type: "sjmcl:miuchat-text-visibility",
+        payload: { visible },
+      },
+      "*"
+    );
+  }, []);
+
+  const openAgentChatPanel = () => {
+    setIsAgentChatOpen(true);
+    setTimeout(() => {
+      notifyAgentChatTextVisibility(true);
+    }, 180);
+  };
+
+  const closeAgentChatPanel = useCallback(() => {
+    notifyAgentChatTextVisibility(false);
+    setIsAgentChatOpen(false);
+  }, [notifyAgentChatTextVisibility]);
+
+  // When MiuChat is open, clicking anywhere on the right window area closes it.
+  useEffect(() => {
+    if (!isLaunchPage || !isAgentChatOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const panelWidth = window.innerWidth * agentChatPanelRatio;
+      if (event.clientX > panelWidth) {
+        closeAgentChatPanel();
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isLaunchPage, isAgentChatOpen, closeAgentChatPanel]);
+
   if (isStandAlone) {
     return (
       <div
@@ -182,11 +261,51 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       bgBlendMode={isDarkenBg ? "darken" : "normal"}
       style={getGlobalExtraStyle(config)}
     >
-      <HeadNavBar />
-      {router.pathname === "/launch" ? (
+      <HeadNavBar leftOffset={headNavOffset} />
+      {/* Keep iframe mounted to avoid reloading MiuChat when switching pages. */}
+      <Flex
+        position="fixed"
+        left={0}
+        top={0}
+        h="100vh"
+        w={agentChatPanelWidth}
+        overflow="hidden"
+        transform={agentChatPanelTransform}
+        transition="transform 0.35s ease"
+        borderRightWidth={1}
+        borderRightColor={
+          isLaunchPage && isAgentChatOpen ? "blackAlpha.300" : "transparent"
+        }
+        zIndex={2}
+        willChange="transform"
+      >
+        <Box
+          as="iframe"
+          ref={agentChatFrameRef}
+          src="/standalone/agent-chat"
+          border="none"
+          w="100%"
+          h="100%"
+          onLoad={() => {
+            notifyAgentChatTextVisibility(isAgentChatOpen);
+          }}
+        />
+      </Flex>
+
+      {isLaunchPage ? (
         <>
-          <AgentHostess />
-          {children}
+          <Flex
+            flex={1}
+            minW={0}
+            position="relative"
+            ml={launchContentOffset}
+            transition="margin-left 0.35s ease"
+          >
+            {!isAgentChatOpen && (
+              <AgentHostess onToggleAgentChat={openAgentChatPanel} />
+            )}
+            {children}
+          </Flex>
         </>
       ) : (
         <AdvancedCard

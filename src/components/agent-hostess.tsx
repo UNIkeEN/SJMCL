@@ -5,13 +5,14 @@ import { useTranslation } from "react-i18next";
 import { LuMessageCircleMore, LuSettings } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
-import { createWindow } from "@/utils/window";
 import AdvancedCard from "./common/advanced-card";
 
-interface AgentHostessProps {}
+interface AgentHostessProps {
+  onToggleAgentChat: () => void;
+}
 
 const AGENT_HOSTESS_SRC = "/images/agent/miuxi_2d.png";
-const AgentHostess: FC<AgentHostessProps> = ({}) => {
+const AgentHostess: FC<AgentHostessProps> = ({ onToggleAgentChat }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { config } = useLauncherConfig();
@@ -21,7 +22,7 @@ const AgentHostess: FC<AgentHostessProps> = ({}) => {
   const [isOnHover, setIsOnHover] = useState(false);
   const onClick = () => {
     if (agentEnabled) {
-      createWindow("agent_chat", "/standalone/agent-chat");
+      onToggleAgentChat();
     } else {
       router.push("/settings/intelligence");
     }

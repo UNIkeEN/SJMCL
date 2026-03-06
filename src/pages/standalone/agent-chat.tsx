@@ -49,6 +49,7 @@ const AgentChatContent: React.FC = () => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isTextVisible, setIsTextVisible] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
   const toast = useToast();
@@ -73,6 +74,20 @@ const AgentChatContent: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const handleTextVisibility = (event: MessageEvent) => {
+      if (event.data?.type !== "sjmcl:miuchat-text-visibility") {
+        return;
+      }
+      setIsTextVisible(Boolean(event.data?.payload?.visible));
+    };
+
+    window.addEventListener("message", handleTextVisibility);
+    return () => {
+      window.removeEventListener("message", handleTextVisibility);
+    };
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -115,6 +130,28 @@ const AgentChatContent: React.FC = () => {
           return updated;
         });
       });
+
+      // Some providers may not emit stream chunks. Fallback to non-stream response.
+      if (!currentResponse.trim()) {
+        const fallbackResp =
+          await IntelligenceService.fetchLLMChatResponse(newMessages);
+        if (
+          requestIdRef.current === currentRequestId &&
+          fallbackResp.status === "success"
+        ) {
+          currentResponse = fallbackResp.data || "";
+          setMessages((prev) => {
+            const updated = [...prev];
+            if (updated.length > 0) {
+              updated[updated.length - 1] = {
+                ...updated[updated.length - 1],
+                content: currentResponse,
+              };
+            }
+            return updated;
+          });
+        }
+      }
     } catch (error) {
       if (requestIdRef.current !== currentRequestId) return;
       console.error(error);
@@ -215,9 +252,19 @@ const AgentChatContent: React.FC = () => {
             message: t("AgentChatPage.functionCall.launchInstance.fail"),
           };
         } else {
-          openSharedModal("launch", {
-            instanceId: params.id,
-          });
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage(
+              {
+                type: "sjmcl:miuchat-launch-instance",
+                payload: { instanceId: params.id },
+              },
+              "*"
+            );
+          } else {
+            openSharedModal("launch", {
+              instanceId: params.id,
+            });
+          }
           return {
             message: t("AgentChatPage.functionCall.launchInstance.success"),
           };
@@ -311,6 +358,28 @@ const AgentChatContent: React.FC = () => {
             return updated;
           });
         });
+
+        // Some providers may not emit stream chunks. Fallback to non-stream response.
+        if (!currentResponse.trim()) {
+          const fallbackResp =
+            await IntelligenceService.fetchLLMChatResponse(newHistory);
+          if (
+            requestIdRef.current === currentRequestId &&
+            fallbackResp.status === "success"
+          ) {
+            currentResponse = fallbackResp.data || "";
+            setMessages((prev) => {
+              const updated = [...prev];
+              if (updated.length > 0) {
+                updated[updated.length - 1] = {
+                  ...updated[updated.length - 1],
+                  content: currentResponse,
+                };
+              }
+              return updated;
+            });
+          }
+        }
       } catch (e) {
         if (requestIdRef.current !== currentRequestId) return;
         console.error(e);
@@ -370,15 +439,29 @@ const AgentChatContent: React.FC = () => {
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const inputShellBg = useColorModeValue("gray.50", "gray.800");
   const inputShellBorder = useColorModeValue("gray.200", "gray.700");
+  const placeholderColor = useColorModeValue("gray.400", "gray.500");
+  const headerBg = useColorModeValue("white", "gray.800");
+  const inputBg = useColorModeValue("white", "gray.800");
 
   let filteredMessages = messages.filter(
     (msg) => msg.role !== "system" && msg.content.trim()
   );
   const canSend = input.trim().length > 0;
   const isBusy = isLoading || hasExecutingCall();
+  const textOpacity = isTextVisible ? 1 : 0;
 
   return (
-    <Flex direction="column" h="100vh" bg={bg}>
+    <Flex
+      direction="column"
+      h="100vh"
+      bg={bg}
+      sx={{
+        "p, span, li, code, h1, h2, h3, h4, h5, h6": {
+          opacity: textOpacity,
+          transition: "opacity 0.2s ease",
+        },
+      }}
+    >
       {/* Header */}
       <Flex
         px={4}
@@ -387,7 +470,7 @@ const AgentChatContent: React.FC = () => {
         borderColor={borderColor}
         align="center"
         justify="space-between"
-        bg={useColorModeValue("white", "gray.800")}
+        bg={headerBg}
       >
         <HStack>
           <MiuChatLogoTitle />
@@ -494,12 +577,7 @@ const AgentChatContent: React.FC = () => {
       </Flex>
 
       {/* Input */}
-      <Box
-        p={4}
-        bg={useColorModeValue("white", "gray.800")}
-        borderTopWidth={1}
-        borderColor={borderColor}
-      >
+      <Box p={4} bg={inputBg} borderTopWidth={1} borderColor={borderColor}>
         <Box
           bg={inputShellBg}
           borderWidth={1}
@@ -516,8 +594,9 @@ const AgentChatContent: React.FC = () => {
               variant="unstyled"
               resize="none"
               minH="60px"
+              color={isTextVisible ? undefined : "transparent"}
               _placeholder={{
-                color: useColorModeValue("gray.400", "gray.500"),
+                color: isTextVisible ? placeholderColor : "transparent",
               }}
             />
             <HStack justify="space-between" align="center">
