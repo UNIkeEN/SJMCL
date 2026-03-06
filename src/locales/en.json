@@ -631,6 +631,7 @@
       "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
       "forge-libraries": "Forge Libraries",
+      "optifine-libraries": "OptiFine Libraries",
       "launcher-update": "Update Launcher",
       "mojang-java": "Java {{param}} Runtime"
     }
@@ -2503,6 +2504,23 @@
             "MAIN_CLASS_NOT_FOUND": "Main class not found in the mod loader version",
             "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process",
             "LOADER_INSTALLER_NOT_FOUND": "Mod loader installer file not found"
+          }
+        }
+      },
+      "finishOptifineLoaderInstall": {
+        "loading": "Installing OptiFine for {{instanceName}}",
+        "success": "OptiFine installed successfully",
+        "error": {
+          "title": "Failed to install OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "INSTALLATION_DUPLICATED": "Another installation process is already in progress",
+            "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process",
+            "LOADER_INSTALLER_NOT_FOUND": "OptiFine installer file not found",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Failed to parse OptiFine version information",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "NO_SUITABLE_JAVA": "No suitable Java runtime found",
+            "SELECTED_JAVA_UNAVAILABLE": "The selected Java runtime is unavailable"
           }
         }
       },
