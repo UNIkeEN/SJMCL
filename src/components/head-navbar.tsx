@@ -28,11 +28,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
 
-interface HeadNavBarProps {
-  leftOffset?: string;
-}
-
-const HeadNavBar = ({ leftOffset = "0px" }: HeadNavBarProps) => {
+const HeadNavBar = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
@@ -87,18 +83,14 @@ const HeadNavBar = ({ leftOffset = "0px" }: HeadNavBarProps) => {
   };
 
   return (
-    <Flex
-      justify="center"
-      p={4}
-      transform={`translateX(${leftOffset})`}
-      transition="transform 0.35s ease"
-    >
+    <Flex justify="center" p={4}>
       <AdvancedCard
         level="back"
         pl={8}
         pr={isDownloadIndicatorShown ? 4 : 8}
         py={2}
         className={`animated-card ${isAnimating ? "animate" : ""}`}
+        borderRadius="2xl"
       >
         <HStack spacing={4} h="100%">
           <TitleShort />

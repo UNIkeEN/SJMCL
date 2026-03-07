@@ -7,19 +7,17 @@ import {
   Spinner,
   Text,
   Textarea,
+  VStack,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuPause, LuSend, LuTrash2 } from "react-icons/lu";
+import { LuPause, LuSend, LuX } from "react-icons/lu";
 import MarkdownContainer from "@/components/common/markdown-container";
 import { MiuChatLogoTitle } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
-import {
-  FunctionCallProvider,
-  useFunctionCallActions,
-} from "@/contexts/function-call-context";
+import { useFunctionCallActions } from "@/contexts/function-call-context";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { ChatMessage } from "@/models/intelligence";
@@ -31,13 +29,18 @@ import { InstanceService } from "@/services/instance";
 import { IntelligenceService } from "@/services/intelligence";
 import { FunctionCallMatch, findFunctionCalls } from "@/utils/function-call";
 import { base64ImgSrc, formatPrintable } from "@/utils/string";
+import AdvancedCard from "./common/advanced-card";
 
 const AGENT_AVATAR_SRC = "/images/agent/miuxi_px_avatar.png";
 
-const AgentChatContent: React.FC = () => {
+interface AgentChatProps {
+  onAgentChatPanelClose: () => void;
+}
+
+const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   const { t, i18n } = useTranslation();
   const { config } = useLauncherConfig();
-  const { getPlayerList, selectedPlayer } = useGlobalData();
+  const { selectedPlayer } = useGlobalData();
   const primaryColor = config.appearance.theme.primaryColor;
 
   // Initialize with system prompt
@@ -49,18 +52,12 @@ const AgentChatContent: React.FC = () => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isTextVisible, setIsTextVisible] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
   const toast = useToast();
   const { openSharedModal } = useSharedModals();
   const { getCallState, setCallState, hasExecutingCall } =
     useFunctionCallActions();
-
-  useEffect(() => {
-    getPlayerList(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const messagesRef = useRef(messages);
   useEffect(() => {
@@ -68,26 +65,17 @@ const AgentChatContent: React.FC = () => {
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    const handleTextVisibility = (event: MessageEvent) => {
-      if (event.data?.type !== "sjmcl:miuchat-text-visibility") {
-        return;
-      }
-      setIsTextVisible(Boolean(event.data?.payload?.visible));
-    };
-
-    window.addEventListener("message", handleTextVisibility);
-    return () => {
-      window.removeEventListener("message", handleTextVisibility);
-    };
-  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -252,19 +240,9 @@ const AgentChatContent: React.FC = () => {
             message: t("AgentChatPage.functionCall.launchInstance.fail"),
           };
         } else {
-          if (window.parent && window.parent !== window) {
-            window.parent.postMessage(
-              {
-                type: "sjmcl:miuchat-launch-instance",
-                payload: { instanceId: params.id },
-              },
-              "*"
-            );
-          } else {
-            openSharedModal("launch", {
-              instanceId: params.id,
-            });
-          }
+          openSharedModal("launch", {
+            instanceId: params.id,
+          });
           return {
             message: t("AgentChatPage.functionCall.launchInstance.success"),
           };
@@ -433,14 +411,11 @@ const AgentChatContent: React.FC = () => {
     }
   }, [isLoading, messages, handleFunctionCall, getCallState]);
 
-  const bg = useColorModeValue("gray.50", "gray.900");
   const msgBgUser = useColorModeValue("blue.500", "blue.600");
   const msgBgBot = "transparent";
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const inputShellBg = useColorModeValue("gray.50", "gray.800");
   const inputShellBorder = useColorModeValue("gray.200", "gray.700");
-  const placeholderColor = useColorModeValue("gray.400", "gray.500");
-  const headerBg = useColorModeValue("white", "gray.800");
   const inputBg = useColorModeValue("white", "gray.800");
 
   let filteredMessages = messages.filter(
@@ -448,137 +423,130 @@ const AgentChatContent: React.FC = () => {
   );
   const canSend = input.trim().length > 0;
   const isBusy = isLoading || hasExecutingCall();
-  const textOpacity = isTextVisible ? 1 : 0;
 
   return (
-    <Flex
-      direction="column"
-      h="100vh"
-      bg={bg}
+    <AdvancedCard
+      borderRadius="2xl"
+      h="100%"
+      w="100%"
+      p={2}
       sx={{
         "p, span, li, code, h1, h2, h3, h4, h5, h6": {
-          opacity: textOpacity,
           transition: "opacity 0.2s ease",
         },
       }}
     >
-      {/* Header */}
-      <Flex
-        px={4}
-        py={3}
-        borderBottomWidth={1}
-        borderColor={borderColor}
-        align="center"
-        justify="space-between"
-        bg={headerBg}
-      >
-        <HStack>
+      <VStack h="100%" w="100%">
+        <Flex w="100%" align="center" justify="space-between">
           <MiuChatLogoTitle />
-        </HStack>
-        <IconButton
-          icon={<LuTrash2 />}
-          aria-label="clear"
-          size="sm"
-          variant="ghost"
-          onClick={() => {
-            setIsLoading(false);
-            setInput("");
-            setMessages([
-              { role: "system", content: getChatSystemPrompt(i18n.language) },
-            ]);
-          }}
-        />
-      </Flex>
+          <IconButton
+            icon={<LuX />}
+            aria-label="agent-chat-close"
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setIsLoading(false);
+              setInput("");
+              onAgentChatPanelClose();
+            }}
+          />
+        </Flex>
 
-      {/* Messages */}
-      <Flex flex={1} overflowY="auto" direction="column" p={4} gap={4}>
-        {filteredMessages.length === 0 && (
-          <Flex
-            direction="column"
-            align="center"
-            justify="center"
-            h="100%"
-            color="gray.500"
-          >
-            <Image
-              boxSize="48px"
-              objectFit="cover"
-              src={AGENT_AVATAR_SRC}
-              alt="agent"
-              mb={4}
-            />
-            <Text>{t("AgentChatPage.description")}</Text>
-          </Flex>
-        )}
-        {filteredMessages.map((msg, i) => {
-          const originalIndex = messages.indexOf(msg);
-
-          return (
+        <Flex
+          ref={messagesContainerRef}
+          w="100%"
+          flex={1}
+          overflowY="auto"
+          direction="column"
+          gap={2}
+          fontSize="sm"
+        >
+          {filteredMessages.length === 0 && (
             <Flex
-              key={i}
-              direction={msg.role === "user" ? "row-reverse" : "row"}
-              gap={3}
-              width="100%"
+              direction="column"
+              align="center"
+              justify="center"
+              h="100%"
+              color="gray.500"
             >
-              {(msg.role !== "user" ||
-                (selectedPlayer && selectedPlayer.avatar)) &&
-                (i > 0 && filteredMessages[i - 1].role === msg.role ? (
+              <Image
+                boxSize="48px"
+                objectFit="cover"
+                src={AGENT_AVATAR_SRC}
+                alt="agent"
+                mb={4}
+              />
+              <Text>{t("AgentChatPage.description")}</Text>
+            </Flex>
+          )}
+          {filteredMessages.map((msg, i) => {
+            const originalIndex = messages.indexOf(msg);
+
+            return (
+              <Flex
+                key={i}
+                direction={msg.role === "user" ? "row-reverse" : "row"}
+                gap={3}
+                width="100%"
+              >
+                {(msg.role !== "user" ||
+                  (selectedPlayer && selectedPlayer.avatar)) &&
+                  (i > 0 && filteredMessages[i - 1].role === msg.role ? (
+                    <Box boxSize="32px" />
+                  ) : (
+                    <Image
+                      boxSize="32px"
+                      objectFit="cover"
+                      src={
+                        msg.role === "user"
+                          ? base64ImgSrc(selectedPlayer?.avatar!)
+                          : AGENT_AVATAR_SRC
+                      }
+                      alt={msg.role}
+                    />
+                  ))}
+                <Box
+                  bg={msg.role === "user" ? msgBgUser : msgBgBot}
+                  color={msg.role === "user" ? "white" : undefined}
+                  p={msg.role === "user" ? 2 : 0}
+                  borderRadius="lg"
+                  maxW={msg.role === "user" ? "80%" : undefined}
+                  w={msg.role === "user" ? undefined : "80%"}
+                  position="relative"
+                >
+                  <MarkdownContainer messageId={originalIndex}>
+                    {msg.content}
+                  </MarkdownContainer>
+                </Box>
+              </Flex>
+            );
+          })}
+          {isLoading &&
+            messages.length > 0 &&
+            messages[messages.length - 1].content === "" && (
+              <Flex direction="row" gap={3}>
+                {filteredMessages.length > 0 &&
+                filteredMessages[filteredMessages.length - 1].role ===
+                  "assistant" ? (
                   <Box boxSize="32px" />
                 ) : (
                   <Image
                     boxSize="32px"
                     objectFit="cover"
-                    src={
-                      msg.role === "user"
-                        ? base64ImgSrc(selectedPlayer?.avatar!)
-                        : AGENT_AVATAR_SRC
-                    }
-                    alt={msg.role}
+                    src={AGENT_AVATAR_SRC}
+                    alt="agent"
                   />
-                ))}
-              <Box
-                bg={msg.role === "user" ? msgBgUser : msgBgBot}
-                color={msg.role === "user" ? "white" : undefined}
-                p={2}
-                borderRadius="lg"
-                maxW={msg.role === "user" ? "80%" : undefined}
-                w={msg.role === "user" ? undefined : "80%"}
-                position="relative"
-              >
-                <MarkdownContainer messageId={originalIndex}>
-                  {msg.content}
-                </MarkdownContainer>
-              </Box>
-            </Flex>
-          );
-        })}
-        {isLoading &&
-          messages.length > 0 &&
-          messages[messages.length - 1].content === "" && (
-            <Flex direction="row" gap={3}>
-              {filteredMessages.length > 0 &&
-              filteredMessages[filteredMessages.length - 1].role ===
-                "assistant" ? (
-                <Box boxSize="32px" />
-              ) : (
-                <Image
-                  boxSize="32px"
-                  objectFit="cover"
-                  src={AGENT_AVATAR_SRC}
-                  alt="agent"
-                />
-              )}
-              <Box bg={msgBgBot} p={2} borderRadius="lg">
-                <Spinner size="sm" speed="0.8s" />
-              </Box>
-            </Flex>
-          )}
-        <div ref={messagesEndRef} />
-      </Flex>
+                )}
+                <Box bg={msgBgBot} p={2} borderRadius="lg">
+                  <Spinner size="sm" speed="0.8s" />
+                </Box>
+              </Flex>
+            )}
+        </Flex>
 
-      {/* Input */}
-      <Box p={4} bg={inputBg} borderTopWidth={1} borderColor={borderColor}>
+        {/* Input */}
         <Box
+          w="100%"
           bg={inputShellBg}
           borderWidth={1}
           borderColor={inputShellBorder}
@@ -594,13 +562,10 @@ const AgentChatContent: React.FC = () => {
               variant="unstyled"
               resize="none"
               minH="60px"
-              color={isTextVisible ? undefined : "transparent"}
-              _placeholder={{
-                color: isTextVisible ? placeholderColor : "transparent",
-              }}
+              size="sm"
             />
-            <HStack justify="space-between" align="center">
-              <Text className="secondary-text" fontSize="xs">
+            <HStack justify="space-between" align="end">
+              <Text className="secondary-text" fontSize="2xs">
                 {t("AgentChatPage.bottomWarning")}
               </Text>
               <IconButton
@@ -615,17 +580,8 @@ const AgentChatContent: React.FC = () => {
             </HStack>
           </Flex>
         </Box>
-      </Box>
-    </Flex>
+      </VStack>
+    </AdvancedCard>
   );
 };
-
-const AgentChatPage: React.FC = () => {
-  return (
-    <FunctionCallProvider>
-      <AgentChatContent />
-    </FunctionCallProvider>
-  );
-};
-
-export default AgentChatPage;
+export default AgentChat;

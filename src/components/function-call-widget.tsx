@@ -50,6 +50,8 @@ export const FunctionCallWidget: React.FC<{
 
   return (
     <Box
+      w="full"
+      h="full"
       mt={7}
       p={3}
       borderRadius="xl"
@@ -60,7 +62,7 @@ export const FunctionCallWidget: React.FC<{
       <HStack justify="space-between">
         <HStack>
           <Icon as={LuZap} color={textColor} />
-          <Text fontWeight="bold" fontSize="sm" color={textColor}>
+          <Text fontWeight="bold" fontSize="xs" color={textColor}>
             {t("AgentChatPage.functionCall.title")}: {data.name}
           </Text>
         </HStack>
@@ -78,7 +80,7 @@ export const FunctionCallWidget: React.FC<{
           mt={2}
           display="block"
           whiteSpace="pre-wrap"
-          fontSize="xs"
+          fontSize="2xs"
           p={2}
           borderRadius="md"
           bg={codeBgColor}
@@ -96,7 +98,7 @@ export const FunctionCallWidget: React.FC<{
             w="full"
             justifyContent="space-between"
             color={textColor}
-            fontSize="xs"
+            fontSize="2xs"
           >
             {error
               ? t("AgentChatPage.functionCall.error")
@@ -107,7 +109,7 @@ export const FunctionCallWidget: React.FC<{
               mt={1}
               display="block"
               whiteSpace="pre-wrap"
-              fontSize="xs"
+              fontSize="2xs"
               p={2}
               borderRadius="md"
               bg={codeBgColor}
