@@ -37,14 +37,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const [isAgentChatOpen, setIsAgentChatOpen] = useState(false);
   const [panelWidth, setPanelWidth] = useState(300);
-  const isDragging = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
   const isCheckedRunCount = useRef(false);
   const isStandAlone = router.pathname.startsWith("/standalone");
   const isLaunchPage = router.pathname === "/launch";
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging.current) return;
+      if (!isDragging) return;
       let newWidth = e.clientX;
       if (newWidth < 250) newWidth = 250;
       if (newWidth > window.innerWidth - 450)
@@ -53,8 +53,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     };
 
     const handleMouseUp = () => {
-      if (isDragging.current) {
-        isDragging.current = false;
+      if (isDragging) {
+        setIsDragging(false);
         document.body.style.cursor = "default";
       }
     };
@@ -65,11 +65,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, []);
+  }, [isDragging]);
 
   const startResize = (e: React.MouseEvent) => {
     e.preventDefault();
-    isDragging.current = true;
+    setIsDragging(true);
     document.body.style.cursor = "col-resize";
   };
 
@@ -262,20 +262,21 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 position="absolute"
                 top={0}
                 right={0}
-                w="12px"
+                w={2}
                 h="100%"
                 borderRadius="full"
                 cursor="col-resize"
                 onMouseDown={startResize}
                 zIndex={10}
                 transition="background 0.2s"
-                _hover={{ bg: resizeHoverBg }}
+                bgColor={isDragging ? resizeHoverBg : "transparent"}
+                _hover={{ bgColor: resizeHoverBg }}
                 alignItems="center"
                 justifyContent="center"
               >
                 <Icon
                   as={LuGripVertical}
-                  opacity={0}
+                  opacity={isDragging ? 1 : 0}
                   color={resizeHoverIconColor}
                   _groupHover={{ opacity: 1 }}
                   transition="opacity 0.2s"
@@ -292,7 +293,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           minW={0}
         >
           <HeadNavBar />
-          <Flex flex={1} p={2} pt={0} h="full" minH={0}>
+          <Flex
+            flex={1}
+            pl={isAgentChatOpen ? 0 : 2}
+            pr={2}
+            pb={2}
+            h="full"
+            minH={0}
+          >
             {isLaunchPage ? (
               children
             ) : (
