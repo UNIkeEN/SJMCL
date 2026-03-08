@@ -1,4 +1,4 @@
-<img src="docs/figs/banner.png" alt="SJMCL" />
+﻿<img src="docs/figs/banner.png" alt="SJMCL" />
 
 [![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
 ![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?style=for-the-badge)
@@ -26,46 +26,7 @@
 
 ## Getting Started
 
-Getting started with SJMCL is simple, just download the latest release from the [Official Website](https://mc.sjtu.cn/sjmcl/en).
-
-You can also find all the releases, including the nightly versions, on [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases).
-
-SJMCL currently supports the following platforms:
-
-| Platform  | Versions            | Architectures              | Provided Bundles                        |
-|-----------|---------------------|----------------------------|-----------------------------------------|
-| Windows   | 7 and above         | `aarch64`, `i686`, `x86_64`| installer `.exe`, portable `.exe`                 |
-| macOS     | 10.15 and above     | `aarch64`, `x86_64`        | `.app`, `.dmg`                          |
-| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `aarch64`, `x86_64`   | `.AppImage`, `.deb`, `.rpm`, portable binary |
-
-To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs).
-
-### Windows 7
-
-If you need to run SJMCL on Windows 7, please first [download the Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download) and install it. We recommend choosing the 'Evergreen Bootstrapper'.
-
-<details>
-<summary><h3>Install from Command Line</h3></summary>
-
-<details>
-<summary><h4>Arch Linux</h4></summary>
-
-SJMCL is available on the Arch User Repository (AUR). You can install it using a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
-
-```bash
-yay -S sjmcl-bin
-```
-
-Manual installation without an AUR helper:
-
-```bash
-git clone https://aur.archlinux.org/sjmcl-bin.git
-cd sjmcl-bin
-makepkg -si
-```
-
-</details>
-</details>
+Download the latest release from this site to get started — for full installation instructions and platform support details, see [Installing SJMCL](docs/install.en.md).
 
 ## Development and Contributing
 
