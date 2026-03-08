@@ -1,4 +1,4 @@
-<img src="figs/banner.png" alt="SJMCL" />
+﻿<img src="figs/banner.png" alt="SJMCL" />
 
 [![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
 ![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?style=for-the-badge)
@@ -26,46 +26,7 @@
 
 ## 开始使用
 
-开始使用 SJMCL，只需前往 [官网](https://mc.sjtu.cn/sjmcl/en) 下载最新版即可。
-
-您也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 获取所有版本，包括周期性构建。
-
-SJMCL 目前支持以下平台：
-
-| 平台    | 系统版本            | 架构               | 提供的的分发类型                              |
-|---------|---------------------|--------------------|--------------------------------------------|
-| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`  | 安装版 `.exe`，便携版 `.exe` |
-| macOS   | 10.15 及以上        | `aarch64`, `x86_64` | `.app`，`.dmg`                   |
-| Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便携版二进制文件 |
-
-了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/zh/docs)。
-
-### Windows 7
-
-如果您需要在 Windows 7 运行 SJMCL，请先 [下载 Microsoft Edge WebView2 运行时](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2#download) 并安装之，推荐选择“常青引导程序”。
-
-<details>
-<summary><h3>从命令行安装</h3></summary>
-
-<details>
-<summary><h4>Arch Linux</h4></summary>
-
-SJMCL 已上传至 Arch Linux 用户仓库（AUR）。您可以使用常见的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 安装：
-
-```bash
-yay -S sjmcl-bin
-```
-
-如不使用 AUR 助手，您也可以手动安装：
-
-```bash
-git clone https://aur.archlinux.org/sjmcl-bin.git
-cd sjmcl-bin
-makepkg -si
-```
-
-</details>
-</details>
+从本站下载最新版即可立即上手——详细的安装说明与平台支持信息请参阅[安装 SJMCL](install.md)。
 
 ## 开发与贡献
 
