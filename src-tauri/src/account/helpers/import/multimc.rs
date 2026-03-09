@@ -1,4 +1,4 @@
-use crate::account::helpers::import::misc::find_game_dirs_with_file;
+use crate::account::helpers::import::misc::{find_game_dirs, ACCESS_TOKEN_EXPIRED};
 use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
@@ -57,7 +57,7 @@ async fn microsoft_to_player(
           name: acc.profile.name.clone(),
           player_type: PlayerType::Microsoft,
           auth_account: None,
-          access_token: Some("%failed:access_token_expired%".to_string()),
+          access_token: Some(ACCESS_TOKEN_EXPIRED.to_string()),
           refresh_token: Some(acc.msa.refresh_token.clone()),
           textures: load_preset_skin(app, PresetRole::Steve)?,
           auth_server_url: None,
@@ -117,7 +117,7 @@ async fn microsoft_to_player(
 pub async fn retrieve_multimc_account_info(
   app: &AppHandle,
 ) -> SJMCLResult<(Vec<PlayerInfo>, Vec<Url>)> {
-  let candidate_dirs = find_game_dirs_with_file(app, "accounts.json");
+  let candidate_dirs = find_game_dirs(app);
   let multimc_json_paths: Vec<_> = candidate_dirs
     .into_iter()
     .map(|dir| dir.join("accounts.json"))
@@ -126,7 +126,7 @@ pub async fn retrieve_multimc_account_info(
   let multimc_jsons = multimc_json_paths
     .into_iter()
     .filter_map(|path| fs::read_to_string(path).ok())
-    .filter_map(|content| serde_json::from_str::<MultiMCAccountEntry>(&content).ok())
+    .filter_map(|content| serde_json::from_str::<MultiMCAccountEntry>(content.as_str()).ok())
     .collect::<Vec<_>>();
   let mut player_infos: Vec<PlayerInfo> = Vec::new();
   let url_set: HashSet<Url> = HashSet::new();
