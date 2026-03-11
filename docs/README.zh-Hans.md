@@ -85,7 +85,7 @@ npm run tauri dev
 我们热烈欢迎每一位开发者的贡献。
 
 - 在开始前，请先阅读我们的 [贡献指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（内含开发流程详细说明）。
-- API 参考与部分开发者笔记见 [开发者文档](https://mc.sjtu.cn/sjmcl/zh/dev)。
+- API 参考与部分开发者笔记见 [开发者文档](https://mc.sjtu.cn/sjmcl/dev)。
 - 欢迎通过 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
 
 ### 仓库活动
