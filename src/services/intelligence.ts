@@ -1,5 +1,9 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { ChatMessage } from "@/models/intelligence";
+import {
+  ChatMessage,
+  ChatSession,
+  ChatSessionSummary,
+} from "@/models/intelligence";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -42,5 +46,52 @@ export class IntelligenceService {
       return { status: "success", data: "", message: "Stream completed" };
     }
     return invoke("fetch_llm_chat_response", { messages });
+  }
+
+  /**
+   * RETRIEVE all chat session summaries.
+   * @return {Promise<InvokeResponse<ChatSessionSummary[]>>}
+   */
+  @responseHandler("intelligence")
+  public static async retrieveChatSessions(): Promise<
+    InvokeResponse<ChatSessionSummary[]>
+  > {
+    return invoke("retrieve_chat_sessions");
+  }
+
+  /**
+   * RETRIEVE a full chat session by ID.
+   * @param {string} sessionId The session ID.
+   * @return {Promise<InvokeResponse<ChatSession>>}
+   */
+  @responseHandler("intelligence")
+  public static async retrieveChatSession(
+    sessionId: string
+  ): Promise<InvokeResponse<ChatSession>> {
+    return invoke("retrieve_chat_session", { sessionId });
+  }
+
+  /**
+   * SAVE a chat session (create or update).
+   * @param {ChatSession} session The session to save.
+   * @return {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("intelligence")
+  public static async saveChatSession(
+    session: ChatSession
+  ): Promise<InvokeResponse<void>> {
+    return invoke("save_chat_session", { session });
+  }
+
+  /**
+   * DELETE a chat session by ID.
+   * @param {string} sessionId The session ID.
+   * @return {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("intelligence")
+  public static async deleteChatSession(
+    sessionId: string
+  ): Promise<InvokeResponse<void>> {
+    return invoke("delete_chat_session", { sessionId });
   }
 }

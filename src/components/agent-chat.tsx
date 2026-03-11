@@ -13,14 +13,22 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuPause, LuSend, LuX } from "react-icons/lu";
+import {
+  LuHistory,
+  LuPause,
+  LuPlus,
+  LuSend,
+  LuTrash2,
+  LuX,
+} from "react-icons/lu";
 import MarkdownContainer from "@/components/common/markdown-container";
+import { OptionItem } from "@/components/common/option-item";
 import { MiuChatLogoTitle } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useFunctionCallActions } from "@/contexts/function-call-context";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { ChatMessage } from "@/models/intelligence";
+import { ChatMessage, ChatSessionSummary } from "@/models/intelligence";
 import { NewsPostRequest } from "@/models/news-post";
 import { getChatSystemPrompt } from "@/prompts";
 import { ConfigService } from "@/services/config";
@@ -54,6 +62,11 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
+  const currentSessionIdRef = useRef<string>(crypto.randomUUID());
+  const sessionCreatedAtRef = useRef<number>(Math.floor(Date.now() / 1000));
+  const wasLoadingRef = useRef(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
   const toast = useToast();
   const { openSharedModal } = useSharedModals();
   const { getCallState, setCallState, hasExecutingCall } =
@@ -63,6 +76,57 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  const saveCurrentSession = async () => {
+    const msgs = messagesRef.current;
+    const userMsgs = msgs.filter((m) => m.role === "user");
+    if (userMsgs.length === 0) return;
+    const title = userMsgs[0].content.slice(0, 50);
+    await IntelligenceService.saveChatSession({
+      id: currentSessionIdRef.current,
+      title,
+      messages: msgs,
+      createdAt: sessionCreatedAtRef.current,
+      updatedAt: Math.floor(Date.now() / 1000),
+    });
+  };
+
+  const handleNewSession = async () => {
+    await saveCurrentSession();
+    requestIdRef.current++;
+    currentSessionIdRef.current = crypto.randomUUID();
+    sessionCreatedAtRef.current = Math.floor(Date.now() / 1000);
+    setIsLoading(false);
+    setMessages([
+      { role: "system", content: getChatSystemPrompt(i18n.language) },
+    ]);
+    setInput("");
+    setShowHistory(false);
+  };
+
+  const handleShowHistory = async () => {
+    const resp = await IntelligenceService.retrieveChatSessions();
+    if (resp.status === "success") {
+      setSessions(resp.data);
+    }
+    setShowHistory(true);
+  };
+
+  const handleLoadSession = async (sessionId: string) => {
+    const resp = await IntelligenceService.retrieveChatSession(sessionId);
+    if (resp.status === "success") {
+      currentSessionIdRef.current = sessionId;
+      sessionCreatedAtRef.current = resp.data.createdAt;
+      setMessages(resp.data.messages);
+      setShowHistory(false);
+      setInput("");
+    }
+  };
+
+  const handleDeleteSession = async (sessionId: string) => {
+    await IntelligenceService.deleteChatSession(sessionId);
+    setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+  };
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -76,6 +140,13 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (wasLoadingRef.current && !isLoading) {
+      saveCurrentSession();
+    }
+    wasLoadingRef.current = isLoading;
+  }, [isLoading]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -439,147 +510,214 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
       <VStack h="100%" w="100%">
         <Flex w="100%" align="center" justify="space-between">
           <MiuChatLogoTitle />
-          <IconButton
-            icon={<LuX />}
-            aria-label="agent-chat-close"
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              setIsLoading(false);
-              setInput("");
-              onAgentChatPanelClose();
-            }}
-          />
+          <HStack spacing={1}>
+            <IconButton
+              icon={<LuPlus />}
+              aria-label="agent-chat-new-chat"
+              size="sm"
+              variant="ghost"
+              onClick={handleNewSession}
+            />
+            <IconButton
+              icon={<LuHistory />}
+              aria-label="agent-chat-history"
+              size="sm"
+              variant="ghost"
+              onClick={
+                showHistory ? () => setShowHistory(false) : handleShowHistory
+              }
+            />
+            <IconButton
+              icon={<LuX />}
+              aria-label="agent-chat-close"
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setIsLoading(false);
+                setInput("");
+                onAgentChatPanelClose();
+              }}
+            />
+          </HStack>
         </Flex>
 
-        <Flex
-          ref={messagesContainerRef}
-          w="100%"
-          flex={1}
-          overflowY="auto"
-          direction="column"
-          gap={2}
-          fontSize="sm"
-        >
-          {filteredMessages.length === 0 && (
-            <Flex
-              direction="column"
-              align="center"
-              justify="center"
-              h="100%"
-              color="gray.500"
-            >
-              <Image
-                boxSize="48px"
-                objectFit="cover"
-                src={AGENT_AVATAR_SRC}
-                alt="agent"
-                mb={4}
-              />
-              <Text>{t("AgentChatPage.description")}</Text>
-            </Flex>
-          )}
-          {filteredMessages.map((msg, i) => {
-            const originalIndex = messages.indexOf(msg);
-
-            return (
+        {showHistory ? (
+          <Flex w="100%" flex={1} overflowY="auto" direction="column" p={2}>
+            {sessions.length === 0 ? (
               <Flex
-                key={i}
-                direction={msg.role === "user" ? "row-reverse" : "row"}
-                gap={3}
-                width="100%"
+                direction="column"
+                align="center"
+                justify="center"
+                h="100%"
+                color="gray.500"
               >
-                {(msg.role !== "user" ||
-                  (selectedPlayer && selectedPlayer.avatar)) &&
-                  (i > 0 && filteredMessages[i - 1].role === msg.role ? (
-                    <Box boxSize="32px" />
-                  ) : (
-                    <Image
-                      boxSize="32px"
-                      objectFit="cover"
-                      src={
-                        msg.role === "user"
-                          ? base64ImgSrc(selectedPlayer?.avatar!)
-                          : AGENT_AVATAR_SRC
-                      }
-                      alt={msg.role}
-                    />
-                  ))}
-                <Box
-                  bg={msg.role === "user" ? msgBgUser : msgBgBot}
-                  color={msg.role === "user" ? "white" : undefined}
-                  p={msg.role === "user" ? 2 : 0}
-                  borderRadius="lg"
-                  maxW={msg.role === "user" ? "80%" : undefined}
-                  w={msg.role === "user" ? undefined : "80%"}
-                  position="relative"
-                >
-                  <MarkdownContainer messageId={originalIndex}>
-                    {msg.content}
-                  </MarkdownContainer>
-                </Box>
+                <Text>{t("AgentChatPage.noHistory")}</Text>
               </Flex>
-            );
-          })}
-          {isLoading &&
-            messages.length > 0 &&
-            messages[messages.length - 1].content === "" && (
-              <Flex direction="row" gap={3}>
-                {filteredMessages.length > 0 &&
-                filteredMessages[filteredMessages.length - 1].role ===
-                  "assistant" ? (
-                  <Box boxSize="32px" />
-                ) : (
+            ) : (
+              <VStack w="100%" spacing={1} align="stretch">
+                {sessions.map((session) => (
+                  <OptionItem
+                    key={session.id}
+                    title={session.title || t("AgentChatPage.untitledSession")}
+                    description={new Date(
+                      session.updatedAt * 1000
+                    ).toLocaleString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                    isFullClickZone
+                    onClick={() => handleLoadSession(session.id)}
+                    isChildrenIndependent
+                  >
+                    <IconButton
+                      icon={<LuTrash2 />}
+                      aria-label="delete-session"
+                      size="sm"
+                      variant="ghost"
+                      colorScheme="red"
+                      onClick={() => handleDeleteSession(session.id)}
+                    />
+                  </OptionItem>
+                ))}
+              </VStack>
+            )}
+          </Flex>
+        ) : (
+          <>
+            <Flex
+              ref={messagesContainerRef}
+              w="100%"
+              flex={1}
+              overflowY="auto"
+              direction="column"
+              gap={2}
+              fontSize="sm"
+            >
+              {filteredMessages.length === 0 && (
+                <Flex
+                  direction="column"
+                  align="center"
+                  justify="center"
+                  h="100%"
+                  color="gray.500"
+                >
                   <Image
-                    boxSize="32px"
+                    boxSize="48px"
                     objectFit="cover"
                     src={AGENT_AVATAR_SRC}
                     alt="agent"
+                    mb={4}
                   />
-                )}
-                <Box bg={msgBgBot} p={2} borderRadius="lg">
-                  <Spinner size="sm" speed="0.8s" />
-                </Box>
-              </Flex>
-            )}
-        </Flex>
+                  <Text>{t("AgentChatPage.description")}</Text>
+                </Flex>
+              )}
+              {filteredMessages.map((msg, i) => {
+                const originalIndex = messages.indexOf(msg);
 
-        {/* Input */}
-        <Box
-          w="100%"
-          bg={inputShellBg}
-          borderWidth={1}
-          borderColor={inputShellBorder}
-          borderRadius="2xl"
-          p={3}
-        >
-          <Flex direction="column" gap={3}>
-            <Textarea
-              placeholder={t("AgentChatPage.placeholder")}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              variant="unstyled"
-              resize="none"
-              minH="60px"
-              size="sm"
-            />
-            <HStack justify="space-between" align="end">
-              <Text className="secondary-text" fontSize="2xs">
-                {t("AgentChatPage.bottomWarning")}
-              </Text>
-              <IconButton
-                aria-label={isBusy ? "stop" : "send"}
-                icon={isBusy ? <LuPause /> : <LuSend />}
-                colorScheme={isBusy ? "red" : canSend ? primaryColor : "gray"}
-                variant="solid"
-                borderRadius="full"
-                isDisabled={!isBusy && !canSend}
-                onClick={isBusy ? handleStopReply : handleSend}
-              />
-            </HStack>
-          </Flex>
-        </Box>
+                return (
+                  <Flex
+                    key={i}
+                    direction={msg.role === "user" ? "row-reverse" : "row"}
+                    gap={3}
+                    width="100%"
+                  >
+                    {(msg.role !== "user" ||
+                      (selectedPlayer && selectedPlayer.avatar)) &&
+                      (i > 0 && filteredMessages[i - 1].role === msg.role ? (
+                        <Box boxSize="32px" />
+                      ) : (
+                        <Image
+                          boxSize="32px"
+                          objectFit="cover"
+                          src={
+                            msg.role === "user"
+                              ? base64ImgSrc(selectedPlayer?.avatar!)
+                              : AGENT_AVATAR_SRC
+                          }
+                          alt={msg.role}
+                        />
+                      ))}
+                    <Box
+                      bg={msg.role === "user" ? msgBgUser : msgBgBot}
+                      color={msg.role === "user" ? "white" : undefined}
+                      p={msg.role === "user" ? 2 : 0}
+                      borderRadius="lg"
+                      maxW={msg.role === "user" ? "80%" : undefined}
+                      w={msg.role === "user" ? undefined : "80%"}
+                      position="relative"
+                    >
+                      <MarkdownContainer messageId={originalIndex}>
+                        {msg.content}
+                      </MarkdownContainer>
+                    </Box>
+                  </Flex>
+                );
+              })}
+              {isLoading &&
+                messages.length > 0 &&
+                messages[messages.length - 1].content === "" && (
+                  <Flex direction="row" gap={3}>
+                    {filteredMessages.length > 0 &&
+                    filteredMessages[filteredMessages.length - 1].role ===
+                      "assistant" ? (
+                      <Box boxSize="32px" />
+                    ) : (
+                      <Image
+                        boxSize="32px"
+                        objectFit="cover"
+                        src={AGENT_AVATAR_SRC}
+                        alt="agent"
+                      />
+                    )}
+                    <Box bg={msgBgBot} p={2} borderRadius="lg">
+                      <Spinner size="sm" speed="0.8s" />
+                    </Box>
+                  </Flex>
+                )}
+            </Flex>
+
+            {/* Input */}
+            <Box
+              w="100%"
+              bg={inputShellBg}
+              borderWidth={1}
+              borderColor={inputShellBorder}
+              borderRadius="2xl"
+              p={3}
+            >
+              <Flex direction="column" gap={3}>
+                <Textarea
+                  placeholder={t("AgentChatPage.placeholder")}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  variant="unstyled"
+                  resize="none"
+                  minH="60px"
+                  size="sm"
+                />
+                <HStack justify="space-between" align="end">
+                  <Text className="secondary-text" fontSize="2xs">
+                    {t("AgentChatPage.bottomWarning")}
+                  </Text>
+                  <IconButton
+                    aria-label={isBusy ? "stop" : "send"}
+                    icon={isBusy ? <LuPause /> : <LuSend />}
+                    colorScheme={
+                      isBusy ? "red" : canSend ? primaryColor : "gray"
+                    }
+                    variant="solid"
+                    borderRadius="full"
+                    isDisabled={!isBusy && !canSend}
+                    onClick={isBusy ? handleStopReply : handleSend}
+                  />
+                </HStack>
+              </Flex>
+            </Box>
+          </>
+        )}
       </VStack>
     </AdvancedCard>
   );

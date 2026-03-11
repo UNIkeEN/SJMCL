@@ -5,10 +5,11 @@ use tauri_plugin_http::reqwest;
 
 use crate::error::SJMCLResult;
 use crate::intelligence::models::{
-  ChatCompletionChunk, ChatCompletionRequest, ChatCompletionResponse, ChatMessage,
-  ChatModelsResponse, LLMServiceError,
+  ChatCompletionChunk, ChatCompletionRequest, ChatCompletionResponse, ChatHistory, ChatMessage,
+  ChatModelsResponse, ChatSession, ChatSessionSummary, LLMServiceError,
 };
 use crate::launcher_config::models::LauncherConfig;
+use crate::storage::Storage;
 
 // TODO: make chat completion as helper funtion
 // TODO: migrate log analysis logic to backend (w multi-language prompt and result parsing)
@@ -162,5 +163,52 @@ pub async fn fetch_llm_chat_response_stream(
     }
   }
 
+  Ok(())
+}
+
+#[tauri::command]
+pub fn retrieve_chat_sessions(app: AppHandle) -> SJMCLResult<Vec<ChatSessionSummary>> {
+  let binding = app.state::<Mutex<ChatHistory>>();
+  let history = binding.lock()?;
+  let mut summaries: Vec<ChatSessionSummary> = history
+    .sessions
+    .iter()
+    .map(ChatSessionSummary::from)
+    .collect();
+  summaries.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+  Ok(summaries)
+}
+
+#[tauri::command]
+pub fn retrieve_chat_session(app: AppHandle, session_id: String) -> SJMCLResult<ChatSession> {
+  let binding = app.state::<Mutex<ChatHistory>>();
+  let history = binding.lock()?;
+  history
+    .sessions
+    .iter()
+    .find(|s| s.id == session_id)
+    .cloned()
+    .ok_or_else(|| crate::error::SJMCLError("Session not found".to_string()))
+}
+
+#[tauri::command]
+pub fn save_chat_session(app: AppHandle, session: ChatSession) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<ChatHistory>>();
+  let mut history = binding.lock()?;
+  if let Some(existing) = history.sessions.iter_mut().find(|s| s.id == session.id) {
+    *existing = session;
+  } else {
+    history.sessions.push(session);
+  }
+  history.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub fn delete_chat_session(app: AppHandle, session_id: String) -> SJMCLResult<()> {
+  let binding = app.state::<Mutex<ChatHistory>>();
+  let mut history = binding.lock()?;
+  history.sessions.retain(|s| s.id != session_id);
+  history.save()?;
   Ok(())
 }

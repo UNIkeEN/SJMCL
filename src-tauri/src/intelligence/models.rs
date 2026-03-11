@@ -1,4 +1,8 @@
+use crate::storage::Storage;
+use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use serde::{Deserialize, Serialize};
+use smart_default::SmartDefault;
+use std::path::PathBuf;
 use strum_macros::Display;
 
 structstruck::strike! {
@@ -13,7 +17,7 @@ structstruck::strike! {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Serialize, Deserialize)]]
+  #[strikethrough[derive(Debug, Clone, Serialize, Deserialize)]]
   pub struct ChatCompletionRequest {
     pub model: String,
     pub messages: Vec<pub struct ChatMessage {
@@ -66,3 +70,52 @@ pub enum LLMServiceError {
 }
 
 impl std::error::Error for LLMServiceError {}
+
+const CHAT_HISTORY_FILE_NAME: &str = "chat_history.json";
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ChatSession {
+  pub id: String,
+  pub title: String,
+  pub messages: Vec<ChatMessage>,
+  pub created_at: u64,
+  pub updated_at: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ChatSessionSummary {
+  pub id: String,
+  pub title: String,
+  pub created_at: u64,
+  pub updated_at: u64,
+}
+
+impl From<&ChatSession> for ChatSessionSummary {
+  fn from(session: &ChatSession) -> Self {
+    ChatSessionSummary {
+      id: session.id.clone(),
+      title: session.title.clone(),
+      created_at: session.created_at,
+      updated_at: session.updated_at,
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, SmartDefault)]
+#[serde(rename_all = "camelCase")]
+pub struct ChatHistory {
+  #[default(_code = "vec![]")]
+  pub sessions: Vec<ChatSession>,
+}
+
+impl Storage for ChatHistory {
+  fn file_path() -> PathBuf {
+    if *IS_PORTABLE {
+      EXE_DIR.join(CHAT_HISTORY_FILE_NAME)
+    } else {
+      APP_DATA_DIR.get().unwrap().join(CHAT_HISTORY_FILE_NAME)
+    }
+  }
+}

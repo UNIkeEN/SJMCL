@@ -219,7 +219,9 @@
         "fail": "Failed to find the game instance"
       }
     },
-    "bottomWarning": "By AI assistant, for reference only."
+    "bottomWarning": "By AI assistant, for reference only.",
+    "noHistory": "No chat history yet.",
+    "untitledSession": "Untitled Session"
   },
   "AlertResourceDependencyModal": {
     "header": {

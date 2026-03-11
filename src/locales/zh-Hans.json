@@ -219,7 +219,9 @@
         "fail": "无法找到该游戏实例"
       }
     },
-    "bottomWarning": "由 AI 助手生成的内容，仅供参考。"
+    "bottomWarning": "由 AI 助手生成的内容，仅供参考。",
+    "noHistory": "暂无聊天记录",
+    "untitledSession": "未命名会话"
   },
   "AlertResourceDependencyModal": {
     "header": {
