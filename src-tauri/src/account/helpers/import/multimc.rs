@@ -1,4 +1,4 @@
-use crate::account::helpers::import::misc::{find_game_dirs, ACCESS_TOKEN_EXPIRED};
+use crate::account::helpers::import::misc::{list_launcher_candidate_dirs, ACCESS_TOKEN_EXPIRED};
 use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
@@ -117,7 +117,7 @@ async fn microsoft_to_player(
 pub async fn retrieve_multimc_account_info(
   app: &AppHandle,
 ) -> SJMCLResult<(Vec<PlayerInfo>, Vec<Url>)> {
-  let candidate_dirs = find_game_dirs(app);
+  let candidate_dirs = list_launcher_candidate_dirs(app);
   let multimc_json_paths: Vec<_> = candidate_dirs
     .into_iter()
     .map(|dir| dir.join("accounts.json"))

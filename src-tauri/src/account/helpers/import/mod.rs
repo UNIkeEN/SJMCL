@@ -9,7 +9,6 @@ use serde::Deserialize;
 #[derive(Debug, Clone, Deserialize)]
 pub enum ImportLauncherType {
   HMCL,
-  PCL, // only on Windows
   SCL, // only on macOS
   MultiMC,
 }
