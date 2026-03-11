@@ -62,7 +62,7 @@
         },
         "userAgreement": {
           "title": "用户协议",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
         },
         "openSourceLicense": {
           "title": "开源协议",
@@ -1194,7 +1194,7 @@
       "settings": {
         "LauncherDocs": {
           "title": "SJMC Launcher 文档",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/"
         }
       }
     }
@@ -1393,7 +1393,7 @@
         "docs": {
           "title": "使用指南",
           "description": "了解如何将启动器连接到外部 Agent 应用（如 Claude, Cherry Studio 等）",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/intelligence/launcher-mcp"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp.html"
         },
         "port": {
           "title": "端口",

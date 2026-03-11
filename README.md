@@ -10,11 +10,11 @@
 
 ## Features
 
-* **Cross Platform**: Supports Windows 10/11, macOS and Linux.
-* **Efficient Instance Management**: Supports multiple game directories and instances, allowing the management of all instance resources (such as saves, mods, resource packs, shaders, screenshots, etc.) and settings in one place.
-* **Convenient Resource Download**: Supports downloading game clients, mod loaders, various game resources and modpacks from CurseForge and Modrinth.
-* **Multi-Account System Support**: Built-in Microsoft login and third-party authentication server support, compatible with the OAuth login process proposed by the Yggdrasil Connect proposal.
-* **Deeplink Integration**: Integrates with external websites and tool collections, providing convenient features such as desktop shortcuts for launching instances through system deeplinks.
+- **Cross Platform**: Supports Windows 10/11, macOS and Linux.
+- **Efficient Instance Management**: Supports multiple game directories and instances, allowing the management of all instance resources (such as saves, mods, resource packs, shaders, screenshots, etc.) and settings in one place.
+- **Convenient Resource Download**: Supports downloading game clients, mod loaders, various game resources and modpacks from CurseForge and Modrinth.
+- **Multi-Account System Support**: Built-in Microsoft login and third-party authentication server support, compatible with the OAuth login process proposed by the Yggdrasil Connect proposal.
+- **Deeplink Integration**: Integrates with external websites and tool collections, providing convenient features such as desktop shortcuts for launching instances through system deeplinks.
 
 > Note: some features may be limited by region, platform, or bundle type.
 
@@ -32,13 +32,13 @@ You can also find all the releases, including the nightly versions, on [GitHub R
 
 SJMCL currently supports the following platforms:
 
-| Platform  | Versions            | Architectures              | Provided Bundles                        |
-|-----------|---------------------|----------------------------|-----------------------------------------|
-| Windows   | 7 and above         | `aarch64`, `i686`, `x86_64`| installer `.exe`, portable `.exe`                 |
-| macOS     | 10.15 and above     | `aarch64`, `x86_64`        | `.app`, `.dmg`                          |
-| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `aarch64`, `x86_64`   | `.AppImage`, `.deb`, `.rpm`, portable binary |
+| Platform | Versions                            | Architectures               | Provided Bundles                             |
+| -------- | ----------------------------------- | --------------------------- | -------------------------------------------- |
+| Windows  | 7 and above                         | `aarch64`, `i686`, `x86_64` | installer `.exe`, portable `.exe`            |
+| macOS    | 10.15 and above                     | `aarch64`, `x86_64`         | `.app`, `.dmg`                               |
+| Linux    | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `aarch64`, `x86_64`         | `.AppImage`, `.deb`, `.rpm`, portable binary |
 
-To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs).
+To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs/).
 
 ### Windows 7
 
@@ -82,11 +82,11 @@ To run the project in development mode:
 npm run tauri dev
 ```
 
-We warmly invite contributions from everyone. 
+We warmly invite contributions from everyone.
 
-* Before you get started, please take a moment to review our [Contributing Guide](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md) (includes more details on the development workflow). 
-* API references and some developers’ insights can be found in the [Developer Documentation](https://mc.sjtu.cn/sjmcl/en/dev).
-* Feel free to share your ideas through [Pull Requests](https://github.com/UNIkeEN/SJMCL/pulls) or [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues).
+- Before you get started, please take a moment to review our [Contributing Guide](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md) (includes more details on the development workflow).
+- API references and some developers’ insights can be found in the [Developer Documentation](https://mc.sjtu.cn/sjmcl/en/dev).
+- Feel free to share your ideas through [Pull Requests](https://github.com/UNIkeEN/SJMCL/pulls) or [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues).
 
 ### Repo Activity
 
@@ -100,7 +100,7 @@ Copyright © 2024-2026 SJMCL Team.
 
 The software is distributed under [GNU General Public License v3.0](/LICENSE).
 
-By GPLv3 License term 7, we require that when you distribute a modified version of the software, you must obey GPLv3 License as well as the following [additional terms](/LICENSE.EXTRA): 
+By GPLv3 License term 7, we require that when you distribute a modified version of the software, you must obey GPLv3 License as well as the following [additional terms](/LICENSE.EXTRA):
 
 1. Use a different software name than SJMCL or SJMC Launcher;
 2. Mark clearly in your repository README file, your distribution website or thread, Support documents, About Page in the software that your program is based on SJMCL and give out the url of the origin repository.
@@ -119,27 +119,29 @@ You can also send email to [launcher@sjmc.club](mailto:launcher@sjmc.club) if yo
 We sincerely thank the following organizations for their development and community support throughout the SJMCL project.
 
 [
-  <picture>
-    <source srcset="docs/figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figs/partners/sjmc.png" alt="SJMC" style="height: 65px;">
-  </picture>
+<picture>
+
+<source srcset="docs/figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
+<source srcset="docs/figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
+<img src="docs/figs/partners/sjmc.png" alt="SJMC" style="height: 65px;">
+</picture>
 ](https://mc.sjtu.cn/en/)
 &nbsp;&nbsp;
 [<img src="docs/figs/partners/sues-mc.png" alt="SUES-MC" style="height: 65px;"/>](https://www.suesmc.ltd/)
 
 [
-  <picture>
-    <source srcset="docs/figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figs/partners/mua.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figs/partners/mua.png" alt="MUA" style="height: 45px;">
-  </picture>
+<picture>
+
+<source srcset="docs/figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
+<source srcset="docs/figs/partners/mua.png" media="(prefers-color-scheme: light)">
+<img src="docs/figs/partners/mua.png" alt="MUA" style="height: 45px;">
+</picture>
 ](https://www.mualliance.cn/en)
 &nbsp;&nbsp;&nbsp;&nbsp;
 [
-  <picture>
-    <source srcset="docs/figs/partners/gnwork-dark.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figs/partners/gnwork.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figs/partners/gnwork.png" alt="GNWORK" style="height: 45px;">
-  </picture>
+<picture>
+<source srcset="docs/figs/partners/gnwork-dark.png" media="(prefers-color-scheme: dark)">
+<source srcset="docs/figs/partners/gnwork.png" media="(prefers-color-scheme: light)">
+<img src="docs/figs/partners/gnwork.png" alt="GNWORK" style="height: 45px;">
+</picture>
 ](https://space.bilibili.com/403097853)
