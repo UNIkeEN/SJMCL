@@ -25,9 +25,10 @@ import MarkdownContainer from "@/components/common/markdown-container";
 import { OptionItem } from "@/components/common/option-item";
 import { MiuChatLogoTitle } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
-import { useFunctionCallActions } from "@/contexts/function-call-context";
+import { useFunctionCallActions } from "@/contexts/function-call";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { GetStateFlag } from "@/hooks/get-state";
 import { ChatMessage, ChatSessionSummary } from "@/models/intelligence";
 import { NewsPostRequest } from "@/models/news-post";
 import { getChatSystemPrompt } from "@/prompts";
@@ -35,9 +36,11 @@ import { ConfigService } from "@/services/config";
 import { DiscoverService } from "@/services/discover";
 import { InstanceService } from "@/services/instance";
 import { IntelligenceService } from "@/services/intelligence";
+import { ResourceService } from "@/services/resource";
 import { FunctionCallMatch, findFunctionCalls } from "@/utils/function-call";
 import { base64ImgSrc, formatPrintable } from "@/utils/string";
 import AdvancedCard from "./common/advanced-card";
+import { gameTypesToIcon } from "./game-version-selector";
 
 const AGENT_AVATAR_SRC = "/images/agent/miuxi_px_avatar.png";
 
@@ -48,7 +51,7 @@ interface AgentChatProps {
 const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   const { t, i18n } = useTranslation();
   const { config } = useLauncherConfig();
-  const { selectedPlayer } = useGlobalData();
+  const { selectedPlayer, getGameVersionList } = useGlobalData();
   const primaryColor = config.appearance.theme.primaryColor;
 
   // Initialize with system prompt
@@ -103,6 +106,10 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     setInput("");
     setShowHistory(false);
   };
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
 
   const handleShowHistory = async () => {
     const resp = await IntelligenceService.retrieveChatSessions();
@@ -251,13 +258,75 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     params: Record<string, any>
   ) => {
     switch (name) {
+      case "retrieve_game_version_list":
+        if (
+          !params.type ||
+          !["release", "snapshot", "old_beta", "april_fools"].includes(
+            params.type
+          )
+        ) {
+          return { status: "error", message: "Missing or incorrect type" };
+        }
+        let versionList = await getGameVersionList();
+        if (versionList == GetStateFlag.Cancelled) {
+          return { status: "error", message: "Cancelled" };
+        }
+        return (versionList || []).filter((v) => v.gameType === params.type);
+      case "retrieve_mod_loader_list_by_game_version":
+        if (
+          !params.version ||
+          !["Fabric", "Forge", "NeoForge"].includes(params.loaderType)
+        ) {
+          return {
+            status: "error",
+            message: "Missing version or incorrect loaderType",
+          };
+        }
+        return await ResourceService.fetchModLoaderVersionList(
+          params.version,
+          params.loaderType
+        );
+      case "create_instance":
+        if (
+          !params.name ||
+          !params.description ||
+          !params.gameInfo ||
+          !params.modLoaderInfo
+        ) {
+          return {
+            status: "error",
+            message: "Missing name, description, gameInfo or modLoaderInfo",
+          };
+        }
+        return await InstanceService.createInstance(
+          config.localGameDirectories[0],
+          params.name,
+          params.description,
+          gameTypesToIcon[params.gameInfo.gameType],
+          params.gameInfo,
+          params.modLoaderInfo,
+          undefined,
+          true
+        );
       case "retrieve_instance_list":
         return await InstanceService.retrieveInstanceList();
       case "retrieve_instance_game_config":
+        if (!params.id) {
+          return { status: "error", message: "Missing instanceId" };
+        }
         return await InstanceService.retrieveInstanceGameConfig(params.id);
       case "retrieve_instance_world_list":
+        if (!params.id) {
+          return { status: "error", message: "Missing instanceId" };
+        }
         return await InstanceService.retrieveWorldList(params.id);
       case "retrieve_instance_world_details":
+        if (!params.instanceId || !params.worldName) {
+          return {
+            status: "error",
+            message: "Missing instanceId or worldName",
+          };
+        }
         return await InstanceService.retrieveWorldDetails(
           params.instanceId,
           params.worldName
@@ -339,7 +408,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     async (param: {
       name: string;
       params: Record<string, any>;
-      callId?: number;
+      callId?: string;
     }) => {
       const { name, params, callId } = param;
 
@@ -470,12 +539,14 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
       if (validMatches.length > 0) {
         const lastMatch = validMatches[validMatches.length - 1];
         // Check context if already executed
-        const state = getCallState(lastMsgIndex);
+        const state = getCallState(
+          `${currentSessionIdRef.current}-${lastMsgIndex}`
+        );
         if (!state.result && !state.error && !state.isExecuting) {
           handleFunctionCall({
             name: lastMatch.name,
             params: lastMatch.params,
-            callId: lastMsgIndex,
+            callId: `${currentSessionIdRef.current}-${lastMsgIndex}`,
           });
         }
       }
@@ -648,7 +719,9 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                       w={msg.role === "user" ? undefined : "80%"}
                       position="relative"
                     >
-                      <MarkdownContainer messageId={originalIndex}>
+                      <MarkdownContainer
+                        messageId={`${currentSessionIdRef.current}-${originalIndex}`}
+                      >
                         {msg.content}
                       </MarkdownContainer>
                     </Box>

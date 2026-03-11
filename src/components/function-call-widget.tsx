@@ -18,7 +18,7 @@ import {
   LuX,
   LuZap,
 } from "react-icons/lu";
-import { useFunctionCall } from "@/contexts/function-call-context";
+import { useFunctionCall } from "@/contexts/function-call";
 
 // Interface for the function call parameters
 export interface FunctionCallParams {
@@ -29,7 +29,7 @@ export interface FunctionCallParams {
 
 export const FunctionCallWidget: React.FC<{
   data: FunctionCallParams;
-  callId?: number;
+  callId?: string;
 }> = ({ data, callId }) => {
   const { t } = useTranslation();
   const bgColor = useColorModeValue("purple.50", "purple.900");
@@ -52,7 +52,7 @@ export const FunctionCallWidget: React.FC<{
     <Box
       w="full"
       h="full"
-      mt={7}
+      mt={2}
       p={3}
       borderRadius="xl"
       borderWidth="1px"

@@ -24,11 +24,15 @@ export const chatSystemPrompt = `# Role: 缪汐 (μc)
 ## Capabilities
 当用户请求执行特定操作（如启动游戏、管理实例、下载资源等）时，你可以使用“咒语”（Function Call）来直接操作启动器。
 语法: \`::function::{"name": "function_name", "params": {"key": "value"}}\`。
-请注意：咒语只能在上一个回答的结尾调用，且一次回答只能调用一个咒语。
+请注意：1. 不要忘记输入首尾的“\`”包裹语法；2. 咒语只能在上一个回答的结尾调用，且一次回答只能调用一个咒语。
 接下来，系统会根据你的回答调用咒语，并直接返回运行的结果。
 在下一次回答中，你要根据该结果，进行下一步操作或总结。
 
 可用咒语:
+- \`retrieve_game_version_list\`: 获取所有的游戏版本信息 (params: \`{type: "release" | "snapshot" | "old_beta" | "april_fools"}\`)，包含正式版、快照版、旧版、愚人节特别版。每个游戏版本信息包含 id, gameType, releaseTime, url 字段。
+- \`retrieve_mod_loader_list_by_game_version\`: 获取指定游戏版本的模组加载器版本列表 (params: \`{version: string, loaderType: "Fabric" | "Forge" | "NeoForge"}\`)。 version 必须是有效的游戏版本，可以从 retrieve_game_version_list 中获取。每个模组加载器版本包含 loaderType, version, description, stable, branch 字段。
+- \`create_instance\`: 创建一个新的游戏实例 (params: \`{name: string, description: string, gameInfo: { gameType: "release" | "snapshot" | "old_beta" | "april_fools", id: string, releaseTime: string, url: string }, modLoaderInfo: { loaderType: "Fabric" | "Forge" | "NeoForge", version: string, description: string, stable: boolean, branch: string }}\`)。
+    其中 gameInfo 和 modLoaderInfo 必须分别通过 fetch_game_version_list 和 fetch_mod_loader_list_by_game_version 获取。
 - \`retrieve_instance_list\`: 获取玩家的所有游戏实例 (params: \`{}\`)。在 data 中，每个实例包含 id、name、version、等字段，其中 name 方便用户选择，id 用作接下来的一系列实例操作的参数。
 - \`retrieve_instance_game_config\`: 获取玩家在实例中的游戏配置 (params: \`{id: string}\`) 其中 id 必须从 \`retrieve_instance_list\` 的返回值中获取。如果实例没有特殊设置，应该从启动器配置 \`retrieve_launcher_config\` 中获取。
 - \`retrieve_instance_world_list\`: 获取玩家在实例中的所有世界 (params: \`{id: string}\`) 其中 id 必须从 \`retrieve_instance_list\` 的返回值中获取。在 data 中，每个世界包含 name 字段，其中 name 可以用于 \`retrieve_instance_world_info\` 的参数。
@@ -57,7 +61,7 @@ export const gameErrorSystemPrompt = (
 这是游戏崩溃日志的相关部分：
 ${log}
 请根据日志内容，分析导致游戏崩溃的主要原因
-请按以下示例模式输出，不要任何开头/结尾客套话、不要解释。 
+请按以下示例模式输出，不要任何开头/结尾客套话、不要解释。
 
 **错误：xxx**
 > 可以通过 xxx(命令/文件操作/重新安装实例等)解决。

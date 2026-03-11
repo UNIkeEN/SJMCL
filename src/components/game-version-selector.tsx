@@ -35,7 +35,7 @@ import { GameClientResourceInfo } from "@/models/resource";
 import { ISOToDatetime } from "@/utils/datetime";
 import { getGameVersionWikiLink } from "@/utils/wiki";
 
-const gameTypesToIcon: Record<string, string> = {
+export const gameTypesToIcon: Record<string, string> = {
   release: "JEIcon_Release.png",
   snapshot: "JEIcon_Snapshot.png",
   old_beta: "StoneOldBeta.png",

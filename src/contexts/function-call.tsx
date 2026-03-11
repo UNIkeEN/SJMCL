@@ -7,13 +7,13 @@ export interface FunctionCallState {
 }
 
 export const FunctionCallStateContext = createContext<
-  Record<number, FunctionCallState> | undefined
+  Record<string, FunctionCallState> | undefined
 >(undefined);
 
 export const FunctionCallActionsContext = createContext<
   | {
-      setCallState: (id: number, state: FunctionCallState) => void;
-      getCallState: (id: number) => FunctionCallState;
+      setCallState: (id: string, state: FunctionCallState) => void;
+      getCallState: (id: string) => FunctionCallState;
       hasExecutingCall: () => boolean;
     }
   | undefined
@@ -23,14 +23,14 @@ export const FunctionCallProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [callStates, setCallStates] = useState<
-    Record<number, FunctionCallState>
+    Record<string, FunctionCallState>
   >({});
 
   // Use a ref to store state for synchronous access and stable callbacks
   const callStatesRef = React.useRef(callStates);
 
   const setCallState = React.useCallback(
-    (id: number, state: FunctionCallState) => {
+    (id: string, state: FunctionCallState) => {
       // Update ref immediately for synchronous logic
       callStatesRef.current = { ...callStatesRef.current, [id]: state };
       // Trigger re-render
@@ -42,7 +42,7 @@ export const FunctionCallProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   );
 
-  const getCallState = React.useCallback((id: number) => {
+  const getCallState = React.useCallback((id: string) => {
     return (
       callStatesRef.current[id] || {
         result: null,

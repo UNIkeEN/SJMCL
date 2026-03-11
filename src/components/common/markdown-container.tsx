@@ -21,7 +21,7 @@ import { splitByFunctionCalls } from "@/utils/function-call";
 
 type MarkdownContainerProps = BoxProps & {
   children: string;
-  messageId?: number;
+  messageId?: string;
 };
 
 const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
@@ -222,7 +222,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
         }
 
         return (
-          <Code className={className} {...rest}>
+          <Code bg="unset" className={className} {...rest}>
             {children}
           </Code>
         );
