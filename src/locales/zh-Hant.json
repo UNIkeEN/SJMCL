@@ -62,7 +62,7 @@
         },
         "userAgreement": {
           "title": "使用者協議",
-          "url": "https://mc.sjtu.cn/sjmcl/docs/tos.html"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
         },
         "openSourceLicense": {
           "title": "開源協議",
@@ -1393,7 +1393,7 @@
         "docs": {
           "title": "使用指南",
           "description": "了解如何將啟動器連線到外部 Agent 應用（例如 Claude、Cherry Studio 等）。",
-          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp.html"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
         },
         "port": {
           "title": "連接埠",
