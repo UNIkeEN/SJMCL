@@ -16,7 +16,6 @@
 * **Multi-Account System Support**: Built-in Microsoft login and third-party authentication server support, compatible with the OAuth login process proposed by the Yggdrasil Connect proposal.
 * **Deeplink Integration**: Integrates with external websites and tool collections, providing convenient features such as desktop shortcuts for launching instances through system deeplinks.
 
-
 > Note: some features may be limited by region, platform, or bundle type.
 
 ### Built with
@@ -83,7 +82,7 @@ To run the project in development mode:
 npm run tauri dev
 ```
 
-We warmly invite contributions from everyone.
+We warmly invite contributions from everyone. 
 
 * Before you get started, please take a moment to review our [Contributing Guide](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md) (includes more details on the development workflow). 
 * API references and some developers’ insights can be found in the [Developer Documentation](https://mc.sjtu.cn/sjmcl/en/dev).
@@ -120,21 +119,21 @@ You can also send email to [launcher@sjmc.club](mailto:launcher@sjmc.club) if yo
 We sincerely thank the following organizations for their development and community support throughout the SJMCL project.
 
 [
-    <picture>
-        <source srcset="docs/figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
-        <source srcset="docs/figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
-        <img src="docs/figs/partners/sjmc.png" alt="SJMC" style="height: 65px;">
-    </picture>
+  <picture>
+    <source srcset="docs/figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
+    <source srcset="docs/figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
+    <img src="docs/figs/partners/sjmc.png" alt="SJMC" style="height: 65px;">
+  </picture>
 ](https://mc.sjtu.cn/en/)
 &nbsp;&nbsp;
 [<img src="docs/figs/partners/sues-mc.png" alt="SUES-MC" style="height: 65px;"/>](https://www.suesmc.ltd/)
 
 [
-    <picture>
-        <source srcset="docs/figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
-        <source srcset="docs/figs/partners/mua.png" media="(prefers-color-scheme: light)">
-        <img src="docs/figs/partners/mua.png" alt="MUA" style="height: 45px;">
-    </picture>
+  <picture>
+    <source srcset="docs/figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
+    <source srcset="docs/figs/partners/mua.png" media="(prefers-color-scheme: light)">
+    <img src="docs/figs/partners/mua.png" alt="MUA" style="height: 45px;">
+  </picture>
 ](https://www.mualliance.cn/en)
 &nbsp;&nbsp;&nbsp;&nbsp;
 [
