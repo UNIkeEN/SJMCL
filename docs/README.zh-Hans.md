@@ -129,7 +129,7 @@ SJMCL 用户 QQ 交流群：860851380
 [<img src="figs/partners/sues-mc.png" alt="SUES-MC" style="height: 65px;"/>](https://www.suesmc.ltd/)
 
 [
-<picture>
+  <picture>
     <source srcset="figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
     <source srcset="figs/partners/mua.png" media="(prefers-color-scheme: light)">
     <img src="figs/partners/mua.png" alt="MUA" style="height: 45px;">
