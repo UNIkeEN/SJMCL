@@ -38,13 +38,13 @@ import { AccountService } from "@/services/account";
 import { LaunchService } from "@/services/launch";
 
 // This modal will use shared-modal-context
-interface LaunchProcessModal extends Omit<ModalProps, "children"> {
-  instanceId: string; // may not be select instance id
+interface LaunchProcessModalProps extends Omit<ModalProps, "children"> {
+  instanceId: string; // may not be selected instance id
   quickPlaySingleplayer?: string;
   quickPlayMultiplayer?: string;
 }
 
-const LaunchProcessModal: React.FC<LaunchProcessModal> = ({
+const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
   instanceId,
   quickPlaySingleplayer,
   quickPlayMultiplayer,

@@ -79,14 +79,25 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
 
   const quickLaunchGame = useCallback(
     (path: string | URL) => {
-      const id = new URL(path).searchParams.get("id") || "";
-      const decodeId = decodeURIComponent(id);
-      if (!isStandAlone && decodeId) {
+      const url = new URL(path);
+      const params = Array.from(url.searchParams.entries()).reduce<
+        Record<string, string>
+      >((acc, [key, value]) => {
+        const decodedValue = decodeURIComponent(value);
+        if (!decodedValue) return acc;
+        acc[key] = decodedValue;
+        return acc;
+      }, {});
+
+      if (!isStandAlone && params["id"]) {
         // Delay the modal opening to ensure required app state/data (e.g. selected player in global-data context) is ready.
         // This is important when the app is opened via deeplink.
         // FIXME: find a better way to handle this.
         setTimeout(() => {
-          openSharedModal("launch", { instanceId: decodeId });
+          openSharedModal("launch", {
+            ...params, // support quickPlaySingleplayer and quickPlayMultiplayer
+            instanceId: params["id"],
+          });
         }, 500);
       }
     },
