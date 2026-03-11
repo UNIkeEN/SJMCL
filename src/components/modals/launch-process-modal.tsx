@@ -21,17 +21,21 @@ import {
   StepTitle,
   Stepper,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import SelectInstanceModal from "@/components/modals/select-instance-modal";
+import SelectPlayerModal from "@/components/modals/select-player-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { LaunchServiceError } from "@/enums/service-error";
+import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
 import { ResponseError } from "@/models/response";
 import { AccountService } from "@/services/account";
@@ -39,13 +43,15 @@ import { LaunchService } from "@/services/launch";
 
 // This modal will use shared-modal-context
 interface LaunchProcessModalProps extends Omit<ModalProps, "children"> {
-  instanceId: string; // may not be selected instance id
+  instanceId?: string;
+  playerId?: string;
   quickPlaySingleplayer?: string;
   quickPlayMultiplayer?: string;
 }
 
 const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
   instanceId,
+  playerId,
   quickPlaySingleplayer,
   quickPlayMultiplayer,
   ...props
@@ -53,29 +59,98 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const toast = useToast();
-  const { config } = useLauncherConfig();
+  const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { selectedPlayer, getInstanceList } = useGlobalData();
+  const { selectedPlayer, selectedInstance, getPlayerList, getInstanceList } =
+    useGlobalData();
   const { openSharedModal, openGenericConfirmDialog, closeSharedModal } =
     useSharedModals();
 
-  const [launchingInstance, setLaunchingInstance] = useState<InstanceSummary>();
+  const [pickedInstance, setPickedInstance] = useState<InstanceSummary>();
+  const [pickedPlayer, setPickedPlayer] = useState<Player>();
   const [errorPaused, setErrorPaused] = useState<boolean>(false);
   const [errorDesc, setErrorDesc] = useState<string>("");
-  const [activeStep, setActiveStep] = useState<number>(0);
-  const previousStep = useRef<number>(-1);
+  const [activeStep, setActiveStep] = useState<number>(-1);
 
+  const previousStep = useRef<number>(-1);
+  const candidatePlayers = getPlayerList();
+  const candidateInstances = getInstanceList();
+  const shouldPickInstance = instanceId?.toLowerCase() === "tbd";
+  const requestedInstance = useMemo(
+    () =>
+      !candidateInstances || !instanceId || shouldPickInstance
+        ? undefined
+        : candidateInstances.find((instance) => instance.id === instanceId),
+    [candidateInstances, instanceId, shouldPickInstance]
+  );
+
+  const shouldPickPlayer = playerId?.toLowerCase() === "tbd";
+  const requestedPlayer = useMemo(
+    () =>
+      !candidatePlayers || !playerId || shouldPickPlayer
+        ? undefined
+        : candidatePlayers.find((player) => player.id === playerId),
+    [candidatePlayers, playerId, shouldPickPlayer]
+  );
+
+  // Prefer the instance and player chosen in this launch flow before falling back to global selection.
+  const effectiveInstance =
+    pickedInstance ||
+    requestedInstance ||
+    (!instanceId ? selectedInstance : undefined);
+  const effectiveSelectedPlayer =
+    pickedPlayer || requestedPlayer || (!playerId ? selectedPlayer : undefined);
+
+  const {
+    isOpen: isSelectPlayerModalOpen,
+    onOpen: onSelectPlayerModalOpen,
+    onClose: onSelectPlayerModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isSelectInstanceModalOpen,
+    onOpen: onSelectInstanceModalOpen,
+    onClose: onSelectInstanceModalClose,
+  } = useDisclosure();
+
+  // Reset the local instance override when a new instance request arrives.
   useEffect(() => {
-    setLaunchingInstance(
-      getInstanceList()?.find((instance) => instance.id === instanceId)
-    );
-  }, [getInstanceList, instanceId]);
+    setPickedInstance(undefined);
+  }, [instanceId]);
+
+  // Reset the local player override when a new player request arrives.
+  useEffect(() => {
+    setPickedPlayer(undefined);
+  }, [playerId]);
 
   const handleCloseModalWithCancel = useCallback(() => {
     LaunchService.cancelLaunchProcess();
     setErrorPaused(false);
+    onSelectPlayerModalClose();
+    onSelectInstanceModalClose();
     props.onClose();
-  }, [props]);
+  }, [onSelectInstanceModalClose, onSelectPlayerModalClose, props]);
+
+  const handleSelectPlayer = useCallback(
+    (player: Player) => {
+      setPickedPlayer(player);
+      if (!shouldPickPlayer || !selectedPlayer) {
+        update("states.shared.selectedPlayerId", player.id);
+      }
+      onSelectPlayerModalClose();
+    },
+    [onSelectPlayerModalClose, selectedPlayer, shouldPickPlayer, update]
+  );
+
+  const handleSelectInstance = useCallback(
+    (instance: InstanceSummary) => {
+      setPickedInstance(instance);
+      if (!shouldPickInstance || !selectedInstance) {
+        update("states.shared.selectedInstanceId", instance.id);
+      }
+      onSelectInstanceModalClose();
+    },
+    [onSelectInstanceModalClose, selectedInstance, shouldPickInstance, update]
+  );
 
   const launchProcessSteps: Array<{
     label: string;
@@ -87,7 +162,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
     () => [
       {
         label: "selectSuitableJRE",
-        function: () => LaunchService.selectSuitableJRE(instanceId),
+        function: () =>
+          LaunchService.selectSuitableJRE(effectiveInstance?.id || ""),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
         onErrCallback: (error: ResponseError) => {
@@ -134,11 +210,11 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
                 setErrorDesc(response.details);
               }
             });
-          AccountService.refreshPlayer(selectedPlayer?.id || "").then(
+          AccountService.refreshPlayer(effectiveSelectedPlayer?.id || "").then(
             (response) => {
               if (response.status !== "success") {
                 openSharedModal("relogin", {
-                  player: selectedPlayer,
+                  player: effectiveSelectedPlayer,
                   onSuccess: () => {
                     reValidate();
                   },
@@ -168,21 +244,37 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
     [
       activeStep,
       closeSharedModal,
+      effectiveInstance,
+      effectiveSelectedPlayer,
       handleCloseModalWithCancel,
-      instanceId,
       openGenericConfirmDialog,
       openSharedModal,
       quickPlaySingleplayer,
       quickPlayMultiplayer,
       router,
-      selectedPlayer,
       t,
       toast,
     ]
   );
 
+  // Gate the launch steps on required selections, opening local pickers when possible.
   useEffect(() => {
-    if (!selectedPlayer) {
+    if (candidateInstances === undefined) return;
+    if (!candidateInstances.length) {
+      toast({
+        title: t("LaunchProcessModal.toast.noSelectedInstance"),
+        status: "warning",
+      });
+      handleCloseModalWithCancel();
+      return;
+    }
+    if (!effectiveInstance) {
+      onSelectInstanceModalOpen();
+      return;
+    }
+
+    if (candidatePlayers === undefined) return;
+    if (!candidatePlayers.length) {
       toast({
         title: t("LaunchProcessModal.toast.noSelectedPlayer"),
         status: "warning",
@@ -190,6 +282,16 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
       handleCloseModalWithCancel();
       return;
     }
+    if (!effectiveSelectedPlayer) {
+      onSelectPlayerModalOpen();
+      return;
+    }
+
+    if (activeStep < 0) {
+      setActiveStep(0);
+      return;
+    }
+
     if (activeStep >= launchProcessSteps.length) {
       // Final launching state, we don't use handleCloseModalWithCancel (it includes cancel logic)
       setErrorPaused(false);
@@ -217,11 +319,17 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
     }
   }, [
     activeStep,
-    setActiveStep,
+    candidateInstances,
+    candidatePlayers,
+    effectiveInstance,
+    effectiveSelectedPlayer,
+    onSelectInstanceModalOpen,
+    onSelectPlayerModalOpen,
     launchProcessSteps,
     handleCloseModalWithCancel,
     props,
-    selectedPlayer,
+    requestedInstance,
+    requestedPlayer,
     t,
     toast,
   ]);
@@ -238,7 +346,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
       <ModalContent>
         <ModalHeader>
           {t("LaunchProcessModal.header.title", {
-            name: launchingInstance?.name,
+            name: effectiveInstance?.name,
           })}
         </ModalHeader>
         <ModalCloseButton />
@@ -292,6 +400,22 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
           </Button>
         </ModalFooter>
       </ModalContent>
+      <SelectPlayerModal
+        candidatePlayers={candidatePlayers || []}
+        onPlayerSelected={handleSelectPlayer}
+        modalTitle={t("SelectPlayerModal.header.titleForLaunch")}
+        showDesc
+        isOpen={isSelectPlayerModalOpen}
+        onClose={handleCloseModalWithCancel}
+      />
+      <SelectInstanceModal
+        candidateInstances={candidateInstances || []}
+        selectedInstance={effectiveInstance}
+        onInstanceSelected={handleSelectInstance}
+        modalTitle={t("SelectInstanceModal.header.titleForLaunch")}
+        isOpen={isSelectInstanceModalOpen}
+        onClose={handleCloseModalWithCancel}
+      />
     </Modal>
   );
 };

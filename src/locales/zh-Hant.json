@@ -1454,7 +1454,8 @@
       "launchGame": "等待遊戲啟動"
     },
     "toast": {
-      "noSelectedPlayer": "請先新增並選擇遊戲角色"
+      "noSelectedPlayer": "請先新增並選擇遊戲角色",
+      "noSelectedInstance": "請先新增並選擇遊戲實例"
     }
   },
   "LoaderSelector": {
@@ -1873,9 +1874,17 @@
       "setAsBg": "設定為啟動器背景"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "選擇實例",
+      "titleForLaunch": "選擇要啟動的實例"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "請選擇想要新增的角色"
+      "title": "選擇角色",
+      "titleForAdd": "選擇要新增的新角色",
+      "titleForLaunch": "選擇要遊玩的角色"
     }
   },
   "Services": {

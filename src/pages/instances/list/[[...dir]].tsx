@@ -184,7 +184,11 @@ const InstanceListPage = () => {
       }
     >
       <Box overflow="auto" flexGrow={1} rounded="md">
-        <InstancesView instances={instanceList} viewType={selectedViewType} />
+        <InstancesView
+          instances={instanceList}
+          selectedInstance={selectedInstance}
+          viewType={selectedViewType}
+        />
       </Box>
     </Section>
   );

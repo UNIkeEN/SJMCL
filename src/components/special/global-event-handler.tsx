@@ -89,7 +89,7 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
         return acc;
       }, {});
 
-      if (!isStandAlone && params["id"]) {
+      if (!isStandAlone) {
         // Delay the modal opening to ensure required app state/data (e.g. selected player in global-data context) is ready.
         // This is important when the app is opened via deeplink.
         // FIXME: find a better way to handle this.

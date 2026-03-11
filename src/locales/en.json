@@ -1454,7 +1454,8 @@
       "launchGame": "Waiting for Game to Launch"
     },
     "toast": {
-      "noSelectedPlayer": "Please add and select a player first"
+      "noSelectedPlayer": "Please add and select a player first",
+      "noSelectedInstance": "Please add and select a game instance first"
     }
   },
   "LoaderSelector": {
@@ -1873,9 +1874,17 @@
       "setAsBg": "Set as Launcher Background"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Select Instance",
+      "titleForLaunch": "Select Instance to Launch"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "Please select a player to add"
+      "title": "Select Player",
+      "titleForAdd": "Select New Player to Add",
+      "titleForLaunch": "Select Player to Play"
     }
   },
   "Services": {

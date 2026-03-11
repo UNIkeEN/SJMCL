@@ -593,6 +593,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
       <SelectPlayerModal
         candidatePlayers={candidatePlayers}
         onPlayerSelected={handlePlayerSelect}
+        modalTitle={t("SelectPlayerModal.header.titleForAdd")}
+        showDesc={false}
         isOpen={isSelectPlayerModalOpen}
         onClose={handleSelectPlayerModalClose}
       />
