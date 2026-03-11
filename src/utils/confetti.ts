@@ -1,11 +1,10 @@
-import confetti, { type Shape } from "canvas-confetti";
-
 const defaults = {
   ticks: 80,
   zIndex: 2000, // above the modal overlay.
 };
 
-export const confettiSchoolPride = () => {
+export const confettiSchoolPride = async () => {
+  const { default: confetti } = await import("canvas-confetti");
   confetti({
     particleCount: 200,
     angle: 60,
@@ -22,9 +21,10 @@ export const confettiSchoolPride = () => {
   });
 };
 
-export const confettiStars = () => {
+export const confettiStars = async () => {
+  const { default: confetti } = await import("canvas-confetti");
   const stars = {
-    shapes: ["star"] as Shape[],
+    shapes: ["star"] as import("canvas-confetti").Shape[],
     colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
     ...defaults,
   };
