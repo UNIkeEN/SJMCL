@@ -979,7 +979,7 @@ pub async fn create_instance(
       loader_type: mod_loader.loader_type,
       status: if matches!(
         mod_loader.loader_type,
-        ModLoaderType::Unknown | ModLoaderType::Fabric
+        ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
       ) {
         ModLoaderStatus::Installed
       } else {
