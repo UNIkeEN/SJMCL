@@ -26,7 +26,7 @@
 
 ## 開始使用
 
-開始使用 SJMCL，只需前往 [官網](https://mc.sjtu.cn/sjmcl/) 下載最新版即可。
+開始使用 SJMCL，只需前往 [官網](https://mc.sjtu.cn/sjmcl/downloads) 下載最新版即可。
 
 您也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 獲取所有版本，包括週期性構建。
 
@@ -38,7 +38,7 @@ SJMCL 目前支援以下平臺：
 | macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`                   |
 | Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便攜版二進位制檔案 |
 
-了解更多功能與常見問題，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/docs/)。
+了解更多功能與常見問題，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/docs)。
 
 ### Windows 7
 
@@ -85,7 +85,7 @@ npm run tauri dev
 我們熱烈歡迎每一位開發者的貢獻。
 
 * 在開始前，請先閱讀我們的 [貢獻指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（內含開發流程詳細說明）。
-* API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/zh/dev)。
+* API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/dev)。
 * 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
 
 ### 專案活動

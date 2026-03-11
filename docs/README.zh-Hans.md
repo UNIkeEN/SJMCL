@@ -26,7 +26,7 @@
 
 ## 开始使用
 
-开始使用 SJMCL，只需前往 [官网](https://mc.sjtu.cn/sjmcl/) 下载最新版即可。
+开始使用 SJMCL，只需前往 [官网](https://mc.sjtu.cn/sjmcl/downloads) 下载最新版即可。
 
 您也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 获取所有版本，包括周期性构建。
 
@@ -38,7 +38,7 @@ SJMCL 目前支持以下平台：
 | macOS   | 10.15 及以上        | `aarch64`, `x86_64` | `.app`，`.dmg`                   |
 | Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便携版二进制文件 |
 
-了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/docs/)。
+了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/docs)。
 
 ### Windows 7
 
