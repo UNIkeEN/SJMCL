@@ -119,7 +119,6 @@ SJMCL 使用者 QQ 交流群：860851380
 衷心感謝以下組織對 SJMCL 專案開發與社群的支援。
 
 [
-
   <picture>
     <source srcset="figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
     <source srcset="figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
