@@ -1,4 +1,4 @@
-import confetti, { Shape } from "canvas-confetti";
+import confetti, { type Shape } from "canvas-confetti";
 
 const defaults = {
   ticks: 80,
