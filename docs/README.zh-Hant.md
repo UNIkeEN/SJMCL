@@ -10,11 +10,11 @@
 
 ## 功能特性
 
-- **跨平臺支援**：相容 Windows 10/11、macOS 與 Linux。
-- **高效的實例管理**：支援多個遊戲目錄與實例，集中管理所有實例資源（如存檔、模組、資源包、光影包、截圖等）與設定。
-- **便捷的資源下載**：支援從 CurseForge 與 Modrinth 等源下載遊戲用戶端、模組載入器、各類遊戲資源與模組包。
-- **多帳戶系統支援**：內建 Microsoft 登入與第三方認證伺服器支援，相容 Yggdrasil Connect 的 OAuth 登入流程規範提案。
-- **深度連結整合**：可與外部網站與工具集同步，支援透過系統深度連結、桌面捷徑一鍵啟動實例等便捷功能。
+* **跨平臺支援**：相容 Windows 10/11、macOS 與 Linux。
+* **高效的實例管理**：支援多個遊戲目錄與實例，集中管理所有實例資源（如存檔、模組、資源包、光影包、截圖等）與設定。
+* **便捷的資源下載**：支援從 CurseForge 與 Modrinth 等源下載遊戲用戶端、模組載入器、各類遊戲資源與模組包。
+* **多帳戶系統支援**：內建 Microsoft 登入與第三方認證伺服器支援，相容 Yggdrasil Connect 的 OAuth 登入流程規範提案。
+* **深度連結整合**：可與外部網站與工具集同步，支援透過系統深度連結、桌面捷徑一鍵啟動實例等便捷功能。
 
 > 注意：部分功能可能受地區、執行平臺或程式發行類型限制。
 
@@ -32,11 +32,11 @@
 
 SJMCL 目前支援以下平臺：
 
-| 平臺    | 系統版本                         | 架構                        | 提供的的發行類型                                |
-| ------- | -------------------------------- | --------------------------- | ----------------------------------------------- |
-| Windows | 7 及以上                         | `aarch64`, `i686`, `x86_64` | 安裝版 `.exe`，便攜版 `.exe`                    |
-| macOS   | 10.15 及以上                     | `aarch64`, `x86_64`         | `.app`，`.dmg`                                  |
-| Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64`         | `.AppImage`, `.deb`, `.rpm`, 便攜版二進位制檔案 |
+| 平臺    | 系統版本            | 架構               | 提供的的發行類型                              |
+|---------|---------------------|--------------------|--------------------------------------------|
+| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`   | 安裝版 `.exe`，便攜版 `.exe` |
+| macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`                   |
+| Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便攜版二進位制檔案 |
 
 了解更多功能與常見問題，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/docs/)。
 
@@ -84,9 +84,9 @@ npm run tauri dev
 
 我們熱烈歡迎每一位開發者的貢獻。
 
-- 在開始前，請先閱讀我們的 [貢獻指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（內含開發流程詳細說明）。
-- API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/dev)。
-- 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
+* 在開始前，請先閱讀我們的 [貢獻指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（內含開發流程詳細說明）。
+* API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/zh/dev)。
+* 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
 
 ### 專案活動
 
@@ -119,29 +119,28 @@ SJMCL 使用者 QQ 交流群：860851380
 衷心感謝以下組織對 SJMCL 專案開發與社群的支援。
 
 [
-<picture>
 
-<source srcset="figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
-<source srcset="figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
-<img src="figs/partners/sjmc.png" alt="SJMC" style="height: 65px;">
-</picture>
+  <picture>
+    <source srcset="figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
+    <source srcset="figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
+    <img src="figs/partners/sjmc.png" alt="SJMC" style="height: 65px;">
+  </picture>
 ](https://mc.sjtu.cn)
 &nbsp;&nbsp;
 [<img src="figs/partners/sues-mc.png" alt="SUES-MC" style="height: 65px;"/>](https://www.suesmc.ltd/)
 
 [
-<picture>
-
-<source srcset="figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
-<source srcset="figs/partners/mua.png" media="(prefers-color-scheme: light)">
-<img src="figs/partners/mua.png" alt="MUA" style="height: 45px;">
-</picture>
+  <picture>
+    <source srcset="figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
+    <source srcset="figs/partners/mua.png" media="(prefers-color-scheme: light)">
+    <img src="figs/partners/mua.png" alt="MUA" style="height: 45px;">
+  </picture>
 ](https://www.mualliance.cn)
 &nbsp;&nbsp;&nbsp;&nbsp;
 [
-<picture>
-<source srcset="figs/partners/gnwork-dark.png" media="(prefers-color-scheme: dark)">
-<source srcset="figs/partners/gnwork.png" media="(prefers-color-scheme: light)">
-<img src="figs/partners/gnwork.png" alt="GNWORK" style="height: 45px;">
-</picture>
+  <picture>
+    <source srcset="figs/partners/gnwork-dark.png" media="(prefers-color-scheme: dark)">
+    <source srcset="figs/partners/gnwork.png" media="(prefers-color-scheme: light)">
+    <img src="figs/partners/gnwork.png" alt="GNWORK" style="height: 45px;">
+  </picture>
 ](https://space.bilibili.com/403097853)
