@@ -1454,7 +1454,8 @@
       "launchGame": "ゲーム起動中"
     },
     "toast": {
-      "noSelectedPlayer": "キャラクターを追加して選択してください"
+      "noSelectedPlayer": "キャラクターを追加して選択してください",
+      "noSelectedInstance": "インスタンスを追加して選択してください"
     }
   },
   "LoaderSelector": {
@@ -1873,9 +1874,17 @@
       "setAsBg": "これをランチャーのバックグラウンドにする"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "インスタンスを選択",
+      "titleForLaunch": "起動するインスタンスを選択"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "追加のキャラクターを選んでください。"
+      "title": "キャラクターを選択",
+      "titleForAdd": "追加する新しいキャラクターを選択",
+      "titleForLaunch": "プレイするキャラクターを選択"
     }
   },
   "Services": {
