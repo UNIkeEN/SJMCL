@@ -58,9 +58,9 @@ pub enum ProcessPriority {
 #[serde(rename_all = "camelCase")]
 pub enum FileValidatePolicy {
   Disable,
-  Normal,
-  #[serde(other)]
   Full,
+  #[serde(other)]
+  Normal,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
@@ -136,7 +136,7 @@ structstruck::strike! {
       },
       pub workaround: struct {
         pub no_jvm_args: bool,
-        #[default(FileValidatePolicy::Full)]
+        #[default(FileValidatePolicy::Normal)]
         pub game_file_validate_policy: FileValidatePolicy,
         pub dont_check_jvm_validity: bool,
         pub dont_patch_natives: bool,
