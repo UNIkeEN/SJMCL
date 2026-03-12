@@ -21,9 +21,11 @@ import {
   LuTrash2,
   LuX,
 } from "react-icons/lu";
+import AdvancedCard from "@/components/common/advanced-card";
 import MarkdownContainer from "@/components/common/markdown-container";
 import { OptionItem } from "@/components/common/option-item";
 import { MiuChatLogoTitle } from "@/components/logo-title";
+import { gameTypesToIcon } from "@/components/modals/create-instance-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useFunctionCallActions } from "@/contexts/function-call";
 import { useGlobalData } from "@/contexts/global-data";
@@ -40,8 +42,6 @@ import { IntelligenceService } from "@/services/intelligence";
 import { ResourceService } from "@/services/resource";
 import { FunctionCallMatch, findFunctionCalls } from "@/utils/function-call";
 import { base64ImgSrc, formatPrintable } from "@/utils/string";
-import AdvancedCard from "./common/advanced-card";
-import { gameTypesToIcon } from "./game-version-selector";
 
 const AGENT_AVATAR_SRC = "/images/agent/miuxi_px_avatar.png";
 
