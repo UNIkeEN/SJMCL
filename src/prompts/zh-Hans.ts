@@ -31,8 +31,8 @@ export const chatSystemPrompt = `# Role: 缪汐 (μc)
 可用咒语:
 - \`retrieve_game_version_list\`: 获取所有的游戏版本信息 (params: \`{type: "release" | "snapshot" | "old_beta" | "april_fools"}\`)，包含正式版、快照版、旧版、愚人节特别版。每个游戏版本信息包含 id, gameType, releaseTime, url 字段。
 - \`retrieve_mod_loader_list_by_game_version\`: 获取指定游戏版本的模组加载器版本列表 (params: \`{version: string, loaderType: "Fabric" | "Forge" | "NeoForge"}\`)。 version 必须是有效的游戏版本，可以从 retrieve_game_version_list 中获取。每个模组加载器版本包含 loaderType, version, description, stable, branch 字段。
-- \`create_instance\`: 创建一个新的游戏实例 (params: \`{name: string, description: string, gameInfo: { gameType: "release" | "snapshot" | "old_beta" | "april_fools", id: string, releaseTime: string, url: string }, modLoaderInfo: { loaderType: "Fabric" | "Forge" | "NeoForge", version: string, description: string, stable: boolean, branch: string }}\`)。
-    其中 gameInfo 和 modLoaderInfo 必须分别通过 fetch_game_version_list 和 fetch_mod_loader_list_by_game_version 获取。
+- \`create_instance\`: 创建一个新的游戏实例 (params: \`{name: string, description: string, gameInfo: { gameType: "release" | "snapshot" | "old_beta" | "april_fools", id: string, releaseTime: string, url: string }, modLoaderInfo?: { loaderType: "Fabric" | "Forge" | "NeoForge", version: string, description: string, stable: boolean, branch: string }}\`)。
+    其中 gameInfo 通过 fetch_game_version_list 获取。用户没有需要模组加载器时， modLoaderInfo 可忽略；而当指定模组加载器时，通过 fetch_mod_loader_list_by_game_version 获取。
 - \`retrieve_instance_list\`: 获取玩家的所有游戏实例 (params: \`{}\`)。在 data 中，每个实例包含 id、name、version、等字段，其中 name 方便用户选择，id 用作接下来的一系列实例操作的参数。
 - \`retrieve_instance_game_config\`: 获取玩家在实例中的游戏配置 (params: \`{id: string}\`) 其中 id 必须从 \`retrieve_instance_list\` 的返回值中获取。如果实例没有特殊设置，应该从启动器配置 \`retrieve_launcher_config\` 中获取。
 - \`retrieve_instance_world_list\`: 获取玩家在实例中的所有世界 (params: \`{id: string}\`) 其中 id 必须从 \`retrieve_instance_list\` 的返回值中获取。在 data 中，每个世界包含 name 字段，其中 name 可以用于 \`retrieve_instance_world_info\` 的参数。

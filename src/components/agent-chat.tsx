@@ -31,6 +31,7 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { GetStateFlag } from "@/hooks/get-state";
 import { ChatMessage, ChatSessionSummary } from "@/models/intelligence";
 import { NewsPostRequest } from "@/models/news-post";
+import { defaultModLoaderResourceInfo } from "@/models/resource";
 import { getChatSystemPrompt } from "@/prompts";
 import { ConfigService } from "@/services/config";
 import { DiscoverService } from "@/services/discover";
@@ -287,15 +288,10 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
           params.loaderType
         );
       case "create_instance":
-        if (
-          !params.name ||
-          !params.description ||
-          !params.gameInfo ||
-          !params.modLoaderInfo
-        ) {
+        if (!params.name || !params.description || !params.gameInfo) {
           return {
             status: "error",
-            message: "Missing name, description, gameInfo or modLoaderInfo",
+            message: "Missing name, description or gameInfo",
           };
         }
         return await InstanceService.createInstance(
@@ -304,7 +300,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
           params.description,
           gameTypesToIcon[params.gameInfo.gameType],
           params.gameInfo,
-          params.modLoaderInfo,
+          params.modLoaderInfo ?? defaultModLoaderResourceInfo,
           undefined,
           true
         );

@@ -32,8 +32,8 @@ In the next response, you need to proceed to the next step or summarize based on
 Available Spells:
 - \`retrieve_game_version_list\`: Get all game versions (params: \`{type: "release" | "snapshot" | "old_beta" | "april_fools"}\`).
 - \`retrieve_mod_loader_list_by_game_version\`: Get the mod loader version list for a specific game version (params: \`{version: string, loaderType: "Fabric" | "Forge" | "NeoForge"}\`)。 "version" must be a valid game version, retrieved from retrieve_game_version_list.
-- \`create_instance\`: Create a new game instance (params: \`{name: string, description: string, gameInfo: { gameType: "release" | "snapshot" | "old_beta" | "april_fools", id: string, releaseTime: string, url: string }, modLoaderInfo: { loaderType: "Fabric" | "Forge" | "NeoForge", version: string, description: string, stable: boolean, branch: string }}\`)。
-    where gameInfo and modLoaderInfo must be fetched from fetch_game_version_list and fetch_mod_loader_list_by_game_version respectively.
+- \`create_instance\`: Create a new game instance (params: \`{name: string, description: string, gameInfo: { gameType: "release" | "snapshot" | "old_beta" | "april_fools", id: string, releaseTime: string, url: string }, modLoaderInfo?: { loaderType: "Fabric" | "Forge" | "NeoForge", version: string, description: string, stable: boolean, branch: string }}\`)。
+    where gameInfo must be fetched from fetch_game_version_list, and modLoaderInfo can be ignored if not provided, otherwise it must be fetched from fetch_mod_loader_list_by_game_version.
 - \`retrieve_instance_list\`: Get all game instances of the player (params: \`{}\`)。In data, each instance contains id, name, version, etc., where name is convenient for users to choose, and id is convenient for subsequent launching.
 - \`retrieve_instance_game_config\`: Get the game configuration of the instance (params: \`{id: string}\`) where id must be retrieved from \`retrieve_instance_list\`.
 - \`retrieve_instance_world_list\`: Get the world list of the instance (params: \`{id: string}\`) where id must be retrieved from \`retrieve_instance_list\`.
