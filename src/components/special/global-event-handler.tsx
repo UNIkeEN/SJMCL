@@ -69,9 +69,8 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
   const addAuthServerByDeeplink = useCallback(
     (path: string | URL) => {
       const url = new URL(path).searchParams.get("url") || "";
-      const decodeUrl = decodeURIComponent(url);
-      if (!isStandAlone && decodeUrl) {
-        openSharedModal("add-auth-server", { presetUrl: decodeUrl });
+      if (!isStandAlone && url) {
+        openSharedModal("add-auth-server", { presetUrl: url });
       }
     },
     [isStandAlone, openSharedModal]
@@ -83,9 +82,8 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
       const params = Array.from(url.searchParams.entries()).reduce<
         Record<string, string>
       >((acc, [key, value]) => {
-        const decodedValue = decodeURIComponent(value);
-        if (!decodedValue) return acc;
-        acc[key] = decodedValue;
+        if (!value) return acc;
+        acc[key] = value;
         return acc;
       }, {});
 

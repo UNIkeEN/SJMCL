@@ -133,12 +133,9 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
   const handleSelectPlayer = useCallback(
     (player: Player) => {
       setPickedPlayer(player);
-      if (!shouldPickPlayer || !selectedPlayer) {
-        update("states.shared.selectedPlayerId", player.id);
-      }
       onSelectPlayerModalClose();
     },
-    [onSelectPlayerModalClose, selectedPlayer, shouldPickPlayer, update]
+    [onSelectPlayerModalClose]
   );
 
   const handleSelectInstance = useCallback(
@@ -286,6 +283,11 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
       onSelectPlayerModalOpen();
       return;
     }
+    // Update selectedPlayerId because validateSelectedPlayer will read it from backend config state later.
+    if (selectedPlayer?.id !== effectiveSelectedPlayer.id) {
+      update("states.shared.selectedPlayerId", effectiveSelectedPlayer.id);
+      return;
+    }
 
     if (activeStep < 0) {
       setActiveStep(0);
@@ -330,6 +332,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
     props,
     requestedInstance,
     requestedPlayer,
+    selectedPlayer,
+    update,
     t,
     toast,
   ]);

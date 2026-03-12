@@ -12,8 +12,9 @@ interface UseDeepLinkOptions {
   onCall: (path: string, subpath: string) => void;
 }
 
-// not use openUrl, so that can be used in the development.
+// Do not use openUrl so this helper can be used during development.
 export const emitDeepLink = (urls: string[]) => {
+  if (typeof window === "undefined") return;
   window.dispatchEvent(
     new CustomEvent<string[]>(EMIT_DEEPLINK_EVENT, {
       detail: urls,
