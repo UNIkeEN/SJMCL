@@ -58,9 +58,9 @@ pub enum ProcessPriority {
 #[serde(rename_all = "camelCase")]
 pub enum FileValidatePolicy {
   Disable,
+  Full,
   #[serde(other)]
   Normal,
-  Full,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
