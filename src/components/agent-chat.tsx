@@ -11,7 +11,7 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuHistory,
@@ -123,6 +123,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   const handleLoadSession = async (sessionId: string) => {
     const resp = await IntelligenceService.retrieveChatSession(sessionId);
     if (resp.status === "success") {
+      shouldAutoScrollRef.current = true;
       currentSessionIdRef.current = sessionId;
       sessionCreatedAtRef.current = resp.data.createdAt;
       setMessages(resp.data.messages);
@@ -136,17 +137,28 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     setSessions((prev) => prev.filter((s) => s.id !== sessionId));
   };
 
-  const scrollToBottom = () => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTo({
-        top: messagesContainerRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  };
+  const shouldAutoScrollRef = useRef(true);
 
+  const handleContainerScroll = useCallback(() => {
+    if (!messagesContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } =
+      messagesContainerRef.current;
+    shouldAutoScrollRef.current = scrollHeight - scrollTop - clientHeight < 40;
+  }, []);
+
+  // When user sends a message or function call starts, re-enable auto-scroll
   useEffect(() => {
-    scrollToBottom();
+    if (isLoading) {
+      shouldAutoScrollRef.current = true;
+    }
+  }, [isLoading]);
+
+  // Auto-scroll on new content only if user hasn't scrolled up
+  useEffect(() => {
+    if (shouldAutoScrollRef.current && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -655,6 +667,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
           <>
             <Flex
               ref={messagesContainerRef}
+              onScroll={handleContainerScroll}
               w="100%"
               flex={1}
               overflowY="auto"
