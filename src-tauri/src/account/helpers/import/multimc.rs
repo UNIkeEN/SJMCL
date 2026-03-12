@@ -28,11 +28,17 @@ pub struct MultiMCProfile {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct MultiMCYgg {
+  pub token: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct MultiMCOfficialAccount {
   pub active: bool,
   pub r#type: String,
   pub msa: MultiMCMsa,
   pub profile: MultiMCProfile,
+  pub ygg: MultiMCYgg,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -46,7 +52,7 @@ async fn microsoft_to_player(
   app: &AppHandle,
   acc: &MultiMCOfficialAccount,
 ) -> SJMCLResult<PlayerInfo> {
-  let profile_result = fetch_minecraft_profile(app, acc.msa.token.clone()).await;
+  let profile_result = fetch_minecraft_profile(app, acc.ygg.token.clone()).await;
   let profile = match profile_result {
     Ok(p) => p,
     Err(_) => {
