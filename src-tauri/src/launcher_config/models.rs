@@ -58,8 +58,8 @@ pub enum ProcessPriority {
 #[serde(rename_all = "camelCase")]
 pub enum FileValidatePolicy {
   Disable,
-  Normal,
   #[serde(other)]
+  Normal,
   Full,
 }
 
