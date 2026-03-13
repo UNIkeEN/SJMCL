@@ -14,6 +14,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  LuBotMessageSquare,
   LuHistory,
   LuPause,
   LuPlus,
@@ -586,7 +587,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
               onClick={handleNewSession}
             />
             <IconButton
-              icon={<LuHistory />}
+              icon={showHistory ? <LuBotMessageSquare /> : <LuHistory />}
               aria-label="agent-chat-history"
               size="sm"
               variant="ghost"
@@ -609,7 +610,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
         </Flex>
 
         {showHistory ? (
-          <Flex w="100%" flex={1} overflowY="auto" direction="column" p={2}>
+          <Flex w="100%" flex={1} overflowY="auto" direction="column">
             {sessions.length === 0 ? (
               <Flex
                 direction="column"
@@ -637,6 +638,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                     isFullClickZone
                     onClick={() => handleLoadSession(session.id)}
                     isChildrenIndependent
+                    p={1}
                   >
                     <IconButton
                       icon={<LuTrash2 />}
@@ -755,6 +757,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
               borderColor={inputShellBorder}
               borderRadius="2xl"
               p={3}
+              pt={0}
             >
               <Flex direction="column" gap={3}>
                 <Textarea
