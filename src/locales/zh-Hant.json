@@ -16,8 +16,8 @@
         "contributors": {
           "title": "開發者名單"
         },
-        "reportIssue": {
-          "title": "報告問題或請求功能"
+        "sourceCode": {
+          "title": "在 GitHub 檢視原始碼"
         },
         "aboutSJMC": {
           "title": "關於上海交通大學 Minecraft 社（SJMC）"
@@ -1195,6 +1195,11 @@
         "LauncherDocs": {
           "title": "SJMC Launcher 文件",
           "url": "https://mc.sjtu.cn/sjmcl/docs"
+        },
+        "UserGroup": {
+          "title": "使用者社群",
+          "description": "歡迎加入 QQ 群或 Discord 伺服器，回報問題、請求功能或取得協助",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }
     }
@@ -1445,6 +1450,13 @@
     "Text": {
       "noSelectedPlayer": "尚未選擇角色",
       "noSelectedGame": "尚未選擇遊戲實例"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "上次執行異常退出",
+      "content": "SJMCL 上次執行時異常退出，您可以將日誌發送到<community>使用者社群</community>，或在 <github>GitHub</github> 發起 Issue 以尋求協助",
+      "viewLog": "檢視日誌"
     }
   },
   "LaunchProcessModal": {

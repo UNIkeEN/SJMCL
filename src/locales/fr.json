@@ -16,8 +16,8 @@
         "contributors": {
           "title": "Liste des développeurs"
         },
-        "reportIssue": {
-          "title": "Signaler un problème ou demander une fonctionnalité"
+        "sourceCode": {
+          "title": "Voir le code source sur GitHub"
         },
         "aboutSJMC": {
           "title": "À propos de Minecraft society à l’université jiao tong shanghai (SJMC)"
@@ -1195,6 +1195,11 @@
         "LauncherDocs": {
           "title": "Documentation du lanceur SJMC",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        },
+        "UserGroup": {
+          "title": "Communauté des utilisateurs",
+          "description": "Rejoignez le groupe QQ ou le serveur Discord pour signaler des problèmes, demander des fonctionnalités ou obtenir de l'aide",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
     }
@@ -1445,6 +1450,13 @@
     "Text": {
       "noSelectedPlayer": "Aucun joueur sélectionné",
       "noSelectedGame": "Aucune instance de jeu sélectionnée"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "La dernière exécution s'est terminée anormalement",
+      "content": "SJMCL s'est terminé anormalement lors de la dernière exécution. Vous pouvez envoyer les journaux à la <community>communauté</community> ou ouvrir une issue sur <github>GitHub</github> pour obtenir de l'aide.",
+      "viewLog": "Voir les journaux"
     }
   },
   "LaunchProcessModal": {

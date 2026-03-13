@@ -42,7 +42,7 @@ static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(fa
 static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 pub async fn run() {
-  tauri::Builder::default()
+  let exit_code = tauri::Builder::default()
     .plugin(tauri_plugin_clipboard_manager::init())
     .plugin(tauri_plugin_deep_link::init())
     .plugin(tauri_plugin_dialog::init())
@@ -296,6 +296,15 @@ pub async fn run() {
 
       Ok(())
     })
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+    .build(tauri::generate_context!())
+    .expect("error while building tauri application")
+    .run_return(|_, _| {});
+
+  log::info!("Launcher exited with code {exit_code}.");
+  let _ = LauncherConfig::load().map(|mut config| {
+    config.last_run_exited_normally = exit_code == 0;
+    config.save();
+  });
+
+  std::process::exit(exit_code);
 }

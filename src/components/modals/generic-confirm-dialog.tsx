@@ -20,6 +20,7 @@ interface GenericConfirmDialogProps {
   onClose: () => void;
   title: string;
   body: string | React.ReactElement;
+  footerLeft?: React.ReactElement;
   btnOK?: string;
   btnCancel?: string;
   onOKCallback?: () => void;
@@ -35,6 +36,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
   onClose,
   title,
   body,
+  footerLeft,
   btnOK = t("General.confirm"),
   btnCancel = t("General.cancel"),
   onOKCallback,
@@ -79,15 +81,18 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
           <AlertDialogCloseButton />
           <AlertDialogBody>{body}</AlertDialogBody>
           <AlertDialogFooter>
-            {showSuppressBtn && suppressKey && (
-              <Checkbox
-                colorScheme={primaryColor}
-                isChecked={dontShowAgain}
-                onChange={(e) => setDontShowAgain(e.target.checked)}
-              >
-                <Text fontSize="sm">{t("General.dontShowAgain")}</Text>
-              </Checkbox>
-            )}
+            <HStack spacing={3}>
+              {showSuppressBtn && suppressKey && (
+                <Checkbox
+                  colorScheme={primaryColor}
+                  isChecked={dontShowAgain}
+                  onChange={(e) => setDontShowAgain(e.target.checked)}
+                >
+                  <Text fontSize="sm">{t("General.dontShowAgain")}</Text>
+                </Checkbox>
+              )}
+              {footerLeft}
+            </HStack>
 
             <HStack spacing={3} ml="auto">
               {btnCancel && (

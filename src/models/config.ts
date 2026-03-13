@@ -70,6 +70,7 @@ export interface LauncherConfig {
   };
   mocked: boolean;
   runCount: number;
+  lastRunExitedNormally: boolean;
   appearance: {
     theme: {
       primaryColor: string;
@@ -236,6 +237,7 @@ export const defaultConfig: LauncherConfig = {
   },
   mocked: true,
   runCount: -1,
+  lastRunExitedNormally: true,
   appearance: {
     theme: {
       primaryColor: "blue",

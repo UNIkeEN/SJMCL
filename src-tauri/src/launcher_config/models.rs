@@ -189,6 +189,8 @@ structstruck::strike! {
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,
     pub run_count: usize,
+    #[default = true]
+    pub last_run_exited_normally: bool,
     pub appearance: struct AppearanceConfig {
       pub theme: struct {
         #[default = "blue"]
