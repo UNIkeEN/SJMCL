@@ -135,7 +135,6 @@ pub async fn retrieve_multimc_account_info(
     .filter_map(|content| serde_json::from_str::<MultiMCAccountEntry>(content.as_str()).ok())
     .collect::<Vec<_>>();
   let mut player_infos: Vec<PlayerInfo> = Vec::new();
-  let url_set: HashSet<Url> = HashSet::new();
   let mut seen_ids: HashSet<String> = HashSet::new();
   for json in &multimc_jsons {
     for acc in &json.accounts {
@@ -147,5 +146,5 @@ pub async fn retrieve_multimc_account_info(
     }
   }
 
-  Ok((player_infos, url_set.into_iter().collect()))
+  Ok((player_infos, vec![]))
 }
