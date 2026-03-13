@@ -1204,11 +1204,15 @@
       "title": "他のランチャーからアカウント情報をインポート"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "認証サーバー",
       "players": "キャラクター"
+    },
+    "footer": {
+      "parentDirHint": "追加済みのゲームディレクトリの親ディレクトリから、アカウント情報ファイルを検索します。"
     },
     "tooltips": {
       "existingServer": "同じアドレスの認証サーバーが既に存在するため、インポート時に上書きされます。",

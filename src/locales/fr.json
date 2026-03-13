@@ -1204,11 +1204,15 @@
       "title": "Importer des comptes depuis d'autres launchers"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "Serveurs d'authentification",
       "players": "Joueurs"
+    },
+    "footer": {
+      "parentDirHint": "Les fichiers d'informations de compte seront recherchés dans les dossiers parents des répertoires de jeu ajoutés."
     },
     "tooltips": {
       "existingServer": "Les données d'un serveur d'authentification avec la même adresse existent déjà et seront écrasées.",

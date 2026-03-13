@@ -2,6 +2,7 @@ use crate::account::helpers::authlib_injector::common::parse_profile;
 use crate::account::helpers::authlib_injector::models::{
   MinecraftProfile, MinecraftProfileProperty,
 };
+use crate::account::helpers::import::misc::ACCESS_TOKEN_EXPIRED;
 use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
@@ -98,7 +99,7 @@ async fn microsoft_to_player(
           name: acc.display_name.clone(),
           player_type: PlayerType::Microsoft,
           auth_account: None,
-          access_token: Some("%failed:access_token_expired%".to_string()),
+          access_token: Some(ACCESS_TOKEN_EXPIRED.to_string()),
           refresh_token: Some(acc.refresh_token.clone()),
           textures: load_preset_skin(app, PresetRole::Steve)?,
           auth_server_url: None,

@@ -1204,11 +1204,15 @@
       "title": "Import Players and Auth Servers"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "Auth Servers",
       "players": "Players"
+    },
+    "footer": {
+      "parentDirHint": "Account files will be searched in parent path of added game directories."
     },
     "tooltips": {
       "existingServer": "Existing auth server data with the same address will be overwritten.",

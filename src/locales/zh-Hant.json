@@ -1204,11 +1204,15 @@
       "title": "從其他啟動器匯入帳戶資訊"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "認證伺服器",
       "players": "角色"
+    },
+    "footer": {
+      "parentDirHint": "將在已新增遊戲目錄的父目錄尋找帳戶資訊檔案。"
     },
     "tooltips": {
       "existingServer": "已存在相同地址的認證伺服器，匯入將會覆寫資料",

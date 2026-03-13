@@ -1204,11 +1204,15 @@
       "title": "从其他启动器导入账户信息"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "认证服务器",
       "players": "角色"
+    },
+    "footer": {
+      "parentDirHint": "将在已添加游戏目录的父目录寻找账户信息文件。"
     },
     "tooltips": {
       "existingServer": "已存在相同地址的认证服务器，导入将会覆盖数据",
