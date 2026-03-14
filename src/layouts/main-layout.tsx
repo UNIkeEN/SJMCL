@@ -45,6 +45,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
+  const isCheckedLastRunStatus = useRef(false);
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -63,8 +64,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       title: t("UnavailableExePathAlertDialog.dialog.title"),
       body: t("UnavailableExePathAlertDialog.dialog.content"),
       btnCancel: t("UnavailableExePathAlertDialog.dialog.btnContinue"),
+      onCancelCallback: () => update("runCount", config.runCount + 1), // because this dialog will skip the run count check
       btnOK: t("General.exit"),
-      isAlert: true,
       onOKCallback: () => exit(0),
       footerLeft: (
         <HStack spacing={2}>
@@ -72,8 +73,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <LanguageMenu placement="top" />
         </HStack>
       ),
+      isAlert: true,
+      closeOnEsc: false,
+      closeOnOverlayClick: false,
+      showCloseBtn: false,
     });
-  }, [openGenericConfirmDialog]);
+  }, [config.runCount, openGenericConfirmDialog, update]);
 
   const openLastExitedAbnormallyDialog = useCallback(() => {
     openGenericConfirmDialog({
@@ -132,11 +137,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     }
 
     // update `last_run_exited_normally` to false, will be updated when this run ends with normal exit.
-    if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
+    if (!config.mocked && !isCheckedLastRunStatus.current && !isStandAlone) {
       if (!config.lastRunExitedNormally) {
         openLastExitedAbnormallyDialog();
       }
       update("lastRunExitedNormally", false);
+      isCheckedLastRunStatus.current = true;
     }
 
     // update run count, conditionally show some modals.
