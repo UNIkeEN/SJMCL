@@ -74,7 +74,10 @@ pub async fn download_optifine_libraries(
   };
 
   let mut task_params: Vec<PTaskParam> = vec![];
-  let installer_coord = format!("net.minecraftforge:optifine:{}", optifine.filename);
+  let installer_coord = format!(
+    "net.minecraftforge:optifine:{}-installer",
+    optifine.filename
+  );
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
