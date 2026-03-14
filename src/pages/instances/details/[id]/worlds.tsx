@@ -416,18 +416,32 @@ const InstanceWorldsPage = () => {
                   )}
                   {server.isQueried &&
                     (server.online ? (
-                      <Tag colorScheme="green">
-                        <LuCheck />
-                        <TagLabel ml={0.5}>
-                          {t("InstanceWorldsPage.serverList.tag.online")}
-                        </TagLabel>
+                      <Tag
+                        colorScheme={
+                          (server.latency ?? 0) < 300
+                            ? "green"
+                            : (server.latency ?? 0) < 600
+                              ? "yellow"
+                              : "red"
+                        }
+                      >
+                        <HStack spacing={0.5}>
+                          <LuCheck />
+                          <TagLabel>
+                            {server.latency !== undefined
+                              ? `${server.latency} ms`
+                              : t("InstanceWorldsPage.serverList.tag.online")}
+                          </TagLabel>
+                        </HStack>
                       </Tag>
                     ) : (
                       <Tag colorScheme="red">
-                        <LuX />
-                        <TagLabel ml={0.5}>
-                          {t("InstanceWorldsPage.serverList.tag.offline")}
-                        </TagLabel>
+                        <HStack spacing={0.5}>
+                          <LuX />
+                          <TagLabel>
+                            {t("InstanceWorldsPage.serverList.tag.offline")}
+                          </TagLabel>
+                        </HStack>
                       </Tag>
                     ))}
                   <HStack spacing={0}>
