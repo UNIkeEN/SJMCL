@@ -58,6 +58,7 @@ export interface GameServerInfo {
   playersOnline?: number;
   playersMax?: number;
   online: boolean;
+  latency?: number;
 }
 
 export interface LocalModInfo {
