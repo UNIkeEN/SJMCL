@@ -1204,11 +1204,15 @@
       "title": "Import Players and Auth Servers"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "Auth Servers",
       "players": "Players"
+    },
+    "footer": {
+      "parentDirHint": "Account files will be searched in parent path of added game directories."
     },
     "tooltips": {
       "existingServer": "Existing auth server data with the same address will be overwritten.",
@@ -1454,7 +1458,8 @@
       "launchGame": "Waiting for Game to Launch"
     },
     "toast": {
-      "noSelectedPlayer": "Please add and select a player first"
+      "noSelectedPlayer": "Please add and select a player first",
+      "noSelectedInstance": "Please add and select a game instance first"
     }
   },
   "LoaderSelector": {
@@ -1873,9 +1878,17 @@
       "setAsBg": "Set as Launcher Background"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Select Instance",
+      "titleForLaunch": "Select Instance to Launch"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "Please select a player to add"
+      "title": "Select Player",
+      "titleForAdd": "Select New Player to Add",
+      "titleForLaunch": "Select Player to Play"
     }
   },
   "Services": {

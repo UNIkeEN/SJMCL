@@ -62,7 +62,7 @@
         },
         "userAgreement": {
           "title": "使用者協議",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
         },
         "openSourceLicense": {
           "title": "開源協議",
@@ -1194,7 +1194,7 @@
       "settings": {
         "LauncherDocs": {
           "title": "SJMC Launcher 文件",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/docs"
         }
       }
     }
@@ -1204,11 +1204,15 @@
       "title": "從其他啟動器匯入帳戶資訊"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "認證伺服器",
       "players": "角色"
+    },
+    "footer": {
+      "parentDirHint": "將在已新增遊戲目錄的父目錄尋找帳戶資訊檔案。"
     },
     "tooltips": {
       "existingServer": "已存在相同地址的認證伺服器，匯入將會覆寫資料",
@@ -1393,7 +1397,7 @@
         "docs": {
           "title": "使用指南",
           "description": "了解如何將啟動器連線到外部 Agent 應用（例如 Claude、Cherry Studio 等）。",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/intelligence/launcher-mcp"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
         },
         "port": {
           "title": "連接埠",
@@ -1454,7 +1458,8 @@
       "launchGame": "等待遊戲啟動"
     },
     "toast": {
-      "noSelectedPlayer": "請先新增並選擇遊戲角色"
+      "noSelectedPlayer": "請先新增並選擇遊戲角色",
+      "noSelectedInstance": "請先新增並選擇遊戲實例"
     }
   },
   "LoaderSelector": {
@@ -1873,9 +1878,17 @@
       "setAsBg": "設定為啟動器背景"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "選擇實例",
+      "titleForLaunch": "選擇要啟動的實例"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "請選擇想要新增的角色"
+      "title": "選擇角色",
+      "titleForAdd": "選擇要新增的新角色",
+      "titleForLaunch": "選擇要遊玩的角色"
     }
   },
   "Services": {

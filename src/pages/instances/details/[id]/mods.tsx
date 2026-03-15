@@ -2,18 +2,24 @@ import {
   Avatar,
   AvatarBadge,
   Center,
+  Flex,
   HStack,
   Highlight,
   Icon,
+  IconButton,
+  Image,
   Input,
   Tag,
   Text,
+  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  LuChevronRight,
   LuCircleCheck,
   LuCircleMinus,
   LuClockArrowUp,
@@ -27,9 +33,8 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import SelectableCard, {
-  SelectableCardProps,
-} from "@/components/common/selectable-card";
+import { SelectableCardProps } from "@/components/common/selectable-card";
+import { WrapCardGroup } from "@/components/common/wrap-card";
 import {
   modLoaderTypes,
   modLoaderTypesToIcon,
@@ -381,17 +386,56 @@ const InstanceModsPage = () => {
           );
         }}
       >
-        <HStack spacing={3.5} w="100%">
-          {selectableCardItems.map((item, index) => (
-            <SelectableCard
-              key={index}
-              {...item}
-              flex={1}
-              minH="max-content"
-              h="100%"
-            />
-          ))}
-        </HStack>
+        <WrapCardGroup
+          items={modLoaderTypes.map((type) => ({
+            cardContent: (
+              <Flex justify="space-between" align="center">
+                <HStack spacing={2}>
+                  <Image
+                    src={`/images/icons/${modLoaderTypesToIcon[type]}`}
+                    alt={type}
+                    boxSize="28px"
+                    borderRadius="4px"
+                  />
+                  <VStack spacing={0} alignItems="start">
+                    <Text
+                      fontSize="xs-sm"
+                      fontWeight={
+                        summary?.modLoader.loaderType === type
+                          ? "bold"
+                          : "normal"
+                      }
+                      color={
+                        summary?.modLoader.loaderType === type
+                          ? `${config.appearance.theme.primaryColor}.600`
+                          : "inherit"
+                      }
+                    >
+                      {type}
+                    </Text>
+                    <Text fontSize="xs" className="secondary-text">
+                      {summary?.modLoader.loaderType === type
+                        ? parseModLoaderVersion(
+                            summary?.modLoader.version || ""
+                          )
+                        : t("InstanceModsPage.modLoaderList.notInstalled")}
+                    </Text>
+                  </VStack>
+                </HStack>
+                <HStack spacing={0}>
+                  <IconButton
+                    aria-label="select"
+                    icon={<Icon as={LuChevronRight} boxSize={3.5} />}
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => handleTypeSelect(type)}
+                  />
+                </HStack>
+              </Flex>
+            ),
+            isSelected: summary?.modLoader.loaderType === type,
+          }))}
+        />
       </Section>
       <Section
         title={t("InstanceModsPage.modList.title")}

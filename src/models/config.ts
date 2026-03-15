@@ -212,7 +212,7 @@ export const defaultGameConfig: GameConfig = {
     },
     workaround: {
       noJvmArgs: false,
-      gameFileValidatePolicy: "full",
+      gameFileValidatePolicy: "normal",
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useNativeGlfw: false,

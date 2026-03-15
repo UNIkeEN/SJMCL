@@ -246,7 +246,7 @@ export class AccountService {
 
   /**
    * RETRIEVE other launcher account info for importing (stage 1).
-   * @param {ImportLauncherType} launcherType - The external launcher type (e.g., HMCL / PCL).
+   * @param {ImportLauncherType} launcherType - The external launcher type (e.g., HMCL / MultiMC).
    * @returns {Promise<InvokeResponse<[Player[], AuthServer[]]>>} - The other launcher account info for user selection.
    */
   @responseHandler("account")

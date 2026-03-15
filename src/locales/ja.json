@@ -1194,7 +1194,7 @@
       "settings": {
         "LauncherDocs": {
           "title": "SJMC Launcher ドキュメント（中国語）",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/docs"
         }
       }
     }
@@ -1204,11 +1204,15 @@
       "title": "他のランチャーからアカウント情報をインポート"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "認証サーバー",
       "players": "キャラクター"
+    },
+    "footer": {
+      "parentDirHint": "追加済みのゲームディレクトリの親ディレクトリから、アカウント情報ファイルを検索します。"
     },
     "tooltips": {
       "existingServer": "同じアドレスの認証サーバーが既に存在するため、インポート時に上書きされます。",
@@ -1454,7 +1458,8 @@
       "launchGame": "ゲーム起動中"
     },
     "toast": {
-      "noSelectedPlayer": "キャラクターを追加して選択してください"
+      "noSelectedPlayer": "キャラクターを追加して選択してください",
+      "noSelectedInstance": "インスタンスを追加して選択してください"
     }
   },
   "LoaderSelector": {
@@ -1873,9 +1878,17 @@
       "setAsBg": "これをランチャーのバックグラウンドにする"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "インスタンスを選択",
+      "titleForLaunch": "起動するインスタンスを選択"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "追加のキャラクターを選んでください。"
+      "title": "キャラクターを選択",
+      "titleForAdd": "追加する新しいキャラクターを選択",
+      "titleForLaunch": "プレイするキャラクターを選択"
     }
   },
   "Services": {

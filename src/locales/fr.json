@@ -1194,7 +1194,7 @@
       "settings": {
         "LauncherDocs": {
           "title": "Documentation du lanceur SJMC",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs"
         }
       }
     }
@@ -1204,11 +1204,15 @@
       "title": "Importer des comptes depuis d'autres launchers"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "Serveurs d'authentification",
       "players": "Joueurs"
+    },
+    "footer": {
+      "parentDirHint": "Les fichiers d'informations de compte seront recherchés dans les dossiers parents des répertoires de jeu ajoutés."
     },
     "tooltips": {
       "existingServer": "Les données d'un serveur d'authentification avec la même adresse existent déjà et seront écrasées.",
@@ -1454,7 +1458,8 @@
       "launchGame": "En attente du lancement du jeu"
     },
     "toast": {
-      "noSelectedPlayer": "Veuillez d'abord ajouter et sélectionner un joueur"
+      "noSelectedPlayer": "Veuillez d'abord ajouter et sélectionner un joueur",
+      "noSelectedInstance": "Veuillez d'abord ajouter et sélectionner une instance de jeu"
     }
   },
   "LoaderSelector": {
@@ -1873,9 +1878,17 @@
       "setAsBg": "Définir comme fond du lanceur"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Sélectionner une instance",
+      "titleForLaunch": "Sélectionner l'instance à lancer"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "Veuillez sélectionner le joueur à ajouter"
+      "title": "Sélectionner un joueur",
+      "titleForAdd": "Sélectionner le nouveau joueur à ajouter",
+      "titleForLaunch": "Sélectionner le joueur à utiliser"
     }
   },
   "Services": {

@@ -195,7 +195,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
               </Flex>
             </Flex>
           )}
-          <ModalBody>
+          <ModalBody flex="1" overflow="auto">
             {summary?.version && (
               <LoaderSelector
                 selectedGameVersion={{
