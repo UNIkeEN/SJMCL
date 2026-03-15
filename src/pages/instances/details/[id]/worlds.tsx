@@ -418,7 +418,7 @@ const InstanceWorldsPage = () => {
                     <Tag
                       colorScheme={
                         server.online
-                          ? (server.latency || 0) < 200
+                          ? (server.latency || 0) < 300
                             ? "green"
                             : "yellow"
                           : "red"
