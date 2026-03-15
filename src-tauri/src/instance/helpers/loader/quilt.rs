@@ -34,10 +34,30 @@ pub async fn install_quilt_loader(
   let client = app.state::<reqwest::Client>();
   let loader_ver = &loader.version;
 
-  let meta_url = get_download_api(priority[0], ResourceType::QuiltMeta)?
-    .join(&format!("v3/versions/loader/{game_version}/{loader_ver}"))?;
+  let mut meta: Option<serde_json::Value> = None;
+  let mut quilt_maven: Option<Url> = None;
 
-  let meta: serde_json::Value = client.get(meta_url).send().await?.json().await?;
+  for source_type in priority.iter() {
+    if let Ok(base_url) = get_download_api(*source_type, ResourceType::QuiltMeta) {
+      if let Ok(url) = base_url.join(&format!("v3/versions/loader/{game_version}/{loader_ver}")) {
+        match client.get(url.clone()).send().await {
+          Ok(resp) if resp.status().is_success() => {
+            if let Ok(json) = resp.json::<serde_json::Value>().await {
+              meta = Some(json);
+              if let Ok(maven_url) = get_download_api(*source_type, ResourceType::QuiltMaven) {
+                quilt_maven = Some(maven_url);
+              }
+              break;
+            }
+          }
+          _ => continue,
+        }
+      }
+    }
+  }
+
+  let meta = meta.ok_or(SJMCLError("failed to fetch Quilt loader meta".to_string()))?;
+  let quilt_maven = quilt_maven.ok_or(SJMCLError("failed to get Quilt Maven URL".to_string()))?;
 
   let loader_path = meta["loader"]["maven"]
     .as_str()
@@ -61,8 +81,6 @@ pub async fn install_quilt_loader(
     ..Default::default()
   };
 
-  let quilt_maven = get_download_api(priority[0], ResourceType::QuiltMaven)?;
-
   for path in &[loader_path, int_path, hashed_path] {
     add_library_entry(&mut client_info.libraries, path, None)?;
     add_library_entry(&mut new_patch.libraries, path, None)?;
@@ -73,20 +91,38 @@ pub async fn install_quilt_loader(
     if let Some(arr) = launcher_meta.get(side).and_then(|v| v.as_array()) {
       for item in arr {
         if let Some(name) = item["name"].as_str() {
-          let url = item
+          let root_url = item
             .get("url")
             .and_then(|v| v.as_str())
-            .unwrap_or_else(|| resolve_maven_root(name, quilt_maven.as_str()));
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| resolve_maven_root(name, quilt_maven.as_str()).to_string());
 
           add_library_entry(&mut client_info.libraries, name, None)?;
           add_library_entry(&mut new_patch.libraries, name, None)?;
 
           let rel: String = convert_library_name_to_path(name, None)?;
-          let src = convert_url_to_target_source(
-            &Url::parse(url)?.join(&rel)?,
-            &[ResourceType::QuiltMaven, ResourceType::Libraries],
-            &priority[0],
-          )?;
+          let full_url = Url::parse(&root_url)?.join(&rel)?;
+
+          // fallback priority
+          let mut src_opt = None;
+          for source_type in priority.iter() {
+            if let Ok(src) = convert_url_to_target_source(
+              &full_url,
+              &[
+                ResourceType::QuiltMaven,
+                ResourceType::FabricMaven,
+                ResourceType::Libraries,
+              ],
+              source_type,
+            ) {
+              src_opt = Some(src);
+              break;
+            }
+          }
+          let src = src_opt.ok_or(SJMCLError(format!(
+            "failed to create download source for {}",
+            name
+          )))?;
 
           task_params.push(PTaskParam::Download(DownloadParam {
             src,
@@ -102,12 +138,29 @@ pub async fn install_quilt_loader(
 
   for path in &[loader_path, int_path, hashed_path] {
     let rel: String = convert_library_name_to_path(path, None)?;
-    let root = resolve_maven_root(path, quilt_maven.as_str());
-    let src = convert_url_to_target_source(
-      &Url::parse(root)?.join(&rel)?,
-      &[ResourceType::QuiltMaven, ResourceType::Libraries],
-      &priority[0],
-    )?;
+    let root_url = resolve_maven_root(path, quilt_maven.as_str());
+    let full_url = Url::parse(root_url)?.join(&rel)?;
+
+    let mut src_opt = None;
+    for source_type in priority.iter() {
+      if let Ok(src) = convert_url_to_target_source(
+        &full_url,
+        &[
+          ResourceType::QuiltMaven,
+          ResourceType::FabricMaven,
+          ResourceType::Libraries,
+        ],
+        source_type,
+      ) {
+        src_opt = Some(src);
+        break;
+      }
+    }
+    let src = src_opt.ok_or(SJMCLError(format!(
+      "failed to create download source for {}",
+      path
+    )))?;
+
     task_params.push(PTaskParam::Download(DownloadParam {
       src,
       dest: lib_dir.join(&rel),
