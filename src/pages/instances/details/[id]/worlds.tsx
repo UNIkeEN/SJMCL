@@ -414,36 +414,37 @@ const InstanceWorldsPage = () => {
                         : `${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
                     </Text>
                   )}
-                  {server.isQueried &&
-                    (server.online ? (
-                      <Tag
-                        colorScheme={
-                          (server.latency ?? 0) < 300
+                  {server.isQueried && (
+                    <Tag
+                      colorScheme={
+                        server.online
+                          ? (server.latency || 0) < 200
                             ? "green"
-                            : (server.latency ?? 0) < 600
-                              ? "yellow"
-                              : "red"
-                        }
-                      >
-                        <HStack spacing={0.5}>
-                          <LuCheck />
-                          <TagLabel>
-                            {server.latency !== undefined
-                              ? `${server.latency} ms`
-                              : t("InstanceWorldsPage.serverList.tag.online")}
-                          </TagLabel>
-                        </HStack>
-                      </Tag>
-                    ) : (
-                      <Tag colorScheme="red">
-                        <HStack spacing={0.5}>
-                          <LuX />
-                          <TagLabel>
-                            {t("InstanceWorldsPage.serverList.tag.offline")}
-                          </TagLabel>
-                        </HStack>
-                      </Tag>
-                    ))}
+                            : "yellow"
+                          : "red"
+                      }
+                    >
+                      <HStack spacing={0.5}>
+                        {server.online ? (
+                          <>
+                            <LuCheck />
+                            <TagLabel>
+                              {server.latency != null
+                                ? `${server.latency} ms`
+                                : t("InstanceWorldsPage.serverList.tag.online")}
+                            </TagLabel>
+                          </>
+                        ) : (
+                          <>
+                            <LuX />
+                            <TagLabel>
+                              {t("InstanceWorldsPage.serverList.tag.offline")}
+                            </TagLabel>
+                          </>
+                        )}
+                      </HStack>
+                    </Tag>
+                  )}
                   <HStack spacing={0}>
                     {serverItemMenuOperations(server).map((item, index) => (
                       <CommonIconButton
