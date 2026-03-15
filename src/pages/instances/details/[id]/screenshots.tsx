@@ -25,14 +25,8 @@ import { ScreenshotInfo } from "@/models/instance/misc";
 const GAP = 12;
 const ASPECT_RATIO = 9 / 16;
 const OVERSCAN_ROW_COUNT = 5;
-
-// 每个截图项的最小宽度，用于计算列数
 const MIN_ITEM_WIDTH = 220;
 
-/**
- * 根据容器宽度计算列数
- * 默认窗口大小下显示5列，窗口缩小时减少列数
- */
 const getColumnCount = (containerWidth: number): number => {
   if (containerWidth <= 0) return 5;
   const columnCount = Math.floor(containerWidth / MIN_ITEM_WIDTH);
@@ -136,6 +130,7 @@ const InstanceScreenshotsPage: React.FC = () => {
     getScreenshotListWrapper();
   }, [getScreenshotListWrapper]);
 
+  // Handle container resize with debounce to avoid excessive re-renders
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -166,6 +161,7 @@ const InstanceScreenshotsPage: React.FC = () => {
     onClose: onScreenshotPreviewModalClose,
   } = useDisclosure();
 
+  // Open preview modal when screenshot index is in URL query
   useEffect(() => {
     const { screenshotIndex } = router.query;
     if (screenshotIndex) {
@@ -190,6 +186,7 @@ const InstanceScreenshotsPage: React.FC = () => {
     }
   }, [onScreenshotPreviewModalClose]);
 
+  // Track scrolling state for performance optimization
   const handleScroll = useCallback(({ scrollTop }: { scrollTop: number }) => {
     setIsScrolling(true);
     if (scrollTimeoutRef.current) {
