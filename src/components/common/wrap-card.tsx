@@ -148,9 +148,13 @@ export const WrapCardGroup: React.FC<WrapCardGroupProps> = ({
   }, [boxRef, numberToPx, cardMinWidth, spacing, widthMode, items.length]);
 
   useLayoutEffect(() => {
-    resizeCard();
-    window.addEventListener("resize", resizeCard);
-    return () => window.removeEventListener("resize", resizeCard);
+    if (!boxRef.current) return;
+    const observer = new ResizeObserver(() => {
+      resizeCard();
+    });
+    observer.observe(boxRef.current);
+
+    return () => observer.disconnect();
   }, [resizeCard]);
 
   return (
