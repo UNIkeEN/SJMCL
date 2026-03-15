@@ -16,8 +16,8 @@
         "contributors": {
           "title": "Contributors"
         },
-        "reportIssue": {
-          "title": "Report an Issue or Submit a Feature Request"
+        "sourceCode": {
+          "title": "View Source Code on GitHub"
         },
         "aboutSJMC": {
           "title": "About SJTU Minecraft Club (SJMC)"
@@ -1195,6 +1195,11 @@
         "LauncherDocs": {
           "title": "SJMC Launcher Documentation",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        },
+        "UserGroup": {
+          "title": "User Community",
+          "description": "Join the QQ group or Discord server to report issues, request features, or get help",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
     }
@@ -1445,6 +1450,13 @@
     "Text": {
       "noSelectedPlayer": "No player selected",
       "noSelectedGame": "No game instance selected"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "Previous Run Exited Abnormally",
+      "content": "SJMCL exited abnormally during the last run. You can send the logs to the <community>community</community>, or open an issue on <github>GitHub</github> for help.",
+      "viewLog": "View Logs"
     }
   },
   "LaunchProcessModal": {

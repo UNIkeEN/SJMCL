@@ -92,8 +92,8 @@ const GlobalGameSettingsPage = () => {
     {
       icon: "openFolder",
       danger: false,
-      onClick: () => {
-        openPath(directory.dir);
+      onClick: async () => {
+        await openPath(directory.dir);
       },
       disabled: !directoryExistence[directory.dir],
     },

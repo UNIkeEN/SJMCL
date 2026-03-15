@@ -132,17 +132,17 @@ const AboutSettingsPage = () => {
           ),
         },
         {
-          title: t("AboutSettingsPage.about.settings.reportIssue.title"),
+          title: t("AboutSettingsPage.about.settings.sourceCode.title"),
           children: (
             <CommonIconButton
-              label="https://github.com/UNIkeEN/SJMCL/issues"
+              label="https://github.com/UNIkeEN/SJMCL"
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               h={18}
               onClick={() => {
-                openUrl("https://github.com/UNIkeEN/SJMCL/issues");
+                openUrl("https://github.com/UNIkeEN/SJMCL");
               }}
             />
           ),

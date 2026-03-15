@@ -205,7 +205,7 @@ const InstanceWorldsPage = () => {
     {
       label: "",
       icon: "revealFile",
-      onClick: () => openPath(save.dirPath),
+      onClick: async () => await openPath(save.dirPath),
     },
     {
       label: t("InstanceWorldsPage.worldList.viewLevelData"),

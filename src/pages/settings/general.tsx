@@ -1,5 +1,5 @@
 import { Button, HStack, Switch, useDisclosure } from "@chakra-ui/react";
-import { appLogDir } from "@tauri-apps/api/path";
+import { appLogDir, join } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -282,7 +282,8 @@ const GeneralSettingsPage = () => {
               size="xs"
               onClick={async () => {
                 const _appLogDir = await appLogDir();
-                openPath(_appLogDir + "/launcher");
+                const launcherLogDir = await join(_appLogDir, "launcher");
+                await openPath(launcherLogDir);
               }}
             >
               {t("General.open")}
