@@ -101,8 +101,8 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     {
       icon: "openFolder",
       danger: false,
-      onClick: () => {
-        openPath(summary?.versionPath || "");
+      onClick: async () => {
+        await openPath(summary?.versionPath || "");
       },
     },
     {

@@ -1455,7 +1455,7 @@
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次运行异常退出",
-      "content": "SJMCL 上次运行时异常退出、您可以将日志发送到<community>用户社群</community>、或在 <github>GitHub</github> 发起 Issue 以寻求帮助",
+      "content": "SJMCL 上次运行时异常退出。您可以将日志发送到<community>用户社群</community>，或在 <github>GitHub</github> 发起 Issue 以寻求帮助",
       "viewLog": "查看日志"
     }
   },

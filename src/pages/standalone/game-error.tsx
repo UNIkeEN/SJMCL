@@ -194,7 +194,9 @@ const GameErrorPage: React.FC = () => {
                       variant="ghost"
                       size="sm"
                       h={21}
-                      onClick={() => openPath(instanceInfo.versionPath)}
+                      onClick={async () => {
+                        await openPath(instanceInfo.versionPath);
+                      }}
                     />
                   </Tooltip>
                 </HStack>

@@ -329,8 +329,8 @@ const DownloadSettingsPage = () => {
               <Button
                 variant="subtle"
                 size="xs"
-                onClick={() => {
-                  openPath(downloadConfigs.cache.directory);
+                onClick={async () => {
+                  await openPath(downloadConfigs.cache.directory);
                 }}
               >
                 {t("General.open")}

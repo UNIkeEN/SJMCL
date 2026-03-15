@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { appDataDir, appLogDir } from "@tauri-apps/api/path";
+import { appDataDir, appLogDir, join } from "@tauri-apps/api/path";
 import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
 import { t } from "i18next";
@@ -119,7 +119,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             colorScheme={primaryColor}
             onClick={async () => {
               const _appLogDir = await appLogDir();
-              openPath(_appLogDir + "/launcher");
+              const launcherLogDir = await join(_appLogDir, "launcher");
+              await openPath(launcherLogDir);
             }}
           >
             {t("LastExitedAbnormallyDialog.dialog.viewLog")}
