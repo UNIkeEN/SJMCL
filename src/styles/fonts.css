@@ -1,13 +1,13 @@
 @font-face {
     font-family: "Sinter";
-    src: url("../../public/fonts/Sinter/Sinter-Regular.otf") format("opentype");
+    src: url("../../public/fonts/Sinter/Sinter-Regular.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: "Sinter";
-    src: url("../../public/fonts/Sinter/Sinter-Medium.otf") format("opentype");
+    src: url("../../public/fonts/Sinter/Sinter-Medium.woff2") format("woff2");
     font-weight: bold;
     font-style: normal;
 }
