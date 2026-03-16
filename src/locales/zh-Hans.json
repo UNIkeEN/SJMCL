@@ -1275,7 +1275,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "加载器",
-      "notInstalled": "未安装"
+      "notInstalled": "未安装",
+      "installed": "已安装"
     },
     "modList": {
       "title": "模组",

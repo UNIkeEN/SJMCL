@@ -11,6 +11,7 @@ use crate::resource::helpers::loader_meta::fabric::get_fabric_meta_by_game_versi
 use crate::resource::helpers::loader_meta::forge::get_forge_meta_by_game_version;
 use crate::resource::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
 use crate::resource::helpers::loader_meta::optifine::get_optifine_meta_by_game_version;
+use crate::resource::helpers::loader_meta::quilt::get_quilt_meta_by_game_version;
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
@@ -72,6 +73,9 @@ pub async fn fetch_mod_loader_version_list(
     }
     ModLoaderType::NeoForge => {
       Ok(get_neoforge_meta_by_game_version(&app, &priority_list, &game_version).await?)
+    }
+    ModLoaderType::Quilt => {
+      Ok(get_quilt_meta_by_game_version(&app, &priority_list, &game_version).await?)
     }
     // TODO here
     _ => Err(ResourceError::NoDownloadApi.into()),

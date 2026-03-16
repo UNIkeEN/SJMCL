@@ -1275,7 +1275,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "Mod Loader",
-      "notInstalled": "Not Installed"
+      "notInstalled": "Not Installed",
+      "installed": "Installed"
     },
     "modList": {
       "title": "Mods",

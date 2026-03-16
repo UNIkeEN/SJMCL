@@ -11,6 +11,7 @@ use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
 use crate::instance::helpers::loader::forge::{install_forge_loader, InstallProfile};
 use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
+use crate::instance::helpers::loader::quilt::install_quilt_loader;
 use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::merge_library_lists;
@@ -55,6 +56,19 @@ pub async fn install_mod_loader(
         client_info,
         task_params,
         is_install_fabric_api,
+      )
+      .await
+    }
+    ModLoaderType::Quilt => {
+      install_quilt_loader(
+        app,
+        priority,
+        game_version,
+        loader,
+        lib_dir,
+        mods_dir,
+        client_info,
+        task_params,
       )
       .await
     }

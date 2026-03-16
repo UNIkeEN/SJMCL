@@ -57,6 +57,7 @@ export const loaderTypesToIcon: Record<string, string> = {
   Forge: "/images/icons/Anvil.png", // differ from that in mod-loader-selector
   NeoForge: "/images/icons/NeoForge.png",
   OptiFine: "/images/icons/OptiFine.png",
+  Quilt: "/images/icons/Quilt.png",
 };
 
 export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
