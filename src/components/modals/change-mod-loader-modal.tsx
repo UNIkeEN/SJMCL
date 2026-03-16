@@ -123,124 +123,118 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent h="80vh">
+      <ModalContent h="100%">
         <ModalHeader>
           {t(
             `ChangeModLoaderModal.header.title.${currentModLoader.loaderType === "Unknown" ? "install" : "change"}`
           )}
         </ModalHeader>
         <ModalCloseButton />
-        <Flex flexDir="column" h="100%">
-          {currentModLoader.loaderType !== "Unknown" && (
-            <Flex position="relative" align="center" justify="center" py={2}>
-              <Flex flex="1" justify="flex-end" pr={8}>
+        {currentModLoader.loaderType !== "Unknown" && (
+          <Flex position="relative" align="center" justify="center" py={2}>
+            <Flex flex="1" justify="flex-end" pr={8}>
+              <OptionItem
+                prefixElement={
+                  <Image
+                    src={`/images/icons/${currentModLoader.loaderType}.png`}
+                    alt={currentModLoader.loaderType}
+                    boxSize="36px"
+                    borderRadius="md"
+                  />
+                }
+                title={
+                  <Text fontSize="sm" fontWeight="medium">
+                    {currentModLoader.loaderType}
+                  </Text>
+                }
+                description={
+                  <Text fontSize="xs" color="gray.500">
+                    {parseModLoaderVersion(currentModLoader.version)}
+                  </Text>
+                }
+              />
+            </Flex>
+            <Box position="absolute" left="50%" transform="translateX(-50%)">
+              <LuArrowRight size={18} />
+            </Box>
+            <Flex flex="1" justify="flex-start" pl={8}>
+              {isUnselected ? (
+                <OptionItem
+                  prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
+                  title={
+                    <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                      {t("ChangeModLoaderModal.notSelectedLoader")}
+                    </Text>
+                  }
+                />
+              ) : (
                 <OptionItem
                   prefixElement={
                     <Image
-                      src={`/images/icons/${currentModLoader.loaderType}.png`}
-                      alt={currentModLoader.loaderType}
+                      src={`/images/icons/${selectedModLoader.loaderType}.png`}
+                      alt={selectedModLoader.loaderType}
                       boxSize="36px"
                       borderRadius="md"
                     />
                   }
                   title={
                     <Text fontSize="sm" fontWeight="medium">
-                      {currentModLoader.loaderType}
+                      {selectedModLoader.loaderType}
                     </Text>
                   }
                   description={
                     <Text fontSize="xs" color="gray.500">
-                      {parseModLoaderVersion(currentModLoader.version)}
+                      {parseModLoaderVersion(selectedModLoader.version)}
                     </Text>
                   }
                 />
-              </Flex>
-              <Box position="absolute" left="50%" transform="translateX(-50%)">
-                <LuArrowRight size={18} />
-              </Box>
-              <Flex flex="1" justify="flex-start" pl={8}>
-                {isUnselected ? (
-                  <OptionItem
-                    prefixElement={
-                      <Skeleton boxSize="36px" borderRadius="md" />
-                    }
-                    title={
-                      <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                        {t("ChangeModLoaderModal.notSelectedLoader")}
-                      </Text>
-                    }
-                  />
-                ) : (
-                  <OptionItem
-                    prefixElement={
-                      <Image
-                        src={`/images/icons/${selectedModLoader.loaderType}.png`}
-                        alt={selectedModLoader.loaderType}
-                        boxSize="36px"
-                        borderRadius="md"
-                      />
-                    }
-                    title={
-                      <Text fontSize="sm" fontWeight="medium">
-                        {selectedModLoader.loaderType}
-                      </Text>
-                    }
-                    description={
-                      <Text fontSize="xs" color="gray.500">
-                        {parseModLoaderVersion(selectedModLoader.version)}
-                      </Text>
-                    }
-                  />
-                )}
-              </Flex>
+              )}
             </Flex>
+          </Flex>
+        )}
+        <ModalBody flexGrow="1" flexDir="column" h="100%" overflow="auto">
+          {summary?.version && (
+            <LoaderSelector
+              selectedGameVersion={{
+                id: summary.version,
+                gameType: "release",
+                releaseTime: new Date().toISOString(),
+                url: "",
+              }}
+              selectedModLoader={selectedModLoader}
+              onSelectModLoader={setSelectedModLoader}
+            />
           )}
-          <ModalBody flex="1" overflow="auto">
-            {summary?.version && (
-              <LoaderSelector
-                selectedGameVersion={{
-                  id: summary.version,
-                  gameType: "release",
-                  releaseTime: new Date().toISOString(),
-                  url: "",
-                }}
-                selectedModLoader={selectedModLoader}
-                onSelectModLoader={setSelectedModLoader}
-              />
-            )}
-          </ModalBody>
-          <ModalFooter>
-            {selectedModLoader.loaderType === ModLoaderType.Fabric && (
-              <Checkbox
-                colorScheme={primaryColor}
-                isChecked={
-                  selectedModLoader.version !== "" && isInstallFabricApi
-                }
-                disabled={!selectedModLoader.version}
-                onChange={(e) => setIsInstallFabricApi(e.target.checked)}
-              >
-                <Text fontSize="sm">
-                  {t("ChangeModLoaderModal.footer.installFabricApi")}
-                </Text>
-              </Checkbox>
-            )}
-            <HStack spacing={3} ml="auto">
-              <Button variant="ghost" onClick={modalProps.onClose}>
-                {t("General.cancel")}
-              </Button>
-              <Button
-                colorScheme={primaryColor}
-                onClick={handleChangeModLoader}
-                isLoading={isLoading}
-                isDisabled={isUnselected}
-              >
-                {isSameAsCurrent
-                  ? t("ChangeModLoaderModal.footer.reinstall")
-                  : t("General.confirm")}
-              </Button>
-            </HStack>
-          </ModalFooter>
-        </Flex>
+        </ModalBody>
+        <ModalFooter>
+          {selectedModLoader.loaderType === ModLoaderType.Fabric && (
+            <Checkbox
+              colorScheme={primaryColor}
+              isChecked={selectedModLoader.version !== "" && isInstallFabricApi}
+              disabled={!selectedModLoader.version}
+              onChange={(e) => setIsInstallFabricApi(e.target.checked)}
+            >
+              <Text fontSize="sm">
+                {t("ChangeModLoaderModal.footer.installFabricApi")}
+              </Text>
+            </Checkbox>
+          )}
+          <HStack spacing={3} ml="auto">
+            <Button variant="ghost" onClick={modalProps.onClose}>
+              {t("General.cancel")}
+            </Button>
+            <Button
+              colorScheme={primaryColor}
+              onClick={handleChangeModLoader}
+              isLoading={isLoading}
+              isDisabled={isUnselected}
+            >
+              {isSameAsCurrent
+                ? t("ChangeModLoaderModal.footer.reinstall")
+                : t("General.confirm")}
+            </Button>
+          </HStack>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

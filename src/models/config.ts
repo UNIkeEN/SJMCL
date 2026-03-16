@@ -324,7 +324,7 @@ export const defaultConfig: LauncherConfig = {
       gameTypes: ["release"],
     },
     instanceModsPage: {
-      accordionStates: [true, true],
+      accordionStates: [false, true],
     },
     instanceResourcePacksPage: {
       accordionStates: [true, true],
