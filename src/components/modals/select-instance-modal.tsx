@@ -3,6 +3,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
@@ -28,22 +29,26 @@ const SelectInstanceModal: React.FC<SelectInstanceModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Modal size="md" {...modalProps}>
+    <Modal scrollBehavior="inside" {...modalProps}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxH="calc(100vh - 7.5rem)">
         <ModalHeader>
           {modalTitle || t("SelectInstanceModal.header.title")}
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody pb={6}>
+        <ModalBody display="flex" flexDir="column" flex="1">
           <InstancesView
             instances={candidateInstances}
             selectedInstance={selectedInstance}
             viewType="list"
             withMenu={false}
             onSelectInstance={onInstanceSelected}
+            onWheel={(e) => {
+              e.stopPropagation();
+            }}
           />
         </ModalBody>
+        <ModalFooter />
       </ModalContent>
     </Modal>
   );

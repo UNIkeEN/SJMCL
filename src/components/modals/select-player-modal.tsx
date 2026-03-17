@@ -3,6 +3,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
@@ -28,14 +29,14 @@ const SelectPlayerModal: React.FC<SelectPlayerModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Modal size="md" {...modalProps}>
+    <Modal scrollBehavior="inside" {...modalProps}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxH="calc(100vh - 7.5rem)">
         <ModalHeader>
           {modalTitle || t("SelectPlayerModal.header.title")}
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody pb={6}>
+        <ModalBody display="flex" flexDir="column" flex="1" minH={0}>
           <PlayersView
             players={candidatePlayers}
             selectedPlayer={undefined}
@@ -43,8 +44,12 @@ const SelectPlayerModal: React.FC<SelectPlayerModalProps> = ({
             withMenu={false}
             showDesc={showDesc}
             onSelectPlayer={onPlayerSelected}
+            onWheel={(e) => {
+              e.stopPropagation();
+            }}
           />
         </ModalBody>
+        <ModalFooter />
       </ModalContent>
     </Modal>
   );

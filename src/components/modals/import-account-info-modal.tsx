@@ -246,7 +246,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
       {...props}
     >
       <ModalOverlay />
-      <ModalContent h="80vh">
+      <ModalContent h="100%">
         <ModalHeader>{t("ImportAccountInfoModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody overflow="hidden">
