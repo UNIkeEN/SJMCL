@@ -29,6 +29,8 @@ use tasks::monitor::TaskMonitor;
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
+use tauri_plugin_decorum::WebviewWindowExt;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
 use tauri::Manager;
@@ -59,6 +61,7 @@ pub async fn run() {
       let _ = main_window.set_focus();
     }))
     .plugin(tauri_plugin_window_state::Builder::new().build())
+    .plugin(tauri_plugin_decorum::init())
     .invoke_handler(tauri::generate_handler![
       launcher_config::commands::retrieve_launcher_config,
       launcher_config::commands::update_launcher_config,
@@ -271,6 +274,10 @@ pub async fn run() {
           let _ = utils::logging::purge_old_launcher_logs(app_handle, 30).await;
         });
       }
+
+      // set custom title bar
+      let main_window = app.get_webview_window("main").unwrap();
+      main_window.create_overlay_titlebar().unwrap();
 
       // On platforms other than macOS, set the menu to empty to hide the default menu.
       // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458

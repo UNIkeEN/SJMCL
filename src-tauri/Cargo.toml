@@ -70,6 +70,7 @@ sysinfo = "0.36.0"
 systemstat = "0.2.3"
 tauri = { version = "2.9.5", features = ["protocol-asset"] }
 tauri-plugin-clipboard-manager = "2.3.2"
+tauri-plugin-decorum = "1.1.1"
 tauri-plugin-deep-link = "2.4.6"
 tauri-plugin-dialog = "2.6.0"
 tauri-plugin-fs = "2.4.5"
