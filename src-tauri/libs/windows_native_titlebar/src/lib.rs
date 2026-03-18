@@ -8,7 +8,8 @@ use std::sync::{LazyLock, Mutex};
 use tauri::WebviewWindow;
 use winapi::shared::minwindef::{LPARAM, LRESULT, UINT, WPARAM};
 use winapi::shared::windef::{HWND, RECT};
-use winapi::um::dwmapi::{DwmDefWindowProc, DwmExtendFrameIntoClientArea, MARGINS};
+use winapi::um::dwmapi::{DwmDefWindowProc, DwmExtendFrameIntoClientArea};
+use winapi::um::uxtheme::MARGINS;
 use winapi::um::winuser::{
   CallWindowProcW, DefWindowProcW, GetSystemMetrics, GetWindowLongPtrW, GetWindowRect,
   SetWindowLongPtrW, SetWindowPos, GWLP_WNDPROC, GWL_STYLE, HTCAPTION, HTCLIENT, HTCLOSE, HTHELP,
@@ -88,7 +89,7 @@ unsafe fn hit_test_resize_border(hwnd: HWND, lparam: LPARAM) -> Option<LRESULT> 
 
 fn is_caption_control_hit(hit: LRESULT) -> bool {
   matches!(
-    hit as i32,
+    hit as isize,
     HTCLOSE | HTMAXBUTTON | HTMINBUTTON | HTHELP | HTSYSMENU
   )
 }
