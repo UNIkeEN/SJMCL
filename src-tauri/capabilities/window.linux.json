@@ -2,12 +2,16 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "window-linux",
   "description": "window controls permissions for linux",
-  "windows": ["main", "game_log*", "game_error*"],
+  "windows": ["main"],
   "platforms": ["linux"],
   "permissions": [
     "core:window:allow-close",
-    "core:window:allow-is-maximized",
+    "core:window:allow-center",
     "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-set-size",
+    "core:window:allow-set-focus",
+    "core:window:allow-is-maximized",
     "core:window:allow-toggle-maximize"
   ]
 }

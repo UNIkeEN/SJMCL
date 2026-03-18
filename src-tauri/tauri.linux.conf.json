@@ -7,10 +7,11 @@
         "title": " ",
         "url": "/",
         "width": 800,
-        "height": 578,
+        "height": 550,
         "minWidth": 800,
-        "minHeight": 578,
+        "minHeight": 550,
         "center": true,
+        "transparent": true,
         "decorations": false,
         "dragDropEnabled": false
       },
