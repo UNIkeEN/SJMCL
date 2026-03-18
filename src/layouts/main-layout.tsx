@@ -21,7 +21,7 @@ import { LuLanguages, LuLogs } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
-import HeadNavBar from "@/components/head-navbar";
+import HeadNavBar from "@/components/head-navbar-v2";
 import LanguageMenu from "@/components/language-menu";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
