@@ -22,11 +22,6 @@ const MainWindowTitlebar = () => {
     "blackAlpha.200",
     "whiteAlpha.300"
   );
-  const linuxWindowButtonColor = useColorModeValue("gray.700", "gray.200");
-  const linuxWindowButtonHoverBg = useColorModeValue(
-    "blackAlpha.200",
-    "whiteAlpha.200"
-  );
 
   const linuxWindowButtons = [
     {
@@ -156,9 +151,11 @@ const MainWindowTitlebar = () => {
       h={`${titlebarHeight}px`}
       minH={`${titlebarHeight}px`}
       bg={titlebarBg}
+      backdropFilter="blur(3px) saturate(140%)"
       borderBottom="1px solid"
       borderColor={titlebarBorderColor}
       zIndex={9999}
+      px={2}
     >
       <Flex
         id="sjmcl-main-drag-region"
@@ -166,7 +163,6 @@ const MainWindowTitlebar = () => {
         flex="1"
         h="100%"
         align="center"
-        px={2}
       >
         {(isWindows || isLinux) && (
           <Image

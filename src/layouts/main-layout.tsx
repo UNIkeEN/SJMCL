@@ -284,7 +284,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       bgRepeat="no-repeat"
       bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
       bgBlendMode={isDarkenBg ? "darken" : "normal"}
-      borderRadius="md"
+      {...(config.basicInfo.osType === "linux" && {
+        border: "0.5px solid",
+        borderColor: "gray.500",
+        borderRadius: "lg",
+      })}
       overflow="hidden"
       style={getGlobalExtraStyle(config)}
     >
