@@ -95,7 +95,7 @@ uuid = { version = "1.11.0", features = [
 zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
 
 [target."cfg(windows)".dependencies]
-winapi = { version = "0.3", features = ["processthreadsapi", "winnt", "handleapi", "winuser", "windef", "dwmapi"] }
+winapi = { version = "0.3", features = ["processthreadsapi", "winnt", "handleapi", "winuser", "windef"] }
 winreg = "0.55.0"
 tauri-plugin-decorum = "1.1.1"
 
