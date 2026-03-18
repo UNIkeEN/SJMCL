@@ -1,5 +1,4 @@
 import {
-  Badge,
   Card,
   Center,
   HStack,
@@ -454,7 +453,6 @@ const AppearanceSettingsPage = () => {
           title: t(
             "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.title"
           ),
-          titleExtra: <Badge colorScheme="purple">Beta</Badge>,
           description: t(
             "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.description"
           ),
