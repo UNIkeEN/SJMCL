@@ -1,0 +1,8 @@
+[package]
+name = "windows_native_titlebar"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tauri = { version = "2.9.5" }
+winapi = { version = "0.3", features = ["winuser", "windef", "dwmapi"] }

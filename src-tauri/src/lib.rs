@@ -171,6 +171,17 @@ pub async fn run() {
         .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
         .expect("APP_DATA_DIR initialization failed");
 
+      #[cfg(windows)]
+      {
+        if let Some(main_window) = app.get_webview_window("main") {
+          if let Err(e) =
+            windows_native_titlebar::setup_main_window_native_caption_buttons(&main_window)
+          {
+            log::warn!("Failed to setup native windows caption buttons: {e}");
+          }
+        }
+      }
+
       // Set up logging
       utils::logging::setup_with_app(app.handle().clone()).unwrap();
 
