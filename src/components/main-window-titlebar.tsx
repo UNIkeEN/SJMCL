@@ -8,11 +8,12 @@ import { useLauncherConfig } from "@/contexts/config";
 const MainWindowTitlebar = () => {
   const { config } = useLauncherConfig();
   const osType = config.basicInfo.osType;
-  const titlebarHeight = 28; // the same as macOS 15 native titlebar height.
 
   const isLinux = osType === "linux";
   const isMac = osType === "macos" || osType === "darwin";
   const isWindows = osType === "windows";
+
+  const titlebarHeight = isWindows ? 32 : 28; // the same as Windows 11 / macOS 15 native titlebar height.
 
   const [isMacFullscreen, setIsMacFullscreen] = useState(false);
   const [isLinuxMaximized, setIsLinuxMaximized] = useState(false);
@@ -155,7 +156,7 @@ const MainWindowTitlebar = () => {
       borderBottom="1px solid"
       borderColor={titlebarBorderColor}
       zIndex={9999}
-      px={2}
+      pl={2}
     >
       <Flex
         id="sjmcl-main-drag-region"
@@ -181,7 +182,7 @@ const MainWindowTitlebar = () => {
         />
       )}
       {isLinux && (
-        <HStack spacing={0} h="100%" align="center">
+        <HStack spacing={0} h="100%" align="center" pr={2}>
           {linuxWindowButtons.map((button) => (
             <CommonIconButton
               key={button.label}
