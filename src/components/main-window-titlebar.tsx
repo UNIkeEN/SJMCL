@@ -124,6 +124,31 @@ const MainWindowTitlebar = () => {
     };
   }, [isMac]);
 
+  // Remove decorum fallback titlebar if it was created before React host mounted.
+  useEffect(() => {
+    if (typeof window === "undefined" || !isWindows) return;
+    const host = document.getElementById("sjmcl-main-decorum-host");
+    if (!host) return;
+
+    const allHosts = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-tauri-decorum-tb]")
+    );
+
+    allHosts.forEach((el) => {
+      if (el === host) return;
+      const buttons = Array.from(
+        el.querySelectorAll<HTMLElement>(".decorum-tb-btn")
+      );
+      if (
+        buttons.length > 0 &&
+        host.querySelector(".decorum-tb-btn") === null
+      ) {
+        buttons.forEach((btn) => host.appendChild(btn));
+      }
+      el.remove();
+    });
+  }, [isWindows]);
+
   if (isMac && isMacFullscreen) return null;
 
   return (
@@ -151,7 +176,14 @@ const MainWindowTitlebar = () => {
           />
         )}
       </Flex>
-      {isWindows && <HStack data-tauri-decorum-tb spacing={0} h="100%" />}
+      {isWindows && (
+        <HStack
+          id="sjmcl-main-decorum-host"
+          data-tauri-decorum-tb
+          spacing={0}
+          h="100%"
+        />
+      )}
       {isLinux && (
         <HStack spacing={0} h="100%" align="center">
           {linuxWindowButtons.map((button) => (
