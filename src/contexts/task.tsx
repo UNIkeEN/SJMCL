@@ -59,7 +59,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
   const { t } = useTranslation();
-  const loadingToastRef = React.useRef<ToastId | null>(null);
+  const modLoaderLoadingToastRef = React.useRef<ToastId | null>(null);
+  const optifineLoadingToastRef = React.useRef<ToastId | null>(null);
 
   const updateGroupInfo = useCallback((group: TaskGroupDesc) => {
     if (group.status === GTaskEventStatusEnums.Completed) {
@@ -453,13 +454,12 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 break;
               case "forge-libraries":
               case "neoforge-libraries":
-              case "optifine-libraries":
                 if (version) {
                   let instanceName = getInstanceList()?.find(
                     (i) => i.id === version
                   )?.name;
-                  if (loadingToastRef.current) return newTasks;
-                  loadingToastRef.current = toast({
+                  if (modLoaderLoadingToastRef.current) return newTasks;
+                  modLoaderLoadingToastRef.current = toast({
                     title: t(
                       "Services.instance.finishModLoaderInstall.loading",
                       {
@@ -470,11 +470,50 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   });
                   InstanceService.finishModLoaderInstall(version).then(
                     (response) => {
-                      if (loadingToastRef.current) {
-                        closeToast(loadingToastRef.current);
-                        loadingToastRef.current = null;
+                      if (modLoaderLoadingToastRef.current) {
+                        closeToast(modLoaderLoadingToastRef.current);
+                        modLoaderLoadingToastRef.current = null;
                       }
                       if (response.status === "success") {
+                        getInstanceList(true);
+                        toast({
+                          title: response.message,
+                          status: "success",
+                        });
+                      } else {
+                        toast({
+                          title: response.message,
+                          description: response.details,
+                          status: "error",
+                        });
+                      }
+                    }
+                  );
+                }
+                break;
+              case "optifine-libraries":
+                if (version) {
+                  let instanceName = getInstanceList()?.find(
+                    (i) => i.id === version
+                  )?.name;
+                  if (optifineLoadingToastRef.current) return newTasks;
+                  optifineLoadingToastRef.current = toast({
+                    title: t(
+                      "Services.instance.finishOptifineLoaderInstall.loading",
+                      {
+                        instanceName,
+                      }
+                    ),
+                    status: "loading",
+                  });
+                  InstanceService.finishOptifineLoaderInstall(version).then(
+                    (response) => {
+                      if (optifineLoadingToastRef.current) {
+                        closeToast(optifineLoadingToastRef.current);
+                        optifineLoadingToastRef.current = null;
+                      }
+                      if (response.status === "success") {
+                        getInstanceList(true);
                         toast({
                           title: response.message,
                           status: "success",
