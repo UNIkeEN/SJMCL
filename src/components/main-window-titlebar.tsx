@@ -100,30 +100,6 @@ const MainWindowTitlebar = () => {
     };
   }, [isLinux]);
 
-  // Listen macOS native fullscreen mode, make titlebar hidden.
-  useEffect(() => {
-    if (typeof window === "undefined" || !isMac) return;
-    const currentWindow = getCurrentWindow();
-    let unlistenResized: (() => void) | undefined;
-    const syncFullscreen = async () => {
-      setIsMacFullscreen(await currentWindow.isFullscreen());
-    };
-    void syncFullscreen();
-    currentWindow
-      .onResized(() => {
-        void syncFullscreen();
-      })
-      .then((unlisten) => {
-        unlistenResized = unlisten;
-      });
-
-    return () => {
-      if (unlistenResized) {
-        unlistenResized();
-      }
-    };
-  }, [isMac]);
-
   // Remove decorum fallback titlebar if it was created before React host mounted.
   useEffect(() => {
     if (typeof window === "undefined" || !isWindows) return;
@@ -148,6 +124,30 @@ const MainWindowTitlebar = () => {
       el.remove();
     });
   }, [isWindows]);
+
+  // Listen macOS native fullscreen mode, make titlebar hidden.
+  useEffect(() => {
+    if (typeof window === "undefined" || !isMac) return;
+    const currentWindow = getCurrentWindow();
+    let unlistenResized: (() => void) | undefined;
+    const syncFullscreen = async () => {
+      setIsMacFullscreen(await currentWindow.isFullscreen());
+    };
+    void syncFullscreen();
+    currentWindow
+      .onResized(() => {
+        void syncFullscreen();
+      })
+      .then((unlisten) => {
+        unlistenResized = unlisten;
+      });
+
+    return () => {
+      if (unlistenResized) {
+        unlistenResized();
+      }
+    };
+  }, [isMac]);
 
   if (isMac && isMacFullscreen) return null;
 
