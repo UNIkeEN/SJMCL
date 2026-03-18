@@ -9,8 +9,10 @@ const MainWindowTitlebar = () => {
   const { config } = useLauncherConfig();
   const osType = config.basicInfo.osType;
   const titlebarHeight = 28; // the same as macOS 15 native titlebar height.
+
   const isLinux = osType === "linux";
   const isMac = osType === "macos" || osType === "darwin";
+  const isWindows = osType === "windows";
 
   const [isMacFullscreen, setIsMacFullscreen] = useState(false);
   const [isLinuxMaximized, setIsLinuxMaximized] = useState(false);
@@ -59,7 +61,9 @@ const MainWindowTitlebar = () => {
       if (
         event.clientY <= titlebarHeight &&
         document.querySelector(".chakra-modal__overlay") &&
-        !target?.closest("[data-titlebar-control]")
+        !target?.closest(
+          "[data-titlebar-control], .decorum-tb-btn, [data-tauri-decorum-tb]"
+        )
       ) {
         event.preventDefault();
         event.stopPropagation();
@@ -137,6 +141,7 @@ const MainWindowTitlebar = () => {
         flex="1"
         h="100%"
       />
+      {isWindows && <HStack data-tauri-decorum-tb spacing={0} h="100%" />}
       {isLinux && (
         <HStack spacing={0} h="100%" pr={2} align="center">
           {linuxWindowButtons.map((button) => (

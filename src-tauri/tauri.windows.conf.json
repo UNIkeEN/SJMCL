@@ -1,5 +1,8 @@
 {
   "identifier": "SJMCL",
+  "build": {
+    "withGlobalTauri": true
+  },
   "bundle": {
     "windows": {
       "nsis": {
@@ -20,11 +23,11 @@
         "title": " ",
         "url": "/",
         "width": 800,
-        "height": 550,
+        "height": 570,
         "minWidth": 800,
-        "minHeight": 550,
+        "minHeight": 570,
         "center": true,
-        "decorations": true,
+        "decorations": false,
         "dragDropEnabled": false
       },
       {

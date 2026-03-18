@@ -5,4 +5,3 @@ edition = "2021"
 
 [dependencies]
 tauri = { version = "2.9.5" }
-winapi = { version = "0.3", features = ["winuser", "windef", "dwmapi", "uxtheme"] }
