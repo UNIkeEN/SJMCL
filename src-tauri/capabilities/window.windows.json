@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "window-windows",
+  "description": "window controls and decorum permissions for windows",
+  "windows": ["main"],
+  "platforms": ["windows"],
+  "permissions": [
+    "core:window:allow-close",
+    "core:window:allow-center",
+    "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-set-size",
+    "core:window:allow-set-focus",
+    "core:window:allow-is-maximized",
+    "core:window:allow-toggle-maximize",
+    "decorum:allow-show-snap-overlay"
+  ]
+}
