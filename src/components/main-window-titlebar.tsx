@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, useColorModeValue } from "@chakra-ui/react";
+import { Flex, HStack, Image, useColorModeValue } from "@chakra-ui/react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useState } from "react";
 import { LuMaximize2, LuMinimize2, LuMinus, LuX } from "react-icons/lu";
@@ -135,15 +135,25 @@ const MainWindowTitlebar = () => {
       borderColor={titlebarBorderColor}
       zIndex={9999}
     >
-      <Box
+      <Flex
         id="sjmcl-main-drag-region"
         data-tauri-drag-region
         flex="1"
         h="100%"
-      />
+        align="center"
+        px={2}
+      >
+        {(isWindows || isLinux) && (
+          <Image
+            src="/images/icons/Logo_32x32.png"
+            alt="SJMCL"
+            boxSize="16px"
+          />
+        )}
+      </Flex>
       {isWindows && <HStack data-tauri-decorum-tb spacing={0} h="100%" />}
       {isLinux && (
-        <HStack spacing={0} h="100%" pr={2} align="center">
+        <HStack spacing={0} h="100%" align="center">
           {linuxWindowButtons.map((button) => (
             <CommonIconButton
               key={button.label}

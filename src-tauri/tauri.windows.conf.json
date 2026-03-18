@@ -26,6 +26,8 @@
         "minHeight": 578,
         "center": true,
         "decorations": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
         "dragDropEnabled": false
       },
       {
