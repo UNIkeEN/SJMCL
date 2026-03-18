@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "window-linux",
+  "description": "window controls permissions for linux",
+  "windows": ["main", "game_log*", "game_error*"],
+  "platforms": ["linux"],
+  "permissions": [
+    "core:window:allow-close",
+    "core:window:allow-is-maximized",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize"
+  ]
+}
