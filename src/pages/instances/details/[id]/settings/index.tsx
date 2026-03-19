@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { ChakraColorSelectPopover } from "@/components/chakra-color-selector";
 import Editable from "@/components/common/editable";
 import {
   OptionItemGroup,
@@ -95,6 +96,22 @@ const InstanceSettingsPage = () => {
               textProps={{ className: "secondary-text", fontSize: "xs-sm" }}
               inputProps={{ fontSize: "xs-sm" }}
               flex={1}
+            />
+          ),
+        },
+        {
+          title: t("InstanceSettingsPage.colorTag"),
+          children: (
+            <ChakraColorSelectPopover
+              current={summary?.tag || ""}
+              size="xs"
+              withUnselectButton
+              onColorSelect={(value) => {
+                handleUpdateInstanceConfig("tag", value);
+              }}
+              onUnselect={() => {
+                handleUpdateInstanceConfig("tag", null);
+              }}
             />
           ),
         },

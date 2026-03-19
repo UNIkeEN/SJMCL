@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuArrowDown01,
@@ -32,32 +32,52 @@ import InstancesView from "@/components/instances-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { isChakraColor } from "@/enums/misc";
 import { InstanceSummary } from "@/models/instance/misc";
 import { getGameDirName } from "@/utils/instance";
 
+const getQueryString = (value: string | string[] | undefined): string => {
+  if (Array.isArray(value)) return value[0] || "";
+  return value || "";
+};
+
 const InstanceListPage = () => {
   const router = useRouter();
-  const { dir } = router.query;
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const selectedViewType = config.states.allInstancesPage.viewType;
   const selectedSortByType = config.states.allInstancesPage.sortBy;
+  const dir = getQueryString(router.query.dir);
+  const tag = getQueryString(router.query.tag);
 
   const { openSharedModal } = useSharedModals();
   const { selectedInstance, getInstanceList } = useGlobalData();
   const [instanceList, setInstanceList] = useState<InstanceSummary[]>([]);
 
+  const filterInstances = useMemo(
+    () => (all: InstanceSummary[]) => {
+      if (tag) return all.filter((inst) => inst.tag === tag);
+      if (dir) return all.filter((inst) => inst.id.startsWith(`${dir}:`));
+      return all;
+    },
+    [dir, tag]
+  );
+
   useEffect(() => {
     if (!router.isReady) return;
+    setInstanceList(filterInstances(getInstanceList() || []));
+  }, [filterInstances, getInstanceList, router.isReady]);
 
-    setInstanceList(() => {
-      const all = getInstanceList() || [];
-      if (!dir) return all; // /instances/list, show all
-      const dirPrefix = Array.isArray(dir) ? dir.join("/") : dir;
-      return all.filter((inst) => inst.id.startsWith(`${dirPrefix}:`));
-    });
-  }, [dir, router.isReady, getInstanceList]);
+  const title = useMemo(() => {
+    if (tag) {
+      return isChakraColor(tag) ? t(`Enums.chakraColors.${tag}`) : tag;
+    }
+    if (dir) {
+      return getGameDirName(dir);
+    }
+    return t("AllInstancesPage.title");
+  }, [dir, tag, t]);
 
   const viewTypeList = [
     {
@@ -126,9 +146,7 @@ const InstanceListPage = () => {
       display="flex"
       flexDirection="column"
       height="100%"
-      title={getGameDirName(
-        Array.isArray(dir) ? dir.join("/") : dir || t("AllInstancesPage.title")
-      )}
+      title={title}
       headExtra={
         <HStack spacing={2}>
           <CommonIconButton
@@ -136,7 +154,7 @@ const InstanceListPage = () => {
             size="xs"
             fontSize="sm"
             onClick={() => {
-              setInstanceList(getInstanceList(true) || []);
+              setInstanceList(filterInstances(getInstanceList(true) || []));
             }}
           />
           <FilterAndSortMenu />

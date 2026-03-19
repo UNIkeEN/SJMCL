@@ -6,8 +6,10 @@ import {
   Image,
   Radio,
   RadioGroup,
+  Text,
 } from "@chakra-ui/react";
 import { FaStar } from "react-icons/fa6";
+import { GoDotFill } from "react-icons/go";
 import Empty from "@/components/common/empty";
 import {
   OptionItemGroup,
@@ -16,6 +18,7 @@ import {
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import InstanceMenu from "@/components/instance-menu";
 import { useLauncherConfig } from "@/contexts/config";
+import { isChakraColor } from "@/enums/misc";
 import { InstanceSummary } from "@/models/instance/misc";
 import { generateInstanceDesc, getInstanceIconSrc } from "@/utils/instance";
 
@@ -54,9 +57,14 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     description: [generateInstanceDesc(instance), instance.description]
       .filter(Boolean)
       .join(", "),
-    ...{
-      titleExtra: instance.starred && <Icon as={FaStar} color="yellow.500" />,
-    },
+    titleExtra: (instance.starred || isChakraColor(instance.tag)) && (
+      <HStack spacing={1}>
+        {instance.starred && <Icon as={FaStar} color="yellow.500" />}
+        {isChakraColor(instance.tag) && (
+          <Icon as={GoDotFill} color={`${instance.tag}.500`} />
+        )}
+      </HStack>
+    ),
     maxTitleLines: 1,
     maxDescriptionLines: 2,
     titleLineWrap: false,
@@ -88,7 +96,22 @@ const InstancesView: React.FC<InstancesViewProps> = ({
 
   const gridItems = instances.map((instance) => ({
     cardContent: {
-      title: instance.name,
+      title: (
+        <HStack spacing={1} justify="center">
+          {isChakraColor(instance.tag) && (
+            <Icon as={GoDotFill} color={`${instance.tag}.500`} />
+          )}
+          <Text
+            fontSize="xs-sm"
+            className="ellipsis-text"
+            fontWeight={
+              selectedInstance?.id === instance.id ? "bold" : "normal"
+            }
+          >
+            {instance.name}
+          </Text>
+        </HStack>
+      ),
       description: generateInstanceDesc(instance) || String.fromCharCode(160),
       image: (
         <Image
@@ -99,7 +122,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       ),
       extraContent: (
-        <HStack spacing={1} position="absolute" top={0.5} right={1}>
+        <HStack spacing={0.5} position="absolute" top={0.5} right={1}>
           {instance.starred && <Icon as={FaStar} color="yellow.500" />}
           {withMenu && <InstanceMenu instance={instance} />}
         </HStack>

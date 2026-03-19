@@ -40,7 +40,7 @@ const GeneralSettingsPage = () => {
     onClose: onSyncConfigImportModalClose,
   } = useDisclosure();
 
-  const instancesNavTypes = ["instance", "directory", "hidden"];
+  const instancesNavTypes = ["instance", "directory", "tag", "hidden"];
 
   const handleRestoreLauncherConfig = useCallback(async () => {
     ConfigService.restoreLauncherConfig().then((response) => {
