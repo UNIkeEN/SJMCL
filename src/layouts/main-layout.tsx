@@ -17,12 +17,13 @@ import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Trans } from "react-i18next";
-import { LuLanguages, LuLogs } from "react-icons/lu";
+import { LuLanguages, LuScrollText } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
-import HeadNavBar from "@/components/head-navbar";
+import HeadNavBar from "@/components/head-navbar-v2";
 import LanguageMenu from "@/components/language-menu";
+import MainWindowTitlebar from "@/components/main-window-titlebar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
@@ -113,7 +114,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       ),
       footerLeft: (
         <HStack>
-          <LuLogs />
+          <LuScrollText />
           <Button
             variant="link"
             colorScheme={primaryColor}
@@ -283,8 +284,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       bgRepeat="no-repeat"
       bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
       bgBlendMode={isDarkenBg ? "darken" : "normal"}
+      {...(config.basicInfo.osType === "linux" && {
+        border: "0.5px solid",
+        borderColor: "gray.500",
+        borderRadius: "lg",
+      })}
+      overflow="hidden"
       style={getGlobalExtraStyle(config)}
     >
+      <MainWindowTitlebar />
       <HeadNavBar />
       {router.pathname === "/launch" ? (
         <>{children}</>

@@ -29,7 +29,6 @@ import { OptionItem } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { useToast } from "@/contexts/toast";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { NewsPostSummary } from "@/models/news-post";
 import { OtherResourceInfo } from "@/models/resource";
@@ -500,7 +499,6 @@ const HotModpackGrid: React.FC<HotModpackGridProps> = ({
 
 export const DiscoverHomePage = () => {
   const { t } = useTranslation();
-  const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const accentColor = `var(--chakra-colors-${primaryColor}-400)`;
@@ -557,43 +555,38 @@ export const DiscoverHomePage = () => {
     }
   }, []);
 
-  const fetchHotModpacks = useCallback(
-    async (source: OtherResourceSource) => {
-      source === OtherResourceSource.CurseForge
-        ? setIsLoadingCfModpacks(true)
-        : setIsLoadingMrModpacks(true);
-      try {
-        const response = await ResourceService.fetchResourceListByName(
-          OtherResourceType.ModPack,
-          "",
-          "All",
-          "All",
-          source === OtherResourceSource.CurseForge
-            ? "Popularity"
-            : "relevance",
-          source,
-          0,
-          MAX_MODPACK_NUM
-        );
-        if (response.status === "success") {
-          source === OtherResourceSource.CurseForge
-            ? setCfModpacks(response.data.list)
-            : setMrModpacks(response.data.list);
-        } else {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-        }
-      } finally {
+  const fetchHotModpacks = useCallback(async (source: OtherResourceSource) => {
+    source === OtherResourceSource.CurseForge
+      ? setIsLoadingCfModpacks(true)
+      : setIsLoadingMrModpacks(true);
+    try {
+      const response = await ResourceService.fetchResourceListByName(
+        OtherResourceType.ModPack,
+        "",
+        "All",
+        "All",
+        source === OtherResourceSource.CurseForge ? "Popularity" : "relevance",
+        source,
+        0,
+        MAX_MODPACK_NUM
+      );
+      if (response.status === "success") {
         source === OtherResourceSource.CurseForge
-          ? setIsLoadingCfModpacks(false)
-          : setIsLoadingMrModpacks(false);
+          ? setCfModpacks(response.data.list)
+          : setMrModpacks(response.data.list);
+      } else {
+        // toast({
+        //   title: response.message,
+        //   description: response.details,
+        //   status: "error",
+        // });
       }
-    },
-    [toast]
-  );
+    } finally {
+      source === OtherResourceSource.CurseForge
+        ? setIsLoadingCfModpacks(false)
+        : setIsLoadingMrModpacks(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchCommunityNews();

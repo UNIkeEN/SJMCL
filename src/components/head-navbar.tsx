@@ -24,7 +24,6 @@ import AdvancedCard from "@/components/common/advanced-card";
 import { DownloadIndicator } from "@/components/download-indicator";
 import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
-import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
 
 const HeadNavBar = () => {
@@ -34,7 +33,6 @@ const HeadNavBar = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const isSimplified = config.appearance.theme.headNavStyle === "simplified";
 
-  const { openSharedModal } = useSharedModals();
   const [isAnimating, setIsAnimating] = useState(false);
   const { tasks } = useTaskContext();
   const isDownloadIndicatorShown = tasks.length > 0;
