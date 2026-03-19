@@ -64,6 +64,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
           }))
         : navBarType === "tag"
           ? ChakraColorEnums.map((color) => ({
+              // group by color tag
               value: `/instances/list?tag=${encodeURIComponent(color)}`,
               icon: <Icon as={GoDotFill} color={`${color}.500`} />,
               label: t(`Enums.chakraColors.${color}`),

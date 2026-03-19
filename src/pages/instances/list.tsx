@@ -32,7 +32,6 @@ import InstancesView from "@/components/instances-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { isChakraColor } from "@/enums/misc";
 import { InstanceSummary } from "@/models/instance/misc";
 import { getGameDirName } from "@/utils/instance";
 
@@ -70,12 +69,8 @@ const InstanceListPage = () => {
   }, [filterInstances, getInstanceList, router.isReady]);
 
   const title = useMemo(() => {
-    if (tag) {
-      return isChakraColor(tag) ? t(`Enums.chakraColors.${tag}`) : tag;
-    }
-    if (dir) {
-      return getGameDirName(dir);
-    }
+    if (tag) return t(`Enums.chakraColors.${tag}`);
+    if (dir) return getGameDirName(dir);
     return t("AllInstancesPage.title");
   }, [dir, tag, t]);
 
