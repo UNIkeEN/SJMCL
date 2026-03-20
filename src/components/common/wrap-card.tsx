@@ -73,7 +73,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
               boxSize="36px"
               objectFit="cover"
               src={image}
-              alt={typeof title === "string" ? title : ""}
+              alt={typeof title === "string" ? title : description}
             />
           ) : (
             image
