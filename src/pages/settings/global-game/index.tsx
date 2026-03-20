@@ -84,7 +84,9 @@ const GlobalGameSettingsPage = () => {
     );
     getInstanceList(true); // refresh frontend state of instance list
     removeHistory(`/instances/details/${selectedDir.name}:`);
-    removeHistory(`/instances/list/${selectedDir.name}`);
+    removeHistory(
+      `/instances/list?dir=${encodeURIComponent(selectedDir.name)}`
+    );
     closeSharedModal("generic-confirm");
   };
 

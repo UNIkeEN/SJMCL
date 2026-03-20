@@ -5,6 +5,7 @@ import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import { FaRegStar, FaStar } from "react-icons/fa6";
+import { GoDotFill } from "react-icons/go";
 import {
   LuBookDashed,
   LuEarth,
@@ -28,6 +29,7 @@ import {
 } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
+import { isChakraColor } from "@/enums/misc";
 import { InstanceService } from "@/services/instance";
 
 const InstanceDetailsLayout: React.FC<{ children: React.ReactNode }> = ({
@@ -150,20 +152,24 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       withBackButton={navBarType !== "instance"}
       backRoutePath="/instances/list"
       titleExtra={
-        <CommonIconButton
-          icon={summary?.starred ? FaStar : FaRegStar}
-          label={t(
-            `InstanceDetailsLayout.secMenu.${summary?.starred ? "unstar" : "star"}`
+        <HStack spacing={1} marginInlineEnd="0.5rem">
+          <CommonIconButton
+            icon={summary?.starred ? FaStar : FaRegStar}
+            label={t(
+              `InstanceDetailsLayout.secMenu.${summary?.starred ? "unstar" : "star"}`
+            )}
+            color={summary?.starred ? "yellow.500" : "inherit"}
+            onClick={() => {
+              handleUpdateInstanceConfig("starred", !summary?.starred);
+            }}
+            size="xs"
+            fontSize="sm"
+            h={21}
+          />
+          {isChakraColor(summary?.tag) && (
+            <Icon as={GoDotFill} color={`${summary.tag}.500`} />
           )}
-          color={summary?.starred ? "yellow.500" : "inherit"}
-          onClick={() => {
-            handleUpdateInstanceConfig("starred", !summary?.starred);
-          }}
-          size="xs"
-          fontSize="sm"
-          h={21}
-          marginInlineEnd="0.5rem"
-        />
+        </HStack>
       }
       headExtra={
         <HStack spacing={2}>

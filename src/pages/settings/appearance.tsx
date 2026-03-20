@@ -5,10 +5,6 @@ import {
   Icon,
   IconButton,
   Image,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Slider,
   SliderFilledTrack,
   SliderThumb,
@@ -25,8 +21,8 @@ import { appDataDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuPlus, LuTrash } from "react-icons/lu";
-import ChakraColorSelector from "@/components/chakra-color-selector";
+import { LuPlus, LuTrash } from "react-icons/lu";
+import { ChakraColorSelectPopover } from "@/components/chakra-color-selector";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
@@ -157,32 +153,6 @@ const AppearanceSettingsPage = () => {
         });
       }
     });
-  };
-
-  const ColorSelectPopover = () => {
-    return (
-      <Popover>
-        <PopoverTrigger>
-          <IconButton
-            size="xs"
-            colorScheme={primaryColor}
-            aria-label="color"
-            icon={<LuChevronDown />}
-          />
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverBody>
-            <ChakraColorSelector
-              current={primaryColor}
-              onColorSelect={(color) => {
-                update("appearance.theme.primaryColor", color);
-              }}
-              size="xs"
-            />
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
-    );
   };
 
   const HeadNavStyleMenu = () => {
@@ -429,7 +399,14 @@ const AppearanceSettingsPage = () => {
       items: [
         {
           title: t("AppearanceSettingsPage.theme.settings.primaryColor.title"),
-          children: <ColorSelectPopover />,
+          children: (
+            <ChakraColorSelectPopover
+              current={primaryColor}
+              onColorSelect={(color) => {
+                update("appearance.theme.primaryColor", color);
+              }}
+            />
+          ),
         },
         {
           title: t("AppearanceSettingsPage.theme.settings.colorMode.title"),

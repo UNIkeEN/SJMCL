@@ -991,6 +991,7 @@
           "description": "更改实例页左侧导航栏是否显示、分组方式",
           "instance": "按实例",
           "directory": "按目录",
+          "tag": "按标签",
           "hidden": "隐藏"
         },
         "launchPageQuickSwitch": {
@@ -1306,6 +1307,7 @@
   "InstanceSettingsPage": {
     "name": "实例名称",
     "description": "实例描述",
+    "colorTag": "颜色标签",
     "icon": "实例图标",
     "applySettings": "启用特定游戏设置",
     "restoreSettings": "重置以下特定设置",

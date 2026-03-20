@@ -158,6 +158,11 @@ pub async fn update_instance_config(
     // PartialUpdate not support Option<T> yet
     if key_path == "description" {
       instance.description = serde_json::from_str::<String>(&value).unwrap_or(value);
+    } else if key_path == "tag" {
+      instance.tag = serde_json::from_str::<Option<String>>(&value)
+        .ok()
+        .flatten()
+        .map(|v| v.trim().to_string());
     } else if key_path == "icon_src" {
       instance.icon_src = serde_json::from_str::<String>(&value).unwrap_or(value);
     } else if key_path == "starred" {
@@ -990,6 +995,7 @@ pub async fn create_instance(
     },
     optifine: optifine_info,
     description,
+    tag: None,
     icon_src,
     starred: false,
     play_time: 0,

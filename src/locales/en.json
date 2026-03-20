@@ -991,6 +991,7 @@
           "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
           "instance": "By Instance",
           "directory": "By Directory",
+          "tag": "By Tag",
           "hidden": "Hidden"
         },
         "launchPageQuickSwitch": {
@@ -1306,6 +1307,7 @@
   "InstanceSettingsPage": {
     "name": "Instance Name",
     "description": "Instance Description",
+    "colorTag": "Color Tag",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
     "restoreSettings": "Restore specific settings",
