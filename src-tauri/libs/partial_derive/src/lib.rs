@@ -51,7 +51,7 @@ fn derive_partial_traits(input: &syn::DeriveInput) -> TokenStream {
               if path.is_empty() {
                   match serde_json::from_str::<Self>(value) {
                       Ok(value) => {*self = value; Ok(())},
-                      Err(e) => Err(crate::partial::PartialError::InvalidType),
+                      Err(_) => Err(crate::partial::PartialError::InvalidType),
                   }
               } else {
                   let (field, rest) = path.split_once('.').unwrap_or((path, ""));
