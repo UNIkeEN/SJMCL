@@ -100,22 +100,6 @@ const InstanceSettingsPage = () => {
           ),
         },
         {
-          title: t("InstanceSettingsPage.colorTag"),
-          children: (
-            <ChakraColorSelectPopover
-              current={summary?.tag || ""}
-              size="xs"
-              withUnselectButton
-              onColorSelect={(value) => {
-                handleUpdateInstanceConfig("tag", value);
-              }}
-              onUnselect={() => {
-                handleUpdateInstanceConfig("tag", null);
-              }}
-            />
-          ),
-        },
-        {
           title: t("InstanceSettingsPage.icon"),
           children: (
             <HStack>
@@ -134,6 +118,22 @@ const InstanceSettingsPage = () => {
                 instanceId={summary?.id}
               />
             </HStack>
+          ),
+        },
+        {
+          title: t("InstanceSettingsPage.colorTag"),
+          children: (
+            <ChakraColorSelectPopover
+              current={summary?.tag || ""}
+              size="xs"
+              withUnselectButton
+              onColorSelect={(value) => {
+                handleUpdateInstanceConfig("tag", value);
+              }}
+              onUnselect={() => {
+                handleUpdateInstanceConfig("tag", null);
+              }}
+            />
           ),
         },
         {
