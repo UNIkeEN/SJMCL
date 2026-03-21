@@ -10,6 +10,7 @@ use smart_default::SmartDefault;
 use std::path::PathBuf;
 use strum_macros::Display;
 use tauri::{AppHandle, Emitter};
+use uuid::Uuid;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -59,6 +60,63 @@ pub enum FileValidatePolicy {
   Normal,
   #[serde(other)]
   Full,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum LLMProviderType {
+  Anthropic,
+  Gemini,
+  #[serde(other)]
+  OpenAiCompatible,
+}
+
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, SmartDefault)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LLMModelConfig {
+  pub base_url: String,
+  pub api_key: String,
+  pub model: String,
+}
+
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, SmartDefault)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LLMParametersConfig {
+  #[default = 0.7]
+  pub temperature: f64,
+  #[default = 4096]
+  pub max_tokens: u32,
+  #[default = 1.0]
+  pub top_p: f64,
+  pub frequency_penalty: f64,
+  pub presence_penalty: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
+#[serde(rename_all = "camelCase", default)]
+pub struct ProviderConfig {
+  #[default(_code = "Uuid::new_v4().to_string()")]
+  pub id: String,
+  pub name: String,
+  pub enabled: bool,
+  pub priority: u32,
+  #[default(LLMProviderType::OpenAiCompatible)]
+  pub provider_type: LLMProviderType,
+  pub base_url: String,
+  pub api_key: String,
+  pub model: String,
+  #[default(LLMParametersConfig::default())]
+  pub parameters: LLMParametersConfig,
+}
+
+impl From<&ProviderConfig> for LLMModelConfig {
+  fn from(p: &ProviderConfig) -> Self {
+    LLMModelConfig {
+      base_url: p.base_url.clone(),
+      api_key: p.api_key.clone(),
+      model: p.model.clone(),
+    }
+  }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
@@ -261,15 +319,8 @@ structstruck::strike! {
     pub global_game_config: GameConfig,
     pub intelligence: struct IntelligenceConfig {
       pub enabled: bool,
-      pub model: struct LLMModelConfig {
-        pub base_url: String,
-        pub api_key: String,
-        pub model: String,
-      },
-      // pub chat: struct LLMChatConfig {
-      //   #[default = 0.7]
-      //   pub temperature: f32,
-      // }
+      pub active_provider_id: String,
+      pub providers: Vec<ProviderConfig>,
     },
     pub local_game_directories: Vec<GameDirectory>,
     #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(),
@@ -342,6 +393,40 @@ impl Storage for LauncherConfig {
     } else {
       APP_DATA_DIR.get().unwrap().join(LAUNCHER_CFG_FILE_NAME)
     }
+  }
+
+  fn load() -> Result<Self, std::io::Error> {
+    let json_string = std::fs::read_to_string(Self::file_path())?;
+    let mut value: serde_json::Value =
+      serde_json::from_str(&json_string).map_err(std::io::Error::other)?;
+
+    // Migrate old single-provider config to multi-provider format
+    if let Some(intel) = value.get_mut("intelligence") {
+      if intel.get("model").is_some() && intel.get("providers").is_none() {
+        let id = Uuid::new_v4().to_string();
+        let provider = serde_json::json!({
+          "id": id,
+          "name": "Default",
+          "enabled": true,
+          "priority": 0,
+          "providerType": intel.get("providerType").cloned().unwrap_or(serde_json::json!("openAiCompatible")),
+          "baseUrl": intel.get("model").and_then(|m| m.get("baseUrl")).cloned().unwrap_or(serde_json::json!("")),
+          "apiKey": intel.get("model").and_then(|m| m.get("apiKey")).cloned().unwrap_or(serde_json::json!("")),
+          "model": intel.get("model").and_then(|m| m.get("model")).cloned().unwrap_or(serde_json::json!("")),
+          "parameters": intel.get("parameters").cloned().unwrap_or(serde_json::json!({})),
+        });
+        intel["providers"] = serde_json::json!([provider]);
+        intel["activeProviderId"] = serde_json::json!(id);
+        if let Some(obj) = intel.as_object_mut() {
+          obj.remove("model");
+          obj.remove("providerType");
+          obj.remove("parameters");
+        }
+        log::info!("Migrated old intelligence config to multi-provider format");
+      }
+    }
+
+    serde_json::from_value(value).map_err(std::io::Error::other)
   }
 }
 
