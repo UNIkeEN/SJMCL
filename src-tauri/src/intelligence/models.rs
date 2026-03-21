@@ -59,6 +59,112 @@ structstruck::strike! {
   }
 }
 
+// ── Anthropic types ──
+
+#[derive(Debug, Serialize)]
+pub struct AnthropicRequest {
+  pub model: String,
+  pub messages: Vec<ChatMessage>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub system: Option<String>,
+  pub max_tokens: u32,
+  pub stream: bool,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub temperature: Option<f64>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub top_p: Option<f64>,
+}
+
+structstruck::strike! {
+  #[strikethrough[derive(Deserialize, Debug)]]
+  pub struct AnthropicResponse {
+    pub content: Vec<pub struct AnthropicContentBlock {
+      #[serde(rename = "type")]
+      pub block_type: String,
+      #[serde(default)]
+      pub text: String,
+    }>,
+    pub stop_reason: Option<String>,
+  }
+}
+
+structstruck::strike! {
+  #[strikethrough[derive(Deserialize, Debug)]]
+  pub struct AnthropicStreamEvent {
+    #[serde(rename = "type")]
+    pub event_type: String,
+    #[serde(default)]
+    pub delta: Option<pub struct AnthropicDelta {
+      #[serde(rename = "type")]
+      pub delta_type: Option<String>,
+      pub text: Option<String>,
+    }>,
+  }
+}
+
+structstruck::strike! {
+  #[strikethrough[derive(Deserialize, Debug)]]
+  pub struct AnthropicModelsResponse {
+    pub data: Vec<pub struct AnthropicModel {
+      pub id: String,
+    }>,
+  }
+}
+
+// ── Gemini types ──
+
+structstruck::strike! {
+  #[strikethrough[derive(Serialize, Deserialize, Debug, Clone)]]
+  pub struct GeminiContent {
+    pub role: String,
+    pub parts: Vec<pub struct GeminiPart {
+      pub text: String,
+    }>,
+  }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeminiRequest {
+  pub contents: Vec<GeminiContent>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub system_instruction: Option<GeminiContent>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub generation_config: Option<GeminiGenerationConfig>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeminiGenerationConfig {
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub temperature: Option<f64>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub max_output_tokens: Option<u32>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub top_p: Option<f64>,
+}
+
+structstruck::strike! {
+  #[strikethrough[derive(Deserialize, Debug)]]
+  pub struct GeminiResponse {
+    #[serde(default)]
+    pub candidates: Vec<pub struct GeminiCandidate {
+      pub content: GeminiContent,
+    }>,
+  }
+}
+
+structstruck::strike! {
+  #[strikethrough[derive(Deserialize, Debug)]]
+  pub struct GeminiModelsResponse {
+    pub models: Vec<pub struct GeminiModel {
+      pub name: String,
+      #[serde(default)]
+      pub display_name: Option<String>,
+    }>,
+  }
+}
+
 #[derive(Debug, Display)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum LLMServiceError {

@@ -1327,12 +1327,39 @@
       "title": "智能服务",
       "description": "结合您提供的生成式语言模型，为 SJMCL 引入更多智能体验"
     },
+    "providers": {
+      "title": "服务来源",
+      "add": "添加来源",
+      "edit": "编辑",
+      "delete": "删除",
+      "save": "保存",
+      "cancel": "取消",
+      "name": "来源名称",
+      "namePlaceholder": "例如：我的 OpenAI",
+      "active": "使用中",
+      "setActive": "设为主要",
+      "enabled": "已启用",
+      "empty": "尚未配置任何来源，请添加一个以开始使用。",
+      "deleteConfirm": "确定要删除此来源吗？",
+      "failoverHint": "当主要来源请求失败时，将按优先级尝试其他已启用的来源。"
+    },
+    "providerType": {
+      "title": "服务提供商",
+      "options": {
+        "openAiCompatible": "OpenAI 兼容",
+        "anthropic": "Anthropic (Claude)",
+        "gemini": "Google Gemini"
+      }
+    },
     "model": {
       "title": "模型",
       "settings": {
         "baseUrl": {
           "title": "基础 URL",
           "fullUrl": "完整 URL: {{url}}"
+        },
+        "endpoint": {
+          "title": "API 端点"
         },
         "apiKey": {
           "title": "API 密钥"
@@ -1345,6 +1372,29 @@
           "available": "可用",
           "unavailable": "不可用"
         }
+      }
+    },
+    "parameters": {
+      "title": "高级参数",
+      "temperature": {
+        "title": "温度",
+        "description": "控制随机性。较高的值使输出更具创造性，较低的值使输出更确定。"
+      },
+      "maxTokens": {
+        "title": "最大词元数",
+        "description": "生成响应的最大词元数量。"
+      },
+      "topP": {
+        "title": "Top P",
+        "description": "核采样。考虑累积概率达到 top_p 的词元。"
+      },
+      "frequencyPenalty": {
+        "title": "频率惩罚",
+        "description": "根据词元在文本中出现的频率进行惩罚。仅适用于 OpenAI 兼容。"
+      },
+      "presencePenalty": {
+        "title": "存在惩罚",
+        "description": "根据词元是否已出现在文本中进行惩罚。仅适用于 OpenAI 兼容。"
       }
     }
   },

@@ -1,4 +1,5 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
+import { ProviderConfig } from "@/models/config";
 import {
   ChatMessage,
   ChatSession,
@@ -11,6 +12,30 @@ import { responseHandler } from "@/utils/response";
  * Service class for managing intelligence services (e.g. LLM) and interactions.
  */
 export class IntelligenceService {
+  // ─── Provider CRUD ───
+
+  @responseHandler("intelligence")
+  public static async saveIntelligenceProvider(
+    provider: ProviderConfig
+  ): Promise<InvokeResponse<void>> {
+    return invoke("save_intelligence_provider", { provider });
+  }
+
+  @responseHandler("intelligence")
+  public static async deleteIntelligenceProvider(
+    providerId: string
+  ): Promise<InvokeResponse<void>> {
+    return invoke("delete_intelligence_provider", { providerId });
+  }
+
+  @responseHandler("intelligence")
+  public static async setActiveIntelligenceProvider(
+    providerId: string
+  ): Promise<InvokeResponse<void>> {
+    return invoke("set_active_intelligence_provider", { providerId });
+  }
+
+  // ─── LLM API ───
   /**
    * CHECK the availability of the LLM service.
    * @param {string} baseUrl The base URL of the LLM service.
@@ -19,10 +44,11 @@ export class IntelligenceService {
    */
   @responseHandler("intelligence")
   public static async retrieveLLMModels(
+    providerType: string,
     baseUrl: string,
     apiKey: string
   ): Promise<InvokeResponse<string[]>> {
-    return invoke("retrieve_llm_models", { baseUrl, apiKey });
+    return invoke("retrieve_llm_models", { providerType, baseUrl, apiKey });
   }
 
   /**
