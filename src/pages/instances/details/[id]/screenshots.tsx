@@ -1,7 +1,9 @@
 import {
+  Box,
   Center,
   IconButton,
   Image,
+  Skeleton,
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -13,15 +15,18 @@ import { LuEllipsis } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
-import { WrapCardGroup } from "@/components/common/wrap-card";
+import {
+  VirtualWrapCardGroup,
+  WrapCardProps,
+} from "@/components/common/wrap-card-virtual";
 import PreviewScreenshotModal from "@/components/modals/preview-screenshot-modal";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { GetStateFlag } from "@/hooks/get-state";
 import { ScreenshotInfo } from "@/models/instance/misc";
 
-const InstanceScreenshotsPage: React.FC = () => {
-  const { t } = useTranslation();
+const ASPECT_RATIO = 16 / 9;
 
+const InstanceScreenshotsPage: React.FC = () => {
   const { getScreenshotList, isScreenshotListLoading: isLoading } =
     useInstanceSharedData();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
@@ -35,7 +40,7 @@ const InstanceScreenshotsPage: React.FC = () => {
           if (data === GetStateFlag.Cancelled) return;
           setScreenshots(data || []);
         })
-        .catch((e) => setScreenshots([]));
+        .catch(() => setScreenshots([]));
     },
     [getScreenshotList]
   );
@@ -43,12 +48,6 @@ const InstanceScreenshotsPage: React.FC = () => {
   useEffect(() => {
     getScreenshotListWrapper();
   }, [getScreenshotListWrapper]);
-
-  useEffect(() => {
-    // This page does not have a refresh button, so we need to fetch the screenshot list when the page is mounted
-    getScreenshotListWrapper(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const {
     isOpen: isScreenshotPreviewModalOpen,
@@ -64,7 +63,7 @@ const InstanceScreenshotsPage: React.FC = () => {
     }
   }, [screenshots, onScreenshotPreviewModalOpen]);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     onScreenshotPreviewModalClose();
     const { id } = router.query;
     if (id !== undefined) {
@@ -78,63 +77,32 @@ const InstanceScreenshotsPage: React.FC = () => {
         { shallow: true }
       );
     }
-  };
+  }, [onScreenshotPreviewModalClose]);
 
-  const ScreenshotsCard = ({ screenshot }: { screenshot: ScreenshotInfo }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    return (
-      <div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <Image
-          src={convertFileSrc(screenshot.filePath)}
-          alt={screenshot.fileName}
-          objectFit="cover"
-          w="100%"
-          h="100%"
-          position="relative"
-          borderRadius="md"
-        />
-        {isHovered && (
-          <Tooltip
-            label={t("InstanceScreenshotsPage.button.details")}
-            placement="auto"
-          >
-            <IconButton
-              icon={<LuEllipsis />}
-              aria-label="details"
-              colorScheme="blackAlpha"
-              variant="solid"
-              size="xs"
-              position="absolute"
-              top={1}
-              right={1}
-              onClick={() => {
-                setCurrentScreenshot(screenshot);
-                onScreenshotPreviewModalOpen();
-              }}
-            />
-          </Tooltip>
-        )}
-      </div>
-    );
-  };
+  const wrapCardItems: WrapCardProps[] = screenshots.map((screenshot) => ({
+    cardContent: (
+      <ScreenshotCell
+        screenshot={screenshot}
+        onPreview={() => {
+          setCurrentScreenshot(screenshot);
+          onScreenshotPreviewModalOpen();
+        }}
+      />
+    ),
+    colSpan: 1,
+  }));
 
   return (
-    <Section>
+    <Section overflow="hidden">
       {isLoading ? (
         <Center mt={4}>
           <BeatLoader size={16} color="gray" />
         </Center>
       ) : screenshots.length > 0 ? (
-        <WrapCardGroup
-          cardAspectRatio={16 / 9}
-          items={screenshots.map((screenshot) => ({
-            cardContent: <ScreenshotsCard screenshot={screenshot} />,
-            p: 0,
-          }))}
+        <VirtualWrapCardGroup
+          items={wrapCardItems}
+          cardAspectRatio={ASPECT_RATIO}
+          h="calc(100vh - 180px)"
         />
       ) : (
         <Empty withIcon={false} size="sm" />
@@ -147,6 +115,73 @@ const InstanceScreenshotsPage: React.FC = () => {
         />
       )}
     </Section>
+  );
+};
+
+const ScreenshotCell = ({
+  screenshot,
+  onPreview,
+}: {
+  screenshot: ScreenshotInfo;
+  onPreview: () => void;
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const { t } = useTranslation();
+
+  return (
+    <Box
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      w="100%"
+      h="100%"
+      position="relative"
+      borderRadius="md"
+      overflow="hidden"
+    >
+      {!isLoaded && (
+        <Skeleton
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          startColor="gray.700"
+          endColor="gray.600"
+          speed={1}
+        />
+      )}
+      <Image
+        src={convertFileSrc(screenshot.filePath)}
+        alt={screenshot.fileName}
+        objectFit="cover"
+        w="100%"
+        h="100%"
+        loading="lazy"
+        onLoad={() => setIsLoaded(true)}
+        style={{
+          opacity: isLoaded ? 1 : 0,
+          transition: "opacity 0.2s ease-in-out",
+        }}
+      />
+      {isHovered && isLoaded && (
+        <Box position="absolute" top={1} right={1}>
+          <Tooltip
+            label={t("InstanceScreenshotsPage.button.details")}
+            placement="auto"
+          >
+            <IconButton
+              icon={<LuEllipsis />}
+              aria-label="details"
+              colorScheme="blackAlpha"
+              variant="solid"
+              size="sm"
+              onClick={onPreview}
+            />
+          </Tooltip>
+        </Box>
+      )}
+    </Box>
   );
 };
 
