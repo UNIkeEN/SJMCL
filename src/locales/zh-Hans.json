@@ -880,9 +880,10 @@
     "button": {
       "exportGameInfo": "导出游戏崩溃报告",
       "gameLogs": "游戏日志",
-      "help": "帮助"
+      "help": "帮助",
+      "copyAIPrompt": "复制 AI 分析提示词"
     },
-    "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图"
+    "bottomAlert": "如需寻求他人帮助,请导出并发送崩溃报告,而非这个窗口的截图"
   },
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
