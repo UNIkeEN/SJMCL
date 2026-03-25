@@ -209,8 +209,14 @@
   "AgentChatPage": {
     "description": "Start your first conversation with Miuxi!",
     "placeholder": "Ask Miuxi anything, press Enter to send~",
+    "thinking": "Thinking",
+    "thinkingFinished": "Thinking Finished",
+    "skipThinking": "Skip thinking",
+    "skipThinkingPrompt": "Stop showing the thinking process and provide the final answer directly. Do not output any <think> tag content.",
     "functionCall": {
       "title": "Magic Call",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
       "execute": "Execute",
       "result": "Result",
       "error": "Error",

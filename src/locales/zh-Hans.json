@@ -209,8 +209,14 @@
   "AgentChatPage": {
     "description": "与缪汐开始第一句对话吧！",
     "placeholder": "问问缪汐，回车发送~",
+    "thinking": "正在思考",
+    "thinkingFinished": "思考完成",
+    "skipThinking": "跳过思考",
+    "skipThinkingPrompt": "请停止展示思考过程，直接给出最终答案，不要输出 <think> 标签内容。",
     "functionCall": {
       "title": "调用魔法",
+      "confirm": "确认",
+      "cancel": "取消",
       "execute": "执行",
       "result": "执行结果",
       "error": "执行失败",

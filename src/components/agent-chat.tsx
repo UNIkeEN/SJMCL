@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Flex,
   HStack,
   IconButton,
@@ -37,6 +38,17 @@ import { IntelligenceService } from "@/services/intelligence";
 import { base64ImgSrc } from "@/utils/string";
 
 const AGENT_AVATAR_SRC = "/images/agent/miuxi_px_avatar.png";
+
+function stripThinkTags(content: string): string {
+  const withoutClosedThink = content.replace(/<think>[\s\S]*?<\/think>/g, "");
+  const lastOpenIdx = withoutClosedThink.lastIndexOf("<think>");
+  const sanitized =
+    lastOpenIdx === -1
+      ? withoutClosedThink
+      : withoutClosedThink.slice(0, lastOpenIdx);
+
+  return sanitized.replace(/\n{3,}/g, "\n\n").trim();
+}
 
 interface AgentChatProps {
   onAgentChatPanelClose: () => void;
@@ -252,6 +264,45 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     setIsLoading(false);
   };
 
+  const handleSkipThinking = async () => {
+    if (!isBusy) return;
+
+    requestIdRef.current++;
+    setIsLoading(false);
+
+    const cleanedMessages = [...messagesRef.current];
+    for (let i = cleanedMessages.length - 1; i >= 0; i--) {
+      if (cleanedMessages[i].role === "assistant") {
+        cleanedMessages[i] = {
+          ...cleanedMessages[i],
+          content: stripThinkTags(cleanedMessages[i].content),
+        };
+        break;
+      }
+    }
+
+    setMessages(cleanedMessages);
+    setInput("");
+    await runAgentLoop(cleanedMessages, {
+      skipThinking: true,
+      skipThinkingInstruction: t("AgentChatPage.skipThinkingPrompt"),
+    });
+  };
+
+  const handleFunctionCallConfirmationAction = async (
+    action: "confirm" | "cancel"
+  ) => {
+    if (isBusy) return;
+
+    const actionText = action === "confirm" ? "确认" : "取消";
+    const userMsg: ChatMessage = { role: "user", content: actionText };
+    const newMessages = [...messagesRef.current, userMsg];
+
+    setMessages(newMessages);
+    setInput("");
+    await runAgentLoop(newMessages);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -271,6 +322,18 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   );
   const canSend = input.trim().length > 0;
   const isBusy = isLoading || hasExecutingCall();
+  const isThinking = React.useMemo(() => {
+    if (!isBusy) return false;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role !== "assistant") continue;
+      const content = messages[i].content;
+      const lastOpen = content.lastIndexOf("<think>");
+      if (lastOpen === -1) return false;
+      const lastClose = content.lastIndexOf("</think>");
+      return lastClose < lastOpen;
+    }
+    return false;
+  }, [messages, isBusy]);
 
   return (
     <AdvancedCard
@@ -429,6 +492,9 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                     >
                       <MarkdownContainer
                         messageId={`${currentSessionIdRef.current}-${originalIndex}`}
+                        onFunctionCallAction={
+                          handleFunctionCallConfirmationAction
+                        }
                       >
                         {msg.content}
                       </MarkdownContainer>
@@ -484,17 +550,28 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                   <Text className="secondary-text" fontSize="2xs">
                     {t("AgentChatPage.bottomWarning")}
                   </Text>
-                  <IconButton
-                    aria-label={isBusy ? "stop" : "send"}
-                    icon={isBusy ? <LuPause /> : <LuSend />}
-                    colorScheme={
-                      isBusy ? "red" : canSend ? primaryColor : "gray"
-                    }
-                    variant="solid"
-                    borderRadius="full"
-                    isDisabled={!isBusy && !canSend}
-                    onClick={isBusy ? handleStopReply : handleSend}
-                  />
+                  <HStack spacing={2}>
+                    {isThinking && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleSkipThinking}
+                      >
+                        {t("AgentChatPage.skipThinking")}
+                      </Button>
+                    )}
+                    <IconButton
+                      aria-label={isBusy ? "stop" : "send"}
+                      icon={isBusy ? <LuPause /> : <LuSend />}
+                      colorScheme={
+                        isBusy ? "red" : canSend ? primaryColor : "gray"
+                      }
+                      variant="solid"
+                      borderRadius="full"
+                      isDisabled={!isBusy && !canSend}
+                      onClick={isBusy ? handleStopReply : handleSend}
+                    />
+                  </HStack>
                 </HStack>
               </Flex>
             </Box>

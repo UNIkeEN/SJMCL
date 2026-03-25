@@ -19,6 +19,8 @@ import {
   LuZap,
 } from "react-icons/lu";
 import { useFunctionCall } from "@/contexts/function-call";
+import { ToolCallStatus } from "@/enums/tool-call";
+import { parseToolCallStatus } from "@/utils/tool-call";
 
 // Interface for the function call parameters
 export interface FunctionCallParams {
@@ -30,7 +32,8 @@ export interface FunctionCallParams {
 export const FunctionCallWidget: React.FC<{
   data: FunctionCallParams;
   callId?: string;
-}> = ({ data, callId }) => {
+  onConfirmationAction?: (action: "confirm" | "cancel") => void;
+}> = ({ data, callId, onConfirmationAction }) => {
   const { t } = useTranslation();
   const bgColor = useColorModeValue("purple.50", "purple.900");
   const borderColor = useColorModeValue("purple.200", "purple.700");
@@ -47,6 +50,11 @@ export const FunctionCallWidget: React.FC<{
   const result = contextState?.result || data.result;
   const error = contextState?.error;
   const isLoading = contextState?.isExecuting || false;
+
+  const isPendingConfirmation = React.useMemo(() => {
+    if (error || isLoading) return false;
+    return parseToolCallStatus(result) === ToolCallStatus.PendingConfirmation;
+  }, [result, error, isLoading]);
 
   return (
     <Box
@@ -88,7 +96,30 @@ export const FunctionCallWidget: React.FC<{
           {JSON.stringify(data.params, null, 2)}
         </Code>
       )}
-      {(result || error) && (
+      {isPendingConfirmation && (
+        <HStack mt={2} spacing={2}>
+          <Button
+            size="xs"
+            colorScheme="green"
+            onClick={() => onConfirmationAction?.("confirm")}
+            isDisabled={!onConfirmationAction}
+            flex={1}
+          >
+            {t("AgentChatPage.functionCall.confirm")}
+          </Button>
+          <Button
+            size="xs"
+            variant="outline"
+            colorScheme="red"
+            onClick={() => onConfirmationAction?.("cancel")}
+            isDisabled={!onConfirmationAction}
+            flex={1}
+          >
+            {t("AgentChatPage.functionCall.cancel")}
+          </Button>
+        </HStack>
+      )}
+      {!isPendingConfirmation && (result || error) && (
         <Box mt={2}>
           <Button
             size="xs"

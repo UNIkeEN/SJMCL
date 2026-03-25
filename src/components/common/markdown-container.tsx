@@ -1,9 +1,15 @@
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   BoxProps,
   Code,
   Divider,
   Heading,
+  Icon,
   Image,
   Link,
   ListItem,
@@ -13,7 +19,10 @@ import {
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { LuLightbulb } from "react-icons/lu";
 import ReactMarkdown, { Components } from "react-markdown";
+import { BeatLoader } from "react-spinners";
 import remarkGfm from "remark-gfm";
 import { FunctionCallWidget } from "@/components/function-call-widget";
 import { useLauncherConfig } from "@/contexts/config";
@@ -22,13 +31,60 @@ import { splitByFunctionCalls } from "@/utils/function-call";
 type MarkdownContainerProps = BoxProps & {
   children: string;
   messageId?: string;
+  onFunctionCallAction?: (action: "confirm" | "cancel") => void;
 };
+
+type ThinkSegment = {
+  type: "normal" | "think";
+  content: string;
+  isFinished?: boolean;
+};
+
+function splitThinkSegments(text: string): ThinkSegment[] {
+  const segments: ThinkSegment[] = [];
+  let cursor = 0;
+
+  while (cursor < text.length) {
+    const openIdx = text.indexOf("<think>", cursor);
+    if (openIdx === -1) {
+      segments.push({ type: "normal", content: text.slice(cursor) });
+      break;
+    }
+
+    if (openIdx > cursor) {
+      segments.push({ type: "normal", content: text.slice(cursor, openIdx) });
+    }
+
+    const thinkContentStart = openIdx + "<think>".length;
+    const closeIdx = text.indexOf("</think>", thinkContentStart);
+
+    if (closeIdx === -1) {
+      segments.push({
+        type: "think",
+        content: text.slice(thinkContentStart),
+        isFinished: false,
+      });
+      break;
+    }
+
+    segments.push({
+      type: "think",
+      content: text.slice(thinkContentStart, closeIdx),
+      isFinished: true,
+    });
+    cursor = closeIdx + "</think>".length;
+  }
+
+  return segments.filter((segment) => segment.content.trim().length > 0);
+}
 
 const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
   children,
   messageId,
+  onFunctionCallAction,
   ...boxProps
 }) => {
+  const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
@@ -91,6 +147,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
                   key={`fn-${i}`}
                   data={{ name: segment.name, params: segment.params }}
                   callId={messageId ? `${messageId}-${toolIndex}` : undefined}
+                  onConfirmationAction={onFunctionCallAction}
                 />
               );
               toolIndex++;
@@ -122,7 +179,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
 
       return children;
     },
-    [processGitHubMarks, messageId]
+    [processGitHubMarks, messageId, onFunctionCallAction]
   );
 
   // map HTML tags to Chakra components so styles are inherited.
@@ -234,11 +291,62 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
     [processContent]
   );
 
+  const thinkSegments = React.useMemo(
+    () => splitThinkSegments(children || ""),
+    [children]
+  );
+
+  const renderMarkdown = React.useCallback(
+    (content: string, key: string) => (
+      <ReactMarkdown
+        key={key}
+        remarkPlugins={[remarkGfm]}
+        components={components}
+      >
+        {content}
+      </ReactMarkdown>
+    ),
+    [components]
+  );
+
   return (
     <Box {...boxProps}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-        {children || ""}
-      </ReactMarkdown>
+      {thinkSegments.length === 0
+        ? renderMarkdown(children || "", "markdown-default")
+        : thinkSegments.map((segment, index) => {
+            if (segment.type === "normal") {
+              return renderMarkdown(segment.content, `markdown-${index}`);
+            }
+
+            return (
+              <Accordion key={`think-${index}`} allowToggle my={2}>
+                <AccordionItem border="unset" borderRadius="md">
+                  <AccordionButton px={0} py={2}>
+                    {segment.isFinished ? (
+                      <Icon size={4} as={LuLightbulb} />
+                    ) : (
+                      <BeatLoader size={4} />
+                    )}
+                    <Text
+                      flex="1"
+                      textAlign="left"
+                      fontSize="sm"
+                      fontWeight="600"
+                      ml={2}
+                    >
+                      {segment.isFinished
+                        ? t("AgentChatPage.thinkingFinished")
+                        : t("AgentChatPage.thinking")}
+                    </Text>
+                    <AccordionIcon />
+                  </AccordionButton>
+                  <AccordionPanel px={0} pt={1} pb={3}>
+                    {renderMarkdown(segment.content, `think-markdown-${index}`)}
+                  </AccordionPanel>
+                </AccordionItem>
+              </Accordion>
+            );
+          })}
     </Box>
   );
 };

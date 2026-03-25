@@ -1,4 +1,5 @@
 import { gameTypesToIcon } from "@/components/modals/create-instance-modal";
+import { ToolCallStatus } from "@/enums/tool-call";
 import { GetStateFlag } from "@/hooks/get-state";
 import { LauncherConfig } from "@/models/config";
 import { NewsPostRequest } from "@/models/news-post";
@@ -31,11 +32,14 @@ export async function executeToolCall(
           params.type
         )
       ) {
-        return { status: "error", message: "Missing or incorrect type" };
+        return {
+          status: ToolCallStatus.Error,
+          message: "Missing or incorrect type",
+        };
       }
       let versionList = await getGameVersionList();
       if (versionList == GetStateFlag.Cancelled) {
-        return { status: "error", message: "Cancelled" };
+        return { status: ToolCallStatus.Error, message: "Cancelled" };
       }
       return (versionList || []).filter((v: any) => v.gameType === params.type);
     case "retrieve_mod_loader_list_by_game_version":
@@ -44,7 +48,7 @@ export async function executeToolCall(
         !["Fabric", "Forge", "NeoForge"].includes(params.loaderType)
       ) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing version or incorrect loaderType",
         };
       }
@@ -55,12 +59,12 @@ export async function executeToolCall(
     case "create_instance": {
       if (!params.name || !params.description || !params.gameInfo) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing name, description or gameInfo",
         };
       }
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         instanceName: params.name,
@@ -71,7 +75,7 @@ export async function executeToolCall(
     }
     case "retrieve_instance_list": {
       const instListResp = await InstanceService.retrieveInstanceList();
-      if (instListResp.status === "success") {
+      if (instListResp.status === ToolCallStatus.Success) {
         return instListResp.data.map((inst) => ({
           id: inst.id,
           name: inst.name,
@@ -84,18 +88,18 @@ export async function executeToolCall(
     }
     case "retrieve_instance_game_config":
       if (!params.id) {
-        return { status: "error", message: "Missing instanceId" };
+        return { status: ToolCallStatus.Error, message: "Missing instanceId" };
       }
       return await InstanceService.retrieveInstanceGameConfig(params.id);
     case "retrieve_instance_world_list":
       if (!params.id) {
-        return { status: "error", message: "Missing instanceId" };
+        return { status: ToolCallStatus.Error, message: "Missing instanceId" };
       }
       return await InstanceService.retrieveWorldList(params.id);
     case "retrieve_instance_world_details":
       if (!params.instanceId || !params.worldName) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing instanceId or worldName",
         };
       }
@@ -109,7 +113,7 @@ export async function executeToolCall(
       let local_mod_list_response = await InstanceService.retrieveLocalModList(
         params.id
       );
-      if (local_mod_list_response.status === "success") {
+      if (local_mod_list_response.status === ToolCallStatus.Success) {
         return local_mod_list_response.data.map((mod) => {
           return { ...mod, iconSrc: undefined }; // iconSrc is too large and useless
         });
@@ -118,7 +122,7 @@ export async function executeToolCall(
     case "retrieve_instance_resource_pack_list":
       let resource_pack_list_response =
         await InstanceService.retrieveResourcePackList(params.id);
-      if (resource_pack_list_response.status === "success") {
+      if (resource_pack_list_response.status === ToolCallStatus.Success) {
         return resource_pack_list_response.data.map((pack) => {
           return { ...pack, iconSrc: undefined };
         });
@@ -127,7 +131,9 @@ export async function executeToolCall(
     case "retrieve_instance_server_resource_pack_list":
       let server_resource_pack_list_response =
         await InstanceService.retrieveServerResourcePackList(params.id);
-      if (server_resource_pack_list_response.status === "success") {
+      if (
+        server_resource_pack_list_response.status === ToolCallStatus.Success
+      ) {
         return server_resource_pack_list_response.data.map((pack) => {
           return { ...pack, iconSrc: undefined };
         });
@@ -139,12 +145,12 @@ export async function executeToolCall(
       return await InstanceService.retrieveShaderPackList(params.id);
     case "launch_instance": {
       if (!params.id) {
-        return { status: "error", message: "Missing instance id" };
+        return { status: ToolCallStatus.Error, message: "Missing instance id" };
       }
       let instance_list_response = await InstanceService.retrieveInstanceList();
-      if (instance_list_response.status !== "success") {
+      if (instance_list_response.status !== ToolCallStatus.Success) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: t("AgentChatPage.functionCall.launchInstance.fail"),
         };
       }
@@ -153,12 +159,12 @@ export async function executeToolCall(
       );
       if (!instance) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: t("AgentChatPage.functionCall.launchInstance.fail"),
         };
       }
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         action: "launch",
@@ -174,7 +180,7 @@ export async function executeToolCall(
       };
     case "retrieve_java_info": {
       const javaListResp = await ConfigService.retrieveJavaList();
-      if (javaListResp.status === "success") {
+      if (javaListResp.status === ToolCallStatus.Success) {
         return javaListResp.data.map((j) => ({
           name: j.name,
           execPath: j.execPath,
@@ -200,21 +206,24 @@ export async function executeToolCall(
         typeof params.sizeMB !== "number" ||
         params.sizeMB < 512
       ) {
-        return { status: "error", message: "sizeMB must be a number >= 512" };
+        return {
+          status: ToolCallStatus.Error,
+          message: "sizeMB must be a number >= 512",
+        };
       }
       const memResp = await UtilsService.retrieveMemoryInfo();
       if (
-        memResp.status === "success" &&
+        memResp.status === ToolCallStatus.Success &&
         params.sizeMB > memResp.data.suggestedMaxAlloc
       ) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: `sizeMB (${params.sizeMB}) exceeds suggested maximum (${memResp.data.suggestedMaxAlloc}MB)`,
         };
       }
       const gc = config.globalGameConfig;
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         current: {
@@ -227,21 +236,21 @@ export async function executeToolCall(
 
     case "set_global_java_path": {
       if (!params.execPath) {
-        return { status: "error", message: "Missing execPath" };
+        return { status: ToolCallStatus.Error, message: "Missing execPath" };
       }
       const javaResp = await ConfigService.retrieveJavaList();
-      if (javaResp.status === "success") {
+      if (javaResp.status === ToolCallStatus.Success) {
         const valid = javaResp.data.some((j) => j.execPath === params.execPath);
         if (!valid) {
           return {
-            status: "error",
+            status: ToolCallStatus.Error,
             message: `execPath not found in system Java list. Use retrieve_java_info to get valid paths.`,
           };
         }
       }
       const gc2 = config.globalGameConfig;
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         current: { auto: gc2.gameJava.auto, execPath: gc2.gameJava.execPath },
@@ -251,14 +260,20 @@ export async function executeToolCall(
 
     case "set_game_window_resolution": {
       if (!params.width || !params.height) {
-        return { status: "error", message: "Missing width or height" };
+        return {
+          status: ToolCallStatus.Error,
+          message: "Missing width or height",
+        };
       }
       if (params.width < 400 || params.height < 300) {
-        return { status: "error", message: "width >= 400, height >= 300" };
+        return {
+          status: ToolCallStatus.Error,
+          message: "width >= 400, height >= 300",
+        };
       }
       const res = config.globalGameConfig.gameWindow.resolution;
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         current: { width: res.width, height: res.height },
@@ -274,16 +289,17 @@ export async function executeToolCall(
         params.sizeMB < 512
       ) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing instanceId or invalid sizeMB",
         };
       }
       const instCfgResp = await InstanceService.retrieveInstanceGameConfig(
         params.instanceId
       );
-      const curMem = instCfgResp.status === "success" ? instCfgResp.data : null;
+      const curMem =
+        instCfgResp.status === ToolCallStatus.Success ? instCfgResp.data : null;
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         current: curMem
@@ -298,16 +314,19 @@ export async function executeToolCall(
 
     case "set_instance_java_path": {
       if (!params.instanceId || !params.execPath) {
-        return { status: "error", message: "Missing instanceId or execPath" };
+        return {
+          status: ToolCallStatus.Error,
+          message: "Missing instanceId or execPath",
+        };
       }
       const javaResp2 = await ConfigService.retrieveJavaList();
-      if (javaResp2.status === "success") {
+      if (javaResp2.status === ToolCallStatus.Success) {
         const valid = javaResp2.data.some(
           (j) => j.execPath === params.execPath
         );
         if (!valid) {
           return {
-            status: "error",
+            status: ToolCallStatus.Error,
             message: "execPath not found in system Java list",
           };
         }
@@ -316,9 +335,11 @@ export async function executeToolCall(
         params.instanceId
       );
       const curJava =
-        instCfgResp2.status === "success" ? instCfgResp2.data : null;
+        instCfgResp2.status === ToolCallStatus.Success
+          ? instCfgResp2.data
+          : null;
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         current: curJava
@@ -331,7 +352,7 @@ export async function executeToolCall(
     case "set_instance_version_isolation": {
       if (!params.instanceId || typeof params.enabled !== "boolean") {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing instanceId or invalid enabled",
         };
       }
@@ -339,11 +360,11 @@ export async function executeToolCall(
         params.instanceId
       );
       const curIso =
-        instCfgResp3.status === "success"
+        instCfgResp3.status === ToolCallStatus.Success
           ? instCfgResp3.data.versionIsolation
           : null;
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         current: { versionIsolation: curIso },
@@ -353,10 +374,10 @@ export async function executeToolCall(
 
     case "disable_instance_specific_config": {
       if (!params.instanceId) {
-        return { status: "error", message: "Missing instanceId" };
+        return { status: ToolCallStatus.Error, message: "Missing instanceId" };
       }
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         current: "instance-specific config enabled",
@@ -366,10 +387,10 @@ export async function executeToolCall(
 
     case "download_java": {
       if (!params.version) {
-        return { status: "error", message: "Missing version" };
+        return { status: ToolCallStatus.Error, message: "Missing version" };
       }
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         action: "download",
@@ -384,13 +405,13 @@ export async function executeToolCall(
         typeof params.enable !== "boolean"
       ) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing instanceId, filePath, or enable",
         };
       }
       const fileName = params.filePath.split(/[/\\]/).pop() || params.filePath;
       return {
-        status: "pending_confirmation",
+        status: ToolCallStatus.PendingConfirmation,
         instruction:
           "Show the user the current vs proposed values and ask them to reply '确认' or 'ok' in the chat to apply the change.",
         action: params.enable ? "enable" : "disable",
@@ -416,20 +437,20 @@ export async function commitToolCall(
     case "launch_instance":
       if (!context) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing context for launch_instance",
         };
       }
       context.openSharedModal("launch", { instanceId: params.id });
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: context.t("AgentChatPage.functionCall.launchInstance.success"),
       };
 
     case "create_instance":
       if (!context) {
         return {
-          status: "error",
+          status: ToolCallStatus.Error,
           message: "Missing context for create_instance",
         };
       }
@@ -454,7 +475,7 @@ export async function commitToolCall(
         params.sizeMB
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Global memory set to ${params.sizeMB}MB`,
       };
 
@@ -468,7 +489,7 @@ export async function commitToolCall(
         params.execPath
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Global Java path set to ${params.execPath}`,
       };
 
@@ -482,7 +503,7 @@ export async function commitToolCall(
         params.height
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Resolution set to ${params.width}x${params.height}`,
       };
 
@@ -503,7 +524,7 @@ export async function commitToolCall(
         params.sizeMB
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Instance memory set to ${params.sizeMB}MB`,
       };
 
@@ -524,7 +545,7 @@ export async function commitToolCall(
         params.execPath
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Instance Java path set to ${params.execPath}`,
       };
 
@@ -540,7 +561,7 @@ export async function commitToolCall(
         params.enabled
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Instance version isolation set to ${params.enabled}`,
       };
 
@@ -551,14 +572,14 @@ export async function commitToolCall(
         false
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: "Instance now follows global config",
       };
 
     case "download_java":
       await ConfigService.downloadMojangJava(params.version);
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Java ${params.version} download started`,
       };
 
@@ -568,12 +589,15 @@ export async function commitToolCall(
         params.enable
       );
       return {
-        status: "success",
+        status: ToolCallStatus.Success,
         message: `Mod ${params.enable ? "enabled" : "disabled"}: ${params.filePath}`,
       };
 
     default:
-      return { status: "error", message: `Unknown write tool: ${name}` };
+      return {
+        status: ToolCallStatus.Error,
+        message: `Unknown write tool: ${name}`,
+      };
   }
 }
 
@@ -584,6 +608,17 @@ export function isConfirmationMessage(content: string): boolean {
   const trimmed = content.trim();
   if (trimmed.length > 50) return false;
   return /^(确认|执行吧?|好的?|可以|没问题|改吧|是的?|行|嗯|继续|同意|对|yes|ok|sure|confirm|go\s*ahead|do\s*it|y|👍)/i.test(
+    trimmed
+  );
+}
+
+/**
+ * Detect if a user message is a cancellation for a pending write operation.
+ */
+export function isCancellationMessage(content: string): boolean {
+  const trimmed = content.trim();
+  if (trimmed.length > 50) return false;
+  return /^(取消|不用了?|算了|停止|别执行|先不要|不改了?|no|cancel|stop|abort|n|✖|x)$/i.test(
     trimmed
   );
 }

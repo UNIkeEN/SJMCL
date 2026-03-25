@@ -1,5 +1,6 @@
 import React from "react";
 import { FunctionCallState } from "@/contexts/function-call";
+import { ToolCallStatus } from "@/enums/tool-call";
 import { ChatMessage } from "@/models/intelligence";
 import { IntelligenceService } from "@/services/intelligence";
 import { TOOL_DEFINITIONS } from "@/services/tool-definitions";
@@ -7,10 +8,12 @@ import {
   ToolExecutionContext,
   commitToolCall,
   executeToolCall,
+  isCancellationMessage,
   isConfirmationMessage,
 } from "@/services/tool-executor";
 import { FunctionCallMatch, findFunctionCalls } from "@/utils/function-call";
 import { formatPrintable } from "@/utils/string";
+import { parseToolCallStatus } from "@/utils/tool-call";
 
 const MAX_ITERATIONS = 10;
 const MAX_TOOL_RESULT_LENGTH = 4000;
@@ -51,6 +54,22 @@ interface PendingConfirmation {
   createdAt: number;
 }
 
+interface RunAgentLoopOptions {
+  skipThinking?: boolean;
+  skipThinkingInstruction?: string;
+}
+
+function stripThinkTags(content: string): string {
+  const withoutClosedThink = content.replace(/<think>[\s\S]*?<\/think>/g, "");
+  const lastOpenIdx = withoutClosedThink.lastIndexOf("<think>");
+  const sanitized =
+    lastOpenIdx === -1
+      ? withoutClosedThink
+      : withoutClosedThink.slice(0, lastOpenIdx);
+
+  return sanitized.replace(/\n{3,}/g, "\n\n").trim();
+}
+
 export interface AgentLoopDeps {
   requestIdRef: React.MutableRefObject<number>;
   currentSessionIdRef: React.MutableRefObject<string>;
@@ -75,7 +94,7 @@ export function useAgentLoop(deps: AgentLoopDeps) {
   }, []);
 
   const runAgentLoop = React.useCallback(
-    async (initialMessages: ChatMessage[]) => {
+    async (initialMessages: ChatMessage[], options?: RunAgentLoopOptions) => {
       const {
         requestIdRef,
         currentSessionIdRef,
@@ -117,6 +136,23 @@ export function useAgentLoop(deps: AgentLoopDeps) {
           ];
           setMessages([...messages]);
           // Fall through to normal loop — LLM will see the commit result
+        } else if (
+          lastMsg.role === "user" &&
+          isCancellationMessage(lastMsg.content)
+        ) {
+          pendingRef.current = null;
+          messages = [
+            ...messages,
+            {
+              role: "system" as const,
+              content: JSON.stringify({
+                status: ToolCallStatus.Cancelled,
+                message: "Operation cancelled by user",
+              }),
+            },
+          ];
+          setMessages([...messages]);
+          // Fall through to normal loop — LLM will see the cancellation result
         } else {
           // User didn't confirm, clear pending
           pendingRef.current = null;
@@ -131,6 +167,14 @@ export function useAgentLoop(deps: AgentLoopDeps) {
 
           // Capture history for LLM (before adding placeholder)
           const historyForLLM = preprocessMessagesForLLM([...messages]);
+          if (options?.skipThinking && iteration === 0) {
+            historyForLLM.push({
+              role: "user",
+              content:
+                options.skipThinkingInstruction ||
+                "Do not output any <think> or chain-of-thought content. Return only concise final answer.",
+            });
+          }
 
           // Add empty assistant placeholder for UI
           messages = [...messages, { role: "assistant" as const, content: "" }];
@@ -143,12 +187,15 @@ export function useAgentLoop(deps: AgentLoopDeps) {
             (chunk) => {
               if (requestIdRef.current !== currentRequestId) return;
               currentResponse += chunk;
+              const renderResponse = options?.skipThinking
+                ? stripThinkTags(currentResponse)
+                : currentResponse;
               setMessages((prev) => {
                 const updated = [...prev];
                 if (updated.length > 0) {
                   updated[updated.length - 1] = {
                     ...updated[updated.length - 1],
-                    content: currentResponse,
+                    content: renderResponse,
                   };
                 }
                 return updated;
@@ -170,15 +217,19 @@ export function useAgentLoop(deps: AgentLoopDeps) {
 
           if (requestIdRef.current !== currentRequestId) return;
 
+          const finalResponse = options?.skipThinking
+            ? stripThinkTags(currentResponse)
+            : currentResponse;
+
           // Sync local array and React state with final response
           messages[messages.length - 1] = {
             role: "assistant",
-            content: currentResponse,
+            content: finalResponse,
           };
           setMessages([...messages]);
 
           // Parse function calls
-          const toolCalls = findFunctionCalls(currentResponse).filter(
+          const toolCalls = findFunctionCalls(finalResponse).filter(
             (m) => m.type === "success"
           ) as FunctionCallMatch[];
 
@@ -235,7 +286,7 @@ export function useAgentLoop(deps: AgentLoopDeps) {
             // If this is a write tool that requires confirmation, pause the loop
             if (
               toolDef?.requiresConfirmation &&
-              !resultStr.includes('"status":"error"')
+              parseToolCallStatus(resultStr) !== ToolCallStatus.Error
             ) {
               pendingRef.current = {
                 id: callId,
@@ -270,12 +321,15 @@ export function useAgentLoop(deps: AgentLoopDeps) {
               (chunk) => {
                 if (requestIdRef.current !== currentRequestId) return;
                 previewResponse += chunk;
+                const renderPreview = options?.skipThinking
+                  ? stripThinkTags(previewResponse)
+                  : previewResponse;
                 setMessages((prev) => {
                   const updated = [...prev];
                   if (updated.length > 0) {
                     updated[updated.length - 1] = {
                       ...updated[updated.length - 1],
-                      content: previewResponse,
+                      content: renderPreview,
                     };
                   }
                   return updated;
@@ -298,7 +352,9 @@ export function useAgentLoop(deps: AgentLoopDeps) {
 
             messages[messages.length - 1] = {
               role: "assistant",
-              content: previewResponse,
+              content: options?.skipThinking
+                ? stripThinkTags(previewResponse)
+                : previewResponse,
             };
             setMessages([...messages]);
 
