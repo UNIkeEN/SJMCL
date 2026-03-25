@@ -353,6 +353,7 @@
     "notSelectedLoader": "未选择新的加载器",
     "footer": {
       "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）",
       "reinstall": "重新安装"
     }
   },
@@ -421,7 +422,8 @@
       "info": "基本设置"
     },
     "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
+      "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {

@@ -353,6 +353,7 @@
     "notSelectedLoader": "No new loader selected",
     "footer": {
       "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)",
       "reinstall": "Reinstall"
     }
   },
@@ -421,7 +422,8 @@
       "info": "Basic Settings"
     },
     "footer": {
-      "installFabricApi": "Install Fabric API Mod"
+      "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {

@@ -52,6 +52,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     useState<ModLoaderResourceInfo>(defaultModLoaderResourceInfo);
   const [isLoading, setIsLoading] = useState(false);
   const [isInstallFabricApi, setIsInstallFabricApi] = useState(true);
+  const [isInstallQfApi, setIsInstallQfApi] = useState(true);
 
   useEffect(() => {
     if (defaultSelectedType && defaultSelectedType !== ModLoaderType.Unknown) {
@@ -62,6 +63,8 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     } else {
       setSelectedModLoader(defaultModLoaderResourceInfo);
     }
+    setIsInstallFabricApi(true);
+    setIsInstallQfApi(true);
   }, [modalProps.isOpen, summary?.version, defaultSelectedType]);
 
   const currentModLoader: ModLoaderResourceInfo = useMemo(() => {
@@ -86,7 +89,8 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
       const res = await InstanceService.changeModLoader(
         summary.id,
         selectedModLoader,
-        isInstallFabricApi
+        isInstallFabricApi,
+        isInstallQfApi
       );
 
       if (res.status === "error") {
@@ -216,6 +220,18 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
             >
               <Text fontSize="sm">
                 {t("ChangeModLoaderModal.footer.installFabricApi")}
+              </Text>
+            </Checkbox>
+          )}
+          {selectedModLoader.loaderType === ModLoaderType.Quilt && (
+            <Checkbox
+              colorScheme={primaryColor}
+              isChecked={selectedModLoader.version !== "" && isInstallQfApi}
+              disabled={!selectedModLoader.version}
+              onChange={(e) => setIsInstallQfApi(e.target.checked)}
+            >
+              <Text fontSize="sm">
+                {t("ChangeModLoaderModal.footer.installQFAPI")}
               </Text>
             </Checkbox>
           )}
