@@ -55,7 +55,11 @@ export interface GameDirectory {
   dir: string;
 }
 
-export type LLMProviderType = "openAiCompatible" | "anthropic" | "gemini";
+export enum LLMProviderType {
+  OpenAICompatible = "openAiCompatible",
+  Anthropic = "anthropic",
+  Gemini = "gemini",
+}
 
 export interface LLMParametersConfig {
   temperature: number;
@@ -65,7 +69,7 @@ export interface LLMParametersConfig {
   presencePenalty: number;
 }
 
-export interface ProviderConfig {
+export interface LLMProviderConfig {
   id: string;
   name: string;
   enabled: boolean;
@@ -150,7 +154,7 @@ export interface LauncherConfig {
   intelligence: {
     enabled: boolean;
     activeProviderId: string;
-    providers: ProviderConfig[];
+    providers: LLMProviderConfig[];
   };
   localGameDirectories: GameDirectory[];
   discoverSourceEndpoints: string[];
@@ -353,4 +357,24 @@ export interface VersionMetaInfo {
 export const defaultVersionMetaInfo: VersionMetaInfo = {
   version: "",
   fileName: "",
+};
+
+export const defaultLLMParameters = {
+  temperature: 0.7,
+  maxTokens: 4096,
+  topP: 1.0,
+  frequencyPenalty: 0.0,
+  presencePenalty: 0.0,
+};
+
+export const defaultLLMProviderConfig: LLMProviderConfig = {
+  id: "",
+  name: "",
+  enabled: true,
+  priority: 0,
+  providerType: LLMProviderType.OpenAICompatible,
+  baseUrl: "",
+  apiKey: "",
+  model: "",
+  parameters: { ...defaultLLMParameters },
 };

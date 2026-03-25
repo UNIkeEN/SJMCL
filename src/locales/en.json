@@ -1327,75 +1327,16 @@
       "title": "Intelligent Services",
       "description": "Enhance SJMCL with intelligent features powered by user-provided generative language models"
     },
-    "providers": {
-      "title": "Providers",
-      "add": "Add Provider",
-      "edit": "Edit",
-      "delete": "Delete",
-      "save": "Save",
-      "cancel": "Cancel",
-      "name": "Provider Name",
-      "namePlaceholder": "e.g. My OpenAI",
-      "active": "Active",
-      "setActive": "Set as Active",
-      "enabled": "Enabled",
-      "empty": "No providers configured. Add one to get started.",
-      "deleteConfirm": "Are you sure you want to delete this provider?",
-      "failoverHint": "When the active provider fails, enabled providers will be tried in priority order."
-    },
+    "setActive": "Set as Active",
+    "add": "Add Provider",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this provider?",
+    "failoverHint": "When the active provider fails, enabled providers will be tried in priority order.",
     "providerType": {
-      "title": "Provider Type",
-      "options": {
-        "openAiCompatible": "OpenAI Compatible",
-        "anthropic": "Anthropic (Claude)",
-        "gemini": "Google Gemini"
-      }
-    },
-    "model": {
-      "title": "Model",
-      "settings": {
-        "baseUrl": {
-          "title": "Base URL",
-          "fullUrl": "Full URL: {{url}}"
-        },
-        "endpoint": {
-          "title": "API Endpoint"
-        },
-        "apiKey": {
-          "title": "API Key"
-        },
-        "model": {
-          "title": "Model Name"
-        },
-        "checkAvailability": {
-          "title": "Model Service Availability",
-          "available": "Available",
-          "unavailable": "Unavailable"
-        }
-      }
-    },
-    "parameters": {
-      "title": "Advanced Parameters",
-      "temperature": {
-        "title": "Temperature",
-        "description": "Controls randomness. Higher values make output more creative, lower values more deterministic."
-      },
-      "maxTokens": {
-        "title": "Max Tokens",
-        "description": "Maximum number of tokens to generate in the response."
-      },
-      "topP": {
-        "title": "Top P",
-        "description": "Nucleus sampling. Consider tokens with top_p cumulative probability."
-      },
-      "frequencyPenalty": {
-        "title": "Frequency Penalty",
-        "description": "Penalizes tokens based on their frequency in the text so far. OpenAI-compatible only."
-      },
-      "presencePenalty": {
-        "title": "Presence Penalty",
-        "description": "Penalizes tokens based on whether they appear in the text so far. OpenAI-compatible only."
-      }
+      "openAiCompatible": "OpenAI Compatible",
+      "anthropic": "Anthropic (Claude)",
+      "gemini": "Google Gemini"
     }
   },
   "JavaSettingsPage": {
@@ -1449,6 +1390,74 @@
     },
     "toast": {
       "noSelectedPlayer": "Please add and select a player first"
+    }
+  },
+  "LLMProviderSettingsModal": {
+    "header": {
+      "title": {
+        "add": "Add LLM Provider",
+        "edit": "Edit LLM Provider"
+      }
+    },
+    "content": {
+      "model": {
+        "title": "Model",
+        "settings": {
+          "name": {
+            "title": "Model Name",
+            "placeholder": "e.g., ChatGPT-4"
+          },
+          "provider": {
+            "title": "Service Provider",
+            "options": {
+              "openAiCompatible": "OpenAI Compatible",
+              "anthropic": "Anthropic (Claude)",
+              "gemini": "Google Gemini"
+            }
+          },
+          "baseUrl": {
+            "title": "Base URL",
+            "fullUrl": "Full URL: {{url}}"
+          },
+          "endpoint": {
+            "title": "API Endpoint"
+          },
+          "apiKey": {
+            "title": "API Key"
+          },
+          "model": {
+            "title": "Model Name"
+          },
+          "checkAvailability": {
+            "title": "Availability",
+            "available": "Available",
+            "unavailable": "Unavailable"
+          }
+        }
+      },
+      "parameters": {
+        "title": "Advanced Parameters",
+        "temperature": {
+          "title": "Temperature",
+          "description": "Controls randomness. Higher values make output more creative, lower values more deterministic."
+        },
+        "maxTokens": {
+          "title": "Max Tokens",
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "topP": {
+          "title": "Top P",
+          "description": "Nucleus sampling. Consider tokens with cumulative probability reaching top_p."
+        },
+        "frequencyPenalty": {
+          "title": "Frequency Penalty",
+          "description": "Penalizes tokens based on their frequency in the text so far. OpenAI-compatible only."
+        },
+        "presencePenalty": {
+          "title": "Presence Penalty",
+          "description": "Penalizes tokens based on their presence in the text so far. OpenAI-compatible only."
+        }
+      }
     }
   },
   "ManageSkinModal": {

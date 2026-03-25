@@ -1,5 +1,5 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { ProviderConfig } from "@/models/config";
+import { LLMProviderConfig } from "@/models/config";
 import {
   ChatMessage,
   ChatSession,
@@ -16,7 +16,7 @@ export class IntelligenceService {
 
   @responseHandler("intelligence")
   public static async saveIntelligenceProvider(
-    provider: ProviderConfig
+    provider: LLMProviderConfig
   ): Promise<InvokeResponse<void>> {
     return invoke("save_intelligence_provider", { provider });
   }
