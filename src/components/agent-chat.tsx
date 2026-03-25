@@ -26,23 +26,15 @@ import AdvancedCard from "@/components/common/advanced-card";
 import MarkdownContainer from "@/components/common/markdown-container";
 import { OptionItem } from "@/components/common/option-item";
 import { MiuChatLogoTitle } from "@/components/logo-title";
-import { gameTypesToIcon } from "@/components/modals/create-instance-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useFunctionCallActions } from "@/contexts/function-call";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { GetStateFlag } from "@/hooks/get-state";
+import { useAgentLoop } from "@/hooks/use-agent-loop";
 import { ChatMessage, ChatSessionSummary } from "@/models/intelligence";
-import { NewsPostRequest } from "@/models/news-post";
-import { defaultModLoaderResourceInfo } from "@/models/resource";
 import { getChatSystemPrompt } from "@/prompts";
-import { ConfigService } from "@/services/config";
-import { DiscoverService } from "@/services/discover";
-import { InstanceService } from "@/services/instance";
 import { IntelligenceService } from "@/services/intelligence";
-import { ResourceService } from "@/services/resource";
-import { FunctionCallMatch, findFunctionCalls } from "@/utils/function-call";
-import { base64ImgSrc, formatPrintable } from "@/utils/string";
+import { base64ImgSrc } from "@/utils/string";
 
 const AGENT_AVATAR_SRC = "/images/agent/miuxi_px_avatar.png";
 
@@ -74,13 +66,80 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
   const toast = useToast();
   const { openSharedModal } = useSharedModals();
-  const { getCallState, setCallState, hasExecutingCall } =
-    useFunctionCallActions();
+  const { setCallState, hasExecutingCall } = useFunctionCallActions();
+
+  const { runAgentLoop, clearPendingConfirmation } = useAgentLoop({
+    requestIdRef,
+    currentSessionIdRef,
+    setMessages,
+    setIsLoading,
+    setCallState,
+    toolContext: { config, t, openSharedModal, getGameVersionList },
+    toast,
+  });
 
   const messagesRef = useRef(messages);
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  // Check for pending crash context from game-error page
+  // Load crash context from localStorage and start diagnosis session
+  const loadCrashContext = useCallback(() => {
+    const pending = localStorage.getItem("pending-crash-context");
+    if (!pending) return;
+    localStorage.removeItem("pending-crash-context");
+
+    try {
+      const ctx = JSON.parse(pending);
+      const contextLines = [
+        ctx.instanceName &&
+          `实例: ${ctx.instanceName}${ctx.instanceVersion ? ` (${ctx.instanceVersion})` : ""}${ctx.instanceId ? ` [ID: ${ctx.instanceId}]` : ""}`,
+        ctx.javaName && `Java: ${ctx.javaName}`,
+        ctx.os && `系统: ${ctx.os}`,
+        ctx.crashLog && `\n崩溃日志:\n${ctx.crashLog}`,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const newMessages: ChatMessage[] = [
+        { role: "system", content: getChatSystemPrompt(i18n.language) },
+        {
+          role: "user",
+          content: `我的游戏崩溃了，请分析并给出可执行修复方案。\n\n${contextLines}`,
+        },
+      ];
+
+      clearPendingConfirmation();
+      requestIdRef.current++;
+      currentSessionIdRef.current = crypto.randomUUID();
+      sessionCreatedAtRef.current = Math.floor(Date.now() / 1000);
+      setMessages(newMessages);
+      setInput("");
+      setShowHistory(false);
+
+      setTimeout(() => runAgentLoop(newMessages), 0);
+    } catch (e) {
+      console.error("Failed to parse crash context", e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Check on mount
+  useEffect(() => {
+    loadCrashContext();
+  }, [loadCrashContext]);
+
+  // Listen for cross-window storage changes (game-error page writes localStorage)
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "pending-crash-context" && e.newValue) {
+        loadCrashContext();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [loadCrashContext]);
 
   const saveCurrentSession = async () => {
     const msgs = messagesRef.current;
@@ -98,6 +157,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
 
   const handleNewSession = async () => {
     await saveCurrentSession();
+    clearPendingConfirmation();
     requestIdRef.current++;
     currentSessionIdRef.current = crypto.randomUUID();
     sessionCreatedAtRef.current = Math.floor(Date.now() / 1000);
@@ -178,80 +238,12 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     }
 
     const userMsg: ChatMessage = { role: "user", content: input };
-    // Include current conversation history plus the new message
     const newMessages = [...messages, userMsg];
 
     setMessages(newMessages);
     setInput("");
-    setIsLoading(true);
 
-    const currentRequestId = ++requestIdRef.current;
-
-    // Initial empty assistant message placeholder
-    const assistantMsg: ChatMessage = { role: "assistant", content: "" };
-    setMessages((prev) => [...prev, assistantMsg]);
-
-    let currentResponse = "";
-
-    try {
-      // System prompt is already in messages[0]
-      await IntelligenceService.fetchLLMChatResponse(newMessages, (chunk) => {
-        if (requestIdRef.current !== currentRequestId) return;
-        currentResponse += chunk;
-        setMessages((prev) => {
-          const updated = [...prev];
-          // Update the last message (which is the assistant's)
-          if (updated.length > 0) {
-            updated[updated.length - 1] = {
-              ...updated[updated.length - 1],
-              content: currentResponse,
-            };
-          }
-          return updated;
-        });
-      });
-
-      // Some providers may not emit stream chunks. Fallback to non-stream response.
-      if (!currentResponse.trim()) {
-        const fallbackResp =
-          await IntelligenceService.fetchLLMChatResponse(newMessages);
-        if (
-          requestIdRef.current === currentRequestId &&
-          fallbackResp.status === "success"
-        ) {
-          currentResponse = fallbackResp.data || "";
-          setMessages((prev) => {
-            const updated = [...prev];
-            if (updated.length > 0) {
-              updated[updated.length - 1] = {
-                ...updated[updated.length - 1],
-                content: currentResponse,
-              };
-            }
-            return updated;
-          });
-        }
-      }
-    } catch (error) {
-      if (requestIdRef.current !== currentRequestId) return;
-      console.error(error);
-      setMessages((prev) => {
-        const updated = [...prev];
-        if (updated.length > 0) {
-          updated[updated.length - 1] = {
-            ...updated[updated.length - 1],
-            content:
-              currentResponse +
-              "\n\n**Error:** An error occurred while fetching the response.",
-          };
-        }
-        return updated;
-      });
-    } finally {
-      if (requestIdRef.current === currentRequestId) {
-        setIsLoading(false);
-      }
-    }
+    await runAgentLoop(newMessages);
   };
 
   const handleStopReply = () => {
@@ -266,301 +258,6 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
       handleSend();
     }
   };
-
-  const executeFunctionCall = async (
-    name: string,
-    params: Record<string, any>
-  ) => {
-    switch (name) {
-      case "retrieve_game_version_list":
-        if (
-          !params.type ||
-          !["release", "snapshot", "old_beta", "april_fools"].includes(
-            params.type
-          )
-        ) {
-          return { status: "error", message: "Missing or incorrect type" };
-        }
-        let versionList = await getGameVersionList();
-        if (versionList == GetStateFlag.Cancelled) {
-          return { status: "error", message: "Cancelled" };
-        }
-        return (versionList || []).filter((v) => v.gameType === params.type);
-      case "retrieve_mod_loader_list_by_game_version":
-        if (
-          !params.version ||
-          !["Fabric", "Forge", "NeoForge"].includes(params.loaderType)
-        ) {
-          return {
-            status: "error",
-            message: "Missing version or incorrect loaderType",
-          };
-        }
-        return await ResourceService.fetchModLoaderVersionList(
-          params.version,
-          params.loaderType
-        );
-      case "create_instance":
-        if (!params.name || !params.description || !params.gameInfo) {
-          return {
-            status: "error",
-            message: "Missing name, description or gameInfo",
-          };
-        }
-        return await InstanceService.createInstance(
-          config.localGameDirectories[0],
-          params.name,
-          params.description,
-          gameTypesToIcon[params.gameInfo.gameType],
-          params.gameInfo,
-          params.modLoaderInfo ?? defaultModLoaderResourceInfo,
-          undefined,
-          true
-        );
-      case "retrieve_instance_list":
-        return await InstanceService.retrieveInstanceList();
-      case "retrieve_instance_game_config":
-        if (!params.id) {
-          return { status: "error", message: "Missing instanceId" };
-        }
-        return await InstanceService.retrieveInstanceGameConfig(params.id);
-      case "retrieve_instance_world_list":
-        if (!params.id) {
-          return { status: "error", message: "Missing instanceId" };
-        }
-        return await InstanceService.retrieveWorldList(params.id);
-      case "retrieve_instance_world_details":
-        if (!params.instanceId || !params.worldName) {
-          return {
-            status: "error",
-            message: "Missing instanceId or worldName",
-          };
-        }
-        return await InstanceService.retrieveWorldDetails(
-          params.instanceId,
-          params.worldName
-        );
-      case "retrieve_instance_game_server_list":
-        return await InstanceService.retrieveGameServerList(params.id, true);
-      case "retrieve_instance_local_mod_list":
-        let local_mod_list_response =
-          await InstanceService.retrieveLocalModList(params.id);
-        if (local_mod_list_response.status === "success") {
-          return local_mod_list_response.data.map((mod) => {
-            return { ...mod, iconSrc: undefined }; // iconSrc is too large and useless
-          });
-        }
-        return local_mod_list_response;
-      case "retrieve_instance_resource_pack_list":
-        let resource_pack_list_response =
-          await InstanceService.retrieveResourcePackList(params.id);
-        if (resource_pack_list_response.status === "success") {
-          return resource_pack_list_response.data.map((pack) => {
-            return { ...pack, iconSrc: undefined };
-          });
-        }
-        return resource_pack_list_response;
-      case "retrieve_instance_server_resource_pack_list":
-        let server_resource_pack_list_response =
-          await InstanceService.retrieveServerResourcePackList(params.id);
-        if (server_resource_pack_list_response.status === "success") {
-          return server_resource_pack_list_response.data.map((pack) => {
-            return { ...pack, iconSrc: undefined };
-          });
-        }
-        return server_resource_pack_list_response;
-      case "retrieve_instance_schematic_list":
-        return await InstanceService.retrieveSchematicList(params.id);
-      case "retrieve_instance_shader_pack_list":
-        return await InstanceService.retrieveShaderPackList(params.id);
-      case "launch_instance":
-        let instance_list_response =
-          await InstanceService.retrieveInstanceList();
-        if (instance_list_response.status !== "success") {
-          return {
-            message: t("AgentChatPage.functionCall.launchInstance.fail"),
-          };
-        }
-        let instance = instance_list_response.data.find(
-          (instance) => instance.id === params.id
-        );
-        if (!instance) {
-          return {
-            message: t("AgentChatPage.functionCall.launchInstance.fail"),
-          };
-        } else {
-          openSharedModal("launch", {
-            instanceId: params.id,
-          });
-          return {
-            message: t("AgentChatPage.functionCall.launchInstance.success"),
-          };
-        }
-      case "retrieve_launcher_config":
-        return config;
-      case "retrieve_java_info":
-        return await ConfigService.retrieveJavaList();
-      case "fetch_news":
-        const sources: NewsPostRequest[] = config.discoverSourceEndpoints.map(
-          (url) => ({
-            url,
-            cursor: null,
-          })
-        );
-        return await DiscoverService.fetchNewsPostSummaries(sources);
-      default:
-        return `Unknown function: ${name}`;
-    }
-  };
-
-  const handleFunctionCall = React.useCallback(
-    async (param: {
-      name: string;
-      params: Record<string, any>;
-      callId?: string;
-    }) => {
-      const { name, params, callId } = param;
-
-      // If callId is present, check if already executed/executing
-      if (callId) {
-        const state = getCallState(callId);
-        if (state.isExecuting || state.result || state.error) {
-          return;
-        }
-        setCallState(callId, {
-          isExecuting: true,
-          result: null,
-          error: null,
-        });
-      }
-
-      let result = "";
-      try {
-        result = formatPrintable(await executeFunctionCall(name, params));
-        if (callId) {
-          setCallState(callId, {
-            isExecuting: false,
-            result: result,
-            error: null,
-          });
-        }
-      } catch (e: any) {
-        result = `Error: ${e.message || "Unknown error"}`;
-        if (callId) {
-          setCallState(callId, {
-            isExecuting: false,
-            result: null,
-            error: result,
-          });
-        }
-      }
-
-      const systemMsg = { role: "system", content: result } as ChatMessage;
-      const assistantMsg = { role: "assistant", content: "" } as ChatMessage;
-
-      const currentRequestId = ++requestIdRef.current;
-
-      // ATOMIC UPDATE: Add system message and placeholder together to prevent race conditions
-      setMessages((prev) => [...prev, systemMsg, assistantMsg]);
-      setIsLoading(true);
-
-      const newHistory = [...messagesRef.current, systemMsg];
-
-      try {
-        let currentResponse = "";
-
-        // Fetch response based on new history which includes the system result
-        await IntelligenceService.fetchLLMChatResponse(newHistory, (chunk) => {
-          if (requestIdRef.current !== currentRequestId) return;
-          currentResponse += chunk;
-          setMessages((prev) => {
-            const updated = [...prev];
-            // Update the last message (which is the new assistant message)
-            if (updated.length > 0) {
-              updated[updated.length - 1] = {
-                ...updated[updated.length - 1],
-                content: currentResponse,
-              };
-            }
-            return updated;
-          });
-        });
-
-        // Some providers may not emit stream chunks. Fallback to non-stream response.
-        if (!currentResponse.trim()) {
-          const fallbackResp =
-            await IntelligenceService.fetchLLMChatResponse(newHistory);
-          if (
-            requestIdRef.current === currentRequestId &&
-            fallbackResp.status === "success"
-          ) {
-            currentResponse = fallbackResp.data || "";
-            setMessages((prev) => {
-              const updated = [...prev];
-              if (updated.length > 0) {
-                updated[updated.length - 1] = {
-                  ...updated[updated.length - 1],
-                  content: currentResponse,
-                };
-              }
-              return updated;
-            });
-          }
-        }
-      } catch (e) {
-        if (requestIdRef.current !== currentRequestId) return;
-        console.error(e);
-        toast({ title: "Error fetching response", status: "error" });
-        setMessages((prev) => {
-          const updated = [...prev];
-          if (
-            updated.length > 0 &&
-            updated[updated.length - 1].content === ""
-          ) {
-            updated[updated.length - 1].content =
-              "**Error:** Execution failed.";
-          }
-          return updated;
-        });
-      } finally {
-        if (requestIdRef.current === currentRequestId) {
-          setIsLoading(false);
-        }
-      }
-      return result;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [i18n.language, toast, getCallState, setCallState]
-  );
-
-  // Auto-execute function calls when response is finished
-  useEffect(() => {
-    if (isLoading || messages.length === 0) return;
-    const lastMsgIndex = messages.length - 1;
-    const lastMsg = messages[lastMsgIndex];
-
-    if (lastMsg.role === "assistant") {
-      const matches = findFunctionCalls(lastMsg.content);
-      const validMatches = matches.filter(
-        (m) => m.type === "success"
-      ) as FunctionCallMatch[];
-
-      if (validMatches.length > 0) {
-        const lastMatch = validMatches[validMatches.length - 1];
-        // Check context if already executed
-        const state = getCallState(
-          `${currentSessionIdRef.current}-${lastMsgIndex}`
-        );
-        if (!state.result && !state.error && !state.isExecuting) {
-          handleFunctionCall({
-            name: lastMatch.name,
-            params: lastMatch.params,
-            callId: `${currentSessionIdRef.current}-${lastMsgIndex}`,
-          });
-        }
-      }
-    }
-  }, [isLoading, messages, handleFunctionCall, getCallState]);
 
   const msgBgUser = useColorModeValue("blue.500", "blue.600");
   const msgBgBot = "transparent";
