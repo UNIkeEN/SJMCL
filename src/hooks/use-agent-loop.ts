@@ -1,0 +1,339 @@
+import React from "react";
+import { FunctionCallState } from "@/contexts/function-call";
+import { ChatMessage } from "@/models/intelligence";
+import { IntelligenceService } from "@/services/intelligence";
+import { TOOL_DEFINITIONS } from "@/services/tool-definitions";
+import {
+  ToolExecutionContext,
+  commitToolCall,
+  executeToolCall,
+  isConfirmationMessage,
+} from "@/services/tool-executor";
+import { FunctionCallMatch, findFunctionCalls } from "@/utils/function-call";
+import { formatPrintable } from "@/utils/string";
+
+const MAX_ITERATIONS = 10;
+const MAX_TOOL_RESULT_LENGTH = 4000;
+
+/**
+ * Convert mid-conversation system messages to user role before sending to LLM.
+ * Fixes Gemini provider which extracts ALL system messages into system_instruction,
+ * causing the initial prompt to be overwritten by tool results.
+ */
+function preprocessMessagesForLLM(messages: ChatMessage[]): ChatMessage[] {
+  return messages.map((msg, i) => {
+    if (msg.role === "system" && i > 0) {
+      return {
+        role: "user" as const,
+        content: `[Tool Result]\n${msg.content}`,
+      };
+    }
+    return msg;
+  });
+}
+
+/**
+ * Truncate overly large tool results to avoid overwhelming LLM context.
+ */
+function truncateResult(result: string): string {
+  if (result.length <= MAX_TOOL_RESULT_LENGTH) return result;
+  return (
+    result.substring(0, MAX_TOOL_RESULT_LENGTH) +
+    `\n...(truncated, ${result.length} chars total)`
+  );
+}
+
+interface PendingConfirmation {
+  id: string;
+  toolName: string;
+  params: Record<string, any>;
+  previewText: string;
+  createdAt: number;
+}
+
+export interface AgentLoopDeps {
+  requestIdRef: React.MutableRefObject<number>;
+  currentSessionIdRef: React.MutableRefObject<string>;
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  setIsLoading: (loading: boolean) => void;
+  setCallState: (id: string, state: FunctionCallState) => void;
+  toolContext: ToolExecutionContext;
+  toast: (options: {
+    title: string;
+    status: "error" | "info" | "warning" | "success";
+  }) => void;
+}
+
+export function useAgentLoop(deps: AgentLoopDeps) {
+  const depsRef = React.useRef(deps);
+  depsRef.current = deps;
+
+  const pendingRef = React.useRef<PendingConfirmation | null>(null);
+
+  const clearPendingConfirmation = React.useCallback(() => {
+    pendingRef.current = null;
+  }, []);
+
+  const runAgentLoop = React.useCallback(
+    async (initialMessages: ChatMessage[]) => {
+      const {
+        requestIdRef,
+        currentSessionIdRef,
+        setMessages,
+        setIsLoading,
+        setCallState,
+        toolContext,
+        toast,
+      } = depsRef.current;
+
+      const currentRequestId = ++requestIdRef.current;
+      setIsLoading(true);
+
+      let messages = [...initialMessages];
+
+      // ── Handle pending confirmation ──────────────────────────────
+      if (pendingRef.current) {
+        const lastMsg = messages[messages.length - 1];
+        if (lastMsg.role === "user" && isConfirmationMessage(lastMsg.content)) {
+          const pending = pendingRef.current;
+          pendingRef.current = null;
+
+          let resultStr = "";
+          try {
+            const result = await commitToolCall(
+              pending.toolName,
+              pending.params,
+              toolContext
+            );
+            resultStr = truncateResult(formatPrintable(result));
+          } catch (e: any) {
+            resultStr = `Error: ${e.message || "Unknown error"}`;
+          }
+
+          // Add commit result as system message
+          messages = [
+            ...messages,
+            { role: "system" as const, content: resultStr },
+          ];
+          setMessages([...messages]);
+          // Fall through to normal loop — LLM will see the commit result
+        } else {
+          // User didn't confirm, clear pending
+          pendingRef.current = null;
+          // Fall through to normal loop
+        }
+      }
+
+      // ── Main agent loop ──────────────────────────────────────────
+      try {
+        for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+          if (requestIdRef.current !== currentRequestId) return;
+
+          // Capture history for LLM (before adding placeholder)
+          const historyForLLM = preprocessMessagesForLLM([...messages]);
+
+          // Add empty assistant placeholder for UI
+          messages = [...messages, { role: "assistant" as const, content: "" }];
+          setMessages([...messages]);
+
+          // Stream LLM response
+          let currentResponse = "";
+          await IntelligenceService.fetchLLMChatResponse(
+            historyForLLM,
+            (chunk) => {
+              if (requestIdRef.current !== currentRequestId) return;
+              currentResponse += chunk;
+              setMessages((prev) => {
+                const updated = [...prev];
+                if (updated.length > 0) {
+                  updated[updated.length - 1] = {
+                    ...updated[updated.length - 1],
+                    content: currentResponse,
+                  };
+                }
+                return updated;
+              });
+            }
+          );
+
+          // Fallback for non-streaming providers
+          if (!currentResponse.trim()) {
+            const fallbackResp =
+              await IntelligenceService.fetchLLMChatResponse(historyForLLM);
+            if (
+              requestIdRef.current === currentRequestId &&
+              fallbackResp.status === "success"
+            ) {
+              currentResponse = fallbackResp.data || "";
+            }
+          }
+
+          if (requestIdRef.current !== currentRequestId) return;
+
+          // Sync local array and React state with final response
+          messages[messages.length - 1] = {
+            role: "assistant",
+            content: currentResponse,
+          };
+          setMessages([...messages]);
+
+          // Parse function calls
+          const toolCalls = findFunctionCalls(currentResponse).filter(
+            (m) => m.type === "success"
+          ) as FunctionCallMatch[];
+
+          if (toolCalls.length === 0) break;
+
+          // Execute tool calls sequentially
+          const assistantMsgIndex = messages.length - 1;
+          let waitingForConfirmation = false;
+
+          for (let toolIndex = 0; toolIndex < toolCalls.length; toolIndex++) {
+            if (requestIdRef.current !== currentRequestId) return;
+
+            const toolCall = toolCalls[toolIndex];
+            const callId = `${currentSessionIdRef.current}-${assistantMsgIndex}-${toolIndex}`;
+            const toolDef = TOOL_DEFINITIONS.find(
+              (d) => d.name === toolCall.name
+            );
+
+            setCallState(callId, {
+              isExecuting: true,
+              result: null,
+              error: null,
+            });
+
+            let resultStr = "";
+            try {
+              const result = await executeToolCall(
+                toolCall.name,
+                toolCall.params,
+                toolContext
+              );
+              resultStr = truncateResult(formatPrintable(result));
+              setCallState(callId, {
+                isExecuting: false,
+                result: resultStr,
+                error: null,
+              });
+            } catch (e: any) {
+              resultStr = `Error: ${e.message || "Unknown error"}`;
+              setCallState(callId, {
+                isExecuting: false,
+                result: null,
+                error: resultStr,
+              });
+            }
+
+            // Add system message with result
+            messages = [
+              ...messages,
+              { role: "system" as const, content: resultStr },
+            ];
+            setMessages([...messages]);
+
+            // If this is a write tool that requires confirmation, pause the loop
+            if (
+              toolDef?.requiresConfirmation &&
+              !resultStr.includes('"status":"error"')
+            ) {
+              pendingRef.current = {
+                id: callId,
+                toolName: toolCall.name,
+                params: toolCall.params,
+                previewText: resultStr,
+                createdAt: Date.now(),
+              };
+              waitingForConfirmation = true;
+              break;
+            }
+          }
+
+          if (waitingForConfirmation) {
+            // Let LLM see the preview and respond, then break the outer loop
+            // so the user can confirm
+            // Stream one more LLM response to show the preview to the user
+            if (requestIdRef.current !== currentRequestId) return;
+
+            const previewHistoryForLLM = preprocessMessagesForLLM([
+              ...messages,
+            ]);
+            messages = [
+              ...messages,
+              { role: "assistant" as const, content: "" },
+            ];
+            setMessages([...messages]);
+
+            let previewResponse = "";
+            await IntelligenceService.fetchLLMChatResponse(
+              previewHistoryForLLM,
+              (chunk) => {
+                if (requestIdRef.current !== currentRequestId) return;
+                previewResponse += chunk;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  if (updated.length > 0) {
+                    updated[updated.length - 1] = {
+                      ...updated[updated.length - 1],
+                      content: previewResponse,
+                    };
+                  }
+                  return updated;
+                });
+              }
+            );
+
+            if (!previewResponse.trim()) {
+              const fallbackResp =
+                await IntelligenceService.fetchLLMChatResponse(
+                  previewHistoryForLLM
+                );
+              if (
+                requestIdRef.current === currentRequestId &&
+                fallbackResp.status === "success"
+              ) {
+                previewResponse = fallbackResp.data || "";
+              }
+            }
+
+            messages[messages.length - 1] = {
+              role: "assistant",
+              content: previewResponse,
+            };
+            setMessages([...messages]);
+
+            break; // Exit loop — wait for user confirmation
+          }
+
+          // Loop continues — next iteration streams the LLM's follow-up response
+        }
+      } catch (error) {
+        if (requestIdRef.current !== currentRequestId) return;
+        console.error(error);
+        toast({ title: "Error in agent loop", status: "error" });
+
+        setMessages((prev) => {
+          const updated = [...prev];
+          if (
+            updated.length > 0 &&
+            updated[updated.length - 1].content === ""
+          ) {
+            updated[updated.length - 1] = {
+              ...updated[updated.length - 1],
+              content:
+                "**Error:** An error occurred while fetching the response.",
+            };
+          }
+          return updated;
+        });
+      } finally {
+        if (requestIdRef.current === currentRequestId) {
+          setIsLoading(false);
+        }
+      }
+    },
+    []
+  );
+
+  return { runAgentLoop, clearPendingConfirmation };
+}
