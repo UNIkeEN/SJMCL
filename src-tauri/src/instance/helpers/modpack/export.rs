@@ -496,35 +496,38 @@ pub async fn collect_modrinth_files(
       .await
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
 
-    let task = tokio::spawn(async move {
-      let result = if is_remote_candidate(&rel) && !no_create_remote_files {
-        build_modrinth_remote_file(&app, &rel, &full, skip_curseforge)
-          .await
-          .ok()
-          .flatten()
-      } else {
-        None
-      };
+    let task = tokio::spawn({
+      let rel = rel.clone();
+      let full = full.clone();
 
-      drop(permit);
-      (rel, full, result)
+      async move {
+        let result = if is_remote_candidate(&rel) && !no_create_remote_files {
+          build_modrinth_remote_file(&app, &rel, &full, skip_curseforge)
+            .await
+            .ok()
+            .flatten()
+        } else {
+          None
+        };
+
+        drop(permit);
+        result
+      }
     });
 
-    tasks.push(task);
+    tasks.push((rel, full, task));
   }
 
   let mut modrinth_files = Vec::new();
   let mut override_files = Vec::new();
 
-  for task in tasks {
-    if let Ok(res) = task.await {
-      match res {
-        (_, _, Some(modrinth_file)) => {
-          modrinth_files.push(modrinth_file);
-        }
-        (rel, full, None) => {
-          override_files.push((rel.to_string(), full));
-        }
+  for (rel, full, task) in tasks {
+    match task.await {
+      Ok(Some(modrinth_file)) => {
+        modrinth_files.push(modrinth_file);
+      }
+      Ok(None) | Err(_) => {
+        override_files.push((rel, full));
       }
     }
   }
