@@ -109,7 +109,7 @@ macro_rules! mcp_tool {
       rmcp::model::Tool::new(
         $name,
         $description,
-        rmcp::handler::server::tool::schema_for_type::<rmcp::model::JsonObject>(),
+        rmcp::handler::server::tool::schema_for_type::<$params_ty>(),
       ),
       move |context: rmcp::handler::server::tool::ToolCallContext<
         '_,
@@ -120,6 +120,36 @@ macro_rules! mcp_tool {
         async move {
           let mut context = context;
           let $params: $params_ty = rmcp::handler::server::tool::parse_json_object(
+            context.arguments.take().unwrap_or_default(),
+          )?;
+          let $app = context.service.app_handle.clone();
+          $crate::intelligence::mcp_server::launcher::command_result_to_tool_result($call.await)
+        }
+        .boxed()
+      },
+    )
+  }};
+  ($name:expr, $description:expr, |$app:ident, $params:ident| { $($arg:ident : $ty:ty),* $(,)? } => $call:expr) => {{
+    #[derive(::serde::Deserialize, ::schemars::JsonSchema)]
+    struct __McpToolParams {
+      $(pub $arg: $ty),*
+    }
+
+    rmcp::handler::server::tool::ToolRoute::new_dyn(
+      rmcp::model::Tool::new(
+        $name,
+        $description,
+        rmcp::handler::server::tool::schema_for_type::<__McpToolParams>(),
+      ),
+      move |context: rmcp::handler::server::tool::ToolCallContext<
+        '_,
+        $crate::intelligence::mcp_server::launcher::McpContext,
+      >| {
+        use futures::FutureExt;
+
+        async move {
+          let mut context = context;
+          let $params: __McpToolParams = rmcp::handler::server::tool::parse_json_object(
             context.arguments.take().unwrap_or_default(),
           )?;
           let $app = context.service.app_handle.clone();

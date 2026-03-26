@@ -16,6 +16,8 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
   routes.extend(instance::tool_routes());
   routes.extend(launch::tool_routes());
   routes.extend(resource::tool_routes());
+
+  #[cfg(debug_assertions)]
   routes.extend(debug::tool_routes());
 
   routes
