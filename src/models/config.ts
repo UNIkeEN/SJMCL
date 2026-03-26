@@ -55,6 +55,32 @@ export interface GameDirectory {
   dir: string;
 }
 
+export enum LLMProviderType {
+  OpenAICompatible = "openAiCompatible",
+  Anthropic = "anthropic",
+  Gemini = "gemini",
+}
+
+export interface LLMParametersConfig {
+  temperature: number;
+  maxTokens: number;
+  topP: number;
+  frequencyPenalty: number;
+  presencePenalty: number;
+}
+
+export interface LLMProviderConfig {
+  id: string;
+  name: string;
+  enabled: boolean;
+  priority: number;
+  providerType: LLMProviderType;
+  baseUrl: string;
+  apiKey: string;
+  model: string;
+  parameters: LLMParametersConfig;
+}
+
 export interface LauncherConfig {
   basicInfo: {
     launcherVersion: string;
@@ -128,12 +154,9 @@ export interface LauncherConfig {
     };
   };
   intelligence: {
-    mcpServer: {
-      launcher: {
-        enabled: boolean;
-        port: number;
-      };
-    };
+    enabled: boolean;
+    activeProviderId: string;
+    providers: LLMProviderConfig[];
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
@@ -294,16 +317,13 @@ export const defaultConfig: LauncherConfig = {
       autoPurgeLauncherLogs: true,
     },
   },
-  intelligence: {
-    mcpServer: {
-      launcher: {
-        enabled: true,
-        port: 18970,
-      },
-    },
-  },
+  globalGameConfig: { ...defaultGameConfig },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
-  globalGameConfig: defaultGameConfig,
+  intelligence: {
+    enabled: false,
+    activeProviderId: "",
+    providers: [],
+  },
   discoverSourceEndpoints: [
     ["https://mc.sjtu.cn/api-sjmcl/article", true],
     ["https://mc.sjtu.cn/api-sjmcl/article/mua", true],
@@ -351,4 +371,24 @@ export interface VersionMetaInfo {
 export const defaultVersionMetaInfo: VersionMetaInfo = {
   version: "",
   fileName: "",
+};
+
+export const defaultLLMParameters = {
+  temperature: 0.7,
+  maxTokens: 4096,
+  topP: 1.0,
+  frequencyPenalty: 0.0,
+  presencePenalty: 0.0,
+};
+
+export const defaultLLMProviderConfig: LLMProviderConfig = {
+  id: "",
+  name: "",
+  enabled: true,
+  priority: 0,
+  providerType: LLMProviderType.OpenAICompatible,
+  baseUrl: "",
+  apiKey: "",
+  model: "",
+  parameters: { ...defaultLLMParameters },
 };

@@ -1,33 +1,25 @@
 import {
-  Button,
   Center,
   Flex,
-  HStack,
-  Link,
-  Text,
+  Icon,
   useColorMode,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { appDataDir, appLogDir, join } from "@tauri-apps/api/path";
-import { openPath, openUrl } from "@tauri-apps/plugin-opener";
-import { exit } from "@tauri-apps/plugin-process";
-import { t } from "i18next";
+import { appDataDir } from "@tauri-apps/api/path";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Trans } from "react-i18next";
-import { LuLanguages, LuScrollText } from "react-icons/lu";
+import { useEffect, useRef, useState } from "react";
+import { LuGripVertical } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import AgentChatPage from "@/components/agent-chat";
+import AgentHostess from "@/components/agent-hostess";
 import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
-import HeadNavBar from "@/components/head-navbar-v2";
-import LanguageMenu from "@/components/language-menu";
-import MainWindowTitlebar from "@/components/main-window-titlebar";
+import HeadNavBar from "@/components/head-navbar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
-import { useSharedModals } from "@/contexts/shared-modal";
 import { isDev } from "@/utils/env";
 
 interface MainLayoutProps {
@@ -36,17 +28,56 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
-  const isStandAlone = router.pathname.startsWith("/standalone");
   const { config, update } = useLauncherConfig();
-  const primaryColor = config.appearance.theme.primaryColor;
   const { colorMode } = useColorMode();
   const isDarkenBg =
     colorMode === "dark" && config.appearance.background.autoDarken;
-  const { openGenericConfirmDialog } = useSharedModals();
+  const originalHeadNavStyle = useRef(config.appearance.theme.headNavStyle);
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
+  const [isAgentChatOpen, setIsAgentChatOpen] = useState(false);
+  const [panelWidth, setPanelWidth] = useState(300);
+  const [isDragging, setIsDragging] = useState(false);
   const isCheckedRunCount = useRef(false);
-  const isCheckedLastRunStatus = useRef(false);
+  const isStandAlone = router.pathname.startsWith("/standalone");
+  const isLaunchPage = router.pathname === "/launch";
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      let newWidth = e.clientX;
+      if (newWidth < 250) newWidth = 250;
+      if (newWidth > window.innerWidth - 450)
+        newWidth = window.innerWidth - 450;
+      setPanelWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      if (isDragging) {
+        setIsDragging(false);
+        document.body.style.cursor = "default";
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging]);
+
+  const startResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    document.body.style.cursor = "col-resize";
+  };
+
+  const agentChatPanelWidth = `${panelWidth}px`;
+  const agentChatPanelTransform = isAgentChatOpen
+    ? "translateX(0)"
+    : "translateX(-100%)";
+  const agentChatPanelOffset = isAgentChatOpen ? agentChatPanelWidth : "0px";
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -60,94 +91,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onClose: onStarUsModalClose,
   } = useDisclosure();
 
-  const openUnavailableExePathDialog = useCallback(() => {
-    openGenericConfirmDialog({
-      title: t("UnavailableExePathAlertDialog.dialog.title"),
-      body: t("UnavailableExePathAlertDialog.dialog.content"),
-      btnCancel: t("UnavailableExePathAlertDialog.dialog.btnContinue"),
-      onCancelCallback: () => update("runCount", config.runCount + 1), // because this dialog will skip the run count check
-      btnOK: t("General.exit"),
-      onOKCallback: () => exit(0),
-      footerLeft: (
-        <HStack spacing={2}>
-          <LuLanguages />
-          <LanguageMenu placement="top" />
-        </HStack>
-      ),
-      isAlert: true,
-      closeOnEsc: false,
-      closeOnOverlayClick: false,
-      showCloseBtn: false,
-    });
-  }, [config.runCount, openGenericConfirmDialog, update]);
-
-  const openLastExitedAbnormallyDialog = useCallback(() => {
-    openGenericConfirmDialog({
-      title: t("LastExitedAbnormallyDialog.dialog.title"),
-      btnCancel: "",
-      showSuppressBtn: true,
-      suppressKey: "lastExitedAbnormally",
-      body: (
-        <Text color="gray.500">
-          <Trans
-            i18nKey="LastExitedAbnormallyDialog.dialog.content"
-            components={{
-              community: (
-                <Link
-                  color={`${primaryColor}.500`}
-                  onClick={() =>
-                    openUrl(t("HelpSettingsPage.top.settings.UserGroup.url"))
-                  }
-                />
-              ),
-              github: (
-                <Link
-                  color={`${primaryColor}.500`}
-                  onClick={() =>
-                    openUrl("https://github.com/UNIkeEN/SJMCL/issues")
-                  }
-                />
-              ),
-            }}
-          />
-        </Text>
-      ),
-      footerLeft: (
-        <HStack>
-          <LuScrollText />
-          <Button
-            variant="link"
-            colorScheme={primaryColor}
-            onClick={async () => {
-              const _appLogDir = await appLogDir();
-              const launcherLogDir = await join(_appLogDir, "launcher");
-              await openPath(launcherLogDir);
-            }}
-          >
-            {t("LastExitedAbnormallyDialog.dialog.viewLog")}
-          </Button>
-        </HStack>
-      ),
-    });
-  }, [openGenericConfirmDialog, primaryColor]);
-
+  // update run count, conditionally show some modals.
   useEffect(() => {
-    // running in unavailable path, show alert dialog.
-    if (!config.mocked && !config.basicInfo.isExePathAvailable) {
-      openUnavailableExePathDialog();
-      isCheckedRunCount.current = true; // skip run count check below
-    }
-
-    // update `last_run_exited_normally` to false, will be updated when this run ends with normal exit.
-    if (!config.mocked && !isCheckedLastRunStatus.current && !isStandAlone) {
-      if (!config.lastRunExitedNormally) {
-        openLastExitedAbnormallyDialog();
-      }
-      update("lastRunExitedNormally", false);
-      isCheckedLastRunStatus.current = true;
-    }
-
-    // update run count, conditionally show some modals.
     if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
       if (!config.runCount) {
         setTimeout(() => {
@@ -167,11 +112,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   }, [
     config.mocked,
     config.runCount,
-    config.lastRunExitedNormally,
-    config.basicInfo.isExePathAvailable,
     isStandAlone,
-    openLastExitedAbnormallyDialog,
-    openUnavailableExePathDialog,
     onWelcomeAndTermsModalOpen,
     onStarUsModalOpen,
     update,
@@ -252,6 +193,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     "white",
     "var(--chakra-colors-gray-900)"
   );
+  const resizeHoverBg = useColorModeValue("blackAlpha.600", "whiteAlpha.600");
+  const resizeHoverIconColor = useColorModeValue(
+    "whiteAlpha.800",
+    "blackAlpha.800"
+  );
 
   if (isStandAlone) {
     return (
@@ -274,41 +220,106 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       </Center>
     );
 
+  const handleAgentChatOpen = (state: boolean) => {
+    if (state) {
+      update("appearance.theme.headNavStyle", "simplified");
+    } else {
+      update("appearance.theme.headNavStyle", originalHeadNavStyle.current);
+    }
+    setIsAgentChatOpen(state);
+  };
+
   return (
     <Flex
       direction="column"
       h="100vh"
+      w="100vw"
+      overflow="hidden"
       bgImg={`url('${bgImgSrc}')`}
       bgSize="cover"
       bgPosition="center"
       bgRepeat="no-repeat"
       bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
       bgBlendMode={isDarkenBg ? "darken" : "normal"}
-      {...(config.basicInfo.osType === "linux" && {
-        border: "0.5px solid",
-        borderColor: "gray.500",
-        borderRadius: "lg",
-      })}
-      overflow="hidden"
       style={getGlobalExtraStyle(config)}
     >
-      <MainWindowTitlebar />
-      <HeadNavBar />
-      {router.pathname === "/launch" ? (
-        <>{children}</>
-      ) : (
-        <AdvancedCard
-          level="back"
-          h="100%"
-          overflow="auto"
-          mt={1}
-          mb={4}
-          mx={4}
+      <Flex w="full" h="full" flexDir="row" justify="space-between">
+        <Flex
+          w={agentChatPanelOffset}
+          overflow="hidden"
+          transform={agentChatPanelTransform}
+          transition="transform 0.35s ease"
+          p={isAgentChatOpen ? 2 : 0}
+          position="relative"
         >
-          {children}
-        </AdvancedCard>
+          {isAgentChatOpen && (
+            <>
+              <AgentChatPage
+                onAgentChatPanelClose={() => handleAgentChatOpen(false)}
+              />
+              <Flex
+                role="group"
+                position="absolute"
+                top={0}
+                right={0}
+                w={2}
+                h="100%"
+                borderRadius="full"
+                cursor="col-resize"
+                onMouseDown={startResize}
+                zIndex={10}
+                transition="background 0.2s"
+                bgColor={isDragging ? resizeHoverBg : "transparent"}
+                _hover={{ bgColor: resizeHoverBg }}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Icon
+                  as={LuGripVertical}
+                  opacity={isDragging ? 1 : 0}
+                  color={resizeHoverIconColor}
+                  _groupHover={{ opacity: 1 }}
+                  transition="opacity 0.2s"
+                />
+              </Flex>
+            </>
+          )}
+        </Flex>
+        <Flex
+          flex={1}
+          flexDir="column"
+          justify="space-between"
+          w="full"
+          minW={0}
+        >
+          <HeadNavBar />
+          <Flex
+            flex={1}
+            pl={isAgentChatOpen ? 0 : 2}
+            pr={2}
+            pb={2}
+            h="full"
+            minH={0}
+          >
+            {isLaunchPage ? (
+              children
+            ) : (
+              <AdvancedCard
+                w="full"
+                h="full"
+                level="back"
+                overflow="auto"
+                borderRadius="2xl"
+              >
+                {children}
+              </AdvancedCard>
+            )}
+          </Flex>
+        </Flex>
+      </Flex>
+      {isLaunchPage && !isAgentChatOpen && (
+        <AgentHostess onToggleAgentChat={() => handleAgentChatOpen(true)} />
       )}
-
       <WelcomeAndTermsModal
         isOpen={isWelcomeAndTermsModalOpen}
         onClose={onWelcomeAndTermsModalClose}

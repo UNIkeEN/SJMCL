@@ -1,172 +1,325 @@
 import {
+  Badge,
   Box,
+  Button,
+  Card,
+  Flex,
+  HStack,
   Icon,
-  NumberInput,
-  NumberInputField,
+  IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Portal,
   Switch,
   Text,
+  VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuSparkles } from "react-icons/lu";
-import { CommonIconButton } from "@/components/common/common-icon-button";
+import { FaRegStar, FaStar } from "react-icons/fa6";
+import { LuPencil, LuPlus, LuSparkles, LuTrash2 } from "react-icons/lu";
+import Empty from "@/components/common/empty";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import LLMProviderSettingsModal from "@/components/modals/llm-provider-settings-modal";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
+import { LLMProviderConfig, defaultLLMProviderConfig } from "@/models/config";
+import { IntelligenceService } from "@/services/intelligence";
+import cardStyles from "@/styles/card.module.css";
+
+interface ProviderCardProps {
+  provider: LLMProviderConfig;
+  isActive: boolean;
+  onEdit: () => void;
+  onSetActive: () => void;
+  onDelete: () => void;
+}
+
+const ProviderCard: React.FC<ProviderCardProps> = ({
+  provider,
+  isActive,
+  onEdit,
+  onSetActive,
+  onDelete,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Card className={cardStyles["card-front"]}>
+      {/* Compact header */}
+      <HStack justify="space-between">
+        <HStack spacing={2} flex={1} minW={0}>
+          <IconButton
+            aria-label={t("IntelligenceSettingsPage.setActive")}
+            icon={isActive ? <FaStar size={12} /> : <FaRegStar size={12} />}
+            size="xs"
+            variant="ghost"
+            color={isActive ? "yellow.500" : "gray.500"}
+            onClick={isActive ? undefined : onSetActive}
+          />
+          <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
+            {provider.name || "Unnamed"}
+          </Text>
+          <Badge fontSize="2xs" colorScheme="gray" variant="subtle">
+            {t(
+              `IntelligenceSettingsPage.providerType.${provider.providerType}`
+            )}
+          </Badge>
+          {provider.model && (
+            <Text fontSize="xs" className="secondary-text" noOfLines={1}>
+              {provider.model}
+            </Text>
+          )}
+          {!provider.enabled && (
+            <Badge fontSize="2xs" colorScheme="red" variant="subtle">
+              disabled
+            </Badge>
+          )}
+        </HStack>
+        <HStack spacing={1}>
+          <IconButton
+            aria-label={t("IntelligenceSettingsPage.edit")}
+            icon={<LuPencil size={12} />}
+            size="xs"
+            variant="ghost"
+            onClick={onEdit}
+          />
+          <Popover size="xs" trigger="click" placement="top">
+            <PopoverTrigger>
+              <IconButton
+                aria-label={t("IntelligenceSettingsPage.delete")}
+                icon={<LuTrash2 size={12} />}
+                size="xs"
+                variant="ghost"
+                colorScheme="red"
+              />
+            </PopoverTrigger>
+            <Portal>
+              <PopoverContent w={48} m={1.5}>
+                <PopoverArrow />
+                <PopoverBody
+                  display="flex"
+                  flexDir="column"
+                  justifyContent="space-between"
+                  gap={3}
+                >
+                  <Text fontWeight="bold" fontSize="sm">
+                    {t("IntelligenceSettingsPage.deleteConfirm")}
+                  </Text>
+                  <Flex justify="flex-end">
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      onClick={onDelete}
+                      colorScheme="red"
+                    >
+                      {t("IntelligenceSettingsPage.delete")}
+                    </Button>
+                  </Flex>
+                </PopoverBody>
+              </PopoverContent>
+            </Portal>
+          </Popover>
+        </HStack>
+      </HStack>
+    </Card>
+  );
+};
+
+// ─── Main Page ───
+
+const SparklesIconBox = () => {
+  const bg = useColorModeValue(
+    `
+    radial-gradient(circle at top left,     #4299E1 0%, transparent 70%),
+    radial-gradient(circle at top right,    #ED64A6 0%, transparent 70%),
+    radial-gradient(circle at bottom left,  #ED8936 0%, transparent 70%),
+    radial-gradient(circle at bottom right, #ED64A6 0%, transparent 70%)
+    `,
+    "linear-gradient(135deg, #171923, #2D3748)"
+  );
+
+  return (
+    <Box
+      boxSize="32px"
+      borderRadius="4px"
+      bg={bg}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Icon as={LuSparkles} boxSize="16px" color="white" />
+    </Box>
+  );
+};
 
 const IntelligenceSettingsPage = () => {
   const { t } = useTranslation();
-  const { config, update } = useLauncherConfig();
+  const toast = useToast();
+  const { config, setConfig, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const intelligence = config.intelligence;
 
-  const [port, setPort] = useState<number>(
-    config.intelligence.mcpServer.launcher.port
+  const [currentProviderId, setCurrentProviderId] = useState<string | null>(
+    null
   );
 
-  useEffect(() => {
-    setPort(config.intelligence.mcpServer.launcher.port);
-  }, [config.intelligence.mcpServer.launcher.port]);
+  const handleSaveProvider = useCallback(
+    async (provider: LLMProviderConfig) => {
+      const resp = await IntelligenceService.saveIntelligenceProvider(provider);
+      if (resp.status === "success") {
+        setConfig((prev) => {
+          const providers = [...prev.intelligence.providers];
+          const idx = providers.findIndex((p) => p.id === provider.id);
+          if (idx >= 0) {
+            providers[idx] = provider;
+          } else {
+            providers.push(provider);
+          }
+          // If this is the first provider, auto-set as active
+          const activeId =
+            prev.intelligence.activeProviderId ||
+            (providers.length === 1
+              ? provider.id
+              : prev.intelligence.activeProviderId);
+          if (activeId !== prev.intelligence.activeProviderId) {
+            IntelligenceService.setActiveIntelligenceProvider(activeId);
+          }
+          return {
+            ...prev,
+            intelligence: {
+              ...prev.intelligence,
+              providers,
+              activeProviderId: activeId,
+            },
+          };
+        });
+        setCurrentProviderId(null);
+      } else {
+        toast({ title: resp.message, status: "error" });
+      }
+    },
+    [setConfig, toast]
+  );
 
-  const SparklesIconBox = () => {
-    const bg = useColorModeValue(
-      // light mode: colorful background
-      `
-      radial-gradient(circle at top left,     #4299E1 0%, transparent 70%),   // blue.400
-      radial-gradient(circle at top right,    #ED64A6 0%, transparent 70%),   // pink.400
-      radial-gradient(circle at bottom left,  #ED8936 0%, transparent 70%),   // orange.400
-      radial-gradient(circle at bottom right, #ED64A6 0%, transparent 70%)
-      `,
-      // dark mode: neutral gray background
-      "linear-gradient(135deg, #171923, #2D3748)"
-    );
+  const handleDeleteProvider = useCallback(
+    async (providerId: string) => {
+      const resp =
+        await IntelligenceService.deleteIntelligenceProvider(providerId);
+      if (resp.status === "success") {
+        setConfig((prev) => {
+          const providers = prev.intelligence.providers.filter(
+            (p) => p.id !== providerId
+          );
+          const activeId =
+            prev.intelligence.activeProviderId === providerId
+              ? ""
+              : prev.intelligence.activeProviderId;
+          return {
+            ...prev,
+            intelligence: {
+              ...prev.intelligence,
+              providers,
+              activeProviderId: activeId,
+            },
+          };
+        });
+        setCurrentProviderId(null);
+      }
+    },
+    [setConfig]
+  );
 
-    return (
-      <Box
-        boxSize="32px"
-        borderRadius="4px"
-        bg={bg}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Icon as={LuSparkles} boxSize="16px" color="white" />
-      </Box>
-    );
+  const handleSetActive = useCallback(
+    async (providerId: string) => {
+      const resp =
+        await IntelligenceService.setActiveIntelligenceProvider(providerId);
+      if (resp.status === "success") {
+        setConfig((prev) => ({
+          ...prev,
+          intelligence: { ...prev.intelligence, activeProviderId: providerId },
+        }));
+      }
+    },
+    [setConfig]
+  );
+
+  // Master switch group
+  const masterSwitchGroup: OptionItemGroupProps = {
+    items: [
+      {
+        prefixElement: <SparklesIconBox />,
+        title: t("IntelligenceSettingsPage.masterSwitch.title"),
+        description: t("IntelligenceSettingsPage.masterSwitch.description"),
+        children: (
+          <Switch
+            colorScheme={primaryColor}
+            isChecked={intelligence.enabled}
+            onChange={(e) => update("intelligence.enabled", e.target.checked)}
+          />
+        ),
+      },
+    ],
   };
-
-  const settingsGroups: OptionItemGroupProps[] = [
-    {
-      items: [
-        {
-          prefixElement: <SparklesIconBox />,
-          title: t("IntelligenceSettingsPage.title"),
-          description: t("IntelligenceSettingsPage.description"),
-          children: <></>,
-        },
-      ],
-    },
-    {
-      title: t("IntelligenceSettingsPage.mcpServer.title"),
-      headExtra: (
-        <Box display="flex" alignItems="center">
-          <Text fontSize="xs" className="secondary-text">
-            {t("IntelligenceSettingsPage.mcpServer.headExtra")}
-          </Text>
-        </Box>
-      ),
-      items: [
-        {
-          title: t("IntelligenceSettingsPage.mcpServer.settings.enabled.title"),
-          description: t(
-            "IntelligenceSettingsPage.mcpServer.settings.enabled.description"
-          ),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={config.intelligence.mcpServer.launcher.enabled}
-              onChange={(e) => {
-                update(
-                  "intelligence.mcpServer.launcher.enabled",
-                  e.target.checked
-                );
-              }}
-            />
-          ),
-        },
-        ...(config.intelligence.mcpServer.launcher.enabled
-          ? [
-              {
-                title: t(
-                  "IntelligenceSettingsPage.mcpServer.settings.docs.title"
-                ),
-                description: t(
-                  "IntelligenceSettingsPage.mcpServer.settings.docs.description"
-                ),
-                children: (
-                  <CommonIconButton
-                    label={t(
-                      "IntelligenceSettingsPage.mcpServer.settings.docs.url"
-                    )}
-                    icon="external"
-                    withTooltip
-                    tooltipPlacement="bottom-end"
-                    size="xs"
-                    onClick={() => {
-                      openUrl(
-                        t(
-                          "IntelligenceSettingsPage.mcpServer.settings.docs.url"
-                        )
-                      );
-                    }}
-                  />
-                ),
-              },
-              {
-                title: t(
-                  "IntelligenceSettingsPage.mcpServer.settings.port.title"
-                ),
-                description: t(
-                  "IntelligenceSettingsPage.mcpServer.settings.port.description"
-                ),
-                children: (
-                  <NumberInput
-                    min={1}
-                    max={65535}
-                    size="xs"
-                    maxW={16}
-                    value={port}
-                    onChange={(value) => {
-                      if (!/^\d*$/.test(value)) return;
-                      setPort(Number(value));
-                    }}
-                    onBlur={() => {
-                      const nextPort = Math.max(
-                        1,
-                        Math.min(port || 18970, 65535)
-                      );
-                      setPort(nextPort);
-                      update("intelligence.mcpServer.launcher.port", nextPort);
-                    }}
-                  >
-                    <NumberInputField pr={0} />
-                  </NumberInput>
-                ),
-              },
-            ]
-          : []),
-      ],
-    },
-  ];
 
   return (
     <>
-      {settingsGroups.map((group, index) => (
-        <OptionItemGroup key={index} {...group} />
-      ))}
+      <OptionItemGroup
+        title={masterSwitchGroup.title}
+        items={masterSwitchGroup.items}
+      />
+
+      {intelligence.enabled && (
+        <VStack spacing={3} align="stretch" mt={3}>
+          {/* Failover hint */}
+          <Text fontSize="xs" className="secondary-text" px={1}>
+            {t("IntelligenceSettingsPage.failoverHint")}
+          </Text>
+
+          {/* Provider list */}
+          {intelligence.providers.length === 0 && <Empty />}
+
+          {intelligence.providers.map((provider) => (
+            <ProviderCard
+              key={provider.id}
+              provider={provider}
+              isActive={intelligence.activeProviderId === provider.id}
+              onEdit={() => setCurrentProviderId(provider.id)}
+              onSetActive={() => handleSetActive(provider.id)}
+              onDelete={() => handleDeleteProvider(provider.id)}
+            />
+          ))}
+
+          <Button
+            size="sm"
+            variant="solid"
+            leftIcon={<LuPlus size={14} />}
+            onClick={() => setCurrentProviderId(crypto.randomUUID())}
+          >
+            {t("IntelligenceSettingsPage.add")}
+          </Button>
+        </VStack>
+      )}
+
+      <LLMProviderSettingsModal
+        provider={
+          intelligence.providers.find((p) => p.id === currentProviderId) || {
+            ...defaultLLMProviderConfig,
+            id: currentProviderId!,
+          }
+        }
+        onSave={handleSaveProvider}
+        onCancel={() => setCurrentProviderId(null)}
+        isOpen={!!currentProviderId}
+        onClose={() => setCurrentProviderId(null)}
+      />
     </>
   );
 };

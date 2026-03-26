@@ -36,6 +36,8 @@ use tauri::Manager;
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
 
+use crate::intelligence::models::ChatHistory;
+
 static EXE_PATH: LazyLock<PathBuf> = LazyLock::new(|| std::env::current_exe().unwrap());
 
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().to_path_buf());
@@ -140,6 +142,16 @@ pub async fn run() {
         instance::commands::change_mod_loader,
         instance::commands::retrieve_modpack_meta_info,
         instance::commands::add_custom_instance_icon,
+        intelligence::commands::retrieve_llm_models,
+        intelligence::commands::fetch_llm_chat_response,
+        intelligence::commands::fetch_llm_chat_response_stream,
+        intelligence::commands::save_intelligence_provider,
+        intelligence::commands::delete_intelligence_provider,
+        intelligence::commands::set_active_intelligence_provider,
+        intelligence::commands::retrieve_chat_sessions,
+        intelligence::commands::retrieve_chat_session,
+        intelligence::commands::save_chat_session,
+        intelligence::commands::delete_chat_session,
         launch::commands::select_suitable_jre,
         launch::commands::validate_game_files,
         launch::commands::validate_selected_player,
@@ -199,7 +211,6 @@ pub async fn run() {
         let os = launcher_config.basic_info.platform.clone();
         let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
         let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
-        let launcher_mcp_config = launcher_config.intelligence.mcp_server.launcher.clone();
         app.manage(Mutex::new(launcher_config));
 
         let account_info = AccountInfo::load().unwrap_or_default();
@@ -211,6 +222,9 @@ pub async fn run() {
 
         let instances: HashMap<String, Instance> = HashMap::new();
         app.manage(Mutex::new(instances));
+
+        let chat_history = ChatHistory::load().unwrap_or_default();
+        app.manage(Mutex::new(chat_history));
 
         let javas: Vec<JavaInfo> = vec![];
         app.manage(Mutex::new(javas));
@@ -313,11 +327,6 @@ pub async fn run() {
         {
           use tauri_plugin_deep_link::DeepLinkExt;
           app.deep_link().register_all()?;
-        }
-
-        // Start the launcher MCP server if enabled
-        if launcher_mcp_config.enabled {
-          intelligence::mcp_server::launcher::run(app.handle().clone(), &launcher_mcp_config);
         }
 
         Ok(())

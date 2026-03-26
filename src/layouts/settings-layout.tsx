@@ -19,6 +19,7 @@ import {
   LuGamepad2,
   LuInfo,
   LuPalette,
+  LuRefreshCcw,
   LuSettings,
   LuSparkles,
 } from "react-icons/lu";
@@ -46,6 +47,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
       { key: "appearance", icon: LuPalette },
       { key: "download", icon: LuCloudDownload },
       { key: "intelligence", icon: LuSparkles },
+      { key: "sync-restore", icon: LuRefreshCcw },
       { key: "help", icon: LuCircleHelp },
       { key: "about", icon: LuInfo },
     ],

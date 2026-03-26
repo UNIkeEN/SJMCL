@@ -219,6 +219,35 @@
       "usePasswordLogin": "Account & Password Login"
     }
   },
+  "AgentButton": {
+    "enabled": "Glad to serve you, {{name}}!",
+    "disabled": "Please enable Intelligence functions.",
+    "turnToSettings": "Go to Settings",
+    "startChatting": "Start Chatting"
+  },
+  "AgentChatPage": {
+    "description": "Start your first conversation with Miuxi!",
+    "placeholder": "Ask Miuxi anything, press Enter to send~",
+    "thinking": "Thinking",
+    "thinkingFinished": "Thinking Finished",
+    "skipThinking": "Skip thinking",
+    "skipThinkingPrompt": "Stop showing the thinking process and provide the final answer directly. Do not output any <think> tag content.",
+    "functionCall": {
+      "title": "Magic Call",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "execute": "Execute",
+      "result": "Result",
+      "error": "Error",
+      "launchInstance": {
+        "success": "Successfully opened game launching panel",
+        "fail": "Failed to find the game instance"
+      }
+    },
+    "bottomWarning": "By AI assistant, for reference only.",
+    "noHistory": "No chat history yet.",
+    "untitledSession": "Untitled Session"
+  },
   "AlertResourceDependencyModal": {
     "header": {
       "title": "Dependency Resources Exist"
@@ -877,14 +906,16 @@
       "MOD_INTERNET_ERROR": "The instance cannot continue due to mod download failure. Please check your network connection or use a proxy.",
       "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
       "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
-      "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
+      "UNKNOWN": "Cannot determine the cause of the crash. You can use AI analysis, or check the logs for more details and export the crash report."
     },
     "button": {
+      "aiAnalysis": "AI Analysis",
       "exportGameInfo": "Export Crash Report",
       "gameLogs": "Game Logs",
       "help": "Help"
     },
-    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
+    "aiAnalysis": "AI Analysis"
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
@@ -956,6 +987,7 @@
       }
     },
     "skip": "Skip",
+    "unknown": "Unknown",
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -988,6 +1020,13 @@
     "functions": {
       "title": "Functionality",
       "settings": {
+        "discoverPage": {
+          "title": "Discover Page",
+          "openNotice": {
+            "part-1": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut ",
+            "part-2": "."
+          }
+        },
         "instancesNavType": {
           "title": "Instance Page Navigation Mode",
           "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
@@ -1394,26 +1433,20 @@
     }
   },
   "IntelligenceSettingsPage": {
-    "title": "SJMCL Intelligence",
-    "description": "Integrate AI models into your launcher and Minecraft gameplay experience.",
-    "mcpServer": {
-      "title": "MCP Service",
-      "headExtra": "Restart Required",
-      "settings": {
-        "enabled": {
-          "title": "Launcher MCP Service",
-          "description": "Enable the local MCP service to connect external agent applications for automated launcher control."
-        },
-        "docs": {
-          "title": "User Guide",
-          "description": "Learn how to connect the launcher to external agent applications (such as Claude, Cherry Studio, and more).",
-          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "Port",
-          "description": "The fixed local port used by the launcher MCP service."
-        }
-      }
+    "masterSwitch": {
+      "title": "Intelligent Services",
+      "description": "Enhance SJMCL with intelligent features powered by user-provided generative language models"
+    },
+    "setActive": "Set as Active",
+    "add": "Add Provider",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this provider?",
+    "failoverHint": "When the active provider fails, enabled providers will be tried in priority order.",
+    "providerType": {
+      "openAiCompatible": "OpenAI Compatible",
+      "anthropic": "Anthropic (Claude)",
+      "gemini": "Google Gemini"
     }
   },
   "JavaSettingsPage": {
@@ -1485,6 +1518,74 @@
     "releaseDate": "Released at {{date}}",
     "notCompatibleWith": "Not compatible with {{item}}",
     "noVersionSelected": "No version selected"
+  },
+  "LLMProviderSettingsModal": {
+    "header": {
+      "title": {
+        "add": "Add LLM Provider",
+        "edit": "Edit LLM Provider"
+      }
+    },
+    "content": {
+      "model": {
+        "title": "Model",
+        "settings": {
+          "name": {
+            "title": "Model Name",
+            "placeholder": "e.g., ChatGPT-4"
+          },
+          "provider": {
+            "title": "Service Provider",
+            "options": {
+              "openAiCompatible": "OpenAI Compatible",
+              "anthropic": "Anthropic (Claude)",
+              "gemini": "Google Gemini"
+            }
+          },
+          "baseUrl": {
+            "title": "Base URL",
+            "fullUrl": "Full URL: {{url}}"
+          },
+          "endpoint": {
+            "title": "API Endpoint"
+          },
+          "apiKey": {
+            "title": "API Key"
+          },
+          "model": {
+            "title": "Model Name"
+          },
+          "checkAvailability": {
+            "title": "Availability",
+            "available": "Available",
+            "unavailable": "Unavailable"
+          }
+        }
+      },
+      "parameters": {
+        "title": "Advanced Parameters",
+        "temperature": {
+          "title": "Temperature",
+          "description": "Controls randomness. Higher values make output more creative, lower values more deterministic."
+        },
+        "maxTokens": {
+          "title": "Max Tokens",
+          "description": "The maximum number of tokens to generate in the response."
+        },
+        "topP": {
+          "title": "Top P",
+          "description": "Nucleus sampling. Consider tokens with cumulative probability reaching top_p."
+        },
+        "frequencyPenalty": {
+          "title": "Frequency Penalty",
+          "description": "Penalizes tokens based on their frequency in the text so far. OpenAI-compatible only."
+        },
+        "presencePenalty": {
+          "title": "Presence Penalty",
+          "description": "Penalizes tokens based on their presence in the text so far. OpenAI-compatible only."
+        }
+      }
+    }
   },
   "ManageSkinModal": {
     "skinManage": "Manage Skin",
@@ -2568,6 +2669,32 @@
         }
       }
     },
+    "intelligence": {
+      "checkLLMServiceAvailability": {
+        "success": "GenAI service available",
+        "error": {
+          "title": "GenAI service unavailable",
+          "description": {
+            "NETWORK_ERROR": "Network error",
+            "API_PARSE_ERROR": "Failed to parse service API",
+            "NO_SUCH_MODEL": "The specified model does not exist, please check if the name is correct",
+            "INVALID_API_KEY": "Invalid API key"
+          }
+        }
+      },
+      "fetchLLMChatResponse": {
+        "error": {
+          "title": "Failed to retrieve AI chat response",
+          "description": {
+            "NETWORK_ERROR": "Network error",
+            "NOT_ENABLED": "GenAI feature not enabled",
+            "API_PARSE_ERROR": "Failed to parse service API",
+            "INVALID_API_KEY": "Invalid API key",
+            "NO_RESPONSE": "No response received"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "Failed to create task"
@@ -2599,6 +2726,7 @@
       "appearance": "Appearance",
       "download": "Download",
       "intelligence": "Intelligence",
+      "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
       "about": "About",
       "dev-test": "Dev - Test Page"

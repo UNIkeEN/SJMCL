@@ -25,7 +25,7 @@ pub enum InstanceSubdirType {
   ShaderPacks,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, Default, Display)]
+#[derive(Debug, PartialEq, Clone, Copy, Deserialize, Serialize, Default, Display)]
 pub enum ModLoaderType {
   #[default]
   Unknown,
@@ -67,7 +67,7 @@ impl ModLoaderType {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
+#[derive(Debug, PartialEq, Deserialize, Clone, Serialize, Default)]
 pub enum ModLoaderStatus {
   NotDownloaded, // mod loader's library has not been downloaded
   DownloadFailed, /* mod loader's library download process failed (including processor installation failed)
@@ -80,8 +80,8 @@ pub enum ModLoaderStatus {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
-  #[strikethrough[serde(rename_all = "camelCase", default)]]
+  #[strikethrough[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]]
+  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields, default)]]
   pub struct Instance {
     pub id: String,
     pub name: String,
@@ -212,7 +212,7 @@ impl Ord for LocalModInfo {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ResourcePackInfo {
   pub name: String,
@@ -222,21 +222,21 @@ pub struct ResourcePackInfo {
   pub file_path: PathBuf,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SchematicInfo {
   pub name: String,
   pub file_path: PathBuf,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ShaderPackInfo {
   pub file_name: String,
   pub file_path: PathBuf,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ScreenshotInfo {
   pub file_name: String,
@@ -280,7 +280,7 @@ pub enum InstanceError {
   LoaderInstallerNotFound,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct OptiFine {
   pub filename: String,

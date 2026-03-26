@@ -12,9 +12,10 @@ use smart_default::SmartDefault;
 use std::path::PathBuf;
 use strum_macros::Display;
 use tauri::{AppHandle, Emitter};
+use uuid::Uuid;
 
 #[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct MemoryInfo {
   pub total: u64,
   pub used: u64,
@@ -22,7 +23,7 @@ pub struct MemoryInfo {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct JavaInfo {
   pub name: String, // JDK/JRE + full version
   pub exec_path: String,
@@ -34,7 +35,7 @@ pub struct JavaInfo {
 
 // Info about the latest release version fetched from remote, shown to the user to update.
 #[derive(Debug, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct VersionMetaInfo {
   pub version: String,
   pub file_name: String,
@@ -43,7 +44,7 @@ pub struct VersionMetaInfo {
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/game/ProcessPriority.java#L20
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum ProcessPriority {
   Low,
@@ -54,7 +55,7 @@ pub enum ProcessPriority {
   Normal,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum FileValidatePolicy {
   Disable,
@@ -63,7 +64,64 @@ pub enum FileValidatePolicy {
   Normal,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum LLMProviderType {
+  Anthropic,
+  Gemini,
+  #[serde(other)]
+  OpenAiCompatible,
+}
+
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, SmartDefault)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LLMModelConfig {
+  pub base_url: String,
+  pub api_key: String,
+  pub model: String,
+}
+
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, SmartDefault)]
+#[serde(rename_all = "camelCase", default)]
+pub struct LLMParametersConfig {
+  #[default = 0.7]
+  pub temperature: f64,
+  #[default = 4096]
+  pub max_tokens: u32,
+  #[default = 1.0]
+  pub top_p: f64,
+  pub frequency_penalty: f64,
+  pub presence_penalty: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, SmartDefault)]
+#[serde(rename_all = "camelCase", default)]
+pub struct ProviderConfig {
+  #[default(_code = "Uuid::new_v4().to_string()")]
+  pub id: String,
+  pub name: String,
+  pub enabled: bool,
+  pub priority: u32,
+  #[default(LLMProviderType::OpenAiCompatible)]
+  pub provider_type: LLMProviderType,
+  pub base_url: String,
+  pub api_key: String,
+  pub model: String,
+  #[default(LLMParametersConfig::default())]
+  pub parameters: LLMParametersConfig,
+}
+
+impl From<&ProviderConfig> for LLMModelConfig {
+  fn from(p: &ProviderConfig) -> Self {
+    LLMModelConfig {
+      base_url: p.base_url.clone(),
+      api_key: p.api_key.clone(),
+      model: p.model.clone(),
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum LauncherVisiablity {
   StartHidden,
@@ -81,7 +139,7 @@ pub enum LauncherVisiablity {
 // assert!(config.access("114514").is_err())
 //
 structstruck::strike! {
-  #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
+  #[strikethrough[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase")]]
   #[strikethrough[derive(SmartDefault)]]
   #[strikethrough[serde(default)]]
@@ -147,8 +205,8 @@ structstruck::strike! {
   }
 }
 
-#[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GameDirectory {
   pub name: String,
   pub dir: PathBuf,
@@ -156,7 +214,7 @@ pub struct GameDirectory {
 
 // see java.net.proxy
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum ProxyType {
   Socks,
@@ -165,7 +223,7 @@ pub enum ProxyType {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
+  #[strikethrough[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase")]]
   #[strikethrough[derive(SmartDefault)]]
   #[strikethrough[serde(default)]]
@@ -267,17 +325,12 @@ structstruck::strike! {
         pub auto_purge_launcher_logs: bool,
       }
     },
-    pub intelligence: struct Intelligence {
-      pub mcp_server: struct {
-        pub launcher: struct LauncherMcpServerConfig{
-          #[default = true]
-          pub enabled: bool,
-          #[default = 18970]
-          pub port: u16,
-        },
-      }
-    },
     pub global_game_config: GameConfig,
+    pub intelligence: struct IntelligenceConfig {
+      pub enabled: bool,
+      pub active_provider_id: String,
+      pub providers: Vec<ProviderConfig>,
+    },
     pub local_game_directories: Vec<GameDirectory>,
     // Changed from Vec<String> to Vec<(String, bool)> with default enabled=true
     #[serde(
@@ -360,6 +413,40 @@ impl Storage for LauncherConfig {
     } else {
       APP_DATA_DIR.get().unwrap().join(LAUNCHER_CFG_FILE_NAME)
     }
+  }
+
+  fn load() -> Result<Self, std::io::Error> {
+    let json_string = std::fs::read_to_string(Self::file_path())?;
+    let mut value: serde_json::Value =
+      serde_json::from_str(&json_string).map_err(std::io::Error::other)?;
+
+    // Migrate old single-provider config to multi-provider format
+    if let Some(intel) = value.get_mut("intelligence") {
+      if intel.get("model").is_some() && intel.get("providers").is_none() {
+        let id = Uuid::new_v4().to_string();
+        let provider = serde_json::json!({
+          "id": id,
+          "name": "Default",
+          "enabled": true,
+          "priority": 0,
+          "providerType": intel.get("providerType").cloned().unwrap_or(serde_json::json!("openAiCompatible")),
+          "baseUrl": intel.get("model").and_then(|m| m.get("baseUrl")).cloned().unwrap_or(serde_json::json!("")),
+          "apiKey": intel.get("model").and_then(|m| m.get("apiKey")).cloned().unwrap_or(serde_json::json!("")),
+          "model": intel.get("model").and_then(|m| m.get("model")).cloned().unwrap_or(serde_json::json!("")),
+          "parameters": intel.get("parameters").cloned().unwrap_or(serde_json::json!({})),
+        });
+        intel["providers"] = serde_json::json!([provider]);
+        intel["activeProviderId"] = serde_json::json!(id);
+        if let Some(obj) = intel.as_object_mut() {
+          obj.remove("model");
+          obj.remove("providerType");
+          obj.remove("parameters");
+        }
+        log::info!("Migrated old intelligence config to multi-provider format");
+      }
+    }
+
+    serde_json::from_value(value).map_err(std::io::Error::other)
   }
 }
 

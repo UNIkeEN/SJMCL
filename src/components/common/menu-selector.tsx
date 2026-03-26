@@ -80,7 +80,6 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
         size={size}
         variant="outline"
         textAlign="left"
-        w="auto"
         {...buttonProps}
       >
         {renderButtonLabel()}
@@ -100,7 +99,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
           {options.map((opt, i) => {
             const { value: v, label } = buildOptions(opt);
             return (
-              <MenuItemOption key={i} value={v} fontSize={fontSize}>
+              <MenuItemOption key={i} value={v} fontSize={fontSize} w="full">
                 {label}
               </MenuItemOption>
             );

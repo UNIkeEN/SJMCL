@@ -31,3 +31,16 @@ export const TitleFullWithLogo: React.FC<LogoTitleProps> = (props) => {
     </HStack>
   );
 };
+
+export const MiuChatLogoTitle: React.FC<LogoTitleProps> = (props) => {
+  return (
+    <Heading size="md" className={styles.title} {...props}>
+      <Highlight
+        query="Chat"
+        styles={{ color: "blue.600", userSelect: "none" }}
+      >
+        MiuChat
+      </Highlight>
+    </Heading>
+  );
+};

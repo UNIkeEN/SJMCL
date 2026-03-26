@@ -124,3 +124,11 @@ export const isPathSanitized = (path: string, maxLength = 255): boolean => {
 
 export const isValidSemanticVersion = (version: string) =>
   /^\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?$/.test(version);
+
+export const formatPrintable = (value: any): string => {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return value.toString();
+  if (typeof value === "boolean") return value.toString();
+  if (typeof value === "object") return JSON.stringify(value, null, 2);
+  return "";
+};

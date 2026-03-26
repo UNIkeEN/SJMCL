@@ -1,1 +1,3 @@
-pub mod mcp_server;
+pub mod commands;
+pub mod models;
+pub mod providers;

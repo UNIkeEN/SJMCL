@@ -1,7 +1,16 @@
 {
   "identifier": "desktop-capability",
-  "platforms": ["macOS", "windows", "linux"],
-  "windows": ["main", "game_error*", "game_log*"],
+  "platforms": [
+    "macOS",
+    "windows",
+    "linux"
+  ],
+  "windows": [
+    "main",
+    "game_error*",
+    "game_log*",
+    "agent_chat"
+  ],
   "permissions": [
     "window-state:default",
     "fs:default",

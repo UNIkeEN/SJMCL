@@ -14,8 +14,10 @@ import {
   Text,
   Tooltip,
   VStack,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { keyframes } from "@emotion/react";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
@@ -28,12 +30,12 @@ import { LaunchService } from "@/services/launch";
 import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
 import { analyzeCrashReport } from "@/utils/game-error";
-import { generateInstanceDesc } from "@/utils/instance";
 import { capitalizeFirstLetter } from "@/utils/string";
 import { parseIdFromWindowLabel } from "@/utils/window";
+import { getLogLevel } from "./game-log";
 
 const GameErrorPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
@@ -44,6 +46,8 @@ const GameErrorPage: React.FC = () => {
   const [javaInfo, setJavaInfo] = useState<JavaInfo>();
   const [reason, setReason] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+
+  const [gameLog, setGameLog] = useState<string>("");
 
   const platformName = useCallback(() => {
     let name = config.basicInfo.platform
@@ -73,18 +77,8 @@ const GameErrorPage: React.FC = () => {
     setBasicInfoParams(infoList);
   }, [config.basicInfo, platformName]);
 
-  // set window title with i18n
   useEffect(() => {
-    (async () => {
-      await getCurrentWebviewWindow().setTitle(
-        t("Tauri.windowTitle.gameError")
-      );
-    })();
-  }, [t]);
-
-  // retrieve states and logs (for crash analysis)
-  useEffect(() => {
-    let launchingId = parseIdFromWindowLabel(getCurrentWebviewWindow().label);
+    let launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
 
     LaunchService.retrieveGameLaunchingState(launchingId).then((response) => {
       if (response.status === "success") {
@@ -95,7 +89,15 @@ const GameErrorPage: React.FC = () => {
 
     LaunchService.retrieveGameLog(launchingId).then((response) => {
       if (response.status === "success") {
-        let { key, params } = analyzeCrashReport(response.data);
+        const errorLogs = response.data.filter((line) => {
+          let level = getLogLevel(line);
+          return level == "ERROR" || level == "FATAL" || level == "WARN";
+        });
+
+        const errorLog = errorLogs.join("\n");
+        setGameLog(errorLog);
+
+        const { key, params } = analyzeCrashReport(errorLogs); // old analyzer powered by regex
         setReason(
           t(`GameErrorPage.crashDetails.${key}`, {
             param1: params[0],
@@ -133,9 +135,7 @@ const GameErrorPage: React.FC = () => {
   };
 
   const handleOpenLogWindow = async () => {
-    let launchingId = parseIdFromWindowLabel(
-      getCurrentWebviewWindow()?.label || ""
-    );
+    let launchingId = parseIdFromWindowLabel(getCurrentWebview()?.label || "");
     if (launchingId) {
       await LaunchService.openGameLogWindow(launchingId);
     }
@@ -150,7 +150,7 @@ const GameErrorPage: React.FC = () => {
     const savePath = await save({
       defaultPath: `minecraft-exported-crash-info-${timestamp}.zip`,
     });
-    let launchingId = parseIdFromWindowLabel(getCurrentWebviewWindow().label);
+    let launchingId = parseIdFromWindowLabel(getCurrentWebview().label);
     if (!savePath || !launchingId) return;
     setIsLoading(true);
     const res = await LaunchService.exportGameCrashInfo(launchingId, savePath);
@@ -159,6 +159,23 @@ const GameErrorPage: React.FC = () => {
     }
     setIsLoading(false);
   };
+
+  const fancyBg = useColorModeValue(
+    // light mode: colorful background
+    `
+        radial-gradient(circle at top left,     #4299E1 0%, transparent 70%),   // blue.400
+        radial-gradient(circle at top right,    #ED64A6 0%, transparent 70%),   // pink.400
+        radial-gradient(circle at bottom left,  #ED8936 0%, transparent 70%),   // orange.400
+        radial-gradient(circle at bottom right, #ED64A6 0%, transparent 70%)
+        `,
+    // dark mode: neutral gray background
+    "linear-gradient(135deg, #171923, #2D3748)"
+  );
+
+  const hueAnim = keyframes`
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+  `;
 
   return (
     <Flex direction="column" h="100vh">
@@ -181,7 +198,7 @@ const GameErrorPage: React.FC = () => {
           {instanceInfo &&
             renderStats({
               title: t("GameErrorPage.gameInfo.gameVersion"),
-              value: generateInstanceDesc(instanceInfo) || instanceInfo.name,
+              value: instanceInfo.name,
               helper: (
                 <HStack spacing={1}>
                   <Text className="secondary-text" fontSize="sm">
@@ -194,9 +211,7 @@ const GameErrorPage: React.FC = () => {
                       variant="ghost"
                       size="sm"
                       h={21}
-                      onClick={async () => {
-                        await openPath(instanceInfo.versionPath);
-                      }}
+                      onClick={() => openPath(instanceInfo.versionPath)}
                     />
                   </Tooltip>
                 </HStack>
@@ -224,6 +239,7 @@ const GameErrorPage: React.FC = () => {
                 </HStack>
               ),
             })}
+
           <VStack spacing={1} align="stretch">
             <Text fontSize="xs-sm">
               {t("GameErrorPage.crashDetails.title")}
@@ -252,6 +268,32 @@ const GameErrorPage: React.FC = () => {
         <Button colorScheme={primaryColor} variant="solid">
           {t("GameErrorPage.button.help")}
         </Button>
+
+        {config.intelligence.enabled && (
+          <Button
+            bg={fancyBg}
+            variant="solid"
+            _hover={{ bg: fancyBg, animation: `${hueAnim} 2s linear infinite` }}
+            onClick={() => {
+              const crashContext = {
+                instanceId: instanceInfo?.id,
+                instanceName: instanceInfo?.name,
+                instanceVersion: instanceInfo?.version,
+                javaName: javaInfo?.name,
+                javaPath: javaInfo?.execPath,
+                crashLog: gameLog.substring(0, 2000),
+                os: basicInfoParams.get("os"),
+              };
+              localStorage.setItem(
+                "pending-crash-context",
+                JSON.stringify(crashContext)
+              );
+            }}
+          >
+            {t("GameErrorPage.button.sendToMiuChat", "发送到 MiuChat")}
+          </Button>
+        )}
+
         <Icon ml={2} as={LuCircleAlert} color="red.500" />
         <Text fontSize="xs-sm" color="red.500">
           {t("GameErrorPage.bottomAlert")}

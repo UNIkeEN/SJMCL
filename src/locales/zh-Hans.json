@@ -219,6 +219,35 @@
       "usePasswordLogin": "账号密码登录"
     }
   },
+  "AgentButton": {
+    "enabled": "您好 {{name}}，很高兴为您服务！",
+    "disabled": "请先在设置中启用智能服务。",
+    "turnToSettings": "转到设置",
+    "startChatting": "开始聊天"
+  },
+  "AgentChatPage": {
+    "description": "与缪汐开始第一句对话吧！",
+    "placeholder": "问问缪汐，回车发送~",
+    "thinking": "正在思考",
+    "thinkingFinished": "思考完成",
+    "skipThinking": "跳过思考",
+    "skipThinkingPrompt": "请停止展示思考过程，直接给出最终答案，不要输出 <think> 标签内容。",
+    "functionCall": {
+      "title": "调用魔法",
+      "confirm": "确认",
+      "cancel": "取消",
+      "execute": "执行",
+      "result": "执行结果",
+      "error": "执行失败",
+      "launchInstance": {
+        "success": "已成功打开游戏启动界面",
+        "fail": "无法找到该游戏实例"
+      }
+    },
+    "bottomWarning": "由 AI 助手生成的内容，仅供参考。",
+    "noHistory": "暂无聊天记录",
+    "untitledSession": "未命名会话"
+  },
   "AlertResourceDependencyModal": {
     "header": {
       "title": "存在前置资源"
@@ -877,14 +906,16 @@
       "MOD_INTERNET_ERROR": "当前实例由于模组下载失败，无法继续运行。请检查网络连接或使用网络代理。",
       "VICS_MODERN_WARFARE_ERROR": "当前实例由于 Vics Modern Warfare 模组错误，无法继续运行。请尝试更新或删除该模组。",
       "FORGE_LITELOADER_CONFLICT": "当前实例由于 Forge 与 LiteLoader 冲突，无法继续运行。请尝试删除 LiteLoader 或更换 Forge 版本。",
-      "UNKNOWN": "暂时无法分析该错误，请查看游戏日志或导出错误崩溃报告。"
+      "UNKNOWN": "暂时无法分析该错误，可尝试使用 AI 分析，或查看游戏日志、导出错误崩溃报告。"
     },
     "button": {
+      "aiAnalysis": "使用 AI 分析",
       "exportGameInfo": "导出游戏崩溃报告",
       "gameLogs": "游戏日志",
       "help": "帮助"
     },
-    "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图"
+    "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图",
+    "aiAnalysis": "AI 崩溃分析"
   },
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
@@ -956,6 +987,7 @@
       }
     },
     "skip": "跳过",
+    "unknown": "未知",
     "version": {
       "dev": "开发版本",
       "nightly": "夜间构建版本",
@@ -988,6 +1020,13 @@
     "functions": {
       "title": "功能",
       "settings": {
+        "discoverPage": {
+          "title": "发现页",
+          "openNotice": {
+            "part-1": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 ",
+            "part-2": " 继续使用 “聚合搜索”。"
+          }
+        },
         "instancesNavType": {
           "title": "实例页导航栏模式",
           "description": "更改实例页左侧导航栏是否显示、分组方式",
@@ -1394,26 +1433,20 @@
     }
   },
   "IntelligenceSettingsPage": {
-    "title": "SJMCL 智能",
-    "description": "将人工智能模型整合进您的启动器使用与 Minecraft 游玩体验",
-    "mcpServer": {
-      "title": "MCP 服务",
-      "headExtra": "以下设置重启后生效",
-      "settings": {
-        "enabled": {
-          "title": "启动器 MCP 服务",
-          "description": "启用本地 MCP 服务，以连接外部 Agent 应用实现启动器的自动化控制"
-        },
-        "docs": {
-          "title": "使用指南",
-          "description": "了解如何将启动器连接到外部 Agent 应用（如 Claude, Cherry Studio 等）",
-          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "端口",
-          "description": "启动器 MCP 服务使用的固定本地端口"
-        }
-      }
+    "masterSwitch": {
+      "title": "智能服务",
+      "description": "结合您提供的生成式语言模型，为 SJMCL 引入更多智能体验"
+    },
+    "setActive": "设为主要",
+    "add": "添加来源",
+    "edit": "编辑",
+    "delete": "删除",
+    "deleteConfirm": "确定要删除此来源吗？",
+    "failoverHint": "当主要来源请求失败时，将按优先级尝试其他已启用的来源。",
+    "providerType": {
+      "openAiCompatible": "OpenAI 兼容",
+      "anthropic": "Anthropic (Claude)",
+      "gemini": "Google Gemini"
     }
   },
   "JavaSettingsPage": {
@@ -1485,6 +1518,74 @@
     "releaseDate": "发布于 {{date}}",
     "notCompatibleWith": "与 {{item}} 不兼容",
     "noVersionSelected": "未选择版本"
+  },
+  "LLMProviderSettingsModal": {
+    "header": {
+      "title": {
+        "add": "添加大模型服务",
+        "edit": "编辑大模型服务"
+      }
+    },
+    "content": {
+      "model": {
+        "title": "模型",
+        "settings": {
+          "name": {
+            "title": "模型名称",
+            "placeholder": "例如：ChatGPT-4"
+          },
+          "provider": {
+            "title": "服务提供商",
+            "options": {
+              "openAiCompatible": "OpenAI 兼容",
+              "anthropic": "Anthropic (Claude)",
+              "gemini": "Google Gemini"
+            }
+          },
+          "baseUrl": {
+            "title": "基础 URL",
+            "fullUrl": "完整 URL: {{url}}"
+          },
+          "endpoint": {
+            "title": "API 端点"
+          },
+          "apiKey": {
+            "title": "API 密钥"
+          },
+          "model": {
+            "title": "模型名称"
+          },
+          "checkAvailability": {
+            "title": "模型服务可用性",
+            "available": "可用",
+            "unavailable": "不可用"
+          }
+        }
+      },
+      "parameters": {
+        "title": "高级参数",
+        "temperature": {
+          "title": "温度",
+          "description": "控制随机性。较高的值使输出更具创造性，较低的值使输出更确定。"
+        },
+        "maxTokens": {
+          "title": "最大词元数",
+          "description": "生成响应的最大词元数量。"
+        },
+        "topP": {
+          "title": "Top P",
+          "description": "核采样。考虑累积概率达到 top_p 的词元。"
+        },
+        "frequencyPenalty": {
+          "title": "频率惩罚",
+          "description": "根据词元在文本中出现的频率进行惩罚。仅适用于 OpenAI 兼容。"
+        },
+        "presencePenalty": {
+          "title": "存在惩罚",
+          "description": "根据词元是否已出现在文本中进行惩罚。仅适用于 OpenAI 兼容。"
+        }
+      }
+    }
   },
   "ManageSkinModal": {
     "skinManage": "管理皮肤",
@@ -2568,6 +2669,32 @@
         }
       }
     },
+    "intelligence": {
+      "checkLLMServiceAvailability": {
+        "success": "生成式 AI 服务可用",
+        "error": {
+          "title": "生成式 AI 服务不可用",
+          "description": {
+            "NETWORK_ERROR": "网络错误",
+            "API_PARSE_ERROR": "无法正常读取服务 API",
+            "NO_SUCH_MODEL": "指定模型不存在，请检查名称是否正确",
+            "INVALID_API_KEY": "API 密钥无效"
+          }
+        }
+      },
+      "fetchLLMChatResponse": {
+        "error": {
+          "title": "获取 AI 聊天响应失败",
+          "description": {
+            "NETWORK_ERROR": "网络错误",
+            "NOT_ENABLED": "生成式 AI 功能未启用",
+            "API_PARSE_ERROR": "无法正常读取服务 API",
+            "INVALID_API_KEY": "API 密钥无效",
+            "NO_RESPONSE": "没有返回任何内容"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "任务创建失败"
@@ -2599,6 +2726,7 @@
       "appearance": "外观",
       "download": "下载资源",
       "intelligence": "智能",
+      "sync-restore": "同步与还原",
       "help": "文档与帮助",
       "about": "关于",
       "dev-test": "开发 - 测试页"

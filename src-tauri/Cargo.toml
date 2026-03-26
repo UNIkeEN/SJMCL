@@ -1,10 +1,10 @@
 [package]
 name = "SJMCL"
-version = "1.0.0-beta.2"
-description = "A Minecraft launcher from SJMC"
+version = "1.0.0-beta.2-miu"
+description = "A Minecraft launcher from SJMC featured with MiuXi Agent"
 authors = ["SJMCL Team"]
 license = "GNU General Public License v3.0 (with additional terms)"
-repository = "https://github.com/UNIkeEN/SJMCL"
+repository = "https://github.com/ProjectMiu/SJMCL"
 edition = "2021"
 rust-version = "1.91.0"
 
