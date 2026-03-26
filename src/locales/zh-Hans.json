@@ -16,8 +16,8 @@
         "contributors": {
           "title": "开发者名单"
         },
-        "reportIssue": {
-          "title": "报告问题或请求功能"
+        "sourceCode": {
+          "title": "在 GitHub 查看源代码"
         },
         "aboutSJMC": {
           "title": "关于上海交通大学 Minecraft 社（SJMC）"
@@ -62,7 +62,7 @@
         },
         "userAgreement": {
           "title": "用户协议",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
         },
         "openSourceLicense": {
           "title": "开源协议",
@@ -139,6 +139,20 @@
     },
     "placeholder": {
       "endpointUrl": "源地址"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "添加游戏服务器"
+    },
+    "serverAddrRequired": "服务器地址不能为空",
+    "label": {
+      "serverAddr": "服务器地址",
+      "serverName": "服务器名称"
+    },
+    "placeholder": {
+      "serverAddr": "请输入服务器地址",
+      "serverName": "Minecraft 服务器"
     }
   },
   "AddPlayerModal": {
@@ -338,7 +352,9 @@
     },
     "notSelectedLoader": "未选择新的加载器",
     "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
+      "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）",
+      "reinstall": "重新安装"
     }
   },
   "CheckModUpdateModal": {
@@ -371,20 +387,6 @@
   },
   "ComingSoonSign": {
     "text": "该页面暂未开放，敬请期待"
-  },
-  "ContributorsPage": {
-    "all": "全部开发者名单",
-    "core": "主要开发者",
-    "contribution": {
-      "fullStackDev": "全栈开发",
-      "frontendDev": "前端开发",
-      "backendDev": "后端开发",
-      "externalAPI": "外部服务",
-      "doc": "文档",
-      "cicd": "CI / CD",
-      "design": "视觉设计",
-      "mascot": "吉祥物"
-    }
   },
   "CopyOrMoveModal": {
     "modal": {
@@ -420,11 +422,22 @@
       "info": "基本设置"
     },
     "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
+      "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "删除认证服务器",
+      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "删除游戏服务器",
+    "content": "确定要删除游戏服务器 “{{name}}”（{{addr}}） 吗？它将会永久消失！（真的很久！）"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
@@ -448,20 +461,33 @@
       "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
     }
   },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
-    }
-  },
   "DevToolbar": {
     "tooltip": "开发工具栏"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "发现",
     "noMore": "无更多内容",
     "sources": "管理数据源",
     "NoSources": "未添加数据源"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft 新闻",
+    "community-news": "社区新闻",
+    "hotModpacks": "{{source}} 的热门整合包"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "搜索",
+      "home": "主页",
+      "community-news": "社区新闻",
+      "minecraft-news": "Minecraft 新闻",
+      "modpack": "整合包",
+      "mod": "模组",
+      "world": "世界",
+      "resourcepack": "资源包",
+      "shader": "光影",
+      "datapack": "数据包"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -584,7 +610,7 @@
       "pause": "暂停",
       "begin": "开始",
       "retry": "重试",
-      "deleteRecord": "删除此记录"
+      "clearHistory": "清空历史记录"
     },
     "label": {
       "paused": "已暂停",
@@ -594,6 +620,7 @@
     },
     "task": {
       "game-client": "游戏客户端 {{param}}",
+      "game-client-w-java": "游戏客户端 {{param1}}（包含 Java {{param2}}）",
       "game-server": "游戏服务端 {{param}}",
       "change-mod-loader": "修改模组加载器 {{param}}",
       "mod": "模组",
@@ -681,9 +708,19 @@
       "macos": "Control(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -903,6 +940,8 @@
     "finish": "完成",
     "import": "导入",
     "launch": "启动",
+    "more": "更多",
+    "new": "新",
     "next": "下一步",
     "notice": "提示",
     "open": "打开",
@@ -951,22 +990,31 @@
     "functions": {
       "title": "功能",
       "settings": {
-        "discoverPage": {
-          "title": "发现页",
-          "openNotice": {
-            "content": "顶部导航栏的 “搜索” 已替换为 “发现”，您可以通过键盘快捷键 <key>{{keyname}}</key> + <key>S</key> 继续使用 “聚合搜索”。"
-          }
-        },
         "instancesNavType": {
           "title": "实例页导航栏模式",
           "description": "更改实例页左侧导航栏是否显示、分组方式",
           "instance": "按实例",
           "directory": "按目录",
+          "tag": "按标签",
           "hidden": "隐藏"
         },
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
           "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
+        },
+        "autoDownloadJava": {
+          "title": "自动下载可用版本 Java 运行时",
+          "description": "启用后，新建实例时若不存在可用版本的 Java 运行时，将自动安装至特定目录"
+        }
+      }
+    },
+    "sync": {
+      "title": "同步",
+      "settings": {
+        "internetSync": {
+          "title": "联网同步启动器设置",
+          "import": "导入",
+          "export": "导出"
         }
       }
     },
@@ -983,6 +1031,11 @@
         "autoPurgeLauncherLogs": {
           "title": "自动清理启动器日志",
           "description": "自动清理 30 天及以前的启动器日志文件"
+        },
+        "restoreAll": {
+          "title": "还原所有设置",
+          "description": "将所有启动器设置还原为默认值",
+          "restore": "还原"
         }
       }
     }
@@ -1095,6 +1148,10 @@
       "content": "在此处添加账户，选择您想要游玩的角色"
     },
     "step3": {
+      "title": "发现页",
+      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>S</key> 快速打开 “聚合搜索”。"
+    },
+    "step4": {
       "title": "Minecraft，启动！",
       "content": "选中实例与角色、调整好相关设置后，点击启动按钮享受游戏吧 🥳"
     }
@@ -1146,7 +1203,12 @@
       "settings": {
         "LauncherDocs": {
           "title": "SJMC Launcher 文档",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/docs"
+        },
+        "UserGroup": {
+          "title": "用户社群",
+          "description": "欢迎加入 QQ 群或 Discord 服务器，报告问题、请求功能或获取帮助",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }
     }
@@ -1156,15 +1218,20 @@
       "title": "从其他启动器导入账户信息"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "认证服务器",
       "players": "角色"
     },
+    "footer": {
+      "parentDirHint": "将在已添加游戏目录的父目录寻找账户信息文件。"
+    },
     "tooltips": {
       "existingServer": "已存在相同地址的认证服务器，导入将会覆盖数据",
-      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据"
+      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据",
+      "expired": "登录令牌已过期，无法导入此角色"
     }
   },
   "ImportModpackModal": {
@@ -1254,7 +1321,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "加载器",
-      "notInstalled": "未安装"
+      "notInstalled": "未安装",
+      "installed": "已安装"
     },
     "modList": {
       "title": "模组",
@@ -1284,6 +1352,7 @@
   "InstanceSettingsPage": {
     "name": "实例名称",
     "description": "实例描述",
+    "colorTag": "颜色标签",
     "icon": "实例图标",
     "applySettings": "启用特定游戏设置",
     "restoreSettings": "重置以下特定设置",
@@ -1367,6 +1436,29 @@
       "launch": "游玩此服务器"
     }
   },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL 智能",
+    "description": "将人工智能模型整合进您的启动器使用与 Minecraft 游玩体验",
+    "mcpServer": {
+      "title": "MCP 服务",
+      "headExtra": "以下设置重启后生效",
+      "settings": {
+        "enabled": {
+          "title": "启动器 MCP 服务",
+          "description": "启用本地 MCP 服务，以连接外部 Agent 应用实现启动器的自动化控制"
+        },
+        "docs": {
+          "title": "使用指南",
+          "description": "了解如何将启动器连接到外部 Agent 应用（如 Claude, Cherry Studio 等）",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "端口",
+          "description": "启动器 MCP 服务使用的固定本地端口"
+        }
+      }
+    }
+  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Java 管理",
@@ -1408,6 +1500,13 @@
       "noSelectedGame": "尚未选择游戏实例"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "上次运行异常退出",
+      "content": "SJMCL 上次运行时异常退出。您可以将日志发送到<community>用户社群</community>，或在 <github>GitHub</github> 发起 Issue 以寻求帮助",
+      "viewLog": "查看日志"
+    }
+  },
   "LaunchProcessModal": {
     "header": {
       "title": "启动游戏 - {{name}}"
@@ -1419,7 +1518,8 @@
       "launchGame": "等待游戏启动"
     },
     "toast": {
-      "noSelectedPlayer": "请先添加并选择游戏角色"
+      "noSelectedPlayer": "请先添加并选择游戏角色",
+      "noSelectedInstance": "请先添加并选择游戏实例"
     }
   },
   "LoaderSelector": {
@@ -1469,6 +1569,10 @@
   },
   "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
+  },
+  "NoSuitableJavaDialog": {
+    "title": "未找到合适的 Java 运行时",
+    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击 “确定” 以前往 Java 管理页面手动添加或下载 Java。"
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
@@ -1822,6 +1926,10 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "重置实例设置",
+    "body": "此操作将会重置本实例的游戏设置为当前全局游戏设置，您确定要继续吗？"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
   },
@@ -1830,9 +1938,17 @@
       "setAsBg": "设置为启动器背景"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "选择实例",
+      "titleForLaunch": "选择要启动的实例"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "请选择想要添加的角色"
+      "title": "选择角色",
+      "titleForAdd": "选择要添加的新角色",
+      "titleForLaunch": "选择要游玩的角色"
     }
   },
   "Services": {
@@ -2137,7 +2253,6 @@
           "title": "验证游戏文件失败",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模组加载器未完成安装",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "模组加载器库文件未下载",
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "游戏文件不完整或缺失",
             "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
@@ -2290,7 +2405,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "实例游戏设置已重置",
         "error": {
           "title": "实例游戏设置重置失败",
@@ -2367,6 +2482,28 @@
           }
         }
       },
+      "addGameServer": {
+        "success": "游戏服务器添加成功",
+        "error": {
+          "title": "添加游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "DUPLICATE_SERVER": "服务器已存在"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "游戏服务器删除成功",
+        "error": {
+          "title": "删除游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "SERVER_NOT_FOUND": "服务器不存在"
+          }
+        }
+      },
       "retrieveLocalModList": {
         "error": {
           "title": "获取模组列表失败",
@@ -2412,8 +2549,8 @@
         "error": {
           "title": "获取世界详细信息失败",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
-            "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
+            "WORLD_NOT_EXIST_ERROR": "世界不存在",
+            "LEVEL_NOT_EXIST_ERROR": "存档数据文件不存在",
             "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
           }
         }
@@ -2504,7 +2641,7 @@
       "general": "通用",
       "appearance": "外观",
       "download": "下载资源",
-      "sync-restore": "同步与还原",
+      "intelligence": "智能",
       "help": "文档与帮助",
       "about": "关于",
       "dev-test": "开发 - 测试页"
@@ -2563,23 +2700,6 @@
       "starUs": "点亮星标"
     }
   },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "启动器设置",
-      "settings": {
-        "internetSync": {
-          "title": "联网同步",
-          "import": "导入",
-          "export": "导出"
-        },
-        "restoreAll": {
-          "title": "还原所有设置",
-          "description": "将所有启动器设置还原为默认值",
-          "restore": "还原"
-        }
-      }
-    }
-  },
   "SyncConfigExportModal": {
     "header": {
       "title": "同步设置 - 导出"
@@ -2608,7 +2728,8 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "无效的运行路径",
-      "content": "您正在临时或非法目录下运行 SJMCL，您的设置和游戏数据可能丢失。请将 SJMCL 移动到其他位置后再次运行。"
+      "content": "您正在临时或非法目录下运行 SJMCL，您的设置和游戏数据可能丢失。请将 SJMCL 移动到其他位置后再次运行。",
+      "btnContinue": "仍要运行"
     }
   },
   "Utils": {

@@ -17,8 +17,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCalendar } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { NewsPostSummary, NewsSourceInfo } from "@/models/news-post";
+import cardStyles from "@/styles/card.module.css";
 import { formatRelativeTime } from "@/utils/datetime";
 import { cleanHtmlText } from "@/utils/string";
 
@@ -31,15 +31,16 @@ const PosterCard = ({ data }: PosterCardProps) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const themedStyles = useThemedCSSStyle();
-
   const { title, abstract, keywords, imageSrc, source, createAt, link } = data;
   const [isHovered, setIsHovered] = useState(false);
   const [src, width, height] = imageSrc || [];
+  const validWidth = typeof width === "number" && width > 0 ? width : undefined;
+  const validHeight =
+    typeof height === "number" && height > 0 ? height : undefined; // Images from mc news don't provide dimensions, let it be auto
 
   return (
     <Card
-      className={themedStyles.card["card-front"]}
+      className={cardStyles["card-front"]}
       cursor="pointer"
       overflow="hidden" // show the border
       p={0}
@@ -57,8 +58,8 @@ const PosterCard = ({ data }: PosterCardProps) => {
             objectFit="cover"
             src={src}
             alt={title}
-            width={width}
-            height={height}
+            width={validWidth}
+            height={validHeight}
             style={{ height: "auto" }}
           />
         </Skeleton>

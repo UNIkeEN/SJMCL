@@ -28,6 +28,7 @@ import { LaunchService } from "@/services/launch";
 import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
 import { analyzeCrashReport } from "@/utils/game-error";
+import { generateInstanceDesc } from "@/utils/instance";
 import { capitalizeFirstLetter } from "@/utils/string";
 import { parseIdFromWindowLabel } from "@/utils/window";
 
@@ -180,7 +181,7 @@ const GameErrorPage: React.FC = () => {
           {instanceInfo &&
             renderStats({
               title: t("GameErrorPage.gameInfo.gameVersion"),
-              value: instanceInfo.name,
+              value: generateInstanceDesc(instanceInfo) || instanceInfo.name,
               helper: (
                 <HStack spacing={1}>
                   <Text className="secondary-text" fontSize="sm">
@@ -193,7 +194,9 @@ const GameErrorPage: React.FC = () => {
                       variant="ghost"
                       size="sm"
                       h={21}
-                      onClick={() => openPath(instanceInfo.versionPath)}
+                      onClick={async () => {
+                        await openPath(instanceInfo.versionPath);
+                      }}
                     />
                   </Tooltip>
                 </HStack>

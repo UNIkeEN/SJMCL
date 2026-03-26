@@ -7,7 +7,7 @@ import {
   Tag,
   VStack,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
@@ -35,6 +35,7 @@ export const modLoaderTypes: ModLoaderType[] = [
   ModLoaderType.Forge,
   ModLoaderType.Fabric,
   ModLoaderType.NeoForge,
+  ModLoaderType.Quilt,
 ];
 
 export const modLoaderTypesToIcon: Record<string, string> = {
@@ -42,6 +43,7 @@ export const modLoaderTypesToIcon: Record<string, string> = {
   Fabric: "Fabric.png",
   Forge: "Forge.png",
   NeoForge: "NeoForge.png",
+  Quilt: "Quilt.png",
 };
 
 interface LoaderSelectorProps {
@@ -70,6 +72,8 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     ModLoaderType.Unknown
   );
   const [selectedId, setSelectedId] = useState("");
+
+  const selectableCardListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (selectedOptiFine) {
@@ -293,6 +297,25 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     selectedType,
   ]);
 
+  // Scroll selected item into view when version list changes or selected item changes
+  useEffect(() => {
+    const list = selectableCardListRef.current;
+    if (!list) return;
+    const selectedCard = list.querySelector<HTMLElement>(
+      '[data-loader-selected="true"]'
+    );
+    if (!selectedCard) return;
+
+    const frame = requestAnimationFrame(() => {
+      selectedCard.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [selectedModLoader.loaderType, selectedOptiFine?.filename, selectedType]);
+
   return (
     <HStack {...props} w="100%" h="100%" spacing={4} overflow="hidden">
       <VStack
@@ -301,9 +324,16 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
         overflowY="auto"
         overflowX="hidden"
         flexShrink={0}
+        ref={selectableCardListRef}
       >
         {selectableCardItems.map((item, index) => (
-          <SelectableCard key={index} {...item} minW="3xs" w="100%" />
+          <SelectableCard
+            key={index}
+            {...item}
+            minW="3xs"
+            w="100%"
+            data-loader-selected={item.isSelected ? "true" : undefined}
+          />
         ))}
       </VStack>
       <Section overflow="auto" flexGrow={1} w="100%" h="100%">

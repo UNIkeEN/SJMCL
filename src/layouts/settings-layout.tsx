@@ -1,4 +1,12 @@
-import { Grid, GridItem, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Badge,
+  Grid,
+  GridItem,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -11,10 +19,11 @@ import {
   LuGamepad2,
   LuInfo,
   LuPalette,
-  LuRefreshCcw,
   LuSettings,
+  LuSparkles,
 } from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
+import { useLauncherConfig } from "@/contexts/config";
 import { isDev } from "@/utils/env";
 
 interface SettingsLayoutProps {
@@ -24,6 +33,8 @@ interface SettingsLayoutProps {
 const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { config, newerVersion } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
 
   const settingsDomainList: { key: string; icon: IconType }[][] = [
     [
@@ -34,7 +45,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
       { key: "general", icon: LuSettings },
       { key: "appearance", icon: LuPalette },
       { key: "download", icon: LuCloudDownload },
-      { key: "sync-restore", icon: LuRefreshCcw },
+      { key: "intelligence", icon: LuSparkles },
       { key: "help", icon: LuCircleHelp },
       { key: "about", icon: LuInfo },
     ],
@@ -54,11 +65,16 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
               }}
               items={group.map((item) => ({
                 label: (
-                  <HStack spacing={2} overflow="hidden">
+                  <HStack spacing={2} overflow="hidden" w="100%">
                     <Icon as={item.icon} />
                     <Text fontSize="sm" className="ellipsis-text">
                       {t(`SettingsLayout.settingsDomainList.${item.key}`)}
                     </Text>
+                    {item.key === "about" && newerVersion.version && (
+                      <Badge colorScheme={primaryColor} ml="auto">
+                        {t("General.new")}
+                      </Badge>
+                    )}
                   </HStack>
                 ),
                 value: `/settings/${item.key}`,

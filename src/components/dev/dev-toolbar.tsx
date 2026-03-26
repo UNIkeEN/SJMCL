@@ -15,6 +15,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeft, LuCode, LuRotateCw, LuX } from "react-icons/lu";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { emitDeepLink } from "@/hooks/deep-link";
 import { isProd } from "@/utils/env";
 
 const DevToolbarContent: React.FC = () => {
@@ -30,8 +31,8 @@ const DevToolbarContent: React.FC = () => {
   }, [router.asPath, inputType]);
 
   useEffect(() => {
-    // switch to modal from route, clear input
-    if (inputType === "modal") setInputValue("");
+    // switch to modal / deeplink from route, clear input
+    if (inputType === "modal" || inputType === "deeplink") setInputValue("");
   }, [inputType]);
 
   // calculate load time on route change
@@ -59,6 +60,7 @@ const DevToolbarContent: React.FC = () => {
     route: "blue",
     modal: "purple",
     invoke: "green",
+    deeplink: "orange",
   };
 
   const handleInputKeyDown = async (
@@ -67,16 +69,27 @@ const DevToolbarContent: React.FC = () => {
     if (e.key === "Enter" && inputValue.trim()) {
       const trimmedPath = inputValue.trim();
 
-      // open shared modal
-      if (inputType === "route") {
-        if (trimmedPath.startsWith("/")) {
-          router.push(trimmedPath);
-        } else {
-          openUrl(trimmedPath);
+      switch (inputType) {
+        case "route":
+          if (trimmedPath.startsWith("/")) {
+            router.push(trimmedPath);
+          } else {
+            openUrl(trimmedPath);
+          }
+          break;
+        case "deeplink": {
+          const deeplink = trimmedPath.startsWith("sjmcl://")
+            ? trimmedPath
+            : `sjmcl://${trimmedPath}`;
+          emitDeepLink([deeplink]);
+          setInputValue("");
+          break;
         }
-      } else {
-        const match = trimmedPath.match(/^([^:]+)(?::(.*))?$/);
-        if (match) {
+        case "modal":
+        case "invoke": {
+          const match = trimmedPath.match(/^([^:]+)(?::(.*))?$/);
+          if (!match) break;
+
           const key = match[1];
           const paramString = match[2];
           try {
@@ -95,6 +108,7 @@ const DevToolbarContent: React.FC = () => {
           } catch (err) {
             logger.error("Failed to parse modal params:", err);
           }
+          break;
         }
       }
     }
@@ -137,7 +151,13 @@ const DevToolbarContent: React.FC = () => {
         onKeyDown={handleInputKeyDown}
         width={200}
         mx={2}
-        placeholder={inputType === "route" ? "" : "key(:params)"}
+        placeholder={
+          inputType === "route"
+            ? ""
+            : inputType === "deeplink"
+              ? "sjmcl://..."
+              : "key(:params)"
+        }
       />
       {loadTime && (
         <Text

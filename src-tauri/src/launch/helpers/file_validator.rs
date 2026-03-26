@@ -1,5 +1,6 @@
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::asset_index::load_asset_index;
+use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
@@ -8,10 +9,12 @@ use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
+use crate::storage::load_json_async;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
+use futures::stream::{self, StreamExt, TryStreamExt};
 use semver::Version;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
@@ -257,6 +260,8 @@ pub fn get_nonnative_library_paths(
 pub fn get_native_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
+  use_native_glfw: bool,
+  use_native_openal: bool,
 ) -> SJMCLResult<Vec<PathBuf>> {
   let mut result = Vec::new();
   let feature = FeaturesInfo::default();
@@ -267,6 +272,15 @@ pub fn get_native_library_paths(
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
         let path = convert_library_name_to_path(&library.name, Some(native))?;
+        #[cfg(target_os = "linux")]
+        {
+          if use_native_glfw && library.name.to_lowercase().contains("glfw") {
+            continue;
+          }
+          if use_native_openal && library.name.to_lowercase().contains("openal") {
+            continue;
+          }
+        }
         result.push(library_path.join(path));
       } else {
         println!("natives is None");
@@ -280,16 +294,26 @@ pub async fn extract_native_libraries(
   client_info: &McClientInfo,
   library_path: &Path,
   natives_dir: &PathBuf,
+  use_native_glfw: bool,
+  use_native_openal: bool,
 ) -> SJMCLResult<()> {
-  if !natives_dir.exists() {
-    fs::create_dir(natives_dir).await?;
+  #[cfg(target_os = "linux")]
+  if (use_native_glfw || use_native_openal) && natives_dir.exists() {
+    fs::remove_dir_all(natives_dir).await?;
   }
-  let native_libraries = get_native_library_paths(client_info, library_path)?;
+
+  fs::create_dir_all(natives_dir).await?;
+
+  let native_libraries = get_native_library_paths(
+    client_info,
+    library_path,
+    use_native_glfw,
+    use_native_openal,
+  )?;
   let tasks: Vec<tokio::task::JoinHandle<SJMCLResult<()>>> = native_libraries
     .into_iter()
     .map(|library_path| {
       let patches_dir_clone = natives_dir.clone();
-
       tokio::spawn(async move {
         let file = Cursor::new(fs::read(library_path).await?);
         let mut jar = ZipArchive::new(file)?;
@@ -304,7 +328,7 @@ pub async fn extract_native_libraries(
   for result in results {
     if let Err(e) = result {
       println!("Error handling artifact: {:?}", e);
-      return Err(crate::error::SJMCLError::from(e)); // Assuming e is of type SJMCLResult
+      return Err(crate::error::SJMCLError::from(e));
     }
   }
 
@@ -357,4 +381,54 @@ pub async fn get_invalid_assets(
     }
   }
   Ok(params)
+}
+
+pub async fn prepare_legacy_assets(
+  root_dir: &Path,
+  assets_dir: &Path,
+  assets_index_name: &str,
+) -> SJMCLResult<()> {
+  let target_roots = match assets_index_name {
+    "legacy" => vec![assets_dir.join("virtual/legacy")],
+    "pre-1.6" => vec![
+      assets_dir.join("virtual/legacy"),
+      root_dir.join("resources"),
+    ],
+    _ => return Ok(()),
+  };
+
+  let objects_dir = assets_dir.join("objects");
+  let asset_index =
+    load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
+      .await?;
+
+  stream::iter(asset_index.objects.into_iter())
+    .map(Ok::<_, SJMCLError>)
+    .try_for_each_concurrent(None, move |(name, item)| {
+      let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));
+      let targets = target_roots
+        .iter()
+        .map(|target_root| target_root.join(&name))
+        .collect::<Vec<_>>();
+
+      async move {
+        if !fs::try_exists(&origin).await? {
+          return Ok::<(), SJMCLError>(());
+        }
+
+        for target in targets {
+          if fs::try_exists(&target).await? {
+            continue;
+          }
+          if let Some(parent) = target.parent() {
+            fs::create_dir_all(parent).await?;
+          }
+          fs::copy(&origin, &target).await?;
+        }
+        Ok(())
+      }
+    })
+    .await?;
+
+  Ok(())
 }

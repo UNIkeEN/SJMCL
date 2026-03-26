@@ -12,9 +12,10 @@
 
 * **跨平台支持**：兼容 Windows 10/11、macOS 与 Linux。
 * **高效的实例管理**：支持多个游戏目录与实例，集中管理所有实例资源（如存档、模组、资源包、光影包、截图等）与设置。
-* **便捷的资源下载**：支持从 CurseForge 与 Modrinth 等源下载游戏客户端、Mod 加载器、各类游戏资源与整合包。
+* **便捷的资源下载**：支持从 CurseForge 与 Modrinth 等源下载游戏客户端、模组加载器、各类游戏资源与整合包。
 * **多账户系统支持**：内置 Microsoft 登录与第三方认证服务器支持，兼容 Yggdrasil Connect 的 OAuth 登录流程规范提案。
-* **深度链接集成**：可与外部网站与工具集联动，支持通过系统深度链接、桌面快捷方式一键启动实例等便捷功能。
+* **外部服务协同**：通过深度链接与 MCP 服务，与外部网页、程序及 Agent 服务协同工作，提供一系列便捷功能与自动化能力。
+* **开放插件系统**：支持开发插件，为启动器扩展更多有趣且实用的功能。（即将推出）
 
 > 注意：部分功能可能受地区、运行平台或程序分发类型限制。
 
@@ -26,7 +27,7 @@
 
 ## 开始使用
 
-开始使用 SJMCL，只需前往 [官网](https://mc.sjtu.cn/sjmcl/en) 下载最新版即可。
+开始使用 SJMCL，只需前往 [官网](https://mc.sjtu.cn/sjmcl/downloads) 下载最新版即可。
 
 您也可以在 [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases) 获取所有版本，包括周期性构建。
 
@@ -38,7 +39,7 @@ SJMCL 目前支持以下平台：
 | macOS   | 10.15 及以上        | `aarch64`, `x86_64` | `.app`，`.dmg`                   |
 | Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.AppImage`, `.deb`, `.rpm`, 便携版二进制文件 |
 
-了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/zh/docs)。
+了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/docs)。
 
 ### Windows 7
 
@@ -85,7 +86,7 @@ npm run tauri dev
 我们热烈欢迎每一位开发者的贡献。
 
 * 在开始前，请先阅读我们的 [贡献指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（内含开发流程详细说明）。
-* API 参考与部分开发者笔记见 [开发者文档](https://mc.sjtu.cn/sjmcl/zh/dev)。
+* API 参考与部分开发者笔记见 [开发者文档](https://mc.sjtu.cn/sjmcl/dev)。
 * 欢迎通过 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
 
 ### 仓库活动

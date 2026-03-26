@@ -1,0 +1,73 @@
+.tabList {
+  position: relative;
+  min-height: 28px;
+  padding: 2px;
+  isolation: isolate;
+}
+
+.indicator {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 0;
+  border-radius: var(--chakra-radii-full);
+  pointer-events: none;
+  border: 1px solid var(--head-nav-indicator-border);
+  background: var(--head-nav-indicator-bg);
+  opacity: 0;
+  transition:
+    transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 360ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 120ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.indicatorVisible {
+  opacity: 1;
+}
+
+.tabButton {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 24px;
+  padding: 0 10px;
+  font-size: var(--chakra-fontSizes-sm);
+  line-height: 1;
+  border-radius: var(--chakra-radii-full);
+  transition:
+    color 200ms ease,
+    background-color 180ms ease;
+}
+
+.tabContent {
+  align-items: center;
+  justify-content: flex-start;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tabIcon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.tabButton:hover {
+  background: var(--head-nav-hover-bg);
+}
+
+.tabButton[aria-selected="true"] {
+  background: transparent;
+}
+
+[data-theme="dark"] .tabList {
+  --head-nav-hover-bg: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .tabButton[aria-selected="true"] {
+  text-shadow: 0 0 0.35px currentColor;
+}

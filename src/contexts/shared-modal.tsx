@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface SharedModalContextType {
@@ -20,34 +20,37 @@ export const SharedModalContextProvider: React.FC<{
   >({});
   const { config } = useLauncherConfig();
 
-  const openSharedModal = (key: string, params: any = {}) => {
+  const openSharedModal = useCallback((key: string, params: any = {}) => {
     setModalStates((prev) => ({
       ...prev,
       [key]: { isOpen: true, ...params },
     }));
     logger.info("Opened shared modal:", key, params);
-  };
+  }, []);
 
-  const closeSharedModal = (key: string) => {
+  const closeSharedModal = useCallback((key: string) => {
     setModalStates((prev) => {
       const { [key]: _, ...newStates } = prev;
       return newStates;
     });
-  };
+  }, []);
 
-  const openGenericConfirmDialog = (params?: any) => {
-    // If the user has previously selected "Don't show again", skip the dialog and call the OK callback directly
-    if (
-      params.suppressKey &&
-      config.suppressedDialogs?.includes(params.suppressKey)
-    ) {
-      params?.onOKCallback?.();
-      return;
-    }
-    openSharedModal("generic-confirm", {
-      ...params,
-    });
-  };
+  const openGenericConfirmDialog = useCallback(
+    (params?: any) => {
+      // If the user has previously selected "Don't show again", skip the dialog and call the OK callback directly
+      if (
+        params.suppressKey &&
+        config.suppressedDialogs?.includes(params.suppressKey)
+      ) {
+        params?.onOKCallback?.();
+        return;
+      }
+      openSharedModal("generic-confirm", {
+        ...params,
+      });
+    },
+    [config.suppressedDialogs, openSharedModal]
+  );
 
   return (
     <SharedModalContext.Provider

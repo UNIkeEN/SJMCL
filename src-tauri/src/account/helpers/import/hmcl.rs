@@ -2,6 +2,7 @@ use crate::account::helpers::authlib_injector::common::parse_profile;
 use crate::account::helpers::authlib_injector::models::{
   MinecraftProfile, MinecraftProfileProperty,
 };
+use crate::account::helpers::import::misc::ACCESS_TOKEN_EXPIRED;
 use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
@@ -87,7 +88,26 @@ async fn microsoft_to_player(
   app: &AppHandle,
   acc: &HmclMicrosoftAccount,
 ) -> SJMCLResult<PlayerInfo> {
-  let profile = fetch_minecraft_profile(app, acc.access_token.clone()).await?;
+  let profile_result = fetch_minecraft_profile(app, acc.access_token.clone()).await;
+  let profile = match profile_result {
+    Ok(p) => p,
+    Err(_) => {
+      return Ok(
+        PlayerInfo {
+          id: "".to_string(),
+          uuid: Uuid::from_str(&acc.uuid).map_err(|_| AccountError::ParseError)?,
+          name: acc.display_name.clone(),
+          player_type: PlayerType::Microsoft,
+          auth_account: None,
+          access_token: Some(ACCESS_TOKEN_EXPIRED.to_string()),
+          refresh_token: Some(acc.refresh_token.clone()),
+          textures: load_preset_skin(app, PresetRole::Steve)?,
+          auth_server_url: None,
+        }
+        .with_generated_id(),
+      );
+    }
+  };
 
   let mut textures = vec![];
   if let Some(skins) = &profile.skins {

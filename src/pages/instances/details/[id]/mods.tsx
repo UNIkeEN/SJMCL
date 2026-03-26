@@ -1,19 +1,25 @@
 import {
   Avatar,
   AvatarBadge,
+  Box,
   Center,
+  Flex,
   HStack,
   Highlight,
   Icon,
+  IconButton,
+  Image,
   Input,
   Tag,
   Text,
+  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  LuChevronRight,
   LuCircleCheck,
   LuCircleMinus,
   LuClockArrowUp,
@@ -27,9 +33,7 @@ import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import SelectableCard, {
-  SelectableCardProps,
-} from "@/components/common/selectable-card";
+import { WrapCardGroup } from "@/components/common/wrap-card";
 import {
   modLoaderTypes,
   modLoaderTypesToIcon,
@@ -69,6 +73,9 @@ const InstanceModsPage = () => {
   const showZhTrans =
     config.general.general.language === "zh-Hans" &&
     config.general.functionality.resourceTranslation;
+  const currentModLoaderType =
+    summary?.modLoader?.loaderType ?? ModLoaderType.Unknown;
+  const currentModLoaderVersion = summary?.modLoader?.version || "";
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
@@ -354,26 +361,39 @@ const InstanceModsPage = () => {
     },
   ];
 
-  const selectableCardItems = modLoaderTypes.map(
-    (type): SelectableCardProps => ({
-      title: type,
-      iconSrc: `/images/icons/${modLoaderTypesToIcon[type]}`,
-      description:
-        summary?.modLoader.loaderType === type
-          ? parseModLoaderVersion(summary?.modLoader.version || "")
-          : t("InstanceModsPage.modLoaderList.notInstalled"),
-      displayMode: "entry",
-      isSelected: summary?.modLoader.loaderType === type,
-      onSelect: () => handleTypeSelect(type),
-    })
-  );
-
   return (
     <>
       <Section
         title={t("InstanceModsPage.modLoaderList.title")}
         isAccordion
         initialIsOpen={accordionStates[0]}
+        headExtra={
+          <Box
+            display="flex"
+            alignItems="center"
+            opacity={accordionStates[0] ? 0 : 1}
+            transition="opacity 0.2s ease"
+            mr={1}
+          >
+            {currentModLoaderType === ModLoaderType.Unknown ? (
+              <Text fontSize="xs" className="secondary-text">
+                {t("InstanceModsPage.modLoaderList.notInstalled")}
+              </Text>
+            ) : (
+              <HStack spacing={1.5}>
+                <Image
+                  src={`/images/icons/${modLoaderTypesToIcon[currentModLoaderType]}`}
+                  alt={currentModLoaderType}
+                  boxSize="16px"
+                  borderRadius="4px"
+                />
+                <Text fontSize="xs" className="secondary-text">
+                  {`${t("InstanceModsPage.modLoaderList.installed")} ${currentModLoaderType} ${parseModLoaderVersion(currentModLoaderVersion)}`}
+                </Text>
+              </HStack>
+            )}
+          </Box>
+        }
         onAccordionToggle={(isOpen) => {
           update(
             "states.instanceModsPage.accordionStates",
@@ -381,17 +401,52 @@ const InstanceModsPage = () => {
           );
         }}
       >
-        <HStack spacing={3.5} w="100%">
-          {selectableCardItems.map((item, index) => (
-            <SelectableCard
-              key={index}
-              {...item}
-              flex={1}
-              minH="max-content"
-              h="100%"
-            />
-          ))}
-        </HStack>
+        <WrapCardGroup
+          items={modLoaderTypes.map((type) => ({
+            cardContent: (
+              <Flex justify="space-between" align="center">
+                <HStack spacing={2}>
+                  <Image
+                    src={`/images/icons/${modLoaderTypesToIcon[type]}`}
+                    alt={type}
+                    boxSize="28px"
+                    borderRadius="4px"
+                  />
+                  <VStack spacing={0} alignItems="start">
+                    <Text
+                      fontSize="xs-sm"
+                      fontWeight={
+                        currentModLoaderType === type ? "bold" : "normal"
+                      }
+                      color={
+                        currentModLoaderType === type
+                          ? `${config.appearance.theme.primaryColor}.600`
+                          : "inherit"
+                      }
+                    >
+                      {type}
+                    </Text>
+                    <Text fontSize="xs" className="secondary-text">
+                      {currentModLoaderType === type
+                        ? parseModLoaderVersion(currentModLoaderVersion)
+                        : t("InstanceModsPage.modLoaderList.notInstalled")}
+                    </Text>
+                  </VStack>
+                </HStack>
+                <HStack spacing={0}>
+                  <IconButton
+                    aria-label="select"
+                    icon={<Icon as={LuChevronRight} boxSize={3.5} />}
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => handleTypeSelect(type)}
+                  />
+                </HStack>
+              </Flex>
+            ),
+            isSelected: currentModLoaderType === type,
+          }))}
+        />
       </Section>
       <Section
         title={t("InstanceModsPage.modList.title")}
@@ -459,7 +514,7 @@ const InstanceModsPage = () => {
           </HStack>
         }
       >
-        {summary?.modLoader.loaderType === ModLoaderType.Unknown &&
+        {currentModLoaderType === ModLoaderType.Unknown &&
           filteredMods.length > 0 && (
             <HStack fontSize="xs" color="red.600" mt={-0.5} ml={1.5} mb={2}>
               <Icon as={LuTriangleAlert} />
@@ -575,6 +630,7 @@ const InstanceModsPage = () => {
         summary={summary}
         localMods={localMods}
       />
+
       <ChangeModLoaderModal
         isOpen={isChangeModLoaderModalOpen}
         onClose={onChangeModLoaderModalClose}

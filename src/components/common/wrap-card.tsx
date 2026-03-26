@@ -13,10 +13,10 @@ import {
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Section, SectionProps } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import cardStyles from "@/styles/card.module.css";
 
 type WrapCardContentObject = {
-  title: string;
+  title: string | React.ReactNode;
   description: string;
   image?: string | React.ReactNode;
   extraContent?: React.ReactNode;
@@ -51,8 +51,6 @@ export const WrapCard: React.FC<WrapCardProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const themedStyles = useThemedCSSStyle();
-
   const borderWidth = "1px";
   const basePadding = cardProps.padding || "12px";
   const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
@@ -71,19 +69,30 @@ export const WrapCard: React.FC<WrapCardProps> = ({
       <VStack spacing={0}>
         {image &&
           (typeof image === "string" ? (
-            <Image boxSize="36px" objectFit="cover" src={image} alt={title} />
+            <Image
+              boxSize="36px"
+              objectFit="cover"
+              src={image}
+              alt={typeof title === "string" ? title : description}
+            />
           ) : (
             image
           ))}
-        <Text
-          fontSize="xs-sm"
-          className="ellipsis-text"
-          fontWeight={isSelected ? "bold" : "normal"}
-          mt={image ? 2 : 0}
-          overflow="hidden"
-        >
-          {title}
-        </Text>
+        {typeof title === "string" ? (
+          <Text
+            fontSize="xs-sm"
+            className="ellipsis-text"
+            fontWeight={isSelected ? "bold" : "normal"}
+            mt={image ? 2 : 0}
+            overflow="hidden"
+          >
+            {title}
+          </Text>
+        ) : (
+          <Box mt={image ? 2 : 0} w="100%">
+            {title}
+          </Box>
+        )}
         <Text fontSize="xs" className="secondary-text ellipsis-text">
           {description}
         </Text>
@@ -94,7 +103,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
 
   return (
     <Card
-      className={themedStyles.card["card-front"]}
+      className={cardStyles["card-front"]}
       borderColor={`${primaryColor}.500`}
       variant={isSelected ? "outline" : "elevated"}
       position="relative"
@@ -150,9 +159,13 @@ export const WrapCardGroup: React.FC<WrapCardGroupProps> = ({
   }, [boxRef, numberToPx, cardMinWidth, spacing, widthMode, items.length]);
 
   useLayoutEffect(() => {
-    resizeCard();
-    window.addEventListener("resize", resizeCard);
-    return () => window.removeEventListener("resize", resizeCard);
+    if (!boxRef.current) return;
+    const observer = new ResizeObserver(() => {
+      resizeCard();
+    });
+    observer.observe(boxRef.current);
+
+    return () => observer.disconnect();
   }, [resizeCard]);
 
   return (

@@ -214,10 +214,12 @@ pub async fn monitor_process(
         let main_window = app.get_webview_window("main").expect("no main window");
         if let Ok(is_visible) = main_window.is_visible() {
           if !is_visible {
-            std::process::exit(0);
+            app.exit(0);
+            return;
           }
         } else {
-          std::process::exit(0);
+          app.exit(0);
+          return;
         }
       }
       _ => {}

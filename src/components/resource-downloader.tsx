@@ -1,3 +1,4 @@
+import type { ResponsiveValue } from "@chakra-ui/react";
 import {
   Avatar,
   Box,
@@ -15,9 +16,21 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
+import {
+  LuChevronDown,
+  LuDownload,
+  LuGlobe,
+  LuUpload,
+  LuUserRoundPen,
+} from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItemProps } from "@/components/common/option-item";
@@ -51,6 +64,7 @@ interface ResourceDownloaderProps {
   initialSearchQuery?: string;
   initialDownloadSource?: OtherResourceSource;
   curInstance?: InstanceSummary;
+  displayInModal?: boolean;
 }
 
 interface ResourceDownloaderMenuProps {
@@ -60,7 +74,7 @@ interface ResourceDownloaderMenuProps {
   defaultValue: string;
   options: React.ReactNode;
   value: string;
-  width?: number;
+  width?: ResponsiveValue<number | string>;
 }
 
 interface ResourceDownloaderListProps {
@@ -95,7 +109,7 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
   defaultValue,
   options,
   value,
-  width = 28,
+  width = { base: 28 },
 }) => {
   return (
     <HStack>
@@ -201,8 +215,9 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
           {(showZhTrans && item.translatedDescription) || item.description}
         </Text>
         <Grid
-          templateColumns="repeat(3, 1fr)"
-          w={{ base: "sm", lg: "md", xl: "md" }}
+          templateColumns="repeat(4, 1fr)"
+          w={{ base: "lg", lg: "xl", xl: "xl" }}
+          maxW="100%"
         >
           <HStack spacing={1}>
             <LuUpload />
@@ -216,6 +231,12 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
             <HStack spacing={1}>
               <LuGlobe />
               <Text>{item.source}</Text>
+            </HStack>
+          )}
+          {item.author && (
+            <HStack spacing={1}>
+              <LuUserRoundPen />
+              <Text>{item.author}</Text>
             </HStack>
           )}
         </Grid>
@@ -276,6 +297,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   initialSearchQuery = "",
   initialDownloadSource = OtherResourceSource.CurseForge,
   curInstance,
+  displayInModal = true,
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
@@ -289,7 +311,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
   const [isLoadingResourceList, setIsLoadingResourceList] =
     useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(20);
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const [gameVersion, setGameVersion] = useState<string>("");
@@ -308,6 +330,20 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
 
   const tagList = (tagLists[resourceType] || modpackTagList)[downloadSource];
   const sortByList = sortByLists[downloadSource];
+
+  const menuWidths = useMemo(
+    () => ({
+      tag: displayInModal ? { base: 28, lg: 32 } : { base: 20, lg: 28, xl: 32 },
+      version: { base: 20, lg: 28 },
+      source: displayInModal
+        ? { base: 28, lg: 32 }
+        : { base: 16, lg: 28, xl: 32 },
+      sortBy: displayInModal
+        ? { base: 24, lg: 28 }
+        : { base: 16, lg: 24, xl: 28 },
+    }),
+    [displayInModal]
+  );
 
   const onDownloadSourceChange = (e: string) => {
     setDownloadSource(e as OtherResourceSource);
@@ -477,8 +513,13 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
         ...(Array.isArray(tags)
           ? tags
               .filter((item) => item !== "All")
-              .map((item, index) => (
-                <MenuItemOption key={index} value={item} fontSize="xs" pl={6}>
+              .map((item) => (
+                <MenuItemOption
+                  key={`tag-${group}-${item}`}
+                  value={item}
+                  fontSize="xs"
+                  pl={6}
+                >
                   {t(
                     `ResourceDownloader.${resourceType}TagList.${downloadSource}.${item}`
                   ) || item}
@@ -502,6 +543,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
           value={selectedTag}
           defaultValue={"All"}
           options={renderTagMenuOptions()}
+          width={menuWidths.tag}
         />
 
         <ResourceDownloaderMenu
@@ -529,7 +571,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               </MenuItemOption>
             )
           }
-          width={20}
+          width={menuWidths.version}
         />
 
         <ResourceDownloaderMenu
@@ -543,7 +585,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               {item}
             </MenuItemOption>
           ))}
-          width={28}
+          width={menuWidths.source}
         />
 
         <ResourceDownloaderMenu
@@ -563,7 +605,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               {t(`ResourceDownloader.sortByList.${downloadSource}.${item}`)}
             </MenuItemOption>
           ))}
-          width={24}
+          width={menuWidths.sortBy}
         />
       </HStack>
 

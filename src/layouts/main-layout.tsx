@@ -1,22 +1,33 @@
 import {
+  Button,
   Center,
   Flex,
+  HStack,
+  Link,
+  Text,
   useColorMode,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { appDataDir } from "@tauri-apps/api/path";
+import { appDataDir, appLogDir, join } from "@tauri-apps/api/path";
+import { openPath, openUrl } from "@tauri-apps/plugin-opener";
+import { exit } from "@tauri-apps/plugin-process";
+import { t } from "i18next";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Trans } from "react-i18next";
+import { LuLanguages, LuScrollText } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
-import HeadNavBar from "@/components/head-navbar";
+import HeadNavBar from "@/components/head-navbar-v2";
+import LanguageMenu from "@/components/language-menu";
+import MainWindowTitlebar from "@/components/main-window-titlebar";
 import StarUsModal from "@/components/modals/star-us-modal";
-import UnavailableExePathAlertDialog from "@/components/modals/unavailable-exe-path-alert-dialog";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { isDev } from "@/utils/env";
 
 interface MainLayoutProps {
@@ -27,12 +38,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const isStandAlone = router.pathname.startsWith("/standalone");
   const { config, update } = useLauncherConfig();
+  const primaryColor = config.appearance.theme.primaryColor;
   const { colorMode } = useColorMode();
   const isDarkenBg =
     colorMode === "dark" && config.appearance.background.autoDarken;
+  const { openGenericConfirmDialog } = useSharedModals();
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isCheckedRunCount = useRef(false);
+  const isCheckedLastRunStatus = useRef(false);
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -46,17 +60,91 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onClose: onStarUsModalClose,
   } = useDisclosure();
 
-  const {
-    isOpen: isUnavailableExePathAlertDialogOpen,
-    onOpen: onUnavailableExePathAlertDialogOpen,
-    onClose: onUnavailableExePathAlertDialogClose,
-  } = useDisclosure();
+  const openUnavailableExePathDialog = useCallback(() => {
+    openGenericConfirmDialog({
+      title: t("UnavailableExePathAlertDialog.dialog.title"),
+      body: t("UnavailableExePathAlertDialog.dialog.content"),
+      btnCancel: t("UnavailableExePathAlertDialog.dialog.btnContinue"),
+      onCancelCallback: () => update("runCount", config.runCount + 1), // because this dialog will skip the run count check
+      btnOK: t("General.exit"),
+      onOKCallback: () => exit(0),
+      footerLeft: (
+        <HStack spacing={2}>
+          <LuLanguages />
+          <LanguageMenu placement="top" />
+        </HStack>
+      ),
+      isAlert: true,
+      closeOnEsc: false,
+      closeOnOverlayClick: false,
+      showCloseBtn: false,
+    });
+  }, [config.runCount, openGenericConfirmDialog, update]);
+
+  const openLastExitedAbnormallyDialog = useCallback(() => {
+    openGenericConfirmDialog({
+      title: t("LastExitedAbnormallyDialog.dialog.title"),
+      btnCancel: "",
+      showSuppressBtn: true,
+      suppressKey: "lastExitedAbnormally",
+      body: (
+        <Text color="gray.500">
+          <Trans
+            i18nKey="LastExitedAbnormallyDialog.dialog.content"
+            components={{
+              community: (
+                <Link
+                  color={`${primaryColor}.500`}
+                  onClick={() =>
+                    openUrl(t("HelpSettingsPage.top.settings.UserGroup.url"))
+                  }
+                />
+              ),
+              github: (
+                <Link
+                  color={`${primaryColor}.500`}
+                  onClick={() =>
+                    openUrl("https://github.com/UNIkeEN/SJMCL/issues")
+                  }
+                />
+              ),
+            }}
+          />
+        </Text>
+      ),
+      footerLeft: (
+        <HStack>
+          <LuScrollText />
+          <Button
+            variant="link"
+            colorScheme={primaryColor}
+            onClick={async () => {
+              const _appLogDir = await appLogDir();
+              const launcherLogDir = await join(_appLogDir, "launcher");
+              await openPath(launcherLogDir);
+            }}
+          >
+            {t("LastExitedAbnormallyDialog.dialog.viewLog")}
+          </Button>
+        </HStack>
+      ),
+    });
+  }, [openGenericConfirmDialog, primaryColor]);
 
   useEffect(() => {
     // running in unavailable path, show alert dialog.
     if (!config.mocked && !config.basicInfo.isExePathAvailable) {
-      onUnavailableExePathAlertDialogOpen();
+      openUnavailableExePathDialog();
       isCheckedRunCount.current = true; // skip run count check below
+    }
+
+    // update `last_run_exited_normally` to false, will be updated when this run ends with normal exit.
+    if (!config.mocked && !isCheckedLastRunStatus.current && !isStandAlone) {
+      if (!config.lastRunExitedNormally) {
+        openLastExitedAbnormallyDialog();
+      }
+      update("lastRunExitedNormally", false);
+      isCheckedLastRunStatus.current = true;
     }
 
     // update run count, conditionally show some modals.
@@ -79,9 +167,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   }, [
     config.mocked,
     config.runCount,
+    config.lastRunExitedNormally,
     config.basicInfo.isExePathAvailable,
     isStandAlone,
-    onUnavailableExePathAlertDialogOpen,
+    openLastExitedAbnormallyDialog,
+    openUnavailableExePathDialog,
     onWelcomeAndTermsModalOpen,
     onStarUsModalOpen,
     update,
@@ -194,8 +284,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       bgRepeat="no-repeat"
       bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
       bgBlendMode={isDarkenBg ? "darken" : "normal"}
+      {...(config.basicInfo.osType === "linux" && {
+        border: "0.5px solid",
+        borderColor: "gray.500",
+        borderRadius: "lg",
+      })}
+      overflow="hidden"
       style={getGlobalExtraStyle(config)}
     >
+      <MainWindowTitlebar />
       <HeadNavBar />
       {router.pathname === "/launch" ? (
         <>{children}</>
@@ -217,10 +314,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         onClose={onWelcomeAndTermsModalClose}
       />
       <StarUsModal isOpen={isStarUsModalOpen} onClose={onStarUsModalClose} />
-      <UnavailableExePathAlertDialog
-        isOpen={isUnavailableExePathAlertDialogOpen}
-        onClose={onUnavailableExePathAlertDialogClose}
-      />
 
       {isDev && <DevToolbar />}
     </Flex>

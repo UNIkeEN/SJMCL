@@ -4,18 +4,20 @@ use crate::instance::models::misc::Instance;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{GameJava, JavaInfo};
 use std::cmp::Ordering;
-use tauri::AppHandle;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
 
 pub async fn select_java_runtime(
   app: &AppHandle,
-  game_java: &GameJava,
-  java_list: &[JavaInfo],
+  game_java: Option<&GameJava>, // None means force auto selection for some installation flows.
   instance: &Instance,
   client_json_req: i32,
   // TODO: pass client and mod loader info to calculate version with more rules, instead of passing require version
   // ref: https://github.com/Hex-Dragon/PCL2/blob/16e09c792ce8c13435fc6827e6da54170aaa3bc0/Plain%20Craft%20Launcher%202/Modules/Minecraft/ModLaunch.vb#L1130
 ) -> SJMCLResult<JavaInfo> {
-  if !game_java.auto {
+  let java_list = app.state::<Mutex<Vec<JavaInfo>>>().lock()?.clone();
+
+  if let Some(game_java) = game_java.filter(|game_java| !game_java.auto) {
     return java_list
       .iter()
       .find(|j| j.exec_path == game_java.exec_path)
@@ -23,14 +25,14 @@ pub async fn select_java_runtime(
       .ok_or_else(|| LaunchError::SelectedJavaUnavailable.into());
   }
 
-  let mut min_version_req = get_minimum_java_version_by_game(app, instance).await;
+  let mut min_version_req = get_minimum_java_version_by_game(app, instance, true).await;
 
   if client_json_req > min_version_req {
     min_version_req = client_json_req;
   }
 
   let mut suitable_candidates = Vec::new();
-  for java in java_list {
+  for java in &java_list {
     match java.major_version.cmp(&min_version_req) {
       Ordering::Equal => return Ok(java.clone()),
       Ordering::Greater => suitable_candidates.push(java.clone()),
@@ -48,11 +50,22 @@ pub async fn select_java_runtime(
 
 /// Get minimum java version requirement by game client version
 /// ref: https://zh.minecraft.wiki/w/Java%E7%89%88?variant=zh-cn#%E8%BD%AF%E4%BB%B6%E9%9C%80%E6%B1%82
-async fn get_minimum_java_version_by_game(app: &AppHandle, instance: &Instance) -> i32 {
+pub async fn get_minimum_java_version_by_game(
+  app: &AppHandle,
+  instance: &Instance,
+  fallback_fetch_remote: bool,
+) -> i32 {
   // only allow fallback remote fetch here in the launch process, as Java selection and command generation are used sequentially.
   // ref: https://github.com/UNIkeEN/SJMCL/pull/799
   // 26.1(26.1-snapshot-1)+
-  if compare_game_versions(app, &instance.version, "26.1-snapshot-1", true).await >= Ordering::Equal
+  if compare_game_versions(
+    app,
+    &instance.version,
+    "26.1-snapshot-1",
+    fallback_fetch_remote,
+  )
+  .await
+    >= Ordering::Equal
   {
     return 25;
   }

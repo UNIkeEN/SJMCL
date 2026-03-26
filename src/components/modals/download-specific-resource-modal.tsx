@@ -4,6 +4,7 @@ import {
   Card,
   Grid,
   HStack,
+  IconButton,
   Image,
   Link,
   Modal,
@@ -27,6 +28,7 @@ import {
   LuDownload,
   LuExternalLink,
   LuPackage,
+  LuRefreshCw,
   LuUpload,
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -44,7 +46,6 @@ import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 import {
   GameClientResourceInfo,
   OtherResourceFileInfo,
@@ -55,12 +56,15 @@ import { TaskParam, TaskTypeEnums } from "@/models/task";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
 import { TaskService } from "@/services/task";
+import cardStyles from "@/styles/card.module.css";
 import { ISOToDate } from "@/utils/datetime";
 import { translateTag } from "@/utils/resource";
 import { formatDisplayCount, sanitizeFileName } from "@/utils/string";
 
-interface DownloadSpecificResourceModalProps
-  extends Omit<ModalProps, "children"> {
+interface DownloadSpecificResourceModalProps extends Omit<
+  ModalProps,
+  "children"
+> {
   resource: OtherResourceInfo;
   curInstanceMajorVersion?: string;
   curInstanceVersion?: string;
@@ -80,7 +84,6 @@ const DownloadSpecificResourceModal: React.FC<
   const { config } = useLauncherConfig();
   const router = useRouter();
   const toast = useToast();
-  const themedStyles = useThemedCSSStyle();
   const primaryColor = config.appearance.theme.primaryColor;
   const showZhTrans =
     config.general.general.language === "zh-Hans" &&
@@ -109,6 +112,7 @@ const DownloadSpecificResourceModal: React.FC<
     ModLoaderType.Fabric,
     ModLoaderType.Forge,
     ModLoaderType.NeoForge,
+    ModLoaderType.Quilt,
   ];
 
   const iconBackgroundColor: Record<string, string> = {
@@ -512,7 +516,7 @@ const DownloadSpecificResourceModal: React.FC<
         <ModalCloseButton />
         <ModalBody>
           <Card
-            className={themedStyles.card["card-front"]}
+            className={cardStyles["card-front"]}
             mt={-2}
             mb={2}
             py={2}
@@ -614,6 +618,17 @@ const DownloadSpecificResourceModal: React.FC<
                 menuListProps={{ maxH: "40vh", minW: 28, overflow: "auto" }}
               />
               <MCVersionNumberHelper placement="bottom-start" />
+              <IconButton
+                aria-label="refresh-version-packs"
+                icon={<LuRefreshCw size={14} />}
+                size="xs"
+                variant="ghost"
+                onClick={() => {
+                  fetchVersionLabels();
+                  reFetchVersionPacks();
+                }}
+                isDisabled={isGameVersionListLoading || isVersionPacksLoading}
+              />
             </HStack>
 
             <Box>

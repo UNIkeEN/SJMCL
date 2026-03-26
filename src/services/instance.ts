@@ -47,6 +47,7 @@ export class InstanceService {
    * @param {OptiFineResourceInfo} [optifine] - Optional OptiFine installation.
    * @param {string} [modpackPath] - Optional path to the modpack archive file.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
+   * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
@@ -59,7 +60,8 @@ export class InstanceService {
     modLoader: ModLoaderResourceInfo,
     optifine?: OptiFineResourceInfo,
     modpackPath?: string,
-    isInstallFabricApi?: boolean
+    isInstallFabricApi?: boolean,
+    isInstallQfApi?: boolean
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_instance", {
       directory,
@@ -71,6 +73,7 @@ export class InstanceService {
       optifine,
       modpackPath,
       isInstallFabricApi,
+      isInstallQfApi,
     });
   }
 
@@ -110,15 +113,15 @@ export class InstanceService {
   }
 
   /**
-   * RESET the instance game config to use global default game config.
+   * RESTORE the instance game config to use current global game config.
    * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async resetInstanceGameConfig(
+  static async restoreInstanceGameConfig(
     instanceId: string
   ): Promise<InvokeResponse<void>> {
-    return await invoke("reset_instance_game_config", {
+    return await invoke("restore_instance_game_config", {
       instanceId,
     });
   }
@@ -274,6 +277,44 @@ export class InstanceService {
   }
 
   /**
+   * ADD a game server entry into the instance's `servers.dat`.
+   * The command rejects duplicate `serverAddr` values in the same instance.
+   * @param {string} instanceId - The target instance ID.
+   * @param {string} serverAddr - The server address (for example: `example.com` or `example.com:25565`).
+   * @param {string} serverName - The display name stored in `servers.dat`.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async addGameServer(
+    instanceId: string,
+    serverAddr: string,
+    serverName: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_game_server", {
+      instanceId,
+      serverAddr,
+      serverName,
+    });
+  }
+
+  /**
+   * DELETE a game server from the instance's servers.dat.
+   * @param {string} instanceId - The ID of the instance.
+   * @param {string} serverAddr - The server address (IP) to delete.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async deleteGameServer(
+    instanceId: string,
+    serverAddr: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("delete_game_server", {
+      instanceId,
+      serverAddr,
+    });
+  }
+
+  /**
    * RETRIEVE the list of resource packs.
    * @param {string} instanceId - The instance ID to retrieve the resource packs for.
    * @returns {Promise<InvokeResponse<ResourcePackInfo[]>>}
@@ -366,14 +407,17 @@ export class InstanceService {
   /**
    * CREATE a desktop shortcut for launching a specific instance.
    * @param {string} instanceId - The instance ID for which to create the shortcut.
+   * @param {string} iconSrc - Instance icon src (file path or base64), will be a component of shortcut icon.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
   static async createLaunchDesktopShortcut(
-    instanceId: string
+    instanceId: string,
+    iconSrc: string
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_launch_desktop_shortcut", {
       instanceId,
+      iconSrc,
     });
   }
 
@@ -410,18 +454,21 @@ export class InstanceService {
    * @param {string} instanceId - The ID of the instance to update.
    * @param {ModLoaderResourceInfo} newModLoader - The new mod loader information.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
+   * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async changeModLoader(
     instanceId: string,
     newModLoader: ModLoaderResourceInfo,
-    isInstallFabricApi?: boolean
+    isInstallFabricApi?: boolean,
+    isInstallQfApi?: boolean
   ): Promise<InvokeResponse<void>> {
     return await invoke("change_mod_loader", {
       instanceId,
       newModLoader,
       isInstallFabricApi,
+      isInstallQfApi,
     });
   }
 

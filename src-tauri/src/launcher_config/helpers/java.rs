@@ -3,6 +3,7 @@ use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::ResourceType;
 use crate::tasks::{download::DownloadParam, PTaskParam};
+use crate::utils::fs::{manage_permissions_unix, PermissionOperation};
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
 use std::fs;
@@ -28,14 +29,23 @@ pub async fn refresh_and_update_javas(app: &AppHandle) {
   let mut seen_paths: HashMap<String, JavaInfo> = HashMap::new();
 
   for java_exec_path in java_paths {
-    let java_path_buf = PathBuf::from(&java_exec_path);
-    let (vendor, full_version) = match get_java_info_from_release_file(&java_exec_path)
-      .or_else(|| get_java_info_from_command(&java_exec_path))
-    {
-      Some(info) => info,
-      None => continue,
-    };
+    // ensure execute permissions (for Linux and macOS)
+    let _ = manage_permissions_unix(&java_exec_path, 0o111, PermissionOperation::Upgrade);
 
+    // get java version and vendor (prioritize release file, fallback to command)
+    let (mut vendor, mut version) = get_java_info_from_release_file(&java_exec_path);
+    if vendor.is_none() || version.is_none() {
+      let (cmd_vendor, cmd_version) = get_java_info_from_command(&java_exec_path);
+      vendor = vendor.or(cmd_vendor);
+      version = version.or(cmd_version);
+    }
+    let full_version = match version {
+      Some(v) => v,
+      None => continue, // if no version, skip as invalid
+    };
+    let vendor = vendor.unwrap_or_else(|| "Unknown Vendor".to_string());
+
+    let java_path_buf = PathBuf::from(&java_exec_path);
     let java_bin_path = java_path_buf
       .parent()
       .unwrap_or_else(|| Path::new(""))
@@ -365,73 +375,81 @@ fn scan_java_paths_in_windows_registry() -> Vec<String> {
     .collect()
 }
 
-pub fn get_java_info_from_release_file(java_path: &str) -> Option<(String, String)> {
+pub fn get_java_info_from_release_file(java_path: &str) -> (Option<String>, Option<String>) {
   // Typically, executable files are located in .../Home/bin/java, release file and bin folder are at the same level.
   let java_path_buf = PathBuf::from(java_path);
-  let java_home = java_path_buf.parent()?.parent()?;
+  let java_home = match java_path_buf.parent().and_then(|p| p.parent()) {
+    Some(p) => p,
+    None => return (None, None),
+  };
   let release_file = java_home.join("release");
 
   if !release_file.exists() {
-    return None;
+    return (None, None);
   }
+  let content = match fs::read_to_string(release_file) {
+    Ok(c) => c,
+    Err(_) => return (None, None),
+  };
 
-  let content = fs::read_to_string(release_file).ok()?;
-  let mut vendor = "Oracle Corporation".to_string();
-  let mut full_version = "0".to_string();
+  let mut vendor = None;
+  let mut full_version = None;
 
   // Try to parse info from release file
   for line in content.lines() {
     if line.starts_with("JAVA_VERSION=") {
-      let quoted = line.split('=').nth(1)?.trim().trim_matches('"');
-      full_version = quoted.to_string();
+      if let Some(val) = line.split('=').nth(1) {
+        full_version = Some(val.trim().trim_matches('"').to_string());
+      }
     } else if line.starts_with("IMPLEMENTOR=") {
-      let quoted = line.split('=').nth(1)?.trim().trim_matches('"');
-      vendor = quoted.to_string();
+      if let Some(val) = line.split('=').nth(1) {
+        vendor = Some(val.trim().trim_matches('"').to_string());
+      }
     }
   }
 
-  if full_version == "0" {
-    None
-  } else {
-    Some((vendor, full_version))
-  }
+  (vendor, full_version)
 }
 
-pub fn get_java_info_from_command(java_path: &str) -> Option<(String, String)> {
+pub fn get_java_info_from_command(java_path: &str) -> (Option<String>, Option<String>) {
   // use "java -version -XshowSettings:properties" command to get info
   #[cfg(target_os = "windows")]
   let output = Command::new(java_path)
     .args(["-XshowSettings:properties", "-version"])
     .creation_flags(0x08000000) // CREATE_NO_WINDOW
-    .output()
-    .ok()?;
+    .output();
   #[cfg(any(target_os = "macos", target_os = "linux"))]
   let output = Command::new(java_path)
     .args(["-XshowSettings:properties", "-version"])
-    .output()
-    .ok()?;
+    .output();
 
-  if !output.status.success() {
-    return None;
-  }
+  let output = match output {
+    Ok(o) if o.status.success() => o,
+    _ => return (None, None),
+  };
 
   let mut output_str = String::new();
   output_str.push_str(&String::from_utf8_lossy(&output.stdout));
   output_str.push_str(&String::from_utf8_lossy(&output.stderr));
 
-  let mut vendor = "Unknown".to_string();
-  let mut full_version = "0".to_string();
+  let mut vendor = None;
+  let mut full_version = None;
 
   for line in output_str.lines() {
-    if line.trim().starts_with("java.vendor = ") {
-      vendor = line.split('=').nth(1)?.trim().trim_matches('"').to_string();
+    let trimmed = line.trim();
+    if trimmed.starts_with("java.vendor = ") {
+      if let Some(val) = line.split('=').nth(1) {
+        vendor = Some(val.trim().trim_matches('"').to_string());
+      }
     }
-    if line.trim().starts_with("java.version = ") {
-      full_version = line.split('=').nth(1)?.trim().trim_matches('"').to_string();
+    if trimmed.starts_with("java.version = ") {
+      if let Some(val) = line.split('=').nth(1) {
+        full_version = Some(val.trim().trim_matches('"').to_string());
+      }
     }
   }
 
-  Some((vendor, full_version))
+  (vendor, full_version)
 }
 
 pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {

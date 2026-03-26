@@ -232,12 +232,7 @@ impl ModDataBase {
       return Vec::new();
     }
 
-    let processed_query = query
-      .trim()
-      .replace(char::is_whitespace, " ")
-      .split_whitespace()
-      .collect::<Vec<&str>>()
-      .join(" ");
+    let processed_query = query.split_whitespace().collect::<Vec<&str>>().join(" ");
     if processed_query.is_empty() {
       return Vec::new();
     }
@@ -371,6 +366,8 @@ pub async fn initialize_mod_db(app: &AppHandle) -> SJMCLResult<()> {
 }
 
 pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<String> {
+  let query = query.split_whitespace().collect::<Vec<_>>().join(" ");
+
   // Only process Chinese queries
   if !query.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
     return Ok(query.to_string());
@@ -378,12 +375,46 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
 
   let state = app.state::<Mutex<ModDataBase>>();
   let search_results = match state.lock() {
-    Ok(cache) => cache.get_mods_by_chinese(query, 5),
+    Ok(cache) => cache.get_mods_by_chinese(&query, 5),
     Err(_) => return Ok(query.to_string()),
   };
 
   if search_results.is_empty() {
     return Ok(query.to_string());
+  }
+
+  // Short-circuit: if exists a very confident match, search by its name directly
+  let mut best_match: Option<(&MCModRecord, f64, bool)> = None;
+  for mod_record in &search_results {
+    if mod_record.subname.is_none()
+      && mod_record.curseforge_slug.is_none()
+      && mod_record.modrinth_slug.is_none()
+    {
+      continue;
+    }
+
+    let similarity = calculate_similarity(&mod_record.name, &query);
+    let absolute = mod_record.name.replace(" ", "") == query.replace(" ", "");
+
+    match best_match {
+      Some((_, best_sim, _)) if similarity <= best_sim => {}
+      _ => {
+        best_match = Some((mod_record, similarity, absolute));
+      }
+    }
+  }
+
+  if let Some((mod_record, similarity, absolute)) = best_match {
+    if absolute || similarity >= 0.9 {
+      if let Some(exact_name) = mod_record
+        .subname
+        .as_ref()
+        .or(mod_record.curseforge_slug.as_ref())
+        .or(mod_record.modrinth_slug.as_ref())
+      {
+        return Ok(exact_name.chars().take(24).collect());
+      }
+    }
   }
 
   // Count keyword frequency across all found mods
@@ -427,28 +458,31 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
 
   keyword_scores.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
-  // Select top keywords with high frequency (appear in >= 40% of results)
+  // Select keywords
   let min_frequency_threshold = (total_mods as f64 * 0.4).max(1.0) as usize;
+  let min_frequency_ratio = min_frequency_threshold as f64 / total_mods as f64;
   let mut final_keywords = Vec::new();
 
-  // First priority: high-frequency keywords
-  for (keyword, _score) in &keyword_scores {
-    if keyword_count.get(keyword).unwrap_or(&0) >= &min_frequency_threshold {
-      final_keywords.push(keyword.clone());
-      if final_keywords.len() >= 3 {
+  if let Some((primary_keyword, primary_score)) = keyword_scores.first().cloned() {
+    // Always keep the best one to anchor the query
+    final_keywords.push(primary_keyword.clone());
+
+    // Look for a second keyword, but only if it is reliable enough
+    for (keyword, score) in keyword_scores.iter().skip(1) {
+      if final_keywords.len() >= 2 || primary_keyword.len() >= 16 {
         break;
       }
-    }
-  }
 
-  // Second priority: top-scored keywords if we need more
-  if final_keywords.len() < 3 {
-    for (keyword, _score) in &keyword_scores {
-      if !final_keywords.contains(keyword) {
+      let freq_ratio = *keyword_count.get(keyword).unwrap_or(&0) as f64 / total_mods as f64;
+
+      if freq_ratio < min_frequency_ratio {
+        continue;
+      }
+
+      let score_ratio = *score / primary_score.max(1e-6);
+
+      if score_ratio >= 0.5 {
         final_keywords.push(keyword.clone());
-        if final_keywords.len() >= 5 {
-          break;
-        }
       }
     }
   }

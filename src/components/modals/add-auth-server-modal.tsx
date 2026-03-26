@@ -50,7 +50,8 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [isServerUrlTouched, setIsServerUrlTouched] = useState(false);
-  const isServerUrlInvalid = isServerUrlTouched && !serverUrl;
+  const trimmedServerUrl = serverUrl.trim();
+  const isServerUrlInvalid = isServerUrlTouched && !trimmedServerUrl;
 
   useEffect(() => {
     if (isOpen) {
@@ -64,7 +65,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const handleNextStep = useCallback(() => {
     setIsLoading(true);
     // test the server url in backend & get the server name (without saving)
-    AccountService.fetchAuthServer(serverUrl)
+    AccountService.fetchAuthServer(trimmedServerUrl)
       .then((response) => {
         if (response.status === "success") {
           setServerName(response.data.name);
@@ -81,7 +82,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [serverUrl, toast]);
+  }, [trimmedServerUrl, toast]);
 
   useEffect(() => {
     if (
@@ -98,7 +99,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const handleFinish = () => {
     setIsLoading(true);
     // save the server info to the storage
-    AccountService.addAuthServer(serverUrl)
+    AccountService.addAuthServer(trimmedServerUrl)
       .then((response) => {
         if (response.status === "success") {
           getAuthServerList(true);
@@ -208,7 +209,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
               colorScheme={primaryColor}
               onClick={handleNextStep}
               isLoading={isLoading}
-              isDisabled={!serverUrl}
+              isDisabled={!trimmedServerUrl}
             >
               {t("General.next")}
             </Button>

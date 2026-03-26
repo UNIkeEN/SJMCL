@@ -16,8 +16,8 @@
         "contributors": {
           "title": "Contributors"
         },
-        "reportIssue": {
-          "title": "Report an Issue or Submit a Feature Request"
+        "sourceCode": {
+          "title": "View Source Code on GitHub"
         },
         "aboutSJMC": {
           "title": "About SJTU Minecraft Club (SJMC)"
@@ -139,6 +139,20 @@
     },
     "placeholder": {
       "endpointUrl": "Endpoint URL"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Add Game Server"
+    },
+    "serverAddrRequired": "Server address is required",
+    "label": {
+      "serverAddr": "Server Address",
+      "serverName": "Server Name"
+    },
+    "placeholder": {
+      "serverAddr": "Enter server address",
+      "serverName": "Minecraft Server"
     }
   },
   "AddPlayerModal": {
@@ -338,7 +352,9 @@
     },
     "notSelectedLoader": "No new loader selected",
     "footer": {
-      "installFabricApi": "Install Fabric API Mod"
+      "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)",
+      "reinstall": "Reinstall"
     }
   },
   "CheckModUpdateModal": {
@@ -371,20 +387,6 @@
   },
   "ComingSoonSign": {
     "text": "This page is not available yet, coming soon!"
-  },
-  "ContributorsPage": {
-    "all": "All Contributors List",
-    "core": "Main Contributors",
-    "contribution": {
-      "fullStackDev": "Full Stack Dev",
-      "frontendDev": "Frontend Dev",
-      "backendDev": "Backend Dev",
-      "externalAPI": "External API",
-      "doc": "Documentation",
-      "cicd": "CI / CD",
-      "design": "Visual Design",
-      "mascot": "Team Mascot"
-    }
   },
   "CopyOrMoveModal": {
     "modal": {
@@ -420,11 +422,22 @@
       "info": "Basic Settings"
     },
     "footer": {
-      "installFabricApi": "Install Fabric API Mod"
+      "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Delete Authentication Server",
+      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "Delete Game Server",
+    "content": "Confirm delete the game server \"{{name}}\" ({{addr}}) ? It will be lost forever! (A long time!)"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
@@ -448,20 +461,33 @@
       "content": "Confirm delete the player \"{{name}}\" ? This cannot be undone!"
     }
   },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "Delete Authentication Server",
-      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
-    }
-  },
   "DevToolbar": {
     "tooltip": "Dev Toolbar"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "Discover",
     "noMore": "No more",
     "sources": "Manage Sources",
     "NoSources": "No source added"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft News",
+    "community-news": "Community News",
+    "hotModpacks": "Hot Modpacks from {{source}}"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "Search",
+      "home": "Home",
+      "community-news": "Community",
+      "minecraft-news": "Minecraft News",
+      "modpack": "Modpacks",
+      "mod": "Mods",
+      "world": "Worlds",
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -498,9 +524,9 @@
     "resourceTypeList": {
       "world": "Worlds",
       "mod": "Mods",
-      "resourcepack": "Resourcepacks",
-      "shader": "Shaderpacks",
-      "datapack": "Datapacks"
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
     }
   },
   "DownloadSettingPage": {
@@ -584,7 +610,7 @@
       "pause": "Pause",
       "begin": "Start",
       "retry": "Retry",
-      "deleteRecord": "Delete this Record"
+      "clearHistory": "Clear History Records"
     },
     "label": {
       "paused": "Paused",
@@ -594,6 +620,7 @@
     },
     "task": {
       "game-client": "Game Client {{param}}",
+      "game-client-w-java": "Game Client {{param1}} (with Java {{param2}})",
       "game-server": "Game Server {{param}}",
       "change-mod-loader": "Change Mod Loader {{param}}",
       "mod": "Mod",
@@ -649,8 +676,8 @@
     },
     "errorMessage": {
       "dirName": {
-        "tooLong": "Directory name cannot be longer than 20 characters",
         "empty": "Directory name cannot be empty",
+        "tooLong": "Directory name cannot be longer than 20 characters",
         "exist": "Directory name already exists",
         "hasInvalidChar": "Directory name has invalid characters"
       },
@@ -681,9 +708,19 @@
       "macos": "Control(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -903,6 +940,8 @@
     "finish": "Finish",
     "import": "Import",
     "launch": "Launch",
+    "more": "More",
+    "new": "New",
     "next": "Next",
     "notice": "Notice",
     "open": "Open",
@@ -912,13 +951,13 @@
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
-    "skip": "Skip",
     "share": {
       "text": "Share",
       "toast": {
         "error": "Failed to share"
       }
     },
+    "skip": "Skip",
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
@@ -951,22 +990,31 @@
     "functions": {
       "title": "Functionality",
       "settings": {
-        "discoverPage": {
-          "title": "Discover Page",
-          "openNotice": {
-            "content": "The 'Search' in the top navigation bar has been replaced with 'Discover'. You can continue using the 'Global Search' through the keyboard shortcut <key>{{keyname}}</key> + <key>S</key>."
-          }
-        },
         "instancesNavType": {
           "title": "Instance Page Navigation Mode",
           "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
           "instance": "By Instance",
           "directory": "By Directory",
+          "tag": "By Tag",
           "hidden": "Hidden"
         },
         "launchPageQuickSwitch": {
           "title": "Quick Switch for Accounts & Instances",
           "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+        },
+        "autoDownloadJava": {
+          "title": "Auto-download Suitable Java Runtime",
+          "description": "When enabled, if no suitable Java runtime is available when creating a new instance, it will be installed automatically to a dedicated directory"
+        }
+      }
+    },
+    "sync": {
+      "title": "Sync",
+      "settings": {
+        "internetSync": {
+          "title": "Sync Launcher Settings via Internet",
+          "import": "Import",
+          "export": "Export"
         }
       }
     },
@@ -983,6 +1031,11 @@
         "autoPurgeLauncherLogs": {
           "title": "Auto Purge Launcher Logs",
           "description": "Automatically purge launcher log files older than 30 days"
+        },
+        "restoreAll": {
+          "title": "Restore All Settings",
+          "description": "Restore all launcher settings to their default values",
+          "restore": "Restore"
         }
       }
     }
@@ -1095,6 +1148,10 @@
       "content": "Here you can add accounts and choose the player you want to play."
     },
     "step3": {
+      "title": "Discover Page",
+      "content": "Here you can browse Minecraft and community news, discover and download various related resources such as mods, maps, and modpacks.<br/>You can also quickly open \"Global Search\" with the keyboard shortcut <key>{{keyname}}</key> + <key>S</key>."
+    },
+    "step4": {
       "title": "Launch Minecraft!",
       "content": "After selecting your instance and player and adjusting the relevant settings, click the launch button and enjoy the game! 🥳"
     }
@@ -1147,6 +1204,11 @@
         "LauncherDocs": {
           "title": "SJMC Launcher Documentation",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        },
+        "UserGroup": {
+          "title": "User Community",
+          "description": "Join the QQ group or Discord server to report issues, request features, or get help",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
     }
@@ -1156,15 +1218,20 @@
       "title": "Import Players and Auth Servers"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "Auth Servers",
       "players": "Players"
     },
+    "footer": {
+      "parentDirHint": "Account files will be searched in parent path of added game directories."
+    },
     "tooltips": {
       "existingServer": "Existing auth server data with the same address will be overwritten.",
-      "existingPlayer": "Existing player data with the same UUID will be overwritten."
+      "existingPlayer": "Existing player data with the same UUID will be overwritten.",
+      "expired": "This player token has expired and cannot be imported."
     }
   },
   "ImportModpackModal": {
@@ -1254,7 +1321,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "Mod Loader",
-      "notInstalled": "Not Installed"
+      "notInstalled": "Not Installed",
+      "installed": "Installed"
     },
     "modList": {
       "title": "Mods",
@@ -1284,10 +1352,11 @@
   "InstanceSettingsPage": {
     "name": "Instance Name",
     "description": "Instance Description",
+    "colorTag": "Color Tag",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
-    "restoreSettings": "Reset specific settings",
-    "restoreSettingsDesc": "Reset the following specific settings to the global game settings.",
+    "restoreSettings": "Restore specific settings",
+    "restoreSettingsDesc": "Restore the following specific settings to the global game settings.",
     "restore": "Restore",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
@@ -1367,6 +1436,29 @@
       "launch": "Play this Server"
     }
   },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL Intelligence",
+    "description": "Integrate AI models into your launcher and Minecraft gameplay experience.",
+    "mcpServer": {
+      "title": "MCP Service",
+      "headExtra": "Restart Required",
+      "settings": {
+        "enabled": {
+          "title": "Launcher MCP Service",
+          "description": "Enable the local MCP service to connect external agent applications for automated launcher control."
+        },
+        "docs": {
+          "title": "User Guide",
+          "description": "Learn how to connect the launcher to external agent applications (such as Claude, Cherry Studio, and more).",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "Port",
+          "description": "The fixed local port used by the launcher MCP service."
+        }
+      }
+    }
+  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Java Management",
@@ -1408,6 +1500,13 @@
       "noSelectedGame": "No game instance selected"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "Previous Run Exited Abnormally",
+      "content": "SJMCL exited abnormally during the last run. You can send the logs to the <community>community</community>, or open an issue on <github>GitHub</github> for help.",
+      "viewLog": "View Logs"
+    }
+  },
   "LaunchProcessModal": {
     "header": {
       "title": "Launch Game - {{name}}"
@@ -1419,7 +1518,8 @@
       "launchGame": "Waiting for Game to Launch"
     },
     "toast": {
-      "noSelectedPlayer": "Please add and select a player first"
+      "noSelectedPlayer": "Please add and select a player first",
+      "noSelectedInstance": "Please add and select a game instance first"
     }
   },
   "LoaderSelector": {
@@ -1469,6 +1569,10 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} selected"
+  },
+  "NoSuitableJavaDialog": {
+    "title": "No suitable Java runtime found for this instance",
+    "body": "No suitable Java runtime is available for this instance. Click \"Confirm\" to open Java Management page and add or download Java manually."
   },
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
@@ -1554,7 +1658,6 @@
         "Applied Energistics 2": "Applied Energistics 2",
         "Armor, Tools, and Weapons": "Armor Tools Weapons",
         "Automation": "Automation",
-        "Auxiliary": "Auxiliary",
         "Biomes": "Biomes",
         "Blood Magic": "Blood Magic",
         "Buildcraft": "Buildcraft",
@@ -1596,6 +1699,7 @@
         "Twitch Integration": "Twitch",
         "Utility & QoL": "Utility QoL",
         "World Gen": "World Gen",
+        "Auxiliary": "Auxiliary",
         "World": "World"
       },
       "Modrinth": {
@@ -1624,19 +1728,20 @@
     "worldTagList": {
       "CurseForge": {
         "All": "All",
+        "Types": "Types",
         "Adventure": "Adventure",
         "Creation": "Creation",
         "Game Map": "Game Map",
         "Modded World": "Modded World",
         "Parkour": "Parkour",
         "Puzzle": "Puzzle",
-        "Survival": "Survival",
-        "Types": "Types"
+        "Survival": "Survival"
       }
     },
     "resourcepackTagList": {
       "CurseForge": {
         "All": "All",
+        "Resolution": "Resolution",
         "16x": "16x",
         "32x": "32x",
         "64x": "64x",
@@ -1653,12 +1758,12 @@
         "Mod Support": "Mod Support",
         "Modern": "Modern",
         "Photo Realistic": "Photo Realistic",
-        "Resolution": "Resolution",
         "Steampunk": "Steampunk",
         "Traditional": "Traditional"
       },
       "Modrinth": {
         "All": "All",
+        "Resolution": "Resolution",
         "8x-": "8x or Lower",
         "16x": "16x",
         "32x": "32x",
@@ -1683,7 +1788,6 @@
         "decoration": "Decoration",
         "modded": "Modded",
         "realistic": "Realistic",
-        "Resolution": "Resolution",
         "simplistic": "Simplistic",
         "themed": "Themed",
         "tweaks": "Tweaks",
@@ -1822,6 +1926,10 @@
     "title": "Restore Launcher Settings",
     "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "Restore Instance Settings",
+    "body": "This action will restore this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
   },
@@ -1830,9 +1938,17 @@
       "setAsBg": "Set as Launcher Background"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Select Instance",
+      "titleForLaunch": "Select Instance to Launch"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "Please select a player to add"
+      "title": "Select Player",
+      "titleForAdd": "Select New Player to Add",
+      "titleForLaunch": "Select Player to Play"
     }
   },
   "Services": {
@@ -2137,7 +2253,6 @@
           "title": "Failed to validate game files",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "Mod loader library files not downloaded",
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "GAME_FILES_INCOMPLETE": "Game files are incomplete",
             "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
@@ -2290,10 +2405,10 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
-        "success": "Successfully reset instance game settings",
+      "restoreInstanceGameConfig": {
+        "success": "Successfully restored instance game settings",
         "error": {
-          "title": "Failed to reset instance game settings",
+          "title": "Failed to restore instance game settings",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"
@@ -2367,6 +2482,28 @@
           }
         }
       },
+      "addGameServer": {
+        "success": "Game server added successfully",
+        "error": {
+          "title": "Failed to add game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "DUPLICATE_SERVER": "Server already exists"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Game server deleted successfully",
+        "error": {
+          "title": "Failed to delete game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
+          }
+        }
+      },
       "retrieveLocalModList": {
         "error": {
           "title": "Failed to retrieve local mod list",
@@ -2412,8 +2549,8 @@
         "error": {
           "title": "Failed to retrieve world details list",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "World not exist",
-            "LEVEL_NOT_EXSIT_ERROR": "Level data not exist",
+            "WORLD_NOT_EXIST_ERROR": "World not exist",
+            "LEVEL_NOT_EXIST_ERROR": "Level data not exist",
             "LEVEL_PARSE_ERROR": "Level data parse error"
           }
         }
@@ -2504,7 +2641,7 @@
       "general": "General",
       "appearance": "Appearance",
       "download": "Download",
-      "sync-restore": "Sync & Restore",
+      "intelligence": "Intelligence",
       "help": "Docs & Help",
       "about": "About",
       "dev-test": "Dev - Test Page"
@@ -2563,23 +2700,6 @@
       "starUs": "Star Us"
     }
   },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "Launcher Settings",
-      "settings": {
-        "internetSync": {
-          "title": "Sync through the Internet",
-          "import": "Import",
-          "export": "Export"
-        },
-        "restoreAll": {
-          "title": "Restore All Settings",
-          "description": "Restore all launcher settings to their default values",
-          "restore": "Restore"
-        }
-      }
-    }
-  },
   "SyncConfigExportModal": {
     "header": {
       "title": "Sync Settings - Export"
@@ -2608,7 +2728,8 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "Unsafe Execution Path",
-      "content": "SJMCL is currently running from a temporary or invalid directory. Your settings and game data may be lost. Please move SJMCL to another location and run it again."
+      "content": "SJMCL is currently running from a temporary or invalid directory. Your settings and game data may be lost. Please move SJMCL to another location and run it again.",
+      "btnContinue": "Run Anyway"
     }
   },
   "Utils": {

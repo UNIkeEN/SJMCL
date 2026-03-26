@@ -25,7 +25,7 @@ pub enum InstanceSubdirType {
   ShaderPacks,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default, Display)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, Default, Display)]
 pub enum ModLoaderType {
   #[default]
   Unknown,
@@ -55,14 +55,14 @@ impl FromStr for ModLoaderType {
 }
 
 impl ModLoaderType {
-  pub fn to_icon_path(&self) -> &str {
+  pub fn to_icon_path(self) -> &'static str {
     match self {
-      &ModLoaderType::Unknown => "/images/icons/JEIcon_Release.png",
-      &ModLoaderType::Fabric => "/images/icons/Fabric.png",
-      &ModLoaderType::Forge | &ModLoaderType::LegacyForge => "/images/icons/Anvil.png",
-      &ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
-      &ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
-      &ModLoaderType::Quilt => "/images/icons/Quilt.png",
+      ModLoaderType::Unknown => "/images/icons/JEIcon_Release.png",
+      ModLoaderType::Fabric => "/images/icons/Fabric.png",
+      ModLoaderType::Forge | ModLoaderType::LegacyForge => "/images/icons/Anvil.png",
+      ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
+      ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
+      ModLoaderType::Quilt => "/images/icons/Quilt.png",
     }
   }
 }
@@ -86,6 +86,7 @@ structstruck::strike! {
     pub id: String,
     pub name: String,
     pub description: String,
+    pub tag: Option<String>,
     pub icon_src: String,
     pub starred: bool,
     pub play_time: u128,
@@ -128,6 +129,7 @@ pub struct InstanceSummary {
   pub id: String,
   pub name: String,
   pub description: String,
+  pub tag: Option<String>,
   pub icon_src: String,
   pub starred: bool,
   pub play_time: u128,
@@ -152,6 +154,7 @@ impl InstanceSummary {
       id,
       name: instance.name.clone(),
       description: instance.description.clone(),
+      tag: instance.tag.clone(),
       icon_src: instance.icon_src.clone(),
       starred: instance.starred,
       play_time: instance.play_time,
@@ -246,11 +249,13 @@ pub struct ScreenshotInfo {
 pub enum InstanceError {
   InstanceNotFoundByID,
   ServerNbtReadError,
+  DuplicateServer,
   FileNotFoundError,
   InvalidSourcePath,
   FileCreationFailed,
   FileCopyFailed,
   FileMoveFailed,
+  FileOperationError,
   FolderCreationFailed,
   ShortcutCreationFailed,
   ZipFileProcessFailed,

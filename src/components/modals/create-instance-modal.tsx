@@ -57,6 +57,7 @@ export const loaderTypesToIcon: Record<string, string> = {
   Forge: "/images/icons/Anvil.png", // differ from that in mod-loader-selector
   NeoForge: "/images/icons/NeoForge.png",
   OptiFine: "/images/icons/OptiFine.png",
+  Quilt: "/images/icons/Quilt.png",
 };
 
 export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
@@ -86,6 +87,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
   const [instanceDirectory, setInstanceDirectory] = useState<GameDirectory>();
   const [isLoading, setIsLoading] = useState(false);
   const [isInstallFabricApi, setIsInstallFabricApi] = useState(true);
+  const [isInstallQfApi, setIsInstallQfApi] = useState(true);
 
   useEffect(() => {
     setSelectedModLoader(defaultModLoaderResourceInfo);
@@ -95,6 +97,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       gameTypesToIcon[selectedGameVersion?.gameType || "release"]
     );
     setIsInstallFabricApi(true);
+    setIsInstallQfApi(true);
   }, [selectedGameVersion]);
 
   const handleCreateInstance = useCallback(() => {
@@ -110,7 +113,8 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       selectedModLoader,
       selectedOptiFine,
       undefined, // modpackPath
-      isInstallFabricApi
+      isInstallFabricApi,
+      isInstallQfApi
     )
       .then((res) => {
         if (res.status === "success") {
@@ -135,6 +139,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     selectedModLoader,
     selectedOptiFine,
     isInstallFabricApi,
+    isInstallQfApi,
     modalProps,
     router,
     toast,
@@ -196,6 +201,19 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
                 </Text>
               </Checkbox>
             )}
+            {/* QF API download option - only show when Quilt is selected and has version */}
+            {selectedModLoader.loaderType === ModLoaderType.Quilt && (
+              <Checkbox
+                colorScheme={primaryColor}
+                isChecked={selectedModLoader.version !== "" && isInstallQfApi}
+                disabled={!selectedModLoader.version}
+                onChange={(e) => setIsInstallQfApi(e.target.checked)}
+              >
+                <Text fontSize="sm">
+                  {t("CreateInstanceModal.footer.installQFAPI")}
+                </Text>
+              </Checkbox>
+            )}
 
             <HStack spacing={3} ml="auto">
               <Button variant="ghost" onClick={modalProps.onClose}>
@@ -248,6 +266,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     selectedOptiFine,
     primaryColor,
     isInstallFabricApi,
+    isInstallQfApi,
     t,
     modalProps.onClose,
     setActiveStep,

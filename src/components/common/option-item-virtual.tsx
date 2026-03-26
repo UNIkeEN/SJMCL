@@ -10,7 +10,7 @@ import {
 } from "react-virtualized";
 import { OptionItem, OptionItemProps } from "@/components/common/option-item";
 import { Section, SectionProps } from "@/components/common/section";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import cardStyles from "@/styles/card.module.css";
 
 export { OptionItem };
 export type { OptionItemProps };
@@ -31,8 +31,6 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
   loadMore = () => {},
   ...props
 }) => {
-  const themedStyles = useThemedCSSStyle();
-
   const offscreenItemRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<List>(null);
   const [itemHeight, setItemHeight] = useState(0);
@@ -98,7 +96,7 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
   return (
     <Section {...props}>
       {items.length > 0 && (
-        <Card className={themedStyles.card["card-front"]} h="100%">
+        <Card className={cardStyles["card-front"]} h="100%">
           <Box
             ref={offscreenItemRef}
             position="absolute"

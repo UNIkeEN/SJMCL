@@ -11,6 +11,7 @@ use crate::resource::helpers::loader_meta::fabric::get_fabric_meta_by_game_versi
 use crate::resource::helpers::loader_meta::forge::get_forge_meta_by_game_version;
 use crate::resource::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
 use crate::resource::helpers::loader_meta::optifine::get_optifine_meta_by_game_version;
+use crate::resource::helpers::loader_meta::quilt::get_quilt_meta_by_game_version;
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
@@ -30,13 +31,11 @@ use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
-pub async fn fetch_game_version_list(
-  app: AppHandle,
-  state: State<'_, Mutex<LauncherConfig>>,
-) -> SJMCLResult<Vec<GameClientResourceInfo>> {
+pub async fn fetch_game_version_list(app: AppHandle) -> SJMCLResult<Vec<GameClientResourceInfo>> {
   let priority_list = {
-    let state = state.lock()?;
-    get_source_priority_list(&state)
+    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
   };
   get_game_version_manifest(&app, &priority_list).await
 }
@@ -44,10 +43,9 @@ pub async fn fetch_game_version_list(
 #[tauri::command]
 pub async fn fetch_game_version_specific(
   app: AppHandle,
-  state: State<'_, Mutex<LauncherConfig>>,
   game_version: String,
 ) -> SJMCLResult<GameClientResourceInfo> {
-  let all_versions = fetch_game_version_list(app.clone(), state).await?;
+  let all_versions = fetch_game_version_list(app.clone()).await?;
 
   all_versions
     .into_iter()
@@ -75,6 +73,9 @@ pub async fn fetch_mod_loader_version_list(
     }
     ModLoaderType::NeoForge => {
       Ok(get_neoforge_meta_by_game_version(&app, &priority_list, &game_version).await?)
+    }
+    ModLoaderType::Quilt => {
+      Ok(get_quilt_meta_by_game_version(&app, &priority_list, &game_version).await?)
     }
     // TODO here
     _ => Err(ResourceError::NoDownloadApi.into()),

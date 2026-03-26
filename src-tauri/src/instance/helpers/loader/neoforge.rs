@@ -27,43 +27,52 @@ pub async fn install_neoforge_loader(
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
-  let (installer_url, installer_coord) = if loader_ver.starts_with("1.20.1-") {
-    (
+  let mut installer_url_opt: Option<Url> = None;
+  let mut installer_coord: String = String::new();
+
+  if loader_ver.starts_with("1.20.1-") {
+    installer_url_opt = Some(
       get_download_api(SourceType::Official, ResourceType::NeoforgeInstall)?.join(&format!(
         "net/neoforged/forge/{v}/forge-{v}-installer.jar",
         v = loader_ver
       ))?,
-      format!("net.neoforged:forge:{}-installer", loader.version),
-    )
+    );
+    installer_coord = format!("net.neoforged:forge:{}-installer", loader.version);
   } else {
-    let root = get_download_api(priority[0], ResourceType::NeoforgeInstall)?;
-    (
-      match priority.first().unwrap_or(&SourceType::Official) {
-        SourceType::Official => {
-          let path = format!(
-            "net/neoforged/neoforge/{v}/neoforge-{v}-installer.jar",
-            v = loader_ver
-          );
-          root.join(&path)?
-        }
-        SourceType::BMCLAPIMirror => {
-          let path = format!("{v}/download/installer", v = loader_ver);
-          root.join(&path)?
-        }
-      },
-      format!("net.neoforged:neoforge:{}-installer", loader.version),
-    )
-  };
+    // fallback priority
+    for source_type in priority.iter() {
+      if let Ok(root) = get_download_api(*source_type, ResourceType::NeoforgeInstall) {
+        let url = match *source_type {
+          SourceType::Official => {
+            let path = format!(
+              "net/neoforged/neoforge/{v}/neoforge-{v}-installer.jar",
+              v = loader_ver
+            );
+            root.join(&path)?
+          }
+          SourceType::BMCLAPIMirror => {
+            let path = format!("{v}/download/installer", v = loader_ver);
+            root.join(&path)?
+          }
+        };
+        installer_url_opt = Some(url);
+        installer_coord = format!("net.neoforged:neoforge:{}-installer", loader.version);
+        break;
+      }
+    }
+  }
 
-  let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
-  let installer_path = lib_dir.join(&installer_rel);
+  if let Some(installer_url) = installer_url_opt {
+    let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
+    let installer_path = lib_dir.join(&installer_rel);
 
-  task_params.push(PTaskParam::Download(DownloadParam {
-    src: installer_url,
-    dest: installer_path.clone(),
-    filename: None,
-    sha1: None,
-  }));
+    task_params.push(PTaskParam::Download(DownloadParam {
+      src: installer_url,
+      dest: installer_path,
+      filename: None,
+      sha1: None,
+    }));
+  }
 
   Ok(())
 }

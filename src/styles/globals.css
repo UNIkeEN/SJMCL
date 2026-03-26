@@ -14,6 +14,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
   user-select: none;
+  background: transparent !important;
 }
 
 body[use-custom-font] {
@@ -44,6 +45,14 @@ body img {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--chakra-colors-blackAlpha-500);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: var(--chakra-colors-whiteAlpha-500);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--chakra-colors-whiteAlpha-700);
 }
 
 

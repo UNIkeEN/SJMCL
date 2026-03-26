@@ -21,15 +21,18 @@ use crate::instance::helpers::modpack::misc::{
   extract_overrides, get_download_params, ModpackMetaInfo,
 };
 use crate::instance::helpers::mods::common::{
-  add_local_mod_translations, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
-  LocalModTranslationEntry, LocalModTranslationsCache,
+  compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
+};
+use crate::instance::helpers::mods::translation::{
+  add_local_mod_translations, LocalModTranslationEntry, LocalModTranslationsCache,
 };
 use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
 use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
 use crate::instance::helpers::server::{
-  load_servers_info_from_path, query_servers_online, GameServerInfo,
+  get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt, query_servers_online,
+  save_servers_to_nbt, GameServerInfo,
 };
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
@@ -40,6 +43,9 @@ use crate::instance::models::misc::{
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::LevelData;
 use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
+use crate::launch::helpers::jre_selector::{get_minimum_java_version_by_game, select_java_runtime};
+use crate::launch::models::LaunchError;
+use crate::launcher_config::helpers::java::build_mojang_java_download_params;
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialError, PartialUpdate};
@@ -63,7 +69,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
-use tauri::State;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tokio;
@@ -161,6 +166,11 @@ pub async fn update_instance_config(
     // PartialUpdate not support Option<T> yet
     if key_path == "description" {
       instance.description = serde_json::from_str::<String>(&value).unwrap_or(value);
+    } else if key_path == "tag" {
+      instance.tag = serde_json::from_str::<Option<String>>(&value)
+        .ok()
+        .flatten()
+        .map(|v| v.trim().to_string());
     } else if key_path == "icon_src" {
       instance.icon_src = serde_json::from_str::<String>(&value).unwrap_or(value);
     } else if key_path == "starred" {
@@ -173,8 +183,9 @@ pub async fn update_instance_config(
       }
     } else if key_path.starts_with("spec_game_config.") {
       let key = key_path.split_at("spec_game_config.".len()).1;
-      let game_config = instance.spec_game_config.as_mut().unwrap();
-      game_config.update(key, &value)?;
+      if let Some(game_config) = instance.spec_game_config.as_mut() {
+        game_config.update(key, &value)?;
+      }
     } else {
       return Err(PartialError::NotFound.into());
     }
@@ -199,7 +210,7 @@ pub fn retrieve_instance_game_config(
 }
 
 #[tauri::command]
-pub async fn reset_instance_game_config(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+pub async fn restore_instance_game_config(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
   let instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let mut state = binding.lock().unwrap();
@@ -423,14 +434,11 @@ pub async fn retrieve_game_server_list(
   query_online: bool,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   // query_online is false, return local data from nbt (servers.dat)
-  let game_root_dir =
-    match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Root) {
-      Some(path) => path,
-      None => return Ok(Vec::new()),
-    };
-
-  let nbt_path = game_root_dir.join("servers.dat");
-  let mut game_servers = match load_servers_info_from_path(&nbt_path).await {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Ok(Vec::new()),
+  };
+  let mut game_servers = match load_servers_info_from_nbt(&nbt_path).await {
     Ok(servers) => servers,
     Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
@@ -447,11 +455,76 @@ pub async fn retrieve_game_server_list(
 }
 
 #[tauri::command]
+pub async fn delete_game_server(
+  app: AppHandle,
+  instance_id: String,
+  server_addr: String,
+) -> SJMCLResult<()> {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
+
+  existing_servers.retain(|server| server.ip != server_addr);
+  save_servers_to_nbt(&nbt_path, &existing_servers)
+    .await
+    .map_err(|_| InstanceError::FileOperationError)?;
+
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn add_game_server(
+  app: AppHandle,
+  instance_id: String,
+  server_addr: String,
+  server_name: String,
+) -> SJMCLResult<()> {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
+
+  if existing_servers
+    .iter()
+    .any(|server| server.ip == server_addr)
+  {
+    return Err(InstanceError::DuplicateServer.into());
+  }
+
+  existing_servers.push(GameServerInfo {
+    ip: server_addr,
+    name: server_name,
+    ..Default::default()
+  });
+  save_servers_to_nbt(&nbt_path, &existing_servers)
+    .await
+    .map_err(|_| InstanceError::FileOperationError)?;
+
+  Ok(())
+}
+
+#[tauri::command]
 pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
-  local_mod_translations_cache_state: State<'_, Mutex<LocalModTranslationsCache>>,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
+  let expected_loader_type = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock().unwrap();
+    let instance = state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+
+    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
+      Some(instance.mod_loader.loader_type)
+    } else {
+      None
+    }
+  };
+
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
     Some(path) => path,
@@ -475,8 +548,10 @@ pub async fn retrieve_local_mod_list(
       .await
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
-      log::debug!("Load mod info from dir: {}", path.display());
-      let info = get_mod_info_from_jar(&path).await.ok();
+      log::debug!("Load mod info from jar: {}", path.display());
+      let info = get_mod_info_from_jar(&path, expected_loader_type)
+        .await
+        .ok();
       drop(permit);
       info
     });
@@ -494,7 +569,9 @@ pub async fn retrieve_local_mod_list(
         .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
       let task = tokio::spawn(async move {
         log::debug!("Load mod info from dir: {}", path.display());
-        let info = get_mod_info_from_dir(&path).await.ok();
+        let info = get_mod_info_from_dir(&path, expected_loader_type)
+          .await
+          .ok();
         drop(permit);
         info
       });
@@ -509,22 +586,8 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  let incompatible_loader_type = {
-    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let state = binding.lock().unwrap();
-    let instance = state
-      .get(&instance_id)
-      .ok_or(InstanceError::InstanceNotFoundByID)?;
-
-    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
-      Some(instance.mod_loader.loader_type.clone())
-    } else {
-      None
-    }
-  };
-
   mod_infos.iter_mut().for_each(|mod_info| {
-    if let Some(loader_type) = &incompatible_loader_type {
+    if let Some(loader_type) = &expected_loader_type {
       mod_info.potential_incompatibility = mod_info.loader_type != *loader_type;
     } else {
       mod_info.potential_incompatibility = false;
@@ -556,6 +619,7 @@ pub async fn retrieve_local_mod_list(
   }
   // sort by name (and version)
   mod_infos.sort();
+  let local_mod_translations_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
     if let Some(entry) = cache.translations.get(&info.file_name) {
@@ -849,7 +913,11 @@ pub async fn retrieve_world_details(
 }
 
 #[tauri::command]
-pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+pub fn create_launch_desktop_shortcut(
+  app: AppHandle,
+  instance_id: String,
+  icon_src: String,
+) -> SJMCLResult<()> {
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let state = binding
     .lock()
@@ -865,7 +933,19 @@ pub fn create_launch_desktop_shortcut(app: AppHandle, instance_id: String) -> SJ
     .replace("+", "%20");
   let url = format!("sjmcl://launch?{}", encoded_id);
 
-  create_url_shortcut(&app, name, url, None).map_err(|_| InstanceError::ShortcutCreationFailed)?;
+  #[cfg(any(target_os = "windows", target_os = "linux"))]
+  let icon_path = {
+    use crate::instance::helpers::misc::create_instance_shortcut_icon;
+    create_instance_shortcut_icon(&app, instance, &icon_src).ok()
+  };
+  #[cfg(target_os = "macos")]
+  let icon_path = {
+    let _ = icon_src; // explicitly consume to avoid warning
+    None
+  };
+
+  create_url_shortcut(&app, name, url, icon_path)
+    .map_err(|_| InstanceError::ShortcutCreationFailed)?;
 
   Ok(())
 }
@@ -882,13 +962,17 @@ pub async fn create_instance(
   optifine: Option<OptiFineResourceInfo>,
   modpack_path: Option<String>,
   is_install_fabric_api: Option<bool>,
+  is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
   // Get priority list
-  let priority_list = {
+  let (priority_list, auto_download_java) = {
     let launcher_config = launcher_config_state.lock()?;
-    get_source_priority_list(&launcher_config)
+    (
+      get_source_priority_list(&launcher_config),
+      launcher_config.general.functionality.auto_download_java,
+    )
   };
 
   // Ensure the instance name is unique
@@ -909,10 +993,10 @@ pub async fn create_instance(
     version: game.id.clone(),
     version_path: version_path.clone(),
     mod_loader: ModLoader {
-      loader_type: mod_loader.loader_type.clone(),
+      loader_type: mod_loader.loader_type,
       status: if matches!(
         mod_loader.loader_type,
-        ModLoaderType::Unknown | ModLoaderType::Fabric
+        ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
       ) {
         ModLoaderStatus::Installed
       } else {
@@ -923,6 +1007,7 @@ pub async fn create_instance(
     },
     optifine: optifine_info,
     description,
+    tag: None,
     icon_src,
     starred: false,
     play_time: 0,
@@ -952,6 +1037,24 @@ pub async fn create_instance(
   version_info.patches.push(vanilla_patch);
 
   let mut task_params = Vec::<PTaskParam>::new();
+
+  // auto download recommended java if needed
+  let mut java_version_to_download: Option<String> = None;
+  if auto_download_java {
+    let client_java_version = version_info
+      .java_version
+      .as_ref()
+      .map_or(0i32, |version| version.major_version);
+
+    if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await {
+      if err.0 == LaunchError::NoSuitableJava.to_string() {
+        let minimum_java_version = get_minimum_java_version_by_game(&app, &instance, false).await;
+        let minimum_java_version = minimum_java_version.to_string();
+        task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
+        java_version_to_download = Some(minimum_java_version);
+      }
+    }
+  }
 
   // Download client (use task)
   let client_download_info = version_info
@@ -1005,6 +1108,7 @@ pub async fn create_instance(
       &mut version_info,
       &mut task_params,
       is_install_fabric_api,
+      is_install_qf_api,
     )
     .await?;
   }
@@ -1029,7 +1133,10 @@ pub async fn create_instance(
 
   schedule_progressive_task_group(
     app.clone(),
-    format!("game-client?{}", name),
+    match java_version_to_download {
+      Some(java_version) => format!("game-client-w-java?{}&{}", name, java_version),
+      None => format!("game-client?{}", name),
+    },
     task_params,
     true,
   )
@@ -1194,6 +1301,7 @@ pub async fn change_mod_loader(
   instance_id: String,
   new_mod_loader: ModLoaderResourceInfo,
   is_install_fabric_api: Option<bool>,
+  is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let mut instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
@@ -1223,11 +1331,11 @@ pub async fn change_mod_loader(
     .ok_or(InstanceError::NotSupportChangeModLoader)?;
 
   let mod_loader = ModLoader {
-    loader_type: new_mod_loader.loader_type.clone(),
+    loader_type: new_mod_loader.loader_type,
     version: new_mod_loader.version.clone(),
     status: if matches!(
       new_mod_loader.loader_type,
-      ModLoaderType::Unknown | ModLoaderType::Fabric
+      ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
     ) {
       ModLoaderStatus::Installed
     } else {
@@ -1245,8 +1353,12 @@ pub async fn change_mod_loader(
   let [libraries_dir, mods_dir] = subdirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
-  // Remove Fabric API mods if switching from Fabric modloader
-  if instance.mod_loader.loader_type == ModLoaderType::Fabric && version_isolation {
+  // Remove Fabric API / QFAPI mods if switching from Fabric or Quilt modloader
+  if matches!(
+    instance.mod_loader.loader_type,
+    ModLoaderType::Fabric | ModLoaderType::Quilt
+  ) && version_isolation
+  {
     remove_fabric_api_mods(mods_dir).await?;
   }
   // construct new version info
@@ -1270,6 +1382,7 @@ pub async fn change_mod_loader(
     &mut version_info,
     &mut task_params,
     is_install_fabric_api,
+    is_install_qf_api,
   )
   .await?;
 
