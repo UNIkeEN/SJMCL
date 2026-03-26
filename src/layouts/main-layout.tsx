@@ -286,7 +286,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               h="full"
               level="back"
               overflow="auto"
-              borderRadius="2xl"
+              borderRadius="xl"
             >
               {children}
             </AdvancedCard>

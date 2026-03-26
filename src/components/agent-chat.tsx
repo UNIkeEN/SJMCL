@@ -4,7 +4,6 @@ import {
   Flex,
   HStack,
   IconButton,
-  Image,
   Spinner,
   Text,
   Textarea,
@@ -28,6 +27,7 @@ import MarkdownContainer from "@/components/common/markdown-container";
 import { OptionItem } from "@/components/common/option-item";
 import { MiuChatLogoTitle } from "@/components/logo-title";
 import PlayerAvatar from "@/components/player-avatar";
+import { miuxiAvatar } from "@/constants/miuxi-avatar";
 import { useLauncherConfig } from "@/contexts/config";
 import { useFunctionCallActions } from "@/contexts/function-call";
 import { useGlobalData } from "@/contexts/global-data";
@@ -36,8 +36,6 @@ import { useAgentLoop } from "@/hooks/use-agent-loop";
 import { ChatMessage, ChatSessionSummary } from "@/models/intelligence";
 import { getChatSystemPrompt } from "@/prompts";
 import { IntelligenceService } from "@/services/intelligence";
-
-const AGENT_AVATAR_SRC = "/images/agent/miuxi_px_avatar.png";
 
 function stripThinkTags(content: string): string {
   const withoutClosedThink = content.replace(/<think>[\s\S]*?<\/think>/g, "");
@@ -337,7 +335,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
 
   return (
     <AdvancedCard
-      borderRadius="2xl"
+      borderRadius="xl"
       h="100%"
       w="100%"
       p={2}
@@ -349,7 +347,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     >
       <VStack h="100%" w="100%">
         <Flex w="100%" align="center" justify="space-between">
-          <MiuChatLogoTitle />
+          <MiuChatLogoTitle ml={1} />
           <HStack spacing={1}>
             <IconButton
               icon={<LuPlus />}
@@ -445,11 +443,10 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                   h="100%"
                   color="gray.500"
                 >
-                  <Image
+                  <PlayerAvatar
+                    avatar={miuxiAvatar}
                     boxSize="48px"
                     objectFit="cover"
-                    src={AGENT_AVATAR_SRC}
-                    alt="agent"
                     mb={4}
                   />
                   <Text>{t("AgentChatPage.description")}</Text>
@@ -469,18 +466,15 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                       (selectedPlayer && selectedPlayer.avatar)) &&
                       (i > 0 && filteredMessages[i - 1].role === msg.role ? (
                         <Box boxSize="32px" />
-                      ) : msg.role === "user" ? (
-                        <PlayerAvatar
-                          avatar={selectedPlayer?.avatar!}
-                          boxSize="32px"
-                          objectFit="cover"
-                        />
                       ) : (
-                        <Image
+                        <PlayerAvatar
+                          avatar={
+                            msg.role === "user"
+                              ? selectedPlayer?.avatar!
+                              : miuxiAvatar
+                          }
                           boxSize="32px"
                           objectFit="cover"
-                          src={AGENT_AVATAR_SRC}
-                          alt="agent"
                         />
                       ))}
                     <Box
@@ -513,11 +507,10 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                       "assistant" ? (
                       <Box boxSize="32px" />
                     ) : (
-                      <Image
+                      <PlayerAvatar
+                        avatar={miuxiAvatar}
                         boxSize="32px"
                         objectFit="cover"
-                        src={AGENT_AVATAR_SRC}
-                        alt="agent"
                       />
                     )}
                     <Box bg={msgBgBot} p={2} borderRadius="lg">
@@ -533,7 +526,8 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
               bg={inputShellBg}
               borderWidth={1}
               borderColor={inputShellBorder}
-              borderRadius="2xl"
+              borderTopRadius="2xl"
+              borderBottomRadius="md"
               p={3}
               pt={0}
             >
@@ -568,7 +562,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                       colorScheme={
                         isBusy ? "red" : canSend ? primaryColor : "gray"
                       }
-                      variant="solid"
+                      variant="ghost"
                       borderRadius="full"
                       isDisabled={!isBusy && !canSend}
                       onClick={isBusy ? handleStopReply : handleSend}

@@ -1,6 +1,5 @@
 import {
   Box,
-  Divider,
   Flex,
   FlexProps,
   HStack,
@@ -207,17 +206,7 @@ const HeadNavBar: React.FC<Omit<FlexProps, "children">> = ({ ...props }) => {
             );
           })}
         </HStack>
-        {isDownloadIndicatorShown && (
-          <>
-            <Divider
-              orientation="vertical"
-              size="xl"
-              h="100%"
-              borderColor="var(--chakra-colors-chakra-placeholder-color)"
-            />
-            <DownloadIndicator />
-          </>
-        )}
+        {isDownloadIndicatorShown && <DownloadIndicator />}
       </HStack>
     </Flex>
   );
