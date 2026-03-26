@@ -1,7 +1,7 @@
 .tabList {
   position: relative;
-  min-height: 28px;
-  padding: 2px;
+  min-height: 30px;
+  padding: 1px;
   isolation: isolate;
 }
 
@@ -34,9 +34,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  height: 24px;
+  height: 26px;
   padding: 0 10px;
-  font-size: var(--chakra-fontSizes-sm);
+  font-size: var(--chakra-fontSizes-xs);
   line-height: 1;
   border-radius: var(--chakra-radii-full);
   transition:

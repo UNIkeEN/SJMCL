@@ -16,7 +16,7 @@ import AgentChatPage from "@/components/agent-chat";
 import AgentHostess from "@/components/agent-hostess";
 import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
-import HeadNavBar from "@/components/head-navbar";
+import MainWindowTitlebar from "@/components/main-window-titlebar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import { useLauncherConfig } from "@/contexts/config";
@@ -32,7 +32,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const { colorMode } = useColorMode();
   const isDarkenBg =
     colorMode === "dark" && config.appearance.background.autoDarken;
-  const originalHeadNavStyle = useRef(config.appearance.theme.headNavStyle);
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const [isAgentChatOpen, setIsAgentChatOpen] = useState(false);
@@ -220,15 +219,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       </Center>
     );
 
-  const handleAgentChatOpen = (state: boolean) => {
-    if (state) {
-      update("appearance.theme.headNavStyle", "simplified");
-    } else {
-      update("appearance.theme.headNavStyle", originalHeadNavStyle.current);
-    }
-    setIsAgentChatOpen(state);
-  };
-
   return (
     <Flex
       direction="column"
@@ -243,7 +233,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       bgBlendMode={isDarkenBg ? "darken" : "normal"}
       style={getGlobalExtraStyle(config)}
     >
-      <Flex w="full" h="full" flexDir="row" justify="space-between">
+      <MainWindowTitlebar />
+      <Flex w="full" flex={1} minH={0} flexDir="row" justify="space-between">
         <Flex
           w={agentChatPanelOffset}
           overflow="hidden"
@@ -255,7 +246,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {isAgentChatOpen && (
             <>
               <AgentChatPage
-                onAgentChatPanelClose={() => handleAgentChatOpen(false)}
+                onAgentChatPanelClose={() => setIsAgentChatOpen(false)}
               />
               <Flex
                 role="group"
@@ -285,40 +276,25 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             </>
           )}
         </Flex>
-        <Flex
-          flex={1}
-          flexDir="column"
-          justify="space-between"
-          w="full"
-          minW={0}
-        >
-          <HeadNavBar />
-          <Flex
-            flex={1}
-            pl={isAgentChatOpen ? 0 : 2}
-            pr={2}
-            pb={2}
-            h="full"
-            minH={0}
-          >
-            {isLaunchPage ? (
-              children
-            ) : (
-              <AdvancedCard
-                w="full"
-                h="full"
-                level="back"
-                overflow="auto"
-                borderRadius="2xl"
-              >
-                {children}
-              </AdvancedCard>
-            )}
-          </Flex>
+
+        <Flex flex={1} p={2} pl={isAgentChatOpen ? 0 : 2} h="full" minH={0}>
+          {isLaunchPage ? (
+            children
+          ) : (
+            <AdvancedCard
+              w="full"
+              h="full"
+              level="back"
+              overflow="auto"
+              borderRadius="2xl"
+            >
+              {children}
+            </AdvancedCard>
+          )}
         </Flex>
       </Flex>
       {isLaunchPage && !isAgentChatOpen && (
-        <AgentHostess onToggleAgentChat={() => handleAgentChatOpen(true)} />
+        <AgentHostess onToggleAgentChat={() => setIsAgentChatOpen(true)} />
       )}
       <WelcomeAndTermsModal
         isOpen={isWelcomeAndTermsModalOpen}

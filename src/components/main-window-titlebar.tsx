@@ -1,8 +1,9 @@
 import { Flex, HStack, Image, useColorModeValue } from "@chakra-ui/react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LuMaximize2, LuMinimize2, LuMinus, LuX } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import HeadNavBar from "@/components/head-navbar-v2";
 import { useLauncherConfig } from "@/contexts/config";
 
 const MainWindowTitlebar = () => {
@@ -121,32 +122,6 @@ const MainWindowTitlebar = () => {
     });
   }, [isWindows]);
 
-  // Listen macOS native fullscreen mode, make titlebar hidden.
-  useEffect(() => {
-    if (typeof window === "undefined" || !isMac) return;
-    const currentWindow = getCurrentWindow();
-    let unlistenResized: (() => void) | undefined;
-    const syncFullscreen = async () => {
-      setIsMacFullscreen(await currentWindow.isFullscreen());
-    };
-    void syncFullscreen();
-    currentWindow
-      .onResized(() => {
-        void syncFullscreen();
-      })
-      .then((unlisten) => {
-        unlistenResized = unlisten;
-      });
-
-    return () => {
-      if (unlistenResized) {
-        unlistenResized();
-      }
-    };
-  }, [isMac]);
-
-  if (isMac && isMacFullscreen) return null;
-
   return (
     <Flex
       h={`${titlebarHeight}px`}
@@ -158,6 +133,13 @@ const MainWindowTitlebar = () => {
       zIndex={9999}
       pl={2}
     >
+      <HeadNavBar
+        h={`${titlebarHeight}px`}
+        minH={`${titlebarHeight}px`}
+        pos="absolute"
+        left="50%"
+        transform="translateX(-50%)"
+      />
       <Flex
         id="sjmcl-main-drag-region"
         data-tauri-drag-region
