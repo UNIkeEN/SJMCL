@@ -14,7 +14,8 @@
 * **Efficient Instance Management**: Supports multiple game directories and instances, allowing the management of all instance resources (such as saves, mods, resource packs, shaders, screenshots, etc.) and settings in one place.
 * **Convenient Resource Download**: Supports downloading game clients, mod loaders, various game resources and modpacks from CurseForge and Modrinth.
 * **Multi-Account System Support**: Built-in Microsoft login and third-party authentication server support, compatible with the OAuth login process proposed by the Yggdrasil Connect proposal.
-* **Deeplink Integration**: Integrates with external websites and tool collections, providing convenient features such as desktop shortcuts for launching instances through system deeplinks.
+* **External Service Collaboration**: Works with external webpages, applications, and Agent services through deeplinks and MCP services, delivering a range of convenient features and automation capabilities.
+* **Open Plugin System**: Supports plugin development to extend the launcher with more interesting and practical features. (Coming Soon)
 
 > Note: some features may be limited by region, platform, or bundle type.
 
@@ -26,7 +27,7 @@
 
 ## Getting Started
 
-Getting started with SJMCL is simple, just download the latest release from the [Official Website](https://mc.sjtu.cn/sjmcl/en).
+Getting started with SJMCL is simple, just download the latest release from the [Official Website](https://mc.sjtu.cn/sjmcl/en/downloads).
 
 You can also find all the releases, including the nightly versions, on [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases).
 
@@ -34,9 +35,9 @@ SJMCL currently supports the following platforms:
 
 | Platform  | Versions            | Architectures              | Provided Bundles                        |
 |-----------|---------------------|----------------------------|-----------------------------------------|
-| Windows   | 7 and above         | `aarch64`, `i686`, `x86_64`| `.msi`, portable `.exe`                 |
+| Windows   | 7 and above         | `aarch64`, `i686`, `x86_64`| installer `.exe`, portable `.exe`                 |
 | macOS     | 10.15 and above     | `aarch64`, `x86_64`        | `.app`, `.dmg`                          |
-| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `x86_64`   | `.AppImage`, `.deb`, `.rpm`, portable binary |
+| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `aarch64`, `x86_64`   | `.AppImage`, `.deb`, `.rpm`, portable binary |
 
 To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs).
 
@@ -94,7 +95,7 @@ We warmly invite contributions from everyone.
 
 ## Copyright
 
-Copyright © 2024-2025 SJMCL Team.
+Copyright © 2024-2026 SJMCL Team.
 
 > NOT AN OFFICIAL MINECRAFT SERVICE. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
 

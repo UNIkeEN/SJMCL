@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "SJMCL",
-  "version": "0.6.1",
+  "version": "1.0.0-beta.2",
   "identifier": "SJMCL",
   "build": {
     "frontendDist": "../out",
@@ -45,18 +45,6 @@
         "minHeight": 440,
         "center": true,
         "dragDropEnabled": false
-      },
-      {
-        "label": "agent_chat",
-        "create": false,
-        "title": "",
-        "url": "/standalone/agent-chat",
-        "width": 800,
-        "height": 550,
-        "minWidth": 640,
-        "minHeight": 440,
-        "center": true,
-        "dragDropEnabled": true
       }
     ],
     "security": {
@@ -65,14 +53,21 @@
         "enable": true,
         "scope": [
           "**",
-          "**/.minecraft/**"
+          "**/.*/**",
+          "**/.*/**/.*/**"
         ]
       }
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "deb",
+      "rpm",
+      "appimage",
+      "nsis",
+      "app"
+    ],
     "category": "Game",
     "icon": [
       "assets/icons/32x32.png",
@@ -85,21 +80,12 @@
     ],
     "licenseFile": "../LICENSE",
     "license": "GPLv3",
-    "macOS": {
-      "dmg": {
-        "background": "assets/misc/dmg_bg.png",
-        "windowSize": {
-          "width": 640,
-          "height": 440
-        }
-      },
-      "entitlements": "Entitlements.plist"
-    },
     "resources": [
       "assets/skins/*",
       "assets/game/*",
       "assets/icons/icon.ico",
       "assets/icons/icon.png",
+      "assets/icons/variants/square.png",
       "assets/db/*"
     ]
   },

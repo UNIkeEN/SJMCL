@@ -252,9 +252,11 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
         // update dir path, instance may change, remove all route history
         removeHistory(`/instances/details/${currentName}:`);
       }
+      const encodedCurrentName = encodeURIComponent(currentName);
+      const encodedDirName = encodeURIComponent(dirName);
       replaceHistory(
-        `/instances/list/${currentName}`,
-        `/instances/list/${dirName}`
+        `/instances/list?dir=${encodedCurrentName}`,
+        `/instances/list?dir=${encodedDirName}`
       );
     }
     getInstanceList(true); // refresh frontend state of instance list

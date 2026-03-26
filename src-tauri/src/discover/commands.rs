@@ -1,3 +1,4 @@
+use crate::discover::helpers::mc_news::{fetch_mc_news_page, MC_NEWS_ENDPOINT};
 use crate::discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
@@ -10,7 +11,7 @@ use tauri_plugin_http::reqwest;
 
 #[tauri::command]
 pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSourceInfo>> {
-  let post_source_urls = {
+  let post_sources = {
     let binding = app.state::<Mutex<LauncherConfig>>();
     let state = binding.lock().unwrap();
     state.discover_source_endpoints.clone()
@@ -18,9 +19,9 @@ pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSour
 
   let client = with_retry(app.state::<reqwest::Client>().inner().clone());
 
-  let tasks: Vec<_> = post_source_urls
+  let tasks: Vec<_> = post_sources
     .into_iter()
-    .map(|url| {
+    .map(|(url, _)| {
       let client = client.clone();
       async move {
         let mut news_source = NewsSourceInfo {
@@ -65,6 +66,10 @@ pub async fn fetch_news_post_summaries(
     .map(|NewsPostRequest { url, cursor }| {
       let client = client.clone();
       async move {
+        if url.starts_with(MC_NEWS_ENDPOINT) {
+          return fetch_mc_news_page(&client, &url, cursor).await;
+        }
+
         let mut req = client.get(&url).query(&[("pageSize", "12")]);
 
         if let Some(c) = cursor {

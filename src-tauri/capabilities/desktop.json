@@ -30,10 +30,24 @@
           "path": "**"
         },
         {
-          "path": "**/.minecraft"
+          "path": "**/.*"
         },
         {
-          "path": "**/.minecraft/**"
+          "path": "**/.*/**"
+        },
+        {
+          "path": "**/.*/**/.*"
+        },
+        {
+          "path": "**/.*/**/.*/**"
+        }
+      ]
+    },
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "ms-windows-store:*"
         }
       ]
     }

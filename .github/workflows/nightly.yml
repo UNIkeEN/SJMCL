@@ -200,9 +200,13 @@ jobs:
             rm -rf ./artifacts/SJMCL_*_macos_*_signed/
             echo "Using unsigned macOS artifacts"
           fi
-          
+
+      - name: Cleanup artifacts directory
+        working-directory: artifacts
+        run: |
+          rm -f */*.sha256
           echo "Remaining artifacts:"
-          ls -la ./artifacts/*/*
+          ls -la ./*/*
 
       - name: Delete existing nightly release if exists
         env:

@@ -2,11 +2,10 @@ use crate::error::{SJMCLError, SJMCLResult};
 use crate::utils::fs::get_files_with_regex;
 use regex::Regex;
 use std::fmt::Arguments;
+use std::fs::create_dir_all;
+use std::path::PathBuf;
 use std::sync::LazyLock;
-use std::{
-  path::PathBuf,
-  time::{SystemTime, UNIX_EPOCH},
-};
+use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
 use tauri::{path::BaseDirectory, AppHandle};
 use tauri_plugin_log::fern::FormatCallback;
@@ -25,8 +24,11 @@ static LOG_FILENAME: LazyLock<String> = LazyLock::new(|| {
 pub fn get_launcher_logs_folder(app: &AppHandle) -> PathBuf {
   let folder = app
     .path()
-    .resolve::<PathBuf>("LauncherLogs/".into(), BaseDirectory::AppCache)
+    .resolve::<PathBuf>("launcher/".into(), BaseDirectory::AppLog)
     .unwrap();
+  if !folder.exists() {
+    create_dir_all(&folder).unwrap();
+  }
   folder
 }
 

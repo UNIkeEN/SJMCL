@@ -10,7 +10,7 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::{LaunchArgumentTemplate, LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
@@ -55,27 +55,43 @@ pub async fn install_forge_loader(
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
-  let root = get_download_api(priority[0], ResourceType::ForgeInstall)?;
-
-  let installer_url = match priority.first().unwrap_or(&SourceType::Official) {
-    SourceType::Official => {
-      let full_ver = vec![
-        game_version,
-        loader_ver,
-        loader.branch.as_ref().unwrap_or(&"".to_string()),
-      ]
-      .into_iter()
-      .filter(|s| !s.is_empty())
-      .collect::<Vec<_>>()
-      .join("-");
-
-      root.join(&format!("{full_ver}/forge-{full_ver}-installer.jar"))?
+  let mut installer_url_opt: Option<Url> = None;
+  for source_type in priority.iter() {
+    if let Ok(root) = get_download_api(*source_type, ResourceType::ForgeInstall) {
+      let url_res: SJMCLResult<Url> = match source_type {
+        SourceType::Official => {
+          let full_ver = vec![
+            game_version,
+            loader_ver,
+            loader.branch.as_ref().unwrap_or(&"".to_string()),
+          ]
+          .into_iter()
+          .filter(|s| !s.is_empty())
+          .collect::<Vec<_>>()
+          .join("-");
+          Ok(root.join(&format!("{full_ver}/forge-{full_ver}-installer.jar"))?)
+        }
+        SourceType::BMCLAPIMirror => {
+          let s = fetch_bmcl_forge_installer_url(
+            root,
+            game_version,
+            loader_ver,
+            loader.branch.as_deref(),
+          )
+          .await?;
+          Ok(Url::parse(&s)?)
+        }
+      };
+      if let Ok(url) = url_res {
+        installer_url_opt = Some(url);
+        break;
+      }
     }
-    SourceType::BMCLAPIMirror => Url::parse(
-      &fetch_bmcl_forge_installer_url(root, game_version, loader_ver, loader.branch.as_deref())
-        .await?,
-    )?,
-  };
+  }
+
+  let installer_url = installer_url_opt.ok_or(SJMCLError(
+    "failed to resolve Forge installer URL".to_string(),
+  ))?;
 
   let installer_coord = format!("net.minecraftforge:forge:{}-installer", loader.version);
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
@@ -95,8 +111,7 @@ pub async fn download_forge_libraries(
   app: &AppHandle,
   priority: &[SourceType],
   instance: &Instance,
-  client_info: &McClientInfo,
-  is_retry: bool, // do not modify client info, just download necessary files
+  client_info: &mut McClientInfo,
 ) -> SJMCLResult<()> {
   let subdirs = get_instance_subdir_paths(
     app,
@@ -108,8 +123,6 @@ pub async fn download_forge_libraries(
     return Err(InstanceError::InvalidSourcePath.into());
   };
   let mut task_params = vec![];
-
-  let mut client_info = client_info.clone();
 
   let installer_coord = format!(
     "net.minecraftforge:forge:{}-installer",
@@ -124,6 +137,9 @@ pub async fn download_forge_libraries(
     ),
     None,
   )?);
+  if !installer_path.exists() {
+    return Err(InstanceError::LoaderInstallerNotFound.into());
+  }
   let file = File::open(&installer_path)?;
   let mut archive = ZipArchive::new(file)?;
 
@@ -304,14 +320,14 @@ pub async fn download_forge_libraries(
       }));
     }
 
-    let (arguments, minecraft_arguments) = if let Some(v_args) = client_info.arguments {
+    let (arguments, minecraft_arguments) = if let Some(v_args) = &client_info.arguments {
       let nf_args = forge_info
         .arguments
         .ok_or(InstanceError::ModLoaderVersionParseError)?;
 
       let new_args = LaunchArgumentTemplate {
-        game: [v_args.game, nf_args.game].concat(),
-        jvm: [v_args.jvm, nf_args.jvm].concat(),
+        game: [v_args.game.clone(), nf_args.game.clone()].concat(),
+        jvm: [v_args.jvm.clone(), nf_args.jvm.clone()].concat(),
       };
       (Some(new_args), None)
     } else {
@@ -446,13 +462,6 @@ pub async fn download_forge_libraries(
     true,
   )
   .await?;
-
-  if !is_retry {
-    let vjson_path = instance
-      .version_path
-      .join(format!("{}.json", instance.name));
-    fs::write(vjson_path, serde_json::to_vec_pretty(&client_info)?)?;
-  }
 
   Ok(())
 }

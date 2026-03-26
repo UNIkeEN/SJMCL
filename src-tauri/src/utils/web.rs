@@ -11,6 +11,7 @@ use tauri::http::StatusCode;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest::header::HeaderMap;
 use tauri_plugin_http::reqwest::{Client, ClientBuilder, Proxy};
+use url::Url;
 
 /// Builds a reqwest client with SJMCL version header and proxy support.
 /// Defaults to 10s timeout.
@@ -97,6 +98,21 @@ pub fn with_retry(client: Client) -> ClientWithMiddleware {
     .build()
 }
 
+/// Check whether the current IP is located in mainland China.
+///
+/// This function queries two Cloudflare trace endpoints in parallel.
+/// If either endpoint reports `loc=CN`, the IP is considered to be in mainland China.
+/// The detection result is cached into the launcher config.
+///
+/// # Arguments
+///
+/// * `app` - The Tauri AppHandle.
+///
+/// # Returns
+///
+/// * `Some(true)` if either endpoint reports mainland China.
+/// * `Some(false)` if both endpoints report non-mainland China.
+/// * `None` if both detection requests fail.
 pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
   let client = app.state::<Client>();
 
@@ -128,4 +144,49 @@ pub async fn is_china_mainland_ip(app: &AppHandle) -> Option<bool> {
   }
 
   Some(result)
+}
+
+/// Normalizes a URL string for semantic equality comparison, including:
+/// - Lowercasing the scheme and the host (ref to RFC 3986, impl by Url::parse)
+/// - Removing trailing slashes from paths (except for root `/`)
+/// - Removing default ports (e.g. 80 for HTTP, 443 for HTTPS)
+///
+/// # Arguments
+///
+/// * `input` - The URL string to normalize.
+///
+/// # Returns
+///
+/// A normalized URL string suitable for direct string comparison.
+/// If parsing fails, the original input string is returned unchanged.
+pub fn normalize_url(input: &str) -> String {
+  let url = match Url::parse(input) {
+    Ok(url) if !url.cannot_be_a_base() && url.host_str().is_some() => url,
+    _ => return input.to_string(),
+  };
+
+  // remove trailing slash except for root
+  let mut path = url.path().to_string();
+  if path != "/" {
+    path = path.trim_end_matches('/').to_string();
+  }
+
+  // remove default port(e.g. 80 for HTTP, 443 for HTTPS)
+  let port = match (url.port(), url.port_or_known_default()) {
+    (Some(p), Some(default)) if p == default => None,
+    (p, _) => p,
+  };
+
+  let mut normalized = match Url::parse(&format!("{}://{}", url.scheme(), url.host_str().unwrap()))
+  {
+    Ok(u) => u,
+    Err(_) => return input.to_string(),
+  };
+
+  let _ = normalized.set_port(port);
+  normalized.set_path(&path);
+  normalized.set_query(url.query());
+  normalized.set_fragment(url.fragment());
+
+  normalized.to_string()
 }

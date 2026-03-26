@@ -191,9 +191,10 @@ export async function executeToolCall(
     }
     case "fetch_news":
       const sources: NewsPostRequest[] = config.discoverSourceEndpoints.map(
-        (url) => ({
+        ([url, enabled]) => ({
           url,
           cursor: null,
+          enabled,
         })
       );
       return await DiscoverService.fetchNewsPostSummaries(sources);
@@ -461,6 +462,7 @@ export async function commitToolCall(
         gameTypesToIcon[params.gameInfo.gameType],
         params.gameInfo,
         params.modLoaderInfo ?? defaultModLoaderResourceInfo,
+        undefined,
         undefined,
         true
       );

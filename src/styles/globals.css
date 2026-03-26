@@ -17,6 +17,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
   user-select: none;
+  background: transparent !important;
 }
 
 body[use-custom-font] {
@@ -48,6 +49,15 @@ body img {
   background-color: var(--chakra-colors-blackAlpha-500);
 }
 
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: var(--chakra-colors-whiteAlpha-500);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--chakra-colors-whiteAlpha-700);
+}
+
+
 /* text */
 .subtitle {
   font-weight: 600;
@@ -68,6 +78,11 @@ body img {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.force-break {
+  word-break: break-all;
+}
+
 
 /* card-style content container */
 .content-full-y {
@@ -103,3 +118,4 @@ body img {
   padding-top: var(--chakra-space-2) !important;
   padding-bottom: var(--chakra-space-2) !important;
 } */
+ 

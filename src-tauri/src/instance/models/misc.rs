@@ -1,4 +1,5 @@
 use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
+use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
 use crate::launcher_config::models::GameConfig;
 use crate::storage::{load_json_async, save_json_async};
 use crate::utils::image::ImageWrapper;
@@ -7,6 +8,7 @@ use std::cmp::{Ord, Ordering, PartialOrd};
 use std::path::PathBuf;
 use std::str::FromStr;
 use strum_macros::Display;
+use tauri::AppHandle;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstanceSubdirType {
@@ -23,7 +25,7 @@ pub enum InstanceSubdirType {
   ShaderPacks,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default, Display)]
+#[derive(Debug, PartialEq, Clone, Copy, Deserialize, Serialize, Default, Display)]
 pub enum ModLoaderType {
   #[default]
   Unknown,
@@ -53,19 +55,19 @@ impl FromStr for ModLoaderType {
 }
 
 impl ModLoaderType {
-  pub fn to_icon_path(&self) -> &str {
+  pub fn to_icon_path(self) -> &'static str {
     match self {
-      &ModLoaderType::Unknown => "/images/icons/JEIcon_Release.png",
-      &ModLoaderType::Fabric => "/images/icons/Fabric.png",
-      &ModLoaderType::Forge | &ModLoaderType::LegacyForge => "/images/icons/Anvil.png",
-      &ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
-      &ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
-      &ModLoaderType::Quilt => "/images/icons/Quilt.png",
+      ModLoaderType::Unknown => "/images/icons/JEIcon_Release.png",
+      ModLoaderType::Fabric => "/images/icons/Fabric.png",
+      ModLoaderType::Forge | ModLoaderType::LegacyForge => "/images/icons/Anvil.png",
+      ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
+      ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
+      ModLoaderType::Quilt => "/images/icons/Quilt.png",
     }
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
+#[derive(Debug, PartialEq, Deserialize, Clone, Serialize, Default)]
 pub enum ModLoaderStatus {
   NotDownloaded, // mod loader's library has not been downloaded
   DownloadFailed, /* mod loader's library download process failed (including processor installation failed)
@@ -84,6 +86,7 @@ structstruck::strike! {
     pub id: String,
     pub name: String,
     pub description: String,
+    pub tag: Option<String>,
     pub icon_src: String,
     pub starred: bool,
     pub play_time: u128,
@@ -95,6 +98,7 @@ structstruck::strike! {
       pub version: String,
       pub branch: Option<String>, // Optional branch name for mod loaders like Forge
     },
+    pub optifine: Option<OptiFine>,
     // if true, use the spec_game_config, else use the global game config
     pub use_spec_game_config: bool,
     // if use_spec_game_config is false, this field is ignored
@@ -125,6 +129,7 @@ pub struct InstanceSummary {
   pub id: String,
   pub name: String,
   pub description: String,
+  pub tag: Option<String>,
   pub icon_src: String,
   pub starred: bool,
   pub play_time: u128,
@@ -132,9 +137,41 @@ pub struct InstanceSummary {
   pub version: String,
   pub major_version: String,
   pub mod_loader: ModLoader,
+  pub optifine: Option<OptiFine>,
   pub support_quick_play: bool,
   pub use_spec_game_config: bool,
   pub is_version_isolated: bool,
+}
+
+impl InstanceSummary {
+  pub async fn from_instance(
+    app: &AppHandle,
+    id: String,
+    instance: &Instance,
+    is_version_isolated: bool,
+  ) -> Self {
+    InstanceSummary {
+      id,
+      name: instance.name.clone(),
+      description: instance.description.clone(),
+      tag: instance.tag.clone(),
+      icon_src: instance.icon_src.clone(),
+      starred: instance.starred,
+      play_time: instance.play_time,
+      version_path: instance.version_path.clone(),
+      version: instance.version.clone(),
+      mod_loader: instance.mod_loader.clone(),
+      optifine: instance.optifine.clone(),
+      // skip fallback remote fetch in `get_major_game_version` and `compare_game_versions` to avoid instance list load delay.
+      // ref: https://github.com/UNIkeEN/SJMCL/pull/799
+      major_version: get_major_game_version(app, &instance.version, false).await,
+      support_quick_play: compare_game_versions(app, &instance.version, "23w14a", false)
+        .await
+        .is_ge(),
+      use_spec_game_config: instance.use_spec_game_config,
+      is_version_isolated,
+    }
+  }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
@@ -175,7 +212,7 @@ impl Ord for LocalModInfo {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ResourcePackInfo {
   pub name: String,
@@ -185,21 +222,21 @@ pub struct ResourcePackInfo {
   pub file_path: PathBuf,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SchematicInfo {
   pub name: String,
   pub file_path: PathBuf,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ShaderPackInfo {
   pub file_name: String,
   pub file_path: PathBuf,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ScreenshotInfo {
   pub file_name: String,
@@ -212,11 +249,13 @@ pub struct ScreenshotInfo {
 pub enum InstanceError {
   InstanceNotFoundByID,
   ServerNbtReadError,
+  DuplicateServer,
   FileNotFoundError,
   InvalidSourcePath,
   FileCreationFailed,
   FileCopyFailed,
   FileMoveFailed,
+  FileOperationError,
   FolderCreationFailed,
   ShortcutCreationFailed,
   ZipFileProcessFailed,
@@ -238,6 +277,15 @@ pub enum InstanceError {
   InstallationDuplicated,
   ProcessorExecutionFailed,
   SemaphoreAcquireFailed,
+  LoaderInstallerNotFound,
+}
+
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct OptiFine {
+  pub filename: String,
+  pub version: String,
+  pub status: ModLoaderStatus,
 }
 
 impl std::error::Error for InstanceError {}

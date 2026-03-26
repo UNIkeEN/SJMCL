@@ -32,8 +32,8 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
   const handleConfirm = () => {
     const trimmed = endpointUrl.trim();
     const current = config.discoverSourceEndpoints;
-    if (!trimmed || current.includes(trimmed)) return;
-    const updated = [...current, trimmed];
+    if (!trimmed || current.some(([url]) => url === trimmed)) return;
+    const updated = [...current, [trimmed, true]];
     update("discoverSourceEndpoints", updated);
     handleCloseModal();
   };

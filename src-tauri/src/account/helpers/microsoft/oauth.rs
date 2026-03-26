@@ -132,7 +132,7 @@ async fn fetch_minecraft_token(
   Ok(response["access_token"].as_str().unwrap_or("").to_string())
 }
 
-async fn fetch_minecraft_profile(
+pub async fn fetch_minecraft_profile(
   app: &AppHandle,
   minecraft_token: String,
 ) -> SJMCLResult<MinecraftProfile> {

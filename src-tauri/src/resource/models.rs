@@ -18,7 +18,7 @@ pub enum ResourceType {
   ForgeMavenNew,
   ForgeInstall,
   Liteloader,
-  Optifine,
+  OptiFine,
   AuthlibInjector,
   FabricMeta,
   FabricMaven,
@@ -36,7 +36,7 @@ pub enum SourceType {
   BMCLAPIMirror,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 pub enum OtherResourceSource {
   #[default]
   Unknown,
@@ -76,7 +76,7 @@ pub enum OtherResourceApiEndpoint {
 }
 
 // mod, save, resourcepack, datapack and shader
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceInfo {
   pub id: String,
@@ -93,9 +93,10 @@ pub struct OtherResourceInfo {
   pub downloads: u64,
   pub source: OtherResourceSource,
   pub website_url: String,
+  pub author: Option<String>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceSearchRes {
   pub list: Vec<OtherResourceInfo>,
@@ -104,7 +105,7 @@ pub struct OtherResourceSearchRes {
   pub page_size: u32,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceSearchQuery {
   pub resource_type: String,
@@ -116,7 +117,7 @@ pub struct OtherResourceSearchQuery {
   pub page_size: u32,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceVersionPackQuery {
   pub resource_id: String,
@@ -124,7 +125,7 @@ pub struct OtherResourceVersionPackQuery {
   pub game_versions: Vec<String>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceFileInfo {
   pub resource_id: String,
@@ -139,21 +140,21 @@ pub struct OtherResourceFileInfo {
   pub loader: Option<String>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceDependency {
   pub resource_id: String,
   pub relation: String,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct OtherResourceVersionPack {
   pub name: String,
   pub items: Vec<OtherResourceFileInfo>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ModUpdateQuery {
   pub url: String,
@@ -163,7 +164,7 @@ pub struct ModUpdateQuery {
 }
 
 // game client itself
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct GameClientResourceInfo {
   pub id: String,
@@ -172,7 +173,7 @@ pub struct GameClientResourceInfo {
   pub url: String,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ModLoaderResourceInfo {
   pub loader_type: ModLoaderType,
@@ -180,6 +181,14 @@ pub struct ModLoaderResourceInfo {
   pub description: String,
   pub stable: bool,
   pub branch: Option<String>,
+}
+
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct OptiFineResourceInfo {
+  pub filename: String,
+  pub patch: String,
+  pub r#type: String,
 }
 
 #[derive(Debug, Display)]

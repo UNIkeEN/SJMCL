@@ -30,9 +30,9 @@ import {
 import LLMProviderSettingsModal from "@/components/modals/llm-provider-settings-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { LLMProviderConfig, defaultLLMProviderConfig } from "@/models/config";
 import { IntelligenceService } from "@/services/intelligence";
+import cardStyles from "@/styles/card.module.css";
 
 interface ProviderCardProps {
   provider: LLMProviderConfig;
@@ -50,10 +50,9 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation();
-  const themedStyles = useThemedCSSStyle();
 
   return (
-    <Card className={themedStyles.card["card-front"]}>
+    <Card className={cardStyles["card-front"]}>
       {/* Compact header */}
       <HStack justify="space-between">
         <HStack spacing={2} flex={1} minW={0}>

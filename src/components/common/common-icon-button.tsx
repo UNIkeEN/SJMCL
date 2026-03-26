@@ -11,6 +11,7 @@ import {
   LuArrowDownToLine,
   LuCircleHelp,
   LuCopy,
+  LuEllipsis,
   LuExternalLink,
   LuFiles,
   LuFolderOpen,
@@ -25,8 +26,10 @@ import {
 } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 
-interface CommonIconButtonProps
-  extends Omit<IconButtonProps, "icon" | "aria-label"> {
+interface CommonIconButtonProps extends Omit<
+  IconButtonProps,
+  "icon" | "aria-label"
+> {
   icon: string | IconType;
   label?: string;
   withTooltip?: boolean;
@@ -53,6 +56,7 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     external: <LuExternalLink size="14" />, // keep the same as deprecated link-icon-button
     info: <LuInfo />,
     launch: <LuPlay />,
+    more: <LuEllipsis />,
     open: <LuFolderOpen />,
     openFolder: <LuFolderOpen />,
     refresh: <LuRefreshCcw />,

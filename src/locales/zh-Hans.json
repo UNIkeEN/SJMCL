@@ -16,8 +16,8 @@
         "contributors": {
           "title": "开发者名单"
         },
-        "reportIssue": {
-          "title": "报告问题或请求功能"
+        "sourceCode": {
+          "title": "在 GitHub 查看源代码"
         },
         "aboutSJMC": {
           "title": "关于上海交通大学 Minecraft 社（SJMC）"
@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "感谢 LittleSkin 和 @tnqzh123 对登录流程设计的帮助"
         },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "感谢 SCL 开发团队与我们的持续交流与相互启发"
+        },
         "sinter": {
           "title": "Sinter",
           "description": "在 Windows 和 Linux 平台作为启动器界面字体，遵循 SIL 协议使用"
@@ -54,11 +58,11 @@
       "settings": {
         "copyright": {
           "title": "版权",
-          "description": "版权所有 © 2024-2025 SJMCL 开发团队."
+          "description": "版权所有 © 2024-2026 SJMCL 开发团队."
         },
         "userAgreement": {
           "title": "用户协议",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
         },
         "openSourceLicense": {
           "title": "开源协议",
@@ -72,7 +76,8 @@
       "addPlayer": "添加角色",
       "add3rdPartyServer": "添加认证服务器",
       "sourceHomepage": "访问主页",
-      "deleteServer": "删除此服务器"
+      "deleteServer": "删除此服务器",
+      "importFromOtherLaunchers": "从其他启动器导入"
     },
     "playerTypeList": {
       "all": "全部来源"
@@ -134,6 +139,20 @@
     },
     "placeholder": {
       "endpointUrl": "源地址"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "添加游戏服务器"
+    },
+    "serverAddrRequired": "服务器地址不能为空",
+    "label": {
+      "serverAddr": "服务器地址",
+      "serverName": "服务器名称"
+    },
+    "placeholder": {
+      "serverAddr": "请输入服务器地址",
+      "serverName": "Minecraft 服务器"
     }
   },
   "AddPlayerModal": {
@@ -255,12 +274,19 @@
     "button": {
       "addAndImport": "添加与导入",
       "globalSettings": "全局游戏设置",
-      "launch": "启动游戏"
+      "launch": "启动游戏",
+      "sortAndFilter": "排序与筛选"
     },
     "viewTypeList": {
       "grid": "网格视图",
       "list": "列表视图"
     },
+    "sortByTypeList": {
+      "versionAsc": "游戏版本升序",
+      "versionDesc": "游戏版本降序",
+      "name": "实例名称"
+    },
+    "sortBy": "排序方式",
     "title": "全部实例"
   },
   "AppearanceSettingsPage": {
@@ -355,7 +381,9 @@
     },
     "notSelectedLoader": "未选择新的加载器",
     "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
+      "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）",
+      "reinstall": "重新安装"
     }
   },
   "CheckModUpdateModal": {
@@ -389,20 +417,6 @@
   "ComingSoonSign": {
     "text": "该页面暂未开放，敬请期待"
   },
-  "ContributorsPage": {
-    "all": "全部开发者名单",
-    "core": "主要开发者",
-    "contribution": {
-      "fullStackDev": "全栈开发",
-      "frontendDev": "前端开发",
-      "backendDev": "后端开发",
-      "externalAPI": "外部服务",
-      "doc": "文档",
-      "cicd": "CI / CD",
-      "design": "视觉设计",
-      "mascot": "吉祥物"
-    }
-  },
   "CopyOrMoveModal": {
     "modal": {
       "header": "复制或移动资源"
@@ -414,7 +428,7 @@
     "tag": {
       "source": "源"
     },
-    "body": "到",
+    "content": "{{type}} <b>{{name}}</b> 到",
     "resourceType": {
       "Root": "",
       "ResourcePacks": "资源包",
@@ -437,11 +451,22 @@
       "info": "基本设置"
     },
     "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
+      "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
     "content": "您最近更改了此实例的名称，请刷新实例列表或重启启动器后，再次尝试添加启动快捷方式。"
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "删除认证服务器",
+      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "删除游戏服务器",
+    "content": "确定要删除游戏服务器 “{{name}}”（{{addr}}） 吗？它将会永久消失！（真的很久！）"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
@@ -465,20 +490,33 @@
       "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
     }
   },
-  "DeleteAuthServerAlertDialog": {
-    "dialog": {
-      "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
-    }
-  },
   "DevToolbar": {
     "tooltip": "开发工具栏"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "发现",
     "noMore": "无更多内容",
     "sources": "管理数据源",
     "NoSources": "未添加数据源"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft 新闻",
+    "community-news": "社区新闻",
+    "hotModpacks": "{{source}} 的热门整合包"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "搜索",
+      "home": "主页",
+      "community-news": "社区新闻",
+      "minecraft-news": "Minecraft 新闻",
+      "modpack": "整合包",
+      "mod": "模组",
+      "world": "世界",
+      "resourcepack": "资源包",
+      "shader": "光影",
+      "datapack": "数据包"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -601,7 +639,7 @@
       "pause": "暂停",
       "begin": "开始",
       "retry": "重试",
-      "deleteRecord": "删除此记录"
+      "clearHistory": "清空历史记录"
     },
     "label": {
       "paused": "已暂停",
@@ -698,9 +736,19 @@
       "macos": "Control(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -871,7 +919,7 @@
   },
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
-    "exportLogs": "导出日志",
+    "revealRawLog": "显示原始日志文件",
     "clearLogs": "清除所有日志",
     "scrollToBottom": "滚动到底部"
   },
@@ -918,8 +966,12 @@
     "download": "下载",
     "edit": "编辑",
     "enable": "启用",
+    "exit": "退出",
     "finish": "完成",
+    "import": "导入",
     "launch": "启动",
+    "more": "更多",
+    "new": "新",
     "next": "下一步",
     "notice": "提示",
     "open": "打开",
@@ -944,12 +996,24 @@
     "viewOnWiki": "在 Minecraft Wiki 中查看"
   },
   "GeneralSettingsPage": {
-    "general": {
-      "title": "通用设置",
+    "language": {
+      "title": "语言",
       "settings": {
         "language": {
           "title": "语言（Language）",
           "communityAck": ""
+        },
+        "resourceTranslation": {
+          "title": "显示资源翻译",
+          "description": "启用后，在资源下载界面尝试显示名称或描述的简体中文翻译（如数据可用）"
+        },
+        "translatedFilenamePrefix": {
+          "title": "资源文件名添加翻译前缀",
+          "description": "启用后，下载与更新资源时将在文件名添加简体中文译名前缀（如“[地图] map.jar”）"
+        },
+        "skipFirstScreenOptions": {
+          "title": "自动设置实例语言",
+          "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
         }
       }
     },
@@ -963,28 +1027,27 @@
             "part-2": " 继续使用 “聚合搜索”。"
           }
         },
-        "enableAiProvider": {
-          "title": "生成式 AI 功能",
-          "description": "启用后，可在游戏崩溃页面使用 AI 分析崩溃原因"
-        },
         "instancesNavType": {
           "title": "实例页导航栏模式",
           "description": "更改实例页左侧导航栏是否显示、分组方式",
           "instance": "按实例",
           "directory": "按目录",
+          "tag": "按标签",
           "hidden": "隐藏"
         },
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
           "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
-        },
-        "resourceTranslation": {
-          "title": "显示资源翻译",
-          "description": "启用后，在资源下载界面尝试显示名称或描述的简体中文翻译（如数据可用）"
-        },
-        "skipFirstScreenOptions": {
-          "title": "自动设置实例语言",
-          "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
+        }
+      }
+    },
+    "sync": {
+      "title": "同步",
+      "settings": {
+        "internetSync": {
+          "title": "联网同步启动器设置",
+          "import": "导入",
+          "export": "导出"
         }
       }
     },
@@ -1001,6 +1064,11 @@
         "autoPurgeLauncherLogs": {
           "title": "自动清理启动器日志",
           "description": "自动清理 30 天及以前的启动器日志文件"
+        },
+        "restoreAll": {
+          "title": "还原所有设置",
+          "description": "将所有启动器设置还原为默认值",
+          "restore": "还原"
         }
       }
     }
@@ -1113,6 +1181,10 @@
       "content": "在此处添加账户，选择您想要游玩的角色"
     },
     "step3": {
+      "title": "发现页",
+      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>S</key> 快速打开 “聚合搜索”。"
+    },
+    "step4": {
       "title": "Minecraft，启动！",
       "content": "选中实例与角色、调整好相关设置后，点击启动按钮享受游戏吧 🥳"
     }
@@ -1164,9 +1236,35 @@
       "settings": {
         "LauncherDocs": {
           "title": "SJMC Launcher 文档",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/docs"
+        },
+        "UserGroup": {
+          "title": "用户社群",
+          "description": "欢迎加入 QQ 群或 Discord 服务器，报告问题、请求功能或获取帮助",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }
+    }
+  },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "从其他启动器导入账户信息"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
+    },
+    "body": {
+      "authServers": "认证服务器",
+      "players": "角色"
+    },
+    "footer": {
+      "parentDirHint": "将在已添加游戏目录的父目录寻找账户信息文件。"
+    },
+    "tooltips": {
+      "existingServer": "已存在相同地址的认证服务器，导入将会覆盖数据",
+      "existingPlayer": "已存在相同 UUID 的角色，导入将会覆盖数据",
+      "expired": "登录令牌已过期，无法导入此角色"
     }
   },
   "ImportModpackModal": {
@@ -1181,9 +1279,6 @@
       "author": "作者",
       "modLoader": "模组加载器",
       "gameVersion": "游戏版本"
-    },
-    "button": {
-      "import": "导入"
     }
   },
   "InstanceBasicSettings": {
@@ -1210,6 +1305,9 @@
       "launch": "启动实例"
     }
   },
+  "InstanceIconSelector": {
+    "customize": "自定义图像"
+  },
   "InstanceMenu": {
     "label": {
       "details": "实例详情",
@@ -1218,7 +1316,9 @@
   },
   "InstanceModsPage": {
     "modLoaderList": {
-      "title": "加载器"
+      "title": "加载器",
+      "notInstalled": "未安装",
+      "installed": "已安装"
     },
     "modList": {
       "title": "模组",
@@ -1248,6 +1348,7 @@
   "InstanceSettingsPage": {
     "name": "实例名称",
     "description": "实例描述",
+    "colorTag": "颜色标签",
     "icon": "实例图标",
     "applySettings": "启用特定游戏设置",
     "restoreSettings": "重置以下特定设置",
@@ -1259,11 +1360,14 @@
       "error-3": "实例名称太长"
     },
     "tipsToGlobal": {
-      "part-1": "当前实例未启用特定游戏设置，",
-      "part-2": "前往全局游戏设置"
+      "content": "当前实例未启用特定游戏设置，<terms>前往全局游戏设置</terms>"
     }
   },
   "InstanceShaderPacksPage": {
+    "shaderLoaderList": {
+      "title": "加载器",
+      "notInstalled": "未安装"
+    },
     "shaderPackList": {
       "title": "光影包"
     }
@@ -1376,12 +1480,21 @@
     "SwitchButton": {
       "tooltip": {
         "switchPlayer": "切换角色",
-        "switchGame": "切换游戏实例"
+        "addPlayer": "添加角色",
+        "switchInstance": "切换游戏实例",
+        "addInstance": "添加游戏实例"
       }
     },
     "Text": {
       "noSelectedPlayer": "尚未选择角色",
       "noSelectedGame": "尚未选择游戏实例"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "上次运行异常退出",
+      "content": "SJMCL 上次运行时异常退出。您可以将日志发送到<community>用户社群</community>，或在 <github>GitHub</github> 发起 Issue 以寻求帮助",
+      "viewLog": "查看日志"
     }
   },
   "LaunchProcessModal": {
@@ -1395,8 +1508,16 @@
       "launchGame": "等待游戏启动"
     },
     "toast": {
-      "noSelectedPlayer": "请先添加并选择游戏角色"
+      "noSelectedPlayer": "请先添加并选择游戏角色",
+      "noSelectedInstance": "请先添加并选择游戏实例"
     }
+  },
+  "LoaderSelector": {
+    "stable": "正式版",
+    "beta": "测试版",
+    "releaseDate": "发布于 {{date}}",
+    "notCompatibleWith": "与 {{item}} 不兼容",
+    "noVersionSelected": "未选择版本"
   },
   "LLMProviderSettingsModal": {
     "header": {
@@ -1491,6 +1612,11 @@
       "javaPath": "请输入或选择 Java 可执行文件路径"
     }
   },
+  "MCVersionNumberHelper": {
+    "content": "自 2026 年起，Minecraft 版本号采取新的命名规则，以年份作为版本号首位（如 26.1）以取代原有的 1.x 版本号规则。",
+    "linkText": "阅读官方文档",
+    "url": "https://www.minecraft.net/zh-hans/article/minecraft-new-version-numbering-system"
+  },
   "MemoryStatusProgress": {
     "title": "内存状态",
     "info": "{{used}} / {{total}} GB 已使用",
@@ -1502,16 +1628,9 @@
   "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
   },
-  "ModLoaderCards": {
-    "installed": "已安装",
-    "unInstalled": "未安装",
-    "notCompatibleWith": "与 {{modLoader}} 不兼容",
-    "versionNotSelected": "未选择版本"
-  },
-  "ModLoaderSelector": {
-    "stable": "正式版",
-    "beta": "测试版",
-    "releaseDate": "发布于 {{date}}"
+  "NoSuitableJavaDialog": {
+    "title": "未找到合适的 Java 运行时",
+    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击 “确定” 以前往 Java 管理页面手动添加或下载 Java。"
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
@@ -1865,6 +1984,10 @@
     "title": "还原启动器设置",
     "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
   },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "重置实例设置",
+    "body": "此操作将会重置本实例的游戏设置为当前全局游戏设置，您确定要继续吗？"
+  },
   "RevealConfigJsonConfirmDialog": {
     "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
   },
@@ -1873,9 +1996,17 @@
       "setAsBg": "设置为启动器背景"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "选择实例",
+      "titleForLaunch": "选择要启动的实例"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "请选择想要添加的角色"
+      "title": "选择角色",
+      "titleForAdd": "选择要添加的新角色",
+      "titleForLaunch": "选择要游玩的角色"
     }
   },
   "Services": {
@@ -1985,7 +2116,8 @@
           "title": "离线角色添加失败",
           "description": {
             "DUPLICATE": "角色已存在",
-            "INVALID": "UUID 无效"
+            "INVALID": "UUID 无效",
+            "TEXTURE_ERROR": "角色皮肤获取失败"
           }
         }
       },
@@ -2147,6 +2279,20 @@
             "NOT_FOUND": "认证服务器不存在"
           }
         }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "获取外部账号信息失败",
+          "description": {
+            "NOT_FOUND": "读取账号信息文件错误"
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "外部账户信息导入成功",
+        "error": {
+          "title": "外部账号信息导入失败"
+        }
       }
     },
     "launch": {
@@ -2165,7 +2311,6 @@
           "title": "验证游戏文件失败",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模组加载器未完成安装",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "模组加载器库文件未下载",
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "游戏文件不完整或缺失",
             "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
@@ -2318,7 +2463,7 @@
           }
         }
       },
-      "resetInstanceGameConfig": {
+      "restoreInstanceGameConfig": {
         "success": "实例游戏设置已重置",
         "error": {
           "title": "实例游戏设置重置失败",
@@ -2395,6 +2540,28 @@
           }
         }
       },
+      "addGameServer": {
+        "success": "游戏服务器添加成功",
+        "error": {
+          "title": "添加游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "DUPLICATE_SERVER": "服务器已存在"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "游戏服务器删除成功",
+        "error": {
+          "title": "删除游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "SERVER_NOT_FOUND": "服务器不存在"
+          }
+        }
+      },
       "retrieveLocalModList": {
         "error": {
           "title": "获取模组列表失败",
@@ -2440,8 +2607,8 @@
         "error": {
           "title": "获取世界详细信息失败",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
-            "LEVEL_NOT_EXSIT_ERROR": "存档数据文件不存在",
+            "WORLD_NOT_EXIST_ERROR": "世界不存在",
+            "LEVEL_NOT_EXIST_ERROR": "存档数据文件不存在",
             "LEVEL_PARSE_ERROR": "存档数据文件解析错误"
           }
         }
@@ -2465,7 +2632,8 @@
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
             "MAIN_CLASS_NOT_FOUND": "主类未找到",
-            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败"
+            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
+            "LOADER_INSTALLER_NOT_FOUND": "加载器安装程序不存在"
           }
         }
       },
@@ -2492,6 +2660,12 @@
             "FILE_NOT_FOUND_ERROR": "整合包文件不存在，可能已更名、移动或删除",
             "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误"
           }
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "自定义实例图标添加成功",
+        "error": {
+          "title": "自定义实例图标添加失败"
         }
       }
     },
@@ -2611,23 +2785,6 @@
       "starUs": "点亮星标"
     }
   },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "启动器设置",
-      "settings": {
-        "internetSync": {
-          "title": "联网同步",
-          "import": "导入",
-          "export": "导出"
-        },
-        "restoreAll": {
-          "title": "还原所有设置",
-          "description": "将所有启动器设置还原为默认值",
-          "restore": "还原"
-        }
-      }
-    }
-  },
   "SyncConfigExportModal": {
     "header": {
       "title": "同步设置 - 导出"
@@ -2646,6 +2803,19 @@
       "token": "令牌"
     },
     "helper": "请输入需同步设备生成的令牌"
+  },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "游戏日志",
+      "gameError": "哎呀！游戏崩溃了"
+    }
+  },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "无效的运行路径",
+      "content": "您正在临时或非法目录下运行 SJMCL，您的设置和游戏数据可能丢失。请将 SJMCL 移动到其他位置后再次运行。",
+      "btnContinue": "仍要运行"
+    }
   },
   "Utils": {
     "datetime": {
@@ -2680,15 +2850,13 @@
       "title": "欢迎！"
     },
     "body": {
-      "part1": "欢迎使用 SJMCL！在开始使用之前，请务必阅读并同意我们的",
-      "terms": "用户协议",
-      "periods": "。"
+      "text": "欢迎使用 SJMCL！在开始使用之前，请务必阅读并同意我们的<terms>用户协议</terms>。"
     },
     "warning": {
-      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不稳定或未开发完成，欢迎报告使用问题与功能建议。"
+      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不稳定或未开发完成，欢迎报告使用问题与功能建议。",
+      "winArm64Notice": "SJMCL 现已支持 Windows on Arm 平台。<br/>如您正在使用 <b>高通</b> 平台，您可能需要安装 <glpack>OpenGL 兼容包</glpack> 后才能进行游戏。"
     },
     "button": {
-      "exit": "退出",
       "agree": "同意并继续"
     }
   },

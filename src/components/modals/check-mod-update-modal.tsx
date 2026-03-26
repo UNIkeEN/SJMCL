@@ -42,6 +42,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const addPrefix =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.translatedFilenamePrefix;
 
   const [selectedMods, setSelectedMods] = useState<ModUpdateRecord[]>([]);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState<boolean>(true);
@@ -119,7 +122,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           return candidateFiles[0];
         } else return undefined;
       } catch (error) {
-        console.error("Failed to fetch latest mod:", error);
+        logger.error("Failed to fetch latest mod:", error);
         return undefined;
       }
     },
@@ -227,7 +230,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           }
           return null;
         } catch (error) {
-          console.error(`Failed to check update for mod ${mod.name}:`, error);
+          logger.error(`Failed to check update for mod ${mod.name}:`, error);
           return null;
         }
       });
@@ -249,7 +252,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       setModsToUpdate(validUpdates.map((item) => item.mod));
       setUpdateList(validUpdates.map((item) => item.updateRecord));
     } catch (error) {
-      console.error("Failed to check mod updates:", error);
+      logger.error("Failed to check mod updates:", error);
     } finally {
       setIsCheckingUpdate(false);
     }
@@ -269,10 +272,14 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           );
           if (oldMod) {
             const oldFilePath = oldMod.filePath;
+            const finalFileName =
+              addPrefix && oldMod.translatedName
+                ? `[${oldMod.translatedName}] ${fileName}`
+                : fileName;
             params.push({
               url,
               sha1,
-              fileName,
+              fileName: finalFileName,
               oldFilePath,
             });
           }
@@ -280,7 +287,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
         ResourceService.updateMods(summary.id, params);
       }
     },
-    [summary?.id, modsToUpdate, updateList]
+    [summary?.id, modsToUpdate, updateList, addPrefix]
   );
 
   useEffect(() => {

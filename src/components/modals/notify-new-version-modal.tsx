@@ -57,11 +57,15 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
   };
 
   const processReleaseNotes = (raw: string): string => {
-    const m = raw.match(/^([\s\S]*?)\r?\n\s*-{3,}\s*\r?\n([\s\S]*)$/); // match MD separator
+    const m = raw.match(
+      /^([\s\S]*?)- ([\s\S]*?)(?:\r?\n)?\s*-{3,}\s*\r?\n([\s\S]*)$/
+    ); // match MD separator
 
     // If user language is Chinese, swap to make Chinese part on top.
     const isZh = config.general.general.language.startsWith("zh");
-    return m && isZh ? `${m[2].trim()}\n---\n${m[1].trim()}` : raw;
+    return m && isZh
+      ? `${m[1].trim()}\n${m[3].trim()}\n---\n- ${m[2].trim()}`
+      : raw;
   };
 
   return (

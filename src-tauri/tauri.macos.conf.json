@@ -1,0 +1,61 @@
+{
+  "identifier": "SJMCL",
+  "bundle": {
+    "macOS": {
+      "dmg": {
+        "background": "assets/misc/dmg_bg.png",
+        "windowSize": {
+          "width": 640,
+          "height": 440
+        }
+      },
+      "entitlements": "Entitlements.plist"
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": " ",
+        "url": "/",
+        "width": 800,
+        "height": 550,
+        "minWidth": 800,
+        "minHeight": 550,
+        "center": true,
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "dragDropEnabled": false,
+        "trafficLightPosition": {
+          "x": 12,
+          "y": 12
+        }
+      },
+      {
+        "label": "game_error",
+        "create": false,
+        "title": "Game Error",
+        "url": "/standalone/game-error",
+        "width": 800,
+        "height": 550,
+        "minWidth": 640,
+        "minHeight": 440,
+        "center": true,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "game_log",
+        "create": false,
+        "title": "Game Log",
+        "url": "/standalone/game-log",
+        "width": 800,
+        "height": 550,
+        "minWidth": 640,
+        "minHeight": 440,
+        "center": true,
+        "dragDropEnabled": false
+      }
+    ]
+  }
+}

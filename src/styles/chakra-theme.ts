@@ -99,6 +99,9 @@ const chakraExtendTheme = extendTheme({
     },
     Menu: {
       baseStyle: {
+        groupTitle: {
+          fontSize: "xs",
+        },
         list: {
           minWidth: "auto",
           py: 1,
@@ -110,7 +113,8 @@ const chakraExtendTheme = extendTheme({
         dialog: {
           header: {
             fontSize: "md",
-            paddingX: 4,
+            paddingLeft: 4,
+            paddingRight: 8, // reserve space for close button (issue#1312)
             paddingTop: 3,
             paddingBottom: 2,
             userSelect: "none",
@@ -143,6 +147,13 @@ const chakraExtendTheme = extendTheme({
         isCentered: true,
       },
     },
+    Popover: {
+      baseStyle: {
+        content: {
+          boxShadow: "md",
+        },
+      },
+    },
     Switch: {
       defaultProps: {
         size: "sm",
@@ -158,13 +169,6 @@ const chakraExtendTheme = extendTheme({
       baseStyle: {
         userSelect: "none",
         fontSize: "xs-sm",
-      },
-    },
-    Popover: {
-      baseStyle: {
-        content: {
-          boxShadow: "md",
-        },
       },
     },
   },

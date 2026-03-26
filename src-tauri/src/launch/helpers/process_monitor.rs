@@ -95,10 +95,9 @@ pub async fn monitor_process(
 ) -> SJMCLResult<()> {
   // create unique log window
   let label = format!("game_log_{id}");
-  let log_file_path = app.path().resolve::<PathBuf>(
-    format!("GameLogs/{label}.log").into(),
-    BaseDirectory::AppCache,
-  )?;
+  let log_file_path = app
+    .path()
+    .resolve::<PathBuf>(format!("game/{label}.log").into(), BaseDirectory::AppLog)?;
   if let Some(parent_dir) = log_file_path.parent() {
     fs::create_dir_all(parent_dir)?;
   }
@@ -215,10 +214,12 @@ pub async fn monitor_process(
         let main_window = app.get_webview_window("main").expect("no main window");
         if let Ok(is_visible) = main_window.is_visible() {
           if !is_visible {
-            std::process::exit(0);
+            app.exit(0);
+            return;
           }
         } else {
-          std::process::exit(0);
+          app.exit(0);
+          return;
         }
       }
       _ => {}

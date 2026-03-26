@@ -14,6 +14,7 @@ import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { TaskContextProvider } from "@/contexts/task";
 import { ToastContextProvider } from "@/contexts/toast";
+import DiscoverLayout from "@/layouts/discover-layout";
 import InstanceDetailsLayout from "@/layouts/instance-details-layout";
 import InstancesLayout from "@/layouts/instances-layout";
 import MainLayout from "@/layouts/main-layout";
@@ -51,11 +52,11 @@ export default function App({ Component, pageProps }: AppProps) {
     document.addEventListener("keydown", (event) => {
       const disabledShortcuts =
         ["F3", "F5", "F7"].includes(event.key) ||
+        (event.shiftKey && event.key === "Escape") || // forbid Edge task manager
         (event.altKey && ["ArrowLeft", "ArrowRight"].includes(event.key)) ||
+        (event.ctrlKey && ["H", "Q"].includes(event.key.toUpperCase())) ||
         ((event.ctrlKey || event.metaKey) &&
-          ["F", "G", "H", "J", "P", "Q", "R", "U"].includes(
-            event.key.toUpperCase()
-          ));
+          ["F", "G", "J", "P", "R", "U"].includes(event.key.toUpperCase()));
       disabledShortcuts && event.preventDefault();
     });
   }, []);
@@ -65,6 +66,7 @@ export default function App({ Component, pageProps }: AppProps) {
     key: string;
   }[] = useMemo(
     () => [
+      { prefix: "/discover", key: "discover" },
       { prefix: "/settings", key: "settings" },
       {
         prefix: "/instances/details",
@@ -80,6 +82,7 @@ export default function App({ Component, pageProps }: AppProps) {
     React.ComponentType<{ children: React.ReactNode }>[]
   > = useMemo(
     () => ({
+      discover: [DiscoverLayout],
       settings: [SettingsLayout],
       "instances-details": [InstancesLayout, InstanceDetailsLayout],
       instances: [InstancesLayout],

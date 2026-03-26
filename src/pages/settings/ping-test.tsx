@@ -90,7 +90,7 @@ const PingTestPage = () => {
         allEntries.map(([id, url]) => handleCheckServiceAvailability(id, url))
       );
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }, [handleCheckServiceAvailability, services]);
 

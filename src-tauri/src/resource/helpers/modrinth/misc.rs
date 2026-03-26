@@ -85,6 +85,7 @@ pub struct ModrinthProject {
   pub icon_url: Option<String>,
   #[serde(alias = "updated")]
   pub date_modified: String,
+  pub author: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -136,6 +137,7 @@ fn normalize_modrinth_loader(loader: &str) -> Option<String> {
     match loader.to_lowercase().as_str() {
       "forge" => Some("Forge".to_string()),
       "fabric" => Some("Fabric".to_string()),
+      "quilt" => Some("Quilt".to_string()),
       "neoforge" => Some("NeoForge".to_string()),
       "vanilla" => Some("Vanilla".to_string()),
       "iris" => Some("Iris".to_string()),
@@ -161,6 +163,7 @@ pub fn map_modrinth_file_to_version_pack(
     const ALLOWED_LOADERS: &[&str] = &[
       "forge",
       "fabric",
+      "quilt",
       "neoforge",
       "vanilla",
       "iris",
@@ -223,6 +226,7 @@ impl From<ModrinthProject> for OtherResourceInfo {
       source: OtherResourceSource::Modrinth,
       translated_name: None,
       translated_description: None,
+      author: project.author,
     }
   }
 }

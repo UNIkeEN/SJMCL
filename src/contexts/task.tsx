@@ -39,8 +39,9 @@ interface TaskContextType {
     params: TaskParam[]
   ) => void;
   handleCancelProgressiveTaskGroup: (taskGroup: string) => void;
-  handleResumeProgressiveTaskGroup: (taskGroup: string) => void;
   handleStopProgressiveTaskGroup: (taskGroup: string) => void;
+  handleResumeProgressiveTaskGroup: (taskGroup: string) => void;
+  handleClearHistoryTaskGroups: () => void;
 }
 
 export const TaskContext = createContext<TaskContextType | undefined>(
@@ -124,7 +125,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
       if (response.status === "success") {
-        console.log("Retrieved progressive tasks:", response.data);
+        logger.info("Retrieved progressive tasks:", response.data);
         // info(JSON.stringify(response.data));
         setTasks((prevTasks) => {
           let tasks = response.data
@@ -193,6 +194,21 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     [toast]
   );
 
+  const handleStopProgressiveTaskGroup = useCallback(
+    (taskGroup: string) => {
+      TaskService.stopProgressiveTaskGroup(taskGroup).then((response) => {
+        if (response.status !== "success") {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        }
+      });
+    },
+    [toast]
+  );
+
   const handleResumeProgressiveTaskGroup = useCallback(
     (taskGroup: string) => {
       TaskService.resumeProgressiveTaskGroup(taskGroup).then((response) => {
@@ -208,20 +224,20 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     [toast]
   );
 
-  const handleStopProgressiveTaskGroup = useCallback(
-    (taskGroup: string) => {
-      TaskService.stopProgressiveTaskGroup(taskGroup).then((response) => {
-        if (response.status !== "success") {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-        }
-      });
-    },
-    [toast]
-  );
+  const isActiveGroup = (t: TaskGroupDesc) =>
+    t.status === GTaskEventStatusEnums.Started ||
+    t.status === GTaskEventStatusEnums.Stopped;
+
+  const handleClearHistoryTaskGroups = useCallback(() => {
+    setTasks((prev) => {
+      prev
+        .filter((t) => !isActiveGroup(t))
+        .forEach((group) => {
+          TaskService.deleteProgressiveTaskGroup(group.taskGroup);
+        });
+      return prev.filter(isActiveGroup);
+    });
+  }, []);
 
   useEffect(() => {
     const unlisten = TaskService.onProgressiveTaskUpdate(
@@ -354,7 +370,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             }
 
             case PTaskEventStatusEnums.Failed: {
-              console.error(
+              logger.error(
                 `Task ${payload.id} failed in group ${payload.taskGroup}: ${
                   (payload.event as FailedPTaskEventStatus).reason
                 }`
@@ -389,7 +405,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const unlisten = TaskService.onTaskGroupUpdate(
       (payload: GTaskEventPayload) => {
-        console.log(`Received task group update: ${payload.event}`);
+        logger.info(`Received task group update: ${payload.event}`);
         setTasks((prevTasks) => {
           let newTasks = prevTasks.map((task) => {
             if (task.taskGroup === payload.taskGroup) {
@@ -437,6 +453,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 break;
               case "forge-libraries":
               case "neoforge-libraries":
+              case "optifine-libraries":
                 if (version) {
                   let instanceName = getInstanceList()?.find(
                     (i) => i.id === version
@@ -603,8 +620,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         generalPercent,
         handleScheduleProgressiveTaskGroup,
         handleCancelProgressiveTaskGroup,
-        handleResumeProgressiveTaskGroup,
         handleStopProgressiveTaskGroup,
+        handleResumeProgressiveTaskGroup,
+        handleClearHistoryTaskGroups,
       }}
     >
       {children}

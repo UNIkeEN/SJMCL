@@ -93,7 +93,7 @@ const DownloadSettingsPage = () => {
     if (selectedDirectory && typeof selectedDirectory === "string") {
       update("download.cache.directory", selectedDirectory);
     } else if (selectedDirectory === null) {
-      console.log("Directory selection was cancelled.");
+      logger.info("Directory selection was cancelled.");
     }
   };
 
@@ -329,8 +329,8 @@ const DownloadSettingsPage = () => {
               <Button
                 variant="subtle"
                 size="xs"
-                onClick={() => {
-                  openPath(downloadConfigs.cache.directory);
+                onClick={async () => {
+                  await openPath(downloadConfigs.cache.directory);
                 }}
               >
                 {t("General.open")}

@@ -1,14 +1,19 @@
-import { Badge, Button, Kbd, Switch, Text } from "@chakra-ui/react";
-import { appCacheDir } from "@tauri-apps/api/path";
+import { Button, HStack, Switch, useDisclosure } from "@chakra-ui/react";
+import { appLogDir, join } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
-import React from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { LuLanguages } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import LanguageMenu from "@/components/language-menu";
+import {
+  SyncConfigExportModal,
+  SyncConfigImportModal,
+} from "@/components/modals/sync-config-modals";
 import { useLauncherConfig } from "@/contexts/config";
 import { useRoutingHistory } from "@/contexts/routing-history";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -18,77 +23,135 @@ import { ConfigService } from "@/services/config";
 const GeneralSettingsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
-  const { config, update } = useLauncherConfig();
+  const { config, setConfig, update } = useLauncherConfig();
   const generalConfigs = config.general;
   const primaryColor = config.appearance.theme.primaryColor;
   const { removeHistory } = useRoutingHistory();
   const { openGenericConfirmDialog, openSharedModal, closeSharedModal } =
     useSharedModals();
 
-  const instancesNavTypes = ["instance", "directory", "hidden"];
+  const {
+    isOpen: isSyncConfigExportModalOpen,
+    onOpen: onSyncConfigExportModalOpen,
+    onClose: onSyncConfigExportModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isSyncConfigImportModalOpen,
+    onOpen: onSyncConfigImportModalOpen,
+    onClose: onSyncConfigImportModalClose,
+  } = useDisclosure();
+
+  const instancesNavTypes = ["instance", "directory", "tag", "hidden"];
+
+  const handleRestoreLauncherConfig = useCallback(async () => {
+    ConfigService.restoreLauncherConfig().then((response) => {
+      if (response.status === "success") {
+        setConfig(response.data);
+        toast({
+          title: response.message,
+          status: "success",
+        });
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    });
+    closeSharedModal("generic-confirm");
+  }, [setConfig, toast, closeSharedModal]);
 
   const generalSettingGroups: OptionItemGroupProps[] = [
+    // Frontend grouping was modified after discussions in PR#1299
+    // resulting in a mismatch with the backend storage structure. (TODO: migration?)
     {
-      title: t("GeneralSettingsPage.general.title"),
+      title: t("GeneralSettingsPage.language.title"),
       items: [
         {
-          title: t("GeneralSettingsPage.general.settings.language.title"),
+          title: t("GeneralSettingsPage.language.settings.language.title"),
           description: t(
-            "GeneralSettingsPage.general.settings.language.communityAck"
+            "GeneralSettingsPage.language.settings.language.communityAck"
           ),
+          prefixElement: <LuLanguages />,
           children: <LanguageMenu />,
         },
       ],
     },
+    ...(config.general.general.language == "zh-Hans"
+      ? [
+          {
+            items: [
+              {
+                title: t(
+                  "GeneralSettingsPage.language.settings.resourceTranslation.title"
+                ),
+                description: t(
+                  "GeneralSettingsPage.language.settings.resourceTranslation.description"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={generalConfigs.functionality.resourceTranslation}
+                    onChange={(e) => {
+                      update(
+                        "general.functionality.resourceTranslation",
+                        e.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
+              {
+                title: t(
+                  "GeneralSettingsPage.language.settings.translatedFilenamePrefix.title"
+                ),
+                description: t(
+                  "GeneralSettingsPage.language.settings.translatedFilenamePrefix.description"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={
+                      generalConfigs.functionality.translatedFilenamePrefix
+                    }
+                    onChange={(e) => {
+                      update(
+                        "general.functionality.translatedFilenamePrefix",
+                        e.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
+              {
+                title: t(
+                  "GeneralSettingsPage.language.settings.skipFirstScreenOptions.title"
+                ),
+                description: t(
+                  "GeneralSettingsPage.language.settings.skipFirstScreenOptions.description"
+                ),
+                children: (
+                  <Switch
+                    colorScheme={primaryColor}
+                    isChecked={
+                      generalConfigs.functionality.skipFirstScreenOptions
+                    }
+                    onChange={(e) => {
+                      update(
+                        "general.functionality.skipFirstScreenOptions",
+                        e.target.checked
+                      );
+                    }}
+                  />
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       title: t("GeneralSettingsPage.functions.title"),
-      items: [
-        {
-          title: t("GeneralSettingsPage.functions.settings.discoverPage.title"),
-          titleExtra: <Badge colorScheme="purple">Beta</Badge>,
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={generalConfigs.functionality.discoverPage}
-              onChange={(e) => {
-                update("general.functionality.discoverPage", e.target.checked);
-                if (e.target.checked) {
-                  openGenericConfirmDialog({
-                    title: t("General.notice"),
-                    body: (
-                      <Text>
-                        {t(
-                          "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-1"
-                        )}
-                        <Kbd>
-                          {t(
-                            `Enums.${
-                              config.basicInfo.osType === "macos"
-                                ? "metaKey"
-                                : "ctrlKey"
-                            }.${config.basicInfo.osType}`
-                          )}
-                        </Kbd>
-                        {" + "}
-                        <Kbd>S</Kbd>
-                        {t(
-                          "GeneralSettingsPage.functions.settings.discoverPage.openNotice.part-2"
-                        )}
-                      </Text>
-                    ),
-                    btnCancel: "",
-                    onOKCallback: () => {
-                      closeSharedModal("generic-confirm");
-                    },
-                  });
-                }
-              }}
-            />
-          ),
-        },
-      ],
-    },
-    {
       items: [
         {
           title: t(
@@ -144,56 +207,32 @@ const GeneralSettingsPage = () => {
         },
       ],
     },
-    ...(config.general.general.language == "zh-Hans"
-      ? [
-          {
-            items: [
-              {
-                title: t(
-                  "GeneralSettingsPage.functions.settings.resourceTranslation.title"
-                ),
-                description: t(
-                  "GeneralSettingsPage.functions.settings.resourceTranslation.description"
-                ),
-                children: (
-                  <Switch
-                    colorScheme={primaryColor}
-                    isChecked={generalConfigs.functionality.resourceTranslation}
-                    onChange={(e) => {
-                      update(
-                        "general.functionality.resourceTranslation",
-                        e.target.checked
-                      );
-                    }}
-                  />
-                ),
-              },
-              {
-                title: t(
-                  "GeneralSettingsPage.functions.settings.skipFirstScreenOptions.title"
-                ),
-                description: t(
-                  "GeneralSettingsPage.functions.settings.skipFirstScreenOptions.description"
-                ),
-                children: (
-                  <Switch
-                    colorScheme={primaryColor}
-                    isChecked={
-                      generalConfigs.functionality.skipFirstScreenOptions
-                    }
-                    onChange={(e) => {
-                      update(
-                        "general.functionality.skipFirstScreenOptions",
-                        e.target.checked
-                      );
-                    }}
-                  />
-                ),
-              },
-            ],
-          },
-        ]
-      : []),
+    {
+      title: t("GeneralSettingsPage.sync.title"),
+      items: [
+        {
+          title: t("GeneralSettingsPage.sync.settings.internetSync.title"),
+          children: (
+            <HStack>
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={onSyncConfigExportModalOpen}
+              >
+                {t("GeneralSettingsPage.sync.settings.internetSync.export")}
+              </Button>
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={onSyncConfigImportModalOpen}
+              >
+                {t("GeneralSettingsPage.sync.settings.internetSync.import")}
+              </Button>
+            </HStack>
+          ),
+        },
+      ],
+    },
     {
       title: t("GeneralSettingsPage.advanced.title"),
       items: [
@@ -243,8 +282,9 @@ const GeneralSettingsPage = () => {
               variant="subtle"
               size="xs"
               onClick={async () => {
-                const _appCacheDir = await appCacheDir();
-                openPath(_appCacheDir + "/LauncherLogs");
+                const _appLogDir = await appLogDir();
+                const launcherLogDir = await join(_appLogDir, "launcher");
+                await openPath(launcherLogDir);
               }}
             >
               {t("General.open")}
@@ -271,6 +311,29 @@ const GeneralSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t("GeneralSettingsPage.advanced.settings.restoreAll.title"),
+          description: t(
+            "GeneralSettingsPage.advanced.settings.restoreAll.description"
+          ),
+          children: (
+            <Button
+              colorScheme="red"
+              variant="subtle"
+              size="xs"
+              onClick={() => {
+                openGenericConfirmDialog({
+                  title: t("RestoreConfigConfirmDialog.title"),
+                  body: t("RestoreConfigConfirmDialog.body"),
+                  isAlert: true,
+                  onOKCallback: handleRestoreLauncherConfig,
+                });
+              }}
+            >
+              {t("GeneralSettingsPage.advanced.settings.restoreAll.restore")}
+            </Button>
+          ),
+        },
       ],
     },
   ];
@@ -280,6 +343,15 @@ const GeneralSettingsPage = () => {
       {generalSettingGroups.map((group, index) => (
         <OptionItemGroup title={group.title} items={group.items} key={index} />
       ))}
+
+      <SyncConfigExportModal
+        isOpen={isSyncConfigExportModalOpen}
+        onClose={onSyncConfigExportModalClose}
+      />
+      <SyncConfigImportModal
+        isOpen={isSyncConfigImportModalOpen}
+        onClose={onSyncConfigImportModalClose}
+      />
     </>
   );
 };

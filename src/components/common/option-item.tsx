@@ -17,7 +17,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Section, SectionProps } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import cardStyles from "@/styles/card.module.css";
 
 export interface OptionItemProps extends Omit<BoxProps, "title"> {
   prefixElement?: React.ReactNode;
@@ -191,7 +191,6 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const themedStyles = useThemedCSSStyle();
   const [showAll, setShowAll] = useState(false);
 
   function isOptionItemProps(item: any): item is OptionItemProps {
@@ -245,7 +244,7 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
     <Section {...props}>
       {items.length > 0 &&
         (withInCard ? (
-          <Card className={themedStyles.card["card-front"]} py={2.5}>
+          <Card className={cardStyles["card-front"]} py={2.5}>
             {renderItems()}
           </Card>
         ) : (

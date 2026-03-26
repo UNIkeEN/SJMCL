@@ -88,12 +88,15 @@ export interface LauncherConfig {
     arch: string;
     osType: string;
     platformVersion: string;
+    exeSha256: string;
     isPortable: boolean;
+    isExePathAvailable: boolean;
     isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
   };
   mocked: boolean;
   runCount: number;
+  lastRunExitedNormally: boolean;
   appearance: {
     theme: {
       primaryColor: string;
@@ -140,24 +143,24 @@ export interface LauncherConfig {
       language: string;
     };
     functionality: {
-      discoverPage: boolean;
       instancesNavType: string;
       launchPageQuickSwitch: boolean;
       resourceTranslation: boolean;
+      translatedFilenamePrefix: boolean;
       skipFirstScreenOptions: boolean;
     };
     advanced: {
       autoPurgeLauncherLogs: boolean;
     };
   };
-  globalGameConfig: GameConfig;
   intelligence: {
     enabled: boolean;
     activeProviderId: string;
     providers: LLMProviderConfig[];
   };
   localGameDirectories: GameDirectory[];
-  discoverSourceEndpoints: string[];
+  globalGameConfig: GameConfig;
+  discoverSourceEndpoints: [string, boolean][];
   extraJavaPaths: string[];
   suppressedDialogs: string[];
   states: {
@@ -169,6 +172,7 @@ export interface LauncherConfig {
       viewType: string;
     };
     allInstancesPage: {
+      sortBy: string;
       viewType: string;
     };
     gameVersionSelector: {
@@ -177,10 +181,13 @@ export interface LauncherConfig {
     instanceModsPage: {
       accordionStates: boolean[];
     };
-    instanceResourcepackPage: {
+    instanceResourcePacksPage: {
       accordionStates: boolean[];
     };
     instanceWorldsPage: {
+      accordionStates: boolean[];
+    };
+    instanceShaderPacksPage: {
       accordionStates: boolean[];
     };
   };
@@ -229,7 +236,7 @@ export const defaultGameConfig: GameConfig = {
     },
     workaround: {
       noJvmArgs: false,
-      gameFileValidatePolicy: "full",
+      gameFileValidatePolicy: "normal",
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useNativeGlfw: false,
@@ -245,12 +252,15 @@ export const defaultConfig: LauncherConfig = {
     arch: "",
     osType: "",
     platformVersion: "",
+    exeSha256: "",
     isPortable: false,
+    isExePathAvailable: true,
     isChinaMainlandIp: false,
     allowFullLoginFeature: false,
   },
   mocked: true,
   runCount: -1,
+  lastRunExitedNormally: true,
   appearance: {
     theme: {
       primaryColor: "blue",
@@ -297,26 +307,26 @@ export const defaultConfig: LauncherConfig = {
       language: "zh-Hans",
     },
     functionality: {
-      discoverPage: false,
       instancesNavType: "instance",
       launchPageQuickSwitch: true,
       resourceTranslation: true,
+      translatedFilenamePrefix: true,
       skipFirstScreenOptions: false,
     },
     advanced: {
       autoPurgeLauncherLogs: true,
     },
   },
-  globalGameConfig: defaultGameConfig,
+  globalGameConfig: { ...defaultGameConfig },
+  localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   intelligence: {
     enabled: false,
     activeProviderId: "",
     providers: [],
   },
-  localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   discoverSourceEndpoints: [
-    "https://mc.sjtu.cn/api-sjmcl/article",
-    "https://mc.sjtu.cn/api-sjmcl/article/mua",
+    ["https://mc.sjtu.cn/api-sjmcl/article", true],
+    ["https://mc.sjtu.cn/api-sjmcl/article/mua", true],
   ],
   extraJavaPaths: [],
   suppressedDialogs: [],
@@ -329,18 +339,22 @@ export const defaultConfig: LauncherConfig = {
       viewType: "grid",
     },
     allInstancesPage: {
+      sortBy: "versionAsc",
       viewType: "list",
     },
     gameVersionSelector: {
       gameTypes: ["release"],
     },
     instanceModsPage: {
-      accordionStates: [true, true],
+      accordionStates: [false, true],
     },
-    instanceResourcepackPage: {
+    instanceResourcePacksPage: {
       accordionStates: [true, true],
     },
     instanceWorldsPage: {
+      accordionStates: [true, true],
+    },
+    instanceShaderPacksPage: {
       accordionStates: [true, true],
     },
   },

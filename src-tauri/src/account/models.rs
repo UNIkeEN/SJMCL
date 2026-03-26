@@ -21,6 +21,7 @@ pub enum PlayerType {
 }
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Display, Default, EnumIter)]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum PresetRole {
   #[default]
   Steve,
@@ -80,7 +81,7 @@ pub struct Player {
   pub id: String,
   pub name: String,
   pub uuid: Uuid,
-  pub avatar: ImageWrapper,
+  pub avatar: Vec<ImageWrapper>, // [face, hat]
   pub player_type: PlayerType,
   pub auth_account: Option<String>,
   pub auth_server: Option<AuthServer>,
@@ -89,28 +90,36 @@ pub struct Player {
   pub textures: Vec<Texture>,
 }
 
-impl From<PlayerInfo> for Player {
-  fn from(player_info: PlayerInfo) -> Self {
-    let state: AccountInfo = Storage::load().unwrap_or_default();
+impl Player {
+  pub fn from_player_info(
+    player_info: PlayerInfo,
+    auth_servers: Option<&[AuthServerInfo]>,
+  ) -> Self {
+    let owned_auth_servers;
+    let auth_servers = match auth_servers {
+      Some(list) => list,
+      None => {
+        let state: AccountInfo = Storage::load().unwrap_or_default();
+        owned_auth_servers = state.auth_servers.into_iter().collect::<Vec<_>>();
+        &owned_auth_servers
+      }
+    };
 
-    let auth_server = if let Some(auth_server_url) = player_info.auth_server_url {
-      Some(AuthServer::from(
-        state
-          .auth_servers
+    let auth_server = player_info.auth_server_url.clone().map(|auth_server_url| {
+      AuthServer::from(
+        auth_servers
           .iter()
           .find(|server| server.auth_url == auth_server_url)
           .cloned()
           .unwrap_or_default(),
-      ))
-    } else {
-      None
-    };
+      )
+    });
 
     Player {
       id: player_info.id,
       name: player_info.name,
       uuid: player_info.uuid,
-      avatar: draw_avatar(36, &player_info.textures[0].image.image).into(),
+      avatar: draw_avatar(36, &player_info.textures[0].image.image),
       player_type: player_info.player_type,
       auth_account: player_info.auth_account,
       access_token: player_info.access_token,
@@ -118,6 +127,12 @@ impl From<PlayerInfo> for Player {
       auth_server,
       textures: player_info.textures,
     }
+  }
+}
+
+impl From<PlayerInfo> for Player {
+  fn from(player_info: PlayerInfo) -> Self {
+    Player::from_player_info(player_info, None)
   }
 }
 

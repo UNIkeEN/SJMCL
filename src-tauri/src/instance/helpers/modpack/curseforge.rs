@@ -39,7 +39,7 @@ structstruck::strike! {
 #[strikethrough[serde(rename_all = "camelCase")]]
   pub struct CurseForgeManifest {
     pub name: String,
-    pub version: String,
+    pub version: Option<String>,
     pub author: String,
     pub overrides: String,
     pub minecraft: struct {
@@ -87,21 +87,27 @@ impl ModpackManifest for CurseForgeManifest {
 
   async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
     let client_version = self.get_client_version()?;
-    let (loader_type, version) = self.get_mod_loader_type_version()?;
+    let mod_loader = if let Ok((loader_type, version)) = self.get_mod_loader_type_version() {
+      Some(
+        ModLoader {
+          loader_type,
+          version,
+          ..Default::default()
+        }
+        .with_branch(app, client_version.clone())
+        .await?,
+      )
+    } else {
+      None
+    };
     Ok(ModpackMetaInfo {
       name: self.name.clone(),
       version: self.version.clone(),
       description: None,
       author: Some(self.author.clone()),
       modpack_source: OtherResourceSource::CurseForge,
-      client_version: client_version.clone(),
-      mod_loader: ModLoader {
-        loader_type,
-        version,
-        ..Default::default()
-      }
-      .with_branch(app, client_version)
-      .await?,
+      client_version,
+      mod_loader,
     })
   }
 

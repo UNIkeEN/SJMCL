@@ -28,8 +28,10 @@ import { ResourceService } from "@/services/resource";
 import { ISOToDate } from "@/utils/datetime";
 import { formatDisplayCount } from "@/utils/string";
 
-interface AlertResourceDependencyModalProps
-  extends Omit<ModalProps, "children"> {
+interface AlertResourceDependencyModalProps extends Omit<
+  ModalProps,
+  "children"
+> {
   dependencies: OtherResourceDependency[];
   downloadSource: OtherResourceSource;
   curInstanceMajorVersion?: string;
@@ -198,9 +200,13 @@ const AlertResourceDependencyModal: React.FC<
   };
 
   return (
-    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
+    <Modal
+      scrollBehavior="inside"
+      size={{ base: "md", lg: "lg", xl: "xl" }}
+      {...modalProps}
+    >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent h="100%">
         <ModalHeader>
           {t("AlertResourceDependencyModal.header.title")}
         </ModalHeader>
@@ -211,6 +217,9 @@ const AlertResourceDependencyModal: React.FC<
           display="flex"
           flexDirection="column"
           overflowY="auto"
+          onWheel={(e) => {
+            e.stopPropagation();
+          }}
         >
           {isLoading ? (
             <VStack mt={8}>

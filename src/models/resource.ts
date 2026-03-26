@@ -26,6 +26,7 @@ export interface OtherResourceInfo {
   lastUpdated: string;
   downloads: number;
   source?: OtherResourceSource;
+  author?: string;
 }
 
 export interface OtherResourceSearchRes {
@@ -73,6 +74,12 @@ export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
   description: "",
   stable: true,
 };
+
+export interface OptiFineResourceInfo {
+  filename: string;
+  patch: string;
+  type: string;
+}
 
 export interface ModUpdateRecord {
   name: string;

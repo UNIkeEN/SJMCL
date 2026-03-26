@@ -6,7 +6,6 @@ import {
   HStack,
   IconButton,
   IconButtonProps,
-  Image,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -20,31 +19,35 @@ import {
 import { useRouter } from "next/router";
 import { cloneElement, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuArrowLeftRight, LuSettings } from "react-icons/lu";
+import { LuArrowLeftRight, LuPlus, LuSettings } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { CompactButtonGroup } from "@/components/common/compact-button-group";
 import InstancesView from "@/components/instances-view";
+import PlayerAvatar from "@/components/player-avatar";
 import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { PlayerType } from "@/enums/account";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
+import cardStyles from "@/styles/card.module.css";
 import styles from "@/styles/launch.module.css";
-import { base64ImgSrc } from "@/utils/string";
 
-interface SwitchButtonProps extends Omit<IconButtonProps, "onClick"> {
+interface CustomButtonProps extends Omit<IconButtonProps, "onClick"> {
   tooltip: string;
   onClick: () => void;
   popoverContent: React.ReactElement;
+  showAdd?: boolean;
+  onAddClick?: () => void;
 }
 
-const SwitchButton: React.FC<SwitchButtonProps> = ({
+const ButtonWithPopover: React.FC<CustomButtonProps> = ({
   tooltip,
   popoverContent,
   onClick,
+  showAdd = false,
+  onAddClick,
   ...props
 }) => {
   const { config } = useLauncherConfig();
@@ -64,34 +67,38 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
 
   return (
     <Popover
-      isOpen={isOpen}
+      isOpen={showAdd ? false : isOpen}
       onClose={handleClose}
       placement="top-end"
       gutter={12} // add more gutter to show clear space from the launch button's shadow
     >
       <Tooltip label={tooltip} placement="top-end" isDisabled={tooltipDisabled}>
-        <Box>
+        <Box lineHeight={0}>
           {/* anchor for Tooltip */}
           <PopoverTrigger>
             <IconButton
               size="xs"
-              icon={<LuArrowLeftRight />}
+              icon={showAdd ? <LuPlus /> : <LuArrowLeftRight />}
               {...props}
               onClick={() => {
+                if (showAdd) return (onAddClick ?? onClick)();
                 quickSwitch ? onToggle() : onClick();
               }}
             />
           </PopoverTrigger>
         </Box>
       </Tooltip>
-      <PopoverContent maxH="3xs" overflow="auto">
-        <PopoverBody p={0}>
-          {cloneElement(popoverContent, {
-            // Delay close after selecting an item for better UX.
-            onSelectCallback: () => setTimeout(handleClose, 100),
-          })}
-        </PopoverBody>
-      </PopoverContent>
+
+      {!showAdd && (
+        <PopoverContent maxH="3xs" overflow="auto">
+          <PopoverBody p={0}>
+            {cloneElement(popoverContent, {
+              // Delay close after selecting an item for better UX.
+              onSelectCallback: () => setTimeout(handleClose, 100),
+            })}
+          </PopoverBody>
+        </PopoverContent>
+      )}
     </Popover>
   );
 };
@@ -99,7 +106,6 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
 const LaunchPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const themedStyles = useThemedCSSStyle();
   const { openSharedModal } = useSharedModals();
 
   const { selectedPlayer, getPlayerList, getInstanceList, selectedInstance } =
@@ -116,17 +122,20 @@ const LaunchPage = () => {
     setInstanceList(getInstanceList() || []);
   }, [getInstanceList]);
 
+  const hasPlayers = playerList.length > 0;
+  const hasInstances = instanceList.length > 0;
+
   return (
     <HStack position="absolute" bottom={7} right={7} spacing={4}>
       <Card
-        className={
-          styles["selected-user-card"] + " " + themedStyles.card["card-back"]
-        }
+        className={styles["selected-user-card"] + " " + cardStyles["card-back"]}
       >
         <Box position="absolute" top={1} right={1}>
-          <SwitchButton
-            tooltip={t("LaunchPage.SwitchButton.tooltip.switchPlayer")}
-            aria-label="switch-player"
+          <ButtonWithPopover
+            tooltip={t(
+              `LaunchPage.SwitchButton.tooltip.${hasPlayers ? "switchPlayer" : "addPlayer"}`
+            )}
+            aria-label="player"
             variant="subtle"
             popoverContent={
               <PlayersView
@@ -137,16 +146,18 @@ const LaunchPage = () => {
               />
             }
             onClick={() => router.push("/accounts")}
+            showAdd={!hasPlayers}
+            onAddClick={() => router.push("/accounts?add=true")}
           />
         </Box>
+
         <HStack spacing={2.5} h="100%" w="100%">
           {selectedPlayer ? (
             <>
-              <Image
+              <PlayerAvatar
                 boxSize="32px"
                 objectFit="cover"
-                src={base64ImgSrc(selectedPlayer.avatar)}
-                alt={selectedPlayer.name}
+                avatar={selectedPlayer.avatar}
               />
               <VStack spacing={0} align="left" mt={-2} minW={0}>
                 <Text
@@ -178,6 +189,7 @@ const LaunchPage = () => {
           )}
         </HStack>
       </Card>
+
       <Box position="relative">
         <Button
           id="main-launch-button"
@@ -208,30 +220,37 @@ const LaunchPage = () => {
             colorScheme={useColorModeValue("blackAlpha", "gray")}
             size="xs"
           >
-            {selectedInstance && (
+            {selectedInstance && hasInstances && (
               <CommonIconButton
                 icon={LuSettings}
                 label={t("LaunchPage.button.instanceSettings")}
                 tooltipPlacement="top"
                 onClick={() =>
                   router.push(
-                    `/instances/details/${encodeURIComponent(selectedInstance.id)}/settings`
+                    `/instances/details/${encodeURIComponent(
+                      selectedInstance.id
+                    )}/settings`
                   )
                 }
               />
             )}
-            <SwitchButton
-              tooltip={t("LaunchPage.SwitchButton.tooltip.switchGame")}
-              aria-label="switch-game"
+
+            <ButtonWithPopover
+              tooltip={t(
+                `LaunchPage.SwitchButton.tooltip.${hasInstances ? "switchInstance" : "addInstance"}`
+              )}
+              aria-label="instance"
               popoverContent={
                 <InstancesView
                   instances={instanceList}
+                  selectedInstance={selectedInstance}
                   viewType="list"
                   withMenu={false}
                 />
               }
               onClick={() => router.push("/instances/list")}
-              mt={-1} // prevent margin caused by Tooltip
+              showAdd={!hasInstances}
+              onAddClick={() => router.push("/instances/add-import")}
             />
           </CompactButtonGroup>
         </Box>

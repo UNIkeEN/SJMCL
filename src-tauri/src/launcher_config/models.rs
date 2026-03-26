@@ -5,7 +5,9 @@ use crate::utils::string::snake_to_camel_case;
 use crate::utils::sys_info;
 use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use partial_derive::Partial;
+use serde::de::Deserializer;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use smart_default::SmartDefault;
 use std::path::PathBuf;
 use strum_macros::Display;
@@ -13,7 +15,7 @@ use tauri::{AppHandle, Emitter};
 use uuid::Uuid;
 
 #[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct MemoryInfo {
   pub total: u64,
   pub used: u64,
@@ -21,7 +23,7 @@ pub struct MemoryInfo {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct JavaInfo {
   pub name: String, // JDK/JRE + full version
   pub exec_path: String,
@@ -33,7 +35,7 @@ pub struct JavaInfo {
 
 // Info about the latest release version fetched from remote, shown to the user to update.
 #[derive(Debug, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct VersionMetaInfo {
   pub version: String,
   pub file_name: String,
@@ -42,7 +44,7 @@ pub struct VersionMetaInfo {
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/game/ProcessPriority.java#L20
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum ProcessPriority {
   Low,
@@ -53,16 +55,16 @@ pub enum ProcessPriority {
   Normal,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum FileValidatePolicy {
   Disable,
-  Normal,
-  #[serde(other)]
   Full,
+  #[serde(other)]
+  Normal,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum LLMProviderType {
   Anthropic,
@@ -119,7 +121,7 @@ impl From<&ProviderConfig> for LLMModelConfig {
   }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum LauncherVisiablity {
   StartHidden,
@@ -138,7 +140,7 @@ pub enum LauncherVisiablity {
 //
 structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]]
-  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
+  #[strikethrough[serde(rename_all = "camelCase")]]
   #[strikethrough[derive(SmartDefault)]]
   #[strikethrough[serde(default)]]
   pub struct GameConfig {
@@ -192,7 +194,7 @@ structstruck::strike! {
       },
       pub workaround: struct {
         pub no_jvm_args: bool,
-        #[default(FileValidatePolicy::Full)]
+        #[default(FileValidatePolicy::Normal)]
         pub game_file_validate_policy: FileValidatePolicy,
         pub dont_check_jvm_validity: bool,
         pub dont_patch_natives: bool,
@@ -203,8 +205,8 @@ structstruck::strike! {
   }
 }
 
-#[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GameDirectory {
   pub name: String,
   pub dir: PathBuf,
@@ -212,7 +214,7 @@ pub struct GameDirectory {
 
 // see java.net.proxy
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum ProxyType {
   Socks,
@@ -222,7 +224,7 @@ pub enum ProxyType {
 
 structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Clone, Deserialize, Serialize)]]
-  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
+  #[strikethrough[serde(rename_all = "camelCase")]]
   #[strikethrough[derive(SmartDefault)]]
   #[strikethrough[serde(default)]]
   pub struct LauncherConfig {
@@ -233,7 +235,10 @@ structstruck::strike! {
       pub arch: String,
       pub os_type: String,
       pub platform_version: String,
+      pub exe_sha256: String,
       pub is_portable: bool,
+      #[default = true]
+      pub is_exe_path_available: bool,
       #[default = false]
       pub is_china_mainland_ip: bool,
       #[default = false]
@@ -242,6 +247,8 @@ structstruck::strike! {
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,
     pub run_count: usize,
+    #[default = true]
+    pub last_run_exited_normally: bool,
     pub appearance: struct AppearanceConfig {
       pub theme: struct {
         #[default = "blue"]
@@ -302,13 +309,15 @@ structstruck::strike! {
         pub language: String,
       },
       pub functionality: struct {
-        pub discover_page: bool,
         #[default = "instance"]
         pub instances_nav_type: String,
         #[default = true]
         pub launch_page_quick_switch: bool,
         #[default = true]
         pub resource_translation: bool, // only available in zh-Hans
+        #[default = true]
+        pub translated_filename_prefix: bool, // only available in zh-Hans
+        #[default = true]
         pub skip_first_screen_options: bool,  // only available in zh-Hans
       },
       pub advanced: struct GeneralConfigAdvanced {
@@ -323,9 +332,14 @@ structstruck::strike! {
       pub providers: Vec<ProviderConfig>,
     },
     pub local_game_directories: Vec<GameDirectory>,
-    #[default(_code="vec![\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(),
-    \"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string()]")]
-    pub discover_source_endpoints: Vec<String>,
+    // Changed from Vec<String> to Vec<(String, bool)> with default enabled=true
+    #[serde(
+      default,
+      deserialize_with = "deserialize_discover_sources"
+    )]
+    #[default(_code="vec![(\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(), true),
+    (\"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string(), true)]")]
+    pub discover_source_endpoints: Vec<(String, bool)>,
     pub extra_java_paths: Vec<String>,
     pub suppressed_dialogs: Vec<String>,
     pub states: struct States {
@@ -338,6 +352,8 @@ structstruck::strike! {
         pub view_type: String
       },
       pub all_instances_page: struct {
+        #[default = "versionAsc"]
+        pub sort_by: String,
         #[default = "list"]
         pub view_type: String
       },
@@ -349,7 +365,7 @@ structstruck::strike! {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
-      pub instance_resourcepack_page: struct {
+      pub instance_resource_packs_page: struct {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
@@ -357,7 +373,11 @@ structstruck::strike! {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
-    },
+      pub instance_shader_packs_page: struct {
+        #[default([true, true])]
+        pub accordion_states: [bool; 2],
+      }
+    }
   }
 }
 
@@ -445,3 +465,39 @@ pub enum LauncherConfigError {
 }
 
 impl std::error::Error for LauncherConfigError {}
+
+// deserializing discover sources from old and new formats.
+// TODO: unify to migration system later.
+fn deserialize_discover_sources<'de, D>(deserializer: D) -> Result<Vec<(String, bool)>, D::Error>
+where
+  D: Deserializer<'de>,
+{
+  let v = match Value::deserialize(deserializer) {
+    Ok(v) => v,
+    Err(_) => return Ok(Vec::default()),
+  };
+
+  let arr = match v.as_array() {
+    Some(a) => a,
+    None => return Ok(Vec::default()),
+  };
+
+  fn parse_item(item: &Value) -> Option<(String, bool)> {
+    // old (<=0.6.3) format: String(url)
+    if let Some(s) = item.as_str() {
+      return Some((s.to_string(), true));
+    }
+
+    // new format: (String, bool)
+    let t = item.as_array()?;
+    if t.len() != 2 {
+      log::error!("Invalid discover source item format: {:?}", item);
+      return None;
+    }
+    let url = t[0].as_str()?;
+    let enabled = t[1].as_bool()?;
+    Some((url.to_string(), enabled))
+  }
+
+  Ok(arr.iter().filter_map(parse_item).collect())
+}

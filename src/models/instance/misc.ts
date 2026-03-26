@@ -16,17 +16,25 @@ export interface ModLoader {
   branch?: string;
 }
 
+export interface OptiFine {
+  filename: string;
+  version: string;
+  status: ModLoaderStatus;
+}
+
 export interface InstanceSummary {
   id: string;
   iconSrc: string;
   name: string;
   description?: string;
+  tag?: string;
   starred: boolean;
   playTime: number;
   versionPath: string;
   version: string;
   majorVersion: string;
   modLoader: ModLoader;
+  optifine?: OptiFine;
   supportQuickPlay: boolean;
   useSpecGameConfig: boolean;
   isVersionIsolated: boolean;
@@ -34,12 +42,12 @@ export interface InstanceSummary {
 
 export interface ModpackMetaInfo {
   name: string;
-  version: string;
+  version?: string;
   author?: string;
   description?: string;
   modpackType: OtherResourceSource;
   clientVersion: string;
-  modLoader: ModLoader;
+  modLoader?: ModLoader;
 }
 
 export interface GameServerInfo {
@@ -51,6 +59,7 @@ export interface GameServerInfo {
   playersOnline?: number;
   playersMax?: number;
   online: boolean;
+  latency?: number;
 }
 
 export interface LocalModInfo {

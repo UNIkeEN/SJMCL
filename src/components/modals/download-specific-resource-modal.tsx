@@ -4,6 +4,7 @@ import {
   Card,
   Grid,
   HStack,
+  IconButton,
   Image,
   Link,
   Modal,
@@ -27,6 +28,7 @@ import {
   LuDownload,
   LuExternalLink,
   LuPackage,
+  LuRefreshCw,
   LuUpload,
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -36,6 +38,7 @@ import { MenuSelector } from "@/components/common/menu-selector";
 import NavMenu from "@/components/common/nav-menu";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import MCVersionNumberHelper from "@/components/mc-version-number-helper";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -43,7 +46,6 @@ import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 import {
   GameClientResourceInfo,
   OtherResourceFileInfo,
@@ -54,12 +56,15 @@ import { TaskParam, TaskTypeEnums } from "@/models/task";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
 import { TaskService } from "@/services/task";
+import cardStyles from "@/styles/card.module.css";
 import { ISOToDate } from "@/utils/datetime";
 import { translateTag } from "@/utils/resource";
-import { formatDisplayCount } from "@/utils/string";
+import { formatDisplayCount, sanitizeFileName } from "@/utils/string";
 
-interface DownloadSpecificResourceModalProps
-  extends Omit<ModalProps, "children"> {
+interface DownloadSpecificResourceModalProps extends Omit<
+  ModalProps,
+  "children"
+> {
   resource: OtherResourceInfo;
   curInstanceMajorVersion?: string;
   curInstanceVersion?: string;
@@ -79,11 +84,13 @@ const DownloadSpecificResourceModal: React.FC<
   const { config } = useLauncherConfig();
   const router = useRouter();
   const toast = useToast();
-  const themedStyles = useThemedCSSStyle();
   const primaryColor = config.appearance.theme.primaryColor;
   const showZhTrans =
     config.general.general.language === "zh-Hans" &&
     config.general.functionality.resourceTranslation;
+  const addPrefix =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.translatedFilenamePrefix;
 
   const [gameVersionList, setGameVersionList] = useState<string[]>([]);
   const [versionLabels, setVersionLabels] = useState<string[]>([]);
@@ -105,6 +112,7 @@ const DownloadSpecificResourceModal: React.FC<
     ModLoaderType.Fabric,
     ModLoaderType.Forge,
     ModLoaderType.NeoForge,
+    ModLoaderType.Quilt,
   ];
 
   const iconBackgroundColor: Record<string, string> = {
@@ -196,9 +204,11 @@ const DownloadSpecificResourceModal: React.FC<
     translatedName?: string
   ) => {
     const dir = await getDefaultFilePath();
-    const fileName = translatedName
-      ? `[${translatedName}] ${item.fileName}`
-      : item.fileName;
+    const fileName = sanitizeFileName(
+      addPrefix && translatedName
+        ? `[${translatedName}] ${item.fileName}`
+        : item.fileName
+    );
     const savepath = await save({
       defaultPath: dir + "/" + fileName,
     });
@@ -506,7 +516,7 @@ const DownloadSpecificResourceModal: React.FC<
         <ModalCloseButton />
         <ModalBody>
           <Card
-            className={themedStyles.card["card-front"]}
+            className={cardStyles["card-front"]}
             mt={-2}
             mb={2}
             py={2}
@@ -596,16 +606,30 @@ const DownloadSpecificResourceModal: React.FC<
             </HStack>
           </Card>
           <HStack align="center" justify="space-between" mb={3}>
-            <MenuSelector
-              options={versionLabels.map((item) => ({
-                value: item,
-                label: buildVersionLabelItem(item),
-              }))}
-              value={selectedVersionLabel}
-              onSelect={(value) => setSelectedVersionLabel(value as string)}
-              buttonProps={{ minW: "28" }}
-              menuListProps={{ maxH: "40vh", minW: 28, overflow: "auto" }}
-            />
+            <HStack>
+              <MenuSelector
+                options={versionLabels.map((item) => ({
+                  value: item,
+                  label: buildVersionLabelItem(item),
+                }))}
+                value={selectedVersionLabel}
+                onSelect={(value) => setSelectedVersionLabel(value as string)}
+                buttonProps={{ minW: "28" }}
+                menuListProps={{ maxH: "40vh", minW: 28, overflow: "auto" }}
+              />
+              <MCVersionNumberHelper placement="bottom-start" />
+              <IconButton
+                aria-label="refresh-version-packs"
+                icon={<LuRefreshCw size={14} />}
+                size="xs"
+                variant="ghost"
+                onClick={() => {
+                  fetchVersionLabels();
+                  reFetchVersionPacks();
+                }}
+                isDisabled={isGameVersionListLoading || isVersionPacksLoading}
+              />
+            </HStack>
 
             <Box>
               {resource.type === OtherResourceType.Mod &&

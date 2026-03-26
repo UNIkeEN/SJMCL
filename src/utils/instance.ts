@@ -1,7 +1,9 @@
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { t } from "i18next";
 import { ModLoaderType } from "@/enums/instance";
 import { GameDirectory } from "@/models/config";
 import { InstanceSummary } from "@/models/instance/misc";
+import { isDirNameInvalid } from "@/utils/string";
 
 export const generateInstanceDesc = (instance: InstanceSummary) => {
   if (instance.modLoader.loaderType === ModLoaderType.Unknown) {
@@ -36,6 +38,18 @@ export const getGameDirName = (dir: string | GameDirectory) => {
     : name;
 };
 
+export const getInstanceIconSrc = (
+  src?: string,
+  versionPath?: string
+): string => {
+  if (!src) return "";
+  if (!versionPath) return src;
+
+  return src === "custom"
+    ? convertFileSrc(`${versionPath}/icon`) + `?t=${Date.now()}`
+    : src;
+};
+
 export const parseModLoaderVersion = (version: string): string => {
   const patterns = [
     {
@@ -58,4 +72,10 @@ export const parseModLoaderVersion = (version: string): string => {
   }
 
   return version;
+};
+
+export const isInstanceNameInvalid = (value: string): number => {
+  // return number as specific error index (e.g. for displaying error message in Editable)
+  if (value.toLowerCase() === "sjmclcfg") return 2;
+  return isDirNameInvalid(value);
 };

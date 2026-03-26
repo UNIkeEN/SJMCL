@@ -3,15 +3,12 @@ import {
   AvatarGroup,
   Button,
   HStack,
-  Icon,
   Text,
   useToast as useChakraToast,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuArrowRight } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import {
   OptionItemGroup,
@@ -21,12 +18,10 @@ import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { CoreContributorsList } from "@/pages/settings/contributors";
 import { isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
-  const router = useRouter();
   const toast = useToast();
   const { close: closeToast } = useChakraToast();
   const { openSharedModal } = useSharedModals();
@@ -37,6 +32,15 @@ const AboutSettingsPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
 
   const [checkingUpdate, setCheckingUpdate] = useState(false);
+
+  const ackList = {
+    skinview3d: "https://github.com/bs-community/skinview3d",
+    bmclapi: "https://bmclapidoc.bangbang93.com/",
+    hmcl: "https://hmcl.huangyuhui.net/",
+    littleskin: "https://github.com/LittleSkinChina",
+    sinter: "https://m.ui.cn/details/615564",
+    scl: "https://suhang12332.github.io/swift-craft-launcher-web.github.io/",
+  };
 
   const checkUpdate = useCallback(async () => {
     setCheckingUpdate(true);
@@ -59,6 +63,8 @@ const AboutSettingsPage = () => {
     } else openSharedModal("notify-new-version", { newVersion: res });
     setCheckingUpdate(false);
   }, [handleCheckLauncherUpdate, t, toast, closeToast, openSharedModal]);
+
+  const avatarUserList = ["UNIkeEN", "Reqwey", "SundayChen"];
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -101,32 +107,42 @@ const AboutSettingsPage = () => {
           children: (
             <HStack spacing={2.5}>
               <AvatarGroup size="xs" spacing={-2}>
-                {CoreContributorsList.slice(0, 3).map((item) => (
+                {avatarUserList.map((username) => (
                   <Avatar
-                    key={item.username}
-                    name={item.username}
-                    src={`https://avatars.githubusercontent.com/${item.username}`}
+                    key={username}
+                    name={username}
+                    src={`https://avatars.githubusercontent.com/${username}`}
                   />
                 ))}
               </AvatarGroup>
-              <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
+              <CommonIconButton
+                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                icon="external"
+                withTooltip
+                tooltipPlacement="bottom-end"
+                size="xs"
+                h={18}
+                onClick={() => {
+                  openUrl(
+                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                  );
+                }}
+              />
             </HStack>
           ),
-          isFullClickZone: true,
-          onClick: () => router.push("/settings/contributors"),
         },
         {
-          title: t("AboutSettingsPage.about.settings.reportIssue.title"),
+          title: t("AboutSettingsPage.about.settings.sourceCode.title"),
           children: (
             <CommonIconButton
-              label="https://github.com/UNIkeEN/SJMCL/issues"
+              label="https://github.com/UNIkeEN/SJMCL"
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               h={18}
               onClick={() => {
-                openUrl("https://github.com/UNIkeEN/SJMCL/issues");
+                openUrl("https://github.com/UNIkeEN/SJMCL");
               }}
             />
           ),
@@ -151,92 +167,24 @@ const AboutSettingsPage = () => {
     },
     {
       title: t("AboutSettingsPage.ack.title"),
-      items: [
-        {
-          title: t("AboutSettingsPage.ack.settings.skinview3d.title"),
-          description: t(
-            "AboutSettingsPage.ack.settings.skinview3d.description"
-          ),
+      items: Object.entries(ackList).map(([key, url]) => {
+        return {
+          title: t(`AboutSettingsPage.ack.settings.${key}.title`),
+          description: t(`AboutSettingsPage.ack.settings.${key}.description`),
           children: (
             <CommonIconButton
-              label="https://github.com/bs-community/skinview3d"
+              label={url}
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               onClick={() => {
-                openUrl("https://github.com/bs-community/skinview3d");
+                openUrl(url);
               }}
             />
           ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.bmclapi.title"),
-          description: t("AboutSettingsPage.ack.settings.bmclapi.description"),
-          children: (
-            <CommonIconButton
-              label="https://bmclapidoc.bangbang93.com/"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://bmclapidoc.bangbang93.com/");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.hmcl.title"),
-          description: t("AboutSettingsPage.ack.settings.hmcl.description"),
-          children: (
-            <CommonIconButton
-              label="https://hmcl.huangyuhui.net/"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://hmcl.huangyuhui.net/");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.littleskin.title"),
-          description: t(
-            "AboutSettingsPage.ack.settings.littleskin.description"
-          ),
-          children: (
-            <CommonIconButton
-              label="https://github.com/LittleSkinChina"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://github.com/LittleSkinChina");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AboutSettingsPage.ack.settings.sinter.title"),
-          description: t("AboutSettingsPage.ack.settings.sinter.description"),
-          children: (
-            <CommonIconButton
-              label="https://m.ui.cn/details/615564"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              onClick={() => {
-                openUrl("https://m.ui.cn/details/615564");
-              }}
-            />
-          ),
-        },
-      ],
+        };
+      }),
     },
     {
       title: t("AboutSettingsPage.legalInfo.title"),

@@ -108,10 +108,7 @@ export const GlobalDataContextProvider: React.FC<{
       if (response.status === "success") {
         const sorted = [...response.data].sort((a, b) => {
           // put starred instances at the top
-          if (a.starred !== b.starred) {
-            return Number(b.starred) - Number(a.starred);
-          }
-          return a.id.localeCompare(b.id);
+          return Number(b.starred) - Number(a.starred);
         });
         setInstanceList(sorted);
         return response.data;

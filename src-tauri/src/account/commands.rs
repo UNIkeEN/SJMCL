@@ -3,6 +3,9 @@ use crate::account::helpers::authlib_injector::info::{
 };
 use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
 use crate::account::helpers::authlib_injector::{self};
+use crate::account::helpers::import::hmcl::retrieve_hmcl_account_info;
+use crate::account::helpers::import::multimc::retrieve_multimc_account_info;
+use crate::account::helpers::import::ImportLauncherType;
 use crate::account::helpers::{microsoft, misc, offline};
 use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
@@ -12,6 +15,7 @@ use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
 use crate::utils::fs::get_app_resource_filepath;
+use crate::utils::web::normalize_url;
 use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -19,15 +23,33 @@ use url::Url;
 
 #[tauri::command]
 pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {
-  let binding = app.state::<Mutex<AccountInfo>>();
-  let state = binding.lock()?;
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let account_state = account_binding.lock()?;
 
-  let player_list: Vec<Player> = state
+  let player_list: Vec<Player> = account_state
     .clone()
     .players
     .into_iter()
     .map(Player::from)
     .collect();
+
+  // ensure a player is selected when player_list is not empty
+  if !player_list.is_empty() {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+    if !player_list
+      .iter()
+      .any(|player| player.id == config_state.states.shared.selected_player_id)
+    {
+      config_state.partial_update(
+        &app,
+        "states.shared.selected_player_id",
+        &serde_json::to_string(&player_list[0].id).unwrap_or_default(),
+      )?;
+      config_state.save()?;
+    }
+  }
+
   Ok(player_list)
 }
 
@@ -599,5 +621,99 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
 
   account_state.save()?;
   config_state.save()?;
+  Ok(())
+}
+
+// Stage 1 of importing accounts (players and auth servers) from other launchers
+#[tauri::command]
+pub async fn retrieve_other_launcher_account_info(
+  app: AppHandle,
+  launcher_type: ImportLauncherType,
+) -> SJMCLResult<(Vec<Player>, Vec<AuthServer>)> {
+  let (mut player_infos, urls) = match launcher_type {
+    ImportLauncherType::HMCL => retrieve_hmcl_account_info(&app).await?,
+    ImportLauncherType::MultiMC => retrieve_multimc_account_info(&app).await?,
+    _ => return Ok((vec![], vec![])),
+  };
+
+  // remove trailing slashes for deduplication
+  let mut url_set = std::collections::HashSet::<String>::new();
+  for u in urls {
+    url_set.insert(normalize_url(u.as_str()));
+  }
+  for p in &mut player_infos {
+    if let Some(url) = p.auth_server_url.as_mut() {
+      *url = normalize_url(url);
+    }
+  }
+
+  // fetch auth servers
+  let mut auth_server_infos = Vec::new();
+  for url in url_set {
+    auth_server_infos.push(fetch_auth_server_info(&app, url).await?);
+  }
+
+  Ok((
+    player_infos
+      .into_iter()
+      .map(|p| Player::from_player_info(p, Some(&auth_server_infos)))
+      .collect(),
+    auth_server_infos
+      .into_iter()
+      .map(AuthServer::from)
+      .collect(),
+  ))
+}
+
+// Stage 2 of importing accounts from other launchers
+#[tauri::command]
+pub async fn import_external_account_info(
+  app: AppHandle,
+  players: Vec<Player>,
+  auth_servers: Vec<AuthServer>,
+) -> SJMCLResult<()> {
+  // fetch auth servers
+  let fetch_tasks = auth_servers.into_iter().map(|server| {
+    let app = app.clone();
+    async move { fetch_auth_server_info(&app, server.auth_url).await }
+  });
+
+  let fetched = futures::future::join_all(fetch_tasks).await;
+  let mut fetched_infos = Vec::with_capacity(fetched.len());
+  for r in fetched {
+    fetched_infos.push(r?);
+  }
+
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  // servers: same url overwritten
+  for server_info in fetched_infos {
+    if let Some(existing) = account_state
+      .auth_servers
+      .iter_mut()
+      .find(|s| s.auth_url == server_info.auth_url)
+    {
+      *existing = server_info;
+    } else {
+      account_state.auth_servers.push(server_info);
+    }
+  }
+
+  // players: same id overwritten
+  for player in players {
+    let player_info: PlayerInfo = player.into();
+    if let Some(existing) = account_state
+      .players
+      .iter_mut()
+      .find(|p| p.id == player_info.id)
+    {
+      *existing = player_info;
+    } else {
+      account_state.players.push(player_info);
+    }
+  }
+
+  account_state.save()?;
   Ok(())
 }
