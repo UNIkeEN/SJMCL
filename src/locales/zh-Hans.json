@@ -735,6 +735,46 @@
       "windows": "文件资源管理器"
     }
   },
+  "ExportModpackModal": {
+    "header": {
+      "title": "将 {{param}} 导出为整合包"
+    },
+    "label": {
+      "exportFormat": "导出格式",
+      "basicInfo": "基本信息",
+      "modpackName": "整合包名称",
+      "modpackVersion": "整合包版本",
+      "author": "作者",
+      "description": "描述",
+      "includedFiles": "包含文件",
+      "exportOptions": "导出选项",
+      "packWithLauncher": "打包启动器",
+      "minMemory": "最低内存 (MB)",
+      "noCreateRemoteFiles": "禁用远程文件",
+      "skipCurseForgeRemoteFiles": "跳过 CurseForge 远程文件"
+    },
+    "button": {
+      "export": "导出"
+    },
+    "error": {
+      "invalidName": "请输入有效的整合包名称",
+      "invalidVersion": "请输入有效的版本号",
+      "noCategorySelected": "请至少选择一个类别"
+    },
+    "errorMessage": {
+      "error-1": "名称不能为空",
+      "error-2": "名称包含无效字符",
+      "error-3": "名称过长（最多 255 个字符）"
+    },
+    "fileTreeTranslation": {
+      "mods": "模组",
+      "config": "模组配置文件",
+      "shaderpacks": "光影",
+      "resourcepacks": "资源包",
+      "optionsTxt": "游戏设置",
+      "saves": "存档"
+    }
+  },
   "GameAdvancedSettingsPage": {
     "title": "高级游戏设置",
     "topWarning": "高级游戏设置仅提供给专业玩家使用。修改以下选项可能导致游戏无法启动。除非您充分了解其中的意义，否则请不要修改这些选项！",
@@ -1270,43 +1310,6 @@
     },
     "button": {
       "launch": "启动实例"
-    }
-  },
-  "ExportModpackModal": {
-    "header": {
-      "title": "将 {{param}} 导出为整合包"
-    },
-    "label": {
-      "exportFormat": "导出格式",
-      "basicInfo": "基本信息",
-      "modpackName": "整合包名称",
-      "modpackVersion": "整合包版本",
-      "author": "作者",
-      "description": "描述",
-      "includedFiles": "包含文件",
-      "exportOptions": "导出选项",
-      "packWithLauncher": "打包启动器",
-      "minMemory": "最低内存 (MB)",
-      "noCreateRemoteFiles": "禁用远程文件",
-      "skipCurseForgeRemoteFiles": "跳过 CurseForge 远程文件"
-    },
-    "button": {
-      "export": "导出"
-    },
-    "error": {
-      "title": "导出失败",
-      "invalidName": "请输入有效的整合包名称",
-      "invalidVersion": "请输入有效的版本号",
-      "noCategorySelected": "请至少选择一个类别"
-    },
-    "errorMessage": {
-      "error-1": "名称不能为空",
-      "error-2": "名称包含无效字符",
-      "error-3": "名称过长（最多 255 个字符）"
-    },
-    "success": {
-      "title": "导出成功",
-      "description": "整合包已成功导出"
     }
   },
   "InstanceIconSelector": {
@@ -2602,6 +2605,17 @@
             "FILE_NOT_FOUND_ERROR": "整合包文件不存在，可能已更名、移动或删除",
             "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误"
           }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "获取可导出文件列表失败"
+        }
+      },
+      "exportModpack": {
+        "success": "导出整合包成功",
+        "error": {
+          "title": "导出整合包失败"
         }
       },
       "addCustomInstanceIcon": {

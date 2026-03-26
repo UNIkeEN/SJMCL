@@ -116,12 +116,21 @@ const buildFileTree = (paths: string[]): TreeNode<FileTreeData>[] => {
   return convert(root);
 };
 
+const ROOT_FILE_CATEGORY_LOCALE_KEYS: Partial<Record<string, string>> = {
+  mods: "mods",
+  config: "config",
+  shaderpacks: "shaderpacks",
+  resourcepacks: "resourcepacks",
+  "options.txt": "optionsTxt",
+  saves: "saves",
+};
+
 const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
   instanceId,
   instanceName,
   ...modalProps
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { config } = useLauncherConfig();
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
@@ -168,8 +177,8 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
           setSelectedFiles(nextSelected);
         } else {
           toast({
-            title: t("ExportModpackModal.error.title"),
-            description: response.details || response.message,
+            title: response.message,
+            description: response.details,
             status: "error",
           });
         }
@@ -177,7 +186,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
       .catch((error) => {
         if (!isActive) return;
         toast({
-          title: t("ExportModpackModal.error.title"),
+          title: t("Services.instance.retrieveExportableFileList.error.title"),
           description: String(error),
           status: "error",
         });
@@ -269,21 +278,20 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
 
       if (response.status === "success") {
         toast({
-          title: t("ExportModpackModal.success.title"),
-          description: t("ExportModpackModal.success.description"),
+          title: response.message,
           status: "success",
         });
         modalProps.onClose?.();
       } else {
         toast({
-          title: t("ExportModpackModal.error.title"),
-          description: response.details || response.message,
+          title: response.message,
+          description: response.details,
           status: "error",
         });
       }
     } catch (error) {
       toast({
-        title: t("ExportModpackModal.error.title"),
+        title: t("Services.instance.exportModpack.error.title"),
         description: String(error),
         status: "error",
       });
@@ -412,7 +420,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
           ) : fileTree.length > 0 ? (
             <TreeView
               nodes={fileTree}
-              renderNode={({ node }) => {
+              renderNode={({ node, depth }) => {
                 const leafPaths = collectLeafNodeIds(node);
                 const selectedCount = leafPaths.filter((path) =>
                   selectedFiles.has(path)
@@ -421,6 +429,12 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
                   leafPaths.length > 0 && selectedCount === leafPaths.length;
                 const isIndeterminate =
                   selectedCount > 0 && selectedCount < leafPaths.length;
+                const translationKey =
+                  depth === 0
+                    ? ROOT_FILE_CATEGORY_LOCALE_KEYS[node.data.name]
+                    : undefined;
+                const showTranslation =
+                  translationKey && !i18n.resolvedLanguage?.startsWith("en");
 
                 return (
                   <Checkbox
@@ -443,9 +457,16 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
                     colorScheme={primaryColor}
                     size="sm"
                   >
-                    <Text fontSize="xs-sm" className="ellipsis-text">
-                      {node.data.name}
-                    </Text>
+                    <HStack spacing={2} fontSize="xs-sm">
+                      <Text className="ellipsis-text">{node.data.name}</Text>
+                      {showTranslation ? (
+                        <Text className="secondary-text">
+                          {t(
+                            `ExportModpackModal.fileTreeTranslation.${translationKey}`
+                          )}
+                        </Text>
+                      ) : null}
+                    </HStack>
                   </Checkbox>
                 );
               }}
@@ -528,7 +549,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent h="100%">
+      <ModalContent maxH="calc(100vh - 7.5rem)">
         <ModalHeader>
           {t("ExportModpackModal.header.title", { param: instanceName })}
         </ModalHeader>
