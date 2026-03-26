@@ -14,7 +14,6 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Select,
   Slider,
   SliderFilledTrack,
   SliderThumb,
@@ -52,6 +51,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const primaryColor = useLauncherConfig().config.appearance.theme.primaryColor;
+  const unifiedFieldRadius = "md";
   const [draft, setDraft] = useState<LLMProviderConfig>({ ...provider });
   const [isApiKeyEditing, setIsApiKeyEditing] = useState(false);
   const [availableModels, setAvailableModels] = useState<string[]>([]);
@@ -180,6 +180,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
             <Input
               size="xs"
               w="60%"
+              borderRadius={unifiedFieldRadius}
               focusBorderColor={`${primaryColor}.500`}
               placeholder={t(
                 "LLMProviderSettingsModal.content.model.settings.name.placeholder"
@@ -196,7 +197,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
           ),
           children: (
             <MenuSelector
-              buttonProps={{ w: "60%" }}
+              buttonProps={{ w: "60%", borderRadius: unifiedFieldRadius }}
               placement="bottom-end"
               value={draft.providerType}
               onSelect={(value) => {
@@ -226,6 +227,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                     <Input
                       size="xs"
                       w="full"
+                      borderRadius={unifiedFieldRadius}
                       focusBorderColor={`${primaryColor}.500`}
                       value={draft.baseUrl}
                       onChange={(e) => update("baseUrl", e.target.value)}
@@ -263,6 +265,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
             <Input
               size="xs"
               w="60%"
+              borderRadius={unifiedFieldRadius}
               focusBorderColor={`${primaryColor}.500`}
               value={isApiKeyEditing ? draft.apiKey : maskedApiKey}
               onChange={(e) => {
@@ -279,20 +282,29 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
             "LLMProviderSettingsModal.content.model.settings.model.title"
           ),
           children: (
-            <Select
-              size="xs"
-              w="60%"
-              focusBorderColor={`${primaryColor}.500`}
-              value={draft.model}
-              onChange={(e) => update("model", e.target.value)}
-              isDisabled={!canCheck || isChecking || !modelAvailability}
-            >
-              {availableModels.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </Select>
+            <MenuSelector
+              buttonProps={{
+                w: "60%",
+                borderRadius: unifiedFieldRadius,
+              }}
+              menuListProps={{
+                maxH: "200px",
+                overflowY: "auto",
+              }}
+              placement="bottom-end"
+              value={draft.model || null}
+              onSelect={(value) => {
+                if (typeof value === "string") {
+                  update("model", value);
+                }
+              }}
+              options={availableModels.map((m) => ({
+                label: m,
+                value: m,
+              }))}
+              disabled={!canCheck || isChecking || !modelAvailability}
+              placeholder="--"
+            />
           ),
         },
         // Availability check
@@ -368,7 +380,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                 min={0}
                 max={2}
                 step={0.1}
-                w="full"
+                flex={1}
                 colorScheme={primaryColor}
                 value={draft.parameters.temperature}
                 onChange={(v) => updateParam("temperature", v)}
@@ -383,13 +395,13 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                 max={2}
                 step={0.1}
                 size="xs"
-                maxW={16}
+                maxW={20}
                 value={draft.parameters.temperature}
                 onChange={(_, v) => {
                   if (!isNaN(v)) updateParam("temperature", v);
                 }}
               >
-                <NumberInputField pr={0} />
+                <NumberInputField textAlign="right" />
                 <NumberInputStepper>
                   <NumberIncrementStepper>
                     <LuChevronUp size={8} />
@@ -421,7 +433,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                 if (!isNaN(v)) updateParam("maxTokens", v);
               }}
             >
-              <NumberInputField />
+              <NumberInputField textAlign="right" />
               <NumberInputStepper>
                 <NumberIncrementStepper>
                   <LuChevronUp size={8} />
@@ -444,6 +456,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                 min={0}
                 max={1}
                 step={0.05}
+                flex={1}
                 colorScheme={primaryColor}
                 value={draft.parameters.topP}
                 onChange={(v) => updateParam("topP", v)}
@@ -458,13 +471,13 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                 max={1}
                 step={0.05}
                 size="xs"
-                maxW={16}
+                maxW={20}
                 value={draft.parameters.topP}
                 onChange={(_, v) => {
                   if (!isNaN(v)) updateParam("topP", v);
                 }}
               >
-                <NumberInputField pr={0} />
+                <NumberInputField textAlign="right" />
                 <NumberInputStepper>
                   <NumberIncrementStepper>
                     <LuChevronUp size={8} />
@@ -492,7 +505,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                       min={-2}
                       max={2}
                       step={0.1}
-                      w="full"
+                      flex={1}
                       colorScheme={primaryColor}
                       value={draft.parameters.frequencyPenalty}
                       onChange={(v) => updateParam("frequencyPenalty", v)}
@@ -507,13 +520,13 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                       max={2}
                       step={0.1}
                       size="xs"
-                      maxW={16}
+                      maxW={20}
                       value={draft.parameters.frequencyPenalty}
                       onChange={(_, v) => {
                         if (!isNaN(v)) updateParam("frequencyPenalty", v);
                       }}
                     >
-                      <NumberInputField pr={0} />
+                      <NumberInputField textAlign="right" />
                       <NumberInputStepper>
                         <NumberIncrementStepper>
                           <LuChevronUp size={8} />
@@ -539,7 +552,7 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                       min={-2}
                       max={2}
                       step={0.1}
-                      w="full"
+                      flex={1}
                       colorScheme={primaryColor}
                       value={draft.parameters.presencePenalty}
                       onChange={(v) => updateParam("presencePenalty", v)}
@@ -554,13 +567,13 @@ const LLMProviderSettingsModal: React.FC<LLMProviderSettingsModalProps> = ({
                       max={2}
                       step={0.1}
                       size="xs"
-                      maxW={16}
+                      maxW={20}
                       value={draft.parameters.presencePenalty}
                       onChange={(_, v) => {
                         if (!isNaN(v)) updateParam("presencePenalty", v);
                       }}
                     >
-                      <NumberInputField pr={0} />
+                      <NumberInputField textAlign="right" />
                       <NumberInputStepper>
                         <NumberIncrementStepper>
                           <LuChevronUp size={8} />
