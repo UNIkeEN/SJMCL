@@ -14,7 +14,7 @@ const MainWindowTitlebar = () => {
   const isMac = osType === "macos" || osType === "darwin";
   const isWindows = osType === "windows";
 
-  const titlebarHeight = isWindows ? 32 : 28; // the same as Windows 11 / macOS 15 native titlebar height.
+  const titlebarHeight = 40;
 
   const [isMacFullscreen, setIsMacFullscreen] = useState(false);
   const [isLinuxMaximized, setIsLinuxMaximized] = useState(false);

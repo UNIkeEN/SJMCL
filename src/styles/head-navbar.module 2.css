@@ -14,15 +14,13 @@
   width: 0;
   border-radius: var(--chakra-radii-full);
   pointer-events: none;
-  border: 1px solid var(--head-nav-indicator-border);
   background: var(--head-nav-indicator-bg);
   opacity: 0;
   transition:
     transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1),
     width 360ms cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 120ms ease,
-    background-color 200ms ease,
-    border-color 200ms ease;
+    background-color 200ms ease;
 }
 
 .indicatorVisible {
