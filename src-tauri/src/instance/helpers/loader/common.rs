@@ -2,8 +2,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
 use std::process::Command;
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use zip::ZipArchive;
 
 use crate::error::SJMCLResult;
@@ -16,7 +15,6 @@ use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
-use crate::launcher_config::models::JavaInfo;
 use crate::resource::models::SourceType;
 use crate::tasks::PTaskParam;
 
@@ -88,15 +86,11 @@ pub async fn execute_processors(
   client_info: &McClientInfo,
   install_profile: &InstallProfile,
 ) -> SJMCLResult<()> {
-  let javas_state = app.state::<Mutex<Vec<JavaInfo>>>();
-  let javas = javas_state.lock()?.clone();
-
   let game_config = get_instance_game_config(app, instance);
 
   let selected_java = select_java_runtime(
     app,
-    &game_config.game_java,
-    &javas,
+    Some(&game_config.game_java),
     instance,
     client_info
       .java_version

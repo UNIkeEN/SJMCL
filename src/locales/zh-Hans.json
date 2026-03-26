@@ -618,6 +618,7 @@
     },
     "task": {
       "game-client": "游戏客户端 {{param}}",
+      "game-client-w-java": "游戏客户端 {{param1}}（包含 Java {{param2}}）",
       "game-server": "游戏服务端 {{param}}",
       "change-mod-loader": "修改模组加载器 {{param}}",
       "mod": "模组",
@@ -997,6 +998,10 @@
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
           "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
+        },
+        "autoDownloadJava": {
+          "title": "自动下载可用版本 Java 运行时",
+          "description": "启用后，新建实例时若不存在可用版本的 Java 运行时，将自动安装至特定目录"
         }
       }
     },

@@ -38,6 +38,9 @@ use crate::instance::models::misc::{
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::LevelData;
 use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
+use crate::launch::helpers::jre_selector::{get_minimum_java_version_by_game, select_java_runtime};
+use crate::launch::models::LaunchError;
+use crate::launcher_config::helpers::java::build_mojang_java_download_params;
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::partial::{PartialError, PartialUpdate};
@@ -958,9 +961,12 @@ pub async fn create_instance(
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
   // Get priority list
-  let priority_list = {
+  let (priority_list, auto_download_java) = {
     let launcher_config = launcher_config_state.lock()?;
-    get_source_priority_list(&launcher_config)
+    (
+      get_source_priority_list(&launcher_config),
+      launcher_config.general.functionality.auto_download_java,
+    )
   };
 
   // Ensure the instance name is unique
@@ -1025,6 +1031,24 @@ pub async fn create_instance(
   version_info.patches.push(vanilla_patch);
 
   let mut task_params = Vec::<PTaskParam>::new();
+
+  // auto download recommended java if needed
+  let mut java_version_to_download: Option<String> = None;
+  if auto_download_java {
+    let client_java_version = version_info
+      .java_version
+      .as_ref()
+      .map_or(0i32, |version| version.major_version);
+
+    if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await {
+      if err.0 == LaunchError::NoSuitableJava.to_string() {
+        let minimum_java_version = get_minimum_java_version_by_game(&app, &instance, false).await;
+        let minimum_java_version = minimum_java_version.to_string();
+        task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
+        java_version_to_download = Some(minimum_java_version);
+      }
+    }
+  }
 
   // Download client (use task)
   let client_download_info = version_info
@@ -1102,7 +1126,10 @@ pub async fn create_instance(
 
   schedule_progressive_task_group(
     app.clone(),
-    format!("game-client?{}", name),
+    match java_version_to_download {
+      Some(java_version) => format!("game-client-w-java?{}&{}", name, java_version),
+      None => format!("game-client?{}", name),
+    },
     task_params,
     true,
   )

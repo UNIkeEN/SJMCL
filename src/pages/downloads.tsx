@@ -86,13 +86,11 @@ export const DownloadTasksPage = () => {
   };
 
   const parseGroupTitle = (taskGroup: string) => {
-    let { name, version, isRetry } = parseTaskGroup(taskGroup);
+    let { name, params, isRetry } = parseTaskGroup(taskGroup);
 
     return `${isRetry ? `${t(`DownloadTasksPage.task.retry`)} ` : ""}${t(
       `DownloadTasksPage.task.${name}`,
-      {
-        param: version || "",
-      }
+      params
     )}`;
   };
 

@@ -256,6 +256,8 @@ structstruck::strike! {
         #[default = true]
         pub launch_page_quick_switch: bool,
         #[default = true]
+        pub auto_download_java: bool,
+        #[default = true]
         pub resource_translation: bool, // only available in zh-Hans
         #[default = true]
         pub translated_filename_prefix: bool, // only available in zh-Hans
