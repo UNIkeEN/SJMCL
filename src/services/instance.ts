@@ -46,6 +46,7 @@ export class InstanceService {
    * @param {OptiFineResourceInfo} [optifine] - Optional OptiFine installation.
    * @param {string} [modpackPath] - Optional path to the modpack archive file.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
+   * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
@@ -58,7 +59,8 @@ export class InstanceService {
     modLoader: ModLoaderResourceInfo,
     optifine?: OptiFineResourceInfo,
     modpackPath?: string,
-    isInstallFabricApi?: boolean
+    isInstallFabricApi?: boolean,
+    isInstallQfApi?: boolean
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_instance", {
       directory,
@@ -70,6 +72,7 @@ export class InstanceService {
       optifine,
       modpackPath,
       isInstallFabricApi,
+      isInstallQfApi,
     });
   }
 
@@ -450,18 +453,21 @@ export class InstanceService {
    * @param {string} instanceId - The ID of the instance to update.
    * @param {ModLoaderResourceInfo} newModLoader - The new mod loader information.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
+   * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async changeModLoader(
     instanceId: string,
     newModLoader: ModLoaderResourceInfo,
-    isInstallFabricApi?: boolean
+    isInstallFabricApi?: boolean,
+    isInstallQfApi?: boolean
   ): Promise<InvokeResponse<void>> {
     return await invoke("change_mod_loader", {
       instanceId,
       newModLoader,
       isInstallFabricApi,
+      isInstallQfApi,
     });
   }
 

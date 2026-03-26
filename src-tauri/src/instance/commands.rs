@@ -954,6 +954,7 @@ pub async fn create_instance(
   optifine: Option<OptiFineResourceInfo>,
   modpack_path: Option<String>,
   is_install_fabric_api: Option<bool>,
+  is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -1078,6 +1079,7 @@ pub async fn create_instance(
       &mut version_info,
       &mut task_params,
       is_install_fabric_api,
+      is_install_qf_api,
     )
     .await?;
   }
@@ -1267,6 +1269,7 @@ pub async fn change_mod_loader(
   instance_id: String,
   new_mod_loader: ModLoaderResourceInfo,
   is_install_fabric_api: Option<bool>,
+  is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let mut instance = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
@@ -1300,7 +1303,7 @@ pub async fn change_mod_loader(
     version: new_mod_loader.version.clone(),
     status: if matches!(
       new_mod_loader.loader_type,
-      ModLoaderType::Unknown | ModLoaderType::Fabric
+      ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
     ) {
       ModLoaderStatus::Installed
     } else {
@@ -1318,8 +1321,12 @@ pub async fn change_mod_loader(
   let [libraries_dir, mods_dir] = subdirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
-  // Remove Fabric API mods if switching from Fabric modloader
-  if instance.mod_loader.loader_type == ModLoaderType::Fabric && version_isolation {
+  // Remove Fabric API / QFAPI mods if switching from Fabric or Quilt modloader
+  if matches!(
+    instance.mod_loader.loader_type,
+    ModLoaderType::Fabric | ModLoaderType::Quilt
+  ) && version_isolation
+  {
     remove_fabric_api_mods(mods_dir).await?;
   }
   // construct new version info
@@ -1343,6 +1350,7 @@ pub async fn change_mod_loader(
     &mut version_info,
     &mut task_params,
     is_install_fabric_api,
+    is_install_qf_api,
   )
   .await?;
 

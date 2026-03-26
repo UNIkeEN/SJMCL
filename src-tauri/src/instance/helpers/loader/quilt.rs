@@ -6,12 +6,15 @@ use url::Url;
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
-use crate::instance::models::misc::ModLoader;
+use crate::instance::models::misc::{ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth;
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+
+const QFAPI_MOD_ID_MODRINTH: &str = "qvIfYCYJ";
 
 fn resolve_maven_root<'a>(coord: &str, quilt_root: &'a str) -> &'a str {
   if coord.starts_with("net.fabricmc") {
@@ -27,9 +30,10 @@ pub async fn install_quilt_loader(
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
-  _mods_dir: PathBuf,
+  mods_dir: PathBuf,
   client_info: &mut McClientInfo,
   task_params: &mut Vec<PTaskParam>,
+  is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let loader_ver = &loader.version;
@@ -167,6 +171,20 @@ pub async fn install_quilt_loader(
       filename: None,
       sha1: None,
     }));
+  }
+
+  if is_install_qf_api.unwrap_or(true) {
+    if let Ok(Some(qfapi_download)) = fetch_latest_mod_download_param_modrinth(
+      &app,
+      QFAPI_MOD_ID_MODRINTH,
+      ModLoaderType::Quilt,
+      game_version,
+      mods_dir,
+    )
+    .await
+    {
+      task_params.push(PTaskParam::Download(qfapi_download));
+    }
   }
 
   Ok(())
