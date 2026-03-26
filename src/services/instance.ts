@@ -505,6 +505,20 @@ export class InstanceService {
   }
 
   /**
+   * Retrieve exportable file list for modpack export.
+   * @param {string} instanceId - The ID of the instance.
+   * @returns {Promise<InvokeResponse<ModpackFileList>>}
+   */
+  @responseHandler("instance")
+  static async retrieveExportableFileList(
+    instanceId: string
+  ): Promise<InvokeResponse<ModpackFileList>> {
+    return await invoke("retrieve_exportable_file_list", {
+      instanceId,
+    });
+  }
+
+  /**
    * Export the instance as a modpack.
    * @param {string} instanceId - The ID of the instance to export.
    * @param {string} savePath - The destination path for the exported modpack.
@@ -524,20 +538,6 @@ export class InstanceService {
       savePath,
       options,
       files,
-    });
-  }
-
-  /**
-   * Retrieve exportable file list for modpack export.
-   * @param {string} instanceId - The ID of the instance.
-   * @returns {Promise<InvokeResponse<ModpackFileList>>}
-   */
-  @responseHandler("instance")
-  static async listModpackFiles(
-    instanceId: string
-  ): Promise<InvokeResponse<ModpackFileList>> {
-    return await invoke("list_modpack_files", {
-      instanceId,
     });
   }
 }

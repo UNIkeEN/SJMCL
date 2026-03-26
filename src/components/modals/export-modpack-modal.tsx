@@ -4,7 +4,7 @@ import {
   Center,
   Checkbox,
   HStack,
-  IconButton,
+  Icon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,9 +13,6 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  Radio,
-  RadioGroup,
-  Stack,
   Switch,
   Text,
   VStack,
@@ -23,7 +20,8 @@ import {
 import { save } from "@tauri-apps/plugin-dialog";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuChevronRight } from "react-icons/lu";
+import { FaInfinity } from "react-icons/fa6";
+import { SiModrinth } from "react-icons/si";
 import { BeatLoader } from "react-spinners";
 import Editable from "@/components/common/editable";
 import Empty from "@/components/common/empty";
@@ -31,6 +29,11 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import SegmentedControl from "@/components/common/segmented";
+import TreeView, {
+  TreeNode,
+  collectLeafNodeIds,
+} from "@/components/common/tree-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ModpackFileList } from "@/models/instance/misc";
@@ -42,8 +45,10 @@ interface ExportModpackModalProps extends Omit<ModalProps, "children"> {
   instanceName: string;
 }
 
+type ExportFormat = "Modrinth" | "MultiMC";
+
 interface ExportModpackOptions {
-  format: "Modrinth" | "MultiMC";
+  format: ExportFormat;
   name: string;
   version: string;
   author?: string;
@@ -54,14 +59,13 @@ interface ExportModpackOptions {
   skipCurseForgeRemoteFiles?: boolean;
 }
 
-interface FileTreeNode {
+interface FileTreeData {
   name: string;
   path: string;
   isFile: boolean;
-  children: FileTreeNode[];
 }
 
-const buildFileTree = (paths: string[]): FileTreeNode[] => {
+const buildFileTree = (paths: string[]): TreeNode<FileTreeData>[] => {
   type InternalNode = {
     name: string;
     path: string;
@@ -93,27 +97,23 @@ const buildFileTree = (paths: string[]): FileTreeNode[] => {
     });
   }
 
-  const convert = (map: Map<string, InternalNode>): FileTreeNode[] =>
+  const convert = (map: Map<string, InternalNode>): TreeNode<FileTreeData>[] =>
     Array.from(map.values())
       .sort((a, b) => {
         if (a.isFile !== b.isFile) return a.isFile ? 1 : -1;
         return a.name.localeCompare(b.name);
       })
       .map((node) => ({
-        name: node.name,
-        path: node.path,
-        isFile: node.isFile,
+        id: node.path,
+        data: {
+          name: node.name,
+          path: node.path,
+          isFile: node.isFile,
+        },
         children: convert(node.children),
       }));
 
   return convert(root);
-};
-
-const collectLeafPaths = (node: FileTreeNode): string[] => {
-  if (node.isFile || node.children.length === 0) {
-    return [node.path];
-  }
-  return node.children.flatMap((child) => collectLeafPaths(child));
 };
 
 const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
@@ -126,9 +126,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const [exportFormat, setExportFormat] = useState<"Modrinth" | "MultiMC">(
-    "Modrinth"
-  );
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("Modrinth");
   const [modpackName, setModpackName] = useState(instanceName);
   const [modpackVersion, setModpackVersion] = useState("1.0.0");
   const [author, setAuthor] = useState("");
@@ -137,7 +135,6 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
   const [fileList, setFileList] = useState<ModpackFileList | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [isFileListLoading, setIsFileListLoading] = useState(false);
-  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set());
   const [packWithLauncher, setPackWithLauncher] = useState(false);
   const [minMemoryInput, setMinMemoryInput] = useState("");
   const [noCreateRemoteFiles, setNoCreateRemoteFiles] = useState(false);
@@ -161,7 +158,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
     let isActive = true;
     setIsFileListLoading(true);
 
-    InstanceService.listModpackFiles(instanceId)
+    InstanceService.retrieveExportableFileList(instanceId)
       .then((response) => {
         if (!isActive) return;
         if (response.status === "success") {
@@ -312,103 +309,29 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
     modalProps,
   ]);
 
-  const FileTreeItem: React.FC<{ node: FileTreeNode; depth?: number }> = ({
-    node,
-    depth = 0,
-  }) => {
-    const expanded = expandedPaths.has(node.path);
-    const leafPaths = useMemo(() => collectLeafPaths(node), [node]);
-    const selectedCount = useMemo(
-      () => leafPaths.filter((path) => selectedFiles.has(path)).length,
-      [leafPaths]
-    );
-    const isChecked =
-      leafPaths.length > 0 && selectedCount === leafPaths.length;
-    const isIndeterminate =
-      selectedCount > 0 && selectedCount < leafPaths.length;
-
-    const handleToggle = (checked: boolean) => {
-      setSelectedFiles((prev) => {
-        const next = new Set(prev);
-        leafPaths.forEach((path) => {
-          if (checked) {
-            next.add(path);
-          } else {
-            next.delete(path);
-          }
-        });
-        return next;
-      });
-    };
-
-    return (
-      <VStack align="start" spacing={1} w="100%" pl={depth * 3}>
-        <HStack spacing={1} w="100%" align="center" minH={6}>
-          {!node.isFile ? (
-            <IconButton
-              aria-label={expanded ? "collapse" : "expand"}
-              icon={expanded ? <LuChevronDown /> : <LuChevronRight />}
-              size="xs"
-              variant="ghost"
-              onClick={() =>
-                setExpandedPaths((prev) => {
-                  const next = new Set(prev);
-                  if (expanded) {
-                    next.delete(node.path);
-                  } else {
-                    next.add(node.path);
-                  }
-                  return next;
-                })
-              }
-            />
-          ) : (
-            <Box w="24px" />
-          )}
-          <Checkbox
-            isChecked={isChecked}
-            isIndeterminate={isIndeterminate}
-            onChange={(e) => handleToggle(e.target.checked)}
-            colorScheme={primaryColor}
-            size="sm"
-          >
-            <Text fontSize="xs-sm" className="ellipsis-text">
-              {node.name}
-            </Text>
-          </Checkbox>
-        </HStack>
-        {!node.isFile && expanded && (
-          <VStack align="start" spacing={1} w="100%">
-            {node.children.map((child) => (
-              <FileTreeItem key={child.path} node={child} depth={depth + 1} />
-            ))}
-          </VStack>
-        )}
-      </VStack>
-    );
-  };
-
   const optionGroups: OptionItemGroupProps[] = [
     {
-      title: t("ExportModpackModal.label.exportFormat"),
       items: [
         {
-          title: "",
+          title: t("ExportModpackModal.label.exportFormat"),
           children: (
-            <RadioGroup
-              value={exportFormat}
-              onChange={(val) => setExportFormat(val as "Modrinth" | "MultiMC")}
-              w="100%"
-            >
-              <Stack direction="column" spacing={2} align="start" w="100%">
-                <Radio value="Modrinth" colorScheme={primaryColor}>
-                  <Text fontSize="xs-sm">Modrinth</Text>
-                </Radio>
-                <Radio value="MultiMC" colorScheme={primaryColor}>
-                  <Text fontSize="xs-sm">MultiMC</Text>
-                </Radio>
-              </Stack>
-            </RadioGroup>
+            <SegmentedControl
+              selected={exportFormat}
+              onSelectItem={(val) => setExportFormat(val as ExportFormat)}
+              size="xs"
+              items={(["Modrinth", "MultiMC"] as const).map((format) => ({
+                value: format,
+                label: (
+                  <HStack spacing={2}>
+                    <Icon
+                      as={format === "Modrinth" ? SiModrinth : FaInfinity}
+                    />
+                    <Text>{format}</Text>
+                  </HStack>
+                ),
+              }))}
+              withTooltip={false}
+            />
           ),
         },
       ],
@@ -481,41 +404,71 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
     {
       title: t("ExportModpackModal.label.includedFiles"),
       items: [
-        {
-          title: "",
-          children: (
-            <Box w="100%" maxH="260px" overflowY="auto">
-              {isFileListLoading ? (
-                <Center py={4}>
-                  <BeatLoader size={10} color="gray" />
-                </Center>
-              ) : fileTree.length > 0 ? (
-                <VStack align="start" spacing={1} w="100%">
-                  {fileTree.map((node) => (
-                    <FileTreeItem key={node.path} node={node} />
-                  ))}
-                </VStack>
-              ) : (
-                <Empty withIcon={false} size="sm" />
-              )}
-            </Box>
-          ),
-        },
+        <Box key="included-files-tree" w="100%" maxH="xs" overflowY="auto">
+          {isFileListLoading ? (
+            <Center py={4}>
+              <BeatLoader size={10} color="gray" />
+            </Center>
+          ) : fileTree.length > 0 ? (
+            <TreeView
+              nodes={fileTree}
+              renderNode={({ node }) => {
+                const leafPaths = collectLeafNodeIds(node);
+                const selectedCount = leafPaths.filter((path) =>
+                  selectedFiles.has(path)
+                ).length;
+                const isChecked =
+                  leafPaths.length > 0 && selectedCount === leafPaths.length;
+                const isIndeterminate =
+                  selectedCount > 0 && selectedCount < leafPaths.length;
+
+                return (
+                  <Checkbox
+                    isChecked={isChecked}
+                    isIndeterminate={isIndeterminate}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setSelectedFiles((prev) => {
+                        const next = new Set(prev);
+                        leafPaths.forEach((path) => {
+                          if (checked) {
+                            next.add(path);
+                          } else {
+                            next.delete(path);
+                          }
+                        });
+                        return next;
+                      });
+                    }}
+                    colorScheme={primaryColor}
+                    size="sm"
+                  >
+                    <Text fontSize="xs-sm" className="ellipsis-text">
+                      {node.data.name}
+                    </Text>
+                  </Checkbox>
+                );
+              }}
+            />
+          ) : (
+            <Empty withIcon={false} size="sm" />
+          )}
+        </Box>,
       ],
     },
     {
       title: t("ExportModpackModal.label.exportOptions"),
       items: [
-        {
-          title: t("ExportModpackModal.label.packWithLauncher"),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={packWithLauncher}
-              onChange={(e) => setPackWithLauncher(e.target.checked)}
-            />
-          ),
-        },
+        // {
+        //   title: t("ExportModpackModal.label.packWithLauncher"),
+        //   children: (
+        //     <Switch
+        //       colorScheme={primaryColor}
+        //       isChecked={packWithLauncher}
+        //       onChange={(e) => setPackWithLauncher(e.target.checked)}
+        //     />
+        //   ),
+        // },
         ...(isMultiMC
           ? [
               {
@@ -575,13 +528,17 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent h="80vh">
-        <ModalHeader>{t("ExportModpackModal.header.title")}</ModalHeader>
+      <ModalContent h="100%">
+        <ModalHeader>
+          {t("ExportModpackModal.header.title", { param: instanceName })}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {optionGroups.map((group, index) => (
-            <OptionItemGroup {...group} key={index} />
-          ))}
+          <VStack spacing={4} align="stretch">
+            {optionGroups.map((group, index) => (
+              <OptionItemGroup {...group} key={index} />
+            ))}
+          </VStack>
         </ModalBody>
         <ModalFooter>
           <HStack spacing={2}>

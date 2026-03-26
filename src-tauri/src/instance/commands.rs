@@ -1443,7 +1443,7 @@ pub fn add_custom_instance_icon(
 }
 
 #[tauri::command]
-pub async fn list_modpack_files(
+pub async fn retrieve_exportable_file_list(
   app: AppHandle,
   instance_id: String,
 ) -> SJMCLResult<ModpackFileList> {

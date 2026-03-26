@@ -1274,7 +1274,7 @@
   },
   "ExportModpackModal": {
     "header": {
-      "title": "Export Modpack"
+      "title": "Export {{param}} as Modpack"
     },
     "label": {
       "exportFormat": "Export Format",
@@ -1300,9 +1300,9 @@
       "noCategorySelected": "Please select at least one category to include"
     },
     "errorMessage": {
-      "1": "Name cannot be empty",
-      "2": "Name contains invalid characters",
-      "3": "Name is too long (max 255 characters)"
+      "error-1": "Name cannot be empty",
+      "error-2": "Name contains invalid characters",
+      "error-3": "Name is too long (max 255 characters)"
     },
     "success": {
       "title": "Export Successful",
