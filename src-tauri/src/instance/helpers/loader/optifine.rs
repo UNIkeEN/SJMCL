@@ -6,7 +6,6 @@ use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subd
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderType};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::launch::helpers::jre_selector::select_java_runtime;
-use crate::launcher_config::models::JavaInfo;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
@@ -289,15 +288,11 @@ async fn run_optifine_patcher(
   base_client_jar: &Path,
   out_optifine_jar: &Path,
 ) -> SJMCLResult<()> {
-  let javas_state = app.state::<Mutex<Vec<JavaInfo>>>();
-  let javas = javas_state.lock()?.clone();
-
   let game_config = get_instance_game_config(app, instance);
 
   let selected_java = select_java_runtime(
     app,
-    &game_config.game_java,
-    &javas,
+    Some(&game_config.game_java),
     instance,
     client_info
       .java_version

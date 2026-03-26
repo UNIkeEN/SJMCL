@@ -204,6 +204,26 @@ const GeneralSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t(
+            "GeneralSettingsPage.functions.settings.autoDownloadJava.title"
+          ),
+          description: t(
+            "GeneralSettingsPage.functions.settings.autoDownloadJava.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={generalConfigs.functionality.autoDownloadJava}
+              onChange={(e) => {
+                update(
+                  "general.functionality.autoDownloadJava",
+                  e.target.checked
+                );
+              }}
+            />
+          ),
+        },
       ],
     },
     {

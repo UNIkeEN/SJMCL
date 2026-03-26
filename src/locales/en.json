@@ -620,6 +620,7 @@
     },
     "task": {
       "game-client": "Game Client {{param}}",
+      "game-client-w-java": "Game Client {{param1}} (with Java {{param2}})",
       "game-server": "Game Server {{param}}",
       "change-mod-loader": "Change Mod Loader {{param}}",
       "mod": "Mod",
@@ -999,6 +1000,10 @@
         "launchPageQuickSwitch": {
           "title": "Quick Switch for Accounts & Instances",
           "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+        },
+        "autoDownloadJava": {
+          "title": "Auto-download Suitable Java Runtime",
+          "description": "When enabled, if no suitable Java runtime is available when creating a new instance, it will be installed automatically to a dedicated directory"
         }
       }
     },
