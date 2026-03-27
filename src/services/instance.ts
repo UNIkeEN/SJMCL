@@ -396,7 +396,7 @@ export class InstanceService {
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async finishOptifineLoaderInstall(
+  static async finishOptiFineLoaderInstall(
     instanceId: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("finish_optifine_loader_install", {

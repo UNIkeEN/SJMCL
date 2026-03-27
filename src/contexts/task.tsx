@@ -483,14 +483,14 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   if (optifineLoadingToastRef.current) return newTasks;
                   optifineLoadingToastRef.current = toast({
                     title: t(
-                      "Services.instance.finishOptifineLoaderInstall.loading",
+                      "Services.instance.finishOptiFineLoaderInstall.loading",
                       {
                         instanceName,
                       }
                     ),
                     status: "loading",
                   });
-                  InstanceService.finishOptifineLoaderInstall(version).then(
+                  InstanceService.finishOptiFineLoaderInstall(version).then(
                     (response) => {
                       if (optifineLoadingToastRef.current) {
                         closeToast(optifineLoadingToastRef.current);

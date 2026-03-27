@@ -162,11 +162,6 @@ pub async fn download_optifine_libraries(
     sha1: None,
   }));
 
-  println!(
-    "OptiFine installer has launchwrapper: {}, version: {}",
-    has_launchwrapper, lw_coord
-  );
-
   if !has_launchwrapper {
     lw_coord = "net.minecraft:launchwrapper:1.12".to_string();
     add_library_entry(&mut client_info.libraries, &temp_lw_coord, None)?;
