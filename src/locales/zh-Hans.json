@@ -759,7 +759,7 @@
     "error": {
       "invalidName": "请输入有效的整合包名称",
       "invalidVersion": "请输入有效的版本号",
-      "noCategorySelected": "请至少选择一个类别"
+      "noFileSelected": "请至少选择一个要包含的文件或文件夹"
     },
     "errorMessage": {
       "error-1": "名称不能为空",

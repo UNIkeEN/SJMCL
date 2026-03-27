@@ -44,14 +44,6 @@ const collectExpandedIdsByDepth = <T,>(
   return expandedIds;
 };
 
-export const collectLeafNodeIds = <T,>(node: TreeNode<T>): string[] => {
-  const children = node.children ?? [];
-  if (children.length === 0) {
-    return [node.id];
-  }
-  return children.flatMap((child) => collectLeafNodeIds(child));
-};
-
 export const buildStructTreeNodes = (
   data: unknown,
   parentId = "root"

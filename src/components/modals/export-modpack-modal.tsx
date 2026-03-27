@@ -30,13 +30,11 @@ import {
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
-import TreeView, {
-  TreeNode,
-  collectLeafNodeIds,
-} from "@/components/common/tree-view";
+import TreeView, { TreeNode } from "@/components/common/tree-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
-import { ModpackFileList } from "@/models/instance/misc";
+import { ExportModpackFormat } from "@/enums/instance";
+import { ExportModpackOptions, ModpackFileList } from "@/models/instance/misc";
 import { InstanceService } from "@/services/instance";
 import { isFileNameSanitized, sanitizeFileName } from "@/utils/string";
 
@@ -45,24 +43,11 @@ interface ExportModpackModalProps extends Omit<ModalProps, "children"> {
   instanceName: string;
 }
 
-type ExportFormat = "Modrinth" | "MultiMC";
-
-interface ExportModpackOptions {
-  format: ExportFormat;
-  name: string;
-  version: string;
-  author?: string;
-  description?: string;
-  packWithLauncher?: boolean;
-  minMemory?: number;
-  noCreateRemoteFiles?: boolean;
-  skipCurseForgeRemoteFiles?: boolean;
-}
-
 interface FileTreeData {
   name: string;
   path: string;
   isFile: boolean;
+  leafIds: string[];
 }
 
 const buildFileTree = (paths: string[]): TreeNode<FileTreeData>[] => {
@@ -103,15 +88,24 @@ const buildFileTree = (paths: string[]): TreeNode<FileTreeData>[] => {
         if (a.isFile !== b.isFile) return a.isFile ? 1 : -1;
         return a.name.localeCompare(b.name);
       })
-      .map((node) => ({
-        id: node.path,
-        data: {
-          name: node.name,
-          path: node.path,
-          isFile: node.isFile,
-        },
-        children: convert(node.children),
-      }));
+      .map((node) => {
+        const children = convert(node.children);
+        const leafIds =
+          children.length === 0
+            ? [node.path]
+            : children.flatMap((child) => child.data.leafIds);
+
+        return {
+          id: node.path,
+          data: {
+            name: node.name,
+            path: node.path,
+            isFile: node.isFile,
+            leafIds,
+          },
+          children,
+        };
+      });
 
   return convert(root);
 };
@@ -135,7 +129,8 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
   const toast = useToast();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const [exportFormat, setExportFormat] = useState<ExportFormat>("Modrinth");
+  const [exportFormat, setExportFormat] =
+    useState<ExportModpackFormat>("Modrinth");
   const [modpackName, setModpackName] = useState(instanceName);
   const [modpackVersion, setModpackVersion] = useState("1.0.0");
   const [author, setAuthor] = useState("");
@@ -227,6 +222,14 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
     if (checkVersionError(modpackVersion) !== 0) {
       toast({
         title: t("ExportModpackModal.error.invalidVersion"),
+        status: "warning",
+      });
+      return;
+    }
+
+    if (selectedFileList.length === 0) {
+      toast({
+        title: t("ExportModpackModal.error.noFileSelected"),
         status: "warning",
       });
       return;
@@ -325,7 +328,9 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
           children: (
             <SegmentedControl
               selected={exportFormat}
-              onSelectItem={(val) => setExportFormat(val as ExportFormat)}
+              onSelectItem={(val) =>
+                setExportFormat(val as ExportModpackFormat)
+              }
               size="xs"
               items={(["Modrinth", "MultiMC"] as const).map((format) => ({
                 value: format,
@@ -421,14 +426,14 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
             <TreeView
               nodes={fileTree}
               renderNode={({ node, depth }) => {
-                const leafPaths = collectLeafNodeIds(node);
-                const selectedCount = leafPaths.filter((path) =>
+                const selectedCount = node.data.leafIds.filter((path) =>
                   selectedFiles.has(path)
                 ).length;
                 const isChecked =
-                  leafPaths.length > 0 && selectedCount === leafPaths.length;
+                  node.data.leafIds.length > 0 &&
+                  selectedCount === node.data.leafIds.length;
                 const isIndeterminate =
-                  selectedCount > 0 && selectedCount < leafPaths.length;
+                  selectedCount > 0 && selectedCount < node.data.leafIds.length;
                 const translationKey =
                   depth === 0
                     ? ROOT_FILE_CATEGORY_LOCALE_KEYS[node.data.name]
@@ -444,7 +449,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
                       const checked = e.target.checked;
                       setSelectedFiles((prev) => {
                         const next = new Set(prev);
-                        leafPaths.forEach((path) => {
+                        node.data.leafIds.forEach((path) => {
                           if (checked) {
                             next.add(path);
                           } else {

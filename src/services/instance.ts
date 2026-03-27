@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { InstanceSubdirType } from "@/enums/instance";
 import { GameConfig, GameDirectory } from "@/models/config";
 import {
+  ExportModpackOptions,
   GameServerInfo,
   InstanceSummary,
   LocalModInfo,
@@ -522,7 +523,7 @@ export class InstanceService {
    * Export the instance as a modpack.
    * @param {string} instanceId - The ID of the instance to export.
    * @param {string} savePath - The destination path for the exported modpack.
-   * @param {any} options - Export configuration options.
+   * @param {ExportModpackOptions} options - Export configuration options.
    * @param {string[]} files - The selected files to include in the export.
    * @returns {Promise<InvokeResponse<void>>}
    */
@@ -530,7 +531,7 @@ export class InstanceService {
   static async exportModpack(
     instanceId: string,
     savePath: string,
-    options: any,
+    options: ExportModpackOptions,
     files: string[]
   ): Promise<InvokeResponse<void>> {
     return await invoke("export_modpack", {

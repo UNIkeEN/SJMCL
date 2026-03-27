@@ -759,7 +759,7 @@
     "error": {
       "invalidName": "Please enter a valid modpack name",
       "invalidVersion": "Please enter a valid version number",
-      "noCategorySelected": "Please select at least one category to include"
+      "noFileSelected": "Please select at least one file or folder to include"
     },
     "errorMessage": {
       "error-1": "Name cannot be empty",
