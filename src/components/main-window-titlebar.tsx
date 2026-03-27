@@ -19,7 +19,7 @@ const MainWindowTitlebar = () => {
   const [isMacFullscreen, setIsMacFullscreen] = useState(false);
   const [isLinuxMaximized, setIsLinuxMaximized] = useState(false);
 
-  const titlebarBg = useColorModeValue("whiteAlpha.600", "blackAlpha.500");
+  const titlebarBg = useColorModeValue("whiteAlpha.800", "blackAlpha.700");
   const titlebarBorderColor = useColorModeValue(
     "blackAlpha.200",
     "whiteAlpha.300"
