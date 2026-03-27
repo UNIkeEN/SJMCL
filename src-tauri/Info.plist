@@ -18,5 +18,7 @@
     <string>A Minecraft mod wants to access your camera.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>A Minecraft mod wants to access your microphone.</string>
+    <key>UIDesignRequiresCompatibility</key>
+    <true/>
   </dict>
 </plist>
