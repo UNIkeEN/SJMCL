@@ -57,7 +57,6 @@ pub async fn run() {
       .plugin(tauri_plugin_process::init())
       .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
         let main_window = app.get_webview_window("main").expect("no main window");
-
         let _ = main_window.show(); // may hide by launcher_visibility settings
                                     // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
         let _ = main_window.set_focus();
@@ -136,6 +135,7 @@ pub async fn run() {
         instance::commands::toggle_mod_by_extension,
         instance::commands::create_launch_desktop_shortcut,
         instance::commands::finish_mod_loader_install,
+        instance::commands::finish_optifine_loader_install,
         instance::commands::check_change_mod_loader_availablity,
         instance::commands::change_mod_loader,
         instance::commands::retrieve_modpack_meta_info,

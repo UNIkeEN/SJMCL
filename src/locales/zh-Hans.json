@@ -634,6 +634,7 @@
       "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
       "forge-libraries": "Forge 运行库",
+      "optifine-libraries": "OptiFine 运行库",
       "launcher-update": "更新启动器",
       "mojang-java": "Java {{param}} 运行时"
     }
@@ -2538,6 +2539,23 @@
             "MAIN_CLASS_NOT_FOUND": "主类未找到",
             "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
             "LOADER_INSTALLER_NOT_FOUND": "加载器安装程序不存在"
+          }
+        }
+      },
+      "finishOptiFineLoaderInstall": {
+        "loading": "正在为 {{instanceName}} 安装 OptiFine",
+        "success": "OptiFine 安装完成",
+        "error": {
+          "title": "OptiFine 安装失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
+            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
+            "LOADER_INSTALLER_NOT_FOUND": "OptiFine 安装程序不存在",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版本信息解析失败",
+            "INVALID_SOURCE_PATH": "资源路径无效",
+            "NO_SUITABLE_JAVA": "没有找到可用的 Java 运行时",
+            "SELECTED_JAVA_UNAVAILABLE": "所选 Java 运行时不可用"
           }
         }
       },
