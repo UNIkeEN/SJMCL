@@ -127,6 +127,7 @@ const MarkdownContainer: React.FC<MarkdownContainerProps> = ({
     a: ({ node, href, children, ...rest }) => (
       <Link
         _hover={{ textDecoration: "underline" }}
+        color={`${primaryColor}.500`}
         onClick={(e) => {
           e.preventDefault();
           if (href) openUrl(href);

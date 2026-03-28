@@ -236,7 +236,7 @@ const GameLogPage: React.FC = () => {
           <Button
             key={level}
             size="xs"
-            variant={filterStates[level] ? "solid" : "subtle"}
+            variant={filterStates[level] ? "solid" : "outline"}
             onClick={() =>
               setFilterStates({
                 ...filterStates,

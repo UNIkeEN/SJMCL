@@ -6,8 +6,10 @@ import {
   Image,
   Radio,
   RadioGroup,
+  Text,
 } from "@chakra-ui/react";
 import { FaStar } from "react-icons/fa6";
+import { GoDotFill } from "react-icons/go";
 import Empty from "@/components/common/empty";
 import {
   OptionItemGroup,
@@ -16,30 +18,37 @@ import {
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import InstanceMenu from "@/components/instance-menu";
 import { useLauncherConfig } from "@/contexts/config";
-import { useGlobalData } from "@/contexts/global-data";
+import { isChakraColor } from "@/enums/misc";
 import { InstanceSummary } from "@/models/instance/misc";
 import { generateInstanceDesc, getInstanceIconSrc } from "@/utils/instance";
 
 interface InstancesViewProps extends BoxProps {
   instances: InstanceSummary[];
+  selectedInstance: InstanceSummary | undefined;
   viewType: string;
+  onSelectInstance?: (instance: InstanceSummary) => void;
   onSelectCallback?: () => void;
   withMenu?: boolean;
 }
 
 const InstancesView: React.FC<InstancesViewProps> = ({
   instances,
+  selectedInstance,
   viewType,
+  onSelectInstance,
   onSelectCallback = () => {},
   withMenu = true,
   ...boxProps
 }) => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { selectedInstance } = useGlobalData();
 
-  const handleUpdateSelectedInstance = (instance: InstanceSummary) => {
-    update("states.shared.selectedInstanceId", instance.id);
+  const handleSelectInstance = (instance: InstanceSummary) => {
+    if (onSelectInstance) {
+      onSelectInstance(instance);
+    } else {
+      update("states.shared.selectedInstanceId", instance.id);
+    }
     onSelectCallback();
   };
 
@@ -48,9 +57,14 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     description: [generateInstanceDesc(instance), instance.description]
       .filter(Boolean)
       .join(", "),
-    ...{
-      titleExtra: instance.starred && <Icon as={FaStar} color="yellow.500" />,
-    },
+    titleExtra: (instance.starred || isChakraColor(instance.tag)) && (
+      <HStack spacing={1}>
+        {instance.starred && <Icon as={FaStar} color="yellow.500" />}
+        {isChakraColor(instance.tag) && (
+          <Icon as={GoDotFill} color={`${instance.tag}.500`} />
+        )}
+      </HStack>
+    ),
     maxTitleLines: 1,
     maxDescriptionLines: 2,
     titleLineWrap: false,
@@ -58,7 +72,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
       <HStack spacing={2.5}>
         <Radio
           value={instance.id}
-          onClick={() => handleUpdateSelectedInstance(instance)}
+          onClick={() => handleSelectInstance(instance)}
           colorScheme={primaryColor}
         />
         <Image
@@ -71,7 +85,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     ),
     ...(!withMenu && {
       isFullClickZone: true,
-      onClick: () => handleUpdateSelectedInstance(instance),
+      onClick: () => handleSelectInstance(instance),
     }),
     children: withMenu ? (
       <InstanceMenu instance={instance} variant="buttonGroup" />
@@ -82,7 +96,22 @@ const InstancesView: React.FC<InstancesViewProps> = ({
 
   const gridItems = instances.map((instance) => ({
     cardContent: {
-      title: instance.name,
+      title: (
+        <HStack spacing={1} justify="center">
+          {isChakraColor(instance.tag) && (
+            <Icon as={GoDotFill} color={`${instance.tag}.500`} />
+          )}
+          <Text
+            fontSize="xs-sm"
+            className="ellipsis-text"
+            fontWeight={
+              selectedInstance?.id === instance.id ? "bold" : "normal"
+            }
+          >
+            {instance.name}
+          </Text>
+        </HStack>
+      ),
       description: generateInstanceDesc(instance) || String.fromCharCode(160),
       image: (
         <Image
@@ -93,7 +122,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       ),
       extraContent: (
-        <HStack spacing={1} position="absolute" top={0.5} right={1}>
+        <HStack spacing={0.5} position="absolute" top={0.5} right={1}>
           {instance.starred && <Icon as={FaStar} color="yellow.500" />}
           {withMenu && <InstanceMenu instance={instance} />}
         </HStack>
@@ -101,7 +130,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     },
     isSelected: selectedInstance?.id === instance.id,
     radioValue: instance.id,
-    onSelect: () => handleUpdateSelectedInstance(instance),
+    onSelect: () => handleSelectInstance(instance),
   }));
 
   return (

@@ -1,0 +1,57 @@
+{
+  "identifier": "SJMCL",
+  "bundle": {
+    "windows": {
+      "nsis": {
+        "installerIcon": "assets/icons/icon.ico",
+        "languages": [
+          "English",
+          "SimpChinese",
+          "TradChinese"
+        ],
+        "sidebarImage": "assets/misc/nsis_sidebar.bmp"
+      }
+    }
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": " ",
+        "url": "/",
+        "width": 820,
+        "height": 550,
+        "minWidth": 820,
+        "minHeight": 550,
+        "center": true,
+        "decorations": false,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "game_error",
+        "create": false,
+        "title": "Game Error",
+        "url": "/standalone/game-error",
+        "width": 800,
+        "height": 530,
+        "minWidth": 640,
+        "minHeight": 440,
+        "center": true,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "game_log",
+        "create": false,
+        "title": "Game Log",
+        "url": "/standalone/game-log",
+        "width": 800,
+        "height": 530,
+        "minWidth": 640,
+        "minHeight": 440,
+        "center": true,
+        "dragDropEnabled": false
+      }
+    ]
+  }
+}

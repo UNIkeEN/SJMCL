@@ -59,7 +59,7 @@ fn get_parsers() -> Vec<Parser> {
 impl ModLoader {
   pub async fn with_branch(&self, app: &AppHandle, mc_version: String) -> SJMCLResult<Self> {
     let version_list =
-      fetch_mod_loader_version_list(app.clone(), mc_version, self.loader_type.clone()).await?;
+      fetch_mod_loader_version_list(app.clone(), mc_version, self.loader_type).await?;
     if let Some(version) = version_list.iter().find(|v| v.version == self.version) {
       return Ok(Self {
         branch: version.branch.clone(),
@@ -74,7 +74,7 @@ impl ModLoader {
 #[serde(rename_all = "camelCase")]
 pub struct ModpackMetaInfo {
   pub name: String,
-  pub version: String,
+  pub version: Option<String>,
   pub description: Option<String>,
   pub author: Option<String>,
   pub modpack_source: OtherResourceSource,

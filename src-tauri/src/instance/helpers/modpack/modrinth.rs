@@ -73,7 +73,7 @@ impl ModpackManifest for ModrinthManifest {
     };
     Ok(ModpackMetaInfo {
       name: self.name.clone(),
-      version: self.version_id.clone(),
+      version: Some(self.version_id.clone()),
       description: self.summary.clone(),
       author: None,
       modpack_source: OtherResourceSource::Modrinth,

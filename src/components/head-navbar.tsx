@@ -17,7 +17,6 @@ import {
   LuBox,
   LuCircleUserRound,
   LuCompass,
-  LuSearch,
   LuSettings,
   LuZap,
 } from "react-icons/lu";
@@ -25,7 +24,6 @@ import AdvancedCard from "@/components/common/advanced-card";
 import { DownloadIndicator } from "@/components/download-indicator";
 import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
-import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
 
 const HeadNavBar = () => {
@@ -35,7 +33,6 @@ const HeadNavBar = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const isSimplified = config.appearance.theme.headNavStyle === "simplified";
 
-  const { openSharedModal } = useSharedModals();
   const [isAnimating, setIsAnimating] = useState(false);
   const { tasks } = useTaskContext();
   const isDownloadIndicatorShown = tasks.length > 0;
@@ -58,18 +55,7 @@ const HeadNavBar = () => {
     { icon: LuZap, label: "launch", path: "/launch" },
     { icon: LuBox, label: "instances", path: "/instances" },
     { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
-    ...(config.general.functionality.discoverPage
-      ? [{ icon: LuCompass, label: "discover", path: "/discover" }]
-      : [
-          {
-            icon: LuSearch,
-            label: "search",
-            path: "%not-page",
-            onNav: () => {
-              openSharedModal("spotlight-search");
-            },
-          },
-        ]),
+    { icon: LuCompass, label: "discover", path: "/discover" },
     { icon: LuSettings, label: "settings", path: "/settings" },
   ];
 
@@ -79,7 +65,7 @@ const HeadNavBar = () => {
 
   const handleTabChange = (index: number) => {
     const target = navList[index];
-    target.path === "%not-page" ? target.onNav?.() : router.push(target.path);
+    router.push(target.path);
   };
 
   return (

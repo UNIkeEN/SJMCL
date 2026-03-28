@@ -1,3 +1,4 @@
+use crate::discover::helpers::mc_news::{fetch_mc_news_page, MC_NEWS_ENDPOINT};
 use crate::discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
@@ -65,6 +66,10 @@ pub async fn fetch_news_post_summaries(
     .map(|NewsPostRequest { url, cursor }| {
       let client = client.clone();
       async move {
+        if url.starts_with(MC_NEWS_ENDPOINT) {
+          return fetch_mc_news_page(&client, &url, cursor).await;
+        }
+
         let mut req = client.get(&url).query(&[("pageSize", "12")]);
 
         if let Some(c) = cursor {

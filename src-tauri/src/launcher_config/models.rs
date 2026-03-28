@@ -58,9 +58,9 @@ pub enum ProcessPriority {
 #[serde(rename_all = "camelCase")]
 pub enum FileValidatePolicy {
   Disable,
-  Normal,
-  #[serde(other)]
   Full,
+  #[serde(other)]
+  Normal,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
@@ -136,7 +136,7 @@ structstruck::strike! {
       },
       pub workaround: struct {
         pub no_jvm_args: bool,
-        #[default(FileValidatePolicy::Full)]
+        #[default(FileValidatePolicy::Normal)]
         pub game_file_validate_policy: FileValidatePolicy,
         pub dont_check_jvm_validity: bool,
         pub dont_patch_natives: bool,
@@ -189,6 +189,8 @@ structstruck::strike! {
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,
     pub run_count: usize,
+    #[default = true]
+    pub last_run_exited_normally: bool,
     pub appearance: struct AppearanceConfig {
       pub theme: struct {
         #[default = "blue"]
@@ -249,11 +251,12 @@ structstruck::strike! {
         pub language: String,
       },
       pub functionality: struct {
-        pub discover_page: bool,
         #[default = "instance"]
         pub instances_nav_type: String,
         #[default = true]
         pub launch_page_quick_switch: bool,
+        #[default = true]
+        pub auto_download_java: bool,
         #[default = true]
         pub resource_translation: bool, // only available in zh-Hans
         #[default = true]
@@ -264,6 +267,16 @@ structstruck::strike! {
       pub advanced: struct GeneralConfigAdvanced {
         #[default = true]
         pub auto_purge_launcher_logs: bool,
+      }
+    },
+    pub intelligence: struct Intelligence {
+      pub mcp_server: struct {
+        pub launcher: struct LauncherMcpServerConfig{
+          #[default = true]
+          pub enabled: bool,
+          #[default = 18970]
+          pub port: u16,
+        },
       }
     },
     pub global_game_config: GameConfig,

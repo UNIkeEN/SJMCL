@@ -27,6 +27,23 @@ const HelpSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t("HelpSettingsPage.top.settings.UserGroup.title"),
+          description: t("HelpSettingsPage.top.settings.UserGroup.description"),
+          children: (
+            <CommonIconButton
+              label={t("HelpSettingsPage.top.settings.UserGroup.url")}
+              icon="external"
+              withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              h={18}
+              onClick={() =>
+                openUrl(t("HelpSettingsPage.top.settings.UserGroup.url"))
+              }
+            />
+          ),
+        },
       ],
     },
     {

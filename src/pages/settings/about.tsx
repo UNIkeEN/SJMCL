@@ -7,7 +7,6 @@ import {
   useToast as useChakraToast,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -23,7 +22,6 @@ import { isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
-  const router = useRouter();
   const toast = useToast();
   const { close: closeToast } = useChakraToast();
   const { openSharedModal } = useSharedModals();
@@ -134,17 +132,17 @@ const AboutSettingsPage = () => {
           ),
         },
         {
-          title: t("AboutSettingsPage.about.settings.reportIssue.title"),
+          title: t("AboutSettingsPage.about.settings.sourceCode.title"),
           children: (
             <CommonIconButton
-              label="https://github.com/UNIkeEN/SJMCL/issues"
+              label="https://github.com/UNIkeEN/SJMCL"
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               h={18}
               onClick={() => {
-                openUrl("https://github.com/UNIkeEN/SJMCL/issues");
+                openUrl("https://github.com/UNIkeEN/SJMCL");
               }}
             />
           ),

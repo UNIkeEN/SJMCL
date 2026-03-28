@@ -39,7 +39,7 @@ structstruck::strike! {
 #[strikethrough[serde(rename_all = "camelCase")]]
   pub struct CurseForgeManifest {
     pub name: String,
-    pub version: String,
+    pub version: Option<String>,
     pub author: String,
     pub overrides: String,
     pub minecraft: struct {

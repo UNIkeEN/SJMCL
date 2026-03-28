@@ -1,6 +1,7 @@
 pub mod misc;
 
 use crate::error::SJMCLResult;
+use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::apply_other_resource_enhancements;
 use crate::resource::helpers::mod_db::handle_search_query;
 use crate::resource::models::{
@@ -185,16 +186,25 @@ pub async fn fetch_remote_resource_by_id_modrinth(
   Ok(resource_info)
 }
 
-pub async fn get_latest_fabric_api_mod_download(
+// used for auto install Fabric API and QFAPI mod
+pub async fn fetch_latest_mod_download_param_modrinth(
   app: &AppHandle,
+  mod_id: &str,
+  mod_loader: ModLoaderType,
   game_version: &str,
   mods_dir: PathBuf,
 ) -> SJMCLResult<Option<DownloadParam>> {
-  const FABRIC_API_MOD_ID: &str = "P7dR8mSH"; // Fabric API Mod Id in Modrinth
+  log::info!(
+    "fetch_latest_mod_download_param_modrinth called: mod_id={}, mod_loader={}, game_version={}, mods_dir={}",
+    mod_id,
+    mod_loader,
+    game_version,
+    mods_dir.display()
+  );
 
   let query = OtherResourceVersionPackQuery {
-    resource_id: FABRIC_API_MOD_ID.to_string(),
-    mod_loader: "Fabric".to_string(),
+    resource_id: mod_id.to_string(),
+    mod_loader: mod_loader.to_string(),
     game_versions: vec![game_version.to_string()],
   };
 

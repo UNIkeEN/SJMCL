@@ -169,7 +169,7 @@ fn extract_versions_and_loaders(game_versions: &[String]) -> (Vec<String>, Vec<S
   let mut loaders = Vec::new();
 
   const ALLOWED_LOADERS: &[&str] = &[
-    "Forge", "Fabric", "NeoForge", "Vanilla", "Iris", "Canvas", "OptiFine",
+    "Forge", "Fabric", "Quilt", "NeoForge", "Vanilla", "Iris", "Canvas", "OptiFine",
   ];
 
   for v in game_versions {
@@ -470,13 +470,16 @@ pub fn cvt_mod_loader_to_id(mod_loader: &str) -> u32 {
   match mod_loader {
     "Forge" => 1,
     "Fabric" => 4,
+    "Quilt" => 5,
     "NeoForge" => 6,
     _ => 0,
   }
 }
 
+// https://api.curseforge.com/v1/minecraft/version
 pub fn cvt_version_to_type_id(version: &str) -> u32 {
   match version {
+    "26.1" => 83806,
     "1.21" => 77784,
     "1.20" => 75125,
     "1.19" => 73407,

@@ -10,8 +10,8 @@ import {
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { IconType } from "react-icons";
 import { FaStar } from "react-icons/fa6";
+import { GoDotFill } from "react-icons/go";
 import {
   LuBox,
   LuBoxes,
@@ -23,6 +23,7 @@ import NavMenu from "@/components/common/nav-menu";
 import SelectableButton from "@/components/common/selectable-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { ChakraColorEnums } from "@/enums/misc";
 import { getGameDirName } from "@/utils/instance";
 
 interface InstancesLayoutProps {
@@ -33,26 +34,49 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   const router = useRouter();
   const { t } = useTranslation();
   const { getInstanceList } = useGlobalData();
-  const instanceList = getInstanceList() || [];
+  const instanceList = useMemo(
+    () => getInstanceList() || [],
+    [getInstanceList]
+  );
   const { config } = useLauncherConfig();
   const navBarType = config.general.functionality.instancesNavType;
   const showNavBar = navBarType !== "hidden";
 
-  const instanceItems: { key: string; icon: IconType; label: string }[] = [
-    { key: "list", icon: LuBoxes, label: t("AllInstancesPage.title") },
-    ...(navBarType === "instance"
-      ? instanceList.map((item) => ({
-          // group by instance
-          key: `details/${encodeURIComponent(item.id)}`,
-          icon: item.starred ? FaStar : LuBox,
-          label: item.name,
-        }))
-      : config.localGameDirectories.map((item) => ({
-          key: `list/${encodeURIComponent(item.name)}`,
-          icon: LuFolder,
-          label: getGameDirName(item),
-        }))),
-  ];
+  const instanceItems: {
+    value: string;
+    icon: React.ReactNode;
+    label: string;
+    tooltip?: string;
+  }[] = useMemo(
+    () => [
+      {
+        value: "/instances/list",
+        icon: <Icon as={LuBoxes} />,
+        label: t("AllInstancesPage.title"),
+        tooltip: "",
+      },
+      ...(navBarType === "instance"
+        ? instanceList.map((item) => ({
+            // group by instance
+            value: `/instances/details/${encodeURIComponent(item.id)}`,
+            icon: <Icon as={item.starred ? FaStar : LuBox} />,
+            label: item.name,
+          }))
+        : navBarType === "tag"
+          ? ChakraColorEnums.map((color) => ({
+              // group by color tag
+              value: `/instances/list?tag=${encodeURIComponent(color)}`,
+              icon: <Icon as={GoDotFill} color={`${color}.500`} />,
+              label: t(`Enums.chakraColors.${color}`),
+            }))
+          : config.localGameDirectories.map((item) => ({
+              value: `/instances/list?dir=${encodeURIComponent(item.name)}`,
+              icon: <Icon as={LuFolder} />,
+              label: getGameDirName(item),
+            }))),
+    ],
+    [config.localGameDirectories, instanceList, navBarType, t]
+  );
 
   // Truncate to the ID, excluding subpage routes
   const isInstanceDetailsPage = (path: string) =>
@@ -91,14 +115,14 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
                 items={instanceItems.map((item) => ({
                   label: (
                     <HStack spacing={2} overflow="hidden">
-                      <Icon as={item.icon} />
+                      {item.icon}
                       <Text fontSize="sm" className="ellipsis-text">
                         {item.label}
                       </Text>
                     </HStack>
                   ),
-                  value: `/instances/${item.key}`,
-                  tooltip: item.key === "all" ? "" : item.label,
+                  value: item.value,
+                  tooltip: item.tooltip ?? item.label,
                 }))}
               />
             </Box>

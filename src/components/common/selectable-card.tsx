@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { LuChevronRight, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
+import cardStyles from "@/styles/card.module.css";
 
 export interface SelectableCardProps extends CardProps {
   title: string;
@@ -41,15 +41,13 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const themedStyles = useThemedCSSStyle();
-
   const borderWidth = "1px";
   const basePadding = boxProps.padding || "12px";
   const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
 
   return (
     <Card
-      className={themedStyles.card["card-front"]}
+      className={cardStyles["card-front"]}
       pr={1.5}
       variant={isSelected ? "outline" : "elevated"}
       borderColor={isSelected ? `${primaryColor}.500` : "transparent"}

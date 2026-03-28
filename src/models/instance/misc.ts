@@ -27,6 +27,7 @@ export interface InstanceSummary {
   iconSrc: string;
   name: string;
   description?: string;
+  tag?: string;
   starred: boolean;
   playTime: number;
   versionPath: string;
@@ -41,7 +42,7 @@ export interface InstanceSummary {
 
 export interface ModpackMetaInfo {
   name: string;
-  version: string;
+  version?: string;
   author?: string;
   description?: string;
   modpackType: OtherResourceSource;
@@ -58,6 +59,7 @@ export interface GameServerInfo {
   playersOnline?: number;
   playersMax?: number;
   online: boolean;
+  latency?: number;
 }
 
 export interface LocalModInfo {

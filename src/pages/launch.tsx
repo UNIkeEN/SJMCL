@@ -29,9 +29,9 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { PlayerType } from "@/enums/account";
-import { useThemedCSSStyle } from "@/hooks/themed-css";
 import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
+import cardStyles from "@/styles/card.module.css";
 import styles from "@/styles/launch.module.css";
 
 interface CustomButtonProps extends Omit<IconButtonProps, "onClick"> {
@@ -73,7 +73,7 @@ const ButtonWithPopover: React.FC<CustomButtonProps> = ({
       gutter={12} // add more gutter to show clear space from the launch button's shadow
     >
       <Tooltip label={tooltip} placement="top-end" isDisabled={tooltipDisabled}>
-        <Box>
+        <Box lineHeight={0}>
           {/* anchor for Tooltip */}
           <PopoverTrigger>
             <IconButton
@@ -106,7 +106,6 @@ const ButtonWithPopover: React.FC<CustomButtonProps> = ({
 const LaunchPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const themedStyles = useThemedCSSStyle();
   const { openSharedModal } = useSharedModals();
 
   const { selectedPlayer, getPlayerList, getInstanceList, selectedInstance } =
@@ -129,9 +128,7 @@ const LaunchPage = () => {
   return (
     <HStack position="absolute" bottom={7} right={7} spacing={4}>
       <Card
-        className={
-          styles["selected-user-card"] + " " + themedStyles.card["card-back"]
-        }
+        className={styles["selected-user-card"] + " " + cardStyles["card-back"]}
       >
         <Box position="absolute" top={1} right={1}>
           <ButtonWithPopover
@@ -246,6 +243,7 @@ const LaunchPage = () => {
               popoverContent={
                 <InstancesView
                   instances={instanceList}
+                  selectedInstance={selectedInstance}
                   viewType="list"
                   withMenu={false}
                 />
@@ -253,7 +251,6 @@ const LaunchPage = () => {
               onClick={() => router.push("/instances/list")}
               showAdd={!hasInstances}
               onAddClick={() => router.push("/instances/add-import")}
-              mt={-1} // prevent margin caused by Tooltip
             />
           </CompactButtonGroup>
         </Box>

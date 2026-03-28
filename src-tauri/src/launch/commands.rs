@@ -10,7 +10,7 @@ use crate::launch::helpers::command_generator::{
   export_full_launch_command, generate_launch_command, LaunchCommand,
 };
 use crate::launch::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files, prepare_legacy_assets,
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
@@ -20,9 +20,7 @@ use crate::launch::helpers::process_monitor::{
 };
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
-use crate::launcher_config::models::{
-  FileValidatePolicy, JavaInfo, LauncherConfig, LauncherVisiablity,
-};
+use crate::launcher_config::models::{FileValidatePolicy, LauncherConfig, LauncherVisiablity};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::storage::load_json_async;
 use crate::tasks::commands::schedule_progressive_task_group;
@@ -50,7 +48,6 @@ pub async fn select_suitable_jre(
   app: AppHandle,
   instance_id: String,
   instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
-  javas_state: State<'_, Mutex<Vec<JavaInfo>>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
   let instance = instances_state
@@ -66,12 +63,10 @@ pub async fn select_suitable_jre(
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
   refresh_and_update_javas(&app).await;
-  let javas = javas_state.lock()?.clone();
 
   let selected_java = select_java_runtime(
     &app,
-    &game_config.game_java,
-    &javas,
+    Some(&game_config.game_java),
     &instance,
     client_info
       .java_version
@@ -94,7 +89,7 @@ pub async fn select_suitable_jre(
   Ok(())
 }
 
-// Step 2: extract native libraries, validate game and dependency files.
+// Step 2: extract native libraries, validate game and dependency files, and prepare legacy game assets (if needed).
 #[tauri::command]
 pub async fn validate_game_files(
   app: AppHandle,
@@ -136,13 +131,14 @@ pub async fn validate_game_files(
     &app,
     &instance,
     &[
+      &InstanceSubdirType::Root,
       &InstanceSubdirType::Libraries,
       &InstanceSubdirType::NativeLibraries,
       &InstanceSubdirType::Assets,
     ],
   )
   .ok_or(InstanceError::InstanceNotFoundByID)?;
-  let [libraries_dir, natives_dir, assets_dir] = dirs.as_slice() else {
+  let [root_dir, libraries_dir, natives_dir, assets_dir] = dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
   extract_native_libraries(
@@ -161,7 +157,7 @@ pub async fn validate_game_files(
 
   // validate game files
   let incomplete_files = match workaround.game_file_validate_policy {
-    FileValidatePolicy::Disable => return Ok(()), // skip
+    FileValidatePolicy::Disable => Vec::new(), // skip
     FileValidatePolicy::Normal => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, false).await?,
@@ -173,7 +169,9 @@ pub async fn validate_game_files(
     ]
     .concat(),
   };
+
   if incomplete_files.is_empty() {
+    prepare_legacy_assets(root_dir, assets_dir, &client_info.asset_index.id).await?;
     Ok(())
   } else {
     schedule_progressive_task_group(
