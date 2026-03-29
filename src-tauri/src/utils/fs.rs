@@ -481,12 +481,36 @@ pub async fn create_modpack_zip(
       .map_err(|e| SJMCLError(format!("Failed to create zip file: {}", e)))?;
     let output = io::BufWriter::with_capacity(1024 * 1024, output);
     let mut writer = ZipWriter::new(output);
-    let options =
-      FileOptions::<ExtendedFileOptions>::default().compression_method(CompressionMethod::Deflated);
+    let deflate_options = FileOptions::<ExtendedFileOptions>::default()
+      .compression_method(CompressionMethod::Deflated)
+      .compression_level(Some(1));
+    let store_options =
+      FileOptions::<ExtendedFileOptions>::default().compression_method(CompressionMethod::Stored);
+
+    fn should_store(path: &str) -> bool {
+      // For these types of files, compression often doesn't reduce size.
+      let ext = path.rsplit('.').next().unwrap_or("").to_lowercase();
+      matches!(
+        ext.as_str(),
+        "jar"
+          | "png"
+          | "jpg"
+          | "jpeg"
+          | "gif"
+          | "webp"
+          | "zip"
+          | "gz"
+          | "xz"
+          | "ogg"
+          | "mp3"
+          | "mp4"
+          | "nbt"
+      )
+    }
 
     for (name, content) in extra_files {
       writer
-        .start_file(name, options.clone())
+        .start_file(name, deflate_options.clone())
         .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
       writer
         .write_all(content.as_bytes())
@@ -495,8 +519,13 @@ pub async fn create_modpack_zip(
 
     for (rel, full) in overrides_files {
       let entry_path = format!("{}/{}", overrides_prefix, rel);
+      let opts = if should_store(&entry_path) {
+        store_options.clone()
+      } else {
+        deflate_options.clone()
+      };
       writer
-        .start_file(entry_path, options.clone())
+        .start_file(entry_path, opts)
         .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
 
       let file = std::fs::File::open(&full)
