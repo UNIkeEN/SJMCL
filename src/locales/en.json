@@ -884,7 +884,8 @@
     "button": {
       "exportGameInfo": "Export Crash Report",
       "gameLogs": "Game Logs",
-      "help": "Help"
+      "help": "Help",
+      "copyAIPrompt": "Copy AI Analysis Prompt"
     },
     "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
   },
