@@ -13,6 +13,8 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  NumberInput,
+  NumberInputField,
   Switch,
   Text,
   VStack,
@@ -254,8 +256,9 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
     setIsLoading(true);
 
     try {
-      const parsedMinMemory = minMemoryInput.trim()
-        ? Number.parseInt(minMemoryInput.trim(), 10)
+      const normalizedMinMemoryInput = minMemoryInput.trim();
+      const parsedMinMemory = /^\d+$/.test(normalizedMinMemoryInput)
+        ? Number.parseInt(normalizedMinMemoryInput, 10)
         : undefined;
 
       const options: ExportModpackOptions = {
@@ -265,9 +268,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
         author: author || undefined,
         description: description || undefined,
         packWithLauncher: packWithLauncher || undefined,
-        minMemory: Number.isNaN(parsedMinMemory || NaN)
-          ? undefined
-          : parsedMinMemory,
+        minMemory: parsedMinMemory,
         noCreateRemoteFiles: noCreateRemoteFiles || undefined,
         skipCurseForgeRemoteFiles: skipCurseForgeRemoteFiles || undefined,
       };
@@ -500,19 +501,29 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
               {
                 title: t("ExportModpackModal.label.minMemory"),
                 children: (
-                  <Editable
-                    isTextArea={false}
-                    value={minMemoryInput}
-                    onEditSubmit={setMinMemoryInput}
-                    textProps={{
-                      className: "secondary-text",
-                      fontSize: "xs-sm",
-                    }}
-                    inputProps={{
-                      fontSize: "xs-sm",
-                      placeholder: t("General.optional"),
-                    }}
-                  />
+                  <HStack spacing={2}>
+                    <NumberInput
+                      min={0}
+                      size="xs"
+                      maxW={20}
+                      clampValueOnBlur={false}
+                      focusBorderColor={`${primaryColor}.500`}
+                      value={minMemoryInput}
+                      onChange={(value) => {
+                        if (!/^\d*$/.test(value)) return;
+                        setMinMemoryInput(value);
+                      }}
+                    >
+                      <NumberInputField
+                        pr={0}
+                        fontSize="xs-sm"
+                        placeholder={t("General.optional")}
+                      />
+                    </NumberInput>
+                    <Text fontSize="xs" className="secondary-text">
+                      MB
+                    </Text>
+                  </HStack>
                 ),
               },
             ]
