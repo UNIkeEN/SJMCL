@@ -13,7 +13,13 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       sync "update_launcher_config",
       crate::launcher_config::commands::update_launcher_config,
       "Update a launcher config field by key_path. Use this to change game settings, launcher app settings, selected instance/account ID, and other config values.",
-      { key_path: String, value: String }
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Dot-delimited launcher config path, for example `states.shared.selectedPlayerId`.")]
+        key_path: String,
+        #[schemars(description = "JSON-encoded value written into the target config field.")]
+        value: String,
+      }
     ),
   ]
 }

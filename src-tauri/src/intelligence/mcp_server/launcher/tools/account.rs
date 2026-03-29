@@ -22,7 +22,12 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     mcp_tool!(
       "select_player",
       "A shortcut tool to update selected player by its ID in launcher config, which will be used for Minecraft game launches. Player ID can be obtained from retrieve_player_list tool.",
-      |app, params| { id: String } => async move {
+      |app, params|
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Player profile ID returned by `retrieve_player_list`.")]
+        id: String,
+      } => async move {
         let id = params.id.trim();
         let value =
           serde_json::to_string(&id).map_err(|e| crate::error::SJMCLError(e.to_string()))?;
