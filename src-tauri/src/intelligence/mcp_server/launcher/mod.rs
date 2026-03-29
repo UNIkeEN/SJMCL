@@ -40,7 +40,7 @@ impl ServerHandler for McpContext {
         website_url: None,
       },
       instructions: Some(
-        "Use tools to query Minecraft instances and accounts managed by SJMC Launcher. For tools requiring instance_id (for example retrieve_game_server_list), call retrieve_instance_list first and pass one returned id. This server is intended for local trusted clients."
+        "Use tools to query Minecraft instances and accounts managed by SJMC Launcher. When a tool requires instance_id, first list available instances and then pass one returned id. This server is intended for local trusted clients."
           .to_string(),
       ),
       ..Default::default()
