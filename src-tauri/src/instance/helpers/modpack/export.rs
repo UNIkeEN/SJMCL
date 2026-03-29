@@ -477,6 +477,10 @@ pub async fn collect_modrinth_files(
   no_create_remote_files: bool,
   skip_curseforge: bool,
 ) -> SJMCLResult<(Vec<ModrinthFile>, Vec<(String, PathBuf)>)> {
+  if no_create_remote_files {
+    return Ok((Vec::new(), selected_files.to_vec()));
+  }
+
   let is_remote_candidate = |rel: &str| {
     rel.starts_with("mods/") || rel.starts_with("resourcepacks/") || rel.starts_with("shaderpacks/")
   };
@@ -501,7 +505,7 @@ pub async fn collect_modrinth_files(
       let full = full.clone();
 
       async move {
-        let result = if is_remote_candidate(&rel) && !no_create_remote_files {
+        let result = if is_remote_candidate(&rel) {
           build_modrinth_remote_file(&app, &rel, &full, skip_curseforge)
             .await
             .ok()

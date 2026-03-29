@@ -93,7 +93,6 @@ uuid = { version = "1.11.0", features = [
     "macro-diagnostics",
 ] }
 walkdir = "2.5.0"
-async_zip = { version = "0.0.18", features = ["tokio", "tokio-fs", "deflate"] }
 zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
 
 [target."cfg(windows)".dependencies]

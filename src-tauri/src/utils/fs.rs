@@ -1,18 +1,14 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::IS_PORTABLE;
-use async_zip::tokio::write::ZipFileWriter;
-use async_zip::Compression;
-use async_zip::ZipEntryBuilder;
 use regex::Regex;
 use sha1::{Digest, Sha1};
 use sha2::Sha256;
 use std::ffi::OsStr;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
-use tokio_util::compat::TokioAsyncReadCompatExt;
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
 
@@ -477,23 +473,53 @@ pub async fn create_modpack_zip(
   overrides_files: Vec<(String, PathBuf)>,
   extra_files: Vec<(String, String)>,
 ) -> SJMCLResult<()> {
-  let output = tokio::fs::File::create(save_path).await?;
-  let mut writer = ZipFileWriter::with_tokio(output);
-  for (name, content) in extra_files {
-    let entry = ZipEntryBuilder::new(name.into(), Compression::Deflate);
-    writer.write_entry_whole(entry, content.as_bytes()).await?;
-  }
+  let save_path = save_path.to_string();
+  let overrides_prefix = overrides_prefix.to_string();
 
-  for (rel, full) in overrides_files {
-    let file = tokio::fs::File::open(&full).await?.compat();
-    let entry_path = format!("{}/{}", overrides_prefix, rel);
-    let entry = ZipEntryBuilder::new(entry_path.into(), Compression::Deflate);
-    let mut entry_writer = writer.write_entry_stream(entry).await?;
-    futures::io::copy(file, &mut entry_writer).await?;
-    entry_writer.close().await?;
-  }
-  writer.close().await?;
-  Ok(())
+  tokio::task::spawn_blocking(move || -> SJMCLResult<()> {
+    let output = std::fs::File::create(&save_path)
+      .map_err(|e| SJMCLError(format!("Failed to create zip file: {}", e)))?;
+    let output = io::BufWriter::with_capacity(1024 * 1024, output);
+    let mut writer = ZipWriter::new(output);
+    let options =
+      FileOptions::<ExtendedFileOptions>::default().compression_method(CompressionMethod::Deflated);
+
+    for (name, content) in extra_files {
+      writer
+        .start_file(name, options.clone())
+        .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
+      writer
+        .write_all(content.as_bytes())
+        .map_err(|e| SJMCLError(format!("Failed to write extra file to zip: {}", e)))?;
+    }
+
+    for (rel, full) in overrides_files {
+      let entry_path = format!("{}/{}", overrides_prefix, rel);
+      writer
+        .start_file(entry_path, options.clone())
+        .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
+
+      let file = std::fs::File::open(&full)
+        .map_err(|e| SJMCLError(format!("Failed to open file {}: {}", full.display(), e)))?;
+      let mut file = io::BufReader::with_capacity(1024 * 1024, file);
+
+      io::copy(&mut file, &mut writer).map_err(|e| {
+        SJMCLError(format!(
+          "Failed to copy file {} to zip: {}",
+          full.display(),
+          e
+        ))
+      })?;
+    }
+
+    writer
+      .finish()
+      .map_err(|e| SJMCLError(format!("Failed to finalize zip file: {}", e)))?;
+
+    Ok(())
+  })
+  .await
+  .map_err(|e| SJMCLError(format!("Failed to join zip creation task: {}", e)))?
 }
 
 /// Enum to define the permission operation
