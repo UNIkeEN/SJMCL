@@ -4,7 +4,7 @@ use regex::Regex;
 use sha1::{Digest, Sha1};
 use sha2::Sha256;
 use std::ffi::OsStr;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 use tauri::path::BaseDirectory;
@@ -465,6 +465,90 @@ pub fn create_zip_from_dirs(paths: Vec<PathBuf>, zip_file_path: PathBuf) -> SJMC
     .map_err(|e| SJMCLError(format!("Failed to finalize zip file: {}", e)))?;
 
   Ok(zip_file_path.to_string_lossy().to_string())
+}
+
+pub async fn create_modpack_zip(
+  save_path: &str,
+  overrides_prefix: &str,
+  overrides_files: Vec<(String, PathBuf)>,
+  extra_files: Vec<(String, String)>,
+) -> SJMCLResult<()> {
+  let save_path = save_path.to_string();
+  let overrides_prefix = overrides_prefix.to_string();
+
+  tokio::task::spawn_blocking(move || -> SJMCLResult<()> {
+    let output = std::fs::File::create(&save_path)
+      .map_err(|e| SJMCLError(format!("Failed to create zip file: {}", e)))?;
+    let output = io::BufWriter::with_capacity(1024 * 1024, output);
+    let mut writer = ZipWriter::new(output);
+    let deflate_options = FileOptions::<ExtendedFileOptions>::default()
+      .compression_method(CompressionMethod::Deflated)
+      .compression_level(Some(1));
+    let store_options =
+      FileOptions::<ExtendedFileOptions>::default().compression_method(CompressionMethod::Stored);
+
+    fn should_store(path: &str) -> bool {
+      // For these types of files, compression often doesn't reduce size.
+      let ext = path.rsplit('.').next().unwrap_or("").to_lowercase();
+      matches!(
+        ext.as_str(),
+        "jar"
+          | "png"
+          | "jpg"
+          | "jpeg"
+          | "gif"
+          | "webp"
+          | "zip"
+          | "gz"
+          | "xz"
+          | "ogg"
+          | "mp3"
+          | "mp4"
+          | "nbt"
+      )
+    }
+
+    for (name, content) in extra_files {
+      writer
+        .start_file(name, deflate_options.clone())
+        .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
+      writer
+        .write_all(content.as_bytes())
+        .map_err(|e| SJMCLError(format!("Failed to write extra file to zip: {}", e)))?;
+    }
+
+    for (rel, full) in overrides_files {
+      let entry_path = format!("{}/{}", overrides_prefix, rel);
+      let opts = if should_store(&entry_path) {
+        store_options.clone()
+      } else {
+        deflate_options.clone()
+      };
+      writer
+        .start_file(entry_path, opts)
+        .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
+
+      let file = std::fs::File::open(&full)
+        .map_err(|e| SJMCLError(format!("Failed to open file {}: {}", full.display(), e)))?;
+      let mut file = io::BufReader::with_capacity(1024 * 1024, file);
+
+      io::copy(&mut file, &mut writer).map_err(|e| {
+        SJMCLError(format!(
+          "Failed to copy file {} to zip: {}",
+          full.display(),
+          e
+        ))
+      })?;
+    }
+
+    writer
+      .finish()
+      .map_err(|e| SJMCLError(format!("Failed to finalize zip file: {}", e)))?;
+
+    Ok(())
+  })
+  .await
+  .map_err(|e| SJMCLError(format!("Failed to join zip creation task: {}", e)))?
 }
 
 /// Enum to define the permission operation

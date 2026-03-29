@@ -76,6 +76,7 @@ dependencies = [
  "url",
  "urlencoding",
  "uuid",
+ "walkdir",
  "winapi",
  "winreg 0.55.0",
  "zip",
