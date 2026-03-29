@@ -6,8 +6,6 @@ use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subd
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderType};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::launch::helpers::jre_selector::select_java_runtime;
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{OptiFineResourceInfo, ResourceType, SourceType};
 use crate::tasks::commands::schedule_progressive_task_group;
@@ -17,8 +15,7 @@ use std::fs;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use zip::{write::FileOptions, ZipArchive, ZipWriter};
 
 pub async fn download_optifine_installer(

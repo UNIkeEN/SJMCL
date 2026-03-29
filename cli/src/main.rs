@@ -142,7 +142,6 @@ impl CliInvocation {
           rest.push(arg);
           rest.extend(
             args
-              .into_iter()
               .map(os_string_to_string)
               .collect::<Result<Vec<_>, _>>()?,
           );
