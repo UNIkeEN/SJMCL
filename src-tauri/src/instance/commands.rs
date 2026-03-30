@@ -13,11 +13,10 @@ use crate::instance::helpers::misc::{
   refresh_and_update_instances, unify_instance_name,
 };
 use crate::instance::helpers::modpack::export::{
-  collect_modrinth_files, generate_modrinth_manifest, generate_multimc_instance_cfg,
-  generate_multimc_manifest, list_files, validate_export_options, ExportFormat,
+  build_export_bundle, create_modpack_zip, list_files, validate_export_options,
   ExportModpackOptions,
 };
-use crate::instance::helpers::modpack::misc::{
+use crate::instance::helpers::modpack::import::{
   extract_overrides, get_download_params, ModpackMetaInfo,
 };
 use crate::instance::helpers::mods::common::{
@@ -58,8 +57,8 @@ use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::{
-  copy_whole_dir, create_modpack_zip, create_url_shortcut, generate_unique_filename,
-  get_files_with_regex, get_subdirectories,
+  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
+  get_subdirectories,
 };
 use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
@@ -1490,46 +1489,9 @@ pub async fn export_modpack(
     return Err(InstanceError::ModpackManifestParseError.into());
   }
 
-  let no_create_remote_files = options.no_create_remote_files.unwrap_or(false);
-  let skip_curseforge = options.skip_curseforge_remote_files.unwrap_or(false);
+  let export_bundle = build_export_bundle(&app, &instance, &options, &selected_files).await?;
 
-  let (overrides_prefix, overrides_files, extra_files) = match options.format {
-    ExportFormat::Modrinth => {
-      let mut manifest = generate_modrinth_manifest(&instance, &options)?;
-      let (modrinth_files, override_files) = collect_modrinth_files(
-        &app,
-        &selected_files,
-        no_create_remote_files,
-        skip_curseforge,
-      )
-      .await?;
-
-      manifest.files = modrinth_files;
-      let json = serde_json::to_string_pretty(&manifest)
-        .map_err(|_| InstanceError::ModpackManifestParseError)?;
-      (
-        "overrides".to_string(),
-        override_files,
-        vec![("modrinth.index.json".to_string(), json)],
-      )
-    }
-    ExportFormat::MultiMC => {
-      let manifest = generate_multimc_manifest(&instance, &options)?;
-      let json = serde_json::to_string_pretty(&manifest)
-        .map_err(|_| InstanceError::ModpackManifestParseError)?;
-      let extras = vec![
-        ("mmc-pack.json".to_string(), json),
-        (
-          "instance.cfg".to_string(),
-          generate_multimc_instance_cfg(&instance, &options),
-        ),
-        (".packignore".to_string(), String::new()),
-      ];
-      (".minecraft".to_string(), selected_files, extras)
-    }
-  };
-
-  create_modpack_zip(&save_path, &overrides_prefix, overrides_files, extra_files)
+  create_modpack_zip(&save_path, export_bundle)
     .await
     .map_err(|_| InstanceError::ZipFileProcessFailed)?;
 

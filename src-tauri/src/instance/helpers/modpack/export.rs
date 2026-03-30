@@ -1,22 +1,18 @@
-use crate::error::SJMCLResult;
-use crate::instance::helpers::modpack::modrinth::{
-  ModrinthFile, ModrinthFileEnv, ModrinthFileHashes, ModrinthManifest,
+use crate::error::{SJMCLError, SJMCLResult};
+use crate::instance::helpers::modpack::{
+  modrinth::build_modrinth_export_bundle, multimc::build_multimc_export_bundle,
 };
-use crate::instance::helpers::modpack::multimc::{MultiMcComponent, MultiMcManifest};
-use crate::instance::models::misc::{Instance, InstanceError, ModLoaderType, ModpackFileList};
-use crate::resource::helpers::{
-  curseforge::fetch_remote_resource_by_local_curseforge,
-  modrinth::fetch_remote_resource_by_local_modrinth,
-};
+use crate::instance::models::misc::{Instance, InstanceError, ModpackFileList};
 use regex::{Regex, RegexSet};
 use serde::{Deserialize, Serialize};
-use sha1::Digest;
-use std::collections::{HashMap, HashSet};
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, LazyLock};
+use std::collections::HashSet;
+use std::io::{self, Write};
+use std::path::PathBuf;
+use std::sync::LazyLock;
 use tauri::AppHandle;
-use tokio::sync::Semaphore;
 use walkdir::WalkDir;
+use zip::write::{ExtendedFileOptions, FileOptions};
+use zip::{CompressionMethod, ZipWriter};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum ExportFormat {
@@ -278,7 +274,7 @@ static NEOFORGE_VERSION_REGEX: LazyLock<Regex> = LazyLock::new(|| {
   Regex::new(r"(neoforge-)?([a-zA-Z0-9.-]+)(-beta)?").expect("Invalid regex")
 });
 
-fn normalize_mod_loader_version(raw: &str) -> String {
+pub(crate) fn normalize_mod_loader_version(raw: &str) -> String {
   let trimmed = raw.trim();
   if trimmed.is_empty() {
     return raw.to_string();
@@ -299,242 +295,109 @@ fn normalize_mod_loader_version(raw: &str) -> String {
   raw.to_string()
 }
 
-// ============================================================================
-// Export Manifest Generators
-// ============================================================================
+#[derive(Debug, Clone)]
+pub struct ModpackExportBundle {
+  pub overrides_prefix: String,
+  pub overrides_files: Vec<(String, PathBuf)>,
+  pub extra_files: Vec<(String, String)>,
+}
 
-/// Generate a Modrinth format manifest for the instance
-pub fn generate_modrinth_manifest(
+pub async fn build_export_bundle(
+  app: &AppHandle,
   instance: &Instance,
   options: &ExportModpackOptions,
-) -> SJMCLResult<ModrinthManifest> {
-  let mut dependencies = HashMap::new();
-
-  // Add Minecraft version
-  dependencies.insert("minecraft".to_string(), instance.version.clone());
-
-  // Add mod loader if present
-  if instance.mod_loader.loader_type != ModLoaderType::Unknown {
-    let version = normalize_mod_loader_version(&instance.mod_loader.version);
-    let loader_key = match instance.mod_loader.loader_type {
-      ModLoaderType::Forge | ModLoaderType::LegacyForge => "forge",
-      ModLoaderType::Fabric => "fabric-loader",
-      ModLoaderType::NeoForge => "neoforge",
-      ModLoaderType::Quilt => "quilt-loader",
-      _ => "",
-    };
-
-    if !loader_key.is_empty() {
-      dependencies.insert(loader_key.to_string(), version);
-    }
-  }
-
-  Ok(ModrinthManifest {
-    version_id: options.version.clone(),
-    name: options.name.clone(),
-    summary: options.description.clone(),
-    files: Vec::new(),
-    dependencies,
-    ..Default::default()
-  })
-}
-
-/// Generate a MultiMC format manifest for the instance
-pub fn generate_multimc_manifest(
-  instance: &Instance,
-  _options: &ExportModpackOptions,
-) -> SJMCLResult<MultiMcManifest> {
-  let mut components = Vec::new();
-
-  // Add Minecraft component (always important)
-  components.push(MultiMcComponent {
-    uid: "net.minecraft".to_string(),
-    version: Some(instance.version.clone()),
-    important: Some(true),
-    dependency_only: Some(false),
-    cached_name: None,
-    cached_requires: None,
-    cached_version: None,
-    cached_volatile: None,
-  });
-
-  // Add mod loader component if present
-  if instance.mod_loader.loader_type != ModLoaderType::Unknown {
-    let version = normalize_mod_loader_version(&instance.mod_loader.version);
-    let uid = match instance.mod_loader.loader_type {
-      ModLoaderType::Forge | ModLoaderType::LegacyForge => "net.minecraftforge",
-      ModLoaderType::NeoForge => "net.neoforged",
-      ModLoaderType::Fabric => "net.fabricmc.fabric-loader",
-      ModLoaderType::Quilt => "org.quiltmc.quilt-loader",
-      _ => "",
-    };
-
-    if !uid.is_empty() {
-      components.push(MultiMcComponent {
-        uid: uid.to_string(),
-        version: Some(version),
-        important: Some(false),
-        dependency_only: Some(false),
-        cached_name: None,
-        cached_requires: None,
-        cached_version: None,
-        cached_volatile: None,
-      });
-    }
-  }
-
-  Ok(MultiMcManifest {
-    format_version: 1,
-    components,
-    cfg: HashMap::new(),
-    base_path: String::new(),
-  })
-}
-
-/// Generate instance.cfg file content for MultiMC
-pub fn generate_multimc_instance_cfg(
-  _instance: &Instance,
-  options: &ExportModpackOptions,
-) -> String {
-  let mut content = format!(
-    "# Auto generated by SJMC Launcher\nInstanceType=OneSix\nname={}\n",
-    options.name
-  );
-  if let Some(min_memory) = options.min_memory {
-    content.push_str("OverrideMemory=true\n");
-    content.push_str(&format!("MinMemAlloc={}\n", min_memory));
-  }
-  content
-}
-
-// ============================================================================
-// Remote File Collectors
-// ============================================================================
-
-async fn build_modrinth_remote_file(
-  app: &AppHandle,
-  rel: &str,
-  full: &Path,
-  skip_curseforge: bool,
-) -> SJMCLResult<Option<ModrinthFile>> {
-  // If disabled, mark it as optional in env
-  let is_disabled = rel.ends_with(".disabled");
-  let manifest_path = if is_disabled {
-    rel.trim_end_matches(".disabled").to_string()
-  } else {
-    rel.to_string()
-  };
-
-  let mut downloads = Vec::new();
-
-  if let Ok(remote) =
-    fetch_remote_resource_by_local_modrinth(app, full.to_string_lossy().as_ref()).await
-  {
-    downloads.push(remote.download_url);
-  }
-
-  if !skip_curseforge {
-    if let Ok(remote) =
-      fetch_remote_resource_by_local_curseforge(app, full.to_string_lossy().as_ref()).await
-    {
-      downloads.push(remote.download_url);
-    }
-  }
-
-  if downloads.is_empty() {
-    return Ok(None);
-  }
-
-  let file_content = tokio::fs::read(full).await?;
-  let mut sha1_hasher = sha1::Sha1::new();
-  let mut sha512_hasher = sha2::Sha512::new();
-  sha1_hasher.update(&file_content);
-  sha512_hasher.update(&file_content);
-  let sha1 = hex::encode(sha1_hasher.finalize());
-  let sha512 = hex::encode(sha512_hasher.finalize());
-  let file_size = file_content.len() as u64;
-  let env = if is_disabled {
-    Some(ModrinthFileEnv {
-      client: "optional".to_string(),
-      server: "unsupported".to_string(),
-    })
-  } else {
-    None
-  };
-
-  Ok(Some(ModrinthFile {
-    path: manifest_path,
-    hashes: ModrinthFileHashes { sha1, sha512 },
-    env,
-    downloads,
-    file_size,
-  }))
-}
-
-pub async fn collect_modrinth_files(
-  app: &AppHandle,
   selected_files: &[(String, PathBuf)],
-  no_create_remote_files: bool,
-  skip_curseforge: bool,
-) -> SJMCLResult<(Vec<ModrinthFile>, Vec<(String, PathBuf)>)> {
-  if no_create_remote_files {
-    return Ok((Vec::new(), selected_files.to_vec()));
-  }
-
-  let is_remote_candidate = |rel: &str| {
-    rel.starts_with("mods/") || rel.starts_with("resourcepacks/") || rel.starts_with("shaderpacks/")
-  };
-
-  let mut tasks = Vec::new();
-  let semaphore = Arc::new(Semaphore::new(
-    std::thread::available_parallelism().unwrap().into(),
-  ));
-
-  for (rel, full) in selected_files {
-    let rel = rel.clone();
-    let full = full.clone();
-    let app = app.clone();
-    let permit = semaphore
-      .clone()
-      .acquire_owned()
-      .await
-      .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
-
-    let task = tokio::spawn({
-      let rel = rel.clone();
-      let full = full.clone();
-
-      async move {
-        let result = if is_remote_candidate(&rel) {
-          build_modrinth_remote_file(&app, &rel, &full, skip_curseforge)
-            .await
-            .ok()
-            .flatten()
-        } else {
-          None
-        };
-
-        drop(permit);
-        result
-      }
-    });
-
-    tasks.push((rel, full, task));
-  }
-
-  let mut modrinth_files = Vec::new();
-  let mut override_files = Vec::new();
-
-  for (rel, full, task) in tasks {
-    match task.await {
-      Ok(Some(modrinth_file)) => {
-        modrinth_files.push(modrinth_file);
-      }
-      Ok(None) | Err(_) => {
-        override_files.push((rel, full));
-      }
+) -> SJMCLResult<ModpackExportBundle> {
+  match options.format {
+    ExportFormat::Modrinth => {
+      build_modrinth_export_bundle(app, instance, options, selected_files).await
     }
+    ExportFormat::MultiMC => build_multimc_export_bundle(instance, options, selected_files),
   }
+}
 
-  Ok((modrinth_files, override_files))
+fn should_store(path: &str) -> bool {
+  // For these types of files, compression often doesn't reduce size.
+  let ext = path.rsplit('.').next().unwrap_or("").to_lowercase();
+  matches!(
+    ext.as_str(),
+    "jar"
+      | "png"
+      | "jpg"
+      | "jpeg"
+      | "gif"
+      | "webp"
+      | "zip"
+      | "gz"
+      | "xz"
+      | "ogg"
+      | "mp3"
+      | "mp4"
+      | "nbt"
+  )
+}
+
+pub async fn create_modpack_zip(
+  save_path: &str,
+  export_bundle: ModpackExportBundle,
+) -> SJMCLResult<()> {
+  let save_path = save_path.to_string();
+  let ModpackExportBundle {
+    overrides_prefix,
+    overrides_files,
+    extra_files,
+  } = export_bundle;
+
+  tokio::task::spawn_blocking(move || -> SJMCLResult<()> {
+    let output = std::fs::File::create(&save_path)
+      .map_err(|e| SJMCLError(format!("Failed to create zip file: {}", e)))?;
+    let output = io::BufWriter::with_capacity(1024 * 1024, output);
+    let mut writer = ZipWriter::new(output);
+    let deflate_options = FileOptions::<ExtendedFileOptions>::default()
+      .compression_method(CompressionMethod::Deflated)
+      .compression_level(Some(1));
+    let store_options =
+      FileOptions::<ExtendedFileOptions>::default().compression_method(CompressionMethod::Stored);
+
+    for (name, content) in extra_files {
+      writer
+        .start_file(name, deflate_options.clone())
+        .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
+      writer
+        .write_all(content.as_bytes())
+        .map_err(|e| SJMCLError(format!("Failed to write extra file to zip: {}", e)))?;
+    }
+
+    for (rel, full) in overrides_files {
+      let entry_path = format!("{}/{}", overrides_prefix, rel);
+      let options = if should_store(&entry_path) {
+        store_options.clone()
+      } else {
+        deflate_options.clone()
+      };
+      writer
+        .start_file(entry_path, options)
+        .map_err(|e| SJMCLError(format!("Failed to create zip entry: {}", e)))?;
+
+      let file = std::fs::File::open(&full)
+        .map_err(|e| SJMCLError(format!("Failed to open file {}: {}", full.display(), e)))?;
+      let mut file = io::BufReader::with_capacity(1024 * 1024, file);
+
+      io::copy(&mut file, &mut writer).map_err(|e| {
+        SJMCLError(format!(
+          "Failed to copy file {} to zip: {}",
+          full.display(),
+          e
+        ))
+      })?;
+    }
+
+    writer
+      .finish()
+      .map_err(|e| SJMCLError(format!("Failed to finalize zip file: {}", e)))?;
+
+    Ok(())
+  })
+  .await
+  .map_err(|e| SJMCLError(format!("Failed to join zip creation task: {}", e)))?
 }
