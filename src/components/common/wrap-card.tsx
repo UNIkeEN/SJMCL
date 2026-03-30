@@ -16,7 +16,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import cardStyles from "@/styles/card.module.css";
 
 type WrapCardContentObject = {
-  title: string;
+  title: string | React.ReactNode;
   description: string;
   image?: string | React.ReactNode;
   extraContent?: React.ReactNode;
@@ -69,19 +69,30 @@ export const WrapCard: React.FC<WrapCardProps> = ({
       <VStack spacing={0}>
         {image &&
           (typeof image === "string" ? (
-            <Image boxSize="36px" objectFit="cover" src={image} alt={title} />
+            <Image
+              boxSize="36px"
+              objectFit="cover"
+              src={image}
+              alt={typeof title === "string" ? title : description}
+            />
           ) : (
             image
           ))}
-        <Text
-          fontSize="xs-sm"
-          className="ellipsis-text"
-          fontWeight={isSelected ? "bold" : "normal"}
-          mt={image ? 2 : 0}
-          overflow="hidden"
-        >
-          {title}
-        </Text>
+        {typeof title === "string" ? (
+          <Text
+            fontSize="xs-sm"
+            className="ellipsis-text"
+            fontWeight={isSelected ? "bold" : "normal"}
+            mt={image ? 2 : 0}
+            overflow="hidden"
+          >
+            {title}
+          </Text>
+        ) : (
+          <Box mt={image ? 2 : 0} w="100%">
+            {title}
+          </Box>
+        )}
         <Text fontSize="xs" className="secondary-text ellipsis-text">
           {description}
         </Text>
@@ -148,9 +159,13 @@ export const WrapCardGroup: React.FC<WrapCardGroupProps> = ({
   }, [boxRef, numberToPx, cardMinWidth, spacing, widthMode, items.length]);
 
   useLayoutEffect(() => {
-    resizeCard();
-    window.addEventListener("resize", resizeCard);
-    return () => window.removeEventListener("resize", resizeCard);
+    if (!boxRef.current) return;
+    const observer = new ResizeObserver(() => {
+      resizeCard();
+    });
+    observer.observe(boxRef.current);
+
+    return () => observer.disconnect();
   }, [resizeCard]);
 
   return (

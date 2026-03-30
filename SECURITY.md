@@ -6,6 +6,7 @@ The following releases of SJMCL are currently supported.
 
 | Version | Supported |
 | ------- | --------- |
+| 1.x     | ✅        |
 | 0.x     | ✅        |
 | Other   | ❌        |
 

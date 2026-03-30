@@ -73,7 +73,7 @@ const ButtonWithPopover: React.FC<CustomButtonProps> = ({
       gutter={12} // add more gutter to show clear space from the launch button's shadow
     >
       <Tooltip label={tooltip} placement="top-end" isDisabled={tooltipDisabled}>
-        <Box>
+        <Box lineHeight={0}>
           {/* anchor for Tooltip */}
           <PopoverTrigger>
             <IconButton
@@ -243,6 +243,7 @@ const LaunchPage = () => {
               popoverContent={
                 <InstancesView
                   instances={instanceList}
+                  selectedInstance={selectedInstance}
                   viewType="list"
                   withMenu={false}
                 />
@@ -250,7 +251,6 @@ const LaunchPage = () => {
               onClick={() => router.push("/instances/list")}
               showAdd={!hasInstances}
               onAddClick={() => router.push("/instances/add-import")}
-              mt={-1} // prevent margin caused by Tooltip
             />
           </CompactButtonGroup>
         </Box>

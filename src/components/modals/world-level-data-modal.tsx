@@ -12,11 +12,14 @@ import {
   ModalProps,
   Text,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
-import StructDataTree from "@/components/common/struct-data-tree";
+import TreeView, {
+  StructTreeNodeData,
+  buildStructTreeNodes,
+} from "@/components/common/tree-view";
 import { useToast } from "@/contexts/toast";
 import { LevelData } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
@@ -37,24 +40,32 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isOpen, onClose } = props;
 
+  const treeNodes = useMemo(
+    () => (levelData ? buildStructTreeNodes(levelData) : []),
+    [levelData]
+  );
+
   const handleRetrieveWorldDetails = useCallback(
-    (instanceId: string, worldName: string) => {
+    async (instanceId: string, worldName: string) => {
       setIsLoading(true);
-      InstanceService.retrieveWorldDetails(instanceId, worldName).then(
-        (response) => {
-          if (response.status === "success") {
-            setLevelData(response.data);
-          } else {
-            setLevelData(undefined);
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-          }
+      try {
+        const response = await InstanceService.retrieveWorldDetails(
+          instanceId,
+          worldName
+        );
+        if (response.status === "success") {
+          setLevelData(response.data);
+        } else {
+          setLevelData(undefined);
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
         }
-      );
-      setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
     },
     [toast]
   );
@@ -85,7 +96,28 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
         <ModalCloseButton />
 
         <ModalBody className="allow-select">
-          {levelData && <StructDataTree data={levelData} />}
+          {levelData && (
+            <TreeView
+              nodes={treeNodes}
+              defaultExpandedDepth={1}
+              renderNode={({ node }) => {
+                const { key, value } = node.data as StructTreeNodeData;
+                const isPrimitive = typeof value !== "object" || value === null;
+
+                return (
+                  <Text fontWeight="bold" fontSize="sm" display="inline">
+                    {key}
+                    {isPrimitive ? ": " : ""}
+                    {isPrimitive ? (
+                      <Text as="span" fontWeight="normal" fontSize="sm">
+                        {String(value)}
+                      </Text>
+                    ) : null}
+                  </Text>
+                );
+              }}
+            />
+          )}
           {!levelData && !isLoading && <Empty withIcon={false} size="sm" />}
           {isLoading && (
             <Center>

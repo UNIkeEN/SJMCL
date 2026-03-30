@@ -3,6 +3,7 @@ use crate::instance::helpers::client_jar::load_game_version_from_jar;
 use crate::instance::helpers::client_json::{libraries_to_info, patches_to_info, McClientInfo};
 use crate::instance::helpers::loader::forge::download_forge_libraries;
 use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
+use crate::instance::helpers::loader::optifine::download_optifine_libraries;
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType, OptiFine,
 };
@@ -234,6 +235,54 @@ pub async fn refresh_instances(
       }
     }
 
+    if cfg_read
+      .optifine
+      .as_ref()
+      .is_some_and(|o| o.status != ModLoaderStatus::Installed)
+    {
+      let priority_list = {
+        let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+        let launcher_config = launcher_config_state.lock()?;
+        get_source_priority_list(&launcher_config)
+      };
+      if let Err(e) = {
+        match cfg_read.optifine.as_ref().unwrap().status {
+          ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
+            if is_first_run {
+              // The instance failed to install OptiFine during last run.
+              if let Some(optifine_cfg) = &mut cfg_read.optifine {
+                optifine_cfg.status = ModLoaderStatus::DownloadFailed;
+              }
+            }
+            Ok(())
+          }
+          ModLoaderStatus::NotDownloaded => {
+            cfg_read.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
+            download_optifine_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+
+            let vjson_path = cfg_read
+              .version_path
+              .join(format!("{}.json", cfg_read.name));
+            fs::write(vjson_path, serde_json::to_vec_pretty(&client_data)?)?;
+
+            Ok(())
+          }
+          ModLoaderStatus::DownloadFailed => {
+            cfg_read.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
+            download_optifine_libraries(app, &priority_list, &cfg_read, &mut client_data).await
+          }
+          ModLoaderStatus::Installed => Ok(()),
+        }
+      } {
+        log::warn!("Failed to install OptiFine for {}: {:?}", name, e);
+        if let Some(optifine_cfg) = &mut cfg_read.optifine {
+          optifine_cfg.status = ModLoaderStatus::DownloadFailed;
+        }
+        cfg_read.save_json_cfg().await?;
+        continue;
+      }
+    }
+
     let (mut game_version, loader_version, loader_type, optifine_info) =
       if !client_data.patches.is_empty() {
         patches_to_info(&client_data.patches)
@@ -258,7 +307,7 @@ pub async fn refresh_instances(
       .as_ref()
       .is_some_and(|o| o.status == ModLoaderStatus::Installed);
     let optifine_filename = optifine_info.as_ref().map(|info| info.filename.clone());
-    let optifine_version = optifine_info.map(|info| format!("{}", info.r#type));
+    let optifine_version = optifine_info.map(|info| info.r#type.to_string());
     let instance = Instance {
       name,
       version: game_version.unwrap_or_default(),
@@ -329,4 +378,40 @@ pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();
   *state = instances;
+}
+
+#[cfg(any(target_os = "windows", target_os = "linux"))]
+pub fn create_instance_shortcut_icon(
+  app: &AppHandle,
+  instance: &Instance,
+  icon_src: &str,
+) -> SJMCLResult<PathBuf> {
+  use crate::utils::fs::get_app_resource_filepath;
+
+  let mut img = if icon_src == "custom" {
+    image::ImageReader::open(instance.version_path.join("icon"))?
+      .with_guessed_format()?
+      .decode()?
+  } else {
+    let asset = app
+      .asset_resolver()
+      .get(icon_src.to_string())
+      .ok_or_else(|| crate::error::SJMCLError(format!("Icon asset not found: {}", icon_src)))?;
+    image::load_from_memory(asset.bytes())?
+  };
+
+  // combine instance icon with square overlay of the launcher icon's variant. (see #448)
+  img = img.resize_exact(128, 128, image::imageops::FilterType::Nearest);
+  let overlay = get_app_resource_filepath(app, "assets/icons/variants/square.png")?;
+  let square = image::open(overlay)?.resize_exact(42, 42, image::imageops::FilterType::Lanczos3);
+  image::imageops::overlay(&mut img, &square, 80, 80);
+
+  #[cfg(target_os = "windows")]
+  let icon_name = "icon.ico";
+  #[cfg(target_os = "linux")]
+  let icon_name = "icon.png";
+
+  let icon_path = instance.version_path.join(icon_name);
+  img.save(&icon_path)?;
+  Ok(icon_path)
 }

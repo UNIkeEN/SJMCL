@@ -13,6 +13,7 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Text,
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
@@ -39,6 +40,10 @@ import {
 interface ImportAccountInfoModalProps extends Omit<ModalProps, "children"> {
   currAuthServers?: AuthServer[];
   currPlayers?: Player[];
+}
+
+interface ImportLauncherOption {
+  showParentDirHint: boolean;
 }
 
 const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
@@ -70,11 +75,28 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
     {}
   );
 
-  const importLauncherTypes = [
-    ImportLauncherType.HMCL,
-    // ...(config.basicInfo.osType === "windows" ? [ImportLauncherType.PCL] : []),
-    // ...(config.basicInfo.osType === "macos" ? [ImportLauncherType.SCL] : []),
-  ];
+  const importLauncherTypes: Partial<
+    Record<ImportLauncherType, ImportLauncherOption>
+  > = {
+    [ImportLauncherType.HMCL]: {
+      showParentDirHint: false,
+    },
+    ...(config.basicInfo.osType === "windows"
+      ? {
+          [ImportLauncherType.MultiMC]: {
+            showParentDirHint: true,
+          },
+        }
+      : {}),
+    // [ImportLauncherType.SCL]: { showParentDirHint: false },
+  };
+
+  const importLauncherTypeEntries = Object.entries(importLauncherTypes) as [
+    ImportLauncherType,
+    ImportLauncherOption,
+  ][];
+  const selectedTypeOptions = importLauncherTypes[selectedType];
+  const showParentDirHint = selectedTypeOptions?.showParentDirHint ?? false;
 
   const isThirdParty = (p: Player) =>
     p.playerType === PlayerType.ThirdParty && !!p.authServer?.authUrl;
@@ -224,15 +246,15 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
       {...props}
     >
       <ModalOverlay />
-      <ModalContent h="80vh">
+      <ModalContent h="100%">
         <ModalHeader>{t("ImportAccountInfoModal.header.title")}</ModalHeader>
         <ModalCloseButton />
         <ModalBody overflow="hidden">
           <Grid templateColumns={"3fr 5fr"} gap={4} h="100%">
             <VStack minW="3xs" spacing={3.5} overflowY="auto" align="stretch">
-              {importLauncherTypes.map((type, index) => (
+              {importLauncherTypeEntries.map(([type]) => (
                 <SelectableCard
-                  key={index}
+                  key={type}
                   title={type}
                   description={t(`ImportAccountInfoModal.launcherDesc.${type}`)}
                   iconSrc={`/images/icons/external/${type}.png`}
@@ -361,22 +383,33 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
             </VStack>
           </Grid>
         </ModalBody>
-        <ModalFooter>
-          <Button variant="ghost" onClick={props.onClose}>
-            {t("General.cancel")}
-          </Button>
-          <Button
-            colorScheme={primaryColor}
-            isLoading={isImporting}
-            isDisabled={
-              isRetrieving ||
-              isImporting ||
-              (selectedAuthServers.length === 0 && selectedPlayers.length === 0)
-            }
-            onClick={handleImportExternalAccountInfo}
+        <ModalFooter justifyContent="space-between" gap={3}>
+          <Text
+            color="gray.500"
+            fontSize="sm"
+            lineHeight="short"
+            visibility={showParentDirHint ? "visible" : "hidden"}
           >
-            {t("General.import")}
-          </Button>
+            {t("ImportAccountInfoModal.footer.parentDirHint")}
+          </Text>
+          <HStack spacing={3}>
+            <Button variant="ghost" onClick={props.onClose}>
+              {t("General.cancel")}
+            </Button>
+            <Button
+              colorScheme={primaryColor}
+              isLoading={isImporting}
+              isDisabled={
+                isRetrieving ||
+                isImporting ||
+                (selectedAuthServers.length === 0 &&
+                  selectedPlayers.length === 0)
+              }
+              onClick={handleImportExternalAccountInfo}
+            >
+              {t("General.import")}
+            </Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>

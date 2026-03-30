@@ -16,8 +16,8 @@
         "contributors": {
           "title": "開發者名單"
         },
-        "reportIssue": {
-          "title": "報告問題或請求功能"
+        "sourceCode": {
+          "title": "在 GitHub 檢視原始碼"
         },
         "aboutSJMC": {
           "title": "關於上海交通大學 Minecraft 社（SJMC）"
@@ -62,7 +62,7 @@
         },
         "userAgreement": {
           "title": "使用者協議",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
         },
         "openSourceLicense": {
           "title": "開源協議",
@@ -462,11 +462,30 @@
   "DevToolbar": {
     "tooltip": "開發工具列"
   },
-  "DiscoverPage": {
+  "DiscoverCommunityNewsPage": {
     "title": "發現",
     "noMore": "無更多內容",
     "sources": "管理資料來源",
     "NoSources": "未新增資料來源"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft 新聞",
+    "community-news": "社群新聞",
+    "hotModpacks": "來自 {{source}} 的熱門整合包"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "搜尋",
+      "home": "首頁",
+      "community-news": "社群",
+      "minecraft-news": "Minecraft 新聞",
+      "modpack": "整合包",
+      "mod": "模組",
+      "world": "世界",
+      "resourcepack": "資源包",
+      "shader": "光影包",
+      "datapack": "資料包"
+    }
   },
   "DiscoverSourcesPage": {
     "button": {
@@ -589,7 +608,7 @@
       "pause": "暫停",
       "begin": "開始",
       "retry": "重試",
-      "deleteRecord": "刪除此記錄"
+      "clearHistory": "清空歷史記錄"
     },
     "label": {
       "paused": "已暫停",
@@ -686,9 +705,19 @@
       "macos": "Control(⌃)",
       "windows": "Ctrl"
     },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
     "metaKey": {
       "linux": "Meta",
       "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
       "windows": "Win"
     },
     "playerTypes": {
@@ -908,6 +937,8 @@
     "finish": "完成",
     "import": "匯入",
     "launch": "啟動",
+    "more": "更多",
+    "new": "新",
     "next": "下一步",
     "notice": "提示",
     "open": "開啟",
@@ -955,12 +986,6 @@
     "functions": {
       "title": "功能",
       "settings": {
-        "discoverPage": {
-          "title": "發現頁",
-          "openNotice": {
-            "content": "頂部導航欄的「搜尋」已取代為「發現」，您可以透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>S</key> 繼續使用「聚合搜尋」。"
-          }
-        },
         "instancesNavType": {
           "title": "實例頁導航欄模式",
           "description": "更改實例頁左側導航欄是否顯示、分組方式",
@@ -971,6 +996,16 @@
         "launchPageQuickSwitch": {
           "title": "快捷切換實例與帳戶",
           "description": "啟用後，點選啟動頁的切換按鈕可直接選擇帳戶或實例，而無需跳轉頁面"
+        }
+      }
+    },
+    "sync": {
+      "title": "同步",
+      "settings": {
+        "internetSync": {
+          "title": "聯網同步啟動器設定",
+          "import": "匯入",
+          "export": "匯出"
         }
       }
     },
@@ -987,6 +1022,11 @@
         "autoPurgeLauncherLogs": {
           "title": "自動清理啟動器日誌",
           "description": "自動清理 30 天及以前的啟動器日誌檔案"
+        },
+        "restoreAll": {
+          "title": "還原所有設定",
+          "description": "將所有啟動器設定還原為預設值",
+          "restore": "還原"
         }
       }
     }
@@ -1101,6 +1141,10 @@
     "step3": {
       "title": "Minecraft，啟動！",
       "content": "選中實例與角色、調整好相關設定後，點選啟動按鈕享受遊戲吧 🥳"
+    },
+    "step4": {
+      "title": "啟動 Minecraft！",
+      "content": "選擇好實例與角色，並調整好相關設定後，點擊啟動按鈕即可開始遊戲，祝你玩得開心！🥳"
     }
   },
   "HeadNavBar": {
@@ -1150,7 +1194,12 @@
       "settings": {
         "LauncherDocs": {
           "title": "SJMC Launcher 文件",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/docs"
+        },
+        "UserGroup": {
+          "title": "使用者社群",
+          "description": "歡迎加入 QQ 群或 Discord 伺服器，回報問題、請求功能或取得協助",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }
     }
@@ -1160,15 +1209,20 @@
       "title": "從其他啟動器匯入帳戶資訊"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "認證伺服器",
       "players": "角色"
     },
+    "footer": {
+      "parentDirHint": "將在已新增遊戲目錄的父目錄尋找帳戶資訊檔案。"
+    },
     "tooltips": {
       "existingServer": "已存在相同地址的認證伺服器，匯入將會覆寫資料",
-      "existingPlayer": "已存在相同 UUID 的角色，匯入將會覆寫資料"
+      "existingPlayer": "已存在相同 UUID 的角色，匯入將會覆寫資料",
+      "expired": "此角色 Token 已過期，無法匯入。"
     }
   },
   "ImportModpackModal": {
@@ -1334,6 +1388,29 @@
       "launch": "遊玩此伺服器"
     }
   },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL 智慧",
+    "description": "將 AI 模型整合到你的啟動器與 Minecraft 遊玩體驗中。",
+    "mcpServer": {
+      "title": "MCP 服務",
+      "headExtra": "需要重新啟動",
+      "settings": {
+        "enabled": {
+          "title": "啟動器 MCP 服務",
+          "description": "啟用本機 MCP 服務，以連線外部 Agent 應用並自動化控制啟動器。"
+        },
+        "docs": {
+          "title": "使用指南",
+          "description": "了解如何將啟動器連線到外部 Agent 應用（例如 Claude、Cherry Studio 等）。",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "連接埠",
+          "description": "啟動器 MCP 服務使用的固定本機連接埠。"
+        }
+      }
+    }
+  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Java 管理",
@@ -1375,6 +1452,13 @@
       "noSelectedGame": "尚未選擇遊戲實例"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "上次執行異常退出",
+      "content": "SJMCL 上次執行時異常退出。您可以將日誌發送到<community>使用者社群</community>，或在 <github>GitHub</github> 發起 Issue 以尋求協助",
+      "viewLog": "檢視日誌"
+    }
+  },
   "LaunchProcessModal": {
     "header": {
       "title": "啟動遊戲 - {{name}}"
@@ -1386,7 +1470,8 @@
       "launchGame": "等待遊戲啟動"
     },
     "toast": {
-      "noSelectedPlayer": "請先新增並選擇遊戲角色"
+      "noSelectedPlayer": "請先新增並選擇遊戲角色",
+      "noSelectedInstance": "請先新增並選擇遊戲實例"
     }
   },
   "LoaderSelector": {
@@ -1805,9 +1890,17 @@
       "setAsBg": "設定為啟動器背景"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "選擇實例",
+      "titleForLaunch": "選擇要啟動的實例"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "請選擇想要新增的角色"
+      "title": "選擇角色",
+      "titleForAdd": "選擇要新增的新角色",
+      "titleForLaunch": "選擇要遊玩的角色"
     }
   },
   "Services": {
@@ -2112,7 +2205,6 @@
           "title": "驗證遊戲檔案失敗",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模組載入器未完成安裝",
-            "MOD_LOADER_LIB_NOT_DOWNLOADED": "模組載入器庫檔案未下載",
             "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "遊戲檔案不完整或缺失",
             "LAUNCHING_STATE_NOT_FOUND": "啟動狀態遺失"
@@ -2409,8 +2501,8 @@
         "error": {
           "title": "獲取世界詳細資訊失敗",
           "description": {
-            "WORLD_NOT_EXSIT_ERROR": "世界不存在",
-            "LEVEL_NOT_EXSIT_ERROR": "存檔資料檔案不存在",
+            "WORLD_NOT_EXIST_ERROR": "世界不存在",
+            "LEVEL_NOT_EXIST_ERROR": "存檔資料檔案不存在",
             "LEVEL_PARSE_ERROR": "存檔資料檔案解析錯誤"
           }
         }
@@ -2501,7 +2593,7 @@
       "general": "一般",
       "appearance": "外觀",
       "download": "下載資源",
-      "sync-restore": "同步與還原",
+      "intelligence": "智慧",
       "help": "文件與幫助",
       "about": "關於",
       "dev-test": "開發 - 測試頁"
@@ -2560,23 +2652,6 @@
       "starUs": "點亮星標"
     }
   },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "啟動器設定",
-      "settings": {
-        "internetSync": {
-          "title": "聯網同步",
-          "import": "匯入",
-          "export": "匯出"
-        },
-        "restoreAll": {
-          "title": "還原所有設定",
-          "description": "將所有啟動器設定還原為預設值",
-          "restore": "還原"
-        }
-      }
-    }
-  },
   "SyncConfigExportModal": {
     "header": {
       "title": "同步設定 - 匯出"
@@ -2605,7 +2680,8 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "無效的執行路徑",
-      "content": "您正在暫存或非法目錄下執行 SJMCL，您的設定和遊戲資料可能遺失。請將 SJMCL 移動到其他位置後再次執行。"
+      "content": "您正在暫存或非法目錄下執行 SJMCL，您的設定和遊戲資料可能遺失。請將 SJMCL 移動到其他位置後再次執行。",
+      "btnContinue": "仍要執行"
     }
   },
   "Utils": {

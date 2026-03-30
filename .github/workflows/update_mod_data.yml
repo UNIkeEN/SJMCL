@@ -69,7 +69,7 @@ jobs:
             TITLE="chore: auto update mcmod data"
           fi
 
-          echo "pr_title=$TITLE" >> $GITHUB_OUTPUT
+          echo "pr_title=$TITLE [skip ci]" >> $GITHUB_OUTPUT
           echo "pr_body=$TITLE" >> $GITHUB_OUTPUT
 
       - name: Create or update Pull Request

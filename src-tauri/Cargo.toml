@@ -1,6 +1,6 @@
 [package]
 name = "SJMCL"
-version = "0.8.3"
+version = "1.0.0-beta.2"
 description = "A Minecraft launcher from SJMC"
 authors = ["SJMCL Team"]
 license = "GNU General Public License v3.0 (with additional terms)"
@@ -92,11 +92,13 @@ uuid = { version = "1.11.0", features = [
     "fast-rng",
     "macro-diagnostics",
 ] }
+walkdir = "2.5.0"
 zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
 
 [target."cfg(windows)".dependencies]
 winapi = { version = "0.3", features = ["processthreadsapi", "winnt", "handleapi", "winuser", "windef"] }
 winreg = "0.55.0"
+tauri-plugin-decorum = "1.1.1"
 
 [target."cfg(target_os = \"macos\")".dependencies]
 plist = "1"

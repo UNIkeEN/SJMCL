@@ -1,4 +1,4 @@
-import { ModLoaderType } from "@/enums/instance";
+import { ExportModpackFormat, ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource } from "@/enums/resource";
 
 export enum ModLoaderStatus {
@@ -27,6 +27,7 @@ export interface InstanceSummary {
   iconSrc: string;
   name: string;
   description?: string;
+  tag?: string;
   starred: boolean;
   playTime: number;
   versionPath: string;
@@ -49,6 +50,23 @@ export interface ModpackMetaInfo {
   modLoader?: ModLoader;
 }
 
+export interface ModpackFileList {
+  all: string[];
+  unchecked: string[];
+}
+
+export interface ExportModpackOptions {
+  format: ExportModpackFormat;
+  name: string;
+  version: string;
+  author?: string;
+  description?: string;
+  packWithLauncher?: boolean;
+  minMemory?: number;
+  noCreateRemoteFiles?: boolean;
+  skipCurseForgeRemoteFiles?: boolean;
+}
+
 export interface GameServerInfo {
   iconSrc: string;
   ip: string;
@@ -58,6 +76,7 @@ export interface GameServerInfo {
   playersOnline?: number;
   playersMax?: number;
   online: boolean;
+  latency?: number;
 }
 
 export interface LocalModInfo {

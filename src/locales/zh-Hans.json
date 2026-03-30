@@ -16,8 +16,8 @@
         "contributors": {
           "title": "开发者名单"
         },
-        "reportIssue": {
-          "title": "报告问题或请求功能"
+        "sourceCode": {
+          "title": "在 GitHub 查看源代码"
         },
         "aboutSJMC": {
           "title": "关于上海交通大学 Minecraft 社（SJMC）"
@@ -62,7 +62,7 @@
         },
         "userAgreement": {
           "title": "用户协议",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/tos"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
         },
         "openSourceLicense": {
           "title": "开源协议",
@@ -353,6 +353,7 @@
     "notSelectedLoader": "未选择新的加载器",
     "footer": {
       "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）",
       "reinstall": "重新安装"
     }
   },
@@ -421,7 +422,8 @@
       "info": "基本设置"
     },
     "footer": {
-      "installFabricApi": "同时安装 Fabric API 模组"
+      "installFabricApi": "同时安装 Fabric API 模组",
+      "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -618,6 +620,7 @@
     },
     "task": {
       "game-client": "游戏客户端 {{param}}",
+      "game-client-w-java": "游戏客户端 {{param1}}（包含 Java {{param2}}）",
       "game-server": "游戏服务端 {{param}}",
       "change-mod-loader": "修改模组加载器 {{param}}",
       "mod": "模组",
@@ -631,6 +634,7 @@
       "retry": "重试",
       "neoforge-libraries": "NeoForge 运行库",
       "forge-libraries": "Forge 运行库",
+      "optifine-libraries": "OptiFine 运行库",
       "launcher-update": "更新启动器",
       "mojang-java": "Java {{param}} 运行时"
     }
@@ -730,6 +734,46 @@
       "linux": "文件管理器",
       "macos": "访达",
       "windows": "文件资源管理器"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "将 {{param}} 导出为整合包"
+    },
+    "label": {
+      "exportFormat": "导出格式",
+      "basicInfo": "基本信息",
+      "modpackName": "整合包名称",
+      "modpackVersion": "整合包版本",
+      "author": "作者",
+      "description": "描述",
+      "includedFiles": "包含文件",
+      "exportOptions": "导出选项",
+      "packWithLauncher": "打包启动器",
+      "minMemory": "最低内存 (MB)",
+      "noCreateRemoteFiles": "禁用远程文件",
+      "skipCurseForgeRemoteFiles": "跳过 CurseForge 远程文件"
+    },
+    "button": {
+      "export": "导出"
+    },
+    "error": {
+      "invalidName": "请输入有效的整合包名称",
+      "invalidVersion": "请输入有效的版本号",
+      "noFileSelected": "请至少选择一个要包含的文件或文件夹"
+    },
+    "errorMessage": {
+      "error-1": "名称不能为空",
+      "error-2": "名称包含无效字符",
+      "error-3": "名称过长（最多 255 个字符）"
+    },
+    "fileTreeTranslation": {
+      "mods": "模组",
+      "config": "模组配置文件",
+      "shaderpacks": "光影",
+      "resourcepacks": "资源包",
+      "optionsTxt": "游戏设置",
+      "saves": "存档"
     }
   },
   "GameAdvancedSettingsPage": {
@@ -938,10 +982,12 @@
     "import": "导入",
     "launch": "启动",
     "more": "更多",
+    "new": "新",
     "next": "下一步",
     "notice": "提示",
     "open": "打开",
     "openFolder": "打开文件夹",
+    "optional": "可选",
     "previous": "上一步",
     "refresh": "刷新",
     "revealFile": "在{{opener}}中显示",
@@ -990,11 +1036,26 @@
           "description": "更改实例页左侧导航栏是否显示、分组方式",
           "instance": "按实例",
           "directory": "按目录",
+          "tag": "按标签",
           "hidden": "隐藏"
         },
         "launchPageQuickSwitch": {
           "title": "快捷切换实例与账户",
           "description": "启用后，点击启动页的切换按钮可直接选择账户或实例，而无需跳转页面"
+        },
+        "autoDownloadJava": {
+          "title": "自动下载可用版本 Java 运行时",
+          "description": "启用后，新建实例时若不存在可用版本的 Java 运行时，将自动安装至特定目录"
+        }
+      }
+    },
+    "sync": {
+      "title": "同步",
+      "settings": {
+        "internetSync": {
+          "title": "联网同步启动器设置",
+          "import": "导入",
+          "export": "导出"
         }
       }
     },
@@ -1011,6 +1072,11 @@
         "autoPurgeLauncherLogs": {
           "title": "自动清理启动器日志",
           "description": "自动清理 30 天及以前的启动器日志文件"
+        },
+        "restoreAll": {
+          "title": "还原所有设置",
+          "description": "将所有启动器设置还原为默认值",
+          "restore": "还原"
         }
       }
     }
@@ -1178,7 +1244,12 @@
       "settings": {
         "LauncherDocs": {
           "title": "SJMC Launcher 文档",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs"
+          "url": "https://mc.sjtu.cn/sjmcl/docs"
+        },
+        "UserGroup": {
+          "title": "用户社群",
+          "description": "欢迎加入 QQ 群或 Discord 服务器，报告问题、请求功能或获取帮助",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }
     }
@@ -1188,11 +1259,15 @@
       "title": "从其他启动器导入账户信息"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "认证服务器",
       "players": "角色"
+    },
+    "footer": {
+      "parentDirHint": "将在已添加游戏目录的父目录寻找账户信息文件。"
     },
     "tooltips": {
       "existingServer": "已存在相同地址的认证服务器，导入将会覆盖数据",
@@ -1250,7 +1325,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "加载器",
-      "notInstalled": "未安装"
+      "notInstalled": "未安装",
+      "installed": "已安装"
     },
     "modList": {
       "title": "模组",
@@ -1280,6 +1356,7 @@
   "InstanceSettingsPage": {
     "name": "实例名称",
     "description": "实例描述",
+    "colorTag": "颜色标签",
     "icon": "实例图标",
     "applySettings": "启用特定游戏设置",
     "restoreSettings": "重置以下特定设置",
@@ -1377,7 +1454,7 @@
         "docs": {
           "title": "使用指南",
           "description": "了解如何将启动器连接到外部 Agent 应用（如 Claude, Cherry Studio 等）",
-          "url": "https://mc.sjtu.cn/sjmcl/zh/docs/intelligence/launcher-mcp"
+          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
         },
         "port": {
           "title": "端口",
@@ -1427,6 +1504,13 @@
       "noSelectedGame": "尚未选择游戏实例"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "上次运行异常退出",
+      "content": "SJMCL 上次运行时异常退出。您可以将日志发送到<community>用户社群</community>，或在 <github>GitHub</github> 发起 Issue 以寻求帮助",
+      "viewLog": "查看日志"
+    }
+  },
   "LaunchProcessModal": {
     "header": {
       "title": "启动游戏 - {{name}}"
@@ -1438,7 +1522,8 @@
       "launchGame": "等待游戏启动"
     },
     "toast": {
-      "noSelectedPlayer": "请先添加并选择游戏角色"
+      "noSelectedPlayer": "请先添加并选择游戏角色",
+      "noSelectedInstance": "请先添加并选择游戏实例"
     }
   },
   "LoaderSelector": {
@@ -1857,9 +1942,17 @@
       "setAsBg": "设置为启动器背景"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "选择实例",
+      "titleForLaunch": "选择要启动的实例"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "请选择想要添加的角色"
+      "title": "选择角色",
+      "titleForAdd": "选择要添加的新角色",
+      "titleForLaunch": "选择要游玩的角色"
     }
   },
   "Services": {
@@ -2490,6 +2583,23 @@
           }
         }
       },
+      "finishOptiFineLoaderInstall": {
+        "loading": "正在为 {{instanceName}} 安装 OptiFine",
+        "success": "OptiFine 安装完成",
+        "error": {
+          "title": "OptiFine 安装失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
+            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
+            "LOADER_INSTALLER_NOT_FOUND": "OptiFine 安装程序不存在",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版本信息解析失败",
+            "INVALID_SOURCE_PATH": "资源路径无效",
+            "NO_SUITABLE_JAVA": "没有找到可用的 Java 运行时",
+            "SELECTED_JAVA_UNAVAILABLE": "所选 Java 运行时不可用"
+          }
+        }
+      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "无法更改模组加载器",
@@ -2513,6 +2623,17 @@
             "FILE_NOT_FOUND_ERROR": "整合包文件不存在，可能已更名、移动或删除",
             "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误"
           }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "获取可导出文件列表失败"
+        }
+      },
+      "exportModpack": {
+        "success": "导出整合包成功",
+        "error": {
+          "title": "导出整合包失败"
         }
       },
       "addCustomInstanceIcon": {
@@ -2583,7 +2704,6 @@
       "download": "下载资源",
       "intelligence": "智能",
       "extension": "扩展插件",
-      "sync-restore": "同步与还原",
       "help": "文档与帮助",
       "about": "关于"
     }
@@ -2639,23 +2759,6 @@
     "button": {
       "later": "稍后",
       "starUs": "点亮星标"
-    }
-  },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "启动器设置",
-      "settings": {
-        "internetSync": {
-          "title": "联网同步",
-          "import": "导入",
-          "export": "导出"
-        },
-        "restoreAll": {
-          "title": "还原所有设置",
-          "description": "将所有启动器设置还原为默认值",
-          "restore": "还原"
-        }
-      }
     }
   },
   "SyncConfigExportModal": {

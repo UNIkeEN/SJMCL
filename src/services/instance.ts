@@ -2,9 +2,11 @@ import { invoke } from "@tauri-apps/api/core";
 import { InstanceSubdirType } from "@/enums/instance";
 import { GameConfig, GameDirectory } from "@/models/config";
 import {
+  ExportModpackOptions,
   GameServerInfo,
   InstanceSummary,
   LocalModInfo,
+  ModpackFileList,
   ModpackMetaInfo,
   ResourcePackInfo,
   SchematicInfo,
@@ -46,6 +48,7 @@ export class InstanceService {
    * @param {OptiFineResourceInfo} [optifine] - Optional OptiFine installation.
    * @param {string} [modpackPath] - Optional path to the modpack archive file.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
+   * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
@@ -58,7 +61,8 @@ export class InstanceService {
     modLoader: ModLoaderResourceInfo,
     optifine?: OptiFineResourceInfo,
     modpackPath?: string,
-    isInstallFabricApi?: boolean
+    isInstallFabricApi?: boolean,
+    isInstallQfApi?: boolean
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_instance", {
       directory,
@@ -70,6 +74,7 @@ export class InstanceService {
       optifine,
       modpackPath,
       isInstallFabricApi,
+      isInstallQfApi,
     });
   }
 
@@ -403,19 +408,22 @@ export class InstanceService {
   /**
    * CREATE a desktop shortcut for launching a specific instance.
    * @param {string} instanceId - The instance ID for which to create the shortcut.
+   * @param {string} iconSrc - Instance icon src (file path or base64), will be a component of shortcut icon.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
   static async createLaunchDesktopShortcut(
-    instanceId: string
+    instanceId: string,
+    iconSrc: string
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_launch_desktop_shortcut", {
       instanceId,
+      iconSrc,
     });
   }
 
   /**
-   * Finish the mod loader installation.
+   * FINISH the mod loader installation.
    * @param {string} instanceId - The ID of the instance to mark the mod loader as installed.
    * @returns {Promise<InvokeResponse<void>>}
    */
@@ -424,6 +432,20 @@ export class InstanceService {
     instanceId: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("finish_mod_loader_install", {
+      instanceId,
+    });
+  }
+
+  /**
+   * FINISH the OptiFine loader installation.
+   * @param {string} instanceId - The ID of the instance to mark OptiFine as installed.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async finishOptiFineLoaderInstall(
+    instanceId: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("finish_optifine_loader_install", {
       instanceId,
     });
   }
@@ -447,18 +469,21 @@ export class InstanceService {
    * @param {string} instanceId - The ID of the instance to update.
    * @param {ModLoaderResourceInfo} newModLoader - The new mod loader information.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
+   * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async changeModLoader(
     instanceId: string,
     newModLoader: ModLoaderResourceInfo,
-    isInstallFabricApi?: boolean
+    isInstallFabricApi?: boolean,
+    isInstallQfApi?: boolean
   ): Promise<InvokeResponse<void>> {
     return await invoke("change_mod_loader", {
       instanceId,
       newModLoader,
       isInstallFabricApi,
+      isInstallQfApi,
     });
   }
 
@@ -491,6 +516,43 @@ export class InstanceService {
     return await invoke("add_custom_instance_icon", {
       instanceId,
       sourceSrc,
+    });
+  }
+
+  /**
+   * Retrieve exportable file list for modpack export.
+   * @param {string} instanceId - The ID of the instance.
+   * @returns {Promise<InvokeResponse<ModpackFileList>>}
+   */
+  @responseHandler("instance")
+  static async retrieveExportableFileList(
+    instanceId: string
+  ): Promise<InvokeResponse<ModpackFileList>> {
+    return await invoke("retrieve_exportable_file_list", {
+      instanceId,
+    });
+  }
+
+  /**
+   * Export the instance as a modpack.
+   * @param {string} instanceId - The ID of the instance to export.
+   * @param {string} savePath - The destination path for the exported modpack.
+   * @param {ExportModpackOptions} options - Export configuration options.
+   * @param {string[]} files - The selected files to include in the export.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async exportModpack(
+    instanceId: string,
+    savePath: string,
+    options: ExportModpackOptions,
+    files: string[]
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("export_modpack", {
+      instanceId,
+      savePath,
+      options,
+      files,
     });
   }
 }

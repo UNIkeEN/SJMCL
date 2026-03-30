@@ -205,7 +205,7 @@ const InstanceWorldsPage = () => {
     {
       label: "",
       icon: "revealFile",
-      onClick: () => openPath(save.dirPath),
+      onClick: async () => await openPath(save.dirPath),
     },
     {
       label: t("InstanceWorldsPage.worldList.viewLevelData"),
@@ -414,22 +414,37 @@ const InstanceWorldsPage = () => {
                         : `${server.playersOnline} / ${server.playersMax} ${t("InstanceWorldsPage.serverList.players")}`}
                     </Text>
                   )}
-                  {server.isQueried &&
-                    (server.online ? (
-                      <Tag colorScheme="green">
-                        <LuCheck />
-                        <TagLabel ml={0.5}>
-                          {t("InstanceWorldsPage.serverList.tag.online")}
-                        </TagLabel>
-                      </Tag>
-                    ) : (
-                      <Tag colorScheme="red">
-                        <LuX />
-                        <TagLabel ml={0.5}>
-                          {t("InstanceWorldsPage.serverList.tag.offline")}
-                        </TagLabel>
-                      </Tag>
-                    ))}
+                  {server.isQueried && (
+                    <Tag
+                      colorScheme={
+                        server.online
+                          ? (server.latency || 0) < 300
+                            ? "green"
+                            : "yellow"
+                          : "red"
+                      }
+                    >
+                      <HStack spacing={0.5}>
+                        {server.online ? (
+                          <>
+                            <LuCheck />
+                            <TagLabel>
+                              {server.latency != null
+                                ? `${server.latency} ms`
+                                : t("InstanceWorldsPage.serverList.tag.online")}
+                            </TagLabel>
+                          </>
+                        ) : (
+                          <>
+                            <LuX />
+                            <TagLabel>
+                              {t("InstanceWorldsPage.serverList.tag.offline")}
+                            </TagLabel>
+                          </>
+                        )}
+                      </HStack>
+                    </Tag>
+                  )}
                   <HStack spacing={0}>
                     {serverItemMenuOperations(server).map((item, index) => (
                       <CommonIconButton

@@ -16,8 +16,8 @@
         "contributors": {
           "title": "Contributors"
         },
-        "reportIssue": {
-          "title": "Report an Issue or Submit a Feature Request"
+        "sourceCode": {
+          "title": "View Source Code on GitHub"
         },
         "aboutSJMC": {
           "title": "About SJTU Minecraft Club (SJMC)"
@@ -353,6 +353,7 @@
     "notSelectedLoader": "No new loader selected",
     "footer": {
       "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)",
       "reinstall": "Reinstall"
     }
   },
@@ -421,7 +422,8 @@
       "info": "Basic Settings"
     },
     "footer": {
-      "installFabricApi": "Install Fabric API Mod"
+      "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -618,6 +620,7 @@
     },
     "task": {
       "game-client": "Game Client {{param}}",
+      "game-client-w-java": "Game Client {{param1}} (with Java {{param2}})",
       "game-server": "Game Server {{param}}",
       "change-mod-loader": "Change Mod Loader {{param}}",
       "mod": "Mod",
@@ -631,6 +634,7 @@
       "retry": "Retry",
       "neoforge-libraries": "NeoForge Libraries",
       "forge-libraries": "Forge Libraries",
+      "optifine-libraries": "OptiFine Libraries",
       "launcher-update": "Update Launcher",
       "mojang-java": "Java {{param}} Runtime"
     }
@@ -730,6 +734,46 @@
       "linux": "File Manager",
       "macos": "Finder",
       "windows": "File Explorer"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "Export {{param}} as Modpack"
+    },
+    "label": {
+      "exportFormat": "Export Format",
+      "basicInfo": "Basic Information",
+      "modpackName": "Modpack Name",
+      "modpackVersion": "Modpack Version",
+      "author": "Author",
+      "description": "Description",
+      "includedFiles": "Included Files",
+      "exportOptions": "Export Options",
+      "packWithLauncher": "Pack With Launcher",
+      "minMemory": "Minimum Memory (MB)",
+      "noCreateRemoteFiles": "Disable Remote Files",
+      "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
+    },
+    "button": {
+      "export": "Export"
+    },
+    "error": {
+      "invalidName": "Please enter a valid modpack name",
+      "invalidVersion": "Please enter a valid version number",
+      "noFileSelected": "Please select at least one file or folder to include"
+    },
+    "errorMessage": {
+      "error-1": "Name cannot be empty",
+      "error-2": "Name contains invalid characters",
+      "error-3": "Name is too long (max 255 characters)"
+    },
+    "fileTreeTranslation": {
+      "mods": "Mods",
+      "config": "Mod Config Files",
+      "shaderpacks": "Shaders",
+      "resourcepacks": "Resource Packs",
+      "optionsTxt": "Game Settings",
+      "saves": "Saves"
     }
   },
   "GameAdvancedSettingsPage": {
@@ -938,10 +982,12 @@
     "import": "Import",
     "launch": "Launch",
     "more": "More",
+    "new": "New",
     "next": "Next",
     "notice": "Notice",
     "open": "Open",
     "openFolder": "Open Folder",
+    "optional": "Optional",
     "previous": "Previous",
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
@@ -990,11 +1036,26 @@
           "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
           "instance": "By Instance",
           "directory": "By Directory",
+          "tag": "By Tag",
           "hidden": "Hidden"
         },
         "launchPageQuickSwitch": {
           "title": "Quick Switch for Accounts & Instances",
           "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+        },
+        "autoDownloadJava": {
+          "title": "Auto-download Suitable Java Runtime",
+          "description": "When enabled, if no suitable Java runtime is available when creating a new instance, it will be installed automatically to a dedicated directory"
+        }
+      }
+    },
+    "sync": {
+      "title": "Sync",
+      "settings": {
+        "internetSync": {
+          "title": "Sync Launcher Settings via Internet",
+          "import": "Import",
+          "export": "Export"
         }
       }
     },
@@ -1011,6 +1072,11 @@
         "autoPurgeLauncherLogs": {
           "title": "Auto Purge Launcher Logs",
           "description": "Automatically purge launcher log files older than 30 days"
+        },
+        "restoreAll": {
+          "title": "Restore All Settings",
+          "description": "Restore all launcher settings to their default values",
+          "restore": "Restore"
         }
       }
     }
@@ -1179,6 +1245,11 @@
         "LauncherDocs": {
           "title": "SJMC Launcher Documentation",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        },
+        "UserGroup": {
+          "title": "User Community",
+          "description": "Join the QQ group or Discord server to report issues, request features, or get help",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
     }
@@ -1188,11 +1259,15 @@
       "title": "Import Players and Auth Servers"
     },
     "launcherDesc": {
-      "HMCL": "Hello Minecraft! Launcher"
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
     },
     "body": {
       "authServers": "Auth Servers",
       "players": "Players"
+    },
+    "footer": {
+      "parentDirHint": "Account files will be searched in parent path of added game directories."
     },
     "tooltips": {
       "existingServer": "Existing auth server data with the same address will be overwritten.",
@@ -1250,7 +1325,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "Mod Loader",
-      "notInstalled": "Not Installed"
+      "notInstalled": "Not Installed",
+      "installed": "Installed"
     },
     "modList": {
       "title": "Mods",
@@ -1280,6 +1356,7 @@
   "InstanceSettingsPage": {
     "name": "Instance Name",
     "description": "Instance Description",
+    "colorTag": "Color Tag",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
     "restoreSettings": "Restore specific settings",
@@ -1427,6 +1504,13 @@
       "noSelectedGame": "No game instance selected"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "Previous Run Exited Abnormally",
+      "content": "SJMCL exited abnormally during the last run. You can send the logs to the <community>community</community>, or open an issue on <github>GitHub</github> for help.",
+      "viewLog": "View Logs"
+    }
+  },
   "LaunchProcessModal": {
     "header": {
       "title": "Launch Game - {{name}}"
@@ -1438,7 +1522,8 @@
       "launchGame": "Waiting for Game to Launch"
     },
     "toast": {
-      "noSelectedPlayer": "Please add and select a player first"
+      "noSelectedPlayer": "Please add and select a player first",
+      "noSelectedInstance": "Please add and select a game instance first"
     }
   },
   "LoaderSelector": {
@@ -1857,9 +1942,17 @@
       "setAsBg": "Set as Launcher Background"
     }
   },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Select Instance",
+      "titleForLaunch": "Select Instance to Launch"
+    }
+  },
   "SelectPlayerModal": {
     "header": {
-      "title": "Please select a player to add"
+      "title": "Select Player",
+      "titleForAdd": "Select New Player to Add",
+      "titleForLaunch": "Select Player to Play"
     }
   },
   "Services": {
@@ -2490,6 +2583,23 @@
           }
         }
       },
+      "finishOptiFineLoaderInstall": {
+        "loading": "Installing OptiFine for {{instanceName}}",
+        "success": "OptiFine installed successfully",
+        "error": {
+          "title": "Failed to install OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "INSTALLATION_DUPLICATED": "Another installation process is already in progress",
+            "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process",
+            "LOADER_INSTALLER_NOT_FOUND": "OptiFine installer file not found",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Failed to parse OptiFine version information",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "NO_SUITABLE_JAVA": "No suitable Java runtime found",
+            "SELECTED_JAVA_UNAVAILABLE": "The selected Java runtime is unavailable"
+          }
+        }
+      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "Unable to Change Mod Loader",
@@ -2513,6 +2623,17 @@
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
             "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
           }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "Failed to retrieve exportable file list"
+        }
+      },
+      "exportModpack": {
+        "success": "Modpack exported successfully",
+        "error": {
+          "title": "Failed to export modpack"
         }
       },
       "addCustomInstanceIcon": {
@@ -2583,7 +2704,6 @@
       "download": "Download",
       "intelligence": "Intelligence",
       "extension": "Extension",
-      "sync-restore": "Sync & Restore",
       "help": "Docs & Help",
       "about": "About"
     }
@@ -2639,23 +2759,6 @@
     "button": {
       "later": "Later",
       "starUs": "Star Us"
-    }
-  },
-  "SyncAndRestoreSettingsPage": {
-    "launcherConfig": {
-      "title": "Launcher Settings",
-      "settings": {
-        "internetSync": {
-          "title": "Sync through the Internet",
-          "import": "Import",
-          "export": "Export"
-        },
-        "restoreAll": {
-          "title": "Restore All Settings",
-          "description": "Restore all launcher settings to their default values",
-          "restore": "Restore"
-        }
-      }
     }
   },
   "SyncConfigExportModal": {

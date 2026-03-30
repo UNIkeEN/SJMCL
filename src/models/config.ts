@@ -70,6 +70,7 @@ export interface LauncherConfig {
   };
   mocked: boolean;
   runCount: number;
+  lastRunExitedNormally: boolean;
   appearance: {
     theme: {
       primaryColor: string;
@@ -118,6 +119,7 @@ export interface LauncherConfig {
     functionality: {
       instancesNavType: string;
       launchPageQuickSwitch: boolean;
+      autoDownloadJava: boolean;
       resourceTranslation: boolean;
       translatedFilenamePrefix: boolean;
       skipFirstScreenOptions: boolean;
@@ -215,7 +217,7 @@ export const defaultGameConfig: GameConfig = {
     },
     workaround: {
       noJvmArgs: false,
-      gameFileValidatePolicy: "full",
+      gameFileValidatePolicy: "normal",
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useNativeGlfw: false,
@@ -239,6 +241,7 @@ export const defaultConfig: LauncherConfig = {
   },
   mocked: true,
   runCount: -1,
+  lastRunExitedNormally: true,
   appearance: {
     theme: {
       primaryColor: "blue",
@@ -287,6 +290,7 @@ export const defaultConfig: LauncherConfig = {
     functionality: {
       instancesNavType: "instance",
       launchPageQuickSwitch: true,
+      autoDownloadJava: true,
       resourceTranslation: true,
       translatedFilenamePrefix: true,
       skipFirstScreenOptions: false,
@@ -330,7 +334,7 @@ export const defaultConfig: LauncherConfig = {
       gameTypes: ["release"],
     },
     instanceModsPage: {
-      accordionStates: [true, true],
+      accordionStates: [false, true],
     },
     instanceResourcePacksPage: {
       accordionStates: [true, true],

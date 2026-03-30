@@ -23,6 +23,7 @@ pub struct GameServerInfo {
   pub players_online: usize,
   pub players_max: usize,
   pub online: bool, // if false, it may be offline in the query result or failed in the query.
+  pub latency: Option<u64>, // ping latency in milliseconds
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -145,6 +146,7 @@ pub async fn query_servers_online(
       if let Ok(status) = result {
         if let ServerData::Java(sv) = status.data {
           server.online = true;
+          server.latency = Some(status.latency.round() as u64);
           server.players_online = sv.players.online as usize;
           server.players_max = sv.players.max as usize;
           server.description = sv.description.clone();

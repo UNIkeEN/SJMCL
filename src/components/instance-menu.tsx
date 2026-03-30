@@ -39,8 +39,8 @@ export const InstanceMenu: React.FC<InstanceMenuProps> = ({
     {
       icon: LuFolderOpen,
       label: t("General.openFolder"),
-      onClick: () => {
-        openPath(instance.versionPath);
+      onClick: async () => {
+        await openPath(instance.versionPath);
       },
     },
     {

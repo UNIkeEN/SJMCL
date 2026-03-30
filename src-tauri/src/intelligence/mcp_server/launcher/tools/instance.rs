@@ -17,25 +17,18 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     ),
     mcp_tool!(
       "retrieve_game_server_list",
-      "Retrieve metadata of servers configured in the given Minecraft instance and query online status. Input param: instance_id (string). Call retrieve_instance_list first to get a valid instance_id.",
-      |app, params: rmcp::model::JsonObject| async move {
-        let instance_id = params["instance_id"]
-          .as_str()
-          .unwrap_or_default()
-          .to_string();
+      "Retrieve metadata of servers configured in the given Minecraft instance and query online status. Input param: instance_id (string).",
+      |app, params| { instance_id: String } => async move {
         // always query online status in MCP context.
-        crate::instance::commands::retrieve_game_server_list(app, instance_id, true).await
+        crate::instance::commands::retrieve_game_server_list(app, params.instance_id, true).await
       }
     ),
     mcp_tool!(
       "retrieve_local_mod_list",
       "Retrieve metadata of local mods in the given Minecraft instance. Input param: instance_id (string).",
-      |app, params: rmcp::model::JsonObject| async move {
-        let instance_id = params["instance_id"]
-          .as_str()
-          .unwrap_or_default()
-          .to_string();
-        let mut mods = crate::instance::commands::retrieve_local_mod_list(app, instance_id).await?;
+      |app, params| { instance_id: String } => async move {
+        let mut mods =
+          crate::instance::commands::retrieve_local_mod_list(app, params.instance_id).await?;
         // strip icon binary payload in MCP responses to reduce context length.
         for mod_info in &mut mods {
           mod_info.icon_src = Default::default();
@@ -76,12 +69,10 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     mcp_tool!(
       "toggle_mod_by_extension",
       "Enable or disable a mod file by toggling .disabled extension. Input params: file_path (string), enable (boolean). File path can be obtained from retrieve_local_mod_list tool.",
-      |_app, params: rmcp::model::JsonObject| async move {
-        let file_path = params["file_path"].as_str().unwrap_or_default().to_string();
-        let enable = params["enable"].as_bool().unwrap_or(true);
+      |_app, params| { file_path: String, enable: bool } => async move {
         crate::instance::commands::toggle_mod_by_extension(
-          std::path::PathBuf::from(file_path),
-          enable,
+          std::path::PathBuf::from(params.file_path),
+          params.enable,
         )
       }
     ),

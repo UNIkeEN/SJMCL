@@ -201,10 +201,9 @@ export const InstanceContextProvider: React.FC<{
   );
 
   const openInstanceSubdir = useCallback(
-    (dirType: InstanceSubdirType) => {
-      handleRetrieveInstanceSubdirPath(dirType).then((path) => {
-        if (path) openPath(path);
-      });
+    async (dirType: InstanceSubdirType) => {
+      const path = await handleRetrieveInstanceSubdirPath(dirType);
+      if (path) await openPath(path);
     },
     [handleRetrieveInstanceSubdirPath]
   );

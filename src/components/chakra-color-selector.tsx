@@ -2,13 +2,19 @@ import {
   Box,
   BoxProps,
   Flex,
+  HStack,
   IconButton,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Spacer,
   Tooltip,
 } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { FaCircleCheck, FaRegCircle } from "react-icons/fa6";
+import { LuChevronDown, LuX } from "react-icons/lu";
 import { ChakraColorEnums, ColorSelectorType } from "@/enums/misc";
 
 interface ChakraColorSelectorProps extends BoxProps {
@@ -51,6 +57,63 @@ const ChakraColorSelector: React.FC<ChakraColorSelectorProps> = ({
         ))}
       </Flex>
     </Box>
+  );
+};
+
+interface ChakraColorSelectPopoverProps {
+  current?: string;
+  onColorSelect: (color: ColorSelectorType) => void;
+  size?: string;
+  withUnselectButton?: boolean;
+  onUnselect?: () => void;
+}
+
+export const ChakraColorSelectPopover: React.FC<
+  ChakraColorSelectPopoverProps
+> = ({
+  current = "",
+  onColorSelect,
+  size = "xs",
+  withUnselectButton = false,
+  onUnselect,
+}) => {
+  const hasSelectedColor = current !== "";
+
+  return (
+    <Popover>
+      <PopoverTrigger>
+        <IconButton
+          size={size}
+          colorScheme={current || "gray"}
+          variant={hasSelectedColor ? "solid" : "outline"}
+          aria-label="color"
+          icon={<LuChevronDown />}
+        />
+      </PopoverTrigger>
+      <PopoverContent>
+        <PopoverBody>
+          <HStack spacing={2}>
+            <ChakraColorSelector
+              current={current}
+              onColorSelect={onColorSelect}
+              size={size}
+              flex={1}
+            />
+            {withUnselectButton && hasSelectedColor && (
+              <IconButton
+                size={size}
+                colorScheme={current || "gray"}
+                variant="outline"
+                aria-label="unselect-color"
+                icon={<LuX />}
+                onClick={onUnselect}
+                isDisabled={!onUnselect}
+              />
+            )}
+          </HStack>
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
   );
 };
 
