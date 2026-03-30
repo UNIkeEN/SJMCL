@@ -1,4 +1,11 @@
-import { Button, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React, { useCallback } from "react";
@@ -22,6 +29,7 @@ import {
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
+import ExportModpackModal from "@/components/modals/export-modpack-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import {
   InstanceContextProvider,
@@ -57,6 +65,12 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const navBarType = config.general.functionality.instancesNavType;
+
+  const {
+    isOpen: isExportModpackModalOpen,
+    onOpen: onExportModpackModalOpen,
+    onClose: onExportModpackModalClose,
+  } = useDisclosure();
 
   const handleCreateLaunchDesktopShortcut = useCallback(
     (instanceId: string) => {
@@ -119,7 +133,11 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       icon: LuPackagePlus,
       label: t("InstanceDetailsLayout.secMenu.exportModPack"),
       danger: false,
-      onClick: () => {},
+      onClick: () => {
+        if (summary) {
+          onExportModpackModalOpen();
+        }
+      },
     },
     {
       icon: "delete",
@@ -231,6 +249,14 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       >
         {children}
       </VStack>
+      {summary && (
+        <ExportModpackModal
+          isOpen={isExportModpackModalOpen}
+          onClose={onExportModpackModalClose}
+          instanceId={summary.id}
+          instanceName={summary.name}
+        />
+      )}
     </Section>
   );
 };

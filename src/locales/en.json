@@ -736,6 +736,46 @@
       "windows": "File Explorer"
     }
   },
+  "ExportModpackModal": {
+    "header": {
+      "title": "Export {{param}} as Modpack"
+    },
+    "label": {
+      "exportFormat": "Export Format",
+      "basicInfo": "Basic Information",
+      "modpackName": "Modpack Name",
+      "modpackVersion": "Modpack Version",
+      "author": "Author",
+      "description": "Description",
+      "includedFiles": "Included Files",
+      "exportOptions": "Export Options",
+      "packWithLauncher": "Pack With Launcher",
+      "minMemory": "Minimum Memory (MB)",
+      "noCreateRemoteFiles": "Disable Remote Files",
+      "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
+    },
+    "button": {
+      "export": "Export"
+    },
+    "error": {
+      "invalidName": "Please enter a valid modpack name",
+      "invalidVersion": "Please enter a valid version number",
+      "noFileSelected": "Please select at least one file or folder to include"
+    },
+    "errorMessage": {
+      "error-1": "Name cannot be empty",
+      "error-2": "Name contains invalid characters",
+      "error-3": "Name is too long (max 255 characters)"
+    },
+    "fileTreeTranslation": {
+      "mods": "Mods",
+      "config": "Mod Config Files",
+      "shaderpacks": "Shaders",
+      "resourcepacks": "Resource Packs",
+      "optionsTxt": "Game Settings",
+      "saves": "Saves"
+    }
+  },
   "GameAdvancedSettingsPage": {
     "title": "Advanced Settings",
     "topWarning": "Advanced settings are for expert users. Changing them may break the game. Do not modify unless you know what you're doing.",
@@ -947,6 +987,7 @@
     "notice": "Notice",
     "open": "Open",
     "openFolder": "Open Folder",
+    "optional": "Optional",
     "previous": "Previous",
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
@@ -2582,6 +2623,17 @@
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
             "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
           }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "Failed to retrieve exportable file list"
+        }
+      },
+      "exportModpack": {
+        "success": "Modpack exported successfully",
+        "error": {
+          "title": "Failed to export modpack"
         }
       },
       "addCustomInstanceIcon": {

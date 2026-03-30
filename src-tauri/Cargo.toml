@@ -92,6 +92,7 @@ uuid = { version = "1.11.0", features = [
     "fast-rng",
     "macro-diagnostics",
 ] }
+walkdir = "2.5.0"
 zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
 
 [target."cfg(windows)".dependencies]

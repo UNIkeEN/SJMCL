@@ -12,7 +12,11 @@ use crate::instance::helpers::misc::{
   get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
   refresh_and_update_instances, unify_instance_name,
 };
-use crate::instance::helpers::modpack::misc::{
+use crate::instance::helpers::modpack::export::{
+  build_export_bundle, create_modpack_zip, list_files, validate_export_options,
+  ExportModpackOptions,
+};
+use crate::instance::helpers::modpack::import::{
   extract_overrides, get_download_params, ModpackMetaInfo,
 };
 use crate::instance::helpers::mods::common::{
@@ -32,8 +36,8 @@ use crate::instance::helpers::server::{
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
-  ModLoaderStatus, ModLoaderType, OptiFine, ResourcePackInfo, SchematicInfo, ScreenshotInfo,
-  ShaderPackInfo,
+  ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo, SchematicInfo,
+  ScreenshotInfo, ShaderPackInfo,
 };
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::LevelData;
@@ -1459,6 +1463,63 @@ pub fn add_custom_instance_icon(
 
   let dest_path = Path::new(&version_path).join("icon");
   fs::copy(source_path, &dest_path)?;
+
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn retrieve_exportable_file_list(
+  app: AppHandle,
+  instance_id: String,
+) -> SJMCLResult<ModpackFileList> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  tokio::task::spawn_blocking(move || list_files(&instance)).await?
+}
+
+#[tauri::command]
+pub async fn export_modpack(
+  app: AppHandle,
+  instance_id: String,
+  save_path: String,
+  options: ExportModpackOptions,
+  files: Vec<String>,
+) -> SJMCLResult<()> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  validate_export_options(&instance, &options)?;
+
+  let base_path = instance.version_path.clone();
+
+  let mut selected_files = Vec::new();
+  for rel in files {
+    let full = base_path.join(&rel);
+    if tokio::fs::try_exists(&full).await.unwrap_or(false) {
+      selected_files.push((rel, full));
+    }
+  }
+
+  if selected_files.is_empty() {
+    return Err(InstanceError::ModpackManifestParseError.into());
+  }
+
+  let export_bundle = build_export_bundle(&app, &instance, &options, &selected_files).await?;
+
+  create_modpack_zip(&save_path, export_bundle)
+    .await
+    .map_err(|_| InstanceError::ZipFileProcessFailed)?;
 
   Ok(())
 }
