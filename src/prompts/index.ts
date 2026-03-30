@@ -1,12 +1,10 @@
-import {
-  TOOL_DEFINITIONS,
-  ToolDefinition,
-  renderParamsSignature,
-} from "@/services/tool-definitions";
+import { ToolDefinition } from "@/models/intelligence/tool-call";
+import { renderParamsSignature } from "@/utils/tool-call/definition-renderer";
 import {
   chatSystemPrompt as chatEn,
   gameErrorSystemPrompt as gameErrorEn,
 } from "./en";
+import { TOOL_DEFINITIONS } from "./tool";
 import {
   chatSystemPrompt as chatZhHans,
   gameErrorSystemPrompt as gameErrorZhHans,

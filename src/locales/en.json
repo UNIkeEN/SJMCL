@@ -232,7 +232,7 @@
     "thinkingFinished": "Thinking Finished",
     "skipThinking": "Skip thinking",
     "skipThinkingPrompt": "Stop showing the thinking process and provide the final answer directly. Do not output any <think> tag content.",
-    "functionCall": {
+    "toolCall": {
       "title": "Magic Call",
       "confirm": "Confirm",
       "cancel": "Cancel",

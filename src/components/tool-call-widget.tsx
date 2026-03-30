@@ -18,19 +18,18 @@ import {
   LuX,
   LuZap,
 } from "react-icons/lu";
-import { useFunctionCall } from "@/contexts/function-call";
+import { useToolCall } from "@/contexts/tool-call";
 import { ToolCallStatus } from "@/enums/tool-call";
-import { parseToolCallStatus } from "@/utils/tool-call";
+import { parseToolCallStatus } from "@/utils/tool-call/parser";
 
-// Interface for the function call parameters
-export interface FunctionCallParams {
+export interface ToolCallParams {
   name: string;
   params: Record<string, any>;
   result?: string;
 }
 
-export const FunctionCallWidget: React.FC<{
-  data: FunctionCallParams;
+export const ToolCallWidget: React.FC<{
+  data: ToolCallParams;
   callId?: string;
   onConfirmationAction?: (action: "confirm" | "cancel") => void;
 }> = ({ data, callId, onConfirmationAction }) => {
@@ -39,12 +38,12 @@ export const FunctionCallWidget: React.FC<{
   const borderColor = useColorModeValue("purple.200", "purple.700");
   const textColor = useColorModeValue("purple.800", "purple.100");
   const codeBgColor = useColorModeValue("whiteAlpha.500", "blackAlpha.400");
-  const { getCallState } = useFunctionCall();
+  const { getToolCallState } = useToolCall();
 
   const [isOpen, setIsOpen] = useState(false);
 
   // Get state from context if callId is available
-  const contextState = callId ? getCallState(callId) : null;
+  const contextState = callId ? getToolCallState(callId) : null;
 
   // Fallback to data.result if no context state (e.g. historical messages)
   const result = contextState?.result || data.result;
@@ -71,7 +70,7 @@ export const FunctionCallWidget: React.FC<{
         <HStack>
           <Icon as={LuZap} color={textColor} />
           <Text fontWeight="bold" fontSize="xs" color={textColor}>
-            {t("AgentChatPage.functionCall.title")}: {data.name}
+            {t("AgentChatPage.toolCall.title")}: {data.name}
           </Text>
         </HStack>
         {isLoading ? (
@@ -105,7 +104,7 @@ export const FunctionCallWidget: React.FC<{
             isDisabled={!onConfirmationAction}
             flex={1}
           >
-            {t("AgentChatPage.functionCall.confirm")}
+            {t("AgentChatPage.toolCall.confirm")}
           </Button>
           <Button
             size="xs"
@@ -115,7 +114,7 @@ export const FunctionCallWidget: React.FC<{
             isDisabled={!onConfirmationAction}
             flex={1}
           >
-            {t("AgentChatPage.functionCall.cancel")}
+            {t("AgentChatPage.toolCall.cancel")}
           </Button>
         </HStack>
       )}
@@ -132,8 +131,8 @@ export const FunctionCallWidget: React.FC<{
             fontSize="2xs"
           >
             {error
-              ? t("AgentChatPage.functionCall.error")
-              : t("AgentChatPage.functionCall.result")}
+              ? t("AgentChatPage.toolCall.error")
+              : t("AgentChatPage.toolCall.result")}
           </Button>
           <Collapse in={isOpen} animateOpacity>
             <Code

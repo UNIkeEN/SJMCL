@@ -9,11 +9,11 @@ import GlobalEventHandler from "@/components/special/global-event-handler";
 import { GuidedTourProvider } from "@/components/special/guided-tour-provider";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
-import { FunctionCallProvider } from "@/contexts/function-call";
 import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { TaskContextProvider } from "@/contexts/task";
 import { ToastContextProvider } from "@/contexts/toast";
+import { ToolCallProvider } from "@/contexts/tool-call";
 import DiscoverLayout from "@/layouts/discover-layout";
 import InstanceDetailsLayout from "@/layouts/instance-details-layout";
 import InstancesLayout from "@/layouts/instances-layout";
@@ -126,7 +126,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <SharedModalsProvider>
                   <TaskContextProvider>
                     <GlobalEventHandler>
-                      <FunctionCallProvider>
+                      <ToolCallProvider>
                         <MainLayout>
                           <Fade key={router.pathname.split("/")[1] || ""} in>
                             <SpecLayout>
@@ -134,7 +134,7 @@ export default function App({ Component, pageProps }: AppProps) {
                             </SpecLayout>
                           </Fade>
                         </MainLayout>
-                      </FunctionCallProvider>
+                      </ToolCallProvider>
                     </GlobalEventHandler>
                   </TaskContextProvider>
                 </SharedModalsProvider>

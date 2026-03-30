@@ -4,7 +4,7 @@ import {
   ChatMessage,
   ChatSession,
   ChatSessionSummary,
-} from "@/models/intelligence";
+} from "@/models/intelligence/chat";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 

@@ -11,7 +11,13 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuBotMessageSquare,
@@ -29,11 +35,14 @@ import { MiuChatLogoTitle } from "@/components/logo-title";
 import PlayerAvatar from "@/components/player-avatar";
 import { miuxiAvatar } from "@/constants/miuxi-avatar";
 import { useLauncherConfig } from "@/contexts/config";
-import { useFunctionCallActions } from "@/contexts/function-call";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
+import {
+  useToolCallActions,
+  useToolExecutionContextActions,
+} from "@/contexts/tool-call";
 import { useAgentLoop } from "@/hooks/use-agent-loop";
-import { ChatMessage, ChatSessionSummary } from "@/models/intelligence";
+import { ChatMessage, ChatSessionSummary } from "@/models/intelligence/chat";
 import { getChatSystemPrompt } from "@/prompts";
 import { IntelligenceService } from "@/services/intelligence";
 
@@ -76,17 +85,30 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
   const toast = useToast();
   const { openSharedModal } = useSharedModals();
-  const { setCallState, hasExecutingCall } = useFunctionCallActions();
+  const { setToolExecutionContext, clearToolExecutionContext } =
+    useToolExecutionContextActions();
+  const { setToolCallState, hasExecutingToolCall } = useToolCallActions();
 
   const { runAgentLoop, clearPendingConfirmation } = useAgentLoop({
     requestIdRef,
     currentSessionIdRef,
     setMessages,
     setIsLoading,
-    setCallState,
-    toolContext: { config, t, openSharedModal, getGameVersionList },
+    setToolCallState,
     toast,
   });
+
+  useEffect(() => {
+    setToolExecutionContext({ config, t, openSharedModal, getGameVersionList });
+    return () => clearToolExecutionContext();
+  }, [
+    clearToolExecutionContext,
+    config,
+    getGameVersionList,
+    openSharedModal,
+    setToolExecutionContext,
+    t,
+  ]);
 
   const messagesRef = useRef(messages);
   useEffect(() => {
@@ -287,7 +309,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
     });
   };
 
-  const handleFunctionCallConfirmationAction = async (
+  const handleToolCallConfirmationAction = async (
     action: "confirm" | "cancel"
   ) => {
     if (isBusy) return;
@@ -310,17 +332,15 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
 
   const msgBgUser = useColorModeValue("blue.500", "blue.600");
   const msgBgBot = "transparent";
-  const borderColor = useColorModeValue("gray.200", "gray.700");
   const inputShellBg = useColorModeValue("gray.50", "gray.800");
   const inputShellBorder = useColorModeValue("gray.200", "gray.700");
-  const inputBg = useColorModeValue("white", "gray.800");
 
   let filteredMessages = messages.filter(
     (msg) => msg.role !== "system" && msg.content.trim()
   );
   const canSend = input.trim().length > 0;
-  const isBusy = isLoading || hasExecutingCall();
-  const isThinking = React.useMemo(() => {
+  const isBusy = isLoading || hasExecutingToolCall();
+  const isThinking = useMemo(() => {
     if (!isBusy) return false;
     for (let i = messages.length - 1; i >= 0; i--) {
       if (messages[i].role !== "assistant") continue;
@@ -488,9 +508,7 @@ const AgentChat: React.FC<AgentChatProps> = ({ onAgentChatPanelClose }) => {
                     >
                       <MarkdownContainer
                         messageId={`${currentSessionIdRef.current}-${originalIndex}`}
-                        onFunctionCallAction={
-                          handleFunctionCallConfirmationAction
-                        }
+                        onToolCallAction={handleToolCallConfirmationAction}
                       >
                         {msg.content}
                       </MarkdownContainer>

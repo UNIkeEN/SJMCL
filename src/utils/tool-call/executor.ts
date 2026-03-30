@@ -1,7 +1,7 @@
 import { gameTypesToIcon } from "@/components/modals/create-instance-modal";
+import { ToolExecutionContextData } from "@/contexts/tool-call";
 import { ToolCallStatus } from "@/enums/tool-call";
 import { GetStateFlag } from "@/hooks/get-state";
-import { LauncherConfig } from "@/models/config";
 import { NewsPostRequest } from "@/models/news-post";
 import { defaultModLoaderResourceInfo } from "@/models/resource";
 import { ConfigService } from "@/services/config";
@@ -10,17 +10,10 @@ import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
 import { UtilsService } from "@/services/utils";
 
-export interface ToolExecutionContext {
-  config: LauncherConfig;
-  t: (key: string) => string;
-  openSharedModal: (key: string, params?: any) => void;
-  getGameVersionList: () => Promise<any>;
-}
-
 export async function executeToolCall(
   name: string,
   params: Record<string, any>,
-  context: ToolExecutionContext
+  context: ToolExecutionContextData
 ): Promise<unknown> {
   const { config, t, openSharedModal, getGameVersionList } = context;
 
@@ -151,7 +144,7 @@ export async function executeToolCall(
       if (instance_list_response.status !== ToolCallStatus.Success) {
         return {
           status: ToolCallStatus.Error,
-          message: t("AgentChatPage.functionCall.launchInstance.fail"),
+          message: t("AgentChatPage.toolCall.launchInstance.fail"),
         };
       }
       let instance = instance_list_response.data.find(
@@ -160,7 +153,7 @@ export async function executeToolCall(
       if (!instance) {
         return {
           status: ToolCallStatus.Error,
-          message: t("AgentChatPage.functionCall.launchInstance.fail"),
+          message: t("AgentChatPage.toolCall.launchInstance.fail"),
         };
       }
       return {
@@ -432,7 +425,7 @@ export async function executeToolCall(
 export async function commitToolCall(
   name: string,
   params: Record<string, any>,
-  context?: ToolExecutionContext
+  context?: ToolExecutionContextData
 ): Promise<unknown> {
   switch (name) {
     case "launch_instance":
@@ -445,7 +438,7 @@ export async function commitToolCall(
       context.openSharedModal("launch", { instanceId: params.id });
       return {
         status: ToolCallStatus.Success,
-        message: context.t("AgentChatPage.functionCall.launchInstance.success"),
+        message: context.t("AgentChatPage.toolCall.launchInstance.success"),
       };
 
     case "create_instance":
