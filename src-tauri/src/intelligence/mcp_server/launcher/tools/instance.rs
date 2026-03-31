@@ -7,26 +7,40 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     mcp_tool!(
       "retrieve_instance_list",
       crate::instance::commands::retrieve_instance_list,
-      "List all local Minecraft instances and return their IDs and metadata. Use this first when another tool requires instance_id."
+      "Primary tool for listing local Minecraft instances. Returns instance IDs and metadata for selecting an instance."
     ),
     mcp_tool!(
       "retrieve_world_list",
       crate::instance::commands::retrieve_world_list,
-      "Retrieve metadata of local worlds (saves) in the given Minecraft instance. Input param: instance_id (string).",
-      { instance_id: String }
+      "Retrieve local world metadata for a Minecraft instance.",
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      }
     ),
     mcp_tool!(
       "retrieve_game_server_list",
-      "Retrieve metadata of servers configured in the given Minecraft instance and query online status. Input param: instance_id (string).",
-      |app, params| { instance_id: String } => async move {
+      "Retrieve configured servers for a Minecraft instance and query their online status.",
+      |app, params|
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      } => async move {
         // always query online status in MCP context.
         crate::instance::commands::retrieve_game_server_list(app, params.instance_id, true).await
       }
     ),
     mcp_tool!(
       "retrieve_local_mod_list",
-      "Retrieve metadata of local mods in the given Minecraft instance. Input param: instance_id (string).",
-      |app, params| { instance_id: String } => async move {
+      "Retrieve local mod metadata for a Minecraft instance.",
+      |app, params|
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      } => async move {
         let mut mods =
           crate::instance::commands::retrieve_local_mod_list(app, params.instance_id).await?;
         // strip icon binary payload in MCP responses to reduce context length.
@@ -39,37 +53,64 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     mcp_tool!(
       "retrieve_resource_pack_list",
       crate::instance::commands::retrieve_resource_pack_list,
-      "Retrieve resource packs in the given Minecraft instance. Input param: instance_id (string).",
-      { instance_id: String }
+      "Retrieve resource packs for a Minecraft instance.",
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      }
     ),
     mcp_tool!(
       "retrieve_server_resource_pack_list",
       crate::instance::commands::retrieve_server_resource_pack_list,
-      "Retrieve server resource packs in the given Minecraft instance. Input param: instance_id (string).",
-      { instance_id: String }
+      "Retrieve server resource packs for a Minecraft instance.",
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      }
     ),
     mcp_tool!(
       sync "retrieve_schematic_list",
       crate::instance::commands::retrieve_schematic_list,
-      "Retrieve schematics in the given Minecraft instance. Input param: instance_id (string).",
-      { instance_id: String }
+      "Retrieve schematics for a Minecraft instance.",
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      }
     ),
     mcp_tool!(
       sync "retrieve_shader_pack_list",
       crate::instance::commands::retrieve_shader_pack_list,
-      "Retrieve shader packs in the given Minecraft instance. Input param: instance_id (string).",
-      { instance_id: String }
+      "Retrieve shader packs for a Minecraft instance.",
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      }
     ),
     mcp_tool!(
       sync "retrieve_screenshot_list",
       crate::instance::commands::retrieve_screenshot_list,
-      "Retrieve screenshots in the given Minecraft instance. Input param: instance_id (string).",
-      { instance_id: String }
+      "Retrieve screenshots for a Minecraft instance.",
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID.")]
+        instance_id: String,
+      }
     ),
     mcp_tool!(
       "toggle_mod_by_extension",
-      "Enable or disable a mod file by toggling .disabled extension. Input params: file_path (string), enable (boolean). File path can be obtained from retrieve_local_mod_list tool.",
-      |_app, params| { file_path: String, enable: bool } => async move {
+      "Enable or disable a mod file by toggling its `.disabled` extension.",
+      |_app, params|
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "File path from `retrieve_local_mod_list`.")]
+        file_path: String,
+        #[schemars(description = "Set to true to enable the mod file, or false to disable it.")]
+        enable: bool,
+      } => async move {
         crate::instance::commands::toggle_mod_by_extension(
           std::path::PathBuf::from(params.file_path),
           params.enable,
