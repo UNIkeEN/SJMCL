@@ -132,7 +132,7 @@ jobs:
           {
             "title": "SJMCL Installer",
             "icon": "../src-tauri/assets/icons/dmg/volume.icns",
-            "background": "../src-tauri/assets/misc/dmg_bg.png",
+            "background": "../src-tauri/assets/misc/dmg_bg_april_fool.png",
             "format": "UDZO",
             "icon-size": 120,
             "window": {

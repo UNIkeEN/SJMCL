@@ -3,7 +3,7 @@
   "bundle": {
     "macOS": {
       "dmg": {
-        "background": "assets/misc/dmg_bg.png",
+        "background": "assets/misc/dmg_bg_april_fool.png",
         "windowSize": {
           "width": 640,
           "height": 440
