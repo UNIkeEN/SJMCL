@@ -1,6 +1,7 @@
 use crate::account::constants::DEFAULT_POLLING_INTERVAL;
 use crate::account::models::{
   AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthErrorResponse, OAuthTokens, PlayerInfo,
+  PlayerType,
 };
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
@@ -52,6 +53,43 @@ pub fn get_selected_player_info(app: &AppHandle) -> SJMCLResult<PlayerInfo> {
     .ok_or(AccountError::NotFound)?;
 
   Ok(player_info.clone())
+}
+
+pub fn add_player(app: &AppHandle, new_player: PlayerInfo) -> SJMCLResult<()> {
+  let new_player_id = new_player.id.clone();
+  {
+    let account_binding = app.state::<Mutex<AccountInfo>>();
+    let mut account_state = account_binding.lock()?;
+
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    let mut config_state = config_binding.lock()?;
+
+    if new_player.player_type != PlayerType::Microsoft
+      && !config_state.basic_info.allow_full_login_feature
+    {
+      return Err(AccountError::FullLoginUnavailable.into());
+    }
+
+    if account_state
+      .players
+      .iter()
+      .any(|player| player.id == new_player_id)
+    {
+      return Err(AccountError::Duplicate.into());
+    }
+
+    config_state.partial_update(
+      app,
+      "states.shared.selected_player_id",
+      &serde_json::to_string(&new_player_id)?,
+    )?;
+    config_state.save()?;
+
+    account_state.players.push(new_player);
+    account_state.save()?;
+  }
+
+  Ok(())
 }
 
 pub async fn check_full_login_availability(app: &AppHandle) -> SJMCLResult<()> {
