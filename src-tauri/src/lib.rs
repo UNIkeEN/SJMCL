@@ -326,14 +326,22 @@ pub async fn run() {
       })
       .build(tauri::generate_context!())
       .expect("error while building tauri application")
-      .run_return(|_, _| {})
+      .run_return(|_, event| {
+        if let tauri::RunEvent::Exit = event {
+          log::info!("Launcher exit normally.");
+          let _ = LauncherConfig::load().map(|mut config| {
+            config.last_run_exited_normally = true;
+            let _ = config.save();
+          });
+        }
+      })
   };
 
-  log::info!("Launcher exited with code {exit_code}.");
-  let _ = LauncherConfig::load().map(|mut config| {
-    config.last_run_exited_normally = exit_code == 0;
-    let _ = config.save();
-  });
+  // log::info!("Launcher exited with code {exit_code}.");
+  // let _ = LauncherConfig::load().map(|mut config| {
+  //   config.last_run_exited_normally = exit_code == 0;
+  //   let _ = config.save();
+  // });
 
   std::process::exit(exit_code);
 }
