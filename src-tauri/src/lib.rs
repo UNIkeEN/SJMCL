@@ -328,7 +328,7 @@ pub async fn run() {
       .expect("error while building tauri application")
       .run_return(|_, event| {
         if let tauri::RunEvent::Exit = event {
-          log::info!("Launcher exit normally.");
+          log::info!("Launcher exited normally.");
           let _ = LauncherConfig::load().map(|mut config| {
             config.last_run_exited_normally = true;
             let _ = config.save();
