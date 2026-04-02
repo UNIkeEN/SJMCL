@@ -2062,6 +2062,7 @@
           "title": "Failed to add offline player",
           "description": {
             "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
             "INVALID": "UUID is invalid",
             "TEXTURE_ERROR": "Unable to get player texture"
           }
@@ -2084,6 +2085,7 @@
           "title": "Failed to add player",
           "description": {
             "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NOT_FOUND": "The authentication server does not exist",
@@ -2114,6 +2116,7 @@
           "title": "Failed to add player",
           "description": {
             "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
             "NETWORK_ERROR": "Unable to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "INVALID": "Wrong account or password",
@@ -2141,6 +2144,7 @@
           "title": "Failed to add player",
           "description": {
             "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
             "NETWORK_ERROR": "Failed to connect to the server",
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "EXPIRED": "The access token has expired, please re-login"
