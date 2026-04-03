@@ -773,6 +773,12 @@
       "resourcepacks": "Resource Packs",
       "optionsTxt": "Game Settings",
       "saves": "Saves"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "Smaller package size; required mods are downloaded from a manifest during import.",
+        "MultiMC": "Widely supported by major launchers; packaged as a complete instance."
+      }
     }
   },
   "GameAdvancedSettingsPage": {
