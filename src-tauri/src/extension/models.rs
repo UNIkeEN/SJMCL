@@ -1,4 +1,5 @@
 use crate::utils::image::ImageWrapper;
+use semver::Version;
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 use strum_macros::Display;
@@ -10,6 +11,8 @@ structstruck::strike! {
     pub identifier: String,
     pub name: String,
     pub description: Option<String>,
+    pub version: Option<String>,
+    pub minimal_launcher_version: Option<String>,
     pub frontend: Option<pub struct ExtensionFrontend {
       pub entry: String,
     }>,
@@ -17,7 +20,7 @@ structstruck::strike! {
 }
 
 impl ExtensionMetadata {
-  pub fn validate(&self) -> Result<(), ExtensionError> {
+  pub fn validate(&mut self) -> Result<(), ExtensionError> {
     Self::validate_identifier(&self.identifier)?;
     if self.name.trim().is_empty() {
       return Err(ExtensionError::InvalidName);
@@ -27,6 +30,24 @@ impl ExtensionMetadata {
         return Err(ExtensionError::InvalidFrontendEntry);
       }
     }
+
+    self.version = self.version.take().and_then(|version| {
+      let version = version.trim().to_string();
+      if version.is_empty() || Version::parse(&version).is_err() {
+        None
+      } else {
+        Some(version)
+      }
+    });
+    self.minimal_launcher_version = Some(
+      self
+        .minimal_launcher_version
+        .take()
+        .map(|version| version.trim().to_string())
+        .filter(|version| Version::parse(version).is_ok())
+        .unwrap_or_else(|| "0.0.0".to_string()),
+    );
+
     Ok(())
   }
 
@@ -66,6 +87,7 @@ pub enum ExtensionError {
   InvalidIdentifier,
   InvalidName,
   InvalidFrontendEntry,
+  LauncherVersionTooLow,
   // DuplicateIdentifier,
   ExtensionNotFound,
 }

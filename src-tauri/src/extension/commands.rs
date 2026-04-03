@@ -6,6 +6,7 @@ use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata}
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
 use crate::utils::fs::get_subdirectories;
+use semver::Version;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -61,11 +62,24 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
   fs::create_dir_all(&temp_dir)?;
 
   let register_result = (|| -> SJMCLResult<ExtensionInfo> {
-    // extract extension package (zip), rename the folder to the identifer
+    // extract extension package (zip) and read metadata
     extract_extension_package(&package_path, &temp_dir)?;
     let info = read_extension_info(&temp_dir)?;
-    let extension_dir = extensions_dir.join(&info.metadata.identifier);
 
+    // check required minimal launcher version
+    let minimal_launcher_version = Version::parse(
+      info
+        .metadata
+        .minimal_launcher_version
+        .as_deref()
+        .unwrap_or("0.0.0"),
+    )
+    .unwrap();
+    if app.package_info().version < minimal_launcher_version {
+      return Err(ExtensionError::LauncherVersionTooLow.into());
+    }
+
+    let extension_dir = extensions_dir.join(&info.metadata.identifier);
     // Existing file/folder with the same name(identifier), replace it directly.
     if extension_dir.exists() {
       if extension_dir.is_dir() {

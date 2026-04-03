@@ -2657,6 +2657,7 @@
             "INVALID_PACKAGE_FORMAT": "The extension package content format is invalid",
             "INVALID_IDENTIFIER": "Extension identifier is invalid",
             "INVALID_NAME": "Extension name is invalid",
+            "LAUNCHER_VERSION_TOO_LOW": "Launcher version is too low",
             "EXTENSION_NOT_FOUND": "Target package file not found"
           }
         }

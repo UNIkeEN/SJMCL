@@ -126,7 +126,7 @@ const ExtensionSettingsPage = () => {
         title={extension.name}
         titleExtra={
           <Text fontSize="xs" className="secondary-text">
-            {extension.identifier}
+            {`${extension.identifier}${extension.version ? ` · ${extension.version}` : ""}`}
           </Text>
         }
         description={extension.description}

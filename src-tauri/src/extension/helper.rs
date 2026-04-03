@@ -29,7 +29,7 @@ pub fn read_extension_metadata(extension_dir: &Path) -> SJMCLResult<ExtensionMet
   }
 
   let json_content = fs::read_to_string(metadata_path)?;
-  let metadata: ExtensionMetadata = serde_json::from_str(&json_content)
+  let mut metadata: ExtensionMetadata = serde_json::from_str(&json_content)
     .map_err(|_| io::Error::other(ExtensionError::InvalidPackageFormat))?;
   metadata.validate()?;
   Ok(metadata)

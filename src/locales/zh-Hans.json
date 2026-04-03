@@ -2657,6 +2657,7 @@
             "INVALID_PACKAGE_FORMAT": "扩展包内容格式无效",
             "INVALID_IDENTIFIER": "扩展标识符无效",
             "INVALID_NAME": "扩展名称无效",
+            "LAUNCHER_VERSION_TOO_LOW": "启动器版本过低",
             "EXTENSION_NOT_FOUND": "未找到待添加文件"
           }
         }
