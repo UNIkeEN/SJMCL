@@ -3,7 +3,11 @@ use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::ResourceType;
 use crate::tasks::{download::DownloadParam, PTaskParam};
+use flate2::read::GzDecoder;
+use std::fs;
 use std::sync::Mutex;
+use tar::Archive;
+use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
@@ -32,9 +36,7 @@ pub async fn build_download_param(app: &AppHandle) -> SJMCLResult<Vec<PTaskParam
         let url = api_url.join(&format!(
           "download/v0.4.2/terracotta-0.4.2-{platform}-pkg.tar.gz"
         ))?;
-        let path = app
-          .path()
-          .resolve("terractotta", tauri::path::BaseDirectory::AppData)?;
+        let path = app.path().resolve("terractotta", BaseDirectory::AppData)?;
         param.push(PTaskParam::Download(DownloadParam {
           src: url,
           dest: path,
@@ -48,4 +50,24 @@ pub async fn build_download_param(app: &AppHandle) -> SJMCLResult<Vec<PTaskParam
   }
 
   Ok(param)
+}
+
+pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
+  let dir = app.path().resolve("terracotta", BaseDirectory::AppData)?;
+
+  for entry in fs::read_dir(&dir)? {
+    let entry = entry?;
+    let path = entry.path();
+
+    if path.extension().and_then(|s| s.to_str()) == Some("gz") {
+      let file = fs::File::open(&path)?;
+      let decompressor = GzDecoder::new(file);
+      let mut archive = Archive::new(decompressor);
+      archive.unpack(dir)?;
+      fs::remove_file(path)?;
+      return Ok(());
+    }
+  }
+
+  Ok(())
 }

@@ -1,6 +1,8 @@
 use crate::{
-  error::SJMCLResult, multiplayer::helpers::terracotta::build_download_param,
-  resource::models::ResourceError, tasks::commands::schedule_progressive_task_group,
+  error::SJMCLResult,
+  multiplayer::helpers::terracotta::{build_download_param, decompress},
+  resource::models::ResourceError,
+  tasks::commands::schedule_progressive_task_group,
 };
 use tauri::{AppHandle, Manager};
 
@@ -24,8 +26,9 @@ pub async fn download_terracotta(app: AppHandle) -> SJMCLResult<()> {
   if download_param.is_empty() {
     return Err(ResourceError::NoDownloadApi.into());
   }
-  schedule_progressive_task_group(app, "terracotta".to_string(), download_param, false).await?;
-  //解压
+  schedule_progressive_task_group(app.clone(), "terracotta".to_string(), download_param, false)
+    .await?;
+  decompress(&app).await?;
   Ok(())
 }
 
