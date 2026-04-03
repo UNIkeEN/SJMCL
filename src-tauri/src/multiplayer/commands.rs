@@ -1,4 +1,7 @@
-use crate::error::SJMCLResult;
+use crate::{
+  error::SJMCLResult, multiplayer::helpers::terracotta::build_download_param,
+  resource::models::ResourceError, tasks::commands::schedule_progressive_task_group,
+};
 use tauri::{AppHandle, Manager};
 
 #[tauri::command]
@@ -17,8 +20,12 @@ pub async fn check_terracotta_support() -> SJMCLResult<bool> {
 
 #[tauri::command]
 pub async fn download_terracotta(app: AppHandle) -> SJMCLResult<()> {
-  // 下载并安装陶瓦联机核心
-  // 使用现有的任务系统
+  let download_param = build_download_param(&app).await?;
+  if download_param.is_empty() {
+    return Err(ResourceError::NoDownloadApi.into());
+  }
+  schedule_progressive_task_group(app, "terracotta".to_string(), download_param, false).await?;
+  //解压
   Ok(())
 }
 
@@ -37,5 +44,3 @@ pub async fn create_room() -> SJMCLResult<String> {
   // 创建房间并返回邀请码
   Ok("invite_code".to_string())
 }
-
-//TODO: 在 src-tauri/src/lib.rs 中注册新命令

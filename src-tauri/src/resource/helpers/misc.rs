@@ -51,6 +51,7 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::NeoforgeMaven | ResourceType::NeoforgeInstall => Ok(Url::parse("https://maven.neoforged.net/releases/")?),
       ResourceType::QuiltMaven => Ok(Url::parse("https://maven.quiltmc.org/repository/release/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://meta.quiltmc.org/")?),
+      ResourceType::Terrocotta => Ok(Url::parse("https://github.com/burningtnt/Terracotta/releases")?),
     },
     SourceType::BMCLAPIMirror => match resource_type {
       ResourceType::VersionManifest => Ok(Url::parse("https://bmclapi2.bangbang93.com/mc/game/version_manifest.json")?),
@@ -72,6 +73,7 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::OptiFine => Ok(Url::parse("https://bmclapi2.bangbang93.com/optifine/")?),
       ResourceType::QuiltMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?),// seems 'not found' 
+      ResourceType::Terrocotta => Ok(Url::parse("https://gitee.com/burningtnt/Terracotta/releases")?),
     },
   }
 }

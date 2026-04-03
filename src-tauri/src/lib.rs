@@ -5,6 +5,7 @@ mod instance;
 mod intelligence;
 mod launch;
 mod launcher_config;
+mod multiplayer;
 mod partial;
 mod resource;
 mod storage;
@@ -180,6 +181,10 @@ pub async fn run() {
         utils::commands::delete_directory,
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
+        multiplayer::commands::check_terracotta_support,
+        multiplayer::commands::download_terracotta,
+        multiplayer::commands::join_room,
+        multiplayer::commands::create_room,
       ])
       .setup(|app| {
         // init APP_DATA_DIR
