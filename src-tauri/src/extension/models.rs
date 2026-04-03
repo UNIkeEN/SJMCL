@@ -3,12 +3,17 @@ use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 use strum_macros::Display;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ExtensionMetadata {
-  pub identifier: String,
-  pub name: String,
-  pub description: Option<String>,
+structstruck::strike! {
+  #[strikethrough[derive(Debug, Clone, Serialize, Deserialize)]]
+  #[strikethrough[serde(rename_all = "camelCase")]]
+  pub struct ExtensionMetadata {
+    pub identifier: String,
+    pub name: String,
+    pub description: Option<String>,
+    pub frontend: Option<pub struct ExtensionFrontend {
+      pub entry: String,
+    }>,
+  }
 }
 
 impl ExtensionMetadata {
@@ -16,6 +21,11 @@ impl ExtensionMetadata {
     Self::validate_identifier(&self.identifier)?;
     if self.name.trim().is_empty() {
       return Err(ExtensionError::InvalidName);
+    }
+    if let Some(frontend) = &self.frontend {
+      if frontend.entry.trim().is_empty() {
+        return Err(ExtensionError::InvalidFrontendEntry);
+      }
     }
     Ok(())
   }
@@ -55,7 +65,8 @@ pub enum ExtensionError {
   InvalidPackageFormat,
   InvalidIdentifier,
   InvalidName,
-  DuplicateIdentifier,
+  InvalidFrontendEntry,
+  // DuplicateIdentifier,
   ExtensionNotFound,
 }
 
