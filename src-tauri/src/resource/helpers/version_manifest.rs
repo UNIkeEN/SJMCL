@@ -54,7 +54,8 @@ pub async fn get_game_version_manifest(
       .versions
       .into_iter()
       .map(|info| {
-        let april_fool = info.release_time.contains("04-01");
+        let april_fool =
+          info.release_time.contains("04-01") && semver::Version::parse(&info.id).is_err();
         GameClientResourceInfo {
           id: info.id,
           game_type: if april_fool {
