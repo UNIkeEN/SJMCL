@@ -230,9 +230,7 @@ export const InstanceScreenshotsWidget = () => {
             router.push(
               {
                 pathname: `/instances/details/${encodeURIComponent(instanceId || "")}/screenshots`,
-                query: {
-                  screenshotIndex: currentIndex.toString(),
-                },
+                query: {},
               },
               undefined,
               { shallow: true }
