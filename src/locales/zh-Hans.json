@@ -774,6 +774,12 @@
       "resourcepacks": "资源包",
       "optionsTxt": "游戏设置",
       "saves": "存档"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "包体更小，导入时按清单下载所需模组",
+        "MultiMC": "主流启动器广泛支持，打包完整实例"
+      }
     }
   },
   "GameAdvancedSettingsPage": {

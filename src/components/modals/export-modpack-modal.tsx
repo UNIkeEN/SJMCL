@@ -335,6 +335,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
               size="xs"
               items={(["Modrinth", "MultiMC"] as const).map((format) => ({
                 value: format,
+                tooltip: t(`ExportModpackModal.tooltip.exportFormat.${format}`),
                 label: (
                   <HStack spacing={2}>
                     <Icon
@@ -344,7 +345,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
                   </HStack>
                 ),
               }))}
-              withTooltip={false}
+              withTooltip
             />
           ),
         },
