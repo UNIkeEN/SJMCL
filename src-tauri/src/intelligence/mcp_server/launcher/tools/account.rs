@@ -20,6 +20,19 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       }
     ),
     mcp_tool!(
+      "add_player_offline",
+      crate::account::commands::add_player_offline,
+      "Add a new offline Minecraft player account to the launcher. Offline accounts do not require Microsoft or 3rd-party authentication and can be used for local/LAN play.",
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "The player username for the offline account.")]
+        username: String,
+        #[schemars(description = "Optional UUID for the player. Leave empty to auto-generate a deterministic UUID based on the username.")]
+        #[serde(default)]
+        uuid: String,
+      }
+    ),
+    mcp_tool!(
       "select_player",
       "A shortcut tool to update selected player by its ID in launcher config, which will be used for Minecraft game launches. Player ID can be obtained from retrieve_player_list tool.",
       |app, params|
