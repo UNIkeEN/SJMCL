@@ -57,3 +57,6 @@ next-env.d.ts
 *.njsproj
 *.sln
 *.sw?
+
+# backup files
+*.bak
