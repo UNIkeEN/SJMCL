@@ -1447,6 +1447,7 @@
   },
   "LaunchPage": {
     "button": {
+      "multiplayer": "Multiplayer",
       "launch": "Launch Game",
       "instanceSettings": "Instance Settings"
     },
@@ -1532,6 +1533,39 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} selected"
+  },
+  "MultiplayerModal": {
+    "button": {
+      "copyInviteCode": "Copy Invite Code",
+      "createRoom": "Start as Host",
+      "downloadCore": "Download Core",
+      "joinRoom": "Join as Guest",
+      "thirdPartyChannels": "Third-Party Downloads"
+    },
+    "field": {
+      "inviteCode": {
+        "helper": "6 digits",
+        "label": "Invite Code",
+        "placeholder": "Enter 6-digit code"
+      }
+    },
+    "header": {
+      "title": "Multiplayer"
+    },
+    "label": {
+      "roomInviteCode": "Room Invite Code"
+    },
+    "menu": {
+      "githubReleasePage": "GitHub Releases"
+    },
+    "status": {
+      "checking": "Checking multiplayer core",
+      "notReady": "Multiplayer core is not installed",
+      "ready": "Multiplayer core is ready"
+    },
+    "toast": {
+      "noOpenInstance": "No open instance"
+    }
   },
   "NoSuitableJavaDialog": {
     "title": "No suitable Java runtime found for this instance",
@@ -2244,6 +2278,38 @@
             "AUTH_SERVER_NOT_FOUND": "Auth server not found"
           }
         }
+      }
+    },
+    "multiplayer": {
+      "checkTerracottaSupport": {
+        "error": {
+          "title": "Failed to check multiplayer core"
+        },
+        "success": "Multiplayer core check completed"
+      },
+      "createRoom": {
+        "error": {
+          "description": {
+            "NO_OPEN_INSTANCE": "No open instance"
+          },
+          "title": "Failed to create multiplayer room"
+        },
+        "success": "Multiplayer room created"
+      },
+      "downloadTerracotta": {
+        "error": {
+          "title": "Failed to download multiplayer core"
+        },
+        "success": "Multiplayer core downloaded"
+      },
+      "joinRoom": {
+        "error": {
+          "description": {
+            "INVALID_INVITE_CODE": "Invite code must be 6 digits"
+          },
+          "title": "Failed to join multiplayer room"
+        },
+        "success": "Joined multiplayer room"
       }
     },
     "resource": {

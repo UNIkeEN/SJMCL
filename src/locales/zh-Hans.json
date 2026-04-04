@@ -1447,6 +1447,7 @@
   },
   "LaunchPage": {
     "button": {
+      "multiplayer": "联机",
       "launch": "启动游戏",
       "instanceSettings": "实例设置"
     },
@@ -1532,6 +1533,39 @@
   },
   "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
+  },
+  "MultiplayerModal": {
+    "button": {
+      "copyInviteCode": "复制邀请码",
+      "createRoom": "以房主身份开始游戏",
+      "downloadCore": "下载联机核心",
+      "joinRoom": "以房客身份加入游戏",
+      "thirdPartyChannels": "第三方下载渠道"
+    },
+    "field": {
+      "inviteCode": {
+        "helper": "6位数字",
+        "label": "邀请码",
+        "placeholder": "请输入6位邀请码"
+      }
+    },
+    "header": {
+      "title": "联机"
+    },
+    "label": {
+      "roomInviteCode": "房间邀请码"
+    },
+    "menu": {
+      "githubReleasePage": "GitHub 发布页"
+    },
+    "status": {
+      "checking": "正在检查联机核心",
+      "notReady": "未下载联机核心",
+      "ready": "联机核心已就绪"
+    },
+    "toast": {
+      "noOpenInstance": "没有打开的实例"
+    }
   },
   "NoSuitableJavaDialog": {
     "title": "未找到合适的 Java 运行时",
@@ -2244,6 +2278,38 @@
             "AUTH_SERVER_NOT_FOUND": "认证服务器不存在"
           }
         }
+      }
+    },
+    "multiplayer": {
+      "checkTerracottaSupport": {
+        "error": {
+          "title": "检查联机核心失败"
+        },
+        "success": "联机核心检查完成"
+      },
+      "createRoom": {
+        "error": {
+          "description": {
+            "NO_OPEN_INSTANCE": "没有打开的实例"
+          },
+          "title": "创建联机房间失败"
+        },
+        "success": "联机房间已创建"
+      },
+      "downloadTerracotta": {
+        "error": {
+          "title": "下载联机核心失败"
+        },
+        "success": "联机核心已下载"
+      },
+      "joinRoom": {
+        "error": {
+          "description": {
+            "INVALID_INVITE_CODE": "邀请码必须为6位数字"
+          },
+          "title": "加入联机房间失败"
+        },
+        "success": "已加入联机房间"
       }
     },
     "resource": {

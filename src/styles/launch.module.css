@@ -9,7 +9,6 @@
   transition: box-shadow 0.2s ease;
 }
 
-
 .launch-button:hover {
   box-shadow: 
     -2px 0 5px 2px rgba(233, 121, 57, 0.5),
@@ -22,6 +21,35 @@
     -3px 0 5px 3px rgba(233, 121, 57, 0.7),
     0px 0 5px 3px rgba(215, 25, 79, 0.7),
     3px 0 5px 3px rgba(222, 55, 188, 0.7);
+}
+
+.multiplayer-button {
+  height: 4.5rem !important;
+  width: 10.5rem !important;
+  backdrop-filter: blur(12px);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.28)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    -1px 0 8px 1px rgba(34, 197, 94, 0.24),
+    1px 0 8px 1px rgba(59, 130, 246, 0.28);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.multiplayer-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    -2px 0 10px 2px rgba(34, 197, 94, 0.3),
+    2px 0 10px 2px rgba(59, 130, 246, 0.34);
+}
+
+.multiplayer-button:active {
+  transform: translateY(0);
+  box-shadow:
+    -2px 0 12px 3px rgba(34, 197, 94, 0.38),
+    2px 0 12px 3px rgba(59, 130, 246, 0.4);
 }
 
 .selected-user-card {
