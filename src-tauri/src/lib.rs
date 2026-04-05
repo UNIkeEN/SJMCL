@@ -181,10 +181,10 @@ pub async fn run() {
         utils::commands::delete_directory,
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
-        multiplayer::commands::check_terracotta_support,
+        multiplayer::commands::check_terracotta,
+        multiplayer::commands::launch_terracotta,
         multiplayer::commands::download_terracotta,
-        multiplayer::commands::join_room,
-        multiplayer::commands::create_room,
+        multiplayer::commands::fetch_port,
       ])
       .setup(|app| {
         // init APP_DATA_DIR

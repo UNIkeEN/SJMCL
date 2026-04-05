@@ -52,7 +52,7 @@ pub async fn build_download_param(app: &AppHandle) -> SJMCLResult<Vec<PTaskParam
   Ok(param)
 }
 
-pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
+pub fn decompress(app: &AppHandle) -> SJMCLResult<()> {
   let dir = app.path().resolve("terracotta", BaseDirectory::AppData)?;
 
   for entry in fs::read_dir(&dir)? {
@@ -70,4 +70,8 @@ pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
   }
 
   Ok(())
+}
+
+pub fn _install() {
+  todo!()
 }
