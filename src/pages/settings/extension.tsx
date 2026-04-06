@@ -1,4 +1,11 @@
-import { Avatar, AvatarBadge, HStack, Text } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  Avatar,
+  AvatarBadge,
+  HStack,
+  Text,
+} from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useTranslation } from "react-i18next";
 import { LuCircleCheck, LuCircleMinus } from "react-icons/lu";
@@ -189,6 +196,10 @@ const ExtensionSettingsPage = () => {
         </HStack>
       }
     >
+      <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
+        <AlertIcon />
+        {t("ExtensionSettingsPage.alert")}
+      </Alert>
       {extensions.length > 0 ? (
         <OptionItemGroup items={extensionItems} />
       ) : (

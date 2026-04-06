@@ -779,6 +779,9 @@
   "ExtensionContributionWrapper": {
     "failedToRender": "扩展内容渲染失败。"
   },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。"
+  },
   "GameAdvancedSettingsPage": {
     "title": "高级游戏设置",
     "topWarning": "高级游戏设置仅提供给专业玩家使用。修改以下选项可能导致游戏无法启动。除非您充分了解其中的意义，否则请不要修改这些选项！",

@@ -452,6 +452,19 @@ export const ExtensionHostContextProvider: React.FC<{
         scriptElement.async = false;
         scriptElement.dataset.extensionIdentifier = extension.identifier;
 
+        // remove script and clear pending state on failure.
+        const rejectWithCleanup = (error: unknown) => {
+          if (settled) return;
+          settled = true;
+          if (
+            pendingRegistrationRef.current?.identifier === extension.identifier
+          ) {
+            pendingRegistrationRef.current = null;
+          }
+          scriptElement.remove();
+          reject(error);
+        };
+
         pendingRegistrationRef.current = {
           identifier: extension.identifier,
           resolve: (factory) => {
@@ -460,18 +473,14 @@ export const ExtensionHostContextProvider: React.FC<{
             resolve({ factory, scriptElement });
           },
           reject: (error) => {
-            if (settled) return;
-            settled = true;
-            reject(error);
+            rejectWithCleanup(error);
           },
         };
 
         scriptElement.onload = () => {
           window.setTimeout(() => {
             if (!settled) {
-              settled = true;
-              pendingRegistrationRef.current = null;
-              reject(
+              rejectWithCleanup(
                 new Error(
                   `Extension ${extension.identifier} did not call registerExtension`
                 )
@@ -481,10 +490,7 @@ export const ExtensionHostContextProvider: React.FC<{
         };
 
         scriptElement.onerror = () => {
-          if (settled) return;
-          settled = true;
-          pendingRegistrationRef.current = null;
-          reject(
+          rejectWithCleanup(
             new Error(`Failed to load script for ${extension.identifier}`)
           );
         };

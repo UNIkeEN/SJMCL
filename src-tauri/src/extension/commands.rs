@@ -24,7 +24,7 @@ pub fn retrieve_extension_list(app: AppHandle) -> SJMCLResult<Vec<ExtensionInfo>
   let mut extension_list: Vec<ExtensionInfo> = Vec::new();
 
   for sub_dir in get_subdirectories(extensions_dir)? {
-    // skin hidden/system folders (and .installing-xxx)
+    // skip hidden/system folders (and .installing-xxx)
     if sub_dir
       .file_name()
       .and_then(|name| name.to_str())
@@ -107,6 +107,16 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
 
     Ok(info)
   })();
+
+  if register_result.is_err() && temp_dir.exists() {
+    if let Err(cleanup_error) = fs::remove_dir_all(&temp_dir) {
+      log::warn!(
+        "Failed to cleanup temporary extension directory {:?}: {}",
+        temp_dir,
+        cleanup_error
+      );
+    }
+  }
 
   register_result
 }
