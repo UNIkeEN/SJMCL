@@ -6,7 +6,9 @@ import {
   HStack,
   Text,
 } from "@chakra-ui/react";
+import { appDataDir, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
+import { openPath } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
 import { LuCircleCheck, LuCircleMinus } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -32,6 +34,12 @@ const ExtensionSettingsPage = () => {
   const { extensionList, enabledExtensionList, getExtensionList } =
     useExtensionHost();
   const extensions = extensionList || getExtensionList() || [];
+
+  const handleOpenExtensionsFolder = async () => {
+    const base = await appDataDir();
+    const extensionsDir = await join(base, "UserContent", "Extensions");
+    await openPath(extensionsDir);
+  };
 
   const handleAddExtension = async () => {
     const selectedPath = await open({
@@ -90,6 +98,10 @@ const ExtensionSettingsPage = () => {
   };
 
   const secMenu = [
+    {
+      icon: "openFolder",
+      onClick: handleOpenExtensionsFolder,
+    },
     {
       icon: "add",
       onClick: handleAddExtension,

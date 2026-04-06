@@ -779,6 +779,11 @@
   "ExtensionContributionWrapper": {
     "failedToRender": "Failed to render this extension content."
   },
+  "ExtensionHostContextProvider": {
+    "toast": {
+      "activateError": "Failed to activate extension {{name}}"
+    }
+  },
   "ExtensionSettingsPage": {
     "alert": "SJMCL cannot control the behavior of third-party extensions, including how they handle your personal data. Only install and enable extensions from trusted sources."
   },

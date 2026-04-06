@@ -14,6 +14,7 @@ export interface ExtensionInfo {
   description?: string | null;
   version?: string | null;
   minimalLauncherVersion?: string | null;
+  path: string;
   iconSrc: string;
   frontend?: ExtensionFrontend | null;
 }
@@ -38,6 +39,10 @@ export interface ExtensionAbilityActions {
   getPlayerList: (sync?: boolean) => Player[] | undefined;
   getInstanceList: (sync?: boolean) => InstanceSummary[] | undefined;
   updateConfig: (path: string, value: any) => void;
+  readFile: (path: string) => Promise<string>;
+  writeFile: (path: string, content: string) => Promise<void>;
+  deleteFile: (path: string) => Promise<void>;
+  deleteDirectory: (path: string) => Promise<void>;
   invoke: <T = unknown>(
     command: string,
     payload?: Record<string, unknown>

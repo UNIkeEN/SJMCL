@@ -1,7 +1,7 @@
 import * as ChakraUI from "@chakra-ui/react";
 import { convertFileSrc, invoke as tauriInvoke } from "@tauri-apps/api/core";
-import { appDataDir, join } from "@tauri-apps/api/path";
-import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
+import { join } from "@tauri-apps/api/path";
+import { t } from "i18next";
 import React, {
   createContext,
   useCallback,
@@ -27,6 +27,7 @@ import {
   ExtensionInfo,
 } from "@/models/extension";
 import { ExtensionService } from "@/services/extension";
+import { UtilsService } from "@/services/utils";
 
 interface ExtensionContextRegistration {
   homeWidget?: ExtensionHomeWidgetDefinition;
@@ -78,7 +79,7 @@ interface ExtensionHostStoreState {
 interface ExtensionHostContextType {
   // host internals used to build ExtensionContextValue for each extension.
   data: Omit<ExtensionAbilityData, "routeQuery">;
-  actions: ExtensionAbilityActions;
+  actions?: ExtensionAbilityActions; // will be created per-extension with restricted capabilities.
   stateStore: ExtensionHostStoreState;
   // extension runtime registry state managed by host.
   extensionList: ExtensionInfo[] | undefined;
@@ -92,9 +93,9 @@ const ExtensionHostContext = createContext<
   ExtensionHostContextType | undefined
 >(undefined);
 
-// sanitize extension frontend entry path and block absolute/".." traversal.
-const sanitizeEntryPath = (entry: string) => {
-  const normalized = entry.replace(/\\/g, "/");
+// sanitize extension paths and block absolute/".." traversal.
+const sanitizePath = (path: string) => {
+  const normalized = path.replace(/\\/g, "/").trim();
   if (!normalized || normalized.startsWith("/") || normalized.includes("..")) {
     return undefined;
   }
@@ -173,38 +174,35 @@ export const ExtensionHostContextProvider: React.FC<{
 
   const invoke = useCallback<ExtensionAbility["actions"]["invoke"]>(
     async <T,>(command: string, payload?: Record<string, unknown>) => {
+      if (
+        [
+          "delete_file",
+          "delete_directory",
+          "read_file",
+          "write_file",
+          "request",
+        ].includes(command)
+      ) {
+        throw new Error(`Direct invoke is not allowed for ${command}`);
+      }
+
       return await tauriInvoke<T>(command, payload);
     },
     []
   );
 
   const requestText = useCallback<ExtensionAbility["actions"]["requestText"]>(
-    async (url: string, init?: RequestInit, encoding = "utf-8") => {
-      const response = await tauriFetch(url, init as any);
-      const buffer = await response.arrayBuffer();
-      return new TextDecoder(encoding).decode(buffer);
+    async (url: string, init?: RequestInit) => {
+      const response = await UtilsService.request(url, init?.method, {
+        headers: init?.headers,
+        body: init?.body,
+      });
+      if (response.status === "error") {
+        throw response.raw_error || response.details || response.message;
+      }
+      return response.data;
     },
     []
-  );
-
-  // compose host actions exposed to extensions.
-  const extensionActions = useMemo<ExtensionAbilityActions>(
-    () => ({
-      getPlayerList,
-      getInstanceList,
-      updateConfig: update,
-      invoke,
-      requestText,
-      openSharedModal,
-    }),
-    [
-      getPlayerList,
-      getInstanceList,
-      update,
-      invoke,
-      requestText,
-      openSharedModal,
-    ]
   );
 
   // keep host data snapshot in ref to avoid stale closure in extension APIs.
@@ -222,9 +220,6 @@ export const ExtensionHostContextProvider: React.FC<{
     playerList,
     instanceList,
   };
-
-  const extensionActionsRef = useRef<ExtensionAbilityActions>(extensionActions);
-  extensionActionsRef.current = extensionActions;
 
   const handleRetrieveExtensionList = useCallback(() => {
     ExtensionService.retrieveExtensionList().then((response) => {
@@ -259,8 +254,7 @@ export const ExtensionHostContextProvider: React.FC<{
     setInstanceList(getInstanceList() || []);
   }, [getInstanceList]);
 
-  // 中文：注册全局入口 window.registerExtension，接收扩展工厂函数。
-  // EN: Register global window.registerExtension entry to receive extension factory.
+  // Register global window.registerExtension entry to receive extension factory.
   useEffect(() => {
     const registerExtension = (factory: ExtensionContextFactory) => {
       const pending = pendingRegistrationRef.current;
@@ -398,39 +392,105 @@ export const ExtensionHostContextProvider: React.FC<{
     [getExtensionStateValue, setExtensionStateValue, subscribeExtensionState]
   );
 
-  // EN: Build host context object injected into extension instance.
+  // ------ Extension-scoped sensitive operations (fs, etc.) -----
+  const resolveExtensionDataPath = useCallback(
+    async (extension: ExtensionInfo, path: string) => {
+      const relativePath = sanitizePath(path);
+      if (!relativePath) {
+        throw new Error(`Invalid extension data path: ${path}`);
+      }
+
+      return await join(extension.path, "data", relativePath); // "<extension-identifier>/data"
+    },
+    []
+  );
+
+  // run a utils file command under the current extension's private data dir.
+  const runExtensionFileCommand = useCallback(
+    async <T,>(
+      extension: ExtensionInfo,
+      path: string,
+      action: (fullPath: string) => Promise<{
+        status: string;
+        data?: T;
+        raw_error?: string;
+        details?: string;
+        message: string;
+      }>
+    ) => {
+      const fullPath = await resolveExtensionDataPath(extension, path);
+      const response = await action(fullPath);
+      if (response.status === "error") {
+        throw response.raw_error || response.details || response.message;
+      }
+      return response.data as T;
+    },
+    [resolveExtensionDataPath]
+  );
+
+  // -------------- Extension-scoped actions ability -------------
+  const createExtensionActions = useCallback(
+    (extension: ExtensionInfo): ExtensionAbilityActions => ({
+      getPlayerList,
+      getInstanceList,
+      updateConfig: update,
+      invoke,
+      requestText,
+      openSharedModal,
+      readFile: async (path: string) =>
+        runExtensionFileCommand(extension, path, UtilsService.readFile),
+      writeFile: async (path: string, content: string) => {
+        await runExtensionFileCommand(extension, path, (fullPath) =>
+          UtilsService.writeFile(fullPath, content)
+        );
+      },
+      deleteFile: async (path: string) => {
+        await runExtensionFileCommand(extension, path, UtilsService.deleteFile);
+      },
+      deleteDirectory: async (path: string) => {
+        await runExtensionFileCommand(
+          extension,
+          path,
+          UtilsService.deleteDirectory
+        );
+      },
+    }),
+    [
+      getPlayerList,
+      getInstanceList,
+      update,
+      invoke,
+      requestText,
+      openSharedModal,
+      runExtensionFileCommand,
+    ]
+  );
+
+  // build host context object injected into extension instance.
   const createExtensionContextValue = useCallback(
-    (identifier: string): ExtensionAbility => ({
+    (extension: ExtensionInfo): ExtensionAbility => ({
       data: {
         ...extensionDataRef.current,
         routeQuery: parseRouteQuery(),
       },
-      actions: extensionActionsRef.current,
+      actions: createExtensionActions(extension),
       state: {
-        useExtensionState: createUseExtensionState(identifier),
+        useExtensionState: createUseExtensionState(extension.identifier),
       },
     }),
-    [createUseExtensionState]
+    [createExtensionActions, createUseExtensionState]
   );
 
   // build extension script URL (user dir + entry + cache-busting query).
   const getScriptUrl = useCallback(
     async (extension: ExtensionInfo, nonce: string) => {
-      const entry = sanitizeEntryPath(extension.frontend?.entry || "");
+      const entry = sanitizePath(extension.frontend?.entry || "");
       if (!entry) {
         throw new Error(
           `Invalid frontend entry for extension ${extension.identifier}`
         );
       }
-
-      const base = await appDataDir();
-      const fullPath = await join(
-        base,
-        "UserContent",
-        "Extensions",
-        extension.identifier,
-        entry
-      );
+      const fullPath = await join(extension.path, entry);
 
       return `${convertFileSrc(fullPath)}?extension=${encodeURIComponent(extension.identifier)}&v=${nonce}`;
     },
@@ -447,6 +507,7 @@ export const ExtensionHostContextProvider: React.FC<{
         scriptElement: HTMLScriptElement;
       }>((resolve, reject) => {
         let settled = false;
+        let registrationTimeout: number | undefined;
         const scriptElement = document.createElement("script");
         scriptElement.src = scriptUrl;
         scriptElement.async = false;
@@ -456,6 +517,9 @@ export const ExtensionHostContextProvider: React.FC<{
         const rejectWithCleanup = (error: unknown) => {
           if (settled) return;
           settled = true;
+          if (registrationTimeout !== undefined) {
+            window.clearTimeout(registrationTimeout);
+          }
           if (
             pendingRegistrationRef.current?.identifier === extension.identifier
           ) {
@@ -470,6 +534,9 @@ export const ExtensionHostContextProvider: React.FC<{
           resolve: (factory) => {
             if (settled) return;
             settled = true;
+            if (registrationTimeout !== undefined) {
+              window.clearTimeout(registrationTimeout);
+            }
             resolve({ factory, scriptElement });
           },
           reject: (error) => {
@@ -477,17 +544,15 @@ export const ExtensionHostContextProvider: React.FC<{
           },
         };
 
-        scriptElement.onload = () => {
-          window.setTimeout(() => {
-            if (!settled) {
-              rejectWithCleanup(
-                new Error(
-                  `Extension ${extension.identifier} did not call registerExtension`
-                )
-              );
-            }
-          }, 0);
-        };
+        registrationTimeout = window.setTimeout(() => {
+          rejectWithCleanup(
+            new Error(
+              `Extension ${extension.identifier} did not call registerExtension`
+            )
+          );
+        }, 10000); // timeout for extension to call registerExtension after script load.
+
+        scriptElement.onload = () => {};
 
         scriptElement.onerror = () => {
           rejectWithCleanup(
@@ -512,7 +577,7 @@ export const ExtensionHostContextProvider: React.FC<{
         React,
         ChakraUI,
         identifier: extension.identifier,
-        useHostContext: () => createExtensionContextValue(extension.identifier),
+        useHostContext: () => createExtensionContextValue(extension),
       };
 
       const registration = (factory(api) || {}) as ExtensionContextRegistration;
@@ -610,7 +675,9 @@ export const ExtensionHostContextProvider: React.FC<{
             error
           );
           toast({
-            title: `Failed to activate extension ${extension.name}`,
+            title: t("ExtensionHostContextProvider.toast.activateError", {
+              name: extension.name,
+            }),
             description: String(error),
             status: "error",
           });
@@ -659,7 +726,7 @@ export const ExtensionHostContextProvider: React.FC<{
         playerList,
         instanceList,
       },
-      actions: extensionActions,
+      actions: undefined, // will be created per-extension
       stateStore: {
         getValue: getExtensionStateValue,
         setValue: setExtensionStateValue,
@@ -676,7 +743,6 @@ export const ExtensionHostContextProvider: React.FC<{
       selectedInstance,
       playerList,
       instanceList,
-      extensionActions,
       getExtensionStateValue,
       setExtensionStateValue,
       subscribeExtensionState,
@@ -703,6 +769,30 @@ export const useExtensionHost = (): ExtensionHostContextType => {
   }
   return context;
 };
+
+// export const useExtensionHostState = <T,>(
+//   scope: string,
+//   key: string,
+//   initialValue: T
+// ) => {
+//   const { stateStore } = useExtensionHost();
+//   const initialRef = useRef(initialValue);
+
+//   const value = useSyncExternalStore(
+//     (listener) => stateStore.subscribe(scope, key, listener),
+//     () => stateStore.getValue(scope, key, initialRef.current),
+//     () => initialRef.current
+//   );
+
+//   const setValue = useCallback(
+//     (nextValue: React.SetStateAction<T>) => {
+//       stateStore.setValue(scope, key, nextValue, initialRef.current);
+//     },
+//     [key, scope, stateStore]
+//   );
+
+//   return [value, setValue] as const;
+// };
 
 declare global {
   interface Window {

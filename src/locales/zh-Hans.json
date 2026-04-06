@@ -779,6 +779,11 @@
   "ExtensionContributionWrapper": {
     "failedToRender": "扩展内容渲染失败。"
   },
+  "ExtensionHostContextProvider": {
+    "toast": {
+      "activateError": "激活扩展 {{name}} 失败"
+    }
+  },
   "ExtensionSettingsPage": {
     "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。"
   },

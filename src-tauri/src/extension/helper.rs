@@ -37,8 +37,9 @@ pub fn read_extension_metadata(extension_dir: &Path) -> SJMCLResult<ExtensionMet
 
 pub fn read_extension_info(extension_dir: &Path) -> SJMCLResult<ExtensionInfo> {
   let metadata = read_extension_metadata(extension_dir)?;
+  let path = extension_dir.to_string_lossy().to_string();
   let icon_src = read_extension_icon(extension_dir);
-  Ok(ExtensionInfo::new(metadata, icon_src))
+  Ok(ExtensionInfo::new(metadata, path, icon_src))
 }
 
 pub fn extract_extension_package(package_path: &Path, target_dir: &Path) -> SJMCLResult<()> {
