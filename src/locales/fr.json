@@ -353,6 +353,7 @@
     "notSelectedLoader": "Aucun nouveau chargeur sélectionné",
     "footer": {
       "installFabricApi": "Installer également le mod Fabric API",
+      "installQFAPI": "Installer aussi le mod QFAPI / QSL (si disponible)",
       "reinstall": "Réinstaller"
     }
   },
@@ -421,7 +422,8 @@
       "info": "Paramètres de base"
     },
     "footer": {
-      "installFabricApi": "Installez également le mod Fabric API."
+      "installFabricApi": "Installez également le mod Fabric API.",
+      "installQFAPI": "Installer aussi le mod QFAPI / QSL (si disponible)"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -618,6 +620,7 @@
     },
     "task": {
       "game-client": "Client {{param}}",
+      "game-client-w-java": "Client du jeu {{param1}} (avec Java {{param2}})",
       "game-server": "Serveur {{param}}",
       "change-mod-loader": "Modifier le chargeur de mods {{param}}",
       "mod": "Mod",
@@ -629,8 +632,9 @@
       "patch-files": "Réparer les fichiers du jeu {{param}}",
       "mod-update": "Mettre à jour les mods.",
       "retry": "Réessayer",
-      "neoforge-libraries": "Bibliothèques d'exécution de NeoForge ",
+      "neoforge-libraries": "Bibliothèques d'exécution de NeoForge",
       "forge-libraries": "Bibliothèques d'exécution de Forge",
+      "optifine-libraries": "Bibliothèques d'exécution d'OptiFine",
       "launcher-update": "Mettre à jour le lanceur",
       "mojang-java": "Java {{param}} fonctionne"
     }
@@ -730,6 +734,52 @@
       "linux": "Gestionnaire de fichiers",
       "macos": "La visite de",
       "windows": "Explorateur de fichiers"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "Exporter {{param}} en pack de mods"
+    },
+    "label": {
+      "exportFormat": "Format d'exportation",
+      "basicInfo": "Informations de base",
+      "modpackName": "Nom du pack de mods",
+      "modpackVersion": "Version du pack de mods",
+      "author": "Auteur",
+      "description": "Description",
+      "includedFiles": "Fichiers inclus",
+      "exportOptions": "Options d'exportation",
+      "packWithLauncher": "Inclure le lanceur",
+      "minMemory": "Mémoire minimale (MB)",
+      "noCreateRemoteFiles": "Désactiver les fichiers distants",
+      "skipCurseForgeRemoteFiles": "Ignorer les fichiers distants CurseForge"
+    },
+    "button": {
+      "export": "Exporter"
+    },
+    "error": {
+      "invalidName": "Veuillez saisir un nom de pack de mods valide",
+      "invalidVersion": "Veuillez saisir un numéro de version valide",
+      "noFileSelected": "Veuillez sélectionner au moins un fichier ou dossier à inclure"
+    },
+    "errorMessage": {
+      "error-1": "Le nom ne peut pas être vide",
+      "error-2": "Le nom contient des caractères invalides",
+      "error-3": "Le nom est trop long (255 caractères max)"
+    },
+    "fileTreeTranslation": {
+      "mods": "Mods",
+      "config": "Fichiers de configuration des mods",
+      "shaderpacks": "Shaders",
+      "resourcepacks": "Packs de ressources",
+      "optionsTxt": "Paramètres du jeu",
+      "saves": "Sauvegardes"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "Taille de package plus petite ; les mods requis sont téléchargés depuis un manifeste lors de l'importation.",
+        "MultiMC": "Largement pris en charge par les principaux lanceurs ; empaqueté comme une instance complète."
+      }
     }
   },
   "GameAdvancedSettingsPage": {
@@ -943,6 +993,7 @@
     "notice": "Remarque",
     "open": "Ouvrir",
     "openFolder": "Ouvrir le dossier",
+    "optional": "Optionnel",
     "previous": "Précédent",
     "refresh": "Rafraîchir",
     "revealFile": "Afficher dans {{opener}}",
@@ -991,11 +1042,16 @@
           "description": "Modifier l'affichage et le mode de regroupement de la barre latérale des instances",
           "instance": "Par instance",
           "directory": "Par répertoire",
+          "tag": "Par étiquette",
           "hidden": "Masqué"
         },
         "launchPageQuickSwitch": {
           "title": "Basculement rapide entre instances et comptes",
           "description": "Si activé, cliquer sur le bouton de changement de la page de lancement permet de choisir directement un compte ou une instance sans changer de page"
+        },
+        "autoDownloadJava": {
+          "title": "Télécharger automatiquement un runtime Java adapté",
+          "description": "Une fois activé, si aucun runtime Java adapté n'est disponible lors de la création d'une nouvelle instance, il sera installé automatiquement dans un répertoire dédié"
         }
       }
     },
@@ -1275,7 +1331,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "Chargeur",
-      "notInstalled": "Non installé"
+      "notInstalled": "Non installé",
+      "installed": "Installé"
     },
     "modList": {
       "title": "Mods",
@@ -1297,6 +1354,12 @@
       "title": "Packs de ressources du serveur"
     }
   },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "Schémas",
+      "preview": "Aperçu"
+    }
+  },
   "InstanceScreenshotsPage": {
     "button": {
       "details": "Détails"
@@ -1305,6 +1368,7 @@
   "InstanceSettingsPage": {
     "name": "Nom de l'instance",
     "description": "Description de l'instance",
+    "colorTag": "Étiquette de couleur",
     "icon": "Icône de l'instance",
     "applySettings": "Utiliser des paramètres de jeu spécifiques",
     "restoreSettings": "Réinitialiser les paramètres spécifiques ci-dessous",
@@ -1326,12 +1390,6 @@
     },
     "shaderPackList": {
       "title": "Packs de shaders"
-    }
-  },
-  "InstanceSchematicsPage": {
-    "schematicList": {
-      "title": "Schémas",
-      "preview": "Aperçu"
     }
   },
   "InstanceWidgets": {
@@ -1434,6 +1492,13 @@
       "description": "Êtes-vous sûr de vouloir supprimer cette version de Java ? (SJMCL ne pourra plus l'utiliser pour lancer le jeu, mais les fichiers ne seront pas supprimés du disque)"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "La dernière exécution s'est terminée anormalement",
+      "content": "SJMCL s'est terminé anormalement lors de la dernière exécution. Vous pouvez envoyer les journaux à la <community>communauté</community> ou ouvrir une issue sur <github>GitHub</github> pour obtenir de l'aide.",
+      "viewLog": "Voir les journaux"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "Lancer le jeu",
@@ -1450,13 +1515,6 @@
     "Text": {
       "noSelectedPlayer": "Aucun joueur sélectionné",
       "noSelectedGame": "Aucune instance de jeu sélectionnée"
-    }
-  },
-  "LastExitedAbnormallyDialog": {
-    "dialog": {
-      "title": "La dernière exécution s'est terminée anormalement",
-      "content": "SJMCL s'est terminé anormalement lors de la dernière exécution. Vous pouvez envoyer les journaux à la <community>communauté</community> ou ouvrir une issue sur <github>GitHub</github> pour obtenir de l'aide.",
-      "viewLog": "Voir les journaux"
     }
   },
   "LaunchProcessModal": {
@@ -1537,18 +1595,6 @@
       "showAll": "Tout afficher (+{{left}})"
     }
   },
-  "PlayerMenu": {
-    "label": {
-      "manageSkin": "Gérer les skins",
-      "viewSkin": "Voir le skin",
-      "delete": "Supprimer ce joueur",
-      "copyUUID": "Copier l'UUID"
-    },
-    "toast": {
-      "refreshing": "Actualisation des informations du personnage en cours",
-      "deleting": "Suppression du personnage en cours"
-    }
-  },
   "PingTestPage": {
     "PingServerList": {
       "title": "Test de connectivité des services",
@@ -1565,6 +1611,18 @@
       "sjmclapi": "API du lanceur SJMC"
     }
   },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "Gérer les skins",
+      "viewSkin": "Voir le skin",
+      "delete": "Supprimer ce joueur",
+      "copyUUID": "Copier l'UUID"
+    },
+    "toast": {
+      "refreshing": "Actualisation des informations du personnage en cours",
+      "deleting": "Suppression du personnage en cours"
+    }
+  },
   "ReLoginPlayerModal": {
     "modal": {
       "title": "Se reconnecter"
@@ -1578,16 +1636,6 @@
     },
     "button": {
       "login": "Connexion"
-    }
-  },
-  "RestartForUpdateConfirmDialog": {
-    "title": "Mise à jour du lanceur",
-    "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour finaliser la mise à jour.",
-    "bodyMSI": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
-    "button": {
-      "restart": "Redémarrer",
-      "install": "Installer",
-      "later": "Plus tard"
     }
   },
   "ResourceDownloader": {
@@ -1874,6 +1922,16 @@
       "All": "Tous"
     }
   },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Mise à jour du lanceur",
+    "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour finaliser la mise à jour.",
+    "bodyMSI": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
+    "button": {
+      "restart": "Redémarrer",
+      "install": "Installer",
+      "later": "Plus tard"
+    }
+  },
   "RestoreConfigConfirmDialog": {
     "title": "Restaurer les paramètres du lanceur",
     "body": "Cette opération restaurera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
@@ -2010,6 +2068,7 @@
           "title": "Échec de l'ajout du joueur hors ligne",
           "description": {
             "DUPLICATE": "Le joueur existe déjà",
+            "FULL_LOGIN_UNAVAILABLE": "Veuillez vous connecter avec votre compte Microsoft avant d'accéder à cette fonctionnalité.",
             "INVALID": "UUID invalide",
             "TEXTURE_ERROR": "Impossible d'obtenir la texture du joueur"
           }
@@ -2032,6 +2091,7 @@
           "title": "Échec de l'ajout du joueur",
           "description": {
             "DUPLICATE": "Le joueur existe déjà",
+            "FULL_LOGIN_UNAVAILABLE": "Veuillez vous connecter avec votre compte Microsoft avant d'accéder à cette fonctionnalité.",
             "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NOT_FOUND": "Serveur d'authentification introuvable",
@@ -2062,6 +2122,7 @@
           "title": "Échec de l'ajout du joueur",
           "description": {
             "DUPLICATE": "Le joueur existe déjà",
+            "FULL_LOGIN_UNAVAILABLE": "Veuillez vous connecter avec votre compte Microsoft avant d'accéder à cette fonctionnalité.",
             "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "INVALID": "Nom d'utilisateur ou mot de passe incorrect",
@@ -2089,6 +2150,7 @@
           "title": "Échec de l'ajout du joueur",
           "description": {
             "DUPLICATE": "Le joueur existe déjà",
+            "FULL_LOGIN_UNAVAILABLE": "Veuillez vous connecter avec votre compte Microsoft avant d'accéder à cette fonctionnalité.",
             "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification.",
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect.",
             "EXPIRED": "Le jeton a expiré. Veuillez vous reconnecter."
@@ -2531,6 +2593,23 @@
           }
         }
       },
+      "finishOptiFineLoaderInstall": {
+        "loading": "Installation d'OptiFine pour {{instanceName}}",
+        "success": "OptiFine installé avec succès",
+        "error": {
+          "title": "Échec de l'installation d'OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'identifiant de l'instance n'existe pas",
+            "INSTALLATION_DUPLICATED": "Un autre processus d'installation est déjà en cours",
+            "PROCESSOR_EXECUTION_FAILED": "Échec de l'exécution du processus d'installation",
+            "LOADER_INSTALLER_NOT_FOUND": "Fichier d'installation d'OptiFine introuvable",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Échec de l'analyse des informations de version d'OptiFine",
+            "INVALID_SOURCE_PATH": "Chemin source invalide",
+            "NO_SUITABLE_JAVA": "Aucun runtime Java adapté trouvé",
+            "SELECTED_JAVA_UNAVAILABLE": "Le runtime Java sélectionné est indisponible"
+          }
+        }
+      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "Impossible de changer le chargeur de mods",
@@ -2554,6 +2633,17 @@
             "FILE_NOT_FOUND_ERROR": "Le fichier du pack de mods n'existe pas. Il a peut-être été renommé, déplacé ou supprimé",
             "MODPACK_MANIFEST_PARSE_ERROR": "Erreur d'analyse du fichier de manifeste du pack de mods"
           }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des fichiers exportables"
+        }
+      },
+      "exportModpack": {
+        "success": "Pack de mods exporté avec succès",
+        "error": {
+          "title": "Échec de l'exportation du pack de mods"
         }
       },
       "addCustomInstanceIcon": {

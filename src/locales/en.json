@@ -1354,6 +1354,12 @@
       "title": "Server Resource Packs"
     }
   },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "Schematics",
+      "preview": "Preview"
+    }
+  },
   "InstanceScreenshotsPage": {
     "button": {
       "details": "Details"
@@ -1384,12 +1390,6 @@
     },
     "shaderPackList": {
       "title": "Shader Packs"
-    }
-  },
-  "InstanceSchematicsPage": {
-    "schematicList": {
-      "title": "Schematics",
-      "preview": "Preview"
     }
   },
   "InstanceWidgets": {
@@ -1492,6 +1492,13 @@
       "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "Previous Run Exited Abnormally",
+      "content": "SJMCL exited abnormally during the last run. You can send the logs to the <community>community</community>, or open an issue on <github>GitHub</github> for help.",
+      "viewLog": "View Logs"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "Launch Game",
@@ -1508,13 +1515,6 @@
     "Text": {
       "noSelectedPlayer": "No player selected",
       "noSelectedGame": "No game instance selected"
-    }
-  },
-  "LastExitedAbnormallyDialog": {
-    "dialog": {
-      "title": "Previous Run Exited Abnormally",
-      "content": "SJMCL exited abnormally during the last run. You can send the logs to the <community>community</community>, or open an issue on <github>GitHub</github> for help.",
-      "viewLog": "View Logs"
     }
   },
   "LaunchProcessModal": {
@@ -1595,18 +1595,6 @@
       "showAll": "Show All (+{{left}})"
     }
   },
-  "PlayerMenu": {
-    "label": {
-      "manageSkin": "Manage Skin",
-      "viewSkin": "View Skin",
-      "delete": "Delete",
-      "copyUUID": "Copy UUID"
-    },
-    "toast": {
-      "refreshing": "Refreshing player info",
-      "deleting": "Deleting player"
-    }
-  },
   "PingTestPage": {
     "PingServerList": {
       "title": "Service Connectivity Test",
@@ -1623,6 +1611,18 @@
       "sjmclapi": "SJMC Launcher API"
     }
   },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "Manage Skin",
+      "viewSkin": "View Skin",
+      "delete": "Delete",
+      "copyUUID": "Copy UUID"
+    },
+    "toast": {
+      "refreshing": "Refreshing player info",
+      "deleting": "Deleting player"
+    }
+  },
   "ReLoginPlayerModal": {
     "modal": {
       "title": "Re-login"
@@ -1636,16 +1636,6 @@
     },
     "button": {
       "login": "Login"
-    }
-  },
-  "RestartForUpdateConfirmDialog": {
-    "title": "Launcher Update",
-    "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
-    "bodyMSI": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
-    "button": {
-      "restart": "Restart",
-      "install": "Install",
-      "later": "Later"
     }
   },
   "ResourceDownloader": {
@@ -1930,6 +1920,16 @@
     },
     "versionList": {
       "All": "All"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Launcher Update",
+    "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
+    "bodyMSI": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
+    "button": {
+      "restart": "Restart",
+      "install": "Install",
+      "later": "Later"
     }
   },
   "RestoreConfigConfirmDialog": {
