@@ -1,5 +1,5 @@
 import { Box, VStack } from "@chakra-ui/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import HomeWidget from "@/components/extension/home-widget";
 import { useExtensionHost } from "@/contexts/extension";
 import { ExtensionHomeWidgetContribution } from "@/models/extension";
@@ -17,12 +17,30 @@ interface WidthBounds {
 const DEFAULT_WIDGET_WIDTH = 300;
 
 const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
-  const { homeWidgets } = useExtensionHost();
+  const { homeWidgets, stateStore } = useExtensionHost();
   const widgets = homeWidgets;
 
   const [widgetWidthMap, setWidgetWidthMap] = useState<Record<string, number>>(
     {}
   );
+
+  // hydrate widget widths from extension host state so they survive page remounts.
+  useEffect(() => {
+    if (widgets.length === 0) return;
+
+    setWidgetWidthMap((prev) => {
+      const next = { ...prev };
+      for (const widget of widgets) {
+        const scope = `home-widget:${widget.identifier}`;
+        next[widget.identifier] = stateStore.getValue(
+          scope,
+          "width",
+          widget.defaultWidth ?? DEFAULT_WIDGET_WIDTH
+        );
+      }
+      return next;
+    });
+  }, [stateStore, widgets]);
 
   // calculate each widget's width bound by its declaration and container's current max width.
   const getWidgetWidthBounds = useCallback(
@@ -61,8 +79,15 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
           [identifier]: width,
         };
       });
+
+      stateStore.setValue(
+        `home-widget:${identifier}`,
+        "width",
+        width,
+        DEFAULT_WIDGET_WIDTH
+      );
     },
-    []
+    [stateStore]
   );
 
   const containerWidth = useMemo(
