@@ -184,6 +184,9 @@ pub async fn run() {
         utils::commands::extract_filename,
         utils::commands::delete_file,
         utils::commands::delete_directory,
+        utils::commands::read_file,
+        utils::commands::write_file,
+        utils::commands::request,
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
       ])

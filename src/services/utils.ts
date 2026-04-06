@@ -38,6 +38,47 @@ export class UtilsService {
   }
 
   /**
+   * READ a UTF-8 text file by absolute path.
+   * @param path the file to read.
+   * @returns {Promise<InvokeResponse<string>>}
+   */
+  @responseHandler("utils")
+  static async readFile(path: string): Promise<InvokeResponse<string>> {
+    return await invoke("read_file", { path });
+  }
+
+  /**
+   * WRITE a UTF-8 text file by absolute path.
+   * This method overwrites the target file if it already exists.
+   * @param path the file to write.
+   * @param content the text content to write.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("utils")
+  static async writeFile(
+    path: string,
+    content: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("write_file", { path, content });
+  }
+
+  /**
+   * REQUEST text content through the backend HTTP client.
+   * @param url The request URL.
+   * @param method (Optional) The HTTP method. Defaults to GET.
+   * @param options (Optional) Extra request options such as headers/body.
+   * @returns {Promise<InvokeResponse<string>>}
+   */
+  @responseHandler("utils")
+  static async request(
+    url: string,
+    method?: string,
+    options?: Record<string, unknown>
+  ): Promise<InvokeResponse<string>> {
+    return await invoke("request", { url, method, options });
+  }
+
+  /**
    * RETRIEVE the list of installed TrueType fonts.
    * @returns {Promise<InvokeResponse<string[]>>}
    */
