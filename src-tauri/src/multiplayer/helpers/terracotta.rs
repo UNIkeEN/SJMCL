@@ -71,7 +71,7 @@ pub async fn download_terracotta_archive(
   Ok(())
 }
 
-pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
+pub fn decompress(app: &AppHandle) -> SJMCLResult<()> {
   let dir = app.path().resolve("terracotta", BaseDirectory::AppData)?;
 
   if !dir.exists() {
@@ -95,28 +95,6 @@ pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
   Ok(())
 }
 
-pub fn is_terracotta_ready(app: &AppHandle) -> SJMCLResult<bool> {
-  let dir = app.path().resolve("terracotta", BaseDirectory::AppData)?;
-  if !dir.exists() {
-    return Ok(false);
-  }
-
-  for entry in fs::read_dir(&dir)? {
-    let entry = entry?;
-    let path = entry.path();
-
-    if path.is_dir() {
-      return Ok(true);
-    }
-
-    if path
-      .extension()
-      .and_then(|extension| extension.to_str())
-      .is_some_and(|extension| extension != "gz")
-    {
-      return Ok(true);
-    }
-  }
-
-  Ok(false)
+pub fn _install() {
+  todo!()
 }

@@ -1,3 +1,5 @@
+use std::{ffi::OsStr, fs};
+
 use crate::{
   error::{SJMCLError, SJMCLResult},
   launch::models::LaunchingState,
@@ -5,27 +7,48 @@ use crate::{
     build_download_param, decompress, download_terracotta_archive, is_terracotta_ready,
   },
   resource::models::ResourceError,
+  tasks::commands::schedule_progressive_task_group,
 };
-use rand::Rng;
-use std::sync::Mutex;
-use sysinfo::{Pid, System};
-use tauri::{AppHandle, State};
+use serde_json::Value;
+use tauri::{path::BaseDirectory, AppHandle, Manager};
+use tokio::process::Command;
 
-fn is_valid_invite_code(invite_code: &str) -> bool {
-  invite_code.len() == 6 && invite_code.chars().all(|char| char.is_ascii_digit())
-}
-
-fn has_open_instance(launching_queue: &[LaunchingState]) -> bool {
-  let system = System::new_all();
-
-  launching_queue
-    .iter()
-    .any(|state| state.pid != 0 && system.process(Pid::from_u32(state.pid)).is_some())
+#[tauri::command]
+pub async fn check_terracotta(app: AppHandle) -> SJMCLResult<bool> {
+  let dir = &app.path().resolve("terracotta", BaseDirectory::AppData)?;
+  Ok(dir.exists())
 }
 
 #[tauri::command]
-pub async fn check_terracotta_support(app: AppHandle) -> SJMCLResult<bool> {
-  is_terracotta_ready(&app)
+pub async fn launch_terracotta(app: AppHandle) -> SJMCLResult<()> {
+  let dir = &app.path().resolve("terracotta", BaseDirectory::AppData)?;
+
+  for entry in fs::read_dir(&dir)? {
+    let entry = entry?;
+    let path = entry.path();
+
+    if path.is_file()
+      && path.extension()
+        == if cfg!(target_os = "windows") {
+          Some(OsStr::new("exe"))
+        } else if cfg!(target_os = "macos") {
+          None // TODO: 不知道安装后是什么
+        } else {
+          None
+        }
+    {
+      Command::new(path)
+        .arg("--hmcl")
+        .arg(
+          &app
+            .path()
+            .resolve("sjmcl-terracotta", BaseDirectory::Temp)?,
+        )
+        .spawn()?;
+      return Ok(());
+    }
+  }
+  Ok(())
 }
 
 #[tauri::command]
@@ -34,28 +57,26 @@ pub async fn download_terracotta(app: AppHandle) -> SJMCLResult<()> {
   if download_param.is_empty() {
     return Err(ResourceError::NoDownloadApi.into());
   }
-  download_terracotta_archive(&app, &download_param[0]).await?;
-  decompress(&app).await?;
+  schedule_progressive_task_group(app.clone(), "terracotta".to_string(), download_param, false)
+    .await?;
+  decompress(&app)?;
+  // TODO: 如果是 macOS 还需要安装
   Ok(())
 }
 
 #[tauri::command]
-pub async fn join_room(invite_code: String) -> SJMCLResult<()> {
-  if !is_valid_invite_code(&invite_code) {
-    return Err(SJMCLError("INVALID_INVITE_CODE".to_string()));
+pub async fn fetch_port(app: AppHandle) -> SJMCLResult<u16> {
+  let path = &app
+    .path()
+    .resolve("sjmcl-terracotta", BaseDirectory::Temp)?;
+  loop {
+    if path.exists() {
+      let content = fs::read_to_string(path)?;
+      let json: Value = serde_json::from_str(&content)?;
+      if let Some(port) = json.get("port").and_then(|v| v.as_u64()) {
+        return Ok(port as u16);
+      }
+      tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+    }
   }
-
-  Ok(())
-}
-
-#[tauri::command]
-pub async fn create_room(
-  launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
-) -> SJMCLResult<String> {
-  if !has_open_instance(&launching_queue_state.lock()?) {
-    return Err(SJMCLError("NO_OPEN_INSTANCE".to_string()));
-  }
-
-  let mut rng = rand::rng();
-  Ok(format!("{:06}", rng.random_range(0..1_000_000)))
 }
