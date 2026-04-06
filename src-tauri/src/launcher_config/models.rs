@@ -142,6 +142,7 @@ structstruck::strike! {
         pub dont_patch_natives: bool,
         pub use_native_glfw: bool,
         pub use_native_openal: bool,
+        pub disable_lwjgl_unsafe_agent: bool,
       },
     }
   }

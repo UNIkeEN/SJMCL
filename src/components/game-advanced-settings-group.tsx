@@ -291,6 +291,26 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             />
           ),
         },
+        {
+          title: t(
+            "GameAdvancedSettingsPage.workaround.settings.disableLwjglUnsafeAgent.title"
+          ),
+          description: t(
+            "GameAdvancedSettingsPage.workaround.settings.disableLwjglUnsafeAgent.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={gameConfig.advanced.workaround.disableLwjglUnsafeAgent}
+              onChange={(event) => {
+                updateGameAdvancedConfig(
+                  "workaround.disableLwjglUnsafeAgent",
+                  event.target.checked
+                );
+              }}
+            />
+          ),
+        },
         ...(config.basicInfo.platform === "linux"
           ? [
               {
