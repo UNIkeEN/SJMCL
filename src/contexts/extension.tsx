@@ -38,6 +38,7 @@ interface ExtensionContextRegistrationApi {
   React: typeof React;
   ChakraUI: typeof ChakraUI;
   identifier: string;
+  resolveAssetUrl: (path: string) => string;
   useHostContext: () => ExtensionAbility;
 }
 
@@ -100,6 +101,11 @@ const sanitizePath = (path: string) => {
     return undefined;
   }
   return normalized;
+};
+
+const joinUrlPath = (basePath: string, relativePath: string) => {
+  const normalizedBase = basePath.replace(/\\/g, "/").replace(/\/+$/, "");
+  return `${normalizedBase}/${relativePath}`;
 };
 
 // parse query params from current URL and expose them to extensions.
@@ -497,6 +503,16 @@ export const ExtensionHostContextProvider: React.FC<{
     []
   );
 
+  // build extension asset URL (extension dir + asset path) by tauri's convertFileSrc.
+  const getAssetUrl = useCallback((extension: ExtensionInfo, path: string) => {
+    const relativePath = sanitizePath(path);
+    if (!relativePath) {
+      throw new Error(`Invalid extension asset path: ${path}`);
+    }
+
+    return convertFileSrc(joinUrlPath(extension.path, relativePath));
+  }, []);
+
   // inject script and wait for extension to call registerExtension with factory.
   const loadExtensionFactory = useCallback(
     async (extension: ExtensionInfo, signature: string) => {
@@ -577,6 +593,7 @@ export const ExtensionHostContextProvider: React.FC<{
         React,
         ChakraUI,
         identifier: extension.identifier,
+        resolveAssetUrl: (path: string) => getAssetUrl(extension, path),
         useHostContext: () => createExtensionContextValue(extension),
       };
 
@@ -606,7 +623,7 @@ export const ExtensionHostContextProvider: React.FC<{
         signature,
       };
     },
-    [createExtensionContextValue, loadExtensionFactory]
+    [createExtensionContextValue, getAssetUrl, loadExtensionFactory]
   );
 
   const deactivateExtension = useCallback(
