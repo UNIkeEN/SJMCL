@@ -4,8 +4,13 @@ import { responseHandler } from "@/utils/response";
 
 export class MultiplayerService {
   @responseHandler("multiplayer")
-  static async checkTerracottaSupport(): Promise<InvokeResponse<boolean>> {
-    return await invoke("check_terracotta_support");
+  static async checkTerracotta(): Promise<InvokeResponse<boolean>> {
+    return await invoke("check_terracotta");
+  }
+
+  @responseHandler("multiplayer")
+  static async launchTerracotta(): Promise<InvokeResponse<void>> {
+    return await invoke("launch_terracotta");
   }
 
   @responseHandler("multiplayer")
@@ -21,5 +26,9 @@ export class MultiplayerService {
   @responseHandler("multiplayer")
   static async joinRoom(inviteCode: string): Promise<InvokeResponse<void>> {
     return await invoke("join_room", { inviteCode });
+  }
+  @responseHandler("multiplayer")
+  static async fetchPort(): Promise<InvokeResponse<number>> {
+    return await invoke("fetch_port");
   }
 }

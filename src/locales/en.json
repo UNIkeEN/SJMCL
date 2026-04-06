@@ -1544,9 +1544,9 @@
     },
     "field": {
       "inviteCode": {
-        "helper": "6 digits",
+        "helper": "Invite code",
         "label": "Invite Code",
-        "placeholder": "Enter 6-digit code"
+        "placeholder": "Enter invite code"
       }
     },
     "header": {
@@ -1558,13 +1558,26 @@
     "menu": {
       "githubReleasePage": "GitHub Releases"
     },
+    "runtimeState": {
+      "guest-connecting": "Preparing to join room",
+      "guest-ok": "Ready to launch and join",
+      "guest-starting": "Room joined, waiting for launch info",
+      "host-ok": "Room created successfully",
+      "host-scanning": "Scanning to create room",
+      "host-starting": "Creating room",
+      "waiting": "Ready to create or join a room"
+    },
     "status": {
       "checking": "Checking multiplayer core",
       "notReady": "Multiplayer core is not installed",
       "ready": "Multiplayer core is ready"
     },
     "toast": {
-      "noOpenInstance": "No open instance"
+      "joinReady": "Ready to launch and join the room",
+      "joinTimeout": "Timed out while joining the room",
+      "launchTimeout": "Timed out while starting multiplayer core",
+      "roomReady": "Room created and invite code is ready",
+      "scanTimeout": "Timed out while creating the room"
     }
   },
   "NoSuitableJavaDialog": {
@@ -2287,29 +2300,45 @@
         },
         "success": "Multiplayer core check completed"
       },
-      "createRoom": {
-        "error": {
-          "description": {
-            "NO_OPEN_INSTANCE": "No open instance"
-          },
-          "title": "Failed to create multiplayer room"
-        },
-        "success": "Multiplayer room created"
-      },
       "downloadTerracotta": {
         "error": {
           "title": "Failed to download multiplayer core"
         },
         "success": "Multiplayer core downloaded"
       },
-      "joinRoom": {
+      "fetchPort": {
+        "error": {
+          "title": "Failed to get multiplayer core port"
+        },
+        "success": "Multiplayer core port retrieved"
+      },
+      "fetchState": {
+        "error": {
+          "title": "Failed to get multiplayer room status"
+        },
+        "success": "Multiplayer room status retrieved"
+      },
+      "launchTerracotta": {
+        "error": {
+          "title": "Failed to start multiplayer core"
+        },
+        "success": "Multiplayer core started"
+      },
+      "startGuesting": {
         "error": {
           "description": {
+            "HTTP_400": "Unable to join the room",
             "INVALID_INVITE_CODE": "Invite code must be 6 digits"
           },
           "title": "Failed to join multiplayer room"
         },
-        "success": "Joined multiplayer room"
+        "success": "Joined room request sent"
+      },
+      "startScanning": {
+        "error": {
+          "title": "Failed to start room scanning"
+        },
+        "success": "Room scanning started"
       }
     },
     "resource": {

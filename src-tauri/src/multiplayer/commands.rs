@@ -1,11 +1,8 @@
 use std::{ffi::OsStr, fs};
 
 use crate::{
-  error::{SJMCLError, SJMCLResult},
-  launch::models::LaunchingState,
-  multiplayer::helpers::terracotta::{
-    build_download_param, decompress, download_terracotta_archive, is_terracotta_ready,
-  },
+  error::SJMCLResult,
+  multiplayer::helpers::terracotta::{build_download_param, decompress},
   resource::models::ResourceError,
   tasks::commands::schedule_progressive_task_group,
 };
@@ -16,6 +13,7 @@ use tokio::process::Command;
 #[tauri::command]
 pub async fn check_terracotta(app: AppHandle) -> SJMCLResult<bool> {
   let dir = &app.path().resolve("terracotta", BaseDirectory::AppData)?;
+  println!("Checking if Terracotta is installed at: {:?}", dir);
   Ok(dir.exists())
 }
 

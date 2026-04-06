@@ -1544,9 +1544,9 @@
     },
     "field": {
       "inviteCode": {
-        "helper": "6位数字",
+        "helper": "邀请码",
         "label": "邀请码",
-        "placeholder": "请输入6位邀请码"
+        "placeholder": "请输入邀请码"
       }
     },
     "header": {
@@ -1558,13 +1558,26 @@
     "menu": {
       "githubReleasePage": "GitHub 发布页"
     },
+    "runtimeState": {
+      "guest-connecting": "正在准备加入房间",
+      "guest-ok": "已准备好启动并加入房间",
+      "guest-starting": "已加入房间，正在等待启动信息",
+      "host-ok": "房间已创建成功",
+      "host-scanning": "正在扫描并创建房间",
+      "host-starting": "正在创建房间",
+      "waiting": "可以创建房间或加入房间"
+    },
     "status": {
       "checking": "正在检查联机核心",
       "notReady": "未下载联机核心",
       "ready": "联机核心已就绪"
     },
     "toast": {
-      "noOpenInstance": "没有打开的实例"
+      "joinReady": "已准备好启动游戏并加入房间",
+      "joinTimeout": "加入房间超时",
+      "launchTimeout": "启动联机核心超时",
+      "roomReady": "房间已创建，邀请码已生成",
+      "scanTimeout": "创建房间超时"
     }
   },
   "NoSuitableJavaDialog": {
@@ -2287,29 +2300,45 @@
         },
         "success": "联机核心检查完成"
       },
-      "createRoom": {
-        "error": {
-          "description": {
-            "NO_OPEN_INSTANCE": "没有打开的实例"
-          },
-          "title": "创建联机房间失败"
-        },
-        "success": "联机房间已创建"
-      },
       "downloadTerracotta": {
         "error": {
           "title": "下载联机核心失败"
         },
         "success": "联机核心已下载"
       },
-      "joinRoom": {
+      "fetchPort": {
+        "error": {
+          "title": "获取联机核心端口失败"
+        },
+        "success": "联机核心端口已获取"
+      },
+      "fetchState": {
+        "error": {
+          "title": "获取联机房间状态失败"
+        },
+        "success": "联机房间状态已获取"
+      },
+      "launchTerracotta": {
+        "error": {
+          "title": "启动联机核心失败"
+        },
+        "success": "联机核心已启动"
+      },
+      "startGuesting": {
         "error": {
           "description": {
+            "HTTP_400": "无法加入该房间",
             "INVALID_INVITE_CODE": "邀请码必须为6位数字"
           },
           "title": "加入联机房间失败"
         },
-        "success": "已加入联机房间"
+        "success": "已发送加入房间请求"
+      },
+      "startScanning": {
+        "error": {
+          "title": "开启房间扫描失败"
+        },
+        "success": "已开启房间扫描"
       }
     },
     "resource": {

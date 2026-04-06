@@ -33,6 +33,7 @@ import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import { LuCopy, LuDownload, LuHouse, LuUsers } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { MultiplayerService } from "@/services/multiplayer";
 import { copyText } from "@/utils/copy";
@@ -120,7 +121,8 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-
+  const { selectedPlayer } = useGlobalData();
+  const [port, setPort] = useState(0);
   const [generatedInviteCode, setGeneratedInviteCode] = useState("");
   const [hasTerracotta, setHasTerracotta] = useState<boolean | null>(null);
   const [inviteCode, setInviteCode] = useState("");
@@ -155,10 +157,9 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   );
   const optionIconBg = useColorModeValue("blackAlpha.100", "whiteAlpha.150");
   const optionTextColor = useColorModeValue("gray.800", "whiteAlpha.900");
-
   const checkTerracottaSupport = useCallback(async () => {
     setIsChecking(true);
-    const response = await MultiplayerService.checkTerracottaSupport();
+    const response = await MultiplayerService.checkTerracotta();
 
     if (response.status === "success") {
       setHasTerracotta(response.data);
@@ -189,25 +190,15 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
   const handleCreateRoom = async () => {
     setIsCreatingRoom(true);
-    const response = await MultiplayerService.createRoom();
-
-    if (response.status === "success") {
-      setGeneratedInviteCode(response.data);
-      setInviteCode(response.data);
-      toast({
-        title: response.message,
-        status: "success",
-      });
-    } else {
-      const hasNoOpenInstance = response.raw_error === "NO_OPEN_INSTANCE";
-
-      toast({
-        title: hasNoOpenInstance
-          ? t("MultiplayerModal.toast.noOpenInstance")
-          : response.message,
-        description: hasNoOpenInstance ? undefined : response.details,
-        status: hasNoOpenInstance ? "warning" : "error",
-      });
+    await fetch(`/127.0.0.1:${port}/state/scanning?${selectedPlayer?.name}`, {
+      method: "GET",
+    });
+    const response = await fetch(`/127.0.0.1:${port}/state`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setGeneratedInviteCode(data.room);
     }
 
     setIsCreatingRoom(false);
@@ -234,13 +225,33 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
     setIsDownloading(false);
   };
 
+  const handleInit = useCallback(async () => {
+    console.log("Initializing multiplayer modal...");
+    await MultiplayerService.launchTerracotta()
+      .then(() => {
+        console.log("Launched Terracotta");
+      })
+      .catch((err) => {
+        console.error("Failed to launch Terracotta:", err);
+      });
+    const response = await MultiplayerService.fetchPort();
+    if (response.status === "success") {
+      setPort(response.data);
+      console.log("Fetched Terracotta port:", response.data);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (props.isOpen && hasTerracotta === true) {
+      handleInit();
+    }
+  }, [props.isOpen, hasTerracotta, handleInit]);
+
   const handleJoinRoom = async () => {
     const normalizedInviteCode = inviteCode.trim();
-    if (normalizedInviteCode.length !== INVITE_CODE_LENGTH) return;
-
     setIsJoiningRoom(true);
     const response = await MultiplayerService.joinRoom(normalizedInviteCode);
-
+    /*/state/guesting?<room>&<player>*/
     if (response.status === "success") {
       toast({
         title: response.message,
