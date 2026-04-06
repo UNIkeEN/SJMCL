@@ -353,6 +353,7 @@
     "notSelectedLoader": "未選擇新的載入器",
     "footer": {
       "installFabricApi": "同時安裝 Fabric API 模組",
+      "installQFAPI": "同時安裝 QFAPI / QSL 模組（如果可用）",
       "reinstall": "重新安裝"
     }
   },
@@ -421,7 +422,8 @@
       "info": "基本設定"
     },
     "footer": {
-      "installFabricApi": "同時安裝 Fabric API 模組"
+      "installFabricApi": "同時安裝 Fabric API 模組",
+      "installQFAPI": "同時安裝 QFAPI / QSL 模組（如果可用）"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -618,6 +620,7 @@
     },
     "task": {
       "game-client": "遊戲用戶端 {{param}}",
+      "game-client-w-java": "遊戲用戶端 {{param1}}（包含 Java {{param2}}）",
       "game-server": "遊戲服務端 {{param}}",
       "change-mod-loader": "修改模組載入器 {{param}}",
       "mod": "模組",
@@ -631,6 +634,7 @@
       "retry": "重試",
       "neoforge-libraries": "NeoForge 執行庫",
       "forge-libraries": "Forge 執行庫",
+      "optifine-libraries": "OptiFine 執行庫",
       "launcher-update": "更新啟動器",
       "mojang-java": "Java {{param}} 執行時"
     }
@@ -730,6 +734,52 @@
       "linux": "檔案管理器",
       "macos": "訪達",
       "windows": "檔案總管"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "將 {{param}} 匯出為模組包"
+    },
+    "label": {
+      "exportFormat": "匯出格式",
+      "basicInfo": "基本資訊",
+      "modpackName": "模組包名稱",
+      "modpackVersion": "模組包版本",
+      "author": "作者",
+      "description": "描述",
+      "includedFiles": "包含檔案",
+      "exportOptions": "匯出選項",
+      "packWithLauncher": "打包啟動器",
+      "minMemory": "最低記憶體 (MB)",
+      "noCreateRemoteFiles": "停用遠端檔案",
+      "skipCurseForgeRemoteFiles": "略過 CurseForge 遠端檔案"
+    },
+    "button": {
+      "export": "匯出"
+    },
+    "error": {
+      "invalidName": "請輸入有效的模組包名稱",
+      "invalidVersion": "請輸入有效的版本號",
+      "noFileSelected": "請至少選擇一個要包含的檔案或資料夾"
+    },
+    "errorMessage": {
+      "error-1": "名稱不能為空",
+      "error-2": "名稱包含無效字元",
+      "error-3": "名稱過長（最多 255 個字元）"
+    },
+    "fileTreeTranslation": {
+      "mods": "模組",
+      "config": "模組設定檔",
+      "shaderpacks": "光影",
+      "resourcepacks": "資源包",
+      "optionsTxt": "遊戲設定",
+      "saves": "存檔"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "封包更小，匯入時會依清單下載所需模組",
+        "MultiMC": "主流啟動器廣泛支援，打包為完整實例"
+      }
     }
   },
   "GameAdvancedSettingsPage": {
@@ -943,6 +993,7 @@
     "notice": "提示",
     "open": "開啟",
     "openFolder": "開啟目錄",
+    "optional": "可選",
     "previous": "上一步",
     "refresh": "重新整理",
     "revealFile": "在{{opener}}中顯示",
@@ -991,11 +1042,16 @@
           "description": "更改實例頁左側導航欄是否顯示、分組方式",
           "instance": "按實例",
           "directory": "按目錄",
+          "tag": "按標籤",
           "hidden": "隱藏"
         },
         "launchPageQuickSwitch": {
           "title": "快捷切換實例與帳戶",
           "description": "啟用後，點選啟動頁的切換按鈕可直接選擇帳戶或實例，而無需跳轉頁面"
+        },
+        "autoDownloadJava": {
+          "title": "自動下載可用版本 Java 執行時",
+          "description": "啟用後，新建實例時若不存在可用版本的 Java 執行時，將自動安裝至特定目錄"
         }
       }
     },
@@ -1275,7 +1331,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "載入器",
-      "notInstalled": "未安裝"
+      "notInstalled": "未安裝",
+      "installed": "已安裝"
     },
     "modList": {
       "title": "模組",
@@ -1297,6 +1354,12 @@
       "title": "伺服器資源包"
     }
   },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "原理圖",
+      "preview": "預覽"
+    }
+  },
   "InstanceScreenshotsPage": {
     "button": {
       "details": "詳情"
@@ -1305,6 +1368,7 @@
   "InstanceSettingsPage": {
     "name": "實例名稱",
     "description": "實例描述",
+    "colorTag": "顏色標籤",
     "icon": "實例圖示",
     "applySettings": "啟用特定遊戲設定",
     "restoreSettings": "重設以下特定設定",
@@ -1326,12 +1390,6 @@
     },
     "shaderPackList": {
       "title": "光影包"
-    }
-  },
-  "InstanceSchematicsPage": {
-    "schematicList": {
-      "title": "原理圖",
-      "preview": "預覽"
     }
   },
   "InstanceWidgets": {
@@ -1434,6 +1492,13 @@
       "description": "確認要移除此版本 Java 嗎？（SJMCL 將無法使用此 Java 啟動遊戲，但不會刪除硬碟上的檔案）"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "上次執行異常退出",
+      "content": "SJMCL 上次執行時異常退出。您可以將日誌發送到<community>使用者社群</community>，或在 <github>GitHub</github> 發起 Issue 以尋求協助",
+      "viewLog": "檢視日誌"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "啟動遊戲",
@@ -1450,13 +1515,6 @@
     "Text": {
       "noSelectedPlayer": "尚未選擇角色",
       "noSelectedGame": "尚未選擇遊戲實例"
-    }
-  },
-  "LastExitedAbnormallyDialog": {
-    "dialog": {
-      "title": "上次執行異常退出",
-      "content": "SJMCL 上次執行時異常退出。您可以將日誌發送到<community>使用者社群</community>，或在 <github>GitHub</github> 發起 Issue 以尋求協助",
-      "viewLog": "檢視日誌"
     }
   },
   "LaunchProcessModal": {
@@ -1537,18 +1595,6 @@
       "showAll": "顯示全部（+{{left}}）"
     }
   },
-  "PlayerMenu": {
-    "label": {
-      "manageSkin": "管理外觀",
-      "viewSkin": "檢視外觀",
-      "delete": "刪除此角色",
-      "copyUUID": "複製 UUID"
-    },
-    "toast": {
-      "refreshing": "正在重新整理角色資訊",
-      "deleting": "正在刪除角色"
-    }
-  },
   "PingTestPage": {
     "PingServerList": {
       "title": "服務連通性測試",
@@ -1565,6 +1611,18 @@
       "sjmclapi": "SJMC Launcher API"
     }
   },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "管理外觀",
+      "viewSkin": "檢視外觀",
+      "delete": "刪除此角色",
+      "copyUUID": "複製 UUID"
+    },
+    "toast": {
+      "refreshing": "正在重新整理角色資訊",
+      "deleting": "正在刪除角色"
+    }
+  },
   "ReLoginPlayerModal": {
     "modal": {
       "title": "重新登入"
@@ -1578,16 +1636,6 @@
     },
     "button": {
       "login": "登入"
-    }
-  },
-  "RestartForUpdateConfirmDialog": {
-    "title": "啟動器更新",
-    "body": "新版本已完成下載，重新開啟 SJMCL 以完成更新",
-    "bodyMSI": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
-    "button": {
-      "restart": "重新啟動",
-      "install": "安裝",
-      "later": "稍後"
     }
   },
   "ResourceDownloader": {
@@ -1874,6 +1922,16 @@
       "All": "全部"
     }
   },
+  "RestartForUpdateConfirmDialog": {
+    "title": "啟動器更新",
+    "body": "新版本已完成下載，重新開啟 SJMCL 以完成更新",
+    "bodyMSI": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
+    "button": {
+      "restart": "重新啟動",
+      "install": "安裝",
+      "later": "稍後"
+    }
+  },
   "RestoreConfigConfirmDialog": {
     "title": "還原啟動器設定",
     "body": "此操作將會還原啟動器的所有設定為預設值，您確定要繼續嗎？"
@@ -2010,6 +2068,7 @@
           "title": "離線角色新增失敗",
           "description": {
             "DUPLICATE": "角色已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟帳戶後使用此功能。",
             "INVALID": "UUID 無效",
             "TEXTURE_ERROR": "角色外觀獲取失敗"
           }
@@ -2032,6 +2091,7 @@
           "title": "角色新增失敗",
           "description": {
             "DUPLICATE": "角色已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟帳戶後使用此功能。",
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NOT_FOUND": "認證伺服器不存在",
@@ -2062,6 +2122,7 @@
           "title": "角色新增失敗",
           "description": {
             "DUPLICATE": "角色已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟帳戶後使用此功能。",
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "INVALID": "帳號或密碼錯誤",
@@ -2089,6 +2150,7 @@
           "title": "角色新增失敗",
           "description": {
             "DUPLICATE": "角色已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟帳戶後使用此功能。",
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "EXPIRED": "令牌已過期，請重新登入"
@@ -2531,6 +2593,23 @@
           }
         }
       },
+      "finishOptiFineLoaderInstall": {
+        "loading": "正在為 {{instanceName}} 安裝 OptiFine",
+        "success": "OptiFine 安裝完成",
+        "error": {
+          "title": "OptiFine 安裝失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "INSTALLATION_DUPLICATED": "偵測到另一個程序已在安裝中",
+            "PROCESSOR_EXECUTION_FAILED": "安裝工作執行失敗",
+            "LOADER_INSTALLER_NOT_FOUND": "找不到 OptiFine 安裝程式",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版本資訊解析失敗",
+            "INVALID_SOURCE_PATH": "資源路徑無效",
+            "NO_SUITABLE_JAVA": "沒有找到可用的 Java 執行時",
+            "SELECTED_JAVA_UNAVAILABLE": "所選 Java 執行時不可用"
+          }
+        }
+      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "無法更改模組載入器",
@@ -2554,6 +2633,17 @@
             "FILE_NOT_FOUND_ERROR": "模組包檔案不存在，可能已更名、移動或刪除",
             "MODPACK_MANIFEST_PARSE_ERROR": "模組包清單檔案解析錯誤"
           }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "取得可匯出檔案清單失敗"
+        }
+      },
+      "exportModpack": {
+        "success": "匯出模組包成功",
+        "error": {
+          "title": "匯出模組包失敗"
         }
       },
       "addCustomInstanceIcon": {

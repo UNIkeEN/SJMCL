@@ -353,6 +353,7 @@
     "notSelectedLoader": "新しいローダーが選択されていません",
     "footer": {
       "installFabricApi": "同時に Fabric API モッドをインストール",
+      "installQFAPI": "QFAPI / QSL モッドもインストール（利用可能な場合）",
       "reinstall": "再インストール"
     }
   },
@@ -421,7 +422,8 @@
       "info": "基本設定"
     },
     "footer": {
-      "installFabricApi": "同時に Fabric API をインストール"
+      "installFabricApi": "同時に Fabric API をインストール",
+      "installQFAPI": "QFAPI / QSL モッドもインストール（利用可能な場合）"
     }
   },
   "CreateRenamedInstShortcutAlertDialog": {
@@ -618,6 +620,7 @@
     },
     "task": {
       "game-client": "ゲームクライアント {{param}}",
+      "game-client-w-java": "ゲームクライアント {{param1}}（Java {{param2}} 同梱）",
       "game-server": "ゲームサーバー {{param}}",
       "change-mod-loader": "モッドローダーを変更 {{param}}",
       "mod": "モッド",
@@ -631,6 +634,7 @@
       "retry": "再試行",
       "neoforge-libraries": "NeoForge ランタイムライブラリ",
       "forge-libraries": "Forge ランタイムライブラリ",
+      "optifine-libraries": "OptiFine ランタイムライブラリ",
       "launcher-update": "ランチャーを更新",
       "mojang-java": "Java {{param}} ランタイム"
     }
@@ -730,6 +734,52 @@
       "linux": "ファイルマネージャー",
       "macos": "ファインダー",
       "windows": "エクスプローラー"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "{{param}} をモッドパックとしてエクスポート"
+    },
+    "label": {
+      "exportFormat": "エクスポート形式",
+      "basicInfo": "基本情報",
+      "modpackName": "モッドパック名",
+      "modpackVersion": "モッドパックバージョン",
+      "author": "作者",
+      "description": "説明",
+      "includedFiles": "含めるファイル",
+      "exportOptions": "エクスポートオプション",
+      "packWithLauncher": "ランチャーを同梱",
+      "minMemory": "最小メモリ (MB)",
+      "noCreateRemoteFiles": "リモートファイルを無効化",
+      "skipCurseForgeRemoteFiles": "CurseForge のリモートファイルをスキップ"
+    },
+    "button": {
+      "export": "エクスポート"
+    },
+    "error": {
+      "invalidName": "有効なモッドパック名を入力してください",
+      "invalidVersion": "有効なバージョン番号を入力してください",
+      "noFileSelected": "含めるファイルまたはフォルダーを少なくとも 1 つ選択してください"
+    },
+    "errorMessage": {
+      "error-1": "名前は空にできません",
+      "error-2": "名前に無効な文字が含まれています",
+      "error-3": "名前が長すぎます（最大 255 文字）"
+    },
+    "fileTreeTranslation": {
+      "mods": "モッド",
+      "config": "モッド設定ファイル",
+      "shaderpacks": "シェーダーパック",
+      "resourcepacks": "リソースパック",
+      "optionsTxt": "ゲーム設定",
+      "saves": "セーブデータ"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "パッケージサイズが小さく、インポート時にマニフェストから必要なモッドをダウンロードします。",
+        "MultiMC": "主要ランチャーで広くサポートされ、完全なインスタンスとしてパッケージ化されます。"
+      }
     }
   },
   "GameAdvancedSettingsPage": {
@@ -943,6 +993,7 @@
     "notice": "通知",
     "open": "開く",
     "openFolder": "フォルダーを開く",
+    "optional": "任意",
     "previous": "前へ",
     "refresh": "再読み込み",
     "revealFile": "{{opener}}で表示",
@@ -991,11 +1042,16 @@
           "description": "インスタンスページの左側ナビゲーションバーの表示・グループ化方法を変更",
           "instance": "インスタンス順",
           "directory": "ディレクトリ順",
+          "tag": "タグ別",
           "hidden": "非表示"
         },
         "launchPageQuickSwitch": {
           "title": "クイックスイッチ",
           "description": "起動ページにアカウントとインスタンスの直接選択が可能。"
+        },
+        "autoDownloadJava": {
+          "title": "適切な Java ランタイムを自動ダウンロード",
+          "description": "有効にすると、新しいインスタンス作成時に適切な Java ランタイムがない場合、専用ディレクトリに自動でインストールします"
         }
       }
     },
@@ -1275,7 +1331,8 @@
   "InstanceModsPage": {
     "modLoaderList": {
       "title": "モッドローダー",
-      "notInstalled": "未インストール"
+      "notInstalled": "未インストール",
+      "installed": "インストール済み"
     },
     "modList": {
       "title": "モッド",
@@ -1297,6 +1354,12 @@
       "title": "サーバーリソースパック"
     }
   },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "スキーマティック",
+      "preview": "プレビュー"
+    }
+  },
   "InstanceScreenshotsPage": {
     "button": {
       "details": "詳細を見る"
@@ -1305,6 +1368,7 @@
   "InstanceSettingsPage": {
     "name": "インスタンス名称",
     "description": "インスタンス情報",
+    "colorTag": "カラータグ",
     "icon": "インスタンスアイコン",
     "applySettings": "インスタンス限定設定を有効化",
     "restoreSettings": "限定設定をリセット",
@@ -1326,12 +1390,6 @@
     },
     "shaderPackList": {
       "title": "シェーダーパック"
-    }
-  },
-  "InstanceSchematicsPage": {
-    "schematicList": {
-      "title": "スキーマティック",
-      "preview": "プレビュー"
     }
   },
   "InstanceWidgets": {
@@ -1434,6 +1492,13 @@
       "description": "この Java を削除しますか。（この Java てゲームの起動ができなくなりますが、 Java ファイルの削除はしません。）"
     }
   },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "前回の実行は異常終了しました",
+      "content": "SJMCL は前回の実行時に異常終了しました。ログを<community>コミュニティ</community>に送るか、<github>GitHub</github> で Issue を作成してサポートを求めてください。",
+      "viewLog": "ログを表示"
+    }
+  },
   "LaunchPage": {
     "button": {
       "launch": "ゲーム起動",
@@ -1450,13 +1515,6 @@
     "Text": {
       "noSelectedPlayer": "キャラクターを選択していない",
       "noSelectedGame": "インスタンスを選択していない"
-    }
-  },
-  "LastExitedAbnormallyDialog": {
-    "dialog": {
-      "title": "前回の実行は異常終了しました",
-      "content": "SJMCL は前回の実行時に異常終了しました。ログを<community>コミュニティ</community>に送るか、<github>GitHub</github> で Issue を作成してサポートを求めてください。",
-      "viewLog": "ログを表示"
     }
   },
   "LaunchProcessModal": {
@@ -1537,18 +1595,6 @@
       "showAll": "すべて表示（+{{left}}）"
     }
   },
-  "PlayerMenu": {
-    "label": {
-      "manageSkin": "スキン管理",
-      "viewSkin": "スキンを見る",
-      "delete": "キャラクター削除",
-      "copyUUID": "UUID コピー"
-    },
-    "toast": {
-      "refreshing": "キャラクター情報を更新中",
-      "deleting": "キャラクターを削除中"
-    }
-  },
   "PingTestPage": {
     "PingServerList": {
       "title": "サービス接続テスト",
@@ -1565,6 +1611,18 @@
       "sjmclapi": "SJMC Launcher API"
     }
   },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "スキン管理",
+      "viewSkin": "スキンを見る",
+      "delete": "キャラクター削除",
+      "copyUUID": "UUID コピー"
+    },
+    "toast": {
+      "refreshing": "キャラクター情報を更新中",
+      "deleting": "キャラクターを削除中"
+    }
+  },
   "ReLoginPlayerModal": {
     "modal": {
       "title": "再ログイン"
@@ -1578,16 +1636,6 @@
     },
     "button": {
       "login": "ログイン"
-    }
-  },
-  "RestartForUpdateConfirmDialog": {
-    "title": "ランチャー更新",
-    "body": "新しいバージョンのダウンロードが完了しました。SJMCL を再起動して更新を完了してください",
-    "bodyMSI": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
-    "button": {
-      "restart": "再起動",
-      "install": "インストール",
-      "later": "後で"
     }
   },
   "ResourceDownloader": {
@@ -1874,6 +1922,16 @@
       "All": "すべて"
     }
   },
+  "RestartForUpdateConfirmDialog": {
+    "title": "ランチャー更新",
+    "body": "新しいバージョンのダウンロードが完了しました。SJMCL を再起動して更新を完了してください",
+    "bodyMSI": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
+    "button": {
+      "restart": "再起動",
+      "install": "インストール",
+      "later": "後で"
+    }
+  },
   "RestoreConfigConfirmDialog": {
     "title": "ランチャー設定復元",
     "body": "ランチャーの設定をデフォルトに復元しますか。"
@@ -2010,6 +2068,7 @@
           "title": "オフラインキャラクターの追加に失敗",
           "description": {
             "DUPLICATE": "キャラクターがすでに存在",
+            "FULL_LOGIN_UNAVAILABLE": "この機能を使用するには、まず Microsoft アカウントでログインしてください。",
             "INVALID": "UUID が無効です",
             "TEXTURE_ERROR": "キャラクタースキンの取得に失敗"
           }
@@ -2032,6 +2091,7 @@
           "title": "キャラクターの追加に失敗",
           "description": {
             "DUPLICATE": "キャラクターがすでに存在",
+            "FULL_LOGIN_UNAVAILABLE": "この機能を使用するには、まず Microsoft アカウントでログインしてください。",
             "NETWORK_ERROR": "認証サーバーへの接続に失敗",
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "NOT_FOUND": "認証サーバーが見つからない",
@@ -2062,6 +2122,7 @@
           "title": "キャラクターの追加に失敗",
           "description": {
             "DUPLICATE": "キャラクターがすでに存在",
+            "FULL_LOGIN_UNAVAILABLE": "この機能を使用するには、まず Microsoft アカウントでログインしてください。",
             "NETWORK_ERROR": "認証サーバーへの接続に失敗",
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "INVALID": "ログイン情報が間違っている",
@@ -2089,6 +2150,7 @@
           "title": "キャラクターの追加に失敗",
           "description": {
             "DUPLICATE": "キャラクターがすでに存在",
+            "FULL_LOGIN_UNAVAILABLE": "この機能を使用するには、まず Microsoft アカウントでログインしてください。",
             "NETWORK_ERROR": "認証サーバーに接続できません",
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "EXPIRED": "トークンの有効期限が切れました。再ログインしてください"
@@ -2531,6 +2593,23 @@
           }
         }
       },
+      "finishOptiFineLoaderInstall": {
+        "loading": "{{instanceName}} に OptiFine をインストール中",
+        "success": "OptiFine のインストールが完了",
+        "error": {
+          "title": "OptiFine のインストールに失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "INSTALLATION_DUPLICATED": "別のインストール処理がすでに進行中です",
+            "PROCESSOR_EXECUTION_FAILED": "インストール処理の実行に失敗",
+            "LOADER_INSTALLER_NOT_FOUND": "OptiFine インストーラーが見つかりません",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine のバージョン情報の解析に失敗",
+            "INVALID_SOURCE_PATH": "ソースパスが無効です",
+            "NO_SUITABLE_JAVA": "適切な Java ランタイムが見つかりません",
+            "SELECTED_JAVA_UNAVAILABLE": "選択した Java ランタイムは利用できません"
+          }
+        }
+      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "モッドローダーを変更できません",
@@ -2554,6 +2633,17 @@
             "FILE_NOT_FOUND_ERROR": "モッドパックファイルが存在しません。名前変更、移動、または削除された可能性があります",
             "MODPACK_MANIFEST_PARSE_ERROR": "モッドパックマニフェストファイルの解析エラー"
           }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "エクスポート可能なファイル一覧の取得に失敗"
+        }
+      },
+      "exportModpack": {
+        "success": "モッドパックをエクスポートした",
+        "error": {
+          "title": "モッドパックのエクスポートに失敗"
         }
       },
       "addCustomInstanceIcon": {
