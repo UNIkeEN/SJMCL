@@ -1,0 +1,107 @@
+name: PR Size Label
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  Label:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Label PR by filtered changed lines
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request
+            if (!pr) {
+              core.info('No pull request found in payload, skipping.')
+              return
+            }
+
+            const owner = context.repo.owner
+            const repo = context.repo.repo
+            const issue_number = pr.number
+            const ignoredFilePatterns = [
+              /(?:^|\/)package-lock\.json$/i,
+              /(?:^|\/)npm-shrinkwrap\.json$/i,
+              /(?:^|\/)yarn\.lock$/i,
+              /(?:^|\/)pnpm-lock\.ya?ml$/i,
+              /(?:^|\/)Cargo\.lock$/i,
+              /^src\/locales\/.+\.json$/i,
+            ]
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: pr.number,
+              per_page: 100,
+            })
+
+            const countedFiles = []
+            const ignoredFiles = []
+            let totalChanges = 0
+
+            for (const file of files) {
+              const ignored = ignoredFilePatterns.some(pattern => pattern.test(file.filename))
+              if (ignored) {
+                ignoredFiles.push(file.filename)
+                continue
+              }
+
+              const fileChanges = file.changes ?? ((file.additions || 0) + (file.deletions || 0))
+              totalChanges += fileChanges
+              countedFiles.push(`${file.filename} (${fileChanges})`)
+            }
+
+            let targetLabel
+            if (totalChanges <= 9) targetLabel = 'size/XS'
+            else if (totalChanges <= 29) targetLabel = 'size/S'
+            else if (totalChanges <= 99) targetLabel = 'size/M'
+            else if (totalChanges <= 499) targetLabel = 'size/L'
+            else if (totalChanges <= 999) targetLabel = 'size/XL'
+            else targetLabel = 'size/XXL'
+
+            const currentLabels = await github.paginate(github.rest.issues.listLabelsOnIssue, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            })
+
+            const sizeLabels = currentLabels
+              .map(label => label.name)
+              .filter(name => /^size\//.test(name))
+
+            for (const name of sizeLabels) {
+              if (name !== targetLabel) {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number,
+                  name,
+                }).catch(() => {})
+              }
+            }
+
+            if (!currentLabels.some(label => label.name === targetLabel)) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number,
+                labels: [targetLabel],
+              })
+            }
+
+            core.info(`PR #${issue_number} has ${totalChanges} counted changed lines, applied ${targetLabel}.`)
+            core.info(`Ignored files: ${ignoredFiles.length ? ignoredFiles.join(', ') : 'none'}`)
+            core.info(`Counted files: ${countedFiles.length ? countedFiles.join(', ') : 'none'}`)
