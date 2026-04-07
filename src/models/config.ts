@@ -76,7 +76,7 @@ export interface LauncherConfig {
       primaryColor: string;
       colorMode: "light" | "dark" | "system";
       useLiquidGlassDesign: boolean;
-      headNavStyle: string;
+      headNavStyle: "standard" | "simplified" | "adaptive";
     };
     font: {
       fontFamily: string;
@@ -244,7 +244,7 @@ export const defaultConfig: LauncherConfig = {
       primaryColor: "blue",
       colorMode: "light",
       useLiquidGlassDesign: false,
-      headNavStyle: "standard",
+      headNavStyle: "adaptive",
     },
     font: {
       fontFamily: "%built-in",

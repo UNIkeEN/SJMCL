@@ -156,7 +156,7 @@ const AppearanceSettingsPage = () => {
   };
 
   const HeadNavStyleMenu = () => {
-    const headNavStyleTypes = ["standard", "simplified"];
+    const headNavStyleTypes = ["standard", "simplified", "adaptive"];
 
     return (
       <MenuSelector
