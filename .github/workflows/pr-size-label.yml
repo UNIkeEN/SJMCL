@@ -17,99 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main branch config
-        uses: actions/checkout@v4
-        with:
-          ref: main
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      - name: Install YAML parser
-        run: npm install --no-save --ignore-scripts --no-package-lock yaml
-
-      - name: Sync size labels from main config
-        id: sync-labels
-        uses: actions/github-script@v7
-        env:
-          LABEL_CONFIG_PATH: .github/pr-size-labels.yml
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs')
-            const YAML = require('yaml')
-
-            const owner = context.repo.owner
-            const repo = context.repo.repo
-            const configPath = process.env.LABEL_CONFIG_PATH
-
-            const configContent = fs.readFileSync(configPath, 'utf8')
-            const parsedConfig = YAML.parse(configContent)
-            const labelDefinitions = parsedConfig?.labels
-
-            if (!Array.isArray(labelDefinitions) || !labelDefinitions.length) {
-              core.setFailed(`No labels found in ${configPath} from main branch.`)
-              return
-            }
-
-            for (const label of labelDefinitions) {
-              if (!label.name || !label.color || !label.description || typeof label.min !== 'number') {
-                core.setFailed(`Invalid label definition: ${JSON.stringify(label)}`)
-                return
-              }
-            }
-
-            const repoLabels = await github.paginate(github.rest.issues.listLabelsForRepo, {
-              owner,
-              repo,
-              per_page: 100,
-            })
-
-            const existingRepoLabels = new Map(repoLabels.map(label => [label.name, label]))
-
-            for (const label of labelDefinitions) {
-              const existing = existingRepoLabels.get(label.name)
-
-              if (!existing) {
-                await github.rest.issues.createLabel({
-                  owner,
-                  repo,
-                  name: label.name,
-                  color: label.color,
-                  description: label.description,
-                })
-                core.info(`Created missing repository label: ${label.name}`)
-                continue
-              }
-
-              const currentColor = (existing.color || '').toUpperCase()
-              const targetColor = label.color.toUpperCase()
-              const currentDescription = existing.description || ''
-
-              if (currentColor !== targetColor || currentDescription !== label.description) {
-                await github.rest.issues.updateLabel({
-                  owner,
-                  repo,
-                  name: existing.name,
-                  new_name: label.name,
-                  color: label.color,
-                  description: label.description,
-                })
-                core.info(`Updated repository label: ${label.name}`)
-              }
-            }
-
-            fs.writeFileSync('pr-size-labels.json', JSON.stringify(labelDefinitions))
-
       - name: Label PR by filtered changed lines
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs')
-
             const pr = context.payload.pull_request
             if (!pr) {
               core.info('No pull request found in payload, skipping.')
@@ -120,21 +32,13 @@ jobs:
             const repo = context.repo.repo
             const issue_number = pr.number
             const ignoredFilePatterns = [
-              /^package-lock\.json$/i,
-              /^npm-shrinkwrap\.json$/i,
-              /^yarn\.lock$/i,
-              /^pnpm-lock\.ya?ml$/i,
+              /(?:^|\/)package-lock\.json$/i,
+              /(?:^|\/)npm-shrinkwrap\.json$/i,
+              /(?:^|\/)yarn\.lock$/i,
+              /(?:^|\/)pnpm-lock\.ya?ml$/i,
               /(?:^|\/)Cargo\.lock$/i,
               /^src\/locales\/.+\.json$/i,
             ]
-
-            const labelDefinitions = JSON.parse(fs.readFileSync('pr-size-labels.json', 'utf8'))
-              .sort((left, right) => left.min - right.min)
-
-            if (!labelDefinitions.length) {
-              core.setFailed('No label definitions available for PR labeling.')
-              return
-            }
 
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner,
@@ -159,15 +63,13 @@ jobs:
               countedFiles.push(`${file.filename} (${fileChanges})`)
             }
 
-            const targetLabel = labelDefinitions.find(label => {
-              const max = typeof label.max === 'number' ? label.max : Number.POSITIVE_INFINITY
-              return totalChanges >= label.min && totalChanges <= max
-            })?.name
-
-            if (!targetLabel) {
-              core.setFailed(`No matching size label found for ${totalChanges} changed lines.`)
-              return
-            }
+            let targetLabel
+            if (totalChanges <= 9) targetLabel = 'size/XS'
+            else if (totalChanges <= 29) targetLabel = 'size/S'
+            else if (totalChanges <= 99) targetLabel = 'size/M'
+            else if (totalChanges <= 499) targetLabel = 'size/L'
+            else if (totalChanges <= 999) targetLabel = 'size/XL'
+            else targetLabel = 'size/XXL'
 
             const currentLabels = await github.paginate(github.rest.issues.listLabelsOnIssue, {
               owner,
@@ -176,10 +78,9 @@ jobs:
               per_page: 100,
             })
 
-            const managedLabelNames = new Set(labelDefinitions.map(label => label.name))
             const sizeLabels = currentLabels
               .map(label => label.name)
-              .filter(name => managedLabelNames.has(name))
+              .filter(name => /^size\//.test(name))
 
             for (const name of sizeLabels) {
               if (name !== targetLabel) {
