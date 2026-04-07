@@ -310,11 +310,12 @@ pub async fn generate_launch_command(
     });
     if let Some(ver) = lwjgl_version {
       if ver.starts_with("3.4.") {
-        if let Ok(agent_path) = get_app_resource_filepath(app, "assets/game/lwjgl-unsafe-agent.jar")
-        {
-          let agent_arg = format!("-javaagent:{}", agent_path.to_string_lossy());
-          if !cmd.contains(&agent_arg) {
-            cmd.push(agent_arg);
+        match get_app_resource_filepath(app, "assets/game/lwjgl-unsafe-agent.jar") {
+          Ok(agent_path) => {
+            cmd.push(format!("-javaagent:{}", agent_path.to_string_lossy()));
+          }
+          Err(e) => {
+            eprintln!("[Warn] Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
           }
         }
       }
