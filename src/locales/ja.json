@@ -837,6 +837,10 @@
         "dontPatchNatives": {
           "title": "ローカルライブラリの自動置換をしない"
         },
+        "useLwjglUnsafeAgent": {
+          "title": "LWJGL Unsafe Agent を有効にする",
+          "description": "影響を受ける Minecraft バージョンでは、HMCL の <hmcl>LWJGL Unsafe Agent</hmcl> を自動的に使用してパフォーマンス問題を修正します。"
+        },
         "useNativeGlfw": {
           "title": "システム GLFW を利用（Linux のみ）"
         },

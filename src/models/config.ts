@@ -44,6 +44,7 @@ export interface GameConfig {
       gameFileValidatePolicy: string;
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
+      useLwjglUnsafeAgent: boolean;
       useNativeGlfw: boolean;
       useNativeOpenal: boolean;
     };
@@ -217,6 +218,7 @@ export const defaultGameConfig: GameConfig = {
       gameFileValidatePolicy: "normal",
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
+      useLwjglUnsafeAgent: true,
       useNativeGlfw: false,
       useNativeOpenal: false,
     },

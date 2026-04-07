@@ -9,9 +9,11 @@ use crate::launch::helpers::file_validator::get_nonnative_library_paths;
 use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
+use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
 use base64::engine::general_purpose;
 use base64::Engine;
+use log::warn;
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
 use shlex::try_quote;
@@ -291,6 +293,34 @@ pub async fn generate_launch_command(
       "-Dauthlibinjector.yggdrasil.prefetched={}",
       general_purpose::STANDARD.encode(auth_server_meta.unwrap())
     ));
+  }
+
+  // LWJGL Unsafe Agent for JDK 25+ and LWJGL 3.4.x
+  // ref: https://github.com/HMCL-dev/lwjgl-unsafe-agent
+  if game_config.advanced.workaround.use_lwjgl_unsafe_agent && selected_java.major_version >= 25 {
+    let lwjgl_version = client_info.libraries.iter().find_map(|lib| {
+      let parts: Vec<&str> = lib.name.split(':').collect();
+      if parts.len() >= 3
+        && parts[0].eq_ignore_ascii_case("org.lwjgl")
+        && parts[1].eq_ignore_ascii_case("lwjgl")
+      {
+        Some(parts[2].to_string())
+      } else {
+        None
+      }
+    });
+    if let Some(ver) = lwjgl_version {
+      if ver.starts_with("3.4.") {
+        match get_app_resource_filepath(app, "assets/game/lwjgl-unsafe-agent.jar") {
+          Ok(agent_path) => {
+            cmd.push(format!("-javaagent:{}", agent_path.to_string_lossy()));
+          }
+          Err(e) => {
+            warn!("Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
+          }
+        }
+      }
+    }
   }
 
   // -----------------------------------------

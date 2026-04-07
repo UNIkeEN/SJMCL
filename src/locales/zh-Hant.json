@@ -837,6 +837,10 @@
         "dontPatchNatives": {
           "title": "不嘗試自動取代本機庫"
         },
+        "useLwjglUnsafeAgent": {
+          "title": "啟用 LWJGL Unsafe Agent",
+          "description": "在受影響的 Minecraft 版本中使用來自 HMCL 的 <hmcl>LWJGL Unsafe Agent</hmcl> 修復效能問題"
+        },
         "useNativeGlfw": {
           "title": "使用系統 GLFW（僅 Linux）"
         },

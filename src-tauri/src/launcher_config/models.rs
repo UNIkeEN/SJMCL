@@ -134,12 +134,14 @@ structstruck::strike! {
         pub java_permanent_generation_space: u32,
         pub environment_variable: String,
       },
-      pub workaround: struct {
+      pub workaround: struct GameWorkaroundConfig {
         pub no_jvm_args: bool,
         #[default(FileValidatePolicy::Normal)]
         pub game_file_validate_policy: FileValidatePolicy,
         pub dont_check_jvm_validity: bool,
         pub dont_patch_natives: bool,
+        #[default = true]
+        pub use_lwjgl_unsafe_agent: bool,
         pub use_native_glfw: bool,
         pub use_native_openal: bool,
       },
