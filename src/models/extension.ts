@@ -19,13 +19,7 @@ export interface ExtensionInfo {
   frontend?: ExtensionFrontend | null;
 }
 
-// runtime abilities exposed by the host to extension scripts.
-export interface ExtensionAbility {
-  data: ExtensionAbilityData;
-  actions: ExtensionAbilityActions;
-  state: ExtensionAbilityState;
-}
-
+// reactive host data exposed to extension scripts.
 export interface ExtensionAbilityData {
   config: LauncherConfig;
   selectedPlayer: Player | undefined;
@@ -33,6 +27,12 @@ export interface ExtensionAbilityData {
   playerList: Player[];
   instanceList: InstanceSummary[];
   routeQuery: Record<string, string | string[] | undefined>; // current route query parameters
+}
+
+// stable runtime abilities exposed by the host to extension scripts.
+export interface ExtensionAbilityApi {
+  actions: ExtensionAbilityActions;
+  state: ExtensionAbilityState;
 }
 
 export interface ExtensionAbilityActions {

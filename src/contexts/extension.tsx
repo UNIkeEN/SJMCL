@@ -2,6 +2,7 @@ import * as ChakraUI from "@chakra-ui/react";
 import { convertFileSrc, invoke as tauriInvoke } from "@tauri-apps/api/core";
 import { join } from "@tauri-apps/api/path";
 import { t } from "i18next";
+import { useRouter } from "next/router";
 import React, {
   createContext,
   useCallback,
@@ -21,8 +22,8 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
 import {
-  ExtensionAbility,
   ExtensionAbilityActions,
+  ExtensionAbilityApi,
   ExtensionAbilityData,
   ExtensionAbilityState,
   ExtensionHomeWidgetContribution,
@@ -53,7 +54,8 @@ interface ExtensionContextRegistrationApi {
   };
   identifier: string;
   resolveAssetUrl: (path: string) => string;
-  useHostContext: () => ExtensionAbility;
+  getHostContext: () => ExtensionAbilityApi;
+  useHostData: () => ExtensionAbilityData;
 }
 
 type ExtensionContextFactory = (
@@ -95,6 +97,17 @@ interface ExtensionHostStoreState {
     key: string,
     listener: () => void
   ) => () => void;
+}
+
+interface ExtensionHostActionRefs {
+  getPlayerList: (
+    sync?: boolean
+  ) => ExtensionAbilityData["playerList"] | undefined;
+  getInstanceList: (
+    sync?: boolean
+  ) => ExtensionAbilityData["instanceList"] | undefined;
+  updateConfig: (path: string, value: any) => void;
+  openSharedModal: (key: string, params?: any) => void;
 }
 
 interface ExtensionHostContextType {
@@ -170,15 +183,20 @@ const parseRouteQuery = (): ExtensionAbilityData["routeQuery"] => {
  * 2) For each enabled extension with a frontend entry, the host injects its
  *    script and waits for a `window.registerExtension(...)` handshake.
  * 3) The host executes the factory with a constrained API surface
- *    (React/Chakra + host context + scoped state helpers).
+ *    (React/Chakra + stable host API + reactive host data + scoped state helpers).
  * 4) Returned registrations are converted into runtime contributions
  *    (e.g. home widgets) and tracked by extension identifier.
  * 5) A sync loop re-evaluates activation signatures and performs reload/teardown
  *    to keep runtime consistent with extension list/config changes.
+ *
+ * Design note:
+ * - `getHostContext()` returns a stable per-extension API object for actions/state.
+ * - `useHostData()` is the only reactive entry for launcher-owned data snapshots.
  */
 export const ExtensionHostContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const router = useRouter();
   const { config, update } = useLauncherConfig();
   const { selectedPlayer, selectedInstance, getPlayerList, getInstanceList } =
     useGlobalData();
@@ -215,7 +233,26 @@ export const ExtensionHostContextProvider: React.FC<{
     Record<string, Record<string, Set<() => void>>>
   >({});
 
-  const invoke = useCallback<ExtensionAbility["actions"]["invoke"]>(
+  const extensionHostContextRef = useRef<Record<string, ExtensionAbilityApi>>(
+    {}
+  );
+  const hostDataSnapshotRef = useRef<ExtensionAbilityData>({
+    config,
+    selectedPlayer,
+    selectedInstance,
+    playerList,
+    instanceList,
+    routeQuery: parseRouteQuery(),
+  });
+  const hostDataListenersRef = useRef<Set<() => void>>(new Set());
+  const hostActionRefs = useRef<ExtensionHostActionRefs>({
+    getPlayerList,
+    getInstanceList,
+    updateConfig: update,
+    openSharedModal,
+  });
+
+  const invoke = useCallback<ExtensionAbilityActions["invoke"]>(
     async <T,>(command: string, payload?: Record<string, unknown>) => {
       if (
         [
@@ -234,7 +271,7 @@ export const ExtensionHostContextProvider: React.FC<{
     []
   );
 
-  const requestText = useCallback<ExtensionAbility["actions"]["requestText"]>(
+  const requestText = useCallback<ExtensionAbilityActions["requestText"]>(
     async (url: string, init?: RequestInit) => {
       const response = await UtilsService.request(url, init?.method, {
         headers: init?.headers,
@@ -248,21 +285,14 @@ export const ExtensionHostContextProvider: React.FC<{
     []
   );
 
-  // keep host data snapshot in ref to avoid stale closure in extension APIs.
-  const extensionDataRef = useRef<Omit<ExtensionAbilityData, "routeQuery">>({
-    config,
-    selectedPlayer,
-    selectedInstance,
-    playerList,
-    instanceList,
-  });
-  extensionDataRef.current = {
-    config,
-    selectedPlayer,
-    selectedInstance,
-    playerList,
-    instanceList,
-  };
+  useEffect(() => {
+    hostActionRefs.current = {
+      getPlayerList,
+      getInstanceList,
+      updateConfig: update,
+      openSharedModal,
+    };
+  }, [getInstanceList, getPlayerList, openSharedModal, update]);
 
   const handleRetrieveExtensionList = useCallback(() => {
     ExtensionService.retrieveExtensionList().then((response) => {
@@ -296,6 +326,53 @@ export const ExtensionHostContextProvider: React.FC<{
   useEffect(() => {
     setInstanceList(getInstanceList() || []);
   }, [getInstanceList]);
+
+  // Host data management with useSyncExternalStore to trigger updates in extensions.
+  const subscribeHostData = useCallback((listener: () => void) => {
+    hostDataListenersRef.current.add(listener);
+    return () => {
+      hostDataListenersRef.current.delete(listener);
+    };
+  }, []);
+
+  const getHostDataSnapshot = useCallback(
+    () => hostDataSnapshotRef.current,
+    []
+  );
+
+  const useHostData = useMemo(
+    () =>
+      function useHostData() {
+        return useSyncExternalStore(
+          subscribeHostData,
+          getHostDataSnapshot,
+          getHostDataSnapshot
+        );
+      },
+    [getHostDataSnapshot, subscribeHostData]
+  );
+
+  useEffect(() => {
+    hostDataSnapshotRef.current = {
+      config,
+      selectedPlayer,
+      selectedInstance,
+      playerList,
+      instanceList,
+      routeQuery: parseRouteQuery(),
+    };
+
+    hostDataListenersRef.current.forEach((listener) => {
+      listener();
+    });
+  }, [
+    config,
+    instanceList,
+    playerList,
+    router.asPath,
+    selectedInstance,
+    selectedPlayer,
+  ]);
 
   // Register global window.registerExtension entry to receive extension factory.
   useEffect(() => {
@@ -489,12 +566,14 @@ export const ExtensionHostContextProvider: React.FC<{
   // -------------- Extension-scoped actions ability -------------
   const createExtensionActions = useCallback(
     (extension: ExtensionInfo): ExtensionAbilityActions => ({
-      getPlayerList,
-      getInstanceList,
-      updateConfig: update,
+      getPlayerList: (sync) => hostActionRefs.current.getPlayerList(sync),
+      getInstanceList: (sync) => hostActionRefs.current.getInstanceList(sync),
+      updateConfig: (path, value) =>
+        hostActionRefs.current.updateConfig(path, value),
       invoke,
       requestText,
-      openSharedModal,
+      openSharedModal: (key, params) =>
+        hostActionRefs.current.openSharedModal(key, params),
       readFile: async (path: string) =>
         runExtensionFileCommand(extension, path, UtilsService.readFile),
       writeFile: async (path: string, content: string) => {
@@ -518,29 +597,27 @@ export const ExtensionHostContextProvider: React.FC<{
           [extension.identifier]: (previous[extension.identifier] || 0) + 1,
         })),
     }),
-    [
-      getPlayerList,
-      getInstanceList,
-      update,
-      invoke,
-      requestText,
-      openSharedModal,
-      runExtensionFileCommand,
-    ]
+    [invoke, requestText, runExtensionFileCommand]
   );
 
-  // build host context object injected into extension instance.
-  const createExtensionContextValue = useCallback(
-    (extension: ExtensionInfo): ExtensionAbility => ({
-      data: {
-        ...extensionDataRef.current,
-        routeQuery: parseRouteQuery(),
-      },
-      actions: createExtensionActions(extension),
-      state: {
-        useExtensionState: createUseExtensionState(extension.identifier),
-      },
-    }),
+  // build a stable host context object injected into an extension instance.
+  const getExtensionHostContext = useCallback(
+    (extension: ExtensionInfo): ExtensionAbilityApi => {
+      const cached = extensionHostContextRef.current[extension.identifier];
+      if (cached) {
+        return cached;
+      }
+
+      const contextValue: ExtensionAbilityApi = {
+        actions: createExtensionActions(extension),
+        state: {
+          useExtensionState: createUseExtensionState(extension.identifier),
+        },
+      };
+
+      extensionHostContextRef.current[extension.identifier] = contextValue;
+      return contextValue;
+    },
     [createExtensionActions, createUseExtensionState]
   );
 
@@ -666,7 +743,8 @@ export const ExtensionHostContextProvider: React.FC<{
         },
         identifier: extension.identifier,
         resolveAssetUrl: (path: string) => getAssetUrl(extension, path),
-        useHostContext: () => createExtensionContextValue(extension),
+        getHostContext: () => getExtensionHostContext(extension),
+        useHostData,
       };
 
       const registration = (factory(api) || {}) as ExtensionContextRegistration;
@@ -724,7 +802,7 @@ export const ExtensionHostContextProvider: React.FC<{
         signature,
       };
     },
-    [createExtensionContextValue, getAssetUrl, loadExtensionFactory]
+    [getAssetUrl, getExtensionHostContext, loadExtensionFactory, useHostData]
   );
 
   const deactivateExtension = useCallback(
@@ -752,6 +830,7 @@ export const ExtensionHostContextProvider: React.FC<{
 
       active.scriptElement?.remove();
       delete activeExtensionsRef.current[identifier];
+      delete extensionHostContextRef.current[identifier];
       removeExtensionContributionState(identifier);
     },
     [removeExtensionContributionState]
