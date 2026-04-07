@@ -6,6 +6,7 @@ import {
   Icon,
   Text,
   Tooltip,
+  useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -47,7 +48,12 @@ const HeadNavBar = () => {
   const { tasks } = useTaskContext();
 
   const primaryColor = config.appearance.theme.primaryColor;
-  const isSimplified = config.appearance.theme.headNavStyle === "simplified";
+  const headNavStyle = config.appearance.theme.headNavStyle;
+  const isCompactLayout =
+    useBreakpointValue({ base: true, lg: false }) ?? false;
+  const isSimplified =
+    headNavStyle === "simplified" ||
+    (headNavStyle === "adaptive" && isCompactLayout);
   const isDownloadIndicatorShown = tasks.length > 0;
 
   const [isAnimating, setIsAnimating] = useState(false);

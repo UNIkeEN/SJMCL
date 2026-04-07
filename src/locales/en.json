@@ -283,7 +283,8 @@
           "title": "Navigation Bar Style",
           "type": {
             "standard": "Standard",
-            "simplified": "Simplified"
+            "simplified": "Simplified",
+            "adaptive": "Adaptive"
           }
         }
       }

@@ -283,7 +283,8 @@
           "title": "顶部导航栏样式",
           "type": {
             "standard": "标准",
-            "simplified": "简约"
+            "simplified": "简约",
+            "adaptive": "自适应"
           }
         }
       }
