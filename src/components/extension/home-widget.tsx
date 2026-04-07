@@ -73,7 +73,7 @@ const HomeWidget = ({
           mb={2}
         />
 
-        <ExtensionContributionWrapper resetKey={widget.identifier}>
+        <ExtensionContributionWrapper resetKey={widget.resetKey}>
           <WidgetComponent />
         </ExtensionContributionWrapper>
       </AdvancedCard>

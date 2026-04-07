@@ -118,7 +118,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
         <VStack align="start" spacing={4} pr="10px">
           {widgetLayouts.map(({ widget, bounds, width }) => (
             <HomeWidget
-              key={widget.identifier}
+              key={widget.resetKey}
               widget={widget}
               width={width}
               widthBounds={bounds}

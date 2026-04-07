@@ -28,12 +28,16 @@ import {
   ExtensionHomeWidgetContribution,
   ExtensionHomeWidgetDefinition,
   ExtensionInfo,
+  ExtensionSettingsPageContribution,
+  ExtensionSettingsPageDefinition,
 } from "@/models/extension";
 import { ExtensionService } from "@/services/extension";
 import { UtilsService } from "@/services/utils";
 
 interface ExtensionContextRegistration {
   homeWidget?: ExtensionHomeWidgetDefinition;
+  homeWidgets?: ExtensionHomeWidgetDefinition[];
+  settingsPage?: ExtensionSettingsPageDefinition;
   dispose?: () => void;
 }
 
@@ -96,6 +100,9 @@ interface ExtensionHostContextType {
   extensionList: ExtensionInfo[] | undefined;
   enabledExtensionList: ExtensionInfo[] | undefined;
   homeWidgets: ExtensionHomeWidgetContribution[];
+  getExtensionSettingsPage: (
+    identifier: string
+  ) => ExtensionSettingsPageContribution | undefined;
   // host control methods.
   getExtensionList: (sync?: boolean) => ExtensionInfo[] | undefined;
 }
@@ -169,6 +176,9 @@ export const ExtensionHostContextProvider: React.FC<{
 
   const [extensionList, setExtensionList] = useState<ExtensionInfo[]>();
   const [extensionListVersion, setExtensionListVersion] = useState(0);
+  const [extensionRuntimeVersionMap, setExtensionRuntimeVersionMap] = useState<
+    Record<string, number>
+  >({}); // bump this to trigger reload for a specific extension.
   const [playerList, setPlayerList] = useState<
     ExtensionAbilityData["playerList"]
   >([]);
@@ -177,12 +187,16 @@ export const ExtensionHostContextProvider: React.FC<{
   >([]);
 
   const [homeWidgetMap, setHomeWidgetMap] = useState<
-    Record<string, ExtensionHomeWidgetContribution>
+    Record<string, ExtensionHomeWidgetContribution[]>
+  >({});
+  const [settingsPageMap, setSettingsPageMap] = useState<
+    Record<string, ExtensionSettingsPageContribution>
   >({});
 
   // pending registration, active extensions, and per-extension state stores/listeners.
   const pendingRegistrationRef = useRef<PendingRegistration | null>(null);
   const activeExtensionsRef = useRef<Record<string, ActiveExtensionRecord>>({});
+  const activatingExtensionsRef = useRef<Record<string, string>>({});
   const extensionStateStoreRef = useRef<ExtensionStateStore>({});
   const extensionStateListenerRef = useRef<
     Record<string, Record<string, Set<() => void>>>
@@ -283,11 +297,6 @@ export const ExtensionHostContextProvider: React.FC<{
     };
 
     window.registerExtension = registerExtension;
-    return () => {
-      if (window.registerExtension === registerExtension) {
-        delete window.registerExtension;
-      }
-    };
   }, []);
 
   const enabledExtensionList = useMemo(() => {
@@ -301,16 +310,25 @@ export const ExtensionHostContextProvider: React.FC<{
   // ------------- Spec contributions for rendering --------------
   const homeWidgets = useMemo(() => {
     if (!enabledExtensionList) {
-      return Object.values(homeWidgetMap);
+      return Object.values(homeWidgetMap).flat();
     }
-
     return enabledExtensionList
-      .map((extension) => homeWidgetMap[extension.identifier])
+      .flatMap((extension) => homeWidgetMap[extension.identifier] || [])
       .filter(Boolean);
   }, [enabledExtensionList, homeWidgetMap]);
 
+  const getExtensionSettingsPage = useCallback(
+    (identifier: string) => settingsPageMap[identifier],
+    [settingsPageMap]
+  );
+
   const removeExtensionContributionState = useCallback((identifier: string) => {
     setHomeWidgetMap((prev) => {
+      const next = { ...prev };
+      delete next[identifier];
+      return next;
+    });
+    setSettingsPageMap((prev) => {
       const next = { ...prev };
       delete next[identifier];
       return next;
@@ -470,6 +488,11 @@ export const ExtensionHostContextProvider: React.FC<{
           UtilsService.deleteDirectory
         );
       },
+      reloadSelf: () =>
+        setExtensionRuntimeVersionMap((previous) => ({
+          ...previous,
+          [extension.identifier]: (previous[extension.identifier] || 0) + 1,
+        })),
     }),
     [
       getPlayerList,
@@ -616,18 +639,47 @@ export const ExtensionHostContextProvider: React.FC<{
 
       const registration = (factory(api) || {}) as ExtensionContextRegistration;
 
-      if (registration.homeWidget) {
-        const homeWidget = registration.homeWidget;
+      // Normalize extension-declared contributions into host-owned runtime maps.
+      const homeWidgetDefinitions = [
+        ...(registration.homeWidget ? [registration.homeWidget] : []),
+        ...(registration.homeWidgets || []),
+      ];
+
+      if (homeWidgetDefinitions.length > 0) {
         setHomeWidgetMap((prev) => ({
           ...prev,
+          [extension.identifier]: homeWidgetDefinitions.map(
+            (homeWidget, index) => ({
+              ...homeWidget,
+              identifier:
+                homeWidgetDefinitions.length === 1
+                  ? extension.identifier
+                  : `${extension.identifier}:${homeWidget.key || index}`,
+              resetKey: `${extension.identifier}:${signature}:${homeWidget.key || index}`,
+              extension,
+            })
+          ),
+        }));
+      } else {
+        setHomeWidgetMap((prev) => {
+          const next = { ...prev };
+          delete next[extension.identifier];
+          return next;
+        });
+      }
+
+      if (registration.settingsPage) {
+        setSettingsPageMap((prev) => ({
+          ...prev,
           [extension.identifier]: {
-            ...homeWidget,
+            ...registration.settingsPage!,
             identifier: extension.identifier,
+            resetKey: `${extension.identifier}:${signature}:settings`,
             extension,
           },
         }));
       } else {
-        setHomeWidgetMap((prev) => {
+        setSettingsPageMap((prev) => {
           const next = { ...prev };
           delete next[extension.identifier];
           return next;
@@ -645,6 +697,15 @@ export const ExtensionHostContextProvider: React.FC<{
 
   const deactivateExtension = useCallback(
     (identifier: string) => {
+      if (pendingRegistrationRef.current?.identifier === identifier) {
+        pendingRegistrationRef.current.reject(
+          new Error(`Extension ${identifier} activation cancelled`)
+        );
+        pendingRegistrationRef.current = null;
+      }
+
+      delete activatingExtensionsRef.current[identifier];
+
       const active = activeExtensionsRef.current[identifier];
       if (active?.dispose) {
         try {
@@ -681,8 +742,11 @@ export const ExtensionHostContextProvider: React.FC<{
         const target = targets.find(
           (extension) => extension.identifier === identifier
         );
+        const runtimeVersion = target
+          ? extensionRuntimeVersionMap[target.identifier] || 0
+          : 0;
         const targetSignature = target?.frontend?.entry
-          ? `${target.frontend.entry}:${extensionListVersion}`
+          ? `${target.frontend.entry}:${extensionListVersion}:${runtimeVersion}`
           : undefined;
 
         if (!target || active.signature !== targetSignature) {
@@ -693,17 +757,27 @@ export const ExtensionHostContextProvider: React.FC<{
       for (const extension of targets) {
         if (cancelled) break;
 
-        const signature = `${extension.frontend?.entry}:${extensionListVersion}`;
+        const signature = `${extension.frontend?.entry}:${extensionListVersion}:${extensionRuntimeVersionMap[extension.identifier] || 0}`;
         if (
           activeExtensionsRef.current[extension.identifier]?.signature ===
-          signature
+            signature ||
+          activatingExtensionsRef.current[extension.identifier] === signature
         ) {
           continue;
         }
 
         try {
+          activatingExtensionsRef.current[extension.identifier] = signature;
           await activateExtension(extension, signature);
         } catch (error) {
+          if (
+            error instanceof Error &&
+            error.message ===
+              `Extension ${extension.identifier} activation cancelled`
+          ) {
+            continue;
+          }
+
           logger.error(
             `Failed to activate extension ${extension.identifier}`,
             error
@@ -715,6 +789,12 @@ export const ExtensionHostContextProvider: React.FC<{
             description: String(error),
             status: "error",
           });
+        } finally {
+          if (
+            activatingExtensionsRef.current[extension.identifier] === signature
+          ) {
+            delete activatingExtensionsRef.current[extension.identifier];
+          }
         }
       }
 
@@ -737,6 +817,7 @@ export const ExtensionHostContextProvider: React.FC<{
     deactivateExtension,
     enabledExtensionList,
     extensionListVersion,
+    extensionRuntimeVersionMap,
     toast,
   ]);
 
@@ -769,6 +850,7 @@ export const ExtensionHostContextProvider: React.FC<{
       extensionList,
       enabledExtensionList,
       homeWidgets,
+      getExtensionSettingsPage,
       getExtensionList,
     }),
     [
@@ -783,6 +865,7 @@ export const ExtensionHostContextProvider: React.FC<{
       extensionList,
       enabledExtensionList,
       homeWidgets,
+      getExtensionSettingsPage,
       getExtensionList,
     ]
   );

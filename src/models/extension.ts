@@ -53,6 +53,7 @@ export interface ExtensionAbilityActions {
     encoding?: string
   ) => Promise<string>;
   openSharedModal: (key: string, params?: any) => void;
+  reloadSelf: () => void;
 }
 
 export interface ExtensionAbilityState {
@@ -64,6 +65,7 @@ export interface ExtensionAbilityState {
 
 // extension-declared contract (raw declaration from plugin).
 export interface ExtensionHomeWidgetDefinition {
+  key?: string;
   title: string;
   description?: string;
   icon?: string;
@@ -73,8 +75,19 @@ export interface ExtensionHomeWidgetDefinition {
   Component: React.ComponentType;
 }
 
+export interface ExtensionSettingsPageDefinition {
+  Component: React.ComponentType;
+}
+
 // host-bound contribution (definition + extension metadata).
 export interface ExtensionHomeWidgetContribution extends ExtensionHomeWidgetDefinition {
   identifier: string;
+  resetKey: string;
+  extension: ExtensionInfo;
+}
+
+export interface ExtensionSettingsPageContribution extends ExtensionSettingsPageDefinition {
+  identifier: string;
+  resetKey: string;
   extension: ExtensionInfo;
 }

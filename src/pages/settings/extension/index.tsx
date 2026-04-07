@@ -9,6 +9,7 @@ import {
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuCircleCheck, LuCircleMinus } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
@@ -28,11 +29,16 @@ import { ExtensionService } from "@/services/extension";
 import { base64ImgSrc } from "@/utils/string";
 
 const ExtensionSettingsPage = () => {
+  const router = useRouter();
   const { t } = useTranslation();
   const toast = useToast();
   const { config, update } = useLauncherConfig();
-  const { extensionList, enabledExtensionList, getExtensionList } =
-    useExtensionHost();
+  const {
+    extensionList,
+    enabledExtensionList,
+    getExtensionList,
+    getExtensionSettingsPage,
+  } = useExtensionHost();
   const extensions = extensionList || getExtensionList() || [];
 
   const handleOpenExtensionsFolder = async () => {
@@ -120,6 +126,18 @@ const ExtensionSettingsPage = () => {
   const extensionItemMenuOperations = (extension: ExtensionInfo) => {
     const isEnabled = enabledSet.has(extension.identifier);
     return [
+      ...(getExtensionSettingsPage(extension.identifier)
+        ? [
+            {
+              icon: "settings",
+              label: t("HeadNavBar.navList.settings"),
+              danger: false,
+              onClick: () => {
+                router.push(`/settings/extension/${extension.identifier}`);
+              },
+            },
+          ]
+        : []),
       {
         label: t(isEnabled ? "General.disable" : "General.enable"),
         icon: isEnabled ? LuCircleMinus : LuCircleCheck,
