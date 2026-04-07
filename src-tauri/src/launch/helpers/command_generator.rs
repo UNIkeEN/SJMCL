@@ -296,7 +296,7 @@ pub async fn generate_launch_command(
 
   // LWJGL Unsafe Agent
   // ref: https://github.com/HMCL-dev/lwjgl-unsafe-agent
-  if !game_config.advanced.workaround.disable_lwjgl_unsafe_agent {
+  if game_config.advanced.workaround.use_lwjgl_unsafe_agent {
     let lwjgl_version = client_info.libraries.iter().find_map(|lib| {
       let parts: Vec<&str> = lib.name.split(':').collect();
       if parts.len() >= 3

@@ -837,9 +837,9 @@
         "dontPatchNatives": {
           "title": "不尝试自动替换本地库"
         },
-        "disableLwjglUnsafeAgent": {
-          "title": "禁用 LWJGL Unsafe Agent",
-          "description": "Minecraft 26.1 使用了 LWJGL 3.4.1，在 JDK 25+ 上可能导致严重的性能问题。启动器会使用 LWJGL Unsafe Agent 修复此问题。除非遇到额外问题，否则无需禁用。"
+        "useLwjglUnsafeAgent": {
+          "title": "启用 LWJGL Unsafe Agent",
+          "description": "在受影响的 Minecraft 版本使用来自 HMCL 的 <hmcl>LWJGL Unsafe Agent</hmcl> 修复性能问题"
         },
         "useNativeGlfw": {
           "title": "使用系统 GLFW（仅 Linux）"

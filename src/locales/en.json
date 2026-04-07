@@ -837,9 +837,9 @@
         "dontPatchNatives": {
           "title": "Do not attempt to automatically replace native libraries"
         },
-        "disableLwjglUnsafeAgent": {
-          "title": "Disable LWJGL Unsafe Agent",
-          "description": "Minecraft 26.1 uses LWJGL 3.4.1 which may cause performance issues on JDK 25+. The launcher uses LWJGL Unsafe Agent to fix this. Only disable if you encounter issues."
+        "useLwjglUnsafeAgent": {
+          "title": "Enable LWJGL Unsafe Agent",
+          "description": "Automatically use HMCL's <hmcl>LWJGL Unsafe Agent</hmcl> on affected Minecraft versions to fix performance issues."
         },
         "useNativeGlfw": {
           "title": "Use System GLFW(Linux Only)"
