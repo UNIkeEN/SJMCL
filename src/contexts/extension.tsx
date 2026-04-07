@@ -572,6 +572,7 @@ export const ExtensionHostContextProvider: React.FC<{
         hostActionRefs.current.updateConfig(path, value),
       invoke,
       requestText,
+      logger,
       openSharedModal: (key, params) =>
         hostActionRefs.current.openSharedModal(key, params),
       readFile: async (path: string) =>

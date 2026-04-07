@@ -2,6 +2,7 @@ import type React from "react";
 import type { Player } from "@/models/account";
 import type { LauncherConfig } from "@/models/config";
 import type { InstanceSummary } from "@/models/instance/misc";
+import type { logger as hostLogger } from "@/utils/logging";
 
 // static extension metadata
 export interface ExtensionFrontend {
@@ -52,6 +53,7 @@ export interface ExtensionAbilityActions {
     init?: RequestInit,
     encoding?: string
   ) => Promise<string>;
+  logger: typeof hostLogger;
   openSharedModal: (key: string, params?: any) => void;
   reloadSelf: () => void;
 }
