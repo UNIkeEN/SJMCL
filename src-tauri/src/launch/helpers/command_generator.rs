@@ -294,7 +294,7 @@ pub async fn generate_launch_command(
     ));
   }
 
-  // LWJGL Unsafe Agent (only needed for JDK 25+, where FFM API inlining is limited)
+  // LWJGL Unsafe Agent for JDK 25+ and LWJGL 3.4.x
   // ref: https://github.com/HMCL-dev/lwjgl-unsafe-agent
   if game_config.advanced.workaround.use_lwjgl_unsafe_agent && selected_java.major_version >= 25 {
     let lwjgl_version = client_info.libraries.iter().find_map(|lib| {
