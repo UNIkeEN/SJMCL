@@ -1,4 +1,4 @@
-import { Box, Image, Text } from "@chakra-ui/react";
+import { Avatar, Box, Text } from "@chakra-ui/react";
 import { type MouseEvent as ReactMouseEvent } from "react";
 import AdvancedCard from "@/components/common/advanced-card";
 import { OptionItem } from "@/components/common/option-item";
@@ -57,12 +57,12 @@ const HomeWidget = ({
       <AdvancedCard level="back" p={3} w="100%">
         <OptionItem
           prefixElement={
-            <Image
+            <Avatar
               src={iconSrc}
-              alt={widget.title}
+              name={widget.title}
               boxSize="20px"
               borderRadius="md"
-              objectFit="cover"
+              size="xs"
             />
           }
           title={
