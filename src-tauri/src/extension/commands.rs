@@ -80,16 +80,30 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
     }
 
     let extension_dir = extensions_dir.join(&info.metadata.identifier);
-    // Existing file/folder with the same name(identifier), replace it directly.
+    let backup_dir = extensions_dir.join(format!(".backup-{}", Uuid::new_v4()));
+    // Existing file/folder with the same name(identifier), replace it directly(w/o existing data folder).
     if extension_dir.exists() {
       if extension_dir.is_dir() {
-        fs::remove_dir_all(&extension_dir)?;
+        fs::rename(&extension_dir, &backup_dir)?;
+        fs::rename(&temp_dir, &extension_dir)?;
+
+        let existing_data_dir = backup_dir.join("data");
+        if existing_data_dir.exists() && existing_data_dir.is_dir() {
+          let incoming_data_dir = extension_dir.join("data");
+          if incoming_data_dir.exists() {
+            fs::remove_dir_all(&incoming_data_dir)?;
+          }
+          fs::rename(&existing_data_dir, &incoming_data_dir)?;
+        }
+
+        fs::remove_dir_all(&backup_dir)?;
       } else {
         fs::remove_file(&extension_dir)?;
+        fs::rename(&temp_dir, &extension_dir)?;
       }
+    } else {
+      fs::rename(&temp_dir, &extension_dir)?;
     }
-
-    fs::rename(&temp_dir, &extension_dir)?;
 
     // enable the new extension by default
     let config_binding = app.state::<Mutex<LauncherConfig>>();
