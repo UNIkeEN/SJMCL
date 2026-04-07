@@ -1,5 +1,13 @@
-import { Avatar, Box, Text } from "@chakra-ui/react";
-import { type MouseEvent as ReactMouseEvent } from "react";
+import {
+  Avatar,
+  Box,
+  Collapse,
+  Icon,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
+import { type MouseEvent as ReactMouseEvent, useState } from "react";
+import { LuChevronDown, LuChevronRight } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import { OptionItem } from "@/components/common/option-item";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
@@ -24,6 +32,7 @@ const HomeWidget = ({
   widthBounds,
   onWidthChange,
 }: HomeWidgetProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const WidgetComponent = widget.Component;
   const iconSrc = widget.icon || base64ImgSrc(widget.extension.iconSrc);
 
@@ -70,12 +79,30 @@ const HomeWidget = ({
               {widget.title}
             </Text>
           }
-          mb={2}
-        />
+          isChildrenIndependent
+          mb={isCollapsed ? 0 : 2}
+        >
+          <IconButton
+            aria-label={isCollapsed ? "expand widget" : "collapse widget"}
+            icon={
+              <Icon
+                as={isCollapsed ? LuChevronRight : LuChevronDown}
+                boxSize={3.5}
+              />
+            }
+            size="xs"
+            h={21}
+            variant="ghost"
+            colorScheme="gray"
+            onClick={() => setIsCollapsed((prev) => !prev)}
+          />
+        </OptionItem>
 
-        <ExtensionContributionWrapper resetKey={widget.resetKey}>
-          <WidgetComponent />
-        </ExtensionContributionWrapper>
+        <Collapse in={!isCollapsed} animateOpacity>
+          <ExtensionContributionWrapper resetKey={widget.resetKey}>
+            <WidgetComponent />
+          </ExtensionContributionWrapper>
+        </Collapse>
       </AdvancedCard>
 
       {/* resize area */}
