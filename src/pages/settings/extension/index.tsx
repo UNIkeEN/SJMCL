@@ -3,6 +3,7 @@ import {
   AlertIcon,
   Avatar,
   AvatarBadge,
+  Badge,
   HStack,
   Text,
 } from "@chakra-ui/react";
@@ -210,7 +211,12 @@ const ExtensionSettingsPage = () => {
   return (
     <Section
       title={t("SettingsLayout.settingsDomainList.extension")}
-      titleExtra={<CountTag count={extensions.length} />}
+      titleExtra={
+        <HStack>
+          <Badge colorScheme="purple">Beta</Badge>
+          <CountTag count={extensions.length} />
+        </HStack>
+      }
       headExtra={
         <HStack spacing={2}>
           {secMenu.map((btn, index) => (

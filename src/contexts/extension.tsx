@@ -60,6 +60,11 @@ type ExtensionContextFactory = (
   api: ExtensionContextRegistrationApi
 ) => ExtensionContextRegistration | void;
 
+type ExtensionRegistrationFunction = (
+  factory: ExtensionContextFactory,
+  token: string
+) => void;
+
 interface ActiveExtensionRecord {
   dispose?: () => void;
   scriptElement?: HTMLScriptElement;
@@ -68,6 +73,7 @@ interface ActiveExtensionRecord {
 
 interface PendingRegistration {
   identifier: string;
+  token: string;
   resolve: (factory: ExtensionContextFactory) => void;
   reject: (error: unknown) => void;
 }
@@ -125,6 +131,11 @@ const joinUrlPath = (basePath: string, relativePath: string) => {
   return `${normalizedBase}/${relativePath}`;
 };
 
+// generate a unique token for each extension activation process.
+const createActivationToken = () => {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+};
+
 // parse query params from current URL and expose them to extensions.
 const parseRouteQuery = (): ExtensionAbilityData["routeQuery"] => {
   if (typeof window === "undefined") {
@@ -157,7 +168,7 @@ const parseRouteQuery = (): ExtensionAbilityData["routeQuery"] => {
  * 1) The host retrieves installed extension metadata from backend and filters
  *    enabled extensions from launcher config.
  * 2) For each enabled extension with a frontend entry, the host injects its
- *    script and waits for `window.registerExtension(factory)` handshake.
+ *    script and waits for a `window.registerExtension(...)` handshake.
  * 3) The host executes the factory with a constrained API surface
  *    (React/Chakra + host context + scoped state helpers).
  * 4) Returned registrations are converted into runtime contributions
@@ -194,7 +205,9 @@ export const ExtensionHostContextProvider: React.FC<{
   >({});
 
   // pending registration, active extensions, and per-extension state stores/listeners.
-  const pendingRegistrationRef = useRef<PendingRegistration | null>(null);
+  const pendingRegistrationsRef = useRef<Record<string, PendingRegistration>>(
+    {}
+  );
   const activeExtensionsRef = useRef<Record<string, ActiveExtensionRecord>>({});
   const activatingExtensionsRef = useRef<Record<string, string>>({});
   const extensionStateStoreRef = useRef<ExtensionStateStore>({});
@@ -286,17 +299,28 @@ export const ExtensionHostContextProvider: React.FC<{
 
   // Register global window.registerExtension entry to receive extension factory.
   useEffect(() => {
-    const registerExtension = (factory: ExtensionContextFactory) => {
-      const pending = pendingRegistrationRef.current;
+    const registerExtension: ExtensionRegistrationFunction = (
+      factory,
+      token
+    ) => {
+      const pending = pendingRegistrationsRef.current[token];
       if (!pending) {
-        logger.error("Received extension registration without pending loader");
+        logger.error(
+          `Received extension registration with unknown token ${token}`
+        );
         return;
       }
       pending.resolve(factory);
-      pendingRegistrationRef.current = null;
+      delete pendingRegistrationsRef.current[token];
     };
 
     window.registerExtension = registerExtension;
+
+    return () => {
+      if (window.registerExtension === registerExtension) {
+        delete window.registerExtension;
+      }
+    };
   }, []);
 
   const enabledExtensionList = useMemo(() => {
@@ -522,7 +546,7 @@ export const ExtensionHostContextProvider: React.FC<{
 
   // build extension script URL (extension dir + entry + cache-busting query).
   const getScriptUrl = useCallback(
-    async (extension: ExtensionInfo, nonce: string) => {
+    async (extension: ExtensionInfo, nonce: string, token: string) => {
       const entry = sanitizePath(extension.frontend?.entry || "");
       if (!entry) {
         throw new Error(
@@ -531,7 +555,7 @@ export const ExtensionHostContextProvider: React.FC<{
       }
       const fullPath = await join(extension.path, entry);
 
-      return `${convertFileSrc(fullPath)}?extension=${encodeURIComponent(extension.identifier)}&v=${nonce}`;
+      return `${convertFileSrc(fullPath)}?extension=${encodeURIComponent(extension.identifier)}&token=${encodeURIComponent(token)}&v=${nonce}`;
     },
     []
   );
@@ -549,7 +573,12 @@ export const ExtensionHostContextProvider: React.FC<{
   // inject script and wait for extension to call registerExtension with factory.
   const loadExtensionFactory = useCallback(
     async (extension: ExtensionInfo, signature: string) => {
-      const scriptUrl = await getScriptUrl(extension, signature);
+      const activationToken = createActivationToken();
+      const scriptUrl = await getScriptUrl(
+        extension,
+        signature,
+        activationToken
+      );
 
       return await new Promise<{
         factory: ExtensionContextFactory;
@@ -561,6 +590,7 @@ export const ExtensionHostContextProvider: React.FC<{
         scriptElement.src = scriptUrl;
         scriptElement.async = false;
         scriptElement.dataset.extensionIdentifier = extension.identifier;
+        scriptElement.dataset.extensionToken = activationToken;
 
         // remove script and clear pending state on failure.
         const rejectWithCleanup = (error: unknown) => {
@@ -570,16 +600,18 @@ export const ExtensionHostContextProvider: React.FC<{
             window.clearTimeout(registrationTimeout);
           }
           if (
-            pendingRegistrationRef.current?.identifier === extension.identifier
+            pendingRegistrationsRef.current[activationToken]?.identifier ===
+            extension.identifier
           ) {
-            pendingRegistrationRef.current = null;
+            delete pendingRegistrationsRef.current[activationToken];
           }
           scriptElement.remove();
           reject(error);
         };
 
-        pendingRegistrationRef.current = {
+        pendingRegistrationsRef.current[activationToken] = {
           identifier: extension.identifier,
+          token: activationToken,
           resolve: (factory) => {
             if (settled) return;
             settled = true;
@@ -596,7 +628,7 @@ export const ExtensionHostContextProvider: React.FC<{
         registrationTimeout = window.setTimeout(() => {
           rejectWithCleanup(
             new Error(
-              `Extension ${extension.identifier} did not call registerExtension`
+              `Extension ${extension.identifier} did not call registerExtension. Use registerExtension(factory, token).`
             )
           );
         }, 10000); // timeout for extension to call registerExtension after script load.
@@ -697,11 +729,14 @@ export const ExtensionHostContextProvider: React.FC<{
 
   const deactivateExtension = useCallback(
     (identifier: string) => {
-      if (pendingRegistrationRef.current?.identifier === identifier) {
-        pendingRegistrationRef.current.reject(
+      for (const [token, pending] of Object.entries(
+        pendingRegistrationsRef.current
+      )) {
+        if (pending.identifier !== identifier) continue;
+        pending.reject(
           new Error(`Extension ${identifier} activation cancelled`)
         );
-        pendingRegistrationRef.current = null;
+        delete pendingRegistrationsRef.current[token];
       }
 
       delete activatingExtensionsRef.current[identifier];
@@ -913,6 +948,6 @@ export const useExtensionHost = (): ExtensionHostContextType => {
 
 declare global {
   interface Window {
-    registerExtension?: (factory: ExtensionContextFactory) => void;
+    registerExtension?: ExtensionRegistrationFunction;
   }
 }
