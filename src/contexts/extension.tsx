@@ -12,6 +12,9 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
+import { Section } from "@/components/common/section";
+import { WrapCard, WrapCardGroup } from "@/components/common/wrap-card";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -37,6 +40,13 @@ interface ExtensionContextRegistration {
 interface ExtensionContextRegistrationApi {
   React: typeof React;
   ChakraUI: typeof ChakraUI;
+  Components: {
+    OptionItem: typeof OptionItem;
+    OptionItemGroup: typeof OptionItemGroup;
+    Section: typeof Section;
+    WrapCard: typeof WrapCard;
+    WrapCardGroup: typeof WrapCardGroup;
+  };
   identifier: string;
   resolveAssetUrl: (path: string) => string;
   useHostContext: () => ExtensionAbility;
@@ -487,7 +497,7 @@ export const ExtensionHostContextProvider: React.FC<{
     [createExtensionActions, createUseExtensionState]
   );
 
-  // build extension script URL (user dir + entry + cache-busting query).
+  // build extension script URL (extension dir + entry + cache-busting query).
   const getScriptUrl = useCallback(
     async (extension: ExtensionInfo, nonce: string) => {
       const entry = sanitizePath(extension.frontend?.entry || "");
@@ -592,6 +602,13 @@ export const ExtensionHostContextProvider: React.FC<{
       const api: ExtensionContextRegistrationApi = {
         React,
         ChakraUI,
+        Components: {
+          OptionItem,
+          OptionItemGroup,
+          Section,
+          WrapCard,
+          WrapCardGroup,
+        },
         identifier: extension.identifier,
         resolveAssetUrl: (path: string) => getAssetUrl(extension, path),
         useHostContext: () => createExtensionContextValue(extension),
