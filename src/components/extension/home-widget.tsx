@@ -1,7 +1,15 @@
-import { Avatar, Box, Text } from "@chakra-ui/react";
-import { type MouseEvent as ReactMouseEvent } from "react";
+import {
+  Avatar,
+  Box,
+  Collapse,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
+import { type MouseEvent as ReactMouseEvent, useState } from "react";
+import { LuChevronRight } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
-import { OptionItem } from "@/components/common/option-item";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
 import { ExtensionHomeWidgetContribution } from "@/models/extension";
 import { clamp } from "@/utils/math";
@@ -24,6 +32,7 @@ const HomeWidget = ({
   widthBounds,
   onWidthChange,
 }: HomeWidgetProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const WidgetComponent = widget.Component;
   const iconSrc = widget.icon || base64ImgSrc(widget.extension.iconSrc);
 
@@ -55,27 +64,47 @@ const HomeWidget = ({
       alignSelf="start"
     >
       <AdvancedCard level="back" p={3} w="100%">
-        <OptionItem
-          prefixElement={
-            <Avatar
-              src={iconSrc}
-              name={widget.title}
-              boxSize="20px"
-              borderRadius="md"
-              size="xs"
-            />
-          }
-          title={
-            <Text fontSize="xs-sm" fontWeight="semibold">
-              {widget.title}
-            </Text>
-          }
-          mb={2}
-        />
+        <HStack align="center" mb={isCollapsed ? 0 : 2}>
+          <IconButton
+            aria-label={
+              isCollapsed
+                ? `expand ${widget.title} widget`
+                : `collapse ${widget.title} widget`
+            }
+            aria-expanded={!isCollapsed}
+            icon={
+              <Icon
+                as={LuChevronRight}
+                boxSize={3.5}
+                sx={{
+                  transition: "transform 0.2s ease-in-out",
+                  transform: isCollapsed ? "rotate(0deg)" : "rotate(90deg)",
+                }}
+              />
+            }
+            size="xs"
+            h={21}
+            variant="ghost"
+            colorScheme="gray"
+            onClick={() => setIsCollapsed((prev) => !prev)}
+          />
+          <Avatar
+            src={iconSrc}
+            name={widget.title}
+            boxSize="20px"
+            borderRadius="md"
+            size="xs"
+          />
+          <Text fontSize="xs-sm" fontWeight="semibold" noOfLines={1}>
+            {widget.title}
+          </Text>
+        </HStack>
 
-        <ExtensionContributionWrapper resetKey={widget.resetKey}>
-          <WidgetComponent />
-        </ExtensionContributionWrapper>
+        <Collapse in={!isCollapsed} animateOpacity>
+          <ExtensionContributionWrapper resetKey={widget.resetKey}>
+            <WidgetComponent />
+          </ExtensionContributionWrapper>
+        </Collapse>
       </AdvancedCard>
 
       {/* resize area */}
