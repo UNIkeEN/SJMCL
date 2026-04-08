@@ -352,6 +352,7 @@
       }
     },
     "notSelectedLoader": "No new loader selected",
+    "notSelectedOptifine": "No new Optifine selected",
     "footer": {
       "installFabricApi": "Install Fabric API Mod",
       "installQFAPI": "Install QFAPI / QSL Mod (if available)",

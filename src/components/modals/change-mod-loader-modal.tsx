@@ -28,17 +28,22 @@ import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import {
   ModLoaderResourceInfo,
+  OptiFineResourceInfo,
   defaultModLoaderResourceInfo,
 } from "@/models/resource";
 import { InstanceService } from "@/services/instance";
 import { parseModLoaderVersion } from "@/utils/instance";
 
+type Mode = "modloader" | "optifine";
+
 interface ChangeModLoaderModalProps extends Omit<ModalProps, "children"> {
   defaultSelectedType?: ModLoaderType;
+  mode?: Mode;
 }
 
 export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
   defaultSelectedType,
+  mode = "modloader",
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -50,22 +55,35 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
 
   const [selectedModLoader, setSelectedModLoader] =
     useState<ModLoaderResourceInfo>(defaultModLoaderResourceInfo);
+  const [selectedOptifine, setSelectedOptifine] = useState<
+    OptiFineResourceInfo | undefined
+  >(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [isInstallFabricApi, setIsInstallFabricApi] = useState(true);
   const [isInstallQfApi, setIsInstallQfApi] = useState(true);
 
   useEffect(() => {
-    if (defaultSelectedType && defaultSelectedType !== ModLoaderType.Unknown) {
-      setSelectedModLoader({
-        ...defaultModLoaderResourceInfo,
-        loaderType: defaultSelectedType,
-      });
-    } else {
-      setSelectedModLoader(defaultModLoaderResourceInfo);
+    if (mode === "modloader") {
+      if (
+        defaultSelectedType &&
+        defaultSelectedType !== ModLoaderType.Unknown
+      ) {
+        setSelectedModLoader({
+          ...defaultModLoaderResourceInfo,
+          loaderType: defaultSelectedType,
+        });
+      } else {
+        setSelectedModLoader(defaultModLoaderResourceInfo);
+      }
     }
+
+    if (mode === "optifine") {
+      setSelectedOptifine(undefined);
+    }
+
     setIsInstallFabricApi(true);
     setIsInstallQfApi(true);
-  }, [modalProps.isOpen, summary?.version, defaultSelectedType]);
+  }, [modalProps.isOpen, summary?.version, defaultSelectedType, mode]);
 
   const currentModLoader: ModLoaderResourceInfo = useMemo(() => {
     if (!summary?.modLoader)
@@ -88,7 +106,8 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     try {
       const res = await InstanceService.changeModLoader(
         summary.id,
-        selectedModLoader,
+        mode === "modloader" ? selectedModLoader : null,
+        mode === "optifine" ? selectedOptifine : null,
         isInstallFabricApi,
         isInstallQfApi
       );
@@ -113,16 +132,23 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     selectedModLoader.loaderType === ModLoaderType.Unknown;
 
   const isSameAsCurrent =
-    selectedModLoader.loaderType === currentModLoader.loaderType &&
-    parseModLoaderVersion(selectedModLoader.version) ===
-      parseModLoaderVersion(currentModLoader.version);
+    mode === "modloader"
+      ? selectedModLoader.loaderType === currentModLoader.loaderType &&
+        parseModLoaderVersion(selectedModLoader.version) ===
+          parseModLoaderVersion(currentModLoader.version)
+      : summary?.optifine &&
+        selectedOptifine &&
+        summary.optifine.version ===
+          `${selectedOptifine.type}_${selectedOptifine.patch}`;
 
+  const isDisabled = mode === "modloader" ? isUnselected : !selectedOptifine;
   return (
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
       onCloseComplete={() => {
         setSelectedModLoader(defaultModLoaderResourceInfo);
+        setSelectedOptifine(undefined);
       }}
       {...modalProps}
     >
@@ -134,7 +160,8 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
           )}
         </ModalHeader>
         <ModalCloseButton />
-        {currentModLoader.loaderType !== "Unknown" && (
+
+        {mode === "modloader" && currentModLoader.loaderType !== "Unknown" && (
           <Flex position="relative" align="center" justify="center" py={2}>
             <Flex flex="1" justify="flex-end" pr={8}>
               <OptionItem
@@ -197,7 +224,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
           </Flex>
         )}
         <ModalBody flexGrow="1" flexDir="column" h="100%" overflow="auto">
-          {summary?.version && (
+          {mode === "modloader" && summary?.version && (
             <LoaderSelector
               selectedGameVersion={{
                 id: summary.version,
@@ -209,41 +236,142 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
               onSelectModLoader={setSelectedModLoader}
             />
           )}
+          {mode === "optifine" && summary?.version && summary?.optifine && (
+            <Flex position="relative" align="center" justify="center" py={2}>
+              <Flex flex="1" justify="flex-end" pr={8}>
+                {summary?.optifine ? (
+                  <OptionItem
+                    prefixElement={
+                      <Image
+                        src={`/images/icons/OptiFine.png`}
+                        alt="OptiFine"
+                        boxSize="36px"
+                        borderRadius="md"
+                      />
+                    }
+                    title={
+                      <Text fontSize="sm" fontWeight="medium">
+                        OptiFine
+                      </Text>
+                    }
+                    description={
+                      <Text fontSize="xs" color="gray.500">
+                        {summary.optifine.version}
+                      </Text>
+                    }
+                  />
+                ) : (
+                  <OptionItem
+                    prefixElement={
+                      <Skeleton boxSize="36px" borderRadius="md" />
+                    }
+                    title={
+                      <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                        {t("ChangeModLoaderModal.noOptifineInstalled")}
+                      </Text>
+                    }
+                  />
+                )}
+              </Flex>
+
+              <Box position="absolute" left="50%" transform="translateX(-50%)">
+                <LuArrowRight size={18} />
+              </Box>
+
+              <Flex flex="1" justify="flex-start" pl={8}>
+                {!selectedOptifine || !selectedOptifine.filename ? (
+                  <OptionItem
+                    prefixElement={
+                      <Skeleton boxSize="36px" borderRadius="md" />
+                    }
+                    title={
+                      <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                        {t("ChangeModLoaderModal.notSelectedOptifine")}
+                      </Text>
+                    }
+                  />
+                ) : (
+                  <OptionItem
+                    prefixElement={
+                      <Image
+                        src={`/images/icons/OptiFine.png`}
+                        alt="OptiFine"
+                        boxSize="36px"
+                        borderRadius="md"
+                      />
+                    }
+                    title={
+                      <Text fontSize="sm" fontWeight="medium">
+                        OptiFine
+                      </Text>
+                    }
+                    description={
+                      <Text fontSize="xs" color="gray.500">
+                        {selectedOptifine.type + "_" + selectedOptifine.patch}
+                      </Text>
+                    }
+                  />
+                )}
+              </Flex>
+            </Flex>
+          )}
+          {mode === "optifine" && summary?.version && (
+            <LoaderSelector
+              selectedGameVersion={{
+                id: summary.version,
+                gameType: "release",
+                releaseTime: new Date().toISOString(),
+                url: "",
+              }}
+              selectedModLoader={defaultModLoaderResourceInfo}
+              onSelectModLoader={() => {}}
+              selectedOptiFine={selectedOptifine || undefined}
+              onSelectOptiFine={(opt) => setSelectedOptifine(opt)}
+              onlyOptifine
+            />
+          )}
         </ModalBody>
         <ModalFooter>
-          {selectedModLoader.loaderType === ModLoaderType.Fabric && (
-            <Checkbox
-              colorScheme={primaryColor}
-              isChecked={selectedModLoader.version !== "" && isInstallFabricApi}
-              disabled={!selectedModLoader.version}
-              onChange={(e) => setIsInstallFabricApi(e.target.checked)}
-            >
-              <Text fontSize="sm">
-                {t("ChangeModLoaderModal.footer.installFabricApi")}
-              </Text>
-            </Checkbox>
-          )}
-          {selectedModLoader.loaderType === ModLoaderType.Quilt && (
-            <Checkbox
-              colorScheme={primaryColor}
-              isChecked={selectedModLoader.version !== "" && isInstallQfApi}
-              disabled={!selectedModLoader.version}
-              onChange={(e) => setIsInstallQfApi(e.target.checked)}
-            >
-              <Text fontSize="sm">
-                {t("ChangeModLoaderModal.footer.installQFAPI")}
-              </Text>
-            </Checkbox>
-          )}
+          {mode === "modloader" &&
+            selectedModLoader.loaderType === ModLoaderType.Fabric && (
+              <Checkbox
+                colorScheme={primaryColor}
+                isChecked={
+                  selectedModLoader.version !== "" && isInstallFabricApi
+                }
+                disabled={!selectedModLoader.version}
+                onChange={(e) => setIsInstallFabricApi(e.target.checked)}
+              >
+                <Text fontSize="sm">
+                  {t("ChangeModLoaderModal.footer.installFabricApi")}
+                </Text>
+              </Checkbox>
+            )}
+
+          {mode === "modloader" &&
+            selectedModLoader.loaderType === ModLoaderType.Quilt && (
+              <Checkbox
+                colorScheme={primaryColor}
+                isChecked={selectedModLoader.version !== "" && isInstallQfApi}
+                disabled={!selectedModLoader.version}
+                onChange={(e) => setIsInstallQfApi(e.target.checked)}
+              >
+                <Text fontSize="sm">
+                  {t("ChangeModLoaderModal.footer.installQFAPI")}
+                </Text>
+              </Checkbox>
+            )}
+
           <HStack spacing={3} ml="auto">
             <Button variant="ghost" onClick={modalProps.onClose}>
               {t("General.cancel")}
             </Button>
+
             <Button
               colorScheme={primaryColor}
               onClick={handleChangeModLoader}
               isLoading={isLoading}
-              isDisabled={isUnselected}
+              isDisabled={isDisabled}
             >
               {isSameAsCurrent
                 ? t("ChangeModLoaderModal.footer.reinstall")

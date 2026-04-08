@@ -352,6 +352,7 @@
       }
     },
     "notSelectedLoader": "未选择新的加载器",
+    "notSelectedOptifine": "未选择新的Optifine",
     "footer": {
       "installFabricApi": "同时安装 Fabric API 模组",
       "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）",

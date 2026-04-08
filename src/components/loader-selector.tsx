@@ -52,6 +52,7 @@ interface LoaderSelectorProps {
   onSelectModLoader: (v: ModLoaderResourceInfo) => void;
   selectedOptiFine?: OptiFineResourceInfo | undefined;
   onSelectOptiFine?: (v: OptiFineResourceInfo | undefined) => void;
+  onlyOptifine?: boolean;
 }
 
 export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
@@ -60,6 +61,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   onSelectModLoader,
   selectedOptiFine,
   onSelectOptiFine,
+  onlyOptifine,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -69,23 +71,25 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   const [versionList, setVersionList] = useState<OptionItemProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedType, setSelectedType] = useState<ModLoaderType | "OptiFine">(
-    ModLoaderType.Unknown
+    onlyOptifine ? "OptiFine" : ModLoaderType.Unknown
   );
   const [selectedId, setSelectedId] = useState("");
 
   const selectableCardListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (onlyOptifine) {
+      setSelectedId(selectedOptiFine?.filename || "");
+      return;
+    }
+
     if (selectedOptiFine) {
-      setSelectedType("OptiFine");
-      setSelectedId(selectedOptiFine ? selectedOptiFine.filename : "");
+      setSelectedId(selectedOptiFine.filename);
     } else {
-      setSelectedType(selectedModLoader.loaderType);
       setSelectedId(selectedModLoader.version);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedModLoader.loaderType]);
-
+  }, [selectedModLoader.loaderType, selectedOptiFine, onlyOptifine]);
   function isModLoaderResourceInfo(
     version: ModLoaderResourceInfo | OptiFineResourceInfo
   ): version is ModLoaderResourceInfo {
@@ -285,17 +289,26 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
 
   useEffect(() => {
     if (selectedType === "OptiFine") {
-      handleFetchOptiFineVersionList();
+      if (versionList.length === 0) {
+        handleFetchOptiFineVersionList();
+      }
     } else if (selectedType !== ModLoaderType.Unknown) {
       handleFetchModLoaderVersionList(selectedType);
     } else {
       setVersionList([]);
     }
   }, [
+    selectedType,
+    versionList.length,
     handleFetchModLoaderVersionList,
     handleFetchOptiFineVersionList,
-    selectedType,
   ]);
+
+  useEffect(() => {
+    if (onlyOptifine && selectedType !== "OptiFine") {
+      setSelectedType("OptiFine");
+    }
+  }, [onlyOptifine, selectedType]);
 
   // Scroll selected item into view when version list changes or selected item changes
   useEffect(() => {
@@ -326,15 +339,16 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
         flexShrink={0}
         ref={selectableCardListRef}
       >
-        {selectableCardItems.map((item, index) => (
-          <SelectableCard
-            key={index}
-            {...item}
-            minW="3xs"
-            w="100%"
-            data-loader-selected={item.isSelected ? "true" : undefined}
-          />
-        ))}
+        {!onlyOptifine &&
+          selectableCardItems.map((item, index) => (
+            <SelectableCard
+              key={index}
+              {...item}
+              minW="3xs"
+              w="100%"
+              data-loader-selected={item.isSelected ? "true" : undefined}
+            />
+          ))}
       </VStack>
       <Section overflow="auto" flexGrow={1} w="100%" h="100%">
         {isLoading ? (
