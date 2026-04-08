@@ -44,15 +44,19 @@ export interface ExtensionAbilityActions {
   writeFile: (path: string, content: string) => Promise<void>;
   deleteFile: (path: string) => Promise<void>;
   deleteDirectory: (path: string) => Promise<void>;
-  invoke: <T = unknown>(
-    command: string,
-    payload?: Record<string, unknown>
-  ) => Promise<T>;
+  request: (
+    input: URL | Request | string,
+    init?: RequestInit
+  ) => Promise<Response>;
   requestText: (
     url: string,
     init?: RequestInit,
     encoding?: string
   ) => Promise<string>;
+  invoke: <T = unknown>(
+    command: string,
+    payload?: Record<string, unknown>
+  ) => Promise<T>;
   logger: typeof hostLogger;
   openSharedModal: (key: string, params?: any) => void;
   reloadSelf: () => void;

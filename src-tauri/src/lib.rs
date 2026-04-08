@@ -181,14 +181,13 @@ pub async fn run() {
         tasks::commands::resume_progressive_task_group,
         tasks::commands::delete_progressive_task_group,
         utils::commands::retrieve_memory_info,
+        utils::commands::retrieve_truetype_font_list,
+        utils::commands::check_service_availability,
         utils::commands::extract_filename,
         utils::commands::delete_file,
         utils::commands::delete_directory,
         utils::commands::read_file,
         utils::commands::write_file,
-        utils::commands::request,
-        utils::commands::retrieve_truetype_font_list,
-        utils::commands::check_service_availability,
       ])
       .setup(|app| {
         // init APP_DATA_DIR

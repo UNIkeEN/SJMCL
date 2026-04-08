@@ -1,6 +1,7 @@
 import * as ChakraUI from "@chakra-ui/react";
 import { convertFileSrc, invoke as tauriInvoke } from "@tauri-apps/api/core";
 import { join } from "@tauri-apps/api/path";
+import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import { t } from "i18next";
 import { useRouter } from "next/router";
 import React, {
@@ -34,6 +35,7 @@ import {
 } from "@/models/extension";
 import { ExtensionService } from "@/services/extension";
 import { UtilsService } from "@/services/utils";
+import { logger } from "@/utils/logging";
 
 interface ExtensionContextRegistration {
   homeWidget?: ExtensionHomeWidgetDefinition;
@@ -255,13 +257,9 @@ export const ExtensionHostContextProvider: React.FC<{
   const invoke = useCallback<ExtensionAbilityActions["invoke"]>(
     async <T,>(command: string, payload?: Record<string, unknown>) => {
       if (
-        [
-          "delete_file",
-          "delete_directory",
-          "read_file",
-          "write_file",
-          "request",
-        ].includes(command)
+        ["delete_file", "delete_directory", "read_file", "write_file"].includes(
+          command
+        )
       ) {
         throw new Error(`Direct invoke is not allowed for ${command}`);
       }
@@ -271,18 +269,21 @@ export const ExtensionHostContextProvider: React.FC<{
     []
   );
 
-  const requestText = useCallback<ExtensionAbilityActions["requestText"]>(
-    async (url: string, init?: RequestInit) => {
-      const response = await UtilsService.request(url, init?.method, {
-        headers: init?.headers,
-        body: init?.body,
-      });
-      if (response.status === "error") {
-        throw response.raw_error || response.details || response.message;
-      }
-      return response.data;
+  const request = useCallback<ExtensionAbilityActions["request"]>(
+    async (input: URL | Request | string, init?: RequestInit) => {
+      return await tauriFetch(input, init);
     },
     []
+  );
+
+  const requestText = useCallback<ExtensionAbilityActions["requestText"]>(
+    async (url: string, init?: RequestInit, encoding?: string) => {
+      const response = await request(url, init);
+      if (!encoding || /^(utf-?8)$/i.test(encoding))
+        return await response.text();
+      return new TextDecoder(encoding).decode(await response.arrayBuffer());
+    },
+    [request]
   );
 
   useEffect(() => {
@@ -570,8 +571,9 @@ export const ExtensionHostContextProvider: React.FC<{
       getInstanceList: (sync) => hostActionRefs.current.getInstanceList(sync),
       updateConfig: (path, value) =>
         hostActionRefs.current.updateConfig(path, value),
-      invoke,
+      request,
       requestText,
+      invoke,
       logger,
       openSharedModal: (key, params) =>
         hostActionRefs.current.openSharedModal(key, params),
@@ -598,7 +600,7 @@ export const ExtensionHostContextProvider: React.FC<{
           [extension.identifier]: (previous[extension.identifier] || 0) + 1,
         })),
     }),
-    [invoke, requestText, runExtensionFileCommand]
+    [invoke, request, requestText, runExtensionFileCommand]
   );
 
   // build a stable host context object injected into an extension instance.

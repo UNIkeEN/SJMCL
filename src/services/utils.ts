@@ -17,6 +17,41 @@ export class UtilsService {
   }
 
   /**
+   * RETRIEVE the list of installed TrueType fonts.
+   * @returns {Promise<InvokeResponse<string[]>>}
+   */
+  @responseHandler("utils")
+  static async retrieveFontList(): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_truetype_font_list");
+  }
+
+  /**
+   * CHECK the availability of a given service URL.
+   * @param url The URL to test.
+   * @returns {Promise<InvokeResponse<number>>} Round-trip time in milliseconds.
+   */
+  @responseHandler("utils")
+  static async checkServiceAvailability(
+    url: string
+  ): Promise<InvokeResponse<number>> {
+    return await invoke("check_service_availability", { url });
+  }
+
+  /**
+   * EXTRACT the file name from a path.
+   * @param pathStr The full path string.
+   * @param withExt Whether to keep the file extension.
+   * @returns {Promise<InvokeResponse<string>>}
+   */
+  @responseHandler("utils")
+  static async extractFilename(
+    pathStr: string,
+    withExt: boolean
+  ): Promise<InvokeResponse<string>> {
+    return await invoke("extract_filename", { pathStr, withExt });
+  }
+
+  /**
    * DELETE a file by absolute path.
    * @param path the file to delete.
    * @returns {Promise<InvokeResponse<void>>}
@@ -60,42 +95,5 @@ export class UtilsService {
     content: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("write_file", { path, content });
-  }
-
-  /**
-   * REQUEST text content through the backend HTTP client.
-   * @param url The request URL.
-   * @param method (Optional) The HTTP method. Defaults to GET.
-   * @param options (Optional) Extra request options such as headers/body.
-   * @returns {Promise<InvokeResponse<string>>}
-   */
-  @responseHandler("utils")
-  static async request(
-    url: string,
-    method?: string,
-    options?: Record<string, unknown>
-  ): Promise<InvokeResponse<string>> {
-    return await invoke("request", { url, method, options });
-  }
-
-  /**
-   * RETRIEVE the list of installed TrueType fonts.
-   * @returns {Promise<InvokeResponse<string[]>>}
-   */
-  @responseHandler("utils")
-  static async retrieveFontList(): Promise<InvokeResponse<string[]>> {
-    return await invoke("retrieve_truetype_font_list");
-  }
-
-  /**
-   * CHECK the availability of a given service URL.
-   * @param url The URL to test.
-   * @returns {Promise<InvokeResponse<number>>} Round-trip time in milliseconds.
-   */
-  @responseHandler("utils")
-  static async checkServiceAvailability(
-    url: string
-  ): Promise<InvokeResponse<number>> {
-    return await invoke("check_service_availability", { url });
   }
 }
