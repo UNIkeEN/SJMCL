@@ -159,6 +159,45 @@ export const normalizeExtensionRelativePath = (
   return normalized;
 };
 
+// standalone extension page uses query params due to Next.js static export limits.
+export const convertExtensionRouteForStandalone = (route: string) => {
+  if (!route.startsWith("/standalone/extension/")) {
+    return route;
+  }
+
+  const url = new URL(route, "https://launcher.local");
+  const extensionRoute = url.pathname.slice("/standalone/extension/".length);
+  const routeSegments = extensionRoute.split("/");
+  const identifier = routeSegments.shift();
+  const normalizedRoutePath = normalizeExtensionRelativePath(
+    routeSegments.join("/")
+  );
+  if (!identifier || !normalizedRoutePath) {
+    return route;
+  }
+
+  const searchParams = new URLSearchParams({
+    identifier,
+    routePath: `${normalizedRoutePath}${url.search}`,
+  });
+  return `/standalone/extension?${searchParams.toString()}`;
+};
+
+export const createStandaloneExtensionRouteUrl = (
+  routePath: string | string[] | undefined
+) => {
+  const rawRoutePath = Array.isArray(routePath) ? routePath[0] : routePath;
+  const normalizedRoutePath = rawRoutePath
+    ?.replace(/\\/g, "/")
+    .trim()
+    .replace(/^\/+/, "");
+
+  return new URL(
+    normalizedRoutePath ? `/${normalizedRoutePath}` : "/",
+    "https://launcher.local"
+  );
+};
+
 const isInternalLauncherRoute = (route: string) => {
   return (
     !!route &&
@@ -178,7 +217,13 @@ const parseRouteQuery = (): ExtensionAbilityData["routeQuery"] => {
     return {};
   }
 
-  const searchParams = new URLSearchParams(window.location.search);
+  const url = new URL(window.location.href);
+  const searchParams =
+    url.pathname === "/standalone/extension"
+      ? createStandaloneExtensionRouteUrl(
+          url.searchParams.get("routePath") || undefined
+        ).searchParams
+      : url.searchParams;
   const routeQuery: ExtensionAbilityData["routeQuery"] = {};
 
   searchParams.forEach((value, key) => {
@@ -201,20 +246,23 @@ const parseRouteQuery = (): ExtensionAbilityData["routeQuery"] => {
 
 /**
  * Extension host architecture overview:
- * 1) The host retrieves installed extension metadata from backend and filters
- *    enabled extensions from launcher config.
+ * 1) The host loads installed extension metadata from backend and filters the
+ *    enabled subset from launcher config.
  * 2) For each enabled extension with a frontend entry, the host injects its
- *    script and waits for a `window.registerExtension(...)` handshake.
- * 3) The host executes the factory with a constrained API surface
- *    (React/Chakra + stable host API + reactive host data + scoped state helpers).
- * 4) Returned registrations are converted into runtime contributions
- *    (e.g. home widgets) and tracked by extension identifier.
- * 5) A sync loop re-evaluates activation signatures and performs reload/teardown
- *    to keep runtime consistent with extension list/config changes.
+ *    script and waits for `window.registerExtension(...)` to provide a factory.
+ * 3) The factory runs against a constrained host API surface
+ *    (React/Chakra + stable actions/state + launcher-owned reactive data).
+ * 4) Returned registrations are normalized into runtime contributions
+ *    (home widgets, settings page, general pages) keyed by extension identifier.
+ * 6) A sync loop re-evaluates activation signatures and performs reload/teardown
+ *    to keep runtime state aligned with extension list and config changes.
  *
  * Design note:
  * - `getHostContext()` returns a stable per-extension API object for actions/state.
- * - `useHostData()` is the only reactive entry for launcher-owned data snapshots.
+ * - `useHostData()` is the reactive entry for launcher-owned data snapshots.
+ * - Standalone extension pages are opened through the fixed
+ *    `/standalone/extension` route with `identifier` and `routePath` query
+ *    params so release builds still work under Next.js static export.
  */
 export const ExtensionHostContextProvider: React.FC<{
   children: React.ReactNode;
@@ -316,21 +364,34 @@ export const ExtensionHostContextProvider: React.FC<{
       const internalRoute = trimmedRoute.startsWith("/")
         ? trimmedRoute
         : `/${trimmedRoute}`;
+      const isCurrentStandalonePage =
+        typeof window !== "undefined" &&
+        window.location.pathname.startsWith("/standalone/");
 
       if (
         !isInternalLauncherRoute(trimmedRoute) ||
-        internalRoute.startsWith("/standalone/") ||
+        (isCurrentStandalonePage
+          ? !internalRoute.startsWith("/standalone/")
+          : internalRoute.startsWith("/standalone/")) ||
         (internalRoute.startsWith("/settings/extension/") &&
           !internalRoute.startsWith(
             `/settings/extension/${extension.identifier}`
           )) ||
         (internalRoute.startsWith("/extension/") &&
-          !internalRoute.startsWith(`/extension/${extension.identifier}`))
+          !internalRoute.startsWith(`/extension/${extension.identifier}`)) ||
+        (internalRoute.startsWith("/standalone/extension/") &&
+          !internalRoute.startsWith(
+            `/standalone/extension/${extension.identifier}`
+          )) ||
+        (internalRoute.startsWith("/standalone/extension?") &&
+          !internalRoute.startsWith(
+            `/standalone/extension?identifier=${encodeURIComponent(extension.identifier)}`
+          ))
       ) {
         throw new Error(`Invalid route: ${route}`);
       }
 
-      await router.push(internalRoute);
+      await router.push(convertExtensionRouteForStandalone(internalRoute));
     },
     [router]
   );
@@ -348,14 +409,18 @@ export const ExtensionHostContextProvider: React.FC<{
         (internalRoute.startsWith("/standalone/extension/") &&
           !internalRoute.startsWith(
             `/standalone/extension/${extension.identifier}`
+          )) ||
+        (internalRoute.startsWith("/standalone/extension?") &&
+          !internalRoute.startsWith(
+            `/standalone/extension?identifier=${encodeURIComponent(extension.identifier)}`
           ))
       ) {
         throw new Error(`Invalid route: ${route}`);
       }
 
       createWindow(
-        `extension_standalone_${extension.identifier.replace(/[^a-zA-Z0-9_-]/g, "_")}_${Date.now()}`,
-        internalRoute,
+        `extension_standalone_${Date.now()}`,
+        convertExtensionRouteForStandalone(internalRoute),
         {
           title: `${title} - ${extension.name}`,
         }

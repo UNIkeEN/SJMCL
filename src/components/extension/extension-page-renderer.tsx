@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import Empty from "@/components/common/empty";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
 import {
+  createStandaloneExtensionRouteUrl,
   normalizeExtensionRelativePath,
   useExtensionHost,
 } from "@/contexts/extension";
@@ -23,7 +24,11 @@ const ExtensionPageRenderer = ({
 
   const extensionIdentifier =
     typeof identifier === "string" ? identifier : undefined;
-  const normalizedRoutePath = normalizeExtensionRelativePath(routePath);
+  const normalizedRoutePath = isStandAlone
+    ? normalizeExtensionRelativePath(
+        createStandaloneExtensionRouteUrl(routePath).pathname
+      )
+    : normalizeExtensionRelativePath(routePath);
   const extension = extensionList?.find(
     (item) => item.identifier === extensionIdentifier
   );
