@@ -83,7 +83,12 @@ const HomeWidget = ({
           mb={isCollapsed ? 0 : 2}
         >
           <IconButton
-            aria-label={isCollapsed ? "expand widget" : "collapse widget"}
+            aria-label={
+              isCollapsed
+                ? `expand ${widget.title} widget`
+                : `collapse ${widget.title} widget`
+            }
+            aria-expanded={!isCollapsed}
             icon={
               <Icon
                 as={isCollapsed ? LuChevronRight : LuChevronDown}
