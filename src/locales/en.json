@@ -784,6 +784,16 @@
       "activateError": "Failed to activate extension {{name}}"
     }
   },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "Open External Link",
+    "body": "Extension {{extension}} wants to open {{link}} in your external browser.",
+    "button": {
+      "open": "Open"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "Settings of {{name}}"
+  },
   "ExtensionSettingsPage": {
     "alert": "SJMCL cannot control the behavior of third-party extensions, including how they handle your personal data. Only install and enable extensions from trusted sources."
   },
@@ -1003,6 +1013,7 @@
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
+    "settings": "Settings",
     "share": {
       "text": "Share",
       "toast": {

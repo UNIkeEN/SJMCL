@@ -1,6 +1,7 @@
 import { t } from "i18next";
 import { InvokeResponse } from "@/models/response";
 import { isDev } from "@/utils/env";
+import { logger } from "@/utils/logging";
 
 export function responseHandler(serviceDomain: string): MethodDecorator {
   return function (

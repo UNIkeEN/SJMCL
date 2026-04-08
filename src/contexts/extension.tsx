@@ -2,6 +2,7 @@ import * as ChakraUI from "@chakra-ui/react";
 import { convertFileSrc, invoke as tauriInvoke } from "@tauri-apps/api/core";
 import { join } from "@tauri-apps/api/path";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { t } from "i18next";
 import { useRouter } from "next/router";
 import React, {
@@ -30,17 +31,22 @@ import {
   ExtensionHomeWidgetContribution,
   ExtensionHomeWidgetDefinition,
   ExtensionInfo,
+  ExtensionPageContribution,
+  ExtensionPageDefinition,
   ExtensionSettingsPageContribution,
   ExtensionSettingsPageDefinition,
 } from "@/models/extension";
 import { ExtensionService } from "@/services/extension";
 import { UtilsService } from "@/services/utils";
 import { logger } from "@/utils/logging";
+import { createWindow } from "@/utils/window";
 
 interface ExtensionContextRegistration {
   homeWidget?: ExtensionHomeWidgetDefinition;
   homeWidgets?: ExtensionHomeWidgetDefinition[];
   settingsPage?: ExtensionSettingsPageDefinition;
+  page?: ExtensionPageDefinition;
+  pages?: ExtensionPageDefinition[];
   dispose?: () => void;
 }
 
@@ -124,6 +130,11 @@ interface ExtensionHostContextType {
   getExtensionSettingsPage: (
     identifier: string
   ) => ExtensionSettingsPageContribution | undefined;
+  getExtensionPage: (
+    identifier: string,
+    routePath: string,
+    isStandAlone?: boolean
+  ) => ExtensionPageContribution | undefined;
   // host control methods.
   getExtensionList: (sync?: boolean) => ExtensionInfo[] | undefined;
 }
@@ -132,18 +143,28 @@ const ExtensionHostContext = createContext<
   ExtensionHostContextType | undefined
 >(undefined);
 
-// sanitize extension paths and block absolute/".." traversal.
-const sanitizePath = (path: string) => {
-  const normalized = path.replace(/\\/g, "/").trim();
-  if (!normalized || normalized.startsWith("/") || normalized.includes("..")) {
+export const normalizeExtensionRelativePath = (
+  path: string | string[] | undefined
+) => {
+  const rawPath = Array.isArray(path) ? path.join("/") : path;
+  const normalized = rawPath
+    ?.replace(/[\\/]+/g, "/")
+    .trim()
+    .replace(/^\/+|\/+$/g, "");
+
+  if (!normalized || normalized.includes("..")) {
     return undefined;
   }
+
   return normalized;
 };
 
-const joinUrlPath = (basePath: string, relativePath: string) => {
-  const normalizedBase = basePath.replace(/\\/g, "/").replace(/\/+$/, "");
-  return `${normalizedBase}/${relativePath}`;
+const isInternalLauncherRoute = (route: string) => {
+  return (
+    !!route &&
+    !/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(route) &&
+    !route.startsWith("//")
+  );
 };
 
 // generate a unique token for each extension activation process.
@@ -202,7 +223,7 @@ export const ExtensionHostContextProvider: React.FC<{
   const { config, update } = useLauncherConfig();
   const { selectedPlayer, selectedInstance, getPlayerList, getInstanceList } =
     useGlobalData();
-  const { openSharedModal } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const toast = useToast();
 
   const [extensionList, setExtensionList] = useState<ExtensionInfo[]>();
@@ -222,6 +243,9 @@ export const ExtensionHostContextProvider: React.FC<{
   >({});
   const [settingsPageMap, setSettingsPageMap] = useState<
     Record<string, ExtensionSettingsPageContribution>
+  >({});
+  const [pageMap, setPageMap] = useState<
+    Record<string, ExtensionPageContribution[]>
   >({});
 
   // pending registration, active extensions, and per-extension state stores/listeners.
@@ -284,6 +308,94 @@ export const ExtensionHostContextProvider: React.FC<{
       return new TextDecoder(encoding).decode(await response.arrayBuffer());
     },
     [request]
+  );
+
+  const navigate = useCallback(
+    async (extension: ExtensionInfo, route: string) => {
+      const trimmedRoute = route.trim().replace(/\\/g, "/");
+      const internalRoute = trimmedRoute.startsWith("/")
+        ? trimmedRoute
+        : `/${trimmedRoute}`;
+
+      if (
+        !isInternalLauncherRoute(trimmedRoute) ||
+        internalRoute.startsWith("/standalone/") ||
+        (internalRoute.startsWith("/settings/extension/") &&
+          !internalRoute.startsWith(
+            `/settings/extension/${extension.identifier}`
+          )) ||
+        (internalRoute.startsWith("/extension/") &&
+          !internalRoute.startsWith(`/extension/${extension.identifier}`))
+      ) {
+        throw new Error(`Invalid route: ${route}`);
+      }
+
+      await router.push(internalRoute);
+    },
+    [router]
+  );
+
+  const openWindow = useCallback(
+    (extension: ExtensionInfo, route: string, title: string) => {
+      const trimmedRoute = route.trim().replace(/\\/g, "/");
+      const internalRoute = trimmedRoute.startsWith("/")
+        ? trimmedRoute
+        : `/${trimmedRoute}`;
+
+      if (
+        !isInternalLauncherRoute(trimmedRoute) ||
+        !internalRoute.startsWith("/standalone/") ||
+        (internalRoute.startsWith("/standalone/extension/") &&
+          !internalRoute.startsWith(
+            `/standalone/extension/${extension.identifier}`
+          ))
+      ) {
+        throw new Error(`Invalid route: ${route}`);
+      }
+
+      createWindow(
+        `extension_standalone_${extension.identifier.replace(/[^a-zA-Z0-9_-]/g, "_")}_${Date.now()}`,
+        internalRoute,
+        {
+          title: `${title} - ${extension.name}`,
+        }
+      );
+    },
+    []
+  );
+
+  const openExternalLink = useCallback(
+    async (extension: ExtensionInfo, url: string) => {
+      const trimmedUrl = url.trim();
+      if (!trimmedUrl) {
+        throw new Error("Invalid external link");
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        openGenericConfirmDialog({
+          title: t("ExtensionOpenExternalLinkConfirmDialog.title"),
+          body: t("ExtensionOpenExternalLinkConfirmDialog.body", {
+            extension: extension.name,
+            link: trimmedUrl,
+          }),
+          btnOK: t("ExtensionOpenExternalLinkConfirmDialog.button.open"),
+          btnCancel: t("General.cancel"),
+          onOKCallback: async () => {
+            try {
+              logger.info(
+                `Extension ${extension.identifier} is opening external link: ${trimmedUrl}`
+              );
+              await openUrl(trimmedUrl);
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          },
+          onCancelCallback: () => reject(new Error("Cancelled")),
+        });
+      });
+    },
+    [openGenericConfirmDialog]
   );
 
   useEffect(() => {
@@ -424,6 +536,22 @@ export const ExtensionHostContextProvider: React.FC<{
     [settingsPageMap]
   );
 
+  const getExtensionPage = useCallback(
+    (identifier: string, routePath: string, isStandAlone = false) => {
+      const normalizedRoutePath = normalizeExtensionRelativePath(routePath);
+      if (!normalizedRoutePath) {
+        return undefined;
+      }
+
+      return pageMap[identifier]?.find(
+        (page) =>
+          page.routePath === normalizedRoutePath &&
+          !!page.isStandAlone === isStandAlone
+      );
+    },
+    [pageMap]
+  );
+
   const removeExtensionContributionState = useCallback((identifier: string) => {
     setHomeWidgetMap((prev) => {
       const next = { ...prev };
@@ -431,6 +559,11 @@ export const ExtensionHostContextProvider: React.FC<{
       return next;
     });
     setSettingsPageMap((prev) => {
+      const next = { ...prev };
+      delete next[identifier];
+      return next;
+    });
+    setPageMap((prev) => {
       const next = { ...prev };
       delete next[identifier];
       return next;
@@ -531,7 +664,7 @@ export const ExtensionHostContextProvider: React.FC<{
   // ------ Extension-scoped sensitive operations (fs, etc.) -----
   const resolveExtensionDataPath = useCallback(
     async (extension: ExtensionInfo, path: string) => {
-      const relativePath = sanitizePath(path);
+      const relativePath = normalizeExtensionRelativePath(path);
       if (!relativePath) {
         throw new Error(`Invalid extension data path: ${path}`);
       }
@@ -571,10 +704,14 @@ export const ExtensionHostContextProvider: React.FC<{
       getInstanceList: (sync) => hostActionRefs.current.getInstanceList(sync),
       updateConfig: (path, value) =>
         hostActionRefs.current.updateConfig(path, value),
+      navigate: async (route: string) => await navigate(extension, route),
+      openWindow: (route: string, title: string) =>
+        openWindow(extension, route, title),
+      openExternalLink: async (url: string) =>
+        await openExternalLink(extension, url),
       request,
       requestText,
       invoke,
-      logger,
       openSharedModal: (key, params) =>
         hostActionRefs.current.openSharedModal(key, params),
       readFile: async (path: string) =>
@@ -594,13 +731,22 @@ export const ExtensionHostContextProvider: React.FC<{
           UtilsService.deleteDirectory
         );
       },
+      logger,
       reloadSelf: () =>
         setExtensionRuntimeVersionMap((previous) => ({
           ...previous,
           [extension.identifier]: (previous[extension.identifier] || 0) + 1,
         })),
     }),
-    [invoke, request, requestText, runExtensionFileCommand]
+    [
+      invoke,
+      navigate,
+      openExternalLink,
+      openWindow,
+      request,
+      requestText,
+      runExtensionFileCommand,
+    ]
   );
 
   // build a stable host context object injected into an extension instance.
@@ -627,7 +773,7 @@ export const ExtensionHostContextProvider: React.FC<{
   // build extension script URL (extension dir + entry + cache-busting query).
   const getScriptUrl = useCallback(
     async (extension: ExtensionInfo, nonce: string, token: string) => {
-      const entry = sanitizePath(extension.frontend?.entry || "");
+      const entry = normalizeExtensionRelativePath(extension.frontend?.entry);
       if (!entry) {
         throw new Error(
           `Invalid frontend entry for extension ${extension.identifier}`
@@ -642,12 +788,14 @@ export const ExtensionHostContextProvider: React.FC<{
 
   // build extension asset URL (extension dir + asset path) by tauri's convertFileSrc.
   const getAssetUrl = useCallback((extension: ExtensionInfo, path: string) => {
-    const relativePath = sanitizePath(path);
+    const relativePath = normalizeExtensionRelativePath(path);
     if (!relativePath) {
       throw new Error(`Invalid extension asset path: ${path}`);
     }
 
-    return convertFileSrc(joinUrlPath(extension.path, relativePath));
+    return convertFileSrc(
+      `${extension.path.replace(/[\\/]+/g, "/").replace(/\/+$/, "")}/${relativePath}`
+    );
   }, []);
 
   // inject script and wait for extension to call registerExtension with factory.
@@ -793,6 +941,54 @@ export const ExtensionHostContextProvider: React.FC<{
         }));
       } else {
         setSettingsPageMap((prev) => {
+          const next = { ...prev };
+          delete next[extension.identifier];
+          return next;
+        });
+      }
+
+      const pageDefinitions = [
+        ...(registration.page ? [registration.page] : []),
+        ...(registration.pages || []),
+      ];
+
+      if (pageDefinitions.length > 0) {
+        const pages = pageDefinitions.flatMap((page, index) => {
+          const normalizedRoutePath = normalizeExtensionRelativePath(
+            page.routePath
+          );
+          if (!normalizedRoutePath) {
+            logger.error(
+              `Invalid page route path for extension ${extension.identifier}: ${page.routePath}`
+            );
+            return [];
+          }
+          return [
+            {
+              ...page,
+              routePath: normalizedRoutePath,
+              isStandAlone: page.isStandAlone ?? false,
+              identifier: extension.identifier,
+              resetKey: `${extension.identifier}:${signature}:page:${page.isStandAlone ? "standalone:" : ""}${normalizedRoutePath}:${index}`,
+              extension,
+            },
+          ];
+        });
+
+        if (pages.length > 0) {
+          setPageMap((prev) => ({
+            ...prev,
+            [extension.identifier]: pages,
+          }));
+        } else {
+          setPageMap((prev) => {
+            const next = { ...prev };
+            delete next[extension.identifier];
+            return next;
+          });
+        }
+      } else {
+        setPageMap((prev) => {
           const next = { ...prev };
           delete next[extension.identifier];
           return next;
@@ -968,6 +1164,7 @@ export const ExtensionHostContextProvider: React.FC<{
       enabledExtensionList,
       homeWidgets,
       getExtensionSettingsPage,
+      getExtensionPage,
       getExtensionList,
     }),
     [
@@ -983,6 +1180,7 @@ export const ExtensionHostContextProvider: React.FC<{
       enabledExtensionList,
       homeWidgets,
       getExtensionSettingsPage,
+      getExtensionPage,
       getExtensionList,
     ]
   );

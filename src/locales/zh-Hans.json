@@ -784,6 +784,16 @@
       "activateError": "激活扩展 {{name}} 失败"
     }
   },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "打开外部链接",
+    "body": "扩展 {{extension}} 想要在外部浏览器中打开 {{link}}",
+    "button": {
+      "open": "打开"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "{{name}} 设置"
+  },
   "ExtensionSettingsPage": {
     "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。"
   },
@@ -1003,6 +1013,7 @@
     "refresh": "刷新",
     "revealFile": "在{{opener}}中显示",
     "search": "搜索",
+    "settings": "设置",
     "share": {
       "text": "分享",
       "toast": {

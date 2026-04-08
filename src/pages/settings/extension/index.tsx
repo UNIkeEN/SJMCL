@@ -40,7 +40,7 @@ const ExtensionSettingsPage = () => {
     getExtensionList,
     getExtensionSettingsPage,
   } = useExtensionHost();
-  const extensions = extensionList || getExtensionList() || [];
+  const extensions = extensionList || [];
 
   const handleOpenExtensionsFolder = async () => {
     const base = await appDataDir();
@@ -131,7 +131,6 @@ const ExtensionSettingsPage = () => {
         ? [
             {
               icon: "settings",
-              label: t("HeadNavBar.navList.settings"),
               danger: false,
               onClick: () => {
                 router.push(`/settings/extension/${extension.identifier}`);
