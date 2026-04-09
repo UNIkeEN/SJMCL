@@ -1,5 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
+use crate::utils::fs::get_subdirectories;
 use crate::utils::image::{load_image_from_dir, ImageWrapper};
 use image::imageops::FilterType;
 use std::fs::{self, File};
@@ -40,6 +41,30 @@ pub fn read_extension_info(extension_dir: &Path) -> SJMCLResult<ExtensionInfo> {
   let path = extension_dir.to_string_lossy().to_string();
   let icon_src = read_extension_icon(extension_dir);
   Ok(ExtensionInfo::new(metadata, path, icon_src))
+}
+
+// support both single-level and nested structure
+pub fn resolve_extension_root(extracted_dir: &Path) -> SJMCLResult<PathBuf> {
+  if extracted_dir.join(METADATA_FILE_NAME).is_file() {
+    return Ok(extracted_dir.to_path_buf());
+  }
+  let mut subdirectories = get_subdirectories(extracted_dir)?;
+  if subdirectories.len() != 1 {
+    return Err(ExtensionError::InvalidPackageFormat.into());
+  }
+
+  let nested_dir = subdirectories.swap_remove(0);
+  let nested_name = nested_dir
+    .file_name()
+    .and_then(|name| name.to_str())
+    .ok_or(ExtensionError::InvalidPackageFormat)?;
+  ExtensionMetadata::validate_identifier(nested_name)?;
+
+  if nested_dir.join(METADATA_FILE_NAME).is_file() {
+    Ok(nested_dir)
+  } else {
+    Err(ExtensionError::InvalidPackageFormat.into())
+  }
 }
 
 pub fn extract_extension_package(package_path: &Path, target_dir: &Path) -> SJMCLResult<()> {

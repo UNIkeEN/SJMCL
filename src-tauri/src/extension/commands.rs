@@ -1,6 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::extension::helper::{
-  extract_extension_package, get_extensions_dir, read_extension_info,
+  extract_extension_package, get_extensions_dir, read_extension_info, resolve_extension_root,
 };
 use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
 use crate::launcher_config::models::LauncherConfig;
@@ -64,7 +64,8 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
   let register_result = (|| -> SJMCLResult<ExtensionInfo> {
     // extract extension package (zip) and read metadata
     extract_extension_package(&package_path, &temp_dir)?;
-    let info = read_extension_info(&temp_dir)?;
+    let install_dir = resolve_extension_root(&temp_dir)?;
+    let info = read_extension_info(&install_dir)?;
 
     // check required minimal launcher version
     let minimal_launcher_version = Version::parse(
@@ -85,7 +86,7 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
     if extension_dir.exists() {
       if extension_dir.is_dir() {
         fs::rename(&extension_dir, &backup_dir)?;
-        fs::rename(&temp_dir, &extension_dir)?;
+        fs::rename(&install_dir, &extension_dir)?;
 
         let existing_data_dir = backup_dir.join("data");
         if existing_data_dir.exists() && existing_data_dir.is_dir() {
@@ -99,10 +100,13 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
         fs::remove_dir_all(&backup_dir)?;
       } else {
         fs::remove_file(&extension_dir)?;
-        fs::rename(&temp_dir, &extension_dir)?;
+        fs::rename(&install_dir, &extension_dir)?;
       }
     } else {
-      fs::rename(&temp_dir, &extension_dir)?;
+      fs::rename(&install_dir, &extension_dir)?;
+    }
+    if temp_dir.exists() {
+      fs::remove_dir_all(&temp_dir)?;
     }
 
     // enable the new extension by default

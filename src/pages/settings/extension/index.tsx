@@ -54,7 +54,7 @@ const ExtensionSettingsPage = () => {
       filters: [
         {
           name: "SJMCL Extension Package",
-          extensions: ["sjmclx"],
+          extensions: ["sjmclx", "zip"],
         },
       ],
     });
@@ -163,7 +163,9 @@ const ExtensionSettingsPage = () => {
         title={extension.name}
         titleExtra={
           <Text fontSize="xs" className="secondary-text">
-            {`${extension.identifier}${extension.version ? ` · ${extension.version}` : ""}`}
+            {[extension.identifier, extension.version]
+              .filter(Boolean)
+              .join(" · ")}
           </Text>
         }
         description={extension.description}

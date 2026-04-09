@@ -11,6 +11,7 @@ structstruck::strike! {
     pub identifier: String,
     pub name: String,
     pub description: Option<String>,
+    pub author: Option<String>,
     pub version: Option<String>,
     pub minimal_launcher_version: Option<String>,
     pub frontend: Option<pub struct ExtensionFrontend {
@@ -81,7 +82,7 @@ impl ExtensionInfo {
 }
 
 static IDENTIFIER_PATTERN: LazyLock<regex::Regex> = LazyLock::new(|| {
-  regex::Regex::new(r"^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$")
+  regex::Regex::new(r"^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$")
     .expect("identifier regex should be valid")
 });
 

@@ -13,6 +13,7 @@ export interface ExtensionInfo {
   identifier: string;
   name: string;
   description?: string | null;
+  author?: string | null;
   version?: string | null;
   minimalLauncherVersion?: string | null;
   path: string;
