@@ -1555,6 +1555,9 @@
     "notCompatibleWith": "与 {{item}} 不兼容",
     "noVersionSelected": "未选择版本"
   },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "当前页面由扩展 {{name}} 提供"
+  },
   "ManageSkinModal": {
     "skinManage": "管理皮肤",
     "default": "默认",

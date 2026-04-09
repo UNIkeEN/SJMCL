@@ -1555,6 +1555,9 @@
     "notCompatibleWith": "Not compatible with {{item}}",
     "noVersionSelected": "No version selected"
   },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "This page is provided by extension {{name}}"
+  },
   "ManageSkinModal": {
     "skinManage": "Manage Skin",
     "default": "Default",

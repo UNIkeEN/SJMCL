@@ -1,12 +1,18 @@
-import { Flex, HStack, Image, useColorModeValue } from "@chakra-ui/react";
+import { Flex, HStack, Image, Text, useColorModeValue } from "@chakra-ui/react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LuMaximize2, LuMinimize2, LuMinus, LuX } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { useLauncherConfig } from "@/contexts/config";
+import { useExtensionHost } from "@/contexts/extension";
 
 const MainWindowTitlebar = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
   const { config } = useLauncherConfig();
+  const { extensionList } = useExtensionHost();
   const osType = config.basicInfo.osType;
 
   const isLinux = osType === "linux";
@@ -23,6 +29,29 @@ const MainWindowTitlebar = () => {
     "blackAlpha.200",
     "whiteAlpha.300"
   );
+  const titlebarTextColor = useColorModeValue(
+    "blackAlpha.600",
+    "whiteAlpha.700"
+  );
+
+  // if the current page is provided by an extension, show the extension name in titlebar center
+  const extensionIdentifier = (() => {
+    if (!router.isReady) return undefined;
+    const path = router.asPath.split("?")[0];
+    if (path.startsWith("/extension/")) {
+      return decodeURIComponent(path.slice("/extension/".length).split("/")[0]);
+    }
+    if (path.startsWith("/extensions/")) {
+      return decodeURIComponent(
+        path.slice("/extensions/".length).split("/")[0]
+      );
+    }
+    return undefined;
+  })();
+
+  const extensionName = extensionList?.find(
+    (extension) => extension.identifier === extensionIdentifier
+  )?.name;
 
   const linuxWindowButtons = [
     {
@@ -158,6 +187,21 @@ const MainWindowTitlebar = () => {
       zIndex={9999}
       pl={2}
     >
+      {extensionName && (
+        <Flex
+          position="absolute"
+          inset={0}
+          align="center"
+          justify="center"
+          pointerEvents="none"
+        >
+          <Text fontSize="xs-sm" color={titlebarTextColor}>
+            {t("MainWindowTitlebar.extensionProvidedPage", {
+              name: extensionName,
+            })}
+          </Text>
+        </Flex>
+      )}
       <Flex
         id="sjmcl-main-drag-region"
         data-tauri-drag-region
