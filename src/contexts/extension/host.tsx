@@ -40,6 +40,7 @@ import { ExtensionService } from "@/services/extension";
 import { UtilsService } from "@/services/utils";
 import { logger } from "@/utils/logging";
 import { createWindow } from "@/utils/window";
+import { buildSandboxedExtensionScript } from "./sandbox";
 
 interface ExtensionContextRegistration {
   homeWidget?: ExtensionHomeWidgetDefinition;
@@ -329,9 +330,14 @@ export const ExtensionHostContextProvider: React.FC<{
   const invoke = useCallback<ExtensionAbilityActions["invoke"]>(
     async <T,>(command: string, payload?: Record<string, unknown>) => {
       if (
-        ["delete_file", "delete_directory", "read_file", "write_file"].includes(
-          command
-        )
+        [
+          "delete_file",
+          "delete_directory",
+          "read_file",
+          "write_file",
+          "add_extension",
+          "delete_extension",
+        ].includes(command)
       ) {
         throw new Error(`Direct invoke is not allowed for ${command}`);
       }
@@ -863,7 +869,7 @@ export const ExtensionHostContextProvider: React.FC<{
     );
   }, []);
 
-  // inject script and wait for extension to call registerExtension with factory.
+  // inject script (sandboxed) and wait for extension to call registerExtension with factory.
   const loadExtensionFactory = useCallback(
     async (extension: ExtensionInfo, signature: string) => {
       const activationToken = createActivationToken();
@@ -880,8 +886,6 @@ export const ExtensionHostContextProvider: React.FC<{
         let settled = false;
         let registrationTimeout: number | undefined;
         const scriptElement = document.createElement("script");
-        scriptElement.src = scriptUrl;
-        scriptElement.async = false;
         scriptElement.dataset.extensionIdentifier = extension.identifier;
         scriptElement.dataset.extensionToken = activationToken;
 
@@ -926,15 +930,31 @@ export const ExtensionHostContextProvider: React.FC<{
           );
         }, 10000); // timeout for extension to call registerExtension after script load.
 
-        scriptElement.onload = () => {};
+        fetch(scriptUrl)
+          .then(async (response) => {
+            if (!response.ok) {
+              throw new Error(
+                `Failed to fetch script for ${extension.identifier}`
+              );
+            }
+            // build a sandboxed script to execute the extension code with only necessary globals.
+            scriptElement.text = buildSandboxedExtensionScript(
+              await response.text()
+            );
+            Object.defineProperty(document, "currentScript", {
+              configurable: true,
+              get: () => scriptElement,
+            });
 
-        scriptElement.onerror = () => {
-          rejectWithCleanup(
-            new Error(`Failed to load script for ${extension.identifier}`)
-          );
-        };
-
-        document.body.appendChild(scriptElement);
+            try {
+              document.body.appendChild(scriptElement);
+            } finally {
+              Reflect.deleteProperty(document, "currentScript");
+            }
+          })
+          .catch((error) => {
+            rejectWithCleanup(error);
+          });
       });
     },
     [getScriptUrl]

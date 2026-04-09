@@ -5,7 +5,7 @@ import {
   createStandaloneExtensionRouteUrl,
   normalizeExtensionRelativePath,
   useExtensionHost,
-} from "@/contexts/extension";
+} from "@/contexts/extension/host";
 
 interface ExtensionPageRendererProps {
   mode: "general" | "settings";

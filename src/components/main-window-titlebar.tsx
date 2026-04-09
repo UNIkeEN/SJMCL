@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { LuMaximize2, LuMinimize2, LuMinus, LuX } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { useLauncherConfig } from "@/contexts/config";
-import { useExtensionHost } from "@/contexts/extension";
+import { useExtensionHost } from "@/contexts/extension/host";
 
 const MainWindowTitlebar = () => {
   const { t } = useTranslation();

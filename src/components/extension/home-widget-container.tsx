@@ -1,7 +1,7 @@
 import { Box, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import HomeWidget from "@/components/extension/home-widget";
-import { useExtensionHost } from "@/contexts/extension";
+import { useExtensionHost } from "@/contexts/extension/host";
 import { ExtensionHomeWidgetContribution } from "@/models/extension";
 import { clamp } from "@/utils/math";
 

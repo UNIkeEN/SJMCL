@@ -23,7 +23,7 @@ import {
 } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import { useExtensionHost } from "@/contexts/extension";
+import { useExtensionHost } from "@/contexts/extension/host";
 import { useToast } from "@/contexts/toast";
 import { ExtensionInfo } from "@/models/extension";
 import { ExtensionService } from "@/services/extension";

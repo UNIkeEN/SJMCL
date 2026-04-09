@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { Section } from "@/components/common/section";
 import ExtensionPageRenderer from "@/components/extension/extension-page-renderer";
-import { useExtensionHost } from "@/contexts/extension";
+import { useExtensionHost } from "@/contexts/extension/host";
 
 const ExtensionSettingsDetailPage = () => {
   const { t } = useTranslation();
