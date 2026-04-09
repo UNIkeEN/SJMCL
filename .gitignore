@@ -57,3 +57,7 @@ next-env.d.ts
 *.njsproj
 *.sln
 *.sw?
+
+# nix
+*.nix
+result*
