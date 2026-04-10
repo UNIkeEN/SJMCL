@@ -3,7 +3,6 @@ import {
   Center,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -19,6 +18,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import {
   gameTypesToIcon,
@@ -200,7 +200,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
       <ModalOverlay />
       <ModalContent h="100%">
         <ModalHeader>{t("ImportModpackModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={onClose} />
         <ModalBody h="100%">
           {isPageLoading ? (
             <Center h="100%">

@@ -4,7 +4,6 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -20,6 +19,7 @@ import TreeView, {
   StructTreeNodeData,
   buildStructTreeNodes,
 } from "@/components/common/tree-view";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useToast } from "@/contexts/toast";
 import { LevelData } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
@@ -93,7 +93,7 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
             <Badge colorScheme="purple">Beta</Badge>
           </HStack>
         </ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={onClose} />
 
         <ModalBody className="allow-select">
           {levelData && (

@@ -2,7 +2,6 @@ import {
   Flex,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -10,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import SkinPreview from "@/components/skin-preview";
 import { Texture } from "@/models/account";
 import { base64ImgSrc } from "@/utils/string";
@@ -34,7 +34,7 @@ const ViewSkinModal: React.FC<ViewSkinModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ViewSkinModal.skinView")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={onClose} />
         <ModalBody pb={6}>
           <Flex justify="center" align="center" width="100%" height="100%">
             <SkinPreview

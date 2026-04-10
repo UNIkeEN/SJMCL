@@ -2,7 +2,6 @@ import {
   Button,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -14,6 +13,7 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
 import MarkdownContainer from "@/components/common/markdown-container";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { VersionMetaInfo } from "@/models/config";
@@ -73,7 +73,7 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{`${t("NotifyNewVersionModal.title")} - ${newVersion.version}`}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={props.onClose} />
         <ModalBody>
           <MarkdownContainer>
             {processReleaseNotes(newVersion.releaseNotes || "")}

@@ -7,7 +7,6 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -28,6 +27,7 @@ import {
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import { LoaderSelector } from "@/components/loader-selector";
@@ -374,7 +374,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
       <ModalOverlay />
       <ModalContent h="100%">
         <ModalHeader>{t("CreateInstanceModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={modalProps.onClose} />
         <Center>
           <Stepper
             colorScheme={primaryColor}

@@ -4,7 +4,6 @@ import {
   Icon,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -24,6 +23,7 @@ import {
   LuSquareLibrary,
 } from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import ResourceDownloader from "@/components/resource-downloader";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -119,7 +119,7 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
             />
           </HStack>
         </ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={modalProps.onClose} />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
             <ResourceDownloader

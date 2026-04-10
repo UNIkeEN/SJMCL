@@ -6,7 +6,6 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -16,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
@@ -96,7 +96,7 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("AddGameServerModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={onClose} />
         <ModalBody>
           <VStack spacing={4} align="stretch">
             <FormControl isInvalid={isServerAddrInvalid} isRequired>

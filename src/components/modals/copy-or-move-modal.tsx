@@ -7,7 +7,6 @@ import {
   Image,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -25,6 +24,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { LuCopy, LuScissors } from "react-icons/lu";
 import { OptionItemGroup } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
@@ -282,7 +282,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
       <ModalOverlay />
       <ModalContent h="100%">
         <ModalHeader>{t("CopyOrMoveModal.modal.header")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={modalProps.onClose} />
 
         <Flex flexGrow="1" flexDir="column" h="100%" overflow="auto">
           <ModalBody>

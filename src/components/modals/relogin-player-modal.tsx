@@ -5,7 +5,6 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -17,6 +16,7 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -128,7 +128,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ReLoginPlayerModal.modal.title")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={props.onClose} />
         <ModalBody>
           <VStack spacing={3.5} align="flex-start">
             {isOAuth ? (

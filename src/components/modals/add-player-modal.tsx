@@ -18,7 +18,6 @@ import {
   MenuList,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -43,6 +42,7 @@ import {
 } from "react-icons/lu";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
@@ -291,7 +291,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("AddPlayerModal.modal.header")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={modalProps.onClose} />
 
         <ModalBody>
           <VStack spacing={3.5}>

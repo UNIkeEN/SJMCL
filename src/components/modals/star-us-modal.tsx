@@ -2,7 +2,6 @@ import {
   Button,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -12,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 
 const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
   const { t } = useTranslation();
@@ -29,7 +29,7 @@ const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
           <source src="/videos/star-3-2.mp4" type="video/mp4" />
         </video>
         <ModalHeader>🌟&nbsp;&nbsp;{t("StarUsModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={props.onClose} />
         <ModalBody mt={-1}>
           <Text color="gray.500">{t("StarUsModal.body")}</Text>
         </ModalBody>

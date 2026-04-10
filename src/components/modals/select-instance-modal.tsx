@@ -1,7 +1,6 @@
 import {
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -9,6 +8,7 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import InstancesView from "@/components/instances-view";
 import { InstanceSummary } from "@/models/instance/misc";
 
@@ -35,7 +35,7 @@ const SelectInstanceModal: React.FC<SelectInstanceModalProps> = ({
         <ModalHeader>
           {modalTitle || t("SelectInstanceModal.header.title")}
         </ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={modalProps.onClose} />
         <ModalBody display="flex" flexDir="column" flex="1">
           <InstancesView
             instances={candidateInstances}

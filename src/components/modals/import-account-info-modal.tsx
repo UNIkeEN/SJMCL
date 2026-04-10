@@ -7,7 +7,6 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -25,6 +24,7 @@ import Empty from "@/components/common/empty";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import SelectableCard from "@/components/common/selectable-card";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -248,7 +248,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
       <ModalOverlay />
       <ModalContent h="100%">
         <ModalHeader>{t("ImportAccountInfoModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={props.onClose} />
         <ModalBody overflow="hidden">
           <Grid templateColumns={"3fr 5fr"} gap={4} h="100%">
             <VStack minW="3xs" spacing={3.5} overflowY="auto" align="stretch">

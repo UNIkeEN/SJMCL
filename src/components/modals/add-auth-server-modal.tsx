@@ -11,7 +11,6 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -22,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
@@ -130,7 +130,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("AddAuthServerModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={onClose} />
         <ModalBody>
           {!config.basicInfo.allowFullLoginFeature && (
             <Alert status="error" borderRadius="md" mb="3">

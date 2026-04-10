@@ -4,7 +4,6 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -19,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { OptionItem } from "@/components/common/option-item";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { ModLoaderType } from "@/enums/instance";
@@ -210,7 +210,7 @@ const AlertResourceDependencyModal: React.FC<
         <ModalHeader>
           {t("AlertResourceDependencyModal.header.title")}
         </ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={modalProps.onClose} />
 
         <ModalBody
           flex="1"

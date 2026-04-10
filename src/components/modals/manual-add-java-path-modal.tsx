@@ -8,7 +8,6 @@ import {
   InputRightElement,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -18,6 +17,7 @@ import {
 import { open } from "@tauri-apps/plugin-dialog";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 
@@ -85,7 +85,7 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ManualAddJavaPathModal.modal.header")}</ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={props.onClose} />
         <ModalBody>
           <FormControl isRequired>
             <FormLabel>{t("ManualAddJavaPathModal.label.javaPath")}</FormLabel>

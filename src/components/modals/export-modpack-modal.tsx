@@ -7,7 +7,6 @@ import {
   Icon,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -33,6 +32,7 @@ import {
 } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
 import TreeView, { TreeNode } from "@/components/common/tree-view";
+import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ExportModpackFormat } from "@/enums/instance";
@@ -570,7 +570,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
         <ModalHeader>
           {t("ExportModpackModal.header.title", { param: instanceName })}
         </ModalHeader>
-        <ModalCloseButton />
+        <WindowsCloseButton onClick={modalProps.onClose} />
         <ModalBody>
           <VStack spacing={4} align="stretch">
             {optionGroups.map((group, index) => (
