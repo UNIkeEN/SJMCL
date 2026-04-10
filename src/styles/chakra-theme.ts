@@ -119,7 +119,6 @@ const chakraExtendTheme = extendTheme({
             paddingBottom: 2,
             userSelect: "none",
             cursor: "default",
-            textAlign: "center",
           },
           footer: {
             fontSize: "sm",
