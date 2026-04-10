@@ -1,4 +1,5 @@
 import { Box } from "@chakra-ui/react";
+import { useLauncherConfig } from "@/contexts/config";
 
 interface WindowsCloseButtonProps {
   onClick: () => void;
@@ -7,6 +8,12 @@ interface WindowsCloseButtonProps {
 export const WindowsCloseButton: React.FC<WindowsCloseButtonProps> = ({
   onClick,
 }) => {
+  const { config } = useLauncherConfig();
+  const isMac =
+    config.basicInfo.osType === "macos" || config.basicInfo.osType === "darwin";
+
+  if (!isMac) return null;
+
   return (
     <Box
       as="button"
