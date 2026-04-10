@@ -113,13 +113,12 @@ const chakraExtendTheme = extendTheme({
         dialog: {
           header: {
             fontSize: "md",
-            paddingLeft: 6,
+            paddingLeft: 4,
             paddingRight: 8, // reserve space for close button (issue#1312)
             paddingTop: 3,
             paddingBottom: 2,
             userSelect: "none",
             cursor: "default",
-            textAlign: "center",
           },
           footer: {
             fontSize: "sm",
