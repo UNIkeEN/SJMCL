@@ -10,7 +10,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Tag,
@@ -33,6 +32,7 @@ import {
 import { BeatLoader } from "react-spinners";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { MenuSelector } from "@/components/common/menu-selector";
 import NavMenu from "@/components/common/nav-menu";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -504,7 +504,7 @@ const DownloadSpecificResourceModal: React.FC<
     >
       <ModalOverlay />
       <ModalContent h="100%" pb={4}>
-        <ModalHeader>
+        <MacosModalHeader>
           {t("DownloadSpecificResourceModal.title", {
             name:
               showZhTrans && resource.translatedName
@@ -512,7 +512,7 @@ const DownloadSpecificResourceModal: React.FC<
                 : resource.name,
             source: resource.source,
           })}
-        </ModalHeader>
+        </MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
         <ModalBody>
           <Card

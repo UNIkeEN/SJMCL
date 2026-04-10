@@ -6,7 +6,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -15,6 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import TreeView, {
   StructTreeNodeData,
   buildStructTreeNodes,
@@ -87,12 +87,12 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
+        <MacosModalHeader>
           <HStack>
             <Text>{t("WorldLevelDataModal.header.title", { worldName })}</Text>
             <Badge colorScheme="purple">Beta</Badge>
           </HStack>
-        </ModalHeader>
+        </MacosModalHeader>
         <WindowsCloseButton onClick={onClose} />
 
         <ModalBody className="allow-select">

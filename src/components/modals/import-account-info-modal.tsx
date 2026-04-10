@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -21,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { LuCircleX, LuTriangleAlert } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import SelectableCard from "@/components/common/selectable-card";
@@ -247,7 +247,9 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>{t("ImportAccountInfoModal.header.title")}</ModalHeader>
+        <MacosModalHeader>
+          {t("ImportAccountInfoModal.header.title")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={props.onClose} />
         <ModalBody overflow="hidden">
           <Grid templateColumns={"3fr 5fr"} gap={4} h="100%">

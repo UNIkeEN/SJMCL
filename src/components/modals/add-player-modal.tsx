@@ -20,7 +20,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -40,6 +39,7 @@ import {
   LuServer,
   LuSquareUserRound,
 } from "react-icons/lu";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
@@ -290,7 +290,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("AddPlayerModal.modal.header")}</ModalHeader>
+        <MacosModalHeader>{t("AddPlayerModal.modal.header")}</MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
 
         <ModalBody>

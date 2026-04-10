@@ -10,7 +10,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   PinInput,
@@ -19,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -91,7 +91,9 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("SyncConfigExportModal.header.title")}</ModalHeader>
+        <MacosModalHeader>
+          {t("SyncConfigExportModal.header.title")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={handleCloseModal} />
         <ModalBody>
           <FormControl>
@@ -169,7 +171,9 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("SyncConfigImportModal.header.title")}</ModalHeader>
+        <MacosModalHeader>
+          {t("SyncConfigImportModal.header.title")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={handleCloseModal} />
         <ModalBody>
           <FormControl>

@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   NumberInput,
@@ -26,6 +25,7 @@ import { SiModrinth } from "react-icons/si";
 import { BeatLoader } from "react-spinners";
 import Editable from "@/components/common/editable";
 import Empty from "@/components/common/empty";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -567,9 +567,9 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent maxH="calc(100vh - 7.5rem)">
-        <ModalHeader>
+        <MacosModalHeader>
           {t("ExportModpackModal.header.title", { param: instanceName })}
-        </ModalHeader>
+        </MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
         <ModalBody>
           <VStack spacing={4} align="stretch">

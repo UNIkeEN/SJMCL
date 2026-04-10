@@ -18,7 +18,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Stack,
@@ -27,6 +26,7 @@ import {
 import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -291,9 +291,9 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
+        <MacosModalHeader>
           {t(`EditGameDirectoryModal.header.title.${add ? "add" : "edit"}`)}
-        </ModalHeader>
+        </MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
 
         <ModalBody>

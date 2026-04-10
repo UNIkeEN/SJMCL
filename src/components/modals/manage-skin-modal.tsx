@@ -11,7 +11,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Radio,
@@ -25,6 +24,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuFolderOpen } from "react-icons/lu";
 import { AutoSizer } from "react-virtualized";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import SegmentedControl from "@/components/common/segmented";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import SkinPreview from "@/components/skin-preview";
@@ -218,7 +218,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent width="100%">
-        <ModalHeader>{t("ManageSkinModal.skinManage")}</ModalHeader>
+        <MacosModalHeader>{t("ManageSkinModal.skinManage")}</MacosModalHeader>
         <WindowsCloseButton onClick={onClose} />
         <ModalBody width="100%">
           <Grid templateColumns="3fr 2fr" gap={4} h="320px" width="100%">

@@ -5,7 +5,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -16,6 +15,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { MenuSelector } from "@/components/common/menu-selector";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
@@ -159,7 +159,9 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
     <Modal size={{ base: "sm", lg: "md" }} {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("DownloadJavaModal.header.title")}</ModalHeader>
+        <MacosModalHeader>
+          {t("DownloadJavaModal.header.title")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={props.onClose} />
         <ModalBody>
           <VStack align="stretch">

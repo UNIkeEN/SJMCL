@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Step,
@@ -27,6 +26,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import SelectInstanceModal from "@/components/modals/select-instance-modal";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
@@ -348,11 +348,11 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
+        <MacosModalHeader>
           {t("LaunchProcessModal.header.title", {
             name: effectiveInstance?.name,
           })}
-        </ModalHeader>
+        </MacosModalHeader>
         <WindowsCloseButton onClick={props.onClose} />
         <ModalBody minH="12rem">
           <Stepper

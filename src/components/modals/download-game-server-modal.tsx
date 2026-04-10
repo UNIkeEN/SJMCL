@@ -5,7 +5,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
@@ -13,6 +12,7 @@ import { save } from "@tauri-apps/plugin-dialog";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { useLauncherConfig } from "@/contexts/config";
@@ -70,9 +70,9 @@ export const DownloadGameServerModal: React.FC<
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>
+        <MacosModalHeader>
           {t("AddAndImportInstancePage.moreOptions.server.title")}
-        </ModalHeader>
+        </MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>

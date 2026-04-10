@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Step,
@@ -27,6 +26,7 @@ import {
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
@@ -373,7 +373,9 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>{t("CreateInstanceModal.header.title")}</ModalHeader>
+        <MacosModalHeader>
+          {t("CreateInstanceModal.header.title")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
         <Center>
           <Stepper

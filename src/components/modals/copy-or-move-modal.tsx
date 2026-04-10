@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Radio,
@@ -22,6 +21,7 @@ import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { LuCopy, LuScissors } from "react-icons/lu";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItemGroup } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
@@ -281,7 +281,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>{t("CopyOrMoveModal.modal.header")}</ModalHeader>
+        <MacosModalHeader>{t("CopyOrMoveModal.modal.header")}</MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
 
         <Flex flexGrow="1" flexDir="column" h="100%" overflow="auto">

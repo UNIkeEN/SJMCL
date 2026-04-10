@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Skeleton,
@@ -19,6 +18,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight } from "react-icons/lu";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItem } from "@/components/common/option-item";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { LoaderSelector } from "@/components/loader-selector";
@@ -128,11 +128,11 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>
+        <MacosModalHeader>
           {t(
             `ChangeModLoaderModal.header.title.${currentModLoader.loaderType === "Unknown" ? "install" : "change"}`
           )}
-        </ModalHeader>
+        </MacosModalHeader>
         <WindowsCloseButton onClick={modalProps.onClose} />
         {currentModLoader.loaderType !== "Unknown" && (
           <Flex position="relative" align="center" justify="center" py={2}>

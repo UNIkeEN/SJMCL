@@ -10,13 +10,13 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -84,7 +84,9 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
     <Modal {...props} onClose={handleClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("ManualAddJavaPathModal.modal.header")}</ModalHeader>
+        <MacosModalHeader>
+          {t("ManualAddJavaPathModal.modal.header")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={props.onClose} />
         <ModalBody>
           <FormControl isRequired>

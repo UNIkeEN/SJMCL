@@ -8,13 +8,13 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   VStack,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -95,7 +95,9 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("AddGameServerModal.header.title")}</ModalHeader>
+        <MacosModalHeader>
+          {t("AddGameServerModal.header.title")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={onClose} />
         <ModalBody>
           <VStack spacing={4} align="stretch">

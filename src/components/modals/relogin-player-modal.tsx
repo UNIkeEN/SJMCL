@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -16,6 +15,7 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
@@ -127,7 +127,9 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
     <Modal {...props} onClose={handleCloseModal}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("ReLoginPlayerModal.modal.title")}</ModalHeader>
+        <MacosModalHeader>
+          {t("ReLoginPlayerModal.modal.title")}
+        </MacosModalHeader>
         <WindowsCloseButton onClick={props.onClose} />
         <ModalBody>
           <VStack spacing={3.5} align="flex-start">
