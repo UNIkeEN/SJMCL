@@ -22,11 +22,13 @@ use crate::tasks::PTaskParam;
 const DEFAULT_CURSEFORGE_API_KEY: &str = env!("SJMCL_CURSEFORGE_API_KEY");
 
 lazy_static! {
-  static ref CURSEFORGE_API_KEY: &'static str = {
-    env::var("SJMCL_CURSEFORGE_API_KEY")
-      .unwrap_or_else(|_| DEFAULT_CURSEFORGE_API_KEY.to_string())
-      .leak()
+  static ref CURSEFORGE_API_KEY: String = {
+    env::var("SJMCL_CURSEFORGE_API_KEY").unwrap_or_else(|_| DEFAULT_CURSEFORGE_API_KEY.to_string())
   };
+}
+
+pub fn get_curseforge_api_key() -> &'static str {
+  &CURSEFORGE_API_KEY
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -164,7 +166,7 @@ impl ModpackManifest for CurseForgeManifest {
         let class_id = {
           let project_resp = client
             .get(format!("https://api.curseforge.com/v1/mods/{project_id}"))
-            .header("x-api-key", *CURSEFORGE_API_KEY)
+            .header("x-api-key", get_curseforge_api_key())
             .header("accept", "application/json")
             .send()
             .await
@@ -178,7 +180,7 @@ impl ModpackManifest for CurseForgeManifest {
             .get(format!(
               "https://api.curseforge.com/v1/mods/{project_id}/files/{file_id}"
             ))
-            .header("x-api-key", *CURSEFORGE_API_KEY)
+            .header("x-api-key", get_curseforge_api_key())
             .header("accept", "application/json")
             .send()
             .await
