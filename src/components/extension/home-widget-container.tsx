@@ -115,7 +115,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
         overflowX="hidden"
         className="no-scrollbar"
       >
-        <VStack align="start" spacing={4} pr="10px">
+        <VStack align="start" spacing={4}>
           {widgetLayouts.map(({ widget, bounds, width }) => (
             <HomeWidget
               key={widget.resetKey}

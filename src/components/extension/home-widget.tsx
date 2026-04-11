@@ -7,7 +7,12 @@ import {
   IconButton,
   Text,
 } from "@chakra-ui/react";
-import { type MouseEvent as ReactMouseEvent, useState } from "react";
+import {
+  type MouseEvent as ReactMouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { LuChevronRight } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
@@ -33,8 +38,15 @@ const HomeWidget = ({
   onWidthChange,
 }: HomeWidgetProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const resizeHandlersRef = useRef<(() => void) | null>(null);
   const WidgetComponent = widget.Component;
   const iconSrc = widget.icon || base64ImgSrc(widget.extension.iconSrc);
+
+  useEffect(() => {
+    return () => {
+      resizeHandlersRef.current?.();
+    };
+  }, []);
 
   // drag to resize
   const handleResizeStart = (event: ReactMouseEvent) => {
@@ -47,10 +59,13 @@ const HomeWidget = ({
       onWidthChange(clamp(next, widthBounds.lower, widthBounds.upper));
     };
     const handleMouseUp = () => {
+      resizeHandlersRef.current?.();
+      resizeHandlersRef.current = null;
+    };
+    resizeHandlersRef.current = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
   };
