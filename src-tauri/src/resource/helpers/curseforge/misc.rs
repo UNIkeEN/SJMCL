@@ -1,5 +1,5 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::modpack::curseforge::get_curseforge_api_key;
+use crate::instance::helpers::modpack::curseforge::CURSEFORGE_API_KEY;
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
@@ -29,7 +29,7 @@ where
   };
 
   let response = request_builder
-    .header("x-api-key", get_curseforge_api_key())
+    .header("x-api-key", CURSEFORGE_API_KEY.as_str())
     .send()
     .await
     .map_err(|_| ResourceError::NetworkError)?;
@@ -534,7 +534,7 @@ pub async fn translate_description_curseforge(
 
     let translation_res = client
       .get(&url)
-      .header("x-api-key", get_curseforge_api_key())
+      .header("x-api-key", CURSEFORGE_API_KEY.as_str())
       .send()
       .await?
       .json::<CurseForgeTranslationRes>()
