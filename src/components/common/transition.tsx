@@ -7,7 +7,7 @@ export const Fade = forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
       ref={ref}
       {...props}
       style={{
-        height: "inherit",
+        height: "100%",
         width: "100%",
         ...props.style,
       }}

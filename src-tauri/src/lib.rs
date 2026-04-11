@@ -1,6 +1,7 @@
 mod account;
 mod discover;
 mod error;
+mod extension;
 mod instance;
 mod intelligence;
 mod launch;
@@ -163,6 +164,9 @@ pub async fn run() {
         resource::commands::fetch_remote_resource_by_id,
         discover::commands::fetch_news_sources_info,
         discover::commands::fetch_news_post_summaries,
+        extension::commands::retrieve_extension_list,
+        extension::commands::add_extension,
+        extension::commands::delete_extension,
         tasks::commands::schedule_progressive_task_group,
         tasks::commands::cancel_progressive_task,
         tasks::commands::resume_progressive_task,
@@ -177,11 +181,13 @@ pub async fn run() {
         tasks::commands::resume_progressive_task_group,
         tasks::commands::delete_progressive_task_group,
         utils::commands::retrieve_memory_info,
+        utils::commands::retrieve_truetype_font_list,
+        utils::commands::check_service_availability,
         utils::commands::extract_filename,
         utils::commands::delete_file,
         utils::commands::delete_directory,
-        utils::commands::retrieve_truetype_font_list,
-        utils::commands::check_service_availability,
+        utils::commands::read_file,
+        utils::commands::write_file,
       ])
       .setup(|app| {
         // init APP_DATA_DIR

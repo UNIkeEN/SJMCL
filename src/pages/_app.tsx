@@ -9,6 +9,7 @@ import GlobalEventHandler from "@/components/special/global-event-handler";
 import { GuidedTourProvider } from "@/components/special/guided-tour-provider";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
+import { ExtensionHostContextProvider } from "@/contexts/extension/host";
 import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { TaskContextProvider } from "@/contexts/task";
@@ -124,15 +125,17 @@ export default function App({ Component, pageProps }: AppProps) {
               <GuidedTourProvider>
                 <SharedModalsProvider>
                   <TaskContextProvider>
-                    <GlobalEventHandler>
-                      <MainLayout>
-                        <Fade key={router.pathname.split("/")[1] || ""} in>
-                          <SpecLayout>
-                            <Component {...pageProps} />
-                          </SpecLayout>
-                        </Fade>
-                      </MainLayout>
-                    </GlobalEventHandler>
+                    <ExtensionHostContextProvider>
+                      <GlobalEventHandler>
+                        <MainLayout>
+                          <Fade key={router.pathname.split("/")[1] || ""} in>
+                            <SpecLayout>
+                              <Component {...pageProps} />
+                            </SpecLayout>
+                          </Fade>
+                        </MainLayout>
+                      </GlobalEventHandler>
+                    </ExtensionHostContextProvider>
                   </TaskContextProvider>
                 </SharedModalsProvider>
               </GuidedTourProvider>

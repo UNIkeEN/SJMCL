@@ -271,7 +271,7 @@ structstruck::strike! {
         pub auto_purge_launcher_logs: bool,
       }
     },
-    pub intelligence: struct Intelligence {
+    pub intelligence: struct IntelligenceConfig {
       pub mcp_server: struct {
         pub launcher: struct LauncherMcpServerConfig{
           #[default = true]
@@ -280,6 +280,9 @@ structstruck::strike! {
           pub port: u16,
         },
       }
+    },
+    pub extension: struct ExtensionConfig {
+      pub enabled: Vec<String>,
     },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,

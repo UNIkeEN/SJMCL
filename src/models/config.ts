@@ -137,6 +137,9 @@ export interface LauncherConfig {
       };
     };
   };
+  extension: {
+    enabled: string[];
+  };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
   discoverSourceEndpoints: [string, boolean][];
@@ -305,6 +308,9 @@ export const defaultConfig: LauncherConfig = {
         port: 18970,
       },
     },
+  },
+  extension: {
+    enabled: [],
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,

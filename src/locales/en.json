@@ -783,6 +783,27 @@
       }
     }
   },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "Failed to render this extension content."
+  },
+  "ExtensionHostContextProvider": {
+    "toast": {
+      "activateError": "Failed to activate extension {{name}}"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "Open External Link",
+    "body": "Extension {{extension}} wants to open {{link}} in your external browser.",
+    "button": {
+      "open": "Open"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "Settings of {{name}}"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL cannot control the behavior of third-party extensions, including how they handle your personal data. Only install and enable extensions from trusted sources."
+  },
   "GameAdvancedSettingsPage": {
     "title": "Advanced Settings",
     "topWarning": "Advanced settings are for expert users. Changing them may break the game. Do not modify unless you know what you're doing.",
@@ -1003,6 +1024,7 @@
     "refresh": "Refresh",
     "revealFile": "Reveal in {{opener}}",
     "search": "Search",
+    "settings": "Settings",
     "share": {
       "text": "Share",
       "toast": {
@@ -1543,6 +1565,9 @@
     "releaseDate": "Released at {{date}}",
     "notCompatibleWith": "Not compatible with {{item}}",
     "noVersionSelected": "No version selected"
+  },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "This page is provided by extension {{name}}"
   },
   "ManageSkinModal": {
     "skinManage": "Manage Skin",
@@ -2658,6 +2683,36 @@
         }
       }
     },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "Failed to retrieve extension list"
+        }
+      },
+      "addExtension": {
+        "success": "Successfully added extension",
+        "error": {
+          "title": "Failed to add extension",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "The extension package content format is invalid",
+            "INVALID_IDENTIFIER": "Extension identifier is invalid",
+            "INVALID_NAME": "Extension name is invalid",
+            "LAUNCHER_VERSION_TOO_LOW": "Launcher version is too low",
+            "EXTENSION_NOT_FOUND": "Target package file not found"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "Successfully deleted extension",
+        "error": {
+          "title": "Failed to delete extension",
+          "description": {
+            "INVALID_IDENTIFIER": "Extension identifier is invalid",
+            "EXTENSION_NOT_FOUND": "Extension not found"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "Failed to create task"
@@ -2689,9 +2744,9 @@
       "appearance": "Appearance",
       "download": "Download",
       "intelligence": "Intelligence",
+      "extension": "Extension",
       "help": "Docs & Help",
-      "about": "About",
-      "dev-test": "Dev - Test Page"
+      "about": "About"
     }
   },
   "SkinPreview": {

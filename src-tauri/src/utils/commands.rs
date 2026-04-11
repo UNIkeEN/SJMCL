@@ -14,21 +14,6 @@ pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
 }
 
 #[tauri::command]
-pub fn extract_filename(path_str: String, with_ext: bool) -> SJMCLResult<String> {
-  Ok(extract_filename_helper(&path_str, with_ext))
-}
-
-#[tauri::command]
-pub fn delete_file(path: String) -> SJMCLResult<()> {
-  fs::remove_file(&path).map_err(Into::into)
-}
-
-#[tauri::command]
-pub fn delete_directory(path: String) -> SJMCLResult<()> {
-  fs::remove_dir_all(&path).map_err(Into::into)
-}
-
-#[tauri::command]
 pub fn retrieve_truetype_font_list() -> SJMCLResult<Vec<String>> {
   let sysfonts = system_fonts::query_all();
   Ok(sysfonts)
@@ -56,4 +41,32 @@ pub async fn check_service_availability(
     }
     Err(_) => Err(LauncherConfigError::FetchError.into()),
   }
+}
+
+#[tauri::command]
+pub fn extract_filename(path_str: String, with_ext: bool) -> SJMCLResult<String> {
+  Ok(extract_filename_helper(&path_str, with_ext))
+}
+
+#[tauri::command]
+pub fn delete_file(path: String) -> SJMCLResult<()> {
+  fs::remove_file(&path).map_err(Into::into)
+}
+
+#[tauri::command]
+pub fn delete_directory(path: String) -> SJMCLResult<()> {
+  fs::remove_dir_all(&path).map_err(Into::into)
+}
+
+#[tauri::command]
+pub fn read_file(path: String) -> SJMCLResult<String> {
+  fs::read_to_string(&path).map_err(Into::into)
+}
+
+#[tauri::command]
+pub fn write_file(path: String, content: String) -> SJMCLResult<()> {
+  if let Some(parent) = std::path::Path::new(&path).parent() {
+    fs::create_dir_all(parent)?;
+  }
+  fs::write(&path, content).map_err(Into::into)
 }

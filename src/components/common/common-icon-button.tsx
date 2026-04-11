@@ -21,6 +21,7 @@ import {
   LuPlay,
   LuPlus,
   LuRefreshCcw,
+  LuSettings,
   LuShare,
   LuTrash,
 } from "react-icons/lu";
@@ -61,6 +62,7 @@ export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
     openFolder: <LuFolderOpen />,
     refresh: <LuRefreshCcw />,
     revealFile: <LuFolderSearch />,
+    settings: <LuSettings />,
     share: <LuShare />,
   };
 

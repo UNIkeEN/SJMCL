@@ -783,6 +783,27 @@
       }
     }
   },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "扩展内容渲染失败。"
+  },
+  "ExtensionHostContextProvider": {
+    "toast": {
+      "activateError": "激活扩展 {{name}} 失败"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "打开外部链接",
+    "body": "扩展 {{extension}} 想要在外部浏览器中打开 {{link}}",
+    "button": {
+      "open": "打开"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "{{name}} 设置"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。"
+  },
   "GameAdvancedSettingsPage": {
     "title": "高级游戏设置",
     "topWarning": "高级游戏设置仅提供给专业玩家使用。修改以下选项可能导致游戏无法启动。除非您充分了解其中的意义，否则请不要修改这些选项！",
@@ -1003,6 +1024,7 @@
     "refresh": "刷新",
     "revealFile": "在{{opener}}中显示",
     "search": "搜索",
+    "settings": "设置",
     "share": {
       "text": "分享",
       "toast": {
@@ -1543,6 +1565,9 @@
     "releaseDate": "发布于 {{date}}",
     "notCompatibleWith": "与 {{item}} 不兼容",
     "noVersionSelected": "未选择版本"
+  },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "当前页面由扩展 {{name}} 提供"
   },
   "ManageSkinModal": {
     "skinManage": "管理皮肤",
@@ -2658,6 +2683,36 @@
         }
       }
     },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "获取扩展插件列表失败"
+        }
+      },
+      "addExtension": {
+        "success": "扩展插件添加成功",
+        "error": {
+          "title": "扩展插件添加失败",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "扩展包内容格式无效",
+            "INVALID_IDENTIFIER": "扩展标识符无效",
+            "INVALID_NAME": "扩展名称无效",
+            "LAUNCHER_VERSION_TOO_LOW": "启动器版本过低",
+            "EXTENSION_NOT_FOUND": "未找到待添加文件"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "扩展插件删除成功",
+        "error": {
+          "title": "扩展插件删除失败",
+          "description": {
+            "INVALID_IDENTIFIER": "扩展标识符无效",
+            "EXTENSION_NOT_FOUND": "未找到对应扩展插件"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "任务创建失败"
@@ -2689,9 +2744,9 @@
       "appearance": "外观",
       "download": "下载资源",
       "intelligence": "智能",
+      "extension": "扩展插件",
       "help": "文档与帮助",
-      "about": "关于",
-      "dev-test": "开发 - 测试页"
+      "about": "关于"
     }
   },
   "SkinPreview": {
