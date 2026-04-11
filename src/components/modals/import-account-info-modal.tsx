@@ -20,11 +20,11 @@ import { useTranslation } from "react-i18next";
 import { LuCircleX, LuTriangleAlert } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import SelectableCard from "@/components/common/selectable-card";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -250,7 +250,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
         <MacosModalHeader>
           {t("ImportAccountInfoModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={props.onClose} />
+        <MacosCloseButton onClick={props.onClose} />
         <ModalBody overflow="hidden">
           <Grid templateColumns={"3fr 5fr"} gap={4} h="100%">
             <VStack minW="3xs" spacing={3.5} overflowY="auto" align="stretch">

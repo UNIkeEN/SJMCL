@@ -26,8 +26,8 @@ import {
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import { LoaderSelector } from "@/components/loader-selector";
@@ -376,7 +376,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
         <MacosModalHeader>
           {t("CreateInstanceModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
         <Center>
           <Stepper
             colorScheme={primaryColor}

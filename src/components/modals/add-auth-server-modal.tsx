@@ -20,8 +20,8 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
@@ -132,7 +132,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
         <MacosModalHeader>
           {t("AddAuthServerModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={onClose} />
+        <MacosCloseButton onClick={onClose} />
         <ModalBody>
           {!config.basicInfo.allowFullLoginFeature && (
             <Alert status="error" borderRadius="md" mb="3">

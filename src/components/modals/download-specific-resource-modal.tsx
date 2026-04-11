@@ -32,12 +32,12 @@ import {
 import { BeatLoader } from "react-spinners";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { MenuSelector } from "@/components/common/menu-selector";
 import NavMenu from "@/components/common/nav-menu";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import MCVersionNumberHelper from "@/components/mc-version-number-helper";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -513,7 +513,7 @@ const DownloadSpecificResourceModal: React.FC<
             source: resource.source,
           })}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
         <ModalBody>
           <Card
             className={cardStyles["card-front"]}

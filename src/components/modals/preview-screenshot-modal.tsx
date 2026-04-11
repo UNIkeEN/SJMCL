@@ -16,7 +16,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { LuCalendarDays, LuImagePlay } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ScreenshotInfo } from "@/models/instance/misc";
@@ -94,7 +94,7 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
           borderRadius="md"
           objectFit="cover"
         />
-        <WindowsCloseButton onClick={props.onClose} />
+        <MacosCloseButton onClick={props.onClose} />
         <ModalBody>
           <Flex justify="space-between" align="center">
             <Text fontSize="sm" fontWeight="bold">

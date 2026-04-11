@@ -18,9 +18,9 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItem } from "@/components/common/option-item";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { LoaderSelector } from "@/components/loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
@@ -133,7 +133,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
             `ChangeModLoaderModal.header.title.${currentModLoader.loaderType === "Unknown" ? "install" : "change"}`
           )}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
         {currentModLoader.loaderType !== "Unknown" && (
           <Flex position="relative" align="center" justify="center" py={2}>
             <Flex flex="1" justify="flex-end" pr={8}>

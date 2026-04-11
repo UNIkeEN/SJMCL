@@ -13,12 +13,12 @@ import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BeatLoader } from "react-spinners";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import {
   gameTypesToIcon,
@@ -202,7 +202,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
         <MacosModalHeader>
           {t("ImportModpackModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={onClose} />
+        <MacosCloseButton onClick={onClose} />
         <ModalBody h="100%">
           {isPageLoading ? (
             <Center h="100%">

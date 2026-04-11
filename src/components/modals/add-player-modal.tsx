@@ -39,10 +39,10 @@ import {
   LuServer,
   LuSquareUserRound,
 } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
@@ -291,7 +291,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
       <ModalOverlay />
       <ModalContent>
         <MacosModalHeader>{t("AddPlayerModal.modal.header")}</MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
 
         <ModalBody>
           <VStack spacing={3.5}>

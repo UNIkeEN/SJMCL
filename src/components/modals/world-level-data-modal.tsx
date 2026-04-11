@@ -14,12 +14,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import TreeView, {
   StructTreeNodeData,
   buildStructTreeNodes,
 } from "@/components/common/tree-view";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useToast } from "@/contexts/toast";
 import { LevelData } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
@@ -93,7 +93,7 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
             <Badge colorScheme="purple">Beta</Badge>
           </HStack>
         </MacosModalHeader>
-        <WindowsCloseButton onClick={onClose} />
+        <MacosCloseButton onClick={onClose} />
 
         <ModalBody className="allow-select">
           {levelData && (

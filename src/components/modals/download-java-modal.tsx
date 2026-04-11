@@ -15,9 +15,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { MenuSelector } from "@/components/common/menu-selector";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
@@ -162,7 +162,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
         <MacosModalHeader>
           {t("DownloadJavaModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={props.onClose} />
+        <MacosCloseButton onClick={props.onClose} />
         <ModalBody>
           <VStack align="stretch">
             <Grid templateColumns="1fr 1fr 1fr" gap={4} w="100%">

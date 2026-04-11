@@ -1,16 +1,16 @@
 import { Box, ModalCloseButton } from "@chakra-ui/react";
 import { useLauncherConfig } from "@/contexts/config";
+import { isMacPlatform } from "@/utils/platform";
 
-interface WindowsCloseButtonProps {
+interface MacosCloseButtonProps {
   onClick: () => void;
 }
 
-export const WindowsCloseButton: React.FC<WindowsCloseButtonProps> = ({
+export const MacosCloseButton: React.FC<MacosCloseButtonProps> = ({
   onClick,
 }) => {
   const { config } = useLauncherConfig();
-  const isMac =
-    config.basicInfo.osType === "macos" || config.basicInfo.osType === "darwin";
+  const isMac = isMacPlatform(config.basicInfo.osType);
 
   if (!isMac) {
     return <ModalCloseButton onClick={onClick} />;
@@ -19,6 +19,7 @@ export const WindowsCloseButton: React.FC<WindowsCloseButtonProps> = ({
   return (
     <Box
       as="button"
+      type="button"
       position="absolute"
       top="11px"
       left="12px"
@@ -31,15 +32,20 @@ export const WindowsCloseButton: React.FC<WindowsCloseButtonProps> = ({
       justifyContent="center"
       cursor="pointer"
       transition="all 0.1s"
+      aria-label="Close"
       _hover={{
-        "& .windows-close-icon": {
+        "& .macos-close-icon": {
           opacity: 1,
         },
+      }}
+      _focus={{
+        outline: "2px solid #007AFF",
+        outlineOffset: "2px",
       }}
       onClick={onClick}
     >
       <Box
-        className="windows-close-icon"
+        className="macos-close-icon"
         w="6px"
         h="6px"
         display="flex"

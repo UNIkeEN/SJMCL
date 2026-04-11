@@ -21,9 +21,9 @@ import {
   LuPuzzle,
   LuSquareLibrary,
 } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import NavMenu from "@/components/common/nav-menu";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import ResourceDownloader from "@/components/resource-downloader";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -119,7 +119,7 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
             />
           </HStack>
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
             <ResourceDownloader

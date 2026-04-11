@@ -7,8 +7,8 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import PlayersView from "@/components/players-view";
 import { Player } from "@/models/account";
 
@@ -35,7 +35,7 @@ const SelectPlayerModal: React.FC<SelectPlayerModalProps> = ({
         <MacosModalHeader>
           {modalTitle || t("SelectPlayerModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
         <ModalBody display="flex" flexDir="column" flex="1" minH={0}>
           <PlayersView
             players={candidatePlayers}

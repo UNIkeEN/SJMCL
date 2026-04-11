@@ -12,8 +12,8 @@ import { save } from "@tauri-apps/plugin-dialog";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -73,7 +73,7 @@ export const DownloadGameServerModal: React.FC<
         <MacosModalHeader>
           {t("AddAndImportInstancePage.moreOptions.server.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
             <GameVersionSelector

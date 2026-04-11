@@ -25,6 +25,7 @@ import { SiModrinth } from "react-icons/si";
 import { BeatLoader } from "react-spinners";
 import Editable from "@/components/common/editable";
 import Empty from "@/components/common/empty";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import {
   OptionItemGroup,
@@ -32,7 +33,6 @@ import {
 } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
 import TreeView, { TreeNode } from "@/components/common/tree-view";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ExportModpackFormat } from "@/enums/instance";
@@ -570,7 +570,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
         <MacosModalHeader>
           {t("ExportModpackModal.header.title", { param: instanceName })}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
         <ModalBody>
           <VStack spacing={4} align="stretch">
             {optionGroups.map((group, index) => (

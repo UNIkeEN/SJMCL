@@ -16,8 +16,8 @@ import {
 import { open } from "@tauri-apps/plugin-dialog";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 
@@ -87,7 +87,7 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
         <MacosModalHeader>
           {t("ManualAddJavaPathModal.modal.header")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={props.onClose} />
+        <MacosCloseButton onClick={handleClose} />
         <ModalBody>
           <FormControl isRequired>
             <FormLabel>{t("ManualAddJavaPathModal.label.javaPath")}</FormLabel>

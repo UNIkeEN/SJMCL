@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 
 const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
         <MacosModalHeader>
           🌟&nbsp;&nbsp;{t("StarUsModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={props.onClose} />
+        <MacosCloseButton onClick={props.onClose} />
         <ModalBody mt={-1}>
           <Text color="gray.500">{t("StarUsModal.body")}</Text>
         </ModalBody>

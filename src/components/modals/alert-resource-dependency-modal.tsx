@@ -16,9 +16,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItem } from "@/components/common/option-item";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { ModLoaderType } from "@/enums/instance";
@@ -210,7 +210,7 @@ const AlertResourceDependencyModal: React.FC<
         <MacosModalHeader>
           {t("AlertResourceDependencyModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={modalProps.onClose} />
+        <MacosCloseButton onClick={modalProps.onClose} />
 
         <ModalBody
           flex="1"

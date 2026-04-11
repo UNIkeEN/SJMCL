@@ -7,8 +7,8 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { MacosModalHeader } from "@/components/common/macos-modal-header";
-import { WindowsCloseButton } from "@/components/common/windows-close-button";
 
 interface ViewSchematicModalProps extends Omit<ModalProps, "children"> {
   fileUrl?: string;
@@ -29,7 +29,7 @@ const ViewSchematicModal: React.FC<ViewSchematicModalProps> = ({
         <MacosModalHeader>
           {t("ViewSchematicModal.header.title")}
         </MacosModalHeader>
-        <WindowsCloseButton onClick={onClose} />
+        <MacosCloseButton onClick={onClose} />
         <ModalBody pb={4}>
           <Flex justify="center" align="center" width="100%" height="100%">
             {/* TODO */}
