@@ -16,11 +16,13 @@ import {
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
+import { useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import LanguageMenu from "@/components/language-menu";
 import { useGuidedTour } from "@/components/special/guided-tour-provider";
 import { useLauncherConfig } from "@/contexts/config";
+import { confettiSchoolPride } from "@/utils/confetti";
 
 const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
@@ -46,6 +48,16 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
   const isWinArm64 =
     config.basicInfo.platform === "windows" &&
     config.basicInfo.arch === "aarch64";
+
+  // confetti effects when the modal opens
+  useEffect(() => {
+    if (props.isOpen) {
+      const timer = window.setTimeout(() => {
+        confettiSchoolPride();
+      }, 500);
+      return () => window.clearTimeout(timer);
+    }
+  }, [props.isOpen]);
 
   return (
     <Modal

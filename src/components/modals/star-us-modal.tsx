@@ -11,10 +11,22 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { confettiStars } from "@/utils/confetti";
 
 const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
   const { t } = useTranslation();
+
+  // confetti effects when the modal opens
+  useEffect(() => {
+    if (props.isOpen) {
+      const timer = window.setTimeout(() => {
+        confettiStars();
+      }, 300);
+      return () => window.clearTimeout(timer);
+    }
+  }, [props.isOpen]);
 
   const handleStar = () => {
     openUrl("https://github.com/UNIkeEN/SJMCL");
