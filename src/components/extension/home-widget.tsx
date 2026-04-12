@@ -1,5 +1,5 @@
 import { Avatar, Box, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
-import { type MouseEvent as ReactMouseEvent, useState } from "react";
+import { type MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
 import { LuChevronRight } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
@@ -9,13 +9,14 @@ import { base64ImgSrc } from "@/utils/string";
 
 interface HomeWidgetProps {
   widget: ExtensionHomeWidgetContribution;
-  // widget width state and bound are managed and calculated by the container.
   width: number;
   widthBounds: {
     lower: number;
     upper: number;
   };
   onWidthChange: (width: number) => void;
+  isCollapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
 }
 
 const HomeWidget = ({
@@ -23,8 +24,16 @@ const HomeWidget = ({
   width,
   widthBounds,
   onWidthChange,
+  isCollapsed,
+  onCollapsedChange,
 }: HomeWidgetProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const resizeHandlersRef = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    const cleanup = resizeHandlersRef.current;
+    return () => {
+      cleanup?.();
+    };
+  }, []);
   const WidgetComponent = widget.Component;
   const iconSrc = widget.icon || base64ImgSrc(widget.extension.iconSrc);
 
@@ -78,7 +87,7 @@ const HomeWidget = ({
             h={21}
             variant="ghost"
             colorScheme="gray"
-            onClick={() => setIsCollapsed((prev) => !prev)}
+            onClick={() => onCollapsedChange(!isCollapsed)}
           />
           <Avatar
             src={iconSrc}
