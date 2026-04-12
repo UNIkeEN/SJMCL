@@ -1,18 +1,5 @@
-import {
-  Avatar,
-  Box,
-  Collapse,
-  HStack,
-  Icon,
-  IconButton,
-  Text,
-} from "@chakra-ui/react";
-import {
-  type MouseEvent as ReactMouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Avatar, Box, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
+import { type MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
 import { LuChevronRight } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
@@ -22,13 +9,14 @@ import { base64ImgSrc } from "@/utils/string";
 
 interface HomeWidgetProps {
   widget: ExtensionHomeWidgetContribution;
-  // widget width state and bound are managed and calculated by the container.
   width: number;
   widthBounds: {
     lower: number;
     upper: number;
   };
   onWidthChange: (width: number) => void;
+  isCollapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
 }
 
 const HomeWidget = ({
@@ -36,17 +24,18 @@ const HomeWidget = ({
   width,
   widthBounds,
   onWidthChange,
+  isCollapsed,
+  onCollapsedChange,
 }: HomeWidgetProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const resizeHandlersRef = useRef<(() => void) | null>(null);
-  const WidgetComponent = widget.Component;
-  const iconSrc = widget.icon || base64ImgSrc(widget.extension.iconSrc);
-
   useEffect(() => {
+    const cleanup = resizeHandlersRef.current;
     return () => {
-      resizeHandlersRef.current?.();
+      cleanup?.();
     };
   }, []);
+  const WidgetComponent = widget.Component;
+  const iconSrc = widget.icon || base64ImgSrc(widget.extension.iconSrc);
 
   // drag to resize
   const handleResizeStart = (event: ReactMouseEvent) => {
@@ -59,13 +48,10 @@ const HomeWidget = ({
       onWidthChange(clamp(next, widthBounds.lower, widthBounds.upper));
     };
     const handleMouseUp = () => {
-      resizeHandlersRef.current?.();
-      resizeHandlersRef.current = null;
-    };
-    resizeHandlersRef.current = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
+
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
   };
@@ -73,7 +59,7 @@ const HomeWidget = ({
   return (
     <Box
       position="relative"
-      w={`${width}px`}
+      w={isCollapsed ? "max-content" : `${width}px`}
       minW={0}
       maxW="100%"
       alignSelf="start"
@@ -101,7 +87,7 @@ const HomeWidget = ({
             h={21}
             variant="ghost"
             colorScheme="gray"
-            onClick={() => setIsCollapsed((prev) => !prev)}
+            onClick={() => onCollapsedChange(!isCollapsed)}
           />
           <Avatar
             src={iconSrc}
@@ -115,23 +101,25 @@ const HomeWidget = ({
           </Text>
         </HStack>
 
-        <Collapse in={!isCollapsed} animateOpacity>
+        <Box display={isCollapsed ? "none" : "block"} w="100%">
           <ExtensionContributionWrapper resetKey={widget.resetKey}>
             <WidgetComponent />
           </ExtensionContributionWrapper>
-        </Collapse>
+        </Box>
       </AdvancedCard>
 
       {/* resize area */}
-      <Box
-        position="absolute"
-        top={0}
-        right={0}
-        bottom={0}
-        w="10px"
-        cursor="ew-resize"
-        onMouseDown={handleResizeStart}
-      />
+      {!isCollapsed && (
+        <Box
+          position="absolute"
+          top={0}
+          right={0}
+          bottom={0}
+          w="10px"
+          cursor="ew-resize"
+          onMouseDown={handleResizeStart}
+        />
+      )}
     </Box>
   );
 };
