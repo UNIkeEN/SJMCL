@@ -23,8 +23,11 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   const [widgetWidthMap, setWidgetWidthMap] = useState<Record<string, number>>(
     {}
   );
+  const [widgetCollapsedMap, setWidgetCollapsedMap] = useState<
+    Record<string, boolean>
+  >({});
 
-  // hydrate widget widths from extension host state so they survive page remounts.
+  // hydrate widget widths and collapsed state from extension host state so they survive page remounts.
   useEffect(() => {
     if (widgets.length === 0) return;
 
@@ -36,6 +39,19 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
           scope,
           "width",
           widget.defaultWidth ?? DEFAULT_WIDGET_WIDTH
+        );
+      }
+      return next;
+    });
+
+    setWidgetCollapsedMap((prev) => {
+      const next = { ...prev };
+      for (const widget of widgets) {
+        const scope = `home-widget:${widget.identifier}`;
+        next[widget.identifier] = stateStore.getValue(
+          scope,
+          "collapsed",
+          false
         );
       }
       return next;
@@ -90,6 +106,25 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
     [stateStore]
   );
 
+  const handleWidgetCollapsedChange = useCallback(
+    (identifier: string, collapsed: boolean) => {
+      setWidgetCollapsedMap((prev) => {
+        if (prev[identifier] === collapsed) return prev;
+        return {
+          ...prev,
+          [identifier]: collapsed,
+        };
+      });
+      stateStore.setValue(
+        `home-widget:${identifier}`,
+        "collapsed",
+        collapsed,
+        false
+      );
+    },
+    [stateStore]
+  );
+
   const containerWidth = useMemo(
     () => Math.max(0, ...widgetLayouts.map((layout) => layout.width)),
     [widgetLayouts]
@@ -124,6 +159,10 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
               widthBounds={bounds}
               onWidthChange={(nextWidth) =>
                 handleWidgetWidthChange(widget.identifier, nextWidth)
+              }
+              isCollapsed={!!widgetCollapsedMap[widget.identifier]}
+              onCollapsedChange={(collapsed) =>
+                handleWidgetCollapsedChange(widget.identifier, collapsed)
               }
             />
           ))}
