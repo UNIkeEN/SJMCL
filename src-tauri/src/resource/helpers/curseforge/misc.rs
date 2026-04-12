@@ -1,5 +1,4 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::modpack::curseforge::CURSEFORGE_API_KEY;
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
@@ -12,6 +11,13 @@ use std::collections::HashMap;
 use std::env;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+lazy_static! {
+  pub static ref CURSEFORGE_API_KEY: String = {
+    env::var("SJMCL_CURSEFORGE_API_KEY")
+      .unwrap_or_else(|_| env!("SJMCL_CURSEFORGE_API_KEY").to_string())
+  };
+}
 
 pub async fn make_curseforge_request<T, P>(
   client: &reqwest::Client,

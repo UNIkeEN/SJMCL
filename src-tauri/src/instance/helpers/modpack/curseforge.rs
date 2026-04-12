@@ -1,11 +1,9 @@
-use std::env;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -14,17 +12,10 @@ use zip::ZipArchive;
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
-use crate::resource::helpers::curseforge::misc::CurseForgeProject;
+use crate::resource::helpers::curseforge::misc::{CurseForgeProject, CURSEFORGE_API_KEY};
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
-
-lazy_static! {
-  pub static ref CURSEFORGE_API_KEY: String = {
-    env::var("SJMCL_CURSEFORGE_API_KEY")
-      .unwrap_or_else(|_| env!("SJMCL_CURSEFORGE_API_KEY").to_string())
-  };
-}
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
