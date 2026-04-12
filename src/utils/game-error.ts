@@ -304,3 +304,98 @@ export const analyzeCrashReport = (
   }
   return { key: "UNKNOWN", params: [] };
 };
+
+interface GameErrorContext {
+  errorKey: string;
+  errorMessage: string;
+  gameVersion?: string;
+  loaderType?: string;
+  javaVersion?: string;
+  os?: string;
+  arch?: string;
+  launcherVersion?: string;
+  crashLog?: string[];
+}
+
+export const generateAIPrompt = (context: GameErrorContext): string => {
+  const {
+    errorKey,
+    errorMessage,
+    gameVersion,
+    loaderType,
+    javaVersion,
+    os,
+    arch,
+    launcherVersion,
+    crashLog,
+  } = context;
+
+  let prompt = `你是 Minecraft 崩溃报告（crash report）助手，帮助我分析 crash 造成的原因。你应当首先分析出游戏崩溃的主要原因（java，游戏原版 library，mod，或者是其他原因）
+
+对于 java 问题或者游戏原版 library，你应当直接提醒我。
+
+若是 mod 造成的崩溃，你应当通过日志分析出哪些 mod 可能造成这些错误，并提示我。注意我正在使用 SJMC Launcher，关于修复崩溃的建议（如下载 Mod）应当在 SJMC Launcher 里进行。
+
+如果实在分析不出具体原因，请告知用户通过QQ群860851380联系开发者。
+
+**重要：你可以直接使用 MCP 工具来诊断和修复问题，无需等待用户手动操作。**
+
+---
+
+## 系统信息
+
+`;
+
+  if (launcherVersion) {
+    prompt += `- **启动器版本**: ${launcherVersion}\n`;
+  }
+  if (os) {
+    prompt += `- **操作系统**: ${os}\n`;
+  }
+  if (arch) {
+    prompt += `- **系统架构**: ${arch}\n`;
+  }
+  if (gameVersion) {
+    prompt += `- **游戏版本**: ${gameVersion}\n`;
+  }
+  if (loaderType) {
+    prompt += `- **模组加载器**: ${loaderType}\n`;
+  }
+  if (javaVersion) {
+    prompt += `- **Java 版本**: ${javaVersion}\n`;
+  }
+
+  prompt += `\n## 崩溃信息
+
+- **错误类型**: ${errorKey}
+- **错误描述**: ${errorMessage}
+
+`;
+
+  if (crashLog && crashLog.length > 0) {
+    prompt += `## 最新的日志作为补充
+
+\`\`\`
+${crashLog.slice(-100).join("\n")}
+\`\`\`
+
+`;
+  }
+
+  prompt += `---
+
+## 可用的 MCP 工具
+
+你可以直接调用以下工具来深入诊断和修复问题：
+
+1. **analyze_minecraft_log** - 智能分析完整日志，识别崩溃原因、mod 冲突、依赖问题
+2. **get_instance_info** - 获取游戏实例详细信息（已安装的 mods、配置文件等）
+3. **search_mod_conflicts** - 自动检测 mod 冲突（重复安装、不兼容组合）
+4. **read_file** - 读取配置文件、mod 信息等
+5. **list_directory** - 查看 mods 文件夹、配置目录等
+6. **write_file** - 修改配置文件（如需修复配置错误）
+
+**请主动使用这些工具进行诊断，然后给出详细的分析和解决方案。**`;
+
+  return prompt;
+};
