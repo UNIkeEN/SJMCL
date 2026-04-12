@@ -12,7 +12,12 @@ use std::env;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
-const CURSEFORGE_API_KEY: &str = env!("SJMCL_CURSEFORGE_API_KEY");
+lazy_static! {
+  pub static ref CURSEFORGE_API_KEY: String = {
+    env::var("SJMCL_CURSEFORGE_API_KEY")
+      .unwrap_or_else(|_| env!("SJMCL_CURSEFORGE_API_KEY").to_string())
+  };
+}
 
 pub async fn make_curseforge_request<T, P>(
   client: &reqwest::Client,
@@ -30,7 +35,7 @@ where
   };
 
   let response = request_builder
-    .header("x-api-key", CURSEFORGE_API_KEY)
+    .header("x-api-key", CURSEFORGE_API_KEY.as_str())
     .send()
     .await
     .map_err(|_| ResourceError::NetworkError)?;
@@ -535,7 +540,7 @@ pub async fn translate_description_curseforge(
 
     let translation_res = client
       .get(&url)
-      .header("x-api-key", CURSEFORGE_API_KEY)
+      .header("x-api-key", CURSEFORGE_API_KEY.as_str())
       .send()
       .await?
       .json::<CurseForgeTranslationRes>()

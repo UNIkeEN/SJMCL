@@ -12,7 +12,7 @@ use zip::ZipArchive;
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
-use crate::resource::helpers::curseforge::misc::CurseForgeProject;
+use crate::resource::helpers::curseforge::misc::{CurseForgeProject, CURSEFORGE_API_KEY};
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
@@ -152,7 +152,7 @@ impl ModpackManifest for CurseForgeManifest {
         let class_id = {
           let project_resp = client
             .get(format!("https://api.curseforge.com/v1/mods/{project_id}"))
-            .header("x-api-key", env!("SJMCL_CURSEFORGE_API_KEY"))
+            .header("x-api-key", CURSEFORGE_API_KEY.as_str())
             .header("accept", "application/json")
             .send()
             .await
@@ -166,7 +166,7 @@ impl ModpackManifest for CurseForgeManifest {
             .get(format!(
               "https://api.curseforge.com/v1/mods/{project_id}/files/{file_id}"
             ))
-            .header("x-api-key", env!("SJMCL_CURSEFORGE_API_KEY"))
+            .header("x-api-key", CURSEFORGE_API_KEY.as_str())
             .header("accept", "application/json")
             .send()
             .await
