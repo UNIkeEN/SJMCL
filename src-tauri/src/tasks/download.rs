@@ -156,7 +156,11 @@ impl DownloadTask {
   )> {
     let resp = Self::send_request(app_handle, current, param).await?;
     let total_progress = if current == 0 {
-      resp.content_length().unwrap() as i64
+      if let Some(length) = resp.content_length() {
+        length as i64
+      } else {
+        -1
+      }
     } else {
       -1
     };
