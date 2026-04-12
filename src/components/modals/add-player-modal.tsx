@@ -148,7 +148,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   useEffect(() => {
     setOAuthCodeResponse(undefined);
-  }, [showOAuth, playerType, modalProps.isOpen]);
+    AccountService.cancelOAuth();
+  }, [showOAuth, playerType, modalProps.isOpen, authServer?.authUrl]);
 
   useEffect(() => {
     setCandidatePlayers([]);
