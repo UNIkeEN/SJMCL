@@ -242,6 +242,7 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
               }}
               selectedModLoader={selectedModLoader}
               onSelectModLoader={setSelectedModLoader}
+              mode="modloader"
             />
           )}
           {mode === "optifine" && summary?.version && summary?.optifine && (
@@ -335,7 +336,7 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
               onSelectModLoader={() => {}}
               selectedOptiFine={selectedOptifine || undefined}
               onSelectOptiFine={(opt) => setSelectedOptifine(opt)}
-              onlyOptifine
+              mode="optifine"
             />
           )}
         </ModalBody>
