@@ -476,14 +476,14 @@ export class InstanceService {
   static async changeModLoader(
     instanceId: string,
     newModLoader?: ModLoaderResourceInfo | null,
-    optifine?: OptiFineResourceInfo | null,
+    newOptifine?: OptiFineResourceInfo | null,
     isInstallFabricApi?: boolean,
     isInstallQfApi?: boolean
   ): Promise<InvokeResponse<void>> {
     return await invoke("change_mod_loader", {
       instanceId,
       newModLoader: newModLoader ?? null,
-      optifine: optifine ?? null,
+      newOptifine: newOptifine ?? null,
       isInstallFabricApi,
       isInstallQfApi,
     });

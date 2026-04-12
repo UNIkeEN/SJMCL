@@ -11,7 +11,7 @@ import { Section } from "@/components/common/section";
 import SelectableCard, {
   SelectableCardProps,
 } from "@/components/common/selectable-card";
-import { ChangeModLoaderModal } from "@/components/modals/change-mod-loader-modal";
+import { ChangeLoaderModal } from "@/components/modals/change-loader-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -37,9 +37,9 @@ const InstanceShaderPacksPage = () => {
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>([]);
 
   const {
-    isOpen: isChangeModLoaderModalOpen,
-    onOpen: onChangeModLoaderModalOpen,
-    onClose: onChangeModLoaderModalClose,
+    isOpen: isChangeLoaderModalOpen,
+    onOpen: onChangeLoaderModalOpen,
+    onClose: onChangeLoaderModalClose,
   } = useDisclosure();
 
   const getShaderPackListWrapper = useCallback(
@@ -131,7 +131,7 @@ const InstanceShaderPacksPage = () => {
       displayMode: "entry",
       isSelected: summary?.optifine?.status === "Installed",
       onSelect: () => {
-        onChangeModLoaderModalOpen();
+        onChangeLoaderModalOpen();
       },
       isDisabled: false,
       isChevronShown: true,
@@ -214,9 +214,9 @@ const InstanceShaderPacksPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
-      <ChangeModLoaderModal
-        isOpen={isChangeModLoaderModalOpen}
-        onClose={onChangeModLoaderModalClose}
+      <ChangeLoaderModal
+        isOpen={isChangeLoaderModalOpen}
+        onClose={onChangeLoaderModalClose}
         mode="optifine"
       />
     </>

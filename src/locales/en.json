@@ -344,11 +344,19 @@
       }
     }
   },
-  "ChangeModLoaderModal": {
+  "ChangeLoaderModal": {
     "header": {
-      "title": {
-        "change": "Change Mod Loader",
-        "install": "Install Mod Loader"
+      "modloader": {
+        "title": {
+          "change": "Change Mod Loader",
+          "install": "Install Mod Loader"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "Change OptiFine",
+          "install": "Install OptiFine"
+        }
       }
     },
     "notSelectedLoader": "No new loader selected",

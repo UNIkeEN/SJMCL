@@ -38,7 +38,7 @@ import {
   modLoaderTypes,
   modLoaderTypesToIcon,
 } from "@/components/loader-selector";
-import { ChangeModLoaderModal } from "@/components/modals/change-mod-loader-modal";
+import { ChangeLoaderModal } from "@/components/modals/change-loader-modal";
 import CheckModUpdateModal from "@/components/modals/check-mod-update-modal";
 import ModInfoModal from "@/components/modals/mod-info-modal";
 import { useLauncherConfig } from "@/contexts/config";
@@ -90,9 +90,9 @@ const InstanceModsPage = () => {
     useState<LocalModInfo | null>(null);
 
   const {
-    isOpen: isChangeModLoaderModalOpen,
-    onOpen: onChangeModLoaderModalOpen,
-    onClose: onChangeModLoaderModalClose,
+    isOpen: isChangeLoaderModalOpen,
+    onOpen: onChangeLoaderModalOpen,
+    onClose: onChangeLoaderModalClose,
   } = useDisclosure();
 
   const {
@@ -117,7 +117,7 @@ const InstanceModsPage = () => {
     if (response.status === "success") {
       if (response.data) {
         setTargetLoaderType(type);
-        onChangeModLoaderModalOpen();
+        onChangeLoaderModalOpen();
       } else {
         toast({
           title: t("Services.instance.changeModLoader.error.title"),
@@ -631,9 +631,9 @@ const InstanceModsPage = () => {
         localMods={localMods}
       />
 
-      <ChangeModLoaderModal
-        isOpen={isChangeModLoaderModalOpen}
-        onClose={onChangeModLoaderModalClose}
+      <ChangeLoaderModal
+        isOpen={isChangeLoaderModalOpen}
+        onClose={onChangeLoaderModalClose}
         defaultSelectedType={targetLoaderType}
       />
 

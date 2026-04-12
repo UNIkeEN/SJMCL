@@ -344,11 +344,19 @@
       }
     }
   },
-  "ChangeModLoaderModal": {
+  "ChangeLoaderModal": {
     "header": {
-      "title": {
-        "change": "修改模组加载器",
-        "install": "安装模组加载器"
+      "modloader": {
+        "title": {
+          "change": "修改模组加载器",
+          "install": "安装模组加载器"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "修改光影加载器",
+          "install": "安装光影加载器"
+        }
       }
     },
     "notSelectedLoader": "未选择新的加载器",

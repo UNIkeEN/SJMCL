@@ -36,12 +36,12 @@ import { parseModLoaderVersion } from "@/utils/instance";
 
 type Mode = "modloader" | "optifine";
 
-interface ChangeModLoaderModalProps extends Omit<ModalProps, "children"> {
+interface ChangeLoaderModalProps extends Omit<ModalProps, "children"> {
   defaultSelectedType?: ModLoaderType;
   mode?: Mode;
 }
 
-export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
+export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
   defaultSelectedType,
   mode = "modloader",
   ...modalProps
@@ -156,7 +156,15 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
       <ModalContent h="100%">
         <ModalHeader>
           {t(
-            `ChangeModLoaderModal.header.title.${currentModLoader.loaderType === "Unknown" ? "install" : "change"}`
+            `ChangeLoaderModal.header.${mode}.title.${
+              mode === "modloader"
+                ? currentModLoader.loaderType === "Unknown"
+                  ? "install"
+                  : "change"
+                : !summary?.optifine
+                  ? "install"
+                  : "change"
+            }`
           )}
         </ModalHeader>
         <ModalCloseButton />
@@ -194,7 +202,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                   prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
                   title={
                     <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                      {t("ChangeModLoaderModal.notSelectedLoader")}
+                      {t("ChangeLoaderModal.notSelectedLoader")}
                     </Text>
                   }
                 />
@@ -267,7 +275,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                     }
                     title={
                       <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                        {t("ChangeModLoaderModal.noOptifineInstalled")}
+                        {t("ChangeLoaderModal.noOptifineInstalled")}
                       </Text>
                     }
                   />
@@ -286,7 +294,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                     }
                     title={
                       <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                        {t("ChangeModLoaderModal.notSelectedOptifine")}
+                        {t("ChangeLoaderModal.notSelectedOptifine")}
                       </Text>
                     }
                   />
@@ -343,7 +351,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                 onChange={(e) => setIsInstallFabricApi(e.target.checked)}
               >
                 <Text fontSize="sm">
-                  {t("ChangeModLoaderModal.footer.installFabricApi")}
+                  {t("ChangeLoaderModal.footer.installFabricApi")}
                 </Text>
               </Checkbox>
             )}
@@ -357,7 +365,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
                 onChange={(e) => setIsInstallQfApi(e.target.checked)}
               >
                 <Text fontSize="sm">
-                  {t("ChangeModLoaderModal.footer.installQFAPI")}
+                  {t("ChangeLoaderModal.footer.installQFAPI")}
                 </Text>
               </Checkbox>
             )}
@@ -374,7 +382,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
               isDisabled={isDisabled}
             >
               {isSameAsCurrent
-                ? t("ChangeModLoaderModal.footer.reinstall")
+                ? t("ChangeLoaderModal.footer.reinstall")
                 : t("General.confirm")}
             </Button>
           </HStack>

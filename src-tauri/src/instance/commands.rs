@@ -1325,7 +1325,7 @@ pub async fn change_mod_loader(
   app: AppHandle,
   instance_id: String,
   new_mod_loader: Option<ModLoaderResourceInfo>,
-  optifine: Option<OptiFineResourceInfo>,
+  new_optifine: Option<OptiFineResourceInfo>,
   is_install_fabric_api: Option<bool>,
   is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
@@ -1423,7 +1423,7 @@ pub async fn change_mod_loader(
   }
 
   // install new OptiFine
-  if let Some(optifine) = optifine {
+  if let Some(optifine) = new_optifine {
     let optifine_info = OptiFine {
       filename: optifine.filename.clone(),
       version: format!("{}_{}", optifine.r#type, optifine.patch),
