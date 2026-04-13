@@ -3,7 +3,6 @@ import {
   BoxProps,
   Button,
   Card,
-  Collapse,
   Divider,
   Flex,
   HStack,
@@ -216,19 +215,17 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         {isChildrenIndependent && wrappedChildren}
       </Flex>
 
-      {collapsibleContent && (
-        <Collapse in={!isCollapsed} animateOpacity>
-          <Box
-            p={3}
-            mt={2}
-            bg={collapsibleBg}
-            borderRadius="md"
-            borderWidth="1px"
-            borderColor={collapsibleBorderColor}
-          >
-            {collapsibleContent}
-          </Box>
-        </Collapse>
+      {collapsibleContent && !isCollapsed && (
+        <Box
+          p={3}
+          mt={2}
+          bg={collapsibleBg}
+          borderRadius="md"
+          borderWidth="1px"
+          borderColor={collapsibleBorderColor}
+        >
+          {collapsibleContent}
+        </Box>
       )}
     </Box>
   );

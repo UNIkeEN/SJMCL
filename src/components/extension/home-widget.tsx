@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Collapse,
-  HStack,
-  Icon,
-  IconButton,
-  Text,
-} from "@chakra-ui/react";
+import { Avatar, Box, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
 import { type MouseEvent as ReactMouseEvent } from "react";
 import { LuChevronRight } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
@@ -103,11 +95,11 @@ const HomeWidget = ({
           </Text>
         </HStack>
 
-        <Collapse in={!isCollapsed} animateOpacity>
+        {!isCollapsed && (
           <ExtensionContributionWrapper resetKey={widget.resetKey}>
             <WidgetComponent />
           </ExtensionContributionWrapper>
-        </Collapse>
+        )}
       </AdvancedCard>
 
       {/* resize area */}
