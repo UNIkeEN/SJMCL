@@ -71,6 +71,19 @@ pub enum LauncherVisiablity {
   Always,
 }
 
+#[derive(Debug, Display, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
+#[strum(serialize_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
+pub enum GarbageCollector {
+  #[default]
+  Auto,
+  G1gc,
+  Zgc,
+  Shenandoah,
+  Parallel,
+  Serial,
+}
+
 // Partial Derive is used for these structs and we can use it for key value storage.
 // And partially update some fields for better performance and hygiene.
 //
@@ -130,9 +143,11 @@ structstruck::strike! {
         pub post_exit_command: String,
       },
       pub jvm: struct {
-        pub args: String,
+        #[default(GarbageCollector::Auto)]
+        pub garbage_collector: GarbageCollector,
         pub java_permanent_generation_space: u32,
         pub environment_variable: String,
+        pub args: String,
       },
       pub workaround: struct GameWorkaroundConfig {
         pub no_jvm_args: bool,

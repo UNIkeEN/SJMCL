@@ -831,8 +831,17 @@
     "jvm": {
       "title": "Java 虚拟机设置",
       "settings": {
-        "args": {
-          "title": "JVM 虚拟机参数"
+        "garbageCollector": {
+          "title": "垃圾回收器",
+          "desc": "较低版本 Java 可能不包含特定的垃圾回收器",
+          "options": {
+            "auto": "自动（默认）",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
         },
         "javaPermanentGenerationSpace": {
           "title": "内存永久保存区域",
@@ -840,6 +849,9 @@
         },
         "environmentVariable": {
           "title": "环境变量"
+        },
+        "args": {
+          "title": "其他 JVM 参数"
         }
       }
     },

@@ -831,8 +831,17 @@
     "jvm": {
       "title": "Java VM Options",
       "settings": {
-        "args": {
-          "title": "JVM VM Argument"
+        "garbageCollector": {
+          "title": "Garbage Collector",
+          "desc": "Older Java versions may not include specific garbage collectors.",
+          "options": {
+            "auto": "Auto (Default)",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
         },
         "javaPermanentGenerationSpace": {
           "title": "PermGen Space",
@@ -840,6 +849,9 @@
         },
         "environmentVariable": {
           "title": "Environment Variables"
+        },
+        "args": {
+          "title": "Other JVM Arguments"
         }
       }
     },
