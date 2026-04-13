@@ -234,18 +234,17 @@ const ExtensionSettingsPage = () => {
         </HStack>
       }
     >
-      {!config.suppressedDialogs?.includes("extensionSettingsAlert") && (
+      {!config.states.extensionSettingsPage.hideAlert && (
         <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
           <AlertIcon />
           {t("ExtensionSettingsPage.alert")}
           <CloseButton
             alignSelf="flex-start"
-            ml="auto"
+            position="relative"
+            right={-2}
+            size="sm"
             onClick={() =>
-              update("suppressedDialogs", [
-                ...(config.suppressedDialogs ?? []),
-                "extensionSettingsAlert",
-              ])
+              update("states.extensionSettingsPage.hideAlert", true)
             }
           />
         </Alert>
