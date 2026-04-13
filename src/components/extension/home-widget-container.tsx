@@ -23,6 +23,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   const [widgetWidthMap, setWidgetWidthMap] = useState<Record<string, number>>(
     {}
   );
+  const [collapsedMap, setCollapsedMap] = useState<Record<string, boolean>>({});
 
   // hydrate widget widths from extension host state so they survive page remounts.
   useEffect(() => {
@@ -36,6 +37,24 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
           scope,
           "width",
           widget.defaultWidth ?? DEFAULT_WIDGET_WIDTH
+        );
+      }
+      return next;
+    });
+  }, [stateStore, widgets]);
+
+  // hydrate widget collapsed states from extension host state so they survive page remounts.
+  useEffect(() => {
+    if (widgets.length === 0) return;
+
+    setCollapsedMap((prev) => {
+      const next = { ...prev };
+      for (const widget of widgets) {
+        const scope = `home-widget:${widget.identifier}`;
+        next[widget.identifier] = stateStore.getValue(
+          scope,
+          "collapsed",
+          false
         );
       }
       return next;
@@ -90,6 +109,22 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
     [stateStore]
   );
 
+  const handleWidgetCollapseToggle = useCallback(
+    (identifier: string) => {
+      setCollapsedMap((prev) => {
+        const next = !prev[identifier];
+        stateStore.setValue(
+          `home-widget:${identifier}`,
+          "collapsed",
+          next,
+          false
+        );
+        return { ...prev, [identifier]: next };
+      });
+    },
+    [stateStore]
+  );
+
   const containerWidth = useMemo(
     () => Math.max(0, ...widgetLayouts.map((layout) => layout.width)),
     [widgetLayouts]
@@ -124,6 +159,10 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
               widthBounds={bounds}
               onWidthChange={(nextWidth) =>
                 handleWidgetWidthChange(widget.identifier, nextWidth)
+              }
+              isCollapsed={collapsedMap[widget.identifier] ?? false}
+              onToggleCollapse={() =>
+                handleWidgetCollapseToggle(widget.identifier)
               }
             />
           ))}

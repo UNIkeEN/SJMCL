@@ -7,7 +7,7 @@ import {
   IconButton,
   Text,
 } from "@chakra-ui/react";
-import { type MouseEvent as ReactMouseEvent, useState } from "react";
+import { type MouseEvent as ReactMouseEvent } from "react";
 import { LuChevronRight } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
@@ -24,6 +24,8 @@ interface HomeWidgetProps {
     upper: number;
   };
   onWidthChange: (width: number) => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
 const HomeWidget = ({
@@ -31,8 +33,9 @@ const HomeWidget = ({
   width,
   widthBounds,
   onWidthChange,
+  isCollapsed,
+  onToggleCollapse,
 }: HomeWidgetProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const WidgetComponent = widget.Component;
   const iconSrc = widget.icon || base64ImgSrc(widget.extension.iconSrc);
 
@@ -86,7 +89,7 @@ const HomeWidget = ({
             h={21}
             variant="ghost"
             colorScheme="gray"
-            onClick={() => setIsCollapsed((prev) => !prev)}
+            onClick={onToggleCollapse}
           />
           <Avatar
             src={iconSrc}

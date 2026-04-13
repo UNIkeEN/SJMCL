@@ -3,6 +3,7 @@ import {
   BoxProps,
   Button,
   Card,
+  Collapse,
   Divider,
   Flex,
   HStack,
@@ -15,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuChevronDown } from "react-icons/lu";
 import { Section, SectionProps } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import cardStyles from "@/styles/card.module.css";
@@ -32,6 +34,9 @@ export interface OptionItemProps extends Omit<BoxProps, "title"> {
   isChildrenIndependent?: boolean;
   maxTitleLines?: number;
   maxDescriptionLines?: number;
+  collapsibleContent?: React.ReactNode;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export interface OptionItemGroupProps extends SectionProps {
@@ -55,11 +60,19 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   isChildrenIndependent = false,
   maxTitleLines = undefined,
   maxDescriptionLines = undefined,
+  collapsibleContent,
+  isCollapsed = false,
+  onToggleCollapse,
   ...boxProps
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
+  const collapsibleBg = useColorModeValue("gray.50", "whiteAlpha.50");
+  const collapsibleBorderColor = useColorModeValue(
+    "gray.100",
+    "whiteAlpha.100"
+  );
 
   const titleLineClampProps: TextProps = {
     noOfLines: maxTitleLines,
@@ -110,73 +123,114 @@ export const OptionItem: React.FC<OptionItemProps> = ({
       children
     ));
 
-  return (
-    <Flex justify="space-between" alignItems="center">
-      <Flex
-        flex={1}
-        justify="space-between"
-        alignItems="center"
-        overflow="hidden"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        borderRadius="md"
-        _hover={{
-          bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
-          transition: "background-color 0.2s ease-in-out",
-        }}
-        _active={{
-          bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
-          transition: "background-color 0.1s ease-in-out",
-        }}
-        cursor={isFullClickZone ? "pointer" : "default"}
-        p={0.5}
-        {...boxProps}
-      >
-        <HStack spacing={2.5} overflow="hidden">
-          {prefixElement && (
-            <Skeleton isLoaded={!isLoading} flex="0 0 auto">
-              {prefixElement}
-            </Skeleton>
-          )}
-          <VStack
-            spacing={0}
-            mr={2}
-            alignItems="stretch"
-            overflow="hidden"
-            flex={"1 1 auto"}
-          >
-            {titleLineWrap ? (
-              <Wrap spacingX={2} spacingY={0.5}>
-                {_title}
-                {titleExtra && _titleExtra}
-              </Wrap>
-            ) : (
-              <HStack spacing={2} flexWrap="nowrap">
-                {_title}
-                {titleExtra && _titleExtra}
-              </HStack>
-            )}
+  const isClickable = isFullClickZone || !!collapsibleContent;
 
-            {description &&
-              (typeof description === "string" ? (
-                <Skeleton isLoaded={!isLoading}>
-                  <Text
-                    fontSize="xs"
-                    className="secondary-text"
-                    {...(maxDescriptionLines ? descriptionLineClampProps : {})}
-                  >
-                    {description}
-                  </Text>
-                </Skeleton>
+  return (
+    <Box w="100%">
+      <Flex justify="space-between" alignItems="center">
+        <Flex
+          flex={1}
+          justify="space-between"
+          alignItems="center"
+          overflow="hidden"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          borderRadius="md"
+          _hover={{
+            bg: isClickable ? `gray.${palettes[0]}` : "inherit",
+            transition: "background-color 0.2s ease-in-out",
+          }}
+          _active={{
+            bg: isClickable ? `gray.${palettes[1]}` : "inherit",
+            transition: "background-color 0.1s ease-in-out",
+          }}
+          cursor={isClickable ? "pointer" : "default"}
+          p={0.5}
+          onClick={(e) => {
+            if (collapsibleContent && onToggleCollapse) {
+              onToggleCollapse();
+            }
+            if (boxProps.onClick) {
+              boxProps.onClick(e);
+            }
+          }}
+          {...boxProps}
+        >
+          <HStack spacing={2.5} overflow="hidden">
+            {prefixElement && (
+              <Skeleton isLoaded={!isLoading} flex="0 0 auto">
+                {prefixElement}
+              </Skeleton>
+            )}
+            <VStack
+              spacing={0}
+              mr={2}
+              alignItems="stretch"
+              overflow="hidden"
+              flex={"1 1 auto"}
+            >
+              {titleLineWrap ? (
+                <Wrap spacingX={2} spacingY={0.5}>
+                  {_title}
+                  {titleExtra && _titleExtra}
+                </Wrap>
               ) : (
-                description
-              ))}
-          </VStack>
-        </HStack>
-        {!isChildrenIndependent && wrappedChildren}
+                <HStack spacing={2} flexWrap="nowrap">
+                  {_title}
+                  {titleExtra && _titleExtra}
+                </HStack>
+              )}
+
+              {description &&
+                (typeof description === "string" ? (
+                  <Skeleton isLoaded={!isLoading}>
+                    <Text
+                      fontSize="xs"
+                      className="secondary-text"
+                      {...(maxDescriptionLines
+                        ? descriptionLineClampProps
+                        : {})}
+                    >
+                      {description}
+                    </Text>
+                  </Skeleton>
+                ) : (
+                  description
+                ))}
+            </VStack>
+          </HStack>
+
+          <HStack spacing={2}>
+            {!isChildrenIndependent && wrappedChildren}
+
+            {collapsibleContent && (
+              <Box
+                as={LuChevronDown}
+                transition="transform 0.2s"
+                transform={isCollapsed ? "rotate(0deg)" : "rotate(-180deg)"}
+                color="gray.500"
+              />
+            )}
+          </HStack>
+        </Flex>
+        {isChildrenIndependent && wrappedChildren}
       </Flex>
-      {isChildrenIndependent && wrappedChildren}
-    </Flex>
+
+      {collapsibleContent && (
+        <Collapse in={!isCollapsed} animateOpacity>
+          <Box
+            p={3}
+            mt={2}
+            bg={collapsibleBg}
+            borderRadius="md"
+            borderWidth="1px"
+            borderColor={collapsibleBorderColor}
+          >
+            {collapsibleContent}
+          </Box>
+        </Collapse>
+      )}
+    </Box>
   );
 };
 

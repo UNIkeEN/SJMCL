@@ -4,8 +4,10 @@ import {
   Avatar,
   AvatarBadge,
   Badge,
+  CloseButton,
   HStack,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -41,6 +43,19 @@ const ExtensionSettingsPage = () => {
     getExtensionSettingsPage,
   } = useExtensionHost();
   const extensions = extensionList || [];
+
+  const collapsedList = config.extension.collapsed || [];
+  const collapsedSet = new Set(collapsedList);
+
+  const handleToggleCollapse = (identifier: string) => {
+    const newCollapsedSet = new Set(collapsedSet);
+    if (newCollapsedSet.has(identifier)) {
+      newCollapsedSet.delete(identifier);
+    } else {
+      newCollapsedSet.add(identifier);
+    }
+    update("extension.collapsed", Array.from(newCollapsedSet));
+  };
 
   const handleOpenExtensionsFolder = async () => {
     const base = await appDataDir();
@@ -157,56 +172,73 @@ const ExtensionSettingsPage = () => {
   };
 
   const extensionItems: OptionItemGroupProps["items"] = extensions.map(
-    (extension: ExtensionInfo) => (
-      <OptionItem
-        key={extension.identifier}
-        title={extension.name}
-        titleExtra={
-          <Text fontSize="xs" className="secondary-text">
-            {[extension.identifier, extension.version]
-              .filter(Boolean)
-              .join(" · ")}
-          </Text>
-        }
-        description={extension.description}
-        childrenOnHover
-        titleLineWrap={false}
-        maxTitleLines={1}
-        maxDescriptionLines={2}
-        prefixElement={
-          <Avatar
-            boxSize="28px"
-            borderRadius="4px"
-            src={base64ImgSrc(extension.iconSrc)}
-            name={extension.name}
-            style={{
-              filter: enabledSet.has(extension.identifier)
-                ? "none"
-                : "grayscale(90%)",
-              opacity: enabledSet.has(extension.identifier) ? 1 : 0.5,
-            }}
-          >
-            <AvatarBadge
-              bg={enabledSet.has(extension.identifier) ? "green" : "black"}
-              boxSize="0.75em"
-              borderWidth={2}
-            />
-          </Avatar>
-        }
-      >
-        <HStack spacing={0}>
-          {extensionItemMenuOperations(extension).map((item, index) => (
-            <CommonIconButton
-              key={index}
-              icon={item.icon}
-              label={item.label}
-              colorScheme={item.danger ? "red" : "gray"}
-              onClick={item.onClick}
-            />
-          ))}
-        </HStack>
-      </OptionItem>
-    )
+    (extension: ExtensionInfo) => {
+      const isCollapsed = collapsedSet.has(extension.identifier);
+
+      return (
+        <OptionItem
+          key={extension.identifier}
+          title={extension.name}
+          titleExtra={
+            <Text fontSize="xs" className="secondary-text">
+              {[extension.identifier, extension.version]
+                .filter(Boolean)
+                .join(" · ")}
+            </Text>
+          }
+          description={extension.description}
+          childrenOnHover
+          titleLineWrap={false}
+          maxTitleLines={1}
+          maxDescriptionLines={2}
+          prefixElement={
+            <Avatar
+              boxSize="28px"
+              borderRadius="4px"
+              src={base64ImgSrc(extension.iconSrc)}
+              name={extension.name}
+              style={{
+                filter: enabledSet.has(extension.identifier)
+                  ? "none"
+                  : "grayscale(90%)",
+                opacity: enabledSet.has(extension.identifier) ? 1 : 0.5,
+              }}
+            >
+              <AvatarBadge
+                bg={enabledSet.has(extension.identifier) ? "green" : "black"}
+                boxSize="0.75em"
+                borderWidth={2}
+              />
+            </Avatar>
+          }
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => handleToggleCollapse(extension.identifier)}
+          collapsibleContent={
+            <VStack align="stretch" spacing={2} fontSize="xs" py={1}>
+              <Text color="gray.500">
+                {t("ExtensionSettingsPage.id")}: {extension.identifier}
+              </Text>
+              <Text>
+                {t("ExtensionSettingsPage.author")}:{" "}
+                {extension.author || "Unknown"}
+              </Text>
+            </VStack>
+          }
+        >
+          <HStack spacing={0}>
+            {extensionItemMenuOperations(extension).map((item, index) => (
+              <CommonIconButton
+                key={index}
+                icon={item.icon}
+                label={item.label}
+                colorScheme={item.danger ? "red" : "gray"}
+                onClick={item.onClick}
+              />
+            ))}
+          </HStack>
+        </OptionItem>
+      );
+    }
   );
 
   return (
@@ -233,10 +265,22 @@ const ExtensionSettingsPage = () => {
         </HStack>
       }
     >
-      <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
-        <AlertIcon />
-        {t("ExtensionSettingsPage.alert")}
-      </Alert>
+      {!config.suppressedDialogs?.includes("extensionSettingsAlert") && (
+        <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
+          <AlertIcon />
+          {t("ExtensionSettingsPage.alert")}
+          <CloseButton
+            alignSelf="flex-start"
+            ml="auto"
+            onClick={() =>
+              update("suppressedDialogs", [
+                ...(config.suppressedDialogs ?? []),
+                "extensionSettingsAlert",
+              ])
+            }
+          />
+        </Alert>
+      )}
       {extensions.length > 0 ? (
         <OptionItemGroup items={extensionItems} />
       ) : (

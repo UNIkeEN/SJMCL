@@ -138,6 +138,7 @@ export interface LauncherConfig {
   };
   extension: {
     enabled: string[];
+    collapsed?: string[];
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
