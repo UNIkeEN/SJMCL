@@ -256,39 +256,26 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
           {mode === "optifine" && summary?.version && summary?.optifine && (
             <Flex position="relative" align="center" justify="center" py={2}>
               <Flex flex="1" justify="flex-end" pr={8}>
-                {summary?.optifine ? (
-                  <OptionItem
-                    prefixElement={
-                      <Image
-                        src={`/images/icons/OptiFine.png`}
-                        alt="OptiFine"
-                        boxSize="36px"
-                        borderRadius="md"
-                      />
-                    }
-                    title={
-                      <Text fontSize="sm" fontWeight="medium">
-                        OptiFine
-                      </Text>
-                    }
-                    description={
-                      <Text fontSize="xs" color="gray.500">
-                        {summary.optifine.version}
-                      </Text>
-                    }
-                  />
-                ) : (
-                  <OptionItem
-                    prefixElement={
-                      <Skeleton boxSize="36px" borderRadius="md" />
-                    }
-                    title={
-                      <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                        {t("ChangeLoaderModal.noOptifineInstalled")}
-                      </Text>
-                    }
-                  />
-                )}
+                <OptionItem
+                  prefixElement={
+                    <Image
+                      src={`/images/icons/OptiFine.png`}
+                      alt="OptiFine"
+                      boxSize="36px"
+                      borderRadius="md"
+                    />
+                  }
+                  title={
+                    <Text fontSize="sm" fontWeight="medium">
+                      OptiFine
+                    </Text>
+                  }
+                  description={
+                    <Text fontSize="xs" color="gray.500">
+                      {summary.optifine.version}
+                    </Text>
+                  }
+                />
               </Flex>
 
               <Box position="absolute" left="50%" transform="translateX(-50%)">
