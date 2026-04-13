@@ -71,17 +71,16 @@ pub enum LauncherVisiablity {
   Always,
 }
 
-#[derive(Debug, Display, Serialize, Deserialize, PartialEq, Eq, Clone, SmartDefault)]
-#[strum(serialize_all = "lowercase")]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum GarbageCollector {
-  #[default]
-  Auto,
   G1gc,
   Zgc,
   Shenandoah,
   Parallel,
   Serial,
+  #[serde(other)]
+  Auto,
 }
 
 // Partial Derive is used for these structs and we can use it for key value storage.

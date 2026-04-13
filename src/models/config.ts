@@ -35,13 +35,7 @@ export interface GameConfig {
       postExitCommand: string;
     };
     jvm: {
-      garbageCollector:
-        | "auto"
-        | "g1gc"
-        | "zgc"
-        | "shenandoah"
-        | "parallel"
-        | "serial";
+      garbageCollector: string;
       javaPermanentGenerationSpace: number;
       environmentVariable: string;
       args: string;
