@@ -50,6 +50,15 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     gameConfig.advanced.jvm.environmentVariable
   );
 
+  const garbageCollectors = [
+    "auto",
+    "g1gc",
+    "zgc",
+    "shenandoah",
+    "parallel",
+    "serial",
+  ];
+
   const gameFileValidatePolicies = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     updateGameConfig(`advanced.${key}`, value);
@@ -157,17 +166,24 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       title: t("GameAdvancedSettingsPage.jvm.title"),
       items: [
         {
-          title: t("GameAdvancedSettingsPage.jvm.settings.args.title"),
+          title: t(
+            "GameAdvancedSettingsPage.jvm.settings.garbageCollector.title"
+          ),
+          description: t(
+            "GameAdvancedSettingsPage.jvm.settings.garbageCollector.desc"
+          ),
           children: (
-            <Input
-              size="xs"
-              maxW={370}
-              value={args}
-              onChange={(event) => setArgs(event.target.value)}
-              onBlur={() => {
-                updateGameAdvancedConfig("jvm.args", args);
+            <MenuSelector
+              options={garbageCollectors.map((value) => ({
+                value,
+                label: t(
+                  `GameAdvancedSettingsPage.jvm.settings.garbageCollector.options.${value}`
+                ),
+              }))}
+              value={gameConfig.advanced.jvm.garbageCollector}
+              onSelect={(val) => {
+                updateGameAdvancedConfig("jvm.garbageCollector", val);
               }}
-              focusBorderColor={`${primaryColor}.500`}
             />
           ),
         },
@@ -211,6 +227,21 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                   "jvm.environmentVariable",
                   environmentVariable
                 );
+              }}
+              focusBorderColor={`${primaryColor}.500`}
+            />
+          ),
+        },
+        {
+          title: t("GameAdvancedSettingsPage.jvm.settings.args.title"),
+          children: (
+            <Input
+              size="xs"
+              maxW={370}
+              value={args}
+              onChange={(event) => setArgs(event.target.value)}
+              onBlur={() => {
+                updateGameAdvancedConfig("jvm.args", args);
               }}
               focusBorderColor={`${primaryColor}.500`}
             />

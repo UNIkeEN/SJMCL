@@ -239,6 +239,15 @@ pub async fn generate_launch_command(
       }
     }
 
+    match jvm.garbage_collector {
+      GarbageCollector::Auto => {}
+      GarbageCollector::G1gc => cmd.push("-XX:+UseG1GC".to_string()),
+      GarbageCollector::Zgc => cmd.push("-XX:+UseZGC".to_string()),
+      GarbageCollector::Shenandoah => cmd.push("-XX:+UseShenandoahGC".to_string()),
+      GarbageCollector::Parallel => cmd.push("-XX:+UseParallelGC".to_string()),
+      GarbageCollector::Serial => cmd.push("-XX:+UseSerialGC".to_string()),
+    }
+
     if !jvm.args.is_empty() {
       cmd.extend(jvm.args.split_whitespace().map(|s| s.to_string()));
     }
