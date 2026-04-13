@@ -1,4 +1,4 @@
-import { Center, HStack } from "@chakra-ui/react";
+import { Center, HStack, useDisclosure } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ import { Section } from "@/components/common/section";
 import SelectableCard, {
   SelectableCardProps,
 } from "@/components/common/selectable-card";
+import { ChangeLoaderModal } from "@/components/modals/change-loader-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -34,6 +35,12 @@ const InstanceShaderPacksPage = () => {
   const accordionStates = config.states.instanceShaderPacksPage.accordionStates;
 
   const [shaderPacks, setShaderPacks] = useState<ShaderPackInfo[]>([]);
+
+  const {
+    isOpen: isChangeLoaderModalOpen,
+    onOpen: onChangeLoaderModalOpen,
+    onClose: onChangeLoaderModalClose,
+  } = useDisclosure();
 
   const getShaderPackListWrapper = useCallback(
     (sync?: boolean) => {
@@ -123,10 +130,11 @@ const InstanceShaderPacksPage = () => {
           : t("InstanceShaderPacksPage.shaderLoaderList.notInstalled"),
       displayMode: "entry",
       isSelected: summary?.optifine?.status === "Installed",
-      onSelect: () => {},
-      // TODO: add OptiFine installation support
-      isDisabled: true,
-      isChevronShown: false,
+      onSelect: () => {
+        onChangeLoaderModalOpen();
+      },
+      isDisabled: false,
+      isChevronShown: true,
     },
   ];
 
@@ -174,7 +182,6 @@ const InstanceShaderPacksPage = () => {
                 icon={btn.icon}
                 onClick={btn.onClick}
                 size="xs"
-                fontSize="sm"
                 h={21}
               />
             ))}
@@ -207,6 +214,11 @@ const InstanceShaderPacksPage = () => {
           <Empty withIcon={false} size="sm" />
         )}
       </Section>
+      <ChangeLoaderModal
+        isOpen={isChangeLoaderModalOpen}
+        onClose={onChangeLoaderModalClose}
+        mode="optifine"
+      />
     </>
   );
 };

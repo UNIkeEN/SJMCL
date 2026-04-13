@@ -344,14 +344,23 @@
       }
     }
   },
-  "ChangeModLoaderModal": {
+  "ChangeLoaderModal": {
     "header": {
-      "title": {
-        "change": "Change Mod Loader",
-        "install": "Install Mod Loader"
+      "modloader": {
+        "title": {
+          "change": "Change Mod Loader",
+          "install": "Install Mod Loader"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "Change OptiFine",
+          "install": "Install OptiFine"
+        }
       }
     },
     "notSelectedLoader": "No new loader selected",
+    "notSelectedOptifine": "No new Optifine selected",
     "footer": {
       "installFabricApi": "Install Fabric API Mod",
       "installQFAPI": "Install QFAPI / QSL Mod (if available)",
@@ -624,6 +633,7 @@
       "game-client-w-java": "Game Client {{param1}} (with Java {{param2}})",
       "game-server": "Game Server {{param}}",
       "change-mod-loader": "Change Mod Loader {{param}}",
+      "change-optifine": "Change Shaderpack Loader {{param}}",
       "mod": "Mod",
       "world": "World",
       "resourcepack": "Resourcepack",

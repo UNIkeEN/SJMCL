@@ -344,14 +344,23 @@
       }
     }
   },
-  "ChangeModLoaderModal": {
+  "ChangeLoaderModal": {
     "header": {
-      "title": {
-        "change": "修改模组加载器",
-        "install": "安装模组加载器"
+      "modloader": {
+        "title": {
+          "change": "修改模组加载器",
+          "install": "安装模组加载器"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "修改光影加载器",
+          "install": "安装光影加载器"
+        }
       }
     },
     "notSelectedLoader": "未选择新的加载器",
+    "notSelectedOptifine": "未选择新的Optifine",
     "footer": {
       "installFabricApi": "同时安装 Fabric API 模组",
       "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）",
@@ -624,6 +633,7 @@
       "game-client-w-java": "游戏客户端 {{param1}}（包含 Java {{param2}}）",
       "game-server": "游戏服务端 {{param}}",
       "change-mod-loader": "修改模组加载器 {{param}}",
+      "change-optifine": "修改光影加载器 {{param}}",
       "mod": "模组",
       "world": "存档",
       "resourcepack": "资源包",

@@ -31,6 +31,8 @@ import {
 import { ResourceService } from "@/services/resource";
 import { ISOToDatetime } from "@/utils/datetime";
 
+export type LoaderSelectorMode = "modloader" | "optifine" | "all";
+
 export const modLoaderTypes: ModLoaderType[] = [
   ModLoaderType.Forge,
   ModLoaderType.Fabric,
@@ -47,6 +49,7 @@ export const modLoaderTypesToIcon: Record<string, string> = {
 };
 
 interface LoaderSelectorProps {
+  mode?: LoaderSelectorMode;
   selectedGameVersion: GameClientResourceInfo;
   selectedModLoader: ModLoaderResourceInfo;
   onSelectModLoader: (v: ModLoaderResourceInfo) => void;
@@ -55,6 +58,7 @@ interface LoaderSelectorProps {
 }
 
 export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
+  mode = "all",
   selectedGameVersion,
   selectedModLoader,
   onSelectModLoader,
@@ -69,22 +73,22 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   const [versionList, setVersionList] = useState<OptionItemProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedType, setSelectedType] = useState<ModLoaderType | "OptiFine">(
-    ModLoaderType.Unknown
+    mode === "optifine" ? "OptiFine" : ModLoaderType.Unknown
   );
   const [selectedId, setSelectedId] = useState("");
 
   const selectableCardListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (selectedOptiFine) {
-      setSelectedType("OptiFine");
-      setSelectedId(selectedOptiFine ? selectedOptiFine.filename : "");
-    } else {
+    if (mode === "optifine") return;
+
+    if (
+      selectedModLoader.loaderType !== ModLoaderType.Unknown &&
+      selectedType !== selectedModLoader.loaderType
+    ) {
       setSelectedType(selectedModLoader.loaderType);
-      setSelectedId(selectedModLoader.version);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedModLoader.loaderType]);
+  }, [selectedModLoader.loaderType, selectedType, mode]);
 
   function isModLoaderResourceInfo(
     version: ModLoaderResourceInfo | OptiFineResourceInfo
@@ -96,9 +100,10 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     (
       version: ModLoaderResourceInfo | OptiFineResourceInfo
     ): OptionItemProps => {
-      let title = isModLoaderResourceInfo(version)
+      const title = isModLoaderResourceInfo(version)
         ? version.version
-        : version?.filename;
+        : version.filename;
+
       return {
         title,
         description: isModLoaderResourceInfo(version) && version.description,
@@ -106,7 +111,11 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
           <HStack spacing={2.5}>
             <Radio value={title} colorScheme={primaryColor} />
             <Image
-              src={`/images/icons/${isModLoaderResourceInfo(version) ? modLoaderTypesToIcon[version.loaderType] : "OptiFine.png"}`}
+              src={`/images/icons/${
+                isModLoaderResourceInfo(version)
+                  ? modLoaderTypesToIcon[version.loaderType]
+                  : "OptiFine.png"
+              }`}
               alt={title}
               boxSize="28px"
               borderRadius="4px"
@@ -120,7 +129,6 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
             )}
           </Tag>
         ),
-        children: <></>,
         isFullClickZone: true,
         onClick: () => {
           if (isModLoaderResourceInfo(version)) {
@@ -130,6 +138,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
           }
           setSelectedId(title);
         },
+        children: <></>,
       };
     },
     [primaryColor, t, onSelectModLoader, onSelectOptiFine]
@@ -185,105 +194,35 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
       .finally(() => setIsLoading(false));
   }, [selectedGameVersion.id, buildOptionItems, toast]);
 
-  let selectableCardItems = modLoaderTypes.map(
-    (type): SelectableCardProps => ({
-      title: type,
-      iconSrc: `/images/icons/${modLoaderTypesToIcon[type]}`,
-      description:
-        selectedModLoader.loaderType !== ModLoaderType.Unknown
-          ? selectedModLoader.loaderType === type
-            ? selectedModLoader.version || t("LoaderSelector.noVersionSelected")
-            : t("LoaderSelector.notCompatibleWith", {
-                item: selectedModLoader.loaderType,
-              })
-          : t("LoaderSelector.noVersionSelected"),
-      displayMode: "selector",
-      isLoading,
-      isSelected: type === selectedModLoader.loaderType,
-      isChevronShown: selectedType !== type,
-      onSelect: () => {
-        setSelectedType(type);
-        if (selectedModLoader.loaderType !== type) {
-          onSelectModLoader({
-            loaderType: type,
-            version: "",
-            description: "",
-            stable: false,
-          });
-          setSelectedId("");
-        } else {
-          setSelectedId(selectedModLoader.version);
-        }
-        if (
-          type !== ModLoaderType.Forge ||
-          (selectedOptiFine && !selectedOptiFine.filename)
-        ) {
-          // When OptiFine is not compatible with the selected mod loader, or selected without a version, clear it
-          onSelectOptiFine?.(undefined);
-        }
-      },
-      onCancel: () => {
-        if (selectedType === type) {
-          setSelectedType(ModLoaderType.Unknown);
-          setSelectedId("");
-        }
-        onSelectModLoader(defaultModLoaderResourceInfo);
-      },
-    })
-  );
+  useEffect(() => {
+    if (mode === "optifine") {
+      setSelectedId(selectedOptiFine?.filename || "");
+      return;
+    }
 
-  if (typeof onSelectOptiFine === "function") {
-    selectableCardItems.push({
-      title: "OptiFine",
-      iconSrc: "/images/icons/OptiFine.png",
-      description: selectedOptiFine
-        ? selectedOptiFine.type + " " + selectedOptiFine.patch
-        : selectedModLoader.loaderType === ModLoaderType.Forge ||
-            selectedModLoader.loaderType === ModLoaderType.Unknown
-          ? t("LoaderSelector.noVersionSelected")
-          : t("LoaderSelector.notCompatibleWith", {
-              item: selectedModLoader.loaderType,
-            }),
-      displayMode: "selector",
-      isLoading,
-      isSelected: !!selectedOptiFine,
-      isDisabled: !(
-        selectedModLoader.loaderType === ModLoaderType.Forge ||
-        selectedModLoader.loaderType === ModLoaderType.Unknown
-      ),
-      isChevronShown: selectedType !== "OptiFine",
-      onSelect: () => {
-        setSelectedType("OptiFine");
-        if (!selectedOptiFine) {
-          onSelectOptiFine?.({
-            filename: "",
-            patch: "",
-            type: "",
-          });
-          setSelectedId("");
-        } else {
-          setSelectedId(selectedOptiFine.filename);
-        }
-
-        if (
-          selectedModLoader.loaderType !== ModLoaderType.Unknown &&
-          !selectedModLoader.version
-        ) {
-          // When some mod loader was selected without a version, clear it
-          onSelectModLoader(defaultModLoaderResourceInfo);
-        }
-      },
-      onCancel: () => {
-        if (selectedType === "OptiFine") {
-          setSelectedType(ModLoaderType.Unknown);
-          setSelectedId("");
-        }
-        onSelectOptiFine?.(undefined);
-      },
-    });
-  }
+    if (selectedOptiFine) {
+      setSelectedId(selectedOptiFine.filename);
+    } else {
+      setSelectedId(selectedModLoader.version);
+    }
+  }, [selectedModLoader, selectedOptiFine, mode]);
 
   useEffect(() => {
+    if (mode === "optifine") {
+      setSelectedType("OptiFine");
+    } else if (mode === "modloader") {
+      if (selectedType === "OptiFine") {
+        setSelectedType(ModLoaderType.Unknown);
+      }
+    }
+  }, [selectedType, mode]);
+
+  useEffect(() => {
+    if (mode === "optifine") {
+      handleFetchOptiFineVersionList();
+      return;
+    }
+
     if (selectedType === "OptiFine") {
       handleFetchOptiFineVersionList();
     } else if (selectedType !== ModLoaderType.Unknown) {
@@ -291,13 +230,72 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     } else {
       setVersionList([]);
     }
-  }, [
-    handleFetchModLoaderVersionList,
-    handleFetchOptiFineVersionList,
-    selectedType,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedType, mode]);
 
-  // Scroll selected item into view when version list changes or selected item changes
+  let selectableCardItems: SelectableCardProps[] = [];
+
+  if (mode !== "optifine") {
+    selectableCardItems.push(
+      ...modLoaderTypes.map((type) => ({
+        title: type,
+        iconSrc: `/images/icons/${modLoaderTypesToIcon[type]}`,
+        description:
+          selectedModLoader.loaderType === type
+            ? selectedModLoader.version || t("LoaderSelector.noVersionSelected")
+            : t("LoaderSelector.noVersionSelected"),
+        displayMode: "selector" as const,
+        isLoading,
+        isSelected: type === selectedModLoader.loaderType,
+        isChevronShown: selectedType !== type,
+        onSelect: () => {
+          setSelectedType(type);
+          onSelectModLoader({
+            loaderType: type,
+            version: "",
+            description: "",
+            stable: false,
+          });
+          setSelectedId("");
+          onSelectOptiFine?.(undefined);
+        },
+        onCancel: () => {
+          setSelectedType(ModLoaderType.Unknown);
+          setSelectedId("");
+          onSelectModLoader(defaultModLoaderResourceInfo);
+        },
+      }))
+    );
+  }
+
+  if (mode !== "modloader" && onSelectOptiFine) {
+    selectableCardItems.push({
+      title: "OptiFine",
+      iconSrc: "/images/icons/OptiFine.png",
+      description: selectedOptiFine
+        ? selectedOptiFine.type + " " + selectedOptiFine.patch
+        : t("LoaderSelector.noVersionSelected"),
+      displayMode: "selector",
+      isLoading,
+      isSelected: !!selectedOptiFine,
+      isChevronShown: selectedType !== "OptiFine",
+      onSelect: () => {
+        setSelectedType("OptiFine");
+        onSelectOptiFine({
+          filename: "",
+          patch: "",
+          type: "",
+        });
+        setSelectedId("");
+      },
+      onCancel: () => {
+        setSelectedType(ModLoaderType.Unknown);
+        setSelectedId("");
+        onSelectOptiFine(undefined);
+      },
+    });
+  }
+
   useEffect(() => {
     const list = selectableCardListRef.current;
     if (!list) return;
@@ -309,33 +307,34 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     const frame = requestAnimationFrame(() => {
       selectedCard.scrollIntoView({
         block: "nearest",
-        inline: "nearest",
       });
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [selectedModLoader.loaderType, selectedOptiFine?.filename, selectedType]);
+  }, [selectedType, selectedOptiFine, selectedModLoader]);
 
   return (
     <HStack {...props} w="100%" h="100%" spacing={4} overflow="hidden">
-      <VStack
-        spacing={3.5}
-        h="100%"
-        overflowY="auto"
-        overflowX="hidden"
-        flexShrink={0}
-        ref={selectableCardListRef}
-      >
-        {selectableCardItems.map((item, index) => (
-          <SelectableCard
-            key={index}
-            {...item}
-            minW="3xs"
-            w="100%"
-            data-loader-selected={item.isSelected ? "true" : undefined}
-          />
-        ))}
-      </VStack>
+      {mode !== "optifine" && (
+        <VStack
+          spacing={3.5}
+          h="100%"
+          overflowY="auto"
+          overflowX="hidden"
+          flexShrink={0}
+          ref={selectableCardListRef}
+        >
+          {selectableCardItems.map((item, index) => (
+            <SelectableCard
+              key={index}
+              {...item}
+              minW="3xs"
+              w="100%"
+              data-loader-selected={item.isSelected ? "true" : undefined}
+            />
+          ))}
+        </VStack>
+      )}
       <Section overflow="auto" flexGrow={1} w="100%" h="100%">
         {isLoading ? (
           <Center h="100%">

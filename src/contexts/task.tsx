@@ -494,6 +494,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   );
                 }
                 break;
+              case "change-optifine":
+                getInstanceList(true);
+                break;
               case "optifine-libraries":
                 if (params.param || params.param1) {
                   const instanceId = params.param || params.param1;
