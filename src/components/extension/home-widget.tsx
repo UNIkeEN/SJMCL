@@ -9,6 +9,7 @@ import { base64ImgSrc } from "@/utils/string";
 
 interface HomeWidgetProps {
   widget: ExtensionHomeWidgetContribution;
+  // widget width state and bound, collapsed state are managed and calculated by the container.
   width: number;
   widthBounds: {
     lower: number;

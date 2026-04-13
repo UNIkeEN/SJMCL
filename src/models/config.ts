@@ -35,9 +35,16 @@ export interface GameConfig {
       postExitCommand: string;
     };
     jvm: {
-      args: string;
+      garbageCollector:
+        | "auto"
+        | "g1gc"
+        | "zgc"
+        | "shenandoah"
+        | "parallel"
+        | "serial";
       javaPermanentGenerationSpace: number;
       environmentVariable: string;
+      args: string;
     };
     workaround: {
       noJvmArgs: boolean;
@@ -212,9 +219,10 @@ export const defaultGameConfig: GameConfig = {
       postExitCommand: "",
     },
     jvm: {
-      args: "",
+      garbageCollector: "auto",
       javaPermanentGenerationSpace: 0,
       environmentVariable: "",
+      args: "",
     },
     workaround: {
       noJvmArgs: false,
