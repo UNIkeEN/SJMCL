@@ -4,6 +4,7 @@ import {
   Avatar,
   AvatarBadge,
   Badge,
+  CloseButton,
   HStack,
   Text,
 } from "@chakra-ui/react";
@@ -233,10 +234,21 @@ const ExtensionSettingsPage = () => {
         </HStack>
       }
     >
-      <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
-        <AlertIcon />
-        {t("ExtensionSettingsPage.alert")}
-      </Alert>
+      {!config.states.extensionSettingsPage.hideAlert && (
+        <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
+          <AlertIcon />
+          {t("ExtensionSettingsPage.alert")}
+          <CloseButton
+            alignSelf="flex-start"
+            position="relative"
+            right={-2}
+            size="sm"
+            onClick={() =>
+              update("states.extensionSettingsPage.hideAlert", true)
+            }
+          />
+        </Alert>
+      )}
       {extensions.length > 0 ? (
         <OptionItemGroup items={extensionItems} />
       ) : (
