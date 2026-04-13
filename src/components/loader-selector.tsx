@@ -230,12 +230,8 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     } else {
       setVersionList([]);
     }
-  }, [
-    selectedType,
-    mode,
-    handleFetchModLoaderVersionList,
-    handleFetchOptiFineVersionList,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedType, mode]);
 
   let selectableCardItems: SelectableCardProps[] = [];
 

@@ -1387,7 +1387,8 @@ pub async fn change_mod_loader(
   version_info.client_version = Some(instance.version.clone());
   version_info.patches = vec![vanilla_info];
 
-  let mut task_params: Vec<PTaskParam> = Vec::new();
+  let mut modloader_task_params: Vec<PTaskParam> = Vec::new();
+  let mut optifine_task_params: Vec<PTaskParam> = Vec::new();
 
   // install new mod loader
   if let Some(new_mod_loader) = new_mod_loader {
@@ -1415,11 +1416,24 @@ pub async fn change_mod_loader(
       libraries_dir.to_path_buf(),
       mods_dir.to_path_buf(),
       &mut version_info,
-      &mut task_params,
+      &mut modloader_task_params,
       is_install_fabric_api,
       is_install_qf_api,
     )
     .await?;
+
+    if !modloader_task_params.is_empty() {
+      schedule_progressive_task_group(
+        app.clone(),
+        format!(
+          "change-mod-loader?{} {}",
+          instance.mod_loader.loader_type, instance.mod_loader.version
+        ),
+        modloader_task_params,
+        true,
+      )
+      .await?;
+    }
   }
 
   // install new OptiFine
@@ -1436,19 +1450,19 @@ pub async fn change_mod_loader(
       &instance.version,
       &optifine,
       libraries_dir.to_path_buf(),
-      &mut task_params,
+      &mut optifine_task_params,
     )
     .await?;
-  }
 
-  if !task_params.is_empty() {
-    schedule_progressive_task_group(
-      app.clone(),
-      "change-instance-setup".to_string(),
-      task_params,
-      true,
-    )
-    .await?;
+    if !optifine_task_params.is_empty() {
+      schedule_progressive_task_group(
+        app.clone(),
+        format!("change-optifine?{}", optifine.filename),
+        optifine_task_params,
+        true,
+      )
+      .await?;
+    }
   }
 
   save_json_async(&version_info, &json_path).await?;

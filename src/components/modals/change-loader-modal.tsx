@@ -231,19 +231,27 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
             </Flex>
           </Flex>
         )}
-        <ModalBody flexGrow="1" flexDir="column" h="100%" overflow="auto">
+        <ModalBody
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          overflow="hidden"
+          minH={0}
+        >
           {mode === "modloader" && summary?.version && (
-            <LoaderSelector
-              selectedGameVersion={{
-                id: summary.version,
-                gameType: "release",
-                releaseTime: new Date().toISOString(),
-                url: "",
-              }}
-              selectedModLoader={selectedModLoader}
-              onSelectModLoader={setSelectedModLoader}
-              mode="modloader"
-            />
+            <Box flex="1" minH={0} display="flex">
+              <LoaderSelector
+                selectedGameVersion={{
+                  id: summary.version,
+                  gameType: "release",
+                  releaseTime: new Date().toISOString(),
+                  url: "",
+                }}
+                selectedModLoader={selectedModLoader}
+                onSelectModLoader={setSelectedModLoader}
+                mode="modloader"
+              />
+            </Box>
           )}
           {mode === "optifine" && summary?.version && summary?.optifine && (
             <Flex position="relative" align="center" justify="center" py={2}>

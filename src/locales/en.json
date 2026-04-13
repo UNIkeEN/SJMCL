@@ -633,6 +633,7 @@
       "game-client-w-java": "Game Client {{param1}} (with Java {{param2}})",
       "game-server": "Game Server {{param}}",
       "change-mod-loader": "Change Mod Loader {{param}}",
+      "change-optifine": "Change Shaderpack Loader {{param}}",
       "mod": "Mod",
       "world": "World",
       "resourcepack": "Resourcepack",

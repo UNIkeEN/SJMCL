@@ -633,6 +633,7 @@
       "game-client-w-java": "游戏客户端 {{param1}}（包含 Java {{param2}}）",
       "game-server": "游戏服务端 {{param}}",
       "change-mod-loader": "修改模组加载器 {{param}}",
+      "change-optifine": "修改光影加载器 {{param}}",
       "mod": "模组",
       "world": "存档",
       "resourcepack": "资源包",
