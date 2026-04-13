@@ -7,10 +7,8 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Step,
@@ -28,6 +26,8 @@ import {
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { GameVersionSelector } from "@/components/game-version-selector";
 import { InstanceBasicSettings } from "@/components/instance-basic-settings";
 import { LoaderSelector } from "@/components/loader-selector";
@@ -373,8 +373,10 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>{t("CreateInstanceModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>
+          {t("CreateInstanceModal.header.title")}
+        </MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
         <Center>
           <Stepper
             colorScheme={primaryColor}

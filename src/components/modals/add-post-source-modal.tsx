@@ -5,15 +5,15 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { useLauncherConfig } from "@/contexts/config";
 
 const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
@@ -42,8 +42,10 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
     <Modal {...props} onClose={handleCloseModal}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("AddDiscoverSourceModal.modal.header")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>
+          {t("AddDiscoverSourceModal.modal.header")}
+        </MacosModalHeader>
+        <MacosCloseButton onClick={handleCloseModal} />
         <ModalBody>
           <FormControl isRequired>
             <FormLabel>

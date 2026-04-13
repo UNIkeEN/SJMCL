@@ -5,10 +5,8 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Progress,
@@ -18,6 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource } from "@/enums/resource";
@@ -310,12 +310,12 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>
+        <MacosModalHeader>
           <HStack w="100%" justify="flex-start" align="center">
             <Text>{t("CheckModUpdateModal.header.title")}</Text>
           </HStack>
-        </ModalHeader>
-        <ModalCloseButton />
+        </MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
 
         <ModalBody
           flex="1"

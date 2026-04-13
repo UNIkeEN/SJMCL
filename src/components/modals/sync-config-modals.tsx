@@ -8,10 +8,8 @@ import {
   Heading,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   PinInput,
@@ -20,6 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
@@ -91,8 +91,10 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("SyncConfigExportModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>
+          {t("SyncConfigExportModal.header.title")}
+        </MacosModalHeader>
+        <MacosCloseButton onClick={handleCloseModal} />
         <ModalBody>
           <FormControl>
             <FormLabel>{t("SyncConfigExportModal.label.token")}</FormLabel>
@@ -169,8 +171,10 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("SyncConfigImportModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>
+          {t("SyncConfigImportModal.header.title")}
+        </MacosModalHeader>
+        <MacosCloseButton onClick={handleCloseModal} />
         <ModalBody>
           <FormControl>
             <FormLabel>{t("SyncConfigImportModal.label.token")}</FormLabel>

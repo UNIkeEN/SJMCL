@@ -11,7 +11,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Spinner,
@@ -26,6 +25,7 @@ import { LuSearch } from "react-icons/lu";
 import stringSimilarity from "string-similarity";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
@@ -473,7 +473,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
     <Modal scrollBehavior="inside" {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
+        <MacosModalHeader>
           <InputGroup size="md">
             <InputLeftElement pointerEvents="none" h="100%" w="auto">
               {isSearching ? <Spinner size="sm" /> : <LuSearch />}
@@ -499,7 +499,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               }}
             />
           </InputGroup>
-        </ModalHeader>
+        </MacosModalHeader>
         <Divider />
         <ModalBody minH="8rem" overflowY="auto">
           {!queryText && (

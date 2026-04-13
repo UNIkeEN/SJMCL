@@ -4,7 +4,6 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
@@ -16,6 +15,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/enums/instance";
@@ -107,7 +107,7 @@ const ModInfoModal: React.FC<ModInfoModalProps> = ({
     <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
       <ModalOverlay />
       <ModalContent>
-        <ModalCloseButton />
+        <MacosCloseButton onClick={modalProps.onClose} />
         <ModalBody mt={2}>
           <OptionItem
             title={

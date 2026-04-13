@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -18,6 +17,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
 import { Trans, useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import LanguageMenu from "@/components/language-menu";
 import { useGuidedTour } from "@/components/special/guided-tour-provider";
 import { useLauncherConfig } from "@/contexts/config";
@@ -58,9 +58,9 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
       <ModalOverlay />
       <ModalContent borderRadius="md" overflow="hidden">
         <Image alt="banner" src="/images/banner.png" />
-        <ModalHeader>
+        <MacosModalHeader>
           🎉&nbsp;&nbsp;{t("WelcomeAndTermsModal.header.title")}
-        </ModalHeader>
+        </MacosModalHeader>
         <ModalBody mt={-1}>
           <Text color="gray.500">
             <Trans

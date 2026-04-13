@@ -6,7 +6,6 @@ import {
   Kbd,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -31,6 +30,7 @@ import React, {
   useState,
 } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
 import { useLauncherConfig } from "@/contexts/config";
 
 export type Placement = "top" | "right" | "bottom" | "left";
@@ -385,7 +385,7 @@ export const GuidedTourProvider: React.FC<TourProviderProps> = ({
               transitionTimingFunction: "cubic-bezier(.2,.8,.2,1)",
             }}
           >
-            <ModalCloseButton />
+            <MacosCloseButton onClick={close} />
 
             <ModalHeader>{current?.title ?? `Step ${index + 1}`}</ModalHeader>
 

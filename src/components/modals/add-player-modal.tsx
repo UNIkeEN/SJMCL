@@ -18,10 +18,8 @@ import {
   MenuList,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -41,6 +39,8 @@ import {
   LuServer,
   LuSquareUserRound,
 } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
@@ -290,8 +290,8 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("AddPlayerModal.modal.header")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>{t("AddPlayerModal.modal.header")}</MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
 
         <ModalBody>
           <VStack spacing={3.5}>
