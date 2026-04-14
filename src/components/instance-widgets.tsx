@@ -436,13 +436,11 @@ export const InstanceLastPlayedWidget = () => {
 
 export const InstanceMoreWidget = () => {
   const { t } = useTranslation();
-  const { config } = useLauncherConfig();
+  const { config, isZh } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const language = config.general.general.language;
   const router = useRouter();
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
-  const { summary } = useInstanceSharedData();
 
   const features: Record<string, IconType> = {
     worlds: LuEarth,
@@ -456,7 +454,7 @@ export const InstanceMoreWidget = () => {
     <InstanceWidgetBase title={t("InstanceWidgets.more.title")} icon={LuShapes}>
       <Grid templateColumns="repeat(3, 1fr)" rowGap={2}>
         {Object.entries(features).map(([key, icon]) =>
-          language.startsWith("zh") ? (
+          isZh ? (
             <Button
               key={key}
               variant="ghost"
