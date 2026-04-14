@@ -73,7 +73,7 @@
   },
   "AccountsPage": {
     "button": {
-      "addPlayer": "增角",
+      "addPlayer": "增戲者",
       "add3rdPartyServer": "增鑒權伺服器",
       "sourceHomepage": "詣主葉",
       "deleteServer": "刪此伺服器",
@@ -157,15 +157,15 @@
   },
   "AddPlayerModal": {
     "modal": {
-      "header": "增角"
+      "header": "增戲者"
     },
     "label": {
-      "playerType": "角之類"
+      "playerType": "戲者之類"
     },
     "offline": {
       "playerName": {
-        "label": "角之名",
-        "placeholder": "請書入角名",
+        "label": "戲者之名",
+        "placeholder": "請書入戲者名",
         "errorMessage": "只能包含英文字母、數字和下劃線，不超過16個字元。"
       },
       "advancedOptions": {
@@ -189,8 +189,8 @@
         "placeholder": "請書入電郵"
       },
       "emailOrPlayerName": {
-        "label": "電郵或角名",
-        "placeholder": "請書入電郵或角名"
+        "label": "電郵或戲者名",
+        "placeholder": "請書入電郵或戲者名"
       },
       "password": {
         "label": "符節",
@@ -458,8 +458,8 @@
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
-      "title": "刪角",
-      "content": "誠欲刪角「{{name}}」乎？此舉不可復！"
+      "title": "刪戲者",
+      "content": "誠欲刪戲者「{{name}}」乎？此舉不可復！"
     }
   },
   "DevToolbar": {
@@ -1231,7 +1231,7 @@
     },
     "step2": {
       "title": "戶簿頁",
-      "content": "在此處增戶簿，選擇您想要遊玩的角"
+      "content": "在此處增戶簿，選擇您想要遊玩的戲者"
     },
     "step3": {
       "title": "發見頁",
@@ -1239,7 +1239,7 @@
     },
     "step4": {
       "title": "Minecraft，啟！",
-      "content": "選中例與角、調整好相關置設後，點選啟鈕享受戲吧 🥳"
+      "content": "選中例與戲者、調整好相關置設後，點選啟鈕享受戲吧 🥳"
     }
   },
   "HeadNavBar": {
@@ -1309,15 +1309,15 @@
     },
     "body": {
       "authServers": "鑒權伺服器",
-      "players": "角"
+      "players": "戲者"
     },
     "footer": {
       "parentDirHint": "將在已增戲案夾的父夾尋找戶簿資訊案。"
     },
     "tooltips": {
       "existingServer": "已存在相同址的鑒權伺服器，匯入將會覆蓋資料",
-      "existingPlayer": "已存在相同 UUID 的角，匯入將會覆蓋資料",
-      "expired": "登入令牌已過期，不能匯入此角"
+      "existingPlayer": "已存在相同 UUID 的戲者，匯入將會覆蓋資料",
+      "expired": "登入令牌已過期，不能匯入此戲者"
     }
   },
   "ImportModpackModal": {
@@ -1545,14 +1545,14 @@
     },
     "SwitchButton": {
       "tooltip": {
-        "switchPlayer": "切換角",
-        "addPlayer": "增角",
+        "switchPlayer": "切換戲者",
+        "addPlayer": "增戲者",
         "switchInstance": "切換戲例",
         "addInstance": "增戲例"
       }
     },
     "Text": {
-      "noSelectedPlayer": "尚未選擇角",
+      "noSelectedPlayer": "尚未選擇戲者",
       "noSelectedGame": "尚未選擇戲例"
     }
   },
@@ -1567,7 +1567,7 @@
       "launchGame": "候戲之啟"
     },
     "toast": {
-      "noSelectedPlayer": "請先增並選擇戲角",
+      "noSelectedPlayer": "請先增並選擇戲者",
       "noSelectedInstance": "請先增並選擇戲例"
     }
   },
@@ -1657,12 +1657,12 @@
     "label": {
       "manageSkin": "司外觀",
       "viewSkin": "覽外觀",
-      "delete": "刪此角",
+      "delete": "刪此戲者",
       "copyUUID": "鈔 UUID"
     },
     "toast": {
-      "refreshing": "方重整角資訊",
-      "deleting": "方刪角"
+      "refreshing": "方重整戲者資訊",
+      "deleting": "方刪戲者"
     }
   },
   "ReLoginPlayerModal": {
@@ -1998,9 +1998,9 @@
   },
   "SelectPlayerModal": {
     "header": {
-      "title": "選擇角",
-      "titleForAdd": "選擇要增的新角",
-      "titleForLaunch": "選擇要遊玩的角"
+      "title": "選擇戲者",
+      "titleForAdd": "選擇要增的新戲者",
+      "titleForLaunch": "選擇要遊玩的戲者"
     }
   },
   "Services": {
@@ -2101,18 +2101,18 @@
     "account": {
       "retrievePlayerList": {
         "error": {
-          "title": "獲取角列表未成"
+          "title": "獲取戲者列表未成"
         }
       },
       "addPlayerOffline": {
-        "success": "離線角增既成",
+        "success": "離線戲者增既成",
         "error": {
-          "title": "離線角增未成",
+          "title": "離線戲者增未成",
           "description": {
-            "DUPLICATE": "角已存在",
+            "DUPLICATE": "戲者已存在",
             "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
             "INVALID": "UUID 無效",
-            "TEXTURE_ERROR": "角外觀獲取未成"
+            "TEXTURE_ERROR": "戲者外觀獲取未成"
           }
         }
       },
@@ -2128,42 +2128,42 @@
         }
       },
       "addPlayerOAuth": {
-        "success": "角增既成",
+        "success": "戲者增既成",
         "error": {
-          "title": "角增未成",
+          "title": "戲者增未成",
           "description": {
-            "DUPLICATE": "角已存在",
+            "DUPLICATE": "戲者已存在",
             "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
             "NETWORK_ERROR": "不能連線至鑒權伺服器",
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NOT_FOUND": "鑒權伺服器無",
             "CANCELLED": "已罷",
             "INVALID": "無效的鑒權伺服器址",
-            "NO_MINECRAFT_PROFILE": "未找到角，請確認然否已買 礦藝 並建立角"
+            "NO_MINECRAFT_PROFILE": "未找到戲者，請確認然否已買 礦藝 並建立戲者"
           }
         }
       },
       "reloginPlayerOAuth": {
-        "success": "角復登入既成",
+        "success": "戲者復登入既成",
         "error": {
-          "title": "角復登入未成",
+          "title": "戲者復登入未成",
           "description": {
-            "NOT_FOUND": "角無",
+            "NOT_FOUND": "戲者無",
             "EXPIRED": "令牌已過期，請復登入",
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NETWORK_ERROR": "不能連線至鑒權伺服器",
-            "INVALID": "不支援離線角重整",
+            "INVALID": "不支援離線戲者重整",
             "CANCELLED": "已罷",
-            "NO_MINECRAFT_PROFILE": "未找到角，請確認然否已買 礦藝 並建立角"
+            "NO_MINECRAFT_PROFILE": "未找到戲者，請確認然否已買 礦藝 並建立戲者"
           }
         }
       },
       "addPlayer3rdPartyPassword": {
-        "success": "角增既成",
+        "success": "戲者增既成",
         "error": {
-          "title": "角增未成",
+          "title": "戲者增未成",
           "description": {
-            "DUPLICATE": "角已存在",
+            "DUPLICATE": "戲者已存在",
             "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
             "NETWORK_ERROR": "不能連線至鑒權伺服器",
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
@@ -2174,11 +2174,11 @@
         }
       },
       "reloginPlayer3rdPartyPassword": {
-        "success": "角復登入既成",
+        "success": "戲者復登入既成",
         "error": {
-          "title": "角復登入未成",
+          "title": "戲者復登入未成",
           "description": {
-            "NOT_FOUND": "角無",
+            "NOT_FOUND": "戲者無",
             "EXPIRED": "令牌已過期，請復登入",
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NETWORK_ERROR": "連線鑒權伺服器未成",
@@ -2187,11 +2187,11 @@
         }
       },
       "addPlayerFromSelection": {
-        "success": "角增既成",
+        "success": "戲者增既成",
         "error": {
-          "title": "角增未成",
+          "title": "戲者增未成",
           "description": {
-            "DUPLICATE": "角已存在",
+            "DUPLICATE": "戲者已存在",
             "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
             "NETWORK_ERROR": "不能連線至鑒權伺服器",
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
@@ -2200,46 +2200,46 @@
         }
       },
       "updatePlayerSkinOfflinePreset": {
-        "success": "角外觀迭更既成",
+        "success": "戲者外觀迭更既成",
         "error": {
-          "title": "角外觀迭更未成",
+          "title": "戲者外觀迭更未成",
           "description": {
-            "NOT_FOUND": "角無",
-            "INVALID": "角型別謬",
-            "TEXTURE_ERROR": "角外觀獲取未成"
+            "NOT_FOUND": "戲者無",
+            "INVALID": "戲者型別謬",
+            "TEXTURE_ERROR": "戲者外觀獲取未成"
           }
         }
       },
       "updatePlayerSkinOfflineLocal": {
-        "success": "角外觀迭更既成",
+        "success": "戲者外觀迭更既成",
         "error": {
-          "title": "角外觀迭更未成",
+          "title": "戲者外觀迭更未成",
           "description": {
-            "NOT_FOUND": "角無",
-            "INVALID": "角型別謬",
-            "TEXTURE_ERROR": "角外觀獲取未成"
+            "NOT_FOUND": "戲者無",
+            "INVALID": "戲者型別謬",
+            "TEXTURE_ERROR": "戲者外觀獲取未成"
           }
         }
       },
       "deletePlayer": {
-        "success": "角刪既成",
+        "success": "戲者刪既成",
         "error": {
-          "title": "角刪未成",
+          "title": "戲者刪未成",
           "description": {
-            "NOT_FOUND": "角無"
+            "NOT_FOUND": "戲者無"
           }
         }
       },
       "refreshPlayer": {
-        "success": "角資訊迭更既成",
+        "success": "戲者資訊迭更既成",
         "error": {
-          "title": "角資訊迭更未成",
+          "title": "戲者資訊迭更未成",
           "description": {
-            "NOT_FOUND": "角無",
+            "NOT_FOUND": "戲者無",
             "EXPIRED": "令牌已過期，請復登入",
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NETWORK_ERROR": "不能連線至鑒權伺服器",
-            "INVALID": "不支援離線角重整"
+            "INVALID": "不支援離線戲者重整"
           }
         }
       },
@@ -2317,9 +2317,9 @@
       },
       "validateSelectedPlayer": {
         "error": {
-          "title": "驗證角未成",
+          "title": "驗證戲者未成",
           "description": {
-            "NOT_FOUND": "角無",
+            "NOT_FOUND": "戲者無",
             "EXPIRED": "訪問令牌已過期，請復登入",
             "NETWORK_ERROR": "不能連線到伺服器",
             "PARSE_ERROR": "伺服器返回的資料正規化謬矣",
@@ -2799,7 +2799,7 @@
       "page": "頁",
       "recentViewed": "最近訪問過",
       "instance": "例",
-      "player": "角",
+      "player": "戲者",
       "curseforge": "在 CurseForge 上尋",
       "modrinth": "在 Modrinth 上尋"
     }
