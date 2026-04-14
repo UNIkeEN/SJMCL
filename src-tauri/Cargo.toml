@@ -46,7 +46,7 @@ murmur2 = "0.1"
 partial_derive = { path = "./libs/partial_derive" }
 pin-project = "1.1.8"
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
-rand = "0.9.0"
+rand = "0.9.3"
 regex = "1.11"
 reqwest-middleware = "0.4.2"
 reqwest-retry = "0.7.0"
