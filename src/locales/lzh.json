@@ -1,0 +1,2897 @@
+{
+  "AboutSettingsPage": {
+    "about": {
+      "title": "有涉",
+      "settings": {
+        "version": {
+          "title": "版",
+          "foundNew": "有新版",
+          "checkUpdate": "驗迭更",
+          "checkToast": {
+            "loading": "甫察其新",
+            "up2date": "今已至新",
+            "error": "驗迭更未成"
+          }
+        },
+        "contributors": {
+          "title": "開發諸君之列"
+        },
+        "sourceCode": {
+          "title": "覽源碼於群碼之匯"
+        },
+        "aboutSJMC": {
+          "title": "有涉上海交通大學礦藝社（SJMC）"
+        }
+      }
+    },
+    "ack": {
+      "title": "致謝",
+      "settings": {
+        "bmclapi": {
+          "title": "BMCLAPI",
+          "description": "謝 @bangbang93 供高速引源。"
+        },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "其部分設計與成碼，資鑒於此開源之項。"
+        },
+        "littleskin": {
+          "title": "LittleSkin",
+          "description": "謝 LittleSkin 與 @tnqzh123 助其登入流程之設。"
+        },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "謝 SCL 諸君與我輩長相切磋。"
+        },
+        "sinter": {
+          "title": "Sinter",
+          "description": "於 Windows、Linux 爲啟者介面之書體，依 SIL 之約而用。"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "外觀預覽之件，資此開源之項而成，依 MIT 之約而用。"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "律例之訊",
+      "settings": {
+        "copyright": {
+          "title": "版權",
+          "description": "持權所有 © 2024-2026 SJMCL 開發諸君。"
+        },
+        "userAgreement": {
+          "title": "客契",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/tos"
+        },
+        "openSourceLicense": {
+          "title": "開源之約",
+          "description": "此項遵 GNU General Public License v3.0（附增條）"
+        }
+      }
+    }
+  },
+  "AccountsPage": {
+    "button": {
+      "addPlayer": "增角",
+      "add3rdPartyServer": "增鑒權伺服器",
+      "sourceHomepage": "詣主葉",
+      "deleteServer": "刪此伺服器",
+      "importFromOtherLaunchers": "自他啟者導入"
+    },
+    "playerTypeList": {
+      "all": "諸源悉覽"
+    },
+    "viewTypeList": {
+      "grid": "格覽",
+      "list": "列覽"
+    }
+  },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "置新例",
+        "description": "擇而置戲版、載器與改囊。"
+      },
+      "modpack": {
+        "title": "導入改囊集",
+        "description": "自案頭或網絡導入改囊集（CurseForge、Modrinth、MultiMC 之式）。"
+      },
+      "manageDirs": {
+        "title": "司戲案夾",
+        "description": "司本機戲案夾，以納既置之例。"
+      }
+    },
+    "modpackOperations": {
+      "fromdisk": "自案頭案匯入",
+      "download": "引改囊集"
+    },
+    "moreOptions": {
+      "title": "餘",
+      "server": {
+        "title": "引伺服端",
+        "description": "引諸版之官式伺服端案。"
+      }
+    }
+  },
+  "AddAuthServerModal": {
+    "header": {
+      "title": "增鑒權伺服器"
+    },
+    "placeholder": {
+      "inputServerUrl": "請書入伺服器址"
+    },
+    "page1": {
+      "serverUrl": "伺服器之址",
+      "serverUrlRequired": "此欄必填"
+    },
+    "page2": {
+      "name": "名",
+      "serverUrl": "伺服器之址"
+    }
+  },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "增數源"
+    },
+    "label": {
+      "endpointUrl": "源址"
+    },
+    "placeholder": {
+      "endpointUrl": "源址"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "增戲伺服器"
+    },
+    "serverAddrRequired": "伺服器址不可空",
+    "label": {
+      "serverAddr": "伺服器之址",
+      "serverName": "伺服器之名"
+    },
+    "placeholder": {
+      "serverAddr": "請書入伺服器址",
+      "serverName": "礦藝 伺服器"
+    }
+  },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "增角"
+    },
+    "label": {
+      "playerType": "角之類"
+    },
+    "offline": {
+      "playerName": {
+        "label": "角之名",
+        "placeholder": "請書入角名",
+        "errorMessage": "只能包含英文字母、數字和下劃線，不超過16個字元。"
+      },
+      "advancedOptions": {
+        "title": "進階之選",
+        "uuid": {
+          "label": "戶碼",
+          "placeholder": "（由 SJMCL 自調生成）",
+          "errorMessage": "UUID 格式不正確"
+        }
+      }
+    },
+    "3rdparty": {
+      "authServer": {
+        "label": "鑒權之源",
+        "selectSource": "請擇鑒權之源",
+        "noSource": "未增可用之鑒權源",
+        "addSource": "增鑒權之源"
+      },
+      "email": {
+        "label": "電郵",
+        "placeholder": "請書入電郵"
+      },
+      "emailOrPlayerName": {
+        "label": "電郵或角名",
+        "placeholder": "請書入電郵或角名"
+      },
+      "password": {
+        "label": "符節",
+        "placeholder": "請書入符節"
+      }
+    },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "此鑒權之源援 Yggdrasil Connect 規範提案",
+          "microsoft": "SJMCL 援微軟 OAuth 2.0 裝置授權流"
+        },
+        "next": "請擊續登入之鈕以轉登入頁，書上碼（已自鈔）。"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "始 OAuth 登入",
+          "microsoft": "始登微軟"
+        },
+        "next": "續登入"
+      }
+    },
+    "button": {
+      "buyMinecraft": "買礦藝",
+      "useOAuthLogin": "OAuth 登入",
+      "usePasswordLogin": "以戶簿符節登入"
+    }
+  },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "有先資"
+    },
+    "description": "請審先資皆已置，抑續引其本資。",
+    "button": {
+      "continue": "續引其本資",
+      "cancel": "罷"
+    },
+    "fallback": {
+      "title": "資識 ID: {{resourceId}}",
+      "description": "不能自網路獲取此資源詳，請驗您的網路連線或稍後復試。"
+    },
+    "dependencyType": {
+      "required": "必需",
+      "optional": "可選",
+      "incompatible": "衝突",
+      "embedded": "內建",
+      "tool": "工具",
+      "include": "包含"
+    }
+  },
+  "AllInstancesPage": {
+    "button": {
+      "addAndImport": "增與匯入",
+      "globalSettings": "全例戲設",
+      "launch": "啟戲",
+      "sortAndFilter": "次第與篩選"
+    },
+    "viewTypeList": {
+      "grid": "格覽",
+      "list": "列覽"
+    },
+    "sortByTypeList": {
+      "versionAsc": "戲版升序",
+      "versionDesc": "戲版降序",
+      "name": "例名"
+    },
+    "sortBy": "次法",
+    "title": "諸例悉覽"
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "主題",
+      "settings": {
+        "primaryColor": {
+          "title": "啟者強調色"
+        },
+        "colorMode": {
+          "title": "色式",
+          "type": {
+            "system": "隨械網",
+            "light": "淡",
+            "dark": "暗"
+          }
+        },
+        "useLiquidGlassDesign": {
+          "title": "液璃之效",
+          "description": "啟後，部分介面將使用「液態玻璃」效果，這或會影響效能"
+        },
+        "headNavStyle": {
+          "title": "上方導欄之式",
+          "type": {
+            "standard": "常",
+            "simplified": "簡",
+            "adaptive": "自應"
+          }
+        }
+      }
+    },
+    "font": {
+      "title": "書體",
+      "settings": {
+        "fontFamily": {
+          "title": "介面書體",
+          "default": "本"
+        },
+        "fontSize": {
+          "title": "書體之巨細",
+          "small": "小",
+          "large": "大"
+        }
+      }
+    },
+    "background": {
+      "title": "繪景",
+      "settings": {
+        "preset": {
+          "title": "本影像"
+        },
+        "custom": {
+          "title": "自定影像",
+          "add": "增"
+        },
+        "randomCustom": {
+          "title": "隨機自定"
+        },
+        "autoDarken": {
+          "title": "暗模式下調暗繪景"
+        }
+      },
+      "presetBgList": {
+        "Jokull": {
+          "name": "銀淞雪鎮"
+        },
+        "SJTU-eastgate": {
+          "name": "SJTU 紫氣東來門"
+        },
+        "GNLXC": {
+          "name": "GNWork 理想城"
+        }
+      }
+    },
+    "accessibility": {
+      "title": "輔示",
+      "settings": {
+        "invertColors": {
+          "title": "反色"
+        },
+        "enhanceContrast": {
+          "title": "益其對比"
+        }
+      }
+    }
+  },
+  "ChangeModLoaderModal": {
+    "header": {
+      "title": {
+        "change": "改改囊載器",
+        "install": "置改囊載器"
+      }
+    },
+    "notSelectedLoader": "未選擇新的載器",
+    "footer": {
+      "installFabricApi": "同時置 Fabric API 改囊",
+      "installQFAPI": "同時置 QFAPI / QSL 改囊（若可用）",
+      "reinstall": "復置"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "驗改囊之迭更"
+    },
+    "button": {
+      "update": "迭更",
+      "cancel": "罷"
+    },
+    "label": {
+      "noUpdate": "無改囊可迭更",
+      "loading": "方驗迭更…… {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "改囊",
+      "currentVersion": "今版",
+      "latestVersion": "至新版",
+      "source": "源"
+    },
+    "error": {
+      "renameOldMod": "更名舊案未成"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "清其引快取",
+      "content": "誠欲清引快取乎？此舉不可復。"
+    }
+  },
+  "ComingSoonSign": {
+    "text": "此頁暫未啟，姑俟其後。"
+  },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "鈔或徙資項"
+    },
+    "operation": {
+      "copy": "鈔",
+      "move": "徙"
+    },
+    "tag": {
+      "source": "源"
+    },
+    "content": "{{type}} <b>{{name}}</b> 到",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "資囊",
+      "Saves": "生界",
+      "Schematics": "蜃圖",
+      "ShaderPacks": "光影"
+    },
+    "error": {
+      "lackOfArguments": "缺少必要引數，請開發諸君驗程式碼"
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "建新例"
+    },
+    "stepper": {
+      "game": "選擇戲版",
+      "loader": "選擇載器",
+      "skipped": "不裝",
+      "info": "基置"
+    },
+    "footer": {
+      "installFabricApi": "同時置 Fabric API 改囊",
+      "installQFAPI": "同時置 QFAPI / QSL 改囊（若可用）"
+    }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "君近更此例之名，請刷新例列，抑復啟啟者，而後更試增啟動捷徑。"
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "刪鑒權伺服器",
+      "content": "誠欲刪鑒權伺服器「{{name}}」乎？既刪，將不復列於君之伺服器表。"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "刪戲伺服器",
+    "content": "誠欲刪戲伺服器「{{name}}」（{{addr}}）乎？刪則永失！"
+  },
+  "DeleteInstanceAlertDialog": {
+    "dialog": {
+      "title": "刪戲例",
+      "content": "誠欲刪戲例「{{instanceName}}」乎？刪則永失！",
+      "warning": {
+        "withVerIso": "請注意，以此例已啟版隔離，除然例將致生界等資料一同被刪。如需保留相關資料，請先遷移。",
+        "woVerIso": "請注意，若該例此前啟過版隔離，未遷移的生界等資料將一同被刪。"
+      }
+    }
+  },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "刪改囊",
+      "content": "誠欲刪戲例「{{instanceName}}」中之改囊「{{modName}}」乎？"
+    }
+  },
+  "DeletePlayerAlertDialog": {
+    "dialog": {
+      "title": "刪角",
+      "content": "誠欲刪角「{{name}}」乎？此舉不可復！"
+    }
+  },
+  "DevToolbar": {
+    "tooltip": "開發之欄"
+  },
+  "DiscoverCommunityNewsPage": {
+    "title": "發見",
+    "noMore": "無餘文",
+    "sources": "司數源",
+    "NoSources": "未增數源"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "礦藝聞",
+    "community-news": "社聞",
+    "hotModpacks": "{{source}} 所熱門改囊集"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "尋",
+      "home": "主葉",
+      "community-news": "社聞",
+      "minecraft-news": "礦藝聞",
+      "modpack": "改囊集",
+      "mod": "改囊",
+      "world": "生界",
+      "resourcepack": "資囊",
+      "shader": "光影",
+      "datapack": "錄囊"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "增數源",
+      "deleteSource": "刪數源"
+    },
+    "tag": {
+      "online": "線上"
+    }
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "引爪哇"
+    },
+    "selector": {
+      "vendor": "供者",
+      "version": "版",
+      "type": "型別"
+    },
+    "warning": {
+      "mojang": "Mojang 所布之爪哇行時，將由 SJMCL 置於特定夾。",
+      "oracle": "自 Oracle 源引之，或須登入。"
+    }
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "引改囊集"
+    }
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "引資項"
+    },
+    "resourceTypeList": {
+      "world": "生界",
+      "mod": "改囊",
+      "resourcepack": "資囊",
+      "shader": "光影",
+      "datapack": "錄囊"
+    }
+  },
+  "DownloadSettingPage": {
+    "source": {
+      "title": "源",
+      "settings": {
+        "strategy": {
+          "title": "引源選擇策略",
+          "auto": "自調選擇",
+          "official": "官源爲先",
+          "mirror": "鏡源爲先"
+        }
+      }
+    },
+    "download": {
+      "title": "引",
+      "settings": {
+        "autoConcurrent": {
+          "title": "自調選擇並發之數"
+        },
+        "concurrentCount": {
+          "title": "並發之數"
+        },
+        "enableSpeedLimit": {
+          "title": "限制引速度"
+        },
+        "speedLimitValue": {
+          "title": "限速置設"
+        }
+      }
+    },
+    "cache": {
+      "title": "快取",
+      "settings": {
+        "directory": {
+          "title": "引快取夾",
+          "select": "改"
+        },
+        "clear": {
+          "title": "清其引快取",
+          "description": "清引快取夾中的諸案，此操作不會清已引的資源案",
+          "button": "清"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代",
+      "settings": {
+        "enabled": {
+          "title": "啟代"
+        },
+        "type": {
+          "title": "代型別"
+        },
+        "host": {
+          "title": "伺服器"
+        },
+        "port": {
+          "title": "埠"
+        }
+      }
+    }
+  },
+  "DownloadSpecificResourceModal": {
+    "title": "資源引 - {{name}} - {{source}}",
+    "label": {
+      "all": "一覽無遺",
+      "recommendedVersion": "推薦版",
+      "currentModLoader": "今載器"
+    },
+    "releaseType": {
+      "alpha": "內試版",
+      "beta": "公試版",
+      "release": "當版"
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "引務",
+    "button": {
+      "settings": "引之置設",
+      "pause": "暫止",
+      "begin": "始",
+      "retry": "復試",
+      "clearHistory": "清其舊錄"
+    },
+    "label": {
+      "paused": "已暫止",
+      "completed": "已畢",
+      "error": "未成",
+      "cancelled": "已罷"
+    },
+    "task": {
+      "game-client": "戲客戶端 {{param}}",
+      "game-client-w-java": "戲客戶端 {{param1}}（包含爪哇 {{param2}}）",
+      "game-server": "戲伺服端 {{param}}",
+      "change-mod-loader": "改改囊載器 {{param}}",
+      "mod": "改囊",
+      "world": "生界",
+      "resourcepack": "資囊",
+      "shader": "光影",
+      "modpack": "改囊集",
+      "datapack": "錄囊",
+      "patch-files": "修補戲案 {{param}}",
+      "mod-update": "迭更改囊",
+      "retry": "復試",
+      "neoforge-libraries": "NeoForge 行庫",
+      "forge-libraries": "Forge 行庫",
+      "optifine-libraries": "OptiFine 行庫",
+      "launcher-update": "迭更啟者",
+      "mojang-java": "爪哇 {{param}} 行時"
+    }
+  },
+  "Editable": {
+    "edit": "改",
+    "save": "存",
+    "cancel": "罷"
+  },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "增戲案夾",
+        "edit": "改戲案夾"
+      }
+    },
+    "label": {
+      "dirName": "名",
+      "dirPath": "戲案夾之徑"
+    },
+    "placeholder": {
+      "dirName": "請書入名",
+      "dirPath": "請擇戲案夾"
+    },
+    "dialog": {
+      "browse": {
+        "title": "選擇夾"
+      },
+      "addSubDir": {
+        "title": "增子夾",
+        "body": "發見包含例的 minecraft 子夾，然否增子夾？",
+        "addOriginDir": "增原始夾",
+        "addSubDir": "增子夾"
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "增戲案夾未成"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "empty": "夾名不可空",
+        "tooLong": "夾名不可超過 20 個字元",
+        "exist": "夾名既存",
+        "hasInvalidChar": "夾名包含特殊字元或使用械網保留字"
+      },
+      "dirPath": {
+        "exist": "夾徑既存",
+        "invalid": "夾徑不合法"
+      }
+    }
+  },
+  "Empty": {
+    "noData": "無據"
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "灰色",
+      "red": "紅色",
+      "orange": "橙色",
+      "yellow": "黃色",
+      "green": "綠色",
+      "teal": "藍綠色",
+      "blue": "藍色",
+      "cyan": "青色",
+      "purple": "紫色",
+      "pink": "粉色"
+    },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
+      "windows": "Win"
+    },
+    "playerTypes": {
+      "microsoft": "微軟戶簿",
+      "offline": "離綫之式",
+      "3rdparty": "外證",
+      "3rdpartyShort": "外證"
+    },
+    "systemFileManager": {
+      "linux": "案司器",
+      "macos": "訪達",
+      "windows": "案資源司器"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "將 {{param}} 錄出為改囊集"
+    },
+    "label": {
+      "exportFormat": "錄出之式",
+      "basicInfo": "基訊",
+      "modpackName": "改囊集之名",
+      "modpackVersion": "改囊集之版",
+      "author": "作者",
+      "description": "述",
+      "includedFiles": "所納之案",
+      "exportOptions": "錄出之選",
+      "packWithLauncher": "納啟者於包",
+      "minMemory": "至低憶（MB）",
+      "noCreateRemoteFiles": "弗用遠案",
+      "skipCurseForgeRemoteFiles": "略 CurseForge 遠案"
+    },
+    "button": {
+      "export": "錄出"
+    },
+    "error": {
+      "invalidName": "請書入有效的改囊集名",
+      "invalidVersion": "請書入有效的版號",
+      "noFileSelected": "請至少選擇一個要包含的案或案夾"
+    },
+    "errorMessage": {
+      "error-1": "名不可空",
+      "error-2": "名包含無效字元",
+      "error-3": "名過長（最多 255 個字元）"
+    },
+    "fileTreeTranslation": {
+      "mods": "改囊",
+      "config": "改囊置設案",
+      "shaderpacks": "光影",
+      "resourcepacks": "資囊",
+      "optionsTxt": "戲置設",
+      "saves": "生界"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "包體更小，匯入時按清單引所需改囊",
+        "MultiMC": "主流啟者廣泛支援，打包完整例"
+      }
+    }
+  },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "擴充之文渲染未成。"
+  },
+  "ExtensionHostContextProvider": {
+    "toast": {
+      "activateError": "啟用擴充套件 {{name}} 未成"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "啟外鏈",
+    "body": "擴充套件 {{extension}} 想要在外部覽器中開啟 {{link}}",
+    "button": {
+      "open": "啟"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "{{name}} 置設"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL 不能制第三方擴充之行，亦不能保其私據之處置。惟可信源之擴充，可置而啟之。"
+  },
+  "GameAdvancedSettingsPage": {
+    "title": "戲之進階置設",
+    "topWarning": "戲之進階置設僅提供給專業戲者使用。改以下之選或致戲不能啟。除非您充分了解其中的意義，否則請不要改這些之選！",
+    "customCommands": {
+      "title": "自定命令",
+      "settings": {
+        "minecraftArgument": {
+          "title": "戲通弦",
+          "placeholder": "本"
+        },
+        "precallCommand": {
+          "title": "戲啟前執行命令",
+          "placeholder": "將在戲啟前呼叫"
+        },
+        "wrapperLauncher": {
+          "title": "包裝命令",
+          "placeholder": "如填寫\"optirun\"後，啟命令將從\"java ……\"變為\"optirun java ……\""
+        },
+        "postExitCommand": {
+          "title": "戲結束後執行命令",
+          "placeholder": "將在戲結束後呼叫"
+        }
+      }
+    },
+    "jvm": {
+      "title": "爪哇虛機置設",
+      "settings": {
+        "garbageCollector": {
+          "title": "滓收器",
+          "desc": "略低版爪哇或不包含特定的垃圾回收器",
+          "options": {
+            "auto": "自調（本）",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "記憶體永久儲存區域",
+          "placeholder": "單位 MB"
+        },
+        "environmentVariable": {
+          "title": "環境易量"
+        },
+        "args": {
+          "title": "餘 JVM 通弦"
+        }
+      }
+    },
+    "workaround": {
+      "title": "勘誤之選",
+      "settings": {
+        "noJvmArgs": "不增本的 JVM 引數",
+        "gameFileValidatePolicy": {
+          "title": "戲案完整性驗策略",
+          "disable": "不驗",
+          "normal": "凡驗",
+          "full": "增強驗"
+        },
+        "dontCheckJvmValidity": {
+          "title": "不驗 JVM 與戲的相容性"
+        },
+        "dontPatchNatives": {
+          "title": "不嘗試自調替換本地庫"
+        },
+        "useLwjglUnsafeAgent": {
+          "title": "啟 LWJGL Unsafe Agent",
+          "description": "在受影響的 礦藝 版使用來自 HMCL 的 <hmcl>LWJGL Unsafe Agent</hmcl> 修復效能問題"
+        },
+        "useNativeGlfw": {
+          "title": "使用械網 GLFW（僅 Linux）"
+        },
+        "useNativeOpenal": {
+          "title": "使用械網 OpenAL（僅 Linux）"
+        }
+      }
+    }
+  },
+  "GameErrorPage": {
+    "title": "戲非正常退出，請覽誌，或尋求他人助",
+    "basicInfo": {
+      "arch": "大構",
+      "launcherVersion": "啟者版",
+      "os": "作業械網"
+    },
+    "gameInfo": {
+      "gameVersion": "戲版"
+    },
+    "javaInfo": {
+      "javaVersion": "爪哇版"
+    },
+    "crashDetails": {
+      "title": "潰資訊",
+      "OPENJ9": "今例不能在 OpenJ9 JVM 上行，請用 HotSpot JVM。",
+      "NEED_JDK11": "今例使用了 JDK 11 特性，不能在今虛擬機器平臺上行，請選擇 JDK 11 啟。",
+      "TOO_OLD_JAVA": "今例以過舊的爪哇版而不能行，薦用至新的爪哇版。",
+      "JVM_32BIT": "戲記憶體分配過大，超過了 32 位 JVM 的限制。若你的電腦然 64 位械網，請引置並更換 64 位爪哇。",
+      "GL_OPERATION_FAILURE": "今例以你使用的某些改囊/光影/資囊/紋理包有問題，致不能續行。請先嚐試禁你所使用的改囊/光影/資囊/紋理包再試。",
+      "OPENGL_NOT_SUPPORTED": "今例以你的顯示卡驅動不支援 OpenGL ，不能續行。請驗你的顯示卡驅動程式或嘗試使用他者渲染器。",
+      "GRAPHICS_DRIVER": "今例以顯示卡驅動問題而潰，請迭更顯示卡驅動程式。",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "今例以 Apple Silicon 平臺下初始化 OpenGL 匡未成，不能續行。",
+      "OUT_OF_MEMORY": "今例以記憶體不足而潰，請試降低戲記憶體分配或關閉他者程式。",
+      "MEMORY_EXCEEDED": "今例以記憶體分配超過限制而潰，請試降低戲記憶體分配或關閉他者程式。",
+      "RESOLUTION_TOO_HIGH": "今例以解析度過高而不能行，請解析度更低的資囊/紋理包再試。",
+      "JDK_9": "今例使用了 JDK 9 特性，不能在今虛擬機器平臺上行，請選擇 JDK 9 啟。",
+      "MAC_JDK_8U261": "今例以你所使用的 Forge/OptiFine 與爪哇衝突而潰。請試迭更 Forge/OptiFine，或用爪哇 8u251 及更早版啟。",
+      "FILE_CHANGED": "今例以案校驗未成而不能行，請驗案完整性。",
+      "NO_SUCH_METHOD_ERROR": "今例以程式碼不完整，不能續行。你的戲或缺失了某個改囊，抑某些改囊案不完整，抑改囊與戲的版不匹配。你或須復裝戲和改囊，或尋求他人助。",
+      "NO_CLASS_DEF_FOUND_ERROR": "今例以程式碼不完整，不能續行。你的戲或缺失了某個改囊，抑某些改囊案不完整，抑改囊與戲的版不匹配。你或須復裝戲和改囊，或尋求他人助。",
+      "ILLEGAL_ACCESS_ERROR": "今例以某些改囊的問題，不能續行，若你認識 {{param1}}，你可迭更或刪對應改囊再試。",
+      "DUPLICATED_MOD": "今例以改囊 {{param1}} 重複置，不能續行。請刪多餘的改囊再試。",
+      "MOD_RESOLUTION": "今例以改囊依賴問題，不能續行。Fabric 提供瞭如下資訊：{{param1}}",
+      "FORGEMOD_RESOLUTION": "今例以改囊依賴問題，不能續行。Forge/NeoForge 提供瞭如下資訊：{{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "今例以改囊重複置，不能續行，Forge/NeoForge 提供瞭如下資訊：{{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "今例以改囊 {{param1}} 與 {{param2}} 衝突，不能續行。",
+      "MOD_RESOLUTION_MISSING": "今例以改囊 {{param1}} 缺少前置改囊 {{param2}}，不能續行。",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "今例中改囊 {{param1}} 須 礦藝 {{param2}} 才能行。",
+      "MOD_RESOLUTION_COLLECTION": "今例以改囊 {{param1}} 缺少前置改囊 {{param2}}，不能續行。",
+      "FILE_ALREADY_EXISTS": "今例以 {{param}} 既存在，不能續行。若你認為這個案可刪，你可在備份這個案後嘗試刪它，並復戲。",
+      "LOADING_CRASHED_FORGE": "今例以改囊 {{param1}} ({{param2}}) 謬，不能續行。你可嘗試刪或迭更該改囊以解決問題。",
+      "BOOTSTRAP_FAILED": "今例以改囊 {{param1}} 出現問題，不能續行。你可嘗試刪或迭更該改囊以解決問題。",
+      "LOADING_CRASHED_FABRIC": "今例以改囊 {{param1}} 謬，不能續行。你可嘗試刪或迭更該改囊以解決問題。",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 及更高版與今既置的改囊或不相容，你須將 Fabric Loader 降級至 0.11.7。",
+      "MODLAUNCHER_8": "今例以你所使用的 Forge 版與今所用爪哇衝突而潰，請試迭更 Forge 至 36.2.26 或更高版，抑換用低於 1.8.0.320 之爪哇。",
+      "DEBUG_CRASH": "今例以手動觸發潰，不能續行。",
+      "CONFIG": "今例以不能解析改囊 {{param1}} 的置設案 {{param2}}，不能續行。",
+      "FABRIC_WARNINGS": "Fabric 提供了一些誡資訊：{{param1}}",
+      "ENTITY": "今例以某個實體（型別為 {{param1}}，位於 {{param2}}）不可正常工作，不能續行。你可嘗試透過 MCEdit 工具刪該實體，抑直接刪相應的改囊。",
+      "BLOCK": "今例以某個塊方（型別為 {{param1}}，位於 {{param2}}）不可正常工作，不能續行。你可嘗試透過 MCEdit 工具刪該塊方，抑直接刪相應的改囊。",
+      "UNSATISFIED_LINK_ERROR": "今例以缺少本地庫，不能續行。這些缺失案包括：{{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "今例以 OptiFine 與 Forge 不相容，不能續行。請試使用 OptiFine 的至新版或不使用 OptiFine。",
+      "MOD_FILES_ARE_DECOMPRESSED": "今例以改囊案已被解壓縮，不能續行。請直接把整個改囊案放進改囊案夾中即可。",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "今例或以 OptiFine 而不能續行。該問題只在特定 OptiFine 版中出現。",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "今例以你所置的改囊過多，超出了戲的 ID 限制，不能續行。請試置 JEID 等修復改囊，或刪部分大型改囊。",
+      "MODMIXIN_FAILURE": "今例以某些改囊注入未成，不能續行。請驗改囊相容性或嘗試更換改囊。",
+      "MIXIN_APPLY_MOD_FAILED": "今例以 Mixin 不能應以供改囊 {{param1}}，不能續行。你可嘗試刪或迭更該改囊以解決問題。",
+      "FORGE_ERROR": "Forge/NeoForge 提供了謬資訊：{{param1}}",
+      "MOD_RESOLUTION0": "今例以一些改囊出現問題，不能續行。你可覽誌尋找出錯改囊。",
+      "FORGE_REPEAT_INSTALLATION": "今例以 Forge / NeoForge 重複置，不能續行。請刪此例後復引。",
+      "OPTIFINE_REPEAT_INSTALLATION": "今例以 OptiFine 重複置，不能續行。請刪此例後復引。",
+      "JAVA_VERSION_IS_TOO_HIGH": "今例以爪哇版過高，不能續行。請用爪哇 8 或更低版。",
+      "INSTALL_MIXINBOOTSTRAP": "今例以 MixinBootstrap 未裝，不能續行。請置 MixinBootstrap 並復試。",
+      "MOD_NAME": "今例以改囊案名問題，不能續行。改囊案名應只使用半形的大小寫字母 (Aa~Zz)、數字 (0~9)、橫線 (-)、下劃線 (_)和點 (.)。請到改囊案夾中將諸不合規的改囊案名改為上述合規字元。",
+      "INCOMPLETE_FORGE_INSTALLATION": "今例以 Forge 置不完整，不能續行。請試復置 Forge。",
+      "NIGHT_CONFIG_FIXES": "今例以 Night Config 庫的一些問題，不能續行。置 Night Config Fixes 改囊或許能助你解決這個問題。",
+      "SHADERS_MOD": "今例以同時置了 OptiFine 和 Shaders 改囊，不能續行。請試刪 Shaders 改囊。",
+      "RTSS_FOREST_SODIUM": "今例以 RTSS 與 Sodium 不相容，不能續行。",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "今例以本地庫與械網大構不相容，不能續行。",
+      "MAC_DS_STORE": "今例以 Mac 械網的 .DS_Store 案致問題，不能續行。請刪戲徑下的 .DS_Store 案後復試。",
+      "LEVEL_DAT_CORRUPTED": "今例以生界案 level.dat 損壞，不能續行。請試修復生界或從備份中恢復。",
+      "GL_OUT_OF_MEMORY": "今例以 OpenGL 記憶體不足，不能續行。請試降低戲解析度、關閉光影或關閉他者程式。",
+      "MOD_JAVA_VERSION_MISMATCH": "今例以改囊與爪哇版不匹配，不能續行。請驗改囊所需之爪哇版而調之。",
+      "DUPLICATE_MOD_INSTALLED": "今例以重複置改囊而不能續行。請驗改囊列表並移除重複的改囊。",
+      "MOD_ZIP_CORRUPTED": "今例以改囊壓縮包損壞，不能續行。請試復引改囊。",
+      "MOD_INTERNET_ERROR": "今例以改囊引之未成，不能續行。請驗網路連線或使用網路代。",
+      "VICS_MODERN_WARFARE_ERROR": "今例以 Vics Modern Warfare 改囊謬，不能續行。請試迭更或刪該改囊。",
+      "FORGE_LITELOADER_CONFLICT": "今例以 Forge 與 LiteLoader 衝突，不能續行。請試刪 LiteLoader 或更換 Forge 版。",
+      "UNKNOWN": "暫時不能分析該謬，請覽戲誌或錄出謬潰報告。"
+    },
+    "button": {
+      "exportGameInfo": "錄出戲潰報告",
+      "gameLogs": "戲誌",
+      "help": "助"
+    },
+    "bottomAlert": "如需尋求他人助，請錄出並傳送潰報告，而非這個匡的截影"
+  },
+  "GameLogPage": {
+    "placeholder": "書關鍵字以篩",
+    "revealRawLog": "顯其原誌",
+    "clearLogs": "清諸誌",
+    "scrollToBottom": "卷至底"
+  },
+  "GameVersionSelector": {
+    "old_beta": "古典版",
+    "release": "當版",
+    "snapshot": "預版",
+    "april_fools": "愚人節版",
+    "searchPlaceholder": "尋版"
+  },
+  "General": {
+    "add": "增",
+    "alert": {
+      "noFullLogin": {
+        "title": "是功暫不可用",
+        "description": "請先登微軟戶簿，而後用是功。"
+      }
+    },
+    "browse": "覽",
+    "cancel": "罷",
+    "close": "閉",
+    "confirm": "然",
+    "copy": {
+      "text": "鈔",
+      "toast": {
+        "success": "既鈔入板",
+        "error": "書入鈔板未成"
+      }
+    },
+    "copyOrMove": {
+      "linux": "鈔或徙",
+      "macos": "鈔或徙",
+      "windows": "鈔或徙"
+    },
+    "delete": "刪",
+    "dialog": {
+      "filterName": {
+        "image": "圖像之案",
+        "modpack": "改囊集"
+      }
+    },
+    "disable": "禁",
+    "dontShowAgain": "不再顯",
+    "download": "引",
+    "edit": "改",
+    "enable": "啟",
+    "exit": "辭",
+    "finish": "成",
+    "import": "導入",
+    "launch": "啟",
+    "more": "餘",
+    "new": "新",
+    "next": "次步",
+    "notice": "注",
+    "open": "啟",
+    "openFolder": "啟案夾",
+    "optional": "可選",
+    "previous": "前步",
+    "refresh": "重整",
+    "revealFile": "顯於{{opener}}",
+    "search": "尋",
+    "settings": "置設",
+    "share": {
+      "text": "共之",
+      "toast": {
+        "error": "共之未成"
+      }
+    },
+    "skip": "跳過",
+    "version": {
+      "dev": "開發版",
+      "nightly": "夜間構建版",
+      "beta": "測試版"
+    },
+    "viewOnWiki": "在 礦藝 Wiki 中覽"
+  },
+  "GeneralSettingsPage": {
+    "language": {
+      "title": "文",
+      "settings": {
+        "language": {
+          "title": "文（Language）",
+          "communityAck": "此文託機智，因後世華夏通行之文演爲文言"
+        },
+        "resourceTranslation": {
+          "title": "顯資源翻譯",
+          "description": "啟後，在資源引介面嘗試顯名或述的簡體中文翻譯（如資料可用）"
+        },
+        "translatedFilenamePrefix": {
+          "title": "資源案名增翻譯字首",
+          "description": "啟後，引與迭更資源時將在案名增簡體中文譯名字首（如“[生界] map.jar”）"
+        },
+        "skipFirstScreenOptions": {
+          "title": "自調置設例文",
+          "description": "啟後，新建例的文將自調置設為簡體中文，這將同時跳過輔功用置設"
+        }
+      }
+    },
+    "functions": {
+      "title": "功用",
+      "settings": {
+        "instancesNavType": {
+          "title": "例頁導航欄模式",
+          "description": "更改例頁左側導航欄然否顯、分組方式",
+          "instance": "按例",
+          "directory": "按夾",
+          "tag": "按籤",
+          "hidden": "匿"
+        },
+        "launchPageQuickSwitch": {
+          "title": "快捷迭例與戶簿",
+          "description": "啟後，點選啟頁的切換鈕可直接選擇戶簿或例，而無需跳轉頁"
+        },
+        "autoDownloadJava": {
+          "title": "自調引可用之爪哇行時",
+          "description": "啟後，新建例時若無可用之爪哇行時，將自裝至特定夾"
+        }
+      }
+    },
+    "sync": {
+      "title": "同調",
+      "settings": {
+        "internetSync": {
+          "title": "聯網同調啟者置設",
+          "import": "導入",
+          "export": "錄出"
+        }
+      }
+    },
+    "advanced": {
+      "title": "進階",
+      "settings": {
+        "openConfigJson": {
+          "title": "啟者置設案",
+          "description": "在{{opener}}中顯啟者的原始置設案"
+        },
+        "launcherLogDir": {
+          "title": "啟者誌夾"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "自調除快取啟者誌",
+          "description": "自調除快取 30 天及以前的啟者誌案"
+        },
+        "restoreAll": {
+          "title": "復原諸置設",
+          "description": "將諸啟者置設復原為本值",
+          "restore": "復原"
+        }
+      }
+    }
+  },
+  "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "戲案夾",
+      "settings": {
+        "directories": {
+          "special": {
+            "CURRENT_DIR": "今案夾",
+            "APP_DATA_SUBDIR": "SJMCL 資料案夾",
+            "OFFICIAL_DIR": "官方啟者案夾"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "刪戲案夾",
+        "content": "誠欲刪戲案夾 {{dirName}} 乎？（SJMCL 將不會掃描此夾，但不會刪硬碟上的案）"
+      },
+      "directoryNotExist": "該夾無，請刪並復增"
+    },
+    "gameJava": {
+      "title": "戲之爪哇",
+      "settings": {
+        "autoSelect": {
+          "title": "自調擇合宜爪哇"
+        },
+        "execPath": {
+          "title": "定爪哇之版"
+        }
+      }
+    },
+    "gameWindow": {
+      "title": "匡",
+      "settings": {
+        "resolution": {
+          "title": "戲解析度",
+          "switch": "全幕"
+        },
+        "customTitle": {
+          "title": "自定匡標題"
+        },
+        "customInfo": {
+          "title": "自定資訊",
+          "description": "將顯在戲主介面左下角與 F3 除錯頁左上角"
+        }
+      }
+    },
+    "performance": {
+      "title": "效能",
+      "settings": {
+        "autoMemAllocation": {
+          "title": "自調其憶記憶體"
+        },
+        "maxMemAllocation": {
+          "title": "最大記憶體分配"
+        },
+        "memoryUsage": {
+          "title": "記憶體佔用情況",
+          "description": "已用記憶體{{usedMemory}}GB；戲分配{{allocatedMemory}}GB；總記憶體{{totalMemory}}GB"
+        },
+        "processPriority": {
+          "title": "程序優先順序",
+          "low": "低",
+          "belowNormal": "略低",
+          "normal": "中",
+          "aboveNormal": "略高",
+          "high": "高"
+        }
+      }
+    },
+    "versionIsolation": {
+      "settings": {
+        "title": "啟版隔離"
+      }
+    },
+    "moreOptions": {
+      "title": "餘之選",
+      "settings": {
+        "launcherVisibility": {
+          "title": "啟者之隱現",
+          "startHidden": "始戲而匿啟者",
+          "runningHidden": "戲行時匿啟者",
+          "always": "啟者始終可見"
+        },
+        "autoJoinGameServer": {
+          "title": "自調加入伺服器"
+        },
+        "serverUrl": {
+          "title": "伺服器之址"
+        },
+        "displayGameLog": {
+          "title": "顯戲誌"
+        },
+        "advancedOptions": {
+          "title": "進階啟置設",
+          "button": "改進階置設"
+        }
+      }
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "例頁",
+      "content": "在此處增並選擇您的 礦藝 戲例，引和司各類戲資源"
+    },
+    "step2": {
+      "title": "戶簿頁",
+      "content": "在此處增戶簿，選擇您想要遊玩的角"
+    },
+    "step3": {
+      "title": "發見頁",
+      "content": "在此處覽 礦藝 與社群聞，發見並引各類相關資源，如改囊、生界、改囊集等。<br/>另外，您也可透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>S</key> 快速開啟 “聚合尋”。"
+    },
+    "step4": {
+      "title": "Minecraft，啟！",
+      "content": "選中例與角、調整好相關置設後，點選啟鈕享受戲吧 🥳"
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "啟",
+      "instances": "例",
+      "accounts": "戶簿",
+      "discover": "發見",
+      "search": "尋",
+      "settings": "置設"
+    }
+  },
+  "HelpSettingsPage": {
+    "community": {
+      "title": "高校戲者社群",
+      "settings": {
+        "MUA": {
+          "title": "礦藝 高校聯盟（MUA）",
+          "description": "與天下諸學之戲者同遊。",
+          "url": "https://www.mualliance.cn"
+        },
+        "SJMC": {
+          "title": "上海交通大學礦藝社（SJMC）",
+          "url": "https://mc.sjtu.cn"
+        }
+      }
+    },
+    "minecraft": {
+      "title": "礦藝",
+      "settings": {
+        "mcWiki": {
+          "title": "中文 礦藝 Wiki",
+          "description": "最詳細的 礦藝 百科全書",
+          "url": "https://zh.minecraft.wiki/"
+        },
+        "mcMod": {
+          "title": "MCMod",
+          "description": "礦藝 改囊中文百科"
+        },
+        "curseforge": {
+          "title": "CurseForge",
+          "description": "尋探生界上最大的 礦藝 改囊儲存庫"
+        }
+      }
+    },
+    "top": {
+      "settings": {
+        "LauncherDocs": {
+          "title": "SJMC Launcher 案文",
+          "url": "https://mc.sjtu.cn/sjmcl/docs"
+        },
+        "UserGroup": {
+          "title": "使用者社群",
+          "description": "歡迎加入 QQ 群或 Discord 伺服器，報告問題、請求功用或獲取助",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
+        }
+      }
+    }
+  },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "自他啟者匯入戶簿資訊"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello 礦藝! Launcher",
+      "MultiMC": "MultiMC"
+    },
+    "body": {
+      "authServers": "鑒權伺服器",
+      "players": "角"
+    },
+    "footer": {
+      "parentDirHint": "將在已增戲案夾的父夾尋找戶簿資訊案。"
+    },
+    "tooltips": {
+      "existingServer": "已存在相同址的鑒權伺服器，匯入將會覆蓋資料",
+      "existingPlayer": "已存在相同 UUID 的角，匯入將會覆蓋資料",
+      "expired": "登入令牌已過期，不能匯入此角"
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "導入改囊集"
+    },
+    "label": {
+      "instanceSettings": "例置設",
+      "modpackInfo": "改囊集資訊",
+      "modpackName": "改囊集之名",
+      "modpackVersion": "改囊集之版",
+      "author": "作者",
+      "modLoader": "改囊載器",
+      "gameVersion": "戲版"
+    }
+  },
+  "InstanceBasicSettings": {
+    "selectDirectory": "選擇戲案夾"
+  },
+  "InstanceDetailsLayout": {
+    "secMenu": {
+      "createShortcut": "建立啟捷徑",
+      "exportModPack": "錄出為改囊集",
+      "star": "星標此例",
+      "unstar": "罷星標"
+    },
+    "instanceTabList": {
+      "overview": "總覽",
+      "worlds": "生界",
+      "mods": "改囊",
+      "resourcepacks": "資囊",
+      "schematics": "蜃圖",
+      "shaderpacks": "光影",
+      "screenshots": "截影",
+      "settings": "置設"
+    },
+    "button": {
+      "launch": "啟例"
+    }
+  },
+  "InstanceIconSelector": {
+    "customize": "自定影像"
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "例詳",
+      "delete": "刪例"
+    }
+  },
+  "InstanceModsPage": {
+    "modLoaderList": {
+      "title": "載器",
+      "notInstalled": "未裝",
+      "installed": "已置"
+    },
+    "modList": {
+      "title": "改囊",
+      "warning": "未發見改囊載器，改囊或不能正常工作",
+      "menu": {
+        "alert": "或不相容",
+        "info": "覽資訊",
+        "update": "驗迭更",
+        "search": "尋",
+        "placeholder": "尋改囊……"
+      }
+    }
+  },
+  "InstanceResourcePacksPage": {
+    "resourcePackList": {
+      "title": "全例資囊"
+    },
+    "serverResPackList": {
+      "title": "伺服器資囊"
+    }
+  },
+  "InstanceSchematicsPage": {
+    "schematicList": {
+      "title": "蜃圖",
+      "preview": "預覽"
+    }
+  },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "詳"
+    }
+  },
+  "InstanceSettingsPage": {
+    "name": "例名",
+    "description": "例述",
+    "colorTag": "色籤",
+    "icon": "例圖示",
+    "applySettings": "啟特定戲置設",
+    "restoreSettings": "重置以下特定置設",
+    "restoreSettingsDesc": "將以下特定置設重置為全例戲置設",
+    "restore": "復初",
+    "errorMessage": {
+      "error-1": "例名不可空",
+      "error-2": "例名不合法",
+      "error-3": "例名太長"
+    },
+    "tipsToGlobal": {
+      "content": "今例未啟特定戲置設，<terms>前往全例戲置設</terms>"
+    }
+  },
+  "InstanceShaderPacksPage": {
+    "shaderLoaderList": {
+      "title": "載器",
+      "notInstalled": "未裝"
+    },
+    "shaderPackList": {
+      "title": "光影"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "基訊",
+      "gameVersion": "戲版",
+      "playTime": "戲時長"
+    },
+    "screenshots": {
+      "title": "截影"
+    },
+    "mods": {
+      "title": "改囊",
+      "summary": "{{totalMods}} 個改囊, {{enabledMods}} 個已啟",
+      "manage": "前往司"
+    },
+    "lastPlayed": {
+      "title": "前遊",
+      "continuePlaying": "續遊玩"
+    },
+    "more": {
+      "title": "餘"
+    }
+  },
+  "InstanceWorldsPage": {
+    "worldList": {
+      "title": "本地生界",
+      "lastPlayedAt": "前遊於",
+      "difficulty": {
+        "peaceful": "和",
+        "easy": "易",
+        "normal": "凡",
+        "hard": "難",
+        "hardcore": "極生"
+      },
+      "gamemode": {
+        "survival": "生",
+        "creative": "創",
+        "adventure": "勇",
+        "spectator": "覽者之式"
+      },
+      "gamemodeDesc": "，{{gamemode}}",
+      "difficultyDesc": "（難度：{{difficulty}}）",
+      "viewLevelData": "生界基礎資料",
+      "launch": "遊玩此生界"
+    },
+    "serverList": {
+      "title": "伺服器",
+      "players": "戲者",
+      "tag": {
+        "online": "線上",
+        "offline": "離線"
+      },
+      "launch": "遊玩此伺服器"
+    }
+  },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL 智慧",
+    "description": "將人工智慧形整合進您的啟者使用與 礦藝 遊玩體驗",
+    "mcpServer": {
+      "title": "MCP 服務",
+      "headExtra": "以下置設復啟而效",
+      "settings": {
+        "enabled": {
+          "title": "啟者 MCP 服務",
+          "description": "啟本地 MCP 服務，以連線外部 Agent 應用實現啟者的自調化控制"
+        },
+        "docs": {
+          "title": "用法之指南",
+          "description": "瞭解如何將啟者連線到外部 Agent 應用（如 Claude, Cherry Studio 等）",
+          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "埠",
+          "description": "啟者 MCP 服務使用的固定本地埠"
+        }
+      }
+    }
+  },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "司爪哇",
+      "download": "引爪哇",
+      "add": "增爪哇",
+      "remove": "卸此爪哇"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "增爪哇既成",
+        "description": "增自定爪哇徑既成"
+      },
+      "addFailed": {
+        "title": "增爪哇未成",
+        "invalid": "不然有效的爪哇可執行案，抑與今平臺不相容",
+        "duplicated": "目標爪哇徑已增"
+      }
+    },
+    "confirmDelete": {
+      "title": "卸此爪哇",
+      "description": "誠欲移除此版爪哇乎？（SJMCL 將不能用此爪哇啟戲，然不刪硬碟上之案。）"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "上次行異常退出",
+      "content": "SJMCL 上次行時異常退出。您可將誌傳送到<community>使用者社群</community>，或在 <github>群碼之匯</github> 發起 Issue 以尋求助",
+      "viewLog": "察誌"
+    }
+  },
+  "LaunchPage": {
+    "button": {
+      "launch": "啟戲",
+      "instanceSettings": "例置設"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchPlayer": "切換角",
+        "addPlayer": "增角",
+        "switchInstance": "切換戲例",
+        "addInstance": "增戲例"
+      }
+    },
+    "Text": {
+      "noSelectedPlayer": "尚未選擇角",
+      "noSelectedGame": "尚未選擇戲例"
+    }
+  },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "戲 - {{name}}"
+    },
+    "step": {
+      "selectSuitableJRE": "選擇合宜爪哇行時",
+      "validateGameFiles": "驗證戲與依賴案完整性",
+      "validateSelectedPlayer": "驗證戶簿狀態",
+      "launchGame": "候戲之啟"
+    },
+    "toast": {
+      "noSelectedPlayer": "請先增並選擇戲角",
+      "noSelectedInstance": "請先增並選擇戲例"
+    }
+  },
+  "LoaderSelector": {
+    "stable": "當版",
+    "beta": "預版",
+    "releaseDate": "釋出於 {{date}}",
+    "notCompatibleWith": "與 {{item}} 不相容",
+    "noVersionSelected": "未選擇版"
+  },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "今頁由擴充套件 {{name}} 提供"
+  },
+  "ManageSkinModal": {
+    "skinManage": "司外觀",
+    "default": "本",
+    "steve": "史迪武",
+    "alex": "艾麗思",
+    "upload": "案頭上傳",
+    "skin": "外觀",
+    "cape": "蓑衣",
+    "model": {
+      "label": "形",
+      "default": "寬",
+      "slim": "纖"
+    }
+  },
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "增爪哇"
+    },
+    "label": {
+      "javaPath": "爪哇徑"
+    },
+    "placeholder": {
+      "javaPath": "請書入或擇爪哇可執行案之徑"
+    }
+  },
+  "MCVersionNumberHelper": {
+    "content": "自 2026 年起，礦藝 版號採取新的命名規則，以年份作為版號首位（如 26.1）以取代原有的 1.x 版號規則。",
+    "linkText": "覽官方案文",
+    "url": "https://www.minecraft.net/zh-hans/article/minecraft-new-version-numbering-system"
+  },
+  "MemoryStatusProgress": {
+    "title": "記憶體狀態",
+    "info": "{{used}} / {{total}} GB 已使用",
+    "label": {
+      "now": "方使用",
+      "maxAllocation": "為 礦藝 分配的最大值"
+    }
+  },
+  "MenuSelector": {
+    "selectedCount": "已選 {{count}} 項"
+  },
+  "NoSuitableJavaDialog": {
+    "title": "未找到合宜爪哇行時",
+    "body": "於今例，無合宜之爪哇行時可擇。點選“然”以前往爪哇司頁，手動增抑引爪哇。"
+  },
+  "NotFoundPage": {
+    "text": "頁無，即將在 {{seconds}} 秒後跳轉"
+  },
+  "NotifyNewVersionModal": {
+    "title": "發見新版"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "顯全覽（+{{left}}）"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "伺服連通試",
+      "offline": "離線",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "鍛",
+      "fabric": "緞",
+      "neoforge": "新鍛",
+      "authlibInjector": "Authlib Injector",
+      "github": "群碼之匯",
+      "sjmclapi": "SJMC Launcher API"
+    }
+  },
+  "PlayerMenu": {
+    "label": {
+      "manageSkin": "司外觀",
+      "viewSkin": "覽外觀",
+      "delete": "刪此角",
+      "copyUUID": "鈔 UUID"
+    },
+    "toast": {
+      "refreshing": "方重整角資訊",
+      "deleting": "方刪角"
+    }
+  },
+  "ReLoginPlayerModal": {
+    "modal": {
+      "title": "復登入"
+    },
+    "label": {
+      "user": "使用者名稱",
+      "password": "符節"
+    },
+    "placeholder": {
+      "password": "請書入符節"
+    },
+    "button": {
+      "login": "登入"
+    }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "引源",
+      "gameVer": "戲版",
+      "tag": "型別",
+      "sortBy": "次",
+      "name": "名"
+    },
+    "button": {
+      "search": "尋"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "一覽無遺",
+        "Addons": "附屬改囊",
+        "Adventure and RPG": "求索",
+        "API and Library": "支援庫",
+        "Applied Energistics 2": "應用源2",
+        "Armor, Tools, and Weapons": "裝備 武器",
+        "Automation": "自調化",
+        "Biomes": "生態域",
+        "Blood Magic": "血巫法",
+        "Buildcraft": "建築",
+        "Bug Fixes": "勘誤",
+        "Cosmetic": "飾之",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "機械動力",
+        "Dimensions": "幾維",
+        "Education": "師教",
+        "Energy": "源",
+        "Energy, Fluid, and Item Transport": "源 流體 物運",
+        "Farming": "農業",
+        "Food": "食",
+        "Forestry": "林業",
+        "Galacticraft": "星系",
+        "Genetics": "遺傳學",
+        "Industrial Craft": "工業時代2",
+        "Integrated Dynamics": "整合動力",
+        "KubeJS": "KubeJS",
+        "Magic": "巫法",
+        "Map and Information": "生界 資訊",
+        "MCreator": "MCreator",
+        "Miscellaneous": "雜項",
+        "Mobs": "生靈",
+        "Ores and Resources": "礦石 資源",
+        "Performance": "效能",
+        "Player Transport": "戲者運",
+        "Processing": "加工處理",
+        "Redstone": "赤石",
+        "Server Utility": "伺服器",
+        "Skyblock": "懸島",
+        "Storage": "儲存械網",
+        "Structures": "結構",
+        "Technology": "天工",
+        "Thaumcraft": "神秘時代",
+        "Thermal Expansion": "熱力膨脹",
+        "Tinker's Construct": "匠魂",
+        "Twilight Forest": "暮森",
+        "Twitch Integration": "Twitch整合",
+        "Utility & QoL": "實用功用與最佳化",
+        "World Gen": "生界新創",
+        "Auxiliary": "輔改囊",
+        "World": "生界"
+      },
+      "Modrinth": {
+        "All": "一覽無遺",
+        "adventure": "勇",
+        "cursed": "詛咒",
+        "decoration": "飾之",
+        "economy": "經濟",
+        "equipment": "裝備",
+        "food": "食",
+        "game-mechanics": "戲之所行",
+        "library": "支援庫",
+        "magic": "巫法",
+        "management": "司界類",
+        "minigame": "微戲",
+        "mobs": "生靈",
+        "optimization": "最佳化",
+        "social": "交際",
+        "storage": "儲存",
+        "technology": "天工",
+        "transportation": "交通",
+        "utility": "實用",
+        "worldgen": "生界新創"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "一覽無遺",
+        "Types": "型別",
+        "Adventure": "勇",
+        "Creation": "創",
+        "Game Map": "戰戲",
+        "Modded World": "改囊",
+        "Parkour": "猋趫",
+        "Puzzle": "解謎生界",
+        "Survival": "生"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "一覽無遺",
+        "Resolution": "解析度",
+        "16x": "像素十六",
+        "32x": "像素三十二",
+        "64x": "像素六十四",
+        "128x": "像素一百二十八",
+        "256x": "像素二百五十六",
+        "512x and Higher": "512x 及以上",
+        "Styles": "風格",
+        "Animated": "動畫",
+        "Special": "特殊",
+        "Data Packs": "錄囊",
+        "Font Packs": "書體包",
+        "Medieval": "中世紀",
+        "Miscellaneous": "雜項",
+        "Mod Support": "改囊支援",
+        "Modern": "現代",
+        "Photo Realistic": "影視級",
+        "Steampunk": "三清遙獄",
+        "Traditional": "傳統"
+      },
+      "Modrinth": {
+        "All": "一覽無遺",
+        "Resolution": "解析度",
+        "8x-": "8x 或更低",
+        "16x": "像素十六",
+        "32x": "像素三十二",
+        "64x": "像素六十四",
+        "128x": "像素一百二十八",
+        "256x": "像素二百五十六",
+        "512x+": "512x 或更高",
+        "Styles": "風格",
+        "audio": "音訊",
+        "blocks": "塊方",
+        "core-shaders": "核心著色器",
+        "entities": "實體",
+        "environment": "環境",
+        "equipment": "裝備",
+        "fonts": "書體",
+        "gui": "使用者介面",
+        "items": "物",
+        "locale": "歸化",
+        "models": "形",
+        "combat": "戰鬥",
+        "cursed": "詛咒",
+        "decoration": "飾之",
+        "modded": "改囊",
+        "realistic": "狀實",
+        "simplistic": "簡",
+        "themed": "主題",
+        "tweaks": "最佳化",
+        "utility": "實用",
+        "vanilla-like": "原版風格"
+      }
+    },
+    "shaderTagList": {
+      "CurseForge": {
+        "All": "一覽無遺",
+        "Styles": "風格",
+        "Fantasy": "奇幻",
+        "Realistic": "狀實",
+        "Vanilla": "原版"
+      },
+      "Modrinth": {
+        "All": "一覽無遺",
+        "Styles": "風格",
+        "cartoon": "漫",
+        "cursed": "詛咒",
+        "fantasy": "奇幻",
+        "realistic": "狀實",
+        "semi-realistic": "半狀實",
+        "vanilla-like": "原版風格",
+        "atmosphere": "大氣",
+        "bloom": "汎光",
+        "colored-lighting": "照以彩",
+        "foliage": "植被",
+        "path-tracing": "緣蹤",
+        "pbr": "PBR",
+        "reflections": "反射",
+        "shadows": "陰影",
+        "potato": "至低",
+        "performance": "效能",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "screenshot": "影視級"
+      }
+    },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "一覽無遺",
+        "Styles": "風格",
+        "Adventure and RPG": "求索",
+        "Combat / PvP": "戰",
+        "Exploration": "尋探",
+        "Extra Large": "大型整合",
+        "FTB Official Pack": "FTB",
+        "Hardcore": "極生",
+        "Horror": "悚",
+        "Magic": "巫法",
+        "Map Based": "基於生界",
+        "Mini Game": "微戲",
+        "Multiplayer": "眾戲",
+        "Quests": "任務",
+        "Sci-Fi": "行空",
+        "Skyblock": "懸島",
+        "Small / Light": "輕囊整合",
+        "Tech": "天工",
+        "Vanilla+": "原版改良"
+      },
+      "Modrinth": {
+        "All": "一覽無遺",
+        "styles": "風格",
+        "adventure": "勇",
+        "challenging": "挑戰",
+        "combat": "戰鬥",
+        "kitchen-sink": "諸雜",
+        "lightweight": "輕囊整合",
+        "magic": "巫法",
+        "multiplayer": "眾戲",
+        "optimization": "最佳化",
+        "quests": "任務",
+        "technology": "天工"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "一覽無遺",
+        "Styles": "風格",
+        "Magic": "巫法",
+        "Miscellaneous": "雜項",
+        "Fantasy": "奇幻",
+        "Mod Support": "改囊支援",
+        "Tech": "天工",
+        "Library": "支援庫",
+        "Utility": "實用",
+        "Adventure": "勇"
+      },
+      "Modrinth": {
+        "All": "一覽無遺",
+        "styles": "風格",
+        "adventure": "勇",
+        "cursed": "詛咒",
+        "decoration": "飾之",
+        "economy": "經濟",
+        "equipment": "裝備",
+        "food": "食",
+        "game-mechanics": "戲之所行",
+        "library": "支援庫",
+        "magic": "巫法",
+        "management": "司界類",
+        "minigame": "微戲",
+        "mobs": "生靈",
+        "optimization": "最佳化",
+        "social": "交際",
+        "storage": "儲存",
+        "technology": "天工",
+        "transportation": "交通",
+        "utility": "實用",
+        "worldgen": "生界新創"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "幾熱",
+        "Latest update": "近日迭更",
+        "Creation date": "建立日期",
+        "Total downloads": "引數",
+        "A-Z": "名"
+      },
+      "Modrinth": {
+        "relevance": "相關之度",
+        "downloads": "引數",
+        "follows": "從者之數",
+        "newest": "廣佈之期",
+        "updated": "迭更日期"
+      }
+    },
+    "versionList": {
+      "All": "一覽無遺"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "啟者迭更",
+    "body": "新版已畢引，復啟 SJMCL 以畢迭更",
+    "bodyMSI": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
+    "button": {
+      "restart": "復啟",
+      "install": "置",
+      "later": "稍後"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "復原啟者置設",
+    "body": "此操作將會復原啟者的諸置設為本值，您誠欲續乎？"
+  },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "復初例置設",
+    "body": "此操作將會重置本例的戲置設為今全例戲置設，您誠欲續乎？"
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "請謹慎改啟者原始置設案，謬的格式或致原有置設丟失或啟者不能正常工作"
+  },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "置設為啟者繪景"
+    }
+  },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "選擇例",
+      "titleForLaunch": "選擇要啟的例"
+    }
+  },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "選擇角",
+      "titleForAdd": "選擇要增的新角",
+      "titleForLaunch": "選擇要遊玩的角"
+    }
+  },
+  "Services": {
+    "config": {
+      "retrieveLauncherConfig": {
+        "error": {
+          "title": "獲取啟者置設未成"
+        }
+      },
+      "updateLauncherConfig": {
+        "error": {
+          "title": "迭更啟者置設未成"
+        }
+      },
+      "restoreLauncherConfig": {
+        "success": "置設已既成復原",
+        "error": {
+          "title": "復原置設未成，請復試"
+        }
+      },
+      "exportLauncherConfig": {
+        "success": "啟者置設錄出既成",
+        "error": {
+          "title": "啟者置設錄出未成",
+          "description": {
+            "FETCH_ERROR": "與伺服器通訊未成"
+          }
+        }
+      },
+      "importLauncherConfig": {
+        "success": "啟者置設匯入既成",
+        "error": {
+          "title": "啟者置設匯入未成",
+          "description": {
+            "FETCH_ERROR": "與伺服器通訊未成",
+            "INVALID_CODE": "無效的程式碼",
+            "CODE_EXPIRED": "程式碼已過期",
+            "VERSION_MISMATCH": "啟者版不匹配"
+          }
+        }
+      },
+      "retrieveCustomBackgroundList": {
+        "success": "自定繪景列表獲取既成",
+        "error": {
+          "title": "自定繪景列表獲取未成"
+        }
+      },
+      "addCustomBackground": {
+        "success": "自定繪景增既成",
+        "error": {
+          "title": "自定繪景增未成"
+        }
+      },
+      "deleteCustomBackground": {
+        "success": "自定繪景刪既成",
+        "error": {
+          "title": "自定繪景刪未成"
+        }
+      },
+      "retrieveJavaList": {
+        "error": {
+          "title": "爪哇列表獲取未成"
+        }
+      },
+      "validateJava": {
+        "error": {
+          "title": "爪哇驗證未成",
+          "description": {
+            "JAVA_EXEC_INVALID": "爪哇可執行案無效"
+          }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Mojang 爪哇行時引之未成"
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "戲案夾無效",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "戲案夾已增",
+            "GAME_DIR_NOT_EXIST": "戲案夾無"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "引快取已清",
+        "error": {
+          "title": "清引快取未成",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "今有引任務方進行中，請稍後復試",
+            "FILE_DELETION_FAILED": "不能刪快取案，或然案方被使用"
+          }
+        }
+      }
+    },
+    "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "獲取角列表未成"
+        }
+      },
+      "addPlayerOffline": {
+        "success": "離線角增既成",
+        "error": {
+          "title": "離線角增未成",
+          "description": {
+            "DUPLICATE": "角已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
+            "INVALID": "UUID 無效",
+            "TEXTURE_ERROR": "角外觀獲取未成"
+          }
+        }
+      },
+      "fetchOAuthCode": {
+        "error": {
+          "title": "獲取鑒權程式碼未成",
+          "description": {
+            "NETWORK_ERROR": "不能連線至鑒權伺服器",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "INVALID": "伺服器型別謬",
+            "NOT_FOUND": "鑒權伺服器無"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "角增既成",
+        "error": {
+          "title": "角增未成",
+          "description": {
+            "DUPLICATE": "角已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
+            "NETWORK_ERROR": "不能連線至鑒權伺服器",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NOT_FOUND": "鑒權伺服器無",
+            "CANCELLED": "已罷",
+            "INVALID": "無效的鑒權伺服器址",
+            "NO_MINECRAFT_PROFILE": "未找到角，請確認然否已買 礦藝 並建立角"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "角復登入既成",
+        "error": {
+          "title": "角復登入未成",
+          "description": {
+            "NOT_FOUND": "角無",
+            "EXPIRED": "令牌已過期，請復登入",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線至鑒權伺服器",
+            "INVALID": "不支援離線角重整",
+            "CANCELLED": "已罷",
+            "NO_MINECRAFT_PROFILE": "未找到角，請確認然否已買 礦藝 並建立角"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "角增既成",
+        "error": {
+          "title": "角增未成",
+          "description": {
+            "DUPLICATE": "角已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
+            "NETWORK_ERROR": "不能連線至鑒權伺服器",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "INVALID": "戶簿或符節謬",
+            "NOT_FOUND": "鑒權伺服器無",
+            "EXPIRED": "令牌已過期，請復登入"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "角復登入既成",
+        "error": {
+          "title": "角復登入未成",
+          "description": {
+            "NOT_FOUND": "角無",
+            "EXPIRED": "令牌已過期，請復登入",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "連線鑒權伺服器未成",
+            "INVALID": "戶簿或符節謬"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "角增既成",
+        "error": {
+          "title": "角增未成",
+          "description": {
+            "DUPLICATE": "角已存在",
+            "FULL_LOGIN_UNAVAILABLE": "請先登入微軟戶簿後使用此功用。",
+            "NETWORK_ERROR": "不能連線至鑒權伺服器",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "EXPIRED": "令牌已過期，請復登入"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "角外觀迭更既成",
+        "error": {
+          "title": "角外觀迭更未成",
+          "description": {
+            "NOT_FOUND": "角無",
+            "INVALID": "角型別謬",
+            "TEXTURE_ERROR": "角外觀獲取未成"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "角外觀迭更既成",
+        "error": {
+          "title": "角外觀迭更未成",
+          "description": {
+            "NOT_FOUND": "角無",
+            "INVALID": "角型別謬",
+            "TEXTURE_ERROR": "角外觀獲取未成"
+          }
+        }
+      },
+      "deletePlayer": {
+        "success": "角刪既成",
+        "error": {
+          "title": "角刪未成",
+          "description": {
+            "NOT_FOUND": "角無"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "角資訊迭更既成",
+        "error": {
+          "title": "角資訊迭更未成",
+          "description": {
+            "NOT_FOUND": "角無",
+            "EXPIRED": "令牌已過期，請復登入",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線至鑒權伺服器",
+            "INVALID": "不支援離線角重整"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "獲取鑒權伺服器列表未成"
+        }
+      },
+      "fetchAuthServer": {
+        "error": {
+          "title": "獲取鑒權伺服器資訊未成",
+          "description": {
+            "DUPLICATE": "鑒權伺服器已存在",
+            "INVALID": "無效的鑒權伺服器址",
+            "NOT_FOUND": "鑒權伺服器無"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "鑒權伺服器增既成",
+        "error": {
+          "title": "鑒權伺服器增未成",
+          "description": {
+            "DUPLICATE": "鑒權伺服器已存在",
+            "INVALID": "無效的鑒權伺服器址",
+            "NOT_FOUND": "鑒權伺服器無"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "鑒權伺服器刪既成",
+        "error": {
+          "title": "鑒權伺服器刪未成",
+          "description": {
+            "NOT_FOUND": "鑒權伺服器無"
+          }
+        }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "獲取外部戶簿資訊未成",
+          "description": {
+            "NOT_FOUND": "讀取戶簿資訊案謬"
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "外部戶簿資訊匯入既成",
+        "error": {
+          "title": "外部戶簿資訊匯入未成"
+        }
+      }
+    },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "選擇合宜爪哇行時未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
+            "NO_SUITABLE_JAVA": "無合宜之爪哇行時可擇",
+            "SELECTED_JAVA_UNAVAILABLE": "手動所擇之爪哇行時已移除或不可用"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "驗證戲案未成",
+          "description": {
+            "MOD_LOADER_NOT_INSTALLED": "改囊載器未畢置",
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
+            "GAME_FILES_INCOMPLETE": "戲案不完整或缺失",
+            "LAUNCHING_STATE_NOT_FOUND": "啟狀態丟失"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "驗證角未成",
+          "description": {
+            "NOT_FOUND": "角無",
+            "EXPIRED": "訪問令牌已過期，請復登入",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "PARSE_ERROR": "伺服器返回的資料正規化謬矣",
+            "AUTHLIB_INJECTOR_NOT_READY": "引 Authlib-Injector 未成，請驗網路連線",
+            "SAVE_ERROR": "儲存 Authlib-Injector 未成",
+            "LAUNCHING_STATE_NOT_FOUND": "啟狀態丟失"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "戲未成",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "啟狀態丟失",
+            "AUTH_SERVER_NOT_FOUND": "鑒權伺服器無"
+          }
+        }
+      }
+    },
+    "resource": {
+      "fetchGameVersionList": {
+        "error": {
+          "title": "獲取戲版列表未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "獲取戲版元資訊未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "CLIENT_VERSION_NOT_FOUND": "指定戲版無"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "獲取改囊載器列表未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "獲取資源列表未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "獲取資源版列表未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "引戲伺服器未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "獲取遠端資源未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線"
+          }
+        }
+      },
+      "updateMod": {
+        "error": {
+          "title": "迭更改囊未成",
+          "description": {
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "FILE_OPERATION_ERROR": "不能更名舊改囊案"
+          }
+        }
+      }
+    },
+    "instance": {
+      "retrieveInstanceList": {
+        "error": {
+          "title": "獲取例列表未成",
+          "description": {
+            "INVALID_NAME_ERROR": "例逾矩之名",
+            "INVALID_SOURCE_PATH": "例夾無效",
+            "CONFLICT_NAME_ERROR": "今例夾存在重名例",
+            "FILE_MOVE_FAILED": "例夾徙未成"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "例引任務建立未成",
+          "description": {
+            "CONFLICT_NAME_ERROR": "今例夾存在重名例",
+            "FOLDER_CREATION_FAILED": "目標案夾建立未成",
+            "FILE_CREATION_FAILED": "目標案建立未成",
+            "NETWORK_ERROR": "網路謬",
+            "CLIENT_JSON_PARSE_ERROR": "例版資訊解析謬",
+            "ASSET_INDEX_PARSE_ERROR": "資源索引案解析謬"
+          }
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "例置設迭更未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
+            "NOT_FOUND": "例無"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "例戲置設獲取未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無"
+          }
+        }
+      },
+      "restoreInstanceGameConfig": {
+        "success": "例戲置設已重置",
+        "error": {
+          "title": "例戲置設重置未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "未找到指定 ID 的例",
+            "SAVE_ERROR": "儲存例置設案未成"
+          }
+        }
+      },
+      "retrieveInstanceSubdirPath": {
+        "error": {
+          "title": "獲取例子夾未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無或型別謬"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "例刪既成",
+        "error": {
+          "title": "例刪未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無"
+          }
+        }
+      },
+      "renameInstance": {
+        "error": {
+          "title": "例更名未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
+            "CONFLICT_NAME_ERROR": "今例夾存在重名例",
+            "INVALID_NAME_ERROR": "例逾矩之名",
+            "INVALID_SOURCE_PATH": "例夾無效",
+            "FILE_MOVE_FAILED": "例夾徙未成"
+          }
+        }
+      },
+      "copyResourceToInstances": {
+        "success": "資源鈔既成",
+        "error": {
+          "title": "鈔資源未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無或型別謬",
+            "INVALID_SOURCE_PATH": "無效的源徑",
+            "ZIP_FILE_PROCESS_FAILED": "壓縮案讀取或解壓未成",
+            "FILE_COPY_FAILED": "鈔案命令執行未成",
+            "FOLDER_CREATION_FAILED": "目標案夾建立未成"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "資源徙既成",
+        "error": {
+          "title": "徙資源未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無或型別謬",
+            "INVALID_SOURCE_PATH": "無效的源徑",
+            "FILE_MOVE_FAILED": "徙案命令執行未成",
+            "FOLDER_CREATION_FAILED": "目標案夾建立未成"
+          }
+        }
+      },
+      "retrieveWorldList": {
+        "error": {
+          "title": "獲取生界列表未成"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "獲取伺服器列表未成",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat 或已損壞"
+          }
+        }
+      },
+      "addGameServer": {
+        "success": "戲伺服器增既成",
+        "error": {
+          "title": "增戲伺服器未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例ID無",
+            "FILE_OPERATION_ERROR": "寫入伺服器資訊未成",
+            "DUPLICATE_SERVER": "伺服器已存在"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "戲伺服器刪既成",
+        "error": {
+          "title": "刪戲伺服器未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例ID無",
+            "FILE_OPERATION_ERROR": "寫入伺服器資訊未成",
+            "SERVER_NOT_FOUND": "伺服器無"
+          }
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "獲取改囊列表未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "獲取資囊列表未成"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "獲取伺服器資囊列表未成"
+        }
+      },
+      "retrieveSchematicList": {
+        "error": {
+          "title": "獲取蜃圖列表未成"
+        }
+      },
+      "retrieveShaderPackList": {
+        "error": {
+          "title": "獲取著色器包列表未成"
+        }
+      },
+      "retrieveScreenshotList": {
+        "error": {
+          "title": "獲取截影列表未成"
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "改囊狀態切換未成",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "改囊案無，或已更名、徙或刪"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "獲取生界詳細資訊未成",
+          "description": {
+            "WORLD_NOT_EXIST_ERROR": "生界無",
+            "LEVEL_NOT_EXIST_ERROR": "生界資料案無",
+            "LEVEL_PARSE_ERROR": "生界資料案解析謬"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "啟捷徑已增到桌面",
+        "error": {
+          "title": "啟捷徑建立未成",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "命令執行未成",
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無"
+          }
+        }
+      },
+      "finishModLoaderInstall": {
+        "loading": "方為 {{instanceName}} 置改囊載器",
+        "success": "改囊載器置畢",
+        "error": {
+          "title": "改囊載器弗能裝之",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
+            "INSTALLATION_DUPLICATED": "檢測到另一個程序已在置中",
+            "MAIN_CLASS_NOT_FOUND": "主類未找到",
+            "PROCESSOR_EXECUTION_FAILED": "置任務執行未成",
+            "LOADER_INSTALLER_NOT_FOUND": "載器置程式無"
+          }
+        }
+      },
+      "finishOptiFineLoaderInstall": {
+        "loading": "方為 {{instanceName}} 置 OptiFine",
+        "success": "OptiFine 置畢",
+        "error": {
+          "title": "OptiFine 弗能裝之",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
+            "INSTALLATION_DUPLICATED": "檢測到另一個程序已在置中",
+            "PROCESSOR_EXECUTION_FAILED": "置任務執行未成",
+            "LOADER_INSTALLER_NOT_FOUND": "OptiFine 置程式無",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版資訊解析未成",
+            "INVALID_SOURCE_PATH": "資源徑無效",
+            "NO_SUITABLE_JAVA": "未得可用之爪哇行時",
+            "SELECTED_JAVA_UNAVAILABLE": "所擇爪哇行時不可用"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "不能更改改囊載器",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部置的版，不能解除安裝或更換"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "改改囊載器未成",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部置的版，不能解除安裝或更換"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "獲取改囊集資源資訊未成",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "改囊集案無，或已更名、徙或刪",
+            "MODPACK_MANIFEST_PARSE_ERROR": "改囊集清單案解析謬"
+          }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "獲取可錄出案列表未成"
+        }
+      },
+      "exportModpack": {
+        "success": "錄出改囊集既成",
+        "error": {
+          "title": "錄出改囊集未成"
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "自定例圖示增既成",
+        "error": {
+          "title": "自定例圖示增未成"
+        }
+      }
+    },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "獲取擴充套件外掛列表未成"
+        }
+      },
+      "addExtension": {
+        "success": "擴充套件外掛增既成",
+        "error": {
+          "title": "擴充套件外掛增未成",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "擴充套件包內容格式無效",
+            "INVALID_IDENTIFIER": "擴充套件識別符號無效",
+            "INVALID_NAME": "擴充套件逾矩之名",
+            "LAUNCHER_VERSION_TOO_LOW": "啟者版過低",
+            "EXTENSION_NOT_FOUND": "未找到待增案"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "擴充套件外掛刪既成",
+        "error": {
+          "title": "擴充套件外掛刪未成",
+          "description": {
+            "INVALID_IDENTIFIER": "擴充套件識別符號無效",
+            "EXTENSION_NOT_FOUND": "未找到對應擴充套件外掛"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "error": "任務建立未成"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "{{param}} 引任務已始",
+          "Failed": "{{param}} 部分引之未成，請復試",
+          "Completed": "{{param}} 已畢引",
+          "Stopped": "{{param}} 引任務已停止",
+          "Cancelled": "{{param}} 引任務已罷"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "刪案既成",
+        "error": {
+          "title": "刪案未成"
+        }
+      }
+    }
+  },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "全例戲設",
+      "java": "爪哇",
+      "general": "貫用",
+      "appearance": "外觀",
+      "download": "引資項",
+      "intelligence": "智慧",
+      "extension": "擴充套件外掛",
+      "help": "案文與助",
+      "about": "有涉"
+    }
+  },
+  "SkinPreview": {
+    "cape": "蓑衣",
+    "animation": {
+      "idle": "閒",
+      "walk": "行",
+      "run": "跑步",
+      "wave": "揮手"
+    },
+    "button": {
+      "enableRotation": "啟旋轉",
+      "disableRotation": "禁旋轉",
+      "play": "播放",
+      "pause": "暫止"
+    },
+    "error": {
+      "loadSkin": "載入外觀未成"
+    }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "聚合尋"
+    },
+    "tip": "集中一處尋本地內容與線上戲資源",
+    "empty": "無尋結果",
+    "resource": {
+      "mod": "尋有涉 {{query}} 的改囊",
+      "world": "尋有涉 {{query}} 的生界",
+      "resourcepack": "尋有涉 {{query}} 的資囊",
+      "shader": "尋有涉 {{query}} 的光影",
+      "datapack": "尋有涉 {{query}} 的錄囊",
+      "modpack": "尋有涉 {{query}} 的改囊集",
+      "curseforge": "在 CurseForge 上",
+      "modrinth": "在 Modrinth 上"
+    },
+    "result": {
+      "page": "頁",
+      "recentViewed": "最近訪問過",
+      "instance": "例",
+      "player": "角",
+      "curseforge": "在 CurseForge 上尋",
+      "modrinth": "在 Modrinth 上尋"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "於群碼之匯爲我輩點星"
+    },
+    "body": "若您喜愛 SJMCL，並希望支援我輩，可於群碼之匯爲我輩點一星乎？此小舉義甚重，足以勉我輩持續爲君增益其用。",
+    "button": {
+      "later": "稍後",
+      "starUs": "點亮星標"
+    }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "同調置設 - 錄出"
+    },
+    "label": {
+      "token": "令牌"
+    },
+    "helper": "將上述令牌輸入至待同調的裝置以畢同調",
+    "countdown": "{{seconds}} 秒後重整"
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "同調置設 - 匯入"
+    },
+    "label": {
+      "token": "令牌"
+    },
+    "helper": "請書入需同調裝置生成的令牌"
+  },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "戲誌",
+      "gameError": "哎呀！戲潰了"
+    }
+  },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "無效的行徑",
+      "content": "您方臨時或非法夾下行 SJMCL，您的置設和戲資料或丟失。請將 SJMCL 徙到他者所後再次行。",
+      "btnContinue": "仍要行"
+    }
+  },
+  "Utils": {
+    "datetime": {
+      "formatRelativeTime": {
+        "now": "現在",
+        "minutes-ago": "{{count}} 分鐘前",
+        "last-hour": "1 小時前",
+        "hours-ago": "{{count}} 小時前",
+        "yesterday": "昨天",
+        "others": "{{time}}"
+      }
+    },
+    "env": {
+      "checkFrontendCompatibility": {
+        "warning": {
+          "title": "械網 WebView 版低，部分介面元素或不能正常顯"
+        }
+      }
+    },
+    "wiki": {
+      "baseUrl": "https://zh.minecraft.wiki/w/{{key}}?variant=zh-cn",
+      "key": {
+        "javaEdition": "爪哇版{{version}}"
+      }
+    }
+  },
+  "ViewSkinModal": {
+    "skinView": "覽外觀"
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "歡迎！"
+    },
+    "body": {
+      "text": "歡迎使用 SJMCL！在始使用之前，請務必閱讀並許我們的<terms>客契</terms>。"
+    },
+    "warning": {
+      "unstableVersion": "您方使用{{versionLabel}}的 SJMCL，部分功用或不穩定或未開發畢，歡迎報告使用問題與功用薦。",
+      "winArm64Notice": "SJMCL 現已支援 Windows on Arm 平臺。<br/>如您方使用 <b>高通</b> 平臺，您或須置 <glpack>OpenGL 相容包</glpack> 後才能進行戲。"
+    },
+    "button": {
+      "agree": "許並續"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "生界基礎資料 - {{worldName}}"
+    }
+  }
+}

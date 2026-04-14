@@ -62,7 +62,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
   const instanceId = Array.isArray(id) ? id[0] : id;
 
   const { summary, handleUpdateInstanceConfig } = useInstanceSharedData();
-  const { config } = useLauncherConfig();
+  const { config, isZh } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const navBarType = config.general.functionality.instancesNavType;
 
@@ -225,9 +225,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         direction="row"
         size="xs"
         mb={4}
-        spacing={
-          config.general.general.language.startsWith("zh") ? "0.05rem" : 0.5
-        }
+        spacing={isZh ? "0.05rem" : 0.5}
         items={instanceTabList.map((item) => ({
           value: `/instances/details/${encodeURIComponent(instanceId || "")}/${item.key}`,
           label: (

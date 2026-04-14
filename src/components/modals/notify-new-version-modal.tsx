@@ -30,14 +30,14 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
   const toast = useToast();
   const router = useRouter();
   const { t } = useTranslation();
-  const { config } = useLauncherConfig();
+  const { config, isZh } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
   const isLinux = config.basicInfo.osType === "linux"; // for Linux, navigate to the website.
 
   const handleDownloadUpdate = () => {
     if (isLinux) {
-      const lang = config.general.general.language === "zh-Hans" ? "zh" : "en";
+      const lang = isZh ? "zh" : "en";
       openUrl(`https://mc.sjtu.cn/sjmcl/${lang}`);
     } else {
       ConfigService.downloadLauncherUpdate(newVersion).then((response) => {
@@ -62,7 +62,6 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
     ); // match MD separator
 
     // If user language is Chinese, swap to make Chinese part on top.
-    const isZh = config.general.general.language.startsWith("zh");
     return m && isZh
       ? `${m[1].trim()}\n${m[3].trim()}\n---\n- ${m[2].trim()}`
       : raw;
