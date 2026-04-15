@@ -249,7 +249,6 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
                 }}
                 selectedModLoader={selectedModLoader}
                 onSelectModLoader={setSelectedModLoader}
-                mode="modloader"
               />
             </Box>
           )}
