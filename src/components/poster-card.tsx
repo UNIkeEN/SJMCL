@@ -67,7 +67,7 @@ const PosterCard = ({ data }: PosterCardProps) => {
 
       <CardBody p={3}>
         <VStack spacing={1} alignItems="start" overflow="hidden">
-          <Text fontSize="xs-sm">{title}</Text>
+          <Text fontSize="xs-sm">{cleanHtmlText(title)}</Text>
           {keywords && keywords.trim() && (
             <Wrap spacing={1}>
               {keywords.split(",").map((keyword, index) => (

@@ -153,7 +153,7 @@ const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
       )}
       <Box position="relative" pt={3} bg="inherit">
         <Text fontSize="sm" noOfLines={2} visibility="hidden">
-          {post?.title}
+          {cleanHtmlText(post?.title || "")}
         </Text>
         <Box
           position="absolute"
@@ -164,7 +164,7 @@ const NewsCard: React.FC<{ post: NewsPostSummary | null }> = ({ post }) => {
           pt={1.5}
         >
           <Text fontSize="sm" noOfLines={2}>
-            {post?.title}
+            {cleanHtmlText(post?.title || "")}
           </Text>
           <Text
             fontSize="xs"
