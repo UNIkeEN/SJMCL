@@ -23,7 +23,7 @@ permissions:
   contents: read
 
 jobs:
-  Changes:
+  changes:
     runs-on: ubuntu-latest
     outputs:
       should_run_lint: ${{ steps.compute.outputs.should_run_lint }}
@@ -37,7 +37,7 @@ jobs:
           filters: |
             src:
               - 'src/**'
-            src_non_locales:
+            src-non-locales:
               - 'src/**'
               - '!src/locales/**'
             tauri:
@@ -53,7 +53,7 @@ jobs:
             should_run_lint=true
           fi
 
-          if [ "${{ steps.filter.outputs.src_non_locales }}" = "true" ] || [ "${{ steps.filter.outputs.tauri }}" = "true" ]; then
+          if [ "${{ steps.filter.outputs.src-non-locales }}" = "true" ] || [ "${{ steps.filter.outputs.tauri }}" = "true" ]; then
             should_run_build=true
           fi
 
@@ -61,8 +61,8 @@ jobs:
           echo "should_run_build=$should_run_build" >> "$GITHUB_OUTPUT"
 
   Lint:
-    needs: Changes
-    if: needs.Changes.outputs.should_run_lint == 'true'
+    needs: changes
+    if: needs.changes.outputs.should_run_lint == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -88,8 +88,8 @@ jobs:
           find src-tauri/src -name '*.rs' | xargs rustfmt --check
 
   Build:
-    needs: Changes
-    if: needs.Changes.outputs.should_run_build == 'true'
+    needs: changes
+    if: needs.changes.outputs.should_run_build == 'true'
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
