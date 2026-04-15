@@ -15,7 +15,7 @@
 * **便捷的資源下載**：支援從 CurseForge 與 Modrinth 等源下載遊戲用戶端、模組載入器、各類遊戲資源與模組包。
 * **多帳戶系統支援**：內建 Microsoft 登入與第三方認證伺服器支援，相容 Yggdrasil Connect 的 OAuth 登入流程規範提案。
 * **外部服務協同**：透過深度連結與 MCP 服務，與外部網頁、程式及 Agent 服務協同運作，提供一系列便捷功能與自動化能力。
-* **開放外掛系統**：支援開發外掛，為啟動器擴充更多有趣且實用的功能。（即將推出）
+* **開放擴展系統**：支援開發擴展，為啟動器擴展更多有趣且實用的功能。[>> 如何開發擴展](#開發擴展)
 
 > 注意：部分功能可能受地區、執行平臺或程式發行類型限制。
 
@@ -88,6 +88,10 @@ npm run tauri dev
 * 在開始前，請先閱讀我們的 [貢獻指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（內含開發流程詳細說明）。
 * API 參考與部分開發者筆記見 [開發者文件](https://mc.sjtu.cn/sjmcl/dev)。
 * 歡迎透過 [Pull Request](https://github.com/UNIkeEN/SJMCL/pulls) 或 [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues) 分享您的想法。
+
+### 開發擴展
+
+如果您希望為 SJMCL 開發擴展，歡迎查看 [擴展文件](https://mc.sjtu.cn/sjmcl/dev/extension/)。內含擴展系統的介紹、API 參考。我們還提供了腳手架，便於快速建立範本專案並上手。
 
 ### 專案活動
 

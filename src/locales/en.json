@@ -802,7 +802,22 @@
     "title": "Settings of {{name}}"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL cannot control the behavior of third-party extensions, including how they handle your personal data. Only install and enable extensions from trusted sources."
+    "alert": "SJMCL cannot control the behavior of third-party extensions, including how they handle your personal data. Only install and enable extensions from trusted sources.",
+    "installed": "Installed Extensions",
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "Extension Development Documentation",
+          "description": "Read the introduction to the extension system and API docs, and get started quickly with the scaffold.",
+          "url": "https://mc.sjtu.cn/sjmcl/en/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "Discover Community Extensions",
+          "description": "Visit GitHub to browse a list of extensions developed by the community.",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
   },
   "GameAdvancedSettingsPage": {
     "title": "Advanced Settings",

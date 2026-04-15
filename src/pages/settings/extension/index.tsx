@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
-import { openPath } from "@tauri-apps/plugin-opener";
+import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuCircleCheck, LuCircleMinus } from "react-icons/lu";
@@ -210,51 +210,99 @@ const ExtensionSettingsPage = () => {
     )
   );
 
+  const extensionDocItems: OptionItemGroupProps["items"] = [
+    {
+      title: t("ExtensionSettingsPage.top.settings.extensionDocs.title"),
+      description: t(
+        "ExtensionSettingsPage.top.settings.extensionDocs.description"
+      ),
+      children: (
+        <CommonIconButton
+          label={t("ExtensionSettingsPage.top.settings.extensionDocs.url")}
+          icon="external"
+          withTooltip
+          tooltipPlacement="bottom-end"
+          size="xs"
+          h={18}
+          onClick={() =>
+            openUrl(t("ExtensionSettingsPage.top.settings.extensionDocs.url"))
+          }
+        />
+      ),
+    },
+    {
+      title: t("ExtensionSettingsPage.top.settings.awesomeExtensions.title"),
+      description: t(
+        "ExtensionSettingsPage.top.settings.awesomeExtensions.description"
+      ),
+      children: (
+        <CommonIconButton
+          label={t("ExtensionSettingsPage.top.settings.awesomeExtensions.url")}
+          icon="external"
+          withTooltip
+          tooltipPlacement="bottom-end"
+          size="xs"
+          h={18}
+          onClick={() =>
+            openUrl(
+              t("ExtensionSettingsPage.top.settings.awesomeExtensions.url")
+            )
+          }
+        />
+      ),
+    },
+  ];
+
   return (
-    <Section
-      title={t("SettingsLayout.settingsDomainList.extension")}
-      titleExtra={
-        <HStack>
-          <Badge colorScheme="purple">Beta</Badge>
-          <CountTag count={extensions.length} />
-        </HStack>
-      }
-      headExtra={
-        <HStack spacing={2}>
-          {secMenu.map((btn, index) => (
-            <CommonIconButton
-              key={index}
-              icon={btn.icon}
-              onClick={btn.onClick}
-              size="xs"
-              fontSize="sm"
-              h={21}
+    <>
+      <Section
+        title={t("SettingsLayout.settingsDomainList.extension")}
+        titleExtra={<Badge colorScheme="purple">Beta</Badge>}
+        isAccordion
+      >
+        <OptionItemGroup items={extensionDocItems} />
+      </Section>
+      <Section
+        title={t("ExtensionSettingsPage.installed")}
+        titleExtra={<CountTag count={extensions.length} />}
+        isAccordion
+        headExtra={
+          <HStack spacing={2}>
+            {secMenu.map((btn, index) => (
+              <CommonIconButton
+                key={index}
+                icon={btn.icon}
+                onClick={btn.onClick}
+                size="xs"
+                fontSize="sm"
+                h={21}
+              />
+            ))}
+          </HStack>
+        }
+      >
+        {!config.states.extensionSettingsPage.hideAlert && (
+          <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
+            <AlertIcon />
+            {t("ExtensionSettingsPage.alert")}
+            <CloseButton
+              alignSelf="flex-start"
+              position="relative"
+              right={-2}
+              size="sm"
+              onClick={() =>
+                update("states.extensionSettingsPage.hideAlert", true)
+              }
             />
-          ))}
-        </HStack>
-      }
-    >
-      {!config.states.extensionSettingsPage.hideAlert && (
-        <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
-          <AlertIcon />
-          {t("ExtensionSettingsPage.alert")}
-          <CloseButton
-            alignSelf="flex-start"
-            position="relative"
-            right={-2}
-            size="sm"
-            onClick={() =>
-              update("states.extensionSettingsPage.hideAlert", true)
-            }
-          />
-        </Alert>
-      )}
-      {extensions.length > 0 ? (
-        <OptionItemGroup items={extensionItems} />
-      ) : (
-        <Empty withIcon={false} size="sm" />
-      )}
-    </Section>
+          </Alert>
+        )}
+        {extensions.length > 0 ? (
+          <OptionItemGroup items={extensionItems} />
+        ) : (
+          <Empty withIcon={false} size="sm" />
+        )}
+      </Section>
+    </>
   );
 };
 

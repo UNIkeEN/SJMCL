@@ -802,7 +802,22 @@
     "title": "{{name}} 设置"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。"
+    "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。",
+    "installed": "已安装扩展",
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "扩展开发文档",
+          "description": "阅读扩展系统的介绍与 API 文档，使用脚手架快速上手",
+          "url": "https://mc.sjtu.cn/sjmcl/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "发现社区扩展",
+          "description": "前往 GitHub 浏览社区开发的扩展列表",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
   },
   "GameAdvancedSettingsPage": {
     "title": "高级游戏设置",

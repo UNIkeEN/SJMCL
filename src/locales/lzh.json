@@ -802,7 +802,22 @@
     "title": "{{name}} 置設"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL 不能制第三方擴充之行，亦不能保其私據之處置。惟可信源之擴充，可置而啟之。"
+    "alert": "SJMCL 不能制第三方擴充之行，亦不能保其私據之處置。惟可信源之擴充，可置而啟之。",
+    "installed": "已裝擴充套件",
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "擴充開發案文",
+          "description": "讀擴充之制介紹與介面用法，以腳手架速上手",
+          "url": "https://mc.sjtu.cn/sjmcl/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "覽社群擴充",
+          "description": "往群碼之匯覽社群所開發之擴充列表",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
   },
   "GameAdvancedSettingsPage": {
     "title": "戲之進階置設",
@@ -2698,13 +2713,13 @@
     "extension": {
       "retrieveExtensionList": {
         "error": {
-          "title": "獲取擴充套件外掛列表未成"
+          "title": "獲取擴充套件列表未成"
         }
       },
       "addExtension": {
-        "success": "擴充套件外掛增既成",
+        "success": "擴充套件增既成",
         "error": {
-          "title": "擴充套件外掛增未成",
+          "title": "擴充套件增未成",
           "description": {
             "INVALID_PACKAGE_FORMAT": "擴充套件包內容格式無效",
             "INVALID_IDENTIFIER": "擴充套件識別符號無效",
@@ -2715,12 +2730,12 @@
         }
       },
       "deleteExtension": {
-        "success": "擴充套件外掛刪既成",
+        "success": "擴充套件刪既成",
         "error": {
-          "title": "擴充套件外掛刪未成",
+          "title": "擴充套件刪未成",
           "description": {
             "INVALID_IDENTIFIER": "擴充套件識別符號無效",
-            "EXTENSION_NOT_FOUND": "未找到對應擴充套件外掛"
+            "EXTENSION_NOT_FOUND": "未找到對應擴充套件"
           }
         }
       }
@@ -2756,7 +2771,7 @@
       "appearance": "外觀",
       "download": "引資項",
       "intelligence": "智慧",
-      "extension": "擴充套件外掛",
+      "extension": "擴充套件",
       "help": "案文與助",
       "about": "有涉"
     }

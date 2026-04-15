@@ -15,7 +15,7 @@
 * **Convenient Resource Download**: Supports downloading game clients, mod loaders, various game resources and modpacks from CurseForge and Modrinth.
 * **Multi-Account System Support**: Built-in Microsoft login and third-party authentication server support, compatible with the OAuth login process proposed by the Yggdrasil Connect proposal.
 * **External Service Collaboration**: Works with external webpages, applications, and Agent services through deeplinks and MCP services, delivering a range of convenient features and automation capabilities.
-* **Open Plugin System**: Supports plugin development to extend the launcher with more interesting and practical features. (Coming Soon)
+* **Open Extension System**: Supports extension development to extend the launcher with more interesting and practical features. [>> How to develop extensions](#developing-extensions)
 
 > Note: some features may be limited by region, platform, or bundle type.
 
@@ -88,6 +88,10 @@ We warmly invite contributions from everyone.
 * Before you get started, please take a moment to review our [Contributing Guide](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md) (includes more details on the development workflow). 
 * API references and some developers’ insights can be found in the [Developer Documentation](https://mc.sjtu.cn/sjmcl/en/dev).
 * Feel free to share your ideas through [Pull Requests](https://github.com/UNIkeEN/SJMCL/pulls) or [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues).
+
+### Developing Extensions
+
+If you want to develop extensions for SJMCL, check out the [Extension Documentation](https://mc.sjtu.cn/sjmcl/en/dev/extension/). It includes an introduction to the extension system and API references. We also provide a scaffold to help you quickly create a template project and get started.
 
 ### Repo Activity
 
