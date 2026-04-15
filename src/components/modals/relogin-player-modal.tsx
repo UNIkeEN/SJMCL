@@ -5,10 +5,8 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -17,6 +15,8 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -127,8 +127,10 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
     <Modal {...props} onClose={handleCloseModal}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("ReLoginPlayerModal.modal.title")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>
+          {t("ReLoginPlayerModal.modal.title")}
+        </MacosModalHeader>
+        <MacosCloseButton onClick={handleCloseModal} />
         <ModalBody>
           <VStack spacing={3.5} align="flex-start">
             {isOAuth ? (

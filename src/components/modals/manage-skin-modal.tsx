@@ -9,10 +9,8 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Radio,
@@ -26,6 +24,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuFolderOpen } from "react-icons/lu";
 import { AutoSizer } from "react-virtualized";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import SegmentedControl from "@/components/common/segmented";
 import SkinPreview from "@/components/skin-preview";
 import { useLauncherConfig } from "@/contexts/config";
@@ -218,8 +218,8 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent width="100%">
-        <ModalHeader>{t("ManageSkinModal.skinManage")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>{t("ManageSkinModal.skinManage")}</MacosModalHeader>
+        <MacosCloseButton onClick={onClose} />
         <ModalBody width="100%">
           <Grid templateColumns="3fr 2fr" gap={4} h="320px" width="100%">
             <Box width="100%" height="100%">

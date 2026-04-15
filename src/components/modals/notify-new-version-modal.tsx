@@ -2,10 +2,8 @@ import {
   Button,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
@@ -13,6 +11,8 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import MarkdownContainer from "@/components/common/markdown-container";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -71,8 +71,8 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
     <Modal scrollBehavior="inside" size="xl" {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{`${t("NotifyNewVersionModal.title")} - ${newVersion.version}`}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>{`${t("NotifyNewVersionModal.title")} - ${newVersion.version}`}</MacosModalHeader>
+        <MacosCloseButton onClick={props.onClose} />
         <ModalBody>
           <MarkdownContainer>
             {processReleaseNotes(newVersion.releaseNotes || "")}

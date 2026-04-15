@@ -7,10 +7,8 @@ import {
   Image,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Skeleton,
@@ -20,6 +18,8 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItem } from "@/components/common/option-item";
 import { LoaderSelector } from "@/components/loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
@@ -128,12 +128,12 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>
+        <MacosModalHeader>
           {t(
             `ChangeModLoaderModal.header.title.${currentModLoader.loaderType === "Unknown" ? "install" : "change"}`
           )}
-        </ModalHeader>
-        <ModalCloseButton />
+        </MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
         {currentModLoader.loaderType !== "Unknown" && (
           <Flex position="relative" align="center" justify="center" py={2}>
             <Flex flex="1" justify="flex-end" pr={8}>

@@ -3,10 +3,8 @@ import {
   Center,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   VStack,
@@ -15,6 +13,8 @@ import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BeatLoader } from "react-spinners";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -199,8 +199,10 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>{t("ImportModpackModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>
+          {t("ImportModpackModal.header.title")}
+        </MacosModalHeader>
+        <MacosCloseButton onClick={onClose} />
         <ModalBody h="100%">
           {isPageLoading ? (
             <Center h="100%">

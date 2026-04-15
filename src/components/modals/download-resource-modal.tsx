@@ -4,9 +4,7 @@ import {
   Icon,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
@@ -23,6 +21,8 @@ import {
   LuPuzzle,
   LuSquareLibrary,
 } from "react-icons/lu";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import NavMenu from "@/components/common/nav-menu";
 import ResourceDownloader from "@/components/resource-downloader";
 import { useLauncherConfig } from "@/contexts/config";
@@ -77,7 +77,7 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%" pb={4}>
-        <ModalHeader>
+        <MacosModalHeader>
           <HStack w="100%" justify="flex-start" align="center">
             <Text>{t("DownloadResourceModal.header.title")}</Text>
             <NavMenu
@@ -116,8 +116,8 @@ const DownloadResourceModal: React.FC<DownloadResourceModalProps> = ({
               }))}
             />
           </HStack>
-        </ModalHeader>
-        <ModalCloseButton />
+        </MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
             <ResourceDownloader

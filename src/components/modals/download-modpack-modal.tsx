@@ -3,14 +3,14 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Text,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import ResourceDownloader from "@/components/resource-downloader";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 
@@ -34,12 +34,12 @@ export const DownloadModpackModal: React.FC<DownloadModpackModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>
+        <MacosModalHeader>
           <HStack w="100%" justify="flex-start" align="center">
             <Text>{t("DownloadModpackModal.header.title")}</Text>
           </HStack>
-        </ModalHeader>
-        <ModalCloseButton />
+        </MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
         <Flex flexGrow="1" flexDir="column">
           <ModalBody>
             <ResourceDownloader

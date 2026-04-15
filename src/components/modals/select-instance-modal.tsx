@@ -1,14 +1,14 @@
 import {
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import InstancesView from "@/components/instances-view";
 import { InstanceSummary } from "@/models/instance/misc";
 
@@ -32,10 +32,10 @@ const SelectInstanceModal: React.FC<SelectInstanceModalProps> = ({
     <Modal scrollBehavior="inside" {...modalProps}>
       <ModalOverlay />
       <ModalContent maxH="calc(100vh - 7.5rem)">
-        <ModalHeader>
+        <MacosModalHeader>
           {modalTitle || t("SelectInstanceModal.header.title")}
-        </ModalHeader>
-        <ModalCloseButton />
+        </MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
         <ModalBody display="flex" flexDir="column" flex="1">
           <InstancesView
             instances={candidateInstances}

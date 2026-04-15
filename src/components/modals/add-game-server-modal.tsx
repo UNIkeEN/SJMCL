@@ -6,16 +6,16 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   VStack,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
@@ -95,8 +95,10 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{t("AddGameServerModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
+        <MacosModalHeader>
+          {t("AddGameServerModal.header.title")}
+        </MacosModalHeader>
+        <MacosCloseButton onClick={onClose} />
         <ModalBody>
           <VStack spacing={4} align="stretch">
             <FormControl isInvalid={isServerAddrInvalid} isRequired>

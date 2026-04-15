@@ -4,10 +4,8 @@ import {
   HStack,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   ModalProps,
   Tag,
@@ -18,6 +16,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuDownload, LuGlobe, LuUpload } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import { MacosCloseButton } from "@/components/common/macos-close-button";
+import { MacosModalHeader } from "@/components/common/macos-modal-header";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -207,10 +207,10 @@ const AlertResourceDependencyModal: React.FC<
     >
       <ModalOverlay />
       <ModalContent h="100%">
-        <ModalHeader>
+        <MacosModalHeader>
           {t("AlertResourceDependencyModal.header.title")}
-        </ModalHeader>
-        <ModalCloseButton />
+        </MacosModalHeader>
+        <MacosCloseButton onClick={modalProps.onClose} />
 
         <ModalBody
           flex="1"
