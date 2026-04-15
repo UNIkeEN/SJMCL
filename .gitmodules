@@ -1,3 +1,6 @@
 [submodule "tools/vscode-extension"]
 	path = tools/vscode-extension
 	url = git@github.com:SJMC-Dev/SJMCL-dev-extension.git
+[submodule "tools/create-extension-CLI"]
+	path = tools/create-extension-CLI
+	url = git@github.com:SJMC-Dev/SJMCL-extension-CLI.git
