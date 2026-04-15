@@ -1,9 +1,10 @@
 import { Box, VStack } from "@chakra-ui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import HomeWidget from "@/components/extension/home-widget";
+import { useLauncherConfig } from "@/contexts/config";
 import { useExtensionHost } from "@/contexts/extension/host";
 import { ExtensionHomeWidgetContribution } from "@/models/extension";
-import { clamp } from "@/utils/math";
+import { areArraysEqual, clamp } from "@/utils/math";
 
 interface HomeWidgetContainerProps {
   maxWidth: number;
@@ -14,51 +15,133 @@ interface WidthBounds {
   upper: number;
 }
 
+type HomeWidgetStateTuple = [string, number, boolean];
+
 const DEFAULT_WIDGET_WIDTH = 300;
 
-const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
-  const { homeWidgets, stateStore } = useExtensionHost();
-  const widgets = homeWidgets;
+const areHomeWidgetStatesEqual = (
+  left: HomeWidgetStateTuple[],
+  right: HomeWidgetStateTuple[]
+) => {
+  return areArraysEqual(
+    left,
+    right,
+    (
+      [leftIdentifier, leftWidth, leftCollapsed],
+      [rightIdentifier, rightWidth, rightCollapsed]
+    ) =>
+      leftIdentifier === rightIdentifier &&
+      leftWidth === rightWidth &&
+      leftCollapsed === rightCollapsed
+  );
+};
 
+const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
+  const { config, update } = useLauncherConfig();
+  const { homeWidgets } = useExtensionHost();
+  const persistedState = config.extension.homeWidgetState;
+
+  const widgetsByIdentifier = useMemo(() => {
+    return new Map(homeWidgets.map((widget) => [widget.identifier, widget]));
+  }, [homeWidgets]);
+
+  const visibleWidgetIdentifiers = useMemo(
+    () => homeWidgets.map((widget) => widget.identifier),
+    [homeWidgets]
+  );
+
+  const persistedStateMap = useMemo(() => {
+    return new Map(
+      persistedState.map(([identifier, width, collapsed]) => [
+        identifier,
+        { width, collapsed },
+      ])
+    );
+  }, [persistedState]);
+
+  const [widgetOrder, setWidgetOrder] = useState<string[]>([]);
   const [widgetWidthMap, setWidgetWidthMap] = useState<Record<string, number>>(
     {}
   );
   const [widgetCollapsedMap, setWidgetCollapsedMap] = useState<
     Record<string, boolean>
   >({});
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // hydrate widget widths and collapsed state from extension host state so they survive page remounts.
+  const widgetOrderRef = useRef<string[]>([]);
+  const widgetWidthMapRef = useRef<Record<string, number>>({});
+  const widgetCollapsedMapRef = useRef<Record<string, boolean>>({});
+
   useEffect(() => {
-    if (widgets.length === 0) return;
+    widgetOrderRef.current = widgetOrder;
+  }, [widgetOrder]);
 
-    setWidgetWidthMap((prev) => {
-      const next = { ...prev };
-      for (const widget of widgets) {
-        const scope = `home-widget:${widget.identifier}`;
-        next[widget.identifier] = stateStore.getValue(
-          scope,
-          "width",
-          widget.defaultWidth ?? DEFAULT_WIDGET_WIDTH
-        );
+  useEffect(() => {
+    widgetWidthMapRef.current = widgetWidthMap;
+  }, [widgetWidthMap]);
+
+  useEffect(() => {
+    widgetCollapsedMapRef.current = widgetCollapsedMap;
+  }, [widgetCollapsedMap]);
+
+  useEffect(() => {
+    if (visibleWidgetIdentifiers.length === 0) {
+      setWidgetOrder([]);
+      setWidgetWidthMap({});
+      setWidgetCollapsedMap({});
+      setIsHydrated(false);
+      return;
+    }
+
+    const visibleWidgetSet = new Set(visibleWidgetIdentifiers);
+    const nextOrder: string[] = [];
+    const seenIdentifiers = new Set<string>();
+
+    for (const [identifier] of persistedState) {
+      if (
+        visibleWidgetSet.has(identifier) &&
+        !seenIdentifiers.has(identifier)
+      ) {
+        nextOrder.push(identifier);
+        seenIdentifiers.add(identifier);
       }
-      return next;
-    });
+    }
 
-    setWidgetCollapsedMap((prev) => {
-      const next = { ...prev };
-      for (const widget of widgets) {
-        const scope = `home-widget:${widget.identifier}`;
-        next[widget.identifier] = stateStore.getValue(
-          scope,
-          "collapsed",
-          false
-        );
+    for (const identifier of visibleWidgetIdentifiers) {
+      if (!seenIdentifiers.has(identifier)) {
+        nextOrder.push(identifier);
+        seenIdentifiers.add(identifier);
       }
-      return next;
-    });
-  }, [stateStore, widgets]);
+    }
 
-  // calculate each widget's width bound by its declaration and container's current max width.
+    const nextWidthMap = Object.fromEntries(
+      homeWidgets.map((widget) => [
+        widget.identifier,
+        persistedStateMap.get(widget.identifier)?.width ??
+          widget.defaultWidth ??
+          DEFAULT_WIDGET_WIDTH,
+      ])
+    );
+    const nextCollapsedMap = Object.fromEntries(
+      homeWidgets.map((widget) => [
+        widget.identifier,
+        persistedStateMap.get(widget.identifier)?.collapsed ?? false,
+      ])
+    );
+
+    setWidgetOrder((prev) =>
+      areArraysEqual(prev, nextOrder) ? prev : nextOrder
+    );
+    setWidgetWidthMap(nextWidthMap);
+    setWidgetCollapsedMap(nextCollapsedMap);
+    setIsHydrated(true);
+  }, [
+    homeWidgets,
+    persistedState,
+    persistedStateMap,
+    visibleWidgetIdentifiers,
+  ]);
+
   const getWidgetWidthBounds = useCallback(
     (widget: ExtensionHomeWidgetContribution): WidthBounds => {
       const lower = Math.max(0, widget.minWidth ?? 0);
@@ -71,9 +154,75 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
     [maxWidth]
   );
 
-  const widgetLayouts = useMemo(
-    () =>
-      widgets.map((widget) => {
+  const orderedWidgetIdentifiers = useMemo(() => {
+    const orderedIdentifiers = widgetOrder.filter((identifier) =>
+      widgetsByIdentifier.has(identifier)
+    );
+    const missingIdentifiers = visibleWidgetIdentifiers.filter(
+      (identifier) => !orderedIdentifiers.includes(identifier)
+    );
+
+    return [...orderedIdentifiers, ...missingIdentifiers];
+  }, [visibleWidgetIdentifiers, widgetOrder, widgetsByIdentifier]);
+
+  // Merge current UI state with hidden widgets so launcher config can fully restore the layout.
+  const persistHomeWidgetState = useCallback(
+    (
+      nextOrder = widgetOrderRef.current,
+      nextWidthMap = widgetWidthMapRef.current,
+      nextCollapsedMap = widgetCollapsedMapRef.current
+    ) => {
+      const normalizedOrder = [
+        ...nextOrder.filter((identifier) =>
+          widgetsByIdentifier.has(identifier)
+        ),
+        ...visibleWidgetIdentifiers.filter(
+          (identifier) => !nextOrder.includes(identifier)
+        ),
+      ];
+      const visibleWidgetSet = new Set(visibleWidgetIdentifiers);
+
+      const nextVisibleState = normalizedOrder
+        .map((identifier) => widgetsByIdentifier.get(identifier))
+        .filter((widget) => !!widget)
+        .map((widget) => {
+          const bounds = getWidgetWidthBounds(widget);
+          const preferredWidth =
+            nextWidthMap[widget.identifier] ??
+            widget.defaultWidth ??
+            DEFAULT_WIDGET_WIDTH;
+          const width = clamp(preferredWidth, bounds.lower, bounds.upper);
+
+          return [
+            widget.identifier,
+            width,
+            !!nextCollapsedMap[widget.identifier],
+          ] as HomeWidgetStateTuple;
+        });
+
+      const hiddenState = persistedState.filter(
+        ([identifier]) => !visibleWidgetSet.has(identifier)
+      );
+      const nextState = [...nextVisibleState, ...hiddenState];
+
+      if (!areHomeWidgetStatesEqual(persistedState, nextState)) {
+        update("extension.homeWidgetState", nextState);
+      }
+    },
+    [
+      getWidgetWidthBounds,
+      persistedState,
+      update,
+      visibleWidgetIdentifiers,
+      widgetsByIdentifier,
+    ]
+  );
+
+  const widgetLayouts = useMemo(() => {
+    return orderedWidgetIdentifiers
+      .map((identifier) => widgetsByIdentifier.get(identifier))
+      .filter((widget) => !!widget)
+      .map((widget) => {
         const bounds = getWidgetWidthBounds(widget);
         const preferredWidth =
           widgetWidthMap[widget.identifier] ??
@@ -81,56 +230,89 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
           DEFAULT_WIDGET_WIDTH;
         const width = clamp(preferredWidth, bounds.lower, bounds.upper);
 
-        return { widget, bounds, width };
-      }),
-    [getWidgetWidthBounds, widgetWidthMap, widgets]
-  );
+        return {
+          widget,
+          bounds,
+          width,
+        };
+      });
+  }, [
+    getWidgetWidthBounds,
+    orderedWidgetIdentifiers,
+    widgetWidthMap,
+    widgetsByIdentifier,
+  ]);
 
   const handleWidgetWidthChange = useCallback(
-    (identifier: string, width: number) => {
+    (widgetIdentifier: string, width: number) => {
       setWidgetWidthMap((prev) => {
-        if (prev[identifier] === width) return prev;
+        if (prev[widgetIdentifier] === width) return prev;
+
         return {
           ...prev,
-          [identifier]: width,
+          [widgetIdentifier]: width,
         };
       });
-
-      stateStore.setValue(
-        `home-widget:${identifier}`,
-        "width",
-        width,
-        DEFAULT_WIDGET_WIDTH
-      );
     },
-    [stateStore]
+    []
   );
 
+  // Commit the final width on mouse up so drag updates don't spam config writes.
+  const handleWidgetWidthCommit = useCallback(
+    (widgetIdentifier: string, width: number) => {
+      const nextWidthMap = {
+        ...widgetWidthMapRef.current,
+        [widgetIdentifier]: width,
+      };
+      setWidgetWidthMap(nextWidthMap);
+      persistHomeWidgetState(undefined, nextWidthMap);
+    },
+    [persistHomeWidgetState]
+  );
+
+  // Persist collapsed state immediately because this action is discrete and cheap to save.
   const handleWidgetCollapsedChange = useCallback(
-    (identifier: string, collapsed: boolean) => {
-      setWidgetCollapsedMap((prev) => {
-        if (prev[identifier] === collapsed) return prev;
-        return {
-          ...prev,
-          [identifier]: collapsed,
-        };
-      });
-      stateStore.setValue(
-        `home-widget:${identifier}`,
-        "collapsed",
-        collapsed,
-        false
-      );
+    (widgetIdentifier: string, collapsed: boolean) => {
+      const nextCollapsedMap = {
+        ...widgetCollapsedMapRef.current,
+        [widgetIdentifier]: collapsed,
+      };
+      setWidgetCollapsedMap(nextCollapsedMap);
+      persistHomeWidgetState(undefined, undefined, nextCollapsedMap);
     },
-    [stateStore]
+    [persistHomeWidgetState]
   );
+
+  const handleMoveWidgetUp = useCallback(
+    (widgetIdentifier: string) => {
+      const currentOrder = [...orderedWidgetIdentifiers];
+      const currentIndex = currentOrder.indexOf(widgetIdentifier);
+      if (currentIndex <= 0) return;
+
+      [currentOrder[currentIndex - 1], currentOrder[currentIndex]] = [
+        currentOrder[currentIndex],
+        currentOrder[currentIndex - 1],
+      ];
+
+      setWidgetOrder(currentOrder);
+      persistHomeWidgetState(currentOrder);
+    },
+    [orderedWidgetIdentifiers, persistHomeWidgetState]
+  );
+
+  useEffect(() => {
+    if (!isHydrated || orderedWidgetIdentifiers.length === 0) return;
+    persistHomeWidgetState();
+  }, [isHydrated, orderedWidgetIdentifiers, persistHomeWidgetState]);
 
   const containerWidth = useMemo(
     () => Math.max(0, ...widgetLayouts.map((layout) => layout.width)),
     [widgetLayouts]
   );
 
-  if (widgets.length === 0) return null;
+  const topWidgetIdentifier = orderedWidgetIdentifiers[0];
+
+  if (homeWidgets.length === 0) return null;
 
   return (
     <Box
@@ -160,10 +342,15 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
               onWidthChange={(nextWidth) =>
                 handleWidgetWidthChange(widget.identifier, nextWidth)
               }
+              onWidthCommit={(nextWidth) =>
+                handleWidgetWidthCommit(widget.identifier, nextWidth)
+              }
               isCollapsed={!!widgetCollapsedMap[widget.identifier]}
               onCollapsedChange={(collapsed) =>
                 handleWidgetCollapsedChange(widget.identifier, collapsed)
               }
+              showMoveUpButton={widget.identifier !== topWidgetIdentifier}
+              onMoveUp={() => handleMoveWidgetUp(widget.identifier)}
             />
           ))}
         </VStack>

@@ -297,6 +297,8 @@ structstruck::strike! {
     },
     pub extension: struct ExtensionConfig {
       pub enabled: Vec<String>,
+      #[serde(default)]
+      pub home_widget_state: Vec<(String, usize, bool)>,  // widget_key, width, collapsed
     },
     pub global_game_config: GameConfig,
     pub local_game_directories: Vec<GameDirectory>,

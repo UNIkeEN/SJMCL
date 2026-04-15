@@ -140,6 +140,7 @@ export interface LauncherConfig {
   };
   extension: {
     enabled: string[];
+    homeWidgetState: [string, number, boolean][];
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
@@ -316,6 +317,7 @@ export const defaultConfig: LauncherConfig = {
   },
   extension: {
     enabled: [],
+    homeWidgetState: [],
   },
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,

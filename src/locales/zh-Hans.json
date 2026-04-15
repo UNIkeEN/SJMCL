@@ -1314,6 +1314,11 @@
       }
     }
   },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "上移此卡片"
+    }
+  },
   "ImportAccountInfoModal": {
     "header": {
       "title": "从其他启动器导入账户信息"

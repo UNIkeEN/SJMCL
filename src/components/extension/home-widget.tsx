@@ -1,7 +1,21 @@
-import { Avatar, Box, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Portal,
+  Text,
+} from "@chakra-ui/react";
 import { type MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
-import { LuChevronRight } from "react-icons/lu";
+import { useTranslation } from "react-i18next";
+import { LuChevronRight, LuTriangle } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
 import { ExtensionHomeWidgetContribution } from "@/models/extension";
 import { clamp } from "@/utils/math";
@@ -16,17 +30,67 @@ interface HomeWidgetProps {
     upper: number;
   };
   onWidthChange: (width: number) => void;
+  onWidthCommit: (width: number) => void;
   isCollapsed: boolean;
   onCollapsedChange: (collapsed: boolean) => void;
+  showMoveUpButton: boolean;
+  onMoveUp: () => void;
 }
+
+interface ExtraOperationMenuProps {
+  isCollapsed: boolean;
+  onMoveUp: () => void;
+}
+
+const ExtraOperationMenu = ({
+  isCollapsed,
+  onMoveUp,
+}: ExtraOperationMenuProps) => {
+  const { t } = useTranslation();
+
+  const extraOpMenu = {
+    moveUp: {
+      icon: LuTriangle,
+      onClick: onMoveUp,
+    },
+  };
+
+  return (
+    <Menu>
+      <MenuButton
+        as={CommonIconButton}
+        icon="more"
+        withTooltip={false}
+        size="xs"
+        h={21}
+        ml={isCollapsed ? 0 : "auto"}
+      />
+      <Portal>
+        <MenuList>
+          {Object.entries(extraOpMenu).map(([key, item]) => (
+            <MenuItem key={key} fontSize="xs" onClick={item.onClick}>
+              <HStack>
+                <item.icon />
+                <Text>{t(`HomeWidget.extraOpMenu.${key}`)}</Text>
+              </HStack>
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Portal>
+    </Menu>
+  );
+};
 
 const HomeWidget = ({
   widget,
   width,
   widthBounds,
   onWidthChange,
+  onWidthCommit,
   isCollapsed,
   onCollapsedChange,
+  showMoveUpButton,
+  onMoveUp,
 }: HomeWidgetProps) => {
   const resizeHandlersRef = useRef<(() => void) | null>(null);
   useEffect(() => {
@@ -41,20 +105,30 @@ const HomeWidget = ({
   // drag to resize
   const handleResizeStart = (event: ReactMouseEvent) => {
     event.preventDefault();
+    resizeHandlersRef.current?.();
+
     const startX = event.clientX;
     const startWidth = width;
+
+    const cleanup = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      resizeHandlersRef.current = null;
+    };
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const next = startWidth + (moveEvent.clientX - startX);
       onWidthChange(clamp(next, widthBounds.lower, widthBounds.upper));
     };
-    const handleMouseUp = () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+    const handleMouseUp = (moveEvent: MouseEvent) => {
+      const next = startWidth + (moveEvent.clientX - startX);
+      onWidthCommit(clamp(next, widthBounds.lower, widthBounds.upper));
+      cleanup();
     };
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
+    resizeHandlersRef.current = cleanup;
   };
 
   return (
@@ -87,7 +161,6 @@ const HomeWidget = ({
             size="xs"
             h={21}
             variant="ghost"
-            colorScheme="gray"
             onClick={() => onCollapsedChange(!isCollapsed)}
           />
           <Avatar
@@ -100,6 +173,9 @@ const HomeWidget = ({
           <Text fontSize="xs-sm" fontWeight="semibold" noOfLines={1}>
             {widget.title}
           </Text>
+          {showMoveUpButton && (
+            <ExtraOperationMenu isCollapsed={isCollapsed} onMoveUp={onMoveUp} />
+          )}
         </HStack>
 
         <Box display={isCollapsed ? "none" : "block"} w="100%">
