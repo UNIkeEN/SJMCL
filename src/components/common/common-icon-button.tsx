@@ -5,6 +5,7 @@ import {
   PlacementWithLogical,
   Tooltip,
 } from "@chakra-ui/react";
+import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -37,73 +38,78 @@ interface CommonIconButtonProps extends Omit<
   tooltipPlacement?: PlacementWithLogical;
 }
 
-export const CommonIconButton: React.FC<CommonIconButtonProps> = ({
-  icon,
-  label,
-  withTooltip = true,
-  tooltipPlacement = "bottom",
-  ...props
-}) => {
-  const { t } = useTranslation();
-  const { config } = useLauncherConfig();
+export const CommonIconButton = forwardRef<
+  HTMLButtonElement,
+  CommonIconButtonProps
+>(
+  (
+    { icon, label, withTooltip = true, tooltipPlacement = "bottom", ...props },
+    ref
+  ) => {
+    const { t } = useTranslation();
+    const { config } = useLauncherConfig();
 
-  const supportIcons: Record<string, JSX.Element> = {
-    add: <LuPlus />,
-    copy: <LuCopy />,
-    copyOrMove: <LuFiles />,
-    delete: <LuTrash />,
-    download: <LuArrowDownToLine />,
-    edit: <LuPenLine />,
-    external: <LuExternalLink size="14" />, // keep the same as deprecated link-icon-button
-    info: <LuInfo />,
-    launch: <LuPlay />,
-    more: <LuEllipsis />,
-    open: <LuFolderOpen />,
-    openFolder: <LuFolderOpen />,
-    refresh: <LuRefreshCcw />,
-    revealFile: <LuFolderSearch />,
-    settings: <LuSettings />,
-    share: <LuShare />,
-  };
+    const supportIcons: Record<string, JSX.Element> = {
+      add: <LuPlus />,
+      copy: <LuCopy />,
+      copyOrMove: <LuFiles />,
+      delete: <LuTrash />,
+      download: <LuArrowDownToLine />,
+      edit: <LuPenLine />,
+      external: <LuExternalLink size="14" />, // keep the same as deprecated link-icon-button
+      info: <LuInfo />,
+      launch: <LuPlay />,
+      more: <LuEllipsis />,
+      open: <LuFolderOpen />,
+      openFolder: <LuFolderOpen />,
+      refresh: <LuRefreshCcw />,
+      revealFile: <LuFolderSearch />,
+      settings: <LuSettings />,
+      share: <LuShare />,
+    };
 
-  const specLabels: Record<string, string> = {
-    copy: t("General.copy.text"),
-    copyOrMove: t(`General.copyOrMove.${config.basicInfo.osType}`),
-    revealFile: t("General.revealFile", {
-      opener: t(`Enums.systemFileManager.${config.basicInfo.osType}`),
-    }),
-    share: t("General.share.text"),
-  };
+    const specLabels: Record<string, string> = {
+      copy: t("General.copy.text"),
+      copyOrMove: t(`General.copyOrMove.${config.basicInfo.osType}`),
+      revealFile: t("General.revealFile", {
+        opener: t(`Enums.systemFileManager.${config.basicInfo.osType}`),
+      }),
+      share: t("General.share.text"),
+    };
 
-  const selectedIcon =
-    typeof icon === "string" ? (
-      supportIcons[icon] || <LuCircleHelp />
-    ) : (
-      <Icon as={icon} />
-    );
+    const selectedIcon =
+      typeof icon === "string" ? (
+        supportIcons[icon] || <LuCircleHelp />
+      ) : (
+        <Icon as={icon} />
+      );
 
-  const finalLabel =
-    label ||
-    (typeof icon === "string"
-      ? specLabels[icon]
+    const finalLabel =
+      label ||
+      (typeof icon === "string"
         ? specLabels[icon]
-        : t(`General.${icon}`)
-      : "");
+          ? specLabels[icon]
+          : t(`General.${icon}`)
+        : "");
 
-  return (
-    <Tooltip
-      label={finalLabel}
-      isDisabled={!withTooltip}
-      key={finalLabel}
-      placement={tooltipPlacement}
-    >
-      <IconButton
-        icon={selectedIcon}
-        aria-label={finalLabel}
-        variant="ghost"
-        size="sm"
-        {...props}
-      />
-    </Tooltip>
-  );
-};
+    return (
+      <Tooltip
+        label={finalLabel}
+        isDisabled={!withTooltip}
+        key={finalLabel}
+        placement={tooltipPlacement}
+      >
+        <IconButton
+          ref={ref}
+          icon={selectedIcon}
+          aria-label={finalLabel}
+          variant="ghost"
+          size="sm"
+          {...props}
+        />
+      </Tooltip>
+    );
+  }
+);
+
+CommonIconButton.displayName = "CommonIconButton";
