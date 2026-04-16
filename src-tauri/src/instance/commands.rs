@@ -1324,7 +1324,8 @@ pub async fn check_change_mod_loader_availablity(
 pub async fn change_mod_loader(
   app: AppHandle,
   instance_id: String,
-  new_mod_loader: ModLoaderResourceInfo,
+  new_mod_loader: Option<ModLoaderResourceInfo>,
+  new_optifine: Option<OptiFineResourceInfo>,
   is_install_fabric_api: Option<bool>,
   is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
@@ -1336,39 +1337,31 @@ pub async fn change_mod_loader(
       .ok_or(InstanceError::InstanceNotFoundByID)?
       .clone()
   };
+  let original_optifine_config = instance.optifine.clone();
   let version_isolation = get_instance_game_config(&app, &instance).version_isolation;
-  // Get priority list
   let priority_list = {
     let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
     let launcher_config = launcher_config_state.lock()?;
     get_source_priority_list(&launcher_config)
   };
-
-  // load current version info
   let json_path = instance
     .version_path
     .join(format!("{}.json", instance.name));
   let current_info: McClientInfo = load_json_async(&json_path).await?;
+  let original_optifine_patch = current_info
+    .patches
+    .iter()
+    .find(|p| p.id.to_lowercase().contains("optifine"))
+    .cloned();
+
   let vanilla_info = current_info
     .patches
     .first()
     .cloned()
     .ok_or(InstanceError::NotSupportChangeModLoader)?;
 
-  let mod_loader = ModLoader {
-    loader_type: new_mod_loader.loader_type,
-    version: new_mod_loader.version.clone(),
-    status: if matches!(
-      new_mod_loader.loader_type,
-      ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
-    ) {
-      ModLoaderStatus::Installed
-    } else {
-      ModLoaderStatus::NotDownloaded
-    },
-    branch: new_mod_loader.branch.clone(),
-  };
   let game_version = instance.version.clone();
+  let old_optifine = instance.optifine.clone();
   let subdirs = get_instance_subdir_paths(
     &app,
     &instance,
@@ -1378,49 +1371,127 @@ pub async fn change_mod_loader(
   let [libraries_dir, mods_dir] = subdirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
-  // Remove Fabric API / QFAPI mods if switching from Fabric or Quilt modloader
-  if matches!(
-    instance.mod_loader.loader_type,
-    ModLoaderType::Fabric | ModLoaderType::Quilt
-  ) && version_isolation
-  {
-    remove_fabric_api_mods(mods_dir).await?;
+
+  if let Some(new_loader) = &new_mod_loader {
+    // Remove Fabric API / QFAPI mods if switching from Fabric or Quilt modloader
+    if matches!(
+      instance.mod_loader.loader_type,
+      ModLoaderType::Fabric | ModLoaderType::Quilt
+    ) && instance.mod_loader.loader_type != new_loader.loader_type
+      && version_isolation
+    {
+      remove_fabric_api_mods(mods_dir).await?;
+    }
   }
-  // construct new version info
-  instance.mod_loader = mod_loader.clone();
-  let mut version_info: McClientInfo = vanilla_info.clone();
-  version_info.id = current_info.id.clone();
-  version_info.jar = Some(instance.name.clone());
-  version_info.java_version = current_info.java_version.clone();
-  version_info.client_version = Some(instance.version.clone());
-  version_info.patches = vec![vanilla_info];
+
+  let mut version_info: McClientInfo = current_info.clone();
+  if let Some(ref new_loader) = new_mod_loader {
+    if instance.mod_loader.loader_type != new_loader.loader_type
+      || instance.mod_loader.version != new_loader.version
+    {
+      version_info.patches = vec![vanilla_info.clone()];
+    }
+  }
+
+  let mut modloader_task_params: Vec<PTaskParam> = Vec::new();
+  let mut optifine_task_params: Vec<PTaskParam> = Vec::new();
 
   // install new mod loader
-  let mut task_params: Vec<PTaskParam> = Vec::new();
-  install_mod_loader(
-    app.clone(),
-    &priority_list,
-    &game_version,
-    &mod_loader,
-    libraries_dir.to_path_buf(),
-    mods_dir.to_path_buf(),
-    &mut version_info,
-    &mut task_params,
-    is_install_fabric_api,
-    is_install_qf_api,
-  )
-  .await?;
+  if let Some(ref new_mod_loader) = new_mod_loader {
+    let mod_loader = ModLoader {
+      loader_type: new_mod_loader.loader_type,
+      version: new_mod_loader.version.clone(),
+      status: if matches!(
+        new_mod_loader.loader_type,
+        ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
+      ) {
+        ModLoaderStatus::Installed
+      } else {
+        ModLoaderStatus::NotDownloaded
+      },
+      branch: new_mod_loader.branch.clone(),
+    };
 
-  schedule_progressive_task_group(
-    app.clone(),
-    format!(
-      "change-mod-loader?{} {}",
-      mod_loader.loader_type, mod_loader.version
-    ),
-    task_params,
-    true,
-  )
-  .await?;
+    instance.mod_loader = mod_loader.clone();
+
+    install_mod_loader(
+      app.clone(),
+      &priority_list,
+      &game_version,
+      &mod_loader,
+      libraries_dir.to_path_buf(),
+      mods_dir.to_path_buf(),
+      &mut version_info,
+      &mut modloader_task_params,
+      is_install_fabric_api,
+      is_install_qf_api,
+    )
+    .await?;
+    if new_optifine.is_none() {
+      instance.optifine = original_optifine_config;
+
+      if instance.optifine.is_some() {
+        if let Some(patch) = original_optifine_patch.as_ref() {
+          if !version_info.patches.iter().any(|p| p.id == patch.id) {
+            version_info.patches.push(patch.clone());
+          }
+        }
+      }
+    }
+    if !modloader_task_params.is_empty() {
+      schedule_progressive_task_group(
+        app.clone(),
+        format!(
+          "change-mod-loader?{} {}",
+          instance.mod_loader.loader_type, instance.mod_loader.version
+        ),
+        modloader_task_params,
+        true,
+      )
+      .await?;
+    }
+  } else {
+    instance.optifine = original_optifine_config;
+  }
+
+  // install new OptiFine
+  if let Some(optifine) = new_optifine {
+    let optifine_info = OptiFine {
+      filename: optifine.filename.clone(),
+      version: format!("{}_{}", optifine.r#type, optifine.patch),
+      status: ModLoaderStatus::NotDownloaded,
+    };
+
+    instance.optifine = Some(optifine_info);
+
+    download_optifine_installer(
+      &instance.version,
+      &optifine,
+      libraries_dir.to_path_buf(),
+      &mut optifine_task_params,
+    )
+    .await?;
+
+    if !optifine_task_params.is_empty() {
+      schedule_progressive_task_group(
+        app.clone(),
+        format!("change-optifine?{}", optifine.filename),
+        optifine_task_params,
+        true,
+      )
+      .await?;
+    }
+  } else {
+    instance.optifine = old_optifine;
+
+    if instance.optifine.is_some() {
+      if let Some(patch) = original_optifine_patch {
+        if !version_info.patches.iter().any(|p| p.id == patch.id) {
+          version_info.patches.push(patch);
+        }
+      }
+    }
+  }
 
   save_json_async(&version_info, &json_path).await?;
   instance

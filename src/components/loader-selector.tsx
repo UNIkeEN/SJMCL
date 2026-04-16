@@ -52,6 +52,7 @@ interface LoaderSelectorProps {
   onSelectModLoader: (v: ModLoaderResourceInfo) => void;
   selectedOptiFine?: OptiFineResourceInfo | undefined;
   onSelectOptiFine?: (v: OptiFineResourceInfo | undefined) => void;
+  mode?: "all" | "optifine";
 }
 
 export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
@@ -60,6 +61,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   onSelectModLoader,
   selectedOptiFine,
   onSelectOptiFine,
+  mode = "all",
   ...props
 }) => {
   const { t } = useTranslation();
@@ -76,15 +78,24 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   const selectableCardListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (selectedOptiFine) {
+    if (mode === "optifine") {
       setSelectedType("OptiFine");
-      setSelectedId(selectedOptiFine ? selectedOptiFine.filename : "");
-    } else {
-      setSelectedType(selectedModLoader.loaderType);
-      setSelectedId(selectedModLoader.version);
+      setSelectedId(selectedOptiFine?.filename || "");
+      return;
+    }
+    const externalType = selectedModLoader.loaderType;
+    if (
+      externalType !== ModLoaderType.Unknown &&
+      selectedType !== externalType
+    ) {
+      setSelectedType(externalType);
+
+      if (selectedModLoader.version) {
+        setSelectedId(selectedModLoader.version);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedModLoader.loaderType]);
+  }, [mode, selectedModLoader.loaderType]);
 
   function isModLoaderResourceInfo(
     version: ModLoaderResourceInfo | OptiFineResourceInfo
@@ -224,8 +235,13 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
       },
       onCancel: () => {
         if (selectedType === type) {
-          setSelectedType(ModLoaderType.Unknown);
-          setSelectedId("");
+          if (!!selectedOptiFine) {
+            setSelectedType("OptiFine");
+            setSelectedId(selectedOptiFine!.filename);
+          } else {
+            setSelectedType(ModLoaderType.Unknown);
+            setSelectedId("");
+          }
         }
         onSelectModLoader(defaultModLoaderResourceInfo);
       },
@@ -255,28 +271,32 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
       onSelect: () => {
         setSelectedType("OptiFine");
         if (!selectedOptiFine) {
-          onSelectOptiFine?.({
-            filename: "",
-            patch: "",
-            type: "",
-          });
+          onSelectOptiFine?.({ filename: "", patch: "", type: "" });
           setSelectedId("");
         } else {
           setSelectedId(selectedOptiFine.filename);
         }
-
         if (
           selectedModLoader.loaderType !== ModLoaderType.Unknown &&
           !selectedModLoader.version
         ) {
-          // When some mod loader was selected without a version, clear it
           onSelectModLoader(defaultModLoaderResourceInfo);
         }
       },
       onCancel: () => {
+        const hasValidModLoader =
+          selectedModLoader.loaderType !== ModLoaderType.Unknown &&
+          !!selectedModLoader.version;
+
         if (selectedType === "OptiFine") {
-          setSelectedType(ModLoaderType.Unknown);
-          setSelectedId("");
+          if (hasValidModLoader) {
+            setSelectedType(selectedModLoader.loaderType);
+            setSelectedId(selectedModLoader.version);
+          } else {
+            setSelectedType(ModLoaderType.Unknown);
+            setSelectedId("");
+            onSelectModLoader(defaultModLoaderResourceInfo);
+          }
         }
         onSelectOptiFine?.(undefined);
       },
@@ -291,11 +311,8 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     } else {
       setVersionList([]);
     }
-  }, [
-    handleFetchModLoaderVersionList,
-    handleFetchOptiFineVersionList,
-    selectedType,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedType]);
 
   // Scroll selected item into view when version list changes or selected item changes
   useEffect(() => {
@@ -318,24 +335,26 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
 
   return (
     <HStack {...props} w="100%" h="100%" spacing={4} overflow="hidden">
-      <VStack
-        spacing={3.5}
-        h="100%"
-        overflowY="auto"
-        overflowX="hidden"
-        flexShrink={0}
-        ref={selectableCardListRef}
-      >
-        {selectableCardItems.map((item, index) => (
-          <SelectableCard
-            key={index}
-            {...item}
-            minW="3xs"
-            w="100%"
-            data-loader-selected={item.isSelected ? "true" : undefined}
-          />
-        ))}
-      </VStack>
+      {mode !== "optifine" && (
+        <VStack
+          spacing={3.5}
+          h="100%"
+          overflowY="auto"
+          overflowX="hidden"
+          flexShrink={0}
+          ref={selectableCardListRef}
+        >
+          {selectableCardItems.map((item, index) => (
+            <SelectableCard
+              key={index}
+              {...item}
+              minW="3xs"
+              w="100%"
+              data-loader-selected={item.isSelected ? "true" : undefined}
+            />
+          ))}
+        </VStack>
+      )}
       <Section overflow="auto" flexGrow={1} w="100%" h="100%">
         {isLoading ? (
           <Center h="100%">

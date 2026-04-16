@@ -450,6 +450,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               case "change-mod-loader":
                 getInstanceList(true);
                 break;
+              case "change-optifine":
+                getInstanceList(true);
+                break;
               case "game-client-w-java":
                 getInstanceList(true);
                 getJavaInfos(true);
