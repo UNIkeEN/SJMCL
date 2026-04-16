@@ -72,7 +72,8 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
             },
           },
         ]
-      : ["windows", "linux"].includes(config.basicInfo.osType)
+      : config.basicInfo.osType === "windows" ||
+          config.basicInfo.osType === "linux"
         ? [
             {
               icon: "copy",
@@ -81,7 +82,10 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
                   const bytes = await readFile(screenshot.filePath);
                   await copyImage(bytes, { toast });
                 } catch (error) {
-                  logger.error("Copy screenshot failed:", error);
+                  logger.error(
+                    `Copy screenshot failed: ${screenshot.filePath}`,
+                    error
+                  );
                   toast({
                     title: t("General.copy.toast.error"),
                     status: "error",
