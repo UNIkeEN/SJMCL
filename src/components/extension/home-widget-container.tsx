@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import HomeWidget from "@/components/extension/home-widget";
 import { useLauncherConfig } from "@/contexts/config";
 import { useExtensionHost } from "@/contexts/extension/host";
-import { ExtensionHomeWidgetContribution } from "@/models/extension";
+import {
+  ExtensionHomeWidgetContribution,
+  type HomeWidgetStateTuple,
+} from "@/models/extension";
 import { areArraysEqual, clamp } from "@/utils/math";
 
 interface HomeWidgetContainerProps {
@@ -14,8 +17,6 @@ interface WidthBounds {
   lower: number;
   upper: number;
 }
-
-type HomeWidgetStateTuple = [string, number, boolean];
 
 const DEFAULT_WIDGET_WIDTH = 300;
 
@@ -71,6 +72,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   const widgetOrderRef = useRef<string[]>([]);
   const widgetWidthMapRef = useRef<Record<string, number>>({});
   const widgetCollapsedMapRef = useRef<Record<string, boolean>>({});
+  const persistHomeWidgetStateRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
     widgetOrderRef.current = widgetOrder;
@@ -191,7 +193,9 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
             nextWidthMap[widget.identifier] ??
             widget.defaultWidth ??
             DEFAULT_WIDGET_WIDTH;
-          const width = clamp(preferredWidth, bounds.lower, bounds.upper);
+          const width = Math.round(
+            clamp(preferredWidth, bounds.lower, bounds.upper)
+          );
 
           return [
             widget.identifier,
@@ -217,6 +221,10 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
       widgetsByIdentifier,
     ]
   );
+
+  useEffect(() => {
+    persistHomeWidgetStateRef.current = persistHomeWidgetState;
+  }, [persistHomeWidgetState]);
 
   const widgetLayouts = useMemo(() => {
     return orderedWidgetIdentifiers
@@ -302,8 +310,8 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
 
   useEffect(() => {
     if (!isHydrated || orderedWidgetIdentifiers.length === 0) return;
-    persistHomeWidgetState();
-  }, [isHydrated, orderedWidgetIdentifiers, persistHomeWidgetState]);
+    persistHomeWidgetStateRef.current();
+  }, [isHydrated, orderedWidgetIdentifiers]);
 
   const containerWidth = useMemo(
     () => Math.max(0, ...widgetLayouts.map((layout) => layout.width)),

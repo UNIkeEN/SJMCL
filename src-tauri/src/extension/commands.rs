@@ -167,7 +167,7 @@ pub fn delete_extension(app: AppHandle, identifier: String) -> SJMCLResult<()> {
   )?;
 
   let home_widget_prefix = format!("{identifier}:home_widget");
-  let home_widget_state: Vec<(String, usize, bool)> = config_state
+  let home_widget_state: Vec<(String, u32, bool)> = config_state
     .extension
     .home_widget_state
     .iter()

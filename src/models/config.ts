@@ -1,3 +1,5 @@
+import type { HomeWidgetStateTuple } from "@/models/extension";
+
 export interface GameConfig {
   gameJava: {
     auto: boolean;
@@ -140,7 +142,7 @@ export interface LauncherConfig {
   };
   extension: {
     enabled: string[];
-    homeWidgetState: [string, number, boolean][];
+    homeWidgetState: HomeWidgetStateTuple[];
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
