@@ -73,6 +73,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   const widgetWidthMapRef = useRef<Record<string, number>>({});
   const widgetCollapsedMapRef = useRef<Record<string, boolean>>({});
   const persistHomeWidgetStateRef = useRef<() => void>(() => undefined);
+  const startupPersistTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     widgetOrderRef.current = widgetOrder;
@@ -310,7 +311,21 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
 
   useEffect(() => {
     if (!isHydrated || orderedWidgetIdentifiers.length === 0) return;
-    persistHomeWidgetStateRef.current();
+
+    if (startupPersistTimerRef.current) {
+      clearTimeout(startupPersistTimerRef.current);
+    }
+
+    startupPersistTimerRef.current = setTimeout(() => {
+      persistHomeWidgetStateRef.current();
+    }, 1500);
+
+    return () => {
+      if (startupPersistTimerRef.current) {
+        clearTimeout(startupPersistTimerRef.current);
+        startupPersistTimerRef.current = undefined;
+      }
+    };
   }, [isHydrated, orderedWidgetIdentifiers]);
 
   const containerWidth = useMemo(
