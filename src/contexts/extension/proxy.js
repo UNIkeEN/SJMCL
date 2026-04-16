@@ -1,8 +1,10 @@
-function runProxiedExtensionSource(__sjmclRealWindow, __sjmclRealDocument) {
-  const __sjmclBlockedGlobalNames = new Set([
-    "__TAURI__",
-    "__TAURI_INTERNALS__",
-  ]);
+/**
+ * @param {string} source
+ * @returns {string}
+ */
+export const buildProxiedExtensionScript = (source) => {
+  return `;((__sjmclRealWindow, __sjmclRealDocument) => {
+  const __sjmclBlockedGlobalNames = new Set(["__TAURI__", "__TAURI_INTERNALS__"]);
   const __sjmclBlockedPropertyNames = new Set(["constructor"]);
   const __sjmclTauriStub = Object.freeze({});
   let __sjmclWindowProxy;
@@ -122,18 +124,6 @@ function runProxiedExtensionSource(__sjmclRealWindow, __sjmclRealDocument) {
   const __TAURI__ = __sjmclTauriStub;
   const __TAURI_INTERNALS__ = __sjmclTauriStub;
 
-  ("__SJMCL_EXTENSION_SOURCE__");
-}
-
-/**
- * @param {string} source
- * @returns {string}
- */
-export const buildProxiedExtensionScript = (source) => {
-  return `;(${runProxiedExtensionSource
-    .toString()
-    .replace(
-      '"__SJMCL_EXTENSION_SOURCE__";',
-      `((eval, Function) => {${source}\n})(undefined, undefined);`
-    )})(window, document);`;
+  ((eval, Function) => {${source}\n})(undefined, undefined);
+})(window, document);`;
 };
