@@ -12,6 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { readFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -21,6 +22,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { ConfigService } from "@/services/config";
+import { copyImage } from "@/utils/copy";
 import { UNIXToDatetime } from "@/utils/datetime";
 import { shareFile } from "@/utils/share";
 
@@ -70,6 +72,24 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
             },
           },
         ]
+      : ["windows", "linux"].includes(config.basicInfo.osType)
+        ? [
+            {
+              icon: "copy",
+              onClick: async () => {
+                try {
+                  const bytes = await readFile(screenshot.filePath);
+                  await copyImage(Array.from(bytes), { toast });
+                } catch (error) {
+                  logger.error("Copy screenshot failed:", error);
+                  toast({
+                    title: t("General.copy.toast.error"),
+                    status: "error",
+                  });
+                }
+              },
+            },
+          ]
       : []),
     {
       icon: LuImagePlay,
