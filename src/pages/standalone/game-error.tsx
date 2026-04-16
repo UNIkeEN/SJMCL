@@ -22,12 +22,14 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
 import { InstanceSummary } from "@/models/instance/misc";
 import { JavaInfo } from "@/models/system-info";
 import { LaunchService } from "@/services/launch";
+import { copyText } from "@/utils/copy";
 import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
-import { analyzeCrashReport } from "@/utils/game-error";
+import { analyzeCrashReport, generateAIPrompt } from "@/utils/game-error";
 import { generateInstanceDesc } from "@/utils/instance";
 import { capitalizeFirstLetter } from "@/utils/string";
 import { parseIdFromWindowLabel } from "@/utils/window";
@@ -36,6 +38,7 @@ const GameErrorPage: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const toast = useToast();
 
   const [basicInfoParams, setBasicInfoParams] = useState(
     new Map<string, string>()
@@ -43,6 +46,8 @@ const GameErrorPage: React.FC = () => {
   const [instanceInfo, setInstanceInfo] = useState<InstanceSummary>();
   const [javaInfo, setJavaInfo] = useState<JavaInfo>();
   const [reason, setReason] = useState<string>();
+  const [errorKey, setErrorKey] = useState<string>();
+  const [crashLog, setCrashLog] = useState<string[]>();
   const [isLoading, setIsLoading] = useState(false);
 
   const platformName = useCallback(() => {
@@ -96,6 +101,8 @@ const GameErrorPage: React.FC = () => {
     LaunchService.retrieveGameLog(launchingId).then((response) => {
       if (response.status === "success") {
         let { key, params } = analyzeCrashReport(response.data);
+        setErrorKey(key);
+        setCrashLog(response.data);
         setReason(
           t(`GameErrorPage.crashDetails.${key}`, {
             param1: params[0],
@@ -158,6 +165,24 @@ const GameErrorPage: React.FC = () => {
       await revealItemInDir(res.data);
     }
     setIsLoading(false);
+  };
+
+  const handleCopyAIPrompt = async () => {
+    if (!errorKey || !reason) return;
+
+    const prompt = generateAIPrompt({
+      errorKey,
+      errorMessage: reason,
+      gameVersion: instanceInfo?.name,
+      loaderType: instanceInfo?.modLoader?.loaderType,
+      javaVersion: javaInfo?.name,
+      os: basicInfoParams.get("os"),
+      arch: basicInfoParams.get("arch"),
+      launcherVersion: basicInfoParams.get("launcherVersion"),
+      crashLog,
+    });
+
+    await copyText(prompt, { toast });
   };
 
   return (
@@ -248,6 +273,13 @@ const GameErrorPage: React.FC = () => {
           onClick={handleOpenLogWindow}
         >
           {t("GameErrorPage.button.gameLogs")}
+        </Button>
+        <Button
+          colorScheme={primaryColor}
+          variant="solid"
+          onClick={handleCopyAIPrompt}
+        >
+          {t("GameErrorPage.button.copyAIPrompt")}
         </Button>
         <Button colorScheme={primaryColor} variant="solid">
           {t("GameErrorPage.button.help")}
