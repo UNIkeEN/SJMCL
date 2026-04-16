@@ -999,9 +999,9 @@ export const ExtensionHostContextProvider: React.FC<{
               ...homeWidget,
               identifier:
                 homeWidgetDefinitions.length === 1
-                  ? extension.identifier
-                  : `${extension.identifier}:${homeWidget.key || index}`,
-              resetKey: `${extension.identifier}:${signature}:${homeWidget.key || index}`,
+                  ? `${extension.identifier}:home_widget`
+                  : `${extension.identifier}:home_widget:${homeWidget.key || index}`,
+              resetKey: `${extension.identifier}:${signature}:home_widget:${homeWidget.key || index}`,
               extension,
             })
           ),
