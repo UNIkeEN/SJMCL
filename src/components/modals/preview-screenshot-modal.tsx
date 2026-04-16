@@ -94,7 +94,7 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
               },
             },
           ]
-      : []),
+        : []),
     {
       icon: LuImagePlay,
       label: t("ScreenshotPreviewModal.menu.setAsBg"),
