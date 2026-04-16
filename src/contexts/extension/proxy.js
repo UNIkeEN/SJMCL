@@ -1,4 +1,4 @@
-function runSandboxedExtensionSource(__sjmclRealWindow, __sjmclRealDocument) {
+function runProxiedExtensionSource(__sjmclRealWindow, __sjmclRealDocument) {
   const __sjmclBlockedGlobalNames = new Set([
     "__TAURI__",
     "__TAURI_INTERNALS__",
@@ -129,8 +129,8 @@ function runSandboxedExtensionSource(__sjmclRealWindow, __sjmclRealDocument) {
  * @param {string} source
  * @returns {string}
  */
-export const buildSandboxedExtensionScript = (source) => {
-  return `;(${runSandboxedExtensionSource
+export const buildProxiedExtensionScript = (source) => {
+  return `;(${runProxiedExtensionSource
     .toString()
     .replace(
       '"__SJMCL_EXTENSION_SOURCE__";',

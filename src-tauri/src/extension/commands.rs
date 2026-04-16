@@ -109,19 +109,20 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
       fs::remove_dir_all(&temp_dir)?;
     }
 
-    // enable the new extension by default
-    let config_binding = app.state::<Mutex<LauncherConfig>>();
-    let mut config_state = config_binding.lock()?;
-    let mut enabled = config_state.extension.enabled.clone();
-    if !enabled.iter().any(|id| id == &info.metadata.identifier) {
-      enabled.push(info.metadata.identifier.clone());
-    }
-    config_state.partial_update(
-      &app,
-      "extension.enabled",
-      &serde_json::to_string(&enabled).unwrap_or_default(),
-    )?;
-    config_state.save()?;
+    // dont enable the new extension by default (user will manually enable it with a security confirm dialog)
+
+    // let config_binding = app.state::<Mutex<LauncherConfig>>();
+    // let mut config_state = config_binding.lock()?;
+    // let mut enabled = config_state.extension.enabled.clone();
+    // if !enabled.iter().any(|id| id == &info.metadata.identifier) {
+    //   enabled.push(info.metadata.identifier.clone());
+    // }
+    // config_state.partial_update(
+    //   &app,
+    //   "extension.enabled",
+    //   &serde_json::to_string(&enabled).unwrap_or_default(),
+    // )?;
+    // config_state.save()?;
 
     Ok(info)
   })();

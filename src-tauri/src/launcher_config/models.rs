@@ -345,9 +345,6 @@ structstruck::strike! {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
       },
-      pub extension_settings_page: struct {
-        pub hide_alert: bool,
-      }
     }
   }
 }

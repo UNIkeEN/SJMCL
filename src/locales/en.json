@@ -702,6 +702,14 @@
   "Empty": {
     "noData": "No Data"
   },
+  "EnableExtensionConfirmDialog": {
+    "title": "Enable Extension",
+    "body": "Are you sure you want to enable the extension <hl>{{name}}</hl> (<hl>{{identifier}}</hl>) from <hl>{{author}}</hl>? ",
+    "button": {
+      "enable": "Enable"
+    },
+    "unknownDeveloper": "Unknown developer"
+  },
   "Enums": {
     "chakraColors": {
       "gray": "Gray",

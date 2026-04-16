@@ -40,7 +40,7 @@ import { ExtensionService } from "@/services/extension";
 import { UtilsService } from "@/services/utils";
 import { logger } from "@/utils/logging";
 import { createWindow } from "@/utils/window";
-import { buildSandboxedExtensionScript } from "./sandbox";
+import { buildProxiedExtensionScript } from "./proxy";
 
 interface ExtensionContextRegistration {
   homeWidget?: ExtensionHomeWidgetDefinition;
@@ -869,7 +869,7 @@ export const ExtensionHostContextProvider: React.FC<{
     );
   }, []);
 
-  // inject script (sandboxed) and wait for extension to call registerExtension with factory.
+  // inject script through a proxied runtime and wait for the extension to register.
   const loadExtensionFactory = useCallback(
     async (extension: ExtensionInfo, signature: string) => {
       const activationToken = createActivationToken();
@@ -937,8 +937,8 @@ export const ExtensionHostContextProvider: React.FC<{
                 `Failed to fetch script for ${extension.identifier}`
               );
             }
-            // build a sandboxed script to execute the extension code with only necessary globals.
-            scriptElement.text = buildSandboxedExtensionScript(
+            // execute the extension code through proxied window/document globals.
+            scriptElement.text = buildProxiedExtensionScript(
               await response.text()
             );
             Object.defineProperty(document, "currentScript", {

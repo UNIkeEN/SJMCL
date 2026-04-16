@@ -173,9 +173,6 @@ export interface LauncherConfig {
     instanceShaderPacksPage: {
       accordionStates: boolean[];
     };
-    extensionSettingsPage: {
-      hideAlert: boolean;
-    };
   };
 }
 
@@ -351,9 +348,6 @@ export const defaultConfig: LauncherConfig = {
     },
     instanceShaderPacksPage: {
       accordionStates: [true, true],
-    },
-    extensionSettingsPage: {
-      hideAlert: false,
     },
   },
 };

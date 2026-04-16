@@ -702,6 +702,14 @@
   "Empty": {
     "noData": "无数据"
   },
+  "EnableExtensionConfirmDialog": {
+    "title": "启用扩展",
+    "body": "是否确认启用来自 <hl>{{author}}</hl> 的 <hl>{{name}}</hl>（<hl>{{identifier}}</hl>）扩展？",
+    "button": {
+      "enable": "启用"
+    },
+    "unknownDeveloper": "未知开发者"
+  },
   "Enums": {
     "chakraColors": {
       "gray": "灰色",

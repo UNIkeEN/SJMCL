@@ -4,15 +4,14 @@ import {
   Avatar,
   AvatarBadge,
   Badge,
-  CloseButton,
   HStack,
   Text,
 } from "@chakra-ui/react";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
-import { openPath, openUrl } from "@tauri-apps/plugin-opener";
+import { openPath, openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { LuCircleCheck, LuCircleMinus } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
@@ -25,6 +24,7 @@ import {
 import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { useExtensionHost } from "@/contexts/extension/host";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { ExtensionInfo } from "@/models/extension";
 import { ExtensionService } from "@/services/extension";
@@ -35,6 +35,8 @@ const ExtensionSettingsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { config, update } = useLauncherConfig();
+  const { openGenericConfirmDialog } = useSharedModals();
+  const primaryColor = config.appearance.theme.primaryColor;
   const {
     extensionList,
     enabledExtensionList,
@@ -77,11 +79,50 @@ const ExtensionSettingsPage = () => {
     }
   };
 
-  const handleToggleExtension = async (identifier: string, enable: boolean) => {
+  const setExtensionEnabled = (identifier: string, enable: boolean) => {
     const enabledSet = new Set(config.extension.enabled);
     if (enable) enabledSet.add(identifier);
     else enabledSet.delete(identifier);
     update("extension.enabled", Array.from(enabledSet));
+  };
+
+  const handleToggleExtension = async (
+    extension: ExtensionInfo,
+    enable: boolean
+  ) => {
+    if (!enable) {
+      setExtensionEnabled(extension.identifier, false);
+      return;
+    }
+    openGenericConfirmDialog({
+      title: t("EnableExtensionConfirmDialog.title"),
+      body: (
+        <Text>
+          <Trans
+            i18nKey="EnableExtensionConfirmDialog.body"
+            values={{
+              author:
+                extension.author ||
+                t("EnableExtensionConfirmDialog.unknownDeveloper"),
+              name: extension.name,
+              identifier: extension.identifier,
+            }}
+            components={{
+              hl: (
+                <Text
+                  as="span"
+                  color={`${primaryColor}.500`}
+                  fontWeight="500"
+                />
+              ),
+            }}
+          />
+          {t("ExtensionSettingsPage.alert")}
+        </Text>
+      ),
+      btnOK: t("EnableExtensionConfirmDialog.button.enable"),
+      onOKCallback: () => setExtensionEnabled(extension.identifier, true),
+    });
   };
 
   const handleDeleteExtension = async (identifier: string) => {
@@ -144,9 +185,21 @@ const ExtensionSettingsPage = () => {
         icon: isEnabled ? LuCircleMinus : LuCircleCheck,
         danger: false,
         onClick: () => {
-          handleToggleExtension(extension.identifier, !isEnabled);
+          handleToggleExtension(extension, !isEnabled);
         },
       },
+      {
+        icon: "revealFile",
+        danger: false,
+        onClick: () => {
+          revealItemInDir(extension.path);
+        },
+      },
+      // {
+      //   icon: "info",
+      //   danger: false,
+      //   onClick: () => {},
+      // },
       {
         icon: "delete",
         danger: true,
@@ -281,21 +334,10 @@ const ExtensionSettingsPage = () => {
           </HStack>
         }
       >
-        {!config.states.extensionSettingsPage.hideAlert && (
-          <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
-            <AlertIcon />
-            {t("ExtensionSettingsPage.alert")}
-            <CloseButton
-              alignSelf="flex-start"
-              position="relative"
-              right={-2}
-              size="sm"
-              onClick={() =>
-                update("states.extensionSettingsPage.hideAlert", true)
-              }
-            />
-          </Alert>
-        )}
+        <Alert status="warning" fontSize="xs-sm" borderRadius="md" mb={3}>
+          <AlertIcon />
+          {t("ExtensionSettingsPage.alert")}
+        </Alert>
         {extensions.length > 0 ? (
           <OptionItemGroup items={extensionItems} />
         ) : (
