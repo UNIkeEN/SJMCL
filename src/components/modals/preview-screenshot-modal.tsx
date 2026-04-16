@@ -79,7 +79,7 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
               onClick: async () => {
                 try {
                   const bytes = await readFile(screenshot.filePath);
-                  await copyImage(Array.from(bytes), { toast });
+                  await copyImage(bytes, { toast });
                 } catch (error) {
                   logger.error("Copy screenshot failed:", error);
                   toast({
