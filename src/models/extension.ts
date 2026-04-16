@@ -115,3 +115,6 @@ export interface ExtensionSettingsPageContribution
 
 export interface ExtensionPageContribution
   extends ExtensionPageDefinition, ExtensionContributionBaseExtend {}
+
+// persisted extension data stored in launcher config.
+export type HomeWidgetStateTuple = [string, number, boolean];

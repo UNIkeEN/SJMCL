@@ -1314,6 +1314,11 @@
       }
     }
   },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "上移此卡片"
+    }
+  },
   "ImportAccountInfoModal": {
     "header": {
       "title": "自他啟者匯入戶簿資訊"

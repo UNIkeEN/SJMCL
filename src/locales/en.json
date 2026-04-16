@@ -1332,6 +1332,11 @@
       }
     }
   },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "Move This Widget Up"
+    }
+  },
   "ImportAccountInfoModal": {
     "header": {
       "title": "Import Players and Auth Servers"

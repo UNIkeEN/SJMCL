@@ -151,6 +151,7 @@ pub fn delete_extension(app: AppHandle, identifier: String) -> SJMCLResult<()> {
 
   fs::remove_dir_all(extension_dir)?;
 
+  // update related fields in config: enabled list and home widget state
   let config_binding = app.state::<Mutex<LauncherConfig>>();
   let mut config_state = config_binding.lock()?;
   let enabled: Vec<String> = config_state
@@ -164,6 +165,20 @@ pub fn delete_extension(app: AppHandle, identifier: String) -> SJMCLResult<()> {
     &app,
     "extension.enabled",
     &serde_json::to_string(&enabled).unwrap_or_default(),
+  )?;
+
+  let home_widget_prefix = format!("{identifier}:home_widget");
+  let home_widget_state: Vec<(String, u32, bool)> = config_state
+    .extension
+    .home_widget_state
+    .iter()
+    .filter(|(widget_identifier, _, _)| !widget_identifier.starts_with(&home_widget_prefix))
+    .cloned()
+    .collect();
+  config_state.partial_update(
+    &app,
+    "extension.home_widget_state",
+    &serde_json::to_string(&home_widget_state).unwrap_or_default(),
   )?;
   config_state.save()?;
 

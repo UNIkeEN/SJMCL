@@ -128,10 +128,6 @@ const ExtensionSettingsPage = () => {
   const handleDeleteExtension = async (identifier: string) => {
     const response = await ExtensionService.deleteExtension(identifier);
     if (response.status === "success") {
-      update(
-        "extension.enabled",
-        config.extension.enabled.filter((id) => id !== identifier)
-      );
       toast({
         title: response.message,
         status: "success",
