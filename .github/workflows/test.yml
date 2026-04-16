@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - src/**
+      - src-tauri/**
   pull_request:
     branches:
       - main
+    paths:
+      - src/**
+      - src-tauri/**
 
 # Cancel prev CI if new commit come (learned from ant-design repo)
 concurrency:
@@ -17,7 +23,46 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run_lint: ${{ steps.compute.outputs.should_run_lint }}
+      should_run_build: ${{ steps.compute.outputs.should_run_build }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            src:
+              - 'src/**'
+            src-non-locales:
+              - 'src/**'
+              - '!src/locales/**'
+            tauri:
+              - 'src-tauri/**'
+
+      - id: compute
+        shell: bash
+        run: |
+          should_run_lint=false
+          should_run_build=false
+
+          if [ "${{ steps.filter.outputs.src }}" = "true" ] || [ "${{ steps.filter.outputs.tauri }}" = "true" ]; then
+            should_run_lint=true
+          fi
+
+          if [ "${{ steps.filter.outputs.src-non-locales }}" = "true" ] || [ "${{ steps.filter.outputs.tauri }}" = "true" ]; then
+            should_run_build=true
+          fi
+
+          echo "should_run_lint=$should_run_lint" >> "$GITHUB_OUTPUT"
+          echo "should_run_build=$should_run_build" >> "$GITHUB_OUTPUT"
+
   Lint:
+    needs: changes
+    if: needs.changes.outputs.should_run_lint == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -43,6 +88,8 @@ jobs:
           find src-tauri/src -name '*.rs' | xargs rustfmt --check
 
   Build:
+    needs: changes
+    if: needs.changes.outputs.should_run_build == 'true'
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
