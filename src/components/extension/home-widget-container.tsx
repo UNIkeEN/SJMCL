@@ -19,6 +19,7 @@ interface WidthBounds {
 }
 
 const DEFAULT_WIDGET_WIDTH = 300;
+const STARTUP_PERSIST_DEBOUNCE_MS = 1500;
 
 const areHomeWidgetStatesEqual = (
   left: HomeWidgetStateTuple[],
@@ -73,7 +74,9 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   const widgetWidthMapRef = useRef<Record<string, number>>({});
   const widgetCollapsedMapRef = useRef<Record<string, boolean>>({});
   const persistHomeWidgetStateRef = useRef<() => void>(() => undefined);
-  const startupPersistTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const startupPersistTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     widgetOrderRef.current = widgetOrder;
@@ -318,7 +321,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
 
     startupPersistTimerRef.current = setTimeout(() => {
       persistHomeWidgetStateRef.current();
-    }, 1500);
+    }, STARTUP_PERSIST_DEBOUNCE_MS);
 
     return () => {
       if (startupPersistTimerRef.current) {
