@@ -2,7 +2,7 @@ root = true
 
 [*.{js,jsx,ts,tsx,rs}]
 charset = utf-8
-end_of_line = lf
+end_of_line = auto
 indent_style = space
 indent_size = 2
 insert_final_newline = true
