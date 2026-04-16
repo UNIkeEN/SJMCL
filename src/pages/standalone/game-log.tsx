@@ -282,6 +282,7 @@ const GameLogPage: React.FC = () => {
                 width={width}
                 height={height}
                 rowCount={filteredLogs.length}
+                overscanRowCount={filteredLogs.length}
                 deferredMeasurementCache={cacheRef.current}
                 rowHeight={cacheRef.current.rowHeight}
                 rowRenderer={rowRenderer}
