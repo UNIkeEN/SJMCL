@@ -29,6 +29,9 @@ import styles from "@/styles/game-log.module.css";
 import { parseIdFromWindowLabel } from "@/utils/window";
 
 type LogLevel = "FATAL" | "ERROR" | "WARN" | "INFO" | "DEBUG";
+// Keep enough rows mounted during text selection to avoid copy truncation,
+// while still bounding memory/render cost for very large logs.
+const MAX_SELECTION_OVERSCAN_ROWS = 2000;
 
 const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -45,9 +48,12 @@ const GameLogPage: React.FC = () => {
     DEBUG: true,
   });
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
+  const [mountAllRowsForSelection, setMountAllRowsForSelection] =
+    useState(false);
 
   const launchingIdRef = useRef<number | null>(null);
   const listRef = useRef<List>(null);
+  const logListContainerRef = useRef<HTMLDivElement>(null);
   const userScrolledRef = useRef(false);
 
   const cacheRef = useRef(
@@ -215,6 +221,31 @@ const GameLogPage: React.FC = () => {
     listRef.current?.recomputeRowHeights();
   }, [filterStates, searchTerm]);
 
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed) {
+        setMountAllRowsForSelection(false);
+        return;
+      }
+
+      const container = logListContainerRef.current;
+      const anchorNode = selection.anchorNode;
+      const focusNode = selection.focusNode;
+      const isInLogList =
+        !!container &&
+        !!anchorNode &&
+        !!focusNode &&
+        container.contains(anchorNode) &&
+        container.contains(focusNode);
+      setMountAllRowsForSelection(isInLogList);
+    };
+
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () =>
+      document.removeEventListener("selectionchange", handleSelectionChange);
+  }, []);
+
   const levels = Object.keys(logLevelMap) as LogLevel[];
 
   return (
@@ -275,25 +306,35 @@ const GameLogPage: React.FC = () => {
         {filteredLogs.length === 0 ? (
           <Empty withIcon={false} />
         ) : (
-          <AutoSizer>
-            {({ width, height }) => (
-              <List
-                ref={listRef}
-                width={width}
-                height={height}
-                rowCount={filteredLogs.length}
-                overscanRowCount={filteredLogs.length}
-                deferredMeasurementCache={cacheRef.current}
-                rowHeight={cacheRef.current.rowHeight}
-                rowRenderer={rowRenderer}
-                onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
-                  const atBottom = scrollHeight - scrollTop - clientHeight < 2;
-                  setIsScrolledToBottom(atBottom);
-                  userScrolledRef.current = !atBottom;
-                }}
-              />
-            )}
-          </AutoSizer>
+          <Box ref={logListContainerRef} h="full">
+            <AutoSizer>
+              {({ width, height }) => (
+                <List
+                  ref={listRef}
+                  width={width}
+                  height={height}
+                  rowCount={filteredLogs.length}
+                  overscanRowCount={
+                    mountAllRowsForSelection
+                      ? Math.min(
+                          filteredLogs.length,
+                          MAX_SELECTION_OVERSCAN_ROWS
+                        )
+                      : 20
+                  }
+                  deferredMeasurementCache={cacheRef.current}
+                  rowHeight={cacheRef.current.rowHeight}
+                  rowRenderer={rowRenderer}
+                  onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
+                    const atBottom =
+                      scrollHeight - scrollTop - clientHeight < 2;
+                    setIsScrolledToBottom(atBottom);
+                    userScrolledRef.current = !atBottom;
+                  }}
+                />
+              )}
+            </AutoSizer>
+          </Box>
         )}
 
         {!isScrolledToBottom && (
