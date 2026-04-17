@@ -73,6 +73,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   const [widgetCollapsedMap, setWidgetCollapsedMap] = useState<
     Record<string, boolean>
   >({});
+  // True once widget order/width/collapsed state has been rebuilt from real config.
   const [isHydrated, setIsHydrated] = useState(false);
 
   const widgetOrderRef = useRef<string[]>([]);
@@ -83,6 +84,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
     () => undefined
   );
 
+  // Keep refs aligned with the next hydrated snapshot before any persistence runs.
   const syncWidgetStateRefs = useCallback(
     (
       nextOrder: string[],
