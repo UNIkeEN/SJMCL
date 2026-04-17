@@ -272,9 +272,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
     ]
   );
 
-  useEffect(() => {
-    persistHomeWidgetStateRef.current = persistHomeWidgetState;
-  }, [persistHomeWidgetState]);
+  persistHomeWidgetStateRef.current = persistHomeWidgetState;
 
   const widgetLayouts = useMemo(() => {
     return orderedWidgetIdentifiers
