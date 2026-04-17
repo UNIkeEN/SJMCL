@@ -21,6 +21,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ScreenshotInfo } from "@/models/instance/misc";
 import { ConfigService } from "@/services/config";
+import { copyImage } from "@/utils/copy";
 import { UNIXToDatetime } from "@/utils/datetime";
 import { shareFile } from "@/utils/share";
 
@@ -70,7 +71,14 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
             },
           },
         ]
-      : []),
+      : [
+          {
+            icon: "copy",
+            onClick: async () => {
+              await copyImage(screenshot.filePath, { toast });
+            },
+          },
+        ]),
     {
       icon: LuImagePlay,
       label: t("ScreenshotPreviewModal.menu.setAsBg"),

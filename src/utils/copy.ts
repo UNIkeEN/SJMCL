@@ -24,13 +24,20 @@ export const copyText = async (text: string, { toast }: ToastOptions) => {
   }
 };
 
-// NOT TESTED
 export const copyImage = async (
   img: string | Image | Uint8Array | ArrayBuffer | number[],
   { toast }: ToastOptions
 ) => {
   try {
-    await writeImage(img);
+    let image: Image;
+    if (img instanceof Image) {
+      image = img;
+    } else if (typeof img === "string") {
+      image = await Image.fromPath(img);
+    } else {
+      image = await Image.fromBytes(img as Uint8Array | ArrayBuffer | number[]);
+    }
+    await writeImage(image);
     toast({
       title: t("General.copy.toast.success"),
       status: "success",
@@ -46,24 +53,20 @@ export const copyImage = async (
   }
 };
 
-// NOT TESTED
 export const copyImageFromElement = async (
   imgEl: HTMLImageElement,
   { toast }: ToastOptions
 ) => {
+  const { naturalWidth: width, naturalHeight: height } = imgEl;
   const canvas = document.createElement("canvas");
-  canvas.width = imgEl.naturalWidth;
-  canvas.height = imgEl.naturalHeight;
+  canvas.width = width;
+  canvas.height = height;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) return false;
-  else {
-    ctx.drawImage(imgEl, 0, 0);
-    const blob = await new Promise<Blob>((resolve) =>
-      canvas.toBlob((b) => resolve(b!), "image/png")
-    );
-    const arrayBuffer = await blob.arrayBuffer();
-    copyImage(Array.from(new Uint8Array(arrayBuffer)), { toast });
-    return true;
-  }
+
+  ctx.drawImage(imgEl, 0, 0);
+  const { data } = ctx.getImageData(0, 0, width, height);
+  const image = await Image.new(new Uint8Array(data.buffer), width, height);
+  return copyImage(image, { toast });
 };
