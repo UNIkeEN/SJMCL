@@ -13,7 +13,6 @@ use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
 use base64::engine::general_purpose;
 use base64::Engine;
-use log::warn;
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
 use shlex::try_quote;
@@ -325,7 +324,7 @@ pub async fn generate_launch_command(
             cmd.push(format!("-javaagent:{}", agent_path.to_string_lossy()));
           }
           Err(e) => {
-            warn!("Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
+            log::warn!("Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
           }
         }
       }

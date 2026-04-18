@@ -11,12 +11,15 @@ import {
   Portal,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { type MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronRight, LuTriangle } from "react-icons/lu";
+import { LuChevronRight, LuInfo, LuSettings, LuTriangle } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
+import { useExtensionHost } from "@/contexts/extension/host";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { ExtensionHomeWidgetContribution } from "@/models/extension";
 import { clamp } from "@/utils/math";
 import { base64ImgSrc } from "@/utils/string";
@@ -33,27 +36,58 @@ interface HomeWidgetProps {
   onWidthCommit: (width: number) => void;
   isCollapsed: boolean;
   onCollapsedChange: (collapsed: boolean) => void;
-  showMoveUpButton: boolean;
+  canMoveUp: boolean;
   onMoveUp: () => void;
 }
 
 interface ExtraOperationMenuProps {
-  isCollapsed: boolean;
+  widget: ExtensionHomeWidgetContribution;
+  canMoveUp: boolean;
   onMoveUp: () => void;
 }
 
 const ExtraOperationMenu = ({
-  isCollapsed,
+  widget,
+  canMoveUp,
   onMoveUp,
 }: ExtraOperationMenuProps) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { openSharedModal } = useSharedModals();
+  const { getExtensionSettingsPage } = useExtensionHost();
+  const hasSettingsPage = !!getExtensionSettingsPage(
+    widget.extension.identifier
+  );
 
-  const extraOpMenu = {
-    moveUp: {
-      icon: LuTriangle,
-      onClick: onMoveUp,
+  const extraOpMenu = [
+    ...(canMoveUp
+      ? [
+          {
+            key: "moveUp",
+            icon: LuTriangle,
+            onClick: onMoveUp,
+          },
+        ]
+      : []),
+    {
+      key: "extensionInfo",
+      icon: LuInfo,
+      onClick: () => {
+        openSharedModal("extension-info", { extension: widget.extension });
+      },
     },
-  };
+    ...(hasSettingsPage
+      ? [
+          {
+            key: "settings",
+            icon: LuSettings,
+            onClick: () => {
+              router.push(`/settings/extension/${widget.extension.identifier}`);
+            },
+          },
+        ]
+      : []),
+  ];
 
   return (
     <Menu>
@@ -63,15 +97,15 @@ const ExtraOperationMenu = ({
         withTooltip={false}
         size="xs"
         h={21}
-        ml={isCollapsed ? 0 : "auto"}
+        ml="auto"
       />
       <Portal>
         <MenuList>
-          {Object.entries(extraOpMenu).map(([key, item]) => (
-            <MenuItem key={key} fontSize="xs" onClick={item.onClick}>
+          {extraOpMenu.map((item) => (
+            <MenuItem key={item.key} fontSize="xs" onClick={item.onClick}>
               <HStack>
                 <item.icon />
-                <Text>{t(`HomeWidget.extraOpMenu.${key}`)}</Text>
+                <Text>{t(`HomeWidget.extraOpMenu.${item.key}`)}</Text>
               </HStack>
             </MenuItem>
           ))}
@@ -89,7 +123,7 @@ const HomeWidget = ({
   onWidthCommit,
   isCollapsed,
   onCollapsedChange,
-  showMoveUpButton,
+  canMoveUp,
   onMoveUp,
 }: HomeWidgetProps) => {
   const resizeHandlersRef = useRef<(() => void) | null>(null);
@@ -173,9 +207,11 @@ const HomeWidget = ({
           <Text fontSize="xs-sm" fontWeight="semibold" noOfLines={1}>
             {widget.title}
           </Text>
-          {showMoveUpButton && (
-            <ExtraOperationMenu isCollapsed={isCollapsed} onMoveUp={onMoveUp} />
-          )}
+          <ExtraOperationMenu
+            widget={widget}
+            canMoveUp={canMoveUp}
+            onMoveUp={onMoveUp}
+          />
         </HStack>
 
         <Box display={isCollapsed ? "none" : "block"} w="100%">

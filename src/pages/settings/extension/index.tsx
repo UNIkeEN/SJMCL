@@ -35,7 +35,7 @@ const ExtensionSettingsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { config, update } = useLauncherConfig();
-  const { openGenericConfirmDialog } = useSharedModals();
+  const { openGenericConfirmDialog, openSharedModal } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
   const {
     extensionList,
@@ -191,11 +191,14 @@ const ExtensionSettingsPage = () => {
           revealItemInDir(extension.path);
         },
       },
-      // {
-      //   icon: "info",
-      //   danger: false,
-      //   onClick: () => {},
-      // },
+      {
+        label: t("ExtensionSettingsPage.menu.info"),
+        icon: "info",
+        danger: false,
+        onClick: () => {
+          openSharedModal("extension-info", { extension });
+        },
+      },
       {
         icon: "delete",
         danger: true,

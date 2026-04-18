@@ -809,6 +809,12 @@
       "activateError": "Failed to activate extension {{name}}"
     }
   },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "Author",
+      "description": "Description"
+    }
+  },
   "ExtensionOpenExternalLinkConfirmDialog": {
     "title": "Open External Link",
     "body": "Extension {{extension}} wants to open {{link}} in your external browser.",
@@ -822,6 +828,9 @@
   "ExtensionSettingsPage": {
     "alert": "SJMCL cannot control the behavior of third-party extensions, including how they handle your personal data. Only install and enable extensions from trusted sources.",
     "installed": "Installed Extensions",
+    "menu": {
+      "info": "Extension Info"
+    },
     "top": {
       "settings": {
         "extensionDocs": {
@@ -1334,7 +1343,9 @@
   },
   "HomeWidget": {
     "extraOpMenu": {
-      "moveUp": "Move This Widget Up"
+      "moveUp": "Move This Widget Up",
+      "extensionInfo": "View Extension Info",
+      "settings": "Open Extension Settings"
     }
   },
   "ImportAccountInfoModal": {
