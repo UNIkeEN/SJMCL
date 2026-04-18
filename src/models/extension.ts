@@ -17,7 +17,6 @@ export interface ExtensionInfo {
   version?: string | null;
   minimalLauncherVersion?: string | null;
   path: string;
-  folderSize: number;
   iconSrc: string;
   frontend?: ExtensionFrontend | null;
 }

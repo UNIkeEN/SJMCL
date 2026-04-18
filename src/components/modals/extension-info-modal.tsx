@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { ExtensionInfo } from "@/models/extension";
-import { base64ImgSrc, formatByteSize } from "@/utils/string";
+import { base64ImgSrc } from "@/utils/string";
 
 interface ExtensionInfoModalProps extends Omit<ModalProps, "children"> {
   extension: ExtensionInfo;
@@ -92,12 +92,6 @@ const ExtensionInfoModal: React.FC<ExtensionInfoModalProps> = ({
               <InfoField
                 label={t("ExtensionInfoModal.label.author")}
                 value={extension.author}
-              />
-            )}
-            {extension.folderSize !== undefined && (
-              <InfoField
-                label={t("ExtensionInfoModal.label.size")}
-                value={formatByteSize(extension.folderSize)}
               />
             )}
           </VStack>

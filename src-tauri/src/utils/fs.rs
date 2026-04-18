@@ -9,7 +9,6 @@ use std::path::{Path, PathBuf};
 use std::{fs, io};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
-use walkdir::WalkDir;
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
 
@@ -144,20 +143,6 @@ pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> SJMCLResult<Vec<PathBuf>> 
       Err(e) => Some(Err(SJMCLError(format!("Entry Error: {}", e)))),
     })
     .collect()
-}
-
-/// Recursively calculates the total size in bytes of all files under a directory.
-pub fn get_dir_size<P: AsRef<Path>>(path: P) -> SJMCLResult<u64> {
-  let mut size_bytes = 0u64;
-
-  for entry in WalkDir::new(path) {
-    let entry = entry?;
-    if entry.file_type().is_file() {
-      size_bytes += entry.metadata()?.len();
-    }
-  }
-
-  Ok(size_bytes)
 }
 
 /// Retrieves a list of files within a given path that match a specified regular expression.

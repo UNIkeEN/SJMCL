@@ -812,8 +812,7 @@
   "ExtensionInfoModal": {
     "label": {
       "author": "作者",
-      "description": "描述",
-      "size": "大小"
+      "description": "描述"
     }
   },
   "ExtensionOpenExternalLinkConfirmDialog": {
