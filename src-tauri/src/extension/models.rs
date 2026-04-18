@@ -67,15 +67,22 @@ pub struct ExtensionInfo {
   #[serde(flatten)]
   pub metadata: ExtensionMetadata,
   pub path: String,
+  pub folder_size: u64,
   #[serde(default)]
   pub icon_src: ImageWrapper,
 }
 
 impl ExtensionInfo {
-  pub fn new(metadata: ExtensionMetadata, path: String, icon_src: ImageWrapper) -> Self {
+  pub fn new(
+    metadata: ExtensionMetadata,
+    path: String,
+    folder_size: u64,
+    icon_src: ImageWrapper,
+  ) -> Self {
     Self {
       metadata,
       path,
+      folder_size,
       icon_src,
     }
   }

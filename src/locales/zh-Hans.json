@@ -809,6 +809,13 @@
       "activateError": "激活扩展 {{name}} 失败"
     }
   },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "作者",
+      "description": "描述",
+      "size": "大小"
+    }
+  },
   "ExtensionOpenExternalLinkConfirmDialog": {
     "title": "打开外部链接",
     "body": "扩展 {{extension}} 想要在外部浏览器中打开 {{link}}",
@@ -822,6 +829,9 @@
   "ExtensionSettingsPage": {
     "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。",
     "installed": "已安装扩展",
+    "menu": {
+      "info": "查看信息"
+    },
     "top": {
       "settings": {
         "extensionDocs": {
@@ -1334,7 +1344,9 @@
   },
   "HomeWidget": {
     "extraOpMenu": {
-      "moveUp": "上移此卡片"
+      "moveUp": "上移此卡片",
+      "extensionInfo": "查看扩展信息",
+      "settings": "设置此扩展"
     }
   },
   "ImportAccountInfoModal": {

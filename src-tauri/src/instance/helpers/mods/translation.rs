@@ -9,7 +9,6 @@ use crate::resource::helpers::modrinth::{
 };
 use crate::storage::Storage;
 use crate::APP_DATA_DIR;
-use log::info;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -74,7 +73,7 @@ pub async fn add_local_mod_translations(
 
   if let Some(entry) = cache.translations.get(&file_name) {
     if !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS) {
-      info!("Using cached translation for mod: {}", file_name);
+      log::info!("Using cached translation for mod: {}", file_name);
       mod_info.translated_name = entry.translated_name.clone();
       mod_info.translated_description = entry.translated_description.clone();
       return Ok(());
@@ -115,7 +114,7 @@ pub async fn add_local_mod_translations(
   };
 
   if let Some(resource_info) = final_result {
-    info!("Fetched translation for mod: {}", file_name);
+    log::info!("Fetched translation for mod: {}", file_name);
     mod_info.translated_name = resource_info.translated_name.clone();
     mod_info.translated_description = resource_info.translated_description.clone();
   }

@@ -1,6 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
-use crate::utils::fs::get_subdirectories;
+use crate::utils::fs::{get_dir_size, get_subdirectories};
 use crate::utils::image::{load_image_from_dir, ImageWrapper};
 use image::imageops::FilterType;
 use std::fs::{self, File};
@@ -39,8 +39,9 @@ pub fn read_extension_metadata(extension_dir: &Path) -> SJMCLResult<ExtensionMet
 pub fn read_extension_info(extension_dir: &Path) -> SJMCLResult<ExtensionInfo> {
   let metadata = read_extension_metadata(extension_dir)?;
   let path = extension_dir.to_string_lossy().to_string();
+  let folder_size = get_dir_size(extension_dir)?;
   let icon_src = read_extension_icon(extension_dir);
-  Ok(ExtensionInfo::new(metadata, path, icon_src))
+  Ok(ExtensionInfo::new(metadata, path, folder_size, icon_src))
 }
 
 // support both single-level and nested structure

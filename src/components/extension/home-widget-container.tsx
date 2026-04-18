@@ -357,7 +357,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
               onCollapsedChange={(collapsed) =>
                 handleWidgetCollapsedChange(widget.identifier, collapsed)
               }
-              showMoveUpButton={widget.identifier !== topWidgetIdentifier}
+              canMoveUp={widget.identifier !== topWidgetIdentifier}
               onMoveUp={() => handleMoveWidgetUp(widget.identifier)}
             />
           ))}
