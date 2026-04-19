@@ -344,14 +344,23 @@
       }
     }
   },
-  "ChangeModLoaderModal": {
+  "ChangeLoaderModal": {
     "header": {
-      "title": {
-        "change": "改改囊載器",
-        "install": "置改囊載器"
+      "modloader": {
+        "title": {
+          "change": "改改囊載器",
+          "install": "置改囊載器"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "改 OptiFine",
+          "install": "置 OptiFine"
+        }
       }
     },
     "notSelectedLoader": "未選擇新的載器",
+    "notSelectedOptifine": "未選擇新的 OptiFine",
     "footer": {
       "installFabricApi": "同時置 Fabric API 改囊",
       "installQFAPI": "同時置 QFAPI / QSL 改囊（若可用）",
@@ -624,6 +633,7 @@
       "game-client-w-java": "戲客戶端 {{param1}}（包含爪哇 {{param2}}）",
       "game-server": "戲伺服端 {{param}}",
       "change-mod-loader": "改改囊載器 {{param}}",
+      "change-optifine": "改 OptiFine {{param}}",
       "mod": "改囊",
       "world": "生界",
       "resourcepack": "資囊",
@@ -691,6 +701,14 @@
   },
   "Empty": {
     "noData": "無據"
+  },
+  "EnableExtensionConfirmDialog": {
+    "title": "啟擴充套件",
+    "body": "誠欲啟來自 <hl>{{author}}</hl> 之擴充套件 <hl>{{name}}</hl>（<hl>{{identifier}}</hl>）乎？",
+    "button": {
+      "enable": "啟用"
+    },
+    "unknownDeveloper": "未知開發者"
   },
   "Enums": {
     "chakraColors": {
@@ -791,6 +809,12 @@
       "activateError": "啟用擴充套件 {{name}} 未成"
     }
   },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "作者",
+      "description": "述"
+    }
+  },
   "ExtensionOpenExternalLinkConfirmDialog": {
     "title": "啟外鏈",
     "body": "擴充套件 {{extension}} 想要在外部覽器中開啟 {{link}}",
@@ -804,6 +828,9 @@
   "ExtensionSettingsPage": {
     "alert": "SJMCL 不能制第三方擴充之行，亦不能保其私據之處置。惟可信源之擴充，可置而啟之。",
     "installed": "已裝擴充套件",
+    "menu": {
+      "info": "覽資訊"
+    },
     "top": {
       "settings": {
         "extensionDocs": {
@@ -1316,7 +1343,9 @@
   },
   "HomeWidget": {
     "extraOpMenu": {
-      "moveUp": "上移此卡片"
+      "moveUp": "上移此卡片",
+      "extensionInfo": "覽擴充套件資訊",
+      "settings": "置此擴充套件"
     }
   },
   "ImportAccountInfoModal": {

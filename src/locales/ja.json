@@ -283,7 +283,8 @@
           "title": "上部ナビゲーションバーのスタイル",
           "type": {
             "standard": "スタンダード",
-            "simplified": "ミニマル"
+            "simplified": "ミニマル",
+            "adaptive": "自動"
           }
         }
       }
@@ -343,14 +344,23 @@
       }
     }
   },
-  "ChangeModLoaderModal": {
+  "ChangeLoaderModal": {
     "header": {
-      "title": {
-        "change": "モッドローダーを変更",
-        "install": "モッドローダーをインストール"
+      "modloader": {
+        "title": {
+          "change": "モッドローダーを変更",
+          "install": "モッドローダーをインストール"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "OptiFine を変更",
+          "install": "OptiFine をインストール"
+        }
       }
     },
     "notSelectedLoader": "新しいローダーが選択されていません",
+    "notSelectedOptifine": "新しい OptiFine が選択されていません",
     "footer": {
       "installFabricApi": "同時に Fabric API モッドをインストール",
       "installQFAPI": "QFAPI / QSL モッドもインストール（利用可能な場合）",
@@ -623,6 +633,7 @@
       "game-client-w-java": "ゲームクライアント {{param1}}（Java {{param2}} 同梱）",
       "game-server": "ゲームサーバー {{param}}",
       "change-mod-loader": "モッドローダーを変更 {{param}}",
+      "change-optifine": "OptiFine を変更 {{param}}",
       "mod": "モッド",
       "world": "ワールド",
       "resourcepack": "リソースパック",
@@ -690,6 +701,14 @@
   },
   "Empty": {
     "noData": "データなし"
+  },
+  "EnableExtensionConfirmDialog": {
+    "title": "拡張機能を有効化",
+    "body": "<hl>{{author}}</hl> が提供する拡張機能 <hl>{{name}}</hl>（<hl>{{identifier}}</hl>）を有効にしますか？",
+    "button": {
+      "enable": "有効化"
+    },
+    "unknownDeveloper": "不明な開発者"
   },
   "Enums": {
     "chakraColors": {
@@ -782,6 +801,51 @@
       }
     }
   },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "この拡張機能の内容を表示できませんでした。"
+  },
+  "ExtensionHostContextProvider": {
+    "toast": {
+      "activateError": "拡張機能 {{name}} の有効化に失敗"
+    }
+  },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "作者",
+      "description": "説明"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "外部リンクを開く",
+    "body": "拡張機能 {{extension}} が外部ブラウザーで {{link}} を開こうとしています。",
+    "button": {
+      "open": "開く"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "{{name}} の設定"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL はサードパーティー拡張機能の挙動や個人データの扱いを制御できません。信頼できる提供元の拡張機能のみをインストールして有効化してください。",
+    "installed": "インストール済みの拡張機能",
+    "menu": {
+      "info": "拡張機能情報"
+    },
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "拡張機能開発ドキュメント",
+          "description": "拡張機能システムの紹介と API ドキュメントを読み、スキャフォールドですばやく開発を始められます。",
+          "url": "https://mc.sjtu.cn/sjmcl/en/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "コミュニティ拡張機能を探す",
+          "description": "GitHub でコミュニティ製の拡張機能一覧を閲覧します。",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
+  },
   "GameAdvancedSettingsPage": {
     "title": "高度起動設定",
     "topWarning": "本設定は上級者向けに設計されていますので、以下の項目を変更すると、ゲームの起動不能やデータの破損を引き起こす可能性があります。オプションの機能を完全に理解している場合のみ変更してください。",
@@ -809,8 +873,17 @@
     "jvm": {
       "title": "Java 仮想マシン設定",
       "settings": {
-        "args": {
-          "title": "JVM パラメーター"
+        "garbageCollector": {
+          "title": "ガベージコレクター",
+          "desc": "古い Java バージョンでは特定のガベージコレクターが利用できない場合があります",
+          "options": {
+            "auto": "自動（デフォルト）",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
         },
         "javaPermanentGenerationSpace": {
           "title": "メモリ永続保存領域(MB)",
@@ -818,6 +891,9 @@
         },
         "environmentVariable": {
           "title": "環境変数"
+        },
+        "args": {
+          "title": "JVM パラメーター"
         }
       }
     },
@@ -1002,6 +1078,7 @@
     "refresh": "再読み込み",
     "revealFile": "{{opener}}で表示",
     "search": "サーチ",
+    "settings": "設定",
     "share": {
       "text": "共有",
       "toast": {
@@ -1262,6 +1339,13 @@
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
+    }
+  },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "このウィジェットを上へ移動",
+      "extensionInfo": "拡張機能情報",
+      "settings": "拡張機能の設定を開く"
     }
   },
   "ImportAccountInfoModal": {
@@ -1542,6 +1626,9 @@
     "releaseDate": "リリース日 {{date}}",
     "notCompatibleWith": "{{item}} に非互換",
     "noVersionSelected": "バージョンを選択していない"
+  },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
   },
   "ManageSkinModal": {
     "skinManage": "スキン管理",
@@ -2657,6 +2744,36 @@
         }
       }
     },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "拡張機能一覧の取得に失敗"
+        }
+      },
+      "addExtension": {
+        "success": "拡張機能の追加に成功",
+        "error": {
+          "title": "拡張機能の追加に失敗",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "拡張機能パッケージの内容形式が無効です",
+            "INVALID_IDENTIFIER": "拡張機能識別子が無効です",
+            "INVALID_NAME": "拡張機能名が無効です",
+            "LAUNCHER_VERSION_TOO_LOW": "ランチャーバージョンが低すぎます",
+            "EXTENSION_NOT_FOUND": "対象のパッケージファイルが見つかりません"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "拡張機能の削除に成功",
+        "error": {
+          "title": "拡張機能の削除に失敗",
+          "description": {
+            "INVALID_IDENTIFIER": "拡張機能識別子が無効です",
+            "EXTENSION_NOT_FOUND": "拡張機能が見つかりません"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "タスクの作成に失敗"
@@ -2688,9 +2805,9 @@
       "appearance": "表示",
       "download": "ダウンロード",
       "intelligence": "AI",
+      "extension": "拡張機能",
       "help": "マニュアルとヘルプ",
-      "about": "バージョン情報",
-      "dev-test": "開発・テストページ"
+      "about": "バージョン情報"
     }
   },
   "SkinPreview": {

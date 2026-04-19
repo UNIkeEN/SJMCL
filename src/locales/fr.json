@@ -283,7 +283,8 @@
           "title": "Style de la barre de navigation supérieure",
           "type": {
             "standard": "Standard",
-            "simplified": "Simplifié"
+            "simplified": "Simplifié",
+            "adaptive": "Adaptatif"
           }
         }
       }
@@ -343,14 +344,23 @@
       }
     }
   },
-  "ChangeModLoaderModal": {
+  "ChangeLoaderModal": {
     "header": {
-      "title": {
-        "change": "Modifier le chargeur de mods",
-        "install": "Installer le chargeur de mods"
+      "modloader": {
+        "title": {
+          "change": "Modifier le chargeur de mods",
+          "install": "Installer le chargeur de mods"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "Modifier OptiFine",
+          "install": "Installer OptiFine"
+        }
       }
     },
     "notSelectedLoader": "Aucun nouveau chargeur sélectionné",
+    "notSelectedOptifine": "Aucun nouvel OptiFine sélectionné",
     "footer": {
       "installFabricApi": "Installer également le mod Fabric API",
       "installQFAPI": "Installer aussi le mod QFAPI / QSL (si disponible)",
@@ -623,6 +633,7 @@
       "game-client-w-java": "Client du jeu {{param1}} (avec Java {{param2}})",
       "game-server": "Serveur {{param}}",
       "change-mod-loader": "Modifier le chargeur de mods {{param}}",
+      "change-optifine": "Modifier OptiFine {{param}}",
       "mod": "Mod",
       "world": "Sauvegarde",
       "resourcepack": "Pack de ressources",
@@ -690,6 +701,14 @@
   },
   "Empty": {
     "noData": " donnée"
+  },
+  "EnableExtensionConfirmDialog": {
+    "title": "Activer l'extension",
+    "body": "Voulez-vous vraiment activer l'extension <hl>{{name}}</hl> (<hl>{{identifier}}</hl>) de <hl>{{author}}</hl> ? ",
+    "button": {
+      "enable": "Activer"
+    },
+    "unknownDeveloper": "Développeur inconnu"
   },
   "Enums": {
     "chakraColors": {
@@ -782,6 +801,51 @@
       }
     }
   },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "Impossible d'afficher le contenu de cette extension."
+  },
+  "ExtensionHostContextProvider": {
+    "toast": {
+      "activateError": "Échec de l'activation de l'extension {{name}}"
+    }
+  },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "Auteur",
+      "description": "Description"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "Ouvrir un lien externe",
+    "body": "L'extension {{extension}} souhaite ouvrir {{link}} dans votre navigateur externe.",
+    "button": {
+      "open": "Ouvrir"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "Paramètres de {{name}}"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL ne peut pas contrôler le comportement des extensions tierces, y compris la manière dont elles traitent vos données personnelles. N'installez et n'activez que des extensions provenant de sources fiables.",
+    "installed": "Extensions installées",
+    "menu": {
+      "info": "Informations de l'extension"
+    },
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "Documentation de développement des extensions",
+          "description": "Découvrez le système d'extensions et la documentation de l'API, puis démarrez rapidement avec le scaffold.",
+          "url": "https://mc.sjtu.cn/sjmcl/en/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "Découvrir les extensions de la communauté",
+          "description": "Parcourez sur GitHub la liste des extensions développées par la communauté.",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
+  },
   "GameAdvancedSettingsPage": {
     "title": "Paramètres avancés du jeu",
     "topWarning": "Les paramètres avancés sont réservés aux utilisateurs expérimentés. Modifier ces options peut empêcher le jeu de démarrer. Ne modifiez pas ces options à moins de bien comprendre leur signification !",
@@ -809,8 +873,17 @@
     "jvm": {
       "title": "Paramètres de la machine virtuelle Java",
       "settings": {
-        "args": {
-          "title": "Arguments JVM"
+        "garbageCollector": {
+          "title": "Ramasse-miettes",
+          "desc": "Les anciennes versions de Java peuvent ne pas inclure certains ramasse-miettes",
+          "options": {
+            "auto": "Automatique (par défaut)",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
         },
         "javaPermanentGenerationSpace": {
           "title": "Espace de génération permanente",
@@ -818,6 +891,9 @@
         },
         "environmentVariable": {
           "title": "Variable d'environnement"
+        },
+        "args": {
+          "title": "Arguments JVM"
         }
       }
     },
@@ -1002,6 +1078,7 @@
     "refresh": "Rafraîchir",
     "revealFile": "Afficher dans {{opener}}",
     "search": "Rechercher",
+    "settings": "Paramètres",
     "share": {
       "text": "Partager",
       "toast": {
@@ -1262,6 +1339,13 @@
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
+    }
+  },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "Déplacer ce widget vers le haut",
+      "extensionInfo": "Infos sur l'extension",
+      "settings": "Ouvrir les paramètres de l'extension"
     }
   },
   "ImportAccountInfoModal": {
@@ -1542,6 +1626,9 @@
     "releaseDate": "Publié le {{date}}",
     "notCompatibleWith": "Incompatible avec {{item}}",
     "noVersionSelected": "Version non sélectionnée"
+  },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "Cette page est fournie par l'extension {{name}}"
   },
   "ManageSkinModal": {
     "skinManage": "Gérer les skins",
@@ -2657,6 +2744,36 @@
         }
       }
     },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "Échec de la récupération de la liste des extensions"
+        }
+      },
+      "addExtension": {
+        "success": "Extension ajoutée avec succès",
+        "error": {
+          "title": "Échec de l'ajout de l'extension",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "Le format du contenu du paquet d'extension est invalide",
+            "INVALID_IDENTIFIER": "L'identifiant de l'extension est invalide",
+            "INVALID_NAME": "Le nom de l'extension est invalide",
+            "LAUNCHER_VERSION_TOO_LOW": "La version du lanceur est trop ancienne",
+            "EXTENSION_NOT_FOUND": "Fichier du paquet cible introuvable"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "Extension supprimée avec succès",
+        "error": {
+          "title": "Échec de la suppression de l'extension",
+          "description": {
+            "INVALID_IDENTIFIER": "L'identifiant de l'extension est invalide",
+            "EXTENSION_NOT_FOUND": "Extension introuvable"
+          }
+        }
+      }
+    },
     "task": {
       "scheduleProgressiveTaskGroup": {
         "error": "Échec de la création de la tâche"
@@ -2688,9 +2805,9 @@
       "appearance": "Apparence",
       "download": "Téléchargement",
       "intelligence": "IA",
+      "extension": "Extensions",
       "help": "Aide & Doc",
-      "about": "À propos",
-      "dev-test": "Développement - Page de test"
+      "about": "À propos"
     }
   },
   "SkinPreview": {
