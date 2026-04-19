@@ -53,7 +53,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
   useEffect(() => {
     if (props.isOpen) {
       const timer = window.setTimeout(() => {
-        confettiSchoolPride();
+        void confettiSchoolPride();
       }, 500);
       return () => window.clearTimeout(timer);
     }

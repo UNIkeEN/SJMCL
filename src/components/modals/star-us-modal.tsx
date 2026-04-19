@@ -22,7 +22,7 @@ const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
   useEffect(() => {
     if (props.isOpen) {
       const timer = window.setTimeout(() => {
-        confettiStars();
+        void confettiStars();
       }, 300);
       return () => window.clearTimeout(timer);
     }
