@@ -222,7 +222,7 @@ impl Sink for TauriEventSink {
       task_group,
       percentage as f64 / 100.0,
       current,
-      estimated_time.map(Duration::from_secs_f64),
+      estimated_time.map(|x| Duration::from_secs_f64(x.max(0.0))),
       speed,
     );
   }
