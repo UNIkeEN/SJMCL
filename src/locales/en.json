@@ -1118,6 +1118,13 @@
     "functions": {
       "title": "Functionality",
       "settings": {
+        "discoverPage": {
+          "title": "Discover Page",
+          "description": "Conveniently browse Minecraft and community news, search and download game resource from the Discover page.",
+          "on": "On",
+          "search-only": "Search Only",
+          "off": "Hidden"
+        },
         "instancesNavType": {
           "title": "Instance Page Navigation Mode",
           "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",

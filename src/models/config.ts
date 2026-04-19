@@ -121,6 +121,7 @@ export interface LauncherConfig {
       language: string;
     };
     functionality: {
+      discoverPage: string;
       instancesNavType: string;
       launchPageQuickSwitch: boolean;
       autoDownloadJava: boolean;
@@ -295,6 +296,7 @@ export const defaultConfig: LauncherConfig = {
       language: "zh-Hans",
     },
     functionality: {
+      discoverPage: "on",
       instancesNavType: "instance",
       launchPageQuickSwitch: true,
       autoDownloadJava: true,

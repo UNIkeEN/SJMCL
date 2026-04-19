@@ -1118,6 +1118,13 @@
     "functions": {
       "title": "功能",
       "settings": {
+        "discoverPage": {
+          "title": "发现页",
+          "description": "在发现页便捷地查看 Minecraft 与社区新闻、搜索与下载游戏资源",
+          "on": "开启",
+          "search-only": "仅显示搜索",
+          "off": "隐藏"
+        },
         "instancesNavType": {
           "title": "实例页导航栏模式",
           "description": "更改实例页左侧导航栏是否显示、分组方式",

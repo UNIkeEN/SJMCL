@@ -14,15 +14,18 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
+import { IconType } from "react-icons";
 import {
   LuBox,
   LuCircleUserRound,
   LuCompass,
+  LuSearch,
   LuSettings,
   LuZap,
 } from "react-icons/lu";
@@ -30,21 +33,15 @@ import AdvancedCard from "@/components/common/advanced-card";
 import { DownloadIndicator } from "@/components/download-indicator";
 import { TitleShort } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
 import styles from "@/styles/head-navbar.module.css";
-
-const NAV_LIST = [
-  { icon: LuZap, label: "launch", path: "/launch" },
-  { icon: LuBox, label: "instances", path: "/instances" },
-  { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
-  { icon: LuCompass, label: "discover", path: "/discover" },
-  { icon: LuSettings, label: "settings", path: "/settings" },
-] as const;
 
 const HeadNavBar = () => {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { config } = useLauncherConfig();
+  const { openSharedModal } = useSharedModals();
   const { tasks } = useTaskContext();
 
   const primaryColor = config.appearance.theme.primaryColor;
@@ -84,6 +81,35 @@ const HeadNavBar = () => {
     "rgba(255, 255, 255, 0.08)"
   );
 
+  const navList = useMemo<
+    Array<{
+      icon: IconType;
+      label: string;
+      path?: string;
+      onClick?: () => void;
+    }>
+  >(() => {
+    const discoverPageMode = config.general.functionality.discoverPage;
+
+    return [
+      { icon: LuZap, label: "launch", path: "/launch" },
+      { icon: LuBox, label: "instances", path: "/instances" },
+      { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
+      ...(discoverPageMode === "on"
+        ? [{ icon: LuCompass, label: "discover", path: "/discover" }]
+        : discoverPageMode === "search-only"
+          ? [
+              {
+                icon: LuSearch,
+                label: "search",
+                onClick: () => openSharedModal("spotlight-search"),
+              },
+            ]
+          : []),
+      { icon: LuSettings, label: "settings", path: "/settings" },
+    ];
+  }, [config.general.functionality.discoverPage, openSharedModal]);
+
   // animation trigger
   useEffect(() => {
     setIsAnimating(true);
@@ -95,8 +121,8 @@ const HeadNavBar = () => {
     isSimplified,
   ]);
 
-  const selectedIndex = NAV_LIST.findIndex((item) =>
-    router.pathname.startsWith(item.path)
+  const selectedIndex = navList.findIndex(
+    (item) => item.path && router.pathname.startsWith(item.path)
   );
 
   const updateIndicator = useCallback(() => {
@@ -163,9 +189,13 @@ const HeadNavBar = () => {
   }, [updateIndicator, isSimplified, i18n.resolvedLanguage]);
 
   const handleTabChange = (index: number) => {
-    const target = NAV_LIST[index];
+    const target = navList[index];
     if (target) {
-      router.push(target.path);
+      if (target.onClick) {
+        target.onClick();
+      } else if (target.path) {
+        router.push(target.path);
+      }
     }
   };
 
@@ -197,11 +227,11 @@ const HeadNavBar = () => {
               transform={`translateX(${indicator.left}px)`}
               w={`${indicator.width}px`}
             />
-            {NAV_LIST.map((item, index) => {
+            {navList.map((item, index) => {
               const isSelected = selectedIndex === index;
               return (
                 <Tooltip
-                  key={item.path}
+                  key={`${item.label}-${item.path ?? "action"}`}
                   label={t(`HeadNavBar.navList.${item.label}`)}
                   placement="bottom"
                   isDisabled={!isSimplified || isSelected}
