@@ -18,6 +18,12 @@ interface WidthBounds {
   upper: number;
 }
 
+type PersistHomeWidgetState = (
+  nextOrder?: string[],
+  nextWidthMap?: Record<string, number>,
+  nextCollapsedMap?: Record<string, boolean>
+) => void;
+
 const DEFAULT_WIDGET_WIDTH = 300;
 
 const areHomeWidgetStatesEqual = (
@@ -67,12 +73,30 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   const [widgetCollapsedMap, setWidgetCollapsedMap] = useState<
     Record<string, boolean>
   >({});
+  // True once widget order/width/collapsed state has been rebuilt from real config.
   const [isHydrated, setIsHydrated] = useState(false);
 
   const widgetOrderRef = useRef<string[]>([]);
   const widgetWidthMapRef = useRef<Record<string, number>>({});
   const widgetCollapsedMapRef = useRef<Record<string, boolean>>({});
-  const persistHomeWidgetStateRef = useRef<() => void>(() => undefined);
+
+  const persistHomeWidgetStateRef = useRef<PersistHomeWidgetState>(
+    () => undefined
+  );
+
+  // Keep refs aligned with the next hydrated snapshot before any persistence runs.
+  const syncWidgetStateRefs = useCallback(
+    (
+      nextOrder: string[],
+      nextWidthMap: Record<string, number>,
+      nextCollapsedMap: Record<string, boolean>
+    ) => {
+      widgetOrderRef.current = nextOrder;
+      widgetWidthMapRef.current = nextWidthMap;
+      widgetCollapsedMapRef.current = nextCollapsedMap;
+    },
+    []
+  );
 
   useEffect(() => {
     widgetOrderRef.current = widgetOrder;
@@ -87,7 +111,8 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
   }, [widgetCollapsedMap]);
 
   useEffect(() => {
-    if (visibleWidgetIdentifiers.length === 0) {
+    if (config.mocked || visibleWidgetIdentifiers.length === 0) {
+      syncWidgetStateRefs([], {}, {});
       setWidgetOrder([]);
       setWidgetWidthMap({});
       setWidgetCollapsedMap({});
@@ -131,16 +156,25 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
       ])
     );
 
+    syncWidgetStateRefs(nextOrder, nextWidthMap, nextCollapsedMap);
     setWidgetOrder((prev) =>
       areArraysEqual(prev, nextOrder) ? prev : nextOrder
     );
     setWidgetWidthMap(nextWidthMap);
     setWidgetCollapsedMap(nextCollapsedMap);
     setIsHydrated(true);
+
+    persistHomeWidgetStateRef.current(
+      nextOrder,
+      nextWidthMap,
+      nextCollapsedMap
+    );
   }, [
+    config.mocked,
     homeWidgets,
     persistedState,
     persistedStateMap,
+    syncWidgetStateRefs,
     visibleWidgetIdentifiers,
   ]);
 
@@ -182,7 +216,6 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
           (identifier) => !nextOrder.includes(identifier)
         ),
       ];
-      const visibleWidgetSet = new Set(visibleWidgetIdentifiers);
 
       const nextVisibleState = normalizedOrder
         .map((identifier) => widgetsByIdentifier.get(identifier))
@@ -204,10 +237,27 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
           ] as HomeWidgetStateTuple;
         });
 
-      const hiddenState = persistedState.filter(
-        ([identifier]) => !visibleWidgetSet.has(identifier)
+      const nextVisibleStateMap = new Map(
+        nextVisibleState.map((state) => [state[0], state])
       );
-      const nextState = [...nextVisibleState, ...hiddenState];
+      const persistedIdentifierSet = new Set(
+        persistedState.map(([identifier]) => identifier)
+      );
+
+      // Keep hidden widgets in their original persisted slots so partial startup
+      // registration does not rewrite the whole order
+      const reorderedVisibleState = [...nextVisibleState];
+      const nextState = persistedState.map((state) => {
+        const identifier = state[0];
+        if (!nextVisibleStateMap.has(identifier)) return state;
+        return reorderedVisibleState.shift() || state;
+      });
+
+      nextState.push(
+        ...nextVisibleState.filter(
+          ([identifier]) => !persistedIdentifierSet.has(identifier)
+        )
+      );
 
       if (!areHomeWidgetStatesEqual(persistedState, nextState)) {
         update("extension.homeWidgetState", nextState);
@@ -222,9 +272,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
     ]
   );
 
-  useEffect(() => {
-    persistHomeWidgetStateRef.current = persistHomeWidgetState;
-  }, [persistHomeWidgetState]);
+  persistHomeWidgetStateRef.current = persistHomeWidgetState;
 
   const widgetLayouts = useMemo(() => {
     return orderedWidgetIdentifiers
@@ -272,6 +320,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
         ...widgetWidthMapRef.current,
         [widgetIdentifier]: width,
       };
+      widgetWidthMapRef.current = nextWidthMap;
       setWidgetWidthMap(nextWidthMap);
       persistHomeWidgetState(undefined, nextWidthMap);
     },
@@ -285,6 +334,7 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
         ...widgetCollapsedMapRef.current,
         [widgetIdentifier]: collapsed,
       };
+      widgetCollapsedMapRef.current = nextCollapsedMap;
       setWidgetCollapsedMap(nextCollapsedMap);
       persistHomeWidgetState(undefined, undefined, nextCollapsedMap);
     },
@@ -302,16 +352,12 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
         currentOrder[currentIndex - 1],
       ];
 
+      widgetOrderRef.current = currentOrder;
       setWidgetOrder(currentOrder);
       persistHomeWidgetState(currentOrder);
     },
     [orderedWidgetIdentifiers, persistHomeWidgetState]
   );
-
-  useEffect(() => {
-    if (!isHydrated || orderedWidgetIdentifiers.length === 0) return;
-    persistHomeWidgetStateRef.current();
-  }, [isHydrated, orderedWidgetIdentifiers]);
 
   const containerWidth = useMemo(
     () => Math.max(0, ...widgetLayouts.map((layout) => layout.width)),
@@ -320,7 +366,12 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
 
   const topWidgetIdentifier = orderedWidgetIdentifiers[0];
 
-  if (homeWidgets.length === 0) return null;
+  const shouldHideWidgetList =
+    config.mocked || homeWidgets.length === 0 || !isHydrated;
+
+  if (shouldHideWidgetList) {
+    return null;
+  }
 
   return (
     <Box
