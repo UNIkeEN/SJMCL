@@ -200,7 +200,7 @@ impl ModpackManifest for CurseForgeManifest {
           sha1,
           dest: instance_path
             .join(match class_id {
-              Some(12) => "resourcepacks",
+              Some(12) | Some(6945) => "resourcepacks",
               Some(6552) => "shaderpacks",
               _ => "mods",
             })
