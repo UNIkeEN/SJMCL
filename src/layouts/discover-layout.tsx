@@ -112,7 +112,7 @@ const DiscoverLayout: React.FC<{ children: React.ReactNode }> = ({
                   }`
                 )}
               </Kbd>
-              <Kbd>S</Kbd>
+              <Kbd>F</Kbd>
             </HStack>
           )}
         </HStack>

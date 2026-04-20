@@ -1276,8 +1276,8 @@
       "content": "Ajoutez un compte ici et sélectionnez le personnage avec lequel vous souhaitez jouer."
     },
     "step3": {
-      "title": "Minecraft, démarre !",
-      "content": "Après avoir sélectionné l'instance et le personnage, et ajusté les paramètres, cliquez sur le bouton de démarrage pour profiter du jeu ! 🥳"
+      "title": "Page de découverte",
+      "content": "Ici, vous pouvez parcourir les actualités Minecraft et de la communauté, découvrir et télécharger diverses ressources telles que des mods, des cartes et des modpacks.<br/>Vous pouvez également ouvrir rapidement la « Recherche globale » avec le raccourci clavier <key>{{keyname}}</key> + <key>F</key>."
     },
     "step4": {
       "title": "Lancer Minecraft !",

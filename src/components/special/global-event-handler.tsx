@@ -16,9 +16,9 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
   // ----------------- Keyboard Shortcuts -----------------
   const spotlightShortcuts = useMemo(
     () => ({
-      macos: { metaKey: true, key: "S" },
-      windows: { ctrlKey: true, key: "S" },
-      linux: { ctrlKey: true, key: "S" },
+      macos: { metaKey: true, key: "F" },
+      windows: { ctrlKey: true, key: "F" },
+      linux: { ctrlKey: true, key: "F" },
     }),
     []
   );

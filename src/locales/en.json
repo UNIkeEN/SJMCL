@@ -1284,7 +1284,7 @@
     },
     "step3": {
       "title": "Discover Page",
-      "content": "Here you can browse Minecraft and community news, discover and download various related resources such as mods, maps, and modpacks.<br/>You can also quickly open \"Global Search\" with the keyboard shortcut <key>{{keyname}}</key> + <key>S</key>."
+      "content": "Here you can browse Minecraft and community news, discover and download various related resources such as mods, maps, and modpacks.<br/>You can also quickly open \"Global Search\" with the keyboard shortcut <key>{{keyname}}</key> + <key>F</key>."
     },
     "step4": {
       "title": "Launch Minecraft!",

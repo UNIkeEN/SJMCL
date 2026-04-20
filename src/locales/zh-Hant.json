@@ -1276,8 +1276,8 @@
       "content": "在此處新增帳戶，選擇您想要遊玩的角色"
     },
     "step3": {
-      "title": "Minecraft，啟動！",
-      "content": "選中實例與角色、調整好相關設定後，點選啟動按鈕享受遊戲吧 🥳"
+      "title": "發現頁",
+      "content": "在此處瀏覽 Minecraft 與社群新聞，發現並下載各類相關資源，如模組、地圖、整合包等。<br/>另外，您也可以透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>F</key> 快速開啟「聚合搜尋」。"
     },
     "step4": {
       "title": "啟動 Minecraft！",

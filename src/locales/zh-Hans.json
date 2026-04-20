@@ -1284,7 +1284,7 @@
     },
     "step3": {
       "title": "发现页",
-      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>S</key> 快速打开 “聚合搜索”。"
+      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>F</key> 快速打开 “聚合搜索”。"
     },
     "step4": {
       "title": "Minecraft，启动！",
