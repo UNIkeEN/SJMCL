@@ -1,6 +1,6 @@
 import * as ChakraUI from "@chakra-ui/react";
 import { convertFileSrc, invoke as tauriInvoke } from "@tauri-apps/api/core";
-import { join } from "@tauri-apps/api/path";
+import { isAbsolute, join, normalize, sep } from "@tauri-apps/api/path";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { t } from "i18next";
@@ -36,6 +36,7 @@ import {
   ExtensionSettingsPageContribution,
   ExtensionSettingsPageDefinition,
 } from "@/models/extension";
+import { InvokeResponse } from "@/models/response";
 import { ExtensionService } from "@/services/extension";
 import { UtilsService } from "@/services/utils";
 import { logger } from "@/utils/logging";
@@ -733,8 +734,33 @@ export const ExtensionHostContextProvider: React.FC<{
   );
 
   // ------ Extension-scoped sensitive operations (fs, etc.) -----
-  const resolveExtensionDataPath = useCallback(
-    async (extension: ExtensionInfo, path: string) => {
+
+  // Resolve a path scoped to the current extension.
+  // By default it resolves relative paths into the extension private `data` dir.
+  // If `allowInstanceAbsolutePath` is true, it also allows absolute paths that
+  // are within instance root.
+  const resolveExtensionScopedPath = useCallback(
+    async (
+      extension: ExtensionInfo,
+      path: string,
+      allowInstanceAbsolutePath = false
+    ) => {
+      if (allowInstanceAbsolutePath && (await isAbsolute(path))) {
+        const fullPath = await normalize(path);
+        for (const instance of instanceList) {
+          const root = instance.isVersionIsolated
+            ? instance.versionPath
+            : await join(instance.versionPath, "..", "..");
+          if (fullPath === root) return fullPath;
+          if (!fullPath.startsWith(`${root}${sep}`)) continue;
+          const relativePath = normalizeExtensionRelativePath(
+            fullPath.slice(root.length)
+          );
+          if (relativePath) return await join(root, relativePath);
+        }
+        throw new Error(`Invalid instance path: ${path}`);
+      }
+
       const relativePath = normalizeExtensionRelativePath(path);
       if (!relativePath) {
         throw new Error(`Invalid extension data path: ${path}`);
@@ -742,30 +768,29 @@ export const ExtensionHostContextProvider: React.FC<{
 
       return await join(extension.path, "data", relativePath); // "<extension-identifier>/data"
     },
-    []
+    [instanceList]
   );
 
-  // run a utils file command under the current extension's private data dir.
+  // run a utils file command under the restricted path resolved by resolveExtensionScopedPath.
   const runExtensionFileCommand = useCallback(
     async <T,>(
       extension: ExtensionInfo,
       path: string,
-      action: (fullPath: string) => Promise<{
-        status: string;
-        data?: T;
-        raw_error?: string;
-        details?: string;
-        message: string;
-      }>
+      action: (fullPath: string) => Promise<InvokeResponse<T>>,
+      allowInstanceAbsolutePath = false
     ) => {
-      const fullPath = await resolveExtensionDataPath(extension, path);
+      const fullPath = await resolveExtensionScopedPath(
+        extension,
+        path,
+        allowInstanceAbsolutePath
+      );
       const response = await action(fullPath);
       if (response.status === "error") {
         throw response.raw_error || response.details || response.message;
       }
       return response.data as T;
     },
-    [resolveExtensionDataPath]
+    [resolveExtensionScopedPath]
   );
 
   // -------------- Extension-scoped actions ability -------------
@@ -785,23 +810,17 @@ export const ExtensionHostContextProvider: React.FC<{
       invoke,
       openSharedModal: (key, params) =>
         hostActionRefs.current.openSharedModal(key, params),
-      readFile: async (path: string) =>
-        runExtensionFileCommand(extension, path, UtilsService.readFile),
+      readFile: (path: string) =>
+        runExtensionFileCommand(extension, path, UtilsService.readFile, true),
       writeFile: async (path: string, content: string) => {
         await runExtensionFileCommand(extension, path, (fullPath) =>
           UtilsService.writeFile(fullPath, content)
         );
       },
-      deleteFile: async (path: string) => {
-        await runExtensionFileCommand(extension, path, UtilsService.deleteFile);
-      },
-      deleteDirectory: async (path: string) => {
-        await runExtensionFileCommand(
-          extension,
-          path,
-          UtilsService.deleteDirectory
-        );
-      },
+      deleteFile: (path: string) =>
+        runExtensionFileCommand(extension, path, UtilsService.deleteFile),
+      deleteDirectory: (path: string) =>
+        runExtensionFileCommand(extension, path, UtilsService.deleteDirectory),
       logger,
       reloadSelf: () =>
         setExtensionRuntimeVersionMap((previous) => ({
