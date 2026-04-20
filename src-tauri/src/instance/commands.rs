@@ -58,7 +58,7 @@ use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
 use crate::utils::fs::{
   copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
-  get_subdirectories,
+  get_subdirectories, normalize_relative_path,
 };
 use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
@@ -233,6 +233,27 @@ pub fn retrieve_instance_subdir_path(
     Some(path) => Ok(path),
     None => Err(InstanceError::InstanceNotFoundByID.into()),
   }
+}
+
+// Capability for extensions, CLI and external agents
+#[tauri::command]
+pub fn read_instance_file(
+  app: AppHandle,
+  instance_id: String,
+  dir_type: InstanceSubdirType,
+  path: String,
+) -> SJMCLResult<String> {
+  let subdir = get_instance_subdir_path_by_id(&app, &instance_id, &dir_type)
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let relative_path =
+    normalize_relative_path(Path::new(&path)).map_err(|_| InstanceError::InvalidSourcePath)?;
+  let cano_subdir = fs::canonicalize(subdir)?;
+  let cano_target = fs::canonicalize(cano_subdir.join(relative_path))?;
+
+  if !cano_target.starts_with(&cano_subdir) {
+    return Err(InstanceError::InvalidSourcePath.into());
+  }
+  fs::read_to_string(cano_target).map_err(Into::into)
 }
 
 #[tauri::command]

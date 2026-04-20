@@ -48,6 +48,8 @@ pub fn extract_filename(path_str: String, with_ext: bool) -> SJMCLResult<String>
   Ok(extract_filename_helper(&path_str, with_ext))
 }
 
+// ------- Additional file commands for extensions. -------
+
 #[tauri::command]
 pub fn delete_file(path: String) -> SJMCLResult<()> {
   fs::remove_file(&path).map_err(Into::into)

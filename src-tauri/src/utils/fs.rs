@@ -5,7 +5,7 @@ use sha1::{Digest, Sha1};
 use sha2::Sha256;
 use std::ffi::OsStr;
 use std::io::Read;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::{fs, io};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
@@ -120,6 +120,24 @@ pub fn extract_filename(path_str: &str, with_ext: bool) -> String {
       .unwrap_or("")
       .to_string()
   }
+}
+
+pub fn normalize_relative_path(path: &Path) -> SJMCLResult<PathBuf> {
+  let mut normalized = PathBuf::new();
+
+  for component in path.components() {
+    match component {
+      Component::Normal(part) => normalized.push(part),
+      Component::CurDir => {}
+      _ => return Err(SJMCLError("Invalid relative path".into())),
+    }
+  }
+
+  if normalized.as_os_str().is_empty() {
+    return Err(SJMCLError("Invalid relative path".into()));
+  }
+
+  Ok(normalized)
 }
 
 /// Retrieves a list of subdirectories within a given path.

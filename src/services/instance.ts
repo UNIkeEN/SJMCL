@@ -145,6 +145,28 @@ export class InstanceService {
   }
 
   /**
+   * READ a file under the specified instance directory type.
+   * @param {string} instanceId - The instance ID.
+   * @param {InstanceSubdirType} dirType - The directory type.
+   * @param {string} path - Relative path under the instance directory.
+   * @returns {Promise<InvokeResponse<string>>}
+   *
+   * This command is mainly designed for extensions, CLI and external agents.
+   */
+  @responseHandler("instance")
+  static async readInstanceFile(
+    instanceId: string,
+    dirType: InstanceSubdirType,
+    path: string
+  ): Promise<InvokeResponse<string>> {
+    return await invoke("read_instance_file", {
+      instanceId,
+      dirType,
+      path,
+    });
+  }
+
+  /**
    * DELETE the specified instance's version folder from disk.
    * @param {string} instanceId - The instance ID to delete.
    * @returns {Promise<InvokeResponse<void>>}
