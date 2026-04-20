@@ -243,8 +243,7 @@ pub fn read_instance_file(
   dir_type: InstanceSubdirType,
   path: String,
 ) -> SJMCLResult<String> {
-  let subdir = get_instance_subdir_path_by_id(&app, &instance_id, &dir_type)
-    .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let subdir = retrieve_instance_subdir_path(app, instance_id, dir_type)?;
   let relative_path =
     normalize_relative_path(Path::new(&path)).map_err(|_| InstanceError::InvalidSourcePath)?;
   let cano_subdir = fs::canonicalize(subdir)?;

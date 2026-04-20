@@ -122,6 +122,19 @@ pub fn extract_filename(path_str: &str, with_ext: bool) -> String {
   }
 }
 
+/// Normalizes a relative path by removing `.` segments and rejecting invalid components.
+///
+/// Rejects:
+/// - parent directory traversal (`..`)
+/// - absolute path prefixes or roots
+/// - empty / current-directory-only paths
+///
+/// # Examples
+///
+/// ```rust
+/// let path = normalize_relative_path(Path::new("./config/options.txt"))?;
+/// assert_eq!(path, PathBuf::from("config/options.txt"));
+/// ```
 pub fn normalize_relative_path(path: &Path) -> SJMCLResult<PathBuf> {
   let mut normalized = PathBuf::new();
 
