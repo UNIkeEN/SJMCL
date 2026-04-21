@@ -647,7 +647,7 @@
       "forge-libraries": "Forge 运行库",
       "optifine-libraries": "OptiFine 运行库",
       "launcher-update": "更新启动器",
-      "extension-update": "更新扩展 {{identifier}} {{version}}",
+      "extension-update": "更新扩展 {{param1}} {{param2}}",
       "mojang-java": "Java {{param}} 运行时"
     }
   },

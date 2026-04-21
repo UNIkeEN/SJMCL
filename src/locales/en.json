@@ -647,7 +647,7 @@
       "forge-libraries": "Forge Libraries",
       "optifine-libraries": "OptiFine Libraries",
       "launcher-update": "Update Launcher",
-      "extension-update": "Update Extension {{identifier}} {{version}}",
+      "extension-update": "Update Extension {{param1}} {{param2}}",
       "mojang-java": "Java {{param}} Runtime"
     }
   },
