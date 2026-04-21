@@ -1,7 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { ExtensionInfo } from "@/models/extension";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
+
+export const EXTENSION_REFRESH_EVENT = "extension:refresh-list";
 
 /**
  * Service class for managing launcher extensions.
@@ -21,13 +24,15 @@ export class ExtensionService {
   /**
    * ADD an extension package by path.
    * @param {string} path The absolute path of the extension package (.sjmclx).
+   * @param {string} [expectedIdentifier] The identifier expected from the package metadata. (for extension update scenario)
    * @returns {Promise<InvokeResponse<ExtensionInfo>>}
    */
   @responseHandler("extension")
   static async addExtension(
-    path: string
+    path: string,
+    expectedIdentifier?: string
   ): Promise<InvokeResponse<ExtensionInfo>> {
-    return await invoke("add_extension", { path });
+    return await invoke("add_extension", { path, expectedIdentifier });
   }
 
   /**
@@ -40,5 +45,22 @@ export class ExtensionService {
     identifier: string
   ): Promise<InvokeResponse<void>> {
     return await invoke("delete_extension", { identifier });
+  }
+
+  /**
+   * Listen for extension refresh events.
+   * @param callback - The callback to be invoked when an extension refresh event occurs.
+   */
+  static onExtensionRefresh(callback: () => void): () => void {
+    const unlisten = getCurrentWebview().listen<void>(
+      EXTENSION_REFRESH_EVENT,
+      () => {
+        callback();
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 }

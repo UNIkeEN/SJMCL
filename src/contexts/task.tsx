@@ -28,6 +28,10 @@ import {
   TaskParam,
 } from "@/models/task";
 import { ConfigService } from "@/services/config";
+import {
+  EXTENSION_REFRESH_EVENT,
+  ExtensionService,
+} from "@/services/extension";
 import { InstanceService } from "@/services/instance";
 import { TaskService } from "@/services/task";
 
@@ -600,6 +604,46 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                         false
                       ).then((response) => {
                         if (response.status !== "success") {
+                          toast({
+                            title: response.message,
+                            description: response.details,
+                            status: "error",
+                          });
+                        }
+                      });
+                    },
+                  });
+                }
+                break;
+              }
+              case "extension-update": {
+                let group = newTasks.find(
+                  (t) => t.taskGroup === payload.taskGroup
+                );
+                const task = group?.taskDescs[0];
+                const expectedIdentifier = params.param1;
+                const newVersion = params.param2 || "";
+
+                if (task && expectedIdentifier) {
+                  openGenericConfirmDialog({
+                    title: t("ExtensionUpdateConfirmDialog.title"),
+                    body: t("ExtensionUpdateConfirmDialog.body", {
+                      identifier: expectedIdentifier,
+                      version: newVersion,
+                      src: task.payload.src,
+                    }),
+                    onOKCallback: () => {
+                      ExtensionService.addExtension(
+                        task.payload.dest,
+                        expectedIdentifier
+                      ).then((response) => {
+                        if (response.status === "success") {
+                          toast({
+                            title: response.message,
+                            status: "success",
+                          });
+                          emit(EXTENSION_REFRESH_EVENT);
+                        } else {
                           toast({
                             title: response.message,
                             description: response.details,

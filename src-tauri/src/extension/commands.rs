@@ -50,7 +50,11 @@ pub fn retrieve_extension_list(app: AppHandle) -> SJMCLResult<Vec<ExtensionInfo>
 }
 
 #[tauri::command]
-pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo> {
+pub fn add_extension(
+  app: AppHandle,
+  path: String,
+  expected_identifier: Option<String>,
+) -> SJMCLResult<ExtensionInfo> {
   let package_path = PathBuf::from(path);
   if !package_path.exists() || !package_path.is_file() {
     return Err(ExtensionError::ExtensionNotFound.into());
@@ -66,6 +70,14 @@ pub fn add_extension(app: AppHandle, path: String) -> SJMCLResult<ExtensionInfo>
     extract_extension_package(&package_path, &temp_dir)?;
     let install_dir = resolve_extension_root(&temp_dir)?;
     let info = read_extension_info(&install_dir)?;
+
+    // if expected identifier is provided, validate it with the one in metadata (for extension update scenario)
+    if let Some(identifier) = expected_identifier.as_deref() {
+      ExtensionMetadata::validate_identifier(identifier)?;
+      if identifier != info.metadata.identifier {
+        return Err(ExtensionError::IdentifierMismatch.into());
+      }
+    }
 
     // check required minimal launcher version
     let minimal_launcher_version = Version::parse(

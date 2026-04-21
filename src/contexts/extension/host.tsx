@@ -36,9 +36,12 @@ import {
   ExtensionSettingsPageContribution,
   ExtensionSettingsPageDefinition,
 } from "@/models/extension";
+import { TaskTypeEnums } from "@/models/task";
 import { ExtensionService } from "@/services/extension";
+import { TaskService } from "@/services/task";
 import { UtilsService } from "@/services/utils";
 import { logger } from "@/utils/logging";
+import { sanitizeFileName } from "@/utils/string";
 import { createWindow } from "@/utils/window";
 import { buildProxiedExtensionScript } from "./proxy";
 
@@ -470,6 +473,38 @@ export const ExtensionHostContextProvider: React.FC<{
     [openGenericConfirmDialog]
   );
 
+  const scheduleExtensionUpdate = useCallback(
+    async (extension: ExtensionInfo, src: string, newVersion: string) => {
+      const normalizedSrc = src.trim();
+      const normalizedVersion = newVersion.trim();
+      const cacheDir = config.download.cache.directory.trim();
+
+      if (!normalizedSrc || !normalizedVersion || !cacheDir) {
+        throw new Error("Invalid extension update arguments");
+      }
+
+      const filename = sanitizeFileName(
+        `${extension.identifier}_${normalizedVersion}.sjmclx`
+      );
+      const response = await TaskService.scheduleProgressiveTaskGroup(
+        `extension-update?${extension.identifier}&${normalizedVersion}`,
+        [
+          {
+            taskType: TaskTypeEnums.Download,
+            src: normalizedSrc,
+            dest: await join(cacheDir, filename),
+            filename,
+          },
+        ]
+      );
+
+      if (response.status !== "success") {
+        throw response.raw_error || response.details || response.message;
+      }
+    },
+    [config.download.cache.directory]
+  );
+
   useEffect(() => {
     hostActionRefs.current = {
       getPlayerList,
@@ -502,6 +537,16 @@ export const ExtensionHostContextProvider: React.FC<{
 
   useEffect(() => {
     handleRetrieveExtensionList();
+  }, [handleRetrieveExtensionList]);
+
+  // refresh trigger
+  useEffect(() => {
+    const unlisten = ExtensionService.onExtensionRefresh(() => {
+      handleRetrieveExtensionList();
+    });
+    return () => {
+      unlisten();
+    };
   }, [handleRetrieveExtensionList]);
 
   useEffect(() => {
@@ -809,6 +854,8 @@ export const ExtensionHostContextProvider: React.FC<{
           ...previous,
           [extension.identifier]: (previous[extension.identifier] || 0) + 1,
         })),
+      updateSelf: async (src: string, newVersion: string) =>
+        await scheduleExtensionUpdate(extension, src, newVersion),
     }),
     [
       invoke,
@@ -818,6 +865,7 @@ export const ExtensionHostContextProvider: React.FC<{
       request,
       requestText,
       runExtensionFileCommand,
+      scheduleExtensionUpdate,
     ]
   );
 

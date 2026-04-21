@@ -69,6 +69,7 @@ export interface ExtensionAbilityActions {
   // misc
   logger: typeof hostLogger;
   reloadSelf: () => void;
+  updateSelf: (src: string, newVersion: string) => Promise<void>;
 }
 
 export interface ExtensionAbilityState {

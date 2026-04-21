@@ -647,6 +647,7 @@
       "forge-libraries": "Forge 运行库",
       "optifine-libraries": "OptiFine 运行库",
       "launcher-update": "更新启动器",
+      "extension-update": "更新扩展 {{identifier}} {{version}}",
       "mojang-java": "Java {{param}} 运行时"
     }
   },
@@ -845,6 +846,10 @@
         }
       }
     }
+  },
+  "ExtensionUpdateConfirmDialog": {
+    "title": "更新扩展",
+    "body": "扩展 {{identifier}} 已从 {{src}} 下载新版本 {{version}}，是否确认安装？"
   },
   "GameAdvancedSettingsPage": {
     "title": "高级游戏设置",
@@ -2764,6 +2769,7 @@
           "description": {
             "INVALID_PACKAGE_FORMAT": "扩展包内容格式无效",
             "INVALID_IDENTIFIER": "扩展标识符无效",
+            "IDENTIFIER_MISMATCH": "扩展标识符与预期不匹配",
             "INVALID_NAME": "扩展名称无效",
             "LAUNCHER_VERSION_TOO_LOW": "启动器版本过低",
             "EXTENSION_NOT_FOUND": "未找到待添加文件"

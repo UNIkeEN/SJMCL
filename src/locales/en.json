@@ -647,6 +647,7 @@
       "forge-libraries": "Forge Libraries",
       "optifine-libraries": "OptiFine Libraries",
       "launcher-update": "Update Launcher",
+      "extension-update": "Update Extension {{identifier}} {{version}}",
       "mojang-java": "Java {{param}} Runtime"
     }
   },
@@ -845,6 +846,10 @@
         }
       }
     }
+  },
+  "ExtensionUpdateConfirmDialog": {
+    "title": "Update Extension",
+    "body": "Extension {{identifier}} downloaded the new version {{version}} from {{src}}. Do you want to confirm installation?"
   },
   "GameAdvancedSettingsPage": {
     "title": "Advanced Settings",
@@ -2764,6 +2769,7 @@
           "description": {
             "INVALID_PACKAGE_FORMAT": "The extension package content format is invalid",
             "INVALID_IDENTIFIER": "Extension identifier is invalid",
+            "IDENTIFIER_MISMATCH": "The extension identifier does not match the expectation",
             "INVALID_NAME": "Extension name is invalid",
             "LAUNCHER_VERSION_TOO_LOW": "Launcher version is too low",
             "EXTENSION_NOT_FOUND": "Target package file not found"

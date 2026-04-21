@@ -94,6 +94,7 @@ pub enum ExtensionError {
   InvalidName,
   InvalidFrontendEntry,
   LauncherVersionTooLow,
+  IdentifierMismatch,
   // DuplicateIdentifier,
   ExtensionNotFound,
 }
