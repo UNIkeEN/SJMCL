@@ -60,3 +60,9 @@ next-env.d.ts
 
 # backup files
 *.bak
+
+# AI Agents & Coding Assistants
+.codex/
+.claude/
+.gemini/
+.cursor/
