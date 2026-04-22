@@ -1356,6 +1356,7 @@
   "HomeWidget": {
     "extraOpMenu": {
       "moveUp": "Move This Widget Up",
+      "moveDown": "Move This Widget Down",
       "extensionInfo": "View Extension Info",
       "settings": "Open Extension Settings"
     }

@@ -1356,6 +1356,7 @@
   "HomeWidget": {
     "extraOpMenu": {
       "moveUp": "上移此卡片",
+      "moveDown": "下移此卡片",
       "extensionInfo": "查看扩展信息",
       "settings": "设置此扩展"
     }

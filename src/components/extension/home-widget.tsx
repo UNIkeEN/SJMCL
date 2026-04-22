@@ -14,7 +14,13 @@ import {
 import { useRouter } from "next/router";
 import { type MouseEvent as ReactMouseEvent, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronRight, LuInfo, LuSettings, LuTriangle } from "react-icons/lu";
+import {
+  LuArrowDown,
+  LuArrowUp,
+  LuChevronRight,
+  LuInfo,
+  LuSettings,
+} from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
@@ -38,18 +44,24 @@ interface HomeWidgetProps {
   onCollapsedChange: (collapsed: boolean) => void;
   canMoveUp: boolean;
   onMoveUp: () => void;
+  canMoveDown: boolean;
+  onMoveDown: () => void;
 }
 
 interface ExtraOperationMenuProps {
   widget: ExtensionHomeWidgetContribution;
   canMoveUp: boolean;
   onMoveUp: () => void;
+  canMoveDown: boolean;
+  onMoveDown: () => void;
 }
 
 const ExtraOperationMenu = ({
   widget,
   canMoveUp,
   onMoveUp,
+  canMoveDown,
+  onMoveDown,
 }: ExtraOperationMenuProps) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -64,8 +76,17 @@ const ExtraOperationMenu = ({
       ? [
           {
             key: "moveUp",
-            icon: LuTriangle,
+            icon: LuArrowUp,
             onClick: onMoveUp,
+          },
+        ]
+      : []),
+    ...(canMoveDown
+      ? [
+          {
+            key: "moveDown",
+            icon: LuArrowDown,
+            onClick: onMoveDown,
           },
         ]
       : []),
@@ -125,6 +146,8 @@ const HomeWidget = ({
   onCollapsedChange,
   canMoveUp,
   onMoveUp,
+  canMoveDown,
+  onMoveDown,
 }: HomeWidgetProps) => {
   const resizeHandlersRef = useRef<(() => void) | null>(null);
   useEffect(() => {
@@ -211,6 +234,8 @@ const HomeWidget = ({
             widget={widget}
             canMoveUp={canMoveUp}
             onMoveUp={onMoveUp}
+            canMoveDown={canMoveDown}
+            onMoveDown={onMoveDown}
           />
         </HStack>
 
