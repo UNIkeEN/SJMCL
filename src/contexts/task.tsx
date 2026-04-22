@@ -33,6 +33,7 @@ import {
   ExtensionService,
 } from "@/services/extension";
 import { InstanceService } from "@/services/instance";
+import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
 import { TaskService } from "@/services/task";
 
 interface TaskContextType {
@@ -542,19 +543,13 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 break;
               case "mod":
               case "mod-update":
-                emit("instance:refresh-resource-list", OtherResourceType.Mod);
+                emit(RESOURCE_REFRESH_EVENT, OtherResourceType.Mod);
                 break;
               case "resourcepack":
-                emit(
-                  "instance:refresh-resource-list",
-                  OtherResourceType.ResourcePack
-                );
+                emit(RESOURCE_REFRESH_EVENT, OtherResourceType.ResourcePack);
                 break;
               case "shader":
-                emit(
-                  "instance:refresh-resource-list",
-                  OtherResourceType.ShaderPack
-                );
+                emit(RESOURCE_REFRESH_EVENT, OtherResourceType.ShaderPack);
                 break;
               case "modpack": {
                 let group = newTasks.find(
