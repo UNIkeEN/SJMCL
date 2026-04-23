@@ -213,7 +213,7 @@ pub async fn validate_selected_player(
     let local_ygg_server = local_ygg_server_state.lock()?;
     player.auth_server_url = Some(local_ygg_server.root_url.clone());
     local_ygg_server.apply_player(player.clone());
-    Some(local_ygg_server.metadata.to_string())
+    Some(local_ygg_server.metadata().to_string())
   } else {
     None
   };

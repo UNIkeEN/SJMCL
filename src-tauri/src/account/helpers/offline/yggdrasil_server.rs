@@ -26,14 +26,12 @@ use std::{
   io::Cursor,
   net::SocketAddr,
   str::FromStr,
-  sync::{Arc, Mutex},
+  sync::{Arc, Mutex, OnceLock},
 };
 use tower_http::cors::CorsLayer;
 use uuid::Uuid;
 
-lazy_static::lazy_static! {
-  static ref KEY_PAIR: (RsaPrivateKey, RsaPublicKey) = generate_key_pair();
-}
+static KEY_PAIR: OnceLock<(RsaPrivateKey, RsaPublicKey)> = OnceLock::new();
 
 fn generate_key_pair() -> (RsaPrivateKey, RsaPublicKey) {
   let mut rng = rand_core::OsRng;
@@ -43,8 +41,12 @@ fn generate_key_pair() -> (RsaPrivateKey, RsaPublicKey) {
   (private_key, public_key)
 }
 
-pub fn get_public_key() -> String {
-  KEY_PAIR
+fn key_pair() -> &'static (RsaPrivateKey, RsaPublicKey) {
+  KEY_PAIR.get_or_init(generate_key_pair)
+}
+
+fn get_public_key() -> String {
+  key_pair()
     .1
     .to_public_key_pem(rsa::pkcs8::LineEnding::LF)
     .expect("Failed to encode public key")
@@ -52,7 +54,7 @@ pub fn get_public_key() -> String {
 }
 
 fn sign_data(data: &str) -> String {
-  let signing_key = SigningKey::<Sha1>::new_unprefixed(KEY_PAIR.0.clone());
+  let signing_key = SigningKey::<Sha1>::new_unprefixed(key_pair().0.clone());
   let signature = signing_key.sign(data.as_bytes());
   general_purpose::STANDARD.encode(signature.to_bytes())
 }
@@ -118,30 +120,31 @@ impl PlayerInfo {
 pub struct YggdrasilServer {
   pub root_url: String,
   pub port: u16,
-  pub metadata: Value,
   pub players: Arc<Mutex<Vec<PlayerInfo>>>,
 }
 
 impl YggdrasilServer {
   pub fn new() -> Self {
     let port = find_free_port(Some(18960)).unwrap(); // 饮水思源，爱国荣校
-    let public_key = get_public_key();
 
     Self {
       root_url: format!("http://localhost:{}", port),
       port,
-      metadata: json!({
-        "signaturePublickey": public_key,
-        "skinDomains": ["127.0.0.1", "localhost"],
-        "meta": {
-          "serverName": "SJMCL",
-          "implementationName": "SJMCL",
-          "implementationVersion": "1.0",
-          "feature.non_email_login": true
-        }
-      }),
       players: Arc::new(Mutex::new(vec![])),
     }
+  }
+
+  pub fn metadata(&self) -> Value {
+    json!({
+      "signaturePublickey": get_public_key(),
+      "skinDomains": ["127.0.0.1", "localhost"],
+      "meta": {
+        "serverName": "SJMCL",
+        "implementationName": "SJMCL",
+        "implementationVersion": "1.0",
+        "feature.non_email_login": true
+      }
+    })
   }
 
   pub async fn run(self) -> SJMCLResult<()> {
@@ -221,8 +224,7 @@ impl YggdrasilServer {
 
 async fn handle_root(State(state): State<YggdrasilServer>) -> Json<Value> {
   log::info!("Local Yggdrasil server received: GET /");
-
-  Json(state.metadata.clone())
+  Json(state.metadata())
 }
 
 async fn handle_status(State(state): State<YggdrasilServer>) -> Json<Value> {
