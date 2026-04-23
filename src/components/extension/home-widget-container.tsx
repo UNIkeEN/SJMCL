@@ -341,32 +341,22 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
     [persistHomeWidgetState]
   );
 
-  const handleMoveWidgetUp = useCallback(
-    (widgetIdentifier: string) => {
+  const handleMoveWidget = useCallback(
+    (widgetIdentifier: string, direction: -1 | 1) => {
       const currentOrder = [...orderedWidgetIdentifiers];
       const currentIndex = currentOrder.indexOf(widgetIdentifier);
-      if (currentIndex <= 0) return;
+      const nextIndex = currentIndex + direction;
 
-      [currentOrder[currentIndex - 1], currentOrder[currentIndex]] = [
-        currentOrder[currentIndex],
-        currentOrder[currentIndex - 1],
-      ];
+      if (
+        currentIndex < 0 ||
+        nextIndex < 0 ||
+        nextIndex >= currentOrder.length
+      ) {
+        return;
+      }
 
-      widgetOrderRef.current = currentOrder;
-      setWidgetOrder(currentOrder);
-      persistHomeWidgetState(currentOrder);
-    },
-    [orderedWidgetIdentifiers, persistHomeWidgetState]
-  );
-
-  const handleMoveWidgetDown = useCallback(
-    (widgetIdentifier: string) => {
-      const currentOrder = [...orderedWidgetIdentifiers];
-      const currentIndex = currentOrder.indexOf(widgetIdentifier);
-      if (currentIndex < 0 || currentIndex >= currentOrder.length - 1) return;
-
-      [currentOrder[currentIndex], currentOrder[currentIndex + 1]] = [
-        currentOrder[currentIndex + 1],
+      [currentOrder[currentIndex], currentOrder[nextIndex]] = [
+        currentOrder[nextIndex],
         currentOrder[currentIndex],
       ];
 
@@ -429,9 +419,9 @@ const HomeWidgetContainer = ({ maxWidth }: HomeWidgetContainerProps) => {
                 handleWidgetCollapsedChange(widget.identifier, collapsed)
               }
               canMoveUp={widget.identifier !== topWidgetIdentifier}
-              onMoveUp={() => handleMoveWidgetUp(widget.identifier)}
+              onMoveUp={() => handleMoveWidget(widget.identifier, -1)}
               canMoveDown={widget.identifier !== bottomWidgetIdentifier}
-              onMoveDown={() => handleMoveWidgetDown(widget.identifier)}
+              onMoveDown={() => handleMoveWidget(widget.identifier, 1)}
             />
           ))}
         </VStack>
