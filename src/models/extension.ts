@@ -44,6 +44,7 @@ export interface ExtensionAbilityActions {
   updateConfig: (path: string, value: any) => void;
   // navigation and window management
   navigate: (route: string) => Promise<void>;
+  navBack: () => Promise<void>;
   openWindow: (route: string, title: string) => void;
   openExternalLink: (url: string) => Promise<void>;
   openSharedModal: (key: string, params?: any) => void;
