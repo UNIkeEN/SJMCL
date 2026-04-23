@@ -1456,8 +1456,7 @@
   },
   "InstanceSchematicsPage": {
     "schematicList": {
-      "title": "Schematics",
-      "preview": "Preview"
+      "title": "Schematics"
     }
   },
   "InstanceScreenshotsPage": {

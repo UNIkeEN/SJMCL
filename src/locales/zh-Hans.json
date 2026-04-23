@@ -1456,8 +1456,7 @@
   },
   "InstanceSchematicsPage": {
     "schematicList": {
-      "title": "原理图",
-      "preview": "预览"
+      "title": "原理图"
     }
   },
   "InstanceScreenshotsPage": {
