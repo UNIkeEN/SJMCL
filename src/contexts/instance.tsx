@@ -123,17 +123,16 @@ export const InstanceContextProvider: React.FC<{
   const updateSummaryInContext = useCallback(
     (path: string, value: any) => {
       // for frontend-only state update to sync with backend if needed.
-      if (path === "id") return; // forbid update id here
-
       setInstanceSummary((prevSummary) => {
         if (!prevSummary) return prevSummary;
 
+        const prevSummaryId = prevSummary.id;
         const newSummary = { ...prevSummary };
         updateByKeyPath(newSummary, path, value);
 
         const instanceList = getInstanceList() || [];
         const updatedList = instanceList.map((instance) =>
-          instance.id === newSummary.id ? newSummary : instance
+          instance.id === prevSummaryId ? newSummary : instance
         );
         setInstanceList(updatedList as InstanceSummary[]);
 

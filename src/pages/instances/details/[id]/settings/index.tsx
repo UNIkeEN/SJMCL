@@ -21,6 +21,7 @@ import {
 import GameSettingsGroups from "@/components/game-settings-groups";
 import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
 import { useLauncherConfig } from "@/contexts/config";
+import { useGlobalData } from "@/contexts/global-data";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
@@ -31,7 +32,8 @@ const InstanceSettingsPage = () => {
   const router = useRouter();
   const toast = useToast();
   const { t } = useTranslation();
-  const { config } = useLauncherConfig();
+  const { config, update } = useLauncherConfig();
+  const { getInstanceList } = useGlobalData();
   const primaryColor = config.appearance.theme.primaryColor;
   const { openGenericConfirmDialog } = useSharedModals();
 
@@ -52,8 +54,26 @@ const InstanceSettingsPage = () => {
       if (!instanceId) return;
       InstanceService.renameInstance(instanceId, name).then((response) => {
         if (response.status === "success") {
+          const newInstanceId = instanceId.replace(/:[^:]*$/, `:${name}`);
+
+          // firstly sync the current detail context immediately; the instance list refresh below is async.
+          updateSummaryInContext("id", newInstanceId);
           updateSummaryInContext("versionPath", response.data);
           updateSummaryInContext("name", name);
+
+          if (config.states.shared.selectedInstanceId === instanceId) {
+            update("states.shared.selectedInstanceId", newInstanceId);
+          } // update in frontend to prevent error toast
+          getInstanceList(true);
+
+          router.replace(
+            router.asPath.replace(
+              encodeURIComponent(instanceId),
+              encodeURIComponent(newInstanceId)
+            ),
+            undefined,
+            { shallow: true }
+          );
         } else
           toast({
             title: response.message,
@@ -62,7 +82,15 @@ const InstanceSettingsPage = () => {
           });
       });
     },
-    [instanceId, toast, updateSummaryInContext]
+    [
+      config.states.shared.selectedInstanceId,
+      getInstanceList,
+      instanceId,
+      router,
+      toast,
+      update,
+      updateSummaryInContext,
+    ]
   );
 
   const instanceSpecSettingsGroups: OptionItemGroupProps[] = [
