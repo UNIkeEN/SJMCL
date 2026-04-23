@@ -14,6 +14,16 @@
         </array>
       </dict>
     </array>
+    <key>CFBundleLocalizations</key>
+    <array>
+      <string>en</string>
+      <string>fr</string>
+      <string>ja</string>
+      <string>zh-Hans</string>
+      <string>zh-Hant</string>
+    </array>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <true/>
     <key>NSCameraUsageDescription</key>
     <string>A Minecraft mod wants to access your camera.</string>
     <key>NSMicrophoneUsageDescription</key>

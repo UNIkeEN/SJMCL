@@ -1,6 +1,9 @@
 {
   "identifier": "SJMCL",
   "bundle": {
+    "resources": {
+      "infoplist/**": "./"
+    },
     "macOS": {
       "dmg": {
         "background": "assets/misc/dmg_bg.png",
