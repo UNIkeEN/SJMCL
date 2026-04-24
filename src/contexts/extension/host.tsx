@@ -20,7 +20,6 @@ import { Section } from "@/components/common/section";
 import { WrapCard, WrapCardGroup } from "@/components/common/wrap-card";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
-import { useRoutingHistory } from "@/contexts/routing-history";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
@@ -316,7 +315,6 @@ export const ExtensionHostContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const router = useRouter();
-  const { history } = useRoutingHistory();
   const { config, update } = useLauncherConfig();
   const { selectedPlayer, selectedInstance, getPlayerList, getInstanceList } =
     useGlobalData();
@@ -427,26 +425,6 @@ export const ExtensionHostContextProvider: React.FC<{
       await router.push(nextRoute);
     },
     [router]
-  );
-
-  const navBack = useCallback(
-    async (extension: ExtensionInfo) => {
-      const previousRoute = history[history.length - 2];
-      if (!previousRoute) {
-        return;
-      }
-      const nextRoute = resolveExtensionNavigationRoute(
-        extension,
-        previousRoute,
-        false
-      );
-      if (!nextRoute) {
-        return;
-      }
-
-      await router.push(nextRoute);
-    },
-    [history, router]
   );
 
   const openWindow = useCallback(
@@ -846,7 +824,7 @@ export const ExtensionHostContextProvider: React.FC<{
       updateConfig: (path, value) =>
         hostActionRefs.current.updateConfig(path, value),
       navigate: async (route: string) => await navigate(extension, route),
-      navBack: async () => await navBack(extension),
+      navBack: () => router.back(),
       openWindow: (route: string, title: string) =>
         openWindow(extension, route, title),
       openExternalLink: async (url: string) =>
@@ -885,9 +863,9 @@ export const ExtensionHostContextProvider: React.FC<{
     [
       invoke,
       navigate,
-      navBack,
       openExternalLink,
       openWindow,
+      router,
       request,
       requestText,
       runExtensionFileCommand,

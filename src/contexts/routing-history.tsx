@@ -7,6 +7,8 @@ type RoutingHistoryContextType = {
   replaceHistory: (src: string, tgt: string) => void;
 };
 
+const MAX_ROUTING_HISTORY = 200;
+
 const RoutingHistoryContext = createContext<
   RoutingHistoryContextType | undefined
 >(undefined);
@@ -20,9 +22,13 @@ export const RoutingHistoryContextProvider: React.FC<{
 
   useEffect(() => {
     if (!router.isReady) return;
-    setHistory((prev) =>
-      prev[prev.length - 1] === router.asPath ? prev : [...prev, router.asPath]
-    );
+    setHistory((prev) => {
+      if (prev[prev.length - 1] === router.asPath) return prev;
+      const next = [...prev, router.asPath];
+      return next.length > MAX_ROUTING_HISTORY
+        ? next.slice(-MAX_ROUTING_HISTORY)
+        : next;
+    });
     if (window.logger) logger.info("Frontend navigated to:", router.asPath);
   }, [router.isReady, router.asPath]);
 
