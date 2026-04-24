@@ -38,6 +38,7 @@
   ],
   "exclude": [
     "node_modules",
-    "tools"
+    "tools",
+    "src-tauri"
   ]
 }
