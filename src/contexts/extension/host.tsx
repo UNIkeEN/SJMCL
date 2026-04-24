@@ -205,12 +205,10 @@ export const createStandaloneExtensionRouteUrl = (
     ?.replace(/\\/g, "/")
     .trim()
     .replace(/^\/+/, "");
-  const sanitizedRoutePath = normalizedRoutePath
-    ? stripParentPathSegments(normalizedRoutePath)
-    : normalizedRoutePath;
-
   return new URL(
-    sanitizedRoutePath ? `/${sanitizedRoutePath}` : "/",
+    stripParentPathSegments(
+      normalizedRoutePath ? `/${normalizedRoutePath}` : "/"
+    ),
     "https://launcher.local"
   );
 };
