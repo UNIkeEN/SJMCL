@@ -163,6 +163,16 @@ export const normalizeExtensionRelativePath = (
   return normalized;
 };
 
+const stripParentPathSegments = (route: string) =>
+  route.replace(
+    /^[^?#]*/,
+    (pathname) =>
+      pathname
+        .split("/")
+        .filter((segment) => segment !== "..")
+        .join("/") || "/"
+  );
+
 // standalone extension page uses query params due to Next.js static export limits.
 export const convertExtensionRouteForStandalone = (route: string) => {
   if (!route.startsWith("/standalone/extension/")) {
@@ -195,9 +205,12 @@ export const createStandaloneExtensionRouteUrl = (
     ?.replace(/\\/g, "/")
     .trim()
     .replace(/^\/+/, "");
+  const sanitizedRoutePath = normalizedRoutePath
+    ? stripParentPathSegments(normalizedRoutePath)
+    : normalizedRoutePath;
 
   return new URL(
-    normalizedRoutePath ? `/${normalizedRoutePath}` : "/",
+    sanitizedRoutePath ? `/${sanitizedRoutePath}` : "/",
     "https://launcher.local"
   );
 };
@@ -216,9 +229,9 @@ const resolveExtensionNavigationRoute = (
   isToStandalone: boolean // true if navigating from main window to standalone window, false for other cases
 ) => {
   const trimmedRoute = route.trim().replace(/\\/g, "/");
-  const internalRoute = trimmedRoute.startsWith("/")
-    ? trimmedRoute
-    : `/${trimmedRoute}`;
+  const internalRoute = stripParentPathSegments(
+    trimmedRoute.startsWith("/") ? trimmedRoute : `/${trimmedRoute}`
+  );
 
   const isCurrentStandalonePage =
     typeof window !== "undefined" &&
