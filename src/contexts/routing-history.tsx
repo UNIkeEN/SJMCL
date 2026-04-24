@@ -24,10 +24,10 @@ export const RoutingHistoryContextProvider: React.FC<{
     if (!router.isReady) return;
     setHistory((prev) => {
       if (prev[prev.length - 1] === router.asPath) return prev;
-      const next = [...prev, router.asPath];
-      return next.length > MAX_ROUTING_HISTORY
-        ? next.slice(-MAX_ROUTING_HISTORY)
-        : next;
+      if (prev.length < MAX_ROUTING_HISTORY) {
+        return [...prev, router.asPath];
+      }
+      return [...prev.slice(1), router.asPath];
     });
     if (window.logger) logger.info("Frontend navigated to:", router.asPath);
   }, [router.isReady, router.asPath]);
