@@ -182,6 +182,7 @@ const InstanceShaderPacksPage = () => {
                 icon={btn.icon}
                 onClick={btn.onClick}
                 size="xs"
+                fontSize="sm"
                 h={21}
               />
             ))}
