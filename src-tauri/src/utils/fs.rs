@@ -235,10 +235,20 @@ pub fn get_app_resource_filepath(
     BaseDirectory::Resource
   };
 
-  app
+  let path = app
     .path()
     .resolve(relative_path, dir)
-    .map_err(io::Error::other)
+    .map_err(io::Error::other)?;
+
+  #[cfg(target_os = "windows")]
+  {
+    let path_str = path.to_string_lossy();
+    if let Some(stripped) = path_str.strip_prefix(r"\\?\") {
+      return Ok(PathBuf::from(stripped));
+    }
+  }
+
+  Ok(path)
 }
 
 /// Creates a cross-platform desktop shortcut that points to a URL (include deeplink).
