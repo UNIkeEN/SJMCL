@@ -11,7 +11,7 @@ import {
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
 import {
@@ -45,6 +45,11 @@ const GameLogPage: React.FC = () => {
     DEBUG: true,
   });
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
+  const [selection, setSelection] = useState<{
+    start: number;
+    end: number;
+  } | null>(null);
+  const isSelectingRef = useRef(false);
 
   const launchingIdRef = useRef<number | null>(null);
   const listRef = useRef<List>(null);
@@ -108,6 +113,30 @@ const GameLogPage: React.FC = () => {
       listRef.current?.scrollToRow(logs.length - 1);
     });
   }, [logs.length]);
+
+  const handleMouseDown = (index: number) => {
+    isSelectingRef.current = true;
+    setSelection({ start: index, end: index });
+  };
+
+  const handleMouseEnter = (index: number) => {
+    if (!isSelectingRef.current) return;
+    setSelection((prev) => (prev ? { ...prev, end: index } : prev));
+  };
+
+  useEffect(() => {
+    const up = () => (isSelectingRef.current = false);
+    window.addEventListener("mouseup", up);
+    return () => window.removeEventListener("mouseup", up);
+  }, []);
+
+  const isRowSelected = (index: number) => {
+    if (!selection) return false;
+    const { start, end } = selection;
+    const min = Math.min(start, end);
+    const max = Math.max(start, end);
+    return index >= min && index <= max;
+  };
 
   const revealRawLogFile = async () => {
     if (!launchingIdRef.current) return;
@@ -181,8 +210,36 @@ const GameLogPage: React.FC = () => {
       );
   }, [logs, logLevels, filterStates, searchTerm]);
 
+  const copySelection = useCallback(async () => {
+    if (!selection) return;
+    const { start, end } = selection;
+    const text = filteredLogs
+      .slice(Math.min(start, end), Math.max(start, end) + 1)
+      .map((l) => l.log)
+      .join("\n");
+    await navigator.clipboard.writeText(text);
+  }, [selection, filteredLogs]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
+        if (selection) {
+          e.preventDefault();
+          copySelection();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selection, filteredLogs, copySelection]);
+
   const rowRenderer: ListRowRenderer = ({ key, index, style, parent }) => {
     const { log, level } = filteredLogs[index];
+    const selected = isRowSelected(index);
 
     return (
       <CellMeasurer
@@ -192,7 +249,12 @@ const GameLogPage: React.FC = () => {
         rowIndex={index}
         columnIndex={0}
       >
-        <div style={style}>
+        <Box
+          style={style}
+          bg={selected ? `${primaryColor}.100` : undefined}
+          onMouseDown={() => handleMouseDown(index)}
+          onMouseEnter={() => handleMouseEnter(index)}
+        >
           <Text
             className={styles["log-text"]}
             color={logLevelMap[level].textColor}
@@ -200,20 +262,13 @@ const GameLogPage: React.FC = () => {
             whiteSpace="pre-wrap"
             wordBreak="break-word"
             lineHeight="1.4"
-            userSelect={"text"}
           >
             {log}
           </Text>
-        </div>
+        </Box>
       </CellMeasurer>
     );
   };
-
-  // Reset list cache and recalculate row heights on filteredLogs update
-  useEffect(() => {
-    cacheRef.current.clearAll();
-    listRef.current?.recomputeRowHeights();
-  }, [filterStates, searchTerm]);
 
   const levels = Object.keys(logLevelMap) as LogLevel[];
 
