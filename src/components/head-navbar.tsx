@@ -43,11 +43,10 @@ const HeadNavBar = () => {
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 700);
   }, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     config.appearance.theme.useLiquidGlassDesign,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     isDownloadIndicatorShown,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     isSimplified,
   ]);
 
