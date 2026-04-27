@@ -2189,12 +2189,12 @@
             "CANCELLED": "已取消",
             "INVALID": "無效的認證伺服器地址",
             "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色",
-            "XSTS_BANNED": "您的帳號已被 Xbox 封禁。",
-            "XSTS_PARENTAL_RESTRICTION": "您的帳號受到家長管控限制。",
-            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 Xbox 帳號，請前往 minecraft.net 建立。",
-            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服务条款才能繼續。",
-            "XSTS_REGION_BANNED": "您所在的國家或地區不受 Xbox Live 支援。",
-            "XSTS_CHILD_ACCOUNT": "您的帳號為未成年帳號，請前往 family.microsoft.com 進行家長授權。",
+            "XSTS_BANNED": "您的帳號已被 Xbox 封禁",
+            "XSTS_PARENTAL_RESTRICTION": "您的帳號受到家長管控限制",
+            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 Xbox 帳號，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服务条款才能繼續",
+            "XSTS_REGION_BANNED": "您所在的國家或地區不受 Xbox Live 支援",
+            "XSTS_CHILD_ACCOUNT": "您的帳號為未成年帳號，請前往 family.microsoft.com 進行家長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 驗證時發生未知錯誤"
           }
         }
@@ -2211,12 +2211,12 @@
             "INVALID": "離線角色不支援重新整理",
             "CANCELLED": "已取消",
             "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色",
-            "XSTS_BANNED": "您的帳號已被 Xbox 封禁。",
-            "XSTS_PARENTAL_RESTRICTION": "您的帳號受到家長管控限制。",
-            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 Xbox 帳號，請前往 minecraft.net 建立。",
-            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服务条款才能繼續。",
-            "XSTS_REGION_BANNED": "您所在的國家或地區不受 Xbox Live 支援。",
-            "XSTS_CHILD_ACCOUNT": "您的帳號為未成年帳號，請前往 family.microsoft.com 進行家長授權。",
+            "XSTS_BANNED": "您的帳號已被 Xbox 封禁",
+            "XSTS_PARENTAL_RESTRICTION": "您的帳號受到家長管控限制",
+            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 Xbox 帳號，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服务条款才能繼續",
+            "XSTS_REGION_BANNED": "您所在的國家或地區不受 Xbox Live 支援",
+            "XSTS_CHILD_ACCOUNT": "您的帳號為未成年帳號，請前往 family.microsoft.com 進行家長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 驗證時發生未知錯誤"
           }
         }

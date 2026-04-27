@@ -2189,12 +2189,12 @@
             "CANCELLED": "Annulé",
             "INVALID": "Adresse du serveur d'authentification invalide",
             "NO_MINECRAFT_PROFILE": "Personnage non trouvé. Veuillez vérifier si vous avez acheté Minecraft et créé un personnage.",
-            "XSTS_BANNED": "Votre compte a été banni des services Xbox.",
-            "XSTS_PARENTAL_RESTRICTION": "Votre compte est bloqué par le contrôle parental.",
-            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte Xbox. Veuillez en créer un sur minecraft.net.",
-            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation Xbox pour continuer.",
-            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où Xbox Live n'est pas disponible.",
-            "XSTS_CHILD_ACCOUNT": "Votre compte est un compte mineur et nécessite le consentement parental sur family.microsoft.com.",
+            "XSTS_BANNED": "Votre compte a été banni des services Xbox",
+            "XSTS_PARENTAL_RESTRICTION": "Votre compte est bloqué par le contrôle parental",
+            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte Xbox, veuillez en créer un sur minecraft.net",
+            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation Xbox pour continuer",
+            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où Xbox Live n'est pas disponible",
+            "XSTS_CHILD_ACCOUNT": "Votre compte est un compte mineur et nécessite le consentement parental sur family.microsoft.com",
             "XSTS_UNKNOWN_ERROR": "Une erreur XSTS inconnue s'est produite lors de l'authentification"
           }
         }
@@ -2211,12 +2211,12 @@
             "INVALID": "Impossible d'actualiser un joueur hors ligne",
             "CANCELLED": "Annulé",
             "NO_MINECRAFT_PROFILE": "Personnage non trouvé. Veuillez vérifier si vous avez acheté Minecraft et créé un personnage.",
-            "XSTS_BANNED": "Votre compte a été banni des services Xbox.",
-            "XSTS_PARENTAL_RESTRICTION": "Votre compte est bloqué par le contrôle parental.",
-            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte Xbox. Veuillez en créer un sur minecraft.net.",
-            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation Xbox pour continuer.",
-            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où Xbox Live n'est pas disponible.",
-            "XSTS_CHILD_ACCOUNT": "Votre compte est un compte mineur et nécessite le consentement parental sur family.microsoft.com.",
+            "XSTS_BANNED": "Votre compte a été banni des services Xbox",
+            "XSTS_PARENTAL_RESTRICTION": "Votre compte est bloqué par le contrôle parental",
+            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte Xbox, veuillez en créer un sur minecraft.net",
+            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation Xbox pour continuer",
+            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où Xbox Live n'est pas disponible",
+            "XSTS_CHILD_ACCOUNT": "Votre compte est un compte mineur et nécessite le consentement parental sur family.microsoft.com",
             "XSTS_UNKNOWN_ERROR": "Une erreur XSTS inconnue s'est produite lors de l'authentification"
           }
         }
