@@ -105,9 +105,9 @@ structstruck::strike! {
     },
     pub game_window: struct {
       pub resolution: struct {
-        #[default = 854]
+        #[default = 1280]
         pub width: u32,
-        #[default = 480]
+        #[default = 720]
         pub height: u32,
         pub fullscreen: bool,
       },
