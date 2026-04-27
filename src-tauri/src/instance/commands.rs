@@ -299,16 +299,20 @@ pub async fn rename_instance(
   instance_id: String,
   new_name: String,
 ) -> SJMCLResult<PathBuf> {
-  let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-  let mut state = binding.lock().unwrap();
-  let instance = match state.get_mut(&instance_id) {
-    Some(x) => x,
-    None => return Err(InstanceError::InstanceNotFoundByID.into()),
-  };
-  let new_path = unify_instance_name(&instance.version_path, &new_name)?;
+  let new_path = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let mut state = binding.lock().unwrap();
+    let instance = match state.get_mut(&instance_id) {
+      Some(x) => x,
+      None => return Err(InstanceError::InstanceNotFoundByID.into()),
+    };
+    let new_path = unify_instance_name(&instance.version_path, &new_name)?;
 
-  instance.version_path = new_path.clone();
-  instance.name = new_name;
+    instance.version_path = new_path.clone();
+    instance.name = new_name;
+    new_path
+  };
+  refresh_and_update_instances(&app, false).await;
   Ok(new_path)
 }
 

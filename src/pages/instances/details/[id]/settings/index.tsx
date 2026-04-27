@@ -21,7 +21,6 @@ import {
 import GameSettingsGroups from "@/components/game-settings-groups";
 import { InstanceIconSelectorPopover } from "@/components/instance-icon-selector";
 import { useLauncherConfig } from "@/contexts/config";
-import { useGlobalData } from "@/contexts/global-data";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
@@ -33,7 +32,6 @@ const InstanceSettingsPage = () => {
   const toast = useToast();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
-  const { getInstanceList } = useGlobalData();
   const primaryColor = config.appearance.theme.primaryColor;
   const { openGenericConfirmDialog } = useSharedModals();
 
@@ -50,41 +48,38 @@ const InstanceSettingsPage = () => {
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
 
   const handleRenameInstance = useCallback(
-    (name: string) => {
+    async (name: string) => {
       if (!instanceId) return;
-      InstanceService.renameInstance(instanceId, name).then((response) => {
-        if (response.status === "success") {
-          const newInstanceId = instanceId.replace(/:[^:]*$/, `:${name}`);
+      const response = await InstanceService.renameInstance(instanceId, name);
+      if (response.status === "success") {
+        const newInstanceId = instanceId.replace(/:[^:]*$/, `:${name}`);
 
-          // firstly sync the current detail context immediately; the instance list refresh below is async.
-          updateSummaryInContext("id", newInstanceId);
-          updateSummaryInContext("versionPath", response.data);
-          updateSummaryInContext("name", name);
+        await router.replace(
+          {
+            pathname: router.pathname,
+            query: { ...router.query, id: newInstanceId },
+          },
+          undefined,
+          { shallow: true }
+        );
 
-          if (config.states.shared.selectedInstanceId === instanceId) {
-            update("states.shared.selectedInstanceId", newInstanceId);
-          } // update in frontend to prevent error toast
-          getInstanceList(true);
+        // Sync frontend state after both backend state and route id are updated.
+        updateSummaryInContext("versionPath", response.data);
+        updateSummaryInContext("name", name);
+        updateSummaryInContext("id", newInstanceId);
 
-          router.replace(
-            router.asPath.replace(
-              encodeURIComponent(instanceId),
-              encodeURIComponent(newInstanceId)
-            ),
-            undefined,
-            { shallow: true }
-          );
-        } else
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-      });
+        if (config.states.shared.selectedInstanceId === instanceId) {
+          update("states.shared.selectedInstanceId", newInstanceId);
+        } // update in frontend to prevent error toast
+      } else
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
     },
     [
       config.states.shared.selectedInstanceId,
-      getInstanceList,
       instanceId,
       router,
       toast,
