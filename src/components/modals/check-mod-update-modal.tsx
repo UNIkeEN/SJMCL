@@ -258,10 +258,12 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     }
   }, [summary, localMods, handleFetchLatestMod, onCheckUpdateModalClear]);
 
+  const summaryId = summary?.id;
+
   const handleDownloadUpdatedMods = useCallback(
     async (urlShaPairs: { url: string; sha1: string; fileName: string }[]) => {
       let params: ModUpdateQuery[] = [];
-      if (summary?.id) {
+      if (summaryId) {
         for (const pair of urlShaPairs) {
           const { url, sha1, fileName } = pair;
           const oldMod = modsToUpdate.find((mod) =>
@@ -284,17 +286,17 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
             });
           }
         }
-        ResourceService.updateMods(summary.id, params);
+        ResourceService.updateMods(summaryId, params);
       }
     },
-    [summary?.id, modsToUpdate, updateList, addPrefix]
+    [summaryId, modsToUpdate, updateList, addPrefix]
   );
 
   useEffect(() => {
-    if (modalProps.isOpen && summary?.id && localMods.length > 0) {
+    if (modalProps.isOpen && summaryId && localMods.length > 0) {
       handleCheckModUpdate();
     }
-  }, [modalProps.isOpen, summary?.id, localMods.length, handleCheckModUpdate]);
+  }, [modalProps.isOpen, summaryId, localMods.length, handleCheckModUpdate]);
 
   useEffect(() => {
     if (!modalProps.isOpen) {

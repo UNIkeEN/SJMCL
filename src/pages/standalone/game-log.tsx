@@ -123,33 +123,31 @@ const GameLogPage: React.FC = () => {
   };
 
   const logLevels = useMemo<LogLevel[]>(() => {
+    const levels: LogLevel[] = [];
     let lastLevel: LogLevel = "INFO";
 
-    return logs.map((log) => {
+    for (const log of logs) {
       const match = log.match(
         /\[\d{2}:\d{2}:\d{2}]\s+\[.*?\/(INFO|WARN|ERROR|DEBUG|FATAL)]/i
       );
 
       if (match) {
         lastLevel = match[1].toUpperCase() as LogLevel;
-        return lastLevel;
-      }
-
-      if (
-        /^\s+at /.test(log) ||
-        /^\s+Caused by:/.test(log) ||
-        /^\s+/.test(log)
+      } else if (
+        !(
+          /^\s+at /.test(log) ||
+          /^\s+Caused by:/.test(log) ||
+          /^\s+/.test(log)
+        ) &&
+        /exception|error|invalid|failed|错误/i.test(log)
       ) {
-        return lastLevel;
-      }
-
-      if (/exception|error|invalid|failed|错误/i.test(log)) {
         lastLevel = "ERROR";
-        return lastLevel;
       }
 
-      return lastLevel;
-    });
+      levels.push(lastLevel);
+    }
+
+    return levels;
   }, [logs]);
 
   const logCounts = useMemo<Record<LogLevel, number>>(() => {
