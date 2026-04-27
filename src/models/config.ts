@@ -191,8 +191,8 @@ export const defaultGameConfig: GameConfig = {
   },
   gameWindow: {
     resolution: {
-      width: 854,
-      height: 480,
+      width: 1280,
+      height: 720,
       fullscreen: false,
     },
     customTitle: "",
