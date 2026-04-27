@@ -78,7 +78,7 @@ npx tauri build
 npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0
 ```
 
-**Known Issue**: The project uses ESLint v8 config format (`.eslintrc.json`) but modern npm may install ESLint v9. Use `npx --package=eslint@8 eslint ...` if you encounter config errors. The lint-staged configuration depends on this working correctly.
+The project uses ESLint v9 with flat config (`eslint.config.mjs`). Prefer `npm run lint` for a full local check, or the `npx eslint ...` command above when matching CI exactly.
 
 ### Rust Formatting
 ```bash
@@ -122,7 +122,7 @@ The GitHub Actions pipeline validates:
 To replicate CI locally:
 ```bash
 # Frontend linting (matches CI)
-npx --package=eslint@8 eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0
+npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0
 
 # Rust formatting (matches CI) 
 find src-tauri/src -name '*.rs' | xargs rustfmt --check
@@ -168,7 +168,7 @@ npx tauri build
 ```
 
 ### Key Configuration Files
-- **Frontend**: `package.json`, `tsconfig.json`, `next.config.ts`, `.eslintrc.json`, `.prettierrc`
+- **Frontend**: `package.json`, `tsconfig.json`, `next.config.ts`, `eslint.config.mjs`, `.prettierrc`
 - **Backend**: `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, `src-tauri/rustfmt.toml`
 - **Environment**: `.env.template` (copy to `.env`)
 - **CI/CD**: `.github/workflows/test.yml`, `.github/workflows/build.yml`
@@ -216,7 +216,7 @@ npx tauri build
 ### Common Issues and Workarounds
 
 1. **Environment Variables**: Always ensure `.env` exists and contains required values
-2. **ESLint Version Conflicts**: Use `npx --package=eslint@8` if modern ESLint causes config issues
+2. **ESLint config**: The project uses ESLint v9 flat config; run `npm install` before linting so `npx eslint` resolves the local version
 3. **Rust Compilation**: First build can take 5-10 minutes - this is normal
 4. **Platform Dependencies**: 
    - Linux requires webkit2gtk and other system libraries (`sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf`)
@@ -272,7 +272,7 @@ This unified format applies to:
 4. **Check CI locally**: Run the same linting commands as CI before committing
 5. **Environment setup**: Always start with `cp .env.template .env && npm install`
 6. **Dependency order**: Install system dependencies (Linux) before npm install to avoid build issues
-7. **Troubleshoot builds**: Check `cargo check` output for Rust issues, `npx eslint` for frontend issues
+7. **Troubleshoot builds**: Check `cargo check` output for Rust issues, `npm run lint` for frontend issues
 
 ### Quick Start Checklist
 ```bash
