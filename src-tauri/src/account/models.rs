@@ -335,6 +335,13 @@ pub enum AccountError {
   NoDownloadApi,
   SaveError,
   NoMinecraftProfile,
+  XstsBanned,
+  XstsParentalRestriction,
+  XstsNoXboxAccount,
+  XstsTermsNotAccepted,
+  XstsRegionBanned,
+  XstsChildAccount,
+  XstsUnknownError,
 }
 
 impl std::error::Error for AccountError {}

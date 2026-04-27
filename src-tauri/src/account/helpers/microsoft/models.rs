@@ -28,3 +28,9 @@ structstruck::strike! {
     },
   }
 }
+
+#[derive(serde::Deserialize, Debug)]
+pub struct XstsErrorResponse {
+  #[serde(rename = "XErr")]
+  pub x_err: i64,
+}

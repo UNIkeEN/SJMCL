@@ -11,6 +11,13 @@ export enum AccountServiceError {
   NoDownloadApi = "NO_DOWNLOAD_API",
   SaveError = "SAVE_ERROR",
   NoMinecraftProfile = "NO_MINECRAFT_PROFILE",
+  XstsBanned = "XSTS_BANNED",
+  XstsParentalRestriction = "XSTS_PARENTAL_RESTRICTION",
+  XstsNoXboxAccount = "XSTS_NO_XBOX_ACCOUNT",
+  XstsTermsNotAccepted = "XSTS_TERMS_NOT_ACCEPTED",
+  XstsRegionBanned = "XSTS_REGION_BANNED",
+  XstsChildAccount = "XSTS_CHILD_ACCOUNT",
+  XstsUnknownError = "XSTS_UNKNOWN_ERROR",
 }
 
 export enum InstanceError {

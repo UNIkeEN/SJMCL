@@ -2,7 +2,9 @@ use crate::account::helpers::microsoft::constants::{
   CLIENT_ID, DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, OAUTH_TOKEN_ENDPOINT,
   PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
-use crate::account::helpers::microsoft::models::{MinecraftProfile, XstsResponse};
+use crate::account::helpers::microsoft::models::{
+  MinecraftProfile, XstsErrorResponse, XstsResponse,
+};
 use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
@@ -95,19 +97,41 @@ async fn fetch_xsts_token(app: &AppHandle, xbl_token: String) -> SJMCLResult<(St
     )
     .send()
     .await
-    .map_err(|_| AccountError::NetworkError)?
+    .map_err(|_| AccountError::NetworkError)?;
+
+  //refer to https://github.com/PrismarineJS/prismarine-auth/blob/master/src/common/Constants.js
+  if !response.status().is_success() {
+    let err_body = response
+      .json::<XstsErrorResponse>()
+      .await
+      .map_err(|_| AccountError::ParseError)?;
+    return Err(
+      match err_body.x_err {
+        2148916227 => AccountError::XstsBanned,
+        2148916229 | 2148916237 => AccountError::XstsParentalRestriction,
+        2148916233 => AccountError::XstsNoXboxAccount,
+        2148916234 => AccountError::XstsTermsNotAccepted,
+        2148916235 => AccountError::XstsRegionBanned,
+        2148916236 | 2148916238 | 2148916239 => AccountError::XstsChildAccount,
+        _ => AccountError::XstsUnknownError,
+      }
+      .into(),
+    );
+  }
+
+  let xsts_response = response
     .json::<XstsResponse>()
     .await
     .map_err(|_| AccountError::ParseError)?;
 
-  let xsts_userhash = response
+  let xsts_userhash = xsts_response
     .display_claims
     .xui
     .first()
     .map(|xui| xui.uhs.clone())
     .ok_or(AccountError::ParseError)?;
 
-  Ok((xsts_userhash, response.token))
+  Ok((xsts_userhash, xsts_response.token))
 }
 
 async fn fetch_minecraft_token(

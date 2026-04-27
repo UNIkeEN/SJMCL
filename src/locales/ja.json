@@ -2188,7 +2188,14 @@
             "NOT_FOUND": "認証サーバーが見つからない",
             "CANCELLED": "キャンセルした",
             "INVALID": "無効な認証サーバーアドレス",
-            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください"
+            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください",
+            "XSTS_BANNED": "お使いのアカウントは Xbox によって封禁されています。",
+            "XSTS_PARENTAL_RESTRICTION": "お使いのアカウントは保護者の制限によりブロックされています。",
+            "XSTS_NO_XBOX_ACCOUNT": "Microsoft アカウントに Xbox アカウントが関連付けられていません。minecraft.net で作成してください。",
+            "XSTS_TERMS_NOT_ACCEPTED": "続行するには Xbox 利用規約への同意が必要です。",
+            "XSTS_REGION_BANNED": "お使いのアカウントは、Xbox Live が利用できない国または地域のものです。",
+            "XSTS_CHILD_ACCOUNT": "お使いのアカウントは未成年アカウントです。family.microsoft.com で保護者の承認が必要です。",
+            "XSTS_UNKNOWN_ERROR": "XSTS 認証中に不明なエラーが発生しました"
           }
         }
       },
@@ -2203,7 +2210,14 @@
             "NETWORK_ERROR": "認証サーバーに接続できません",
             "INVALID": "オフラインキャラクターの更新に非対応",
             "CANCELLED": "キャンセルしました",
-            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入し、キャラクターを作成済みであることをご確認ください"
+            "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入し、キャラクターを作成済みであることをご確認ください",
+            "XSTS_BANNED": "お使いのアカウントは Xbox によって封禁されています。",
+            "XSTS_PARENTAL_RESTRICTION": "お使いのアカウントは保護者の制限によりブロックされています。",
+            "XSTS_NO_XBOX_ACCOUNT": "Microsoft アカウントに Xbox アカウントが関連付けられていません。minecraft.net で作成してください。",
+            "XSTS_TERMS_NOT_ACCEPTED": "続行するには Xbox 利用規約への同意が必要です。",
+            "XSTS_REGION_BANNED": "お使いのアカウントは、Xbox Live が利用できない国または地域のものです。",
+            "XSTS_CHILD_ACCOUNT": "お使いのアカウントは未成年アカウントです。family.microsoft.com で保護者の承認が必要です。",
+            "XSTS_UNKNOWN_ERROR": "XSTS 認証中に不明なエラーが発生しました"
           }
         }
       },
