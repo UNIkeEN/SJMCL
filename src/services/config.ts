@@ -5,6 +5,8 @@ import { InvokeResponse } from "@/models/response";
 import { JavaInfo } from "@/models/system-info";
 import { responseHandler } from "@/utils/response";
 
+export const CONFIG_PARTIAL_UPDATE_EVENT = "config:partial-update";
+
 /**
  * Service class for managing launcher configurations.
  */
@@ -211,7 +213,7 @@ export class ConfigService {
     callback: (payload: { path: string; value: any }) => void
   ) {
     const unlisten = getCurrentWebview().listen<{ path: string; value: any }>(
-      "config:partial-update",
+      CONFIG_PARTIAL_UPDATE_EVENT,
       (event) => {
         callback(event.payload);
       }
