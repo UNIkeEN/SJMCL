@@ -1,4 +1,4 @@
-use crate::account::helpers::microsoft::constants::{
+﻿use crate::account::helpers::microsoft::constants::{
   CLIENT_ID, DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, OAUTH_TOKEN_ENDPOINT,
   PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
@@ -99,7 +99,7 @@ async fn fetch_xsts_token(app: &AppHandle, xbl_token: String) -> SJMCLResult<(St
     .await
     .map_err(|_| AccountError::NetworkError)?;
 
-  //refer to https://github.com/PrismarineJS/prismarine-auth/blob/master/src/common/Constants.js
+  // ref: https://github.com/PrismarineJS/prismarine-auth/blob/b795199dc5fa26059655bb1bc91c7f7f2733b232/src/common/Constants.js#L51
   if !response.status().is_success() {
     let err_body = response
       .json::<XstsErrorResponse>()
