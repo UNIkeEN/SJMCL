@@ -42,7 +42,7 @@ fn build_resource_filename(ver: &str, os: &str, arch: &str, is_portable: bool) -
         "_setup.exe"
       }
     }
-    "linux" => ".AppImage",
+    "linux" => "_portable",
     "macos" => ".app.tar.gz",
     _ => "",
   };
