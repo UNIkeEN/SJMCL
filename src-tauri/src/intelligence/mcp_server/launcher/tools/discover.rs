@@ -62,9 +62,9 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
 
         let (_, response) = fetch_mc_news_page(&client, MC_NEWS_ENDPOINT, params.cursor)
           .await
-          .ok_or_else(|| crate::error::SJMCLError("failed to fetch Minecraft official news".to_string()))?;
+          .ok_or_else(|| sjmcl_types::error::SJMCLError("failed to fetch Minecraft official news".to_string()))?;
 
-        Ok::<_, crate::error::SJMCLError>(response)
+        Ok::<_, sjmcl_types::error::SJMCLError>(response)
       }
     ),
   ]

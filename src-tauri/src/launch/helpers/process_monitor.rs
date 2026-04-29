@@ -1,10 +1,10 @@
-use crate::error::SJMCLResult;
 use crate::instance::models::misc::Instance;
 use crate::launch::constants::*;
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
 use crate::utils::shell::execute_command_line;
 use crate::utils::window::create_webview_window;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;

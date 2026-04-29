@@ -1,6 +1,6 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::utils::fs::get_files_with_regex;
 use regex::Regex;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fmt::Arguments;
 use std::fs::create_dir_all;
 use std::path::PathBuf;

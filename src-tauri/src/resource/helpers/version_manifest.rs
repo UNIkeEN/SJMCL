@@ -1,7 +1,7 @@
-use crate::error::SJMCLResult;
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{GameClientResourceInfo, ResourceError, ResourceType, SourceType};
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
 use std::fs;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;

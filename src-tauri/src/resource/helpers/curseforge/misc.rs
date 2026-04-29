@@ -1,4 +1,3 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
@@ -7,6 +6,7 @@ use crate::resource::models::{
 };
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
 use std::env;
 use tauri::{AppHandle, Manager};

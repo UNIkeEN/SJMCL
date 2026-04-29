@@ -1,4 +1,3 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
@@ -6,6 +5,7 @@ use crate::resource::models::{
   ResourceError,
 };
 use serde::Deserialize;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 

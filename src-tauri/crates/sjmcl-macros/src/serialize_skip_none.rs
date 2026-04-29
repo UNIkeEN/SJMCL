@@ -46,4 +46,3 @@ pub(crate) fn serialize_skip_none_impl(_attr: TokenStream, item: TokenStream) ->
 
   quote! { #input }.into()
 }
-

@@ -1,6 +1,6 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::MemoryInfo;
 use serde_json::json;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::net::{SocketAddr, TcpListener};
 use std::path::PathBuf;
 use sysinfo::{Disk, Disks};

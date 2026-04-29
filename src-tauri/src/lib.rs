@@ -1,14 +1,11 @@
 mod account;
 mod discover;
-mod error;
 mod extension;
 mod instance;
 mod intelligence;
 mod launch;
 mod launcher_config;
-mod partial;
 mod resource;
-mod storage;
 mod tasks;
 mod utils;
 
@@ -22,10 +19,10 @@ use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
-use storage::Storage;
 use tasks::monitor::TaskMonitor;
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;

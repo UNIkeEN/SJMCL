@@ -1,4 +1,3 @@
-use crate::error::SJMCLResult;
 use crate::launcher_config::commands::retrieve_launcher_config;
 use crate::tasks::download::DownloadTask;
 use crate::tasks::events::{GEvent, GEventStatus, PEvent, TEvent};
@@ -8,6 +7,7 @@ use async_speed_limit::Limiter;
 use flume::{Receiver as FlumeReceiver, Sender as FlumeSender};
 use glob::glob;
 use log::info;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::future::Future;
 use std::sync::atomic::AtomicU32;

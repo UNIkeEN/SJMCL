@@ -11,11 +11,11 @@ use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
   PresetRole, SkinModel, TextureType,
 };
-use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
-use crate::storage::Storage;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::web::normalize_url;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
 use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};

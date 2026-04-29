@@ -1,4 +1,3 @@
-use crate::error::SJMCLResult;
 use crate::instance::helpers::modpack::export::{
   normalize_mod_loader_version, ExportModpackOptions, ModpackExportBundle,
 };
@@ -9,6 +8,7 @@ use crate::tasks::PTaskParam;
 use async_trait::async_trait;
 use config::Config;
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;

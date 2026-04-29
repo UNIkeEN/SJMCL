@@ -11,8 +11,8 @@ use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
   PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::error::SJMCLResult;
 use serde_json::{json, Value};
+use sjmcl_types::error::SJMCLResult;
 use std::str::FromStr;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;

@@ -1,8 +1,8 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::{Level, LevelData};
 use quartz_nbt::io::Flavor;
 use quartz_nbt::serde::deserialize;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::path::{Path, PathBuf};
 
 pub async fn load_world_info_from_dir(

@@ -3,10 +3,10 @@ pub mod yggdrasil_server;
 use crate::account::models::{
   AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::error::SJMCLResult;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::image::load_image_from_dir;
 use rand::seq::IteratorRandom;
+use sjmcl_types::error::SJMCLResult;
 use strum::IntoEnumIterator;
 use tauri::AppHandle;
 use uuid::Uuid;

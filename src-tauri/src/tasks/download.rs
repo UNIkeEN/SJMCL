@@ -1,4 +1,3 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::commands::retrieve_launcher_config;
 use crate::tasks::streams::desc::{PDesc, PStatus};
 use crate::tasks::streams::reporter::Reporter;
@@ -10,6 +9,7 @@ use async_speed_limit::Limiter;
 use futures::stream::TryStreamExt;
 use futures::StreamExt;
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::error::Error;
 use std::future::Future;
 use std::path::PathBuf;

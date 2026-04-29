@@ -3,7 +3,6 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -13,6 +12,7 @@ use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 
 const QFAPI_MOD_ID_MODRINTH: &str = "qvIfYCYJ";
 

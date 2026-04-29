@@ -1,6 +1,6 @@
-use crate::error::SJMCLResult;
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{OptiFineResourceInfo, ResourceError, ResourceType, SourceType};
+use sjmcl_types::error::SJMCLResult;
 use tauri::Manager;
 use tauri_plugin_http::reqwest;
 

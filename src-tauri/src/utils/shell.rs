@@ -1,4 +1,4 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::io;
 use std::process::{Command, ExitStatus};
 
