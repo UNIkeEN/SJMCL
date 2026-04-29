@@ -5,19 +5,6 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use zip::read::ZipArchive;
 
-pub fn is_portable() -> Result<bool, io::Error> {
-  let exe_path = std::env::current_exe()?;
-  let mut file = File::open(&exe_path)?;
-  file.seek(SeekFrom::End(-12))?;
-  let mut footer = [0u8; 4];
-  file.read_exact(&mut footer)?;
-  if &footer == b"PORT" {
-    Ok(true)
-  } else {
-    Ok(false)
-  }
-}
-
 pub fn extract_assets(app: &AppHandle) -> Result<(), io::Error> {
   let exe_path = std::env::current_exe()?;
   let mut file = File::open(&exe_path)?;

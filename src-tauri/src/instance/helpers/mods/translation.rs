@@ -6,8 +6,8 @@ use crate::resource::helpers::curseforge::{
 use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
 };
-use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
+use sjmcl_static::envvar::APP_DATA_DIR;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_types::storage::Storage;
 use std::path::PathBuf;

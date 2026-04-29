@@ -1,11 +1,11 @@
 use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
 use crate::utils::string::snake_to_camel_case;
 use crate::utils::sys_info;
-use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use serde::de::Deserializer;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sjmcl_macros::Partial;
+use sjmcl_static::envvar::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 use sjmcl_types::partial::PartialUpdate;
 use sjmcl_types::storage::Storage;
 use smart_default::SmartDefault;

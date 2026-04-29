@@ -19,12 +19,11 @@ use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use sjmcl_static::envvar::init_app_data_dir;
 use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
-use std::path::PathBuf;
-use std::sync::{LazyLock, Mutex, OnceLock};
+use std::sync::Mutex;
 use tasks::monitor::TaskMonitor;
-use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -33,14 +32,6 @@ use tauri::Manager;
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
-
-static EXE_PATH: LazyLock<PathBuf> = LazyLock::new(|| std::env::current_exe().unwrap());
-
-static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().to_path_buf());
-
-static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(false));
-
-static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 pub async fn run() {
   let exit_code = {
@@ -189,9 +180,7 @@ pub async fn run() {
       ])
       .setup(|app| {
         // init APP_DATA_DIR
-        APP_DATA_DIR
-          .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
-          .expect("APP_DATA_DIR initialization failed");
+        init_app_data_dir(app.path().resolve("", BaseDirectory::AppData).unwrap());
 
         // Set up logging
         utils::logging::setup_with_app(app.handle().clone()).unwrap();

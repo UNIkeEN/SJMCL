@@ -1,0 +1,10 @@
+[package]
+name = "sjmcl-static"
+version = "1.0.0-beta.6"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]

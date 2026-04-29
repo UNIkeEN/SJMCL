@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "crates/sjmcl-macros", "crates/sjmcl-types"]
+members = [".", "crates/sjmcl-macros", "crates/sjmcl-static", "crates/sjmcl-types"]
 resolver = "2"
 
 [workspace.package]
@@ -52,6 +52,7 @@ sha1 = "0.10.1"
 sha2 = "0.10.9"
 shlex = "1.3.0"
 sjmcl_macros = { path = "crates/sjmcl-macros" }
+sjmcl_static = { package = "sjmcl-static", path = "crates/sjmcl-static" }
 sjmcl_types = { package = "sjmcl-types", path = "crates/sjmcl-types" }
 smart-default = "0.7.1"
 structstruck = "0.4.1"
@@ -156,6 +157,7 @@ sha1.workspace = true
 sha2.workspace = true
 shlex.workspace = true
 sjmcl_macros.workspace = true
+sjmcl_static.workspace = true
 sjmcl_types.workspace = true
 smart-default.workspace = true
 structstruck.workspace = true

@@ -2,8 +2,8 @@ use crate::launcher_config::commands::retrieve_custom_background_list;
 use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
 use crate::utils::fs::calculate_sha256;
 use crate::utils::portable::extract_assets;
-use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use rand::Rng;
+use sjmcl_static::envvar::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::partial::{PartialAccess, PartialUpdate};
 use std::fs;
@@ -83,7 +83,7 @@ impl LauncherConfig {
 
     for game_dir in &mut self.local_game_directories {
       if game_dir.name == "CURRENT_DIR" {
-        game_dir.dir = crate::EXE_DIR.join(".minecraft");
+        game_dir.dir = sjmcl_static::envvar::EXE_DIR.join(".minecraft");
       }
       if (game_dir.name == "CURRENT_DIR" || game_dir.name == "APP_DATA_SUBDIR")
         && !game_dir.dir.exists()
