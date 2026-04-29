@@ -17,6 +17,7 @@ use instance::helpers::mods::translation::LocalModTranslationsCache;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
+use launcher_config::helpers::misc::setup_with_app as setup_launcher_config_with_app;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
 use sjmcl_static::envvar::init_app_data_dir;
@@ -188,7 +189,7 @@ pub async fn run() {
         // Set the launcher config and other states
         // Also extract assets in `setup_with_app()` if the application is portable
         let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
-        launcher_config.setup_with_app(app.handle()).unwrap();
+        setup_launcher_config_with_app(&mut launcher_config, app.handle()).unwrap();
         launcher_config.save().unwrap();
         let version = launcher_config.basic_info.launcher_version.clone();
         let os = launcher_config.basic_info.platform.clone();

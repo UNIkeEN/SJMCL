@@ -1,0 +1,21 @@
+[package]
+name = "sjmcl-launcher-config"
+version = "1.0.0-beta.6"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sjmcl_macros.workspace = true
+sjmcl_static.workspace = true
+sjmcl_types.workspace = true
+smart-default.workspace = true
+structstruck.workspace = true
+strum_macros.workspace = true
+tauri.workspace = true
+tauri-plugin-os.workspace = true

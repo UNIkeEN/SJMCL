@@ -3,6 +3,10 @@ use crate::launcher_config::helpers::java::{
   build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
   refresh_and_update_javas,
 };
+use crate::launcher_config::helpers::misc::{
+  replace_with_preserved as replace_launcher_config_with_preserved,
+  setup_with_app as setup_launcher_config_with_app,
+};
 use crate::launcher_config::helpers::updater::{
   self, download_target_version, fetch_latest_version,
 };
@@ -44,13 +48,13 @@ pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -
 #[tauri::command]
 pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
   let mut default_config = LauncherConfig::default();
-  default_config.setup_with_app(&app)?;
+  setup_launcher_config_with_app(&mut default_config, &app)?;
 
   let binding = app.state::<Mutex<LauncherConfig>>();
   let mut state = binding.lock()?;
 
   let preserved_fields = &["run_count"];
-  state.replace_with_preserved(default_config, preserved_fields);
+  replace_launcher_config_with_preserved(&mut state, default_config, preserved_fields);
   state.save()?;
   Ok(state.clone())
 }
@@ -120,7 +124,7 @@ pub async fn import_launcher_config(
         let mut state = binding.lock()?;
 
         let preserved_fields = &["run_count", "local_game_directories", "extra_java_paths"];
-        state.replace_with_preserved(new_config, preserved_fields);
+        replace_launcher_config_with_preserved(&mut state, new_config, preserved_fields);
         state.save()?;
 
         Ok(state.clone())
