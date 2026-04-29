@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use serialize_skip_none_derive::serialize_skip_none;
+use sjmcl_macros::serialize_skip_none;
 use tauri::AppHandle;
 use tokio::sync::Semaphore;
 use zip::ZipArchive;

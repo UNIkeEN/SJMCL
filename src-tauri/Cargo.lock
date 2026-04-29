@@ -27,7 +27,6 @@ dependencies = [
  "log",
  "mc-server-status",
  "murmur2",
- "partial_derive",
  "pin-project",
  "plist",
  "quartz_nbt",
@@ -43,10 +42,10 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with",
- "serialize_skip_none_derive",
  "sha1",
  "sha2",
  "shlex",
+ "sjmcl_macros",
  "smart-default",
  "structstruck",
  "strum",
@@ -3829,15 +3828,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "partial_derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.106",
-]
-
-[[package]]
 name = "pastey"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5293,15 +5283,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serialize_skip_none_derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.106",
-]
-
-[[package]]
 name = "servo-fontconfig"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5420,6 +5401,15 @@ name = "siphasher"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56199f7ddabf13fe5074ce809e7d3f42b42ae711800501b5b16ea82ad029c39d"
+
+[[package]]
+name = "sjmcl_macros"
+version = "1.0.0-beta.6"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
 
 [[package]]
 name = "slab"

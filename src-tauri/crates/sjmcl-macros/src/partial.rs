@@ -1,14 +1,8 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::DeriveInput;
 
-#[proc_macro_derive(Partial)]
-pub fn derive_partial(input: TokenStream) -> TokenStream {
-  let derived_input = syn::parse_macro_input!(input as DeriveInput);
-  derive_partial_traits(&derived_input)
-}
-
-fn derive_partial_traits(input: &syn::DeriveInput) -> TokenStream {
+pub(crate) fn derive_partial_impl(input: TokenStream) -> TokenStream {
+  let input = syn::parse_macro_input!(input as syn::DeriveInput);
   let ident = &input.ident;
   let fields = match &input.data {
     syn::Data::Struct(data) => &data.fields,
