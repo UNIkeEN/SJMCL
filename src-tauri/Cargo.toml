@@ -2,34 +2,14 @@
 members = [".", "crates/sjmcl-macros"]
 resolver = "2"
 
-[workspace.dependencies]
-sjmcl_macros = { path = "crates/sjmcl-macros" }
-
-[package]
-name = "SJMCL"
-version = "1.0.0-beta.6"
-description = "A Minecraft launcher from SJMC"
+[workspace.package]
+edition = "2021"
 authors = ["SJMCL Team"]
 license = "GNU General Public License v3.0 (with additional terms)"
 repository = "https://github.com/UNIkeEN/SJMCL"
-edition = "2021"
 rust-version = "1.91.0"
 
-[lib]
-name = "app_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
-
-[build-dependencies]
-dotenvy = "0.15.7"
-tauri-build = { version = "2.0.2", features = [] }
-
-[profile.release]
-opt-level = 3   # as default
-strip = true
-lto = true
-panic = "abort"
-
-[dependencies]
+[workspace.dependencies]
 async-speed-limit = "0.4.2"
 async-trait = "0.1.89"
 axum = "0.8.6"
@@ -38,6 +18,7 @@ cafebabe = "0.8.1"
 chrono = "0.4.40"
 config = "0.15.18"
 csv = "1.3"
+dotenvy = "0.15.7"
 flume = { version = "0.11.1", features = ["async", "select"] }
 font-loader = "0.11.0"
 futures = "0.3.31"
@@ -51,7 +32,10 @@ log = "0.4"
 mc-server-status = "1.0.0"
 murmur2 = "0.1"
 pin-project = "1.1.8"
+plist = "1"
+proc-macro2 = "1"
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
+quote = "1"
 rand = "0.9.3"
 regex = "1.11"
 reqwest-middleware = "0.4.2"
@@ -67,15 +51,18 @@ serde_with = "3.12.0"
 sha1 = "0.10.1"
 sha2 = "0.10.9"
 shlex = "1.3.0"
-sjmcl_macros.workspace = true
+sjmcl_macros = { path = "crates/sjmcl-macros" }
 smart-default = "0.7.1"
 structstruck = "0.4.1"
 strum = "0.27.1"
 strum_macros = "0.27.1"
+syn = { version = "2", features = ["full"] }
 sysinfo = "0.36.0"
 systemstat = "0.2.3"
 tauri = { version = "2.9.5", features = ["protocol-asset", "image-png"] }
+tauri-build = { version = "2.0.2", features = [] }
 tauri-plugin-clipboard-manager = "2.3.2"
+tauri-plugin-decorum = "1.1.1"
 tauri-plugin-deep-link = "2.4.6"
 tauri-plugin-dialog = "2.6.0"
 tauri-plugin-fs = "2.4.5"
@@ -84,6 +71,8 @@ tauri-plugin-log = "2.8.0"
 tauri-plugin-opener = "2.5.3"
 tauri-plugin-os = "2.3.2"
 tauri-plugin-process = "2.3.1"
+tauri-plugin-single-instance = { version = "2.3.7", features = ["deep-link"] }
+tauri-plugin-window-state = "2.4.1"
 tauri-utils = "2.2.0"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util", "net", "sync", "time"] }
@@ -99,18 +88,111 @@ uuid = { version = "1.11.0", features = [
     "macro-diagnostics",
 ] }
 walkdir = "2.5.0"
-zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
-
-[target."cfg(windows)".dependencies]
 winapi = { version = "0.3", features = ["processthreadsapi", "winnt", "handleapi", "winuser", "windef"] }
 winreg = "0.55.0"
-tauri-plugin-decorum = "1.1.1"
+zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
+
+[package]
+name = "SJMCL"
+version = "1.0.0-beta.6"
+description = "A Minecraft launcher from SJMC"
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+dotenvy.workspace = true
+tauri-build.workspace = true
+
+[profile.release]
+opt-level = 3   # as default
+strip = true
+lto = true
+panic = "abort"
+
+[dependencies]
+async-speed-limit.workspace = true
+async-trait.workspace = true
+axum.workspace = true
+base64.workspace = true
+cafebabe.workspace = true
+chrono.workspace = true
+config.workspace = true
+csv.workspace = true
+flume.workspace = true
+font-loader.workspace = true
+futures.workspace = true
+glob.workspace = true
+hex.workspace = true
+image.workspace = true
+java-properties.workspace = true
+jsonwebtoken.workspace = true
+lazy_static.workspace = true
+log.workspace = true
+mc-server-status.workspace = true
+murmur2.workspace = true
+pin-project.workspace = true
+quartz_nbt.workspace = true
+rand.workspace = true
+regex.workspace = true
+reqwest-middleware.workspace = true
+reqwest-retry.workspace = true
+rmcp.workspace = true
+rsa.workspace = true
+sanitize-filename.workspace = true
+schemars.workspace = true
+semver.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+sha1.workspace = true
+sha2.workspace = true
+shlex.workspace = true
+sjmcl_macros.workspace = true
+smart-default.workspace = true
+structstruck.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+sysinfo.workspace = true
+systemstat.workspace = true
+tauri.workspace = true
+tauri-plugin-clipboard-manager.workspace = true
+tauri-plugin-deep-link.workspace = true
+tauri-plugin-dialog.workspace = true
+tauri-plugin-fs.workspace = true
+tauri-plugin-http.workspace = true
+tauri-plugin-log.workspace = true
+tauri-plugin-opener.workspace = true
+tauri-plugin-os.workspace = true
+tauri-plugin-process.workspace = true
+tauri-utils.workspace = true
+time.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+toml.workspace = true
+tower-http.workspace = true
+url.workspace = true
+urlencoding.workspace = true
+uuid.workspace = true
+walkdir.workspace = true
+zip.workspace = true
+
+[target."cfg(windows)".dependencies]
+winapi.workspace = true
+winreg.workspace = true
+tauri-plugin-decorum.workspace = true
 
 [target."cfg(target_os = \"macos\")".dependencies]
-plist = "1"
+plist.workspace = true
 
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
-tauri-plugin-single-instance = { version = "2.3.7", features = ["deep-link"] }
+tauri-plugin-single-instance.workspace = true
 
 [target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
-tauri-plugin-window-state = "2.4.1"
+tauri-plugin-window-state.workspace = true
