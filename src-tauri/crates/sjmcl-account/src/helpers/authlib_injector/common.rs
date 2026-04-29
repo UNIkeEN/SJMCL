@@ -1,8 +1,8 @@
-use crate::account::helpers::authlib_injector::models::{MinecraftProfile, TextureInfo};
-use crate::account::helpers::authlib_injector::{oauth, password};
-use crate::account::helpers::misc::fetch_image;
-use crate::account::helpers::offline::load_preset_skin;
-use crate::account::models::{
+use crate::helpers::authlib_injector::models::{MinecraftProfile, TextureInfo};
+use crate::helpers::authlib_injector::{oauth, password};
+use crate::helpers::misc::fetch_image;
+use crate::helpers::offline::load_preset_skin;
+use crate::models::{
   AccountError, AuthServer, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
 use base64::engine::general_purpose;

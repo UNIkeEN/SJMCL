@@ -9,9 +9,6 @@ mod resource;
 mod tasks;
 mod utils;
 
-use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
-use account::helpers::offline::yggdrasil_server::YggdrasilServer;
-use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::helpers::mods::translation::LocalModTranslationsCache;
 use instance::models::misc::Instance;
@@ -20,6 +17,10 @@ use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::helpers::misc::setup_with_app as setup_launcher_config_with_app;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use sjmcl_account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
+use sjmcl_account::helpers::misc::check_full_login_availability;
+use sjmcl_account::helpers::offline::yggdrasil_server::YggdrasilServer;
+use sjmcl_account::models::AccountInfo;
 use sjmcl_static::envvar::init_app_data_dir;
 use sjmcl_types::storage::Storage;
 use sjmcl_utils::{logging, web};
@@ -236,7 +237,7 @@ pub async fn run() {
         // check if full account feature (offline and 3rd-party login) is available
         let app_handle = app.handle().clone();
         tauri::async_runtime::spawn(async move {
-          account::helpers::misc::check_full_login_availability(&app_handle)
+          check_full_login_availability(&app_handle)
             .await
             .unwrap_or_default();
         });

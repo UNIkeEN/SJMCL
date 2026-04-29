@@ -1,8 +1,8 @@
-use crate::account::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
-use crate::account::helpers::authlib_injector::constants::SCOPE;
-use crate::account::helpers::authlib_injector::models::MinecraftProfile;
-use crate::account::helpers::misc::oauth_polling;
-use crate::account::models::{
+use crate::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
+use crate::helpers::authlib_injector::constants::SCOPE;
+use crate::helpers::authlib_injector::models::MinecraftProfile;
+use crate::helpers::misc::oauth_polling;
+use crate::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
 };
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};

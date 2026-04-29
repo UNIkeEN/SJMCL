@@ -1,5 +1,5 @@
-use crate::account::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
-use crate::account::models::{AccountError, PlayerInfo};
+use crate::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
+use crate::models::{AccountError, PlayerInfo};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sjmcl_types::error::SJMCLResult;

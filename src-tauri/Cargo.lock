@@ -45,6 +45,7 @@ dependencies = [
  "sha1",
  "sha2",
  "shlex",
+ "sjmcl-account",
  "sjmcl-launcher-config",
  "sjmcl-static",
  "sjmcl-types",
@@ -5405,6 +5406,39 @@ name = "siphasher"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56199f7ddabf13fe5074ce809e7d3f42b42ae711800501b5b16ea82ad029c39d"
+
+[[package]]
+name = "sjmcl-account"
+version = "1.0.0-beta.6"
+dependencies = [
+ "axum",
+ "base64 0.22.1",
+ "chrono",
+ "futures",
+ "image",
+ "jsonwebtoken",
+ "log",
+ "rand 0.9.3",
+ "rsa",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sjmcl-launcher-config",
+ "sjmcl-static",
+ "sjmcl-types",
+ "sjmcl-utils",
+ "structstruck",
+ "strum",
+ "strum_macros",
+ "tauri",
+ "tauri-plugin-clipboard-manager",
+ "tauri-plugin-http",
+ "tokio",
+ "tower-http",
+ "url",
+ "uuid",
+ "zip",
+]
 
 [[package]]
 name = "sjmcl-launcher-config"

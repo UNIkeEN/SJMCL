@@ -1,0 +1,37 @@
+[package]
+name = "sjmcl-account"
+version = "1.0.0-beta.6"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+axum.workspace = true
+base64.workspace = true
+chrono.workspace = true
+futures.workspace = true
+image.workspace = true
+jsonwebtoken.workspace = true
+log.workspace = true
+rand.workspace = true
+rsa.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha1.workspace = true
+sjmcl_launcher_config.workspace = true
+sjmcl_static.workspace = true
+sjmcl_types.workspace = true
+sjmcl_utils.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+structstruck.workspace = true
+tauri.workspace = true
+tauri-plugin-clipboard-manager.workspace = true
+tauri-plugin-http.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+url.workspace = true
+uuid.workspace = true
+zip.workspace = true

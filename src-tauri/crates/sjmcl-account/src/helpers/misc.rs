@@ -1,9 +1,9 @@
-use crate::account::constants::DEFAULT_POLLING_INTERVAL;
-use crate::account::models::{
+use crate::constants::DEFAULT_POLLING_INTERVAL;
+use crate::models::{
   AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthErrorResponse, OAuthTokens, PlayerInfo,
   PlayerType,
 };
-use crate::launcher_config::models::LauncherConfig;
+use sjmcl_launcher_config::models::LauncherConfig;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
 use sjmcl_utils::image::{decode_image, ImageWrapper};

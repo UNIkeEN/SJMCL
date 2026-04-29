@@ -1,17 +1,17 @@
-use crate::account::helpers::authlib_injector::info::{
+use crate::launcher_config::models::LauncherConfig;
+use sjmcl_account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
-use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
-use crate::account::helpers::authlib_injector::{self};
-use crate::account::helpers::import::hmcl::retrieve_hmcl_account_info;
-use crate::account::helpers::import::multimc::retrieve_multimc_account_info;
-use crate::account::helpers::import::ImportLauncherType;
-use crate::account::helpers::{microsoft, misc, offline};
-use crate::account::models::{
+use sjmcl_account::helpers::authlib_injector::jar::check_authlib_jar;
+use sjmcl_account::helpers::authlib_injector::{self};
+use sjmcl_account::helpers::import::hmcl::retrieve_hmcl_account_info;
+use sjmcl_account::helpers::import::multimc::retrieve_multimc_account_info;
+use sjmcl_account::helpers::import::ImportLauncherType;
+use sjmcl_account::helpers::{microsoft, misc, offline};
+use sjmcl_account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
-  PresetRole, SkinModel, TextureType,
+  PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::launcher_config::models::LauncherConfig;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
 use sjmcl_utils::fs::get_app_resource_filepath;
@@ -354,7 +354,7 @@ pub fn update_player_skin_offline_local(
     .retain(|texture| texture.texture_type != texture_type);
 
   // add the new texture
-  player.textures.push(crate::account::models::Texture {
+  player.textures.push(Texture {
     texture_type: texture_type.clone(),
     image: texture_img.into(),
     model: skin_model.clone(),

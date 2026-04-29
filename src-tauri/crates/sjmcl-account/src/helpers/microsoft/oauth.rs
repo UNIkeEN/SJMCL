@@ -1,13 +1,11 @@
-use crate::account::helpers::microsoft::constants::{
+use crate::helpers::microsoft::constants::{
   CLIENT_ID, DEVICE_AUTH_ENDPOINT, MINECRAFT_TOKEN_ENDPOINT, OAUTH_TOKEN_ENDPOINT,
   PROFILE_ENDPOINT, SCOPE, XSTS_AUTH_ENDPOINT,
 };
-use crate::account::helpers::microsoft::models::{
-  MinecraftProfile, XstsErrorResponse, XstsResponse,
-};
-use crate::account::helpers::misc::{fetch_image, oauth_polling};
-use crate::account::helpers::offline::load_preset_skin;
-use crate::account::models::{
+use crate::helpers::microsoft::models::{MinecraftProfile, XstsErrorResponse, XstsResponse};
+use crate::helpers::misc::{fetch_image, oauth_polling};
+use crate::helpers::offline::load_preset_skin;
+use crate::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
   PresetRole, SkinModel, Texture, TextureType,
 };

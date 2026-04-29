@@ -1,4 +1,4 @@
-use crate::account::models::{PlayerInfo, SkinModel};
+use crate::models::{PlayerInfo, SkinModel};
 use axum::{
   extract::{Path, Query, State},
   http::{HeaderMap, StatusCode},

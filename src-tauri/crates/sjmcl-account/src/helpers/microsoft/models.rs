@@ -1,4 +1,4 @@
-use crate::account::models::SkinModel;
+use crate::models::SkinModel;
 
 #[derive(serde::Deserialize, Debug)]
 pub struct MinecraftProfile {

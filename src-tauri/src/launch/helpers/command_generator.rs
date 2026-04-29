@@ -1,5 +1,3 @@
-use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
-use crate::account::models::{AccountError, PlayerType};
 use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
@@ -13,6 +11,8 @@ use base64::Engine;
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
 use shlex::try_quote;
+use sjmcl_account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
+use sjmcl_account::models::{AccountError, PlayerType};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_utils::fs::get_app_resource_filepath;
 use sjmcl_utils::sys_info::get_memory_info;

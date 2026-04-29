@@ -1,10 +1,10 @@
 use crate::account::commands::*;
-use crate::account::helpers::import::misc::ACCESS_TOKEN_EXPIRED;
-use crate::account::models::{AccountError, Player, PresetRole};
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::intelligence::mcp_server::model::MCPError;
 use crate::mcp_tool;
 use rmcp::handler::server::tool::ToolRoute;
+use sjmcl_account::helpers::import::misc::ACCESS_TOKEN_EXPIRED;
+use sjmcl_account::models::{AccountError, Player, PresetRole};
 
 fn strip_sensitive_player_info(players: &mut [Player]) {
   for player in players {
@@ -157,8 +157,8 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         launcher_type: String,
       } => async move {
         let launcher_type = match params.launcher_type.trim().to_ascii_lowercase().as_str() {
-          "hmcl" => crate::account::helpers::import::ImportLauncherType::HMCL,
-          "multimc" => crate::account::helpers::import::ImportLauncherType::MultiMC,
+          "hmcl" => sjmcl_account::helpers::import::ImportLauncherType::HMCL,
+          "multimc" => sjmcl_account::helpers::import::ImportLauncherType::MultiMC,
           _ => return Err(AccountError::Invalid.into()),
         };
 

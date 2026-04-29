@@ -1,5 +1,5 @@
-use crate::account::helpers::authlib_injector::constants::CLIENT_IDS;
-use crate::account::models::{AccountError, AccountInfo, AuthServerInfo};
+use crate::helpers::authlib_injector::constants::CLIENT_IDS;
+use crate::models::{AccountError, AccountInfo, AuthServerInfo};
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_utils::web::normalize_url;
 use std::sync::Mutex;

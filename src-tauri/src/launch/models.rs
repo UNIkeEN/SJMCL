@@ -1,8 +1,8 @@
-use crate::account::models::PlayerInfo;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::models::misc::Instance;
 use crate::launcher_config::models::{GameConfig, JavaInfo};
 use serde::{Deserialize, Serialize};
+use sjmcl_account::models::PlayerInfo;
 use smart_default::SmartDefault;
 use strum_macros::Display;
 

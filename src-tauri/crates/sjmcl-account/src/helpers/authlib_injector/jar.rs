@@ -1,9 +1,7 @@
-use crate::account::helpers::authlib_injector::constants::AUTHLIB_INJECTOR_JAR_NAME;
-use crate::account::models::AccountError;
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
-use crate::resource::models::{ResourceType, SourceType};
+use crate::helpers::authlib_injector::constants::AUTHLIB_INJECTOR_JAR_NAME;
+use crate::models::AccountError;
 use serde::{Deserialize, Serialize};
+use sjmcl_launcher_config::models::LauncherConfig;
 use sjmcl_types::error::SJMCLResult;
 use std::io::Read;
 use std::path::PathBuf;
@@ -12,6 +10,12 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
+
+#[derive(Clone, Copy)]
+enum SourceType {
+  Official,
+  BMCLAPIMirror,
+}
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
 pub struct AuthlibInjectorMeta {
@@ -34,7 +38,7 @@ async fn get_latest_meta(
   let client = app.state::<reqwest::Client>();
 
   for source in priority_list.iter() {
-    let url = get_download_api(*source, ResourceType::AuthlibInjector)?;
+    let url = get_authlib_injector_download_api(*source)?;
     let response = client
       .get(url.join("artifact/latest.json")?)
       .send()
@@ -52,6 +56,27 @@ async fn get_latest_meta(
   }
 
   Err(AccountError::NoDownloadApi.into())
+}
+
+fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
+  match launcher_config.download.source.strategy.as_str() {
+    "official" => vec![SourceType::Official, SourceType::BMCLAPIMirror],
+    "mirror" => vec![SourceType::BMCLAPIMirror, SourceType::Official],
+    "auto" => match launcher_config.basic_info.is_china_mainland_ip {
+      true => vec![SourceType::BMCLAPIMirror, SourceType::Official],
+      false => vec![SourceType::Official, SourceType::BMCLAPIMirror],
+    },
+    _ => vec![SourceType::BMCLAPIMirror, SourceType::Official],
+  }
+}
+
+fn get_authlib_injector_download_api(source: SourceType) -> SJMCLResult<Url> {
+  match source {
+    SourceType::Official => Ok(Url::parse("https://authlib-injector.yushi.moe/")?),
+    SourceType::BMCLAPIMirror => Ok(Url::parse(
+      "https://bmclapi2.bangbang93.com/mirrors/authlib-injector/",
+    )?),
+  }
 }
 
 fn get_local_version(app: &AppHandle) -> SJMCLResult<String> {

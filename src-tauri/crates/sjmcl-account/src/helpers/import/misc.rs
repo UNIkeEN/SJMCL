@@ -1,4 +1,4 @@
-use crate::launcher_config::models::LauncherConfig;
+use sjmcl_launcher_config::models::LauncherConfig;
 use sjmcl_static::envvar::EXE_DIR;
 use std::collections::HashSet;
 use std::path::PathBuf;

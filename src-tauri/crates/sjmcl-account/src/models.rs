@@ -1,6 +1,6 @@
-use crate::account::constants::ACCOUNTS_FILE_NAME;
-use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
-use crate::account::helpers::skin::draw_avatar;
+use crate::constants::ACCOUNTS_FILE_NAME;
+use crate::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
+use crate::helpers::skin::draw_avatar;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sjmcl_static::envvar::APP_DATA_DIR;

@@ -1,6 +1,6 @@
 pub mod yggdrasil_server;
 
-use crate::account::models::{
+use crate::models::{
   AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
 use rand::seq::IteratorRandom;
