@@ -1,3 +1,4 @@
+use std::pin::Pin;
 use std::{ffi::OsStr, fs};
 
 use crate::{
@@ -5,6 +6,7 @@ use crate::{
   multiplayer::helpers::terracotta::{build_download_param, decompress},
   resource::models::ResourceError,
   tasks::commands::schedule_progressive_task_group,
+  tasks::monitor::TaskMonitor,
 };
 use serde_json::Value;
 use tauri::{path::BaseDirectory, AppHandle, Manager};
@@ -14,7 +16,7 @@ use tokio::process::Command;
 pub async fn check_terracotta(app: AppHandle) -> SJMCLResult<bool> {
   let dir = &app.path().resolve("terracotta", BaseDirectory::AppData)?;
   println!("Checking if Terracotta is installed at: {:?}", dir);
-  Ok(dir.exists())
+  Ok(dir.exists() && fs::read_dir(dir)?.next().is_some())
 }
 
 #[tauri::command]
@@ -55,9 +57,16 @@ pub async fn download_terracotta(app: AppHandle) -> SJMCLResult<()> {
   if download_param.is_empty() {
     return Err(ResourceError::NoDownloadApi.into());
   }
-  schedule_progressive_task_group(app.clone(), "terracotta".to_string(), download_param, false)
-    .await?;
-  decompress(&app)?;
+  let task_group =
+    schedule_progressive_task_group(app.clone(), "terracotta".to_string(), download_param, false)
+      .await?;
+
+  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
+  monitor.wait_for_task_group(&task_group.task_group).await?;
+
+  log::info!("Terracotta downloaded, starting decompression...");
+  decompress(&app).await?;
+  log::info!("Terracotta decompressed successfully.");
   // TODO: 如果是 macOS 还需要安装
   Ok(())
 }

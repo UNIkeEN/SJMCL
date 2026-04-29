@@ -1,4 +1,4 @@
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::commands::retrieve_launcher_config;
 use crate::tasks::download::DownloadTask;
 use crate::tasks::events::{GEvent, GEventStatus, PEvent, TEvent};
@@ -475,6 +475,27 @@ impl TaskMonitor {
       // Only delete non-active groups (not Started/Stopped); backend status is authoritative for race-condition protection.
       if group.status != GEventStatus::Started && group.status != GEventStatus::Stopped {
         group_map.remove(&task_group);
+      }
+    }
+  }
+
+  pub async fn wait_for_task_group(&self, task_group: &str) -> SJMCLResult<()> {
+    loop {
+      let status = {
+        let group_map = self.group_map.read().unwrap();
+        group_map.get(task_group).map(|g| g.status.clone())
+      };
+      match status {
+        Some(GEventStatus::Completed) => return Ok(()),
+        Some(GEventStatus::Failed) => {
+          return Err(SJMCLError(format!("Task group '{task_group}' failed")))
+        }
+        Some(GEventStatus::Cancelled) => {
+          return Err(SJMCLError(format!(
+            "Task group '{task_group}' was cancelled"
+          )))
+        }
+        _ => tokio::time::sleep(std::time::Duration::from_millis(200)).await,
       }
     }
   }

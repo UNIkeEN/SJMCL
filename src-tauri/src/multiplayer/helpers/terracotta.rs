@@ -1,4 +1,4 @@
-use crate::error::SJMCLResult;
+use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::ResourceType;
@@ -29,14 +29,17 @@ pub async fn build_download_param(app: &AppHandle) -> SJMCLResult<Vec<PTaskParam
   let priority_list = get_source_priority_list(&config);
 
   for source_type in priority_list.iter() {
-    let api_url = get_download_api(*source_type, ResourceType::Terrocotta)?;
+    let api_url = get_download_api(*source_type, ResourceType::Terracotta)?;
     match client.get(api_url.clone()).send().await {
       Ok(_) => {
-        let url = api_url.join(&format!(
-          "/burningtnt/Terracotta/releases/download/v0.4.2/terracotta-0.4.2-{platform}-pkg.tar.gz"
-        ))?;
-        let path = app.path().resolve("terracotta", BaseDirectory::AppData)?;
-        fs::create_dir_all(&path)?;
+        let filename = format!("terracotta-0.4.2-{platform}-pkg.tar.gz");
+        let url = api_url.join(&format!("download/v0.4.2/{filename}"))?;
+        let path = app
+          .path()
+          .resolve("terracotta", BaseDirectory::AppData)?
+          .join(filename);
+        // fs::create_dir_all(&path)?;
+        log::debug!("{}, {}", url, path.to_str().unwrap());
         param.push(PTaskParam::Download(DownloadParam {
           src: url,
           dest: path,
@@ -52,24 +55,28 @@ pub async fn build_download_param(app: &AppHandle) -> SJMCLResult<Vec<PTaskParam
   Ok(param)
 }
 
-pub fn decompress(app: &AppHandle) -> SJMCLResult<()> {
+pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
   let dir = app.path().resolve("terracotta", BaseDirectory::AppData)?;
-
   for entry in fs::read_dir(&dir)? {
     let entry = entry?;
     let path = entry.path();
 
     if path.extension().and_then(|s| s.to_str()) == Some("gz") {
+      log::info!("Found compressed file: {:?}", path);
       let file = fs::File::open(&path)?;
       let decompressor = GzDecoder::new(file);
       let mut archive = Archive::new(decompressor);
-      archive.unpack(dir)?;
+      archive.unpack(dir).map_err(|e| {
+        log::error!("Failed to unpack archive: {}", e);
+        e
+      })?;
       fs::remove_file(path)?;
       return Ok(());
     }
   }
-
-  Ok(())
+  Err(SJMCLError(
+    "No compressed file found in terracotta directory".into(),
+  ))
 }
 
 pub fn _install() {

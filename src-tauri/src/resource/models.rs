@@ -28,7 +28,7 @@ pub enum ResourceType {
   NeoforgeMaven,
   QuiltMaven,
   QuiltMeta,
-  Terrocotta,
+  Terracotta,
 }
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]
