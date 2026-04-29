@@ -47,6 +47,7 @@ dependencies = [
  "shlex",
  "sjmcl-account",
  "sjmcl-discover",
+ "sjmcl-extension",
  "sjmcl-launcher-config",
  "sjmcl-static",
  "sjmcl-types",
@@ -5448,6 +5449,23 @@ dependencies = [
  "chrono",
  "reqwest-middleware",
  "serde",
+]
+
+[[package]]
+name = "sjmcl-extension"
+version = "1.0.0-beta.6"
+dependencies = [
+ "image",
+ "regex",
+ "semver",
+ "serde",
+ "serde_json",
+ "sjmcl-types",
+ "sjmcl-utils",
+ "structstruck",
+ "strum_macros",
+ "tauri",
+ "zip",
 ]
 
 [[package]]

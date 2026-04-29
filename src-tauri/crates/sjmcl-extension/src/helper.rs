@@ -1,4 +1,4 @@
-use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
+use crate::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
 use image::imageops::FilterType;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_utils::fs::get_subdirectories;

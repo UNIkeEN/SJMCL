@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "crates/sjmcl-account", "crates/sjmcl-discover", "crates/sjmcl-launcher-config", "crates/sjmcl-macros", "crates/sjmcl-static", "crates/sjmcl-types", "crates/sjmcl-utils"]
+members = [".", "crates/sjmcl-account", "crates/sjmcl-discover", "crates/sjmcl-extension", "crates/sjmcl-launcher-config", "crates/sjmcl-macros", "crates/sjmcl-static", "crates/sjmcl-types", "crates/sjmcl-utils"]
 resolver = "2"
 
 [workspace.package]
@@ -57,6 +57,7 @@ sjmcl_static = { package = "sjmcl-static", path = "crates/sjmcl-static" }
 sjmcl_types = { package = "sjmcl-types", path = "crates/sjmcl-types" }
 sjmcl_account = { package = "sjmcl-account", path = "crates/sjmcl-account" }
 sjmcl_discover = { package = "sjmcl-discover", path = "crates/sjmcl-discover" }
+sjmcl_extension = { package = "sjmcl-extension", path = "crates/sjmcl-extension" }
 sjmcl_utils = { package = "sjmcl-utils", path = "crates/sjmcl-utils" }
 smart-default = "0.7.1"
 structstruck = "0.4.1"
@@ -166,6 +167,7 @@ sjmcl_static.workspace = true
 sjmcl_types.workspace = true
 sjmcl_account.workspace = true
 sjmcl_discover.workspace = true
+sjmcl_extension.workspace = true
 sjmcl_utils.workspace = true
 smart-default.workspace = true
 structstruck.workspace = true

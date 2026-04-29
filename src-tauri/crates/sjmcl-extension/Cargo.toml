@@ -1,0 +1,21 @@
+[package]
+name = "sjmcl-extension"
+version = "1.0.0-beta.6"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+image.workspace = true
+regex.workspace = true
+semver.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sjmcl_types.workspace = true
+sjmcl_utils.workspace = true
+strum_macros.workspace = true
+structstruck.workspace = true
+tauri.workspace = true
+zip.workspace = true

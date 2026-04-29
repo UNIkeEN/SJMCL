@@ -1,9 +1,9 @@
-use crate::extension::helper::{
-  extract_extension_package, get_extensions_dir, read_extension_info, resolve_extension_root,
-};
-use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
 use crate::launcher_config::models::LauncherConfig;
 use semver::Version;
+use sjmcl_extension::helper::{
+  extract_extension_package, get_extensions_dir, read_extension_info, resolve_extension_root,
+};
+use sjmcl_extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
 use sjmcl_utils::fs::get_subdirectories;
