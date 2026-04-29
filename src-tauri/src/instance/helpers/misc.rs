@@ -386,7 +386,7 @@ pub fn create_instance_shortcut_icon(
   instance: &Instance,
   icon_src: &str,
 ) -> SJMCLResult<PathBuf> {
-  use crate::utils::fs::get_app_resource_filepath;
+  use sjmcl_utils::fs::get_app_resource_filepath;
 
   let mut img = if icon_src == "custom" {
     image::ImageReader::open(instance.version_path.join("icon"))?

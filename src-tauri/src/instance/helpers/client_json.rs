@@ -1,7 +1,6 @@
 use crate::instance::models::misc::{Instance, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::models::OptiFineResourceInfo;
-use crate::utils::fs::get_app_resource_filepath;
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
@@ -9,6 +8,7 @@ use serde_with::formats::PreferMany;
 use serde_with::{serde_as, OneOrMany};
 use sjmcl_macros::serialize_skip_none;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_utils::fs::get_app_resource_filepath;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs;

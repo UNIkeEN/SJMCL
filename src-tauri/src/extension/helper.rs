@@ -1,8 +1,8 @@
 use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
-use crate::utils::fs::get_subdirectories;
-use crate::utils::image::{load_image_from_dir, ImageWrapper};
 use image::imageops::FilterType;
 use sjmcl_types::error::SJMCLResult;
+use sjmcl_utils::fs::get_subdirectories;
+use sjmcl_utils::image::{load_image_from_dir, ImageWrapper};
 use std::fs::{self, File};
 use std::io;
 use std::path::{Path, PathBuf};

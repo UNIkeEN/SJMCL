@@ -1,10 +1,10 @@
 use crate::instance::constants::COMPRESSED_ICON_SIZE;
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
-use crate::utils::image::ImageWrapper;
 use async_trait::async_trait;
 use image::imageops::FilterType;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_utils::image::ImageWrapper;
 use std::io::{Cursor, Read, Seek};
 use std::path::{Path, PathBuf};
 use zip::ZipArchive;

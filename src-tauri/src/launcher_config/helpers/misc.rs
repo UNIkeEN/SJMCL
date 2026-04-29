@@ -1,11 +1,11 @@
 use crate::launcher_config::commands::retrieve_custom_background_list;
 use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
-use crate::utils::fs::calculate_sha256;
-use crate::utils::portable::extract_assets;
 use rand::Rng;
 use sjmcl_static::envvar::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::partial::{PartialAccess, PartialUpdate};
+use sjmcl_utils::fs::calculate_sha256;
+use sjmcl_utils::portable::extract_assets;
 use std::fs;
 use std::path::{PathBuf, MAIN_SEPARATOR};
 use std::sync::Mutex;

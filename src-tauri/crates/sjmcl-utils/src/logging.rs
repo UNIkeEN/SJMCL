@@ -1,4 +1,4 @@
-use crate::utils::fs::get_files_with_regex;
+use crate::fs::get_files_with_regex;
 use regex::Regex;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fmt::Arguments;

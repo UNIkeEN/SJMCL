@@ -3,10 +3,10 @@ use crate::extension::helper::{
 };
 use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
 use crate::launcher_config::models::LauncherConfig;
-use crate::utils::fs::get_subdirectories;
 use semver::Version;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
+use sjmcl_utils::fs::get_subdirectories;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;

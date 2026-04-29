@@ -22,10 +22,11 @@ use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
 use sjmcl_static::envvar::init_app_data_dir;
 use sjmcl_types::storage::Storage;
+use sjmcl_utils::{logging, web};
 use std::collections::HashMap;
 use std::sync::Mutex;
 use tasks::monitor::TaskMonitor;
-use utils::web::build_sjmcl_client;
+use web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
@@ -184,7 +185,7 @@ pub async fn run() {
         init_app_data_dir(app.path().resolve("", BaseDirectory::AppData).unwrap());
 
         // Set up logging
-        utils::logging::setup_with_app(app.handle().clone()).unwrap();
+        logging::setup_with_app(app.handle().clone()).unwrap();
 
         // Set the launcher config and other states
         // Also extract assets in `setup_with_app()` if the application is portable
@@ -273,14 +274,14 @@ pub async fn run() {
 
         // Send statistics
         tokio::spawn(async move {
-          utils::sys_info::send_statistics(version, os, exe_sha256).await;
+          sjmcl_utils::sys_info::send_statistics(version, os, exe_sha256).await;
         });
 
         // Auto purge launcher logs older than 30 days if enabled
         if auto_purge_launcher_logs {
           let app_handle = app.handle().clone();
           tauri::async_runtime::spawn(async move {
-            let _ = utils::logging::purge_old_launcher_logs(app_handle, 30).await;
+            let _ = logging::purge_old_launcher_logs(app_handle, 30).await;
           });
         }
 

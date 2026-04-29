@@ -48,6 +48,7 @@ dependencies = [
  "sjmcl-launcher-config",
  "sjmcl-static",
  "sjmcl-types",
+ "sjmcl-utils",
  "sjmcl_macros",
  "smart-default",
  "structstruck",
@@ -5434,6 +5435,38 @@ dependencies = [
  "serde_json",
  "strum_macros",
  "tokio",
+]
+
+[[package]]
+name = "sjmcl-utils"
+version = "1.0.0-beta.6"
+dependencies = [
+ "base64 0.22.1",
+ "hex",
+ "image",
+ "log",
+ "regex",
+ "reqwest-middleware",
+ "reqwest-retry",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sha2",
+ "shlex",
+ "sjmcl-launcher-config",
+ "sjmcl-static",
+ "sjmcl-types",
+ "sysinfo",
+ "systemstat",
+ "tauri",
+ "tauri-plugin-http",
+ "tauri-plugin-log",
+ "tauri-plugin-os",
+ "tauri-utils",
+ "time",
+ "tokio",
+ "url",
+ "zip",
 ]
 
 [[package]]

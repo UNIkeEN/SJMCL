@@ -15,8 +15,8 @@ use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
-use crate::utils::fs::get_files_with_regex;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_utils::fs::get_files_with_regex;
 
 const FABRIC_API_MOD_ID_MODRINTH: &str = "P7dR8mSH";
 

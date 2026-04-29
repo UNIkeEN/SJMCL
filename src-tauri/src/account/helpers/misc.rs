@@ -4,10 +4,10 @@ use crate::account::models::{
   PlayerType,
 };
 use crate::launcher_config::models::LauncherConfig;
-use crate::utils::image::{decode_image, ImageWrapper};
-use crate::utils::web::is_china_mainland_ip;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
+use sjmcl_utils::image::{decode_image, ImageWrapper};
+use sjmcl_utils::web::is_china_mainland_ip;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest::{self, RequestBuilder};

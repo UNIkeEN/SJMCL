@@ -1,6 +1,6 @@
-use crate::utils::image::ImageWrapper;
 use semver::Version;
 use serde::{Deserialize, Serialize};
+use sjmcl_utils::image::ImageWrapper;
 use std::sync::LazyLock;
 use strum_macros::Display;
 

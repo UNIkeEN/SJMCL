@@ -1,8 +1,8 @@
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::helpers::version_manifest::get_game_version_manifest;
-use crate::utils::fs::get_app_resource_filepath;
 use regex::Regex;
+use sjmcl_utils::fs::get_app_resource_filepath;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs;

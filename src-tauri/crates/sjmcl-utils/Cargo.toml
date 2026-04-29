@@ -1,0 +1,36 @@
+[package]
+name = "sjmcl-utils"
+version = "1.0.0-beta.6"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+base64.workspace = true
+hex.workspace = true
+image.workspace = true
+log.workspace = true
+regex.workspace = true
+reqwest-middleware.workspace = true
+reqwest-retry.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha1.workspace = true
+sha2.workspace = true
+shlex.workspace = true
+sjmcl_launcher_config.workspace = true
+sjmcl_static.workspace = true
+sjmcl_types.workspace = true
+sysinfo.workspace = true
+systemstat.workspace = true
+tauri.workspace = true
+tauri-plugin-http.workspace = true
+tauri-plugin-log.workspace = true
+tauri-plugin-os.workspace = true
+tauri-utils.workspace = true
+time.workspace = true
+tokio.workspace = true
+url.workspace = true
+zip.workspace = true

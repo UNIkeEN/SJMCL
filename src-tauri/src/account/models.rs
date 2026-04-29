@@ -1,11 +1,11 @@
 use crate::account::constants::ACCOUNTS_FILE_NAME;
 use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
 use crate::account::helpers::skin::draw_avatar;
-use crate::utils::image::ImageWrapper;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sjmcl_static::envvar::APP_DATA_DIR;
 use sjmcl_types::storage::Storage;
+use sjmcl_utils::image::ImageWrapper;
 use std::path::PathBuf;
 use strum_macros::{Display, EnumIter, EnumString};
 use uuid::Uuid;

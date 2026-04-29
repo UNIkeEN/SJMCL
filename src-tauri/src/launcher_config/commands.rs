@@ -14,11 +14,11 @@ use crate::launcher_config::models::{
   GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
 };
 use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
-use crate::utils::fs::{generate_unique_filename, get_subdirectories};
-use crate::utils::string::camel_to_snake_case;
 use serde_json::{json, Value};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_types::storage::Storage;
+use sjmcl_utils::fs::{generate_unique_filename, get_subdirectories};
+use sjmcl_utils::string::camel_to_snake_case;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;

@@ -10,12 +10,12 @@ use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
-use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
 use futures::stream::{self, StreamExt, TryStreamExt};
 use semver::Version;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_types::storage::load_json_async;
+use sjmcl_utils::fs::validate_sha1;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};

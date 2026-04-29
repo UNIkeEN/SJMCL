@@ -1,6 +1,6 @@
 use crate::resource::models::{OtherResourceSource, ResourceError};
-use crate::utils::fs::get_app_resource_filepath;
 use sjmcl_types::error::SJMCLResult;
+use sjmcl_utils::fs::get_app_resource_filepath;
 use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};

@@ -2,9 +2,9 @@ use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::ResourceType;
 use crate::tasks::{download::DownloadParam, PTaskParam};
-use crate::utils::fs::{manage_permissions_unix, PermissionOperation};
 use serde_json::Value;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_utils::fs::{manage_permissions_unix, PermissionOperation};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -14,7 +14,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[cfg(target_os = "windows")]
-use {crate::utils::sys_info::get_all_drive_mount_points, std::os::windows::process::CommandExt};
+use {sjmcl_utils::sys_info::get_all_drive_mount_points, std::os::windows::process::CommandExt};
 
 pub async fn refresh_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.

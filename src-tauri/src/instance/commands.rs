@@ -53,16 +53,16 @@ use crate::resource::models::{
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
-use crate::utils::fs::{
-  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
-  get_subdirectories, normalize_relative_path,
-};
-use crate::utils::image::ImageWrapper;
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::partial::{PartialError, PartialUpdate};
 use sjmcl_types::storage::{load_json_async, save_json_async, Storage};
+use sjmcl_utils::fs::{
+  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
+  get_subdirectories, normalize_relative_path,
+};
+use sjmcl_utils::image::ImageWrapper;
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};

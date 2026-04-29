@@ -1,6 +1,4 @@
 use crate::account::models::{PlayerInfo, SkinModel};
-use crate::utils::image::ImageWrapper;
-use crate::utils::sys_info::find_free_port;
 use axum::{
   extract::{Path, Query, State},
   http::{HeaderMap, StatusCode},
@@ -19,8 +17,8 @@ use rsa::{
 };
 use serde_json::{json, Map, Value};
 use sha1::Sha1;
-use sha2::{Digest, Sha256};
 use sjmcl_types::error::SJMCLResult;
+use sjmcl_utils::sys_info::find_free_port;
 use std::{
   collections::HashMap,
   io::Cursor,
@@ -58,15 +56,6 @@ fn sign_data(data: &str) -> String {
   let signing_key = SigningKey::<Sha1>::new_unprefixed(key_pair().0.clone());
   let signature = signing_key.sign(data.as_bytes());
   general_purpose::STANDARD.encode(signature.to_bytes())
-}
-
-impl ImageWrapper {
-  pub fn compute_hash(&self) -> String {
-    let mut hasher = Sha256::new();
-    hasher.update(self.image.as_raw());
-    let result = hasher.finalize();
-    hex::encode(result)
-  }
 }
 
 impl PlayerInfo {

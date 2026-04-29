@@ -12,10 +12,10 @@ use crate::account::models::{
   PresetRole, SkinModel, TextureType,
 };
 use crate::launcher_config::models::LauncherConfig;
-use crate::utils::fs::get_app_resource_filepath;
-use crate::utils::web::normalize_url;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
+use sjmcl_utils::fs::get_app_resource_filepath;
+use sjmcl_utils::web::normalize_url;
 use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -335,7 +335,7 @@ pub fn update_player_skin_offline_local(
     Path::new(&image_path).to_path_buf()
   };
   let texture_img =
-    crate::utils::image::load_image_from_dir(&image_path).ok_or(AccountError::TextureError)?;
+    sjmcl_utils::image::load_image_from_dir(&image_path).ok_or(AccountError::TextureError)?;
 
   let account_binding = app.state::<Mutex<AccountInfo>>();
   let mut account_state = account_binding.lock()?;

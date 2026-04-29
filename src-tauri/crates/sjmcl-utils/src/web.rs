@@ -1,10 +1,10 @@
-use crate::launcher_config::models::{LauncherConfig, ProxyType};
 use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
 use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::RetryTransientMiddleware;
 use reqwest_retry::{
   default_on_request_failure, default_on_request_success, Retryable, RetryableStrategy,
 };
+use sjmcl_launcher_config::models::{LauncherConfig, ProxyType};
 use std::sync::Mutex;
 use std::time::Duration;
 use tauri::http::StatusCode;

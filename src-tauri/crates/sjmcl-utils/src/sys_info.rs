@@ -1,5 +1,5 @@
-use crate::launcher_config::models::MemoryInfo;
 use serde_json::json;
+use sjmcl_launcher_config::models::MemoryInfo;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::net::{SocketAddr, TcpListener};
 use std::path::PathBuf;

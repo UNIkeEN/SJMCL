@@ -94,6 +94,14 @@ impl<'de> Deserialize<'de> for ImageWrapper {
 }
 
 impl ImageWrapper {
+  pub fn compute_hash(&self) -> String {
+    use sha2::Digest;
+
+    let mut hasher = sha2::Sha256::new();
+    hasher.update(self.image.as_raw());
+    hex::encode(hasher.finalize())
+  }
+
   /// Return a new ImageWrapper resized to the given dimensions using the specified filter.
   ///
   /// # Examples

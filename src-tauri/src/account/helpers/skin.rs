@@ -1,5 +1,5 @@
-use crate::utils::image::ImageWrapper;
 use image::RgbaImage;
+use sjmcl_utils::image::ImageWrapper;
 
 pub fn draw_avatar(size: u32, img: &RgbaImage) -> Vec<ImageWrapper> {
   let (skin_width, _) = img.dimensions();

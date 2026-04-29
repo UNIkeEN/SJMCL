@@ -1,7 +1,7 @@
 use crate::account::helpers::authlib_injector::constants::CLIENT_IDS;
 use crate::account::models::{AccountError, AccountInfo, AuthServerInfo};
-use crate::utils::web::normalize_url;
 use sjmcl_types::error::SJMCLResult;
+use sjmcl_utils::web::normalize_url;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
