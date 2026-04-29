@@ -1,4 +1,4 @@
-use crate::discover::models::{NewsPostResponse, NewsPostSummary, NewsSourceInfo};
+use crate::models::{NewsPostResponse, NewsPostSummary, NewsSourceInfo};
 use chrono::{DateTime, TimeZone, Utc};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;

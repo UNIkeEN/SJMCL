@@ -1,0 +1,13 @@
+[package]
+name = "sjmcl-discover"
+version = "1.0.0-beta.6"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+chrono.workspace = true
+reqwest-middleware.workspace = true
+serde.workspace = true

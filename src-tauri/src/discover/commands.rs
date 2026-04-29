@@ -1,7 +1,7 @@
-use crate::discover::helpers::mc_news::{fetch_mc_news_page, MC_NEWS_ENDPOINT};
-use crate::discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
 use crate::launcher_config::models::LauncherConfig;
 use futures::future;
+use sjmcl_discover::helpers::mc_news::{fetch_mc_news_page, MC_NEWS_ENDPOINT};
+use sjmcl_discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_utils::web::with_retry;
 use std::collections::HashMap;

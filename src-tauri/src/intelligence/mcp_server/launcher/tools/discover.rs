@@ -1,10 +1,10 @@
 use crate::discover::commands::{fetch_news_post_summaries, fetch_news_sources_info};
-use crate::discover::helpers::mc_news::{fetch_mc_news_page, MC_NEWS_ENDPOINT};
-use crate::discover::models::NewsPostRequest;
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::mcp_tool;
 use rmcp::handler::server::tool::ToolRoute;
 use serde::Deserialize;
+use sjmcl_discover::helpers::mc_news::{fetch_mc_news_page, MC_NEWS_ENDPOINT};
+use sjmcl_discover::models::NewsPostRequest;
 use sjmcl_utils::web::with_retry;
 use tauri::{Manager, State};
 use tauri_plugin_http::reqwest;
