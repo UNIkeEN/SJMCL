@@ -1449,7 +1449,8 @@
     "button": {
       "multiplayer": "联机",
       "launch": "启动游戏",
-      "instanceSettings": "实例设置"
+      "instanceSettings": "实例设置",
+      "windowsNotSupported": "联机需要 Windows 10 及以上版本"
     },
     "SwitchButton": {
       "tooltip": {

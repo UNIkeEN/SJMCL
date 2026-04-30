@@ -29,9 +29,11 @@ import PlayersView from "@/components/players-view";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { useToast } from "@/contexts/toast";
 import { PlayerType } from "@/enums/account";
 import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
+import { MultiplayerService } from "@/services/multiplayer";
 import cardStyles from "@/styles/card.module.css";
 import styles from "@/styles/launch.module.css";
 
@@ -103,6 +105,7 @@ const LaunchPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { openSharedModal } = useSharedModals();
+  const toast = useToast();
 
   const { selectedPlayer, getPlayerList, getInstanceList, selectedInstance } =
     useGlobalData();
@@ -129,7 +132,17 @@ const LaunchPage = () => {
         left={7}
         colorScheme="blackAlpha"
         className={styles["multiplayer-button"]}
-        onClick={() => openSharedModal("multiplayer")}
+        onClick={async () => {
+          const res = await MultiplayerService.checkPlatformSupport();
+          if (res.status !== "success" || !res.data) {
+            toast({
+              title: t("LaunchPage.button.windowsNotSupported"),
+              status: "error",
+            });
+            return;
+          }
+          openSharedModal("multiplayer");
+        }}
       >
         <HStack spacing={2.5} color="white">
           <Icon as={LuGlobe} boxSize={4} />

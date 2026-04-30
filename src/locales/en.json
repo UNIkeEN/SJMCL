@@ -1449,7 +1449,8 @@
     "button": {
       "multiplayer": "Multiplayer",
       "launch": "Launch Game",
-      "instanceSettings": "Instance Settings"
+      "instanceSettings": "Instance Settings",
+      "windowsNotSupported": "Multiplayer requires Windows 10 or above"
     },
     "SwitchButton": {
       "tooltip": {

@@ -1,10 +1,13 @@
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   ButtonProps,
-  FormControl,
-  FormHelperText,
-  FormLabel,
   Grid,
   HStack,
   Icon,
@@ -27,8 +30,9 @@ import {
   VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { fetch } from "@tauri-apps/plugin-http";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import { LuCopy, LuDownload, LuHouse, LuUsers } from "react-icons/lu";
@@ -41,6 +45,13 @@ import { copyText } from "@/utils/copy";
 const TERRACOTTA_ICON_URL =
   "https://zh.minecraft.wiki/images/Red_Glazed_Terracotta_JE1_BE1.png?272a2";
 const INVITE_CODE_LENGTH = 6;
+
+type Phase =
+  | "checking"
+  | "notDownloaded"
+  | "ready"
+  | "scanning"
+  | "roomStarted";
 
 interface MultiplayerActionButtonProps extends ButtonProps {
   icon: IconType;
@@ -122,14 +133,22 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { selectedPlayer } = useGlobalData();
+
+  const [phase, setPhase] = useState<Phase>("checking");
   const [port, setPort] = useState(0);
   const [generatedInviteCode, setGeneratedInviteCode] = useState("");
-  const [hasTerracotta, setHasTerracotta] = useState<boolean | null>(null);
-  const [inviteCode, setInviteCode] = useState("");
-  const [isChecking, setIsChecking] = useState(false);
-  const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isJoiningRoom, setIsJoiningRoom] = useState(false);
+
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+
+  const phaseRef = useRef<Phase>("checking");
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
 
   const panelBg = useColorModeValue(
     "rgba(255, 255, 255, 0.7)",
@@ -157,31 +176,65 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   );
   const optionIconBg = useColorModeValue("blackAlpha.100", "whiteAlpha.150");
   const optionTextColor = useColorModeValue("gray.800", "whiteAlpha.900");
-  const checkTerracottaSupport = useCallback(async () => {
-    setIsChecking(true);
-    const response = await MultiplayerService.checkTerracotta();
 
-    if (response.status === "success") {
-      setHasTerracotta(response.data);
-    } else {
+  const handleInit = useCallback(async () => {
+    console.log("[multiplayer] launching terracotta...");
+    await MultiplayerService.launchTerracotta().catch((err) =>
+      console.error("[multiplayer] launch failed:", err)
+    );
+    const response = await MultiplayerService.fetchPort();
+    if (response.status === "success" && response.data) {
+      setPort(response.data);
+      console.log("[multiplayer] port:", response.data);
+    } else if (response.status === "error") {
       toast({
         title: response.message,
         description: response.details,
         status: "error",
       });
-      setHasTerracotta(false);
     }
-
-    setIsChecking(false);
   }, [toast]);
+
+  const checkTerracottaSupport = useCallback(async () => {
+    const response = await MultiplayerService.checkTerracotta();
+    if (response.status === "success" && response.data) {
+      await handleInit();
+      setPhase("ready");
+    } else {
+      setPhase("notDownloaded");
+    }
+  }, [handleInit]);
 
   useEffect(() => {
     if (!props.isOpen) return;
+    setPhase("checking");
+    setPort(0);
     setGeneratedInviteCode("");
-    setInviteCode("");
-    setHasTerracotta(null);
+    setJoinCode("");
     checkTerracottaSupport();
   }, [checkTerracottaSupport, props.isOpen]);
+
+  useEffect(() => {
+    if (!props.isOpen || port === 0) return;
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:${port}/state`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`[multiplayer] state:`, data);
+          if (data.room) {
+            setGeneratedInviteCode(data.room);
+            if (phaseRef.current === "scanning") {
+              setPhase("roomStarted");
+            }
+          }
+        }
+      } catch (e) {
+        console.error(`[multiplayer] poll error:`, e);
+      }
+    }, 500);
+    return () => clearInterval(intervalId);
+  }, [props.isOpen, port]);
 
   const handleCopyInviteCode = async () => {
     if (!generatedInviteCode) return;
@@ -189,30 +242,23 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   };
 
   const handleCreateRoom = async () => {
-    setIsCreatingRoom(true);
-    await fetch(`/127.0.0.1:${port}/state/scanning?${selectedPlayer?.name}`, {
-      method: "GET",
-    });
-    const response = await fetch(`/127.0.0.1:${port}/state`, {
-      method: "GET",
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setGeneratedInviteCode(data.room);
+    const url = `http://127.0.0.1:${port}/state/scanning?${selectedPlayer?.name}`;
+    console.log(`[multiplayer] create room: ${url}`);
+    setPhase("scanning");
+    try {
+      await fetch(url, { method: "GET" });
+    } catch (e) {
+      console.error(`[multiplayer] create room error:`, e);
+      toast({ title: String(e), status: "error" });
+      setPhase("ready");
     }
-
-    setIsCreatingRoom(false);
   };
 
   const handleDownloadTerracotta = async () => {
     setIsDownloading(true);
     const response = await MultiplayerService.downloadTerracotta();
-
     if (response.status === "success") {
-      toast({
-        title: response.message,
-        status: "success",
-      });
+      toast({ title: response.message, status: "success" });
       await checkTerracottaSupport();
     } else {
       toast({
@@ -221,256 +267,318 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
         status: "error",
       });
     }
-
     setIsDownloading(false);
   };
 
-  const handleInit = useCallback(async () => {
-    console.log("Initializing multiplayer modal...");
-    await MultiplayerService.launchTerracotta()
-      .then(() => {
-        console.log("Launched Terracotta");
-      })
-      .catch((err) => {
-        console.error("Failed to launch Terracotta:", err);
-      });
-    const response = await MultiplayerService.fetchPort();
-    if (response.status === "success") {
-      setPort(response.data);
-      console.log("Fetched Terracotta port:", response.data);
+  const handleJoinRoomConfirm = async () => {
+    setIsJoining(true);
+    const url = `http://127.0.0.1:${port}/state/guesting?${joinCode.trim()}&${selectedPlayer?.name}`;
+    console.log(`[multiplayer] join room: ${url}`);
+    try {
+      const response = await fetch(url, { method: "GET" });
+      if (response.ok) {
+        toast({
+          title: t("MultiplayerModal.toast.joinReady"),
+          status: "success",
+        });
+      } else {
+        toast({
+          title: t("MultiplayerModal.toast.joinTimeout"),
+          status: "error",
+        });
+      }
+    } catch (e) {
+      toast({ title: String(e), status: "error" });
     }
-  }, []);
-
-  useEffect(() => {
-    if (props.isOpen && hasTerracotta === true) {
-      handleInit();
-    }
-  }, [props.isOpen, hasTerracotta, handleInit]);
-
-  const handleJoinRoom = async () => {
-    const normalizedInviteCode = inviteCode.trim();
-    setIsJoiningRoom(true);
-    const response = await MultiplayerService.joinRoom(normalizedInviteCode);
-    /*/state/guesting?<room>&<player>*/
-    if (response.status === "success") {
-      toast({
-        title: response.message,
-        status: "success",
-      });
-      props.onClose?.();
-    } else {
-      toast({
-        title: response.message,
-        description: response.details,
-        status: "error",
-      });
-    }
-
-    setIsJoiningRoom(false);
+    setIsJoining(false);
+    setIsJoinDialogOpen(false);
   };
 
   return (
-    <Modal autoFocus={false} size={{ base: "md", lg: "lg" }} {...props}>
-      <ModalOverlay backdropFilter="blur(6px)" />
-      <ModalContent
-        bg={modalBg}
-        borderWidth="1px"
-        borderColor={modalBorderColor}
-        borderRadius="2xl"
-        boxShadow="2xl"
-        backdropFilter="blur(24px)"
-        overflow="hidden"
-      >
-        <ModalHeader>{t("MultiplayerModal.header.title")}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <VStack spacing={5} align="stretch">
-            <Box
-              borderRadius="xl"
-              borderWidth="1px"
-              borderColor={modalBorderColor}
-              bg={panelBg}
-              px={4}
-              py={4}
-            >
-              {isChecking || hasTerracotta === null ? (
-                <HStack spacing={3}>
-                  <Spinner size="sm" color={`${primaryColor}.500`} />
-                  <Text fontSize="sm">
-                    {t("MultiplayerModal.status.checking")}
-                  </Text>
-                </HStack>
-              ) : (
-                <Text fontSize="lg" fontWeight="bold">
-                  {t(
-                    `MultiplayerModal.status.${hasTerracotta ? "ready" : "notReady"}`
-                  )}
-                </Text>
+    <>
+      <Modal autoFocus={false} size={{ base: "md", lg: "lg" }} {...props}>
+        <ModalOverlay backdropFilter="blur(6px)" />
+        <ModalContent
+          bg={modalBg}
+          borderWidth="1px"
+          borderColor={modalBorderColor}
+          borderRadius="2xl"
+          boxShadow="2xl"
+          backdropFilter="blur(24px)"
+          overflow="hidden"
+        >
+          <ModalHeader>{t("MultiplayerModal.header.title")}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={5} align="stretch">
+              {phase === "checking" && (
+                <Box
+                  borderRadius="xl"
+                  borderWidth="1px"
+                  borderColor={modalBorderColor}
+                  bg={panelBg}
+                  px={4}
+                  py={4}
+                >
+                  <HStack spacing={3}>
+                    <Spinner size="sm" color={`${primaryColor}.500`} />
+                    <Text fontSize="sm">
+                      {t("MultiplayerModal.status.checking")}
+                    </Text>
+                  </HStack>
+                </Box>
               )}
-            </Box>
 
-            {hasTerracotta ? (
-              <>
-                <FormControl>
-                  <FormLabel fontSize="sm" mb={2}>
-                    {t("MultiplayerModal.field.inviteCode.label")}
-                  </FormLabel>
-                  <Input
-                    value={inviteCode}
-                    onChange={(event) =>
-                      setInviteCode(
-                        event.target.value
-                          .replace(/\D/g, "")
-                          .slice(0, INVITE_CODE_LENGTH)
-                      )
-                    }
-                    placeholder={t(
-                      "MultiplayerModal.field.inviteCode.placeholder"
-                    )}
-                    inputMode="numeric"
-                    maxLength={INVITE_CODE_LENGTH}
-                    bg={panelBg}
-                    borderColor={modalBorderColor}
-                    _hover={{ borderColor: `${primaryColor}.300` }}
-                    _focusVisible={{
-                      borderColor: `${primaryColor}.400`,
-                      boxShadow: `0 0 0 1px var(--chakra-colors-${primaryColor}-400)`,
-                    }}
-                  />
-                  <FormHelperText>
-                    {t("MultiplayerModal.field.inviteCode.helper")}
-                  </FormHelperText>
-                </FormControl>
-
-                {generatedInviteCode && (
+              {phase === "notDownloaded" && (
+                <>
                   <Box
                     borderRadius="xl"
                     borderWidth="1px"
                     borderColor={modalBorderColor}
                     bg={panelBg}
                     px={4}
-                    py={3}
-                  >
-                    <HStack justify="space-between" spacing={3} align="center">
-                      <VStack spacing={1} align="start">
-                        <Text fontSize="xs" className="secondary-text">
-                          {t("MultiplayerModal.label.roomInviteCode")}
-                        </Text>
-                        <Text fontSize="md" fontWeight="bold">
-                          {generatedInviteCode}
-                        </Text>
-                      </VStack>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        leftIcon={<LuCopy />}
-                        onClick={handleCopyInviteCode}
-                      >
-                        {t("MultiplayerModal.button.copyInviteCode")}
-                      </Button>
-                    </HStack>
-                  </Box>
-                )}
-
-                <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={3}>
-                  <MultiplayerActionButton
-                    icon={LuHouse}
-                    imageSrc={TERRACOTTA_ICON_URL}
-                    title={t("MultiplayerModal.button.createRoom")}
-                    isLoading={isCreatingRoom}
-                    onClick={handleCreateRoom}
-                  />
-                  <MultiplayerActionButton
-                    icon={LuUsers}
-                    imageSrc={TERRACOTTA_ICON_URL}
-                    title={t("MultiplayerModal.button.joinRoom")}
-                    isDisabled={inviteCode.trim().length !== INVITE_CODE_LENGTH}
-                    isLoading={isJoiningRoom}
-                    onClick={handleJoinRoom}
-                  />
-                </Grid>
-              </>
-            ) : (
-              <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={3}>
-                <MultiplayerActionButton
-                  icon={LuDownload}
-                  imageSrc={TERRACOTTA_ICON_URL}
-                  title={t("MultiplayerModal.button.downloadCore")}
-                  isLoading={isDownloading}
-                  onClick={handleDownloadTerracotta}
-                />
-                <Menu placement="bottom-end">
-                  <MenuButton
-                    as={Button}
-                    w="100%"
-                    h="auto"
-                    minH="5.5rem"
-                    px={4}
                     py={4}
+                  >
+                    <Text fontSize="lg" fontWeight="bold">
+                      {t("MultiplayerModal.status.notReady")}
+                    </Text>
+                  </Box>
+                  <Grid
+                    templateColumns={{ base: "1fr", md: "1fr 1fr" }}
+                    gap={3}
+                  >
+                    <MultiplayerActionButton
+                      icon={LuDownload}
+                      imageSrc={TERRACOTTA_ICON_URL}
+                      title={t("MultiplayerModal.button.downloadCore")}
+                      isLoading={isDownloading}
+                      onClick={handleDownloadTerracotta}
+                    />
+                    <Menu placement="bottom-end">
+                      <MenuButton
+                        as={Button}
+                        w="100%"
+                        h="auto"
+                        minH="5.5rem"
+                        px={4}
+                        py={4}
+                        borderRadius="xl"
+                        borderWidth="1px"
+                        borderColor={optionBorderColor}
+                        bg={optionBg}
+                        color={optionTextColor}
+                        textAlign="left"
+                        whiteSpace="normal"
+                        backdropFilter="blur(16px)"
+                        boxShadow="sm"
+                        _hover={{
+                          bg: optionHoverBg,
+                          transform: "translateY(-1px)",
+                        }}
+                        _active={{ transform: "translateY(0)" }}
+                      >
+                        <HStack spacing={3} align="center" w="100%">
+                          <Box
+                            boxSize={9}
+                            borderRadius="lg"
+                            bg={optionIconBg}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            flexShrink={0}
+                          >
+                            <Image
+                              src={TERRACOTTA_ICON_URL}
+                              alt={t(
+                                "MultiplayerModal.button.thirdPartyChannels"
+                              )}
+                              boxSize={6}
+                              objectFit="contain"
+                              draggable={false}
+                            />
+                          </Box>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="semibold"
+                            lineHeight="short"
+                            flex="1"
+                          >
+                            {t("MultiplayerModal.button.thirdPartyChannels")}
+                          </Text>
+                        </HStack>
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem
+                          onClick={() =>
+                            openUrl("https://github.com/burningtnt/Terracotta")
+                          }
+                        >
+                          {t("MultiplayerModal.menu.githubReleasePage")}
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  </Grid>
+                </>
+              )}
+
+              {phase === "ready" && (
+                <>
+                  <Box
                     borderRadius="xl"
                     borderWidth="1px"
-                    borderColor={optionBorderColor}
-                    bg={optionBg}
-                    color={optionTextColor}
-                    textAlign="left"
-                    whiteSpace="normal"
-                    backdropFilter="blur(16px)"
-                    boxShadow="sm"
-                    _hover={{
-                      bg: optionHoverBg,
-                      transform: "translateY(-1px)",
-                    }}
-                    _active={{ transform: "translateY(0)" }}
+                    borderColor={modalBorderColor}
+                    bg={panelBg}
+                    px={4}
+                    py={4}
                   >
-                    <HStack spacing={3} align="center" w="100%">
-                      <Box
-                        boxSize={9}
-                        borderRadius="lg"
-                        bg={optionIconBg}
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        flexShrink={0}
-                      >
-                        <Image
-                          src={TERRACOTTA_ICON_URL}
-                          alt={t("MultiplayerModal.button.thirdPartyChannels")}
-                          boxSize={6}
-                          objectFit="contain"
-                          draggable={false}
-                        />
-                      </Box>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="semibold"
-                        lineHeight="short"
-                        flex="1"
-                      >
-                        {t("MultiplayerModal.button.thirdPartyChannels")}
+                    <Text fontSize="lg" fontWeight="bold">
+                      {t("MultiplayerModal.status.ready")}
+                    </Text>
+                  </Box>
+                  <Grid
+                    templateColumns={{ base: "1fr", md: "1fr 1fr" }}
+                    gap={3}
+                  >
+                    <MultiplayerActionButton
+                      icon={LuHouse}
+                      imageSrc={TERRACOTTA_ICON_URL}
+                      title={t("MultiplayerModal.button.createRoom")}
+                      onClick={handleCreateRoom}
+                    />
+                    <MultiplayerActionButton
+                      icon={LuUsers}
+                      imageSrc={TERRACOTTA_ICON_URL}
+                      title={t("MultiplayerModal.button.joinRoom")}
+                      onClick={() => {
+                        setJoinCode("");
+                        setIsJoinDialogOpen(true);
+                      }}
+                    />
+                  </Grid>
+                </>
+              )}
+
+              {phase === "scanning" && (
+                <>
+                  <Box
+                    borderRadius="xl"
+                    borderWidth="1px"
+                    borderColor={modalBorderColor}
+                    bg={panelBg}
+                    px={4}
+                    py={4}
+                  >
+                    <HStack spacing={3}>
+                      <Spinner size="sm" color={`${primaryColor}.500`} />
+                      <Text fontSize="sm">
+                        {t("MultiplayerModal.runtimeState.host-scanning")}
                       </Text>
                     </HStack>
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem
-                      onClick={() =>
-                        openUrl("https://github.com/burningtnt/Terracotta")
-                      }
+                  </Box>
+                  <Button variant="ghost" onClick={() => setPhase("ready")}>
+                    {t("General.exit")}
+                  </Button>
+                </>
+              )}
+
+              {phase === "roomStarted" && (
+                <>
+                  {generatedInviteCode && (
+                    <Box
+                      borderRadius="xl"
+                      borderWidth="1px"
+                      borderColor={modalBorderColor}
+                      bg={panelBg}
+                      px={4}
+                      py={3}
                     >
-                      {t("MultiplayerModal.menu.githubReleasePage")}
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </Grid>
-            )}
-          </VStack>
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="ghost" onClick={props.onClose}>
-            {t("General.close")}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+                      <HStack
+                        justify="space-between"
+                        spacing={3}
+                        align="center"
+                      >
+                        <VStack spacing={1} align="start">
+                          <Text fontSize="xs" className="secondary-text">
+                            {t("MultiplayerModal.label.roomInviteCode")}
+                          </Text>
+                          <Text fontSize="md" fontWeight="bold">
+                            {generatedInviteCode}
+                          </Text>
+                        </VStack>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          leftIcon={<LuCopy />}
+                          onClick={handleCopyInviteCode}
+                        >
+                          {t("MultiplayerModal.button.copyInviteCode")}
+                        </Button>
+                      </HStack>
+                    </Box>
+                  )}
+                  <Button variant="ghost" onClick={() => setPhase("ready")}>
+                    {t("General.exit")}
+                  </Button>
+                </>
+              )}
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" onClick={props.onClose}>
+              {t("General.close")}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <AlertDialog
+        isOpen={isJoinDialogOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsJoinDialogOpen(false)}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              {t("MultiplayerModal.button.joinRoom")}
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              <Input
+                value={joinCode}
+                onChange={(e) =>
+                  setJoinCode(
+                    e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, INVITE_CODE_LENGTH)
+                  )
+                }
+                placeholder={t("MultiplayerModal.field.inviteCode.placeholder")}
+                inputMode="numeric"
+                maxLength={INVITE_CODE_LENGTH}
+              />
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                variant="ghost"
+                onClick={() => setIsJoinDialogOpen(false)}
+              >
+                {t("General.cancel")}
+              </Button>
+              <Button
+                colorScheme={primaryColor}
+                ml={3}
+                isDisabled={joinCode.trim().length !== INVITE_CODE_LENGTH}
+                isLoading={isJoining}
+                onClick={handleJoinRoomConfirm}
+              >
+                {t("General.confirm")}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
   );
 };
 
