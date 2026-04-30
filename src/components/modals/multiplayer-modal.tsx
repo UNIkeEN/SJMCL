@@ -545,16 +545,8 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
             <AlertDialogBody>
               <Input
                 value={joinCode}
-                onChange={(e) =>
-                  setJoinCode(
-                    e.target.value
-                      .replace(/\D/g, "")
-                      .slice(0, INVITE_CODE_LENGTH)
-                  )
-                }
+                onChange={(e) => setJoinCode(e.target.value)}
                 placeholder={t("MultiplayerModal.field.inviteCode.placeholder")}
-                inputMode="numeric"
-                maxLength={INVITE_CODE_LENGTH}
               />
             </AlertDialogBody>
             <AlertDialogFooter>
@@ -568,7 +560,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
               <Button
                 colorScheme={primaryColor}
                 ml={3}
-                isDisabled={joinCode.trim().length !== INVITE_CODE_LENGTH}
+                isDisabled={joinCode.trim() === ""}
                 isLoading={isJoining}
                 onClick={handleJoinRoomConfirm}
               >

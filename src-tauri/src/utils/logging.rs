@@ -60,7 +60,7 @@ pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
   };
 
   // filter out noisy debug logs
-  const FILTERED_TARGETS_DEBUG: &[&str] = &["h2::", "hyper_util"];
+  const FILTERED_TARGETS_DEBUG: &[&str] = &["h2::", "hyper_util", "reqwest::connect"];
 
   let p = tauri_plugin_log::Builder::default()
     .clear_targets()
