@@ -2317,19 +2317,28 @@
     "multiplayer": {
       "checkTerracottaSupport": {
         "error": {
-          "title": "Failed to check multiplayer core"
+          "title": "Failed to check multiplayer core",
+          "description": {
+            "EXECUTABLE_NOT_FOUND": "Multiplayer core executable not found"
+          }
         },
         "success": "Multiplayer core check completed"
       },
       "downloadTerracotta": {
         "error": {
-          "title": "Failed to download multiplayer core"
+          "title": "Failed to download multiplayer core",
+          "description": {
+            "COMPRESSED_FILE_NOT_FOUND": "Multiplayer core archive not found"
+          }
         },
         "success": "Multiplayer core downloaded"
       },
       "fetchPort": {
         "error": {
-          "title": "Failed to get multiplayer core port"
+          "title": "Failed to get multiplayer core port",
+          "description": {
+            "PORT_FILE_NOT_FOUND": "Unable to detect multiplayer core port"
+          }
         },
         "success": "Multiplayer core port retrieved"
       },
@@ -2341,7 +2350,10 @@
       },
       "launchTerracotta": {
         "error": {
-          "title": "Failed to start multiplayer core"
+          "title": "Failed to start multiplayer core",
+          "description": {
+            "EXECUTABLE_NOT_FOUND": "Multiplayer core executable not found"
+          }
         },
         "success": "Multiplayer core started"
       },

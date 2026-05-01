@@ -2317,19 +2317,28 @@
     "multiplayer": {
       "checkTerracottaSupport": {
         "error": {
-          "title": "检查联机核心失败"
+          "title": "检查联机核心失败",
+          "description": {
+            "EXECUTABLE_NOT_FOUND": "联机核心可执行文件未找到"
+          }
         },
         "success": "联机核心检查完成"
       },
       "downloadTerracotta": {
         "error": {
-          "title": "下载联机核心失败"
+          "title": "下载联机核心失败",
+          "description": {
+            "COMPRESSED_FILE_NOT_FOUND": "联机核心压缩包未找到"
+          }
         },
         "success": "联机核心已下载"
       },
       "fetchPort": {
         "error": {
-          "title": "获取联机核心端口失败"
+          "title": "获取联机核心端口失败",
+          "description": {
+            "PORT_FILE_NOT_FOUND": "无法检测到联机核心端口"
+          }
         },
         "success": "联机核心端口已获取"
       },
@@ -2341,7 +2350,10 @@
       },
       "launchTerracotta": {
         "error": {
-          "title": "启动联机核心失败"
+          "title": "启动联机核心失败",
+          "description": {
+            "EXECUTABLE_NOT_FOUND": "联机核心可执行文件未找到"
+          }
         },
         "success": "联机核心已启动"
       },

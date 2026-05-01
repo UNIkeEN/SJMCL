@@ -43,7 +43,6 @@ import { copyText } from "@/utils/copy";
 
 const TERRACOTTA_ICON_URL =
   "https://zh.minecraft.wiki/images/Red_Glazed_Terracotta_JE1_BE1.png?272a2";
-const INVITE_CODE_LENGTH = 6;
 
 const ERROR_TYPE_TO_KEY: Record<number, string> = {
   0: "PING_HOST_FAIL",
@@ -161,13 +160,8 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const [joinCode, setJoinCode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
 
-  const phaseRef = useRef<Phase>("checking");
   const pollErrorCountRef = useRef(0);
   const cancelRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    phaseRef.current = phase;
-  }, [phase]);
 
   const panelBg = useColorModeValue(
     "rgba(255, 255, 255, 0.7)",
@@ -197,10 +191,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const optionTextColor = useColorModeValue("gray.800", "whiteAlpha.900");
 
   const handleInit = useCallback(async (): Promise<number> => {
-    console.log("[multiplayer] launching terracotta...");
-    await MultiplayerService.launchTerracotta().catch((err) =>
-      console.error("[multiplayer] launch failed:", err)
-    );
+    await MultiplayerService.launchTerracotta();
     for (let i = 0; i < 10; i++) {
       const response = await MultiplayerService.fetchPort();
       if (response.status === "success" && response.data) {
@@ -243,9 +234,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
               return;
             }
           }
-        } catch (e) {
-          console.error("[multiplayer] pre-fetch state error:", e);
-        }
+        } catch {}
       }
       setPhase("ready");
     } else {
@@ -273,7 +262,6 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
         if (response.ok) {
           pollErrorCountRef.current = 0;
           const data = await response.json();
-          console.log(`[multiplayer] state:`, data);
           if (data.state === "exception" && ERROR_TYPE_TO_KEY[data.type]) {
             setErrorType(data.type);
             setPhase("error");
@@ -289,8 +277,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
             setPhase("roomStarted");
           }
         }
-      } catch (e) {
-        console.error(`[multiplayer] poll error:`, e);
+      } catch {
         pollErrorCountRef.current++;
         if (pollErrorCountRef.current >= 3) {
           setPort(0);
@@ -304,9 +291,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const handleReturnToLobby = async () => {
     try {
       await fetch(`http://127.0.0.1:${port}/state/ide`, { method: "GET" });
-    } catch (e) {
-      console.error("[multiplayer] return to lobby error:", e);
-    }
+    } catch {}
     setErrorType(null);
     setPhase("ready");
   };
@@ -342,13 +327,14 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
   const handleCreateRoom = async () => {
     const url = `http://127.0.0.1:${port}/state/scanning?player=${encodeURIComponent(selectedPlayer?.name ?? "")}`;
-    console.log(`[multiplayer] create room: ${url}`);
     setPhase("scanning");
     try {
       await fetch(url, { method: "GET" });
-    } catch (e) {
-      console.error(`[multiplayer] create room error:`, e);
-      toast({ title: String(e), status: "error" });
+    } catch {
+      toast({
+        title: t("MultiplayerModal.toast.launchTimeout"),
+        status: "error",
+      });
       setPhase("ready");
     }
   };
@@ -372,12 +358,9 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const handleJoinRoomConfirm = async () => {
     setIsJoining(true);
     const url = `http://127.0.0.1:${port}/state/guesting?room=${encodeURIComponent(joinCode.trim())}&player=${encodeURIComponent(selectedPlayer?.name ?? "")}`;
-    console.log(`[multiplayer] join room: ${url}`);
     try {
       const response = await fetch(url, { method: "GET" });
-      if (response.ok) {
-        // room joined successfully; polling will transition to guestStarting/guestOk
-      } else {
+      if (!response.ok) {
         toast({
           title: t("MultiplayerModal.toast.joinTimeout"),
           status: "error",

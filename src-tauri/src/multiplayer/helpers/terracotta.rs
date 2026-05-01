@@ -1,5 +1,6 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
+use crate::multiplayer::models::MultiplayerError;
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::ResourceType;
 use crate::tasks::{download::DownloadParam, PTaskParam};
@@ -40,7 +41,6 @@ pub async fn build_download_param(app: &AppHandle) -> SJMCLResult<Vec<PTaskParam
           .path()
           .resolve("terracotta", BaseDirectory::AppData)?
           .join(filename);
-        // fs::create_dir_all(&path)?;
         log::debug!("{}, {}", url, path.to_str().unwrap());
         param.push(PTaskParam::Download(DownloadParam {
           src: url,
@@ -91,11 +91,5 @@ pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
       return Ok(());
     }
   }
-  Err(SJMCLError(
-    "No compressed file found in terracotta directory".into(),
-  ))
-}
-
-pub fn _install() {
-  unimplemented!()
+  Err(MultiplayerError::CompressedFileNotFound.into())
 }

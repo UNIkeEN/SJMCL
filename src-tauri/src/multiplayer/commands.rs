@@ -3,8 +3,9 @@ use std::time::Duration;
 use std::{ffi::OsStr, fs};
 
 use crate::{
-  error::{SJMCLError, SJMCLResult},
+  error::SJMCLResult,
   multiplayer::helpers::terracotta::{build_download_param, decompress},
+  multiplayer::models::MultiplayerError,
   resource::models::ResourceError,
   tasks::commands::schedule_progressive_task_group,
   tasks::monitor::TaskMonitor,
@@ -16,7 +17,6 @@ use tokio::process::Command;
 #[tauri::command]
 pub async fn check_terracotta(app: AppHandle) -> SJMCLResult<bool> {
   let dir = &app.path().resolve("terracotta", BaseDirectory::AppData)?;
-  println!("Checking if Terracotta is installed at: {:?}", dir);
   Ok(dir.exists() && fs::read_dir(dir)?.next().is_some())
 }
 
@@ -47,7 +47,7 @@ pub async fn launch_terracotta(app: AppHandle) -> SJMCLResult<()> {
       return Ok(());
     }
   }
-  Err(SJMCLError("terracotta executable not found".into()))
+  Err(MultiplayerError::ExecutableNotFound.into())
 }
 
 #[tauri::command]
@@ -84,5 +84,5 @@ pub async fn fetch_port(app: AppHandle) -> SJMCLResult<u16> {
       tokio::time::sleep(Duration::from_millis(500)).await;
     }
   }
-  Err(SJMCLError("terracotta port file not found".into()))
+  Err(MultiplayerError::PortFileNotFound.into())
 }
