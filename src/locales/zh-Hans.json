@@ -1541,6 +1541,7 @@
       "createRoom": "以房主身份开始游戏",
       "downloadCore": "下载联机核心",
       "joinRoom": "以房客身份加入游戏",
+      "reconnect": "重启陶瓦核心",
       "thirdPartyChannels": "第三方下载渠道"
     },
     "field": {
@@ -1570,15 +1571,34 @@
     },
     "status": {
       "checking": "正在检查联机核心",
+      "disconnected": "联机核心连接已断开",
       "notReady": "未下载联机核心",
       "ready": "联机核心已就绪"
     },
     "toast": {
-      "joinReady": "已准备好启动游戏并加入房间",
       "joinTimeout": "加入房间超时",
       "launchTimeout": "启动联机核心超时",
       "roomReady": "房间已创建，邀请码已生成",
       "scanTimeout": "创建房间超时"
+    },
+    "error": {
+      "description": {
+        "PING_HOST_FAIL": "加入房间失败：房间已关闭或网络不稳定",
+        "PING_HOST_RST": "房间连接丢失：房间已关闭或网络不稳定",
+        "GUEST_ET_CRASH": "加入房间失败：EasyTier 崩溃",
+        "HOST_ET_CRASH": "创建房间失败：EasyTier 崩溃",
+        "PING_SERVER_RST": "房间已关闭：你退出了游戏世界，房间自动关闭",
+        "SCAFFOLDING_INVALID_RESPONSE": "协议无效：房主发送了无效的响应数据"
+      },
+      "return": "返回"
+    },
+    "guest": {
+      "starting": "正在加入房间……",
+      "difficulty": "连接难度",
+      "joined": "房间内的玩家",
+      "stop": "停止",
+      "leave": "退出房间",
+      "closeRoom": "关闭房间"
     }
   },
   "NoSuitableJavaDialog": {

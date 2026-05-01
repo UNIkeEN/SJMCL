@@ -21,7 +21,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
@@ -46,12 +45,25 @@ const TERRACOTTA_ICON_URL =
   "https://zh.minecraft.wiki/images/Red_Glazed_Terracotta_JE1_BE1.png?272a2";
 const INVITE_CODE_LENGTH = 6;
 
+const ERROR_TYPE_TO_KEY: Record<number, string> = {
+  0: "PING_HOST_FAIL",
+  1: "PING_HOST_RST",
+  2: "GUEST_ET_CRASH",
+  3: "HOST_ET_CRASH",
+  4: "PING_SERVER_RST",
+  5: "SCAFFOLDING_INVALID_RESPONSE",
+};
+
 type Phase =
   | "checking"
   | "notDownloaded"
   | "ready"
   | "scanning"
-  | "roomStarted";
+  | "roomStarted"
+  | "guestStarting"
+  | "guestOk"
+  | "error"
+  | "disconnected";
 
 interface MultiplayerActionButtonProps extends ButtonProps {
   icon: IconType;
@@ -139,11 +151,18 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const [generatedInviteCode, setGeneratedInviteCode] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const [errorType, setErrorType] = useState<number | null>(null);
+  const [difficulty, setDifficulty] = useState("");
+  const [profiles, setProfiles] = useState<{ kind: string; name: string }[]>(
+    []
+  );
+
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
 
   const phaseRef = useRef<Phase>("checking");
+  const pollErrorCountRef = useRef(0);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -177,28 +196,57 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const optionIconBg = useColorModeValue("blackAlpha.100", "whiteAlpha.150");
   const optionTextColor = useColorModeValue("gray.800", "whiteAlpha.900");
 
-  const handleInit = useCallback(async () => {
+  const handleInit = useCallback(async (): Promise<number> => {
     console.log("[multiplayer] launching terracotta...");
     await MultiplayerService.launchTerracotta().catch((err) =>
       console.error("[multiplayer] launch failed:", err)
     );
-    const response = await MultiplayerService.fetchPort();
-    if (response.status === "success" && response.data) {
-      setPort(response.data);
-      console.log("[multiplayer] port:", response.data);
-    } else if (response.status === "error") {
-      toast({
-        title: response.message,
-        description: response.details,
-        status: "error",
-      });
+    for (let i = 0; i < 10; i++) {
+      const response = await MultiplayerService.fetchPort();
+      if (response.status === "success" && response.data) {
+        try {
+          const test = await fetch(`http://127.0.0.1:${response.data}/state`, {
+            signal: AbortSignal.timeout(2000),
+          });
+          if (test.ok) {
+            setPort(response.data);
+            return response.data;
+          }
+        } catch {}
+      }
+      await new Promise((r) => setTimeout(r, 1000));
     }
-  }, [toast]);
+    toast({
+      title: t("MultiplayerModal.toast.launchTimeout"),
+      status: "error",
+    });
+    return 0;
+  }, [toast, t]);
 
   const checkTerracottaSupport = useCallback(async () => {
     const response = await MultiplayerService.checkTerracotta();
     if (response.status === "success" && response.data) {
-      await handleInit();
+      const port = await handleInit();
+      if (port > 0) {
+        try {
+          const stateRes = await fetch(`http://127.0.0.1:${port}/state`);
+          if (stateRes.ok) {
+            const stateData = await stateRes.json();
+            if (stateData.room) {
+              setGeneratedInviteCode(stateData.room);
+              setProfiles(stateData.profiles ?? []);
+              setPhase("roomStarted");
+              return;
+            }
+            if (stateData.state === "host-scanning") {
+              setPhase("scanning");
+              return;
+            }
+          }
+        } catch (e) {
+          console.error("[multiplayer] pre-fetch state error:", e);
+        }
+      }
       setPhase("ready");
     } else {
       setPhase("notDownloaded");
@@ -211,6 +259,9 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
     setPort(0);
     setGeneratedInviteCode("");
     setJoinCode("");
+    setErrorType(null);
+    setDifficulty("");
+    setProfiles([]);
     checkTerracottaSupport();
   }, [checkTerracottaSupport, props.isOpen]);
 
@@ -220,21 +271,69 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
       try {
         const response = await fetch(`http://127.0.0.1:${port}/state`);
         if (response.ok) {
+          pollErrorCountRef.current = 0;
           const data = await response.json();
           console.log(`[multiplayer] state:`, data);
-          if (data.room) {
+          if (data.state === "exception" && ERROR_TYPE_TO_KEY[data.type]) {
+            setErrorType(data.type);
+            setPhase("error");
+          } else if (data.state === "guest-starting") {
+            setDifficulty(data.difficulty ?? "");
+            setPhase("guestStarting");
+          } else if (data.state === "guest-ok") {
+            setProfiles(data.profiles ?? []);
+            setPhase("guestOk");
+          } else if (data.room) {
             setGeneratedInviteCode(data.room);
-            if (phaseRef.current === "scanning") {
-              setPhase("roomStarted");
-            }
+            setProfiles(data.profiles ?? []);
+            setPhase("roomStarted");
           }
         }
       } catch (e) {
         console.error(`[multiplayer] poll error:`, e);
+        pollErrorCountRef.current++;
+        if (pollErrorCountRef.current >= 3) {
+          setPort(0);
+          setPhase("disconnected");
+        }
       }
     }, 500);
     return () => clearInterval(intervalId);
   }, [props.isOpen, port]);
+
+  const handleReturnToLobby = async () => {
+    try {
+      await fetch(`http://127.0.0.1:${port}/state/ide`, { method: "GET" });
+    } catch (e) {
+      console.error("[multiplayer] return to lobby error:", e);
+    }
+    setErrorType(null);
+    setPhase("ready");
+  };
+
+  const handleReconnect = async () => {
+    setPhase("checking");
+    const newPort = await handleInit();
+    if (newPort > 0) {
+      try {
+        const stateRes = await fetch(`http://127.0.0.1:${newPort}/state`);
+        if (stateRes.ok) {
+          const stateData = await stateRes.json();
+          if (stateData.room) {
+            setGeneratedInviteCode(stateData.room);
+            setProfiles(stateData.profiles ?? []);
+            setPhase("roomStarted");
+            return;
+          }
+          if (stateData.state === "host-scanning") {
+            setPhase("scanning");
+            return;
+          }
+        }
+      } catch {}
+      setPhase("ready");
+    }
+  };
 
   const handleCopyInviteCode = async () => {
     if (!generatedInviteCode) return;
@@ -242,7 +341,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   };
 
   const handleCreateRoom = async () => {
-    const url = `http://127.0.0.1:${port}/state/scanning?${selectedPlayer?.name}`;
+    const url = `http://127.0.0.1:${port}/state/scanning?player=${encodeURIComponent(selectedPlayer?.name ?? "")}`;
     console.log(`[multiplayer] create room: ${url}`);
     setPhase("scanning");
     try {
@@ -272,15 +371,12 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
   const handleJoinRoomConfirm = async () => {
     setIsJoining(true);
-    const url = `http://127.0.0.1:${port}/state/guesting?${joinCode.trim()}&${selectedPlayer?.name}`;
+    const url = `http://127.0.0.1:${port}/state/guesting?room=${encodeURIComponent(joinCode.trim())}&player=${encodeURIComponent(selectedPlayer?.name ?? "")}`;
     console.log(`[multiplayer] join room: ${url}`);
     try {
       const response = await fetch(url, { method: "GET" });
       if (response.ok) {
-        toast({
-          title: t("MultiplayerModal.toast.joinReady"),
-          status: "success",
-        });
+        // room joined successfully; polling will transition to guestStarting/guestOk
       } else {
         toast({
           title: t("MultiplayerModal.toast.joinTimeout"),
@@ -475,8 +571,8 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
                       </Text>
                     </HStack>
                   </Box>
-                  <Button variant="ghost" onClick={() => setPhase("ready")}>
-                    {t("General.exit")}
+                  <Button variant="ghost" onClick={handleReturnToLobby}>
+                    {t("MultiplayerModal.guest.stop")}
                   </Button>
                 </>
               )}
@@ -516,18 +612,163 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
                       </HStack>
                     </Box>
                   )}
-                  <Button variant="ghost" onClick={() => setPhase("ready")}>
-                    {t("General.exit")}
+
+                  {profiles.length > 0 && (
+                    <Box
+                      borderRadius="xl"
+                      borderWidth="1px"
+                      borderColor={modalBorderColor}
+                      bg={panelBg}
+                      px={4}
+                      py={4}
+                    >
+                      <VStack spacing={3} align="stretch">
+                        <Text fontSize="sm" fontWeight="bold">
+                          {t("MultiplayerModal.guest.joined")}
+                        </Text>
+                        {profiles.map((p, i) => (
+                          <Box
+                            key={i}
+                            borderRadius="md"
+                            borderWidth="1px"
+                            borderColor={optionBorderColor}
+                            bg={optionBg}
+                            px={3}
+                            py={2}
+                          >
+                            <Text fontSize="sm">
+                              <Text as="span" fontWeight="semibold">
+                                {p.name}
+                              </Text>
+                              <Text as="span" color="gray.500">
+                                {" "}
+                                ({p.kind})
+                              </Text>
+                            </Text>
+                          </Box>
+                        ))}
+                      </VStack>
+                    </Box>
+                  )}
+
+                  <Button variant="ghost" onClick={handleReturnToLobby}>
+                    {t("MultiplayerModal.guest.closeRoom")}
+                  </Button>
+                </>
+              )}
+
+              {phase === "error" && errorType !== null && (
+                <>
+                  <Box
+                    borderRadius="xl"
+                    borderWidth="1px"
+                    borderColor={modalBorderColor}
+                    bg={panelBg}
+                    px={4}
+                    py={4}
+                  >
+                    <Text fontSize="sm">
+                      {t(
+                        "MultiplayerModal.error.description." +
+                          ERROR_TYPE_TO_KEY[errorType]
+                      )}
+                    </Text>
+                  </Box>
+                  <Button variant="ghost" onClick={handleReturnToLobby}>
+                    {t("MultiplayerModal.error.return")}
+                  </Button>
+                </>
+              )}
+
+              {phase === "disconnected" && (
+                <>
+                  <Box
+                    borderRadius="xl"
+                    borderWidth="1px"
+                    borderColor={modalBorderColor}
+                    bg={panelBg}
+                    px={4}
+                    py={4}
+                  >
+                    <Text fontSize="sm">
+                      {t("MultiplayerModal.status.disconnected")}
+                    </Text>
+                  </Box>
+                  <Button variant="ghost" onClick={handleReconnect}>
+                    {t("MultiplayerModal.button.reconnect")}
+                  </Button>
+                </>
+              )}
+
+              {phase === "guestStarting" && (
+                <>
+                  <Box
+                    borderRadius="xl"
+                    borderWidth="1px"
+                    borderColor={modalBorderColor}
+                    bg={panelBg}
+                    px={4}
+                    py={4}
+                  >
+                    <VStack spacing={2} align="stretch">
+                      <Text fontSize="sm">
+                        {t("MultiplayerModal.guest.starting")}
+                      </Text>
+                      <Text fontSize="xs" className="secondary-text">
+                        {t("MultiplayerModal.guest.difficulty")}: {difficulty}
+                      </Text>
+                    </VStack>
+                  </Box>
+                  <Button variant="ghost" onClick={handleReturnToLobby}>
+                    {t("MultiplayerModal.guest.stop")}
+                  </Button>
+                </>
+              )}
+
+              {phase === "guestOk" && (
+                <>
+                  <Box
+                    borderRadius="xl"
+                    borderWidth="1px"
+                    borderColor={modalBorderColor}
+                    bg={panelBg}
+                    px={4}
+                    py={4}
+                  >
+                    <VStack spacing={3} align="stretch">
+                      <Text fontSize="sm" fontWeight="bold">
+                        {t("MultiplayerModal.guest.joined")}
+                      </Text>
+                      {profiles.map((p, i) => (
+                        <Box
+                          key={i}
+                          borderRadius="md"
+                          borderWidth="1px"
+                          borderColor={optionBorderColor}
+                          bg={optionBg}
+                          px={3}
+                          py={2}
+                        >
+                          <Text fontSize="sm">
+                            <Text as="span" fontWeight="semibold">
+                              {p.name}
+                            </Text>
+                            <Text as="span" color="gray.500">
+                              {" "}
+                              ({p.kind})
+                            </Text>
+                          </Text>
+                        </Box>
+                      ))}
+                    </VStack>
+                  </Box>
+                  <Button variant="ghost" onClick={handleReturnToLobby}>
+                    {t("MultiplayerModal.guest.leave")}
                   </Button>
                 </>
               )}
             </VStack>
           </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" onClick={props.onClose}>
-              {t("General.close")}
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
 

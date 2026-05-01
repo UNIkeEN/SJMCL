@@ -1,8 +1,9 @@
 use std::pin::Pin;
+use std::time::Duration;
 use std::{ffi::OsStr, fs};
 
 use crate::{
-  error::SJMCLResult,
+  error::{SJMCLError, SJMCLResult},
   multiplayer::helpers::terracotta::{build_download_param, decompress},
   resource::models::ResourceError,
   tasks::commands::schedule_progressive_task_group,
@@ -31,8 +32,6 @@ pub async fn launch_terracotta(app: AppHandle) -> SJMCLResult<()> {
       && path.extension()
         == if cfg!(target_os = "windows") {
           Some(OsStr::new("exe"))
-        } else if cfg!(target_os = "macos") {
-          None // TODO: 不知道安装后是什么
         } else {
           None
         }
@@ -48,7 +47,7 @@ pub async fn launch_terracotta(app: AppHandle) -> SJMCLResult<()> {
       return Ok(());
     }
   }
-  Ok(())
+  Err(SJMCLError("terracotta executable not found".into()))
 }
 
 #[tauri::command]
@@ -67,7 +66,6 @@ pub async fn download_terracotta(app: AppHandle) -> SJMCLResult<()> {
   log::info!("Terracotta downloaded, starting decompression...");
   decompress(&app).await?;
   log::info!("Terracotta decompressed successfully.");
-  // TODO: 如果是 macOS 还需要安装
   Ok(())
 }
 
@@ -76,14 +74,15 @@ pub async fn fetch_port(app: AppHandle) -> SJMCLResult<u16> {
   let path = &app
     .path()
     .resolve("sjmcl-terracotta", BaseDirectory::Temp)?;
-  loop {
+  for _ in 0..6 {
     if path.exists() {
-      let content = fs::read_to_string(path)?;
+      let content = tokio::fs::read_to_string(path).await?;
       let json: Value = serde_json::from_str(&content)?;
       if let Some(port) = json.get("port").and_then(|v| v.as_u64()) {
         return Ok(port as u16);
       }
-      tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+      tokio::time::sleep(Duration::from_millis(500)).await;
     }
   }
+  Err(SJMCLError("terracotta port file not found".into()))
 }

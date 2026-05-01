@@ -1541,6 +1541,7 @@
       "createRoom": "Start as Host",
       "downloadCore": "Download Core",
       "joinRoom": "Join as Guest",
+      "reconnect": "Restart Core",
       "thirdPartyChannels": "Third-Party Downloads"
     },
     "field": {
@@ -1570,15 +1571,34 @@
     },
     "status": {
       "checking": "Checking multiplayer core",
+      "disconnected": "Multiplayer core disconnected",
       "notReady": "Multiplayer core is not installed",
       "ready": "Multiplayer core is ready"
     },
     "toast": {
-      "joinReady": "Ready to launch and join the room",
       "joinTimeout": "Timed out while joining the room",
       "launchTimeout": "Timed out while starting multiplayer core",
       "roomReady": "Room created and invite code is ready",
       "scanTimeout": "Timed out while creating the room"
+    },
+    "error": {
+      "description": {
+        "PING_HOST_FAIL": "Failed to join room: Room is closed or network unstable",
+        "PING_HOST_RST": "Room connection lost: Room is closed or network unstable",
+        "GUEST_ET_CRASH": "Failed to join room: EasyTier crashed",
+        "HOST_ET_CRASH": "Failed to create room: EasyTier crashed",
+        "PING_SERVER_RST": "Room closed: You exited the game world, room closed automatically",
+        "SCAFFOLDING_INVALID_RESPONSE": "Invalid Protocol: Host has sent invalid response"
+      },
+      "return": "Return"
+    },
+    "guest": {
+      "starting": "Joining room...",
+      "difficulty": "Connection difficulty",
+      "joined": "Players in room",
+      "stop": "Stop",
+      "leave": "Leave Room",
+      "closeRoom": "Close Room"
     }
   },
   "NoSuitableJavaDialog": {

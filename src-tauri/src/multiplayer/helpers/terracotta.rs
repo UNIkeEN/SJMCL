@@ -5,6 +5,8 @@ use crate::resource::models::ResourceType;
 use crate::tasks::{download::DownloadParam, PTaskParam};
 use flate2::read::GzDecoder;
 use std::fs;
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 use std::sync::Mutex;
 use tar::Archive;
 use tauri::path::BaseDirectory;
@@ -71,6 +73,21 @@ pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
         e
       })?;
       fs::remove_file(path)?;
+
+      #[cfg(unix)]
+      {
+        for entry in fs::read_dir(&dir)? {
+          let entry = entry?;
+          let path = entry.path();
+          if path.is_file() {
+            let ext = path.extension().and_then(|s| s.to_str());
+            if ext != Some("gz") && ext != Some("pkg") {
+              fs::set_permissions(&path, PermissionsExt::from_mode(0o755))?;
+            }
+          }
+        }
+      }
+
       return Ok(());
     }
   }
@@ -80,5 +97,5 @@ pub async fn decompress(app: &AppHandle) -> SJMCLResult<()> {
 }
 
 pub fn _install() {
-  todo!()
+  unimplemented!()
 }
