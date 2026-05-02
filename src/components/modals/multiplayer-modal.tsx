@@ -163,6 +163,52 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
   const pollErrorCountRef = useRef(0);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
+  const StatusPanel: React.FC<{ children: React.ReactNode }> = ({
+    children,
+  }) => (
+    <Box
+      borderRadius="xl"
+      borderWidth="1px"
+      borderColor={modalBorderColor}
+      bg={panelBg}
+      px={4}
+      py={4}
+    >
+      {children}
+    </Box>
+  );
+
+  const ProfileList: React.FC<{
+    profiles: { kind: string; name: string }[];
+  }> = ({ profiles }) => (
+    <VStack spacing={3} align="stretch">
+      <Text fontSize="sm" fontWeight="bold">
+        {t("MultiplayerModal.guest.joined")}
+      </Text>
+      {profiles.map((p, i) => (
+        <Box
+          key={`${p.name}-${p.kind}`}
+          borderRadius="md"
+          borderWidth="1px"
+          borderColor={optionBorderColor}
+          bg={optionBg}
+          px={3}
+          py={2}
+        >
+          <Text fontSize="sm">
+            <Text as="span" fontWeight="semibold">
+              {p.name}
+            </Text>
+            <Text as="span" color="gray.500">
+              {" "}
+              ({p.kind})
+            </Text>
+          </Text>
+        </Box>
+      ))}
+    </VStack>
+  );
+
   const panelBg = useColorModeValue(
     "rgba(255, 255, 255, 0.7)",
     "rgba(255, 255, 255, 0.08)"
@@ -214,36 +260,47 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
     return 0;
   }, [toast, t]);
 
+  const restoreRoomState = useCallback(
+    async (port: number): Promise<boolean> => {
+      try {
+        const stateRes = await fetch(`http://127.0.0.1:${port}/state`);
+        if (stateRes.ok) {
+          const stateData = await stateRes.json();
+          if (stateData.room) {
+            setGeneratedInviteCode(stateData.room);
+            setProfiles(stateData.profiles ?? []);
+            setPhase("roomStarted");
+            return true;
+          }
+          if (stateData.state === "host-scanning") {
+            setPhase("scanning");
+            return true;
+          }
+        }
+      } catch {}
+      return false;
+    },
+    []
+  );
+
   const checkTerracottaSupport = useCallback(async () => {
     const response = await MultiplayerService.checkTerracotta();
     if (response.status === "success" && response.data) {
       const port = await handleInit();
       if (port > 0) {
-        try {
-          const stateRes = await fetch(`http://127.0.0.1:${port}/state`);
-          if (stateRes.ok) {
-            const stateData = await stateRes.json();
-            if (stateData.room) {
-              setGeneratedInviteCode(stateData.room);
-              setProfiles(stateData.profiles ?? []);
-              setPhase("roomStarted");
-              return;
-            }
-            if (stateData.state === "host-scanning") {
-              setPhase("scanning");
-              return;
-            }
-          }
-        } catch {}
+        const restored = await restoreRoomState(port);
+        if (!restored) {
+          setPhase("ready");
+        }
       }
-      setPhase("ready");
     } else {
       setPhase("notDownloaded");
     }
-  }, [handleInit]);
+  }, [handleInit, restoreRoomState]);
 
   useEffect(() => {
     if (!props.isOpen) return;
+    pollErrorCountRef.current = 0;
     setPhase("checking");
     setPort(0);
     setGeneratedInviteCode("");
@@ -300,23 +357,10 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
     setPhase("checking");
     const newPort = await handleInit();
     if (newPort > 0) {
-      try {
-        const stateRes = await fetch(`http://127.0.0.1:${newPort}/state`);
-        if (stateRes.ok) {
-          const stateData = await stateRes.json();
-          if (stateData.room) {
-            setGeneratedInviteCode(stateData.room);
-            setProfiles(stateData.profiles ?? []);
-            setPhase("roomStarted");
-            return;
-          }
-          if (stateData.state === "host-scanning") {
-            setPhase("scanning");
-            return;
-          }
-        }
-      } catch {}
-      setPhase("ready");
+      const restored = await restoreRoomState(newPort);
+      if (!restored) {
+        setPhase("ready");
+      }
     }
   };
 
@@ -391,37 +435,23 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
           <ModalBody>
             <VStack spacing={5} align="stretch">
               {phase === "checking" && (
-                <Box
-                  borderRadius="xl"
-                  borderWidth="1px"
-                  borderColor={modalBorderColor}
-                  bg={panelBg}
-                  px={4}
-                  py={4}
-                >
+                <StatusPanel>
                   <HStack spacing={3}>
                     <Spinner size="sm" color={`${primaryColor}.500`} />
                     <Text fontSize="sm">
                       {t("MultiplayerModal.status.checking")}
                     </Text>
                   </HStack>
-                </Box>
+                </StatusPanel>
               )}
 
               {phase === "notDownloaded" && (
                 <>
-                  <Box
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor={modalBorderColor}
-                    bg={panelBg}
-                    px={4}
-                    py={4}
-                  >
+                  <StatusPanel>
                     <Text fontSize="lg" fontWeight="bold">
                       {t("MultiplayerModal.status.notReady")}
                     </Text>
-                  </Box>
+                  </StatusPanel>
                   <Grid
                     templateColumns={{ base: "1fr", md: "1fr 1fr" }}
                     gap={3}
@@ -502,18 +532,11 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
               {phase === "ready" && (
                 <>
-                  <Box
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor={modalBorderColor}
-                    bg={panelBg}
-                    px={4}
-                    py={4}
-                  >
+                  <StatusPanel>
                     <Text fontSize="lg" fontWeight="bold">
                       {t("MultiplayerModal.status.ready")}
                     </Text>
-                  </Box>
+                  </StatusPanel>
                   <Grid
                     templateColumns={{ base: "1fr", md: "1fr 1fr" }}
                     gap={3}
@@ -539,21 +562,14 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
               {phase === "scanning" && (
                 <>
-                  <Box
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor={modalBorderColor}
-                    bg={panelBg}
-                    px={4}
-                    py={4}
-                  >
+                  <StatusPanel>
                     <HStack spacing={3}>
                       <Spinner size="sm" color={`${primaryColor}.500`} />
                       <Text fontSize="sm">
                         {t("MultiplayerModal.runtimeState.host-scanning")}
                       </Text>
                     </HStack>
-                  </Box>
+                  </StatusPanel>
                   <Button variant="ghost" onClick={handleReturnToLobby}>
                     {t("MultiplayerModal.guest.stop")}
                   </Button>
@@ -597,41 +613,9 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
                   )}
 
                   {profiles.length > 0 && (
-                    <Box
-                      borderRadius="xl"
-                      borderWidth="1px"
-                      borderColor={modalBorderColor}
-                      bg={panelBg}
-                      px={4}
-                      py={4}
-                    >
-                      <VStack spacing={3} align="stretch">
-                        <Text fontSize="sm" fontWeight="bold">
-                          {t("MultiplayerModal.guest.joined")}
-                        </Text>
-                        {profiles.map((p, i) => (
-                          <Box
-                            key={i}
-                            borderRadius="md"
-                            borderWidth="1px"
-                            borderColor={optionBorderColor}
-                            bg={optionBg}
-                            px={3}
-                            py={2}
-                          >
-                            <Text fontSize="sm">
-                              <Text as="span" fontWeight="semibold">
-                                {p.name}
-                              </Text>
-                              <Text as="span" color="gray.500">
-                                {" "}
-                                ({p.kind})
-                              </Text>
-                            </Text>
-                          </Box>
-                        ))}
-                      </VStack>
-                    </Box>
+                    <StatusPanel>
+                      <ProfileList profiles={profiles} />
+                    </StatusPanel>
                   )}
 
                   <Button variant="ghost" onClick={handleReturnToLobby}>
@@ -642,21 +626,14 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
               {phase === "error" && errorType !== null && (
                 <>
-                  <Box
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor={modalBorderColor}
-                    bg={panelBg}
-                    px={4}
-                    py={4}
-                  >
+                  <StatusPanel>
                     <Text fontSize="sm">
                       {t(
                         "MultiplayerModal.error.description." +
                           ERROR_TYPE_TO_KEY[errorType]
                       )}
                     </Text>
-                  </Box>
+                  </StatusPanel>
                   <Button variant="ghost" onClick={handleReturnToLobby}>
                     {t("MultiplayerModal.error.return")}
                   </Button>
@@ -665,18 +642,11 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
               {phase === "disconnected" && (
                 <>
-                  <Box
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor={modalBorderColor}
-                    bg={panelBg}
-                    px={4}
-                    py={4}
-                  >
+                  <StatusPanel>
                     <Text fontSize="sm">
                       {t("MultiplayerModal.status.disconnected")}
                     </Text>
-                  </Box>
+                  </StatusPanel>
                   <Button variant="ghost" onClick={handleReconnect}>
                     {t("MultiplayerModal.button.reconnect")}
                   </Button>
@@ -685,14 +655,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
               {phase === "guestStarting" && (
                 <>
-                  <Box
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor={modalBorderColor}
-                    bg={panelBg}
-                    px={4}
-                    py={4}
-                  >
+                  <StatusPanel>
                     <VStack spacing={2} align="stretch">
                       <Text fontSize="sm">
                         {t("MultiplayerModal.guest.starting")}
@@ -701,7 +664,7 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
                         {t("MultiplayerModal.guest.difficulty")}: {difficulty}
                       </Text>
                     </VStack>
-                  </Box>
+                  </StatusPanel>
                   <Button variant="ghost" onClick={handleReturnToLobby}>
                     {t("MultiplayerModal.guest.stop")}
                   </Button>
@@ -710,41 +673,9 @@ const MultiplayerModal: React.FC<Omit<ModalProps, "children">> = ({
 
               {phase === "guestOk" && (
                 <>
-                  <Box
-                    borderRadius="xl"
-                    borderWidth="1px"
-                    borderColor={modalBorderColor}
-                    bg={panelBg}
-                    px={4}
-                    py={4}
-                  >
-                    <VStack spacing={3} align="stretch">
-                      <Text fontSize="sm" fontWeight="bold">
-                        {t("MultiplayerModal.guest.joined")}
-                      </Text>
-                      {profiles.map((p, i) => (
-                        <Box
-                          key={i}
-                          borderRadius="md"
-                          borderWidth="1px"
-                          borderColor={optionBorderColor}
-                          bg={optionBg}
-                          px={3}
-                          py={2}
-                        >
-                          <Text fontSize="sm">
-                            <Text as="span" fontWeight="semibold">
-                              {p.name}
-                            </Text>
-                            <Text as="span" color="gray.500">
-                              {" "}
-                              ({p.kind})
-                            </Text>
-                          </Text>
-                        </Box>
-                      ))}
-                    </VStack>
-                  </Box>
+                  <StatusPanel>
+                    <ProfileList profiles={profiles} />
+                  </StatusPanel>
                   <Button variant="ghost" onClick={handleReturnToLobby}>
                     {t("MultiplayerModal.guest.leave")}
                   </Button>

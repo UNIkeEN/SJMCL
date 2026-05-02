@@ -24,8 +24,6 @@
 }
 
 .multiplayer-button {
-  height: 4.5rem !important;
-  width: 10.5rem !important;
   backdrop-filter: blur(12px);
   background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.28)) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -52,9 +50,13 @@
     2px 0 12px 3px rgba(59, 130, 246, 0.4);
 }
 
+.multiplayer-button,
 .selected-user-card {
   height: 4.5rem !important;
   width: 10.5rem !important;
+}
+
+.selected-user-card {
   backdrop-filter: blur(7px);
   padding: var(--chakra-space-3);
 }
