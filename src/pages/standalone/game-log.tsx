@@ -1,17 +1,17 @@
 import {
   Box,
   Button,
+  Text as ChakraText,
   Flex,
   IconButton,
   Input,
   Spacer,
-  Text,
   Tooltip,
 } from "@chakra-ui/react";
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
 import {
@@ -26,9 +26,15 @@ import Empty from "@/components/common/empty";
 import { useLauncherConfig } from "@/contexts/config";
 import { LaunchService } from "@/services/launch";
 import styles from "@/styles/game-log.module.css";
+import { clamp } from "@/utils/math";
 import { parseIdFromWindowLabel } from "@/utils/window";
 
 type LogLevel = "FATAL" | "ERROR" | "WARN" | "INFO" | "DEBUG";
+type LogSelectionRange = { start: number; end: number };
+type LogSelectionState = {
+  range: LogSelectionRange | null;
+  selecting: boolean;
+};
 
 const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -48,14 +54,59 @@ const GameLogPage: React.FC = () => {
 
   const launchingIdRef = useRef<number | null>(null);
   const listRef = useRef<List>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const userScrolledRef = useRef(false);
-
   const cacheRef = useRef(
     new CellMeasurerCache({
       fixedWidth: true,
       defaultHeight: 20,
     })
   );
+
+  const logSelectionStateRef = useRef<LogSelectionState>({
+    range: null,
+    selecting: false,
+  });
+
+  useEffect(() => {
+    (async () => {
+      await getCurrentWebviewWindow().setTitle(t("Tauri.windowTitle.gameLog"));
+    })();
+  }, [t]);
+
+  useEffect(() => {
+    (async () => {
+      launchingIdRef.current = parseIdFromWindowLabel(
+        getCurrentWebviewWindow().label
+      );
+      const launchingId = launchingIdRef.current;
+      if (!launchingId) return;
+
+      const res = await LaunchService.retrieveGameLog(launchingId);
+      if (res.status === "success" && Array.isArray(res.data)) {
+        setLogs(res.data);
+      }
+    })();
+  }, []);
+
+  // ------- Live log stream and auto scroll -------
+
+  useEffect(() => {
+    const unlisten = LaunchService.onGameProcessOutput((payload) => {
+      setLogs((prevLogs) => [...prevLogs, payload]);
+    });
+    return () => unlisten();
+  }, []);
+
+  useEffect(() => {
+    if (userScrolledRef.current) return;
+
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToRow(logs.length - 1);
+    });
+  }, [logs.length]);
+
+  // ------- Log level styling, parsing and filtering -------
 
   const logLevelMap: Record<
     LogLevel,
@@ -66,60 +117,6 @@ const GameLogPage: React.FC = () => {
     WARN: { colorScheme: "yellow", textColor: "yellow.500" },
     INFO: { colorScheme: "gray", textColor: "gray.600" },
     DEBUG: { colorScheme: "blue", textColor: "blue.600" },
-  };
-
-  const clearLogs = () => setLogs([]);
-
-  // set window title with i18n
-  useEffect(() => {
-    (async () => {
-      await getCurrentWebviewWindow().setTitle(t("Tauri.windowTitle.gameLog"));
-    })();
-  }, [t]);
-
-  // invoke retrieve on first load
-  useEffect(() => {
-    (async () => {
-      launchingIdRef.current = parseIdFromWindowLabel(
-        getCurrentWebviewWindow().label
-      );
-      const launchingId = launchingIdRef.current;
-      if (launchingId) {
-        const res = await LaunchService.retrieveGameLog(launchingId);
-        if (res.status === "success" && Array.isArray(res.data)) {
-          setLogs(res.data);
-        }
-      }
-    })();
-  }, []);
-
-  // keep listening to game process output
-  useEffect(() => {
-    const unlisten = LaunchService.onGameProcessOutput((payload) => {
-      setLogs((prevLogs) => [...prevLogs, payload]);
-    });
-    return () => unlisten();
-  }, []);
-
-  // scroll to bottom on new log if unclicked
-  useEffect(() => {
-    if (userScrolledRef.current) return;
-    requestAnimationFrame(() => {
-      listRef.current?.scrollToRow(logs.length - 1);
-    });
-  }, [logs.length]);
-
-  const revealRawLogFile = async () => {
-    if (!launchingIdRef.current) return;
-
-    const baseDir = await appLogDir();
-    const logFilePath = await join(
-      baseDir,
-      "game",
-      `game_log_${launchingIdRef.current}.log`
-    );
-
-    await revealItemInDir(logFilePath);
   };
 
   const logLevels = useMemo<LogLevel[]>(() => {
@@ -179,6 +176,138 @@ const GameLogPage: React.FC = () => {
       );
   }, [logs, logLevels, filterStates, searchTerm]);
 
+  // ------- Custom multi-row selection and copy handler (to fix issue#1462) -------
+
+  const resetLogSelection = () => {
+    logSelectionStateRef.current = {
+      range: null,
+      selecting: false,
+    };
+  };
+
+  const handleLogMouseDown = (
+    index: number,
+    event: MouseEvent<HTMLDivElement>
+  ) => {
+    if (event.button !== 0) return;
+
+    logSelectionStateRef.current = {
+      range: { start: index, end: index },
+      selecting: true,
+    };
+  };
+
+  const handleLogMouseEnter = (index: number) => {
+    const selectionState = logSelectionStateRef.current;
+    if (!selectionState.selecting || !selectionState.range) return;
+
+    selectionState.range.end = index;
+  };
+
+  const isTextInputTarget = (target: EventTarget | null) => {
+    return (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      (target instanceof HTMLElement && target.isContentEditable)
+    );
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      logSelectionStateRef.current.selecting = false;
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      if (
+        (config.basicInfo.osType === "macos" &&
+          (key !== "a" || !event.metaKey || event.ctrlKey || event.altKey)) ||
+        (config.basicInfo.osType !== "macos" &&
+          (key !== "a" || !event.ctrlKey || event.metaKey || event.altKey))
+      ) {
+        return;
+      }
+
+      const target = event.target;
+      if (isTextInputTarget(target)) return;
+      const targetNode = target instanceof Node ? target : null;
+
+      if (
+        !containerRef.current?.contains(targetNode) &&
+        targetNode !== document.body
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+    };
+
+    const handleCopy = (event: ClipboardEvent) => {
+      const selection = window.getSelection();
+      const { range } = logSelectionStateRef.current;
+      const selectedText = selection?.toString() ?? "";
+
+      if (!range || selectedText.length === 0 || range.start === range.end) {
+        return;
+      }
+
+      const start = clamp(
+        Math.min(range.start, range.end),
+        0,
+        filteredLogs.length - 1
+      );
+      const end = clamp(
+        Math.max(range.start, range.end),
+        0,
+        filteredLogs.length - 1
+      );
+
+      if (start > end) return;
+
+      const text = filteredLogs
+        .slice(start, end + 1)
+        .map(({ log }) => log)
+        .join("\n");
+      if (text.length === 0) return;
+
+      event.clipboardData?.setData("text/plain", text);
+      event.preventDefault();
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("copy", handleCopy);
+
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("copy", handleCopy);
+    };
+  }, [config.basicInfo.osType, filteredLogs]);
+
+  useEffect(() => {
+    resetLogSelection();
+    cacheRef.current.clearAll();
+    listRef.current?.recomputeRowHeights();
+  }, [filterStates, searchTerm]);
+
+  // --------------------------------------------------
+
+  const clearLogs = () => setLogs([]);
+
+  const revealRawLogFile = async () => {
+    if (!launchingIdRef.current) return;
+
+    const baseDir = await appLogDir();
+    const logFilePath = await join(
+      baseDir,
+      "game",
+      `game_log_${launchingIdRef.current}.log`
+    );
+
+    await revealItemInDir(logFilePath);
+  };
+
   const rowRenderer: ListRowRenderer = ({ key, index, style, parent }) => {
     const { log, level } = filteredLogs[index];
 
@@ -190,8 +319,13 @@ const GameLogPage: React.FC = () => {
         rowIndex={index}
         columnIndex={0}
       >
-        <div style={style}>
-          <Text
+        <div
+          data-log-index={index}
+          style={style}
+          onMouseDown={(event) => handleLogMouseDown(index, event)}
+          onMouseEnter={() => handleLogMouseEnter(index)}
+        >
+          <ChakraText
             className={styles["log-text"]}
             color={logLevelMap[level].textColor}
             fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
@@ -201,22 +335,22 @@ const GameLogPage: React.FC = () => {
             userSelect={"text"}
           >
             {log}
-          </Text>
+          </ChakraText>
         </div>
       </CellMeasurer>
     );
   };
 
-  // Reset list cache and recalculate row heights on filteredLogs update
-  useEffect(() => {
-    cacheRef.current.clearAll();
-    listRef.current?.recomputeRowHeights();
-  }, [filterStates, searchTerm]);
-
   const levels = Object.keys(logLevelMap) as LogLevel[];
 
   return (
-    <Box p={4} h="100vh" display="flex" flexDirection="column">
+    <Box
+      ref={containerRef}
+      p={4}
+      h="100vh"
+      display="flex"
+      flexDirection="column"
+    >
       <Flex alignItems="center" mb={4}>
         <Input
           type="text"
