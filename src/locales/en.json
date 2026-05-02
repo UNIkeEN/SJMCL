@@ -2475,6 +2475,14 @@
           }
         }
       },
+      "fetchOptiFineVersionList": {
+        "error": {
+          "title": "Failed to fetch OptiFine version list",
+          "description": {
+            "NETWORK_ERROR": "Failed to connect to the server"
+          }
+        }
+      },
       "fetchResourceListByName": {
         "error": {
           "title": "Failed to fetch resource list",

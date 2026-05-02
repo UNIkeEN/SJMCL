@@ -79,5 +79,5 @@ pub async fn get_forge_meta_by_game_version(
       }
     }
   }
-  Err(ResourceError::NoDownloadApi.into())
+  Err(ResourceError::NetworkError.into())
 }

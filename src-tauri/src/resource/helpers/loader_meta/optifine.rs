@@ -39,5 +39,5 @@ pub async fn get_optifine_meta_by_game_version(
       _ => continue,
     }
   }
-  Err(ResourceError::NoDownloadApi.into())
+  Err(ResourceError::NetworkError.into())
 }

@@ -2475,6 +2475,14 @@
           }
         }
       },
+      "fetchOptiFineVersionList": {
+        "error": {
+          "title": "获取 OptiFine 列表失败",
+          "description": {
+            "NETWORK_ERROR": "无法连接到服务器"
+          }
+        }
+      },
       "fetchResourceListByName": {
         "error": {
           "title": "获取资源列表失败",
