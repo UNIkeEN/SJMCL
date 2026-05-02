@@ -59,6 +59,9 @@ const ButtonWithPopover: React.FC<CustomButtonProps> = ({
 
   const [tooltipDisabled, setTooltipDisabled] = useState(false);
 
+  // To use Popover and Tooltip together, refer to: https://github.com/chakra-ui/chakra-ui/issues/2843
+  // However, when the Popover is closed, the Tooltip will wrongly show again.
+  // To prevent this, we temporarily disable the Tooltip using a timeout.
   const handleClose = () => {
     setTooltipDisabled(true);
     onClose();
@@ -70,10 +73,11 @@ const ButtonWithPopover: React.FC<CustomButtonProps> = ({
       isOpen={showAdd ? false : isOpen}
       onClose={handleClose}
       placement="top-end"
-      gutter={12}
+      gutter={12} // add more gutter to show clear space from the launch button's shadow
     >
       <Tooltip label={tooltip} placement="top-end" isDisabled={tooltipDisabled}>
         <Box lineHeight={0}>
+          {/* anchor for Tooltip */}
           <PopoverTrigger>
             <IconButton
               size="xs"
@@ -92,6 +96,7 @@ const ButtonWithPopover: React.FC<CustomButtonProps> = ({
         <PopoverContent maxH="3xs" overflow="auto">
           <PopoverBody p={0}>
             {cloneElement(popoverContent, {
+              // Delay close after selecting an item for better UX.
               onSelectCallback: () => setTimeout(handleClose, 100),
             })}
           </PopoverBody>
