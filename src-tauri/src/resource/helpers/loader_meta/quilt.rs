@@ -2,6 +2,7 @@ use crate::error::SJMCLResult;
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
+use semver::Version;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{AppHandle, Manager};
@@ -35,16 +36,34 @@ pub async fn get_quilt_meta_by_game_version(
     match client.get(url).send().await {
       Ok(response) => {
         if response.status().is_success() {
-          if let Ok(manifest) = response.json::<Vec<QuiltMetaItem>>().await {
+          // API response may not be in current order, sort by semver here.
+          if let Ok(mut manifest) = response.json::<Vec<QuiltMetaItem>>().await {
+            manifest.sort_by(|a, b| {
+              match (
+                Version::parse(&a.loader.version),
+                Version::parse(&b.loader.version),
+              ) {
+                (Ok(left), Ok(right)) => right.cmp(&left),
+                (Ok(_), Err(_)) => std::cmp::Ordering::Less,
+                (Err(_), Ok(_)) => std::cmp::Ordering::Greater,
+                (Err(_), Err(_)) => b.loader.version.cmp(&a.loader.version),
+              }
+            });
             return Ok(
               manifest
                 .into_iter()
-                .map(|info| ModLoaderResourceInfo {
-                  loader_type: ModLoaderType::Quilt,
-                  version: info.loader.version,
-                  description: String::new(),
-                  stable: true,
-                  branch: None,
+                .map(|info| {
+                  let version = info.loader.version;
+                  let stable = !version.contains("beta")
+                    && !version.contains("alpha")
+                    && !version.contains("rc");
+                  ModLoaderResourceInfo {
+                    loader_type: ModLoaderType::Quilt,
+                    version,
+                    description: String::new(),
+                    stable,
+                    branch: None,
+                  }
                 })
                 .collect(),
             );
