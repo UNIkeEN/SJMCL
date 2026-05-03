@@ -1,17 +1,25 @@
-import { Center, HStack, useDisclosure } from "@chakra-ui/react";
+import {
+  Center,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
+  Image,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuHaze } from "react-icons/lu";
+import { LuChevronRight, LuHaze } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import SelectableCard, {
-  SelectableCardProps,
-} from "@/components/common/selectable-card";
+import { WrapCardGroup } from "@/components/common/wrap-card";
 import { ChangeLoaderModal } from "@/components/modals/change-loader-modal";
 import { useFileDnD } from "@/components/special/file-dnd-overlay";
 import { useLauncherConfig } from "@/contexts/config";
@@ -149,21 +157,50 @@ const InstanceShaderPacksPage = () => {
     },
   ];
 
-  const selectableCardItems: SelectableCardProps[] = [
+  const shaderLoaderCardItems = [
     {
-      title: "OptiFine",
-      iconSrc: "/images/icons/OptiFine.png",
-      description:
-        summary?.optifine?.status === "Installed"
-          ? summary?.optifine?.version
-          : t("InstanceShaderPacksPage.shaderLoaderList.notInstalled"),
-      displayMode: "entry",
+      cardContent: (
+        <Flex justify="space-between" align="center">
+          <HStack spacing={2}>
+            <Image
+              src="/images/icons/OptiFine.png"
+              alt="OptiFine"
+              boxSize="28px"
+              borderRadius="4px"
+            />
+            <VStack spacing={0} alignItems="start">
+              <Text
+                fontSize="xs-sm"
+                fontWeight={
+                  summary?.optifine?.status === "Installed" ? "bold" : "normal"
+                }
+                color={
+                  summary?.optifine?.status === "Installed"
+                    ? `${config.appearance.theme.primaryColor}.600`
+                    : "inherit"
+                }
+              >
+                OptiFine
+              </Text>
+              <Text fontSize="xs" className="secondary-text">
+                {summary?.optifine?.status === "Installed"
+                  ? summary?.optifine?.version
+                  : t("InstanceShaderPacksPage.shaderLoaderList.notInstalled")}
+              </Text>
+            </VStack>
+          </HStack>
+          <HStack spacing={0}>
+            <IconButton
+              aria-label="select"
+              icon={<Icon as={LuChevronRight} boxSize={3.5} />}
+              variant="ghost"
+              size="xs"
+              onClick={onChangeLoaderModalOpen}
+            />
+          </HStack>
+        </Flex>
+      ),
       isSelected: summary?.optifine?.status === "Installed",
-      onSelect: () => {
-        onChangeLoaderModalOpen();
-      },
-      isDisabled: false,
-      isChevronShown: true,
     },
   ];
 
@@ -180,17 +217,7 @@ const InstanceShaderPacksPage = () => {
           );
         }}
       >
-        <HStack spacing={3.5} w="100%">
-          {selectableCardItems.map((item, index) => (
-            <SelectableCard
-              key={index}
-              {...item}
-              flex={1}
-              minH="max-content"
-              h="100%"
-            />
-          ))}
-        </HStack>
+        <WrapCardGroup items={shaderLoaderCardItems} />
       </Section>
       <Section
         title={t("InstanceShaderPacksPage.shaderPackList.title")}
