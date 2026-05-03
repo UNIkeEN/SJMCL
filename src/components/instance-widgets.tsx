@@ -229,7 +229,8 @@ export const InstanceScreenshotsWidget = () => {
           onClick={() => {
             router.push(
               {
-                pathname: `/instances/details/${encodeURIComponent(instanceId || "")}/screenshots`,
+                pathname: "/instances/details/[id]/screenshots",
+                query: { id: instanceId || "" },
               },
               undefined,
               { shallow: true }
@@ -314,9 +315,10 @@ export const InstanceModsWidget = () => {
           justifyContent="flex-start"
           colorScheme={primaryColor}
           onClick={() => {
-            router.push(
-              `/instances/details/${encodeURIComponent(instanceId || "")}/mods`
-            );
+            router.push({
+              pathname: "/instances/details/[id]/mods",
+              query: { id: instanceId || "" },
+            });
           }}
         >
           <HStack spacing={1.5}>
@@ -461,9 +463,10 @@ export const InstanceMoreWidget = () => {
               size="lg"
               colorScheme={primaryColor}
               onClick={() =>
-                router.push(
-                  `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
-                )
+                router.push({
+                  pathname: `/instances/details/[id]/${key}`,
+                  query: { id: instanceId || "" },
+                })
               }
             >
               <VStack spacing={1} align="center">
@@ -484,9 +487,10 @@ export const InstanceMoreWidget = () => {
                 size="lg"
                 colorScheme={primaryColor}
                 onClick={() =>
-                  router.push(
-                    `/instances/details/${encodeURIComponent(instanceId || "")}/${key}`
-                  )
+                  router.push({
+                    pathname: `/instances/details/[id]/${key}`,
+                    query: { id: instanceId || "" },
+                  })
                 }
                 aria-label={t(`InstanceDetailsLayout.instanceTabList.${key}`)}
               />

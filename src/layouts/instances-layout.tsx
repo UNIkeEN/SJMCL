@@ -58,7 +58,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
       ...(navBarType === "instance"
         ? instanceList.map((item) => ({
             // group by instance
-            value: `/instances/details/${encodeURIComponent(item.id)}`,
+            value: item.id,
             icon: <Icon as={item.starred ? FaStar : LuBox} />,
             label: item.name,
           }))
@@ -85,7 +85,7 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   const selectedKey = useMemo(() => {
     const parts = router.asPath.split("/");
     if (parts[2] === "details" && parts[3]) {
-      return `/instances/details/${parts[3]}`;
+      return decodeURIComponent(parts[3]);
     }
     return router.asPath;
   }, [router.asPath]);
@@ -99,17 +99,30 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
               <NavMenu
                 selectedKeys={[selectedKey]}
                 onClick={(value) => {
+                  const detailsRoute = {
+                    pathname: "/instances/details/[id]",
+                    query: { id: value },
+                  };
                   if (
                     isInstanceDetailsPage(router.asPath) &&
-                    isInstanceDetailsPage(value)
+                    typeof value === "string" &&
+                    !value.startsWith("/instances/")
                   ) {
-                    router.push(
-                      // across instances, not change subpath
-                      // `${value}/${router.asPath.split("/").slice(4).join("/")}`
-                      `${value}/${router.pathname.split("/")[4] ?? ""}`
-                    );
+                    // Across instances, keep the current detail tab (preserves the first child segment only, e.g. "settings", rather than a deeper nested path like "settings/advanced")
+                    router.push({
+                      pathname:
+                        router.pathname === "/instances/details/[id]"
+                          ? "/instances/details/[id]"
+                          : `/instances/details/[id]/${router.pathname.split("/")[4] ?? "overview"}`,
+                      query: { id: value },
+                    });
                   } else {
-                    router.push(value);
+                    router.push(
+                      typeof value === "string" &&
+                        value.startsWith("/instances/")
+                        ? value
+                        : detailsRoute
+                    );
                   }
                 }}
                 items={instanceItems.map((item) => ({

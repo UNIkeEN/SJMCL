@@ -172,13 +172,17 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
                 icon: instance.iconSrc,
                 title: instance.name,
                 description: generateInstanceDesc(instance),
-                url: `/instances/details/${encodeURIComponent(instance.id)}`,
+                action: () =>
+                  router.push({
+                    pathname: "/instances/details/[id]",
+                    query: { id: instance.id },
+                  }),
               }) as SearchResult
           ) || [];
 
       return [...routingHistoryMatches, ...playerMatches, ...instanceMatches];
     },
-    [getPlayerList, getInstanceList, history, t]
+    [getPlayerList, getInstanceList, history, router, t]
   );
 
   const handleResourceSearch = useCallback(

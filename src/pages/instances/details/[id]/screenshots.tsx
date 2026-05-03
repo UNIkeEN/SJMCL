@@ -71,8 +71,8 @@ const InstanceScreenshotsPage: React.FC = () => {
       const instanceId = Array.isArray(id) ? id[0] : id;
       router.replace(
         {
-          pathname: `/instances/details/${encodeURIComponent(instanceId)}/screenshots`,
-          query: {},
+          pathname: "/instances/details/[id]/screenshots",
+          query: { id: instanceId },
         },
         undefined,
         { shallow: true }

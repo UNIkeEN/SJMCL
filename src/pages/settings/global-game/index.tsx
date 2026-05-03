@@ -83,7 +83,9 @@ const GlobalGameSettingsPage = () => {
       config.localGameDirectories.filter((dir) => dir.dir !== selectedDir.dir)
     );
     getInstanceList(true); // refresh frontend state of instance list
-    removeHistory(`/instances/details/${selectedDir.name}:`);
+    removeHistory(
+      `/instances/details/${encodeURIComponent(`${selectedDir.name}:`)}`
+    );
     removeHistory(
       `/instances/list?dir=${encodeURIComponent(selectedDir.name)}`
     );

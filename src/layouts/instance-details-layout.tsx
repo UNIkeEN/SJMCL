@@ -60,6 +60,7 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     useSharedModals();
   const { id } = router.query;
   const instanceId = Array.isArray(id) ? id[0] : id;
+  const selectedTab = router.pathname.split("/")[4] || "overview";
 
   const { summary, handleUpdateInstanceConfig } = useInstanceSharedData();
   const { config, isZh } = useLauncherConfig();
@@ -220,14 +221,13 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     >
       <NavMenu
         flexWrap="wrap"
-        selectedKeys={[router.asPath]}
-        onClick={(value) => router.push(value)}
+        selectedKeys={[selectedTab]}
         direction="row"
         size="xs"
         mb={4}
         spacing={isZh ? "0.05rem" : 0.5}
         items={instanceTabList.map((item) => ({
-          value: `/instances/details/${encodeURIComponent(instanceId || "")}/${item.key}`,
+          value: item.key,
           label: (
             <HStack spacing={1.5}>
               <Icon as={item.icon} />
@@ -237,6 +237,12 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
             </HStack>
           ),
         }))}
+        onClick={(value) =>
+          router.push({
+            pathname: `/instances/details/[id]/${value}`,
+            query: { id: instanceId || "" },
+          })
+        }
       />
       <VStack
         overflow="auto"
