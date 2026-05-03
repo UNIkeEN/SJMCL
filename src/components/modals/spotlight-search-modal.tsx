@@ -19,11 +19,11 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import Fuse from "fuse.js";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuSearch } from "react-icons/lu";
-import stringSimilarity from "string-similarity";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -54,12 +54,15 @@ interface SearchResult {
   resourceType?: OtherResourceType;
 }
 
+const normalizeText = (value: string): string =>
+  value.normalize("NFKC").toLocaleLowerCase().trim();
+
 const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
 }) => {
   // constants for online resource search
-  const RESOURCES_PER_REQUEST = 3;
-  const MIN_RELEVANCE_SCORE = 0.45;
+  const RESOURCES_PER_REQUEST = 6;
+  const MAX_FUSE_SCORE = 0.4;
   const MAX_SEARCH_RESULTS = 3;
 
   const { t } = useTranslation();
@@ -241,10 +244,11 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
 
   const performNetworkSearch = useCallback(
     async (query: string, signal?: AbortSignal): Promise<SearchResult[]> => {
-      if (!query.trim()) return [];
+      const normalizedQuery = normalizeText(query);
+      if (normalizedQuery.length < 2) return [];
 
       // Priority resource types for network search - performs concurrent searches
-      // 4 resource types * 2 sources * 3 results per request = 24 results before filtering
+      // 4 resource types * 2 sources * 6 results per request = 48 results before filtering
       const priorityResourceTypes = [
         OtherResourceType.Mod,
         OtherResourceType.ModPack,
@@ -275,25 +279,34 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               return [];
             }
 
-            return response.data.list
-              .map((resource) => {
-                const relevanceScore = Math.max(
-                  stringSimilarity.compareTwoStrings(
-                    query.toLowerCase(),
-                    resource.name.toLowerCase()
-                  ),
-                  stringSimilarity.compareTwoStrings(
-                    query,
-                    resource.translatedName || ""
-                  )
-                );
+            const fuse = new Fuse(response.data.list, {
+              includeScore: true,
+              ignoreLocation: true,
+              minMatchCharLength: 2,
+              threshold: MAX_FUSE_SCORE,
+              keys: [
+                { name: "name", weight: 0.5 },
+                { name: "translatedName", weight: 0.5 },
+                { name: "tags", weight: 0.1 },
+              ],
+              getFn: (resource, path) => {
+                switch (Array.isArray(path) ? path[0] : path) {
+                  case "name":
+                    return normalizeText(resource.name);
+                  case "translatedName":
+                    return normalizeText(resource.translatedName || "");
+                  case "tags":
+                    return resource.tags.map((tag) => normalizeText(tag));
+                  default:
+                    return "";
+                }
+              },
+            });
 
-                return { resource, relevanceScore };
-              })
-              .filter(
-                ({ relevanceScore }) => relevanceScore > MIN_RELEVANCE_SCORE
-              )
-              .map(({ resource }) => convertResourceToSearchResult(resource));
+            return fuse
+              .search(normalizedQuery)
+              .filter(({ score }) => (score ?? 1) <= MAX_FUSE_SCORE)
+              .map(({ item }) => convertResourceToSearchResult(item));
           })
         );
 

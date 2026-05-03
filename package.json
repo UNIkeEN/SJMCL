@@ -44,6 +44,7 @@
     "@tauri-apps/plugin-os": "^2.3.0",
     "@tauri-apps/plugin-process": "^2.3.0",
     "@tauri-apps/plugin-window-state": "^2.3.0",
+    "fuse.js": "^7.3.0",
     "i18next": "^24.0.0",
     "lodash": "^4.18.1",
     "masonic": "^4.0.1",
@@ -57,8 +58,7 @@
     "react-spinners": "^0.14.1",
     "react-virtualized": "^9.22.6",
     "remark-gfm": "^4.0.1",
-    "skinview3d": "^3.1.0",
-    "string-similarity": "^4.0.4"
+    "skinview3d": "^3.1.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.2.4",
@@ -70,7 +70,6 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-virtualized": "^9.22.0",
-    "@types/string-similarity": "^4.0.2",
     "chalk": "^4.1.2",
     "eslint": "^9.39.4",
     "eslint-config-next": "16.2.4",
