@@ -55,14 +55,15 @@ interface SearchResult {
 }
 
 const normalizeText = (value: string): string =>
-  value.normalize("NFKC").toLocaleLowerCase().trim();
+  value.normalize("NFKC").toLowerCase().trim();
 
 const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
 }) => {
   // constants for online resource search
   const RESOURCES_PER_REQUEST = 6;
-  const MAX_FUSE_SCORE = 0.4;
+  const FUSE_THRESHOLD = 0.4;
+  const MAX_SEARCH_RESULT_SCORE = 0.4;
   const MAX_SEARCH_RESULTS = 3;
 
   const { t } = useTranslation();
@@ -283,7 +284,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
               includeScore: true,
               ignoreLocation: true,
               minMatchCharLength: 2,
-              threshold: MAX_FUSE_SCORE,
+              threshold: FUSE_THRESHOLD,
               keys: [
                 { name: "name", weight: 0.5 },
                 { name: "translatedName", weight: 0.5 },
@@ -296,7 +297,9 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
                   case "translatedName":
                     return normalizeText(resource.translatedName || "");
                   case "tags":
-                    return resource.tags.map((tag) => normalizeText(tag));
+                    return Array.isArray(resource.tags)
+                      ? resource.tags.map((tag) => normalizeText(tag))
+                      : [];
                   default:
                     return "";
                 }
@@ -305,7 +308,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
 
             return fuse
               .search(normalizedQuery)
-              .filter(({ score }) => (score ?? 1) <= MAX_FUSE_SCORE)
+              .filter(({ score }) => (score ?? 1) <= MAX_SEARCH_RESULT_SCORE)
               .map(({ item }) => convertResourceToSearchResult(item));
           })
         );
@@ -347,7 +350,8 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
       searchAbortControllerRef.current.abort();
     }
 
-    if (!queryText.trim()) {
+    const normalizedQuery = normalizeText(queryText);
+    if (!normalizedQuery || normalizedQuery.length < 2) {
       setNetworkSearchResults([]);
       setIsSearching(false);
       searchAbortControllerRef.current = null;
