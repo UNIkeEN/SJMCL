@@ -73,24 +73,26 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
         label: t("AllInstancesPage.title"),
         tooltip: "",
       },
-      ...installTasks
-        .filter(
-          (t) =>
-            t.status === GTaskEventStatusEnums.Started ||
-            t.status === GTaskEventStatusEnums.Stopped
-        )
-        .map((t) => {
-          const parsed = parseTaskGroup(t.taskGroup);
-          const name =
-            parsed.params.param || parsed.params.param1 || t.taskGroup;
-          return {
-            value: "/downloads",
-            icon: <Icon as={LuBox} />,
-            label: name,
-            tooltip: name,
-            rightElement: <InstanceDownloadIndicator task={t} />,
-          };
-        }),
+      ...(navBarType === "instance"
+        ? installTasks
+            .filter(
+              (t) =>
+                t.status === GTaskEventStatusEnums.Started ||
+                t.status === GTaskEventStatusEnums.Stopped
+            )
+            .map((t) => {
+              const parsed = parseTaskGroup(t.taskGroup);
+              const name =
+                parsed.params.param || parsed.params.param1 || t.taskGroup;
+              return {
+                value: "/downloads",
+                icon: <Icon as={LuBox} />,
+                label: name,
+                tooltip: name,
+                rightElement: <InstanceDownloadIndicator task={t} />,
+              };
+            })
+        : []),
       ...(navBarType === "instance"
         ? instanceList.map((item) => ({
             // group by instance
