@@ -26,11 +26,15 @@ import Empty from "@/components/common/empty";
 import { useLauncherConfig } from "@/contexts/config";
 import { LaunchService } from "@/services/launch";
 import styles from "@/styles/game-log.module.css";
-import { clamp } from "@/utils/math";
 import { parseIdFromWindowLabel } from "@/utils/window";
 
 type LogLevel = "FATAL" | "ERROR" | "WARN" | "INFO" | "DEBUG";
-type LogSelectionRange = { start: number; end: number };
+type LogSelectionRange = {
+  start: number;
+  startOffset: number;
+  end: number;
+  endOffset: number;
+};
 type LogSelectionState = {
   range: LogSelectionRange | null;
   selecting: boolean;
@@ -185,23 +189,41 @@ const GameLogPage: React.FC = () => {
     };
   };
 
+  const findLogIndex = (node: Node): number | null => {
+    let el: Element | null =
+      node.nodeType === 1 ? (node as Element) : node.parentElement;
+    while (el) {
+      const idx = el.getAttribute("data-log-index");
+      if (idx !== null) return parseInt(idx, 10);
+      el = el.parentElement;
+    }
+    return null;
+  };
+
   const handleLogMouseDown = (
     index: number,
     event: MouseEvent<HTMLDivElement>
   ) => {
     if (event.button !== 0) return;
 
+    logSelectionStateRef.current = { range: null, selecting: false };
+    window.getSelection()?.removeAllRanges();
+
+    const caretRange = document.caretRangeFromPoint(
+      event.clientX,
+      event.clientY
+    );
+    const offset = caretRange?.startOffset ?? 0;
+
     logSelectionStateRef.current = {
-      range: { start: index, end: index },
+      range: {
+        start: index,
+        startOffset: offset,
+        end: index,
+        endOffset: offset,
+      },
       selecting: true,
     };
-  };
-
-  const handleLogMouseEnter = (index: number) => {
-    const selectionState = logSelectionStateRef.current;
-    if (!selectionState.selecting || !selectionState.range) return;
-
-    selectionState.range.end = index;
   };
 
   const isTextInputTarget = (target: EventTarget | null) => {
@@ -214,7 +236,18 @@ const GameLogPage: React.FC = () => {
 
   useEffect(() => {
     const handleMouseUp = () => {
-      logSelectionStateRef.current.selecting = false;
+      const state = logSelectionStateRef.current;
+      state.selecting = false;
+      if (!state.range) return;
+
+      const sel = window.getSelection();
+      if (!sel || !sel.focusNode) return;
+
+      const focusIdx = findLogIndex(sel.focusNode);
+      if (focusIdx === null) return;
+
+      state.range.end = focusIdx;
+      state.range.endOffset = sel.focusOffset;
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -240,35 +273,45 @@ const GameLogPage: React.FC = () => {
       }
 
       event.preventDefault();
+
+      if (filteredLogs.length === 0) return;
+
+      const lastIdx = filteredLogs.length - 1;
+      const lastLog = filteredLogs[lastIdx].log;
+
+      logSelectionStateRef.current = {
+        range: {
+          start: 0,
+          startOffset: 0,
+          end: lastIdx,
+          endOffset: lastLog.length,
+        },
+        selecting: false,
+      };
     };
 
     const handleCopy = (event: ClipboardEvent) => {
-      const selection = window.getSelection();
       const { range } = logSelectionStateRef.current;
-      const selectedText = selection?.toString() ?? "";
+      if (!range) return;
 
-      if (!range || selectedText.length === 0 || range.start === range.end) {
-        return;
+      let { start, startOffset, end, endOffset } = range;
+      if (start > end) {
+        [start, end] = [end, start];
+        [startOffset, endOffset] = [endOffset, startOffset];
       }
 
-      const start = clamp(
-        Math.min(range.start, range.end),
-        0,
-        filteredLogs.length - 1
-      );
-      const end = clamp(
-        Math.max(range.start, range.end),
-        0,
-        filteredLogs.length - 1
-      );
+      const lines = filteredLogs.slice(start, end + 1).map(({ log }) => log);
+      if (lines.length === 0) return;
 
-      if (start > end) return;
+      if (lines.length === 1) {
+        lines[0] = lines[0].slice(startOffset, endOffset);
+      } else {
+        lines[0] = lines[0].slice(startOffset);
+        lines[lines.length - 1] = lines[lines.length - 1].slice(0, endOffset);
+      }
 
-      const text = filteredLogs
-        .slice(start, end + 1)
-        .map(({ log }) => log)
-        .join("\n");
-      if (text.length === 0) return;
+      const text = lines.join("\n");
+      if (!text) return;
 
       event.clipboardData?.setData("text/plain", text);
       event.preventDefault();
@@ -290,6 +333,123 @@ const GameLogPage: React.FC = () => {
     cacheRef.current.clearAll();
     listRef.current?.recomputeRowHeights();
   }, [filterStates, searchTerm]);
+
+  // ------- Continuous selection highlight restoration -------
+
+  useEffect(() => {
+    let rafId: number;
+
+    const loop = () => {
+      rafId = requestAnimationFrame(() => {
+        const { range, selecting } = logSelectionStateRef.current;
+        const sel = window.getSelection();
+
+        if (!range || !sel || selecting) {
+          loop();
+          return;
+        }
+
+        let { start, startOffset, end, endOffset } = range;
+        if (start > end) {
+          [start, end] = [end, start];
+          [startOffset, endOffset] = [endOffset, startOffset];
+        }
+
+        const startEl = containerRef.current?.querySelector(
+          `[data-log-index="${start}"]`
+        );
+        const endEl = containerRef.current?.querySelector(
+          `[data-log-index="${end}"]`
+        );
+        const startText = startEl?.firstElementChild?.firstChild ?? null;
+        const endText = endEl?.firstElementChild?.firstChild ?? null;
+
+        if (startText && endText) {
+          try {
+            const r = document.createRange();
+            r.setStart(
+              startText,
+              Math.min(startOffset, startText.textContent?.length ?? 0)
+            );
+            r.setEnd(
+              endText,
+              Math.min(endOffset, endText.textContent?.length ?? 0)
+            );
+            sel.removeAllRanges();
+            if (!r.collapsed) {
+              sel.addRange(r);
+            }
+          } catch {
+            /* silently ignore */
+          }
+        } else {
+          // boundary rows not all visible → scan visible rows
+          const visibleRows =
+            containerRef.current?.querySelectorAll("[data-log-index]");
+          let firstRow: Element | null = null;
+          let lastRow: Element | null = null;
+
+          if (visibleRows) {
+            for (const el of visibleRows) {
+              const idx = parseInt(el.getAttribute("data-log-index") ?? "", 10);
+              if (!isNaN(idx) && idx >= start && idx <= end) {
+                if (!firstRow) firstRow = el;
+                lastRow = el;
+              }
+            }
+          }
+
+          if (!firstRow || !lastRow) {
+            if (sel.rangeCount > 0) sel.removeAllRanges();
+          } else {
+            try {
+              const firstText = firstRow.firstElementChild?.firstChild ?? null;
+              const lastText = lastRow.firstElementChild?.firstChild ?? null;
+              if (!firstText || !lastText) {
+                if (sel.rangeCount > 0) sel.removeAllRanges();
+              } else {
+                const firstIdx = parseInt(
+                  firstRow.getAttribute("data-log-index") ?? "",
+                  10
+                );
+                const lastIdx = parseInt(
+                  lastRow.getAttribute("data-log-index") ?? "",
+                  10
+                );
+
+                const offStart = firstIdx === start ? startOffset : 0;
+                const offEnd =
+                  lastIdx === end
+                    ? endOffset
+                    : (lastText.textContent?.length ?? 0);
+
+                const r = document.createRange();
+                r.setStart(
+                  firstText,
+                  Math.min(offStart, firstText.textContent?.length ?? 0)
+                );
+                r.setEnd(
+                  lastText,
+                  Math.min(offEnd, lastText.textContent?.length ?? 0)
+                );
+                sel.removeAllRanges();
+                if (!r.collapsed) {
+                  sel.addRange(r);
+                }
+              }
+            } catch {
+              /* silently ignore */
+            }
+          }
+        }
+
+        loop();
+      });
+    };
+
+    loop();
+    return () => cancelAnimationFrame(rafId);
+  }, []);
 
   // --------------------------------------------------
 
@@ -323,7 +483,6 @@ const GameLogPage: React.FC = () => {
           data-log-index={index}
           style={style}
           onMouseDown={(event) => handleLogMouseDown(index, event)}
-          onMouseEnter={() => handleLogMouseEnter(index)}
         >
           <ChakraText
             className={styles["log-text"]}
