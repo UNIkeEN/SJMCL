@@ -109,41 +109,43 @@ pub async fn fetch_resource_list_by_name_curseforge(
 
   let mut search_result: OtherResourceSearchRes = results.into();
 
-  let lower_case_search_filter = handled_search_query.to_lowercase();
-  let mut search_filter_words = HashMap::new();
-  for token in tokenize_words(&lower_case_search_filter) {
-    *search_filter_words
-      .entry(token.to_string())
-      .or_insert(0usize) += 1;
-  }
+  if sort_by == "Popularity" && !handled_search_query.trim().is_empty() {
+    let lower_case_search_filter = handled_search_query.to_lowercase();
+    let mut search_filter_words = HashMap::new();
+    for token in tokenize_words(&lower_case_search_filter) {
+      *search_filter_words
+        .entry(token.to_string())
+        .or_insert(0usize) += 1;
+    }
 
-  let mut scored_results: Vec<(OtherResourceInfo, i64)> = search_result
-    .list
-    .into_iter()
-    .map(|resource| {
-      let title = resource
-        .translated_name
-        .as_deref()
-        .unwrap_or(resource.name.as_str());
-      let lower_case_result = title.to_lowercase();
+    let mut scored_results: Vec<(OtherResourceInfo, i64)> = search_result
+      .list
+      .into_iter()
+      .map(|resource| {
+        let title = resource
+          .translated_name
+          .as_deref()
+          .unwrap_or(resource.name.as_str());
+        let lower_case_result = title.to_lowercase();
 
-      let mut diff = levenshtein_distance(&lower_case_search_filter, &lower_case_result) as i64;
+        let mut diff = levenshtein_distance(&lower_case_search_filter, &lower_case_result) as i64;
 
-      for token in tokenize_words(&lower_case_result) {
-        if let Some(count) = search_filter_words.get(token) {
-          diff -= (WORD_PERFECT_MATCH_WEIGHT * *count * token.len()) as i64;
+        for token in tokenize_words(&lower_case_result) {
+          if let Some(count) = search_filter_words.get(token) {
+            diff -= (WORD_PERFECT_MATCH_WEIGHT * *count * token.len()) as i64;
+          }
         }
-      }
 
-      (resource, diff)
-    })
-    .collect();
+        (resource, diff)
+      })
+      .collect();
 
-  scored_results.sort_by_key(|(_, diff)| *diff);
-  search_result.list = scored_results
-    .into_iter()
-    .map(|(resource, _)| resource)
-    .collect();
+    scored_results.sort_by_key(|(_, diff)| *diff);
+    search_result.list = scored_results
+      .into_iter()
+      .map(|(resource, _)| resource)
+      .collect();
+  }
 
   for resource_info in &mut search_result.list {
     let _ = apply_other_resource_enhancements(app, resource_info).await;
