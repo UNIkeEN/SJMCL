@@ -129,7 +129,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
 ## 0.7.0
 
-`2025-01-08`
+`2026-01-08`
 
 - **🔥 支持在创建实例时下载与安装 Optifine 加载器。#1149 #1288** @xunying123 @Reqwey @UNIkeEN 
 - **🔥 支持 Linux Arm64 平台。#1249** @pangbo13 @Minecrafter-Pythoner
