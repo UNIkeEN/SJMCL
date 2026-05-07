@@ -6,7 +6,8 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 `2026-05-05`
 
-- **Introducing the first stable release of SJMCL. 🚀**
+**Introducing the first stable release of SJMCL. 🚀**
+
 - **🔥 UI Updates:**
    - **Redesigned window title bar and top navigation bar, delivering an elegant, dynamic, and cross-platform consistent visual experience. #1444 #1446 #1453 #1464 #1482** @UNIkeEN @no6rainer
    - **New built-in launcher background image with adaptive variations across different color modes.** @funkthesky-ops @UNIkeEN @Neuteria
