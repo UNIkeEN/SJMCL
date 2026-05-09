@@ -2784,7 +2784,11 @@
           "title": "Failed to retrieve modpack resource info",
           "description": {
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
-            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
+            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Failed to parse mod loader version information",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
           }
         }
       },

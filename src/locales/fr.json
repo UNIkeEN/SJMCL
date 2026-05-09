@@ -2784,7 +2784,11 @@
           "title": "Échec de la récupération des informations de ressources du pack de mods",
           "description": {
             "FILE_NOT_FOUND_ERROR": "Le fichier du pack de mods n'existe pas. Il a peut-être été renommé, déplacé ou supprimé",
-            "MODPACK_MANIFEST_PARSE_ERROR": "Erreur d'analyse du fichier de manifeste du pack de mods"
+            "MODPACK_MANIFEST_PARSE_ERROR": "Erreur d'analyse du fichier de manifeste du pack de mods",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Échec de l'analyse des informations de version du chargeur de mods",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
+            "PARSE_ERROR": "Format de données du serveur incorrect",
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
       },

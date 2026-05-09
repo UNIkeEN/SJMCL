@@ -2784,7 +2784,11 @@
           "title": "獲取改囊集資源資訊未成",
           "description": {
             "FILE_NOT_FOUND_ERROR": "改囊集案無，或已更名、徙或刪",
-            "MODPACK_MANIFEST_PARSE_ERROR": "改囊集清單案解析謬"
+            "MODPACK_MANIFEST_PARSE_ERROR": "改囊集清單案解析謬",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "模組載入器版資訊解析謬",
+            "NETWORK_ERROR": "不能連線到伺服器",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線"
           }
         }
       },

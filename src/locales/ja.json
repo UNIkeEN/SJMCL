@@ -2784,7 +2784,11 @@
           "title": "モッドパックリソース情報の取得に失敗",
           "description": {
             "FILE_NOT_FOUND_ERROR": "モッドパックファイルが存在しません。名前変更、移動、または削除された可能性があります",
-            "MODPACK_MANIFEST_PARSE_ERROR": "モッドパックマニフェストファイルの解析エラー"
+            "MODPACK_MANIFEST_PARSE_ERROR": "モッドパックマニフェストファイルの解析エラー",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "モッドローダーのバージョン情報の解析に失敗",
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NO_DOWNLOAD_API": "利用可能なダウンロード戦略がありません。ネットワーク接続を確認してください"
           }
         }
       },
