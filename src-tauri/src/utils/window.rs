@@ -1,6 +1,6 @@
 use crate::error::{SJMCLError, SJMCLResult};
+use tauri::utils::config::WindowConfig;
 use tauri::{AppHandle, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
-use tauri_utils::config::WindowConfig;
 use url::Url;
 
 /// Creates a new webview window using the configuration defined in `tauri.conf.json`

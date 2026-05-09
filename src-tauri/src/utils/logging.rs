@@ -45,15 +45,12 @@ pub fn get_launcher_log_path(app: AppHandle) -> PathBuf {
 pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
   let is_dev = cfg!(debug_assertions);
   let folder = get_launcher_logs_folder(&app);
-  let mut targetkinds = vec![
-    TargetKind::Webview,
-    TargetKind::Folder {
-      path: folder,
-      file_name: Some(LOG_FILENAME.clone()),
-    },
-  ];
+  let mut targetkinds = vec![TargetKind::Folder {
+    path: folder,
+    file_name: Some(LOG_FILENAME.clone()),
+  }];
   let level = if is_dev {
-    targetkinds.push(TargetKind::Stderr);
+    targetkinds.extend([TargetKind::Webview, TargetKind::Stderr]);
     log::LevelFilter::Debug
   } else {
     log::LevelFilter::Info
