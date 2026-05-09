@@ -50,7 +50,7 @@ rand = "0.9.3"
 regex = "1.11"
 reqwest-middleware = "0.4.2"
 reqwest-retry = "0.7.0"
-rmcp = { version = "0.15.0", features = ["server", "transport-streamable-http-server"] }
+rmcp = { version = "1.4.0", features = ["server", "transport-streamable-http-server"] }
 rsa = "0.9.10"
 sanitize-filename = "0.6.0"
 schemars = "1.0.4"
