@@ -68,6 +68,7 @@ pub async fn run() {
             tauri_plugin_window_state::StateFlags::POSITION
               | tauri_plugin_window_state::StateFlags::SIZE,
           )
+          .with_filter(|label| label == "main")
           .build(),
       );
 
