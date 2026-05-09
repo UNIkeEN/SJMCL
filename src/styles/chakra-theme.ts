@@ -58,6 +58,7 @@ const chakraExtendTheme = extendTheme({
       baseStyle: {
         container: {
           paddingY: 2,
+          alignItems: "center",
         },
         title: {
           fontSize: "sm",
@@ -65,6 +66,9 @@ const chakraExtendTheme = extendTheme({
         description: {
           fontSize: "xs-sm",
           lineHeight: 4,
+        },
+        icon: {
+          alignSelf: "center",
         },
       },
     },
