@@ -22,6 +22,9 @@ strip = true
 lto = true
 panic = "abort"
 
+[patch.crates-io]
+expat-sys = { git = "https://github.com/SJMC-dev/libexpat.git" }
+
 [dependencies]
 async-speed-limit = "0.4.2"
 async-trait = "0.1.89"

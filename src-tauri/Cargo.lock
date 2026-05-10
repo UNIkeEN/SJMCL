@@ -1632,8 +1632,7 @@ dependencies = [
 [[package]]
 name = "expat-sys"
 version = "2.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "658f19728920138342f68408b7cf7644d90d4784353d8ebc32e7e8663dbe45fa"
+source = "git+https://github.com/SJMC-dev/libexpat.git#24b7dca23a08467491a15e1055d491a8a7dce5ee"
 dependencies = [
  "cmake",
  "pkg-config",
