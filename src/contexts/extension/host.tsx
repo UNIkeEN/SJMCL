@@ -844,19 +844,18 @@ const ActiveExtensionHostContextProvider: React.FC<{
   }, []);
 
   // allow extensions to update their home widget title.
-  const setExtensionHomeWidgetTitle = useCallback(
-    (extension: ExtensionInfo, widgetId: string, title: string) => {
-      const identifier = `${extension.identifier}:${widgetId}`;
-
+  const updateHomeWidgetTitle = useCallback(
+    (extension: ExtensionInfo, title: string, key?: string) => {
       setHomeWidgetMap((prev) => {
         const widgets = prev[extension.identifier];
         if (!widgets) {
           return prev;
         }
 
-        const targetIndex = widgets.findIndex(
-          (widget) => widget.identifier === identifier
-        );
+        const targetIndex =
+          widgets.length === 1
+            ? 0
+            : widgets.findIndex((widget) => widget.key === key);
         if (targetIndex === -1 || widgets[targetIndex].title === title) {
           return prev;
         }
@@ -1017,8 +1016,8 @@ const ActiveExtensionHostContextProvider: React.FC<{
         hostActionRefs.current.openSharedModal(key, params),
       openCustomModal: (key, params) =>
         handleOpenCustomModalRef.current(extension, key, params),
-      setHomeWidgetTitle: (widgetId, title) =>
-        setExtensionHomeWidgetTitle(extension, widgetId, title),
+      setHomeWidgetTitle: (title, key) =>
+        updateHomeWidgetTitle(extension, title, key),
       request,
       requestText,
       invoke,
@@ -1064,7 +1063,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
       requestText,
       runExtensionFileCommand,
       scheduleExtensionUpdate,
-      setExtensionHomeWidgetTitle,
+      updateHomeWidgetTitle,
     ]
   );
 
