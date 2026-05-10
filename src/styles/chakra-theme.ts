@@ -58,7 +58,6 @@ const chakraExtendTheme = extendTheme({
       baseStyle: {
         container: {
           paddingY: 2,
-          alignItems: "center",
         },
         title: {
           fontSize: "sm",
