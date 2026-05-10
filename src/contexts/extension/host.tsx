@@ -843,6 +843,38 @@ const ActiveExtensionHostContextProvider: React.FC<{
     delete extensionStateListenerRef.current[identifier];
   }, []);
 
+  // allow extensions to update their home widget title.
+  const updateHomeWidgetTitle = useCallback(
+    (extension: ExtensionInfo, title: string, key?: string) => {
+      setHomeWidgetMap((prev) => {
+        const widgets = prev[extension.identifier];
+        if (!widgets) {
+          return prev;
+        }
+
+        const targetIndex =
+          widgets.length === 1
+            ? 0
+            : widgets.findIndex((widget) => widget.key === key);
+        if (targetIndex === -1 || widgets[targetIndex].title === title) {
+          return prev;
+        }
+
+        const nextWidgets = [...widgets];
+        nextWidgets[targetIndex] = {
+          ...nextWidgets[targetIndex],
+          title,
+        };
+
+        return {
+          ...prev,
+          [extension.identifier]: nextWidgets,
+        };
+      });
+    },
+    []
+  );
+
   // ------------- Extension-scoped state management -------------
   const getExtensionStateValue = useCallback(
     <T,>(identifier: string, key: string, initialValue: T): T => {
@@ -984,6 +1016,8 @@ const ActiveExtensionHostContextProvider: React.FC<{
         hostActionRefs.current.openSharedModal(key, params),
       openCustomModal: (key, params) =>
         handleOpenCustomModalRef.current(extension, key, params),
+      setHomeWidgetTitle: (title, key) =>
+        updateHomeWidgetTitle(extension, title, key),
       request,
       requestText,
       invoke,
@@ -1029,6 +1063,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
       requestText,
       runExtensionFileCommand,
       scheduleExtensionUpdate,
+      updateHomeWidgetTitle,
     ]
   );
 
