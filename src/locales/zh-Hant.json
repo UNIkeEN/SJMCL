@@ -2784,7 +2784,9 @@
           "title": "獲取模組包資源資訊失敗",
           "description": {
             "FILE_NOT_FOUND_ERROR": "模組包檔案不存在，可能已更名、移動或刪除",
-            "MODPACK_MANIFEST_PARSE_ERROR": "模組包清單檔案解析錯誤"
+            "MODPACK_MANIFEST_PARSE_ERROR": "模組包清單檔案解析錯誤",
+            "NETWORK_ERROR": "取得模組包所需的模組載入器資訊失敗，請檢查網路連線",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "無法辨識模組包所需的模組載入器版本"
           }
         }
       },

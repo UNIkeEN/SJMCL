@@ -2784,7 +2784,9 @@
           "title": "獲取改囊集資源資訊未成",
           "description": {
             "FILE_NOT_FOUND_ERROR": "改囊集案無，或已更名、徙或刪",
-            "MODPACK_MANIFEST_PARSE_ERROR": "改囊集清單案解析謬"
+            "MODPACK_MANIFEST_PARSE_ERROR": "改囊集清單案解析謬",
+            "NETWORK_ERROR": "取改囊集所需模組載入器資訊未成，請稽網路連線",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "不能識改囊集所需模組載入器之版本"
           }
         }
       },

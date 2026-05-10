@@ -2784,7 +2784,9 @@
           "title": "Failed to retrieve modpack resource info",
           "description": {
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
-            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
+            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error",
+            "NETWORK_ERROR": "Failed to fetch the mod loader info required by the modpack",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Unable to recognize the mod loader version required by this modpack"
           }
         }
       },

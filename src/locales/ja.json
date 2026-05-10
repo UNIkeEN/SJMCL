@@ -2784,7 +2784,9 @@
           "title": "モッドパックリソース情報の取得に失敗",
           "description": {
             "FILE_NOT_FOUND_ERROR": "モッドパックファイルが存在しません。名前変更、移動、または削除された可能性があります",
-            "MODPACK_MANIFEST_PARSE_ERROR": "モッドパックマニフェストファイルの解析エラー"
+            "MODPACK_MANIFEST_PARSE_ERROR": "モッドパックマニフェストファイルの解析エラー",
+            "NETWORK_ERROR": "モッドパックに必要な Mod ローダー情報の取得に失敗しました。ネットワーク接続を確認してください",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "このモッドパックに必要な Mod ローダーのバージョンを判別できません"
           }
         }
       },

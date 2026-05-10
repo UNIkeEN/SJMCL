@@ -2784,7 +2784,9 @@
           "title": "获取整合包资源信息失败",
           "description": {
             "FILE_NOT_FOUND_ERROR": "整合包文件不存在，可能已更名、移动或删除",
-            "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误"
+            "MODPACK_MANIFEST_PARSE_ERROR": "整合包清单文件解析错误",
+            "NETWORK_ERROR": "获取整合包所需的模组加载器信息失败，请检查网络连接",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "无法识别整合包所需的模组加载器版本"
           }
         }
       },
