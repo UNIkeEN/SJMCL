@@ -1,0 +1,57 @@
+name: Publish Snap Package
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+      arch:
+        description: "Target architecture (x86_64 or aarch64)"
+        required: true
+        type: string
+      channel:
+        description: "Snap Store channel"
+        required: false
+        type: string
+        default: "edge"
+    secrets:
+      SNAPCRAFT_STORE_CREDENTIALS:
+        description: "Login credentials for Snap Store"
+        required: true
+
+jobs:
+  publish_snap:
+    name: Publish Snap (${{ inputs.arch }})
+    runs-on: ${{ inputs.arch == 'aarch64' && 'ubuntu-22.04-arm' || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: SJMCL_${{ inputs.version }}_linux_${{ inputs.arch }}
+          path: artifacts
+
+      - name: Prepare Snap payload
+        run: |
+          mkdir -p snap-payload
+          dpkg -x artifacts/*.deb snap-payload/
+          chmod +x snap-payload/usr/bin/SJMCL
+
+      - name: Update Snapcraft version
+        run: |
+          sed -i "s/version: .*/version: '${{ inputs.version }}'/g" snapcraft.yaml
+
+      - name: Build Snap
+        id: build
+        uses: snapcore/action-build@v1
+
+      - name: Publish Snap
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: ${{ inputs.channel }}
