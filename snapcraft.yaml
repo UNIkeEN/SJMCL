@@ -28,4 +28,4 @@ parts:
     stage-packages:
       - libwebkit2gtk-4.1-0
       - libayatana-appindicator3-1
-      - libsoup3.0-0
+      - libsoup-3.0-0
