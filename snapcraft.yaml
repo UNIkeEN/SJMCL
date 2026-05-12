@@ -11,7 +11,7 @@ confinement: strict
 apps:
   sjmcl:
     command: usr/bin/SJMCL
-    desktop: usr/share/applications/sjmcl.desktop
+    desktop: usr/share/applications/SJMCL.desktop
     extensions: [gnome]
     plugs:
       - network
