@@ -13,7 +13,14 @@ apps:
     command: usr/bin/SJMCL
     desktop: usr/share/applications/SJMCL.desktop
     extensions: [gnome]
+    environment:
+      GTK_USE_PORTAL: "1"
     plugs:
+      - desktop
+      - desktop-legacy
+      - gsettings
+      - wayland
+      - x11
       - network
       - network-bind
       - opengl
@@ -28,4 +35,18 @@ parts:
     stage-packages:
       - libwebkit2gtk-4.1-0
       - libayatana-appindicator3-1
-      - libsoup-3.0-0
+      - libcanberra-gtk3-module
+
+  cleanup:
+    after:
+      - sjmcl-payload
+    plugin: nil
+    build-snaps:
+      - core22
+      - gnome-42-2204
+    override-prime: |
+      set -eux
+      for snap in "core22" "gnome-42-2204"; do
+        cd "/snap/$snap/current"
+        find . -type f,l -exec rm -f "$CRAFT_PRIME/{}" \;
+      done
