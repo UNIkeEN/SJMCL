@@ -45,8 +45,15 @@ static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(fa
 
 static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
+fn startup_trace(message: &str) {
+  eprintln!("[startup] {message}");
+  log::info!("[startup] {message}");
+}
+
 pub async fn run() {
+  startup_trace("run() entered");
   let exit_code = {
+    startup_trace("building tauri builder");
     let builder = tauri::Builder::default()
       .plugin(tauri_plugin_clipboard_manager::init())
       .plugin(tauri_plugin_deep_link::init())
@@ -75,6 +82,7 @@ pub async fn run() {
     #[cfg(target_os = "windows")]
     let builder = builder.plugin(tauri_plugin_decorum::init());
 
+    startup_trace("tauri builder configured; preparing setup hook");
     builder
       .invoke_handler(tauri::generate_handler![
         launcher_config::commands::retrieve_launcher_config,
@@ -192,32 +200,69 @@ pub async fn run() {
         utils::commands::write_file,
       ])
       .setup(|app| {
+        startup_trace("setup hook entered");
+
         // init APP_DATA_DIR
+        startup_trace("resolving app data directory");
+        let app_data_dir = app
+          .path()
+          .resolve("", BaseDirectory::AppData)
+          .map_err(|e| {
+            eprintln!("[startup] failed to resolve app data directory: {e}");
+            e
+          })?;
+        startup_trace(&format!(
+          "app data directory resolved: {}",
+          app_data_dir.display()
+        ));
         APP_DATA_DIR
-          .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
+          .set(app_data_dir)
           .expect("APP_DATA_DIR initialization failed");
+        startup_trace("APP_DATA_DIR initialized");
 
         // Set up logging
-        utils::logging::setup_with_app(app.handle().clone()).unwrap();
+        startup_trace("setting up logging");
+        utils::logging::setup_with_app(app.handle().clone()).map_err(|e| {
+          eprintln!("[startup] logging setup failed: {e}");
+          e
+        })?;
+        startup_trace("logging setup complete");
 
         // Set the launcher config and other states
         // Also extract assets in `setup_with_app()` if the application is portable
+        startup_trace("loading launcher config");
         let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
-        launcher_config.setup_with_app(app.handle()).unwrap();
-        launcher_config.save().unwrap();
+        startup_trace("configuring launcher config with app context");
+        launcher_config.setup_with_app(app.handle()).map_err(|e| {
+          eprintln!("[startup] launcher_config.setup_with_app failed: {e}");
+          e
+        })?;
+        startup_trace("saving launcher config");
+        launcher_config.save().map_err(|e| {
+          eprintln!("[startup] launcher_config.save failed: {e}");
+          e
+        })?;
+        startup_trace("launcher config ready");
         let version = launcher_config.basic_info.launcher_version.clone();
         let os = launcher_config.basic_info.platform.clone();
         let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
         let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
         let launcher_mcp_config = launcher_config.intelligence.mcp_server.launcher.clone();
         app.manage(Mutex::new(launcher_config));
+        startup_trace("launcher config state managed");
 
+        startup_trace("loading account info");
         let account_info = AccountInfo::load().unwrap_or_default();
         app.manage(Mutex::new(account_info.clone()));
 
         // Migrate account info to new format
         // TODO: will be removed after the new migration utils crate implemented
-        account_info.save().unwrap();
+        startup_trace("saving migrated account info");
+        account_info.save().map_err(|e| {
+          eprintln!("[startup] account_info.save failed: {e}");
+          e
+        })?;
+        startup_trace("account info ready");
 
         let instances: HashMap<String, Instance> = HashMap::new();
         app.manage(Mutex::new(instances));
@@ -303,8 +348,17 @@ pub async fn run() {
         #[cfg(not(target_os = "macos"))]
         {
           use tauri::menu::MenuBuilder;
-          let menu = MenuBuilder::new(app).build()?;
-          app.set_menu(menu)?;
+          startup_trace("building application menu");
+          let menu = MenuBuilder::new(app).build().map_err(|e| {
+            eprintln!("[startup] MenuBuilder::build failed: {e}");
+            e
+          })?;
+          startup_trace("setting application menu");
+          app.set_menu(menu).map_err(|e| {
+            eprintln!("[startup] app.set_menu failed: {e}");
+            e
+          })?;
+          startup_trace("application menu configured");
         }
 
         // on Windows, setup overlay native caption buttons
@@ -322,19 +376,29 @@ pub async fn run() {
         #[cfg(any(target_os = "linux", target_os = "windows"))]
         {
           use tauri_plugin_deep_link::DeepLinkExt;
+          startup_trace("attempting runtime deep link registration");
           if let Err(e) = app.deep_link().register_all() {
+            eprintln!("[startup] runtime deep link registration failed: {e}");
             log::warn!("Failed to register deep links at runtime: {e}");
+          } else {
+            startup_trace("runtime deep link registration complete");
           }
         }
 
         // Start the launcher MCP server if enabled
         if launcher_mcp_config.enabled {
+          startup_trace("starting launcher MCP server");
           intelligence::mcp_server::launcher::run(app.handle().clone(), &launcher_mcp_config);
         }
 
+        startup_trace("setup hook completed");
         Ok(())
       })
       .build(tauri::generate_context!())
+      .map_err(|e| {
+        eprintln!("[startup] tauri build failed: {e}");
+        e
+      })
       .expect("error while building tauri application")
       .run_return(|_, event| {
         if let tauri::RunEvent::Exit = event {
