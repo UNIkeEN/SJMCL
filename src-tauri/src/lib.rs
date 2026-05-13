@@ -50,6 +50,10 @@ fn startup_trace(message: &str) {
   log::info!("[startup] {message}");
 }
 
+fn startup_error(message: &str) -> Box<dyn std::error::Error> {
+  message.to_string().into()
+}
+
 pub async fn run() {
   startup_trace("run() entered");
   let exit_code = {
@@ -209,7 +213,7 @@ pub async fn run() {
           .resolve("", BaseDirectory::AppData)
           .map_err(|e| {
             eprintln!("[startup] failed to resolve app data directory: {e}");
-            e
+            startup_error(&format!("failed to resolve app data directory: {e}"))
           })?;
         startup_trace(&format!(
           "app data directory resolved: {}",
@@ -224,7 +228,7 @@ pub async fn run() {
         startup_trace("setting up logging");
         utils::logging::setup_with_app(app.handle().clone()).map_err(|e| {
           eprintln!("[startup] logging setup failed: {e}");
-          e
+          startup_error(&format!("logging setup failed: {e}"))
         })?;
         startup_trace("logging setup complete");
 
@@ -235,12 +239,12 @@ pub async fn run() {
         startup_trace("configuring launcher config with app context");
         launcher_config.setup_with_app(app.handle()).map_err(|e| {
           eprintln!("[startup] launcher_config.setup_with_app failed: {e}");
-          e
+          startup_error(&format!("launcher_config.setup_with_app failed: {e}"))
         })?;
         startup_trace("saving launcher config");
         launcher_config.save().map_err(|e| {
           eprintln!("[startup] launcher_config.save failed: {e}");
-          e
+          startup_error(&format!("launcher_config.save failed: {e}"))
         })?;
         startup_trace("launcher config ready");
         let version = launcher_config.basic_info.launcher_version.clone();
@@ -260,7 +264,7 @@ pub async fn run() {
         startup_trace("saving migrated account info");
         account_info.save().map_err(|e| {
           eprintln!("[startup] account_info.save failed: {e}");
-          e
+          startup_error(&format!("account_info.save failed: {e}"))
         })?;
         startup_trace("account info ready");
 
@@ -351,12 +355,12 @@ pub async fn run() {
           startup_trace("building application menu");
           let menu = MenuBuilder::new(app).build().map_err(|e| {
             eprintln!("[startup] MenuBuilder::build failed: {e}");
-            e
+            startup_error(&format!("MenuBuilder::build failed: {e}"))
           })?;
           startup_trace("setting application menu");
           app.set_menu(menu).map_err(|e| {
             eprintln!("[startup] app.set_menu failed: {e}");
-            e
+            startup_error(&format!("app.set_menu failed: {e}"))
           })?;
           startup_trace("application menu configured");
         }
@@ -397,7 +401,7 @@ pub async fn run() {
       .build(tauri::generate_context!())
       .map_err(|e| {
         eprintln!("[startup] tauri build failed: {e}");
-        e
+        startup_error(&format!("tauri build failed: {e}"))
       })
       .expect("error while building tauri application")
       .run_return(|_, event| {
