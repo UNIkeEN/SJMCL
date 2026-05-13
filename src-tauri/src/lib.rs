@@ -47,11 +47,6 @@ static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 fn startup_trace(message: &str) {
   eprintln!("[startup] {message}");
-  log::info!("[startup] {message}");
-}
-
-fn startup_error(message: &str) -> Box<dyn std::error::Error> {
-  message.to_string().into()
 }
 
 pub async fn run() {
@@ -208,13 +203,7 @@ pub async fn run() {
 
         // init APP_DATA_DIR
         startup_trace("resolving app data directory");
-        let app_data_dir = app
-          .path()
-          .resolve("", BaseDirectory::AppData)
-          .map_err(|e| {
-            eprintln!("[startup] failed to resolve app data directory: {e}");
-            startup_error(&format!("failed to resolve app data directory: {e}"))
-          })?;
+        let app_data_dir = app.path().resolve("", BaseDirectory::AppData).unwrap();
         startup_trace(&format!(
           "app data directory resolved: {}",
           app_data_dir.display()
@@ -226,10 +215,7 @@ pub async fn run() {
 
         // Set up logging
         startup_trace("setting up logging");
-        utils::logging::setup_with_app(app.handle().clone()).map_err(|e| {
-          eprintln!("[startup] logging setup failed: {e}");
-          startup_error(&format!("logging setup failed: {e}"))
-        })?;
+        utils::logging::setup_with_app(app.handle().clone()).unwrap();
         startup_trace("logging setup complete");
 
         // Set the launcher config and other states
@@ -237,15 +223,9 @@ pub async fn run() {
         startup_trace("loading launcher config");
         let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
         startup_trace("configuring launcher config with app context");
-        launcher_config.setup_with_app(app.handle()).map_err(|e| {
-          eprintln!("[startup] launcher_config.setup_with_app failed: {e}");
-          startup_error(&format!("launcher_config.setup_with_app failed: {e}"))
-        })?;
+        launcher_config.setup_with_app(app.handle()).unwrap();
         startup_trace("saving launcher config");
-        launcher_config.save().map_err(|e| {
-          eprintln!("[startup] launcher_config.save failed: {e}");
-          startup_error(&format!("launcher_config.save failed: {e}"))
-        })?;
+        launcher_config.save().unwrap();
         startup_trace("launcher config ready");
         let version = launcher_config.basic_info.launcher_version.clone();
         let os = launcher_config.basic_info.platform.clone();
@@ -262,10 +242,7 @@ pub async fn run() {
         // Migrate account info to new format
         // TODO: will be removed after the new migration utils crate implemented
         startup_trace("saving migrated account info");
-        account_info.save().map_err(|e| {
-          eprintln!("[startup] account_info.save failed: {e}");
-          startup_error(&format!("account_info.save failed: {e}"))
-        })?;
+        account_info.save().unwrap();
         startup_trace("account info ready");
 
         let instances: HashMap<String, Instance> = HashMap::new();
@@ -353,15 +330,9 @@ pub async fn run() {
         {
           use tauri::menu::MenuBuilder;
           startup_trace("building application menu");
-          let menu = MenuBuilder::new(app).build().map_err(|e| {
-            eprintln!("[startup] MenuBuilder::build failed: {e}");
-            startup_error(&format!("MenuBuilder::build failed: {e}"))
-          })?;
+          let menu = MenuBuilder::new(app).build()?;
           startup_trace("setting application menu");
-          app.set_menu(menu).map_err(|e| {
-            eprintln!("[startup] app.set_menu failed: {e}");
-            startup_error(&format!("app.set_menu failed: {e}"))
-          })?;
+          app.set_menu(menu)?;
           startup_trace("application menu configured");
         }
 
@@ -382,8 +353,7 @@ pub async fn run() {
           use tauri_plugin_deep_link::DeepLinkExt;
           startup_trace("attempting runtime deep link registration");
           if let Err(e) = app.deep_link().register_all() {
-            eprintln!("[startup] runtime deep link registration failed: {e}");
-            log::warn!("Failed to register deep links at runtime: {e}");
+            eprintln!("[startup] runtime deep link registration failed: {e:?}");
           } else {
             startup_trace("runtime deep link registration complete");
           }
@@ -399,10 +369,6 @@ pub async fn run() {
         Ok(())
       })
       .build(tauri::generate_context!())
-      .map_err(|e| {
-        eprintln!("[startup] tauri build failed: {e}");
-        startup_error(&format!("tauri build failed: {e}"))
-      })
       .expect("error while building tauri application")
       .run_return(|_, event| {
         if let tauri::RunEvent::Exit = event {
