@@ -426,6 +426,12 @@ const ActiveExtensionHostContextProvider: React.FC<{
     openSharedModal,
   });
 
+  const extensionIdentifierList = useMemo(
+    () =>
+      new Set((extensionList || []).map((extension) => extension.identifier)),
+    [extensionList]
+  );
+
   const invoke = useCallback<ExtensionAbilityActions["invoke"]>(
     async <T,>(command: string, payload?: Record<string, unknown>) => {
       if (
@@ -632,10 +638,18 @@ const ActiveExtensionHostContextProvider: React.FC<{
     trigger: reloadExtensionTrigger,
     onCall: useCallback(
       (path: string | URL) => {
-        const identifier = new URL(path).searchParams.get("id") || "";
-        if (identifier) reloadExtension(identifier);
+        const identifier = new URL(path).searchParams.get("id");
+        if (
+          !identifier ||
+          !extensionList ||
+          !extensionIdentifierList.has(identifier)
+        ) {
+          return;
+        }
+
+        reloadExtension(identifier);
       },
-      [reloadExtension]
+      [extensionList, extensionIdentifierList, reloadExtension]
     ),
   });
 
