@@ -323,9 +323,7 @@ pub async fn run() {
         {
           use tauri_plugin_deep_link::DeepLinkExt;
           if let Err(e) = app.deep_link().register_all() {
-            eprintln!("[startup] runtime deep link registration failed: {e:?}");
-          } else {
-            startup_trace("runtime deep link registration complete");
+            log::warn!("Failed to register deep links: {e}");
           }
         }
 
