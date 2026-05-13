@@ -24,6 +24,7 @@ import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { type ExtensionSlotKey, ExtensionUISlotKey } from "@/enums/extension";
+import useDeepLink from "@/hooks/deep-link";
 import { useGetState } from "@/hooks/get-state";
 import {
   ExtensionAbilityActions,
@@ -612,11 +613,37 @@ const ActiveExtensionHostContextProvider: React.FC<{
     [getExtensionList, router, toast]
   );
 
+  // reload single extension
+  const reloadExtension = useCallback(
+    (identifier: string) =>
+      setExtensionRuntimeVersionMap((previous) => ({
+        ...previous,
+        [identifier]: (previous[identifier] || 0) + 1,
+      })),
+    []
+  );
+
+  const reloadExtensionTrigger = useMemo(
+    () => /^reload-extension\/?(?:\?.*)?$/,
+    []
+  );
+
+  useDeepLink({
+    trigger: reloadExtensionTrigger,
+    onCall: useCallback(
+      (path: string | URL) => {
+        const identifier = new URL(path).searchParams.get("id") || "";
+        if (identifier) reloadExtension(identifier);
+      },
+      [reloadExtension]
+    ),
+  });
+
   useEffect(() => {
     handleRetrieveExtensionList();
   }, [handleRetrieveExtensionList]);
 
-  // refresh trigger
+  // extension list refresh trigger
   useEffect(() => {
     const unlisten = ExtensionService.onExtensionRefresh(() => {
       handleRetrieveExtensionList();
@@ -1045,11 +1072,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
         );
       },
       logger,
-      reloadSelf: () =>
-        setExtensionRuntimeVersionMap((previous) => ({
-          ...previous,
-          [extension.identifier]: (previous[extension.identifier] || 0) + 1,
-        })),
+      reloadSelf: () => reloadExtension(extension.identifier),
       updateSelf: async (src: string, newVersion: string) =>
         await scheduleExtensionUpdate(extension, src, newVersion),
     }),
@@ -1064,6 +1087,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
       runExtensionFileCommand,
       scheduleExtensionUpdate,
       updateHomeWidgetTitle,
+      reloadExtension,
     ]
   );
 
