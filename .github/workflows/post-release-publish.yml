@@ -1,6 +1,11 @@
 name: Post Release Publish
 
 on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to publish from, for example v1.2.3"
+        required: true
   release:
     types:
       - published
@@ -9,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.release.id }}
+  group: ${{ github.workflow }}-${{ github.event.release.id || inputs.release_tag || github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -23,7 +28,7 @@ jobs:
         id: prepare
         shell: bash
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
