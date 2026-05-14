@@ -182,9 +182,71 @@ pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionP
   compare_versions_with_suffix(&version_a, &suffix_a, &version_b, &suffix_b).reverse()
 }
 
+pub(crate) fn levenshtein_distance(a: &str, b: &str) -> usize {
+  let b_chars: Vec<char> = b.chars().collect();
+  let mut prev: Vec<usize> = (0..=b_chars.len()).collect();
+
+  for (i, a_ch) in a.chars().enumerate() {
+    let mut current = Vec::with_capacity(b_chars.len() + 1);
+    current.push(i + 1);
+
+    for (j, b_ch) in b_chars.iter().enumerate() {
+      let cost = if a_ch == *b_ch { 0 } else { 1 };
+      let insertion = current[j] + 1;
+      let deletion = prev[j + 1] + 1;
+      let substitution = prev[j] + cost;
+      current.push(insertion.min(deletion).min(substitution));
+    }
+
+    prev = current;
+  }
+
+  *prev.last().unwrap_or(&0)
+}
+
+pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_query: &str) {
+  const CONTAIN_CHINESE_WEIGHT: i64 = 10;
+
+  if search_query.trim().is_empty() {
+    return;
+  }
+
+  let mut translated_results = Vec::new();
+  let mut untranslated_results = Vec::new();
+
+  for resource in list.drain(..) {
+    if resource
+      .translated_name
+      .as_deref()
+      .is_some_and(|name| name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')))
+    {
+      translated_results.push(resource);
+    } else {
+      untranslated_results.push(resource);
+    }
+  }
+
+  translated_results.sort_by_key(|resource| {
+    let translated_name = resource.translated_name.as_deref().unwrap_or_default();
+
+    let mut diff = levenshtein_distance(search_query, translated_name) as i64;
+    for ch in search_query.chars() {
+      if translated_name.contains(ch) {
+        diff -= CONTAIN_CHINESE_WEIGHT;
+      }
+    }
+
+    diff
+  });
+
+  list.extend(translated_results);
+  list.extend(untranslated_results);
+}
+
 pub async fn apply_other_resource_enhancements(
   app: &AppHandle,
   resource_info: &mut OtherResourceInfo,
+  include_description_translation: bool,
 ) -> SJMCLResult<()> {
   // Extract data from cache in a limited scope to avoid holding lock across await
   let (translated_name, mcmod_id) = {
@@ -210,17 +272,20 @@ pub async fn apply_other_resource_enhancements(
     resource_info.mcmod_id = id;
   }
 
-  // Get translated description
-  let translated_desc = match resource_info.source {
-    OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
-    OtherResourceSource::CurseForge => {
-      translate_description_curseforge(app, &resource_info.id).await?
-    }
-    _ => None,
-  };
+  if include_description_translation {
+    let translated_desc = match resource_info.source {
+      OtherResourceSource::Modrinth => {
+        translate_description_modrinth(app, &resource_info.id).await?
+      }
+      OtherResourceSource::CurseForge => {
+        translate_description_curseforge(app, &resource_info.id).await?
+      }
+      _ => None,
+    };
 
-  if let Some(desc) = translated_desc {
-    resource_info.translated_description = Some(desc);
+    if let Some(desc) = translated_desc {
+      resource_info.translated_description = Some(desc);
+    }
   }
 
   Ok(())

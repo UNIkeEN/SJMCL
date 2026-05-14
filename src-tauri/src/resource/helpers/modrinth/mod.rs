@@ -2,8 +2,10 @@ pub mod misc;
 
 use crate::error::SJMCLResult;
 use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::apply_other_resource_enhancements;
-use crate::resource::helpers::mod_db::handle_search_query;
+use crate::resource::helpers::misc::{
+  apply_other_resource_enhancements, sort_localized_search_results,
+};
+use crate::resource::helpers::mod_db::{handle_localized_search_query, HandledSearchQuery};
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
@@ -40,9 +42,12 @@ pub async fn fetch_resource_list_by_name_modrinth(
     page_size,
   } = query;
 
-  let handled_search_query = handle_search_query(app, search_query)
+  let handled_search_query = handle_localized_search_query(app, search_query)
     .await
-    .unwrap_or(search_query.clone()); // Handle Chinese query
+    .unwrap_or_else(|_| HandledSearchQuery {
+      query: search_query.clone(),
+      is_chinese: false,
+    });
 
   let mut facets = vec![vec![format!("project_type:{}", resource_type)]];
   if !game_version.is_empty() && game_version != ALL_FILTER {
@@ -53,14 +58,21 @@ pub async fn fetch_resource_list_by_name_modrinth(
   }
 
   let mut params = HashMap::new();
-  params.insert("query".to_string(), handled_search_query);
+  params.insert("query".to_string(), handled_search_query.query.clone());
   params.insert(
     "facets".to_string(),
     serde_json::to_string(&facets).unwrap_or_default(),
   );
   params.insert("offset".to_string(), (page * page_size).to_string());
   params.insert("limit".to_string(), page_size.to_string());
-  params.insert("index".to_string(), sort_by.to_string());
+  params.insert(
+    "index".to_string(),
+    if handled_search_query.is_chinese {
+      "relevance".to_string()
+    } else {
+      sort_by.to_string()
+    },
+  );
 
   let client = app.state::<reqwest::Client>();
   let results = make_modrinth_request::<ModrinthSearchRes, ()>(
@@ -72,7 +84,11 @@ pub async fn fetch_resource_list_by_name_modrinth(
 
   let mut search_result: OtherResourceSearchRes = results.into();
   for resource_info in &mut search_result.list {
-    let _ = apply_other_resource_enhancements(app, resource_info).await;
+    let _ = apply_other_resource_enhancements(app, resource_info, false).await;
+  }
+
+  if handled_search_query.is_chinese {
+    sort_localized_search_results(&mut search_result.list, search_query);
   }
 
   Ok(search_result)
@@ -182,7 +198,7 @@ pub async fn fetch_remote_resource_by_id_modrinth(
       .await?;
 
   let mut resource_info: OtherResourceInfo = results.into();
-  let _ = apply_other_resource_enhancements(app, &mut resource_info).await;
+  let _ = apply_other_resource_enhancements(app, &mut resource_info, true).await;
 
   Ok(resource_info)
 }

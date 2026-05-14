@@ -28,16 +28,11 @@ fn clean_keyword(word: &str) -> Option<String> {
   Some(cleaned)
 }
 
-fn extract_keywords_from_slug(slug: &str) -> Vec<String> {
-  let mut keywords = Vec::new();
-
-  for word in slug.replace(['-', '/', '_', ','], " ").split_whitespace() {
-    if let Some(cleaned) = clean_keyword(word) {
-      keywords.push(cleaned);
-    }
-  }
-
-  keywords
+fn extract_search_words(text: &str) -> Vec<String> {
+  text
+    .split(|c: char| !c.is_alphanumeric())
+    .filter_map(clean_keyword)
+    .collect()
 }
 
 fn calculate_similarity(source: &str, query: &str) -> f64 {
@@ -136,6 +131,11 @@ pub struct MCModRecord {
   pub name: String,
   pub subname: Option<String>,
   pub abbr: Option<String>,
+}
+
+pub struct HandledSearchQuery {
+  pub query: String,
+  pub is_chinese: bool,
 }
 
 impl MCModRecord {
@@ -365,133 +365,62 @@ pub async fn initialize_mod_db(app: &AppHandle) -> SJMCLResult<()> {
   Ok(())
 }
 
-pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<String> {
+pub async fn handle_localized_search_query(
+  app: &AppHandle,
+  query: &str,
+) -> SJMCLResult<HandledSearchQuery> {
   let query = query.split_whitespace().collect::<Vec<_>>().join(" ");
 
-  // Only process Chinese queries
   if !query.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
-    return Ok(query.to_string());
+    return Ok(HandledSearchQuery {
+      query,
+      is_chinese: false,
+    });
   }
 
   let state = app.state::<Mutex<ModDataBase>>();
   let search_results = match state.lock() {
-    Ok(cache) => cache.get_mods_by_chinese(&query, 5),
-    Err(_) => return Ok(query.to_string()),
+    Ok(cache) => cache.get_mods_by_chinese(&query, 3),
+    Err(_) => {
+      return Ok(HandledSearchQuery {
+        query,
+        is_chinese: true,
+      })
+    }
   };
 
   if search_results.is_empty() {
-    return Ok(query.to_string());
+    return Ok(HandledSearchQuery {
+      query,
+      is_chinese: true,
+    });
   }
 
-  // Short-circuit: if exists a very confident match, search by its name directly
-  let mut best_match: Option<(&MCModRecord, f64, bool)> = None;
-  for mod_record in &search_results {
-    if mod_record.subname.is_none()
-      && mod_record.curseforge_slug.is_none()
-      && mod_record.modrinth_slug.is_none()
-    {
-      continue;
-    }
-
-    let similarity = calculate_similarity(&mod_record.name, &query);
-    let absolute = mod_record.name.replace(" ", "") == query.replace(" ", "");
-
-    match best_match {
-      Some((_, best_sim, _)) if similarity <= best_sim => {}
-      _ => {
-        best_match = Some((mod_record, similarity, absolute));
-      }
-    }
-  }
-
-  if let Some((mod_record, similarity, absolute)) = best_match {
-    if absolute || similarity >= 0.9 {
-      if let Some(exact_name) = mod_record
-        .subname
-        .as_ref()
-        .or(mod_record.curseforge_slug.as_ref())
-        .or(mod_record.modrinth_slug.as_ref())
-      {
-        return Ok(exact_name.chars().take(24).collect());
-      }
-    }
-  }
-
-  // Count keyword frequency across all found mods
-  let mut keyword_count: HashMap<String, usize> = HashMap::new();
-  let total_mods = search_results.len();
-
-  for mod_record in &search_results {
-    let mut mod_keywords = HashSet::new();
-
-    if let Some(curseforge_slug) = &mod_record.curseforge_slug {
-      for keyword in extract_keywords_from_slug(curseforge_slug) {
-        mod_keywords.insert(keyword);
-      }
-    }
-
-    if let Some(modrinth_slug) = &mod_record.modrinth_slug {
-      for keyword in extract_keywords_from_slug(modrinth_slug) {
-        mod_keywords.insert(keyword);
-      }
-    }
-
-    for keyword in mod_keywords {
-      *keyword_count.entry(keyword).or_insert(0) += 1;
-    }
-  }
-
-  if keyword_count.is_empty() {
-    return Ok(query.to_string());
-  }
-
-  // Calculate keyword scores: frequency / total_mods * length_bonus
-  let mut keyword_scores: Vec<(String, f64)> = keyword_count
-    .iter()
-    .map(|(keyword, count)| {
-      let frequency_score = *count as f64 / total_mods as f64;
-      let length_bonus = (keyword.len() as f64 / 10.0).min(1.0) + 1.0; // Prefer longer keywords
-      let score = frequency_score * length_bonus;
-      (keyword.clone(), score)
-    })
-    .collect();
-
-  keyword_scores.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-
-  // Select keywords
-  let min_frequency_threshold = (total_mods as f64 * 0.4).max(1.0) as usize;
-  let min_frequency_ratio = min_frequency_threshold as f64 / total_mods as f64;
+  let mut english_words = HashSet::new();
   let mut final_keywords = Vec::new();
 
-  if let Some((primary_keyword, primary_score)) = keyword_scores.first().cloned() {
-    // Always keep the best one to anchor the query
-    final_keywords.push(primary_keyword.clone());
+  for mod_record in &search_results {
+    let english_name = mod_record
+      .subname
+      .as_deref()
+      .filter(|subname| !subname.trim().is_empty())
+      .or(mod_record.curseforge_slug.as_deref())
+      .or(mod_record.modrinth_slug.as_deref())
+      .unwrap_or(&mod_record.name);
 
-    // Look for a second keyword, but only if it is reliable enough
-    for (keyword, score) in keyword_scores.iter().skip(1) {
-      if final_keywords.len() >= 2 || primary_keyword.len() >= 16 {
-        break;
-      }
-
-      let freq_ratio = *keyword_count.get(keyword).unwrap_or(&0) as f64 / total_mods as f64;
-
-      if freq_ratio < min_frequency_ratio {
-        continue;
-      }
-
-      let score_ratio = *score / primary_score.max(1e-6);
-
-      if score_ratio >= 0.5 {
-        final_keywords.push(keyword.clone());
+    for word in extract_search_words(english_name) {
+      if english_words.insert(word.clone()) {
+        final_keywords.push(word);
       }
     }
   }
 
-  if final_keywords.is_empty() {
-    return Ok(query.to_string());
-  }
-
-  let result = final_keywords.join(" ");
-
-  Ok(result)
+  Ok(HandledSearchQuery {
+    query: if final_keywords.is_empty() {
+      query
+    } else {
+      final_keywords.join(" ")
+    },
+    is_chinese: true,
+  })
 }

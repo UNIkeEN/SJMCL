@@ -1,8 +1,10 @@
 pub mod misc;
 
 use crate::error::SJMCLResult;
-use crate::resource::helpers::misc::apply_other_resource_enhancements;
-use crate::resource::helpers::mod_db::handle_search_query;
+use crate::resource::helpers::misc::{
+  apply_other_resource_enhancements, levenshtein_distance, sort_localized_search_results,
+};
+use crate::resource::helpers::mod_db::{handle_localized_search_query, HandledSearchQuery};
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
@@ -24,34 +26,10 @@ use tauri_plugin_http::reqwest;
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";
-const WORD_PERFECT_MATCH_WEIGHT: usize = 10;
+const WORD_PERFECT_MATCH_WEIGHT: usize = 5;
 
 fn tokenize_words(text: &str) -> impl Iterator<Item = &str> {
-  text
-    .split(|c: char| !c.is_alphanumeric())
-    .filter(|token| !token.is_empty())
-}
-
-fn levenshtein_distance(a: &str, b: &str) -> usize {
-  let b_chars: Vec<char> = b.chars().collect();
-  let mut prev: Vec<usize> = (0..=b_chars.len()).collect();
-
-  for (i, a_ch) in a.chars().enumerate() {
-    let mut current = Vec::with_capacity(b_chars.len() + 1);
-    current.push(i + 1);
-
-    for (j, b_ch) in b_chars.iter().enumerate() {
-      let cost = if a_ch == *b_ch { 0 } else { 1 };
-      let insertion = current[j] + 1;
-      let deletion = prev[j + 1] + 1;
-      let substitution = prev[j] + cost;
-      current.push(insertion.min(deletion).min(substitution));
-    }
-
-    prev = current;
-  }
-
-  *prev.last().unwrap_or(&0)
+  text.split_whitespace()
 }
 
 pub async fn fetch_resource_list_by_name_curseforge(
@@ -70,12 +48,19 @@ pub async fn fetch_resource_list_by_name_curseforge(
     page_size,
   } = query;
 
-  let handled_search_query = handle_search_query(app, search_query)
+  let handled_search_query = handle_localized_search_query(app, search_query)
     .await
-    .unwrap_or(search_query.clone()); // Handle Chinese query
+    .unwrap_or_else(|_| HandledSearchQuery {
+      query: search_query.clone(),
+      is_chinese: false,
+    });
 
   let class_id = cvt_type_to_class_id(resource_type);
-  let sort_field = cvt_sort_by_to_id(sort_by);
+  let sort_field = if handled_search_query.is_chinese {
+    cvt_sort_by_to_id("Popularity")
+  } else {
+    cvt_sort_by_to_id(sort_by)
+  };
   let sort_order = match sort_field {
     4 => "asc",
     _ => "desc",
@@ -84,7 +69,10 @@ pub async fn fetch_resource_list_by_name_curseforge(
   let mut params = HashMap::new();
   params.insert("gameId".to_string(), MINECRAFT_GAME_ID.to_string());
   params.insert("classId".to_string(), class_id.to_string());
-  params.insert("searchFilter".to_string(), handled_search_query.clone());
+  params.insert(
+    "searchFilter".to_string(),
+    handled_search_query.query.clone(),
+  );
   if game_version != ALL_FILTER {
     params.insert("gameVersion".to_string(), game_version.to_string());
   }
@@ -109,8 +97,11 @@ pub async fn fetch_resource_list_by_name_curseforge(
 
   let mut search_result: OtherResourceSearchRes = results.into();
 
-  if sort_by == "Popularity" && !handled_search_query.trim().is_empty() {
-    let lower_case_search_filter = handled_search_query.to_lowercase();
+  if !handled_search_query.is_chinese
+    && sort_by == "Popularity"
+    && !handled_search_query.query.trim().is_empty()
+  {
+    let lower_case_search_filter = handled_search_query.query.to_lowercase();
     let mut search_filter_words = HashMap::new();
     for token in tokenize_words(&lower_case_search_filter) {
       *search_filter_words
@@ -148,7 +139,11 @@ pub async fn fetch_resource_list_by_name_curseforge(
   }
 
   for resource_info in &mut search_result.list {
-    let _ = apply_other_resource_enhancements(app, resource_info).await;
+    let _ = apply_other_resource_enhancements(app, resource_info, false).await;
+  }
+
+  if handled_search_query.is_chinese {
+    sort_localized_search_results(&mut search_result.list, search_query);
   }
 
   Ok(search_result)
@@ -277,7 +272,7 @@ pub async fn fetch_remote_resource_by_id_curseforge(
   .await?;
 
   let mut resource_info: OtherResourceInfo = results.data.into();
-  let _ = apply_other_resource_enhancements(app, &mut resource_info).await;
+  let _ = apply_other_resource_enhancements(app, &mut resource_info, true).await;
 
   Ok(resource_info)
 }
