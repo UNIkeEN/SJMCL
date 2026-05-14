@@ -14,7 +14,7 @@ use crate::launch::helpers::file_validator::{
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
-use crate::launch::helpers::misc::get_separator;
+use crate::launch::helpers::misc::{get_separator, parse_graphics_environment_variable};
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
 };
@@ -290,6 +290,9 @@ pub async fn launch_game(
     let _ = execute_command_line(&precall_cmd);
   }
 
+  let graphics_env_var =
+    parse_graphics_environment_variable(&game_config.advanced.jvm.environment_variable);
+
   // execute launch command
   #[cfg(target_os = "windows")]
   cmd_base.creation_flags(0x08000000);
@@ -297,6 +300,7 @@ pub async fn launch_game(
   let child = cmd_base
     .current_dir(&work_dir)
     .env("CLASSPATH", class_paths.join(get_separator()))
+    .envs(graphics_env_var)
     .args(cmd_args)
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())

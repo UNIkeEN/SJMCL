@@ -59,3 +59,31 @@ pub fn get_separator() -> &'static str {
     ":"
   }
 }
+
+pub fn parse_graphics_environment_variable(input: &str) -> HashMap<String, String> {
+  const GRAPHICS_ENV_NAMES: &[&str] = &[
+    "__GLX_VENDOR_LIBRARY_NAME",
+    "VK_ICD_FILENAMES",
+    "VK_DRIVER_FILES",
+    "GALLIUM_DRIVER",
+    "MESA_LOADER_DRIVER_OVERRIDE",
+    "LIBGL_ALWAYS_SOFTWARE",
+    "LIBGL_KOPPER_DRI2",
+  ];
+
+  shlex::split(input)
+    .unwrap_or_default()
+    .into_iter()
+    .find_map(|item| {
+      let (key, value) = item.split_once('=').unwrap_or((&item, ""));
+      let key = key.trim();
+
+      if GRAPHICS_ENV_NAMES.contains(&key) {
+        Some((key.to_string(), value.to_string()))
+      } else {
+        None
+      }
+    })
+    .into_iter()
+    .collect()
+}
