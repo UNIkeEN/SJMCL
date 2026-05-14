@@ -6,19 +6,20 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      deb_hash_x86_64:
-        description: "SHA512 hash of the .deb file for x86_64 architecture"
-        required: true
-      deb_hash_aarch64:
-        description: "SHA512 hash of the .deb file for aarch64 architecture"
-        required: true
       version:
         description: "Version to publish"
+        required: true
+      release_tag:
+        description: "Release tag to download assets from"
         required: true
   workflow_call:
     inputs:
       version:
         description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to download assets from"
         required: true
         type: string
     secrets:
@@ -29,9 +30,6 @@ on:
 jobs:
   publish_aur_package:
     name: Publish AUR package
-    outputs:
-      version: ${{ steps.gen_template.outputs.version }}
-
     runs-on: ubuntu-latest
 
     steps:
@@ -39,36 +37,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download linux x86 artifacts
-        if: ${{ inputs.deb_hash_x86_64 == '' }}
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "SJMCL_${{ inputs.version }}_linux_x86_64"
-          path: artifacts
-          merge-multiple: true
-
-      - name: Download linux aarch64 artifacts
-        if: ${{ inputs.deb_hash_aarch64 == '' }}
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "SJMCL_${{ inputs.version }}_linux_aarch64"
-          path: artifacts
-          merge-multiple: true
+      - name: Download linux release assets
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts
+          gh release download "${{ inputs.release_tag }}" \
+            --repo "$GH_REPO" \
+            --pattern "SJMCL_${{ inputs.version }}_linux_x86_64.deb" \
+            --pattern "SJMCL_${{ inputs.version }}_linux_aarch64.deb" \
+            --dir artifacts
 
       - name: Calculate hashes
         id: calculate_hashes
         run: |
-          X86_64_DEB_HASH=${{ inputs.deb_hash_x86_64 }} # Use input deb_hash if provided
-          AARCH64_DEB_HASH=${{ inputs.deb_hash_aarch64 }} # Use input deb_hash if provided
-          if [[ -z "$X86_64_DEB_HASH" || -z "$AARCH64_DEB_HASH" ]]; then
-            ls -la artifacts
-            if [[ -z "$X86_64_DEB_HASH" ]]; then
-              X86_64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_x86_64.deb)
-            fi
-            if [[ -z "$AARCH64_DEB_HASH" ]]; then
-              AARCH64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_aarch64.deb)
-            fi
-          fi
+          ls -la artifacts
+          X86_64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_x86_64.deb)
+          AARCH64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_aarch64.deb)
           echo "X86_64_DEB_HASH=$X86_64_DEB_HASH"
           echo "AARCH64_DEB_HASH=$AARCH64_DEB_HASH"
           LICENSE_HASH=$(sha512sum LICENSE.EXTRA)
