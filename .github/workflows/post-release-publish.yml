@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.release.id || inputs.release_tag || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.event.release.id || github.event.inputs.release_tag || github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
         id: prepare
         shell: bash
         env:
-          RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.event.inputs.release_tag || github.event.release.tag_name }}
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
