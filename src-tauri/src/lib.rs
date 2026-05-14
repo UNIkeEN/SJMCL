@@ -322,7 +322,9 @@ pub async fn run() {
         #[cfg(any(target_os = "linux", target_os = "windows"))]
         {
           use tauri_plugin_deep_link::DeepLinkExt;
-          app.deep_link().register_all()?;
+          if let Err(e) = app.deep_link().register_all() {
+            log::warn!("Failed to register deep links: {e}");
+          }
         }
 
         // Start the launcher MCP server if enabled
