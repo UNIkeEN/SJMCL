@@ -7,6 +7,10 @@ on:
         description: "Version to publish"
         required: true
         type: string
+      release_tag:
+        description: "Release tag to download assets from"
+        required: true
+        type: string
       arch:
         description: "Target architecture (x86_64 or aarch64)"
         required: true
@@ -28,11 +32,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: SJMCL_${{ inputs.version }}_linux_${{ inputs.arch }}
-          path: artifacts
+      - name: Download release asset
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts
+          gh release download "${{ inputs.release_tag }}" \
+            --repo "$GH_REPO" \
+            --pattern "SJMCL_${{ inputs.version }}_linux_${{ inputs.arch }}.deb" \
+            --dir artifacts
 
       - name: Prepare Snap payload
         run: |
