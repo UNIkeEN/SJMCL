@@ -1723,10 +1723,10 @@
       "playerName": "Entrez un nom de joueur à ajouter en ami"
     },
     "group": {
-      "invites": "Invitations",
+      "requests": "Demandes",
       "friends": "Amis"
     },
-    "invite": {
+    "request": {
       "incoming": "Invitation reçue",
       "outgoing": "Invitation envoyée"
     },
@@ -1738,7 +1738,7 @@
       "remove": "Supprimer l'ami"
     },
     "empty": {
-      "invites": "Aucune invitation",
+      "requests": "Aucune demande",
       "friends": "Aucun ami"
     },
     "status": {

@@ -1723,10 +1723,10 @@
       "playerName": "输入玩家名称以添加好友"
     },
     "group": {
-      "invites": "邀请",
+      "requests": "请求",
       "friends": "好友"
     },
-    "invite": {
+    "request": {
       "incoming": "收到的好友请求",
       "outgoing": "已发送的好友请求"
     },
@@ -1738,7 +1738,7 @@
       "remove": "删除好友"
     },
     "empty": {
-      "invites": "暂无邀请",
+      "requests": "暂无请求",
       "friends": "暂无好友"
     },
     "status": {

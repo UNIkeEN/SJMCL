@@ -230,8 +230,9 @@ export class AccountService {
   /**
    * UPDATE the Microsoft friend relationship for the current player.
    * @param {string} curPlayerId - The current Microsoft player ID.
-   * @param {string} tgtPlayerName - The target player name.
+   * @param {string} [tgtPlayerName] - (Optional) The target player name. For Add, at least one of name/uuid should be provided.
    * @param {string} [tgtPlayerUuid] - (Optional) The target player UUID.
+   * For Remove / Accept / Decline / Revoke, uuid is required.
    * @param {MicrosoftFriendAction} action - The friend action to perform.
    * @returns {Promise<InvokeResponse<MicrosoftFriendList>>}
    */

@@ -273,7 +273,9 @@ async fn retrieve_friend_avatar(
     if response.status().is_success() {
       if let Ok(profile) = response.json::<MinecraftProfile>().await {
         if let Ok(player_info) = parse_profile(app, &profile, None, None, None, None).await {
-          return Ok(draw_avatar(36, &player_info.textures[0].image.image));
+          if let Some(texture) = player_info.textures.first() {
+            return Ok(draw_avatar(36, &texture.image.image));
+          }
         }
       }
     }

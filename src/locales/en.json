@@ -1723,10 +1723,10 @@
       "playerName": "Enter a player name to add as a friend"
     },
     "group": {
-      "invites": "Invites",
+      "requests": "Requests",
       "friends": "Friends"
     },
-    "invite": {
+    "request": {
       "incoming": "Incoming friend request",
       "outgoing": "Outgoing friend request"
     },
@@ -1738,7 +1738,7 @@
       "remove": "Remove Friend"
     },
     "empty": {
-      "invites": "No invites",
+      "requests": "No requests",
       "friends": "No friends"
     },
     "status": {

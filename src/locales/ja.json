@@ -1723,10 +1723,10 @@
       "playerName": "フレンド追加用のプレイヤー名を入力"
     },
     "group": {
-      "invites": "招待",
+      "requests": "申請",
       "friends": "フレンド"
     },
-    "invite": {
+    "request": {
       "incoming": "受信したフレンド申請",
       "outgoing": "送信したフレンド申請"
     },
@@ -1738,7 +1738,7 @@
       "remove": "フレンド削除"
     },
     "empty": {
-      "invites": "招待はありません",
+      "requests": "申請はありません",
       "friends": "フレンドはいません"
     },
     "status": {

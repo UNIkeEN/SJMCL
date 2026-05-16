@@ -1723,10 +1723,10 @@
       "playerName": "輸入玩家名稱以新增好友"
     },
     "group": {
-      "invites": "邀請",
+      "requests": "請求",
       "friends": "好友"
     },
-    "invite": {
+    "request": {
       "incoming": "收到的好友請求",
       "outgoing": "已發送的好友請求"
     },
@@ -1738,7 +1738,7 @@
       "remove": "刪除好友"
     },
     "empty": {
-      "invites": "暫無邀請",
+      "requests": "暫無請求",
       "friends": "暫無好友"
     },
     "status": {
@@ -1747,7 +1747,7 @@
       "PLAYING_OFFLINE": "單人遊戲中",
       "PLAYING_REALMS": "正在玩 Realms",
       "PLAYING_SERVER": "正在伺服器中",
-      "PLAYING_HOSTED_SERVER": "開放區域網",
+      "PLAYING_HOSTED_SERVER": "開放區域網路",
       "OFFLINE": "離線"
     }
   },
@@ -2388,16 +2388,16 @@
         }
       },
       "retrieveMicrosoftFriendList": {
-        "success": "好友列表獲取成功",
+        "success": "好友清單取得成功",
         "error": {
-          "title": "獲取微軟好友列表失敗",
+          "title": "取得微軟好友清單失敗",
           "description": {
             "NOT_FOUND": "角色不存在",
             "INVALID": "目前角色不是微軟帳戶",
             "EXPIRED": "令牌已過期，請重新登入",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線至 Minecraft 服務",
-            "FORBIDDEN": "目前帳戶無權存取好友功能",
+            "FORBIDDEN": "無權限，請檢查您的帳戶設定",
             "TOO_MANY_REQUESTS": "請求過於頻繁，請稍後再試",
             "SERVICE_UNAVAILABLE": "Minecraft 服務暫時不可用"
           }

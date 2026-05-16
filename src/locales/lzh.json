@@ -1723,10 +1723,10 @@
       "playerName": "輸玩家名以增友"
     },
     "group": {
-      "invites": "邀請",
+      "requests": "請求",
       "friends": "友人"
     },
-    "invite": {
+    "request": {
       "incoming": "所受友請",
       "outgoing": "所發友請"
     },
@@ -1738,7 +1738,7 @@
       "remove": "刪友"
     },
     "empty": {
-      "invites": "暫無邀請",
+      "requests": "暫無請求",
       "friends": "暫無友人"
     },
     "status": {

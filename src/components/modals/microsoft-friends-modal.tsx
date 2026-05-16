@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Center,
   HStack,
@@ -22,9 +23,9 @@ import {
   LuCheck,
   LuClock3,
   LuRefreshCcw,
+  LuUndo2,
   LuUserRoundMinus,
   LuUserRoundPlus,
-  LuUserRoundX,
   LuX,
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
@@ -214,16 +215,22 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
 
     const incomingItems = friendList.incomingRequests.map((friend) => ({
       title: friend.name,
-      description: t("MicrosoftFriendsModal.invite.incoming"),
+      description: t("MicrosoftFriendsModal.request.incoming"),
       prefixElement: (
-        <PlayerAvatar avatar={friend.avatar} boxSize="32px" objectFit="cover" />
+        <HStack spacing={0}>
+          <PlayerAvatar
+            avatar={friend.avatar}
+            boxSize="32px"
+            objectFit="cover"
+          />
+        </HStack>
       ),
       children: (
         <HStack spacing={0.5}>
           <CommonIconButton
             icon={LuCheck}
             label={t("MicrosoftFriendsModal.button.accept")}
-            colorScheme={primaryColor}
+            colorScheme="green"
             isDisabled={isOperating || isListLoading}
             isLoading={
               pendingActionKey ===
@@ -240,6 +247,7 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
           <CommonIconButton
             icon={LuX}
             label={t("MicrosoftFriendsModal.button.decline")}
+            colorScheme="red"
             isDisabled={isOperating || isListLoading}
             isLoading={
               pendingActionKey ===
@@ -259,13 +267,19 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
 
     const outgoingItems = friendList.outgoingRequests.map((friend) => ({
       title: friend.name,
-      description: t("MicrosoftFriendsModal.invite.outgoing"),
+      description: t("MicrosoftFriendsModal.request.outgoing"),
       prefixElement: (
-        <PlayerAvatar avatar={friend.avatar} boxSize="32px" objectFit="cover" />
+        <HStack spacing={0}>
+          <PlayerAvatar
+            avatar={friend.avatar}
+            boxSize="32px"
+            objectFit="cover"
+          />
+        </HStack>
       ),
       children: (
         <CommonIconButton
-          icon={LuUserRoundX}
+          icon={LuUndo2}
           label={t("MicrosoftFriendsModal.button.revoke")}
           isDisabled={isOperating || isListLoading}
           isLoading={
@@ -290,7 +304,6 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
     isListLoading,
     isOperating,
     pendingActionKey,
-    primaryColor,
     t,
   ]);
 
@@ -300,7 +313,13 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
     return friendList.friends.map((friend) => ({
       title: friend.name,
       prefixElement: (
-        <PlayerAvatar avatar={friend.avatar} boxSize="32px" objectFit="cover" />
+        <HStack spacing={0}>
+          <PlayerAvatar
+            avatar={friend.avatar}
+            boxSize="32px"
+            objectFit="cover"
+          />
+        </HStack>
       ),
       children: (
         <HStack spacing={2}>
@@ -372,10 +391,15 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
       <ModalOverlay />
       <ModalContent h="100%">
         <ModalHeader>
-          {t("MicrosoftFriendsModal.title", { name: curPlayer.name })}
+          <HStack>
+            <Text>
+              {t("MicrosoftFriendsModal.title", { name: curPlayer.name })}
+            </Text>
+            <Badge colorScheme="purple">Beta</Badge>
+          </HStack>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody overflow={isListLoading ? "hidden" : undefined}>
+        <ModalBody overflow="hidden">
           <VStack h="100%" minH={0} spacing={4} align="stretch">
             <HStack align="stretch">
               <Input
@@ -414,61 +438,53 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
               />
             </HStack>
 
-            <OptionItemGroup
-              title={t("MicrosoftFriendsModal.group.invites")}
-              display="flex"
-              flexDirection="column"
-              flex={isListLoading ? 1 : undefined}
-              minH={0}
-              withInCard={!isListLoading}
-              items={
-                isListLoading
-                  ? [
-                      <Center key="loading-invites" flex={1}>
-                        <BeatLoader size={12} color="gray" />
-                      </Center>,
-                    ]
-                  : inviteItems.length > 0
-                    ? inviteItems
-                    : [
-                        <Text
-                          key="empty-invites"
-                          fontSize="sm"
-                          className="secondary-text"
-                        >
-                          {t("MicrosoftFriendsModal.empty.invites")}
-                        </Text>,
-                      ]
-              }
-            />
+            {isListLoading ? (
+              <Center flex={1} minH={0}>
+                <BeatLoader size={16} color="gray" />
+              </Center>
+            ) : (
+              <VStack
+                flex={1}
+                minH={0}
+                overflowY="auto"
+                spacing={4}
+                align="stretch"
+              >
+                <OptionItemGroup
+                  title={t("MicrosoftFriendsModal.group.requests")}
+                  items={
+                    inviteItems.length > 0
+                      ? inviteItems
+                      : [
+                          <Text
+                            key="empty-invites"
+                            fontSize="sm"
+                            className="secondary-text"
+                          >
+                            {t("MicrosoftFriendsModal.empty.requests")}
+                          </Text>,
+                        ]
+                  }
+                />
 
-            <OptionItemGroup
-              title={t("MicrosoftFriendsModal.group.friends")}
-              display="flex"
-              flexDirection="column"
-              flex={isListLoading ? 1 : undefined}
-              minH={0}
-              withInCard={!isListLoading}
-              items={
-                isListLoading
-                  ? [
-                      <Center key="loading-friends" flex={1}>
-                        <BeatLoader size={12} color="gray" />
-                      </Center>,
-                    ]
-                  : friendItems.length > 0
-                    ? friendItems
-                    : [
-                        <Text
-                          key="empty-friends"
-                          fontSize="sm"
-                          className="secondary-text"
-                        >
-                          {t("MicrosoftFriendsModal.empty.friends")}
-                        </Text>,
-                      ]
-              }
-            />
+                <OptionItemGroup
+                  title={t("MicrosoftFriendsModal.group.friends")}
+                  items={
+                    friendItems.length > 0
+                      ? friendItems
+                      : [
+                          <Text
+                            key="empty-friends"
+                            fontSize="sm"
+                            className="secondary-text"
+                          >
+                            {t("MicrosoftFriendsModal.empty.friends")}
+                          </Text>,
+                        ]
+                  }
+                />
+              </VStack>
+            )}
           </VStack>
         </ModalBody>
 
