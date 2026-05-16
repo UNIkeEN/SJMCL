@@ -12,10 +12,17 @@ import {
 import { useToast as useChakraToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCopy, LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
+import {
+  LuCopy,
+  LuEllipsis,
+  LuRefreshCcw,
+  LuTrash,
+  LuUsersRound,
+} from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
+import MicrosoftFriendsModal from "@/components/modals/microsoft-friends-modal";
 import ViewSkinModal from "@/components/modals/view-skin-modal";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -45,6 +52,11 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     isOpen: isSkinModalOpen,
     onOpen: onSkinModalOpen,
     onClose: onSkinModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isMicrosoftFriendsModalOpen,
+    onOpen: onMicrosoftFriendsModalOpen,
+    onClose: onMicrosoftFriendsModalClose,
   } = useDisclosure();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -111,6 +123,15 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   };
 
   const playerMenuOperations = [
+    ...(player.playerType !== PlayerType.Microsoft
+      ? []
+      : [
+          {
+            icon: LuUsersRound,
+            label: t("PlayerMenu.label.friends"),
+            onClick: onMicrosoftFriendsModalOpen,
+          },
+        ]),
     ...(player.playerType === PlayerType.Offline
       ? []
       : [
@@ -221,6 +242,11 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           )}
         />
       )}
+      <MicrosoftFriendsModal
+        isOpen={isMicrosoftFriendsModalOpen}
+        onClose={onMicrosoftFriendsModalClose}
+        curPlayer={player}
+      />
     </>
   );
 };

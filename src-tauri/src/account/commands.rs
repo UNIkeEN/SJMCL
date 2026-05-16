@@ -6,6 +6,7 @@ use crate::account::helpers::authlib_injector::{self};
 use crate::account::helpers::import::hmcl::retrieve_hmcl_account_info;
 use crate::account::helpers::import::multimc::retrieve_multimc_account_info;
 use crate::account::helpers::import::ImportLauncherType;
+use crate::account::helpers::microsoft::models::{MicrosoftFriendAction, MicrosoftFriendList};
 use crate::account::helpers::{microsoft, misc, offline};
 use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
@@ -442,6 +443,61 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
   }
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn retrieve_microsoft_friend_list(
+  app: AppHandle,
+  cur_player_id: String,
+) -> SJMCLResult<MicrosoftFriendList> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let cloned_account_state = account_binding.lock()?.clone();
+
+  let player = cloned_account_state
+    .players
+    .iter()
+    .find(|player| player.id == cur_player_id)
+    .ok_or(AccountError::NotFound)?;
+
+  if player.player_type != PlayerType::Microsoft {
+    return Err(AccountError::Invalid.into());
+  }
+
+  microsoft::friends::retrieve_friend_list(&app, player).await
+}
+
+#[tauri::command]
+pub async fn update_microsoft_friend(
+  app: AppHandle,
+  cur_player_id: String,
+  tgt_player_name: Option<String>,
+  tgt_player_uuid: Option<String>,
+  action: MicrosoftFriendAction,
+) -> SJMCLResult<MicrosoftFriendList> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let cloned_account_state = account_binding.lock()?.clone();
+
+  let player = cloned_account_state
+    .players
+    .iter()
+    .find(|player| player.id == cur_player_id)
+    .ok_or(AccountError::NotFound)?;
+
+  if player.player_type != PlayerType::Microsoft {
+    return Err(AccountError::Invalid.into());
+  }
+
+  let tgt_player_name = tgt_player_name
+    .map(|name| name.trim().to_string())
+    .filter(|name| !name.is_empty());
+  let tgt_player_uuid = match tgt_player_uuid {
+    Some(uuid) if !uuid.is_empty() => {
+      Some(uuid::Uuid::parse_str(&uuid).map_err(|_| AccountError::Invalid)?)
+    }
+    _ => None,
+  };
+
+  microsoft::friends::update_friend(&app, player, tgt_player_name, tgt_player_uuid, action).await
 }
 
 #[tauri::command]

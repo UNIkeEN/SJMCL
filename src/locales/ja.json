@@ -448,6 +448,12 @@
       "content": "この認証サーバー「{{name}}」を削除しますか。「{{name}}」はサーバーリストの中から消えます。"
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "フレンドを削除",
+      "content": "フレンド「{{name}}」を削除しますか？"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "ゲームサーバーを削除",
     "content": "ゲームサーバー「{{name}}」（{{addr}}）を削除しますか？この操作は取り消せません。"
@@ -1711,6 +1717,40 @@
   "MenuSelector": {
     "selectedCount": "{{count}} 個選択済み"
   },
+  "MicrosoftFriendsModal": {
+    "title": "Microsoft アカウント {{name}} の Minecraft フレンド",
+    "placeholder": {
+      "playerName": "フレンド追加用のプレイヤー名を入力"
+    },
+    "group": {
+      "invites": "招待",
+      "friends": "フレンド"
+    },
+    "invite": {
+      "incoming": "受信したフレンド申請",
+      "outgoing": "送信したフレンド申請"
+    },
+    "button": {
+      "add": "追加",
+      "accept": "承認",
+      "decline": "拒否",
+      "revoke": "取り消し",
+      "remove": "フレンド削除"
+    },
+    "empty": {
+      "invites": "招待はありません",
+      "friends": "フレンドはいません"
+    },
+    "status": {
+      "INVITED": "ワールドへの参加に招待されています",
+      "ONLINE": "オンライン",
+      "PLAYING_OFFLINE": "シングルプレイ中",
+      "PLAYING_REALMS": "Realms プレイ中",
+      "PLAYING_SERVER": "サーバー参加中",
+      "PLAYING_HOSTED_SERVER": "LAN ワールド公開中",
+      "OFFLINE": "オフライン"
+    }
+  },
   "NoSuitableJavaDialog": {
     "title": "このインスタンスに適した Java ランタイムが見つかりません",
     "body": "このインスタンスで利用可能な適切な Java ランタイムがありません。「確認」をクリックして Java 管理ページを開き、Java を手動で追加またはダウンロードしてください。"
@@ -1744,6 +1784,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "フレンド",
       "manageSkin": "スキン管理",
       "viewSkin": "スキンを見る",
       "delete": "キャラクター削除",
@@ -2343,6 +2384,41 @@
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "NETWORK_ERROR": "認証サーバーへの接続に失敗",
             "INVALID": "オフラインキャラクターの更新に非対応"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "フレンド一覧を取得しました",
+        "error": {
+          "title": "Microsoft フレンド一覧の取得に失敗しました",
+          "description": {
+            "NOT_FOUND": "キャラクターが見つかりません",
+            "INVALID": "現在のキャラクターは Microsoft アカウントではありません",
+            "EXPIRED": "トークンの有効期限が切れています。再ログインしてください",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "Minecraft サービスに接続できませんでした",
+            "FORBIDDEN": "このアカウントではフレンド機能を利用できません",
+            "TOO_MANY_REQUESTS": "リクエストが多すぎます。しばらくしてから再試行してください",
+            "SERVICE_UNAVAILABLE": "Minecraft サービスは一時的に利用できません"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "フレンド操作が完了しました",
+        "error": {
+          "title": "Microsoft フレンド操作に失敗しました",
+          "description": {
+            "NOT_FOUND": "キャラクターが見つかりません",
+            "INVALID": "フレンド操作のパラメータが無効です",
+            "EXPIRED": "トークンの有効期限が切れています。再ログインしてください",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "Minecraft サービスに接続できませんでした",
+            "FORBIDDEN": "現在フレンドを追加できません。あなたと相手のアカウント設定を確認してください",
+            "TOO_MANY_REQUESTS": "リクエストが多すぎます。しばらくしてから再試行してください",
+            "SERVICE_UNAVAILABLE": "Minecraft サービスは一時的に利用できません",
+            "UNKNOWN_PROFILE": "対象プレイヤーが存在しません",
+            "CANNOT_ADD_SELF": "自分自身をフレンド追加することはできません",
+            "DUPLICATED_PROFILES": "重複したフレンド操作リクエストです"
           }
         }
       },

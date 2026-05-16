@@ -107,6 +107,8 @@ pub async fn run() {
         account::commands::update_player_skin_offline_local,
         account::commands::delete_player,
         account::commands::refresh_player,
+        account::commands::retrieve_microsoft_friend_list,
+        account::commands::update_microsoft_friend,
         account::commands::retrieve_auth_server_list,
         account::commands::fetch_auth_server,
         account::commands::add_auth_server,

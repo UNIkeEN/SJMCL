@@ -448,6 +448,12 @@
       "content": "誠欲刪鑒權伺服器「{{name}}」乎？既刪，將不復列於君之伺服器表。"
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "刪友",
+      "content": "其刪好友「{{name}}」乎？"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "刪戲伺服器",
     "content": "誠欲刪戲伺服器「{{name}}」（{{addr}}）乎？刪則永失！"
@@ -1711,6 +1717,40 @@
   "MenuSelector": {
     "selectedCount": "已選 {{count}} 項"
   },
+  "MicrosoftFriendsModal": {
+    "title": "微軟帳戶 {{name}} 之 Minecraft 友人",
+    "placeholder": {
+      "playerName": "輸玩家名以增友"
+    },
+    "group": {
+      "invites": "邀請",
+      "friends": "友人"
+    },
+    "invite": {
+      "incoming": "所受友請",
+      "outgoing": "所發友請"
+    },
+    "button": {
+      "add": "新增",
+      "accept": "接受",
+      "decline": "拒絕",
+      "revoke": "撤銷",
+      "remove": "刪友"
+    },
+    "empty": {
+      "invites": "暫無邀請",
+      "friends": "暫無友人"
+    },
+    "status": {
+      "INVITED": "邀汝入其世界",
+      "ONLINE": "在線",
+      "PLAYING_OFFLINE": "獨戲中",
+      "PLAYING_REALMS": "遊 Realms 中",
+      "PLAYING_SERVER": "在伺服中",
+      "PLAYING_HOSTED_SERVER": "開區網",
+      "OFFLINE": "離線"
+    }
+  },
   "NoSuitableJavaDialog": {
     "title": "未找到合宜爪哇行時",
     "body": "於今例，無合宜之爪哇行時可擇。點選“然”以前往爪哇司頁，手動增抑引爪哇。"
@@ -1744,6 +1784,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "友人",
       "manageSkin": "司外觀",
       "viewSkin": "覽外觀",
       "delete": "刪此戲者",
@@ -2343,6 +2384,41 @@
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NETWORK_ERROR": "不能連線至鑒權伺服器",
             "INVALID": "不支援離線戲者重整"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "取友列成",
+        "error": {
+          "title": "取微軟友列敗",
+          "description": {
+            "NOT_FOUND": "戲者無",
+            "INVALID": "今戲者非微軟帳戶",
+            "EXPIRED": "令牌已過期，請復登入",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連 Minecraft 服務",
+            "FORBIDDEN": "今帳無權用友功",
+            "TOO_MANY_REQUESTS": "請過頻，稍後再試",
+            "SERVICE_UNAVAILABLE": "Minecraft 服務暫不可用"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "友事既成",
+        "error": {
+          "title": "微軟友事未成",
+          "description": {
+            "NOT_FOUND": "戲者無",
+            "INVALID": "友事參數無效",
+            "EXPIRED": "令牌已過期，請復登入",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連 Minecraft 服務",
+            "FORBIDDEN": "今不得加友，請審汝與彼帳之相關設置",
+            "TOO_MANY_REQUESTS": "請過頻，稍後再試",
+            "SERVICE_UNAVAILABLE": "Minecraft 服務暫不可用",
+            "UNKNOWN_PROFILE": "彼玩家無",
+            "CANNOT_ADD_SELF": "不可加己為友",
+            "DUPLICATED_PROFILES": "友事請重複"
           }
         }
       },
