@@ -36,11 +36,13 @@ import { copyText } from "@/utils/copy";
 interface PlayerMenuProps {
   player: Player;
   variant?: "dropdown" | "buttonGroup";
+  withFriendsButton?: boolean;
 }
 
 export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   player,
   variant = "dropdown",
+  withFriendsButton = false,
 }) => {
   const { t } = useTranslation();
   const toast = useToast();
@@ -61,6 +63,10 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const showFriendsButton =
+    withFriendsButton &&
+    variant === "dropdown" &&
+    player.playerType === PlayerType.Microsoft;
 
   const handleDeletePlayer = () => {
     setIsDeleting(true);
@@ -123,7 +129,7 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   };
 
   const playerMenuOperations = [
-    ...(player.playerType !== PlayerType.Microsoft
+    ...(player.playerType !== PlayerType.Microsoft || showFriendsButton
       ? []
       : [
           {
@@ -178,32 +184,42 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   return (
     <>
       {variant === "dropdown" ? (
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            size="xs"
-            variant="ghost"
-            aria-label="operations"
-            icon={<LuEllipsis />}
-          />
-          <Portal>
-            <MenuList>
-              {playerMenuOperations.map((item) => (
-                <MenuItem
-                  key={item.label}
-                  fontSize="xs"
-                  color={item.danger ? "red.500" : "inherit"}
-                  onClick={item.onClick}
-                >
-                  <HStack>
-                    <item.icon />
-                    <Text>{item.label}</Text>
-                  </HStack>
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Portal>
-        </Menu>
+        <HStack spacing={0}>
+          {showFriendsButton && (
+            <CommonIconButton
+              size="xs"
+              icon={LuUsersRound}
+              label={t("PlayerMenu.label.friends")}
+              onClick={onMicrosoftFriendsModalOpen}
+            />
+          )}
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              size="xs"
+              variant="ghost"
+              aria-label="operations"
+              icon={<LuEllipsis />}
+            />
+            <Portal>
+              <MenuList>
+                {playerMenuOperations.map((item) => (
+                  <MenuItem
+                    key={item.label}
+                    fontSize="xs"
+                    color={item.danger ? "red.500" : "inherit"}
+                    onClick={item.onClick}
+                  >
+                    <HStack>
+                      <item.icon />
+                      <Text>{item.label}</Text>
+                    </HStack>
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Portal>
+          </Menu>
+        </HStack>
       ) : (
         <HStack spacing={0}>
           {playerMenuOperations.map((item) => (

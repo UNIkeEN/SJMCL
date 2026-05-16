@@ -1735,7 +1735,8 @@
       "accept": "Accept",
       "decline": "Decline",
       "revoke": "Revoke",
-      "remove": "Remove Friend"
+      "remove": "Remove Friend",
+      "xboxSettings": "Xbox Settings"
     },
     "empty": {
       "requests": "No requests",

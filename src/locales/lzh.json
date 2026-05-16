@@ -1735,7 +1735,8 @@
       "accept": "接受",
       "decline": "拒絕",
       "revoke": "撤銷",
-      "remove": "刪友"
+      "remove": "刪友",
+      "xboxSettings": "Xbox 設定"
     },
     "empty": {
       "requests": "暫無請求",

@@ -1735,7 +1735,8 @@
       "accept": "接受",
       "decline": "拒绝",
       "revoke": "撤销",
-      "remove": "删除好友"
+      "remove": "删除好友",
+      "xboxSettings": "Xbox 设置"
     },
     "empty": {
       "requests": "暂无请求",

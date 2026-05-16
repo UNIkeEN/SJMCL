@@ -180,7 +180,7 @@ async fn attach_presence(
       .post(PRESENCE_ENDPOINT)
       .header("Authorization", format!("Bearer {}", access_token))
       .json(&MicrosoftPresenceRequest {
-        status: MicrosoftPresenceStatus::Offline,
+        status: MicrosoftPresenceStatus::Online,
         join_info: None,
       })
       .send()

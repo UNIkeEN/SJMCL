@@ -1735,7 +1735,8 @@
       "accept": "承認",
       "decline": "拒否",
       "revoke": "取り消し",
-      "remove": "フレンド削除"
+      "remove": "フレンド削除",
+      "xboxSettings": "Xbox 設定"
     },
     "empty": {
       "requests": "申請はありません",

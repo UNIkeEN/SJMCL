@@ -5,6 +5,7 @@ import { WrapCardGroup } from "@/components/common/wrap-card";
 import PlayerAvatar from "@/components/player-avatar";
 import PlayerMenu from "@/components/player-menu";
 import { useLauncherConfig } from "@/contexts/config";
+import { PlayerType } from "@/enums/account";
 import { Player } from "@/models/account";
 import { generatePlayerDesc } from "@/utils/account";
 
@@ -77,7 +78,10 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         ? {
             extraContent: (
               <Box position="absolute" top={0.5} right={1}>
-                <PlayerMenu player={player} />
+                <PlayerMenu
+                  player={player}
+                  withFriendsButton={player.playerType === PlayerType.Microsoft}
+                />
               </Box>
             ),
           }

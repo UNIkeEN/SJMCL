@@ -1735,7 +1735,8 @@
       "accept": "Accepter",
       "decline": "Refuser",
       "revoke": "Annuler",
-      "remove": "Supprimer l'ami"
+      "remove": "Supprimer l'ami",
+      "xboxSettings": "Paramètres Xbox"
     },
     "empty": {
       "requests": "Aucune demande",

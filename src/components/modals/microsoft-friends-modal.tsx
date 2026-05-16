@@ -4,6 +4,7 @@ import {
   Center,
   HStack,
   Input,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,11 +18,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuCheck,
   LuClock3,
+  LuExternalLink,
   LuRefreshCcw,
   LuUndo2,
   LuUserRoundMinus,
@@ -488,10 +491,24 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
           </VStack>
         </ModalBody>
 
-        <ModalFooter justifyContent="flex-end">
-          <Button variant="ghost" onClick={modalProps.onClose}>
-            {t("General.close")}
-          </Button>
+        <ModalFooter w="100%">
+          <HStack spacing={2}>
+            <LuExternalLink />
+            <Link
+              color={`${primaryColor}.500`}
+              onClick={() => {
+                openUrl("https://aka.ms/MinecraftJavaXboxPrivacyAndSafety");
+              }}
+            >
+              {t("MicrosoftFriendsModal.button.xboxSettings")}
+            </Link>
+          </HStack>
+
+          <HStack spacing={3} ml="auto">
+            <Button variant="ghost" onClick={modalProps.onClose}>
+              {t("General.close")}
+            </Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>
