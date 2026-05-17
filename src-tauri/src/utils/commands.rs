@@ -84,3 +84,9 @@ pub fn write_file(path: String, content: String, mode: Option<String>) -> SJMCLR
     value => Err(SJMCLError(format!("Unsupported mode: {value}"))),
   }
 }
+
+#[tauri::command]
+pub fn check_pending_modpack_import() -> SJMCLResult<Option<String>> {
+  let pending = crate::PENDING_MODPACK_IMPORT.lock().unwrap().take();
+  Ok(pending)
+}

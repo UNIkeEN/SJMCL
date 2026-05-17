@@ -32,7 +32,7 @@ use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
@@ -45,6 +45,8 @@ static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(fa
 
 static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
+static PENDING_MODPACK_IMPORT: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
+
 pub async fn run() {
   let exit_code = {
     let builder = tauri::Builder::default()
@@ -56,11 +58,20 @@ pub async fn run() {
       .plugin(tauri_plugin_opener::init())
       .plugin(tauri_plugin_os::init())
       .plugin(tauri_plugin_process::init())
-      .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+      .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
         let main_window = app.get_webview_window("main").expect("no main window");
         let _ = main_window.show(); // may hide by launcher_visibility settings
                                     // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
         let _ = main_window.set_focus();
+
+        // Handle .mrpack file association on warm re-launch
+        for arg in &args {
+          if arg.ends_with(".mrpack") {
+            let encoded = urlencoding::encode(arg);
+            let deep_link = format!("sjmcl://import-modpack?path={}", encoded);
+            let _ = app.emit("sjmcl://import", deep_link);
+          }
+        }
       }))
       .plugin(
         tauri_plugin_window_state::Builder::new()
@@ -190,6 +201,7 @@ pub async fn run() {
         utils::commands::delete_directory,
         utils::commands::read_file,
         utils::commands::write_file,
+        utils::commands::check_pending_modpack_import,
       ])
       .setup(|app| {
         // init APP_DATA_DIR
@@ -332,18 +344,46 @@ pub async fn run() {
           intelligence::mcp_server::launcher::run(app.handle().clone(), &launcher_mcp_config);
         }
 
+        // Handle .mrpack file association on cold start
+        // Store the deep link so the frontend can pick it up once loaded
+        let args: Vec<String> = std::env::args().collect();
+        for arg in &args {
+          if arg.ends_with(".mrpack") {
+            let encoded = urlencoding::encode(arg);
+            let deep_link = format!("sjmcl://import-modpack?path={}", encoded);
+            *PENDING_MODPACK_IMPORT.lock().unwrap() = Some(deep_link);
+            break;
+          }
+        }
+
         Ok(())
       })
       .build(tauri::generate_context!())
       .expect("error while building tauri application")
-      .run_return(|_, event| {
-        if let tauri::RunEvent::Exit = event {
+      .run_return(|app_handle, event| match event {
+        #[cfg(target_os = "macos")]
+        tauri::RunEvent::Opened { urls } => {
+          for url in urls {
+            if let Ok(path) = url.to_file_path() {
+              if path.extension().map_or(false, |ext| ext == "mrpack") {
+                if let Some(path_str) = path.to_str() {
+                  let encoded = urlencoding::encode(path_str);
+                  let deep_link = format!("sjmcl://import-modpack?path={}", encoded);
+                  *PENDING_MODPACK_IMPORT.lock().unwrap() = Some(deep_link.clone());
+                  let _ = app_handle.emit("sjmcl://import", deep_link);
+                }
+              }
+            }
+          }
+        }
+        tauri::RunEvent::Exit => {
           log::info!("Launcher exited normally.");
           let _ = LauncherConfig::load().map(|mut config| {
             config.last_run_exited_normally = true;
             let _ = config.save();
           });
         }
+        _ => {}
       })
   };
 

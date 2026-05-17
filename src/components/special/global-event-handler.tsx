@@ -1,5 +1,7 @@
+import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { useRouter } from "next/router";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useSharedModals } from "@/contexts/shared-modal";
 import useDeepLink from "@/hooks/deep-link";
 import useKeyboardShortcut from "@/hooks/keyboard-shortcut";
@@ -109,6 +111,67 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
     trigger: launchTrigger,
     onCall: quickLaunchGame,
   });
+
+  const importModpackTrigger = useMemo(
+    () => /^import-modpack\/?(?:\?.*)?$/,
+    []
+  );
+
+  const importModpackByDeeplink = useCallback(
+    (path: string | URL) => {
+      const url = new URL(path);
+      const filePath = url.searchParams.get("path") || "";
+      if (!isStandAlone && filePath) {
+        setTimeout(() => {
+          openSharedModal("import-modpack", { path: filePath });
+        }, 500);
+      }
+    },
+    [isStandAlone, openSharedModal]
+  );
+
+  useDeepLink({
+    trigger: importModpackTrigger,
+    onCall: importModpackByDeeplink,
+  });
+
+  // Helper: open the import-modpack modal from a deep-link URL
+  const openModpackImportFromUrl = useCallback(
+    (url: string) => {
+      const filePath = new URL(url).searchParams.get("path") || "";
+      if (!isStandAlone && filePath) {
+        setTimeout(() => {
+          openSharedModal("import-modpack", { path: filePath });
+        }, 500);
+      }
+    },
+    [isStandAlone, openSharedModal]
+  );
+
+  // Listen for file association events from the Rust backend (warm start)
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    (async () => {
+      unlisten = await listen<string>("sjmcl://import", (event) => {
+        openModpackImportFromUrl(event.payload);
+      });
+    })();
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, [openModpackImportFromUrl]);
+
+  // Check for pending modpack import from cold start
+  useEffect(() => {
+    (async () => {
+      const pending = await invoke<string | null>(
+        "check_pending_modpack_import"
+      );
+      if (pending) {
+        openModpackImportFromUrl(pending);
+      }
+    })();
+  }, [openModpackImportFromUrl]);
 
   return <>{children}</>;
 };
