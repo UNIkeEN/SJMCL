@@ -65,9 +65,55 @@ export const LauncherConfigContextProvider: React.FC<{
     });
   }, [setConfig, toast]);
 
+  // from frontend to call backend update
+  const handleUpdateLauncherConfig = (path: string, value: any) => {
+    // save to the backend
+    ConfigService.updateLauncherConfig(path, value).then((response) => {
+      // if success, backend will emit signal, the logic below will be executed
+      if (response.status !== "success") {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    });
+  };
+
+  // listen from backend to update frontend's config state
+  const handleConfigPartialUpdate = useCallback((payload: any) => {
+    const { path, value } = payload;
+    setConfig((prevConfig) => {
+      const newConfig = { ...prevConfig };
+      updateByKeyPath(newConfig, path, JSON.parse(value));
+      return newConfig;
+    });
+  }, []);
+
+  // retrieve config after partial update listener is set, to avoid missing updates during the initial loading phase. (#1615)
   useEffect(() => {
-    handleRetrieveLauncherConfig();
-  }, [handleRetrieveLauncherConfig]);
+    let cancelled = false;
+    let unlisten: (() => void) | undefined;
+
+    void ConfigService.onConfigPartialUpdate(handleConfigPartialUpdate)
+      .then((cleanup) => {
+        unlisten = cleanup;
+        if (cancelled) {
+          unlisten();
+          return;
+        }
+
+        handleRetrieveLauncherConfig();
+      })
+      .catch(() => {
+        handleRetrieveLauncherConfig();
+      });
+
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  }, [handleConfigPartialUpdate, handleRetrieveLauncherConfig]);
 
   useEffect(() => {
     i18n.changeLanguage(language);
@@ -92,38 +138,6 @@ export const LauncherConfigContextProvider: React.FC<{
       return () => media.removeEventListener("change", applyColorMode);
     }
   }, [userSelectedColorMode, colorMode, toggleColorMode]);
-
-  // from frontend to call backend update
-  const handleUpdateLauncherConfig = (path: string, value: any) => {
-    // Save to the backend
-    ConfigService.updateLauncherConfig(path, value).then((response) => {
-      // if success, backend will emit signal, the logic below will be executed
-      if (response.status !== "success") {
-        toast({
-          title: response.message,
-          description: response.details,
-          status: "error",
-        });
-      }
-    });
-  };
-
-  // listen from backend to update frontend's config state
-  const handleConfigPartialUpdate = useCallback((payload: any) => {
-    const { path, value } = payload;
-    setConfig((prevConfig) => {
-      const newConfig = { ...prevConfig };
-      updateByKeyPath(newConfig, path, JSON.parse(value));
-      return newConfig;
-    });
-  }, []);
-
-  useEffect(() => {
-    const unlisten = ConfigService.onConfigPartialUpdate(
-      handleConfigPartialUpdate
-    );
-    return () => unlisten();
-  }, [handleConfigPartialUpdate]);
 
   // java list cache and retriever
   const handleRetrieveJavaList = useCallback(() => {
