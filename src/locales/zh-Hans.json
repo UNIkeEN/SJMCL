@@ -448,6 +448,12 @@
       "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "删除好友",
+      "content": "确定要删除好友 “{{name}}” 吗？"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "删除游戏服务器",
     "content": "确定要删除游戏服务器 “{{name}}”（{{addr}}） 吗？它将会永久消失！（真的很久！）"
@@ -1711,6 +1717,41 @@
   "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
   },
+  "MicrosoftFriendsModal": {
+    "title": "微软账户 {{name}} 的 Minecraft 好友",
+    "placeholder": {
+      "playerName": "输入玩家名称以添加好友"
+    },
+    "group": {
+      "requests": "请求",
+      "friends": "好友"
+    },
+    "request": {
+      "incoming": "收到的好友请求",
+      "outgoing": "已发送的好友请求"
+    },
+    "button": {
+      "add": "添加",
+      "accept": "接受",
+      "decline": "拒绝",
+      "revoke": "撤销",
+      "remove": "删除好友",
+      "xboxSettings": "Xbox 设置"
+    },
+    "empty": {
+      "requests": "暂无请求",
+      "friends": "暂无好友"
+    },
+    "status": {
+      "INVITED": "邀请你加入其世界",
+      "ONLINE": "在线",
+      "PLAYING_OFFLINE": "单人游戏中",
+      "PLAYING_REALMS": "正在玩 Realms",
+      "PLAYING_SERVER": "正在服务器中",
+      "PLAYING_HOSTED_SERVER": "开放局域网",
+      "OFFLINE": "离线"
+    }
+  },
   "NoSuitableJavaDialog": {
     "title": "未找到合适的 Java 运行时",
     "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击 “确定” 以前往 Java 管理页面手动添加或下载 Java。"
@@ -1744,6 +1785,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "好友",
       "manageSkin": "管理皮肤",
       "viewSkin": "查看皮肤",
       "delete": "删除此角色",
@@ -2343,6 +2385,41 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NETWORK_ERROR": "无法连接至认证服务器",
             "INVALID": "不支持离线角色刷新"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "好友列表获取成功",
+        "error": {
+          "title": "获取微软好友列表失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "当前角色不是微软账户",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至 Minecraft 服务",
+            "FORBIDDEN": "无权限，请检查您的账户设置",
+            "TOO_MANY_REQUESTS": "请求过于频繁，请稍后再试",
+            "SERVICE_UNAVAILABLE": "Minecraft 服务暂时不可用"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "好友操作成功",
+        "error": {
+          "title": "微软好友操作失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "好友参数无效",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至 Minecraft 服务",
+            "FORBIDDEN": "当前无法添加，请检查您与对方账户的相关设置",
+            "TOO_MANY_REQUESTS": "请求过于频繁，请稍后再试",
+            "SERVICE_UNAVAILABLE": "Minecraft 服务暂时不可用",
+            "UNKNOWN_PROFILE": "目标玩家不存在",
+            "CANNOT_ADD_SELF": "不能添加自己为好友",
+            "DUPLICATED_PROFILES": "重复的好友操作请求"
           }
         }
       },

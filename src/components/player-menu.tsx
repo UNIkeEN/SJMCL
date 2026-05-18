@@ -12,10 +12,17 @@ import {
 import { useToast as useChakraToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCopy, LuEllipsis, LuRefreshCcw, LuTrash } from "react-icons/lu";
+import {
+  LuCopy,
+  LuEllipsis,
+  LuRefreshCcw,
+  LuTrash,
+  LuUsersRound,
+} from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
+import MicrosoftFriendsModal from "@/components/modals/microsoft-friends-modal";
 import ViewSkinModal from "@/components/modals/view-skin-modal";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -29,11 +36,13 @@ import { copyText } from "@/utils/copy";
 interface PlayerMenuProps {
   player: Player;
   variant?: "dropdown" | "buttonGroup";
+  withFriendsButton?: boolean;
 }
 
 export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   player,
   variant = "dropdown",
+  withFriendsButton = false,
 }) => {
   const { t } = useTranslation();
   const toast = useToast();
@@ -46,9 +55,18 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
     onOpen: onSkinModalOpen,
     onClose: onSkinModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isMicrosoftFriendsModalOpen,
+    onOpen: onMicrosoftFriendsModalOpen,
+    onClose: onMicrosoftFriendsModalClose,
+  } = useDisclosure();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const showFriendsButton =
+    withFriendsButton &&
+    variant === "dropdown" &&
+    player.playerType === PlayerType.Microsoft;
 
   const handleDeletePlayer = () => {
     setIsDeleting(true);
@@ -111,6 +129,15 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   };
 
   const playerMenuOperations = [
+    ...(player.playerType !== PlayerType.Microsoft || showFriendsButton
+      ? []
+      : [
+          {
+            icon: LuUsersRound,
+            label: t("PlayerMenu.label.friends"),
+            onClick: onMicrosoftFriendsModalOpen,
+          },
+        ]),
     ...(player.playerType === PlayerType.Offline
       ? []
       : [
@@ -157,32 +184,42 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
   return (
     <>
       {variant === "dropdown" ? (
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            size="xs"
-            variant="ghost"
-            aria-label="operations"
-            icon={<LuEllipsis />}
-          />
-          <Portal>
-            <MenuList>
-              {playerMenuOperations.map((item) => (
-                <MenuItem
-                  key={item.label}
-                  fontSize="xs"
-                  color={item.danger ? "red.500" : "inherit"}
-                  onClick={item.onClick}
-                >
-                  <HStack>
-                    <item.icon />
-                    <Text>{item.label}</Text>
-                  </HStack>
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Portal>
-        </Menu>
+        <HStack spacing={0}>
+          {showFriendsButton && (
+            <CommonIconButton
+              size="xs"
+              icon={LuUsersRound}
+              label={t("PlayerMenu.label.friends")}
+              onClick={onMicrosoftFriendsModalOpen}
+            />
+          )}
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              size="xs"
+              variant="ghost"
+              aria-label="operations"
+              icon={<LuEllipsis />}
+            />
+            <Portal>
+              <MenuList>
+                {playerMenuOperations.map((item) => (
+                  <MenuItem
+                    key={item.label}
+                    fontSize="xs"
+                    color={item.danger ? "red.500" : "inherit"}
+                    onClick={item.onClick}
+                  >
+                    <HStack>
+                      <item.icon />
+                      <Text>{item.label}</Text>
+                    </HStack>
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Portal>
+          </Menu>
+        </HStack>
       ) : (
         <HStack spacing={0}>
           {playerMenuOperations.map((item) => (
@@ -221,6 +258,11 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
           )}
         />
       )}
+      <MicrosoftFriendsModal
+        isOpen={isMicrosoftFriendsModalOpen}
+        onClose={onMicrosoftFriendsModalClose}
+        curPlayer={player}
+      />
     </>
   );
 };
