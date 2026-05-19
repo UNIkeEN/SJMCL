@@ -23,6 +23,7 @@ jobs:
     outputs:
       version: ${{ steps.prepare.outputs.version }}
       release_tag: ${{ steps.prepare.outputs.release_tag }}
+      is_prerelease: ${{ steps.prepare.outputs.is_prerelease }}
     steps:
       - name: Prepare release metadata
         id: prepare
@@ -35,6 +36,8 @@ jobs:
           VERSION="${RELEASE_TAG#v}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          IS_PRERELEASE=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json isPrerelease --jq '.isPrerelease')
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
 
           assets=(
             "SJMCL_${VERSION}_linux_x86_64.deb"
@@ -83,3 +86,14 @@ jobs:
       channel: stable
     secrets:
       SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+
+  Publish-Homebrew:
+    needs: [Prepare-Release-Assets]
+    if: needs.Prepare-Release-Assets.outputs.is_prerelease == 'false'
+    uses: ./.github/workflows/publish-homebrew.yml
+    with:
+      version: ${{ needs.Prepare-Release-Assets.outputs.version }}
+      release_tag: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+    secrets:
+      HOMEBREW_TAP_APP_ID: ${{ secrets.HOMEBREW_TAP_APP_ID }}
+      HOMEBREW_TAP_APP_PRIVATE_KEY: ${{ secrets.HOMEBREW_TAP_APP_PRIVATE_KEY }}
