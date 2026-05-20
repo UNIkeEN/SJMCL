@@ -95,6 +95,7 @@ pub async fn parse_profile(
       player_type: PlayerType::ThirdParty,
       auth_account,
       access_token,
+      access_token_expires: None,
       refresh_token,
       textures,
       auth_server_url,

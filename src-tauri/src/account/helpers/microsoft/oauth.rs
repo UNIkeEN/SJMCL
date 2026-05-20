@@ -13,6 +13,7 @@ use crate::account::models::{
 };
 use crate::error::SJMCLResult;
 use serde_json::{json, Value};
+use std::ops::Add;
 use std::str::FromStr;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
@@ -138,7 +139,7 @@ async fn fetch_minecraft_token(
   app: &AppHandle,
   xsts_userhash: String,
   xsts_token: String,
-) -> SJMCLResult<String> {
+) -> SJMCLResult<(String, chrono::DateTime<chrono::Utc>)> {
   let client = app.state::<reqwest::Client>();
 
   let response: Value = client
@@ -153,7 +154,14 @@ async fn fetch_minecraft_token(
     .await
     .map_err(|_| AccountError::ParseError)?;
 
-  Ok(response["access_token"].as_str().unwrap_or("").to_string())
+  let access_token = response["access_token"].as_str().unwrap_or("").to_string();
+  let expires_in = chrono::Utc::now().add(chrono::Duration::seconds(
+    response["expires_in"]
+      .as_str()
+      .and_then(|f| f.parse().ok())
+      .unwrap_or(3600), // 1 hour default if no expires_in is provided
+  ));
+  Ok((access_token, expires_in))
 }
 
 pub async fn fetch_minecraft_profile(
@@ -180,7 +188,8 @@ pub async fn fetch_minecraft_profile(
 async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<PlayerInfo> {
   let xbl_token = fetch_xbl_token(app, tokens.access_token.clone()).await?;
   let (xsts_userhash, xsts_token) = fetch_xsts_token(app, xbl_token).await?;
-  let minecraft_token = fetch_minecraft_token(app, xsts_userhash, xsts_token).await?;
+  let (minecraft_token, minecraft_token_expires_in) =
+    fetch_minecraft_token(app, xsts_userhash, xsts_token).await?;
   let profile = fetch_minecraft_profile(app, minecraft_token.clone()).await?;
 
   let mut textures = vec![];
@@ -222,6 +231,7 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
       player_type: PlayerType::Microsoft,
       auth_account: Some(profile.name.clone()),
       access_token: Some(minecraft_token.clone()),
+      access_token_expires: Some(minecraft_token_expires_in),
       refresh_token: Some(tokens.refresh_token.clone()),
       textures,
       auth_server_url: None,

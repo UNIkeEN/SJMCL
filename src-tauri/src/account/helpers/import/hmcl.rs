@@ -77,6 +77,7 @@ async fn offline_to_player(app: &AppHandle, acc: &HmclOfflineAccount) -> SJMCLRe
       auth_account: None,
       auth_server_url: None,
       access_token: None,
+      access_token_expires: None,
       refresh_token: None,
       textures,
     }
@@ -100,6 +101,7 @@ async fn microsoft_to_player(
           player_type: PlayerType::Microsoft,
           auth_account: None,
           access_token: Some(ACCESS_TOKEN_EXPIRED.to_string()),
+          access_token_expires: Some(chrono::Utc::now()),
           refresh_token: Some(acc.refresh_token.clone()),
           textures: load_preset_skin(app, PresetRole::Steve)?,
           auth_server_url: None,
@@ -148,6 +150,9 @@ async fn microsoft_to_player(
       player_type: PlayerType::Microsoft,
       auth_account: Some(profile.name.clone()),
       access_token: Some(acc.access_token.clone()),
+      access_token_expires: Some(
+        chrono::DateTime::from_timestamp_millis(acc.not_after).unwrap_or(chrono::Utc::now()),
+      ),
       refresh_token: Some(acc.refresh_token.clone()),
       textures,
       auth_server_url: None,
