@@ -1736,7 +1736,7 @@
       "decline": "拒絕",
       "revoke": "撤銷",
       "remove": "刪友",
-      "xboxSettings": "Xbox 設定"
+      "xboxSettings": "XBOX 設定"
     },
     "empty": {
       "requests": "暫無請求",
@@ -2271,11 +2271,11 @@
             "CANCELLED": "已罷",
             "INVALID": "無效的鑒權伺服器址",
             "NO_MINECRAFT_PROFILE": "未找到戲者，請確認然否已買 礦藝 並建立戲者",
-            "XSTS_BANNED": "此戶簿已遭 Xbox 封禁",
+            "XSTS_BANNED": "此戶簿已遭 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "此戶簿受親長管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 Xbox 戶簿，請前往 minecraft.net 建立",
-            "XSTS_TERMS_NOT_ACCEPTED": "需接受 Xbox 服务條款方能繼行",
-            "XSTS_REGION_BANNED": "所在國度不支持 Xbox Live",
+            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 XBOX 戶簿，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "需接受 XBOX 服务條款方能繼行",
+            "XSTS_REGION_BANNED": "所在國度不支持 XBOX Live",
             "XSTS_CHILD_ACCOUNT": "此戶簿為未成年，請前往 family.microsoft.com 以親長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 鑒權時發生未知謬誤"
           }
@@ -2293,11 +2293,11 @@
             "INVALID": "不支援離線戲者重整",
             "CANCELLED": "已罷",
             "NO_MINECRAFT_PROFILE": "未找到戲者，請確認然否已買 礦藝 並建立戲者",
-            "XSTS_BANNED": "此戶簿已遭 Xbox 封禁",
+            "XSTS_BANNED": "此戶簿已遭 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "此戶簿受親長管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 Xbox 戶簿，請前往 minecraft.net 建立",
-            "XSTS_TERMS_NOT_ACCEPTED": "需接受 Xbox 服務條款方能繼行",
-            "XSTS_REGION_BANNED": "所在國度不支持 Xbox Live",
+            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 XBOX 戶簿，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "需接受 XBOX 服務條款方能繼行",
+            "XSTS_REGION_BANNED": "所在國度不支持 XBOX Live",
             "XSTS_CHILD_ACCOUNT": "此戶簿為未成年，請前往 family.microsoft.com 以親長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 鑒權時發生未知謬誤"
           }

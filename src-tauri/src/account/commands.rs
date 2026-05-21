@@ -1,4 +1,3 @@
-use crate::account;
 use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
@@ -130,8 +129,7 @@ pub async fn relogin_player_oauth(
   player_id: String,
   auth_info: DeviceAuthResponseInfo,
 ) -> SJMCLResult<()> {
-  let old_player =
-    account::helpers::misc::get_player_by_id(&app, &player_id)?.ok_or(AccountError::NotFound)?;
+  let old_player = misc::get_player_by_id(&app, &player_id)?.ok_or(AccountError::NotFound)?;
 
   let new_player = match old_player.player_type {
     PlayerType::ThirdParty => {
@@ -226,8 +224,7 @@ pub async fn relogin_player_3rdparty_password(
   player_id: String,
   password: String,
 ) -> SJMCLResult<()> {
-  let old_player =
-    account::helpers::misc::get_player_by_id(&app, &player_id)?.ok_or(AccountError::NotFound)?;
+  let old_player = misc::get_player_by_id(&app, &player_id)?.ok_or(AccountError::NotFound)?;
 
   if old_player.player_type != PlayerType::ThirdParty {
     return Err(AccountError::Invalid.into());
@@ -369,8 +366,7 @@ pub async fn delete_player(app: AppHandle, player_id: String) -> SJMCLResult<()>
 
 #[tauri::command]
 pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
-  let player =
-    account::helpers::misc::get_player_by_id(&app, &player_id)?.ok_or(AccountError::NotFound)?;
+  let player = misc::get_player_by_id(&app, &player_id)?.ok_or(AccountError::NotFound)?;
 
   let refreshed_player = match player.player_type {
     PlayerType::ThirdParty => {
@@ -399,8 +395,7 @@ pub async fn retrieve_microsoft_friend_list(
   app: AppHandle,
   cur_player_id: String,
 ) -> SJMCLResult<MicrosoftFriendList> {
-  let player = account::helpers::misc::get_player_by_id(&app, &cur_player_id)?
-    .ok_or(AccountError::NotFound)?;
+  let player = misc::get_player_by_id(&app, &cur_player_id)?.ok_or(AccountError::NotFound)?;
 
   if player.player_type != PlayerType::Microsoft {
     return Err(AccountError::Invalid.into());
@@ -417,8 +412,7 @@ pub async fn update_microsoft_friend(
   tgt_player_uuid: Option<String>,
   action: MicrosoftFriendAction,
 ) -> SJMCLResult<MicrosoftFriendList> {
-  let player = account::helpers::misc::get_player_by_id(&app, &cur_player_id)?
-    .ok_or(AccountError::NotFound)?;
+  let player = misc::get_player_by_id(&app, &cur_player_id)?.ok_or(AccountError::NotFound)?;
 
   if player.player_type != PlayerType::Microsoft {
     return Err(AccountError::Invalid.into());
@@ -434,7 +428,7 @@ pub async fn update_microsoft_friend(
     _ => None,
   };
 
-  microsoft::friends::update_friend(&app, player, tgt_player_name, tgt_player_uuid, action).await
+  microsoft::friends::update_friend(&app, &player, tgt_player_name, tgt_player_uuid, action).await
 }
 
 #[tauri::command]
