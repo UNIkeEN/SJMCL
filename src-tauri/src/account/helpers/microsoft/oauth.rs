@@ -297,9 +297,10 @@ pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool>
   Ok(response.status().is_success())
 }
 
+/// Returns the access token for the player, refreshing it if necessary.
 pub async fn get_access_token(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<String> {
   let need_refresh = player.access_token.is_none()
-    | player
+    || player
       .access_token_expires
       .map(|x| x <= chrono::Utc::now())
       .unwrap_or(false);
