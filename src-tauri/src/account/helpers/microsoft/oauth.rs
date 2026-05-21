@@ -8,15 +8,13 @@ use crate::account::helpers::microsoft::models::{
 use crate::account::helpers::misc::{self, fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
-  AccountError, AccountInfo, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
-  PlayerType, PresetRole, SkinModel, Texture, TextureType,
+  AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
+  PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
-use crate::storage::Storage;
 use serde_json::{json, Value};
 use std::ops::Add;
 use std::str::FromStr;
-use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
