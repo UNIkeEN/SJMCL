@@ -404,15 +404,7 @@ pub async fn delete_player(app: AppHandle, player_id: String) -> SJMCLResult<()>
 
 #[tauri::command]
 pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()> {
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-
-  let cloned_account_state = account_binding.lock()?.clone();
-
-  let player = cloned_account_state
-    .players
-    .iter()
-    .find(|player| player.id == player_id)
-    .ok_or(AccountError::NotFound)?;
+  let player = misc::get_player_by_id(&app, &player_id)?.ok_or(AccountError::NotFound)?;
 
   let refreshed_player = match player.player_type {
     PlayerType::ThirdParty => {
@@ -421,26 +413,17 @@ pub async fn refresh_player(app: AppHandle, player_id: String) -> SJMCLResult<()
         player.auth_server_url.clone().unwrap_or_default(),
       )?);
 
-      authlib_injector::common::refresh(&app, player, &auth_server).await?
+      authlib_injector::common::refresh(&app, &player, &auth_server).await?
     }
 
-    PlayerType::Microsoft => microsoft::oauth::refresh(&app, player).await?,
+    PlayerType::Microsoft => microsoft::oauth::refresh(&app, &player).await?,
 
     PlayerType::Offline => {
       return Err(AccountError::Invalid.into());
     }
   };
 
-  let mut account_state = account_binding.lock()?;
-
-  if let Some(player) = account_state
-    .players
-    .iter_mut()
-    .find(|player| player.id == player_id)
-  {
-    *player = refreshed_player;
-    account_state.save()?;
-  }
+  misc::update_player_by_id(&app, &player_id, refreshed_player)?;
 
   Ok(())
 }
@@ -450,20 +433,13 @@ pub async fn retrieve_microsoft_friend_list(
   app: AppHandle,
   cur_player_id: String,
 ) -> SJMCLResult<MicrosoftFriendList> {
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let cloned_account_state = account_binding.lock()?.clone();
-
-  let player = cloned_account_state
-    .players
-    .iter()
-    .find(|player| player.id == cur_player_id)
-    .ok_or(AccountError::NotFound)?;
+  let player = misc::get_player_by_id(&app, &cur_player_id)?.ok_or(AccountError::NotFound)?;
 
   if player.player_type != PlayerType::Microsoft {
     return Err(AccountError::Invalid.into());
   }
 
-  microsoft::friends::retrieve_friend_list(&app, player).await
+  microsoft::friends::retrieve_friend_list(&app, &player).await
 }
 
 #[tauri::command]
@@ -474,14 +450,7 @@ pub async fn update_microsoft_friend(
   tgt_player_uuid: Option<String>,
   action: MicrosoftFriendAction,
 ) -> SJMCLResult<MicrosoftFriendList> {
-  let account_binding = app.state::<Mutex<AccountInfo>>();
-  let cloned_account_state = account_binding.lock()?.clone();
-
-  let player = cloned_account_state
-    .players
-    .iter()
-    .find(|player| player.id == cur_player_id)
-    .ok_or(AccountError::NotFound)?;
+  let player = misc::get_player_by_id(&app, &cur_player_id)?.ok_or(AccountError::NotFound)?;
 
   if player.player_type != PlayerType::Microsoft {
     return Err(AccountError::Invalid.into());
@@ -497,7 +466,7 @@ pub async fn update_microsoft_friend(
     _ => None,
   };
 
-  microsoft::friends::update_friend(&app, player, tgt_player_name, tgt_player_uuid, action).await
+  microsoft::friends::update_friend(&app, &player, tgt_player_name, tgt_player_uuid, action).await
 }
 
 #[tauri::command]

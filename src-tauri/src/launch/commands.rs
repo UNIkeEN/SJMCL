@@ -193,7 +193,7 @@ pub async fn validate_selected_player(
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
   local_ygg_server_state: State<'_, Mutex<YggdrasilServer>>,
 ) -> SJMCLResult<bool> {
-  let mut player = get_selected_player_info(&app)?.clone();
+  let mut player = get_selected_player_info(&app)?;
 
   let metadata = if player.player_type == PlayerType::ThirdParty {
     authlib_injector::jar::check_authlib_jar(&app)
