@@ -86,6 +86,7 @@ pub struct Player {
   pub auth_account: Option<String>,
   pub auth_server: Option<AuthServer>,
   pub access_token: Option<String>,
+  pub access_token_expires: Option<chrono::DateTime<chrono::Utc>>,
   pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
@@ -123,6 +124,7 @@ impl Player {
       player_type: player_info.player_type,
       auth_account: player_info.auth_account,
       access_token: player_info.access_token,
+      access_token_expires: player_info.access_token_expires,
       refresh_token: player_info.refresh_token,
       auth_server,
       textures: player_info.textures,
@@ -147,6 +149,7 @@ pub struct PlayerInfo {
   pub auth_account: Option<String>,
   pub auth_server_url: Option<String>,
   pub access_token: Option<String>,
+  pub access_token_expires: Option<chrono::DateTime<chrono::Utc>>,
   pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
@@ -174,6 +177,7 @@ impl From<Player> for PlayerInfo {
       auth_account: player.auth_account,
       textures: player.textures,
       access_token: player.access_token,
+      access_token_expires: player.access_token_expires,
       refresh_token: player.refresh_token,
       auth_server_url: player
         .auth_server

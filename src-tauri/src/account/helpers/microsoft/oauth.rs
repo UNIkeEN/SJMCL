@@ -5,7 +5,7 @@ use crate::account::helpers::microsoft::constants::{
 use crate::account::helpers::microsoft::models::{
   MinecraftProfile, XstsErrorResponse, XstsResponse,
 };
-use crate::account::helpers::misc::{fetch_image, oauth_polling};
+use crate::account::helpers::misc::{self, fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
@@ -13,6 +13,7 @@ use crate::account::models::{
 };
 use crate::error::SJMCLResult;
 use serde_json::{json, Value};
+use std::ops::Add;
 use std::str::FromStr;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
@@ -138,7 +139,7 @@ async fn fetch_minecraft_token(
   app: &AppHandle,
   xsts_userhash: String,
   xsts_token: String,
-) -> SJMCLResult<String> {
+) -> SJMCLResult<(String, chrono::DateTime<chrono::Utc>)> {
   let client = app.state::<reqwest::Client>();
 
   let response: Value = client
@@ -153,7 +154,11 @@ async fn fetch_minecraft_token(
     .await
     .map_err(|_| AccountError::ParseError)?;
 
-  Ok(response["access_token"].as_str().unwrap_or("").to_string())
+  let access_token = response["access_token"].as_str().unwrap_or("").to_string();
+  let expires_in = chrono::Utc::now().add(chrono::Duration::seconds(
+    response["expires_in"].as_i64().unwrap_or(3600), // 1 hour default if no expires_in is provided
+  ));
+  Ok((access_token, expires_in))
 }
 
 pub async fn fetch_minecraft_profile(
@@ -180,7 +185,8 @@ pub async fn fetch_minecraft_profile(
 async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<PlayerInfo> {
   let xbl_token = fetch_xbl_token(app, tokens.access_token.clone()).await?;
   let (xsts_userhash, xsts_token) = fetch_xsts_token(app, xbl_token).await?;
-  let minecraft_token = fetch_minecraft_token(app, xsts_userhash, xsts_token).await?;
+  let (minecraft_token, minecraft_token_expires_in) =
+    fetch_minecraft_token(app, xsts_userhash, xsts_token).await?;
   let profile = fetch_minecraft_profile(app, minecraft_token.clone()).await?;
 
   let mut textures = vec![];
@@ -222,6 +228,7 @@ async fn parse_profile(app: &AppHandle, tokens: &OAuthTokens) -> SJMCLResult<Pla
       player_type: PlayerType::Microsoft,
       auth_account: Some(profile.name.clone()),
       access_token: Some(minecraft_token.clone()),
+      access_token_expires: Some(minecraft_token_expires_in),
       refresh_token: Some(tokens.refresh_token.clone()),
       textures,
       auth_server_url: None,
@@ -276,11 +283,38 @@ pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool>
     .get(PROFILE_ENDPOINT)
     .header(
       "Authorization",
-      format!("Bearer {}", player.access_token.clone().unwrap_or_default()),
+      format!("Bearer {}", get_access_token(app, player).await?),
     )
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
 
   Ok(response.status().is_success())
+}
+
+/// Returns the access token for the player, refreshing it if necessary.
+pub async fn get_access_token(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<String> {
+  if player.player_type != PlayerType::Microsoft {
+    return Err(AccountError::Invalid.into());
+  }
+
+  let need_refresh = player.access_token.is_none()
+    || player
+      .access_token_expires
+      .map(|x| x <= chrono::Utc::now())
+      .unwrap_or(true);
+
+  if need_refresh {
+    let player_id = player.id.as_str();
+    let refreshed_player = refresh(app, player).await?;
+    let access_token = refreshed_player
+      .access_token
+      .clone()
+      .ok_or(AccountError::Invalid)?;
+    misc::update_player_by_id(app, player_id, refreshed_player)?;
+
+    Ok(access_token)
+  } else {
+    Ok(player.access_token.clone().ok_or(AccountError::Invalid)?)
+  }
 }

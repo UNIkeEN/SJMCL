@@ -92,6 +92,34 @@ pub fn add_player(app: &AppHandle, new_player: PlayerInfo) -> SJMCLResult<()> {
   Ok(())
 }
 
+pub fn get_player_by_id(app: &AppHandle, player_id: &str) -> SJMCLResult<Option<PlayerInfo>> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let account_state = account_binding.lock()?;
+
+  Ok(
+    account_state
+      .players
+      .iter()
+      .find(|player| player.id == player_id)
+      .cloned(),
+  )
+}
+
+pub fn update_player_by_id(app: &AppHandle, player_id: &str, info: PlayerInfo) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  if let Some(index) = account_state
+    .players
+    .iter()
+    .position(|player| player.id == player_id)
+  {
+    account_state.players[index] = info;
+    account_state.save()?;
+  }
+  Ok(())
+}
+
 pub async fn check_full_login_availability(app: &AppHandle) -> SJMCLResult<()> {
   let loc_flag = is_china_mainland_ip(app).await;
 
