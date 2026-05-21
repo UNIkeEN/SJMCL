@@ -288,7 +288,7 @@ pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool>
     .get(PROFILE_ENDPOINT)
     .header(
       "Authorization",
-      format!("Bearer {}", player.access_token.clone().unwrap_or_default()),
+      format!("Bearer {}", get_access_token(app, player).await?),
     )
     .send()
     .await
