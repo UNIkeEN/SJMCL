@@ -2,6 +2,28 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 1.1.0
+
+`2026-05-20`
+
+- **🔥 支持在启动器内查看并管理 Minecraft 好友（实验性功能）。#1617** @UNIkeEN @3gf8jv4dv @suhang12332 @Dainsleif233
+- 🌟 实例列表页现在会显示正在下载中的实例。#1580 @icgnos
+- 🐛 修复提示 Toast 的显示样式问题。#1599 @Chang-Yo
+- 🐛 修复 Linux 平台下已归档第三方依赖的潜在编译问题。#1601 @ToolmanP
+- 🐛 修复窗口状态存储的性能问题。@UNIkeEN
+- 🐛 修复部分情况下因 Deeplink 注册失败导致的崩溃问题。#1611 @pangbo13
+- 🐛 修复部分情况下，账户功能可用性检查失败的问题，提升中国大陆用户体验。#1616 @UNIkeEN @1357310795
+- 📦 更新 Tauri 核心库及其插件至最新版本。@UNIkeEN
+- 📦 更新 `rmcp` 库至正式版本。#1613 @xunying123
+- 扩展：
+   - 新增 `setHomeWidgetTitle` 方法，支持扩展动态更新主页组件标题。#1602 @UNIkeEN
+   - 新增 `MarkdownContainer`，`FormattedMCText` 等组件供扩展直接使用。@UNIkeEN
+   - 支持通过 Deeplink 重新加载扩展，提升开发者体验。#1608 @UNIkeEN
+- 工作流：
+   - 新增发版时自动上传 Snapcraft 的工作流，现在可以通过 Snapcraft 安装 SJMCL（实验性功能）。#1610 @pangbo13
+   - 调整发版工作流顺序、修改 AUR 工作流的校验字段类型。#1612 @pangbo13
+   - 新增发版时自动上传 Homebrew 的工作流，现在可以通过 Homebrew 便捷安装 SJMCL（macOS 平台）。#1620 @pangbo13
+
 ## 1.0.0
 
 `2026-05-05`
