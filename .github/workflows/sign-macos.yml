@@ -109,11 +109,14 @@ jobs:
           SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
         working-directory: artifacts
         run: |
+          ENTITLEMENTS_PATH="../src-tauri/Entitlements.plist"
+
           # Extract the .app from tar.gz
           tar -xzf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz
           
           # Sign the .app bundle
           codesign --deep --force --options runtime \
+            --entitlements "$ENTITLEMENTS_PATH" \
             --sign "$SIGNING_IDENTITY" \
             "SJMCL.app"
           
