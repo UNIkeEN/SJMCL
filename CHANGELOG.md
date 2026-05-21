@@ -2,6 +2,28 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.1.0
+
+`2026-05-20`
+
+- **🔥 Support viewing and managing Minecraft friends directly within the launcher (experimental). #1617** @UNIkeEN @3gf8jv4dv @suhang12332 @Dainsleif233
+- 🌟 The instance list page now displays instances that are currently downloading. #1580 @icgnos
+- 🐛 Fix styling issues with toast notifications. #1599 @Chang-Yo
+- 🐛 Fix potential compilation issues caused by archived third-party dependencies on Linux. #1601 @ToolmanP
+- 🐛 Fix performance issues related to window state persistence. @UNIkeEN
+- 🐛 Fix crashes caused by deeplink registration failures in certain scenarios. #1611 @pangbo13
+- 🐛 Fix failures in account functionality availability checks in certain cases, improving the experience for users in mainland China. #1616 @UNIkeEN @1357310795
+- 📦 Update Tauri core libraries and plugins to the latest versions. @UNIkeEN
+- 📦 Update the `rmcp` library to its stable release version. #1613 @xunying123
+- Extensions:
+   - Add the `setHomeWidgetTitle` API, allowing extensions to dynamically update home widget titles. #1602 @UNIkeEN
+   - Add components such as `MarkdownContainer` and `FormattedMCText` for direct extension usage. @UNIkeEN
+   - Support reloading extensions via deeplink to improve the developer experience. #1608 @UNIkeEN
+- Workflow:
+   - Add a workflow to automatically upload releases to Snapcraft. SJMCL can now be installed via Snapcraft (experimental). #1610 @pangbo13
+   - Adjust the order of release workflows and update validation field types in the AUR workflow. #1612 @pangbo13
+   - Add a workflow to automatically upload releases to Homebrew. SJMCL can now be conveniently installed via Homebrew on macOS. #1620 @pangbo13
+
 ## 1.0.0
 
 `2026-05-05`
