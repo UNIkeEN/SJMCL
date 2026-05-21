@@ -463,28 +463,7 @@ pub async fn retrieve_microsoft_friend_list(
     return Err(AccountError::Invalid.into());
   }
 
-  let maybe_refreshed = if player
-    .access_token_expires
-    .map(|expires| expires < chrono::Utc::now())
-    .unwrap_or(false)
-  {
-    let refreshed_player = microsoft::oauth::refresh(&app, player).await?;
-    let mut account_state = account_binding.lock()?;
-    if let Some(state_player) = account_state
-      .players
-      .iter_mut()
-      .find(|p| p.id == refreshed_player.id)
-    {
-      *state_player = refreshed_player.clone();
-      account_state.save()?;
-    }
-    Some(refreshed_player)
-  } else {
-    None
-  };
-
-  let player_to_use = maybe_refreshed.as_ref().unwrap_or(player);
-  microsoft::friends::retrieve_friend_list(&app, player_to_use).await
+  microsoft::friends::retrieve_friend_list(&app, player).await
 }
 
 #[tauri::command]

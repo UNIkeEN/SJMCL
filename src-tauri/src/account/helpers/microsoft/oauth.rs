@@ -8,13 +8,15 @@ use crate::account::helpers::microsoft::models::{
 use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
-  AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
-  PresetRole, SkinModel, Texture, TextureType,
+  AccountError, AccountInfo, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo,
+  PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
+use crate::storage::Storage;
 use serde_json::{json, Value};
 use std::ops::Add;
 use std::str::FromStr;
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_http::reqwest;
@@ -293,4 +295,36 @@ pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool>
     .map_err(|_| AccountError::NetworkError)?;
 
   Ok(response.status().is_success())
+}
+
+pub async fn get_access_token(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<String> {
+  let need_refresh = player.access_token.is_none()
+    | player
+      .access_token_expires
+      .map(|x| x <= chrono::Utc::now())
+      .unwrap_or(false);
+
+  if need_refresh {
+    let refreshed_player = refresh(app, player).await?;
+    let access_token = refreshed_player
+      .access_token
+      .clone()
+      .ok_or(AccountError::Invalid)?;
+    let account_binding = app.state::<Mutex<AccountInfo>>();
+    let mut account_state = account_binding.lock()?;
+    if let Some(state_player) = account_state
+      .players
+      .iter_mut()
+      .find(|p| p.id == refreshed_player.id)
+    {
+      *state_player = refreshed_player.clone();
+      account_state.save()?;
+    } else {
+      return Err(AccountError::NotFound.into());
+    }
+
+    Ok(access_token)
+  } else {
+    Ok(player.access_token.clone().ok_or(AccountError::Invalid)?)
+  }
 }

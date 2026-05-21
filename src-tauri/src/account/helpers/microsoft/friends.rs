@@ -1,5 +1,6 @@
 use crate::account::helpers::authlib_injector::common::parse_profile;
 use crate::account::helpers::authlib_injector::models::MinecraftProfile;
+use crate::account::helpers::microsoft;
 use crate::account::helpers::microsoft::constants::{FRIENDS_ENDPOINT, PRESENCE_ENDPOINT};
 use crate::account::helpers::microsoft::models::{
   MicrosoftFriend, MicrosoftFriendAction, MicrosoftFriendList, MicrosoftPresenceStatus,
@@ -171,7 +172,7 @@ async fn attach_presence(
   player: &PlayerInfo,
   friends_response: MicrosoftFriendsResponse,
 ) -> SJMCLResult<MicrosoftFriendList> {
-  let access_token = player.access_token.clone().ok_or(AccountError::Invalid)?;
+  let access_token = microsoft::oauth::get_access_token(app, player).await?;
   let client = app.state::<reqwest::Client>();
 
   let mut presence_map = HashMap::<_, MicrosoftPresenceProfile>::new();
@@ -289,7 +290,7 @@ pub async fn retrieve_friend_list(
   app: &AppHandle,
   player: &PlayerInfo,
 ) -> SJMCLResult<MicrosoftFriendList> {
-  let access_token = player.access_token.clone().ok_or(AccountError::Invalid)?;
+  let access_token = microsoft::oauth::get_access_token(app, player).await?;
   let client = app.state::<reqwest::Client>();
 
   let response = client
@@ -318,7 +319,7 @@ pub async fn update_friend(
   tgt_player_uuid: Option<Uuid>,
   action: MicrosoftFriendAction,
 ) -> SJMCLResult<MicrosoftFriendList> {
-  let access_token = player.access_token.clone().ok_or(AccountError::Invalid)?;
+  let access_token = microsoft::oauth::get_access_token(app, player).await?;
   let client = app.state::<reqwest::Client>();
   let request = build_friend_action_request(tgt_player_name, tgt_player_uuid, action)?;
 
