@@ -354,7 +354,8 @@ const MainLayoutFileDnD = () => {
     titleKey: "MainLayout.fileDnD.title",
     descKey: "MainLayout.fileDnD.desc",
     icon: LuPackagePlus,
-    onDrop: async (path) => {
+    onDrop: async ([path]) => {
+      if (!path) return;
       openSharedModal("import-modpack", { path });
     },
   });
@@ -364,7 +365,10 @@ const MainLayoutFileDnD = () => {
     titleKey: "ExtensionSettingsPage.fileDnD.title",
     descKey: "ExtensionSettingsPage.fileDnD.desc",
     icon: LuGrid2X2Plus,
-    onDrop: handleAddExtension,
+    onDrop: async ([path]) => {
+      if (!path) return;
+      await handleAddExtension(path);
+    },
   });
 
   return null;

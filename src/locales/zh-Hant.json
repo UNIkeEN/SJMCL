@@ -865,6 +865,9 @@
     "title": "更新擴充套件",
     "body": "擴充套件 {{identifier}} 已從 {{src}} 下載新版本 {{version}}，是否確認安裝？"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} 等（共 {{count}} 個）"
+  },
   "GameAdvancedSettingsPage": {
     "title": "高階遊戲設定",
     "topWarning": "高階遊戲設定僅提供給專業玩家使用。修改以下選項可能導致遊戲無法啟動。除非您充分了解其中的意義，否則請不要修改這些選項！",
@@ -2688,7 +2691,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "資源複製成功",
         "error": {
           "title": "複製資源失敗",

@@ -61,6 +61,7 @@ use crate::utils::fs::{
   get_subdirectories, normalize_relative_path,
 };
 use crate::utils::image::ImageWrapper;
+use futures::{StreamExt, TryStreamExt};
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
@@ -319,69 +320,121 @@ pub async fn rename_instance(
 }
 
 #[tauri::command]
-pub fn copy_resource_to_instances(
+pub async fn copy_resources_to_instances(
   app: AppHandle,
-  src_file_path: String,
+  src_file_paths: Vec<String>,
   tgt_inst_ids: Vec<String>,
   tgt_dir_type: InstanceSubdirType,
   decompress: bool,
 ) -> SJMCLResult<()> {
-  let src_path = Path::new(&src_file_path);
-
-  if src_path.is_file() {
-    let file_name = src_path
-      .file_name()
-      .ok_or(InstanceError::InvalidSourcePath)?;
-
-    for tgt_inst_id in tgt_inst_ids {
-      let tgt_path = match get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type) {
-        Some(path) => path,
-        None => return Err(InstanceError::InstanceNotFoundByID.into()),
-      };
-
-      if !tgt_path.exists() {
-        fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-      }
-
-      if decompress {
-        let base_name = src_path
-          .extension()
-          .and_then(|ext| if ext == "zip" { Some(()) } else { None })
-          .and_then(|_| Path::new(file_name).file_stem())
-          .unwrap_or(file_name);
-        let dest_path = generate_unique_filename(&tgt_path, base_name);
-
-        // extract zip
-        let file = fs::File::open(src_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
-        let mut archive = ZipArchive::new(file).map_err(|_| InstanceError::ZipFileProcessFailed)?;
-
-        fs::create_dir_all(&dest_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-
-        archive
-          .extract(&dest_path)
-          .map_err(|_| InstanceError::ZipFileProcessFailed)?;
-      } else {
-        let dest_path = generate_unique_filename(&tgt_path, file_name);
-        fs::copy(&src_file_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
-      }
-    }
-  } else if src_path.is_dir() {
-    for tgt_inst_id in tgt_inst_ids {
-      let tgt_path = match get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type) {
-        Some(path) => path,
-        None => return Err(InstanceError::InstanceNotFoundByID.into()),
-      };
-
-      if !tgt_path.exists() {
-        fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-      }
-
-      let dest_path = generate_unique_filename(&tgt_path, src_path.file_name().unwrap());
-      copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
-    }
-  } else {
+  if src_file_paths.is_empty() {
     return Err(InstanceError::InvalidSourcePath.into());
   }
+
+  let src_paths = src_file_paths
+    .into_iter()
+    .map(PathBuf::from)
+    .map(|path| {
+      if path.is_file() || path.is_dir() {
+        Ok(path)
+      } else {
+        Err(InstanceError::InvalidSourcePath.into())
+      }
+    })
+    .collect::<SJMCLResult<Vec<_>>>()?;
+
+  let tgt_paths = tgt_inst_ids
+    .into_iter()
+    .map(|tgt_inst_id| {
+      get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type)
+        .ok_or(InstanceError::InstanceNotFoundByID.into())
+    })
+    .collect::<SJMCLResult<Vec<_>>>()?;
+
+  for tgt_path in &tgt_paths {
+    if !tgt_path.exists() {
+      fs::create_dir_all(tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+    }
+  }
+
+  let entries = src_paths
+    .iter()
+    .flat_map(|src_path| {
+      tgt_paths
+        .iter()
+        .cloned()
+        .map(move |tgt_path| (src_path.clone(), tgt_path))
+    })
+    .collect::<Vec<_>>();
+
+  let semaphore = Arc::new(Semaphore::new(
+    std::thread::available_parallelism().unwrap().into(),
+  ));
+
+  let copy_resource_entry_to_instance =
+    |src_path: &Path, tgt_path: &Path, decompress: bool| -> SJMCLResult<()> {
+      if src_path.is_file() {
+        let file_name = src_path
+          .file_name()
+          .ok_or(InstanceError::InvalidSourcePath)?;
+
+        if decompress {
+          let base_name = src_path
+            .extension()
+            .and_then(|ext| if ext == "zip" { Some(()) } else { None })
+            .and_then(|_| Path::new(file_name).file_stem())
+            .unwrap_or(file_name);
+          let dest_path = generate_unique_filename(tgt_path, base_name);
+
+          let file = fs::File::open(src_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+          let mut archive =
+            ZipArchive::new(file).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+
+          fs::create_dir_all(&dest_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+
+          archive
+            .extract(&dest_path)
+            .map_err(|_| InstanceError::ZipFileProcessFailed)?;
+        } else {
+          let dest_path = generate_unique_filename(tgt_path, file_name);
+          fs::copy(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+        }
+      } else if src_path.is_dir() {
+        let dir_name = src_path
+          .file_name()
+          .ok_or(InstanceError::InvalidSourcePath)?;
+        let dest_path = generate_unique_filename(tgt_path, dir_name);
+        copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+      } else {
+        return Err(InstanceError::InvalidSourcePath.into());
+      }
+
+      Ok(())
+    };
+
+  futures::stream::iter(entries)
+    .map(Ok::<_, crate::error::SJMCLError>)
+    .try_for_each_concurrent(None, move |(src_path, tgt_path)| {
+      let semaphore = semaphore.clone();
+
+      async move {
+        let permit = semaphore
+          .acquire_owned()
+          .await
+          .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
+
+        tokio::task::spawn_blocking(move || -> SJMCLResult<()> {
+          let _permit = permit;
+          copy_resource_entry_to_instance(&src_path, &tgt_path, decompress)
+        })
+        .await
+        .map_err(|_| InstanceError::FileCopyFailed)??;
+
+        Ok::<(), crate::error::SJMCLError>(())
+      }
+    })
+    .await?;
+
   Ok(())
 }
 

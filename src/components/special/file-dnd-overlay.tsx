@@ -17,14 +17,15 @@ export type FileDnDRegistry = {
   titleKey?: string;
   descKey?: string;
   icon?: IconType;
-  onDrop: (path: string) => void | Promise<void>;
+  multiple?: boolean;
+  onDrop: (paths: string[]) => void | Promise<void>;
 };
 
 type Entry = { id: symbol; registries: FileDnDRegistry[] };
 type IndexedItem = { registry: FileDnDRegistry; order: number };
 type MatchItem = {
   registry: FileDnDRegistry;
-  path: string;
+  paths: string[];
   fileName: string;
   order: number;
 };
@@ -76,10 +77,13 @@ const getMatches = (
 
     for (const item of items) {
       const current = matches.get(item.registry);
-      if (current && current.order >= item.order) continue;
+      if (current) {
+        if (item.registry.multiple) current.paths.push(path);
+        continue;
+      }
       matches.set(item.registry, {
         registry: item.registry,
-        path,
+        paths: [path],
         fileName,
         order: item.order,
       });
@@ -124,6 +128,7 @@ export const FileDnDProvider: React.FC<{ children: React.ReactNode }> = ({
   } | null>(null);
   const entriesRef = useRef<Entry[]>([]);
   const registryIndexRef = useRef<Map<string, IndexedItem[]>>(new Map());
+  const unlistenRef = useRef<(() => void) | null>(null);
 
   // The provider maintains a list of registered handlers and their derived extension index for lookup.
   const upsert = useCallback(
@@ -153,7 +158,7 @@ export const FileDnDProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Listen to drag-drop events from the webview.
   useEffect(() => {
-    let cleanup: (() => void) | undefined;
+    let cancelled = false;
 
     (async () => {
       const unlisten = await getCurrentWebview().onDragDropEvent((event) => {
@@ -195,17 +200,29 @@ export const FileDnDProvider: React.FC<{ children: React.ReactNode }> = ({
         setDragState(null);
         if (!match) return;
 
-        Promise.resolve(match.registry.onDrop(match.path)).catch((error) => {
+        const handleDrop = match.registry.onDrop(
+          match.registry.multiple ? match.paths : [match.paths[0]]
+        );
+        Promise.resolve(handleDrop).catch((error) => {
           logger.error("Failed to handle dropped files:", error);
         });
       });
 
-      cleanup = unlisten;
+      if (cancelled) {
+        unlisten();
+        return;
+      }
+
+      unlistenRef.current = unlisten;
     })().catch((error) => {
       logger.error("Failed to listen to drag-drop events:", error);
     });
 
-    return () => cleanup?.();
+    return () => {
+      cancelled = true;
+      unlistenRef.current?.();
+      unlistenRef.current = null;
+    };
   }, []);
 
   const isMultiMatch = matches.length > 1;
@@ -215,16 +232,26 @@ export const FileDnDProvider: React.FC<{ children: React.ReactNode }> = ({
       ? [activeMatch]
       : [];
 
-  const overlayItems = displayMatches.map((match) => ({
-    ...match,
-    title: match.registry.titleKey
-      ? t(match.registry.titleKey, { fileName: match.fileName })
-      : t("General.import"),
-    desc: match.registry.descKey
-      ? t(match.registry.descKey, { fileName: match.fileName })
-      : "",
-    icon: match.registry.icon || LuFileUp,
-  }));
+  const overlayItems = displayMatches.map((match) => {
+    const fileNameText =
+      match.paths.length > 1
+        ? t("FileDnDProvider.fileName", {
+            fileName: match.fileName,
+            count: match.paths.length,
+          })
+        : match.fileName;
+
+    return {
+      ...match,
+      title: match.registry.titleKey
+        ? t(match.registry.titleKey, { fileName: match.fileName })
+        : t("General.import"),
+      desc: match.registry.descKey
+        ? t(match.registry.descKey, { fileName: fileNameText })
+        : "",
+      icon: match.registry.icon || LuFileUp,
+    };
+  });
 
   return (
     <FileDnDContext.Provider value={{ upsert, remove }}>

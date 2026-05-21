@@ -124,7 +124,7 @@ pub async fn run() {
         instance::commands::read_instance_file,
         instance::commands::delete_instance,
         instance::commands::rename_instance,
-        instance::commands::copy_resource_to_instances,
+        instance::commands::copy_resources_to_instances,
         instance::commands::move_resource_to_instance,
         instance::commands::retrieve_world_list,
         instance::commands::retrieve_world_details,

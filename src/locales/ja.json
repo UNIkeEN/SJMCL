@@ -865,6 +865,9 @@
     "title": "拡張機能を更新",
     "body": "拡張機能 {{identifier}} は {{src}} から新しいバージョン {{version}} をダウンロードしました。インストールを確認しますか？"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} など（全{{count}}件）"
+  },
   "GameAdvancedSettingsPage": {
     "title": "高度起動設定",
     "topWarning": "本設定は上級者向けに設計されていますので、以下の項目を変更すると、ゲームの起動不能やデータの破損を引き起こす可能性があります。オプションの機能を完全に理解している場合のみ変更してください。",
@@ -2688,7 +2691,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "リソースをコピーした",
         "error": {
           "title": "リソースのコピーに失敗",

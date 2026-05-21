@@ -865,6 +865,9 @@
     "title": "更新扩展",
     "body": "扩展 {{identifier}} 已从 {{src}} 下载新版本 {{version}}，是否确认安装？"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} 等（共 {{count}} 个）"
+  },
   "GameAdvancedSettingsPage": {
     "title": "高级游戏设置",
     "topWarning": "高级游戏设置仅提供给专业玩家使用。修改以下选项可能导致游戏无法启动。除非您充分了解其中的意义，否则请不要修改这些选项！",
@@ -2688,7 +2691,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "资源复制成功",
         "error": {
           "title": "复制资源失败",
