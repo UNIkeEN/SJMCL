@@ -156,10 +156,7 @@ async fn fetch_minecraft_token(
 
   let access_token = response["access_token"].as_str().unwrap_or("").to_string();
   let expires_in = chrono::Utc::now().add(chrono::Duration::seconds(
-    response["expires_in"]
-      .as_str()
-      .and_then(|f| f.parse().ok())
-      .unwrap_or(3600), // 1 hour default if no expires_in is provided
+    response["expires_in"].as_i64().unwrap_or(3600), // 1 hour default if no expires_in is provided
   ));
   Ok((access_token, expires_in))
 }
