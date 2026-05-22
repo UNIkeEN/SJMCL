@@ -1,9 +1,9 @@
-use crate::account::constants::ACCOUNTS_FILE_NAME;
 use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
 use crate::account::helpers::skin::draw_avatar;
 use crate::storage::Storage;
 use crate::utils::image::ImageWrapper;
 use crate::APP_DATA_DIR;
+use crate::{account::constants::ACCOUNTS_FILE_NAME, error::SJMCLResult};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
@@ -313,8 +313,26 @@ impl Default for AccountInfo {
 }
 
 impl AccountInfo {
-  pub fn get_player_by_id_mut(&mut self, id: String) -> Option<&mut PlayerInfo> {
-    self.players.iter_mut().find(|player| player.id == id)
+  pub fn get_player_by_id_mut(&mut self, id: &str) -> SJMCLResult<&mut PlayerInfo> {
+    self
+      .players
+      .iter_mut()
+      .find(|player| player.id == id)
+      .ok_or(AccountError::NotFound.into())
+  }
+
+  pub fn get_player_by_id(&self, id: &str) -> SJMCLResult<&PlayerInfo> {
+    self
+      .players
+      .iter()
+      .find(|player| player.id == id)
+      .ok_or(AccountError::NotFound.into())
+  }
+
+  pub fn update_player(&mut self, id: &str, player: PlayerInfo) -> SJMCLResult<()> {
+    let m = self.get_player_by_id_mut(id)?;
+    *m = player;
+    Ok(())
   }
 }
 
