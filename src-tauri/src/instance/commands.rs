@@ -368,7 +368,7 @@ pub async fn copy_resources_to_instances(
     .collect::<Vec<_>>();
 
   let semaphore = Arc::new(Semaphore::new(
-    std::thread::available_parallelism().unwrap().into(),
+    std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),
   ));
 
   let copy_resource_entry_to_instance =
@@ -617,7 +617,7 @@ pub async fn retrieve_local_mod_list(
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
   let mut tasks = Vec::new();
   let semaphore = Arc::new(Semaphore::new(
-    std::thread::available_parallelism().unwrap().into(),
+    std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),
   ));
   for path in mod_paths {
     let permit = semaphore

@@ -78,8 +78,17 @@ const getMatches = (
     for (const item of items) {
       const current = matches.get(item.registry);
       if (current) {
-        if (item.registry.multiple) current.paths.push(path);
-        continue;
+        if (current.order >= item.order) {
+          if (item.registry.multiple) current.paths.push(path);
+          continue;
+        }
+
+        if (item.registry.multiple) {
+          current.paths.push(path);
+          current.fileName = fileName;
+          current.order = item.order;
+          continue;
+        }
       }
       matches.set(item.registry, {
         registry: item.registry,
