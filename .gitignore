@@ -66,3 +66,5 @@ next-env.d.ts
 .claude/
 .gemini/
 .cursor/
+
+bun.lock

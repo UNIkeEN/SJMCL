@@ -1,5 +1,4 @@
 import { Box, Card, Center, Divider } from "@chakra-ui/react";
-import { debounce } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import {
@@ -11,6 +10,7 @@ import {
 import { OptionItem, OptionItemProps } from "@/components/common/option-item";
 import { Section, SectionProps } from "@/components/common/section";
 import cardStyles from "@/styles/card.module.css";
+import { lodash_debounce } from "../../utils/partial";
 
 export { OptionItem };
 export type { OptionItemProps };
@@ -55,7 +55,7 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
     setLoadingMore(false);
   }, [items]);
 
-  const debouncedLoadMore = debounce(() => {
+  const debouncedLoadMore = lodash_debounce(() => {
     if (canLoadMore && hasMore && !loadingMore) {
       setLoadingMore(true);
       loadMore();
