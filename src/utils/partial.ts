@@ -22,12 +22,3 @@ export const updateByKeyPath = (obj: any, path: string, value: any): void => {
 
   current[lastKey] = value;
 };
-
-export function lodash_debounce(func: Function, wait: number): Function {
-  let timeout: NodeJS.Timeout | null = null;
-
-  return function (...args: any[]) {
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}

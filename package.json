@@ -63,7 +63,6 @@
     "@next/bundle-analyzer": "^16.2.4",
     "@tauri-apps/cli": "^2.11.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/lodash": "^4.17.15",
     "@types/micromatch": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^18",

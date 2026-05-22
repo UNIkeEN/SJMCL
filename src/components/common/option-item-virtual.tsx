@@ -10,7 +10,7 @@ import {
 import { OptionItem, OptionItemProps } from "@/components/common/option-item";
 import { Section, SectionProps } from "@/components/common/section";
 import cardStyles from "@/styles/card.module.css";
-import { lodash_debounce } from "../../utils/partial";
+import { lodash_debounce } from "@/utils/lodash";
 
 export { OptionItem };
 export type { OptionItemProps };

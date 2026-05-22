@@ -10,6 +10,7 @@
 !.yarn/releases
 !.yarn/versions
 pnpm-lock.yaml
+bun.lock
 
 # testing
 /coverage
@@ -66,5 +67,3 @@ next-env.d.ts
 .claude/
 .gemini/
 .cursor/
-
-bun.lock
