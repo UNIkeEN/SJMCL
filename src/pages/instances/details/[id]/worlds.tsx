@@ -43,7 +43,7 @@ const InstanceWorldsPage = () => {
     instanceId,
     summary,
     openInstanceSubdir,
-    handleImportResource,
+    handleImportResources,
     getWorldList,
     isWorldListLoading: isLoading,
   } = useInstanceSharedData();
@@ -85,15 +85,17 @@ const InstanceWorldsPage = () => {
 
   useFileDnD({
     extensions: ["zip"],
+    multiple: true,
     titleKey: "InstanceWorldsPage.fileDnD.title",
     descKey: "InstanceWorldsPage.fileDnD.desc",
     icon: LuEarth,
-    onDrop: async (path) => {
-      handleImportResource({
+    onDrop: async (paths) => {
+      handleImportResources({
         filterName: t("InstanceDetailsLayout.instanceTabList.worlds"),
         filterExt: ["zip"],
         tgtDirType: InstanceSubdirType.Saves,
-        path,
+        paths,
+        multiple: true,
         decompress: true,
         onSuccessCallback: () => getWorldListWrapper(true),
       });
@@ -179,10 +181,11 @@ const InstanceWorldsPage = () => {
     {
       icon: "add",
       onClick: () => {
-        handleImportResource({
+        handleImportResources({
           filterName: t("InstanceDetailsLayout.instanceTabList.worlds"),
           filterExt: ["zip"],
           tgtDirType: InstanceSubdirType.Saves,
+          multiple: true,
           decompress: true,
           onSuccessCallback: () => getWorldListWrapper(true),
         });

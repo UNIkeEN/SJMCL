@@ -865,6 +865,9 @@
     "title": "Update Extension",
     "body": "Extension {{identifier}} downloaded the new version {{version}} from {{src}}. Do you want to confirm installation?"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} and others ({{count}} total)"
+  },
   "GameAdvancedSettingsPage": {
     "title": "Advanced Settings",
     "topWarning": "Advanced settings are for expert users. Changing them may break the game. Do not modify unless you know what you're doing.",
@@ -2688,7 +2691,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "Resource copied successfully",
         "error": {
           "title": "Failed to copy resource",
