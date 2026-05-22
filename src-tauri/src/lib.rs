@@ -64,11 +64,12 @@ pub async fn run() {
                                     // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
         let _ = main_window.set_focus();
 
-        // Handle .mrpack file association on warm re-launch
+        // .mrpack file association (warm start)
         for arg in &args {
           if arg.ends_with(".mrpack") {
             let encoded = urlencoding::encode(arg);
             let deep_link = format!("sjmcl://import-modpack?path={}", encoded);
+            *PENDING_MODPACK_IMPORT.lock().unwrap() = Some(deep_link.clone());
             let _ = app.emit("sjmcl://import", deep_link);
           }
         }
@@ -201,7 +202,7 @@ pub async fn run() {
         utils::commands::delete_directory,
         utils::commands::read_file,
         utils::commands::write_file,
-        utils::commands::check_pending_modpack_import,
+        utils::commands::check_cold_start_mrpack,
       ])
       .setup(|app| {
         // init APP_DATA_DIR
@@ -344,46 +345,39 @@ pub async fn run() {
           intelligence::mcp_server::launcher::run(app.handle().clone(), &launcher_mcp_config);
         }
 
-        // Handle .mrpack file association on cold start
-        // Store the deep link so the frontend can pick it up once loaded
-        let args: Vec<String> = std::env::args().collect();
-        for arg in &args {
-          if arg.ends_with(".mrpack") {
-            let encoded = urlencoding::encode(arg);
-            let deep_link = format!("sjmcl://import-modpack?path={}", encoded);
-            *PENDING_MODPACK_IMPORT.lock().unwrap() = Some(deep_link);
-            break;
-          }
-        }
-
         Ok(())
       })
       .build(tauri::generate_context!())
       .expect("error while building tauri application")
-      .run_return(|app_handle, event| match event {
-        #[cfg(target_os = "macos")]
-        tauri::RunEvent::Opened { urls } => {
-          for url in urls {
-            if let Ok(path) = url.to_file_path() {
-              if path.extension().map_or(false, |ext| ext == "mrpack") {
-                if let Some(path_str) = path.to_str() {
-                  let encoded = urlencoding::encode(path_str);
-                  let deep_link = format!("sjmcl://import-modpack?path={}", encoded);
-                  *PENDING_MODPACK_IMPORT.lock().unwrap() = Some(deep_link.clone());
-                  let _ = app_handle.emit("sjmcl://import", deep_link);
+      .run_return(|app_handle, event| {
+        #[cfg(not(target_os = "macos"))]
+        let _ = &app_handle;
+        match event {
+          // macOS: file open is an Apple Event, not argv
+          #[cfg(target_os = "macos")]
+          tauri::RunEvent::Opened { urls } => {
+            for url in urls {
+              if let Ok(path) = url.to_file_path() {
+                if path.extension().map_or(false, |ext| ext == "mrpack") {
+                  if let Some(path_str) = path.to_str() {
+                    let encoded = urlencoding::encode(path_str);
+                    let deep_link = format!("sjmcl://import-modpack?path={}", encoded);
+                    *PENDING_MODPACK_IMPORT.lock().unwrap() = Some(deep_link.clone());
+                    let _ = app_handle.emit("sjmcl://import", deep_link);
+                  }
                 }
               }
             }
           }
+          tauri::RunEvent::Exit => {
+            log::info!("Launcher exited normally.");
+            let _ = LauncherConfig::load().map(|mut config| {
+              config.last_run_exited_normally = true;
+              let _ = config.save();
+            });
+          }
+          _ => {}
         }
-        tauri::RunEvent::Exit => {
-          log::info!("Launcher exited normally.");
-          let _ = LauncherConfig::load().map(|mut config| {
-            config.last_run_exited_normally = true;
-            let _ = config.save();
-          });
-        }
-        _ => {}
       })
   };
 

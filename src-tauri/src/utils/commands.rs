@@ -85,8 +85,21 @@ pub fn write_file(path: String, content: String, mode: Option<String>) -> SJMCLR
   }
 }
 
+// Check whether the app was started by opening a .mrpack file.
+// macOS: RunEvent::Opened stores the URL before frontend loads (emit would be lost).
+// Windows/Linux: just read argv — it's available at any time without pre-storage.
 #[tauri::command]
-pub fn check_pending_modpack_import() -> SJMCLResult<Option<String>> {
-  let pending = crate::PENDING_MODPACK_IMPORT.lock().unwrap().take();
-  Ok(pending)
+pub fn check_cold_start_mrpack() -> SJMCLResult<Option<String>> {
+  if let Some(pending) = crate::PENDING_MODPACK_IMPORT.lock().unwrap().take() {
+    return Ok(Some(pending));
+  }
+  for arg in std::env::args() {
+    if arg.ends_with(".mrpack") {
+      return Ok(Some(format!(
+        "sjmcl://import-modpack?path={}",
+        urlencoding::encode(&arg)
+      )));
+    }
+  }
+  Ok(None)
 }

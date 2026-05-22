@@ -3,7 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo } from "react";
 import { useSharedModals } from "@/contexts/shared-modal";
-import useDeepLink from "@/hooks/deep-link";
+import useDeepLink, { emitDeepLink } from "@/hooks/deep-link";
 import useKeyboardShortcut from "@/hooks/keyboard-shortcut";
 
 // Handle global keyboard shortcuts, DnD events, etc.
@@ -135,43 +135,19 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
     onCall: importModpackByDeeplink,
   });
 
-  // Helper: open the import-modpack modal from a deep-link URL
-  const openModpackImportFromUrl = useCallback(
-    (url: string) => {
-      const filePath = new URL(url).searchParams.get("path") || "";
-      if (!isStandAlone && filePath) {
-        setTimeout(() => {
-          openSharedModal("import-modpack", { path: filePath });
-        }, 500);
-      }
-    },
-    [isStandAlone, openSharedModal]
-  );
-
-  // Listen for file association events from the Rust backend (warm start)
   useEffect(() => {
     let unlisten: (() => void) | undefined;
     (async () => {
+      const pending = await invoke<string | null>("check_cold_start_mrpack");
+      if (pending) emitDeepLink([pending]);
       unlisten = await listen<string>("sjmcl://import", (event) => {
-        openModpackImportFromUrl(event.payload);
+        emitDeepLink([event.payload]);
       });
     })();
     return () => {
       if (unlisten) unlisten();
     };
-  }, [openModpackImportFromUrl]);
-
-  // Check for pending modpack import from cold start
-  useEffect(() => {
-    (async () => {
-      const pending = await invoke<string | null>(
-        "check_pending_modpack_import"
-      );
-      if (pending) {
-        openModpackImportFromUrl(pending);
-      }
-    })();
-  }, [openModpackImportFromUrl]);
+  }, []);
 
   return <>{children}</>;
 };
