@@ -10,7 +10,7 @@ import {
 import { OptionItem, OptionItemProps } from "@/components/common/option-item";
 import { Section, SectionProps } from "@/components/common/section";
 import cardStyles from "@/styles/card.module.css";
-import { lodash_debounce } from "@/utils/lodash";
+import { debounce } from "@/utils/debounce";
 
 export { OptionItem };
 export type { OptionItemProps };
@@ -55,7 +55,7 @@ export const VirtualOptionItemGroup: React.FC<VirtualOptionItemGroupProps> = ({
     setLoadingMore(false);
   }, [items]);
 
-  const debouncedLoadMore = lodash_debounce(() => {
+  const debouncedLoadMore = debounce(() => {
     if (canLoadMore && hasMore && !loadingMore) {
       setLoadingMore(true);
       loadMore();
