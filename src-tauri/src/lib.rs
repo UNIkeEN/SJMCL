@@ -66,7 +66,8 @@ pub async fn run() {
         tauri_plugin_window_state::Builder::new()
           .with_state_flags(
             tauri_plugin_window_state::StateFlags::POSITION
-              | tauri_plugin_window_state::StateFlags::SIZE,
+              | tauri_plugin_window_state::StateFlags::SIZE
+              | tauri_plugin_window_state::StateFlags::MAXIMIZED,
           )
           .with_filter(|label| label == "main")
           .build(),
@@ -337,7 +338,19 @@ pub async fn run() {
         Ok(())
       })
       .build(tauri::generate_context!())
-      .expect("error while building tauri application")
+      // Catch and show a native error dialog when Tauri fails to initialize.
+      // A plain panic would be invisible to the user by default, and tauri-plugin-dialog isn't available since the app never started.
+      .unwrap_or_else(|e| {
+        log::error!("Failed to build tauri application: {:?}", e);
+        native_dialog::DialogBuilder::message()
+          .set_title("Initialization error")
+          .set_text(format!("Cannot initialize SJMCL due to an error: \n{e:?}"))
+          .set_level(native_dialog::MessageLevel::Error)
+          .alert()
+          .show()
+          .ok();
+        std::process::exit(1);
+      })
       .run_return(|_, event| {
         if let tauri::RunEvent::Exit = event {
           log::info!("Launcher exited normally.");

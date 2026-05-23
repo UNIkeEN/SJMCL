@@ -118,6 +118,7 @@ pub fn get_memory_info() -> MemoryInfo {
 ///     println!("Drive: {:?}", mount);
 /// }
 /// ```
+#[cfg(target_os = "windows")]
 pub fn get_all_drive_mount_points() -> Vec<PathBuf> {
   let disks = Disks::new_with_refreshed_list(); // creates and loads disks
 
