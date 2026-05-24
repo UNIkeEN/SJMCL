@@ -42,6 +42,16 @@
     ],
     "licenseFile": "../LICENSE",
     "license": "GPLv3",
+    "fileAssociations": [
+      {
+        "ext": ["mrpack"],
+        "name": "Modrinth Modpack",
+        "description": "Modrinth Modpack File",
+        "role": "Editor",
+        "mimeType": "application/zip",
+        "rank": "Default"
+      }
+    ],
     "resources": {
       "assets/skins/*": "assets/skins/",
       "assets/game/*": "assets/game/",
