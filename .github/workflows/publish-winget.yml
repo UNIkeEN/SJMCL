@@ -208,5 +208,5 @@ jobs:
             --base master \
             --head "SJMC-Dev-Bot:${BRANCH_NAME}" \
             --title "New version: SJMC.SJMCL version ${VERSION}" \
-            --body "## Summary\n- Update SJMC.SJMCL to ${VERSION}\n- Generated from GitHub release assets in UNIkeEN/SJMCL" \
+            --body "## Summary\n- Update SJMC.SJMCL to ${VERSION}\n- Generated from GitHub release assets in ${{ github.repository }}" \
             --label Windows-Package-Manager-Manifest
