@@ -21,7 +21,7 @@ use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
-use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
@@ -30,9 +30,9 @@ use tasks::monitor::TaskMonitor;
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
+use tauri::Manager;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
-use tauri::Manager;
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
@@ -59,7 +59,7 @@ pub async fn run() {
       .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
         let main_window = app.get_webview_window("main").expect("no main window");
         let _ = main_window.show(); // may hide by launcher_visibility settings
-                                    // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
+        // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
         let _ = main_window.set_focus();
       }))
       .plugin(

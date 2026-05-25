@@ -1,6 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::instance::helpers::modpack::export::{
-  normalize_mod_loader_version, ExportModpackOptions, ModpackExportBundle,
+  ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
@@ -142,7 +142,7 @@ impl ModpackManifest for MultiMcManifest {
         "net.minecraft" => continue,
         "net.minecraftforge" => return Ok((ModLoaderType::Forge, get_version(component)?)),
         "net.fabricmc.fabric-loader" => {
-          return Ok((ModLoaderType::Fabric, get_version(component)?))
+          return Ok((ModLoaderType::Fabric, get_version(component)?));
         }
         "net.neoforged" => return Ok((ModLoaderType::NeoForge, get_version(component)?)),
         _ => continue,

@@ -7,7 +7,7 @@ use crate::utils::sys_info::find_free_port;
 use rmcp::handler::server::router::Router;
 use rmcp::model::{CallToolResult, Implementation, ServerCapabilities, ServerInfo};
 use rmcp::transport::streamable_http_server::{
-  session::local::LocalSessionManager, StreamableHttpServerConfig, StreamableHttpService,
+  StreamableHttpServerConfig, StreamableHttpService, session::local::LocalSessionManager,
 };
 use rmcp::{ErrorData as McpError, ServerHandler};
 use serde::Serialize;

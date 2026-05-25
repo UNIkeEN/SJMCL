@@ -1,9 +1,9 @@
 use crate::launcher_config::models::{LauncherConfig, ProxyType};
 use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
-use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::RetryTransientMiddleware;
+use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::{
-  default_on_request_failure, default_on_request_success, Retryable, RetryableStrategy,
+  Retryable, RetryableStrategy, default_on_request_failure, default_on_request_success,
 };
 use std::sync::Mutex;
 use std::time::Duration;

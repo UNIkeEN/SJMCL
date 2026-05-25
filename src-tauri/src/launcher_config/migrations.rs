@@ -1,6 +1,6 @@
 use crate::launcher_config::models::AppearanceBackgroundConfig;
-use serde::de::Deserializer;
 use serde::Deserialize;
+use serde::de::Deserializer;
 use serde_json::Value;
 
 // Migrate old built-in wallpaper choices to the new default preset.

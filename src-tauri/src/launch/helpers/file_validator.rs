@@ -1,6 +1,6 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::asset_index::AssetIndex;
+use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
@@ -10,8 +10,8 @@ use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
 use crate::storage::load_json_async;
-use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::tasks::download::DownloadParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
 use futures::stream::{self, StreamExt, TryStreamExt};

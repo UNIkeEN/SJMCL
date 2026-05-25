@@ -6,8 +6,8 @@ use quartz_nbt::io::Flavor;
 use serde::{self, Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
-use tauri::async_runtime;
 use tauri::AppHandle;
+use tauri::async_runtime;
 
 pub const SERVERS_DAT_FILENAME: &str = "servers.dat";
 

@@ -11,8 +11,8 @@ use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth;
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::tasks::download::DownloadParam;
 
 const QFAPI_MOD_ID_MODRINTH: &str = "qvIfYCYJ";
 

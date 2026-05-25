@@ -3,7 +3,7 @@ use crate::tasks::streams::reporter::{Reporter, Sink};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::task::{Context, Waker};
-use tokio::time::{interval, Duration, Interval};
+use tokio::time::{Duration, Interval, interval};
 
 pub struct PHandle<S, P>
 where

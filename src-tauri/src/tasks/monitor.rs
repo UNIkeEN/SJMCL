@@ -13,8 +13,8 @@ use std::future::Future;
 use std::sync::atomic::AtomicU32;
 use std::sync::{Arc, Mutex, RwLock};
 use std::vec::Vec;
-use tauri::async_runtime::JoinHandle;
 use tauri::AppHandle;
+use tauri::async_runtime::JoinHandle;
 use tokio::sync::Semaphore;
 
 pub struct GroupMonitor {

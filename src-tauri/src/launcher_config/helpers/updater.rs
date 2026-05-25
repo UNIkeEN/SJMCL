@@ -1,8 +1,8 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
+use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use crate::tasks::PTaskParam;
 use serde_json::Value;
 use std::fs;
 use std::path::PathBuf;

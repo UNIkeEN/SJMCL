@@ -1,5 +1,5 @@
 use crate::discover::commands::{fetch_news_post_summaries, fetch_news_sources_info};
-use crate::discover::helpers::mc_news::{fetch_mc_news_page, MC_NEWS_ENDPOINT};
+use crate::discover::helpers::mc_news::{MC_NEWS_ENDPOINT, fetch_mc_news_page};
 use crate::discover::models::NewsPostRequest;
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::mcp_tool;

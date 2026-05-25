@@ -1,6 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
-use crate::instance::helpers::client_json::{libraries_to_info, patches_to_info, McClientInfo};
+use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
 use crate::instance::helpers::loader::forge::download_forge_libraries;
 use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
 use crate::instance::helpers::loader::optifine::download_optifine_libraries;
