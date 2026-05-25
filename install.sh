@@ -73,6 +73,9 @@ fi
 need_cmd curl
 need_cmd uname
 need_cmd sed
+need_cmd tr
+need_cmd mktemp
+need_cmd rm
 
 case "$INSTALL_MODE" in
   package|portable) ;;
@@ -83,6 +86,15 @@ case "$DOWNLOAD_SOURCE" in
   auto|github|sjmc) ;;
   *) fail "unsupported download source: $DOWNLOAD_SOURCE (expected auto, github, or sjmc)" ;;
 esac
+
+if [ "$INSTALL_MODE" = "portable" ]; then
+  need_cmd mkdir
+  need_cmd cp
+  need_cmd chmod
+  need_cmd ln
+else
+  need_cmd id
+fi
 
 if [ "$INSTALL_MODE" = "package" ]; then
   if command -v apt-get >/dev/null 2>&1; then
@@ -151,20 +163,22 @@ prepare_github_download() {
 
 prepare_sjmc_download() {
   RELEASE_META=""
+  RELEASE_META_COMPACT=""
   if [ -n "$VERSION_INPUT" ]; then
     normalize_tag "$VERSION_INPUT"
     VERSION="${TAG#v}"
   else
     RELEASE_META="$(curl -fsSL --connect-timeout "$CURL_CONNECT_TIMEOUT" --max-time "$CURL_METADATA_MAX_TIME" "$SJMC_RELEASE_API" 2>/dev/null)" || return 1
-    VERSION="$(printf '%s\n' "$RELEASE_META" | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+    RELEASE_META_COMPACT="$(printf '%s' "$RELEASE_META" | tr -d '\r\n')"
+    VERSION="$(printf '%s\n' "$RELEASE_META_COMPACT" | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
     VERSION="${VERSION#v}"
   fi
 
   [ -n "$VERSION" ] || return 1
   set_asset_name
 
-  if [ -n "$RELEASE_META" ]; then
-    case "$RELEASE_META" in
+  if [ -n "$RELEASE_META_COMPACT" ]; then
+    case "$RELEASE_META_COMPACT" in
       *"\"name\":\"$ASSET_NAME\""*) ;;
       *) return 1 ;;
     esac
