@@ -151,7 +151,7 @@ impl DownloadTask {
     current: i64,
     param: &DownloadParam,
   ) -> SJMCLResult<(
-    impl Stream<Item = Result<bytes::Bytes, std::io::Error>> + Send,
+    impl Stream<Item = Result<bytes::Bytes, std::io::Error>> + Send + use<>,
     i64,
   )> {
     let resp = Self::send_request(app_handle, current, param).await?;

@@ -33,8 +33,8 @@ pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<Downlo
     if library.natives.is_some() {
       continue;
     }
-    if let Some(ref downloads) = &library.downloads {
-      if let Some(ref artifact) = &downloads.artifact {
+    if let Some(downloads) = &library.downloads {
+      if let Some(artifact) = &downloads.artifact {
         artifacts.insert(artifact.clone());
       }
     }
@@ -52,8 +52,8 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
     }
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
-        if let Some(ref downloads) = &library.downloads {
-          if let Some(ref classifiers) = &downloads.classifiers {
+        if let Some(downloads) = &library.downloads {
+          if let Some(classifiers) = &downloads.classifiers {
             if let Some(artifact) = classifiers.get(&native) {
               artifacts.insert(artifact.clone());
             }
