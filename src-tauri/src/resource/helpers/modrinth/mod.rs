@@ -12,8 +12,8 @@ use crate::resource::models::{
 use crate::tasks::download::DownloadParam;
 use hex;
 use misc::{
-  get_modrinth_api, make_modrinth_request, map_modrinth_file_to_version_pack, ModrinthProject,
-  ModrinthSearchRes, ModrinthVersionPack,
+  ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
+  map_modrinth_file_to_version_pack,
 };
 use sha1::{Digest, Sha1};
 use std::collections::HashMap;

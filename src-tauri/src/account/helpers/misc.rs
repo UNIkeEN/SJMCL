@@ -6,7 +6,7 @@ use crate::account::models::{
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
-use crate::utils::image::{decode_image, ImageWrapper};
+use crate::utils::image::{ImageWrapper, decode_image};
 use crate::utils::web::is_china_mainland_ip;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};

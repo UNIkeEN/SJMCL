@@ -374,7 +374,7 @@ pub fn change_process_window_title(pid: u32, new_title: &str) -> SJMCLResult<()>
     type ForEachCallback<'a> = Box<dyn FnMut(HWND) + 'a>;
     let wrapper: ForEachCallback = Box::new(closure);
     unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
-      if let Some(boxed) = (lparam as *mut ForEachCallback).as_mut() {
+      if let Some(boxed) = unsafe { (lparam as *mut ForEachCallback).as_mut() } {
         (*boxed)(hwnd);
       }
       TRUE

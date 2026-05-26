@@ -1,9 +1,9 @@
+use crate::APP_DATA_DIR;
 use crate::account::constants::ACCOUNTS_FILE_NAME;
 use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
 use crate::account::helpers::skin::draw_avatar;
 use crate::storage::Storage;
 use crate::utils::image::ImageWrapper;
-use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;

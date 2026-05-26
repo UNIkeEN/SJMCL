@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
-use tauri::{path::BaseDirectory, AppHandle};
+use tauri::{AppHandle, path::BaseDirectory};
 use tauri_plugin_log::fern::FormatCallback;
 use tauri_plugin_log::{Target, TargetKind, TimezoneStrategy};
 use time::macros::format_description;

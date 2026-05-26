@@ -5,7 +5,7 @@ description = "A Minecraft launcher from SJMC"
 authors = ["SJMCL Team"]
 license = "GNU General Public License v3.0 (with additional terms)"
 repository = "https://github.com/UNIkeEN/SJMCL"
-edition = "2021"
+edition = "2024"
 rust-version = "1.91.0"
 
 [lib]

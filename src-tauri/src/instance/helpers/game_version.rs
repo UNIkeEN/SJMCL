@@ -104,7 +104,7 @@ pub async fn compare_game_versions(
 /// # Returns
 /// A closure suitable for `.sort_by()` or `.sort_by_key()` usage.
 ///
-pub fn build_game_version_cmp_fn(app: &AppHandle) -> impl Fn(&str, &str) -> Ordering {
+pub fn build_game_version_cmp_fn(app: &AppHandle) -> impl Fn(&str, &str) -> Ordering + use<> {
   let mut versions = load_versions(app, "assets/game/versions.txt", false);
 
   if versions.is_empty() {

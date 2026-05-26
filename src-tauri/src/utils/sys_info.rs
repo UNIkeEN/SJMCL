@@ -4,7 +4,7 @@ use serde_json::json;
 use std::net::{SocketAddr, TcpListener};
 use std::path::PathBuf;
 use sysinfo::{Disk, Disks};
-use systemstat::{saturating_sub_bytes, Platform};
+use systemstat::{Platform, saturating_sub_bytes};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_os::locale;
 
