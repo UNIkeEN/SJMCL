@@ -153,11 +153,11 @@ pub fn convert_url_to_target_source(
         continue;
       }
 
-      if let Ok(src_api) = get_download_api(src_type, resource_type) {
-        if url_str.starts_with(src_api.as_str()) {
-          let new_url_str = url_str.replacen(src_api.as_str(), dst_api.as_str(), 1);
-          return Ok(Url::parse(&new_url_str)?);
-        }
+      if let Ok(src_api) = get_download_api(src_type, resource_type)
+        && url_str.starts_with(src_api.as_str())
+      {
+        let new_url_str = url_str.replacen(src_api.as_str(), dst_api.as_str(), 1);
+        return Ok(Url::parse(&new_url_str)?);
       }
     }
   }
@@ -235,10 +235,10 @@ pub async fn apply_other_resource_enhancements(
     }
   };
 
-  if let Some(name) = translated_name {
-    if name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
-      resource_info.translated_name = Some(name);
-    }
+  if let Some(name) = translated_name
+    && name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}'))
+  {
+    resource_info.translated_name = Some(name);
   }
   if let Some(id) = mcmod_id {
     resource_info.mcmod_id = id;

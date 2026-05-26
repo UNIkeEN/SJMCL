@@ -308,14 +308,14 @@ async fn handle_profile_route(
     "Local Yggdrasil server received: GET /sessionserver/session/minecraft/profile/{}",
     uuid
   );
-  if let Ok(parsed_uuid) = Uuid::parse_str(&uuid) {
-    if let Some(player) = state.find_player_by_uuid(parsed_uuid) {
-      return (
-        StatusCode::OK,
-        Json(player.to_full_response(&state.root_url)),
-      )
-        .into_response();
-    }
+  if let Ok(parsed_uuid) = Uuid::parse_str(&uuid)
+    && let Some(player) = state.find_player_by_uuid(parsed_uuid)
+  {
+    return (
+      StatusCode::OK,
+      Json(player.to_full_response(&state.root_url)),
+    )
+      .into_response();
   }
   log::warn!("Profile not found: {}", uuid);
   StatusCode::NO_CONTENT.into_response()

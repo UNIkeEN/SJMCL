@@ -29,7 +29,7 @@ async fn get_forge_meta_by_game_version_bmcl(
     Ok(response) => {
       if response.status().is_success() {
         if let Ok(mut manifest) = response.json::<Vec<ForgeMetaItem>>().await {
-          manifest.sort_by(|a, b| b.build.cmp(&a.build));
+          manifest.sort_by_key(|b| std::cmp::Reverse(b.build));
           Ok(
             manifest
               .into_iter()

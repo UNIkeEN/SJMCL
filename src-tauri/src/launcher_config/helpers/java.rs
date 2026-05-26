@@ -105,17 +105,17 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   #[cfg(any(target_os = "macos", target_os = "linux"))]
   let command_output = Command::new("which").args(["-a", "java"]).output();
 
-  if let Ok(output) = command_output {
-    if output.status.success() {
-      let stdout = String::from_utf8_lossy(&output.stdout);
-      for line in stdout.lines() {
-        let path = line.trim();
-        if path.is_empty() {
-          continue;
-        }
-        if let Ok(resolved_path) = fs::canonicalize(path) {
-          paths.insert(resolved_path.to_string_lossy().into_owned());
-        }
+  if let Ok(output) = command_output
+    && output.status.success()
+  {
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    for line in stdout.lines() {
+      let path = line.trim();
+      if path.is_empty() {
+        continue;
+      }
+      if let Ok(resolved_path) = fs::canonicalize(path) {
+        paths.insert(resolved_path.to_string_lossy().into_owned());
       }
     }
   }
@@ -355,7 +355,7 @@ fn scan_java_paths_in_windows_registry() -> Vec<String> {
         version_name
           .chars()
           .next()
-          .map_or(false, |c| c.is_ascii_digit())
+          .is_some_and(|c| c.is_ascii_digit())
       })
       .filter_map(|version_name| {
         base_key
@@ -401,10 +401,10 @@ pub fn get_java_info_from_release_file(java_path: &str) -> (Option<String>, Opti
       if let Some(val) = line.split('=').nth(1) {
         full_version = Some(val.trim().trim_matches('"').to_string());
       }
-    } else if line.starts_with("IMPLEMENTOR=") {
-      if let Some(val) = line.split('=').nth(1) {
-        vendor = Some(val.trim().trim_matches('"').to_string());
-      }
+    } else if line.starts_with("IMPLEMENTOR=")
+      && let Some(val) = line.split('=').nth(1)
+    {
+      vendor = Some(val.trim().trim_matches('"').to_string());
     }
   }
 
@@ -437,15 +437,15 @@ pub fn get_java_info_from_command(java_path: &str) -> (Option<String>, Option<St
 
   for line in output_str.lines() {
     let trimmed = line.trim();
-    if trimmed.starts_with("java.vendor = ") {
-      if let Some(val) = line.split('=').nth(1) {
-        vendor = Some(val.trim().trim_matches('"').to_string());
-      }
+    if trimmed.starts_with("java.vendor = ")
+      && let Some(val) = line.split('=').nth(1)
+    {
+      vendor = Some(val.trim().trim_matches('"').to_string());
     }
-    if trimmed.starts_with("java.version = ") {
-      if let Some(val) = line.split('=').nth(1) {
-        full_version = Some(val.trim().trim_matches('"').to_string());
-      }
+    if trimmed.starts_with("java.version = ")
+      && let Some(val) = line.split('=').nth(1)
+    {
+      full_version = Some(val.trim().trim_matches('"').to_string());
     }
   }
 
@@ -502,13 +502,12 @@ pub async fn build_mojang_java_download_params(
   let mut json: Option<Value> = None;
 
   for source_type in priority_list.iter() {
-    if let Ok(api_url) = get_download_api(*source_type, ResourceType::MojangJava) {
-      if let Ok(response) = client.get(api_url).send().await {
-        if let Ok(parsed_json) = response.json::<Value>().await {
-          json = Some(parsed_json);
-          break;
-        }
-      }
+    if let Ok(api_url) = get_download_api(*source_type, ResourceType::MojangJava)
+      && let Ok(response) = client.get(api_url).send().await
+      && let Ok(parsed_json) = response.json::<Value>().await
+    {
+      json = Some(parsed_json);
+      break;
     }
   }
 

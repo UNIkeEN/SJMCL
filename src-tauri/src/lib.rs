@@ -313,10 +313,10 @@ pub async fn run() {
         // on Windows, setup overlay native caption buttons
         #[cfg(target_os = "windows")]
         {
-          if let Some(main_window) = app.get_webview_window("main") {
-            if let Err(e) = main_window.create_overlay_titlebar() {
-              log::warn!("Failed to setup native windows caption buttons: {e}");
-            }
+          if let Some(main_window) = app.get_webview_window("main")
+            && let Err(e) = main_window.create_overlay_titlebar()
+          {
+            log::warn!("Failed to setup native windows caption buttons: {e}");
           }
         }
 

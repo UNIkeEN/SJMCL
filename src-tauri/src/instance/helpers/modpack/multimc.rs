@@ -62,14 +62,14 @@ impl ModpackManifest for MultiMcManifest {
         let file = archive.by_index(i)?;
         let name = file.name();
 
-        if name.ends_with("mmc-pack.json") {
-          if let Some(last_slash) = name.rfind('/') {
-            let dir_path = &name[..=last_slash];
-            let depth = name[..last_slash].matches('/').count();
-            if depth <= 1 {
-              found_path = Some(dir_path.to_string());
-              break;
-            }
+        if name.ends_with("mmc-pack.json")
+          && let Some(last_slash) = name.rfind('/')
+        {
+          let dir_path = &name[..=last_slash];
+          let depth = name[..last_slash].matches('/').count();
+          if depth <= 1 {
+            found_path = Some(dir_path.to_string());
+            break;
           }
         }
       }

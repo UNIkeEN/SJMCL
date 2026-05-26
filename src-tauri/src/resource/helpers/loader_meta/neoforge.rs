@@ -69,29 +69,29 @@ async fn get_neoforge_meta_by_game_version_official(
 
     let mut results = Vec::new();
     for version_value in version_list {
-      if let Some(version) = version_value.as_str() {
-        if let Some(cap) = OLD_VERSION_REGEX.captures(version) {
-          let major: i32 = cap[1].parse()?;
-          let minor: i32 = cap[2].parse()?;
-          let patch: i32 = cap[3].parse()?;
+      if let Some(version) = version_value.as_str()
+        && let Some(cap) = OLD_VERSION_REGEX.captures(version)
+      {
+        let major: i32 = cap[1].parse()?;
+        let minor: i32 = cap[2].parse()?;
+        let patch: i32 = cap[3].parse()?;
 
-          results.push((
-            (major, minor, patch),
-            ModLoaderResourceInfo {
-              loader_type: ModLoaderType::NeoForge,
-              version: version.to_string(),
-              description: String::new(),
-              stable: versions
-                .get("is_snapshot")
-                .is_none_or(|v| !v.as_bool().unwrap_or(false)),
-              branch: None,
-            },
-          ));
-        }
+        results.push((
+          (major, minor, patch),
+          ModLoaderResourceInfo {
+            loader_type: ModLoaderType::NeoForge,
+            version: version.to_string(),
+            description: String::new(),
+            stable: versions
+              .get("is_snapshot")
+              .is_none_or(|v| !v.as_bool().unwrap_or(false)),
+            branch: None,
+          },
+        ));
       }
     }
 
-    results.sort_by(|a, b| b.0.cmp(&a.0));
+    results.sort_by_key(|b| std::cmp::Reverse(b.0));
     return Ok(results.into_iter().map(|r| r.1).collect());
   }
 
@@ -185,7 +185,7 @@ async fn get_neoforge_meta_by_game_version_official(
     }
   }
 
-  results.sort_by(|a, b| b.0.cmp(&a.0));
+  results.sort_by_key(|b| std::cmp::Reverse(b.0));
   Ok(results.into_iter().map(|r| r.1).collect())
 }
 
