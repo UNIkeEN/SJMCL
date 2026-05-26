@@ -5,7 +5,7 @@ use crate::account::helpers::microsoft::constants::{
 use crate::account::helpers::microsoft::models::{
   MinecraftProfile, XstsErrorResponse, XstsResponse,
 };
-use crate::account::helpers::misc::{self, fetch_image, oauth_polling};
+use crate::account::helpers::misc::{fetch_image, oauth_polling};
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
@@ -313,8 +313,8 @@ pub async fn get_access_token(app: &AppHandle, player: &PlayerInfo) -> SJMCLResu
       .access_token
       .clone()
       .ok_or(AccountError::Invalid)?;
-    state_extractor::with_account_info(&app, |accounts| {
-      let player = accounts.get_player_by_id_mut(&player_id)?;
+    state_extractor::with_account_info(app, |accounts| {
+      let player = accounts.get_player_by_id_mut(player_id)?;
       *player = refreshed_player;
       accounts.save()?;
       Ok(())

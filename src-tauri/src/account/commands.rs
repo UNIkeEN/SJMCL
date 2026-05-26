@@ -512,7 +512,7 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
 
   let first_player_id = state_extractor::with_account_info(&app, |accounts| {
     accounts.players.retain(|player| {
-      let should_remove = player.auth_server_url == Some(url.clone());
+      let should_remove = player.auth_server_url.as_deref() == Some(url.as_str());
       if should_remove && player.id == selected_id {
         need_reset = true;
       }
