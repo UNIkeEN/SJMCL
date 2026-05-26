@@ -124,10 +124,6 @@ export const buildProxiedExtensionScript = (source) => {
   const __TAURI__ = __sjmclTauriStub;
   const __TAURI_INTERNALS__ = __sjmclTauriStub;
 
-  (() => {
-    var eval = undefined;
-    var Function = undefined;
-${source}
-  })();
+  ((eval, Function) => {${source}\n})(undefined, undefined);
 })(window, document);`;
 };
