@@ -341,10 +341,11 @@ pub async fn run() {
       // Catch and show a native error dialog when Tauri fails to initialize.
       // A plain panic would be invisible to the user by default, and tauri-plugin-dialog isn't available since the app never started.
       .unwrap_or_else(|e| {
-        log::error!("Failed to build tauri application: {:?}", e);
+        log::error!("Failed to build Tauri application: {:?}", e);
+        eprintln!("Failed to build Tauri application: {:?}", e); // fallback when logging is not available
         native_dialog::DialogBuilder::message()
           .set_title("Initialization error")
-          .set_text(format!("Cannot initialize SJMCL due to an error: \n{e:?}"))
+          .set_text(format!("Cannot initialize SJMCL due to an error:\n{e}"))
           .set_level(native_dialog::MessageLevel::Error)
           .alert()
           .show()
