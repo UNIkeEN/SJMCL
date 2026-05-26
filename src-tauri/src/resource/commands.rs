@@ -23,9 +23,9 @@ use crate::resource::models::{
   OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
   OtherResourceSource, OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
 };
+use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use crate::tasks::PTaskParam;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;

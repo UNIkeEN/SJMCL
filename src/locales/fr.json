@@ -865,6 +865,9 @@
     "title": "Mettre à jour l'extension",
     "body": "L'extension {{identifier}} a téléchargé la nouvelle version {{version}} depuis {{src}}. Confirmer l'installation ?"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} et autres ({{count}} au total)"
+  },
   "GameAdvancedSettingsPage": {
     "title": "Paramètres avancés du jeu",
     "topWarning": "Les paramètres avancés sont réservés aux utilisateurs expérimentés. Modifier ces options peut empêcher le jeu de démarrer. Ne modifiez pas ces options à moins de bien comprendre leur signification !",
@@ -2688,7 +2691,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "Ressource copiée avec succès",
         "error": {
           "title": "Échec de la copie de la ressource",

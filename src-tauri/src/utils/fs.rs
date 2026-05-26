@@ -1,5 +1,5 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::IS_PORTABLE;
+use crate::error::{SJMCLError, SJMCLResult};
 use regex::Regex;
 use sha1::{Digest, Sha1};
 use sha2::Sha256;

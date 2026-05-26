@@ -865,6 +865,9 @@
     "title": "迭更擴充套件",
     "body": "擴充套件 {{identifier}} 已自 {{src}} 得新版本 {{version}}，然否確認安之？"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} 等（凡 {{count}} 個）"
+  },
   "GameAdvancedSettingsPage": {
     "title": "戲之進階置設",
     "topWarning": "戲之進階置設僅提供給專業戲者使用。改以下之選或致戲不能啟。除非您充分了解其中的意義，否則請不要改這些之選！",
@@ -2688,7 +2691,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "資源鈔既成",
         "error": {
           "title": "鈔資源未成",

@@ -1,7 +1,7 @@
 use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
 use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
-use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
+use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -13,25 +13,25 @@ use crate::instance::helpers::misc::{
   refresh_and_update_instances, unify_instance_name,
 };
 use crate::instance::helpers::modpack::export::{
-  build_export_bundle, create_modpack_zip, list_files, validate_export_options,
-  ExportModpackOptions,
+  ExportModpackOptions, build_export_bundle, create_modpack_zip, list_files,
+  validate_export_options,
 };
 use crate::instance::helpers::modpack::import::{
-  extract_overrides, get_download_params, ModpackMetaInfo,
+  ModpackMetaInfo, extract_overrides, get_download_params,
 };
 use crate::instance::helpers::mods::common::{
   compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
 };
 use crate::instance::helpers::mods::translation::{
-  add_local_mod_translations, LocalModTranslationEntry, LocalModTranslationsCache,
+  LocalModTranslationEntry, LocalModTranslationsCache, add_local_mod_translations,
 };
 use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
 use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
 use crate::instance::helpers::server::{
-  get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt, query_servers_online,
-  save_servers_to_nbt, GameServerInfo,
+  GameServerInfo, get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt,
+  query_servers_online, save_servers_to_nbt,
 };
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
@@ -52,15 +52,16 @@ use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
 };
-use crate::storage::{load_json_async, save_json_async, Storage};
+use crate::storage::{Storage, load_json_async, save_json_async};
+use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use crate::tasks::PTaskParam;
 use crate::utils::fs::{
   copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
   get_subdirectories, normalize_relative_path,
 };
 use crate::utils::image::ImageWrapper;
+use futures::{StreamExt, TryStreamExt};
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use std::collections::HashMap;
@@ -319,69 +320,121 @@ pub async fn rename_instance(
 }
 
 #[tauri::command]
-pub fn copy_resource_to_instances(
+pub async fn copy_resources_to_instances(
   app: AppHandle,
-  src_file_path: String,
+  src_file_paths: Vec<String>,
   tgt_inst_ids: Vec<String>,
   tgt_dir_type: InstanceSubdirType,
   decompress: bool,
 ) -> SJMCLResult<()> {
-  let src_path = Path::new(&src_file_path);
-
-  if src_path.is_file() {
-    let file_name = src_path
-      .file_name()
-      .ok_or(InstanceError::InvalidSourcePath)?;
-
-    for tgt_inst_id in tgt_inst_ids {
-      let tgt_path = match get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type) {
-        Some(path) => path,
-        None => return Err(InstanceError::InstanceNotFoundByID.into()),
-      };
-
-      if !tgt_path.exists() {
-        fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-      }
-
-      if decompress {
-        let base_name = src_path
-          .extension()
-          .and_then(|ext| if ext == "zip" { Some(()) } else { None })
-          .and_then(|_| Path::new(file_name).file_stem())
-          .unwrap_or(file_name);
-        let dest_path = generate_unique_filename(&tgt_path, base_name);
-
-        // extract zip
-        let file = fs::File::open(src_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
-        let mut archive = ZipArchive::new(file).map_err(|_| InstanceError::ZipFileProcessFailed)?;
-
-        fs::create_dir_all(&dest_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-
-        archive
-          .extract(&dest_path)
-          .map_err(|_| InstanceError::ZipFileProcessFailed)?;
-      } else {
-        let dest_path = generate_unique_filename(&tgt_path, file_name);
-        fs::copy(&src_file_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
-      }
-    }
-  } else if src_path.is_dir() {
-    for tgt_inst_id in tgt_inst_ids {
-      let tgt_path = match get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type) {
-        Some(path) => path,
-        None => return Err(InstanceError::InstanceNotFoundByID.into()),
-      };
-
-      if !tgt_path.exists() {
-        fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
-      }
-
-      let dest_path = generate_unique_filename(&tgt_path, src_path.file_name().unwrap());
-      copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
-    }
-  } else {
+  if src_file_paths.is_empty() {
     return Err(InstanceError::InvalidSourcePath.into());
   }
+
+  let src_paths = src_file_paths
+    .into_iter()
+    .map(PathBuf::from)
+    .map(|path| {
+      if path.is_file() || path.is_dir() {
+        Ok(path)
+      } else {
+        Err(InstanceError::InvalidSourcePath.into())
+      }
+    })
+    .collect::<SJMCLResult<Vec<_>>>()?;
+
+  let tgt_paths = tgt_inst_ids
+    .into_iter()
+    .map(|tgt_inst_id| {
+      get_instance_subdir_path_by_id(&app, &tgt_inst_id, &tgt_dir_type)
+        .ok_or(InstanceError::InstanceNotFoundByID.into())
+    })
+    .collect::<SJMCLResult<Vec<_>>>()?;
+
+  for tgt_path in &tgt_paths {
+    if !tgt_path.exists() {
+      fs::create_dir_all(tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+    }
+  }
+
+  let entries = src_paths
+    .iter()
+    .flat_map(|src_path| {
+      tgt_paths
+        .iter()
+        .cloned()
+        .map(move |tgt_path| (src_path.clone(), tgt_path))
+    })
+    .collect::<Vec<_>>();
+
+  let semaphore = Arc::new(Semaphore::new(
+    std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),
+  ));
+
+  let copy_resource_entry_to_instance =
+    |src_path: &Path, tgt_path: &Path, decompress: bool| -> SJMCLResult<()> {
+      if src_path.is_file() {
+        let file_name = src_path
+          .file_name()
+          .ok_or(InstanceError::InvalidSourcePath)?;
+
+        if decompress {
+          let base_name = src_path
+            .extension()
+            .and_then(|ext| if ext == "zip" { Some(()) } else { None })
+            .and_then(|_| Path::new(file_name).file_stem())
+            .unwrap_or(file_name);
+          let dest_path = generate_unique_filename(tgt_path, base_name);
+
+          let file = fs::File::open(src_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+          let mut archive =
+            ZipArchive::new(file).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+
+          fs::create_dir_all(&dest_path).map_err(|_| InstanceError::FolderCreationFailed)?;
+
+          archive
+            .extract(&dest_path)
+            .map_err(|_| InstanceError::ZipFileProcessFailed)?;
+        } else {
+          let dest_path = generate_unique_filename(tgt_path, file_name);
+          fs::copy(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+        }
+      } else if src_path.is_dir() {
+        let dir_name = src_path
+          .file_name()
+          .ok_or(InstanceError::InvalidSourcePath)?;
+        let dest_path = generate_unique_filename(tgt_path, dir_name);
+        copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
+      } else {
+        return Err(InstanceError::InvalidSourcePath.into());
+      }
+
+      Ok(())
+    };
+
+  futures::stream::iter(entries)
+    .map(Ok::<_, crate::error::SJMCLError>)
+    .try_for_each_concurrent(None, move |(src_path, tgt_path)| {
+      let semaphore = semaphore.clone();
+
+      async move {
+        let permit = semaphore
+          .acquire_owned()
+          .await
+          .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
+
+        tokio::task::spawn_blocking(move || -> SJMCLResult<()> {
+          let _permit = permit;
+          copy_resource_entry_to_instance(&src_path, &tgt_path, decompress)
+        })
+        .await
+        .map_err(|_| InstanceError::FileCopyFailed)??;
+
+        Ok::<(), crate::error::SJMCLError>(())
+      }
+    })
+    .await?;
+
   Ok(())
 }
 
@@ -564,7 +617,7 @@ pub async fn retrieve_local_mod_list(
   let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
   let mut tasks = Vec::new();
   let semaphore = Arc::new(Semaphore::new(
-    std::thread::available_parallelism().unwrap().into(),
+    std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),
   ));
   for path in mod_paths {
     let permit = semaphore

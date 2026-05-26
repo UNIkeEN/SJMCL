@@ -1,3 +1,4 @@
+use crate::APP_DATA_DIR;
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::constants::{TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME};
 use crate::instance::models::misc::LocalModInfo;
@@ -8,7 +9,6 @@ use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
 };
 use crate::storage::Storage;
-use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Mutex;

@@ -2,9 +2,9 @@
 // https://forge.gemwire.uk/wiki/Mods.toml
 // https://docs.neoforged.net/docs/gettingstarted/modfiles/#neoforgemodstoml
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::mods::common::{compress_icon, LocalModMetadataParser};
+use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
-use crate::utils::image::{load_image_from_dir_async, load_image_from_jar, ImageWrapper};
+use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

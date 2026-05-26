@@ -1,5 +1,5 @@
-use crate::launcher_config::models::LauncherConfig;
 use crate::EXE_DIR;
+use crate::launcher_config::models::LauncherConfig;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Mutex;

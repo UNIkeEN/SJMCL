@@ -8,15 +8,15 @@ use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{OptiFineResourceInfo, ResourceType, SourceType};
+use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use crate::tasks::PTaskParam;
 use std::fs;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use tauri::AppHandle;
-use zip::{write::FileOptions, ZipArchive, ZipWriter};
+use zip::{ZipArchive, ZipWriter, write::FileOptions};
 
 pub async fn download_optifine_installer(
   game_version: &str,
@@ -90,11 +90,7 @@ pub async fn download_optifine_libraries(
         let mut s = String::new();
         txt.read_to_string(&mut s)?;
         let v = s.trim().to_string();
-        if v.is_empty() {
-          None
-        } else {
-          Some(v)
-        }
+        if v.is_empty() { None } else { Some(v) }
       }
       Err(_) => None,
     };

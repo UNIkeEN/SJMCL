@@ -6,8 +6,8 @@ use crate::account::models::{
   AccountError, AuthServer, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
-use base64::engine::general_purpose;
 use base64::Engine;
+use base64::engine::general_purpose;
 use serde_json::json;
 use std::str::FromStr;
 use strum::IntoEnumIterator;
