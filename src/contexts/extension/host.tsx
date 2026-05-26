@@ -537,7 +537,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
               reject(error);
             }
           },
-          onCancelCallback: () => reject(new Error("Cancelled")),
+          onCancelCallback: () => resolve(),
         });
       });
     },
