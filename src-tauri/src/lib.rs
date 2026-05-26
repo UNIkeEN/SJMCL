@@ -235,7 +235,7 @@ pub async fn run() {
         let local_mod_translations = LocalModTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(local_mod_translations));
 
-        let client = build_sjmcl_client(app.handle(), true, false);
+        let client = build_sjmcl_client(app.handle(), true);
         app.manage(client);
 
         let launching_queue = Vec::<LaunchingState>::new();
