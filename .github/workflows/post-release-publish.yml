@@ -97,3 +97,13 @@ jobs:
     secrets:
       HOMEBREW_TAP_APP_ID: ${{ secrets.HOMEBREW_TAP_APP_ID }}
       HOMEBREW_TAP_APP_PRIVATE_KEY: ${{ secrets.HOMEBREW_TAP_APP_PRIVATE_KEY }}
+
+  Publish-Winget:
+    needs: [Prepare-Release-Assets]
+    if: needs.Prepare-Release-Assets.outputs.is_prerelease == 'false'
+    uses: ./.github/workflows/publish-winget.yml
+    with:
+      version: ${{ needs.Prepare-Release-Assets.outputs.version }}
+      release_tag: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+    secrets:
+      WINGET_BOT_GITHUB_TOKEN: ${{ secrets.WINGET_BOT_GITHUB_TOKEN }}
