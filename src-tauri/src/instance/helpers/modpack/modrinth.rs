@@ -227,12 +227,11 @@ async fn build_modrinth_remote_file(
     downloads.push(remote.download_url);
   }
 
-  if !skip_curseforge {
-    if let Ok(remote) =
+  if !skip_curseforge
+    && let Ok(remote) =
       fetch_remote_resource_by_local_curseforge(app, full.to_string_lossy().as_ref()).await
-    {
-      downloads.push(remote.download_url);
-    }
+  {
+    downloads.push(remote.download_url);
   }
 
   if downloads.is_empty() {

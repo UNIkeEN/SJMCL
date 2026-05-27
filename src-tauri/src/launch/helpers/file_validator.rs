@@ -33,10 +33,10 @@ pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<Downlo
     if library.natives.is_some() {
       continue;
     }
-    if let Some(downloads) = &library.downloads {
-      if let Some(artifact) = &downloads.artifact {
-        artifacts.insert(artifact.clone());
-      }
+    if let Some(downloads) = &library.downloads
+      && let Some(artifact) = &downloads.artifact
+    {
+      artifacts.insert(artifact.clone());
     }
   }
   artifacts.into_iter().collect()
@@ -52,12 +52,11 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
     }
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
-        if let Some(downloads) = &library.downloads {
-          if let Some(classifiers) = &downloads.classifiers {
-            if let Some(artifact) = classifiers.get(&native) {
-              artifacts.insert(artifact.clone());
-            }
-          }
+        if let Some(downloads) = &library.downloads
+          && let Some(classifiers) = &downloads.classifiers
+          && let Some(artifact) = classifiers.get(&native)
+        {
+          artifacts.insert(artifact.clone());
         }
       } else {
         println!("natives is None");
@@ -402,7 +401,7 @@ pub async fn prepare_legacy_assets(
     load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
       .await?;
 
-  stream::iter(asset_index.objects.into_iter())
+  stream::iter(asset_index.objects)
     .map(Ok::<_, SJMCLError>)
     .try_for_each_concurrent(None, move |(name, item)| {
       let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));

@@ -26,10 +26,10 @@ impl ExtensionMetadata {
     if self.name.trim().is_empty() {
       return Err(ExtensionError::InvalidName);
     }
-    if let Some(frontend) = &self.frontend {
-      if frontend.entry.trim().is_empty() {
-        return Err(ExtensionError::InvalidFrontendEntry);
-      }
+    if let Some(frontend) = &self.frontend
+      && frontend.entry.trim().is_empty()
+    {
+      return Err(ExtensionError::InvalidFrontendEntry);
     }
 
     self.version = self.version.take().and_then(|version| {

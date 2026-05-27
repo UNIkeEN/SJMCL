@@ -139,14 +139,15 @@ pub fn add_extension(
     Ok(info)
   })();
 
-  if register_result.is_err() && temp_dir.exists() {
-    if let Err(cleanup_error) = fs::remove_dir_all(&temp_dir) {
-      log::warn!(
-        "Failed to cleanup temporary extension directory {:?}: {}",
-        temp_dir,
-        cleanup_error
-      );
-    }
+  if register_result.is_err()
+    && temp_dir.exists()
+    && let Err(cleanup_error) = fs::remove_dir_all(&temp_dir)
+  {
+    log::warn!(
+      "Failed to cleanup temporary extension directory {:?}: {}",
+      temp_dir,
+      cleanup_error
+    );
   }
 
   register_result

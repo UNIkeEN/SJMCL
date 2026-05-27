@@ -86,16 +86,13 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
   let instances = instance_binding.lock().unwrap().clone();
   for (id, instance) in instances.iter() {
     // same as get_game_config(), but mannually here
-    let is_version_isolated =
-      if instance.use_spec_game_config && instance.spec_game_config.is_some() {
-        instance
-          .spec_game_config
-          .as_ref()
-          .unwrap()
-          .version_isolation
-      } else {
-        global_version_isolation
-      };
+    let is_version_isolated = if instance.use_spec_game_config
+      && let Some(spec_game_config) = instance.spec_game_config.as_ref()
+    {
+      spec_game_config.version_isolation
+    } else {
+      global_version_isolation
+    };
 
     summary_list
       .push(InstanceSummary::from_instance(&app, id.clone(), instance, is_version_isolated).await);
@@ -119,7 +116,7 @@ pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceS
       });
     }
     _ => {
-      summary_list.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+      summary_list.sort_by_key(|a| a.name.to_lowercase());
     }
   }
 
@@ -700,10 +697,10 @@ pub async fn retrieve_local_mod_list(
   let local_mod_translations_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
-    if let Some(entry) = cache.translations.get(&info.file_name) {
-      if !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS) {
-        continue;
-      }
+    if let Some(entry) = cache.translations.get(&info.file_name)
+      && !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS)
+    {
+      continue;
     }
     cache.translations.insert(
       info.file_name.clone(),
@@ -1124,13 +1121,13 @@ pub async fn create_instance(
       .as_ref()
       .map_or(0i32, |version| version.major_version);
 
-    if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await {
-      if err.0 == LaunchError::NoSuitableJava.to_string() {
-        let minimum_java_version = get_minimum_java_version_by_game(&app, &instance, false).await;
-        let minimum_java_version = minimum_java_version.to_string();
-        task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
-        java_version_to_download = Some(minimum_java_version);
-      }
+    if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await
+      && err.0 == LaunchError::NoSuitableJava.to_string()
+    {
+      let minimum_java_version = get_minimum_java_version_by_game(&app, &instance, false).await;
+      let minimum_java_version = minimum_java_version.to_string();
+      task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
+      java_version_to_download = Some(minimum_java_version);
     }
   }
 
@@ -1231,15 +1228,16 @@ pub async fn create_instance(
         .skip_first_screen_options,
     )
   };
-  if language == "zh-Hans" && skip_first_screen_options {
-    if let Some(lang_code) = get_zh_hans_lang_tag(&instance.version, &app).await {
-      let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
-        .ok_or(InstanceError::InstanceNotFoundByID)?[0]
-        .join("options.txt");
-      if !options_path.exists() {
-        fs::write(options_path, format!("lang:{}\n", lang_code))
-          .map_err(|_| InstanceError::FileCreationFailed)?;
-      }
+  if language == "zh-Hans"
+    && skip_first_screen_options
+    && let Some(lang_code) = get_zh_hans_lang_tag(&instance.version, &app).await
+  {
+    let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
+      .ok_or(InstanceError::InstanceNotFoundByID)?[0]
+      .join("options.txt");
+    if !options_path.exists() {
+      fs::write(options_path, format!("lang:{}\n", lang_code))
+        .map_err(|_| InstanceError::FileCreationFailed)?;
     }
   }
 
@@ -1464,12 +1462,11 @@ pub async fn change_mod_loader(
   }
 
   let mut version_info: McClientInfo = current_info.clone();
-  if let Some(ref new_loader) = new_mod_loader {
-    if instance.mod_loader.loader_type != new_loader.loader_type
-      || instance.mod_loader.version != new_loader.version
-    {
-      version_info.patches = vec![vanilla_info.clone()];
-    }
+  if let Some(ref new_loader) = new_mod_loader
+    && (instance.mod_loader.loader_type != new_loader.loader_type
+      || instance.mod_loader.version != new_loader.version)
+  {
+    version_info.patches = vec![vanilla_info.clone()];
   }
 
   let mut modloader_task_params: Vec<PTaskParam> = Vec::new();
@@ -1509,12 +1506,11 @@ pub async fn change_mod_loader(
     if new_optifine.is_none() {
       instance.optifine = original_optifine_config;
 
-      if instance.optifine.is_some() {
-        if let Some(patch) = original_optifine_patch.as_ref() {
-          if !version_info.patches.iter().any(|p| p.id == patch.id) {
-            version_info.patches.push(patch.clone());
-          }
-        }
+      if instance.optifine.is_some()
+        && let Some(patch) = original_optifine_patch.as_ref()
+        && !version_info.patches.iter().any(|p| p.id == patch.id)
+      {
+        version_info.patches.push(patch.clone());
       }
     }
     if !modloader_task_params.is_empty() {
@@ -1563,12 +1559,11 @@ pub async fn change_mod_loader(
   } else {
     instance.optifine = old_optifine;
 
-    if instance.optifine.is_some() {
-      if let Some(patch) = original_optifine_patch {
-        if !version_info.patches.iter().any(|p| p.id == patch.id) {
-          version_info.patches.push(patch);
-        }
-      }
+    if instance.optifine.is_some()
+      && let Some(patch) = original_optifine_patch
+      && !version_info.patches.iter().any(|p| p.id == patch.id)
+    {
+      version_info.patches.push(patch);
     }
   }
 

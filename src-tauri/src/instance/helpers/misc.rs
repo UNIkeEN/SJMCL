@@ -22,10 +22,10 @@ use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
 pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
-  if instance.use_spec_game_config {
-    if let Some(v) = &instance.spec_game_config {
-      return v.clone();
-    }
+  if instance.use_spec_game_config
+    && let Some(v) = &instance.spec_game_config
+  {
+    return v.clone();
   }
   get_global_game_config(app)
 }

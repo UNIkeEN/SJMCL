@@ -64,8 +64,8 @@ impl<T: Read + Send + 'static> OutputPipe<T> {
 pub async fn record_play_time(app: AppHandle, start_time: Instant, instance_id: String) {
   let instance_in_mem = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let inst = binding.lock().unwrap().get(&instance_id).cloned();
-    inst
+
+    binding.lock().unwrap().get(&instance_id).cloned()
   };
 
   if let Some(instance_in_mem) = instance_in_mem {

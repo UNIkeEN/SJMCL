@@ -139,10 +139,10 @@ pub async fn download_neoforge_libraries(
         fs::create_dir_all(&outpath)?;
       } else {
         // Create parent directories if they don't exist
-        if let Some(p) = outpath.parent() {
-          if !p.exists() {
-            fs::create_dir_all(p)?;
-          }
+        if let Some(p) = outpath.parent()
+          && !p.exists()
+        {
+          fs::create_dir_all(p)?;
         }
 
         // Extract file
@@ -204,15 +204,15 @@ pub async fn download_neoforge_libraries(
 
   for processor in profile.processors.iter_mut() {
     if processor.args.contains(&"DOWNLOAD_MOJMAPS".to_string()) {
-      if let Some(mojmaps) = args_map.get("{MOJMAPS}") {
-        if let Some(client_mappings) = client_info.downloads.get("client_mappings") {
-          task_params.push(PTaskParam::Download(DownloadParam {
-            src: client_mappings.url.parse()?,
-            dest: lib_dir.join(mojmaps),
-            filename: None,
-            sha1: Some(client_mappings.sha1.clone()),
-          }));
-        }
+      if let Some(mojmaps) = args_map.get("{MOJMAPS}")
+        && let Some(client_mappings) = client_info.downloads.get("client_mappings")
+      {
+        task_params.push(PTaskParam::Download(DownloadParam {
+          src: client_mappings.url.parse()?,
+          dest: lib_dir.join(mojmaps),
+          filename: None,
+          sha1: Some(client_mappings.sha1.clone()),
+        }));
       }
       processor.args.clear();
       continue;

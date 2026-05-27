@@ -135,10 +135,10 @@ pub async fn purge_old_launcher_logs(app: AppHandle, days: u64) -> SJMCLResult<(
       .captures(name)
       .and_then(|c| c.get(1))
       .and_then(|m| m.as_str().parse::<u64>().ok());
-    if ts.is_some_and(|t| t < cutoff) {
-      if let Err(e) = fs::remove_file(&path).await {
-        log::warn!("Failed to remove {}: {}", path.display(), e);
-      }
+    if ts.is_some_and(|t| t < cutoff)
+      && let Err(e) = fs::remove_file(&path).await
+    {
+      log::warn!("Failed to remove {}: {}", path.display(), e);
     }
   }
 

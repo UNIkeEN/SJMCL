@@ -86,28 +86,27 @@ pub async fn fetch_latest_version(
   }
 
   for (endpoint, field, _) in sources {
-    if let Ok(resp) = client.get(endpoint).send().await {
-      if let Ok(j) = resp.json::<Value>().await {
-        if let Some(mut ver) = j.get(field).and_then(|v| v.as_str()).map(|s| s.to_string()) {
-          if ver.starts_with('v') {
-            ver.remove(0);
-          }
-          let fname = build_resource_filename(&ver, os.as_str(), arch.as_str(), is_portable);
-
-          let release_notes = j
-            .get("body")
-            .and_then(|v| v.as_str())
-            .unwrap_or_default()
-            .to_string();
-          let published_at = j
-            .get("published_at")
-            .and_then(|v| v.as_str())
-            .unwrap_or_default()
-            .to_string();
-
-          return Ok(Some((ver, fname, release_notes, published_at)));
-        }
+    if let Ok(resp) = client.get(endpoint).send().await
+      && let Ok(j) = resp.json::<Value>().await
+      && let Some(mut ver) = j.get(field).and_then(|v| v.as_str()).map(|s| s.to_string())
+    {
+      if ver.starts_with('v') {
+        ver.remove(0);
       }
+      let fname = build_resource_filename(&ver, os.as_str(), arch.as_str(), is_portable);
+
+      let release_notes = j
+        .get("body")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default()
+        .to_string();
+      let published_at = j
+        .get("published_at")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default()
+        .to_string();
+
+      return Ok(Some((ver, fname, release_notes, published_at)));
     }
   }
 
@@ -136,25 +135,25 @@ pub async fn download_target_version(
   }
 
   for (endpoint, _, mk_url) in sources {
-    if let Ok(resp) = client.get(endpoint).send().await {
-      if resp.status().is_success() {
-        let url = mk_url(&version, &fname);
+    if let Ok(resp) = client.get(endpoint).send().await
+      && resp.status().is_success()
+    {
+      let url = mk_url(&version, &fname);
 
-        schedule_progressive_task_group(
-          app.clone(),
-          format!("launcher-update?{}", fname),
-          vec![PTaskParam::Download(DownloadParam {
-            src: url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?,
-            dest: download_cache_dir.join(&fname),
-            filename: Some(fname),
-            sha1: None,
-          })],
-          true,
-        )
-        .await?;
+      schedule_progressive_task_group(
+        app.clone(),
+        format!("launcher-update?{}", fname),
+        vec![PTaskParam::Download(DownloadParam {
+          src: url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?,
+          dest: download_cache_dir.join(&fname),
+          filename: Some(fname),
+          sha1: None,
+        })],
+        true,
+      )
+      .await?;
 
-        return Ok(());
-      }
+      return Ok(());
     }
   }
 
@@ -246,7 +245,7 @@ try {
       .arg(&pid)
       .arg(&downloaded_path)
       .arg(&target)
-      .arg(&cur_exe.clone())
+      .arg(&cur_exe)
       .arg(restart_flag)
       .creation_flags(0x08000000)
       .spawn()?;

@@ -270,16 +270,13 @@ async fn retrieve_friend_avatar(
     .send()
     .await;
 
-  if let Ok(response) = profile {
-    if response.status().is_success() {
-      if let Ok(profile) = response.json::<MinecraftProfile>().await {
-        if let Ok(player_info) = parse_profile(app, &profile, None, None, None, None).await {
-          if let Some(texture) = player_info.textures.first() {
-            return Ok(draw_avatar(36, &texture.image.image));
-          }
-        }
-      }
-    }
+  if let Ok(response) = profile
+    && response.status().is_success()
+    && let Ok(profile) = response.json::<MinecraftProfile>().await
+    && let Ok(player_info) = parse_profile(app, &profile, None, None, None, None).await
+    && let Some(texture) = player_info.textures.first()
+  {
+    return Ok(draw_avatar(36, &texture.image.image));
   }
 
   let preset_skin = load_preset_skin(app, PresetRole::Steve)?;

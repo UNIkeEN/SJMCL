@@ -345,25 +345,24 @@ pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInf
 
   if let Ok(Some((new_version, fname, release_notes, published_at))) =
     fetch_latest_version(&app).await
-  {
-    if let (Ok(current), Ok(latest)) = (
+    && let (Ok(current), Ok(latest)) = (
       semver::Version::parse(&current_version),
       semver::Version::parse(&new_version),
-    ) {
-      return Ok(match latest.cmp(&current) {
-        std::cmp::Ordering::Greater => VersionMetaInfo {
-          version: new_version,
-          file_name: fname,
-          release_notes,
-          published_at,
-        },
-        std::cmp::Ordering::Equal => VersionMetaInfo {
-          version: "up2date".to_string(),
-          ..Default::default()
-        },
-        std::cmp::Ordering::Less => VersionMetaInfo::default(),
-      });
-    }
+    )
+  {
+    return Ok(match latest.cmp(&current) {
+      std::cmp::Ordering::Greater => VersionMetaInfo {
+        version: new_version,
+        file_name: fname,
+        release_notes,
+        published_at,
+      },
+      std::cmp::Ordering::Equal => VersionMetaInfo {
+        version: "up2date".to_string(),
+        ..Default::default()
+      },
+      std::cmp::Ordering::Less => VersionMetaInfo::default(),
+    });
   }
 
   Ok(VersionMetaInfo::default())

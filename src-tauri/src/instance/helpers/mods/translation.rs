@@ -65,19 +65,19 @@ pub async fn add_local_mod_translations(
 ) -> SJMCLResult<()> {
   let cache = {
     let translation_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
-    let cache = translation_cache_state.lock()?.clone();
-    cache
+
+    translation_cache_state.lock()?.clone()
   };
   let file_path = mod_info.file_path.to_string_lossy().to_string();
   let file_name = mod_info.file_name.clone();
 
-  if let Some(entry) = cache.translations.get(&file_name) {
-    if !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS) {
-      log::info!("Using cached translation for mod: {}", file_name);
-      mod_info.translated_name = entry.translated_name.clone();
-      mod_info.translated_description = entry.translated_description.clone();
-      return Ok(());
-    }
+  if let Some(entry) = cache.translations.get(&file_name)
+    && !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS)
+  {
+    log::info!("Using cached translation for mod: {}", file_name);
+    mod_info.translated_name = entry.translated_name.clone();
+    mod_info.translated_description = entry.translated_description.clone();
+    return Ok(());
   }
 
   // Try both services concurrently and use the fastest successful response
