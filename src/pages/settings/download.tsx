@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   HStack,
   Icon,
@@ -374,6 +375,13 @@ const DownloadSettingsPage = () => {
     },
     {
       title: t("DownloadSettingPage.proxy.title"),
+      headExtra: (
+        <Box display="flex" alignItems="center">
+          <Text fontSize="xs" className="secondary-text">
+            {t("DownloadSettingPage.proxy.headExtra")}
+          </Text>
+        </Box>
+      ),
       items: [
         {
           title: t("DownloadSettingPage.proxy.settings.enabled.title"),
@@ -455,7 +463,7 @@ const DownloadSettingsPage = () => {
   return (
     <>
       {downloadSettingGroups.map((group, index) => (
-        <OptionItemGroup title={group.title} items={group.items} key={index} />
+        <OptionItemGroup key={index} {...group} />
       ))}
     </>
   );

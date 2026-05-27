@@ -593,6 +593,7 @@
     },
     "proxy": {
       "title": "Proxy",
+      "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
           "title": "Activer le proxy"

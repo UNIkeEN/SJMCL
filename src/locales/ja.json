@@ -593,6 +593,7 @@
     },
     "proxy": {
       "title": "プロキシ",
+      "headExtra": "再起動が必要",
       "settings": {
         "enabled": {
           "title": "プロキシ有効化"

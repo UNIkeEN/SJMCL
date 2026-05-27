@@ -593,6 +593,7 @@
     },
     "proxy": {
       "title": "Proxy",
+      "headExtra": "需要重新啟動",
       "settings": {
         "enabled": {
           "title": "啟用 Proxy"

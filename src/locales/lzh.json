@@ -593,6 +593,7 @@
     },
     "proxy": {
       "title": "代",
+      "headExtra": "以下置設復啟而效",
       "settings": {
         "enabled": {
           "title": "啟代"
