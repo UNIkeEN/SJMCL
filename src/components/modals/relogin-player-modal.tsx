@@ -129,7 +129,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
       <ModalContent>
         <ModalHeader>{t("ReLoginPlayerModal.modal.title")}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody pb={isOAuth ? 0 : 4}>
           <VStack spacing={3.5} align="flex-start">
             {isOAuth ? (
               <OAuthLoginPanel
