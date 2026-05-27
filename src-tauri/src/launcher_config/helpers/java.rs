@@ -146,19 +146,19 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   // For macOS, run "/usr/libexec/java_home -V" additionally
   #[cfg(target_os = "macos")]
   {
-    if let Ok(output) = Command::new("/usr/libexec/java_home").arg("-V").output() {
-      if output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        for line in stderr.lines() {
-          let trimmed = line.trim();
-          // Don't use `split_whitespace().last()` because the path may contain spaces.
-          if let Some(idx) = trimmed.rfind('"') {
-            let path_part = &trimmed[idx + 1..].trim();
-            if !path_part.is_empty() {
-              let java_bin = PathBuf::from(path_part).join("bin/java");
-              if let Ok(resolved_path) = fs::canonicalize(java_bin) {
-                paths.insert(resolved_path.to_string_lossy().into_owned());
-              }
+    if let Ok(output) = Command::new("/usr/libexec/java_home").arg("-V").output()
+      && output.status.success()
+    {
+      let stderr = String::from_utf8_lossy(&output.stderr);
+      for line in stderr.lines() {
+        let trimmed = line.trim();
+        // Don't use `split_whitespace().last()` because the path may contain spaces.
+        if let Some(idx) = trimmed.rfind('"') {
+          let path_part = &trimmed[idx + 1..].trim();
+          if !path_part.is_empty() {
+            let java_bin = PathBuf::from(path_part).join("bin/java");
+            if let Ok(resolved_path) = fs::canonicalize(java_bin) {
+              paths.insert(resolved_path.to_string_lossy().into_owned());
             }
           }
         }
@@ -285,10 +285,10 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
     if let Ok(entries) = fs::read_dir(PathBuf::from("/opt/homebrew/Cellar")) {
       for entry in entries.flatten() {
         let path = entry.path();
-        if let Some(name) = path.file_name() {
-          if name.to_string_lossy().starts_with("openjdk") {
-            java_paths.extend(search_java_homes_in_directory(path));
-          }
+        if let Some(name) = path.file_name()
+          && name.to_string_lossy().starts_with("openjdk")
+        {
+          java_paths.extend(search_java_homes_in_directory(path));
         }
       }
     }
