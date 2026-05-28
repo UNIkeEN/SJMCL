@@ -5,8 +5,10 @@ use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
-use crate::launch::helpers::file_validator::get_nonnative_library_paths;
-use crate::launch::helpers::misc::{get_separator, replace_arguments};
+use crate::launch::helpers::file_validator::{
+  get_nonnative_library_paths, get_windows_mesa_loader_path,
+};
+use crate::launch::helpers::misc::{get_separator, mesa_driver_name, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
@@ -265,6 +267,24 @@ pub async fn generate_launch_command(
   cmd.push("-Djava.rmi.server.useCodebaseOnly=true".to_string());
   cmd.push("-Dcom.sun.jndi.rmi.object.trustURLCodebase=false".to_string());
   cmd.push("-Dcom.sun.jndi.cosnaming.object.trustURLCodebase=false".to_string());
+
+  #[cfg(target_os = "windows")]
+  if let Some(driver_name) = mesa_driver_name(
+    &game_config.advanced.graphics.api,
+    &game_config.advanced.graphics.renderer,
+  ) {
+    if let Some(mesa_loader_path) = get_windows_mesa_loader_path(app, libraries_dir)? {
+      cmd.push(format!(
+        "-javaagent:{}={}",
+        mesa_loader_path.to_string_lossy(),
+        driver_name
+      ));
+      cmd.push(format!(
+        "-Dorg.glavo.mesa.loader.nativeDir={}",
+        natives_dir.join("mesa-loader").to_string_lossy()
+      ));
+    }
+  }
 
   if !game_config.advanced.workaround.no_jvm_args {
     cmd.push(format!("-Dminecraft.client.jar={}", client_jar_path));

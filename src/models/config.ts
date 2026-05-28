@@ -30,6 +30,10 @@ export interface GameConfig {
     enabled: boolean;
   };
   advanced: {
+    graphics: {
+      api: string;
+      renderer: string;
+    };
     customCommands: {
       minecraftArgument: string;
       precallCommand: string;
@@ -210,6 +214,10 @@ export const defaultGameConfig: GameConfig = {
     enabled: false,
   },
   advanced: {
+    graphics: {
+      api: "default",
+      renderer: "default",
+    },
     customCommands: {
       minecraftArgument: "",
       precallCommand: "",

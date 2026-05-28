@@ -59,6 +59,39 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     "serial",
   ];
 
+  const graphicsApis = ["default", "opengl", "vulkan"];
+  const openglRenderers = [
+    "default",
+    "llvmpipe",
+    "zink",
+    ...(config.basicInfo.platform === "windows" ? ["d3d12"] : []),
+  ];
+  const vulkanRenderers = [
+    "default",
+    "lavapipe",
+    ...(config.basicInfo.platform === "windows" ? ["dozen"] : []),
+    "nvidia_vulkan",
+    "nvidia_nvk",
+    "amdvlk",
+    "amd_radv",
+    "intel_vulkan",
+    "intel_anv",
+    "intel_hasvk",
+    "qualcomm",
+    "turnip",
+    "moltenvk",
+    "kosmickrisp",
+    "powervr",
+    "panvk",
+    "v3dv",
+  ];
+  const rendererOptions =
+    gameConfig.advanced.graphics.api === "opengl"
+      ? openglRenderers
+      : gameConfig.advanced.graphics.api === "vulkan"
+        ? vulkanRenderers
+        : ["default"];
+
   const gameFileValidatePolicies = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     updateGameConfig(`advanced.${key}`, value);
@@ -157,6 +190,59 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               placeholder={t(
                 "GameAdvancedSettingsPage.customCommands.settings.postExitCommand.placeholder"
               )}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      title: t("GameAdvancedSettingsPage.graphics.title"),
+      items: [
+        {
+          title: t("GameAdvancedSettingsPage.graphics.settings.api.title"),
+          description: t(
+            `GameAdvancedSettingsPage.graphics.settings.api.${gameConfig.advanced.graphics.api}.desc`
+          ),
+          children: (
+            <MenuSelector
+              options={graphicsApis.map((value) => ({
+                value,
+                label: t(
+                  `GameAdvancedSettingsPage.graphics.settings.api.${value}.label`
+                ),
+              }))}
+              value={gameConfig.advanced.graphics.api}
+              onSelect={(val) => {
+                updateGameAdvancedConfig("graphics.api", val);
+                updateGameAdvancedConfig("graphics.renderer", "default");
+              }}
+            />
+          ),
+        },
+        {
+          title: t("GameAdvancedSettingsPage.graphics.settings.renderer.title"),
+          description: t(
+            `GameAdvancedSettingsPage.graphics.settings.renderer.${gameConfig.advanced.graphics.renderer}.desc`,
+            { defaultValue: "" }
+          ),
+          children: (
+            <MenuSelector
+              disabled={gameConfig.advanced.graphics.api === "default"}
+              options={rendererOptions.map((value) => ({
+                value,
+                label: t(
+                  `GameAdvancedSettingsPage.graphics.settings.renderer.${value}.label`
+                ),
+              }))}
+              value={
+                rendererOptions.includes(gameConfig.advanced.graphics.renderer)
+                  ? gameConfig.advanced.graphics.renderer
+                  : "default"
+              }
+              onSelect={(val) => {
+                updateGameAdvancedConfig("graphics.renderer", val);
+              }}
+              menuListProps={{ maxH: 72, overflowY: "auto" }}
             />
           ),
         },

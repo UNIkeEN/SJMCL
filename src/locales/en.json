@@ -883,6 +883,67 @@
         }
       }
     },
+    "graphics": {
+      "title": "Graphics",
+      "settings": {
+        "api": {
+          "title": "Graphics API",
+          "default": {
+            "label": "Default",
+            "desc": "Use Minecraft and the driver default."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Use OpenGL renderer and optional Mesa driver overrides."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Use Vulkan renderer and optional ICD driver selection."
+          }
+        },
+        "renderer": {
+          "title": "Renderer / Driver",
+          "default": {
+            "label": "Default",
+            "desc": "Do not set renderer-specific environment variables."
+          },
+          "llvmpipe": {
+            "label": "LLVMpipe",
+            "desc": "Mesa software OpenGL renderer."
+          },
+          "zink": {
+            "label": "Zink",
+            "desc": "Run OpenGL on top of Vulkan through Mesa."
+          },
+          "d3d12": {
+            "label": "D3D12",
+            "desc": "Mesa OpenGL driver based on DirectX 12."
+          },
+          "lavapipe": {
+            "label": "Lavapipe",
+            "desc": "Mesa software Vulkan driver."
+          },
+          "dozen": {
+            "label": "Dozen",
+            "desc": "Mesa Vulkan driver based on DirectX 12."
+          },
+          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
+          "nvidia_nvk": { "label": "NVK" },
+          "amdvlk": { "label": "AMDVLK" },
+          "amd_radv": { "label": "RADV" },
+          "intel_vulkan": { "label": "Intel Vulkan" },
+          "intel_anv": { "label": "ANV" },
+          "intel_hasvk": { "label": "HASVK" },
+          "qualcomm": { "label": "Qualcomm Vulkan" },
+          "turnip": { "label": "Turnip" },
+          "moltenvk": { "label": "MoltenVK" },
+          "kosmickrisp": { "label": "KosmicKrisp" },
+          "powervr": { "label": "PowerVR" },
+          "panvk": { "label": "PanVK" },
+          "v3dv": { "label": "V3DV" }
+        }
+      }
+    },
     "jvm": {
       "title": "Java VM Options",
       "settings": {

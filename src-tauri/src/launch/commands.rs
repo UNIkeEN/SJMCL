@@ -10,11 +10,14 @@ use crate::launch::helpers::command_generator::{
   export_full_launch_command, generate_launch_command, LaunchCommand,
 };
 use crate::launch::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files, prepare_legacy_assets,
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
+  get_invalid_windows_mesa_loader_file, prepare_legacy_assets,
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
-use crate::launch::helpers::misc::{get_separator, parse_graphics_environment_variable};
+use crate::launch::helpers::misc::{
+  build_graphics_environment_variables, get_separator, parse_environment_variables,
+};
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
 };
@@ -96,7 +99,7 @@ pub async fn validate_game_files(
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (instance, mut client_info, workaround) = {
+  let (instance, mut client_info, game_config) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -105,9 +108,10 @@ pub async fn validate_game_files(
     (
       launching.selected_instance.clone(),
       launching.client_info.clone(),
-      launching.game_config.advanced.workaround.clone(),
+      launching.game_config.clone(),
     )
   };
+  let workaround = game_config.advanced.workaround.clone();
 
   if instance.mod_loader.status != ModLoaderStatus::Installed {
     return Err(LaunchError::ModLoaderNotInstalled.into());
@@ -157,14 +161,39 @@ pub async fn validate_game_files(
 
   // validate game files
   let incomplete_files = match workaround.game_file_validate_policy {
-    FileValidatePolicy::Disable => Vec::new(), // skip
+    FileValidatePolicy::Disable => {
+      get_invalid_windows_mesa_loader_file(
+        &app,
+        priority_list[0],
+        libraries_dir,
+        &game_config,
+        false,
+      )
+      .await?
+    }
     FileValidatePolicy::Normal => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
+      get_invalid_windows_mesa_loader_file(
+        &app,
+        priority_list[0],
+        libraries_dir,
+        &game_config,
+        false,
+      )
+      .await?,
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, false).await?,
     ]
     .concat(),
     FileValidatePolicy::Full => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, true).await?,
+      get_invalid_windows_mesa_loader_file(
+        &app,
+        priority_list[0],
+        libraries_dir,
+        &game_config,
+        true,
+      )
+      .await?,
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, true).await?,
     ]
     .concat(),
@@ -262,6 +291,12 @@ pub async fn launch_game(
     .first()
     .ok_or(InstanceError::InstanceNotFoundByID)?
     .clone();
+  let natives_dir =
+    get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::NativeLibraries])
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .first()
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone();
 
   // generate launch command
   let LaunchCommand {
@@ -290,8 +325,14 @@ pub async fn launch_game(
     let _ = execute_command_line(&precall_cmd);
   }
 
-  let graphics_env_var =
-    parse_graphics_environment_variable(&game_config.advanced.jvm.environment_variable);
+  let mut graphics_env_var = build_graphics_environment_variables(
+    &game_config.advanced.graphics.api,
+    &game_config.advanced.graphics.renderer,
+    Some(&natives_dir.join("mesa-loader")),
+  );
+  graphics_env_var.extend(parse_environment_variables(
+    &game_config.advanced.jvm.environment_variable,
+  ));
 
   // execute launch command
   #[cfg(target_os = "windows")]
