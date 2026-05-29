@@ -1,3 +1,4 @@
+use crate::APP_DATA_DIR;
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
@@ -7,12 +8,75 @@ use crate::resource::models::{
   OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
   SourceType,
 };
+use crate::storage::Storage;
 use futures::StreamExt;
+use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
+use std::collections::HashMap;
+use std::path::PathBuf;
 use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
 use strum::IntoEnumIterator;
 use tauri::{AppHandle, Manager};
 use url::Url;
+
+const RESOURCE_DESCRIPTION_TRANSLATION_CACHE_FILE_NAME: &str =
+  "resource_description_translations.json";
+const RESOURCE_DESCRIPTION_TRANSLATION_CACHE_EXPIRY_HOURS: u64 = 24 * 30;
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ResourceDescriptionTranslationsCache {
+  #[serde(flatten)]
+  pub translations: HashMap<String, ResourceDescriptionTranslationEntry>,
+}
+
+impl ResourceDescriptionTranslationsCache {
+  fn cache_key(source: &OtherResourceSource, resource_id: &str) -> String {
+    let source = match source {
+      OtherResourceSource::CurseForge => "curseforge",
+      OtherResourceSource::Modrinth => "modrinth",
+      OtherResourceSource::MultiMc => "multimc",
+      OtherResourceSource::Unknown => "unknown",
+    };
+
+    format!("{}:{}", source, resource_id)
+  }
+}
+
+impl Storage for ResourceDescriptionTranslationsCache {
+  fn file_path() -> PathBuf {
+    APP_DATA_DIR
+      .get()
+      .unwrap()
+      .join(RESOURCE_DESCRIPTION_TRANSLATION_CACHE_FILE_NAME)
+  }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ResourceDescriptionTranslationEntry {
+  pub translated_description: String,
+  pub timestamp: u64,
+}
+
+impl ResourceDescriptionTranslationEntry {
+  fn new(translated_description: String) -> Self {
+    Self {
+      translated_description,
+      timestamp: SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs(),
+    }
+  }
+
+  fn is_expired(&self, max_age_hours: u64) -> bool {
+    let current_time = SystemTime::now()
+      .duration_since(UNIX_EPOCH)
+      .unwrap_or_default()
+      .as_secs();
+    current_time > self.timestamp + (max_age_hours * 60 * 60)
+  }
+}
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {
@@ -306,6 +370,20 @@ pub async fn apply_other_resource_enhancements(
     resource_info.mcmod_id = id;
   }
 
+  let translation_cache_key =
+    ResourceDescriptionTranslationsCache::cache_key(&resource_info.source, &resource_info.id);
+  if let Ok(cache) = app
+    .state::<Mutex<ResourceDescriptionTranslationsCache>>()
+    .lock()
+  {
+    if let Some(entry) = cache.translations.get(&translation_cache_key)
+      && !entry.is_expired(RESOURCE_DESCRIPTION_TRANSLATION_CACHE_EXPIRY_HOURS)
+    {
+      resource_info.translated_description = Some(entry.translated_description.clone());
+      return Ok(());
+    }
+  }
+
   let translated_desc = match resource_info.source {
     OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
     OtherResourceSource::CurseForge => {
@@ -315,6 +393,16 @@ pub async fn apply_other_resource_enhancements(
   };
 
   if let Some(desc) = translated_desc {
+    if let Ok(mut cache) = app
+      .state::<Mutex<ResourceDescriptionTranslationsCache>>()
+      .lock()
+    {
+      cache.translations.insert(
+        translation_cache_key,
+        ResourceDescriptionTranslationEntry::new(desc.clone()),
+      );
+      let _ = cache.save();
+    }
     resource_info.translated_description = Some(desc);
   }
 
