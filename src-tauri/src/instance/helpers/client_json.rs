@@ -7,7 +7,7 @@ use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use serde_with::formats::PreferMany;
-use serde_with::{serde_as, OneOrMany};
+use serde_with::{OneOrMany, serde_as};
 use serialize_skip_none_derive::serialize_skip_none;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -135,7 +135,7 @@ impl InstructionRule {
         return Err(SJMCLError(format!(
           "unknown action format: {}",
           self.action
-        )))
+        )));
       }
     };
     let mut strong = false;
@@ -149,11 +149,12 @@ impl InstructionRule {
         positive = !positive;
         return Ok((positive, strong));
       }
-      if let Some(ref arch_string) = os_rule.arch {
-        if arch_string != "unknown" && arch_string != tauri_plugin_os::arch() {
-          positive = !positive;
-          return Ok((positive, strong));
-        }
+      if let Some(ref arch_string) = os_rule.arch
+        && arch_string != "unknown"
+        && arch_string != tauri_plugin_os::arch()
+      {
+        positive = !positive;
+        return Ok((positive, strong));
       }
       if let Some(ref version_string) = os_rule.version {
         let version_regex = RegexBuilder::new(version_string).build()?;
@@ -320,11 +321,11 @@ pub fn patches_to_info(
     if game_version.is_none() && patch.id == "game" {
       game_version = patch.version.clone();
     }
-    if loader_type == ModLoaderType::Unknown {
-      if let Ok(found_loader_type) = ModLoaderType::from_str(&patch.id) {
-        loader_type = found_loader_type;
-        loader_version = patch.version.clone();
-      }
+    if loader_type == ModLoaderType::Unknown
+      && let Ok(found_loader_type) = ModLoaderType::from_str(&patch.id)
+    {
+      loader_type = found_loader_type;
+      loader_version = patch.version.clone();
     }
     if patch.id == "optifine" {
       optifine_info = Some(OptiFineResourceInfo {

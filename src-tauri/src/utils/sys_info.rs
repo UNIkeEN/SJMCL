@@ -2,9 +2,7 @@ use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::MemoryInfo;
 use serde_json::json;
 use std::net::{SocketAddr, TcpListener};
-use std::path::PathBuf;
-use sysinfo::{Disk, Disks};
-use systemstat::{saturating_sub_bytes, Platform};
+use systemstat::{Platform, saturating_sub_bytes};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_os::locale;
 
@@ -118,7 +116,9 @@ pub fn get_memory_info() -> MemoryInfo {
 ///     println!("Drive: {:?}", mount);
 /// }
 /// ```
-pub fn get_all_drive_mount_points() -> Vec<PathBuf> {
+#[cfg(target_os = "windows")]
+pub fn get_all_drive_mount_points() -> Vec<std::path::PathBuf> {
+  use sysinfo::{Disk, Disks};
   let disks = Disks::new_with_refreshed_list(); // creates and loads disks
 
   disks

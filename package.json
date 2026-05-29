@@ -1,6 +1,6 @@
 {
   "name": "sjmcl",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -46,7 +46,6 @@
     "@tauri-apps/plugin-window-state": "^2.4.1",
     "fuse.js": "^7.3.0",
     "i18next": "^24.0.0",
-    "lodash": "^4.18.1",
     "masonic": "^4.0.1",
     "micromatch": "^4.0.8",
     "next": "16.2.6",
@@ -62,9 +61,8 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.2.4",
-    "@tauri-apps/cli": "^2.11.1",
+    "@tauri-apps/cli": "^2.11.2",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/lodash": "^4.17.15",
     "@types/micromatch": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^18",

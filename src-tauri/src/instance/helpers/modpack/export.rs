@@ -236,10 +236,10 @@ pub fn list_files(instance: &Instance) -> SJMCLResult<ModpackFileList> {
     if entry.file_type().is_file() {
       let path = entry.path();
       // Ignore name.jar / name.json
-      if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
-        if stem == name {
-          continue;
-        }
+      if let Some(stem) = path.file_stem().and_then(|s| s.to_str())
+        && stem == name
+      {
+        continue;
       }
 
       if let Ok(rel_path) = path.strip_prefix(root) {
@@ -280,16 +280,16 @@ pub(crate) fn normalize_mod_loader_version(raw: &str) -> String {
     return raw.to_string();
   }
 
-  if let Some(caps) = FORGE_VERSION_REGEX.captures(trimmed) {
-    if let Some(matched) = caps.get(2) {
-      return matched.as_str().to_string();
-    }
+  if let Some(caps) = FORGE_VERSION_REGEX.captures(trimmed)
+    && let Some(matched) = caps.get(2)
+  {
+    return matched.as_str().to_string();
   }
 
-  if let Some(caps) = NEOFORGE_VERSION_REGEX.captures(trimmed) {
-    if let Some(matched) = caps.get(2) {
-      return matched.as_str().to_string();
-    }
+  if let Some(caps) = NEOFORGE_VERSION_REGEX.captures(trimmed)
+    && let Some(matched) = caps.get(2)
+  {
+    return matched.as_str().to_string();
   }
 
   raw.to_string()

@@ -29,13 +29,11 @@ pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option
       match serde_json::from_str::<serde_json::Value>(&contents) {
         Ok(json_result) => {
           // Safely extract `description`
-          if let Some(pack_data) = json_result.get("pack") {
-            if let Some(desc) = pack_data.get("description") {
-              // Assume `desc` is a valid JSON object or primitive
-              if let Some(desc_str) = desc.as_str() {
-                description = desc_str.to_string();
-              }
-            }
+          if let Some(pack_data) = json_result.get("pack")
+            && let Some(desc) = pack_data.get("description")
+            && let Some(desc_str) = desc.as_str()
+          {
+            description = desc_str.to_string();
           }
         }
         Err(e) => {
@@ -65,13 +63,11 @@ pub async fn load_resourcepack_from_dir(path: &Path) -> SJMCLResult<(String, Opt
     match serde_json::from_str::<serde_json::Value>(&contents) {
       Ok(json_result) => {
         // Safely extract `description`
-        if let Some(pack_data) = json_result.get("pack") {
-          if let Some(desc) = pack_data.get("description") {
-            // Assume `desc` is a valid JSON object or primitive
-            if let Some(desc_str) = desc.as_str() {
-              description = desc_str.to_string();
-            }
-          }
+        if let Some(pack_data) = json_result.get("pack")
+          && let Some(desc) = pack_data.get("description")
+          && let Some(desc_str) = desc.as_str()
+        {
+          description = desc_str.to_string();
         }
       }
       Err(e) => {

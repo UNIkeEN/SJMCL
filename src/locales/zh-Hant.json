@@ -448,6 +448,12 @@
       "content": "確定要刪除認證伺服器「{{name}}」嗎？它將不再出現在你的伺服器清單中。"
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "刪除好友",
+      "content": "確定要刪除好友 “{{name}}” 嗎？"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "刪除遊戲伺服器",
     "content": "確定要刪除遊戲伺服器「{{name}}」（{{addr}}）嗎？它將會永久消失！（真的很久！）"
@@ -587,6 +593,7 @@
     },
     "proxy": {
       "title": "Proxy",
+      "headExtra": "需要重新啟動",
       "settings": {
         "enabled": {
           "title": "啟用 Proxy"
@@ -858,6 +865,9 @@
   "ExtensionUpdateConfirmDialog": {
     "title": "更新擴充套件",
     "body": "擴充套件 {{identifier}} 已從 {{src}} 下載新版本 {{version}}，是否確認安裝？"
+  },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} 等（共 {{count}} 個）"
   },
   "GameAdvancedSettingsPage": {
     "title": "高階遊戲設定",
@@ -1711,6 +1721,41 @@
   "MenuSelector": {
     "selectedCount": "已選 {{count}} 項"
   },
+  "MicrosoftFriendsModal": {
+    "title": "微軟帳戶 {{name}} 的 Minecraft 好友",
+    "placeholder": {
+      "playerName": "輸入玩家名稱以新增好友"
+    },
+    "group": {
+      "requests": "請求",
+      "friends": "好友"
+    },
+    "request": {
+      "incoming": "收到的好友請求",
+      "outgoing": "已發送的好友請求"
+    },
+    "button": {
+      "add": "添加",
+      "accept": "接受",
+      "decline": "拒絕",
+      "revoke": "撤銷",
+      "remove": "刪除好友",
+      "xboxSettings": "XBOX 設定"
+    },
+    "empty": {
+      "requests": "暫無請求",
+      "friends": "暫無好友"
+    },
+    "status": {
+      "INVITED": "邀請你加入其世界",
+      "ONLINE": "在線",
+      "PLAYING_OFFLINE": "單人遊戲中",
+      "PLAYING_REALMS": "正在玩 Realms",
+      "PLAYING_SERVER": "正在伺服器中",
+      "PLAYING_HOSTED_SERVER": "開放區域網路",
+      "OFFLINE": "離線"
+    }
+  },
   "NoSuitableJavaDialog": {
     "title": "未找到合適的 Java 執行時",
     "body": "對於目前實例，沒有合適的 Java 執行時可供選擇。點擊「確定」以前往 Java 管理頁面手動新增或下載 Java。"
@@ -1744,6 +1789,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "好友",
       "manageSkin": "管理外觀",
       "viewSkin": "檢視外觀",
       "delete": "刪除此角色",
@@ -2229,11 +2275,11 @@
             "CANCELLED": "已取消",
             "INVALID": "無效的認證伺服器地址",
             "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色",
-            "XSTS_BANNED": "您的帳號已被 Xbox 封禁",
+            "XSTS_BANNED": "您的帳號已被 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "您的帳號受到家長管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 Xbox 帳號，請前往 minecraft.net 建立",
-            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服务条款才能繼續",
-            "XSTS_REGION_BANNED": "您所在的國家或地區不受 Xbox Live 支援",
+            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 XBOX 帳號，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 XBOX 服务条款才能繼續",
+            "XSTS_REGION_BANNED": "您所在的國家或地區不受 XBOX Live 支援",
             "XSTS_CHILD_ACCOUNT": "您的帳號為未成年帳號，請前往 family.microsoft.com 進行家長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 驗證時發生未知錯誤"
           }
@@ -2251,11 +2297,11 @@
             "INVALID": "離線角色不支援重新整理",
             "CANCELLED": "已取消",
             "NO_MINECRAFT_PROFILE": "未找到角色，請確認是否已購買 Minecraft 並建立角色",
-            "XSTS_BANNED": "您的帳號已被 Xbox 封禁",
+            "XSTS_BANNED": "您的帳號已被 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "您的帳號受到家長管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 Xbox 帳號，請前往 minecraft.net 建立",
-            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服務條款才能繼續",
-            "XSTS_REGION_BANNED": "您所在的國家或地區不受 Xbox Live 支援",
+            "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 XBOX 帳號，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 XBOX 服務條款才能繼續",
+            "XSTS_REGION_BANNED": "您所在的國家或地區不受 XBOX Live 支援",
             "XSTS_CHILD_ACCOUNT": "您的帳號為未成年帳號，請前往 family.microsoft.com 進行家長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 驗證時發生未知錯誤"
           }
@@ -2343,6 +2389,41 @@
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "INVALID": "離線角色不支援重新整理"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "好友清單取得成功",
+        "error": {
+          "title": "取得微軟好友清單失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "目前角色不是微軟帳戶",
+            "EXPIRED": "令牌已過期，請重新登入",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線至 Minecraft 服務",
+            "FORBIDDEN": "無權限，請檢查您的帳戶設定",
+            "TOO_MANY_REQUESTS": "請求過於頻繁，請稍後再試",
+            "SERVICE_UNAVAILABLE": "Minecraft 服務暫時不可用"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "好友操作成功",
+        "error": {
+          "title": "微軟好友操作失敗",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "好友參數無效",
+            "EXPIRED": "令牌已過期，請重新登入",
+            "PARSE_ERROR": "伺服器返回資料格式錯誤",
+            "NETWORK_ERROR": "無法連線至 Minecraft 服務",
+            "FORBIDDEN": "目前無法新增好友，請檢查您與對方帳戶的相關設定",
+            "TOO_MANY_REQUESTS": "請求過於頻繁，請稍後再試",
+            "SERVICE_UNAVAILABLE": "Minecraft 服務暫時不可用",
+            "UNKNOWN_PROFILE": "目標玩家不存在",
+            "CANNOT_ADD_SELF": "不能將自己加入好友",
+            "DUPLICATED_PROFILES": "重複的好友操作請求"
           }
         }
       },
@@ -2611,7 +2692,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "資源複製成功",
         "error": {
           "title": "複製資源失敗",

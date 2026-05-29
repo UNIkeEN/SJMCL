@@ -15,8 +15,13 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import Editable from "@/components/common/editable";
+import { FormattedMCText } from "@/components/common/formatted-mc-text";
+import MarkdownContainer from "@/components/common/markdown-container";
+import { MenuSelector } from "@/components/common/menu-selector";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import Segmented from "@/components/common/segmented";
 import { WrapCard, WrapCardGroup } from "@/components/common/wrap-card";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
 import { useLauncherConfig } from "@/contexts/config";
@@ -61,9 +66,14 @@ interface ExtensionContextRegistrationApi {
   React: typeof React;
   ChakraUI: typeof ChakraUI;
   Components: {
+    Editable: typeof Editable;
+    FormattedMCText: typeof FormattedMCText;
+    MarkdownContainer: typeof MarkdownContainer;
+    MenuSelector: typeof MenuSelector;
     OptionItem: typeof OptionItem;
     OptionItemGroup: typeof OptionItemGroup;
     Section: typeof Section;
+    Segmented: typeof Segmented;
     WrapCard: typeof WrapCard;
     WrapCardGroup: typeof WrapCardGroup;
   };
@@ -527,7 +537,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
               reject(error);
             }
           },
-          onCancelCallback: () => reject(new Error("Cancelled")),
+          onCancelCallback: () => resolve(),
         });
       });
     },
@@ -1256,9 +1266,14 @@ const ActiveExtensionHostContextProvider: React.FC<{
         React,
         ChakraUI,
         Components: {
+          Editable,
+          FormattedMCText,
+          MarkdownContainer,
+          MenuSelector,
           OptionItem,
           OptionItemGroup,
           Section,
+          Segmented,
           WrapCard,
           WrapCardGroup,
         },

@@ -25,6 +25,16 @@ import { WorldInfo } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
 import { updateByKeyPath } from "@/utils/partial";
 
+type ImportResourcesOptions = {
+  filterName: string;
+  filterExt: string[];
+  tgtDirType: InstanceSubdirType;
+  paths?: string[];
+  multiple?: boolean;
+  decompress?: boolean;
+  onSuccessCallback: () => void;
+};
+
 export interface InstanceContextType {
   instanceId: string | undefined;
   summary: InstanceSummary | undefined;
@@ -65,7 +75,7 @@ export interface InstanceContextType {
   handleRetrieveInstanceSubdirPath: (
     dirType: InstanceSubdirType
   ) => Promise<string | null>;
-  handleImportResource: (option: any) => void;
+  handleImportResources: (options: ImportResourcesOptions) => void;
   handleUpdateInstanceConfig: (path: string, value: any) => void;
   handleRestoreInstanceGameConfig: () => void;
 }
@@ -207,30 +217,22 @@ export const InstanceContextProvider: React.FC<{
     [handleRetrieveInstanceSubdirPath]
   );
 
-  type ImportResourceOptions = {
-    filterName: string;
-    filterExt: string[];
-    tgtDirType: InstanceSubdirType;
-    path?: string;
-    decompress?: boolean;
-    onSuccessCallback: () => void;
-  };
-
-  const handleImportResource = useCallback(
-    (options: ImportResourceOptions) => {
+  const handleImportResources = useCallback(
+    (options: ImportResourcesOptions) => {
       const {
         filterName,
         filterExt,
         tgtDirType,
-        path,
+        paths,
+        multiple = false,
         decompress = false,
         onSuccessCallback,
       } = options;
       if (instanceId !== undefined) {
-        const selectedPathPromise = path
-          ? Promise.resolve(path)
+        const selectedPathPromise = paths
+          ? Promise.resolve(paths)
           : open({
-              multiple: false,
+              multiple,
               filters: [
                 {
                   name: filterName,
@@ -240,9 +242,14 @@ export const InstanceContextProvider: React.FC<{
             });
 
         selectedPathPromise.then((selectedPath) => {
-          if (!selectedPath) return;
-          InstanceService.copyResourceToInstances(
-            selectedPath,
+          const selectedPaths = Array.isArray(selectedPath)
+            ? selectedPath
+            : selectedPath
+              ? [selectedPath]
+              : [];
+          if (selectedPaths.length === 0) return;
+          InstanceService.copyResourcesToInstances(
+            selectedPaths,
             [instanceId],
             tgtDirType,
             decompress
@@ -619,7 +626,7 @@ export const InstanceContextProvider: React.FC<{
         isScreenshotListLoading,
         // getInstanceGameConfig,
         handleRetrieveInstanceSubdirPath,
-        handleImportResource,
+        handleImportResources,
         handleUpdateInstanceConfig,
         handleRestoreInstanceGameConfig,
       }}

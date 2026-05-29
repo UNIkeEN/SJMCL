@@ -132,10 +132,10 @@ pub fn extract_overrides(file: &File, instance_path: &Path) -> SJMCLResult<()> {
 
     if file.is_file() {
       // Create parent directories if they don't exist
-      if let Some(p) = outpath.parent() {
-        if !p.exists() {
-          fs::create_dir_all(p)?;
-        }
+      if let Some(p) = outpath.parent()
+        && !p.exists()
+      {
+        fs::create_dir_all(p)?;
       }
 
       // Extract file

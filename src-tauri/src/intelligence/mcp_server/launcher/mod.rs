@@ -7,7 +7,7 @@ use crate::utils::sys_info::find_free_port;
 use rmcp::handler::server::router::Router;
 use rmcp::model::{CallToolResult, Implementation, ServerCapabilities, ServerInfo};
 use rmcp::transport::streamable_http_server::{
-  session::local::LocalSessionManager, StreamableHttpServerConfig, StreamableHttpService,
+  StreamableHttpServerConfig, StreamableHttpService, session::local::LocalSessionManager,
 };
 use rmcp::{ErrorData as McpError, ServerHandler};
 use serde::Serialize;
@@ -29,22 +29,15 @@ impl McpContext {
 
 impl ServerHandler for McpContext {
   fn get_info(&self) -> ServerInfo {
-    ServerInfo {
-      capabilities: ServerCapabilities::builder().enable_tools().build(),
-      server_info: Implementation {
-        name: "sjmcl-mcp".to_string(),
-        title: Some("SJMCL MCP".to_string()),
-        version: env!("CARGO_PKG_VERSION").to_string(),
-        description: Some("MCP tools exposed by SJMCL, a modern Minecraft launcher".to_string()),
-        icons: None,
-        website_url: None,
-      },
-      instructions: Some(
+    ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+      .with_server_info(
+        Implementation::new("sjmcl-mcp", env!("CARGO_PKG_VERSION"))
+          .with_title("SJMCL MCP")
+          .with_description("MCP tools exposed by SJMCL, a modern Minecraft launcher"),
+      )
+      .with_instructions(
         "Use tools to query Minecraft instances and accounts managed by SJMC Launcher. When a tool requires instance_id, first list available instances and then pass one returned id. This server is intended for local trusted clients."
-          .to_string(),
-      ),
-      ..Default::default()
-    }
+      )
   }
 }
 
@@ -136,10 +129,7 @@ async fn serve(
         )
       },
       Default::default(),
-      StreamableHttpServerConfig {
-        stateful_mode: true,
-        ..Default::default()
-      },
+      StreamableHttpServerConfig::default().with_stateful_mode(true),
     );
 
   let axum_router = axum::Router::new().nest_service(MCP_SERVER_PATH, service);

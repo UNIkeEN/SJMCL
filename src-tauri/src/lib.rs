@@ -21,7 +21,7 @@ use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
-use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
@@ -30,9 +30,9 @@ use tasks::monitor::TaskMonitor;
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
+use tauri::Manager;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
-use tauri::Manager;
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
@@ -59,14 +59,15 @@ pub async fn run() {
       .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
         let main_window = app.get_webview_window("main").expect("no main window");
         let _ = main_window.show(); // may hide by launcher_visibility settings
-                                    // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
+        // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
         let _ = main_window.set_focus();
       }))
       .plugin(
         tauri_plugin_window_state::Builder::new()
           .with_state_flags(
             tauri_plugin_window_state::StateFlags::POSITION
-              | tauri_plugin_window_state::StateFlags::SIZE,
+              | tauri_plugin_window_state::StateFlags::SIZE
+              | tauri_plugin_window_state::StateFlags::MAXIMIZED,
           )
           .with_filter(|label| label == "main")
           .build(),
@@ -107,6 +108,8 @@ pub async fn run() {
         account::commands::update_player_skin_offline_local,
         account::commands::delete_player,
         account::commands::refresh_player,
+        account::commands::retrieve_microsoft_friend_list,
+        account::commands::update_microsoft_friend,
         account::commands::retrieve_auth_server_list,
         account::commands::fetch_auth_server,
         account::commands::add_auth_server,
@@ -122,7 +125,7 @@ pub async fn run() {
         instance::commands::read_instance_file,
         instance::commands::delete_instance,
         instance::commands::rename_instance,
-        instance::commands::copy_resource_to_instances,
+        instance::commands::copy_resources_to_instances,
         instance::commands::move_resource_to_instance,
         instance::commands::retrieve_world_list,
         instance::commands::retrieve_world_details,
@@ -233,7 +236,7 @@ pub async fn run() {
         let local_mod_translations = LocalModTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(local_mod_translations));
 
-        let client = build_sjmcl_client(app.handle(), true, false);
+        let client = build_sjmcl_client(app.handle(), true);
         app.manage(client);
 
         let launching_queue = Vec::<LaunchingState>::new();
@@ -310,10 +313,10 @@ pub async fn run() {
         // on Windows, setup overlay native caption buttons
         #[cfg(target_os = "windows")]
         {
-          if let Some(main_window) = app.get_webview_window("main") {
-            if let Err(e) = main_window.create_overlay_titlebar() {
-              log::warn!("Failed to setup native windows caption buttons: {e}");
-            }
+          if let Some(main_window) = app.get_webview_window("main")
+            && let Err(e) = main_window.create_overlay_titlebar()
+          {
+            log::warn!("Failed to setup native windows caption buttons: {e}");
           }
         }
 
@@ -335,7 +338,20 @@ pub async fn run() {
         Ok(())
       })
       .build(tauri::generate_context!())
-      .expect("error while building tauri application")
+      // Catch and show a native error dialog when Tauri fails to initialize.
+      // A plain panic would be invisible to the user by default, and tauri-plugin-dialog isn't available since the app never started.
+      .unwrap_or_else(|e| {
+        log::error!("Failed to build Tauri application: {:?}", e);
+        eprintln!("Failed to build Tauri application: {:?}", e); // fallback when logging is not available
+        native_dialog::DialogBuilder::message()
+          .set_title("Initialization error")
+          .set_text(format!("Cannot initialize SJMCL due to an error:\n{e}"))
+          .set_level(native_dialog::MessageLevel::Error)
+          .alert()
+          .show()
+          .ok();
+        std::process::exit(1);
+      })
       .run_return(|_, event| {
         if let tauri::RunEvent::Exit = event {
           log::info!("Launcher exited normally.");

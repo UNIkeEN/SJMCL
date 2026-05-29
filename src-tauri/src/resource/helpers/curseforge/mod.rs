@@ -10,10 +10,10 @@ use crate::resource::models::{
 };
 use hex;
 use misc::{
-  cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id, cvt_type_to_class_id,
-  cvt_version_to_type_id, get_curseforge_api, make_curseforge_request,
-  map_curseforge_file_to_version_pack, CurseForgeFileInfo, CurseForgeFingerprintRes,
-  CurseForgeGetProjectRes, CurseForgeSearchRes, CurseForgeVersionPackSearchRes,
+  CurseForgeFileInfo, CurseForgeFingerprintRes, CurseForgeGetProjectRes, CurseForgeSearchRes,
+  CurseForgeVersionPackSearchRes, cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id,
+  cvt_type_to_class_id, cvt_version_to_type_id, get_curseforge_api, make_curseforge_request,
+  map_curseforge_file_to_version_pack,
 };
 use murmur2::murmur2;
 use serde_json::json;
@@ -176,13 +176,13 @@ pub async fn fetch_resource_version_packs_curseforge(
         cvt_mod_loader_to_id(mod_loader).to_string(),
       );
     }
-    if let Some(version) = game_versions.first() {
-      if version != ALL_FILTER {
-        params.insert(
-          "gameVersionTypeId".to_string(),
-          cvt_version_to_type_id(version).to_string(),
-        );
-      }
+    if let Some(version) = game_versions.first()
+      && version != ALL_FILTER
+    {
+      params.insert(
+        "gameVersionTypeId".to_string(),
+        cvt_version_to_type_id(version).to_string(),
+      );
     }
     params.insert("index".to_string(), (page * page_size).to_string());
     params.insert("pageSize".to_string(), page_size.to_string());

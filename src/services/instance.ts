@@ -201,22 +201,22 @@ export class InstanceService {
   }
 
   /**
-   * COPY the specified resource to the target instance(s).
-   * @param {string} srcFilePath - The path of the file (or the directory) to copy.
+   * COPY the specified resource(s) to the target instance(s).
+   * @param {string | string[]} srcFilePaths - The path(s) of the file(s) or directory(s) to copy.
    * @param {string[]} tgtInstIds - ID of the target instance(s).
    * @param {InstanceSubdirType} tgtDirType - The instance subdir type to operate.
    * @param {boolean} [decompress=false] - Whether to decompress as a zip file
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async copyResourceToInstances(
-    srcFilePath: string,
+  static async copyResourcesToInstances(
+    srcFilePaths: string | string[],
     tgtInstIds: string[],
     tgtDirType: InstanceSubdirType,
     decompress: boolean = false
   ): Promise<InvokeResponse<void>> {
-    return await invoke("copy_resource_to_instances", {
-      srcFilePath,
+    return await invoke("copy_resources_to_instances", {
+      srcFilePaths: Array.isArray(srcFilePaths) ? srcFilePaths : [srcFilePaths],
       tgtInstIds,
       tgtDirType,
       decompress,

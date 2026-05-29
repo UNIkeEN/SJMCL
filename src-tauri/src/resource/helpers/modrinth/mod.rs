@@ -12,8 +12,8 @@ use crate::resource::models::{
 use crate::tasks::download::DownloadParam;
 use hex;
 use misc::{
-  get_modrinth_api, make_modrinth_request, map_modrinth_file_to_version_pack, ModrinthProject,
-  ModrinthSearchRes, ModrinthVersionPack,
+  ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
+  map_modrinth_file_to_version_pack,
 };
 use sha1::{Digest, Sha1};
 use std::collections::HashMap;
@@ -97,19 +97,19 @@ pub async fn fetch_resource_version_packs_modrinth(
       format!("[\"{}\"]", mod_loader.to_lowercase()),
     );
   }
-  if let Some(first_version) = game_versions.first() {
-    if first_version != ALL_FILTER {
-      let versions_json = format!(
-        "[{}]",
-        game_versions
-          .iter()
-          .map(|v| format!("\"{}\"", v))
-          .collect::<Vec<_>>()
-          .join(",")
-      );
+  if let Some(first_version) = game_versions.first()
+    && first_version != ALL_FILTER
+  {
+    let versions_json = format!(
+      "[{}]",
+      game_versions
+        .iter()
+        .map(|v| format!("\"{}\"", v))
+        .collect::<Vec<_>>()
+        .join(",")
+    );
 
-      params.insert("game_versions".to_string(), versions_json);
-    }
+    params.insert("game_versions".to_string(), versions_json);
   }
 
   let client = app.state::<reqwest::Client>();
