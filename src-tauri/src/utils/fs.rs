@@ -1,5 +1,5 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::IS_PORTABLE;
+use crate::error::{SJMCLError, SJMCLResult};
 use regex::Regex;
 use sha1::{Digest, Sha1};
 use sha2::Sha256;
@@ -164,10 +164,10 @@ pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> SJMCLResult<Vec<PathBuf>> 
   fs::read_dir(path)?
     .filter_map(|entry| match entry {
       Ok(entry) => {
-        if let Ok(file_type) = entry.file_type() {
-          if file_type.is_dir() {
-            return Some(Ok(entry.path()));
-          }
+        if let Ok(file_type) = entry.file_type()
+          && file_type.is_dir()
+        {
+          return Some(Ok(entry.path()));
         }
         None
       }
@@ -198,12 +198,11 @@ pub fn get_files_with_regex<P: AsRef<Path>>(path: P, pattern: &Regex) -> SJMCLRe
     let entry = entry.map_err(|e| SJMCLError(format!("Read Entry Error: {}", e)))?;
     let path = entry.path();
 
-    if let Some(file_name) = path.file_name() {
-      if let Some(file_name_str) = file_name.to_str() {
-        if pattern.is_match(file_name_str) {
-          matching_files.push(path);
-        }
-      }
+    if let Some(file_name) = path.file_name()
+      && let Some(file_name_str) = file_name.to_str()
+      && pattern.is_match(file_name_str)
+    {
+      matching_files.push(path);
     }
   }
 

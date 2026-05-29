@@ -66,6 +66,9 @@ const chakraExtendTheme = extendTheme({
           fontSize: "xs-sm",
           lineHeight: 4,
         },
+        icon: {
+          alignSelf: "center",
+        },
       },
     },
     Button: {

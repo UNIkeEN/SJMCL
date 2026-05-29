@@ -6,7 +6,7 @@ use crate::account::models::{
 use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::storage::Storage;
-use crate::utils::image::{decode_image, ImageWrapper};
+use crate::utils::image::{ImageWrapper, decode_image};
 use crate::utils::web::is_china_mainland_ip;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -89,6 +89,34 @@ pub fn add_player(app: &AppHandle, new_player: PlayerInfo) -> SJMCLResult<()> {
     account_state.save()?;
   }
 
+  Ok(())
+}
+
+pub fn get_player_by_id(app: &AppHandle, player_id: &str) -> SJMCLResult<Option<PlayerInfo>> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let account_state = account_binding.lock()?;
+
+  Ok(
+    account_state
+      .players
+      .iter()
+      .find(|player| player.id == player_id)
+      .cloned(),
+  )
+}
+
+pub fn update_player_by_id(app: &AppHandle, player_id: &str, info: PlayerInfo) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  if let Some(index) = account_state
+    .players
+    .iter()
+    .position(|player| player.id == player_id)
+  {
+    account_state.players[index] = info;
+    account_state.save()?;
+  }
   Ok(())
 }
 

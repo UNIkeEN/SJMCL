@@ -11,8 +11,8 @@ use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
-use base64::engine::general_purpose;
 use base64::Engine;
+use base64::engine::general_purpose;
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
 use shlex::try_quote;
@@ -285,7 +285,7 @@ pub async fn generate_launch_command(
   if matches!(
     selected_player.player_type,
     PlayerType::ThirdParty | PlayerType::Offline
-  ) && auth_server_meta.is_some()
+  ) && let Some(auth_server_meta) = auth_server_meta.as_ref()
   {
     let auth_server_url = selected_player
       .auth_server_url
@@ -299,7 +299,7 @@ pub async fn generate_launch_command(
     cmd.push("-Dauthlibinjector.side=client".to_string());
     cmd.push(format!(
       "-Dauthlibinjector.yggdrasil.prefetched={}",
-      general_purpose::STANDARD.encode(auth_server_meta.unwrap())
+      general_purpose::STANDARD.encode(auth_server_meta)
     ));
   }
 
@@ -317,15 +317,15 @@ pub async fn generate_launch_command(
         None
       }
     });
-    if let Some(ver) = lwjgl_version {
-      if ver.starts_with("3.4.") {
-        match get_app_resource_filepath(app, "assets/game/lwjgl-unsafe-agent.jar") {
-          Ok(agent_path) => {
-            cmd.push(format!("-javaagent:{}", agent_path.to_string_lossy()));
-          }
-          Err(e) => {
-            log::warn!("Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
-          }
+    if let Some(ver) = lwjgl_version
+      && ver.starts_with("3.4.")
+    {
+      match get_app_resource_filepath(app, "assets/game/lwjgl-unsafe-agent.jar") {
+        Ok(agent_path) => {
+          cmd.push(format!("-javaagent:{}", agent_path.to_string_lossy()));
+        }
+        Err(e) => {
+          log::warn!("Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
         }
       }
     }
@@ -458,11 +458,11 @@ pub fn export_full_launch_command(
   let classpath_str = class_paths.join(get_separator());
   let java_exec = quote_or_raw(java_exec_str);
   let mut safe_args = args.to_vec();
-  if let Some(access_token_pos) = args.iter().position(|s| s == "--accessToken") {
-    if access_token_pos + 1 < args.len() {
-      // avoid leaking access token in exported files
-      safe_args[access_token_pos + 1] = "***".to_string();
-    }
+  if let Some(access_token_pos) = args.iter().position(|s| s == "--accessToken")
+    && access_token_pos + 1 < args.len()
+  {
+    // avoid leaking access token in exported files
+    safe_args[access_token_pos + 1] = "***".to_string();
   }
   let quoted_args = safe_args
     .iter()

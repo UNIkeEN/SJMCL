@@ -13,8 +13,8 @@ use std::future::Future;
 use std::sync::atomic::AtomicU32;
 use std::sync::{Arc, Mutex, RwLock};
 use std::vec::Vec;
-use tauri::async_runtime::JoinHandle;
 use tauri::AppHandle;
+use tauri::async_runtime::JoinHandle;
 use tokio::sync::Semaphore;
 
 pub struct GroupMonitor {
@@ -298,13 +298,13 @@ impl TaskMonitor {
           let r = future.f.await;
           match r {
             Ok(_) => {
-              if let Some(group_name) = future.task_group {
-                if let Some(group) = group_map.write().unwrap().get_mut(&group_name) {
-                  group.phs.remove(&future.task_id);
-                  if group.phs.is_empty() {
-                    group.status = GEventStatus::Completed;
-                    GEvent::emit_group_completed(&app, &group_name)
-                  }
+              if let Some(group_name) = future.task_group
+                && let Some(group) = group_map.write().unwrap().get_mut(&group_name)
+              {
+                group.phs.remove(&future.task_id);
+                if group.phs.is_empty() {
+                  group.status = GEventStatus::Completed;
+                  GEvent::emit_group_completed(&app, &group_name)
                 }
               }
             }

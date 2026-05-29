@@ -52,6 +52,7 @@ export interface ExtensionAbilityActions {
   openExternalLink: (url: string) => Promise<void>;
   openSharedModal: (key: string, params?: any) => void;
   openCustomModal: (key: string, params?: any) => void;
+  setHomeWidgetTitle: (title: string, key?: string) => void;
   // file system and request
   readFile: (path: string, mode?: "string" | "base64") => Promise<string>;
   writeFile: (

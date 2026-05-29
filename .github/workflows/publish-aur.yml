@@ -6,19 +6,20 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      deb_hash_x86_64:
-        description: "SHA512 hash of the .deb file for x86_64 architecture"
-        required: true
-      deb_hash_aarch64:
-        description: "SHA512 hash of the .deb file for aarch64 architecture"
-        required: true
       version:
         description: "Version to publish"
+        required: true
+      release_tag:
+        description: "Release tag to download assets from"
         required: true
   workflow_call:
     inputs:
       version:
         description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to download assets from"
         required: true
         type: string
     secrets:
@@ -29,9 +30,6 @@ on:
 jobs:
   publish_aur_package:
     name: Publish AUR package
-    outputs:
-      version: ${{ steps.gen_template.outputs.version }}
-
     runs-on: ubuntu-latest
 
     steps:
@@ -39,46 +37,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download linux x86 artifacts
-        if: ${{ inputs.deb_hash_x86_64 == '' }}
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "SJMCL_${{ inputs.version }}_linux_x86_64"
-          path: artifacts
-          merge-multiple: true
+      - name: Read release asset digests
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          get_asset_digest() {
+            local asset_name="$1"
+            gh api "repos/${GH_REPO}/releases/tags/${{ inputs.release_tag }}" \
+              --jq ".assets[] | select(.name == \"${asset_name}\") | .digest"
+          }
 
-      - name: Download linux aarch64 artifacts
-        if: ${{ inputs.deb_hash_aarch64 == '' }}
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "SJMCL_${{ inputs.version }}_linux_aarch64"
-          path: artifacts
-          merge-multiple: true
+          X86_64_DEB_DIGEST=$(get_asset_digest "SJMCL_${{ inputs.version }}_linux_x86_64.deb")
+          AARCH64_DEB_DIGEST=$(get_asset_digest "SJMCL_${{ inputs.version }}_linux_aarch64.deb")
+
+          if [[ -z "$X86_64_DEB_DIGEST" || -z "$AARCH64_DEB_DIGEST" ]]; then
+            echo "Failed to read one or more release asset digests from GitHub."
+            exit 1
+          fi
+
+          echo "X86_64_DEB_DIGEST=$X86_64_DEB_DIGEST" >> $GITHUB_ENV
+          echo "AARCH64_DEB_DIGEST=$AARCH64_DEB_DIGEST" >> $GITHUB_ENV
 
       - name: Calculate hashes
-        id: calculate_hashes
         run: |
-          X86_64_DEB_HASH=${{ inputs.deb_hash_x86_64 }} # Use input deb_hash if provided
-          AARCH64_DEB_HASH=${{ inputs.deb_hash_aarch64 }} # Use input deb_hash if provided
-          if [[ -z "$X86_64_DEB_HASH" || -z "$AARCH64_DEB_HASH" ]]; then
-            ls -la artifacts
-            if [[ -z "$X86_64_DEB_HASH" ]]; then
-              X86_64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_x86_64.deb)
-            fi
-            if [[ -z "$AARCH64_DEB_HASH" ]]; then
-              AARCH64_DEB_HASH=$(sha512sum artifacts/SJMCL_${{ inputs.version }}_linux_aarch64.deb)
-            fi
-          fi
+          X86_64_DEB_HASH=${X86_64_DEB_DIGEST#sha256:}
+          AARCH64_DEB_HASH=${AARCH64_DEB_DIGEST#sha256:}
+          LICENSE_HASH=$(sha256sum LICENSE.EXTRA | awk '{print $1}')
+
           echo "X86_64_DEB_HASH=$X86_64_DEB_HASH"
           echo "AARCH64_DEB_HASH=$AARCH64_DEB_HASH"
-          LICENSE_HASH=$(sha512sum LICENSE.EXTRA)
           echo "LICENSE_HASH=$LICENSE_HASH"
+
           echo "X86_64_DEB_HASH=$X86_64_DEB_HASH" >> $GITHUB_ENV
-          echo "deb_hash_x86_64=$X86_64_DEB_HASH" >> $GITHUB_OUTPUT
           echo "AARCH64_DEB_HASH=$AARCH64_DEB_HASH" >> $GITHUB_ENV
-          echo "deb_hash_aarch64=$AARCH64_DEB_HASH" >> $GITHUB_OUTPUT
           echo "LICENSE_HASH=$LICENSE_HASH" >> $GITHUB_ENV
-          echo "license_hash=$LICENSE_HASH" >> $GITHUB_OUTPUT
 
       - name: Generate PKGBUILD
         id: gen_template
@@ -87,17 +81,17 @@ jobs:
         run: |
           sed -i "s/^pkgver=.*/pkgver=${VERSION//-/}/" PKGBUILD
           sed -i "s/^_github_pkgver=.*/_github_pkgver=${VERSION}/" PKGBUILD
-          awk -v license_hash="${LICENSE_HASH%% *}" \
-              -v x86_64_hash="${X86_64_DEB_HASH%% *}" \
-              -v aarch64_hash="${AARCH64_DEB_HASH%% *}" '
+          awk -v license_hash="${LICENSE_HASH}" \
+              -v x86_64_hash="${X86_64_DEB_HASH}" \
+              -v aarch64_hash="${AARCH64_DEB_HASH}" '
             BEGIN {
-              sums["sha512sums"] = license_hash
-              sums["sha512sums_x86_64"] = x86_64_hash
-              sums["sha512sums_aarch64"] = aarch64_hash
+              sums["sha256sums"] = license_hash
+              sums["sha256sums_x86_64"] = x86_64_hash
+              sums["sha256sums_aarch64"] = aarch64_hash
               
-              processed["sha512sums"] = 0
-              processed["sha512sums_x86_64"] = 0
-              processed["sha512sums_aarch64"] = 0
+              processed["sha256sums"] = 0
+              processed["sha256sums_x86_64"] = 0
+              processed["sha256sums_aarch64"] = 0
             }
             
             $0 ~ "^[[:blank:]]*[a-z0-9]+sums(_[^=]+)?\\+?=", $0 ~ "\\)[[:blank:]]*(#.*)?$" {

@@ -13,9 +13,9 @@ url='https://github.com/UNIkeEN/SJMCL'
 _baseurl="${url}/releases/download/v${_github_pkgver}"
 _source="SJMCL_${_github_pkgver}_linux_${CARCH}.deb"
 
-sha512sums=('SKIP')
-sha512sums_x86_64=('SKIP')
-sha512sums_aarch64=('SKIP')
+sha256sums=('SKIP')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
 
 source=('LICENSE.EXTRA')
 source_x86_64=("${_baseurl}/${_source}")

@@ -1,6 +1,6 @@
 use crate::error::SJMCLResult;
 use crate::instance::helpers::modpack::export::{
-  normalize_mod_loader_version, ExportModpackOptions, ModpackExportBundle,
+  ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
@@ -62,14 +62,14 @@ impl ModpackManifest for MultiMcManifest {
         let file = archive.by_index(i)?;
         let name = file.name();
 
-        if name.ends_with("mmc-pack.json") {
-          if let Some(last_slash) = name.rfind('/') {
-            let dir_path = &name[..=last_slash];
-            let depth = name[..last_slash].matches('/').count();
-            if depth <= 1 {
-              found_path = Some(dir_path.to_string());
-              break;
-            }
+        if name.ends_with("mmc-pack.json")
+          && let Some(last_slash) = name.rfind('/')
+        {
+          let dir_path = &name[..=last_slash];
+          let depth = name[..last_slash].matches('/').count();
+          if depth <= 1 {
+            found_path = Some(dir_path.to_string());
+            break;
           }
         }
       }
@@ -142,7 +142,7 @@ impl ModpackManifest for MultiMcManifest {
         "net.minecraft" => continue,
         "net.minecraftforge" => return Ok((ModLoaderType::Forge, get_version(component)?)),
         "net.fabricmc.fabric-loader" => {
-          return Ok((ModLoaderType::Fabric, get_version(component)?))
+          return Ok((ModLoaderType::Fabric, get_version(component)?));
         }
         "net.neoforged" => return Ok((ModLoaderType::NeoForge, get_version(component)?)),
         _ => continue,

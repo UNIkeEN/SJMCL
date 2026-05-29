@@ -15,8 +15,13 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import Editable from "@/components/common/editable";
+import { FormattedMCText } from "@/components/common/formatted-mc-text";
+import MarkdownContainer from "@/components/common/markdown-container";
+import { MenuSelector } from "@/components/common/menu-selector";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import Segmented from "@/components/common/segmented";
 import { WrapCard, WrapCardGroup } from "@/components/common/wrap-card";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
 import { useLauncherConfig } from "@/contexts/config";
@@ -24,6 +29,7 @@ import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { type ExtensionSlotKey, ExtensionUISlotKey } from "@/enums/extension";
+import useDeepLink from "@/hooks/deep-link";
 import { useGetState } from "@/hooks/get-state";
 import {
   ExtensionAbilityActions,
@@ -60,9 +66,14 @@ interface ExtensionContextRegistrationApi {
   React: typeof React;
   ChakraUI: typeof ChakraUI;
   Components: {
+    Editable: typeof Editable;
+    FormattedMCText: typeof FormattedMCText;
+    MarkdownContainer: typeof MarkdownContainer;
+    MenuSelector: typeof MenuSelector;
     OptionItem: typeof OptionItem;
     OptionItemGroup: typeof OptionItemGroup;
     Section: typeof Section;
+    Segmented: typeof Segmented;
     WrapCard: typeof WrapCard;
     WrapCardGroup: typeof WrapCardGroup;
   };
@@ -425,6 +436,12 @@ const ActiveExtensionHostContextProvider: React.FC<{
     openSharedModal,
   });
 
+  const extensionIdentifierList = useMemo(
+    () =>
+      new Set((extensionList || []).map((extension) => extension.identifier)),
+    [extensionList]
+  );
+
   const invoke = useCallback<ExtensionAbilityActions["invoke"]>(
     async <T,>(command: string, payload?: Record<string, unknown>) => {
       if (
@@ -520,7 +537,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
               reject(error);
             }
           },
-          onCancelCallback: () => reject(new Error("Cancelled")),
+          onCancelCallback: () => resolve(),
         });
       });
     },
@@ -612,11 +629,45 @@ const ActiveExtensionHostContextProvider: React.FC<{
     [getExtensionList, router, toast]
   );
 
+  // reload single extension
+  const reloadExtension = useCallback(
+    (identifier: string) =>
+      setExtensionRuntimeVersionMap((previous) => ({
+        ...previous,
+        [identifier]: (previous[identifier] || 0) + 1,
+      })),
+    []
+  );
+
+  const reloadExtensionTrigger = useMemo(
+    () => /^reload-extension\/?(?:\?.*)?$/,
+    []
+  );
+
+  useDeepLink({
+    trigger: reloadExtensionTrigger,
+    onCall: useCallback(
+      (path: string | URL) => {
+        const identifier = new URL(path).searchParams.get("id");
+        if (
+          !identifier ||
+          !extensionList ||
+          !extensionIdentifierList.has(identifier)
+        ) {
+          return;
+        }
+
+        reloadExtension(identifier);
+      },
+      [extensionList, extensionIdentifierList, reloadExtension]
+    ),
+  });
+
   useEffect(() => {
     handleRetrieveExtensionList();
   }, [handleRetrieveExtensionList]);
 
-  // refresh trigger
+  // extension list refresh trigger
   useEffect(() => {
     const unlisten = ExtensionService.onExtensionRefresh(() => {
       handleRetrieveExtensionList();
@@ -843,6 +894,38 @@ const ActiveExtensionHostContextProvider: React.FC<{
     delete extensionStateListenerRef.current[identifier];
   }, []);
 
+  // allow extensions to update their home widget title.
+  const updateHomeWidgetTitle = useCallback(
+    (extension: ExtensionInfo, title: string, key?: string) => {
+      setHomeWidgetMap((prev) => {
+        const widgets = prev[extension.identifier];
+        if (!widgets) {
+          return prev;
+        }
+
+        const targetIndex =
+          widgets.length === 1
+            ? 0
+            : widgets.findIndex((widget) => widget.key === key);
+        if (targetIndex === -1 || widgets[targetIndex].title === title) {
+          return prev;
+        }
+
+        const nextWidgets = [...widgets];
+        nextWidgets[targetIndex] = {
+          ...nextWidgets[targetIndex],
+          title,
+        };
+
+        return {
+          ...prev,
+          [extension.identifier]: nextWidgets,
+        };
+      });
+    },
+    []
+  );
+
   // ------------- Extension-scoped state management -------------
   const getExtensionStateValue = useCallback(
     <T,>(identifier: string, key: string, initialValue: T): T => {
@@ -984,6 +1067,8 @@ const ActiveExtensionHostContextProvider: React.FC<{
         hostActionRefs.current.openSharedModal(key, params),
       openCustomModal: (key, params) =>
         handleOpenCustomModalRef.current(extension, key, params),
+      setHomeWidgetTitle: (title, key) =>
+        updateHomeWidgetTitle(extension, title, key),
       request,
       requestText,
       invoke,
@@ -1011,11 +1096,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
         );
       },
       logger,
-      reloadSelf: () =>
-        setExtensionRuntimeVersionMap((previous) => ({
-          ...previous,
-          [extension.identifier]: (previous[extension.identifier] || 0) + 1,
-        })),
+      reloadSelf: () => reloadExtension(extension.identifier),
       updateSelf: async (src: string, newVersion: string) =>
         await scheduleExtensionUpdate(extension, src, newVersion),
     }),
@@ -1029,6 +1110,8 @@ const ActiveExtensionHostContextProvider: React.FC<{
       requestText,
       runExtensionFileCommand,
       scheduleExtensionUpdate,
+      updateHomeWidgetTitle,
+      reloadExtension,
     ]
   );
 
@@ -1183,9 +1266,14 @@ const ActiveExtensionHostContextProvider: React.FC<{
         React,
         ChakraUI,
         Components: {
+          Editable,
+          FormattedMCText,
+          MarkdownContainer,
+          MenuSelector,
           OptionItem,
           OptionItemGroup,
           Section,
+          Segmented,
           WrapCard,
           WrapCardGroup,
         },

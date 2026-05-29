@@ -2,9 +2,92 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.1.0
+
+`2026-05-20`
+
+- **🔥 Support viewing and managing Minecraft friends directly within the launcher (experimental). #1617** @UNIkeEN @3gf8jv4dv @suhang12332 @Dainsleif233
+- 🌟 The instance list page now displays instances that are currently downloading. #1580 @icgnos
+- 🐛 Fix styling issues with toast notifications. #1599 @Chang-Yo
+- 🐛 Fix potential compilation issues caused by archived third-party dependencies on Linux. #1601 @ToolmanP
+- 🐛 Fix performance issues related to window state persistence. @UNIkeEN
+- 🐛 Fix crashes caused by deeplink registration failures in certain scenarios. #1611 @pangbo13
+- 🐛 Fix failures in account functionality availability checks in certain cases, improving the experience for users in mainland China. #1616 @UNIkeEN @1357310795
+- 📦 Update Tauri core libraries and plugins to the latest versions. @UNIkeEN
+- 📦 Update the `rmcp` library to its stable release version. #1613 @xunying123
+- Extensions:
+   - Add the `setHomeWidgetTitle` API, allowing extensions to dynamically update home widget titles. #1602 @UNIkeEN
+   - Add components such as `MarkdownContainer` and `FormattedMCText` for direct extension usage. @UNIkeEN
+   - Support reloading extensions via deeplink to improve the developer experience. #1608 @UNIkeEN
+- Workflow:
+   - Add a workflow to automatically upload releases to Snapcraft. SJMCL can now be installed via Snapcraft (experimental). #1610 @pangbo13
+   - Adjust the order of release workflows and update validation field types in the AUR workflow. #1612 @pangbo13
+   - Add a workflow to automatically upload releases to Homebrew. SJMCL can now be conveniently installed via Homebrew on macOS. #1620 @pangbo13
+
+## 1.0.0
+
+`2026-05-05`
+
+**Introducing the first stable release of SJMCL. 🚀**
+
+- **🔥 UI Updates:**
+   - **Redesigned window title bar and top navigation bar, delivering an elegant, dynamic, and cross-platform consistent visual experience. #1444 #1446 #1453 #1464 #1482** @UNIkeEN @no6rainer
+   - **New built-in launcher background image with adaptive variations across different color modes.** @funkthesky-ops @UNIkeEN @Neuteria
+- **🔥 Core Features:**
+   - **Support exporting instances as modpacks, compatible with Modrinth and MultiMC formats. #1344 #1477** @w1049 @UNIkeEN @Stya-hr
+   - **A brand-new Discover page, allowing users to browse Minecraft news, download various resources, or search local content in one place. #1359 #1418 #1514 #1538** @SundayChen @zaixiZaixiSJTU @UNIkeEN
+   - **Support installing and modifying the Quilt loader, with automatic QF API download. #1434 #1459 #1586** @baiyuansjtu @UNIkeEN
+   - **Support dragging modpacks, mods, saves, and other files into the launcher window for quick import. #1561** @UNIkeEN @zaixiZaixiSJTU
+- **🔥 Intelligence Services:**
+   - **Introduce the MCP service for the launcher, enabling external agent applications to connect for automation control. #1370 #1475 #1532 #1587** @UNIkeEN @xunying123 @ToolmanP @AinurCody
+   - **Add a CLI tool for the launcher, providing terminal-based control via the MCP service.** @UNIkeEN
+- **🔥 Extension System:**
+   - **Introduce an extension system, allowing third-party developers to extend the launcher with various practical features. #1409 #1487 #1497 #1504 #1509 #1510 #1517 #1521 #1528 #1530 #1547 #1549 #1553 #1556 #1564** @UNIkeEN @Stya-hr @hans362 @xunying123 @zaixiZaixiSJTU
+- 🌟 Support modifying installed OptiFine loaders and installing preview versions of OptiFine. #1374 @xunying123 @baiyuansjtu @UNIkeEN
+- 🌟 Support clearing history in the download task list. #1400
+- 🌟 Support importing profiles from MultiMC. #1419 @xunying123
+- 🌟 When launching via deeplink, allow users to select the target profile and instance, and directly enter a specified world or server. #1427 #1442 @UNIkeEN
+- 🌟 Support viewing game server latency within the launcher. #1436 @HsxMark
+- 🌟 Support adding color tags to instances and categorizing them accordingly. #1447 @UNIkeEN
+- 🌟 Support automatically downloading a suitable Java version when creating instances. #1460 @UNIkeEN
+- 🌟 Support applying the LWJGL Unsafe Agent from HMCL @Glavo to affected Minecraft versions to fix performance issues. #1481 #1568 @w1049 @xunying123
+- 🌟 Support manually selecting the Java garbage collector used when launching the game. #1505 @UNIkeEN
+- 🌟 Support Classical Chinese (Wenyan) in the launcher UI. #1512 @ff98sha @UNIkeEN @Lawrenclia
+- 🌟 Support quickly copying screenshots on Windows and Linux for sharing. #1526 @zaixiZaixiSJTU
+- 🐛 Fix and improve a series of UI display issues. #1379 #1404 #1473 #1563 @UNIkeEN @hbz114514 @baiyuansjtu @zaixiZaixiSJTU @Reqwey
+- 🐛 Fix an issue where certain modpacks could not be imported. #1392 @Reqwey
+- 🐛 Fix incorrect detection of mod loader types for installed mods. #1408 @UNIkeEN @w1049 @3gf8jv4dv
+- 🐛 Fix an issue where certain Minecraft versions were incorrectly classified as April Fools versions. #1476 @xunying123
+- 🐛 Fix crashes caused by resource downloads in certain scenarios. #1496 #1535 @Xiaxiaobaii
+- 🐛 Fix incorrect placement of additional datapacks when importing certain modpacks. #1542 @Copilot @3gf8jv4dv
+- 🐛 Fix incorrect system dialog language on macOS. #1557 @UNIkeEN
+- 🐛 Fix frontend state synchronization issues after renaming instances. #1558 @UNIkeEN @xunying123
+- 🐛 Fix lag when opening folders in certain scenarios on Windows. @UNIkeEN
+- ⚡️ Extend the cache lifetime of mod translations to improve the experience when viewing installed mods. #1527 @w1049
+- ⚡️ Optimize launcher startup speed in development mode. #1555 @UNIkeEN
+- 🛠 Desktop shortcut icons for instances are now generated by combining instance and launcher icons. #1411 @icgnos @funkthesky-ops @RobertZhang0901
+- 🛠 Adjust links to certain launcher documentation and acknowledgements. #1426 #1474 @hbz114514 @suhang12332
+- 🛠 Set the default level of game integrity checks to ‘normal’. #1428 @HsxMark
+- 🛠 Show a modal warning when the launcher did not exit properly last time. #1472 @UNIkeEN
+- 🛠 Change the shortcut for aggregated search to Ctrl (Command) + F. #1544 @zaixiZaixiSJTU
+- 🛠 Provide more detailed error messages for XSTS errors during Microsoft login. #1571 @zaixiZaixiSJTU @xphost008
+- 🛠 Adjust the result sorting logic of aggregated search. #1583 @UNIkeEN
+- 🛠 Adjust the placement of certain settings; ‘Sync and Restore’ related features are no longer shown on a separate page. @UNIkeEN
+- 🛠 Remove support for dragging buttons from Blessing Skin-based sites to add authentication servers.
+- 💄 Refactor parts of the codebase to improve style and maintainability.
+- 🌐 Update multilingual translations for the launcher UI. #1539 @VhahahaV
+- 📦 Discontinue AppImage distribution for Linux. #1573 @pangbo13
+- 📦 Update multiple dependencies to patch versions. @dependabot[bot] @Codex
+- Workflow:
+   - Fix incorrect links in the AUR release workflow. #1416 @KodateMitsuru
+   - Automatically add labels to PRs to indicate the scope of changes. #1483 @pangbo13
+- Web & Docs:
+   - Update the Code of Conduct to version 3.0. @UNIkeEN
+   - Launch a brand-new official website and documentation powered by VitePress. @UNIkeEN @baiyuansjtu @hans362 @hbz114514 @KodateMitsuru @Dainsleif233 @Lawrenclia
+
 ## 0.8.3
 
-`2025-02-23`
+`2026-02-23`
 
 - 🌟 Support adding and removing game servers directly within the launcher. #1328 @hbz114514 @UNIkeEN @zaixizaiximeow
 - 🐛 Fix missing game assets in certain early game versions. #1341 @icgnos @UNIkeEN
@@ -21,7 +104,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 ## 0.8.2
 
-`2025-02-09`
+`2026-02-09`
 
 - 🌟 Support launching the game on Linux using the system-provided OpenAL and GLFW. #1336 @xunying123 @UNIkeEN
 - 🐛 Fix an issue where runtime path checks could fail on Windows and Linux. #1347 #1363 @pangbo13 @UNIkeEN
@@ -39,7 +122,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
    
 ## 0.8.1
 
-`2025-01-31`
+`2026-01-31`
 
 - 🌟 Show a modal warning when the launcher is run from a temporary directory. #1326 @UNIkeEN
 - 🐛 Fix missing icon assets in the 'Import account information' feature. #1318 @zaixizaiximeow
@@ -53,9 +136,9 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
    
 ## 0.8.0
 
-`2025-01-19`
+`2026-01-19`
 
-- 🔥 Support importing profiles and authentication server information from HMCL (experimental). #1255 @xunying123 @UNIkeEN
+- **🔥 Support importing profiles and authentication server information from HMCL (experimental). #1255** @xunying123 @UNIkeEN
 - 🌟 Support choosing whether to prepend Simplified Chinese translated prefixes to filenames when downloading and updating resources. #1299 @SundayChen
 - 🌟 Support searching by Chinese translated names in the instance mod list page. #1305 @icgnos
 - 🐛 Fix an issue where duplicate authentication servers could be added, by applying stricter address duplication checks. #1309 @UNIkeEN
@@ -69,7 +152,7 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
 ## 0.7.0
 
-`2025-01-08`
+`2026-01-08`
 
 - **🔥 Support downloading and installing the OptiFine loader when creating an instance. #1149 #1288** @xunying123 @Reqwey @UNIkeEN
 - **🔥 Add support for the Linux Arm64 platform. #1249** @pangbo13 @Minecrafter-Pythoner

@@ -8,15 +8,15 @@ use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{OptiFineResourceInfo, ResourceType, SourceType};
+use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use crate::tasks::PTaskParam;
 use std::fs;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use tauri::AppHandle;
-use zip::{write::FileOptions, ZipArchive, ZipWriter};
+use zip::{ZipArchive, ZipWriter, write::FileOptions};
 
 pub async fn download_optifine_installer(
   game_version: &str,
@@ -90,11 +90,7 @@ pub async fn download_optifine_libraries(
         let mut s = String::new();
         txt.read_to_string(&mut s)?;
         let v = s.trim().to_string();
-        if v.is_empty() {
-          None
-        } else {
-          Some(v)
-        }
+        if v.is_empty() { None } else { Some(v) }
       }
       Err(_) => None,
     };
@@ -107,10 +103,10 @@ pub async fn download_optifine_libraries(
         lw_coord = lwo_coord.clone();
         let lwo_rel = convert_library_name_to_path(&lwo_coord, None)?;
         let lwo_path = lib_dir.join(lwo_rel);
-        if let Some(p) = lwo_path.parent() {
-          if !p.exists() {
-            fs::create_dir_all(p)?;
-          }
+        if let Some(p) = lwo_path.parent()
+          && !p.exists()
+        {
+          fs::create_dir_all(p)?;
         }
         let mut out = std::fs::File::create(&lwo_path)?;
         std::io::copy(&mut lwo, &mut out)?;
@@ -120,23 +116,21 @@ pub async fn download_optifine_libraries(
       }
     }
 
-    if !has_launchwrapper {
-      if let Ok(mut lw2) = archive.by_name("launchwrapper-2.0.jar") {
-        let lw2_coord = "optifine:launchwrapper:2.0".to_string();
-        lw_coord = lw2_coord.clone();
-        let lw2_rel = convert_library_name_to_path(&lw2_coord, None)?;
-        let lw2_path = lib_dir.join(lw2_rel);
-        if let Some(p) = lw2_path.parent() {
-          if !p.exists() {
-            fs::create_dir_all(p)?;
-          }
-        }
-        let mut out = std::fs::File::create(&lw2_path)?;
-        std::io::copy(&mut lw2, &mut out)?;
-        has_launchwrapper = true;
-
-        add_library_entry(&mut client_info.libraries, &lw2_coord, None)?;
+    if !has_launchwrapper && let Ok(mut lw2) = archive.by_name("launchwrapper-2.0.jar") {
+      let lw2_coord = "optifine:launchwrapper:2.0".to_string();
+      lw_coord = lw2_coord.clone();
+      let lw2_rel = convert_library_name_to_path(&lw2_coord, None)?;
+      let lw2_path = lib_dir.join(lw2_rel);
+      if let Some(p) = lw2_path.parent()
+        && !p.exists()
+      {
+        fs::create_dir_all(p)?;
       }
+      let mut out = std::fs::File::create(&lw2_path)?;
+      std::io::copy(&mut lw2, &mut out)?;
+      has_launchwrapper = true;
+
+      add_library_entry(&mut client_info.libraries, &lw2_coord, None)?;
     }
   }
 

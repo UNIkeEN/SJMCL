@@ -3,11 +3,11 @@ use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
 use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::{replace_native_libraries, McClientInfo};
+use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
 use crate::launch::helpers::command_generator::{
-  export_full_launch_command, generate_launch_command, LaunchCommand,
+  LaunchCommand, export_full_launch_command, generate_launch_command,
 };
 use crate::launch::helpers::file_validator::{
   extract_native_libraries, get_invalid_assets, get_invalid_library_files, prepare_legacy_assets,
@@ -30,11 +30,11 @@ use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
 use std::collections::HashMap;
 use std::fs;
-use std::io::prelude::*;
 use std::io::BufReader;
+use std::io::prelude::*;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
-use std::sync::{mpsc, Mutex};
+use std::sync::{Mutex, mpsc};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager, State};
@@ -193,7 +193,7 @@ pub async fn validate_selected_player(
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
   local_ygg_server_state: State<'_, Mutex<YggdrasilServer>>,
 ) -> SJMCLResult<bool> {
-  let mut player = get_selected_player_info(&app)?.clone();
+  let mut player = get_selected_player_info(&app)?;
 
   let metadata = if player.player_type == PlayerType::ThirdParty {
     authlib_injector::jar::check_authlib_jar(&app)
@@ -355,11 +355,11 @@ pub fn cancel_launch_process(
   let mut launching_queue = launching_queue_state.lock()?;
 
   // kill process if pid exists
-  if let Some(launching) = launching_queue.last_mut() {
-    if launching.pid != 0 {
-      launching.current_step = 0; // mark as manually cancelled to avoid game error window popping up
-      kill_process(launching.pid)?;
-    }
+  if let Some(launching) = launching_queue.last_mut()
+    && launching.pid != 0
+  {
+    launching.current_step = 0; // mark as manually cancelled to avoid game error window popping up
+    kill_process(launching.pid)?;
   }
 
   Ok(())

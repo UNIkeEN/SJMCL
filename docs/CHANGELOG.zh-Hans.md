@@ -2,9 +2,92 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 1.1.0
+
+`2026-05-20`
+
+- **🔥 支持在启动器内查看并管理 Minecraft 好友（实验性功能）。#1617** @UNIkeEN @3gf8jv4dv @suhang12332 @Dainsleif233
+- 🌟 实例列表页现在会显示正在下载中的实例。#1580 @icgnos
+- 🐛 修复提示 Toast 的显示样式问题。#1599 @Chang-Yo
+- 🐛 修复 Linux 平台下已归档第三方依赖的潜在编译问题。#1601 @ToolmanP
+- 🐛 修复窗口状态存储的性能问题。@UNIkeEN
+- 🐛 修复部分情况下因 Deeplink 注册失败导致的崩溃问题。#1611 @pangbo13
+- 🐛 修复部分情况下，账户功能可用性检查失败的问题，提升中国大陆用户体验。#1616 @UNIkeEN @1357310795
+- 📦 更新 Tauri 核心库及其插件至最新版本。@UNIkeEN
+- 📦 更新 `rmcp` 库至正式版本。#1613 @xunying123
+- 扩展：
+   - 新增 `setHomeWidgetTitle` 方法，支持扩展动态更新主页组件标题。#1602 @UNIkeEN
+   - 新增 `MarkdownContainer`，`FormattedMCText` 等组件供扩展直接使用。@UNIkeEN
+   - 支持通过 Deeplink 重新加载扩展，提升开发者体验。#1608 @UNIkeEN
+- 工作流：
+   - 新增发版时自动上传 Snapcraft 的工作流，现在可以通过 Snapcraft 安装 SJMCL（实验性功能）。#1610 @pangbo13
+   - 调整发版工作流顺序、修改 AUR 工作流的校验字段类型。#1612 @pangbo13
+   - 新增发版时自动上传 Homebrew 的工作流，现在可以通过 Homebrew 便捷安装 SJMCL（macOS 平台）。#1620 @pangbo13
+
+## 1.0.0
+
+`2026-05-05`
+
+**现已推出 SJMCL 首个正式版本 🚀**
+
+- **🔥 外观更新：**
+   - **全新设计的窗口标题栏与顶部导航栏，带来优雅、灵动、跨平台一致的视觉体验。#1444 #1446 #1453 #1464 #1482** @UNIkeEN @no6rainer
+   - **全新的启动器预设壁纸，在不同的颜色模式下灵活变化。** @funkthesky-ops @UNIkeEN @Neuteria
+- **🔥 核心功能更新：**
+   - **支持将实例导出为整合包，支持 Modrinth 与 MultiMC 格式。#1344 #1477** @w1049 @UNIkeEN @Stya-hr
+   - **全新发现页，支持在一处浏览 Minecraft 新闻、下载各类游戏资源或搜索本地内容。#1359 #1418 #1514 #1538** @SundayChen @zaixiZaixiSJTU @UNIkeEN
+   - **支持安装与修改 Quilt 加载器并同时下载 QF API 模组。#1434 #1459 #1586** @baiyuansjtu @UNIkeEN
+   - **支持将整合包、模组、存档等文件拖入启动器窗口以快捷导入。#1561** @UNIkeEN @zaixiZaixiSJTU
+- **🔥 智能服务：**
+   - **新增启动器 MCP 服务，允许外部 Agent 应用连接以实现自动化控制。#1370 #1475 #1532 #1587** @UNIkeEN @xunying123 @ToolmanP @AinurCody
+   - **新增启动器 CLI 工具，基于 MCP 服务提供终端控制能力。** @UNIkeEN
+- **🔥 扩展系统：**
+   - **新增扩展系统，支持第三方开发者为启动器扩展各类实用功能。#1409 #1487 #1497 #1504 #1509 #1510 #1517 #1521 #1528 #1530 #1547 #1549 #1553 #1556 #1564** @UNIkeEN @Stya-hr @hans362 @xunying123 @zaixiZaixiSJTU
+- 🌟 支持修改已安装的 OptiFine 加载器，支持安装 OptiFine 的预览版本。#1374 @xunying123 @baiyuansjtu @UNIkeEN
+- 🌟 支持在下载任务列表页清空历史。#1400
+- 🌟 支持从 MultiMC 导入角色信息。#1419 @xunying123
+- 🌟 以 Deeplink 唤起启动流程时，支持让用户选择待游玩的角色与实例、支持直接进入指定存档或服务器。#1427 #1442 @UNIkeEN
+- 🌟 支持在启动器内查看游戏服务器延迟。#1436 @HsxMark
+- 🌟 支持为实例添加颜色标签，并按标签分类展示实例。#1447 @UNIkeEN
+- 🌟 支持在创建实例时自动下载合适版本的 Java。#1460 @UNIkeEN
+- 🌟 支持为受影响的 Minecraft 版本使用来自 HMCL @Glavo 的 LWJGL Unsafe Agent 修复性能问题。#1481 #1568 @w1049 @xunying123
+- 🌟 支持手动设置启动游戏时使用的 Java 内存垃圾回收器。#1505 @UNIkeEN
+- 🌟 启动器界面支持文言文。#1512 @ff98sha @UNIkeEN @Lawrenclia
+- 🌟 支持在 Windows 和 Linux 平台快捷复制屏幕截图以分享。#1526 @zaixiZaixiSJTU
+- 🐛 修复与优化一系列界面显示问题。#1379 #1404 #1473 #1563 @UNIkeEN @hbz114514 @baiyuansjtu @zaixiZaixiSJTU @Reqwey
+- 🐛 修复部分整合包无法导入的问题。#1392 @Reqwey
+- 🐛 修复已安装模组所属加载器识别错误的问题。#1408 @UNIkeEN @w1049 @3gf8jv4dv
+- 🐛 修复部分 Minecraft 版本被错误分类为愚人节版本的问题。#1476 @xunying123
+- 🐛 修复特定情况下，下载资源导致启动器崩溃的问题。#1496 #1535 @Xiaxiaobaii
+- 🐛 修复导入部分整合包时，额外数据包存放位置错误的问题。#1542 @Copilot @3gf8jv4dv
+- 🐛 修复 macOS 平台下，系统对话框界面语言错误的问题。#1557 @UNIkeEN
+- 🐛 修复更改实例名称后的前端状态同步问题。#1558 @UNIkeEN @xunying123
+- 🐛 修复 Windows 平台下，部分场景打开文件夹卡顿的问题。@UNIkeEN
+- ⚡️ 延长模组翻译的本地缓存有效期，提升查看已安装模组时的用户体验。#1527 @w1049
+- ⚡️ 优化开发模式下的启动器启动速度。#1555 @UNIkeEN
+- 🛠 现在创建实例桌面快捷方式的图标，将使用实例与启动器图标合成。#1411 @icgnos @funkthesky-ops @RobertZhang0901
+- 🛠 调整部分启动器文档、鸣谢信息的跳转链接。#1426 #1474 @hbz114514 @suhang12332
+- 🛠 调整游戏完整性检查等级的默认设置为普通检查。#1428 @HsxMark
+- 🛠 启动器上次未正常退出时，显示对话框以提示用户。#1472 @UNIkeEN
+- 🛠 调整聚合搜索的快捷键为 Ctrl（Command）+ F。#1544 @zaixiZaixiSJTU
+- 🛠 对于微软登录流程中的 XSTS 错误，提供更详细的错误提示。#1571 @zaixiZaixiSJTU @xphost008
+- 🛠 调整聚合搜索的结果排序逻辑。#1583 @UNIkeEN
+- 🛠 调整部分设置项的位置，“同步与还原” 相关功能将不再展示单独页面。@UNIkeEN
+- 🛠 不再支持从 Blessing Skin 系列皮肤站拖动按钮以添加第三方认证服务器。
+- 💄 重构部分代码以提升代码风格与可维护性。
+- 🌐 更新启动器界面文本的多语言翻译。#1539 @VhahahaV
+- 📦 终止为 Linux 平台分发 AppImage 格式。#1573 @pangbo13
+- 📦 更新多项依赖至补丁版本。@dependabot[bot] @Codex
+- 工作流：
+   - 修复 AUR 发版流程中的链接错误。#1416 @KodateMitsuru
+   - 为 PR 自动添加标签以指示修改量。#1483 @pangbo13
+- 网页与文档：
+   - 更新 Code of Conduct 至 3.0 版本。@UNIkeEN
+   - 上线基于 VitePress 的全新官网（文档）。@UNIkeEN @baiyuansjtu @hans362 @hbz114514 @KodateMitsuru @Dainsleif233 @Lawrenclia
+
 ## 0.8.3
 
-`2025-02-23`
+`2026-02-23`
 
 - 🌟 支持在启动器内添加或删除游戏服务器。#1328 @hbz114514 @UNIkeEN @zaixizaiximeow
 - 🐛 修复早期游戏版本部分游戏资源丢失的问题。#1341 @icgnos @UNIkeEN
@@ -21,7 +104,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
 ## 0.8.2
 
-`2025-02-09`
+`2026-02-09`
 
 - 🌟 支持在 Linux 平台使用系统 OpenAL 与 GLFW 启动游戏。#1336 @xunying123 @UNIkeEN
 - 🐛 修复 Windows 和 Linux 平台下运行路径检查可能失效的问题。#1347 #1363 @pangbo13 @UNIkeEN
@@ -39,7 +122,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
    
 ## 0.8.1
 
-`2025-01-31`
+`2026-01-31`
 
 - 🌟 在临时目录下运行启动器时，弹出对话框提醒。#1326 @UNIkeEN
 - 🐛 修复“导入账户信息”功能中缺失的图标资源。#1318 @zaixizaiximeow
@@ -53,9 +136,9 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
    
 ## 0.8.0
 
-`2025-01-19`
+`2026-01-19`
 
-- 🔥 支持从 HMCL 导入角色与认证服务器信息（实验性功能）。#1255 @xunying123 @UNIkeEN 
+- **🔥 支持从 HMCL 导入角色与认证服务器信息（实验性功能）。#1255** @xunying123 @UNIkeEN 
 - 🌟 支持在下载与更新资源时，自由选择是否为文件名添加简体中文翻译前缀。#1299 @SundayChen
 - 🌟 支持在实例模组列表页使用中文译名进行搜索。#1305 @icgnos
 - 🐛 修复可能添加重复认证服务器的问题，采用更严格的地址重复判定。#1309 @UNIkeEN
@@ -69,7 +152,7 @@ SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
 ## 0.7.0
 
-`2025-01-08`
+`2026-01-08`
 
 - **🔥 支持在创建实例时下载与安装 Optifine 加载器。#1149 #1288** @xunying123 @Reqwey @UNIkeEN 
 - **🔥 支持 Linux Arm64 平台。#1249** @pangbo13 @Minecrafter-Pythoner

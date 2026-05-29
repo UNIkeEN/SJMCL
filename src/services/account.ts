@@ -1,6 +1,16 @@
 import { invoke } from "@tauri-apps/api/core";
-import { ImportLauncherType, SkinModel, TextureType } from "@/enums/account";
-import { AuthServer, DeviceAuthResponseInfo, Player } from "@/models/account";
+import {
+  ImportLauncherType,
+  MicrosoftFriendAction,
+  SkinModel,
+  TextureType,
+} from "@/enums/account";
+import {
+  AuthServer,
+  DeviceAuthResponseInfo,
+  MicrosoftFriendList,
+  Player,
+} from "@/models/account";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
 
@@ -201,6 +211,44 @@ export class AccountService {
   @responseHandler("account")
   static async refreshPlayer(playerId: string): Promise<InvokeResponse<void>> {
     return await invoke("refresh_player", { playerId });
+  }
+
+  /**
+   * RETRIEVE the Microsoft friend list of the current player.
+   * @param {string} curPlayerId - The current Microsoft player ID.
+   * @returns {Promise<InvokeResponse<MicrosoftFriendList>>}
+   */
+  @responseHandler("account")
+  static async retrieveMicrosoftFriendList(
+    curPlayerId: string
+  ): Promise<InvokeResponse<MicrosoftFriendList>> {
+    return await invoke("retrieve_microsoft_friend_list", {
+      curPlayerId,
+    });
+  }
+
+  /**
+   * UPDATE the Microsoft friend relationship for the current player.
+   * @param {string} curPlayerId - The current Microsoft player ID.
+   * @param {string} [tgtPlayerName] - (Optional) The target player name. For Add, at least one of name/uuid should be provided.
+   * @param {string} [tgtPlayerUuid] - (Optional) The target player UUID.
+   * For Remove / Accept / Decline / Revoke, uuid is required.
+   * @param {MicrosoftFriendAction} action - The friend action to perform.
+   * @returns {Promise<InvokeResponse<MicrosoftFriendList>>}
+   */
+  @responseHandler("account")
+  static async updateMicrosoftFriend(
+    curPlayerId: string,
+    tgtPlayerName: string | undefined,
+    tgtPlayerUuid: string | undefined,
+    action: MicrosoftFriendAction
+  ): Promise<InvokeResponse<MicrosoftFriendList>> {
+    return await invoke("update_microsoft_friend", {
+      curPlayerId,
+      tgtPlayerName,
+      tgtPlayerUuid,
+      action,
+    });
   }
 
   /**

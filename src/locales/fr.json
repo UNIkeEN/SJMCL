@@ -448,6 +448,12 @@
       "content": "Êtes-vous sûr de vouloir supprimer le serveur d'authentification « {{name}} » ? Il ne figurera plus dans votre liste de serveurs."
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "Supprimer l'ami",
+      "content": "Confirmer la suppression de l'ami \"{{name}}\" ?"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "Supprimer le serveur de jeu",
     "content": "Confirmer la suppression du serveur de jeu \"{{name}}\" ({{addr}}) ? Cette action est irréversible."
@@ -587,6 +593,7 @@
     },
     "proxy": {
       "title": "Proxy",
+      "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
           "title": "Activer le proxy"
@@ -858,6 +865,9 @@
   "ExtensionUpdateConfirmDialog": {
     "title": "Mettre à jour l'extension",
     "body": "L'extension {{identifier}} a téléchargé la nouvelle version {{version}} depuis {{src}}. Confirmer l'installation ?"
+  },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} et autres ({{count}} au total)"
   },
   "GameAdvancedSettingsPage": {
     "title": "Paramètres avancés du jeu",
@@ -1711,6 +1721,41 @@
   "MenuSelector": {
     "selectedCount": "{{count}} élément sélectionné"
   },
+  "MicrosoftFriendsModal": {
+    "title": "Amis Minecraft du compte Microsoft {{name}}",
+    "placeholder": {
+      "playerName": "Entrez un nom de joueur à ajouter en ami"
+    },
+    "group": {
+      "requests": "Demandes",
+      "friends": "Amis"
+    },
+    "request": {
+      "incoming": "Invitation reçue",
+      "outgoing": "Invitation envoyée"
+    },
+    "button": {
+      "add": "Ajouter",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "revoke": "Annuler",
+      "remove": "Supprimer l'ami",
+      "xboxSettings": "Paramètres XBOX"
+    },
+    "empty": {
+      "requests": "Aucune demande",
+      "friends": "Aucun ami"
+    },
+    "status": {
+      "INVITED": "Vous a invité à rejoindre son monde",
+      "ONLINE": "En ligne",
+      "PLAYING_OFFLINE": "En solo",
+      "PLAYING_REALMS": "Sur Realms",
+      "PLAYING_SERVER": "Sur un serveur",
+      "PLAYING_HOSTED_SERVER": "Monde LAN ouvert",
+      "OFFLINE": "Hors ligne"
+    }
+  },
   "NoSuitableJavaDialog": {
     "title": "Aucun environnement Java compatible trouvé pour cette instance",
     "body": "Aucun environnement Java compatible n'est disponible pour cette instance. Cliquez sur « Confirmer » pour ouvrir la page de gestion Java et ajouter ou télécharger Java manuellement."
@@ -1744,6 +1789,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "Amis",
       "manageSkin": "Gérer les skins",
       "viewSkin": "Voir le skin",
       "delete": "Supprimer ce joueur",
@@ -2229,11 +2275,11 @@
             "CANCELLED": "Annulé",
             "INVALID": "Adresse du serveur d'authentification invalide",
             "NO_MINECRAFT_PROFILE": "Personnage non trouvé. Veuillez vérifier si vous avez acheté Minecraft et créé un personnage.",
-            "XSTS_BANNED": "Votre compte a été banni des services Xbox",
+            "XSTS_BANNED": "Votre compte a été banni des services XBOX",
             "XSTS_PARENTAL_RESTRICTION": "Votre compte est bloqué par le contrôle parental",
-            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte Xbox, veuillez en créer un sur minecraft.net",
-            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation Xbox pour continuer",
-            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où Xbox Live n'est pas disponible",
+            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte XBOX, veuillez en créer un sur minecraft.net",
+            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation XBOX pour continuer",
+            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où XBOX Live n'est pas disponible",
             "XSTS_CHILD_ACCOUNT": "Votre compte est un compte mineur et nécessite le consentement parental sur family.microsoft.com",
             "XSTS_UNKNOWN_ERROR": "Une erreur XSTS inconnue s'est produite lors de l'authentification"
           }
@@ -2251,11 +2297,11 @@
             "INVALID": "Impossible d'actualiser un joueur hors ligne",
             "CANCELLED": "Annulé",
             "NO_MINECRAFT_PROFILE": "Personnage non trouvé. Veuillez vérifier si vous avez acheté Minecraft et créé un personnage.",
-            "XSTS_BANNED": "Votre compte a été banni des services Xbox",
+            "XSTS_BANNED": "Votre compte a été banni des services XBOX",
             "XSTS_PARENTAL_RESTRICTION": "Votre compte est bloqué par le contrôle parental",
-            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte Xbox, veuillez en créer un sur minecraft.net",
-            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation Xbox pour continuer",
-            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où Xbox Live n'est pas disponible",
+            "XSTS_NO_XBOX_ACCOUNT": "Votre compte Microsoft n'est pas associé à un compte XBOX, veuillez en créer un sur minecraft.net",
+            "XSTS_TERMS_NOT_ACCEPTED": "Vous devez accepter les conditions d'utilisation XBOX pour continuer",
+            "XSTS_REGION_BANNED": "Votre compte provient d'un pays ou d'une région où XBOX Live n'est pas disponible",
             "XSTS_CHILD_ACCOUNT": "Votre compte est un compte mineur et nécessite le consentement parental sur family.microsoft.com",
             "XSTS_UNKNOWN_ERROR": "Une erreur XSTS inconnue s'est produite lors de l'authentification"
           }
@@ -2343,6 +2389,41 @@
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NETWORK_ERROR": "Impossible de se connecter au serveur d'authentification",
             "INVALID": "Impossible d'actualiser un joueur hors ligne"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "Liste d'amis récupérée avec succès",
+        "error": {
+          "title": "Échec de la récupération de la liste d'amis Microsoft",
+          "description": {
+            "NOT_FOUND": "Le joueur n'existe pas",
+            "INVALID": "Le joueur actuel n'est pas un compte Microsoft",
+            "EXPIRED": "Le jeton d'accès a expiré, veuillez vous reconnecter",
+            "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter aux services Minecraft",
+            "FORBIDDEN": "Ce compte n'est pas autorisé à utiliser les amis",
+            "TOO_MANY_REQUESTS": "Trop de requêtes, veuillez réessayer plus tard",
+            "SERVICE_UNAVAILABLE": "Les services Minecraft sont temporairement indisponibles"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "Opération d'ami effectuée avec succès",
+        "error": {
+          "title": "Échec de l'opération d'ami Microsoft",
+          "description": {
+            "NOT_FOUND": "Le joueur n'existe pas",
+            "INVALID": "Les paramètres de l'opération d'ami sont invalides",
+            "EXPIRED": "Le jeton d'accès a expiré, veuillez vous reconnecter",
+            "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
+            "NETWORK_ERROR": "Impossible de se connecter aux services Minecraft",
+            "FORBIDDEN": "Impossible d'ajouter cet ami pour le moment. Veuillez vérifier les paramètres de votre compte et de celui de l'autre joueur",
+            "TOO_MANY_REQUESTS": "Trop de requêtes, veuillez réessayer plus tard",
+            "SERVICE_UNAVAILABLE": "Les services Minecraft sont temporairement indisponibles",
+            "UNKNOWN_PROFILE": "Le joueur cible n'existe pas",
+            "CANNOT_ADD_SELF": "Vous ne pouvez pas vous ajouter vous-même",
+            "DUPLICATED_PROFILES": "Demande d'opération d'ami en double"
           }
         }
       },
@@ -2611,7 +2692,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "Ressource copiée avec succès",
         "error": {
           "title": "Échec de la copie de la ressource",
@@ -2784,7 +2865,9 @@
           "title": "Échec de la récupération des informations de ressources du pack de mods",
           "description": {
             "FILE_NOT_FOUND_ERROR": "Le fichier du pack de mods n'existe pas. Il a peut-être été renommé, déplacé ou supprimé",
-            "MODPACK_MANIFEST_PARSE_ERROR": "Erreur d'analyse du fichier de manifeste du pack de mods"
+            "MODPACK_MANIFEST_PARSE_ERROR": "Erreur d'analyse du fichier de manifeste du pack de mods",
+            "NETWORK_ERROR": "Impossible de récupérer les informations du mod loader requises par le pack de mods. Vérifiez votre connexion réseau",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Impossible d'identifier la version du mod loader requise par ce pack de mods"
           }
         }
       },

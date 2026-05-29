@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
-use tauri::{path::BaseDirectory, AppHandle};
+use tauri::{AppHandle, path::BaseDirectory};
 use tauri_plugin_log::fern::FormatCallback;
 use tauri_plugin_log::{Target, TargetKind, TimezoneStrategy};
 use time::macros::format_description;
@@ -45,15 +45,12 @@ pub fn get_launcher_log_path(app: AppHandle) -> PathBuf {
 pub fn setup_with_app(app: AppHandle) -> SJMCLResult<()> {
   let is_dev = cfg!(debug_assertions);
   let folder = get_launcher_logs_folder(&app);
-  let mut targetkinds = vec![
-    TargetKind::Webview,
-    TargetKind::Folder {
-      path: folder,
-      file_name: Some(LOG_FILENAME.clone()),
-    },
-  ];
+  let mut targetkinds = vec![TargetKind::Folder {
+    path: folder,
+    file_name: Some(LOG_FILENAME.clone()),
+  }];
   let level = if is_dev {
-    targetkinds.push(TargetKind::Stderr);
+    targetkinds.extend([TargetKind::Webview, TargetKind::Stderr]);
     log::LevelFilter::Debug
   } else {
     log::LevelFilter::Info
@@ -138,10 +135,10 @@ pub async fn purge_old_launcher_logs(app: AppHandle, days: u64) -> SJMCLResult<(
       .captures(name)
       .and_then(|c| c.get(1))
       .and_then(|m| m.as_str().parse::<u64>().ok());
-    if ts.is_some_and(|t| t < cutoff) {
-      if let Err(e) = fs::remove_file(&path).await {
-        log::warn!("Failed to remove {}: {}", path.display(), e);
-      }
+    if ts.is_some_and(|t| t < cutoff)
+      && let Err(e) = fs::remove_file(&path).await
+    {
+      log::warn!("Failed to remove {}: {}", path.display(), e);
     }
   }
 

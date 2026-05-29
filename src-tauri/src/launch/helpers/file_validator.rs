@@ -1,6 +1,6 @@
 use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::asset_index::AssetIndex;
+use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
@@ -10,8 +10,8 @@ use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
 use crate::storage::load_json_async;
-use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::tasks::download::DownloadParam;
 use crate::utils::fs::validate_sha1;
 use futures::future::join_all;
 use futures::stream::{self, StreamExt, TryStreamExt};
@@ -33,10 +33,10 @@ pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<Downlo
     if library.natives.is_some() {
       continue;
     }
-    if let Some(ref downloads) = &library.downloads {
-      if let Some(ref artifact) = &downloads.artifact {
-        artifacts.insert(artifact.clone());
-      }
+    if let Some(downloads) = &library.downloads
+      && let Some(artifact) = &downloads.artifact
+    {
+      artifacts.insert(artifact.clone());
     }
   }
   artifacts.into_iter().collect()
@@ -52,12 +52,11 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
     }
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
-        if let Some(ref downloads) = &library.downloads {
-          if let Some(ref classifiers) = &downloads.classifiers {
-            if let Some(artifact) = classifiers.get(&native) {
-              artifacts.insert(artifact.clone());
-            }
-          }
+        if let Some(downloads) = &library.downloads
+          && let Some(classifiers) = &downloads.classifiers
+          && let Some(artifact) = classifiers.get(&native)
+        {
+          artifacts.insert(artifact.clone());
         }
       } else {
         println!("natives is None");
@@ -402,7 +401,7 @@ pub async fn prepare_legacy_assets(
     load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
       .await?;
 
-  stream::iter(asset_index.objects.into_iter())
+  stream::iter(asset_index.objects)
     .map(Ok::<_, SJMCLError>)
     .try_for_each_concurrent(None, move |(name, item)| {
       let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));

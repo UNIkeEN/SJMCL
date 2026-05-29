@@ -15,7 +15,7 @@ use crate::storage::Storage;
 use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};
 use crate::utils::string::camel_to_snake_case;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
@@ -345,25 +345,24 @@ pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInf
 
   if let Ok(Some((new_version, fname, release_notes, published_at))) =
     fetch_latest_version(&app).await
-  {
-    if let (Ok(current), Ok(latest)) = (
+    && let (Ok(current), Ok(latest)) = (
       semver::Version::parse(&current_version),
       semver::Version::parse(&new_version),
-    ) {
-      return Ok(match latest.cmp(&current) {
-        std::cmp::Ordering::Greater => VersionMetaInfo {
-          version: new_version,
-          file_name: fname,
-          release_notes,
-          published_at,
-        },
-        std::cmp::Ordering::Equal => VersionMetaInfo {
-          version: "up2date".to_string(),
-          ..Default::default()
-        },
-        std::cmp::Ordering::Less => VersionMetaInfo::default(),
-      });
-    }
+    )
+  {
+    return Ok(match latest.cmp(&current) {
+      std::cmp::Ordering::Greater => VersionMetaInfo {
+        version: new_version,
+        file_name: fname,
+        release_notes,
+        published_at,
+      },
+      std::cmp::Ordering::Equal => VersionMetaInfo {
+        version: "up2date".to_string(),
+        ..Default::default()
+      },
+      std::cmp::Ordering::Less => VersionMetaInfo::default(),
+    });
   }
 
   Ok(VersionMetaInfo::default())

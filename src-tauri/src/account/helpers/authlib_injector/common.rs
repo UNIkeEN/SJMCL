@@ -6,8 +6,8 @@ use crate::account::models::{
   AccountError, AuthServer, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
 use crate::error::SJMCLResult;
-use base64::engine::general_purpose;
 use base64::Engine;
+use base64::engine::general_purpose;
 use serde_json::json;
 use std::str::FromStr;
 use strum::IntoEnumIterator;
@@ -95,6 +95,7 @@ pub async fn parse_profile(
       player_type: PlayerType::ThirdParty,
       auth_account,
       access_token,
+      access_token_expires: None,
       refresh_token,
       textures,
       auth_server_url,

@@ -18,9 +18,9 @@ use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType,
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
+use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use crate::tasks::PTaskParam;
 
 async fn fetch_bmcl_forge_installer_url(
   root: Url,
@@ -159,10 +159,10 @@ pub async fn download_forge_libraries(
 
     if file.is_file() {
       // Create parent directories if they don't exist
-      if let Some(p) = outpath.parent() {
-        if !p.exists() {
-          fs::create_dir_all(p)?;
-        }
+      if let Some(p) = outpath.parent()
+        && !p.exists()
+      {
+        fs::create_dir_all(p)?;
       }
 
       // Extract file
@@ -231,15 +231,15 @@ pub async fn download_forge_libraries(
 
     for processor in profile.processors.iter_mut() {
       if processor.args.contains(&"DOWNLOAD_MOJMAPS".to_string()) {
-        if let Some(mojmaps) = args_map.get("{MOJMAPS}") {
-          if let Some(client_mappings) = client_info.downloads.get("client_mappings") {
-            task_params.push(PTaskParam::Download(DownloadParam {
-              src: client_mappings.url.parse()?,
-              dest: lib_dir.join(mojmaps),
-              filename: None,
-              sha1: Some(client_mappings.sha1.clone()),
-            }));
-          }
+        if let Some(mojmaps) = args_map.get("{MOJMAPS}")
+          && let Some(client_mappings) = client_info.downloads.get("client_mappings")
+        {
+          task_params.push(PTaskParam::Download(DownloadParam {
+            src: client_mappings.url.parse()?,
+            dest: lib_dir.join(mojmaps),
+            filename: None,
+            sha1: Some(client_mappings.sha1.clone()),
+          }));
         }
         processor.args.clear();
         continue;
@@ -406,10 +406,10 @@ pub async fn download_forge_libraries(
 
     let mut file = archive.by_name(&profile.install.file_path)?;
     let dest_path = lib_dir.join(convert_library_name_to_path(&profile.install.path, None)?);
-    if let Some(parent) = dest_path.parent() {
-      if !parent.exists() {
-        fs::create_dir_all(parent)?;
-      }
+    if let Some(parent) = dest_path.parent()
+      && !parent.exists()
+    {
+      fs::create_dir_all(parent)?;
     }
     let mut output = File::create(&dest_path)?;
     std::io::copy(&mut file, &mut output)?;

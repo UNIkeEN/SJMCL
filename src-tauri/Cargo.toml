@@ -1,11 +1,11 @@
 [package]
 name = "SJMCL"
-version = "1.0.0"
+version = "1.1.0"
 description = "A Minecraft launcher from SJMC"
 authors = ["SJMCL Team"]
 license = "GNU General Public License v3.0 (with additional terms)"
 repository = "https://github.com/UNIkeEN/SJMCL"
-edition = "2021"
+edition = "2024"
 rust-version = "1.91.0"
 
 [lib]
@@ -14,7 +14,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 dotenvy = "0.15.7"
-tauri-build = { version = "2.0.2", features = [] }
+tauri-build = { version = "2.6.1", features = [] }
 
 [profile.release]
 opt-level = 3   # as default
@@ -22,13 +22,16 @@ strip = true
 lto = true
 panic = "abort"
 
+[patch.crates-io]
+expat-sys = { git = "https://github.com/SJMC-dev/libexpat.git" }
+
 [dependencies]
 async-speed-limit = "0.4.2"
 async-trait = "0.1.89"
 axum = "0.8.6"
 base64 = "0.22.1"
 cafebabe = "0.8.1"
-chrono = "0.4.40"
+chrono = { version = "0.4.40", features = ["serde"] }
 config = "0.15.18"
 csv = "1.3"
 flume = { version = "0.11.1", features = ["async", "select"] }
@@ -43,6 +46,7 @@ lazy_static = "1.5"
 log = "0.4"
 mc-server-status = "1.0.0"
 murmur2 = "0.1"
+native-dialog = "0.9.6"
 partial_derive = { path = "./libs/partial_derive" }
 pin-project = "1.1.8"
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
@@ -50,7 +54,7 @@ rand = "0.9.3"
 regex = "1.11"
 reqwest-middleware = "0.4.2"
 reqwest-retry = "0.7.0"
-rmcp = { version = "0.15.0", features = ["server", "transport-streamable-http-server"] }
+rmcp = { version = "1.7.0", features = ["server", "transport-streamable-http-server"] }
 rsa = "0.9.10"
 sanitize-filename = "0.6.0"
 schemars = "1.0.4"
@@ -68,17 +72,16 @@ strum = "0.27.1"
 strum_macros = "0.27.1"
 sysinfo = "0.36.0"
 systemstat = "0.2.3"
-tauri = { version = "2.9.5", features = ["protocol-asset", "image-png"] }
+tauri = { version = "2.11.1", features = ["protocol-asset", "image-png"] }
 tauri-plugin-clipboard-manager = "2.3.2"
-tauri-plugin-deep-link = "2.4.6"
-tauri-plugin-dialog = "2.6.0"
-tauri-plugin-fs = "2.4.5"
-tauri-plugin-http = { version = "2.5.6", features = ["json", "stream"] }
+tauri-plugin-deep-link = "2.4.9"
+tauri-plugin-dialog = "2.7.1"
+tauri-plugin-fs = "2.5.1"
+tauri-plugin-http = { version = "2.5.9", features = ["json", "stream"] }
 tauri-plugin-log = "2.8.0"
-tauri-plugin-opener = "2.5.3"
+tauri-plugin-opener = "2.5.4"
 tauri-plugin-os = "2.3.2"
 tauri-plugin-process = "2.3.1"
-tauri-utils = "2.2.0"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util", "net", "sync", "time"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
@@ -104,7 +107,7 @@ tauri-plugin-decorum = "1.1.1"
 plist = "1"
 
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
-tauri-plugin-single-instance = { version = "2.3.7", features = ["deep-link"] }
+tauri-plugin-single-instance = { version = "2.4.2", features = ["deep-link"] }
 
 [target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
 tauri-plugin-window-state = "2.4.1"

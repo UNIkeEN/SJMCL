@@ -1,7 +1,7 @@
 [package]
 name = "sjmcl-cli"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [profile.release]
 opt-level = "z"
@@ -13,6 +13,6 @@ codegen-units = 1
 [dependencies]
 comfy-table = "7"
 indicatif = "0.17"
-rmcp = { version = "0.15.0", features = ["client", "transport-streamable-http-client-reqwest"] }
+rmcp = { version = "1.7.0", features = ["client", "transport-streamable-http-client-reqwest"] }
 serde_json = "1.0"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }

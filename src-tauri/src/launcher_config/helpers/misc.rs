@@ -7,7 +7,7 @@ use crate::utils::portable::extract_assets;
 use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use rand::Rng;
 use std::fs;
-use std::path::{PathBuf, MAIN_SEPARATOR};
+use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};

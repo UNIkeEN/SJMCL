@@ -448,6 +448,12 @@
       "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "Remove Friend",
+      "content": "Confirm remove friend \"{{name}}\"?"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "Delete Game Server",
     "content": "Confirm delete the game server \"{{name}}\" ({{addr}}) ? It will be lost forever! (A long time!)"
@@ -587,6 +593,7 @@
     },
     "proxy": {
       "title": "Proxy",
+      "headExtra": "Restart Required",
       "settings": {
         "enabled": {
           "title": "Enable Proxy"
@@ -858,6 +865,9 @@
   "ExtensionUpdateConfirmDialog": {
     "title": "Update Extension",
     "body": "Extension {{identifier}} downloaded the new version {{version}} from {{src}}. Do you want to confirm installation?"
+  },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} and others ({{count}} total)"
   },
   "GameAdvancedSettingsPage": {
     "title": "Advanced Settings",
@@ -1711,6 +1721,41 @@
   "MenuSelector": {
     "selectedCount": "{{count}} selected"
   },
+  "MicrosoftFriendsModal": {
+    "title": "Minecraft Friends of Microsoft Account {{name}}",
+    "placeholder": {
+      "playerName": "Enter a player name to add as a friend"
+    },
+    "group": {
+      "requests": "Requests",
+      "friends": "Friends"
+    },
+    "request": {
+      "incoming": "Incoming friend request",
+      "outgoing": "Outgoing friend request"
+    },
+    "button": {
+      "add": "Add",
+      "accept": "Accept",
+      "decline": "Decline",
+      "revoke": "Revoke",
+      "remove": "Remove Friend",
+      "xboxSettings": "XBOX Settings"
+    },
+    "empty": {
+      "requests": "No requests",
+      "friends": "No friends"
+    },
+    "status": {
+      "INVITED": "Invited you to join their world",
+      "ONLINE": "Online",
+      "PLAYING_OFFLINE": "Playing Offline",
+      "PLAYING_REALMS": "Playing Realms",
+      "PLAYING_SERVER": "Playing on a Server",
+      "PLAYING_HOSTED_SERVER": "Hosted LAN World",
+      "OFFLINE": "Offline"
+    }
+  },
   "NoSuitableJavaDialog": {
     "title": "No suitable Java runtime found for this instance",
     "body": "No suitable Java runtime is available for this instance. Click \"Confirm\" to open Java Management page and add or download Java manually."
@@ -1744,6 +1789,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "Friends",
       "manageSkin": "Manage Skin",
       "viewSkin": "View Skin",
       "delete": "Delete",
@@ -2229,11 +2275,11 @@
             "CANCELLED": "OAuth login cancelled",
             "INVALID": "The server type is invalid",
             "NO_MINECRAFT_PROFILE": "No Minecraft profile found",
-            "XSTS_BANNED": "Your account has been banned from Xbox services",
+            "XSTS_BANNED": "Your account has been banned from XBOX services",
             "XSTS_PARENTAL_RESTRICTION": "Your account is blocked by parental controls",
-            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an Xbox account, please visit minecraft.net to set one up",
-            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the Xbox Terms of Service before continuing",
-            "XSTS_REGION_BANNED": "Your account is from a country or region where Xbox Live is not available",
+            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an XBOX account, please visit minecraft.net to set one up",
+            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the XBOX Terms of Service before continuing",
+            "XSTS_REGION_BANNED": "Your account is from a country or region where XBOX Live is not available",
             "XSTS_CHILD_ACCOUNT": "Your account is a minor account and requires parental consent, please visit family.microsoft.com to authorize",
             "XSTS_UNKNOWN_ERROR": "An unknown XSTS authentication error occurred"
           }
@@ -2251,11 +2297,11 @@
             "INVALID": "The player type is invalid",
             "CANCELLED": "OAuth re-login cancelled",
             "NO_MINECRAFT_PROFILE": "No Minecraft profile found",
-            "XSTS_BANNED": "Your account has been banned from Xbox services",
+            "XSTS_BANNED": "Your account has been banned from XBOX services",
             "XSTS_PARENTAL_RESTRICTION": "Your account is blocked by parental controls",
-            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an Xbox account, please visit minecraft.net to set one up",
-            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the Xbox Terms of Service before continuing",
-            "XSTS_REGION_BANNED": "Your account is from a country or region where Xbox Live is not available",
+            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an XBOX account, please visit minecraft.net to set one up",
+            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the XBOX Terms of Service before continuing",
+            "XSTS_REGION_BANNED": "Your account is from a country or region where XBOX Live is not available",
             "XSTS_CHILD_ACCOUNT": "Your account is a minor account and requires parental consent, please visit family.microsoft.com to authorize",
             "XSTS_UNKNOWN_ERROR": "An unknown XSTS authentication error occurred"
           }
@@ -2343,6 +2389,41 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
             "INVALID": "The player type is invalid"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "Successfully retrieved friend list",
+        "error": {
+          "title": "Failed to retrieve Microsoft friend list",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The current player is not a Microsoft account",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to Minecraft services",
+            "FORBIDDEN": "This account is not allowed to access friends",
+            "TOO_MANY_REQUESTS": "Too many requests, please try again later",
+            "SERVICE_UNAVAILABLE": "Minecraft services are temporarily unavailable"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "Successfully updated friend relationship",
+        "error": {
+          "title": "Failed to update Microsoft friend relationship",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The friend action parameters are invalid",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to Minecraft services",
+            "FORBIDDEN": "Unable to add friend right now. Please check the relevant account settings for both you and the other player",
+            "TOO_MANY_REQUESTS": "Too many requests, please try again later",
+            "SERVICE_UNAVAILABLE": "Minecraft services are temporarily unavailable",
+            "UNKNOWN_PROFILE": "The target player does not exist",
+            "CANNOT_ADD_SELF": "You cannot add yourself as a friend",
+            "DUPLICATED_PROFILES": "Duplicated friend operation request"
           }
         }
       },
@@ -2611,7 +2692,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "Resource copied successfully",
         "error": {
           "title": "Failed to copy resource",
@@ -2784,7 +2865,9 @@
           "title": "Failed to retrieve modpack resource info",
           "description": {
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
-            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
+            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error",
+            "NETWORK_ERROR": "Failed to fetch the mod loader info required by the modpack",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Unable to recognize the mod loader version required by this modpack"
           }
         }
       },

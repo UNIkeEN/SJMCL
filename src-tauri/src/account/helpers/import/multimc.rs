@@ -1,4 +1,4 @@
-use crate::account::helpers::import::misc::{list_launcher_candidate_dirs, ACCESS_TOKEN_EXPIRED};
+use crate::account::helpers::import::misc::{ACCESS_TOKEN_EXPIRED, list_launcher_candidate_dirs};
 use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
 use crate::account::helpers::misc::fetch_image;
 use crate::account::helpers::offline::load_preset_skin;
@@ -64,6 +64,7 @@ async fn microsoft_to_player(
           player_type: PlayerType::Microsoft,
           auth_account: None,
           access_token: Some(ACCESS_TOKEN_EXPIRED.to_string()),
+          access_token_expires: Some(chrono::Utc::now()),
           refresh_token: Some(acc.msa.refresh_token.clone()),
           textures: load_preset_skin(app, PresetRole::Steve)?,
           auth_server_url: None,
@@ -112,6 +113,9 @@ async fn microsoft_to_player(
       player_type: PlayerType::Microsoft,
       auth_account: Some(profile.name.clone()),
       access_token: Some(acc.msa.token.clone()),
+      access_token_expires: Some(
+        chrono::DateTime::from_timestamp_secs(acc.msa.exp).unwrap_or(chrono::Utc::now()),
+      ),
       refresh_token: Some(acc.msa.refresh_token.clone()),
       textures,
       auth_server_url: None,
