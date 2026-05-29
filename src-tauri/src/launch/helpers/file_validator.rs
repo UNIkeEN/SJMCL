@@ -2,8 +2,8 @@ use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
-  load_native_libraries_replace_map, DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue,
-  McClientInfo,
+  DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
+  load_native_libraries_replace_map,
 };
 use crate::instance::models::misc::InstanceError;
 use crate::launch::helpers::misc::{get_natives_string, mesa_driver_name};
