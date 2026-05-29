@@ -3,7 +3,8 @@ pub mod misc;
 use crate::error::SJMCLResult;
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::{
-  apply_other_resource_enhancements, sort_localized_search_results,
+  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
+  sort_localized_search_results,
 };
 use crate::resource::helpers::mod_db::{handle_localized_search_query, HandledSearchQuery};
 use crate::resource::models::{
@@ -83,9 +84,7 @@ pub async fn fetch_resource_list_by_name_modrinth(
   .await?;
 
   let mut search_result: OtherResourceSearchRes = results.into();
-  for resource_info in &mut search_result.list {
-    let _ = apply_other_resource_enhancements(app, resource_info, false).await;
-  }
+  apply_other_resource_enhancements_concurrently(app, &mut search_result.list).await;
 
   if handled_search_query.is_chinese {
     sort_localized_search_results(&mut search_result.list, search_query);
@@ -198,7 +197,7 @@ pub async fn fetch_remote_resource_by_id_modrinth(
       .await?;
 
   let mut resource_info: OtherResourceInfo = results.into();
-  let _ = apply_other_resource_enhancements(app, &mut resource_info, true).await;
+  let _ = apply_other_resource_enhancements(app, &mut resource_info).await;
 
   Ok(resource_info)
 }

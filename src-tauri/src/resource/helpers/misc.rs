@@ -7,6 +7,7 @@ use crate::resource::models::{
   OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
   SourceType,
 };
+use futures::StreamExt;
 use std::cmp::Ordering;
 use std::sync::Mutex;
 use strum::IntoEnumIterator;
@@ -246,7 +247,6 @@ pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_q
 pub async fn apply_other_resource_enhancements(
   app: &AppHandle,
   resource_info: &mut OtherResourceInfo,
-  include_description_translation: bool,
 ) -> SJMCLResult<()> {
   // Extract data from cache in a limited scope to avoid holding lock across await
   let (translated_name, mcmod_id) = {
@@ -272,21 +272,41 @@ pub async fn apply_other_resource_enhancements(
     resource_info.mcmod_id = id;
   }
 
-  if include_description_translation {
-    let translated_desc = match resource_info.source {
-      OtherResourceSource::Modrinth => {
-        translate_description_modrinth(app, &resource_info.id).await?
-      }
-      OtherResourceSource::CurseForge => {
-        translate_description_curseforge(app, &resource_info.id).await?
-      }
-      _ => None,
-    };
-
-    if let Some(desc) = translated_desc {
-      resource_info.translated_description = Some(desc);
+  let translated_desc = match resource_info.source {
+    OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
+    OtherResourceSource::CurseForge => {
+      translate_description_curseforge(app, &resource_info.id).await?
     }
+    _ => None,
+  };
+
+  if let Some(desc) = translated_desc {
+    resource_info.translated_description = Some(desc);
   }
 
   Ok(())
+}
+
+pub async fn apply_other_resource_enhancements_concurrently(
+  app: &AppHandle,
+  list: &mut Vec<OtherResourceInfo>,
+) {
+  let concurrency = std::thread::available_parallelism()
+    .map(usize::from)
+    .unwrap_or(4);
+
+  let mut enhanced = futures::stream::iter(std::mem::take(list).into_iter().enumerate())
+    .map(|(index, mut resource_info)| async move {
+      let _ = apply_other_resource_enhancements(app, &mut resource_info).await;
+      (index, resource_info)
+    })
+    .buffer_unordered(concurrency)
+    .collect::<Vec<_>>()
+    .await;
+
+  enhanced.sort_by_key(|(index, _)| *index);
+  *list = enhanced
+    .into_iter()
+    .map(|(_, resource_info)| resource_info)
+    .collect();
 }
