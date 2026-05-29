@@ -370,6 +370,19 @@ pub async fn apply_other_resource_enhancements(
     resource_info.mcmod_id = id;
   }
 
+  let should_translate_resource_description = app
+    .state::<Mutex<LauncherConfig>>()
+    .lock()
+    .map(|config| {
+      config.general.general.language == "zh-Hans"
+        && config.general.functionality.resource_translation
+    })
+    .unwrap_or(false);
+
+  if !should_translate_resource_description {
+    return Ok(());
+  }
+
   let translation_cache_key =
     ResourceDescriptionTranslationsCache::cache_key(&resource_info.source, &resource_info.id);
   if let Ok(cache) = app
