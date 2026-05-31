@@ -1171,6 +1171,14 @@ pub async fn create_instance(
   task_params
     .extend(get_invalid_assets(&app, &version_info, priority_list[0], assets_dir, false).await?);
 
+  // When installing a modpack, skip auto-installing Fabric API / QFAPI to avoid
+  // duplicates — the modpack manifest already specifies the exact version needed.
+  let (effective_install_fabric_api, effective_install_qf_api) = if modpack_path.is_some() {
+    (Some(false), Some(false))
+  } else {
+    (is_install_fabric_api, is_install_qf_api)
+  };
+
   // download loader (installer)
   if instance.mod_loader.loader_type != ModLoaderType::Unknown {
     install_mod_loader(
@@ -1182,8 +1190,8 @@ pub async fn create_instance(
       mods_dir.to_path_buf(),
       &mut version_info,
       &mut task_params,
-      is_install_fabric_api,
-      is_install_qf_api,
+      effective_install_fabric_api,
+      effective_install_qf_api,
     )
     .await?;
   }
