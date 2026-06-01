@@ -594,24 +594,26 @@ where
 /// free, do fallible work, and call `commit()` only on success. Any early `?` return
 /// automatically triggers cleanup.
 pub struct RemoveDirGuard {
-  path: PathBuf,
+  path: Option<PathBuf>,
 }
 
 impl RemoveDirGuard {
   pub fn new(path: PathBuf) -> Self {
-    Self { path }
+    Self { path: Some(path) }
   }
 
   /// Disarms the guard so the directory is kept on drop.
-  pub fn commit(self) {
-    std::mem::forget(self);
+  pub fn commit(mut self) {
+    self.path = None;
   }
 }
 
 impl Drop for RemoveDirGuard {
   fn drop(&mut self) {
-    if self.path.exists() {
-      let _ = fs::remove_dir_all(&self.path);
+    if let Some(path) = &self.path
+      && path.exists()
+    {
+      let _ = fs::remove_dir_all(path);
     }
   }
 }
