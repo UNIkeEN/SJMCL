@@ -1036,8 +1036,8 @@ pub async fn create_instance(
   mod_loader: ModLoaderResourceInfo,
   optifine: Option<OptiFineResourceInfo>,
   modpack_path: Option<String>,
-  is_install_fabric_api: Option<bool>,
-  is_install_qf_api: Option<bool>,
+  mut is_install_fabric_api: Option<bool>,
+  mut is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -1170,6 +1170,13 @@ pub async fn create_instance(
   // We only download assets if they are invalid (not already downloaded)
   task_params
     .extend(get_invalid_assets(&app, &version_info, priority_list[0], assets_dir, false).await?);
+
+  // When installing a modpack, skip auto-installing Fabric API / QFAPI to avoid
+  // duplicates — the modpack manifest already specifies the exact version needed.
+  if modpack_path.is_some() {
+    is_install_fabric_api = Some(false);
+    is_install_qf_api = Some(false);
+  }
 
   // download loader (installer)
   if instance.mod_loader.loader_type != ModLoaderType::Unknown {
