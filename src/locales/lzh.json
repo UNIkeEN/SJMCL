@@ -621,6 +621,13 @@
       "alpha": "內試版",
       "beta": "公試版",
       "release": "當版"
+    },
+    "button": {
+      "cancel": "消",
+      "download": "引",
+      "installToInstance": "裝入例",
+      "installToCurrentInstance": "裝入今例",
+      "install": "裝"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +656,7 @@
       "resourcepack": "資囊",
       "shader": "光影",
       "modpack": "改囊集",
+      "modpack-download": "改囊集",
       "datapack": "錄囊",
       "patch-files": "修補戲案 {{param}}",
       "mod-update": "迭更改囊",

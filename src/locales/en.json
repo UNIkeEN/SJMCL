@@ -621,6 +621,13 @@
       "alpha": "Alpha",
       "beta": "Beta",
       "release": "Release"
+    },
+    "button": {
+      "cancel": "Cancel",
+      "download": "Download",
+      "installToInstance": "Install to Instance",
+      "installToCurrentInstance": "Install to Current Instance",
+      "install": "Install"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +656,7 @@
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",
       "modpack": "Modpack",
+      "modpack-download": "Modpack",
       "datapack": "Datapack",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",

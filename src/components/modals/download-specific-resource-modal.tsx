@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Card,
   Grid,
   HStack,
@@ -11,14 +12,21 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Radio,
   Tag,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { downloadDir } from "@tauri-apps/api/path";
+import { downloadDir, join } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
@@ -38,6 +46,7 @@ import { MenuSelector } from "@/components/common/menu-selector";
 import NavMenu from "@/components/common/nav-menu";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import InstancesView from "@/components/instances-view";
 import MCVersionNumberHelper from "@/components/mc-version-number-helper";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
@@ -46,6 +55,7 @@ import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
+import { InstanceSummary } from "@/models/instance/misc";
 import {
   GameClientResourceInfo,
   OtherResourceFileInfo,
@@ -71,6 +81,9 @@ interface DownloadSpecificResourceModalProps extends Omit<
   curInstanceModLoader?: ModLoaderType;
 }
 
+// Resource version list with single-select; action buttons vary by type.
+// regular: [Cancel] [Download] [Install to Instance (popover picker)] [Install to Current Instance (only on instance details pages)]
+// modpack: [Cancel] [Download] [Install (download to cache dir then auto-install)]
 const DownloadSpecificResourceModal: React.FC<
   DownloadSpecificResourceModalProps
 > = ({
@@ -103,9 +116,37 @@ const DownloadSpecificResourceModal: React.FC<
   const [versionPacks, setVersionPacks] = useState<OtherResourceVersionPack[]>(
     []
   );
+  const [selectedItem, setSelectedItem] =
+    useState<OtherResourceFileInfo | null>(null);
 
-  const { getGameVersionList, isGameVersionListLoading } = useGlobalData();
+  const { getGameVersionList, isGameVersionListLoading, getInstanceList } =
+    useGlobalData();
   const { openSharedModal, closeSharedModal } = useSharedModals();
+  const {
+    isOpen: isInstanceSelectorPopoverOpen,
+    onOpen: onInstanceSelectorPopoverOpen,
+    onClose: onInstanceSelectorPopoverClose,
+  } = useDisclosure();
+
+  const routeInstanceId = useMemo(() => {
+    const id = router.query.id;
+    return Array.isArray(id) ? id[0] : id;
+  }, [router.query.id]);
+
+  const isModpack = resource.type === OtherResourceType.ModPack;
+
+  const resourceTypeToDirType = useMemo<Record<string, InstanceSubdirType>>(
+    () => ({
+      mod: InstanceSubdirType.Mods,
+      world: InstanceSubdirType.Saves,
+      resourcepack: InstanceSubdirType.ResourcePacks,
+      shader: InstanceSubdirType.ShaderPacks,
+      datapack: InstanceSubdirType.Saves,
+    }),
+    []
+  );
+  const dirType =
+    resourceTypeToDirType[resource.type] ?? InstanceSubdirType.Root;
 
   const modLoaderLabels = [
     "All",
@@ -163,71 +204,167 @@ const DownloadSpecificResourceModal: React.FC<
       : t("DownloadSpecificResourceModal.label.all");
   };
 
-  const getDefaultFilePath = useCallback(async (): Promise<string | null> => {
-    const resourceTypeToDirType: Record<string, InstanceSubdirType> = {
-      mod: InstanceSubdirType.Mods,
-      world: InstanceSubdirType.Saves,
-      resourcepack: InstanceSubdirType.ResourcePacks,
-      shader: InstanceSubdirType.ShaderPacks,
-      datapack: InstanceSubdirType.Saves,
-    };
-    const dirType =
-      resourceTypeToDirType[resource.type] ?? InstanceSubdirType.Root;
+  // add prefix and sanitize
+  const getSelectedFileName = useCallback(
+    (item: OtherResourceFileInfo) =>
+      sanitizeFileName(
+        addPrefix && resource.translatedName
+          ? `[${resource.translatedName}] ${item.fileName}`
+          : item.fileName
+      ),
+    [addPrefix, resource.translatedName]
+  );
 
-    let id = router.query.id;
-    const instanceId = Array.isArray(id) ? id[0] : id;
+  // resource dependencies alert
+  const withDependencyCheck = useCallback(
+    (action: () => void) => {
+      if (!selectedItem) return;
+      if (selectedItem.dependencies.length > 0 && !isModpack) {
+        openSharedModal("alert-resource-dependency", {
+          dependencies: selectedItem.dependencies,
+          downloadSource: resource.source as OtherResourceSource,
+          curInstanceMajorVersion,
+          curInstanceVersion,
+          curInstanceModLoader,
+          downloadOriginalResource: action,
+        });
+      } else {
+        action();
+      }
+    },
+    [
+      selectedItem,
+      isModpack,
+      resource.source,
+      openSharedModal,
+      curInstanceMajorVersion,
+      curInstanceVersion,
+      curInstanceModLoader,
+    ]
+  );
 
-    if (instanceId !== undefined) {
-      return InstanceService.retrieveInstanceSubdirPath(
-        instanceId,
+  // for the "download" button (save dialog), get default download path:
+  // on instance page use the instance's subdir
+  // modpacks always use system download dir
+  const getDefaultDownloadPath = useCallback(async (): Promise<string> => {
+    if (!isModpack && routeInstanceId !== undefined) {
+      const response = await InstanceService.retrieveInstanceSubdirPath(
+        routeInstanceId,
         dirType
-      ).then((response) => {
-        if (response.status === "success") {
-          return response.data;
-        } else {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-          return null;
-        }
+      );
+      if (response.status === "success") return response.data;
+      toast({
+        title: response.message,
+        description: response.details,
+        status: "error",
       });
     }
+    return downloadDir();
+  }, [isModpack, routeInstanceId, dirType, toast]);
 
-    const defaultDownloadPath = await downloadDir();
-    return defaultDownloadPath;
-  }, [resource.type, router.query.id, toast]);
-
-  const startDownload = async (
-    item: OtherResourceFileInfo,
-    translatedName?: string
-  ) => {
-    const dir = await getDefaultFilePath();
-    const fileName = sanitizeFileName(
-      addPrefix && translatedName
-        ? `[${translatedName}] ${item.fileName}`
-        : item.fileName
-    );
-    const savepath = await save({
-      defaultPath: dir + "/" + fileName,
+  const handleDownload = useCallback(() => {
+    if (!selectedItem) return;
+    withDependencyCheck(async () => {
+      const dir = await getDefaultDownloadPath();
+      const fileName = getSelectedFileName(selectedItem);
+      const savepath = await save({ defaultPath: dir + "/" + fileName });
+      if (!savepath) return;
+      // use "modpack-wo-install" group , prevent auto-trigger install
+      const taskGroup = isModpack ? "modpack-wo-install" : resource.type;
+      handleScheduleProgressiveTaskGroup(taskGroup, [
+        {
+          src: selectedItem.downloadUrl,
+          dest: savepath,
+          sha1: selectedItem.sha1,
+          taskType: TaskTypeEnums.Download,
+        },
+      ]);
+      closeSharedModal("download-specific-resource");
+      if (isModpack) closeSharedModal("download-modpack");
+      router.push("/downloads");
     });
-    if (!savepath) return;
-    handleScheduleProgressiveTaskGroup(resource.type, [
+  }, [
+    selectedItem,
+    withDependencyCheck,
+    getDefaultDownloadPath,
+    getSelectedFileName,
+    isModpack,
+    resource.type,
+    handleScheduleProgressiveTaskGroup,
+    closeSharedModal,
+    router,
+  ]);
+
+  const handleInstallToInstance = useCallback(
+    async (instance: InstanceSummary) => {
+      if (!selectedItem) return;
+      const response = await InstanceService.retrieveInstanceSubdirPath(
+        instance.id,
+        dirType
+      );
+      if (response.status === "success") {
+        const destPath = await join(
+          response.data,
+          getSelectedFileName(selectedItem)
+        );
+        handleScheduleProgressiveTaskGroup(resource.type, [
+          {
+            src: selectedItem.downloadUrl,
+            dest: destPath,
+            sha1: selectedItem.sha1,
+            taskType: TaskTypeEnums.Download,
+          },
+        ]);
+        modalProps.onClose();
+      } else {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+      }
+    },
+    [
+      selectedItem,
+      dirType,
+      getSelectedFileName,
+      resource.type,
+      handleScheduleProgressiveTaskGroup,
+      modalProps,
+      toast,
+    ]
+  );
+
+  const handleInstallToCurrentInstance = useCallback(() => {
+    if (!routeInstanceId) return;
+    const instance = getInstanceList()?.find((i) => i.id === routeInstanceId);
+    if (instance) handleInstallToInstance(instance);
+  }, [routeInstanceId, getInstanceList, handleInstallToInstance]);
+
+  const handleInstanceModpack = useCallback(async () => {
+    if (!selectedItem) return;
+    const cacheDir = config.download.cache.directory.trim();
+    if (!cacheDir) return;
+    const fileName = sanitizeFileName(selectedItem.fileName);
+    const destPath = await join(cacheDir, fileName);
+    handleScheduleProgressiveTaskGroup("modpack", [
       {
-        src: item.downloadUrl,
-        dest: savepath,
-        sha1: item.sha1,
+        src: selectedItem.downloadUrl,
+        dest: destPath,
+        sha1: selectedItem.sha1,
         taskType: TaskTypeEnums.Download,
       },
     ]);
-
-    if (resource.type === OtherResourceType.ModPack) {
-      closeSharedModal("download-specific-resource");
-      closeSharedModal("download-modpack");
-      router.push("/downloads");
-    }
-  };
+    closeSharedModal("download-specific-resource");
+    closeSharedModal("download-modpack");
+    router.push("/downloads");
+  }, [
+    selectedItem,
+    config.download.cache.directory,
+    handleScheduleProgressiveTaskGroup,
+    closeSharedModal,
+    router,
+  ]);
 
   const getRecommendedFiles = useMemo((): OtherResourceFileInfo[] => {
     if (!curInstanceVersion || !versionPacks.length) return [];
@@ -428,13 +565,21 @@ const DownloadSpecificResourceModal: React.FC<
                   </Grid>
                 }
                 prefixElement={
-                  <Avatar
-                    src={""}
-                    name={item.releaseType}
-                    boxSize="32px"
-                    borderRadius="4px"
-                    backgroundColor={iconBackgroundColor[item.releaseType]}
-                  />
+                  <HStack spacing={2.5}>
+                    <Radio
+                      isChecked={selectedItem === item}
+                      onChange={() => setSelectedItem(item)}
+                      colorScheme={primaryColor}
+                      pointerEvents="none"
+                    />
+                    <Avatar
+                      src={""}
+                      name={item.releaseType}
+                      boxSize="32px"
+                      borderRadius="4px"
+                      backgroundColor={iconBackgroundColor[item.releaseType]}
+                    />
+                  </HStack>
                 }
                 titleExtra={
                   item.loader && (
@@ -448,22 +593,7 @@ const DownloadSpecificResourceModal: React.FC<
                   )
                 }
                 isFullClickZone
-                onClick={() => {
-                  if (
-                    item.dependencies.length > 0 &&
-                    resource.type !== OtherResourceType.ModPack
-                  ) {
-                    openSharedModal("alert-resource-dependency", {
-                      dependencies: item.dependencies,
-                      downloadSource: resource.source as OtherResourceSource,
-                      curInstanceMajorVersion,
-                      curInstanceVersion,
-                      curInstanceModLoader,
-                      downloadOriginalResource: () =>
-                        startDownload(item, resource.translatedName),
-                    });
-                  } else startDownload(item, resource.translatedName);
-                }}
+                onClick={() => setSelectedItem(item)}
               />
             ))}
           />
@@ -495,6 +625,12 @@ const DownloadSpecificResourceModal: React.FC<
     reFetchVersionPacks();
   }, [reFetchVersionPacks]);
 
+  useEffect(() => {
+    setSelectedItem(
+      modalProps.isOpen ? (getRecommendedFiles[0] ?? null) : null
+    );
+  }, [modalProps.isOpen, getRecommendedFiles]);
+
   return (
     <Modal
       scrollBehavior="inside"
@@ -503,7 +639,7 @@ const DownloadSpecificResourceModal: React.FC<
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent h="100%" pb={4}>
+      <ModalContent h="100%">
         <ModalHeader>
           {t("DownloadSpecificResourceModal.title", {
             name:
@@ -685,6 +821,74 @@ const DownloadSpecificResourceModal: React.FC<
             })()
           )}
         </ModalBody>
+        <ModalFooter gap={2}>
+          <Button variant="ghost" onClick={modalProps.onClose}>
+            {t("DownloadSpecificResourceModal.button.cancel")}
+          </Button>
+          <Button
+            variant="ghost"
+            isDisabled={!selectedItem}
+            onClick={handleDownload}
+          >
+            {t("DownloadSpecificResourceModal.button.download")}
+          </Button>
+          {!isModpack && (
+            <Popover
+              isOpen={isInstanceSelectorPopoverOpen}
+              onClose={onInstanceSelectorPopoverClose}
+              placement="top-start"
+              gutter={8}
+            >
+              <PopoverTrigger>
+                <Button
+                  variant={routeInstanceId ? "ghost" : undefined}
+                  colorScheme={routeInstanceId ? undefined : primaryColor}
+                  isDisabled={!selectedItem}
+                  onClick={() =>
+                    withDependencyCheck(onInstanceSelectorPopoverOpen)
+                  }
+                >
+                  {t("DownloadSpecificResourceModal.button.installToInstance")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent maxH="xs" overflow="auto">
+                <PopoverBody p={0}>
+                  <InstancesView
+                    instances={getInstanceList() || []}
+                    selectedInstance={undefined}
+                    viewType="list"
+                    withMenu={false}
+                    onSelectInstance={(instance) => {
+                      onInstanceSelectorPopoverClose();
+                      handleInstallToInstance(instance);
+                    }}
+                  />
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+          )}
+          {isModpack ? (
+            <Button
+              colorScheme={primaryColor}
+              isDisabled={!selectedItem}
+              onClick={handleInstanceModpack}
+            >
+              {t("DownloadSpecificResourceModal.button.install")}
+            </Button>
+          ) : routeInstanceId ? (
+            <Button
+              colorScheme={primaryColor}
+              isDisabled={!selectedItem}
+              onClick={() =>
+                withDependencyCheck(handleInstallToCurrentInstance)
+              }
+            >
+              {t(
+                "DownloadSpecificResourceModal.button.installToCurrentInstance"
+              )}
+            </Button>
+          ) : null}
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
