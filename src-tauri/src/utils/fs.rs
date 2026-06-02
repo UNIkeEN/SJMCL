@@ -587,3 +587,33 @@ where
 
   Ok(())
 }
+
+/// RAII guard that removes a directory on drop unless [`commit`](RemoveDirGuard::commit) is called.
+///
+/// Useful for transactional directory creation: create the guard after verifying the path is
+/// free, do fallible work, and call `commit()` only on success. Any early `?` return
+/// automatically triggers cleanup.
+pub struct RemoveDirGuard {
+  path: Option<PathBuf>,
+}
+
+impl RemoveDirGuard {
+  pub fn new(path: PathBuf) -> Self {
+    Self { path: Some(path) }
+  }
+
+  /// Disarms the guard so the directory is kept on drop.
+  pub fn commit(mut self) {
+    self.path = None;
+  }
+}
+
+impl Drop for RemoveDirGuard {
+  fn drop(&mut self) {
+    if let Some(path) = &self.path
+      && path.exists()
+    {
+      let _ = fs::remove_dir_all(path);
+    }
+  }
+}
