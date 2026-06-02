@@ -341,7 +341,7 @@ const DownloadSpecificResourceModal: React.FC<
     if (instance) handleInstallToInstance(instance);
   }, [routeInstanceId, getInstanceList, handleInstallToInstance]);
 
-  const handleInstanceModpack = useCallback(async () => {
+  const handleInstallModpack = useCallback(async () => {
     if (!selectedItem) return;
     const cacheDir = config.download.cache.directory.trim();
     if (!cacheDir) return;
@@ -871,7 +871,7 @@ const DownloadSpecificResourceModal: React.FC<
             <Button
               colorScheme={primaryColor}
               isDisabled={!selectedItem}
-              onClick={handleInstanceModpack}
+              onClick={handleInstallModpack}
             >
               {t("DownloadSpecificResourceModal.button.install")}
             </Button>
