@@ -41,7 +41,7 @@ glob = "0.3.2"
 hex = "0.4.3"
 image = { version = "0.25.5", default-features = false, features = ["serde", "png", "jpeg", "gif", "ico", "webp"] }
 java-properties = "2.0.0"
-jsonwebtoken = "10.3.0"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
 lazy_static = "1.5"
 log = "0.4"
 mc-server-status = "1.0.0"
