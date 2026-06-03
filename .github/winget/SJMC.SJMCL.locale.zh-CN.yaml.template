@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.locale.1.12.0.schema.json
 PackageIdentifier: SJMC.SJMCL
 PackageVersion: __VERSION__
 PackageLocale: zh-CN
@@ -11,7 +12,6 @@ License: GPL-3.0-only with additional terms (see LICENSE.EXTRA)
 LicenseUrl: https://github.com/UNIkeEN/SJMCL/blob/main/LICENSE.EXTRA
 ShortDescription: 新一代开源跨平台 Minecraft 启动器
 Description: SJMC Launcher 是一款基于 Tauri 框架打造的现代化、跨平台 Minecraft 启动器，由上海交通大学 Minecraft 社的成员自主开发。
-Moniker: sjmcl
 Tags:
   - mc
   - minecraft
