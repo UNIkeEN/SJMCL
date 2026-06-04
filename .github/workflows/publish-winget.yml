@@ -173,7 +173,6 @@ jobs:
 
           git -C winget-pkgs remote add upstream https://github.com/microsoft/winget-pkgs.git
           git -C winget-pkgs fetch upstream master
-          git -C winget-pkgs fetch origin "$BRANCH_NAME" || true
           git -C winget-pkgs checkout -B "$BRANCH_NAME" upstream/master
 
           mkdir -p "winget-pkgs/${MANIFEST_DIR}"
@@ -219,5 +218,4 @@ jobs:
             --base master \
             --head "SJMC-Dev-Bot:${BRANCH_NAME}" \
             --title "New version: SJMC.SJMCL version ${VERSION}" \
-            --body "## Summary\n- Update SJMC.SJMCL to ${VERSION}\n- Generated from GitHub release assets in ${{ github.repository }}" \
-            --label Windows-Package-Manager-Manifest
+            --body "## Summary\n- Update SJMC.SJMCL to ${VERSION}\n- Generated from GitHub release assets in ${{ github.repository }}"
