@@ -18,6 +18,7 @@ use serde_json::Value;
 use shlex::try_quote;
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 
@@ -291,9 +292,16 @@ pub async fn generate_launch_command(
       .auth_server_url
       .clone()
       .ok_or(LaunchError::AuthServerNotFound)?;
+    let custom = &game_config.advanced.workaround.use_custom_authlib_injector;
+    let custom_path = PathBuf::from(&custom.path);
+    let authlib_jar_path = if custom.enabled && custom_path.exists() {
+      custom_path
+    } else {
+      get_authlib_injector_jar_path(app)?
+    };
     cmd.push(format!(
       "-javaagent:{}={}",
-      get_authlib_injector_jar_path(app)?.to_string_lossy(),
+      authlib_jar_path.to_string_lossy(),
       auth_server_url
     ));
     cmd.push("-Dauthlibinjector.side=client".to_string());

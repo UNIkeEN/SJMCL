@@ -937,8 +937,15 @@
           "title": "Ne pas tenter de remplacer automatiquement les bibliothèques natives"
         },
         "useLwjglUnsafeAgent": {
-          "title": "Activer LWJGL Unsafe Agent",
+          "title": "Utiliser LWJGL Unsafe Agent",
           "description": "Utiliser automatiquement le <hmcl>LWJGL Unsafe Agent</hmcl> de HMCL sur les versions de Minecraft concernées pour corriger les problèmes de performances."
+        },
+        "useCustomAuthlibInjector": {
+          "title": "Utiliser un Authlib Injector personnalisé",
+          "description": {
+            "notSet": "Aucun chemin personnalisé défini, la version intégrée sera utilisée"
+          },
+          "select": "Modifier"
         },
         "useNativeGlfw": {
           "title": "Utiliser GLFW du système (Linux uniquement)"

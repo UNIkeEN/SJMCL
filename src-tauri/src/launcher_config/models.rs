@@ -155,6 +155,10 @@ structstruck::strike! {
         pub dont_patch_natives: bool,
         #[default = true]
         pub use_lwjgl_unsafe_agent: bool,
+        pub use_custom_authlib_injector: struct {
+          pub enabled: bool,
+          pub path: String,
+        },
         pub use_native_glfw: bool,
         pub use_native_openal: bool,
       },

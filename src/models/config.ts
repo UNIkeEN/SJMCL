@@ -48,6 +48,10 @@ export interface GameConfig {
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useLwjglUnsafeAgent: boolean;
+      useCustomAuthlibInjector: {
+        enabled: boolean;
+        path: string;
+      };
       useNativeGlfw: boolean;
       useNativeOpenal: boolean;
     };
@@ -228,6 +232,10 @@ export const defaultGameConfig: GameConfig = {
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useLwjglUnsafeAgent: true,
+      useCustomAuthlibInjector: {
+        enabled: false,
+        path: "",
+      },
       useNativeGlfw: false,
       useNativeOpenal: false,
     },
