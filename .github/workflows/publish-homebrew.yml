@@ -1,6 +1,16 @@
 name: Publish Homebrew Cask
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to read assets from. Defaults to v<version>."
+        required: false
+        type: string
   workflow_call:
     inputs:
       version:
@@ -36,7 +46,7 @@ jobs:
         env:
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ inputs.release_tag || format('v{0}', inputs.version) }}
           VERSION: ${{ inputs.version }}
         run: |
           get_asset_digest() {
