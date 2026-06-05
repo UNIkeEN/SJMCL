@@ -1468,13 +1468,17 @@ pub async fn change_mod_loader(
     }
   }
 
-  let mut version_info: McClientInfo = current_info.clone();
-  if let Some(ref new_loader) = new_mod_loader
-    && (instance.mod_loader.loader_type != new_loader.loader_type
-      || instance.mod_loader.version != new_loader.version)
-  {
+  let mut version_info: McClientInfo = if new_mod_loader.is_some() {
+    let mut version_info = vanilla_info.clone();
+    version_info.id = current_info.id.clone();
+    version_info.jar = Some(instance.name.clone());
+    version_info.java_version = current_info.java_version.clone();
+    version_info.client_version = Some(instance.version.clone());
     version_info.patches = vec![vanilla_info.clone()];
-  }
+    version_info
+  } else {
+    current_info.clone()
+  };
 
   let mut modloader_task_params: Vec<PTaskParam> = Vec::new();
   let mut optifine_task_params: Vec<PTaskParam> = Vec::new();
