@@ -1,6 +1,7 @@
 import {
   Alert,
   AlertIcon,
+  Button,
   HStack,
   Input,
   Link,
@@ -10,6 +11,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -62,6 +64,22 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const gameFileValidatePolicies = ["disable", "normal", "full"];
   const updateGameAdvancedConfig = (key: string, value: any) => {
     updateGameConfig(`advanced.${key}`, value);
+  };
+
+  const handleSelectAuthlibJar = async () => {
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: "JAR", extensions: ["jar"] }],
+      defaultPath:
+        gameConfig.advanced.workaround.useCustomAuthlibInjector.path ||
+        undefined,
+    });
+    if (selected && typeof selected === "string") {
+      updateGameAdvancedConfig(
+        "workaround.useCustomAuthlibInjector.path",
+        selected
+      );
+    }
   };
 
   const settingGroups: OptionItemGroupProps[] = [
@@ -359,6 +377,47 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 );
               }}
             />
+          ),
+        },
+        {
+          title: t(
+            "GameAdvancedSettingsPage.workaround.settings.useCustomAuthlibInjector.title"
+          ),
+          description: gameConfig.advanced.workaround.useCustomAuthlibInjector
+            .enabled
+            ? gameConfig.advanced.workaround.useCustomAuthlibInjector.path ||
+              t(
+                "GameAdvancedSettingsPage.workaround.settings.useCustomAuthlibInjector.description.notSet"
+              )
+            : "",
+          children: (
+            <HStack>
+              {gameConfig.advanced.workaround.useCustomAuthlibInjector
+                .enabled && (
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  onClick={handleSelectAuthlibJar}
+                >
+                  {t(
+                    "GameAdvancedSettingsPage.workaround.settings.useCustomAuthlibInjector.select"
+                  )}
+                </Button>
+              )}
+              <Switch
+                colorScheme={primaryColor}
+                isChecked={
+                  gameConfig.advanced.workaround.useCustomAuthlibInjector
+                    .enabled
+                }
+                onChange={(event) => {
+                  updateGameAdvancedConfig(
+                    "workaround.useCustomAuthlibInjector.enabled",
+                    event.target.checked
+                  );
+                }}
+              />
+            </HStack>
           ),
         },
         ...(config.basicInfo.platform === "linux"
