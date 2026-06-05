@@ -656,7 +656,7 @@
       "resourcepack": "リソースパック",
       "shader": "シェーダーパック",
       "modpack": "モッドパック",
-      "modpack-download": "モッドパック",
+      "modpack-wo-install": "モッドパック",
       "datapack": "データパック",
       "patch-files": "ゲームファイルを修復 {{param}}",
       "mod-update": "モッドを更新",

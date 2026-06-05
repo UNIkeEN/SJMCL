@@ -656,7 +656,7 @@
       "resourcepack": "資囊",
       "shader": "光影",
       "modpack": "改囊集",
-      "modpack-download": "改囊集",
+      "modpack-wo-install": "改囊集",
       "datapack": "錄囊",
       "patch-files": "修補戲案 {{param}}",
       "mod-update": "迭更改囊",

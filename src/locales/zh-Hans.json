@@ -656,7 +656,7 @@
       "resourcepack": "资源包",
       "shader": "光影",
       "modpack": "整合包",
-      "modpack-download": "整合包",
+      "modpack-wo-install": "整合包",
       "datapack": "数据包",
       "patch-files": "修补游戏文件 {{param}}",
       "mod-update": "更新模组",

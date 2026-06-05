@@ -267,9 +267,9 @@ const DownloadSpecificResourceModal: React.FC<
     withDependencyCheck(async () => {
       const dir = await getDefaultDownloadPath();
       const fileName = getSelectedFileName(selectedItem);
-      const savepath = await save({ defaultPath: dir + "/" + fileName });
+      const savepath = await save({ defaultPath: await join(dir, fileName) });
       if (!savepath) return;
-      // use "modpack-wo-install" group , prevent auto-trigger install
+      // use "modpack-wo-install" group to prevent auto-triggering install
       const taskGroup = isModpack ? "modpack-wo-install" : resource.type;
       handleScheduleProgressiveTaskGroup(taskGroup, [
         {

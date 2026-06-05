@@ -656,7 +656,7 @@
       "resourcepack": "Pack de ressources",
       "shader": "Shaders",
       "modpack": "Pack modifié",
-      "modpack-download": "Pack modifié",
+      "modpack-wo-install": "Pack modifié",
       "datapack": "Paquet de données",
       "patch-files": "Réparer les fichiers du jeu {{param}}",
       "mod-update": "Mettre à jour les mods.",

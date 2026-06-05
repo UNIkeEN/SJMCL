@@ -656,7 +656,7 @@
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",
       "modpack": "Modpack",
-      "modpack-download": "Modpack",
+      "modpack-wo-install": "Modpack",
       "datapack": "Datapack",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",

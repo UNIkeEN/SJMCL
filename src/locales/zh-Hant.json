@@ -621,6 +621,13 @@
       "alpha": "Alpha",
       "beta": "Beta",
       "release": "Release"
+    },
+    "button": {
+      "cancel": "取消",
+      "download": "下載",
+      "installToInstance": "安裝到實例",
+      "installToCurrentInstance": "安裝到當前實例",
+      "install": "安裝"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +656,7 @@
       "resourcepack": "資源包",
       "shader": "光影",
       "modpack": "模組包",
+      "modpack-wo-install": "模組包",
       "datapack": "資料包",
       "patch-files": "修補遊戲檔案 {{param}}",
       "mod-update": "更新模組",
