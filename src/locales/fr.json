@@ -621,6 +621,13 @@
       "alpha": "Alpha",
       "beta": "Bêta",
       "release": "Version stable"
+    },
+    "button": {
+      "cancel": "Annuler",
+      "download": "Télécharger",
+      "installToInstance": "Installer dans une instance",
+      "installToCurrentInstance": "Installer dans l'instance actuelle",
+      "install": "Installer"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +656,7 @@
       "resourcepack": "Pack de ressources",
       "shader": "Shaders",
       "modpack": "Pack modifié",
+      "modpack-wo-install": "Pack modifié",
       "datapack": "Paquet de données",
       "patch-files": "Réparer les fichiers du jeu {{param}}",
       "mod-update": "Mettre à jour les mods.",

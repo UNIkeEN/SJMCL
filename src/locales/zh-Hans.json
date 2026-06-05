@@ -621,6 +621,13 @@
       "alpha": "内测版",
       "beta": "公测版",
       "release": "正式版"
+    },
+    "button": {
+      "cancel": "取消",
+      "download": "下载",
+      "installToInstance": "安装到实例",
+      "installToCurrentInstance": "安装到当前实例",
+      "install": "安装"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +656,7 @@
       "resourcepack": "资源包",
       "shader": "光影",
       "modpack": "整合包",
+      "modpack-wo-install": "整合包",
       "datapack": "数据包",
       "patch-files": "修补游戏文件 {{param}}",
       "mod-update": "更新模组",

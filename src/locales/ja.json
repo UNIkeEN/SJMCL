@@ -621,6 +621,13 @@
       "alpha": "アルファ版",
       "beta": "ベータ版",
       "release": "正式版"
+    },
+    "button": {
+      "cancel": "キャンセル",
+      "download": "ダウンロード",
+      "installToInstance": "インスタンスにインストール",
+      "installToCurrentInstance": "現在のインスタンスにインストール",
+      "install": "インストール"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +656,7 @@
       "resourcepack": "リソースパック",
       "shader": "シェーダーパック",
       "modpack": "モッドパック",
+      "modpack-wo-install": "モッドパック",
       "datapack": "データパック",
       "patch-files": "ゲームファイルを修復 {{param}}",
       "mod-update": "モッドを更新",
