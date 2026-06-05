@@ -293,8 +293,9 @@ pub async fn generate_launch_command(
       .clone()
       .ok_or(LaunchError::AuthServerNotFound)?;
     let custom = &game_config.advanced.workaround.use_custom_authlib_injector;
-    let custom_path = PathBuf::from(&custom.path);
-    let authlib_jar_path = if custom.enabled && custom_path.exists() {
+    let trimmed_path = custom.path.trim();
+    let custom_path = PathBuf::from(trimmed_path);
+    let authlib_jar_path = if custom.enabled && !trimmed_path.is_empty() && custom_path.is_file() {
       custom_path
     } else {
       get_authlib_injector_jar_path(app)?
