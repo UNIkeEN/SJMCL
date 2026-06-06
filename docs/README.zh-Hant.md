@@ -33,11 +33,11 @@
 
 SJMCL 目前支援以下平臺：
 
-| 平臺    | 系統版本            | 架構               | 提供的的發行類型                              |
-|---------|---------------------|--------------------|--------------------------------------------|
-| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`   | 安裝版 `.exe`，便攜版 `.exe` |
-| macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`                   |
-| Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.deb`, `.rpm`, 便攜版二進位制檔案 |
+| 平臺    | 系統版本            | 架構               | 發行類型與安裝方式                              |
+|---------|---------------------|--------------------|------------------------------------------------|
+| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`   | 安裝版 `.exe`，便攜版 `.exe`，Winget `SJMC.SJMCL` |
+| macOS   | 10.15 及以上        | `aarch64`, `x86_64`| `.app`，`.dmg`，Homebrew Cask `sjmcl` |
+| Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.deb`，`.rpm`，便攜版二進位檔案，AUR `sjmcl-bin`，Snap `sjmcl` |
 
 了解更多功能與常見問題，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/docs)。
 
@@ -49,9 +49,21 @@ SJMCL 目前支援以下平臺：
 <summary><h3>從命令列安裝</h3></summary>
 
 <details>
-<summary><h4>Arch Linux</h4></summary>
+<summary><h4>Linux</h4></summary>
 
-SJMCL 已上傳至 Arch Linux 使用者套件庫（AUR）。您可以使用常見的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 安裝：
+使用 Linux 一鍵安裝腳本安裝最新正式版：
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --source sjmc
+```
+
+不使用 root 權限安裝 Linux 便攜版：
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --portable --source sjmc
+```
+
+透過常見的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 從 Arch Linux 使用者套件庫（AUR）安裝：
 
 ```bash
 yay -S sjmcl-bin
@@ -65,7 +77,38 @@ cd sjmcl-bin
 makepkg -si
 ```
 
+透過 Snap Store 安裝：
+
+```bash
+sudo snap install sjmcl
+```
+
 </details>
+
+<details>
+<summary><h4>macOS</h4></summary>
+
+透過 Homebrew 安裝：
+
+```bash
+brew install --cask SJMC-Dev/SJMCL/sjmcl
+```
+
+</details>
+
+<details>
+<summary><h4>Windows</h4></summary>
+
+透過 Winget 安裝：
+
+```powershell
+winget install SJMC.SJMCL
+```
+
+</details>
+
+更多安裝方式與平臺注意事項，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/docs/install)。
+
 </details>
 
 ## 開發與貢獻
