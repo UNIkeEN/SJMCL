@@ -49,15 +49,27 @@ If you need to run SJMCL on Windows 7, please first [download the Microsoft Edge
 <summary><h3>Install from Command Line</h3></summary>
 
 <details>
-<summary><h4>Arch Linux</h4></summary>
+<summary><h4>Linux</h4></summary>
 
-SJMCL is available on the Arch User Repository (AUR). You can install it using a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
+Install the latest stable release with the Linux installer:
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --source sjmc
+```
+
+Install the portable Linux build without root access:
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --portable --source sjmc
+```
+
+Install from the Arch User Repository (AUR) with a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
 
 ```bash
 yay -S sjmcl-bin
 ```
 
-Manual installation without an AUR helper:
+If you do not use an AUR helper, you can also install manually:
 
 ```bash
 git clone https://aur.archlinux.org/sjmcl-bin.git
@@ -65,7 +77,38 @@ cd sjmcl-bin
 makepkg -si
 ```
 
+Install from Snap Store:
+
+```bash
+sudo snap install sjmcl
+```
+
 </details>
+
+<details>
+<summary><h4>macOS</h4></summary>
+
+Install with Homebrew:
+
+```bash
+brew install --cask SJMC-Dev/SJMCL/sjmcl
+```
+
+</details>
+
+<details>
+<summary><h4>Windows</h4></summary>
+
+Install with Winget:
+
+```powershell
+winget install SJMC.SJMCL
+```
+
+</details>
+
+For more installation options and platform notes, see the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs/install).
+
 </details>
 
 ## Development and Contributing
