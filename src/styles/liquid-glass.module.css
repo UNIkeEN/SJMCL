@@ -4,7 +4,7 @@
   overflow: hidden;
 
   box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, var(--lg-opacity-light, 0.5));
   border-radius: 1rem;
 }
 
@@ -14,7 +14,6 @@
   inset: 0;
 
   backdrop-filter: blur(8px);
-  filter: url(#glass-distortion);
   overflow: hidden;
   isolation: isolate;
 }
@@ -32,7 +31,7 @@
 }
 
 :global([data-theme="dark"]) .wrapper {
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(0, 0, 0, var(--lg-opacity-dark, 0.78));
 }
 
 :global([data-theme="dark"]) .shine {

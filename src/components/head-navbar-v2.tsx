@@ -116,7 +116,7 @@ const HeadNavBar = () => {
     const timer = setTimeout(() => setIsAnimating(false), 700);
     return () => clearTimeout(timer);
   }, [
-    config.appearance.theme.useLiquidGlassDesign,
+    config.appearance.theme.liquidGlassDesign.enabled,
     isDownloadIndicatorShown,
     isSimplified,
   ]);

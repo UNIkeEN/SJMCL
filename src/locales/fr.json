@@ -281,9 +281,9 @@
             "dark": "Sombre"
           }
         },
-        "useLiquidGlassDesign": {
+        "liquidGlassDesign": {
           "title": "Effet verre liquide",
-          "description": "Une fois activé, certaines interfaces utiliseront l'effet 'Verre liquide', ce qui peut affecter les performances"
+          "description": "Une fois activé, certaines interfaces utiliseront l'effet 'Verre liquide'"
         },
         "headNavStyle": {
           "title": "Style de la barre de navigation supérieure",

@@ -83,7 +83,7 @@ export interface LauncherConfig {
     theme: {
       primaryColor: string;
       colorMode: "light" | "dark" | "system";
-      useLiquidGlassDesign: boolean;
+      liquidGlassDesign: { enabled: boolean; opacity: number };
       headNavStyle: "standard" | "simplified" | "adaptive";
     };
     font: {
@@ -262,7 +262,7 @@ export const defaultConfig: LauncherConfig = {
     theme: {
       primaryColor: "blue",
       colorMode: "light",
-      useLiquidGlassDesign: false,
+      liquidGlassDesign: { enabled: false, opacity: 33 },
       headNavStyle: "adaptive",
     },
     font: {

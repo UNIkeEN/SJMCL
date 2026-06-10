@@ -281,9 +281,9 @@
             "dark": "ダーク"
           }
         },
-        "useLiquidGlassDesign": {
+        "liquidGlassDesign": {
           "title": "リキッドグラス効果",
-          "description": "一部のUIで「リキッドグラス」効果が適用されます。パフォーマンスに影響する可能性があります"
+          "description": "一部のUIで「リキッドグラス」効果が適用されます。"
         },
         "headNavStyle": {
           "title": "上部ナビゲーションバーのスタイル",

@@ -1,5 +1,7 @@
 use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
-use crate::launcher_config::migrations::{deserialize_background, deserialize_discover_sources};
+use crate::launcher_config::migrations::{
+  deserialize_background, deserialize_discover_sources, deserialize_theme,
+};
 use crate::partial::PartialUpdate;
 use crate::storage::Storage;
 use crate::utils::string::snake_to_camel_case;
@@ -211,12 +213,17 @@ structstruck::strike! {
     #[default = true]
     pub last_run_exited_normally: bool,
     pub appearance: struct AppearanceConfig {
-      pub theme: struct {
+      #[serde(default, deserialize_with = "deserialize_theme")]
+      pub theme: struct ThemeConfig {
         #[default = "blue"]
         pub primary_color: String,
         #[default = "light"]
         pub color_mode: String,
-        pub use_liquid_glass_design: bool,
+        pub liquid_glass_design: struct LiquidGlassDesignConfig {
+          pub enabled: bool,
+          #[default = 33]
+          pub opacity: usize,
+        },
         #[default = "adaptive"]
         pub head_nav_style: String,
       },

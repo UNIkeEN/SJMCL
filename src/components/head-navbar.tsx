@@ -43,7 +43,7 @@ const HeadNavBar = () => {
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 700);
   }, [
-    config.appearance.theme.useLiquidGlassDesign,
+    config.appearance.theme.liquidGlassDesign.enabled,
     isDownloadIndicatorShown,
     isSimplified,
   ]);

@@ -21,7 +21,7 @@ import { appDataDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuPlus, LuTrash } from "react-icons/lu";
+import { LuBlend, LuPlus, LuTrash } from "react-icons/lu";
 import { ChakraColorSelectPopover } from "@/components/chakra-color-selector";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
@@ -29,6 +29,7 @@ import {
   OptionItemGroupProps,
 } from "@/components/common/option-item";
 import SegmentedControl from "@/components/common/segmented";
+import { LuBlendTwoColor } from "@/components/special/icons";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
@@ -432,22 +433,46 @@ const AppearanceSettingsPage = () => {
         },
         {
           title: t(
-            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.title"
-          ),
-          description: t(
-            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.description"
+            "AppearanceSettingsPage.theme.settings.liquidGlassDesign.title"
           ),
           children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={appearanceConfigs.theme.useLiquidGlassDesign}
-              onChange={(e) => {
-                update(
-                  "appearance.theme.useLiquidGlassDesign",
-                  e.target.checked
-                );
-              }}
-            />
+            <HStack spacing={2}>
+              {appearanceConfigs.theme.liquidGlassDesign.enabled && (
+                <>
+                  <Icon as={LuBlend} />
+                  <Slider
+                    value={appearanceConfigs.theme.liquidGlassDesign.opacity}
+                    min={0}
+                    max={100}
+                    step={1}
+                    w={20}
+                    colorScheme={primaryColor}
+                    onChange={(value) => {
+                      update(
+                        "appearance.theme.liquidGlassDesign.opacity",
+                        value
+                      );
+                    }}
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb />
+                  </Slider>
+                  <LuBlendTwoColor />
+                </>
+              )}
+              <Switch
+                colorScheme={primaryColor}
+                isChecked={appearanceConfigs.theme.liquidGlassDesign.enabled}
+                onChange={(e) => {
+                  update(
+                    "appearance.theme.liquidGlassDesign.enabled",
+                    e.target.checked
+                  );
+                }}
+              />
+            </HStack>
           ),
         },
         {

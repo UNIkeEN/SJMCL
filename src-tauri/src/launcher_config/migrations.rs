@@ -1,4 +1,4 @@
-use crate::launcher_config::models::AppearanceBackgroundConfig;
+use crate::launcher_config::models::{AppearanceBackgroundConfig, ThemeConfig};
 use serde::Deserialize;
 use serde::de::Deserializer;
 use serde_json::Value;
@@ -66,4 +66,31 @@ where
       })
       .collect(),
   )
+}
+
+// Migrate old useLiquidGlassDesign: bool to liquidGlassDesign: { enabled, opacity }.
+pub fn deserialize_theme<'de, D>(deserializer: D) -> Result<ThemeConfig, D::Error>
+where
+  D: Deserializer<'de>,
+{
+  let value = Value::deserialize(deserializer).unwrap_or_default();
+
+  let value = if let Some(obj) = value.as_object() {
+    if let Some(old_flag) = obj.get("useLiquidGlassDesign") {
+      let enabled = old_flag.as_bool().unwrap_or(false);
+      let mut new_obj = obj.clone();
+      new_obj.remove("useLiquidGlassDesign");
+      new_obj.insert(
+        "liquidGlassDesign".to_string(),
+        serde_json::json!({ "enabled": enabled, "opacity": 33_usize }),
+      );
+      Value::Object(new_obj)
+    } else {
+      value
+    }
+  } else {
+    value
+  };
+
+  serde_json::from_value::<ThemeConfig>(value).map_err(serde::de::Error::custom)
 }

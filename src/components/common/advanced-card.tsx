@@ -15,9 +15,13 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
     const { config } = useLauncherConfig();
     const _variant =
       variant ||
-      (config.appearance.theme.useLiquidGlassDesign
+      (config.appearance.theme.liquidGlassDesign.enabled
         ? "liquid-glass"
         : "elevated");
+
+    const { opacity } = config.appearance.theme.liquidGlassDesign;
+    const lightAlpha = Math.min(1, Math.max(0, 0.5 + (opacity - 33) * 0.002));
+    const darkAlpha = Math.min(1, Math.max(0, 0.78 + (opacity - 33) * 0.001));
 
     if (["elevated", "outline", "filled", "unstyled"].includes(_variant)) {
       return (
@@ -38,6 +42,13 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
           ref={ref}
           {...props}
           className={`${liquidGlassStyles["wrapper"]} ${props.className || ""}`}
+          style={
+            {
+              ...props.style,
+              "--lg-opacity-light": lightAlpha,
+              "--lg-opacity-dark": darkAlpha,
+            } as React.CSSProperties
+          }
         >
           <div className={liquidGlassStyles["effect"]} />
           <div className={liquidGlassStyles["shine"]} />
