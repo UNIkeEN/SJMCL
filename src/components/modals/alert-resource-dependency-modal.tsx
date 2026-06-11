@@ -249,7 +249,10 @@ const AlertResourceDependencyModal: React.FC<
             </Button>
             <Button
               colorScheme={primaryColor}
-              onClick={downloadOriginalResource}
+              onClick={() => {
+                modalProps.onClose();
+                downloadOriginalResource();
+              }}
             >
               {t("AlertResourceDependencyModal.button.continue")}
             </Button>
