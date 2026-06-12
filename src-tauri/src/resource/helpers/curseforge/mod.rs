@@ -98,10 +98,12 @@ pub async fn fetch_resource_list_by_name_curseforge(
 
   let mut search_result: OtherResourceSearchRes = results.into();
 
-  if !handled_search_query.is_chinese
-    && sort_by == "Popularity"
-    && !handled_search_query.query.trim().is_empty()
-  {
+  let has_search_filter = !handled_search_query.query.trim().is_empty();
+  // Empty search is browsing by the selected API sort; avoid re-ranking by title length.
+  let should_rerank_by_search_filter =
+    !handled_search_query.is_chinese && sort_by == "Popularity" && has_search_filter;
+
+  if should_rerank_by_search_filter {
     let lower_case_search_filter = handled_search_query.query.to_lowercase();
     let mut search_filter_words = HashMap::new();
     for token in tokenize_words(&lower_case_search_filter) {
