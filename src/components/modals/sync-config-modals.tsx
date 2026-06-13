@@ -85,8 +85,8 @@ export const SyncConfigExportModal: React.FC<SyncConfigModalProps> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       size={{ base: "md", lg: "lg", xl: "xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
       onClose={handleCloseModal}
     >
@@ -164,8 +164,8 @@ export const SyncConfigImportModal: React.FC<SyncConfigModalProps> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       size={{ base: "md", lg: "lg", xl: "xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
       onClose={handleCloseModal}
     >

@@ -48,8 +48,8 @@ const ExtensionInfoModal: React.FC<ExtensionInfoModalProps> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       size={{ base: "md", lg: "lg", xl: "xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

@@ -23,9 +23,9 @@ const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
 
   return (
     <Modal
-      returnFocusOnClose={false}
       autoFocus={false}
       size={{ base: "sm", lg: "md" }}
+      returnFocusOnClose={false}
       {...props}
     >
       <ModalOverlay />

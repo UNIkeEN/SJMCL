@@ -69,9 +69,9 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       scrollBehavior="inside"
       size="xl"
+      returnFocusOnClose={false}
       {...props}
     >
       <ModalOverlay />

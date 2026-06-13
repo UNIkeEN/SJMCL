@@ -494,7 +494,7 @@ const SpotlightSearchModal: React.FC<Omit<ModalProps, "children">> = ({
   };
 
   return (
-    <Modal returnFocusOnClose={false} scrollBehavior="inside" {...props}>
+    <Modal scrollBehavior="inside" returnFocusOnClose={false} {...props}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

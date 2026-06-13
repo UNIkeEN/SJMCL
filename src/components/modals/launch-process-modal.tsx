@@ -340,10 +340,10 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       size="sm"
       closeOnEsc={false}
       closeOnOverlayClick={false}
+      returnFocusOnClose={false}
       {...props}
       onClose={handleCloseModalWithCancel}
     >

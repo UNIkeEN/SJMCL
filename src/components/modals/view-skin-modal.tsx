@@ -31,10 +31,10 @@ const ViewSkinModal: React.FC<ViewSkinModalProps> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       isOpen={isOpen}
       onClose={onClose}
       size="md"
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

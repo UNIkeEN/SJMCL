@@ -201,9 +201,9 @@ const AlertResourceDependencyModal: React.FC<
 
   return (
     <Modal
-      returnFocusOnClose={false}
       scrollBehavior="inside"
       size={{ base: "md", lg: "lg", xl: "xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

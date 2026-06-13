@@ -290,9 +290,9 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       size={{ base: "md", lg: "lg", xl: "xl" }}
       initialFocusRef={initialRef}
+      returnFocusOnClose={false}
       {...modalProps}
       onClose={handleCloseModal}
     >

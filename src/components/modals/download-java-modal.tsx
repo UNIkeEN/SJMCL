@@ -157,8 +157,8 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
 
   return (
     <Modal
-      returnFocusOnClose={false}
       size={{ base: "sm", lg: "md" }}
+      returnFocusOnClose={false}
       {...props}
     >
       <ModalOverlay />

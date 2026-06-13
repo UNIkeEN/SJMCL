@@ -29,7 +29,7 @@ const SelectInstanceModal: React.FC<SelectInstanceModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Modal returnFocusOnClose={false} scrollBehavior="inside" {...modalProps}>
+    <Modal scrollBehavior="inside" returnFocusOnClose={false} {...modalProps}>
       <ModalOverlay />
       <ModalContent maxH="calc(100vh - 7.5rem)">
         <ModalHeader>
