@@ -113,7 +113,10 @@ jobs:
 
       - name: Install appdmg
         run: |
-          pnpm dlx appdmg --version
+          echo "PNPM_HOME=${HOME}/.local/share/pnpm" >> "$GITHUB_ENV"
+          echo "${HOME}/.local/share/pnpm" >> "$GITHUB_PATH"
+          pnpm add -g appdmg
+          appdmg --version
 
       - name: Extract and sign .app
         env:
@@ -182,7 +185,7 @@ jobs:
           rm -f SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
           
           # Create a new DMG with the signed app using appdmg
-          pnpm dlx appdmg dmg-config.json SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
+          appdmg dmg-config.json SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
           
           # Sign the new DMG
           codesign --force --sign "$SIGNING_IDENTITY" \
