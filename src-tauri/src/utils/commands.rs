@@ -3,7 +3,6 @@ use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
 use crate::utils::fs::extract_filename as extract_filename_helper;
 use crate::utils::sys_info::get_memory_info;
 use base64::{Engine, engine::general_purpose};
-use font_loader::system_fonts;
 use std::fs;
 use tauri_plugin_http::reqwest;
 use tokio::time::Instant;
@@ -16,8 +15,7 @@ pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
 
 #[tauri::command]
 pub fn retrieve_truetype_font_list() -> SJMCLResult<Vec<String>> {
-  let sysfonts = system_fonts::query_all();
-  Ok(sysfonts)
+  Ok(list_fonts::get_font_list())
 }
 
 #[tauri::command]
