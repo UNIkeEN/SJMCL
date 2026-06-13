@@ -30,7 +30,13 @@ const ViewSkinModal: React.FC<ViewSkinModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md" {...modalProps}>
+    <Modal
+      returnFocusOnClose={false}
+      isOpen={isOpen}
+      onClose={onClose}
+      size="md"
+      {...modalProps}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ViewSkinModal.skinView")}</ModalHeader>

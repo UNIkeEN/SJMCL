@@ -387,6 +387,7 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
 
   return (
     <Modal
+      returnFocusOnClose={false}
       size={{ base: "lg", xl: "2xl" }}
       scrollBehavior="inside"
       {...modalProps}

@@ -81,7 +81,7 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
   };
 
   return (
-    <Modal {...props} onClose={handleClose}>
+    <Modal returnFocusOnClose={false} {...props} onClose={handleClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ManualAddJavaPathModal.modal.header")}</ModalHeader>

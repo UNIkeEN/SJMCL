@@ -241,6 +241,7 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
 
   return (
     <Modal
+      returnFocusOnClose={false}
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
       {...props}

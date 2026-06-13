@@ -307,6 +307,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
 
   return (
     <Modal
+      returnFocusOnClose={false}
       size={{ base: "md", lg: "lg", xl: "xl" }}
       initialFocusRef={initialRef}
       {...modalProps}

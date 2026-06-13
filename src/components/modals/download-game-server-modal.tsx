@@ -64,6 +64,7 @@ export const DownloadGameServerModal: React.FC<
 
   return (
     <Modal
+      returnFocusOnClose={false}
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
       {...modalProps}

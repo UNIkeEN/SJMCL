@@ -207,6 +207,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
 
   return (
     <Modal
+      returnFocusOnClose={false}
       isOpen={isOpen}
       onClose={onClose}
       size={

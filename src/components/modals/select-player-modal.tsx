@@ -29,7 +29,7 @@ const SelectPlayerModal: React.FC<SelectPlayerModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Modal scrollBehavior="inside" {...modalProps}>
+    <Modal returnFocusOnClose={false} scrollBehavior="inside" {...modalProps}>
       <ModalOverlay />
       <ModalContent maxH="calc(100vh - 7.5rem)">
         <ModalHeader>
