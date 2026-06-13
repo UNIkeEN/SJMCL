@@ -79,9 +79,6 @@
     "prettier": "^3.4.1",
     "typescript": "^5"
   },
-  "overrides": {
-    "mdast-util-gfm-autolink-literal": "2.0.0"
-  },
   "pnpm": {
     "overrides": {
       "mdast-util-gfm-autolink-literal": "2.0.0"
