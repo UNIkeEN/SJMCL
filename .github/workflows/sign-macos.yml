@@ -71,6 +71,17 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
+
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
@@ -102,7 +113,7 @@ jobs:
 
       - name: Install appdmg
         run: |
-          npm install -g appdmg
+          pnpm dlx appdmg --version
 
       - name: Extract and sign .app
         env:
@@ -171,7 +182,7 @@ jobs:
           rm -f SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
           
           # Create a new DMG with the signed app using appdmg
-          appdmg dmg-config.json SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
+          pnpm dlx appdmg dmg-config.json SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
           
           # Sign the new DMG
           codesign --force --sign "$SIGNING_IDENTITY" \

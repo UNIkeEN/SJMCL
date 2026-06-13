@@ -137,7 +137,7 @@ function generatePlaceholder(source, target) {
 // Parse command-line arguments (skip node and the script path)
 const args = process.argv.slice(3);
 if (args.length < 2) {
-  console.error("Usage: npm run locale genplaceholder <source> <target>");
+  console.error("Usage: pnpm locale genplaceholder <source> <target>");
   process.exit(1);
 }
 

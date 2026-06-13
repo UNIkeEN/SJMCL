@@ -70,6 +70,12 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
+
       # See https://github.com/tauri-apps/tauri-action
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -88,7 +94,7 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          npm install
+          pnpm install --frozen-lockfile
 
       - name: Remove Font files (MacOS)
         if: matrix.platform == 'macos'
@@ -103,7 +109,7 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.target }}
 
       - name: Build the app
-        run: npm run tauri build -- --target ${{ matrix.target }}
+        run: pnpm tauri build -- --target ${{ matrix.target }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 

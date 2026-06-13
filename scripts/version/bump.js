@@ -1,11 +1,11 @@
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { spawnSync } = require("child_process");
 
 const newVersion = process.argv[3];
 
 if (!newVersion) {
-  console.error("Usage: npm run version bump <new-version>");
+  console.error("Usage: pnpm run version bump <new-version>");
   process.exit(1);
 }
 
@@ -32,18 +32,18 @@ fs.writeFileSync(cargoTomlPath, cargoToml);
 
 console.log(`✅ Updated all version numbers to ${newVersion}`);
 
-// Sync package-lock.json with package.json
-console.log("\n🔄 Syncing package-lock.json with package.json...");
+// Sync pnpm-lock.yaml with package.json
+console.log("\n🔄 Syncing pnpm-lock.yaml with package.json...");
 try {
-  execSync(
-    "npm install --package-lock-only --no-audit --no-fund --ignore-scripts",
-    {
-      stdio: "inherit",
-      cwd: path.join(__dirname, "../../"),
-    }
-  );
-  console.log("✅ package-lock.json synced successfully!");
+  const result = spawnSync("pnpm", ["install", "--lockfile-only"], {
+    stdio: "inherit",
+    cwd: path.join(__dirname, "../../"),
+  });
+  if (result.status !== 0) {
+    throw new Error(`pnpm install failed with exit code ${result.status}`);
+  }
+  console.log("✅ pnpm-lock.yaml synced successfully!");
 } catch (error) {
-  console.error("❌ Failed to sync package-lock.json:", error.message);
+  console.error("❌ Failed to sync pnpm-lock.yaml:", error.message);
   process.exit(1);
 }
