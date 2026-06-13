@@ -53,6 +53,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
       closeOnEsc={false}
       closeOnOverlayClick={false}
       size={{ base: "sm", lg: "md" }}
+      returnFocusOnClose={false}
       {...props}
     >
       <ModalOverlay />

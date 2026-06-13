@@ -214,6 +214,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
           ? { base: "2xl", lg: "3xl", xl: "4xl" }
           : { base: "md", lg: "lg", xl: "xl" }
       }
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />
