@@ -124,7 +124,7 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
   };
 
   return (
-    <Modal {...props} onClose={handleCloseModal}>
+    <Modal returnFocusOnClose={false} {...props} onClose={handleCloseModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ReLoginPlayerModal.modal.title")}</ModalHeader>

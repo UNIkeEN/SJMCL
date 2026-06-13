@@ -85,7 +85,11 @@ const PreviewScreenshotModal: React.FC<PreviewScreenshotModalProps> = ({
   ];
 
   return (
-    <Modal size={{ base: "lg", lg: "2xl", xl: "4xl" }} {...props}>
+    <Modal
+      size={{ base: "lg", lg: "2xl", xl: "4xl" }}
+      returnFocusOnClose={false}
+      {...props}
+    >
       <ModalOverlay />
       <ModalContent>
         <Image

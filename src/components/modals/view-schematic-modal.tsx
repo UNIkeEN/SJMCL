@@ -23,7 +23,13 @@ const ViewSchematicModal: React.FC<ViewSchematicModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md" {...modalProps}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="md"
+      returnFocusOnClose={false}
+      {...modalProps}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("ViewSchematicModal.header.title")}</ModalHeader>

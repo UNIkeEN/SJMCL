@@ -39,7 +39,7 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
   };
 
   return (
-    <Modal {...props} onClose={handleCloseModal}>
+    <Modal returnFocusOnClose={false} {...props} onClose={handleCloseModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("AddDiscoverSourceModal.modal.header")}</ModalHeader>

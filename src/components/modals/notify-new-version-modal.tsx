@@ -69,7 +69,12 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
   };
 
   return (
-    <Modal scrollBehavior="inside" size="xl" {...props}>
+    <Modal
+      scrollBehavior="inside"
+      size="xl"
+      returnFocusOnClose={false}
+      {...props}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{`${t("NotifyNewVersionModal.title")} - ${newVersion.version}`}</ModalHeader>

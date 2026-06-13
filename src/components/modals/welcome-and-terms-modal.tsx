@@ -52,6 +52,7 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
       autoFocus={false}
       closeOnEsc={false}
       closeOnOverlayClick={false}
+      returnFocusOnClose={false}
       size={{ base: "sm", lg: "md" }}
       {...props}
     >

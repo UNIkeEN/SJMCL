@@ -117,6 +117,7 @@ export const ChangeModLoaderModal: React.FC<ChangeModLoaderModalProps> = ({
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      returnFocusOnClose={false}
       onCloseComplete={() => {
         setSelectedModLoader(defaultModLoaderResourceInfo);
       }}

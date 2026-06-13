@@ -71,6 +71,7 @@ export const ActionSelectDialog: React.FC<ActionSelectDialogProps> = ({
       onClose={modalProps.onClose}
       autoFocus={false}
       isCentered
+      returnFocusOnClose={false}
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
@@ -284,6 +285,7 @@ const EditGameDirectoryModal: React.FC<EditGameDirectoryModalProps> = ({
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
       initialFocusRef={initialRef}
+      returnFocusOnClose={false}
       {...modalProps}
       onClose={handleCloseModal}
     >

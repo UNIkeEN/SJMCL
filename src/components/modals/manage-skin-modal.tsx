@@ -209,6 +209,7 @@ const ManageSkinModal: React.FC<ManageSkinModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      returnFocusOnClose={false}
       size={
         selectedSkin === "upload"
           ? { base: "2xl", lg: "3xl", xl: "4xl" }

@@ -356,6 +356,7 @@ export const GuidedTourProvider: React.FC<TourProviderProps> = ({
         onClose={close}
         isCentered={false}
         closeOnOverlayClick={false}
+        returnFocusOnClose={false}
         blockScrollOnMount
         trapFocus
         // disable default animations in next steps

@@ -499,6 +499,7 @@ const DownloadSpecificResourceModal: React.FC<
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
       autoFocus={false}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />
