@@ -3,12 +3,10 @@ import {
   HStack,
   Icon,
   Image,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  ModalProps,
   Text,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -17,6 +15,8 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { LuCalendarDays, LuImagePlay } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ScreenshotInfo } from "@/models/instance/misc";

@@ -8,14 +8,12 @@ import {
   IconButton,
   Image,
   Link,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -43,6 +41,8 @@ import { BeatLoader } from "react-spinners";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { MenuSelector } from "@/components/common/menu-selector";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import NavMenu from "@/components/common/nav-menu";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";

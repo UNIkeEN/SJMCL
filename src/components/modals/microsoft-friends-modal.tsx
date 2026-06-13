@@ -5,14 +5,12 @@ import {
   HStack,
   Input,
   Link,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Tag,
   TagLabel,
   Text,
@@ -33,6 +31,8 @@ import {
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { OptionItemGroup } from "@/components/common/option-item";
 import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";

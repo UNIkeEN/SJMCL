@@ -2,20 +2,20 @@ import {
   Badge,
   Center,
   HStack,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Text,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import TreeView, {
   StructTreeNodeData,
   buildStructTreeNodes,

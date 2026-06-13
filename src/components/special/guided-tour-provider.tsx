@@ -4,7 +4,6 @@ import {
   Button,
   HStack,
   Kbd,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -31,6 +30,7 @@ import React, {
   useState,
 } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { Modal } from "@/components/common/modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { clamp } from "@/utils/math";
 

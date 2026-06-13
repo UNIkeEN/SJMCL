@@ -79,6 +79,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
       onClose={handleCancel}
       autoFocus={false}
       isCentered
+      returnFocusOnClose={false}
       {...props}
     >
       <AlertDialogOverlay>

@@ -1,14 +1,14 @@
 import {
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import InstancesView from "@/components/instances-view";
 import { InstanceSummary } from "@/models/instance/misc";
 

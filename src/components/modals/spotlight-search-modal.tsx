@@ -8,12 +8,10 @@ import {
   InputGroup,
   InputLeftElement,
   Kbd,
-  Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Spinner,
   Tag,
   Text,
@@ -26,6 +24,8 @@ import { useTranslation } from "react-i18next";
 import { LuSearch } from "react-icons/lu";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";

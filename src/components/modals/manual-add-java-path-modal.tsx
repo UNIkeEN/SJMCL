@@ -6,18 +6,18 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 

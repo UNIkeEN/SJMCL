@@ -5,14 +5,12 @@ import {
   Checkbox,
   HStack,
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   NumberInput,
   NumberInputField,
   Switch,
@@ -27,6 +25,8 @@ import { SiModrinth } from "react-icons/si";
 import { BeatLoader } from "react-spinners";
 import Editable from "@/components/common/editable";
 import Empty from "@/components/common/empty";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import {
   OptionItemGroup,
   OptionItemGroupProps,

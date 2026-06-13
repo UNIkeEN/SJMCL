@@ -5,14 +5,12 @@ import {
   Checkbox,
   Grid,
   HStack,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Text,
   Tooltip,
   VStack,
@@ -22,6 +20,8 @@ import { useTranslation } from "react-i18next";
 import { LuCircleX, LuTriangleAlert } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import SelectableCard from "@/components/common/selectable-card";

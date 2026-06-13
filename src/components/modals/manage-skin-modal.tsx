@@ -7,14 +7,12 @@ import {
   HStack,
   IconButton,
   Input,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Radio,
   RadioGroup,
   Text,
@@ -26,6 +24,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuFolderOpen } from "react-icons/lu";
 import { AutoSizer } from "react-virtualized";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import SegmentedControl from "@/components/common/segmented";
 import SkinPreview from "@/components/skin-preview";
 import { useLauncherConfig } from "@/contexts/config";

@@ -1,15 +1,15 @@
 import {
   Flex,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import SkinPreview from "@/components/skin-preview";
 import { Texture } from "@/models/account";
 import { base64ImgSrc } from "@/utils/string";

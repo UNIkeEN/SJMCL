@@ -2,13 +2,11 @@ import {
   Flex,
   HStack,
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Text,
   Tooltip,
 } from "@chakra-ui/react";
@@ -23,6 +21,8 @@ import {
   LuPuzzle,
   LuSquareLibrary,
 } from "react-icons/lu";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import NavMenu from "@/components/common/nav-menu";
 import ResourceDownloader from "@/components/resource-downloader";
 import { useLauncherConfig } from "@/contexts/config";

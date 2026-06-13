@@ -16,14 +16,12 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Text,
   VStack,
   useDisclosure,
@@ -41,6 +39,8 @@ import {
   LuServer,
   LuSquareUserRound,
 } from "react-icons/lu";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import SelectPlayerModal from "@/components/modals/select-player-modal";

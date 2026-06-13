@@ -4,17 +4,17 @@ import {
   Button,
   Divider,
   HStack,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  ModalProps,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { OptionItem } from "@/components/common/option-item";
 import { useLauncherConfig } from "@/contexts/config";
 import { ExtensionInfo } from "@/models/extension";

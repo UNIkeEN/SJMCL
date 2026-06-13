@@ -1,19 +1,19 @@
 import {
   Button,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuExternalLink } from "react-icons/lu";
 import MarkdownContainer from "@/components/common/markdown-container";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { VersionMetaInfo } from "@/models/config";

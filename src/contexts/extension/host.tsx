@@ -1719,6 +1719,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
               key={modal.resetKey}
               isOpen={modalState.isOpen}
               onClose={close}
+              returnFocusOnClose={false}
             >
               <ChakraUI.ModalOverlay />
               <ChakraUI.ModalContent>

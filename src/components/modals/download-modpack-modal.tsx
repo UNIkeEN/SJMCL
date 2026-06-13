@@ -1,16 +1,16 @@
 import {
   Flex,
   HStack,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Text,
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import ResourceDownloader from "@/components/resource-downloader";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 

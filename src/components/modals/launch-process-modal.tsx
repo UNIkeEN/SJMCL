@@ -3,14 +3,12 @@ import {
   Button,
   HStack,
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Step,
   StepDescription,
   StepIcon,
@@ -28,6 +26,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import SelectInstanceModal from "@/components/modals/select-instance-modal";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
 import { useLauncherConfig } from "@/contexts/config";

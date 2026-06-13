@@ -1,20 +1,20 @@
 import {
   Button,
   Center,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   VStack,
 } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BeatLoader } from "react-spinners";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import {
   OptionItemGroup,
   OptionItemGroupProps,

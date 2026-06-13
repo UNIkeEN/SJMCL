@@ -3,14 +3,12 @@ import {
   Button,
   Checkbox,
   HStack,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
   Progress,
   Text,
   VStack,
@@ -18,6 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Modal } from "@/components/common/modal";
+import type { ModalProps } from "@/components/common/modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource } from "@/enums/resource";
