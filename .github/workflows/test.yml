@@ -135,20 +135,20 @@ jobs:
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
             OUTPUT_NAME="SJMCL-${SHORT_SHA}.exe"
             python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL.exe"
-            cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
             echo "platform_tag=windows" >> "$GITHUB_OUTPUT"
           else
             OUTPUT_NAME="SJMCL-${SHORT_SHA}"
             python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL"
-            cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
             echo "platform_tag=linux" >> "$GITHUB_OUTPUT"
           fi
+          cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
+          echo "output_name=$OUTPUT_NAME" >> "$GITHUB_OUTPUT"
           echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Upload portable artifact
         if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: SJMCL_${{ steps.portable.outputs.platform_tag }}_x86_64_portable_test-${{ steps.portable.outputs.short_sha }}
-          path: artifacts/*
+          path: artifacts/${{ steps.portable.outputs.output_name }}
+          archive: false
           if-no-files-found: error
