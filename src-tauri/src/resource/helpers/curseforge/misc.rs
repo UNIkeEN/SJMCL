@@ -19,6 +19,12 @@ lazy_static! {
   };
 }
 
+pub fn is_curseforge_cdn_url(url: &url::Url) -> bool {
+  url
+    .host_str()
+    .is_some_and(|host| host == "forgecdn.net" || host.ends_with(".forgecdn.net"))
+}
+
 pub async fn make_curseforge_request<T, P>(
   client: &reqwest::Client,
   url: &str,
