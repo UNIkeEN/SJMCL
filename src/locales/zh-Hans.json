@@ -593,7 +593,7 @@
     },
     "proxy": {
       "title": "代理",
-      "headExtra": "以下设置重启时生效",
+      "headExtra": "以下设置重启后生效",
       "settings": {
         "enabled": {
           "title": "启用代理"
