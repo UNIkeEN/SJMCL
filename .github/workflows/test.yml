@@ -99,8 +99,8 @@ jobs:
           #   args: '--target aarch64-apple-darwin'
           - platform: 'ubuntu-latest'
             args: ''
-          # - platform: 'windows-latest'
-          #   args: ''
+          - platform: 'windows-latest'
+            args: ''
 
     steps:
       - uses: actions/checkout@v4
@@ -131,3 +131,28 @@ jobs:
         run: npx tauri build ${{ matrix.args }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
+
+      - name: Build portable artifact
+        id: portable
+        if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          if [ "${{ matrix.platform }}" = "windows-latest" ]; then
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "SJMCL-patched.exe" "SJMCL.exe"
+            cp "src-tauri/target/release/SJMCL-patched.exe" artifacts/
+            echo "platform_tag=windows" >> "$GITHUB_OUTPUT"
+          else
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "SJMCL-patched" "SJMCL"
+            cp "src-tauri/target/release/SJMCL-patched" artifacts/
+            echo "platform_tag=linux" >> "$GITHUB_OUTPUT"
+          fi
+          echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload portable artifact
+        if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SJMCL_${{ steps.portable.outputs.platform_tag }}_x86_64_portable_test-${{ steps.portable.outputs.short_sha }}
+          path: artifacts/*
+          if-no-files-found: error
