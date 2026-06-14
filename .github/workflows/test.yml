@@ -131,16 +131,19 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts
+          SHORT_SHA="${GITHUB_SHA:0:7}"
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "SJMCL-patched.exe" "SJMCL.exe"
-            cp "src-tauri/target/release/SJMCL-patched.exe" artifacts/
+            OUTPUT_NAME="SJMCL-${SHORT_SHA}.exe"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL.exe"
+            cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
             echo "platform_tag=windows" >> "$GITHUB_OUTPUT"
           else
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "SJMCL-patched" "SJMCL"
-            cp "src-tauri/target/release/SJMCL-patched" artifacts/
+            OUTPUT_NAME="SJMCL-${SHORT_SHA}"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL"
+            cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
             echo "platform_tag=linux" >> "$GITHUB_OUTPUT"
           fi
-          echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Upload portable artifact
         if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
