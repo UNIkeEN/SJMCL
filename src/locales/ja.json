@@ -936,7 +936,10 @@
           "title": "ファイル整合性チェックポリシー",
           "disable": "チェックしない",
           "normal": "一般チェック",
-          "full": "強化チェック"
+          "full": "強化チェック",
+          "disableDesc": "",
+          "normalDesc": "ファイルの存在を確認し、欠損時は自動補完",
+          "fullDesc": "ファイルの SHA1 整合性を確認し、欠損時は自動補完（時間がかかる）"
         },
         "dontCheckJvmValidity": {
           "title": "JVM とゲームの整合性をチェックしない"

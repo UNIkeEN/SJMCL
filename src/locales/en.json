@@ -936,7 +936,10 @@
           "title": "Game File Validation Policy",
           "disable": "Disable Check",
           "normal": "Normal Check",
-          "full": "Full Check"
+          "full": "Full Check",
+          "disableDesc": "",
+          "normalDesc": "Check if files exist, auto-download missing ones",
+          "fullDesc": "Check file SHA1 integrity, auto-download missing ones (takes longer)"
         },
         "dontCheckJvmValidity": {
           "title": "Do not check Java VM compatibility"

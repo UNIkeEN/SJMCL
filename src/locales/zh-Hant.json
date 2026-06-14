@@ -936,7 +936,10 @@
           "title": "遊戲檔案完整性檢查策略",
           "disable": "不檢查",
           "normal": "普通檢查",
-          "full": "增強檢查"
+          "full": "增強檢查",
+          "disableDesc": "",
+          "normalDesc": "檢查檔案是否存在，缺失時自動補全",
+          "fullDesc": "檢查檔案 SHA1 完整性，缺失時自動補全（耗時較長）"
         },
         "dontCheckJvmValidity": {
           "title": "不檢查 Java 虛擬機器與遊戲的相容性"
