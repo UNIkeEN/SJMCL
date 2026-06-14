@@ -16,11 +16,25 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 dotenvy = "0.15.7"
 tauri-build = { version = "2.6.1", features = [] }
 
+[features]
+default = []
+# Enables WebView DevTools in optimized builds. Off by default so production
+# releases never ship an inspector; CI portable builds opt in via --features devtools.
+devtools = ["tauri/devtools"]
+
 [profile.release]
 opt-level = 3   # as default
 strip = true
 lto = true
 panic = "abort"
+
+# Faster-to-compile profile for CI test builds. Inherits the release baseline
+# (strip, panic=abort) but drops the costly optimizations (opt-level=3, lto).
+# Used only by the test workflow via `tauri build -- --profile ci`.
+[profile.ci]
+inherits = "release"
+opt-level = 1
+lto = false
 
 [patch.crates-io]
 expat-sys = { git = "https://github.com/SJMC-dev/libexpat.git" }

@@ -121,7 +121,7 @@ jobs:
           key: ${{ matrix.platform }}
 
       - name: Test Build
-        run: npm run tauri build -- ${{ matrix.args }}
+        run: npm run tauri build -- --profile ci --features devtools ${{ matrix.args }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
@@ -134,14 +134,14 @@ jobs:
           SHORT_SHA="${GITHUB_SHA:0:7}"
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
             OUTPUT_NAME="SJMCL-${SHORT_SHA}.exe"
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL.exe"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/ci/" -o "$OUTPUT_NAME" "SJMCL.exe"
             echo "platform_tag=windows" >> "$GITHUB_OUTPUT"
           else
             OUTPUT_NAME="SJMCL-${SHORT_SHA}"
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/ci/" -o "$OUTPUT_NAME" "SJMCL"
             echo "platform_tag=linux" >> "$GITHUB_OUTPUT"
           fi
-          cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
+          cp "src-tauri/target/ci/$OUTPUT_NAME" artifacts/
           echo "output_name=$OUTPUT_NAME" >> "$GITHUB_OUTPUT"
           echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
 
