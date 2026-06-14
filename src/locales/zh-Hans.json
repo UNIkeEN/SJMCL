@@ -445,23 +445,23 @@
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
+      "content": "确定要删除认证服务器“{{name}}”吗？它将不再出现在你的服务器列表中。"
     }
   },
   "DeleteGameFriendDialog": {
     "dialog": {
       "title": "删除好友",
-      "content": "确定要删除好友 “{{name}}” 吗？"
+      "content": "确定要删除好友“{{name}}”吗？"
     }
   },
   "DeleteGameServerAlertDialog": {
     "title": "删除游戏服务器",
-    "content": "确定要删除游戏服务器 “{{name}}”（{{addr}}） 吗？它将会永久消失！（真的很久！）"
+    "content": "确定要删除游戏服务器“{{name}}”（{{addr}}）吗？它将会永久消失！（真的很久！）"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{instanceName}}” 吗？它将会永久消失！（真的很久！）",
+      "content": "确定要删除游戏实例“{{instanceName}}”吗？它将会永久消失！（真的很久！）",
       "warning": {
         "withVerIso": "请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
         "woVerIso": "请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
@@ -471,13 +471,13 @@
   "DeleteModAlertDialog": {
     "dialog": {
       "title": "删除模组",
-      "content": "确定要删除游戏实例 “{{instanceName}}” 中的模组 “{{modName}}” 吗？"
+      "content": "确定要删除游戏实例“{{instanceName}}”中的模组“{{modName}}”吗？"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
-      "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
+      "content": "确定要删除角色“{{name}}”吗？这一操作不可逆！"
     }
   },
   "DevToolbar": {
@@ -1325,7 +1325,7 @@
     },
     "step3": {
       "title": "发现页",
-      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>F</key> 快速打开 “聚合搜索”。"
+      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>F</key> 快速打开“聚合搜索”。"
     },
     "step4": {
       "title": "Minecraft，启动！",
@@ -1776,7 +1776,7 @@
   },
   "NoSuitableJavaDialog": {
     "title": "未找到合适的 Java 运行时",
-    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击 “确定” 以前往 Java 管理页面手动添加或下载 Java。"
+    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击“确定”以前往 Java 管理页面手动添加或下载 Java。"
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"

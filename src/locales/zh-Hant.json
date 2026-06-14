@@ -451,7 +451,7 @@
   "DeleteGameFriendDialog": {
     "dialog": {
       "title": "刪除好友",
-      "content": "確定要刪除好友 “{{name}}” 嗎？"
+      "content": "確定要刪除好友「{{name}}」嗎？"
     }
   },
   "DeleteGameServerAlertDialog": {
