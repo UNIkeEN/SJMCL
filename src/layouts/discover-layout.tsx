@@ -120,6 +120,7 @@ const DiscoverLayout: React.FC<{ children: React.ReactNode }> = ({
       value: item.route || item.key,
       route: item.route,
       onClick: item.onClick,
+      tooltip: t(`DiscoverLayout.discoverDomainList.${item.key}`),
     }));
   };
 
