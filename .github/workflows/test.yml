@@ -76,11 +76,8 @@ jobs:
       - name: Lint JavaScript/TypeScript Frontend
         run: npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0 
       
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
           components: rustfmt
 
       - name: Lint Rust Backend
@@ -116,19 +113,15 @@ jobs:
           node-version: lts/*
       - run: npm install
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          target: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
+      - uses: dtolnay/rust-toolchain@stable
 
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
-          key: ${{ matrix.platform }}-${{ matrix.args }}
+          key: ${{ matrix.platform }}
 
       - name: Test Build
-        run: npx tauri build ${{ matrix.args }}
+        run: npm run tauri build -- ${{ matrix.args }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
