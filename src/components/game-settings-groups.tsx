@@ -65,7 +65,10 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
 
   const buildJavaMenuLabel = (java: JavaInfo | undefined) => {
     if (!java) return "";
-    return `Java ${java.majorVersion}${java.isLts ? " (LTS)" : ""} (${java.execPath})`;
+    return {
+      title: `Java ${java.majorVersion}${java.isLts ? " (LTS)" : ""}`,
+      desc: java.execPath,
+    };
   };
 
   useEffect(() => {

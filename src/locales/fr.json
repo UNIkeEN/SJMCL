@@ -936,7 +936,10 @@
           "title": "Stratégie de vérification de l'intégrité des fichiers du jeu",
           "disable": "Ne pas vérifier",
           "normal": "Vérification normale",
-          "full": "Vérification renforcée"
+          "full": "Vérification renforcée",
+          "disableDesc": "",
+          "normalDesc": "Vérifier l'existence des fichiers, télécharger les manquants",
+          "fullDesc": "Vérifier l'intégrité SHA1 des fichiers, télécharger les manquants (plus long)"
         },
         "dontCheckJvmValidity": {
           "title": "Ne pas vérifier la compatibilité de la JVM avec le jeu"

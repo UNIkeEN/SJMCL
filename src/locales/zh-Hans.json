@@ -936,7 +936,10 @@
           "title": "游戏文件完整性检查策略",
           "disable": "不检查",
           "normal": "普通检查",
-          "full": "增强检查"
+          "full": "增强检查",
+          "disableDesc": "",
+          "normalDesc": "检查文件是否存在，缺失时自动补全",
+          "fullDesc": "检查文件 SHA1 完整性，缺失时自动补全（耗时较长）"
         },
         "dontCheckJvmValidity": {
           "title": "不检查 JVM 与游戏的兼容性"

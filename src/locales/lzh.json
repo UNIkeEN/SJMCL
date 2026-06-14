@@ -936,7 +936,10 @@
           "title": "戲案完整性驗策略",
           "disable": "不驗",
           "normal": "凡驗",
-          "full": "增強驗"
+          "full": "增強驗",
+          "disableDesc": "",
+          "normalDesc": "驗有無，闕則補之",
+          "fullDesc": "驗 SHA1 無闕，闕則補之（費時較久）"
         },
         "dontCheckJvmValidity": {
           "title": "不驗 JVM 與戲的相容性"
