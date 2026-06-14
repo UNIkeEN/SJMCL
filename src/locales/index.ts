@@ -1,5 +1,6 @@
 import { i18nConfig } from "../../next-i18next.config.mjs";
 import en from "./en.json";
+import es from "./es.json";
 import fr from "./fr.json";
 import ja from "./ja.json";
 import lzh from "./lzh.json";
@@ -17,6 +18,10 @@ export const localeResources: LocaleResources = {
   en: {
     translation: en,
     display_name: "English",
+  },
+  es: {
+    translation: es,
+    display_name: "Español",
   },
   fr: {
     translation: fr,
