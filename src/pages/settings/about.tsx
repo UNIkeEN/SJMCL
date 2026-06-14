@@ -38,7 +38,7 @@ const AboutSettingsPage = () => {
     bmclapi: "https://bmclapidoc.bangbang93.com/",
     hmcl: "https://hmcl.huangyuhui.net/",
     littleskin: "https://github.com/LittleSkinChina",
-    sinter: "https://m.ui.cn/details/615564",
+    sinter: "https://www.ui.cn/detail/615564",
     scl: "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/",
   };
 
