@@ -93,6 +93,27 @@ jobs:
 
           echo "published_date=$PUBLISHED_DATE" >> "$GITHUB_OUTPUT"
 
+      - name: Prepare changelog branch
+        id: changelog-branch
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          BRANCH_NAME="docs/auto-changelog"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH_NAME" >/dev/null; then
+            echo "Existing changelog branch found; rebasing onto $DEFAULT_BRANCH."
+            git checkout -B "$BRANCH_NAME" "origin/$BRANCH_NAME"
+            git rebase --empty=drop "origin/$DEFAULT_BRANCH"
+          else
+            echo "Creating changelog branch from $DEFAULT_BRANCH."
+            git checkout -B "$BRANCH_NAME" "origin/$DEFAULT_BRANCH"
+          fi
+
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
       - name: Update changelogs
         shell: bash
         env:
@@ -109,6 +130,7 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ needs.Prepare-Release-Assets.outputs.version }}
+          BRANCH_NAME: ${{ steps.changelog-branch.outputs.branch_name }}
         run: |
           if git diff --quiet -- CHANGELOG.md docs/CHANGELOG.zh-Hans.md; then
             echo "Changelogs are already up to date."
@@ -116,28 +138,21 @@ jobs:
             exit 0
           fi
 
-          BRANCH_NAME="docs/changelog-${VERSION}"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B "$BRANCH_NAME"
           git add CHANGELOG.md docs/CHANGELOG.zh-Hans.md
           git commit -m "docs(changelog): update changelog for ${VERSION}"
           git push --force-with-lease origin "$BRANCH_NAME"
 
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
-          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Create or reuse changelog PR
         if: steps.changelog-commit.outputs.has_changes == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.Prepare-Release-Assets.outputs.version }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           REPOSITORY_OWNER: ${{ github.repository_owner }}
+          BRANCH_NAME: ${{ steps.changelog-branch.outputs.branch_name }}
         run: |
-          BRANCH_NAME="${{ steps.changelog-commit.outputs.branch_name }}"
           EXISTING_PR_URL=$(gh pr list \
             --state open \
             --head "${REPOSITORY_OWNER}:$BRANCH_NAME" \
@@ -152,8 +167,8 @@ jobs:
           gh pr create \
             --base "$DEFAULT_BRANCH" \
             --head "${REPOSITORY_OWNER}:$BRANCH_NAME" \
-            --title "docs(changelog): update changelog for ${VERSION}" \
-            --body "Update the English and Simplified Chinese changelogs from the published release notes for v${VERSION}."
+            --title "docs(changelog): update changelogs from recent releases" \
+            --body "Updates the English and Simplified Chinese changelogs from published release notes. This branch accumulates changelog entries across releases and is reset against the default branch after each merge."
 
   Publish-AUR:
     needs: [Prepare-Release-Assets]
