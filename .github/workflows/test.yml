@@ -121,7 +121,7 @@ jobs:
           key: ${{ matrix.platform }}
 
       - name: Test Build
-        run: npm run tauri build -- --profile ci --features devtools ${{ matrix.args }}
+        run: npm run tauri build -- --profile ci --features devtools --no-bundle ${{ matrix.args }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
