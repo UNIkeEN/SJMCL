@@ -174,9 +174,6 @@ const GeneralSettingsPage = () => {
               placeholder={t(
                 `GeneralSettingsPage.functions.settings.discoverPage.${generalConfigs.functionality.discoverPage}`
               )}
-              buttonProps={{
-                flex: "0 0 auto",
-              }}
             />
           ),
         },

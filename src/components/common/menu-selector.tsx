@@ -108,6 +108,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
         variant="outline"
         textAlign="left"
         w="auto"
+        flexShrink={0}
         {...buttonProps}
       >
         {renderButtonLabel()}
