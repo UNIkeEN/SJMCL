@@ -76,11 +76,8 @@ jobs:
       - name: Lint JavaScript/TypeScript Frontend
         run: npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0 
       
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
           components: rustfmt
 
       - name: Lint Rust Backend
@@ -99,8 +96,8 @@ jobs:
           #   args: '--target aarch64-apple-darwin'
           - platform: 'ubuntu-latest'
             args: ''
-          # - platform: 'windows-latest'
-          #   args: ''
+          - platform: 'windows-latest'
+            args: ''
 
     steps:
       - uses: actions/checkout@v4
@@ -116,18 +113,42 @@ jobs:
           node-version: lts/*
       - run: npm install
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          target: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
+      - uses: dtolnay/rust-toolchain@stable
 
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
-          key: ${{ matrix.platform }}-${{ matrix.args }}
+          key: ${{ matrix.platform }}
 
       - name: Test Build
-        run: npx tauri build ${{ matrix.args }}
+        run: npm run tauri build -- ${{ matrix.args }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
+
+      - name: Build portable artifact
+        id: portable
+        if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          if [ "${{ matrix.platform }}" = "windows-latest" ]; then
+            OUTPUT_NAME="SJMCL-${SHORT_SHA}.exe"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL.exe"
+            echo "platform_tag=windows" >> "$GITHUB_OUTPUT"
+          else
+            OUTPUT_NAME="SJMCL-${SHORT_SHA}"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL"
+            echo "platform_tag=linux" >> "$GITHUB_OUTPUT"
+          fi
+          cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
+          echo "output_name=$OUTPUT_NAME" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Upload portable artifact
+        if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
+        uses: actions/upload-artifact@v7
+        with:
+          path: artifacts/${{ steps.portable.outputs.output_name }}
+          archive: false
+          if-no-files-found: error
