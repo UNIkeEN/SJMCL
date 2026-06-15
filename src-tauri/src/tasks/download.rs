@@ -137,7 +137,8 @@ impl DownloadTask {
         .header(RANGE, format!("bytes={current}-"))
     };
 
-    // Ref: https://blog.curseforge.com/introducing-api-key-authentication-for-curseforge-file-downloads/, https://github.com/UNIkeEN/SJMCL/issues/1679
+    // add api key header for CurseForge download urls (#1679)
+    // ref: https://blog.curseforge.com/introducing-api-key-authentication-for-curseforge-file-downloads
     if is_curseforge_authenticated_url(&param.src) {
       request = request.header("x-api-key", CURSEFORGE_API_KEY.as_str());
     }
