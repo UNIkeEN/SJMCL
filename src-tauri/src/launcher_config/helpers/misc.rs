@@ -217,7 +217,8 @@ pub fn check_exe_path_availability(app: &AppHandle) -> bool {
       || exe_str.starts_with("/var/tmp/")
       || exe_str.starts_with("/var/cache/")
       || exe_str.starts_with("/dev/shm/")
-      || exe_str.starts_with("/run/")
+      // /run is tmpfs, while /run/media is a common mount point on some Linux distributions.
+      || (exe_str.starts_with("/run/") && !exe_str.starts_with("/run/media/"))
       || exe_str.contains("/Trash/"))
   }
 
