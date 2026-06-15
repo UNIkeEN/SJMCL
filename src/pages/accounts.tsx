@@ -31,7 +31,6 @@ import {
 import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
-import SelectableButton from "@/components/common/selectable-button";
 import AddPlayerModal from "@/components/modals/add-player-modal";
 import ImportAccountInfoModal from "@/components/modals/import-account-info-modal";
 import PlayersView from "@/components/players-view";
@@ -118,6 +117,19 @@ const AccountsPage = () => {
     },
   ];
 
+  const bottomNavMenuItems = [
+    {
+      icon: LuImport,
+      key: "importFromOtherLaunchers",
+      onClick: onImportAccountInfoModalOpen,
+    },
+    {
+      icon: LuCirclePlus,
+      key: "add3rdPartyServer",
+      onClick: () => openSharedModal("add-auth-server", {}),
+    },
+  ];
+
   const filterPlayersByType = (type: string) => {
     if (type === "all") {
       return playerList;
@@ -187,35 +199,29 @@ const AccountsPage = () => {
                     </HStack>
                   ),
                   value: item.key,
+                  tooltip: item.label,
                 }))}
               />
             </Box>
-            <VStack mt="auto" align="stretch" spacing={0.5}>
-              <SelectableButton
-                size="sm"
-                onClick={onImportAccountInfoModalOpen}
-              >
-                <HStack spacing={2} overflow="hidden">
-                  <Icon as={LuImport} />
-                  <Text fontSize="sm" className="ellipsis-text">
-                    {t("AccountsPage.button.importFromOtherLaunchers")}
-                  </Text>
-                </HStack>
-              </SelectableButton>
-              <SelectableButton
-                size="sm"
-                onClick={() => {
-                  openSharedModal("add-auth-server", {});
-                }}
-              >
-                <HStack spacing={2} overflow="hidden">
-                  <Icon as={LuCirclePlus} />
-                  <Text fontSize="sm" className="ellipsis-text">
-                    {t("AccountsPage.button.add3rdPartyServer")}
-                  </Text>
-                </HStack>
-              </SelectableButton>
-            </VStack>
+            <NavMenu
+              mt="auto"
+              items={bottomNavMenuItems.map((item) => ({
+                label: (
+                  <HStack spacing={2} overflow="hidden">
+                    <Icon as={item.icon} />
+                    <Text fontSize="sm" className="ellipsis-text">
+                      {t(`AccountsPage.button.${item.key}`)}
+                    </Text>
+                  </HStack>
+                ),
+                value: item.key,
+                tooltip: t(`AccountsPage.button.${item.key}`),
+              }))}
+              onClick={(value) => {
+                const item = bottomNavMenuItems.find((i) => i.key === value);
+                item?.onClick();
+              }}
+            />
           </VStack>
         </GridItem>
         <GridItem className="content-full-y">
