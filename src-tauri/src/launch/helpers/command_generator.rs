@@ -186,7 +186,7 @@ pub async fn generate_launch_command(
       client_info.type_.clone()
     },
     natives_directory: natives_dir.to_string_lossy().to_string(),
-    launcher_name: "SJMCL".to_string(),
+    launcher_name: "SJMC Launcher".to_string(),
     launcher_version: basic_info.launcher_version,
     library_directory: libraries_dir.to_string_lossy().to_string(),
     classpath_separator: get_separator().to_string(),
