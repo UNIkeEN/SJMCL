@@ -64,6 +64,7 @@ next-env.d.ts
 
 # AI Agents & Coding Assistants
 .codex/
-.claude/
+.claude/*
+!.claude/skills
 .gemini/
 .cursor/
