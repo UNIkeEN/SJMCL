@@ -79,6 +79,9 @@ Install from Snap Store:
 sudo snap install sjmcl
 ```
 
+> [!WARNING]
+> When installing via Snap, game data may be stored in a sandboxed directory by default. Before uninstalling the launcher, please back up important data such as saves, resource packs, and mods in a timely manner.
+
 </details>
 
 <details>
@@ -100,6 +103,9 @@ Install with Winget:
 ```powershell
 winget install SJMC.SJMCL
 ```
+
+> [!WARNING]
+> The Winget index is publicly maintained. Before installing, consider running `winget show SJMC.SJMCL` to inspect the installer URL, and make sure the download source is from `github.com/UNIkeEN/SJMCL` or `sjmcl.club`.
 
 </details>
 
