@@ -113,7 +113,7 @@ async fn get_neoforge_meta_by_game_version_official(
     return Err(ResourceError::ParseError.into());
   };
 
-  let mut results: Vec<(i32, ModLoaderResourceInfo)> = Vec::new();
+  let mut results: Vec<(Vec<i32>, ModLoaderResourceInfo)> = Vec::new();
 
   for version_value in version_list {
     if let Some(version) = version_value.as_str() {
@@ -156,12 +156,20 @@ async fn get_neoforge_meta_by_game_version_official(
         };
 
         if matches_game_version {
-          let sort_key: i32 = if is_april_fools {
-            cap[2].parse()?
-          } else if let Some(m) = cap.get(6) {
-            m.as_str().parse()?
+          let sort_key: Vec<i32> = if is_april_fools {
+            vec![cap[2].parse()?]
           } else {
-            cap[3].parse()?
+            let patch: i32 = cap[3].parse()?;
+            let build: i32 = cap.get(4).map_or(Ok(0), |m| m.as_str().parse::<i32>())?;
+            let release_rank = match cap.get(5).map(|m| m.as_str()) {
+              None => 3,
+              Some("rc") => 2,
+              Some("beta") => 1,
+              Some("alpha") => 0,
+              Some(_) => 0,
+            };
+            let prerelease: i32 = cap.get(6).map_or(Ok(0), |m| m.as_str().parse::<i32>())?;
+            vec![patch, build, release_rank, prerelease]
           };
 
           let stable = if is_april_fools {
@@ -185,7 +193,7 @@ async fn get_neoforge_meta_by_game_version_official(
     }
   }
 
-  results.sort_by_key(|b| std::cmp::Reverse(b.0));
+  results.sort_by(|a, b| b.0.cmp(&a.0));
   Ok(results.into_iter().map(|r| r.1).collect())
 }
 
