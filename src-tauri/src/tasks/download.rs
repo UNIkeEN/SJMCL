@@ -1,5 +1,8 @@
 use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::commands::retrieve_launcher_config;
+use crate::resource::helpers::curseforge::misc::{
+  CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
+};
 use crate::tasks::streams::ProgressStream;
 use crate::tasks::streams::desc::{PDesc, PStatus};
 use crate::tasks::streams::reporter::Reporter;
@@ -126,13 +129,19 @@ impl DownloadTask {
   ) -> SJMCLResult<reqwest::Response> {
     let state = app_handle.state::<reqwest::Client>();
     let client = with_retry(state.inner().clone());
-    let request = if current == 0 {
+    let mut request = if current == 0 {
       client.get(param.src.clone())
     } else {
       client
         .get(param.src.clone())
         .header(RANGE, format!("bytes={current}-"))
     };
+
+    // add api key header for CurseForge download urls (#1679)
+    // ref: https://blog.curseforge.com/introducing-api-key-authentication-for-curseforge-file-downloads
+    if is_curseforge_authenticated_url(&param.src) {
+      request = request.header("x-api-key", CURSEFORGE_API_KEY.as_str());
+    }
 
     let response = request
       .send()

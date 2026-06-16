@@ -19,6 +19,13 @@ lazy_static! {
   };
 }
 
+pub fn is_curseforge_authenticated_url(url: &url::Url) -> bool {
+  matches!(
+    url.host_str(),
+    Some("api.curseforge.com" | "edge.forgecdn.net" | "mediafilez.forgecdn.net")
+  )
+}
+
 pub async fn make_curseforge_request<T, P>(
   client: &reqwest::Client,
   url: &str,
