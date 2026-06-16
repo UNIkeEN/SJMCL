@@ -5,7 +5,7 @@
 ## 项目信息
 
 - 跨平台 Minecraft 启动器，简称 SJMCL
-- 使用 [Tauri](https://tauri.app/) 框架开发，前端 React + Next JS + [Chakra UI v2](https://v2.chakra-ui.com/)，后端 Rust
+- 使用 [Tauri](https://tauri.app/) 框架开发，前端 React + Next.js + [Chakra UI v2](https://v2.chakra-ui.com/)，后端 Rust
 - 支持多游戏目录与实例、多账户、MCP 集成、扩展系统、国际化
 
 ### 项目结构
@@ -38,10 +38,10 @@ SJMCL/
 │   ├── src/                        
 │   │   ├── account/                # 账户管理
 │   │   │   ├── mod.rs              # 各功能模块下遵循类似结构，分为以下若干模块（文件或文件夹形式）
-│   │   │   ├── commands.rs         # Tauri 命令
+│   │   │   ├── commands.rs         # Tauri 命令（包含少量功能逻辑）
 │   │   │   ├── constants.rs        # 常量
 │   │   │   ├── models              # 数据模型
-│   │   │   ├── helpers             # 内部实现
+│   │   │   ├── helpers             # 内部实现（处理复杂功能逻辑、私有数据模型）
 │   │   │   └── migrations.rs       # 格式迁移（可选，兼容层，非迁移脚本）
 │   │   ├── discover/               # Minecraft 新闻与社区内容发现
 │   │   ├── extension/              # 扩展系统
@@ -63,6 +63,7 @@ SJMCL/
 - 前端代码整体按页面、组件、状态上下文与服务层分层。
 - 后端代码整体先按功能域划分模块；每个功能域内使用类似结构。
 - 前端 `services/` 封装对 Tauri 后端的 `invoke` 调用与 `emit` 监听，和后端各功能域的 `commands.rs` 一一对应。
+- 前端各个组件调用 `services/` 中的某个函数时，需要封装其对应的 handle 函数使用，参考已有代码或 [讨论](https://github.com/UNIkeEN/SJMCL/pull/61#issuecomment-2613819641)
 
 ---
 
