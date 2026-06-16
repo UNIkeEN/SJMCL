@@ -6,6 +6,8 @@
         "installerIcon": "assets/icons/icon.ico",
         "languages": [
           "English",
+          "French",
+          "Japanese",
           "SimpChinese",
           "TradChinese"
         ],
