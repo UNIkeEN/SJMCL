@@ -320,17 +320,6 @@ pub async fn run() {
           }
         }
 
-        // Open DevTools automatically in dev-enabled builds (e.g. CI portable artifacts).
-        // Compiled out of production releases since the `devtools` feature is off by default.
-        #[cfg(feature = "devtools")]
-        {
-          if let Some(main_window) = app.get_webview_window("main") {
-            main_window.open_devtools();
-          } else {
-            log::warn!("Failed to open DevTools: main window not found.");
-          }
-        }
-
         // Registering the deep links at runtime on Linux and Windows
         // ref: https://v2.tauri.app/plugin/deep-linking/#registering-desktop-deep-links-at-runtime
         #[cfg(any(target_os = "linux", target_os = "windows"))]
