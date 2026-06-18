@@ -19,6 +19,7 @@ impl LauncherConfig {
     let version = match (is_dev, app.package_info().version.to_string().as_str()) {
       (true, _) => "dev".to_string(),
       (false, "0.0.0") => "nightly".to_string(),
+      (false, "0.0.1") => "test-build".to_string(),
       (false, v) => v.to_string(),
     };
 
