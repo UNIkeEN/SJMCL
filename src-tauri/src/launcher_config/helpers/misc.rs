@@ -110,6 +110,12 @@ impl LauncherConfig {
       // below set to default, will be updated later in first time calling `check_full_login_availability`
       is_china_mainland_ip: false,
       allow_full_login_feature: false,
+      // build metadata: compile-time constants injected by build.rs, falling back
+      // to "dev"/"release" derived from debug_assertions when not explicitly set.
+      build_type: option_env!("SJMCL_BUILD_TYPE")
+        .map(str::to_string)
+        .unwrap_or_else(|| if is_dev { "dev" } else { "release" }.to_string()),
+      build_commit_sha: option_env!("SJMCL_COMMIT_SHA").unwrap_or("").to_string(),
     };
 
     log::info!(
