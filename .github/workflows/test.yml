@@ -125,6 +125,9 @@ jobs:
         run: npm run tauri build -- --features devtools --no-bundle -- --profile test-build
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
+          # Exposed to Rust as compile-time constants by build.rs (all SJMCL_* env vars).
+          SJMCL_BUILD_TYPE: test-build
+          SJMCL_COMMIT_SHA: ${{ github.sha }}
 
       - name: Build portable artifact
         id: portable
