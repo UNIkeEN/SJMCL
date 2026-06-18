@@ -18,7 +18,7 @@ import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { isValidSemanticVersion } from "@/utils/string";
+import { formatLauncherVersion, isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
@@ -76,7 +76,7 @@ const AboutSettingsPage = () => {
           children: (
             <HStack>
               <Text fontSize="xs-sm" className="secondary-text">
-                {`${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`}
+                {formatLauncherVersion(basicInfo)}
               </Text>
               {basicInfo.buildType === "release" &&
                 isValidSemanticVersion(basicInfo.launcherVersion) && (
