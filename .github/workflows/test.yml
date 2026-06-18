@@ -95,9 +95,7 @@ jobs:
           # - platform: macos-latest
           #   args: '--target aarch64-apple-darwin'
           - platform: 'ubuntu-latest'
-            args: ''
           - platform: 'windows-latest'
-            args: ''
 
     steps:
       - uses: actions/checkout@v4
@@ -121,7 +119,7 @@ jobs:
           key: ${{ matrix.platform }}
 
       - name: Test Build
-        run: npm run tauri build -- --profile test-build --features devtools --no-bundle ${{ matrix.args }}
+        run: npm run tauri build -- --features devtools --no-bundle -- --profile test-build
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
