@@ -1,0 +1,3110 @@
+{
+  "AboutSettingsPage": {
+    "about": {
+      "title": "Acerca de",
+      "settings": {
+        "version": {
+          "title": "Versión",
+          "foundNew": "Nueva Versión Disponible",
+          "checkUpdate": "Buscar Actualizaciones",
+          "checkToast": {
+            "loading": "Buscando actualizaciones",
+            "up2date": "Ya está actualizado",
+            "error": "Error al buscar actualizaciones"
+          }
+        },
+        "contributors": {
+          "title": "Colaboradores"
+        },
+        "sourceCode": {
+          "title": "Ver Código Fuente en GitHub"
+        },
+        "aboutSJMC": {
+          "title": "Acerca de SJTU Minecraft Club (SJMC)"
+        }
+      }
+    },
+    "ack": {
+      "title": "Agradecimientos",
+      "settings": {
+        "bmclapi": {
+          "title": "BMCLAPI",
+          "description": "Gracias a @bangbang93 por proporcionar el espejo de descarga de alta velocidad"
+        },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "Algunos diseños y la implementación del código se referencian de este proyecto"
+        },
+        "littleskin": {
+          "title": "LittleSkin",
+          "description": "Gracias a LittleSkin y @tnqzh123 por su ayuda con el diseño del proceso de inicio de sesión"
+        },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "Gracias a los desarrolladores de SCL por la comunicación continua y la inspiración mutua con nosotros"
+        },
+        "sinter": {
+          "title": "Sinter",
+          "description": "Utilizado como fuente de interfaz en las plataformas Windows y Linux, bajo la Licencia SIL"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "Nuestro componente de vista previa de skins está construido sobre este proyecto de código abierto, bajo la Licencia MIT"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "Avisos Legales",
+      "settings": {
+        "copyright": {
+          "title": "Derechos de Autor",
+          "description": "Derechos de Autor © 2024-2026 Equipo SJMCL."
+        },
+        "userAgreement": {
+          "title": "Acuerdo de Usuario",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
+        },
+        "openSourceLicense": {
+          "title": "Licencia de Código Abierto",
+          "description": "Licenciado bajo la GNU General Public License v3.0, con términos adicionales."
+        }
+      }
+    }
+  },
+  "AccountsPage": {
+    "button": {
+      "addPlayer": "Agregar Jugador",
+      "add3rdPartyServer": "Agregar servidor de autenticación",
+      "sourceHomepage": "Ver Página Principal",
+      "deleteServer": "Eliminar Servidor de Autenticación",
+      "importFromOtherLaunchers": "Importar"
+    },
+    "playerTypeList": {
+      "all": "Todas las Fuentes"
+    },
+    "viewTypeList": {
+      "grid": "Vista de Cuadrícula",
+      "list": "Vista de Lista"
+    }
+  },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "Instalar Nueva Instancia",
+        "description": "Elegir e instalar versiones del juego, cargadores y mods"
+      },
+      "modpack": {
+        "title": "Importar Modpack",
+        "description": "Importar un modpack (formatos CurseForge, Modrinth o MultiMC) desde archivos locales o internet"
+      },
+      "manageDirs": {
+        "title": "Administrar Directorios del Juego",
+        "description": "Administrar directorios de almacenamiento local del juego para agregar instancias instaladas"
+      }
+    },
+    "modpackOperations": {
+      "fromdisk": "Importar desde Disco",
+      "download": "Descargar Modpack"
+    },
+    "moreOptions": {
+      "title": "Más",
+      "server": {
+        "title": "Descargar Servidor de Juego",
+        "description": "Descargar archivos del servidor de juego para diferentes versiones"
+      }
+    }
+  },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Importar Modpack",
+      "desc": "Importar archivo de modpack {{fileName}} a SJMCL"
+    }
+  },
+  "AddAuthServerModal": {
+    "header": {
+      "title": "Agregar Servidor de Autenticación"
+    },
+    "placeholder": {
+      "inputServerUrl": "URL del Servidor"
+    },
+    "page1": {
+      "serverUrl": "URL del Servidor",
+      "serverUrlRequired": "La URL del servidor es obligatoria"
+    },
+    "page2": {
+      "name": "Nombre",
+      "serverUrl": "URL del Servidor"
+    }
+  },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "Agregar Fuente de Datos"
+    },
+    "label": {
+      "endpointUrl": "URL del Endpoint"
+    },
+    "placeholder": {
+      "endpointUrl": "URL del Endpoint"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Agregar Servidor de Juego"
+    },
+    "serverAddrRequired": "La dirección del servidor es obligatoria",
+    "label": {
+      "serverAddr": "Dirección del Servidor",
+      "serverName": "Nombre del Servidor"
+    },
+    "placeholder": {
+      "serverAddr": "Ingresar dirección del servidor",
+      "serverName": "Servidor de Minecraft"
+    }
+  },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "Agregar Jugador"
+    },
+    "label": {
+      "playerType": "Tipo de Jugador"
+    },
+    "offline": {
+      "playerName": {
+        "label": "Nombre del Jugador",
+        "placeholder": "Nombre del jugador",
+        "errorMessage": "Solo puede contener letras, números y guiones bajos, dentro de 16 caracteres."
+      },
+      "advancedOptions": {
+        "title": "Opciones Avanzadas",
+        "uuid": {
+          "label": "UUID",
+          "placeholder": "(Generado por SJMCL)",
+          "errorMessage": "Forma de UUID inválida"
+        }
+      }
+    },
+    "3rdparty": {
+      "authServer": {
+        "label": "Fuente de Autenticación",
+        "selectSource": "Seleccionar Fuente de Autenticación",
+        "noSource": "No se ha agregado ninguna fuente de autenticación.",
+        "addSource": "Agregar una"
+      },
+      "email": {
+        "label": "Correo Electrónico",
+        "placeholder": "Correo Electrónico"
+      },
+      "emailOrPlayerName": {
+        "label": "Correo Electrónico o Nombre del Jugador",
+        "placeholder": "Correo Electrónico o Nombre del Jugador"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Contraseña"
+      }
+    },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "Esta fuente de autenticación soporta la Propuesta de Conexión Yggdrasil",
+          "microsoft": "Soporta el flujo de autorización de dispositivo OAuth 2.0 de Microsoft"
+        },
+        "next": "Por favor haga clic en el botón Continuar e ingrese el código arriba (ya copiado)"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "Iniciar Inicio de Sesión OAuth",
+          "microsoft": "Iniciar OAuth de Microsoft"
+        },
+        "next": "Continuar"
+      }
+    },
+    "button": {
+      "buyMinecraft": "Comprar Minecraft",
+      "useOAuthLogin": "Inicio de Sesión OAuth",
+      "usePasswordLogin": "Inicio de Sesión con Cuenta y Contraseña"
+    }
+  },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "Existen Recursos Dependientes"
+    },
+    "description": "Por favor confirme que todos los recursos necesarios estén instalados, o continúe descargando el recurso original.",
+    "button": {
+      "continue": "Descargar recurso original",
+      "cancel": "Cancelar"
+    },
+    "fallback": {
+      "title": "ID del Recurso: {{resourceId}}",
+      "description": "Error al obtener este recurso desde el servidor remoto, por favor verifique su conexión de red o inténtelo de nuevo más tarde."
+    },
+    "dependencyType": {
+      "required": "Requerido",
+      "optional": "Opcional",
+      "incompatible": "Incompatible",
+      "embedded": "Embebido",
+      "tool": "Herramienta",
+      "include": "Incluir"
+    }
+  },
+  "AllInstancesPage": {
+    "button": {
+      "addAndImport": "Agregar e Importar",
+      "globalSettings": "Configuración Global del Juego",
+      "launch": "Iniciar Juego",
+      "sortAndFilter": "Ordenar y Filtrar"
+    },
+    "viewTypeList": {
+      "grid": "Vista de Cuadrícula",
+      "list": "Vista de Lista"
+    },
+    "sortByTypeList": {
+      "versionAsc": "Versión del Juego Ascendente",
+      "versionDesc": "Versión del Juego Descendente",
+      "name": "Nombre de la Instancia"
+    },
+    "sortBy": "Ordenar por",
+    "title": "Todas las Instancias"
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "Tema",
+      "settings": {
+        "primaryColor": {
+          "title": "Color Principal del Lanzador"
+        },
+        "colorMode": {
+          "title": "Modo de Color",
+          "type": {
+            "system": "Sistema",
+            "light": "Claro",
+            "dark": "Oscuro"
+          }
+        },
+        "useLiquidGlassDesign": {
+          "title": "Efecto de Vidrio Líquido",
+          "description": "Cuando está habilitado, partes de la interfaz usarán el efecto 'Vidrio Líquido', lo que puede afectar el rendimiento."
+        },
+        "headNavStyle": {
+          "title": "Estilo de Barra de Navegación",
+          "type": {
+            "standard": "Estándar",
+            "simplified": "Simplificado",
+            "adaptive": "Adaptativo"
+          }
+        }
+      }
+    },
+    "font": {
+      "title": "Fuente",
+      "settings": {
+        "fontFamily": {
+          "title": "Familia de Fuente",
+          "default": "Predeterminada"
+        },
+        "fontSize": {
+          "title": "Tamaño de Fuente",
+          "small": "T",
+          "large": "T"
+        }
+      }
+    },
+    "background": {
+      "title": "Fondo",
+      "settings": {
+        "preset": {
+          "title": "Imágenes Preestablecidas"
+        },
+        "custom": {
+          "title": "Imágenes Personalizadas",
+          "add": "Agregar"
+        },
+        "randomCustom": {
+          "title": "Imagen Personalizada Aleatoria"
+        },
+        "autoDarken": {
+          "title": "Oscurecer Fondo en Modo Oscuro"
+        }
+      },
+      "presetBgList": {
+        "Florwyn": {
+          "name": "Florwyn"
+        },
+        "SJTU-eastgate": {
+          "name": "SJTU Eastgate"
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Accesibilidad de Pantalla",
+      "settings": {
+        "invertColors": {
+          "title": "Invertir Colores"
+        },
+        "enhanceContrast": {
+          "title": "Mejorar Contraste"
+        }
+      }
+    }
+  },
+  "ChangeLoaderModal": {
+    "header": {
+      "modloader": {
+        "title": {
+          "change": "Cambiar Cargador de Mods",
+          "install": "Instalar Cargador de Mods"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "Cambiar OptiFine",
+          "install": "Instalar OptiFine"
+        }
+      }
+    },
+    "notSelectedLoader": "No se seleccionó un nuevo cargador",
+    "notSelectedOptifine": "No se seleccionó un nuevo Optifine",
+    "footer": {
+      "installFabricApi": "Instalar Mod Fabric API",
+      "installQFAPI": "Instalar Mod QFAPI / QSL (si está disponible)",
+      "reinstall": "Reinstalar"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "Buscar Actualizaciones de Mods"
+    },
+    "button": {
+      "update": "Actualizar",
+      "cancel": "Cancelar"
+    },
+    "label": {
+      "noUpdate": "Ningún mod necesita actualización",
+      "loading": "Buscando actualizaciones... {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "Mod",
+      "currentVersion": "Versión Actual",
+      "latestVersion": "Última Versión",
+      "source": "Fuente"
+    },
+    "error": {
+      "renameOldMod": "Error al renombrar el archivo del mod antiguo"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "Limpiar Caché de Descarga",
+      "content": "¿Está seguro de que desea limpiar la caché de descarga? Esta acción no se puede deshacer."
+    }
+  },
+  "ComingSoonSign": {
+    "text": "Esta página no está disponible aún, ¡próximamente!"
+  },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "Copiar o Mover Recurso"
+    },
+    "operation": {
+      "copy": "Copiar",
+      "move": "Mover"
+    },
+    "tag": {
+      "source": "Origen"
+    },
+    "content": "{{type}} <b>{{name}}</b> a",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "Paquetes de Recursos",
+      "Saves": "Mundo",
+      "Schematics": "Esquemático",
+      "ShaderPacks": "Paquetes de Shaders"
+    },
+    "error": {
+      "lackOfArguments": "Faltan parámetros necesarios. Por favor haga que el desarrollador verifique el código"
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "Crear Nueva Instancia"
+    },
+    "stepper": {
+      "game": "Cliente del Juego",
+      "loader": "Cargador del Juego",
+      "skipped": "Omitido",
+      "info": "Configuración Básica"
+    },
+    "footer": {
+      "installFabricApi": "Instalar Mod Fabric API",
+      "installQFAPI": "Instalar Mod QFAPI / QSL (si está disponible)"
+    }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "El nombre de esta instancia ha sido cambiado recientemente. Por favor actualice la lista de instancias o reinicie el lanzador antes de intentar agregar un acceso directo de inicio nuevamente."
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Eliminar Servidor de Autenticación",
+      "content": "¿Confirmar eliminar el servidor de autenticación \"{{name}}\"? Esto lo eliminará de su lista de servidores."
+    }
+  },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "Eliminar Amigo",
+      "content": "¿Confirmar eliminar al amigo \"{{name}}\"?"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "Eliminar Servidor de Juego",
+    "content": "¿Confirmar eliminar el servidor de juego \"{{name}}\" ({{addr}})? ¡Se perderá para siempre! (¡Un largo tiempo!)"
+  },
+  "DeleteInstanceAlertDialog": {
+    "dialog": {
+      "title": "Eliminar Instancia del Juego",
+      "content": "¿Confirmar eliminar la instancia del juego \"{{instanceName}}\"? ¡Se perderá para siempre! (¡Un largo tiempo!)",
+      "warning": {
+        "withVerIso": "Por favor tenga en cuenta que, dado que el aislamiento de versión está habilitado para esta instancia, eliminarla también eliminará los guardados y otros archivos asociados. Si desea conservar estos datos, por favor migrelos primero.",
+        "woVerIso": "Por favor tenga en cuenta que si el aislamiento de versión estaba habilitado previamente para esta instancia, los guardados no migrados y otros archivos también serán eliminados."
+      }
+    }
+  },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Eliminar Mod",
+      "content": "¿Confirmar eliminar el mod \"{{modName}}\" en la instancia del juego \"{{instanceName}}\"?"
+    }
+  },
+  "DeletePlayerAlertDialog": {
+    "dialog": {
+      "title": "Eliminar Jugador",
+      "content": "¿Confirmar eliminar al jugador \"{{name}}\"? ¡Esto no se puede deshacer!"
+    }
+  },
+  "DevToolbar": {
+    "tooltip": "Barra de Herramientas de Desarrollo"
+  },
+  "DiscoverCommunityNewsPage": {
+    "title": "Descubrir",
+    "noMore": "No hay más",
+    "sources": "Administrar Fuentes",
+    "NoSources": "No se ha agregado ninguna fuente"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Noticias de Minecraft",
+    "community-news": "Noticias de la Comunidad",
+    "hotModpacks": "Modpacks Populares de {{source}}"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "Buscar",
+      "home": "Inicio",
+      "community-news": "Comunidad",
+      "minecraft-news": "Noticias de Minecraft",
+      "modpack": "Modpacks",
+      "mod": "Mods",
+      "world": "Mundos",
+      "resourcepack": "Paquetes de Recursos",
+      "shader": "Paquetes de Shaders",
+      "datapack": "Paquetes de Datos"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "Agregar Fuente",
+      "deleteSource": "Eliminar"
+    },
+    "tag": {
+      "online": "En línea"
+    }
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "Descargar Java"
+    },
+    "selector": {
+      "vendor": "Proveedor",
+      "version": "Versión",
+      "type": "Tipo"
+    },
+    "warning": {
+      "mojang": "El tiempo de ejecución de Java de Mojang será instalado por SJMCL en un directorio específico.",
+      "oracle": "Descargar desde Oracle puede requerir inicio de sesión."
+    }
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "Descargar Modpack"
+    }
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "Descargar Recurso"
+    },
+    "resourceTypeList": {
+      "world": "Mundos",
+      "mod": "Mods",
+      "resourcepack": "Paquetes de Recursos",
+      "shader": "Paquetes de Shaders",
+      "datapack": "Paquetes de Datos"
+    }
+  },
+  "DownloadSettingPage": {
+    "source": {
+      "title": "Fuente",
+      "settings": {
+        "strategy": {
+          "title": "Estrategia de Selección de Fuente de Descarga",
+          "auto": "Selección Automática",
+          "official": "Priorizar Fuente Oficial",
+          "mirror": "Priorizar Fuente Espejo"
+        }
+      }
+    },
+    "download": {
+      "title": "Descarga",
+      "settings": {
+        "autoConcurrent": {
+          "title": "Selección Automática del Número de Hilos Concurrentes"
+        },
+        "concurrentCount": {
+          "title": "Cantidad de Hilos Concurrentes"
+        },
+        "enableSpeedLimit": {
+          "title": "Limitar Velocidad de Descarga"
+        },
+        "speedLimitValue": {
+          "title": "Configuración de Límite de Velocidad"
+        }
+      }
+    },
+    "cache": {
+      "title": "Caché",
+      "settings": {
+        "directory": {
+          "title": "Directorio de Caché de Descarga",
+          "select": "Cambiar"
+        },
+        "clear": {
+          "title": "Limpiar Caché de Descarga",
+          "description": "Limpiar todos los archivos en el directorio de caché, lo que no afectará los archivos de recursos descargados.",
+          "button": "Limpiar"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "headExtra": "Requiere Reinicio",
+      "settings": {
+        "enabled": {
+          "title": "Habilitar Proxy"
+        },
+        "type": {
+          "title": "Tipo de Proxy"
+        },
+        "host": {
+          "title": "Host"
+        },
+        "port": {
+          "title": "Puerto"
+        }
+      }
+    }
+  },
+  "DownloadSpecificResourceModal": {
+    "title": "Descargar Recurso - {{name}} - {{source}}",
+    "label": {
+      "all": "Todos",
+      "recommendedVersion": "Versión Recomendada",
+      "currentModLoader": "Cargador Actual"
+    },
+    "releaseType": {
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "release": "Versión Final"
+    },
+    "button": {
+      "cancel": "Cancelar",
+      "download": "Descargar",
+      "installToInstance": "Instalar en Instancia",
+      "installToCurrentInstance": "Instalar en Instancia Actual",
+      "install": "Instalar"
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "Tareas de Descarga",
+    "button": {
+      "settings": "Configuración de Descarga",
+      "pause": "Pausar",
+      "begin": "Iniciar",
+      "retry": "Reintentar",
+      "clearHistory": "Limpiar Registros de Historial"
+    },
+    "label": {
+      "paused": "Pausado",
+      "completed": "Completado",
+      "error": "Fallido",
+      "cancelled": "Cancelado"
+    },
+    "task": {
+      "game-client": "Cliente del Juego {{param}}",
+      "game-client-w-java": "Cliente del Juego {{param1}} (con Java {{param2}})",
+      "game-server": "Servidor de Juego {{param}}",
+      "change-mod-loader": "Cambiar Cargador de Mods {{param}}",
+      "change-optifine": "Cambiar Cargador de Shaderpack {{param}}",
+      "mod": "Mod",
+      "world": "Mundo",
+      "resourcepack": "Paquete de Recursos",
+      "shader": "Paquete de Shaders",
+      "modpack": "Modpack",
+      "modpack-wo-install": "Modpack",
+      "datapack": "Paquete de Datos",
+      "patch-files": "Aplicar Parche a Archivos del Juego {{param}}",
+      "mod-update": "Actualizar Mod",
+      "retry": "Reintentar",
+      "neoforge-libraries": "Librerías de NeoForge",
+      "forge-libraries": "Librerías de Forge",
+      "optifine-libraries": "Librerías de OptiFine",
+      "launcher-update": "Actualizar Lanzador",
+      "extension-update": "Actualizar Extensión {{param1}} {{param2}}",
+      "mojang-java": "Tiempo de Ejecución de Java {{param}}"
+    }
+  },
+  "Editable": {
+    "edit": "Editar",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "Agregar Directorio del Juego",
+        "edit": "Editar Directorio del Juego"
+      }
+    },
+    "label": {
+      "dirName": "Nombre",
+      "dirPath": "Directorio del Juego"
+    },
+    "placeholder": {
+      "dirName": "Nombre del Directorio",
+      "dirPath": "Seleccionar un directorio del juego"
+    },
+    "dialog": {
+      "browse": {
+        "title": "Seleccionar Directorio"
+      },
+      "addSubDir": {
+        "title": "Agregar Subdirectorio",
+        "body": "Se ha encontrado un subdirectorio de Minecraft que contiene una instancia. ¿Desea agregar el subdirectorio?",
+        "addOriginDir": "Agregar Directorio Original",
+        "addSubDir": "Agregar Subdirectorio"
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "Error al agregar el directorio del juego"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "empty": "El nombre del directorio no puede estar vacío",
+        "tooLong": "El nombre del directorio no puede tener más de 20 caracteres",
+        "exist": "El nombre del directorio ya existe",
+        "hasInvalidChar": "El nombre del directorio tiene caracteres inválidos"
+      },
+      "dirPath": {
+        "exist": "El directorio ya existe",
+        "invalid": "La ruta del directorio es inválida"
+      }
+    }
+  },
+  "Empty": {
+    "noData": "Sin Datos"
+  },
+  "EnableExtensionConfirmDialog": {
+    "title": "Habilitar Extensión",
+    "body": "¿Está seguro de que desea habilitar la extensión <hl>{{name}}</hl> (<hl>{{identifier}}</hl>) de <hl>{{author}}</hl>? ",
+    "button": {
+      "enable": "Habilitar"
+    },
+    "unknownDeveloper": "Desarrollador desconocido"
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "Gris",
+      "red": "Rojo",
+      "orange": "Naranja",
+      "yellow": "Amarillo",
+      "green": "Verde",
+      "teal": "Verde Azulado",
+      "blue": "Azul",
+      "cyan": "Cian",
+      "purple": "Morado",
+      "pink": "Rosa"
+    },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
+      "windows": "Win"
+    },
+    "playerTypes": {
+      "microsoft": "Microsoft",
+      "offline": "Modo Sin Conexión",
+      "3rdparty": "Autenticación de Terceros",
+      "3rdpartyShort": "Auth de Terceros"
+    },
+    "systemFileManager": {
+      "linux": "Administrador de Archivos",
+      "macos": "Finder",
+      "windows": "Explorador de Archivos"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "Exportar {{param}} como Modpack"
+    },
+    "label": {
+      "exportFormat": "Formato de Exportación",
+      "basicInfo": "Información Básica",
+      "modpackName": "Nombre del Modpack",
+      "modpackVersion": "Versión del Modpack",
+      "author": "Autor",
+      "description": "Descripción",
+      "includedFiles": "Archivos Incluidos",
+      "exportOptions": "Opciones de Exportación",
+      "packWithLauncher": "Empaquetar con el Lanzador",
+      "minMemory": "Memoria Mínima (MB)",
+      "noCreateRemoteFiles": "Deshabilitar Archivos Remotos",
+      "skipCurseForgeRemoteFiles": "Omitir Archivos Remotos de CurseForge"
+    },
+    "button": {
+      "export": "Exportar"
+    },
+    "error": {
+      "invalidName": "Por favor ingrese un nombre de modpack válido",
+      "invalidVersion": "Por favor ingrese un número de versión válido",
+      "noFileSelected": "Por favor seleccione al menos un archivo o carpeta para incluir"
+    },
+    "errorMessage": {
+      "error-1": "El nombre no puede estar vacío",
+      "error-2": "El nombre contiene caracteres inválidos",
+      "error-3": "El nombre es demasiado largo (máximo 255 caracteres)"
+    },
+    "fileTreeTranslation": {
+      "mods": "Mods",
+      "config": "Archivos de Configuración de Mods",
+      "shaderpacks": "Shaders",
+      "resourcepacks": "Paquetes de Recursos",
+      "optionsTxt": "Configuración del Juego",
+      "saves": "Partidas Guardadas"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "Tamaño de paquete más pequeño; los mods necesarios se descargan de un manifiesto durante la importación.",
+        "MultiMC": "Ampliamente soportado por los principales lanzadores; empaquetado como una instancia completa."
+      }
+    }
+  },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "Error al renderizar el contenido de esta extensión."
+  },
+  "ExtensionHostContextProvider": {
+    "extensionProvidedDialog": "Este diálogo es proporcionado por la extensión {{name}}",
+    "toast": {
+      "activateError": "Error al activar la extensión {{name}}"
+    }
+  },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "Autor",
+      "description": "Descripción"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "Abrir Enlace Externo",
+    "body": "La extensión {{extension}} desea abrir {{link}} en tu navegador externo.",
+    "button": {
+      "open": "Abrir"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "Configuración de {{name}}"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL no puede controlar el comportamiento de las extensiones de terceros, incluyendo cómo manejan tus datos personales. Solo instala y habilita extensiones de fuentes confiables.",
+    "fileDnD": {
+      "title": "Instalar Extensión de SJMCL",
+      "desc": "Instalar archivo de extensión {{fileName}} en SJMCL"
+    },
+    "installed": "Extensiones Instaladas",
+    "menu": {
+      "info": "Información de la Extensión"
+    },
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "Documentación de Desarrollo de Extensiones",
+          "description": "Lee la introducción al sistema de extensiones y la documentación de la API, y comienza rápidamente con el andamiaje.",
+          "url": "https://mc.sjtu.cn/sjmcl/en/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "Descubrir Extensiones de la Comunidad",
+          "description": "Visita GitHub para explorar una lista de extensiones desarrolladas por la comunidad.",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
+  },
+  "ExtensionUpdateConfirmDialog": {
+    "title": "Actualizar Extensión",
+    "body": "La extensión {{identifier}} descargó la nueva versión {{version}} de {{src}}. ¿Deseas confirmar la instalación?"
+  },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} y otros ({{count}} en total)"
+  },
+  "GameAdvancedSettingsPage": {
+    "title": "Configuración Avanzada",
+    "topWarning": "La configuración avanzada es para usuarios expertos. Modificarla puede dañar el juego. No modifiques a menos que sepas lo que estás haciendo.",
+    "customCommands": {
+      "title": "Comandos Personalizados",
+      "settings": {
+        "minecraftArgument": {
+          "title": "Argumento del Lanzador",
+          "placeholder": "Predeterminado"
+        },
+        "precallCommand": {
+          "title": "Comando Pre-lanzamiento",
+          "placeholder": "Comandos a ejecutar antes de que el juego se inicie"
+        },
+        "wrapperLauncher": {
+          "title": "Comando Wrapper",
+          "placeholder": "Permite iniciar usando un programa wrapper adicional como \"optirun\" en Linux"
+        },
+        "postExitCommand": {
+          "title": "Comando Post-salida",
+          "placeholder": "Comandos a ejecutar después de que el juego termine"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Opciones de la Máquina Virtual Java",
+      "settings": {
+        "garbageCollector": {
+          "title": "Recolección de Basura",
+          "desc": "Las versiones de Java más antiguas pueden no incluir recolectores de basura específicos.",
+          "options": {
+            "auto": "Automático (Predeterminado)",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "Espacio PermGen",
+          "placeholder": "en MB"
+        },
+        "environmentVariable": {
+          "title": "Variables de Entorno"
+        },
+        "args": {
+          "title": "Otros Argumentos JVM"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Solución Alternativa",
+      "settings": {
+        "noJvmArgs": "No agregar argumentos predeterminados de la Máquina Virtual Java",
+        "gameFileValidatePolicy": {
+          "title": "Política de Validación de Archivos del Juego",
+          "disable": "Deshabilitar Verificación",
+          "normal": "Verificación Normal",
+          "full": "Verificación Completa",
+          "disableDesc": "",
+          "normalDesc": "Verificar si los archivos existen, descargar automáticamente los faltantes",
+          "fullDesc": "Verificar la integridad SHA1 de los archivos, descargar automáticamente los faltantes (toma más tiempo)"
+        },
+        "dontCheckJvmValidity": {
+          "title": "No verificar la compatibilidad de la Máquina Virtual Java"
+        },
+        "dontPatchNatives": {
+          "title": "No intentar reemplazar automáticamente las bibliotecas nativas"
+        },
+        "useLwjglUnsafeAgent": {
+          "title": "Usar LWJGL Unsafe Agent",
+          "description": "Usar automáticamente el <hmcl>LWJGL Unsafe Agent</hmcl> de HMCL en versiones de Minecraft afectadas para corregir problemas de rendimiento."
+        },
+        "useCustomAuthlibInjector": {
+          "title": "Usar Authlib Injector Personalizado",
+          "description": {
+            "notSet": "No se estableció una ruta personalizada, se usará la versión incorporada"
+          },
+          "select": "Modificar"
+        },
+        "useNativeGlfw": {
+          "title": "Usar GLFW del Sistema (Solo Linux)"
+        },
+        "useNativeOpenal": {
+          "title": "Usar OpenAL del Sistema (Solo Linux)"
+        }
+      }
+    }
+  },
+  "GameErrorPage": {
+    "title": "El juego se cerró inesperadamente. Revisa los registros o busca ayuda.",
+    "basicInfo": {
+      "arch": "Arquitectura",
+      "launcherVersion": "Versión del Lanzador",
+      "os": "Sistema Operativo"
+    },
+    "gameInfo": {
+      "gameVersion": "Versión de Minecraft"
+    },
+    "javaInfo": {
+      "javaVersion": "Versión de Java"
+    },
+    "crashDetails": {
+      "title": "Detalles del Error",
+      "OPENJ9": "OpenJ9 JVM no es compatible. Por favor usa HotSpot JVM.",
+      "NEED_JDK11": "Se requieren funciones de JDK 11. Por favor selecciona JDK 11 para iniciar.",
+      "TOO_OLD_JAVA": "La versión de Java es demasiado antigua. Por favor usa la última versión de Java.",
+      "JVM_32BIT": "La asignación de memoria excede el límite de una JVM de 32 bits. Si tu sistema es de 64 bits, por favor usa Java de 64 bits.",
+      "GL_OPERATION_FAILURE": "Un mod, paquete de shaders, paquete de recursos o paquete de texturas causó un problema. Intenta deshabilitarlos e iniciar de nuevo.",
+      "OPENGL_NOT_SUPPORTED": "Tu controlador gráfico no soporta OpenGL. Por favor revisa tu controlador gráfico o intenta con otro renderizador.",
+      "GRAPHICS_DRIVER": "Un problema con el controlador gráfico causó el error. Por favor actualiza tu controlador gráfico.",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "Error al inicializar la ventana OpenGL en la plataforma Apple Silicon.",
+      "OUT_OF_MEMORY": "Memoria insuficiente. Intenta reducir la asignación de memoria del juego o cerrar otros programas.",
+      "MEMORY_EXCEEDED": "La asignación de memoria excedió el límite. Intenta reducir la asignación de memoria del juego o cerrar otros programas.",
+      "RESOLUTION_TOO_HIGH": "La resolución es demasiado alta. Intenta usar un paquete de recursos/texturas con menor resolución.",
+      "JDK_9": "Se requieren funciones de JDK 9. Por favor selecciona JDK 9 para iniciar.",
+      "MAC_JDK_8U261": "Un conflicto entre Forge/OptiFine y Java causó el error. Intenta actualizar Forge/OptiFine o usa Java 8u251 o anterior.",
+      "FILE_CHANGED": "La verificación de archivos falló. Por favor revisa la integridad de los archivos.",
+      "NO_SUCH_METHOD_ERROR": "Código incompleto detectado. Un mod puede estar faltando, incompleto o ser incompatible. Intenta reinstalar el juego y los mods o busca ayuda.",
+      "NO_CLASS_DEF_FOUND_ERROR": "Código incompleto detectado. Un mod puede estar faltando, incompleto o ser incompatible. Intenta reinstalar el juego y los mods o busca ayuda.",
+      "ILLEGAL_ACCESS_ERROR": "Un mod causó un problema de acceso. Si conoces {{param1}}, intenta actualizar o eliminar el mod correspondiente.",
+      "DUPLICATED_MOD": "El mod {{param1}} está instalado múltiples veces. Por favor elimina los duplicados e intenta de nuevo.",
+      "MOD_RESOLUTION": "Problemas de dependencias de mods detectados. Fabric proporcionó la siguiente información: {{param1}}",
+      "FORGEMOD_RESOLUTION": "Problemas de dependencias de mods detectados. Forge/NeoForge proporcionó la siguiente información: {{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "Mods duplicados detectados. Forge/NeoForge proporcionó la siguiente información: {{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "Existe un conflicto entre el mod {{param1}} y {{param2}}.",
+      "MOD_RESOLUTION_MISSING": "Al mod {{param1}} le falta la dependencia requerida {{param2}}.",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "El mod {{param1}} requiere Minecraft {{param2}} para ejecutarse.",
+      "MOD_RESOLUTION_COLLECTION": "Al mod {{param1}} le falta la dependencia requerida {{param2}}.",
+      "FILE_ALREADY_EXISTS": "{{param1}} ya existe. Si crees que este archivo se puede eliminar, intenta hacer una copia de seguridad y eliminarlo, luego reinicia.",
+      "LOADING_CRASHED_FORGE": "El mod {{param1}} ({{param2}}) causó un error. Intenta eliminar o actualizar este mod.",
+      "BOOTSTRAP_FAILED": "El mod {{param1}} causó un problema de inicio. Intenta eliminar o actualizar este mod.",
+      "LOADING_CRASHED_FABRIC": "El mod {{param1}} causó un error. Intenta eliminar o actualizar este mod.",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 y superiores pueden no ser compatibles con los mods instalados. Desactualiza Fabric Loader a 0.11.7.",
+      "MODLAUNCHER_8": "Existe un conflicto entre tu versión de Forge y tu versión de Java. Actualiza Forge a 36.2.26 o superior, o usa Java por debajo de 1.8.0.320.",
+      "DEBUG_CRASH": "Se activó un error manual.",
+      "CONFIG": "Error al analizar el archivo de configuración {{param2}} del mod {{param1}}.",
+      "FABRIC_WARNINGS": "Fabric proporcionó algunos mensajes de advertencia: {{param1}}",
+      "ENTITY": "Una entidad (tipo {{param1}}, en {{param2}}) no funciona correctamente. Intenta eliminar la entidad usando MCEdit o elimina el mod correspondiente.",
+      "BLOCK": "Un bloque (tipo {{param1}}, en {{param2}}) no funciona correctamente. Intenta eliminar el bloque usando MCEdit o elimina el mod correspondiente.",
+      "UNSATISFIED_LINK_ERROR": "Bibliotecas nativas faltantes: {{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "OptiFine no es compatible con Forge. Usa la última versión de OptiFine o no uses OptiFine.",
+      "MOD_FILES_ARE_DECOMPRESSED": "Los archivos de mods han sido descomprimidos. Coloca el archivo de mod completo directamente en la carpeta mods.",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "OptiFine puede causar problemas de carga de mundos en versiones específicas.",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "Demasiados mods instalados, excediendo el límite de IDs del juego. Intenta instalar JEID o mods similares, o elimina algunos mods grandes.",
+      "MODMIXIN_FAILURE": "Error de inyección de mods detectado. Revisa la compatibilidad de los mods o intenta reemplazarlos.",
+      "MIXIN_APPLY_MOD_FAILED": "Mixin falló al aplicarse al mod {{param1}}. Intenta eliminar o actualizar este mod.",
+      "FORGE_ERROR": "Forge/NeoForge proporcionó el siguiente mensaje de error: {{param1}}",
+      "MOD_RESOLUTION0": "Problemas detectados con algunos mods. Revisa los registros para encontrar el mod problemático.",
+      "FORGE_REPEAT_INSTALLATION": "Se detectó una instalación repetida de Forge / NeoForge. Por favor elimina la instancia y reinstálala manualmente.",
+      "OPTIFINE_REPEAT_INSTALLATION": "Se detectó una instalación repetida de OptiFine. Por favor elimina la instancia y reinstálala manualmente.",
+      "JAVA_VERSION_IS_TOO_HIGH": "La versión de Java es demasiado alta. Por favor usa Java 8 o inferior.",
+      "INSTALL_MIXINBOOTSTRAP": "MixinBootstrap no está instalado. Por favor instala MixinBootstrap e intenta de nuevo.",
+      "MOD_NAME": "Los nombres de archivos de mods deben usar solo letras de ancho medio (A-Z, a-z), números (0-9), guiones (-), guiones bajos (_) y puntos (.). Por favor renombra todos los archivos de mods que no cumplan en la carpeta mods.",
+      "INCOMPLETE_FORGE_INSTALLATION": "La instalación de Forge está incompleta. Por favor intenta reinstalar Forge.",
+      "NIGHT_CONFIG_FIXES": "Problemas detectados con la biblioteca Night Config. Instalar el mod Night Config Fixes puede ayudar.",
+      "SHADERS_MOD": "Tanto OptiFine como el mod Shaders están instalados. Por favor elimina el mod Shaders.",
+      "RTSS_FOREST_SODIUM": "RTSS no es compatible con Sodium.",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "Algunas bibliotecas nativas usadas por el juego son incompatibles con la arquitectura de tu sistema.",
+      "MAC_DS_STORE": "La instancia no puede continuar debido a un archivo .DS_Store en Mac. Por favor elimina el archivo .DS_Store en la ruta de tu juego e intenta de nuevo.",
+      "LEVEL_DAT_CORRUPTED": "La instancia no puede continuar debido a un archivo de partida level.dat corrupto. Intenta reparar la partida o restaurar desde una copia de seguridad.",
+      "GL_OUT_OF_MEMORY": "La instancia no puede continuar debido a falta de memoria OpenGL. Intenta reducir la resolución del juego, deshabilitar los shaders o cerrar otros programas.",
+      "MOD_JAVA_VERSION_MISMATCH": "La instancia no puede continuar debido a una incompatibilidad entre mods y la versión de Java. Por favor verifica la versión de Java requerida para tus mods.",
+      "DUPLICATE_MOD_INSTALLED": "La instancia no puede continuar debido a una instalación duplicada de mods. Por favor revisa tu lista de mods y elimina los duplicados.",
+      "MOD_ZIP_CORRUPTED": "La instancia no puede continuar debido a un archivo zip de mod corrupto. Intenta volver a descargar el mod.",
+      "MOD_INTERNET_ERROR": "La instancia no puede continuar debido a un error de descarga de mods. Por favor verifica tu conexión de red o usa un proxy.",
+      "VICS_MODERN_WARFARE_ERROR": "La instancia no puede continuar debido a un error del mod Vic's Modern Warfare. Intenta actualizar o eliminar el mod.",
+      "FORGE_LITELOADER_CONFLICT": "La instancia no puede continuar debido a un conflicto entre Forge y LiteLoader. Intenta eliminar LiteLoader o cambiar la versión de Forge.",
+      "UNKNOWN": "No se puede determinar la causa del error. Por favor revisa los registros para más detalles o exporta el reporte de error."
+    },
+    "button": {
+      "exportGameInfo": "Exportar Reporte de Error",
+      "gameLogs": "Registros del Juego",
+      "help": "Ayuda"
+    },
+    "bottomAlert": "Exporta y envía el reporte de error en lugar de una captura de pantalla de esta página para obtener ayuda."
+  },
+  "GameLogPage": {
+    "placeholder": "Filtrar por Texto",
+    "revealRawLog": "Mostrar Archivo de Registro Sin Procesar",
+    "clearLogs": "Limpiar Todos los Registros",
+    "scrollToBottom": "Desplazar al Final"
+  },
+  "GameVersionSelector": {
+    "old_beta": "Beta",
+    "release": "Versión Estable",
+    "snapshot": "Snapshot",
+    "april_fools": "Inocente de Abril",
+    "searchPlaceholder": "Buscar"
+  },
+  "General": {
+    "add": "Agregar",
+    "alert": {
+      "noFullLogin": {
+        "title": "Esta Función No Está Disponible Actualmente",
+        "description": "Por favor inicia sesión con tu cuenta de Microsoft antes de acceder a esta función."
+      }
+    },
+    "browse": "Examinar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "confirm": "Aceptar",
+    "copy": {
+      "text": "Copiar",
+      "toast": {
+        "success": "Copiado al portapapeles",
+        "error": "Error al copiar al portapapeles"
+      }
+    },
+    "copyOrMove": {
+      "linux": "Copiar / Mover",
+      "macos": "Copiar / Mover",
+      "windows": "Copiar / Mover"
+    },
+    "delete": "Eliminar",
+    "dialog": {
+      "filterName": {
+        "image": "Imagen",
+        "modpack": "Modpack"
+      }
+    },
+    "disable": "Deshabilitar",
+    "dontShowAgain": "No Mostrar de Nuevo",
+    "download": "Descargar",
+    "edit": "Editar",
+    "enable": "Habilitar",
+    "exit": "Salir",
+    "finish": "Finalizar",
+    "import": "Importar",
+    "launch": "Iniciar",
+    "more": "Más",
+    "new": "Nuevo",
+    "next": "Siguiente",
+    "notice": "Aviso",
+    "open": "Abrir",
+    "openFolder": "Abrir Carpeta",
+    "optional": "Opcional",
+    "previous": "Anterior",
+    "refresh": "Actualizar",
+    "revealFile": "Mostrar en {{opener}}",
+    "search": "Buscar",
+    "settings": "Configuración",
+    "share": {
+      "text": "Compartir",
+      "toast": {
+        "error": "Error al compartir"
+      }
+    },
+    "skip": "Omitir",
+    "version": {
+      "dev": "versión de desarrollo",
+      "nightly": "compilación nocturna",
+      "beta": "versión beta"
+    },
+    "viewOnWiki": "Ver en Minecraft Wiki"
+  },
+  "GeneralSettingsPage": {
+    "language": {
+      "title": "Idioma",
+      "settings": {
+        "language": {
+          "title": "Idioma",
+          "communityAck": ""
+        },
+        "resourceTranslation": {
+          "title": "Traducción de Recursos",
+          "description": "%only available in zh-Hans"
+        },
+        "translatedFilenamePrefix": {
+          "title": "Agregar Prefijo de Traducción a Nombres de Archivos Descargados",
+          "description": "%only available in zh-Hans"
+        },
+        "skipFirstScreenOptions": {
+          "title": "Omitir Opciones de la Primera Pantalla de Inicio",
+          "description": "%only available in zh-Hans"
+        }
+      }
+    },
+    "functions": {
+      "title": "Funcionalidad",
+      "settings": {
+        "discoverPage": {
+          "title": "Página de Descubrimiento",
+          "description": "Explora convenientemente Minecraft y noticias de la comunidad, busca y descarga recursos del juego desde la página de Descubrimiento.",
+          "on": "Activado",
+          "search-only": "Solo Búsqueda",
+          "off": "Oculto"
+        },
+        "instancesNavType": {
+          "title": "Modo de Navegación de la Página de Instancias",
+          "description": "Cambia si la barra de navegación izquierda de la página de instancia se muestra y su método de agrupación.",
+          "instance": "Por Instancia",
+          "directory": "Por Directorio",
+          "tag": "Por Etiqueta",
+          "hidden": "Oculto"
+        },
+        "launchPageQuickSwitch": {
+          "title": "Cambio Rápido de Cuentas e Instancias",
+          "description": "Cuando está habilitado, hacer clic en el botón de cambio en la página de inicio permite la selección directa de cuentas e instancias en lugar de navegar a otra página."
+        },
+        "autoDownloadJava": {
+          "title": "Descargar Automáticamente Java Runtime Adecuado",
+          "description": "Cuando está habilitado, si no hay un Java runtime adecuado disponible al crear una nueva instancia, se instalará automáticamente en un directorio dedicado"
+        }
+      }
+    },
+    "sync": {
+      "title": "Sincronización",
+      "settings": {
+        "internetSync": {
+          "title": "Sincronizar Configuración del Lanzador por Internet",
+          "import": "Importar",
+          "export": "Exportar"
+        }
+      }
+    },
+    "advanced": {
+      "title": "Avanzado",
+      "settings": {
+        "openConfigJson": {
+          "title": "Archivo de Configuración del Lanzador",
+          "description": "Mostrar el archivo de configuración del lanzador sin procesar en {{opener}}."
+        },
+        "launcherLogDir": {
+          "title": "Directorio de Registros del Lanzador"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "Purgar Automáticamente los Registros del Lanzador",
+          "description": "Purgar automáticamente los archivos de registro del lanzador con más de 30 días de antigüedad"
+        },
+        "restoreAll": {
+          "title": "Restablecer Todas las Configuraciones",
+          "description": "Restablecer todas las configuraciones del lanzador a sus valores predeterminados",
+          "restore": "Restablecer"
+        }
+      }
+    }
+  },
+  "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "Directorios del Juego",
+      "settings": {
+        "directories": {
+          "special": {
+            "CURRENT_DIR": "Actual",
+            "APP_DATA_SUBDIR": "Datos de SJMCL",
+            "OFFICIAL_DIR": "Lanzador Oficial"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "Eliminar Directorio del Juego",
+        "content": "¿Confirmar la eliminación del directorio del juego {{dirName}}? (SJMCL ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
+      },
+      "directoryNotExist": "El directorio no existe, por favor agrega la ruta de nuevo."
+    },
+    "gameJava": {
+      "title": "Java del Juego",
+      "settings": {
+        "autoSelect": {
+          "title": "Elegir Java del Juego Automáticamente"
+        },
+        "execPath": {
+          "title": "Especificar Versión de Java"
+        }
+      }
+    },
+    "gameWindow": {
+      "title": "Ventana del Juego",
+      "settings": {
+        "resolution": {
+          "title": "Resolución del Juego",
+          "switch": "Pantalla Completa"
+        },
+        "customTitle": {
+          "title": "Título de Ventana Personalizado"
+        },
+        "customInfo": {
+          "title": "Información Personalizada",
+          "description": "Se muestra en la esquina inferior izquierda de la pantalla principal del juego y en la esquina superior izquierda de la página de depuración F3."
+        }
+      }
+    },
+    "performance": {
+      "title": "Rendimiento",
+      "settings": {
+        "autoMemAllocation": {
+          "title": "Asignar Memoria Automáticamente"
+        },
+        "maxMemAllocation": {
+          "title": "Asignación Máxima de Memoria"
+        },
+        "memoryUsage": {
+          "title": "Uso de Memoria",
+          "description": "Memoria utilizada {{usedMemory}}GB; Juego asignado {{allocatedMemory}}GB; Memoria total {{totalMemory}}GB"
+        },
+        "processPriority": {
+          "title": "Prioridad del Proceso",
+          "low": "Baja",
+          "belowNormal": "Por Debajo de Normal",
+          "normal": "Normal",
+          "aboveNormal": "Por Encima de Normal",
+          "high": "Alta"
+        }
+      }
+    },
+    "versionIsolation": {
+      "settings": {
+        "title": "Habilitar Aislamiento de Versión"
+      }
+    },
+    "moreOptions": {
+      "title": "Más Opciones",
+      "settings": {
+        "launcherVisibility": {
+          "title": "Visibilidad del Lanzador",
+          "startHidden": "Ocultar Lanzador después de Iniciar el Juego",
+          "runningHidden": "Ocultar Lanzador mientras el Juego está en Ejecución",
+          "always": "Lanzador Siempre Visible"
+        },
+        "autoJoinGameServer": {
+          "title": "Unirse Automáticamente al Servidor del Juego"
+        },
+        "serverUrl": {
+          "title": "URL del Servidor"
+        },
+        "displayGameLog": {
+          "title": "Mostrar Registros del Juego"
+        },
+        "advancedOptions": {
+          "title": "Opciones de Inicio Avanzadas",
+          "button": "Editar Opciones Avanzadas"
+        }
+      }
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "Página de Instancias",
+      "content": "Aquí puedes agregar y seleccionar tus instancias de juego de Minecraft, así como descargar y gestionar varios recursos del juego."
+    },
+    "step2": {
+      "title": "Página de Cuentas",
+      "content": "Aquí puedes agregar cuentas y elegir el jugador con el que deseas jugar."
+    },
+    "step3": {
+      "title": "Página de Descubrimiento",
+      "content": "Aquí puedes explorar Minecraft y noticias de la comunidad, descubrir y descargar varios recursos relacionados como mods, mapas y modpacks.<br/>También puedes abrir rápidamente \"Búsqueda Global\" con el atajo de teclado <key>{{keyname}}</key> + <key>F</key>."
+    },
+    "step4": {
+      "title": "¡Inicia Minecraft!",
+      "content": "Después de seleccionar tu instancia y jugador y ajustar la configuración correspondiente, haz clic en el botón de inicio y ¡disfruta del juego! 🥳"
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "Iniciar",
+      "instances": "Juegos",
+      "accounts": "Cuentas",
+      "discover": "Descubrir",
+      "search": "Buscar",
+      "settings": "Configuración"
+    }
+  },
+  "HelpSettingsPage": {
+    "community": {
+      "title": "Comunidad de Jugadores Universitarios",
+      "settings": {
+        "MUA": {
+          "title": "Alianza Universitaria de Minecraft (MUA)",
+          "description": "Juega con jugadores universitarios de toda China",
+          "url": "https://www.mualliance.cn/en"
+        },
+        "SJMC": {
+          "title": "Club de Minecraft de SJTU (SJMC)",
+          "url": "https://mc.sjtu.cn/en/"
+        }
+      }
+    },
+    "minecraft": {
+      "title": "Minecraft",
+      "settings": {
+        "mcWiki": {
+          "title": "Minecraft Wiki",
+          "description": "La enciclopedia de Minecraft más detallada",
+          "url": "https://minecraft.wiki/"
+        },
+        "mcMod": {
+          "title": "MCMod",
+          "description": "Una enciclopedia china de mods para Minecraft"
+        },
+        "curseforge": {
+          "title": "CurseForge",
+          "description": "Descubre el repositorio de mods de Minecraft más grande del mundo"
+        }
+      }
+    },
+    "top": {
+      "settings": {
+        "LauncherDocs": {
+          "title": "Documentación del SJMC Launcher",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        },
+        "UserGroup": {
+          "title": "Comunidad de Usuarios",
+          "description": "Únete al grupo de QQ o al servidor de Discord para reportar problemas, solicitar funciones u obtener ayuda",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
+        }
+      }
+    }
+  },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "Mover Este Widget Arriba",
+      "moveDown": "Mover Este Widget Abajo",
+      "extensionInfo": "Ver Información de la Extensión",
+      "settings": "Abrir Configuración de la Extensión"
+    }
+  },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "Importar Jugadores y Servidores de Autenticación"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
+    },
+    "body": {
+      "authServers": "Servidores de Autenticación",
+      "players": "Jugadores"
+    },
+    "footer": {
+      "parentDirHint": "Los archivos de cuentas se buscarán en la ruta padre de los directorios del juego agregados."
+    },
+    "tooltips": {
+      "existingServer": "Los datos del servidor de autenticación existente con la misma dirección serán sobrescritos.",
+      "existingPlayer": "Los datos del jugador existente con el mismo UUID serán sobrescritos.",
+      "expired": "El token de este jugador ha expirado y no se puede importar."
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "Importar Modpack"
+    },
+    "label": {
+      "instanceSettings": "Configuración de la Instancia",
+      "modpackInfo": "Información del Modpack",
+      "modpackName": "Nombre del Modpack",
+      "modpackVersion": "Versión del Modpack",
+      "author": "Autor",
+      "modLoader": "Cargador de Mods",
+      "gameVersion": "Versión del Juego"
+    }
+  },
+  "InstanceBasicSettings": {
+    "selectDirectory": "Seleccionar Directorio del Juego"
+  },
+  "InstanceDetailsLayout": {
+    "secMenu": {
+      "createShortcut": "Crear Acceso Directo de Inicio",
+      "exportModPack": "Exportar como Modpack",
+      "star": "Marcar esta instancia",
+      "unstar": "Desmarcar"
+    },
+    "instanceTabList": {
+      "overview": "Resumen",
+      "worlds": "Mundos",
+      "mods": "Mods",
+      "resourcepacks": "Paquetes de Recursos",
+      "schematics": "Esquemáticos",
+      "shaderpacks": "Paquetes de Shaders",
+      "screenshots": "Capturas de Pantalla",
+      "settings": "Configuración"
+    },
+    "button": {
+      "launch": "Iniciar Instancia"
+    }
+  },
+  "InstanceIconSelector": {
+    "customize": "Personalizar Icono"
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "Detalles de la Instancia",
+      "delete": "Eliminar"
+    }
+  },
+  "InstanceModsPage": {
+    "fileDnD": {
+      "title": "Instalar Mods",
+      "desc": "Instalar archivo de mod {{fileName}} en esta instancia"
+    },
+    "modLoaderList": {
+      "title": "Cargador de Mods",
+      "notInstalled": "No Instalado",
+      "installed": "Instalado"
+    },
+    "modList": {
+      "title": "Mods",
+      "warning": "No se encontró el cargador de mods, estos mods pueden no funcionar correctamente",
+      "menu": {
+        "alert": "Potencialmente incompatible",
+        "info": "Información del Mod",
+        "update": "Actualizar",
+        "search": "Buscar",
+        "placeholder": " Buscar mods..."
+      }
+    }
+  },
+  "InstanceResourcePacksPage": {
+    "fileDnD": {
+      "title": "Agregar Paquetes de Recursos",
+      "desc": "Agregar archivo de paquete de recursos {{fileName}} a esta instancia"
+    },
+    "resourcePackList": {
+      "title": "Paquetes de Recursos Globales"
+    },
+    "serverResPackList": {
+      "title": "Paquetes de Recursos del Servidor"
+    }
+  },
+  "InstanceSchematicsPage": {
+    "fileDnD": {
+      "title": "Agregar Esquemáticos",
+      "desc": "Agregar archivo de esquemático {{fileName}} a esta instancia"
+    },
+    "schematicList": {
+      "title": "Esquemáticos"
+    }
+  },
+  "InstanceScreenshotsPage": {
+    "button": {
+      "details": "Detalles"
+    }
+  },
+  "InstanceSettingsPage": {
+    "name": "Nombre de la Instancia",
+    "description": "Descripción de la Instancia",
+    "colorTag": "Etiqueta de Color",
+    "icon": "Icono de la Instancia",
+    "applySettings": "Aplicar la siguiente configuración específica",
+    "restoreSettings": "Restablecer configuración específica",
+    "restoreSettingsDesc": "Restablecer la siguiente configuración específica a la configuración global del juego.",
+    "restore": "Restablecer",
+    "errorMessage": {
+      "error-1": "El nombre de la instancia no puede estar vacío",
+      "error-2": "El nombre de la instancia es inválido",
+      "error-3": "El nombre de la instancia es demasiado largo"
+    },
+    "tipsToGlobal": {
+      "content": "Esta instancia no está usando configuración específica. <terms>Ir a Configuración Global del Juego</terms>"
+    }
+  },
+  "InstanceShaderPacksPage": {
+    "fileDnD": {
+      "title": "Agregar Paquetes de Shaders",
+      "desc": "Agregar archivo de paquete de shaders {{fileName}} a esta instancia"
+    },
+    "shaderLoaderList": {
+      "title": "Cargadores",
+      "notInstalled": "No Instalado"
+    },
+    "shaderPackList": {
+      "title": "Paquetes de Shaders"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "Información básica",
+      "gameVersion": "Versión",
+      "playTime": "Tiempo de juego"
+    },
+    "screenshots": {
+      "title": "Capturas de pantalla"
+    },
+    "mods": {
+      "title": "Mods",
+      "summary": "{{totalMods}} mods, {{enabledMods}} habilitados",
+      "manage": "Administrar"
+    },
+    "lastPlayed": {
+      "title": "Última vez jugado",
+      "continuePlaying": "Continuar"
+    },
+    "more": {
+      "title": "Más"
+    }
+  },
+  "InstanceWorldsPage": {
+    "fileDnD": {
+      "title": "Agregar mundos",
+      "desc": "Agregar archivo de guardado {{fileName}} a esta instancia"
+    },
+    "worldList": {
+      "title": "Mundos",
+      "lastPlayedAt": "Última vez jugado",
+      "difficulty": {
+        "peaceful": "Pacífico",
+        "easy": "Fácil",
+        "normal": "Normal",
+        "hard": "Difícil",
+        "hardcore": "Hardcore"
+      },
+      "gamemode": {
+        "survival": "Modo Supervivencia",
+        "creative": "Modo Creativo",
+        "adventure": "Modo Aventura",
+        "spectator": "Modo Espectador"
+      },
+      "gamemodeDesc": ", {{gamemode}}",
+      "difficultyDesc": " (Dificultad: {{difficulty}})",
+      "viewLevelData": "Ver datos del nivel",
+      "launch": "Jugar este mundo"
+    },
+    "serverList": {
+      "title": "Servidores",
+      "players": "Jugadores",
+      "tag": {
+        "online": "En línea",
+        "offline": "Desconectado"
+      },
+      "launch": "Jugar en este servidor"
+    }
+  },
+  "IntelligenceSettingsPage": {
+    "title": "SJMCL Intelligence",
+    "description": "Integra modelos de IA en tu lanzador y experiencia de juego de Minecraft.",
+    "mcpServer": {
+      "title": "Servicio MCP",
+      "headExtra": "Reinicio necesario",
+      "settings": {
+        "enabled": {
+          "title": "Servicio MCP del lanzador",
+          "description": "Habilita el servicio MCP local para conectar aplicaciones de agentes externos para el control automatizado del lanzador."
+        },
+        "docs": {
+          "title": "Guía del usuario",
+          "description": "Aprende cómo conectar el lanzador a aplicaciones de agentes externos (como Claude, Cherry Studio, y más).",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "Puerto",
+          "description": "El puerto local fijo utilizado por el servicio MCP del lanzador."
+        }
+      }
+    }
+  },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Gestión de Java",
+      "download": "Descargar Java",
+      "add": "Agregar Java",
+      "remove": "Eliminar este Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "Java agregado exitosamente",
+        "description": "Java se ha agregado exitosamente"
+      },
+      "addFailed": {
+        "title": "Error al agregar Java",
+        "invalid": "No es un ejecutable de Java válido o es incompatible con la plataforma actual",
+        "duplicated": "La ruta de destino ya ha sido agregada"
+      }
+    },
+    "confirmDelete": {
+      "title": "Eliminar Java",
+      "description": "¿Confirmar la eliminación de este Java? (SJMCL ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "La ejecución anterior terminó anormalmente",
+      "content": "SJMCL terminó anormalmente durante la última ejecución. Puedes enviar los registros a la <community>comunidad</community>, o abrir un issue en <github>GitHub</github> para obtener ayuda.",
+      "viewLog": "Ver registros"
+    }
+  },
+  "LaunchPage": {
+    "button": {
+      "launch": "Iniciar juego",
+      "instanceSettings": "Configuración de instancia"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchPlayer": "Cambiar jugador",
+        "addPlayer": "Agregar jugador",
+        "switchInstance": "Cambiar instancia del juego",
+        "addInstance": "Agregar instancia del juego"
+      }
+    },
+    "Text": {
+      "noSelectedPlayer": "Ningún jugador seleccionado",
+      "noSelectedGame": "Ninguna instancia del juego seleccionada"
+    }
+  },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "Iniciar juego - {{name}}"
+    },
+    "step": {
+      "selectSuitableJRE": "Seleccionar entorno de ejecución Java adecuado",
+      "validateGameFiles": "Validar archivos del juego y dependencias",
+      "validateSelectedPlayer": "Validar credenciales del jugador",
+      "launchGame": "Esperando a que el juego se inicie"
+    },
+    "toast": {
+      "noSelectedPlayer": "Por favor, agrega y selecciona un jugador primero",
+      "noSelectedInstance": "Por favor, agrega y selecciona una instancia del juego primero"
+    }
+  },
+  "LoaderSelector": {
+    "stable": "Estable",
+    "beta": "Beta",
+    "releaseDate": "Publicado el {{date}}",
+    "notCompatibleWith": "No compatible con {{item}}",
+    "noVersionSelected": "Ninguna versión seleccionada"
+  },
+  "MainWindowTitlebar": {
+    "extensionProvidedPage": "Esta página es proporcionada por la extensión {{name}}"
+  },
+  "ManageSkinModal": {
+    "skinManage": "Administrar skin",
+    "default": "Predeterminado",
+    "steve": "Steve",
+    "alex": "Alex",
+    "upload": "Subir",
+    "skin": "Skin",
+    "cape": "Capa",
+    "model": {
+      "label": "Modelo",
+      "default": "Ancho",
+      "slim": "Estrecho"
+    }
+  },
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Agregar Java"
+    },
+    "label": {
+      "javaPath": "Ruta de Java"
+    },
+    "placeholder": {
+      "javaPath": "Por favor, ingresa o selecciona la ruta del archivo ejecutable de Java"
+    }
+  },
+  "MCVersionNumberHelper": {
+    "content": "A partir de 2026, Minecraft adopta un nuevo sistema de numeración de versiones. Los números de versión comenzarán con el año de lanzamiento (por ejemplo, 26.1), reemplazando el anterior esquema de versionado 1.x.",
+    "linkText": "Leer el artículo oficial",
+    "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
+  },
+  "MemoryStatusProgress": {
+    "title": "Estado de la memoria",
+    "info": "{{used}} / {{total}} GB en uso",
+    "label": {
+      "now": "En uso",
+      "maxAllocation": "Máximo asignado para Minecraft"
+    }
+  },
+  "MenuSelector": {
+    "selectedCount": "{{count}} seleccionados"
+  },
+  "MicrosoftFriendsModal": {
+    "title": "Amigos de Minecraft de la cuenta de Microsoft {{name}}",
+    "placeholder": {
+      "playerName": "Ingresa un nombre de jugador para agregar como amigo"
+    },
+    "group": {
+      "requests": "Solicitudes",
+      "friends": "Amigos"
+    },
+    "request": {
+      "incoming": "Solicitud de amistad recibida",
+      "outgoing": "Solicitud de amistad enviada"
+    },
+    "button": {
+      "add": "Agregar",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "revoke": "Revocar",
+      "remove": "Eliminar amigo",
+      "xboxSettings": "Configuración de XBOX"
+    },
+    "empty": {
+      "requests": "Sin solicitudes",
+      "friends": "Sin amigos"
+    },
+    "status": {
+      "INVITED": "Te invitó a unirse a su mundo",
+      "ONLINE": "En línea",
+      "PLAYING_OFFLINE": "Jugando sin conexión",
+      "PLAYING_REALMS": "Jugando en Realms",
+      "PLAYING_SERVER": "Jugando en un servidor",
+      "PLAYING_HOSTED_SERVER": "Mundo LAN alojado",
+      "OFFLINE": "Desconectado"
+    }
+  },
+  "NoSuitableJavaDialog": {
+    "title": "No se encontró un entorno de ejecución Java adecuado para esta instancia",
+    "body": "No hay un entorno de ejecución Java adecuado disponible para esta instancia. Haz clic en \"Confirmar\" para abrir la página de gestión de Java y agregar o descargar Java manualmente."
+  },
+  "NotFoundPage": {
+    "text": "Página no encontrada, redirigiendo a la página de inicio en {{seconds}} segundos..."
+  },
+  "NotifyNewVersionModal": {
+    "title": "Nueva versión disponible"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "showAll": "Mostrar todo (+{{left}})"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "Prueba de conectividad del servicio",
+      "offline": "Desconectado",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC Launcher API"
+    }
+  },
+  "PlayerMenu": {
+    "label": {
+      "friends": "Amigos",
+      "manageSkin": "Administrar skin",
+      "viewSkin": "Ver skin",
+      "delete": "Eliminar",
+      "copyUUID": "Copiar UUID"
+    },
+    "toast": {
+      "refreshing": "Actualizando información del jugador",
+      "deleting": "Eliminando jugador"
+    }
+  },
+  "ReLoginPlayerModal": {
+    "modal": {
+      "title": "Volver a iniciar sesión"
+    },
+    "label": {
+      "user": "Nombre de usuario",
+      "password": "Contraseña"
+    },
+    "placeholder": {
+      "password": "Contraseña"
+    },
+    "button": {
+      "login": "Iniciar sesión"
+    }
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "Fuente",
+      "gameVer": "Ver. del juego",
+      "tag": "Tipo",
+      "sortBy": "Ordenar por",
+      "name": "Nombre"
+    },
+    "button": {
+      "search": "Buscar"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "Todos",
+        "Addons": "Complementos",
+        "Adventure and RPG": "Aventura RPG",
+        "API and Library": "API Biblioteca",
+        "Applied Energistics 2": "Applied Energistics 2",
+        "Armor, Tools, and Weapons": "Armadura Herramientas Armas",
+        "Automation": "Automatización",
+        "Biomes": "Biomas",
+        "Blood Magic": "Blood Magic",
+        "Buildcraft": "Buildcraft",
+        "Bug Fixes": "Corrección de errores",
+        "Cosmetic": "Cosmético",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "Create",
+        "Dimensions": "Dimensiones",
+        "Education": "Educación",
+        "Energy": "Energía",
+        "Energy, Fluid, and Item Transport": "Transporte de energía fluidos elementos",
+        "Farming": "Agricultura",
+        "Food": "Comida",
+        "Forestry": "Silvicultura",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "Genética",
+        "Industrial Craft": "Industrial Craft",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
+        "Magic": "Magia",
+        "Map and Information": "Mapa Información",
+        "MCreator": "MCreator",
+        "Miscellaneous": "Varios",
+        "Mobs": "Criaturas",
+        "Ores and Resources": "Minerales Recursos",
+        "Performance": "Rendimiento",
+        "Player Transport": "Transporte de jugadores",
+        "Processing": "Procesamiento",
+        "Redstone": "Redstone",
+        "Server Utility": "Servidor",
+        "Skyblock": "Skyblock",
+        "Storage": "Almacenamiento",
+        "Structures": "Estructuras",
+        "Technology": "Tecnología",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's Construct",
+        "Twilight Forest": "Twilight Forest",
+        "Twitch Integration": "Twitch",
+        "Utility & QoL": "Utilidad QoL",
+        "World Gen": "Generación de mundo",
+        "Auxiliary": "Auxiliar",
+        "World": "Mundo"
+      },
+      "Modrinth": {
+        "All": "Todos",
+        "adventure": "Aventura",
+        "cursed": "Maldito",
+        "decoration": "Decoración",
+        "economy": "Economía",
+        "equipment": "Equipamiento",
+        "food": "Comida",
+        "game-mechanics": "Mecánicas del juego",
+        "library": "Biblioteca",
+        "magic": "Magia",
+        "management": "Gestión",
+        "minigame": "Minijuego",
+        "mobs": "Criaturas",
+        "optimization": "Optimización",
+        "social": "Social",
+        "storage": "Almacenamiento",
+        "technology": "Tecnología",
+        "transportation": "Transporte",
+        "utility": "Utilidad",
+        "worldgen": "Generación de mundo"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "Todos",
+        "Types": "Tipos",
+        "Adventure": "Aventura",
+        "Creation": "Creación",
+        "Game Map": "Mapa de juego",
+        "Modded World": "Mundo moddeado",
+        "Parkour": "Parkour",
+        "Puzzle": "Puzzle",
+        "Survival": "Supervivencia"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "Todos",
+        "Resolution": "Resolución",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x y superior",
+        "Styles": "Estilos",
+        "Animated": "Animado",
+        "Special": "Especial",
+        "Data Packs": "Paquetes de datos",
+        "Font Packs": "Paquetes de fuentes",
+        "Medieval": "Medieval",
+        "Miscellaneous": "Varios",
+        "Mod Support": "Soporte de mods",
+        "Modern": "Moderno",
+        "Photo Realistic": "Fotorrealista",
+        "Steampunk": "Steampunk",
+        "Traditional": "Tradicional"
+      },
+      "Modrinth": {
+        "All": "Todos",
+        "Resolution": "Resolución",
+        "8x-": "8x o inferior",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x+": "512x o superior",
+        "Styles": "Estilos",
+        "audio": "Audio",
+        "blocks": "Bloques",
+        "core-shaders": "Shaders principales",
+        "entities": "Entidades",
+        "environment": "Entorno",
+        "equipment": "Equipamiento",
+        "fonts": "Fuentes",
+        "gui": "GUI",
+        "items": "Elementos",
+        "locale": "Idioma",
+        "models": "Modelos",
+        "combat": "Combate",
+        "cursed": "Maldito",
+        "decoration": "Decoración",
+        "modded": "Moddeado",
+        "realistic": "Realista",
+        "simplistic": "Sencillo",
+        "themed": "Temático",
+        "tweaks": "Ajustes",
+        "utility": "Utilidad",
+        "vanilla-like": "Tipo Vanilla"
+      }
+    },
+    "shaderTagList": {
+      "CurseForge": {
+        "All": "Todos",
+        "Styles": "Estilos",
+        "Fantasy": "Fantasía",
+        "Realistic": "Realista",
+        "Vanilla": "Vanilla"
+      },
+      "Modrinth": {
+        "All": "Todos",
+        "Styles": "Estilos",
+        "cartoon": "Cartoon",
+        "cursed": "Maldito",
+        "fantasy": "Fantasía",
+        "realistic": "Realista",
+        "semi-realistic": "Semi-realista",
+        "vanilla-like": "Tipo Vanilla",
+        "atmosphere": "Atmósfera",
+        "bloom": "Bloom",
+        "colored-lighting": "Iluminación coloreada",
+        "foliage": "Follaje",
+        "path-tracing": "Path Tracing",
+        "pbr": "PBR",
+        "reflections": "Reflejos",
+        "shadows": "Sombras",
+        "potato": "Potato",
+        "performance": "Rendimiento",
+        "low": "Bajo",
+        "medium": "Medio",
+        "high": "Alto",
+        "screenshot": "Captura de pantalla"
+      }
+    },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "Todos",
+        "Styles": "Estilos",
+        "Adventure and RPG": "Aventura RPG",
+        "Combat / PvP": "Combate PvP",
+        "Exploration": "Exploración",
+        "Extra Large": "Extra grande",
+        "FTB Official Pack": "FTB",
+        "Hardcore": "Hardcore",
+        "Horror": "Terror",
+        "Magic": "Magia",
+        "Map Based": "Basado en mapas",
+        "Mini Game": "Minijuego",
+        "Multiplayer": "Multijugador",
+        "Quests": "Misiones",
+        "Sci-Fi": "Ciencia ficción",
+        "Skyblock": "Skyblock",
+        "Small / Light": "Pequeño ligero",
+        "Tech": "Tecnología",
+        "Vanilla+": "Vanilla+"
+      },
+      "Modrinth": {
+        "All": "Todos",
+        "styles": "Estilos",
+        "adventure": "Aventura",
+        "challenging": "Desafiante",
+        "combat": "Combate",
+        "kitchen-sink": "Kitchen Sink",
+        "lightweight": "Ligero",
+        "magic": "Magia",
+        "multiplayer": "Multijugador",
+        "optimization": "Optimización",
+        "quests": "Misiones",
+        "technology": "Tecnología"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "Todos",
+        "Styles": "Estilos",
+        "Magic": "Magia",
+        "Miscellaneous": "Varios",
+        "Fantasy": "Fantasía",
+        "Mod Support": "Soporte de mods",
+        "Tech": "Tecnología",
+        "Library": "Biblioteca",
+        "Utility": "Utilidad",
+        "Adventure": "Aventura"
+      },
+      "Modrinth": {
+        "All": "Todos",
+        "styles": "Estilos",
+        "adventure": "Aventura",
+        "cursed": "Maldito",
+        "decoration": "Decoración",
+        "economy": "Economía",
+        "equipment": "Equipamiento",
+        "food": "Comida",
+        "game-mechanics": "Mecánicas del juego",
+        "library": "Biblioteca",
+        "magic": "Magia",
+        "management": "Gestión",
+        "minigame": "Minijuego",
+        "mobs": "Criaturas",
+        "optimization": "Optimización",
+        "social": "Social",
+        "storage": "Almacenamiento",
+        "technology": "Tecnología",
+        "transportation": "Transporte",
+        "utility": "Utilidad",
+        "worldgen": "Generación de mundo"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "Popularidad",
+        "Latest update": "Última actualización",
+        "Creation date": "Fecha de creación",
+        "Total downloads": "Descargas totales",
+        "A-Z": "A-Z"
+      },
+      "Modrinth": {
+        "relevance": "Relevancia",
+        "downloads": "Descargas",
+        "follows": "Seguidores",
+        "newest": "Fecha de publicación",
+        "updated": "Fecha de actualización"
+      }
+    },
+    "versionList": {
+      "All": "Todos"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Actualización del lanzador",
+    "body": "La nueva versión ha sido descargada. Reinicia SJMCL para completar la actualización.",
+    "bodyMSI": "La nueva versión ha sido descargada. Al hacer clic en Instalar se cerrará SJMCL y se ejecutará el instalador.",
+    "button": {
+      "restart": "Reiniciar",
+      "install": "Instalar",
+      "later": "Más tarde"
+    }
+  },
+  "RestoreConfigConfirmDialog": {
+    "title": "Restaurar configuración del lanzador",
+    "body": "Esta acción restaurará todas las configuraciones del lanzador a sus valores predeterminados. ¿Estás seguro de que deseas continuar?"
+  },
+  "RestoreInstanceConfigConfirmDialog": {
+    "title": "Restaurar configuración de instancia",
+    "body": "Esta acción restaurará la configuración específica del juego de esta instancia a la configuración global actual. ¿Estás seguro de que deseas continuar?"
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Ten cuidado al editar el archivo de configuración sin procesar del lanzador. Un formato incorrecto puede provocar la pérdida de la configuración original o impedir que el lanzador funcione correctamente."
+  },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "Establecer como fondo del lanzador"
+    }
+  },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Seleccionar instancia",
+      "titleForLaunch": "Seleccionar instancia para iniciar"
+    }
+  },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "Seleccionar jugador",
+      "titleForAdd": "Seleccionar nuevo jugador para agregar",
+      "titleForLaunch": "Seleccionar jugador para jugar"
+    }
+  },
+  "Services": {
+    "config": {
+      "retrieveLauncherConfig": {
+        "error": {
+          "title": "Error al obtener la configuración del lanzador"
+        }
+      },
+      "updateLauncherConfig": {
+        "error": {
+          "title": "Error al actualizar la configuración del lanzador"
+        }
+      },
+      "restoreLauncherConfig": {
+        "success": "Configuración del lanzador restaurada exitosamente",
+        "error": {
+          "title": "Error al restaurar la configuración del lanzador"
+        }
+      },
+      "exportLauncherConfig": {
+        "success": "Configuración del lanzador exportada exitosamente",
+        "error": {
+          "title": "Error al exportar la configuración del lanzador",
+          "description": {
+            "FETCH_ERROR": "Error al obtener el servidor meta"
+          }
+        }
+      },
+      "importLauncherConfig": {
+        "success": "Configuración del lanzador importada exitosamente",
+        "error": {
+          "title": "Error al importar la configuración del lanzador",
+          "description": {
+            "FETCH_ERROR": "Error al obtener el servidor meta",
+            "INVALID_CODE": "Código inválido",
+            "CODE_EXPIRED": "Código expirado",
+            "VERSION_MISMATCH": "Versión del lanzador no compatible"
+          }
+        }
+      },
+      "retrieveCustomBackgroundList": {
+        "success": "Lista de fondos personalizados obtenida exitosamente",
+        "error": {
+          "title": "Error al obtener la lista de fondos personalizados"
+        }
+      },
+      "addCustomBackground": {
+        "success": "Fondo personalizado agregado exitosamente",
+        "error": {
+          "title": "Error al agregar fondo personalizado"
+        }
+      },
+      "deleteCustomBackground": {
+        "success": "Fondo personalizado eliminado exitosamente",
+        "error": {
+          "title": "Error al eliminar fondo personalizado"
+        }
+      },
+      "retrieveJavaList": {
+        "error": {
+          "title": "Error al obtener la lista de Java instalados"
+        }
+      },
+      "validateJava": {
+        "error": {
+          "title": "Error al validar Java",
+          "description": {
+            "JAVA_EXEC_INVALID": "El ejecutable de Java es inválido"
+          }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Error al descargar el entorno de ejecución de Mojang Java"
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "Directorio del juego inválido",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "El directorio ya ha sido agregado",
+            "GAME_DIR_NOT_EXIST": "El directorio no existe"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "Caché de descarga limpiada exitosamente",
+        "error": {
+          "title": "Error al limpiar la caché de descarga",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "Hay tareas de descarga activas en progreso.",
+            "FILE_DELETION_FAILED": "Error al eliminar archivos, es posible que estén en uso."
+          }
+        }
+      }
+    },
+    "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "Error al obtener la lista de jugadores"
+        }
+      },
+      "addPlayerOffline": {
+        "success": "Jugador offline agregado exitosamente",
+        "error": {
+          "title": "Error al agregar jugador offline",
+          "description": {
+            "DUPLICATE": "El jugador ya existe",
+            "FULL_LOGIN_UNAVAILABLE": "Por favor, inicia sesión con tu cuenta de Microsoft antes de acceder a esta función.",
+            "INVALID": "El UUID es inválido",
+            "TEXTURE_ERROR": "No se puede obtener la textura del jugador"
+          }
+        }
+      },
+      "fetchOAuthCode": {
+        "error": {
+          "title": "Error al obtener el código de autenticación",
+          "description": {
+            "NETWORK_ERROR": "No se puede conectar al servidor",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "INVALID": "El tipo de jugador es inválido",
+            "NOT_FOUND": "El servidor no existe"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "Jugador agregado exitosamente",
+        "error": {
+          "title": "Error al agregar jugador",
+          "description": {
+            "DUPLICATE": "El jugador ya existe",
+            "FULL_LOGIN_UNAVAILABLE": "Por favor, inicia sesión con tu cuenta de Microsoft antes de acceder a esta función.",
+            "NETWORK_ERROR": "No se puede conectar al servidor",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NOT_FOUND": "El servidor de autenticación no existe",
+            "CANCELLED": "Inicio de sesión OAuth cancelado",
+            "INVALID": "El tipo de servidor es inválido",
+            "NO_MINECRAFT_PROFILE": "No se encontró ningún perfil de Minecraft",
+            "XSTS_BANNED": "Tu cuenta ha sido bloqueada de los servicios de XBOX",
+            "XSTS_PARENTAL_RESTRICTION": "Tu cuenta está bloqueada por los controles parentales",
+            "XSTS_NO_XBOX_ACCOUNT": "Tu cuenta de Microsoft no está vinculada a una cuenta de XBOX, por favor visita minecraft.net para configurar una",
+            "XSTS_TERMS_NOT_ACCEPTED": "Necesitas aceptar los Términos de Servicio de XBOX antes de continuar",
+            "XSTS_REGION_BANNED": "Tu cuenta es de un país o región donde XBOX Live no está disponible",
+            "XSTS_CHILD_ACCOUNT": "Tu cuenta es una cuenta de menor y requiere consentimiento parental, por favor visita family.microsoft.com para autorizar",
+            "XSTS_UNKNOWN_ERROR": "Ocurrió un error de autenticación XSTS desconocido"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "Sesión re-iniciada exitosamente",
+        "error": {
+          "title": "Error al re-iniciar sesión",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "EXPIRED": "El token de acceso ha expirado, por favor re-inicia sesión",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar al servidor",
+            "INVALID": "El tipo de jugador es inválido",
+            "CANCELLED": "Re-inicio de sesión OAuth cancelado",
+            "NO_MINECRAFT_PROFILE": "No se encontró ningún perfil de Minecraft",
+            "XSTS_BANNED": "Tu cuenta ha sido bloqueada de los servicios de XBOX",
+            "XSTS_PARENTAL_RESTRICTION": "Tu cuenta está bloqueada por los controles parentales",
+            "XSTS_NO_XBOX_ACCOUNT": "Tu cuenta de Microsoft no está vinculada a una cuenta de XBOX, por favor visita minecraft.net para configurar una",
+            "XSTS_TERMS_NOT_ACCEPTED": "Necesitas aceptar los Términos de Servicio de XBOX antes de continuar",
+            "XSTS_REGION_BANNED": "Tu cuenta es de un país o región donde XBOX Live no está disponible",
+            "XSTS_CHILD_ACCOUNT": "Tu cuenta es una cuenta de menor y requiere consentimiento parental, por favor visita family.microsoft.com para autorizar",
+            "XSTS_UNKNOWN_ERROR": "Ocurrió un error de autenticación XSTS desconocido"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "Jugador agregado exitosamente",
+        "error": {
+          "title": "Error al agregar jugador",
+          "description": {
+            "DUPLICATE": "El jugador ya existe",
+            "FULL_LOGIN_UNAVAILABLE": "Por favor, inicia sesión con tu cuenta de Microsoft antes de acceder a esta función.",
+            "NETWORK_ERROR": "No se puede conectar al servidor",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "INVALID": "Cuenta o contraseña incorrectos",
+            "NOT_FOUND": "El servidor no existe",
+            "EXPIRED": "El token de acceso ha expirado, por favor re-inicia sesión"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Sesión re-iniciada exitosamente",
+        "error": {
+          "title": "Error al re-iniciar sesión",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "EXPIRED": "El token de acceso ha expirado, por favor re-inicia sesión",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar al servidor",
+            "INVALID": "Cuenta o contraseña incorrectos"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "Jugador agregado exitosamente",
+        "error": {
+          "title": "Error al agregar jugador",
+          "description": {
+            "DUPLICATE": "El jugador ya existe",
+            "FULL_LOGIN_UNAVAILABLE": "Por favor, inicia sesión con tu cuenta de Microsoft antes de acceder a esta función.",
+            "NETWORK_ERROR": "Error al conectar al servidor",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "EXPIRED": "El token de acceso ha expirado, por favor re-inicia sesión"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "Skin del jugador actualizada exitosamente",
+        "error": {
+          "title": "Error al actualizar la skin del jugador",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "INVALID": "El tipo de jugador es inválido",
+            "TEXTURE_ERROR": "No se puede obtener la textura del jugador"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "Skin del jugador actualizada exitosamente",
+        "error": {
+          "title": "Error al actualizar la skin del jugador",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "INVALID": "El tipo de jugador es inválido",
+            "TEXTURE_ERROR": "No se puede obtener la textura del jugador"
+          }
+        }
+      },
+      "deletePlayer": {
+        "success": "Jugador eliminado exitosamente",
+        "error": {
+          "title": "Error al eliminar jugador",
+          "description": {
+            "NOT_FOUND": "El jugador no existe"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "Información del jugador actualizada exitosamente",
+        "error": {
+          "title": "Error al actualizar la información del jugador",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "EXPIRED": "El token de acceso ha expirado, por favor inicie sesión nuevamente",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "INVALID": "El tipo de jugador es inválido"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "Lista de amigos obtenida exitosamente",
+        "error": {
+          "title": "Error al obtener la lista de amigos de Microsoft",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "INVALID": "El jugador actual no es una cuenta de Microsoft",
+            "EXPIRED": "El token de acceso ha expirado, por favor inicie sesión nuevamente",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con los servicios de Minecraft",
+            "FORBIDDEN": "Esta cuenta no tiene permiso para acceder a los amigos",
+            "TOO_MANY_REQUESTS": "Demasiadas solicitudes, por favor intente de nuevo más tarde",
+            "SERVICE_UNAVAILABLE": "Los servicios de Minecraft no están disponibles temporalmente"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "Relación de amigo actualizada exitosamente",
+        "error": {
+          "title": "Error al actualizar la relación de amigo de Microsoft",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "INVALID": "Los parámetros de acción de amigo son inválidos",
+            "EXPIRED": "El token de acceso ha expirado, por favor inicie sesión nuevamente",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con los servicios de Minecraft",
+            "FORBIDDEN": "No se puede agregar como amigo en este momento. Verifique la configuración de cuenta relevante para usted y el otro jugador",
+            "TOO_MANY_REQUESTS": "Demasiadas solicitudes, por favor intente de nuevo más tarde",
+            "SERVICE_UNAVAILABLE": "Los servicios de Minecraft no están disponibles temporalmente",
+            "UNKNOWN_PROFILE": "El jugador objetivo no existe",
+            "CANNOT_ADD_SELF": "No puede agregarse a sí mismo como amigo",
+            "DUPLICATED_PROFILES": "Solicitud de operación de amigo duplicada"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "Error al obtener la lista de servidores"
+        }
+      },
+      "fetchAuthServer": {
+        "error": {
+          "title": "Error al obtener la información del servidor de autenticación",
+          "description": {
+            "DUPLICATE": "El servidor ya ha sido agregado",
+            "INVALID": "URL del servidor inválida",
+            "NOT_FOUND": "El servidor no existe"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "Servidor de autenticación agregado exitosamente",
+        "error": {
+          "title": "Error al agregar el servidor de autenticación",
+          "description": {
+            "DUPLICATE": "El servidor ya ha sido agregado",
+            "INVALID": "URL del servidor inválida",
+            "NOT_FOUND": "El servidor no existe"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "Servidor de autenticación eliminado exitosamente",
+        "error": {
+          "title": "Error al eliminar el servidor de autenticación",
+          "description": {
+            "NOT_FOUND": "El servidor de autenticación no existe"
+          }
+        }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "Error al obtener la información de cuenta externa",
+          "description": {
+            "NOT_FOUND": "Error al leer el archivo de información de cuenta externa."
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "Jugadores y servidores de autenticación externos importados exitosamente",
+        "error": {
+          "title": "Error al importar jugadores y servidores de autenticación externos"
+        }
+      }
+    },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "Error al seleccionar el JRE adecuado",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "NO_SUITABLE_JAVA": "No se encontró una versión de Java adecuada",
+            "SELECTED_JAVA_UNAVAILABLE": "El runtime de Java seleccionado manualmente ha sido eliminado o no está disponible"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "Error al validar los archivos del juego",
+          "description": {
+            "MOD_LOADER_NOT_INSTALLED": "La instalación del cargador de mods no se ha completado",
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "GAME_FILES_INCOMPLETE": "Los archivos del juego están incompletos",
+            "LAUNCHING_STATE_NOT_FOUND": "No se encontró el estado de lanzamiento"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "Error al validar el jugador",
+          "description": {
+            "NOT_FOUND": "El jugador no existe",
+            "EXPIRED": "El token de acceso ha expirado, por favor inicie sesión nuevamente",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "AUTHLIB_INJECTOR_NOT_READY": "Error al descargar Authlib-Injector, verifique su conexión a internet",
+            "SAVE_ERROR": "Error al guardar Authlib-Injector",
+            "LAUNCHING_STATE_NOT_FOUND": "No se encontró el estado de lanzamiento"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "Error al iniciar el juego",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "No se encontró el estado de lanzamiento",
+            "AUTH_SERVER_NOT_FOUND": "Servidor de autenticación no encontrado"
+          }
+        }
+      }
+    },
+    "resource": {
+      "fetchGameVersionList": {
+        "error": {
+          "title": "Error al obtener la lista de versiones del juego",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "Error al obtener los metadatos de la versión del juego",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "CLIENT_VERSION_NOT_FOUND": "La versión del juego solicitada no existe"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "Error al obtener la lista de versiones del cargador de mods",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet"
+          }
+        }
+      },
+      "fetchOptiFineVersionList": {
+        "error": {
+          "title": "Error al obtener la lista de versiones de OptiFine",
+          "description": {
+            "NETWORK_ERROR": "Error al conectar con el servidor"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "Error al obtener la lista de recursos",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "Error al obtener la lista de versiones de recursos",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "Error al descargar el servidor del juego",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "Error al obtener el recurso remoto",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet"
+          }
+        }
+      },
+      "updateMod": {
+        "error": {
+          "title": "Error al descargar la última versión del mod",
+          "description": {
+            "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "FILE_OPERATION_ERROR": "Error al renombrar el archivo del mod anterior"
+          }
+        }
+      }
+    },
+    "instance": {
+      "retrieveInstanceList": {
+        "error": {
+          "title": "Error al obtener la lista de instancias del juego",
+          "description": {
+            "INVALID_NAME_ERROR": "Nombre de instancia inválido",
+            "INVALID_SOURCE_PATH": "Ruta de origen inválida",
+            "CONFLICT_NAME_ERROR": "El nombre de instancia ya existe",
+            "FILE_MOVE_FAILED": "Error al mover los archivos de la instancia"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "Error al crear la tarea de descarga de la instancia",
+          "description": {
+            "CONFLICT_NAME_ERROR": "El nombre de instancia ya existe",
+            "FOLDER_CREATION_FAILED": "Error al crear la carpeta de destino",
+            "FILE_CREATION_FAILED": "Error al crear el archivo de destino",
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "CLIENT_JSON_PARSE_ERROR": "Error al analizar la información de versión de la instancia",
+            "ASSET_INDEX_PARSE_ERROR": "Error al analizar el índice de recursos"
+          }
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "Error al actualizar la configuración de la instancia",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "NOT_FOUND": "Instancia no encontrada"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "Error al obtener la configuración del juego de la instancia",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe"
+          }
+        }
+      },
+      "restoreInstanceGameConfig": {
+        "success": "Configuración del juego de la instancia restaurada exitosamente",
+        "error": {
+          "title": "Error al restaurar la configuración del juego de la instancia",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "SAVE_ERROR": "Error al guardar la configuración de la instancia"
+          }
+        }
+      },
+      "retrieveInstanceSubdirPath": {
+        "error": {
+          "title": "Error al obtener la ruta del directorio de la instancia",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe o tiene un error de tipo"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "Instancia eliminada exitosamente",
+        "error": {
+          "title": "Error al eliminar la instancia",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe"
+          }
+        }
+      },
+      "renameInstance": {
+        "error": {
+          "title": "Error al renombrar la instancia",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "CONFLICT_NAME_ERROR": "Ya existe un nombre de instancia duplicado",
+            "INVALID_NAME_ERROR": "Nombre de instancia inválido",
+            "INVALID_SOURCE_PATH": "Ruta de origen inválida",
+            "FILE_MOVE_FAILED": "Error al mover los archivos de la instancia"
+          }
+        }
+      },
+      "copyResourcesToInstances": {
+        "success": "Recurso copiado exitosamente",
+        "error": {
+          "title": "Error al copiar el recurso",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe o error de tipo",
+            "INVALID_SOURCE_PATH": "Ruta de origen inválida",
+            "ZIP_FILE_PROCESS_FAILED": "Error al procesar el archivo zip",
+            "FILE_COPY_FAILED": "Error al ejecutar el comando de copia de archivo",
+            "FOLDER_CREATION_FAILED": "Error al crear la carpeta de destino"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "Recurso movido exitosamente",
+        "error": {
+          "title": "Error al mover el recurso",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe o error de tipo",
+            "INVALID_SOURCE_PATH": "Ruta de origen inválida",
+            "FILE_MOVE_FAILED": "Error al ejecutar el comando de mover archivo",
+            "FOLDER_CREATION_FAILED": "Error al crear la carpeta de destino"
+          }
+        }
+      },
+      "retrieveWorldList": {
+        "error": {
+          "title": "Error al obtener la lista de mundos"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "Error al obtener la lista de servidores del juego",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat puede haber sido corrupto"
+          }
+        }
+      },
+      "addGameServer": {
+        "success": "Servidor del juego agregado exitosamente",
+        "error": {
+          "title": "Error al agregar el servidor del juego",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "FILE_OPERATION_ERROR": "Error al escribir la información del servidor",
+            "DUPLICATE_SERVER": "El servidor ya existe"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Servidor del juego eliminado exitosamente",
+        "error": {
+          "title": "Error al eliminar el servidor del juego",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "FILE_OPERATION_ERROR": "Error al escribir la información del servidor",
+            "SERVER_NOT_FOUND": "Servidor no encontrado"
+          }
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Error al obtener la lista de mods locales",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "Error al obtener la lista de paquetes de recursos"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "Error al obtener la lista de paquetes de recursos del servidor"
+        }
+      },
+      "retrieveSchematicList": {
+        "error": {
+          "title": "Error al obtener la lista de esquemáticos"
+        }
+      },
+      "retrieveShaderPackList": {
+        "error": {
+          "title": "Error al obtener la lista de paquetes de shaders"
+        }
+      },
+      "retrieveScreenshotList": {
+        "error": {
+          "title": "Error al obtener la lista de capturas de pantalla"
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "Error al cambiar el estado del mod",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "El archivo del mod no existe, puede haber sido renombrado, movido o eliminado"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "Error al obtener los detalles del mundo",
+          "description": {
+            "WORLD_NOT_EXIST_ERROR": "El mundo no existe",
+            "LEVEL_NOT_EXIST_ERROR": "Los datos del nivel no existen",
+            "LEVEL_PARSE_ERROR": "Error al analizar los datos del nivel"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "El acceso directo de inicio se ha agregado al escritorio",
+        "error": {
+          "title": "Error al crear el acceso directo de inicio",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "Error en la ejecución del comando",
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe"
+          }
+        }
+      },
+      "finishModLoaderInstall": {
+        "loading": "Instalando cargador de mods para {{instanceName}}",
+        "success": "Cargador de mods instalado exitosamente",
+        "error": {
+          "title": "Error al instalar el cargador de mods",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "INSTALLATION_DUPLICATED": "Ya hay otro proceso de instalación en curso",
+            "MAIN_CLASS_NOT_FOUND": "Clase principal no encontrada en la versión del cargador de mods",
+            "PROCESSOR_EXECUTION_FAILED": "Error al ejecutar el proceso de instalación",
+            "LOADER_INSTALLER_NOT_FOUND": "Archivo instalador del cargador de mods no encontrado"
+          }
+        }
+      },
+      "finishOptiFineLoaderInstall": {
+        "loading": "Instalando OptiFine para {{instanceName}}",
+        "success": "OptiFine instalado exitosamente",
+        "error": {
+          "title": "Error al instalar OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "INSTALLATION_DUPLICATED": "Ya hay otro proceso de instalación en curso",
+            "PROCESSOR_EXECUTION_FAILED": "Error al ejecutar el proceso de instalación",
+            "LOADER_INSTALLER_NOT_FOUND": "Archivo instalador de OptiFine no encontrado",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Error al analizar la información de versión de OptiFine",
+            "INVALID_SOURCE_PATH": "Ruta de origen inválida",
+            "NO_SUITABLE_JAVA": "No se encontró un runtime de Java adecuado",
+            "SELECTED_JAVA_UNAVAILABLE": "El runtime de Java seleccionado no está disponible"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "No se puede cambiar el cargador de mods",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Instalado por un proceso externo, no se puede configurar"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "Error al cambiar el cargador de mods",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Instalado por un proceso externo, no se puede configurar"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "Error al obtener la información del recurso del modpack",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "Archivo del modpack no encontrado, puede haber sido renombrado, movido o eliminado",
+            "MODPACK_MANIFEST_PARSE_ERROR": "Error al analizar el archivo de manifiesto del modpack",
+            "NETWORK_ERROR": "Error al obtener la información del cargador de mods requerida por el modpack",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "No se pudo reconocer la versión del cargador de mods requerida por este modpack"
+          }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "Error al obtener la lista de archivos exportables"
+        }
+      },
+      "exportModpack": {
+        "success": "Modpack exportado exitosamente",
+        "error": {
+          "title": "Error al exportar el modpack"
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "Icono personalizado de instancia agregado exitosamente",
+        "error": {
+          "title": "Error al agregar el icono personalizado de instancia"
+        }
+      }
+    },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "Error al obtener la lista de extensiones"
+        }
+      },
+      "addExtension": {
+        "success": "Extensión agregada exitosamente",
+        "error": {
+          "title": "Error al agregar la extensión",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "El formato del contenido del paquete de extensión es inválido",
+            "INVALID_IDENTIFIER": "El identificador de la extensión es inválido",
+            "IDENTIFIER_MISMATCH": "El identificador de la extensión no coincide con la expectativa",
+            "INVALID_NAME": "El nombre de la extensión es inválido",
+            "LAUNCHER_VERSION_TOO_LOW": "La versión del lanzador es demasiado antigua",
+            "EXTENSION_NOT_FOUND": "Archivo de paquete objetivo no encontrado"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "Extensión eliminada exitosamente",
+        "error": {
+          "title": "Error al eliminar la extensión",
+          "description": {
+            "INVALID_IDENTIFIER": "El identificador de la extensión es inválido",
+            "EXTENSION_NOT_FOUND": "Extensión no encontrada"
+          }
+        }
+      }
+    },
+    "task": {
+      "scheduleProgressiveTaskGroup": {
+        "error": "Error al crear la tarea"
+      },
+      "onTaskGroupUpdate": {
+        "status": {
+          "Started": "La descarga de {{param}} ha comenzado",
+          "Failed": "La descarga de {{param}} falló parcialmente, por favor intente de nuevo",
+          "Completed": "{{param}} se ha descargado exitosamente",
+          "Stopped": "La descarga de {{param}} se ha detenido",
+          "Cancelled": "La descarga de {{param}} se ha cancelado"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "Archivo eliminado exitosamente",
+        "error": {
+          "title": "Error al eliminar el archivo"
+        }
+      }
+    }
+  },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "Configuración del Juego",
+      "java": "Java",
+      "general": "General",
+      "appearance": "Apariencia",
+      "download": "Descarga",
+      "intelligence": "Inteligencia",
+      "extension": "Extensión",
+      "help": "Documentos y Ayuda",
+      "about": "Acerca de"
+    }
+  },
+  "SkinPreview": {
+    "cape": "Capa",
+    "animation": {
+      "idle": "Quieto",
+      "walk": "Caminar",
+      "run": "Correr",
+      "wave": "Saludar"
+    },
+    "button": {
+      "enableRotation": "Habilitar Rotación",
+      "disableRotation": "Deshabilitar Rotación",
+      "play": "Reproducir",
+      "pause": "Pausar"
+    },
+    "error": {
+      "loadSkin": "Error al cargar la skin"
+    }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "Búsqueda Global"
+    },
+    "tip": "Busca recursos de juego locales y en línea en un solo lugar",
+    "empty": "No se encontraron resultados",
+    "resource": {
+      "mod": "Buscar mods de {{query}}",
+      "world": "Buscar mundos de {{query}}",
+      "resourcepack": "Buscar paquetes de recursos de {{query}}",
+      "shader": "Buscar paquetes de shaders de {{query}}",
+      "datapack": "Buscar paquetes de datos de {{query}}",
+      "modpack": "Buscar modpacks de {{query}}",
+      "curseforge": "en CurseForge",
+      "modrinth": "en Modrinth"
+    },
+    "result": {
+      "page": "Página",
+      "recentViewed": "Vistos Recientemente",
+      "instance": "Instancia",
+      "player": "Jugador",
+      "curseforge": "Buscar en CurseForge",
+      "modrinth": "Buscar en Modrinth"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "Danos una estrella en GitHub"
+    },
+    "body": "Si te gusta nuestro producto y te gustaría apoyarnos, ¿podrías darnos una estrella en GitHub? Esta pequeña acción significa mucho para nosotros y nos motivará a seguir entregando nuevas funcionalidades y experiencias para ti.",
+    "button": {
+      "later": "Más tarde",
+      "starUs": "Danos una estrella"
+    }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "Sincronizar Configuración - Exportar"
+    },
+    "label": {
+      "token": "Token"
+    },
+    "helper": "Ingresa el token de arriba en el dispositivo al que deseas exportar",
+    "countdown": "{{seconds}} segundos hasta la actualización"
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "Sincronizar Configuración - Importar"
+    },
+    "label": {
+      "token": "Token"
+    },
+    "helper": "Ingresa el token generado por el dispositivo del que deseas importar"
+  },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "Registros del Juego",
+      "gameError": "¡Ups! El Juego se Ha Cerrado Inesperadamente."
+    }
+  },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "Ruta de Ejecución No Segura",
+      "content": "SJMCL se está ejecutando actualmente desde un directorio temporal o no válido. Tu configuración y datos del juego podrían perderse. Por favor, mueve SJMCL a otra ubicación y ejecútalo nuevamente.",
+      "btnContinue": "Ejecutar de Todas Formas"
+    }
+  },
+  "Utils": {
+    "datetime": {
+      "formatRelativeTime": {
+        "now": "ahora",
+        "minutes-ago": "hace {{count}} minutos",
+        "last-hour": "la última hora",
+        "hours-ago": "hace {{count}} horas",
+        "yesterday": "ayer",
+        "others": "el {{time}}"
+      }
+    },
+    "env": {
+      "checkFrontendCompatibility": {
+        "warning": {
+          "title": "La versión del webview del sistema está desactualizada. Algunos elementos de la interfaz pueden no mostrarse correctamente."
+        }
+      }
+    },
+    "wiki": {
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Java_Edition_{{version}}"
+      }
+    }
+  },
+  "ViewSkinModal": {
+    "skinView": "Ver Skin"
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "¡Bienvenido!"
+    },
+    "body": {
+      "text": "¡Bienvenido a SJMCL! Antes de comenzar, por favor asegúrate de leer y aceptar nuestro <terms>Acuerdo de Usuario</terms>."
+    },
+    "warning": {
+      "unstableVersion": "Estás usando la versión {{versionLabel}} de SJMCL. Algunas funciones pueden ser inestables o incompletas. Los reportes de errores y solicitudes de funciones son bienvenidos.",
+      "winArm64Notice": "SJMCL ahora es compatible con Windows en Arm. Si estás usando una plataforma <b>QUALCOMM</b>, es posible que necesites instalar el <glpack>OpenGL Compatibility Pack</glpack> antes de iniciar el juego."
+    },
+    "button": {
+      "agree": "Aceptar"
+    }
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "Datos de Nivel del Mundo - {{worldName}}"
+    }
+  }
+}
