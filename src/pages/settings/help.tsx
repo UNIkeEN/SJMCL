@@ -99,6 +99,24 @@ const HelpSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t("HelpSettingsPage.minecraft.settings.modrinth.title"),
+          description: t(
+            "HelpSettingsPage.minecraft.settings.modrinth.description"
+          ),
+          children: (
+            <CommonIconButton
+              label={t("HelpSettingsPage.minecraft.settings.modrinth.url")}
+              icon="external"
+              withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() =>
+                openUrl(t("HelpSettingsPage.minecraft.settings.modrinth.url"))
+              }
+            />
+          ),
+        },
       ],
     },
     {

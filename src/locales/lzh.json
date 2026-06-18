@@ -1372,6 +1372,11 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "尋探生界上最大的 礦藝 改囊儲存庫"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "開源而今式之礦藝資源平臺",
+          "url": "https://modrinth.com/discover/mods"
         }
       }
     },

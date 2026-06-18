@@ -1372,6 +1372,11 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "Descubre el repositorio de mods de Minecraft más grande del mundo"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "Una plataforma moderna y de código abierto para recursos de Minecraft",
+          "url": "https://modrinth.com/discover/mods"
         }
       }
     },
