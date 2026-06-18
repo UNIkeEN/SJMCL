@@ -118,6 +118,9 @@ jobs:
           workspaces: "./src-tauri -> target"
           key: ${{ matrix.platform }}
 
+      - name: Bump version for test build
+        run: npm run version bump 0.0.1
+
       - name: Test Build
         run: npm run tauri build -- --features devtools --no-bundle -- --profile test-build
         env:
