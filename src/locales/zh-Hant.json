@@ -1124,7 +1124,8 @@
     "version": {
       "dev": "開發版本",
       "nightly": "夜間構建版本",
-      "beta": "測試版本"
+      "beta": "測試版本",
+      "test-build": "測試構建版本"
     },
     "viewOnWiki": "在 Minecraft Wiki 中檢視"
   },
