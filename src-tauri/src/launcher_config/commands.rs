@@ -333,13 +333,16 @@ pub async fn clear_download_cache(app: AppHandle) -> SJMCLResult<()> {
 #[tauri::command]
 pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInfo> {
   let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let current_version = {
+  let (current_version, build_type) = {
     let config_state = config_binding.lock()?;
-    config_state.basic_info.launcher_version.clone()
+    (
+      config_state.basic_info.launcher_version.clone(),
+      config_state.basic_info.build_type.clone(),
+    )
   };
 
-  // skip non-semver versions
-  if semver::Version::parse(&current_version).is_err() {
+  // skip non-release builds, then validate the version is a proper semver
+  if build_type != "release" || semver::Version::parse(&current_version).is_err() {
     return Ok(VersionMetaInfo::default());
   }
 

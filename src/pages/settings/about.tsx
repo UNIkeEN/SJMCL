@@ -78,27 +78,30 @@ const AboutSettingsPage = () => {
               <Text fontSize="xs-sm" className="secondary-text">
                 {`${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`}
               </Text>
-              {isValidSemanticVersion(basicInfo.launcherVersion) && (
-                <Button
-                  variant="subtle"
-                  colorScheme={newerVersion.version ? primaryColor : "gray"}
-                  size="xs"
-                  onClick={
-                    newerVersion.version
-                      ? () => {
-                          openSharedModal("notify-new-version", {
-                            newVersion: newerVersion,
-                          });
-                        }
-                      : checkUpdate
-                  }
-                  isLoading={checkingUpdate}
-                >
-                  {newerVersion.version
-                    ? t("AboutSettingsPage.about.settings.version.foundNew")
-                    : t("AboutSettingsPage.about.settings.version.checkUpdate")}
-                </Button>
-              )}
+              {basicInfo.buildType === "release" &&
+                isValidSemanticVersion(basicInfo.launcherVersion) && (
+                  <Button
+                    variant="subtle"
+                    colorScheme={newerVersion.version ? primaryColor : "gray"}
+                    size="xs"
+                    onClick={
+                      newerVersion.version
+                        ? () => {
+                            openSharedModal("notify-new-version", {
+                              newVersion: newerVersion,
+                            });
+                          }
+                        : checkUpdate
+                    }
+                    isLoading={checkingUpdate}
+                  >
+                    {newerVersion.version
+                      ? t("AboutSettingsPage.about.settings.version.foundNew")
+                      : t(
+                          "AboutSettingsPage.about.settings.version.checkUpdate"
+                        )}
+                  </Button>
+                )}
             </HStack>
           ),
         },
