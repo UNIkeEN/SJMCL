@@ -30,8 +30,8 @@ panic = "abort"
 
 # Faster-to-compile profile for CI test builds. Inherits the release baseline
 # (strip, panic=abort) but drops the costly optimizations (opt-level=3, lto).
-# Used only by the test workflow via `tauri build -- --profile ci`.
-[profile.ci]
+# Used only by the test workflow via `tauri build -- --profile test-build`.
+[profile.test-build]
 inherits = "release"
 opt-level = 1
 lto = false
