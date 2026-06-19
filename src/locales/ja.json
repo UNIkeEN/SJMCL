@@ -114,12 +114,6 @@
       }
     }
   },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "モッドパックをインポート",
-      "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
-    }
-  },
   "AddAuthServerModal": {
     "header": {
       "title": "認証サーバー追加"
@@ -1648,6 +1642,17 @@
       "description": "この Java を削除しますか。（この Java てゲームの起動ができなくなりますが、 Java ファイルの削除はしません。）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英語",
+      "es": "スペイン語",
+      "fr": "フランス語",
+      "ja": "",
+      "lzh": "漢文",
+      "zh-Hans": "中国語（簡体字）",
+      "zh-Hant": "中国語（繁体字）"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "前回の実行は異常終了しました",
@@ -1694,6 +1699,12 @@
     "releaseDate": "リリース日 {{date}}",
     "notCompatibleWith": "{{item}} に非互換",
     "noVersionSelected": "バージョンを選択していない"
+  },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "モッドパックをインポート",
+      "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
+    }
   },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
