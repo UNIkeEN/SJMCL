@@ -106,14 +106,12 @@ const HelpSettingsPage = () => {
           ),
           children: (
             <CommonIconButton
-              label={t("HelpSettingsPage.minecraft.settings.modrinth.url")}
+              label="https://modrinth.com/discover/mods"
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
-              onClick={() =>
-                openUrl(t("HelpSettingsPage.minecraft.settings.modrinth.url"))
-              }
+              onClick={() => openUrl("https://modrinth.com/discover/mods")}
             />
           ),
         },

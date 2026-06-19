@@ -1375,8 +1375,7 @@
         },
         "modrinth": {
           "title": "Modrinth",
-          "description": "開源而今式之礦藝資源平臺",
-          "url": "https://modrinth.com/discover/mods"
+          "description": "開源而今式之礦藝資源平臺"
         }
       }
     },

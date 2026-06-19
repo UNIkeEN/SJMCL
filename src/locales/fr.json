@@ -1375,8 +1375,7 @@
         },
         "modrinth": {
           "title": "Modrinth",
-          "description": "Une plateforme de ressources Minecraft moderne et open source",
-          "url": "https://modrinth.com/discover/mods"
+          "description": "Une plateforme de ressources Minecraft moderne et open source"
         }
       }
     },

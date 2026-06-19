@@ -1375,8 +1375,7 @@
         },
         "modrinth": {
           "title": "Modrinth",
-          "description": "开源、现代的 Minecraft 资源平台",
-          "url": "https://modrinth.com/discover/mods"
+          "description": "开源、现代的 Minecraft 资源平台"
         }
       }
     },
