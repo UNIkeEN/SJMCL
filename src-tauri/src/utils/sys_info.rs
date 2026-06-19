@@ -43,6 +43,7 @@ pub fn get_mapped_locale() -> String {
   #[cfg(target_os = "macos")]
   {
     let language_map = [
+      ("es", vec!["es"]),
       ("fr", vec!["fr"]),
       ("ja", vec!["ja"]),
       ("zh-Hans", vec!["zh-Hans", "wuu-Hans", "yue-Hans"]),
@@ -58,6 +59,7 @@ pub fn get_mapped_locale() -> String {
   #[cfg(not(target_os = "macos"))]
   {
     let language_map = [
+      ("es", vec!["es"]),
       ("fr", vec!["fr"]),
       ("ja", vec!["ja"]),
       ("zh-Hans", vec!["zh-CN", "zh-SG"]),
