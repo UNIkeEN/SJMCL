@@ -1250,7 +1250,9 @@
       "settings": {
         "resolution": {
           "title": "戲解析度",
-          "switch": "全幕"
+          "preset": "預定之度",
+          "switch": "全幕",
+          "warning": "此度或逾示器之極"
         },
         "customTitle": {
           "title": "自定匡標題"
