@@ -1244,7 +1244,9 @@
       "settings": {
         "resolution": {
           "title": "Résolution du jeu",
-          "switch": "Plein écran"
+          "preset": "Préréglage",
+          "switch": "Plein écran",
+          "warning": "La résolution peut dépasser la limite du moniteur"
         },
         "customTitle": {
           "title": "Titre de la fenêtre personnalisée"

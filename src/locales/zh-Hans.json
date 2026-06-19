@@ -1244,7 +1244,9 @@
       "settings": {
         "resolution": {
           "title": "游戏分辨率",
-          "switch": "全屏"
+          "preset": "预设",
+          "switch": "全屏",
+          "warning": "分辨率可能超出显示器上限"
         },
         "customTitle": {
           "title": "自定义窗口标题"

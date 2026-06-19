@@ -1244,7 +1244,9 @@
       "settings": {
         "resolution": {
           "title": "遊戲解析度",
-          "switch": "全螢幕"
+          "preset": "預設",
+          "switch": "全螢幕",
+          "warning": "解析度可能超出顯示器上限"
         },
         "customTitle": {
           "title": "自訂視窗標題"

@@ -1244,7 +1244,9 @@
       "settings": {
         "resolution": {
           "title": "Game Resolution",
-          "switch": "Fullscreen"
+          "preset": "Preset",
+          "switch": "Fullscreen",
+          "warning": "Resolution may exceed monitor limit"
         },
         "customTitle": {
           "title": "Custom Window Title"

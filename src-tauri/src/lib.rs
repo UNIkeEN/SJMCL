@@ -186,6 +186,7 @@ pub async fn run() {
         tasks::commands::resume_progressive_task_group,
         tasks::commands::delete_progressive_task_group,
         utils::commands::retrieve_memory_info,
+        utils::commands::retrieve_resolution_upbound,
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
         utils::commands::extract_filename,

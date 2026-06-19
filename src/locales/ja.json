@@ -1244,7 +1244,9 @@
       "settings": {
         "resolution": {
           "title": "ゲーム解像度",
-          "switch": "フルスクリーン"
+          "preset": "プリセット",
+          "switch": "フルスクリーン",
+          "warning": "モニター上限を超える可能性あり"
         },
         "customTitle": {
           "title": "カスタムウィンドウタイトル"
