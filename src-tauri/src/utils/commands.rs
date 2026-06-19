@@ -22,19 +22,17 @@ pub fn retrieve_resolution_upbound(app: AppHandle) -> SJMCLResult<(u32, u32)> {
     .and_then(|w| w.available_monitors().ok())
     .unwrap_or_default();
 
-  Ok(
-    monitors
-      .iter()
-      .max_by_key(|m| {
-        let s = m.size();
-        s.width * s.height
-      })
-      .map(|m| {
-        let s = m.size();
-        (s.width, s.height)
-      })
-      .unwrap_or((0, 0)),
-  )
+  monitors
+    .iter()
+    .max_by_key(|m| {
+      let s = m.size();
+      s.width * s.height
+    })
+    .map(|m| {
+      let s = m.size();
+      (s.width, s.height)
+    })
+    .ok_or_else(|| SJMCLError("No monitor available".into()))
 }
 
 #[tauri::command]
