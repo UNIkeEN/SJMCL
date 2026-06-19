@@ -114,12 +114,6 @@
       }
     }
   },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "匯入模組包",
-      "desc": "將模組包檔案 {{fileName}} 匯入到 SJMCL"
-    }
-  },
   "AddAuthServerModal": {
     "header": {
       "title": "新增認證伺服器"
@@ -1648,6 +1642,17 @@
       "description": "確認要移除此版本 Java 嗎？（SJMCL 將無法使用此 Java 啟動遊戲，但不會刪除硬碟上的檔案）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英語",
+      "es": "西班牙語",
+      "fr": "法語",
+      "ja": "日語",
+      "lzh": "",
+      "zh-Hans": "",
+      "zh-Hant": ""
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次執行異常退出",
@@ -1694,6 +1699,12 @@
     "releaseDate": "釋出於 {{date}}",
     "notCompatibleWith": "與 {{item}} 不相容",
     "noVersionSelected": "未選擇版本"
+  },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "匯入模組包",
+      "desc": "將模組包檔案 {{fileName}} 匯入到 SJMCL"
+    }
   },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "此頁面由擴充套件 {{name}} 提供"

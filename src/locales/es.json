@@ -114,12 +114,6 @@
       }
     }
   },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "Importar Modpack",
-      "desc": "Importar archivo de modpack {{fileName}} a SJMCL"
-    }
-  },
   "AddAuthServerModal": {
     "header": {
       "title": "Agregar Servidor de Autenticación"
@@ -1648,6 +1642,17 @@
       "description": "¿Confirmar la eliminación de este Java? (SJMCL ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "Inglés",
+      "es": "",
+      "fr": "Francés",
+      "ja": "Japonés",
+      "lzh": "Chino clásico",
+      "zh-Hans": "Chino simplificado",
+      "zh-Hant": "Chino tradicional"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "La ejecución anterior terminó anormalmente",
@@ -1694,6 +1699,12 @@
     "releaseDate": "Publicado el {{date}}",
     "notCompatibleWith": "No compatible con {{item}}",
     "noVersionSelected": "Ninguna versión seleccionada"
+  },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Importar Modpack",
+      "desc": "Importar archivo de modpack {{fileName}} a SJMCL"
+    }
   },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "Esta página es proporcionada por la extensión {{name}}"
