@@ -125,9 +125,15 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
 
   const resolutionPresets = [
     { width: 854, height: 480 },
+    { width: 960, height: 540 },
+    { width: 1024, height: 576 },
     { width: 1280, height: 720 },
+    { width: 1366, height: 768 },
+    { width: 1600, height: 900 },
     { width: 1920, height: 1080 },
+    { width: 2048, height: 1152 },
     { width: 2560, height: 1440 },
+    { width: 3200, height: 1800 },
     { width: 3840, height: 2160 },
   ];
 
