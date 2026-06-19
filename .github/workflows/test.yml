@@ -95,9 +95,7 @@ jobs:
           # - platform: macos-latest
           #   args: '--target aarch64-apple-darwin'
           - platform: 'ubuntu-latest'
-            args: ''
           - platform: 'windows-latest'
-            args: ''
 
     steps:
       - uses: actions/checkout@v4
@@ -120,8 +118,11 @@ jobs:
           workspaces: "./src-tauri -> target"
           key: ${{ matrix.platform }}
 
+      - name: Bump version for test build
+        run: npm run version bump 0.0.1
+
       - name: Test Build
-        run: npm run tauri build -- ${{ matrix.args }}
+        run: npm run tauri build -- --features devtools --no-bundle -- --profile test-build
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
@@ -133,17 +134,14 @@ jobs:
           mkdir -p artifacts
           SHORT_SHA="${GITHUB_SHA:0:7}"
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
-            OUTPUT_NAME="SJMCL-${SHORT_SHA}.exe"
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL.exe"
-            echo "platform_tag=windows" >> "$GITHUB_OUTPUT"
+            OUTPUT_NAME="SJMCL_${SHORT_SHA}_windows_x86_64_portable.exe"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/test-build/" -o "$OUTPUT_NAME" "SJMCL.exe"
           else
-            OUTPUT_NAME="SJMCL-${SHORT_SHA}"
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/release/" -o "$OUTPUT_NAME" "SJMCL"
-            echo "platform_tag=linux" >> "$GITHUB_OUTPUT"
+            OUTPUT_NAME="SJMCL_${SHORT_SHA}_linux_x86_64_portable"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/test-build/" -o "$OUTPUT_NAME" "SJMCL"
           fi
-          cp "src-tauri/target/release/$OUTPUT_NAME" artifacts/
+          cp "src-tauri/target/test-build/$OUTPUT_NAME" artifacts/
           echo "output_name=$OUTPUT_NAME" >> "$GITHUB_OUTPUT"
-          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Upload portable artifact
         if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
