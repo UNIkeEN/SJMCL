@@ -95,7 +95,7 @@
       },
       "modpack": {
         "title": "匯入模組包",
-        "description": "從本機檔案或網際網路匯入模組包（CurseForge, Modrinth 或 MultiMC 格式）"
+        "description": "從本機檔案或網際網路匯入模組包（CurseForge、Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理遊戲目錄",
