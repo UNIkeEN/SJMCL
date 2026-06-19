@@ -1366,6 +1366,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "探索世界上最大的 Minecraft 模组存储库"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "开源、现代的 Minecraft 资源平台"
         }
       }
     },

@@ -1366,6 +1366,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "世界一番の Minecraft モッドライブラリ"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "オープンソースでモダンな Minecraft リソースプラットフォーム"
         }
       }
     },
