@@ -42,7 +42,7 @@ use crate::instance::helpers::mods::common::{
 use crate::instance::helpers::mods::translation::{
   LocalModTranslationEntry, LocalModTranslationsCache, add_local_mod_translations,
 };
-use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
+use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
@@ -1229,7 +1229,7 @@ pub async fn create_instance(
   )
   .await?;
 
-  // Optionally skip first-screen options by adding options.txt (available for zh-Hans only)
+  // Optionally skip first-screen options by adding options.txt.
   let (language, skip_first_screen_options) = {
     let launcher_config = launcher_config_state.lock()?;
     (
@@ -1240,9 +1240,8 @@ pub async fn create_instance(
         .skip_first_screen_options,
     )
   };
-  if language == "zh-Hans"
-    && skip_first_screen_options
-    && let Some(lang_code) = get_zh_hans_lang_tag(&instance.version, &app).await
+  if skip_first_screen_options
+    && let Some(lang_code) = get_minecraft_lang_tag(&language, &instance.version, &app).await
   {
     let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
       .ok_or(InstanceError::InstanceNotFoundByID)?[0]

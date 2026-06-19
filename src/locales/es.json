@@ -1148,8 +1148,8 @@
           "description": "%only available in zh-Hans"
         },
         "skipFirstScreenOptions": {
-          "title": "Omitir Opciones de la Primera Pantalla de Inicio",
-          "description": "%only available in zh-Hans"
+          "title": "Configurar automáticamente el idioma de la instancia",
+          "description": "Al activarlo, las nuevas instancias seguirán el idioma del launcher y omitirán la pantalla de configuración de accesibilidad del juego."
         }
       }
     },

@@ -1149,7 +1149,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "自調置設例文",
-          "description": "啟後，新建例的文將自調置設為簡體中文，這將同時跳過輔功用置設"
+          "description": "啟後，新建例之文將隨啟動器，並略過輔功用置設"
         }
       }
     },
