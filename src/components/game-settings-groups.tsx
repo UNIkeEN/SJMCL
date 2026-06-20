@@ -221,6 +221,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                   "GlobalGameSettingsPage.gameWindow.settings.resolution.preset"
                 )}
                 buttonProps={{ variant: "subtle", rightIcon: undefined }}
+                menuListProps={{ maxH: "40vh", overflowY: "auto" }}
               />
               <NumberInput
                 min={400}
