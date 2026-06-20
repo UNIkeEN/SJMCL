@@ -296,6 +296,9 @@
           "title": "介面書體",
           "default": "本"
         },
+        "logFontFamily": {
+          "title": "日誌書體"
+        },
         "fontSize": {
           "title": "書體之巨細",
           "small": "小",

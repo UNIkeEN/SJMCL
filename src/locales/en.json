@@ -296,6 +296,9 @@
           "title": "Font Family",
           "default": "Default"
         },
+        "logFontFamily": {
+          "title": "Log Font"
+        },
         "fontSize": {
           "title": "Font Size",
           "small": "T",

@@ -40,6 +40,7 @@ const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const logFontFamily = config.appearance.font.logFontFamily;
 
   const [logs, setLogs] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -327,6 +328,11 @@ const GameLogPage: React.FC = () => {
         >
           <ChakraText
             className={styles["log-text"]}
+            style={
+              logFontFamily !== "%built-in"
+                ? { fontFamily: logFontFamily }
+                : undefined
+            }
             color={logLevelMap[level].textColor}
             fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
             whiteSpace="pre-wrap"

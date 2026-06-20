@@ -296,6 +296,9 @@
           "title": "UIフォント",
           "default": "デフォルト"
         },
+        "logFontFamily": {
+          "title": "ログフォント"
+        },
         "fontSize": {
           "title": "フォントサイズ",
           "small": "あ",

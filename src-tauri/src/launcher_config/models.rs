@@ -223,6 +223,8 @@ structstruck::strike! {
       pub font: struct {
         #[default = "%built-in"]
         pub font_family: String,
+        #[default = "%built-in"]
+        pub log_font_family: String,
         #[default = 100]
         pub font_size: usize, // as percent
       },

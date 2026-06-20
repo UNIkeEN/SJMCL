@@ -296,6 +296,9 @@
           "title": "Familia de Fuente",
           "default": "Predeterminada"
         },
+        "logFontFamily": {
+          "title": "Fuente del registro"
+        },
         "fontSize": {
           "title": "Tamaño de Fuente",
           "small": "T",

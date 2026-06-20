@@ -296,6 +296,9 @@
           "title": "Polices d'interface",
           "default": "Par défaut"
         },
+        "logFontFamily": {
+          "title": "Police du journal"
+        },
         "fontSize": {
           "title": "Taille de la police",
           "small": "Petit",
