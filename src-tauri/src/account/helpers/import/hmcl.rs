@@ -24,6 +24,7 @@ use tauri::{AppHandle, Manager};
 use url::Url;
 use uuid::Uuid;
 
+// https://github.com/HMCL-dev/HMCL/blob/f0fcc4ac5edde1aa6c63aa74c0ea0fa73d99a0d4/HMCL/src/main/java/org/jackhuang/hmcl/setting/ProtectedPayload.java#L107
 const HMCL_PROTECTION_KEY: &[u8; 32] = &[
   0x3c, 0xd8, 0xa2, 0x22, 0x11, 0xd2, 0x8d, 0x89, 0xb4, 0xf7, 0xd9, 0xb0, 0x65, 0xbc, 0x14, 0x8a,
   0x6e, 0xb0, 0xa9, 0x4d, 0xeb, 0x93, 0x99, 0x6f, 0x84, 0x07, 0x5a, 0x9e, 0xbd, 0xc8, 0xd1, 0xeb,
@@ -295,6 +296,7 @@ pub async fn retrieve_hmcl_account_info(
   if hmcl_private_data_path.is_file() {
     if let Ok(private_json_str) = fs::read_to_string(&hmcl_private_data_path) {
       if let Ok(priv_file) = serde_json::from_str::<HmclPrivateDataFile>(&private_json_str) {
+        // https://github.com/HMCL-dev/HMCL/blob/f0fcc4ac5edde1aa6c63aa74c0ea0fa73d99a0d4/HMCL/src/main/java/org/jackhuang/hmcl/setting/ProtectedPayload.java
         let parsed_payload: Option<Vec<PlainPrivateDataEntry>> = match priv_file.protection.as_str()
         {
           "hmcl-obfuscated-v1" => {
