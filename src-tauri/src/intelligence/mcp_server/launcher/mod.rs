@@ -1,7 +1,6 @@
 mod r#macro;
 pub mod tools;
 
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::LauncherMcpServerConfig;
 use crate::utils::sys_info::find_free_port;
 use rmcp::handler::server::router::Router;
@@ -11,6 +10,7 @@ use rmcp::transport::streamable_http_server::{
 };
 use rmcp::{ErrorData as McpError, ServerHandler};
 use serde::Serialize;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::AppHandle;
 
 pub const MCP_SERVER_HOST: &str = "127.0.0.1";

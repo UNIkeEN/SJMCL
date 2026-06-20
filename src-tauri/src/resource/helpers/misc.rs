@@ -1,4 +1,3 @@
-use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
 use crate::resource::helpers::mod_db::ModDataBase;
@@ -7,6 +6,7 @@ use crate::resource::models::{
   OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
   SourceType,
 };
+use sjmcl_types::error::SJMCLResult;
 use std::cmp::Ordering;
 use std::sync::Mutex;
 use strum::IntoEnumIterator;

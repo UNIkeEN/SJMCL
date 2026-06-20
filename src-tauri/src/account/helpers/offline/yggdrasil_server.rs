@@ -1,5 +1,4 @@
 use crate::account::models::{PlayerInfo, SkinModel};
-use crate::error::SJMCLResult;
 use crate::utils::image::ImageWrapper;
 use crate::utils::sys_info::find_free_port;
 use axum::{
@@ -21,6 +20,7 @@ use rsa::{
 use serde_json::{Map, Value, json};
 use sha1::Sha1;
 use sha2::{Digest, Sha256};
+use sjmcl_types::error::SJMCLResult;
 use std::{
   collections::HashMap,
   io::Cursor,

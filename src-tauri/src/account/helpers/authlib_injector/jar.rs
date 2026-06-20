@@ -1,10 +1,10 @@
 use crate::account::helpers::authlib_injector::constants::AUTHLIB_INJECTOR_JAR_NAME;
 use crate::account::models::AccountError;
-use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::{ResourceType, SourceType};
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
 use std::io::Read;
 use std::path::PathBuf;
 use std::sync::Mutex;

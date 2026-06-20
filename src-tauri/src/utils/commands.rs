@@ -1,9 +1,9 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
 use crate::utils::fs::extract_filename as extract_filename_helper;
 use crate::utils::sys_info::get_memory_info;
 use base64::{Engine, engine::general_purpose};
 use font_loader::system_fonts;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;

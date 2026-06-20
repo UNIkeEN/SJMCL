@@ -3,11 +3,11 @@ use crate::account::models::{
   AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthErrorResponse, OAuthTokens, PlayerInfo,
   PlayerType,
 };
-use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
-use crate::storage::Storage;
 use crate::utils::image::{ImageWrapper, decode_image};
 use crate::utils::web::is_china_mainland_ip;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest::{self, RequestBuilder};

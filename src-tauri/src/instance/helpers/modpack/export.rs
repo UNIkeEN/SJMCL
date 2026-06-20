@@ -1,10 +1,10 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::modpack::{
   modrinth::build_modrinth_export_bundle, multimc::build_multimc_export_bundle,
 };
 use crate::instance::models::misc::{Instance, InstanceError, ModpackFileList};
 use regex::{Regex, RegexSet};
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashSet;
 use std::io::{self, Write};
 use std::path::PathBuf;

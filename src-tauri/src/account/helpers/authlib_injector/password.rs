@@ -1,8 +1,8 @@
 use crate::account::helpers::authlib_injector::common::{parse_profile, retrieve_profile};
 use crate::account::models::{AccountError, PlayerInfo};
-use crate::error::SJMCLResult;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 

@@ -1,5 +1,3 @@
-use crate::error::SJMCLError;
-use crate::error::SJMCLResult;
 use crate::instance::helpers::misc::refresh_instances;
 use crate::launcher_config::helpers::java::{
   build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
@@ -11,11 +9,13 @@ use crate::launcher_config::helpers::updater::{
 use crate::launcher_config::models::{
   GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
 };
-use crate::storage::Storage;
 use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};
 use crate::utils::string::camel_to_snake_case;
 use serde_json::{Value, json};
+use sjmcl_types::error::SJMCLError;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;

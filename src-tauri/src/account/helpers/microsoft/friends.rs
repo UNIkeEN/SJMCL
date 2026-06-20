@@ -8,9 +8,9 @@ use crate::account::helpers::microsoft::models::{
 use crate::account::helpers::offline::load_preset_skin;
 use crate::account::helpers::skin::draw_avatar;
 use crate::account::models::{AccountError, PlayerInfo, PresetRole};
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::utils::image::ImageWrapper;
 use serde::Deserialize;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest::{self, Response, StatusCode};

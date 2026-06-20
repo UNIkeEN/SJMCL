@@ -1,11 +1,11 @@
 // https://github.com/QuiltMC/rfcs/blob/main/specification/0002-quilt.mod.json.md
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::io::{Read, Seek};
 use std::path::Path;
 use tokio;

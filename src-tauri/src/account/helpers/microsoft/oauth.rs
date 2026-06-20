@@ -11,8 +11,8 @@ use crate::account::models::{
   AccountError, DeviceAuthResponse, DeviceAuthResponseInfo, OAuthTokens, PlayerInfo, PlayerType,
   PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::error::SJMCLResult;
 use serde_json::{Value, json};
+use sjmcl_types::error::SJMCLResult;
 use std::ops::Add;
 use std::str::FromStr;
 use tauri::{AppHandle, Manager};

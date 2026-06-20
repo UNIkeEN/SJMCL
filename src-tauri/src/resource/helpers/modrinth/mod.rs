@@ -1,6 +1,5 @@
 pub mod misc;
 
-use crate::error::SJMCLResult;
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::apply_other_resource_enhancements;
 use crate::resource::helpers::mod_db::handle_search_query;
@@ -16,6 +15,7 @@ use misc::{
   map_modrinth_file_to_version_pack,
 };
 use sha1::{Digest, Sha1};
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};

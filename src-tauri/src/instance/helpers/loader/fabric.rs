@@ -6,7 +6,6 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -17,6 +16,7 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::get_files_with_regex;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 
 const FABRIC_API_MOD_ID_MODRINTH: &str = "P7dR8mSH";
 

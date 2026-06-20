@@ -1,4 +1,3 @@
-use crate::error::SJMCLResult;
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
 use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
 use crate::instance::helpers::loader::forge::download_forge_libraries;
@@ -10,9 +9,10 @@ use crate::instance::models::misc::{
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
-use crate::storage::load_json_async;
 use sanitize_filename;
 use serde_json::Value;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::load_json_async;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Cursor;
@@ -433,7 +433,9 @@ pub fn create_instance_shortcut_icon(
     let asset = app
       .asset_resolver()
       .get(icon_src.to_string())
-      .ok_or_else(|| crate::error::SJMCLError(format!("Icon asset not found: {}", icon_src)))?;
+      .ok_or_else(|| {
+        sjmcl_types::error::SJMCLError(format!("Icon asset not found: {}", icon_src))
+      })?;
     image::load_from_memory(asset.bytes())?
   };
 

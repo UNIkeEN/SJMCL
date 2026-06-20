@@ -1,6 +1,6 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
 use image::RgbaImage;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};

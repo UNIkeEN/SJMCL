@@ -1,9 +1,9 @@
-use crate::error::SJMCLResult;
 use crate::tasks::download::DownloadTask;
 use crate::tasks::events::GEventStatus;
 use crate::tasks::monitor::TaskMonitor;
 use crate::tasks::{PTaskGroupDesc, PTaskParam, SJMCLFutureDesc, THandle};
 use crate::utils::fs::extract_filename;
+use sjmcl_types::error::SJMCLResult;
 use std::pin::Pin;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};

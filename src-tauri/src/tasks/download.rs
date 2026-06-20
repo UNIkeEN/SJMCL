@@ -1,4 +1,3 @@
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::launcher_config::commands::retrieve_launcher_config;
 use crate::resource::helpers::curseforge::misc::{
   CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
@@ -13,6 +12,7 @@ use async_speed_limit::Limiter;
 use futures::StreamExt;
 use futures::stream::TryStreamExt;
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::error::Error;
 use std::future::Future;
 use std::path::PathBuf;

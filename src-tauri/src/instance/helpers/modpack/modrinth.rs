@@ -12,7 +12,6 @@ use tauri::AppHandle;
 use tokio::sync::Semaphore;
 use zip::ZipArchive;
 
-use crate::error::SJMCLResult;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
@@ -26,6 +25,7 @@ use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
 use sha1::Digest;
+use sjmcl_types::error::SJMCLResult;
 
 structstruck::strike! {
 #[strikethrough[serialize_skip_none]]

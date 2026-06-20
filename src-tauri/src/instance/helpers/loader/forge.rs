@@ -10,7 +10,6 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::{LaunchArgumentTemplate, LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
@@ -21,6 +20,7 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 
 async fn fetch_bmcl_forge_installer_url(
   root: Url,

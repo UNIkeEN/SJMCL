@@ -5,10 +5,10 @@ use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, AuthServer, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::error::SJMCLResult;
 use base64::Engine;
 use base64::engine::general_purpose;
 use serde_json::json;
+use sjmcl_types::error::SJMCLResult;
 use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tauri::{AppHandle, Manager};

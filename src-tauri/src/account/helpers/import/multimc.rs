@@ -5,8 +5,8 @@ use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::error::SJMCLResult;
 use serde::Deserialize;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashSet;
 use std::fs;
 use std::str::FromStr;

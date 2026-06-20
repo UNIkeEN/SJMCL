@@ -1,10 +1,10 @@
-use crate::error::SJMCLResult;
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
