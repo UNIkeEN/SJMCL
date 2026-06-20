@@ -5,6 +5,7 @@ use crate::instance::helpers::game_version::compare_game_versions;
 fn get_minecraft_lang_tag_by_format(
   launcher_locale: &str,
   use_modern_format: bool,
+  support_lzh: bool,
 ) -> Option<&'static str> {
   match (launcher_locale, use_modern_format) {
     ("en", true) => Some("en_us"),
@@ -19,7 +20,9 @@ fn get_minecraft_lang_tag_by_format(
     ("zh-Hans", false) => Some("zh_CN"),
     ("zh-Hant", true) => Some("zh_tw"),
     ("zh-Hant", false) => Some("zh_TW"),
-    ("lzh", _) => Some("lzh"),
+    ("lzh", _) if support_lzh => Some("lzh"),
+    ("lzh", true) => Some("zh_cn"),
+    ("lzh", false) => Some("zh_CN"),
     _ => None,
   }
 }
@@ -35,13 +38,14 @@ pub async fn get_minecraft_lang_tag(
     .is_lt()
   {
     None
-  } else if compare_game_versions(app, game_version, "1.11", false)
-    .await
-    .is_ge()
-  {
-    get_minecraft_lang_tag_by_format(launcher_locale, true)
   } else {
-    get_minecraft_lang_tag_by_format(launcher_locale, false)
+    let use_modern_format = compare_game_versions(app, game_version, "1.11", false)
+      .await
+      .is_ge();
+    let support_lzh = compare_game_versions(app, game_version, "1.15", false)
+      .await
+      .is_ge();
+    get_minecraft_lang_tag_by_format(launcher_locale, use_modern_format, support_lzh)
   }
 }
 
@@ -65,7 +69,7 @@ mod tests {
 
     for (launcher_locale, expected_lang_tag) in cases {
       assert_eq!(
-        get_minecraft_lang_tag_by_format(launcher_locale, true),
+        get_minecraft_lang_tag_by_format(launcher_locale, true, true),
         Some(expected_lang_tag)
       );
     }
@@ -85,15 +89,27 @@ mod tests {
 
     for (launcher_locale, expected_lang_tag) in cases {
       assert_eq!(
-        get_minecraft_lang_tag_by_format(launcher_locale, false),
+        get_minecraft_lang_tag_by_format(launcher_locale, false, true),
         Some(expected_lang_tag)
       );
     }
   }
 
   #[test]
+  fn falls_back_lzh_to_zh_hans_when_lzh_is_not_supported() {
+    assert_eq!(
+      get_minecraft_lang_tag_by_format("lzh", true, false),
+      Some("zh_cn")
+    );
+    assert_eq!(
+      get_minecraft_lang_tag_by_format("lzh", false, false),
+      Some("zh_CN")
+    );
+  }
+
+  #[test]
   fn ignores_unknown_launcher_locales() {
-    assert_eq!(get_minecraft_lang_tag_by_format("de", true), None);
-    assert_eq!(get_minecraft_lang_tag_by_format("", false), None);
+    assert_eq!(get_minecraft_lang_tag_by_format("de", true, true), None);
+    assert_eq!(get_minecraft_lang_tag_by_format("", false, false), None);
   }
 }
