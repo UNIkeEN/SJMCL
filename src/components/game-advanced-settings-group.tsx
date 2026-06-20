@@ -473,7 +473,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       title={t("GameAdvancedSettingsPage.title")}
       withBackButton
     >
-      <VStack overflow="auto" align="stretch" spacing={4} flex="1">
+      <VStack align="stretch" spacing={4} flex="1">
         <Alert status="warning" fontSize="xs-sm" borderRadius="md">
           <AlertIcon />
           {t("GameAdvancedSettingsPage.topWarning")}
