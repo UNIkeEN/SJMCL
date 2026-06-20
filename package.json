@@ -17,7 +17,7 @@
     "src/**/*.{js,jsx,ts,tsx}": [
       "eslint --no-fix --max-warnings=0"
     ],
-    "src-tauri/src/**/*.rs": [
+    "{src-tauri/src/**/*.rs,src-tauri/crates/**/*.rs,src-tauri/build.rs}": [
       "rustfmt --check"
     ],
     "scripts/**/*.js": [
