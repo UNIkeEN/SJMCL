@@ -8,7 +8,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use serde_with::formats::PreferMany;
 use serde_with::{OneOrMany, serde_as};
-use serialize_skip_none_derive::serialize_skip_none;
+use sjmcl_macros::serialize_skip_none;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs;
