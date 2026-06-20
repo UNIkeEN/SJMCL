@@ -85,7 +85,7 @@ pub struct HmclThirdPartyAccount {
   pub login_name: Option<String>,
   pub profile_name: Option<String>,
   pub access_token: String,
-  pub profile_properties: Option<HashMap<String, String>>,
+  pub profile_properties: HmclProfileProperties,
   #[serde(rename = "profileID")]
   pub profile_id: String,
 }
@@ -214,8 +214,9 @@ async fn thirdparty_to_player(
       name: "textures".to_string(),
       value: acc
         .profile_properties
-        .as_ref()
-        .and_then(|map| map.get("textures").cloned())
+        .clone()
+        .textures
+        .clone()
         .unwrap_or_default(),
     }]),
   };
