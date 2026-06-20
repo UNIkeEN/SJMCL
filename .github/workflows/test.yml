@@ -81,8 +81,7 @@ jobs:
           components: rustfmt
 
       - name: Lint Rust Backend
-        run: |
-          find src-tauri/src -name '*.rs' | xargs rustfmt --check
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --all -- --check
 
   Build:
     needs: changes
