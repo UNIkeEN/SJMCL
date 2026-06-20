@@ -1,3 +1,4 @@
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Read;
@@ -6,7 +7,6 @@ use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LaunchArgumentTemplate, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::loader::forge::InstallProfile;

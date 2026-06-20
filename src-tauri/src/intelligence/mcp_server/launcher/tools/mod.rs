@@ -7,8 +7,9 @@ mod launch;
 mod launcher_config;
 mod resource;
 
-use crate::intelligence::mcp_server::launcher::McpContext;
 use rmcp::handler::server::tool::ToolRoute;
+
+use crate::intelligence::mcp_server::launcher::McpContext;
 
 pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
   let mut routes = Vec::new();

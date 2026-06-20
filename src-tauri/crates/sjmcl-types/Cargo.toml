@@ -1,0 +1,11 @@
+[package]
+name = "sjmcl-types"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+strum_macros.workspace = true
+tokio.workspace = true

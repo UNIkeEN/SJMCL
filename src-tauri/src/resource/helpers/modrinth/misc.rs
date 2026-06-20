@@ -1,13 +1,14 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use serde::Deserialize;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
   OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,
   ResourceError,
 };
-use serde::Deserialize;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 pub async fn make_modrinth_request<T, P>(
   client: &reqwest::Client,

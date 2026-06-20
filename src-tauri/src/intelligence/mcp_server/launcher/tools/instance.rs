@@ -1,3 +1,7 @@
+use rmcp::handler::server::tool::ToolRoute;
+use std::path::PathBuf;
+use std::str::FromStr;
+
 use crate::instance::commands::*;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::intelligence::mcp_server::launcher::McpContext;
@@ -8,13 +12,10 @@ use crate::resource::commands::{
   fetch_game_version_specific, fetch_mod_loader_version_list, fetch_optifine_version_list,
 };
 use crate::resource::models::{ModLoaderResourceInfo, OptiFineResourceInfo, ResourceError};
-use rmcp::handler::server::tool::ToolRoute;
-use std::path::PathBuf;
-use std::str::FromStr;
 
 fn parse_mod_loader_type(
   loader_type: Option<String>,
-) -> Result<ModLoaderType, crate::error::SJMCLError> {
+) -> Result<ModLoaderType, sjmcl_types::error::SJMCLError> {
   match loader_type {
     Some(loader_type) if !loader_type.trim().is_empty() => {
       ModLoaderType::from_str(&loader_type).map_err(|_| ResourceError::NoDownloadApi.into())
@@ -28,7 +29,7 @@ async fn resolve_mod_loader(
   game_version: String,
   loader_type: ModLoaderType,
   loader_version: Option<String>,
-) -> Result<ModLoaderResourceInfo, crate::error::SJMCLError> {
+) -> Result<ModLoaderResourceInfo, sjmcl_types::error::SJMCLError> {
   if loader_type == ModLoaderType::Unknown {
     return Ok(ModLoaderResourceInfo {
       loader_type: ModLoaderType::Unknown,
@@ -59,7 +60,7 @@ async fn resolve_optifine(
   app: tauri::AppHandle,
   game_version: String,
   optifine_version: Option<String>,
-) -> Result<Option<OptiFineResourceInfo>, crate::error::SJMCLError> {
+) -> Result<Option<OptiFineResourceInfo>, sjmcl_types::error::SJMCLError> {
   let Some(optifine_version) = optifine_version.filter(|version| !version.trim().is_empty()) else {
     return Ok(None);
   };

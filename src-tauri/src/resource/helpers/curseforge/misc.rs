@@ -1,16 +1,17 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::collections::HashMap;
+use std::env;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
   OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,
   ResourceError,
 };
-use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::env;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 lazy_static! {
   pub static ref CURSEFORGE_API_KEY: String = {

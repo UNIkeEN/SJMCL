@@ -1,16 +1,17 @@
-use crate::error::SJMCLResult;
-use crate::launcher_config::commands::retrieve_custom_background_list;
-use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
-use crate::partial::{PartialAccess, PartialUpdate};
-use crate::utils::fs::calculate_sha256;
-use crate::utils::portable::extract_assets;
-use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use rand::Rng;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::partial::{PartialAccess, PartialUpdate};
 use std::fs;
 use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
+
+use crate::launcher_config::commands::retrieve_custom_background_list;
+use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
+use crate::utils::fs::calculate_sha256;
+use crate::utils::portable::extract_assets;
+use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {

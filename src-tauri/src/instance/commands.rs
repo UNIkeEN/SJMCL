@@ -1,5 +1,22 @@
+use futures::{StreamExt, TryStreamExt};
+use lazy_static::lazy_static;
+use regex::{Regex, RegexBuilder};
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::partial::{PartialError, PartialUpdate};
+use sjmcl_types::storage::{Storage, load_json_async, save_json_async};
+use std::collections::HashMap;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
+use std::time::SystemTime;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use tokio;
+use tokio::sync::Semaphore;
+use url::Url;
+use zip::read::ZipArchive;
+
 use super::helpers::loader::fabric::remove_fabric_api_mods;
-use crate::error::SJMCLResult;
 use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
 use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
@@ -47,12 +64,10 @@ use crate::launch::models::LaunchError;
 use crate::launcher_config::helpers::java::build_mojang_java_download_params;
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
-use crate::partial::{PartialError, PartialUpdate};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
 };
-use crate::storage::{Storage, load_json_async, save_json_async};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
@@ -61,20 +76,6 @@ use crate::utils::fs::{
   get_files_with_regex, get_subdirectories, normalize_relative_path,
 };
 use crate::utils::image::ImageWrapper;
-use futures::{StreamExt, TryStreamExt};
-use lazy_static::lazy_static;
-use regex::{Regex, RegexBuilder};
-use std::collections::HashMap;
-use std::fs;
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
-use std::time::SystemTime;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use tokio;
-use tokio::sync::Semaphore;
-use url::Url;
-use zip::read::ZipArchive;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
@@ -410,7 +411,7 @@ pub async fn copy_resources_to_instances(
     };
 
   futures::stream::iter(entries)
-    .map(Ok::<_, crate::error::SJMCLError>)
+    .map(Ok::<_, sjmcl_types::error::SJMCLError>)
     .try_for_each_concurrent(None, move |(src_path, tgt_path)| {
       let semaphore = semaphore.clone();
 
@@ -427,7 +428,7 @@ pub async fn copy_resources_to_instances(
         .await
         .map_err(|_| InstanceError::FileCopyFailed)??;
 
-        Ok::<(), crate::error::SJMCLError>(())
+        Ok::<(), sjmcl_types::error::SJMCLError>(())
       }
     })
     .await?;
