@@ -1,3 +1,4 @@
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Read;
@@ -17,7 +18,6 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use sjmcl_types::error::SJMCLResult;
 
 pub async fn install_neoforge_loader(
   priority: &[SourceType],

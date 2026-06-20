@@ -1,3 +1,10 @@
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
+use std::path::Path;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use url::Url;
+
 use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
@@ -15,12 +22,6 @@ use crate::account::models::{
 use crate::launcher_config::models::LauncherConfig;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::web::normalize_url;
-use sjmcl_types::error::SJMCLResult;
-use sjmcl_types::storage::Storage;
-use std::path::Path;
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
-use url::Url;
 
 #[tauri::command]
 pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {

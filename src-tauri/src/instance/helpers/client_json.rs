@@ -1,7 +1,3 @@
-use crate::instance::models::misc::{Instance, ModLoaderType};
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::models::OptiFineResourceInfo;
-use crate::utils::fs::get_app_resource_filepath;
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
@@ -15,6 +11,11 @@ use std::fs;
 use std::str::FromStr;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+
+use crate::instance::models::misc::{Instance, ModLoaderType};
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::models::OptiFineResourceInfo;
+use crate::utils::fs::get_app_resource_filepath;
 
 #[serialize_skip_none]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]

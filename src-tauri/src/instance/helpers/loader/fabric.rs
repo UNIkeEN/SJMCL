@@ -1,4 +1,5 @@
 use regex::Regex;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -16,7 +17,6 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::get_files_with_regex;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
 
 const FABRIC_API_MOD_ID_MODRINTH: &str = "P7dR8mSH";
 

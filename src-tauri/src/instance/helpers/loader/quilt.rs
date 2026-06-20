@@ -1,3 +1,4 @@
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -12,7 +13,6 @@ use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
 
 const QFAPI_MOD_ID_MODRINTH: &str = "qvIfYCYJ";
 

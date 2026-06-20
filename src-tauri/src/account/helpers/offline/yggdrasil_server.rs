@@ -1,6 +1,3 @@
-use crate::account::models::{PlayerInfo, SkinModel};
-use crate::utils::image::ImageWrapper;
-use crate::utils::sys_info::find_free_port;
 use axum::{
   Json, Router,
   extract::{Path, Query, State},
@@ -30,6 +27,10 @@ use std::{
 };
 use tower_http::cors::CorsLayer;
 use uuid::Uuid;
+
+use crate::account::models::{PlayerInfo, SkinModel};
+use crate::utils::image::ImageWrapper;
+use crate::utils::sys_info::find_free_port;
 
 static KEY_PAIR: OnceLock<(RsaPrivateKey, RsaPublicKey)> = OnceLock::new();
 

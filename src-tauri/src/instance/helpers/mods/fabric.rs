@@ -1,7 +1,5 @@
 // see https://wiki.fabricmc.net/zh_cn:documentation:fabric_mod_json
-use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
-use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
-use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
+
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -11,6 +9,10 @@ use std::io::{Read, Seek};
 use std::path::Path;
 use tokio;
 use zip::ZipArchive;
+
+use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
+use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
+use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

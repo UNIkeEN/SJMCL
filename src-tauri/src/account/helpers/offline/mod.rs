@@ -1,15 +1,16 @@
 pub mod yggdrasil_server;
 
-use crate::account::models::{
-  AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
-};
-use crate::utils::fs::get_app_resource_filepath;
-use crate::utils::image::load_image_from_dir;
 use rand::seq::IteratorRandom;
 use sjmcl_types::error::SJMCLResult;
 use strum::IntoEnumIterator;
 use tauri::AppHandle;
 use uuid::Uuid;
+
+use crate::account::models::{
+  AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
+};
+use crate::utils::fs::get_app_resource_filepath;
+use crate::utils::image::load_image_from_dir;
 
 pub fn load_preset_skin(app: &AppHandle, preset_role: PresetRole) -> SJMCLResult<Vec<Texture>> {
   let texture_path = get_app_resource_filepath(app, &format!("assets/skins/{}.png", preset_role))

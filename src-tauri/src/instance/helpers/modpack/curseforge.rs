@@ -1,10 +1,10 @@
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::FromStr;
-
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
@@ -15,7 +15,6 @@ use crate::resource::helpers::curseforge::misc::{CURSEFORGE_API_KEY, CurseForgeP
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

@@ -1,9 +1,7 @@
 // This file is used to read mod info for Forge or NeoForge (structure almost identical)
 // https://forge.gemwire.uk/wiki/Mods.toml
 // https://docs.neoforged.net/docs/gettingstarted/modfiles/#neoforgemodstoml
-use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
-use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
-use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
+
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -12,6 +10,10 @@ use std::io::{Cursor, Read, Seek};
 use std::path::Path;
 use zip::ZipArchive;
 use {java_properties, tokio, toml};
+
+use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
+use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
+use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase", default)]

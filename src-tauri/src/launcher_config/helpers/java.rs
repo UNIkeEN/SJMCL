@@ -1,8 +1,3 @@
-use crate::launcher_config::models::{JavaInfo, LauncherConfig};
-use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
-use crate::resource::models::ResourceType;
-use crate::tasks::{PTaskParam, download::DownloadParam};
-use crate::utils::fs::{PermissionOperation, manage_permissions_unix};
 use serde_json::Value;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::{HashMap, HashSet};
@@ -12,6 +7,12 @@ use std::process::Command;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::launcher_config::models::{JavaInfo, LauncherConfig};
+use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
+use crate::resource::models::ResourceType;
+use crate::tasks::{PTaskParam, download::DownloadParam};
+use crate::utils::fs::{PermissionOperation, manage_permissions_unix};
 
 #[cfg(target_os = "windows")]
 use {crate::utils::sys_info::get_all_drive_mount_points, std::os::windows::process::CommandExt};

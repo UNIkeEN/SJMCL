@@ -1,14 +1,3 @@
-use crate::instance::helpers::client_jar::load_game_version_from_jar;
-use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
-use crate::instance::helpers::loader::forge::download_forge_libraries;
-use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
-use crate::instance::helpers::loader::optifine::download_optifine_libraries;
-use crate::instance::models::misc::{
-  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType, OptiFine,
-};
-use crate::launcher_config::helpers::misc::get_global_game_config;
-use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
-use crate::resource::helpers::misc::get_source_priority_list;
 use sanitize_filename;
 use serde_json::Value;
 use sjmcl_types::error::SJMCLResult;
@@ -20,6 +9,18 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
+
+use crate::instance::helpers::client_jar::load_game_version_from_jar;
+use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
+use crate::instance::helpers::loader::forge::download_forge_libraries;
+use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
+use crate::instance::helpers::loader::optifine::download_optifine_libraries;
+use crate::instance::models::misc::{
+  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType, OptiFine,
+};
+use crate::launcher_config::helpers::misc::get_global_game_config;
+use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
+use crate::resource::helpers::misc::get_source_priority_list;
 
 pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
   if instance.use_spec_game_config

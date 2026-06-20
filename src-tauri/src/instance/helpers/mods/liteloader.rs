@@ -1,6 +1,5 @@
 // https://www.mcmod.cn/class/610.html
-use crate::instance::helpers::mods::common::LocalModMetadataParser;
-use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
+
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -9,6 +8,9 @@ use std::io::{Read, Seek};
 use std::path::Path;
 use tokio;
 use zip::ZipArchive;
+
+use crate::instance::helpers::mods::common::LocalModMetadataParser;
+use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]
 #[serde(rename_all = "camelCase", default)]

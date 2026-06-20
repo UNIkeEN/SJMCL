@@ -1,4 +1,3 @@
-use crate::IS_PORTABLE;
 use regex::Regex;
 use sha1::{Digest, Sha1};
 use sha2::Sha256;
@@ -11,6 +10,8 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
+
+use crate::IS_PORTABLE;
 
 /// Recursively copies the contents of a source directory to a destination directory.
 ///

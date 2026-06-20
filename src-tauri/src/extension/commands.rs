@@ -1,9 +1,3 @@
-use crate::extension::helper::{
-  extract_extension_package, get_extensions_dir, read_extension_info, resolve_extension_root,
-};
-use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
-use crate::launcher_config::models::LauncherConfig;
-use crate::utils::fs::get_subdirectories;
 use semver::Version;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
@@ -13,6 +7,13 @@ use std::sync::Mutex;
 use tauri::AppHandle;
 use tauri::Manager;
 use uuid::Uuid;
+
+use crate::extension::helper::{
+  extract_extension_package, get_extensions_dir, read_extension_info, resolve_extension_root,
+};
+use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
+use crate::launcher_config::models::LauncherConfig;
+use crate::utils::fs::get_subdirectories;
 
 #[tauri::command]
 pub fn retrieve_extension_list(app: AppHandle) -> SJMCLResult<Vec<ExtensionInfo>> {

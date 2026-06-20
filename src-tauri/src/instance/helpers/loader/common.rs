@@ -1,3 +1,4 @@
+use sjmcl_types::error::SJMCLResult;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -16,7 +17,6 @@ use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::resource::models::SourceType;
 use crate::tasks::PTaskParam;
-use sjmcl_types::error::SJMCLResult;
 
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,

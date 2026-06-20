@@ -1,3 +1,16 @@
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::load_json_async;
+use std::collections::HashMap;
+use std::fs;
+use std::io::BufReader;
+use std::io::prelude::*;
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
+use std::sync::{Mutex, mpsc};
+use std::time::{SystemTime, UNIX_EPOCH};
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager, State};
+
 use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
@@ -26,18 +39,6 @@ use crate::utils::fs::create_zip_from_dirs;
 use crate::utils::logging::get_launcher_log_path;
 use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
-use sjmcl_types::error::SJMCLResult;
-use sjmcl_types::storage::load_json_async;
-use std::collections::HashMap;
-use std::fs;
-use std::io::BufReader;
-use std::io::prelude::*;
-use std::path::PathBuf;
-use std::process::{Command, Stdio};
-use std::sync::{Mutex, mpsc};
-use std::time::{SystemTime, UNIX_EPOCH};
-use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager, State};
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;

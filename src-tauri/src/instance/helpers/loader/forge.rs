@@ -1,6 +1,7 @@
 use reqwest::redirect::Policy;
 use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Read;
@@ -20,7 +21,6 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
 
 async fn fetch_bmcl_forge_installer_url(
   root: Url,

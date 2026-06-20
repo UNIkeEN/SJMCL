@@ -1,3 +1,10 @@
+use serde::Deserialize;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::collections::HashMap;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest::{self, Response, StatusCode};
+use uuid::Uuid;
+
 use crate::account::helpers::authlib_injector::common::parse_profile;
 use crate::account::helpers::authlib_injector::models::MinecraftProfile;
 use crate::account::helpers::microsoft;
@@ -9,12 +16,6 @@ use crate::account::helpers::offline::load_preset_skin;
 use crate::account::helpers::skin::draw_avatar;
 use crate::account::models::{AccountError, PlayerInfo, PresetRole};
 use crate::utils::image::ImageWrapper;
-use serde::Deserialize;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
-use std::collections::HashMap;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest::{self, Response, StatusCode};
-use uuid::Uuid;
 
 const MOJANG_SESSION_SERVER_ENDPOINT: &str = "https://sessionserver.mojang.com";
 

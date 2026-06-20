@@ -1,3 +1,15 @@
+use futures::future::join_all;
+use futures::stream::{self, StreamExt, TryStreamExt};
+use semver::Version;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_types::storage::load_json_async;
+use std::collections::{HashMap, HashSet};
+use std::io::Cursor;
+use std::path::{Path, PathBuf};
+use tauri::AppHandle;
+use tokio::fs;
+use zip::ZipArchive;
+
 use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
@@ -11,17 +23,6 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::validate_sha1;
-use futures::future::join_all;
-use futures::stream::{self, StreamExt, TryStreamExt};
-use semver::Version;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
-use sjmcl_types::storage::load_json_async;
-use std::collections::{HashMap, HashSet};
-use std::io::Cursor;
-use std::path::{Path, PathBuf};
-use tauri::AppHandle;
-use tokio::fs;
-use zip::ZipArchive;
 
 pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();

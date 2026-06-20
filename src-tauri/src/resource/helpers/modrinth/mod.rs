@@ -1,14 +1,5 @@
 pub mod misc;
 
-use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::apply_other_resource_enhancements;
-use crate::resource::helpers::mod_db::handle_search_query;
-use crate::resource::models::{
-  OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
-  OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
-  OtherResourceVersionPackQuery, ResourceError,
-};
-use crate::tasks::download::DownloadParam;
 use hex;
 use misc::{
   ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
@@ -21,6 +12,16 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
+
+use crate::instance::models::misc::ModLoaderType;
+use crate::resource::helpers::misc::apply_other_resource_enhancements;
+use crate::resource::helpers::mod_db::handle_search_query;
+use crate::resource::models::{
+  OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
+  OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
+  OtherResourceVersionPackQuery, ResourceError,
+};
+use crate::tasks::download::DownloadParam;
 
 const ALL_FILTER: &str = "All";
 

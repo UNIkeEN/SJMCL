@@ -1,13 +1,3 @@
-use crate::launcher_config::commands::retrieve_launcher_config;
-use crate::resource::helpers::curseforge::misc::{
-  CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
-};
-use crate::tasks::streams::ProgressStream;
-use crate::tasks::streams::desc::{PDesc, PStatus};
-use crate::tasks::streams::reporter::Reporter;
-use crate::tasks::*;
-use crate::utils::fs::validate_sha1;
-use crate::utils::web::with_retry;
 use async_speed_limit::Limiter;
 use futures::StreamExt;
 use futures::stream::TryStreamExt;
@@ -24,6 +14,17 @@ use tauri_plugin_http::reqwest::header::RANGE;
 use tokio::io::AsyncSeekExt;
 use tokio_util::bytes;
 use tokio_util::compat::FuturesAsyncReadCompatExt;
+
+use crate::launcher_config::commands::retrieve_launcher_config;
+use crate::resource::helpers::curseforge::misc::{
+  CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
+};
+use crate::tasks::streams::ProgressStream;
+use crate::tasks::streams::desc::{PDesc, PStatus};
+use crate::tasks::streams::reporter::Reporter;
+use crate::tasks::*;
+use crate::utils::fs::validate_sha1;
+use crate::utils::web::with_retry;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]

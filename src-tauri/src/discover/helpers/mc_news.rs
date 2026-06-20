@@ -1,7 +1,8 @@
-use crate::discover::models::{NewsPostResponse, NewsPostSummary, NewsSourceInfo};
 use chrono::{DateTime, TimeZone, Utc};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
+
+use crate::discover::models::{NewsPostResponse, NewsPostSummary, NewsSourceInfo};
 
 pub const MC_NEWS_ENDPOINT: &str = "https://net-secondary.web.minecraft-services.net/api/v1.0";
 pub const MC_NEWS_DEFAULT_PAGE_SIZE: u32 = 12;

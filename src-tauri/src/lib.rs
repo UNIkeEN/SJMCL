@@ -24,10 +24,10 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
 use tasks::monitor::TaskMonitor;
+use tauri::Manager;
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
-use tauri::Manager;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
 

@@ -1,3 +1,11 @@
+use sjmcl_types::error::SJMCLResult;
+use std::fs;
+use std::io::{self, Read};
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use tauri::AppHandle;
+use zip::{ZipArchive, ZipWriter, write::FileOptions};
+
 use crate::instance::helpers::client_json::{ArgumentsItem, LaunchArgumentTemplate};
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
@@ -10,13 +18,6 @@ use crate::resource::models::{OptiFineResourceInfo, ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use sjmcl_types::error::SJMCLResult;
-use std::fs;
-use std::io::{self, Read};
-use std::path::{Path, PathBuf};
-use std::process::Command;
-use tauri::AppHandle;
-use zip::{ZipArchive, ZipWriter, write::FileOptions};
 
 pub async fn download_optifine_installer(
   game_version: &str,

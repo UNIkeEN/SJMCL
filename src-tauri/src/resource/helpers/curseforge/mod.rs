@@ -1,12 +1,5 @@
 pub mod misc;
 
-use crate::resource::helpers::misc::apply_other_resource_enhancements;
-use crate::resource::helpers::mod_db::handle_search_query;
-use crate::resource::models::{
-  OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
-  OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
-  OtherResourceVersionPackQuery, ResourceError,
-};
 use hex;
 use misc::{
   CurseForgeFileInfo, CurseForgeFingerprintRes, CurseForgeGetProjectRes, CurseForgeSearchRes,
@@ -21,6 +14,14 @@ use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::resource::helpers::misc::apply_other_resource_enhancements;
+use crate::resource::helpers::mod_db::handle_search_query;
+use crate::resource::models::{
+  OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
+  OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
+  OtherResourceVersionPackQuery, ResourceError,
+};
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";

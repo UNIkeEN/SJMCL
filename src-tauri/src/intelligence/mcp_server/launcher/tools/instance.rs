@@ -1,3 +1,7 @@
+use rmcp::handler::server::tool::ToolRoute;
+use std::path::PathBuf;
+use std::str::FromStr;
+
 use crate::instance::commands::*;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::intelligence::mcp_server::launcher::McpContext;
@@ -8,9 +12,6 @@ use crate::resource::commands::{
   fetch_game_version_specific, fetch_mod_loader_version_list, fetch_optifine_version_list,
 };
 use crate::resource::models::{ModLoaderResourceInfo, OptiFineResourceInfo, ResourceError};
-use rmcp::handler::server::tool::ToolRoute;
-use std::path::PathBuf;
-use std::str::FromStr;
 
 fn parse_mod_loader_type(
   loader_type: Option<String>,
