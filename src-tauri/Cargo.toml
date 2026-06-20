@@ -32,9 +32,18 @@ font-loader = "0.11.0"
 futures = "0.3.31"
 glob = "0.3.2"
 hex = "0.4.3"
-image = { version = "0.25.5", default-features = false, features = ["serde", "png", "jpeg", "gif", "ico", "webp"] }
+image = { version = "0.25.5", default-features = false, features = [
+  "serde",
+  "png",
+  "jpeg",
+  "gif",
+  "ico",
+  "webp",
+] }
 java-properties = "2.0.0"
-jsonwebtoken = { version = "10.3.0", default-features = false, features = ["rust_crypto"] }
+jsonwebtoken = { version = "10.3.0", default-features = false, features = [
+  "rust_crypto",
+] }
 lazy_static = "1.5"
 log = "0.4"
 mc-server-status = "1.0.0"
@@ -49,7 +58,10 @@ rand = "0.9.3"
 regex = "1.11"
 reqwest-middleware = "0.4.2"
 reqwest-retry = "0.7.0"
-rmcp = { version = "1.7.0", features = ["server", "transport-streamable-http-server"] }
+rmcp = { version = "1.7.0", features = [
+  "server",
+  "transport-streamable-http-server",
+] }
 rsa = "0.9.10"
 sanitize-filename = "0.6.0"
 schemars = "1.0.4"
@@ -58,7 +70,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.12.0"
 sjmcl-macros = { path = "./crates/sjmcl-macros" }
-sjmcl_types = { package = "sjmcl-types", path = "./crates/sjmcl-types" }
+sjmcl-types = { path = "./crates/sjmcl-types" }
 sha1 = "0.10.1"
 sha2 = "0.10.9"
 shlex = "1.3.0"
@@ -84,17 +96,40 @@ tauri-plugin-process = "2.3.1"
 tauri-plugin-single-instance = { version = "2.4.2", features = ["deep-link"] }
 tauri-plugin-window-state = "2.4.1"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util", "net", "sync", "time"] }
+tokio = { version = "1", features = [
+  "rt-multi-thread",
+  "macros",
+  "fs",
+  "io-util",
+  "net",
+  "sync",
+  "time",
+] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
 toml = "0.8"
 tower-http = { version = "0.6.6", features = ["cors"] }
 url = "2.5.4"
 urlencoding = "2.1.3"
-uuid = { version = "1.11.0", features = ["v4", "v5", "fast-rng", "macro-diagnostics"] }
+uuid = { version = "1.11.0", features = [
+  "v4",
+  "v5",
+  "fast-rng",
+  "macro-diagnostics",
+] }
 walkdir = "2.5.0"
-winapi = { version = "0.3", features = ["processthreadsapi", "winnt", "handleapi", "winuser", "windef"] }
+winapi = { version = "0.3", features = [
+  "processthreadsapi",
+  "winnt",
+  "handleapi",
+  "winuser",
+  "windef",
+] }
 winreg = "0.55.0"
-zip = { version = "2.3", default-features = false, features = ["deflate", "deflate64", "time"] }
+zip = { version = "2.3", default-features = false, features = [
+  "deflate",
+  "deflate64",
+  "time",
+] }
 
 [lib]
 name = "app_lib"
@@ -164,7 +199,7 @@ serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
 sjmcl-macros.workspace = true
-sjmcl_types.workspace = true
+sjmcl-types.workspace = true
 sha1.workspace = true
 sha2.workspace = true
 shlex.workspace = true
