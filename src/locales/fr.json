@@ -1149,7 +1149,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "Définir automatiquement la langue de l'instance",
-          "description": "%only available in zh-Hans"
+          "description": "Lorsque cette option est activée, les nouvelles instances utiliseront la langue du launcher et ignoreront l'écran de configuration d'accessibilité du jeu."
         }
       }
     },

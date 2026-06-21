@@ -289,7 +289,7 @@ structstruck::strike! {
         #[default = true]
         pub translated_filename_prefix: bool, // only available in zh-Hans
         #[default = true]
-        pub skip_first_screen_options: bool,  // only available in zh-Hans
+        pub skip_first_screen_options: bool,
       },
       pub advanced: struct GeneralConfigAdvanced {
         #[default = true]

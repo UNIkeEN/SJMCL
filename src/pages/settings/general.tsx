@@ -78,10 +78,30 @@ const GeneralSettingsPage = () => {
         },
       ],
     },
-    ...(config.general.general.language == "zh-Hans"
-      ? [
-          {
-            items: [
+    {
+      items: [
+        {
+          title: t(
+            "GeneralSettingsPage.language.settings.skipFirstScreenOptions.title"
+          ),
+          description: t(
+            "GeneralSettingsPage.language.settings.skipFirstScreenOptions.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={generalConfigs.functionality.skipFirstScreenOptions}
+              onChange={(e) => {
+                update(
+                  "general.functionality.skipFirstScreenOptions",
+                  e.target.checked
+                );
+              }}
+            />
+          ),
+        },
+        ...(config.general.general.language == "zh-Hans"
+          ? [
               {
                 title: t(
                   "GeneralSettingsPage.language.settings.resourceTranslation.title"
@@ -124,32 +144,10 @@ const GeneralSettingsPage = () => {
                   />
                 ),
               },
-              {
-                title: t(
-                  "GeneralSettingsPage.language.settings.skipFirstScreenOptions.title"
-                ),
-                description: t(
-                  "GeneralSettingsPage.language.settings.skipFirstScreenOptions.description"
-                ),
-                children: (
-                  <Switch
-                    colorScheme={primaryColor}
-                    isChecked={
-                      generalConfigs.functionality.skipFirstScreenOptions
-                    }
-                    onChange={(e) => {
-                      update(
-                        "general.functionality.skipFirstScreenOptions",
-                        e.target.checked
-                      );
-                    }}
-                  />
-                ),
-              },
-            ],
-          },
-        ]
-      : []),
+            ]
+          : []),
+      ],
+    },
     {
       title: t("GeneralSettingsPage.functions.title"),
       items: [
