@@ -80,6 +80,26 @@ const GeneralSettingsPage = () => {
     },
     {
       items: [
+        {
+          title: t(
+            "GeneralSettingsPage.language.settings.skipFirstScreenOptions.title"
+          ),
+          description: t(
+            "GeneralSettingsPage.language.settings.skipFirstScreenOptions.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={generalConfigs.functionality.skipFirstScreenOptions}
+              onChange={(e) => {
+                update(
+                  "general.functionality.skipFirstScreenOptions",
+                  e.target.checked
+                );
+              }}
+            />
+          ),
+        },
         ...(config.general.general.language == "zh-Hans"
           ? [
               {
@@ -126,26 +146,6 @@ const GeneralSettingsPage = () => {
               },
             ]
           : []),
-        {
-          title: t(
-            "GeneralSettingsPage.language.settings.skipFirstScreenOptions.title"
-          ),
-          description: t(
-            "GeneralSettingsPage.language.settings.skipFirstScreenOptions.description"
-          ),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={generalConfigs.functionality.skipFirstScreenOptions}
-              onChange={(e) => {
-                update(
-                  "general.functionality.skipFirstScreenOptions",
-                  e.target.checked
-                );
-              }}
-            />
-          ),
-        },
       ],
     },
     {

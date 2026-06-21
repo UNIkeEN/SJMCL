@@ -16,11 +16,11 @@ use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
 
-use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
 use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
+use crate::instance::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::loader::optifine::{
   download_optifine_installer, finish_optifine_install,
@@ -1241,7 +1241,7 @@ pub async fn create_instance(
     )
   };
   if skip_first_screen_options
-    && let Some(lang_code) = get_minecraft_lang_tag(&language, &instance.version, &app).await
+    && let Some(lang_code) = get_minecraft_lang_tag(&language, &instance.version, &app)
   {
     let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
       .ok_or(InstanceError::InstanceNotFoundByID)?[0]
