@@ -246,6 +246,9 @@ fn decrypt_hmcl_payload(
 
   let ciphertext_bytes = STANDARD.decode(&b64_ciphertext).ok()?;
   let nonce_bytes = STANDARD.decode(nonce_b64).ok()?;
+  if nonce_bytes.len() != 12 {
+    return None;
+  }
 
   let key = Key::from_slice(HMCL_PROTECTION_KEY);
   let cipher = ChaCha20Poly1305::new(key);
