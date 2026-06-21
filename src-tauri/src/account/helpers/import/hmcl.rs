@@ -188,10 +188,9 @@ async fn microsoft_to_player(
       player_type: PlayerType::Microsoft,
       auth_account: Some(profile.name.clone()),
       access_token: Some(acc.access_token.clone()),
-      access_token_expires: Some(
-        chrono::DateTime::from_timestamp_millis(acc.not_after.unwrap_or(0))
-          .unwrap_or(chrono::Utc::now()),
-      ),
+      access_token_expires: acc
+        .not_after
+        .and_then(chrono::DateTime::from_timestamp_millis),
       refresh_token: Some(acc.refresh_token.clone()),
       textures,
       auth_server_url: None,
@@ -296,42 +295,38 @@ pub async fn retrieve_hmcl_account_info(
     .join("user-account-private-data.json");
   let mut private_data_map: HashMap<String, Value> = HashMap::new();
 
-  if hmcl_private_data_path.is_file() {
-    if let Ok(private_json_str) = fs::read_to_string(&hmcl_private_data_path) {
-      if let Ok(priv_file) = serde_json::from_str::<HmclPrivateDataFile>(&private_json_str) {
-        // https://github.com/HMCL-dev/HMCL/blob/f0fcc4ac5edde1aa6c63aa74c0ea0fa73d99a0d4/HMCL/src/main/java/org/jackhuang/hmcl/setting/ProtectedPayload.java
-        let parsed_payload: Option<Vec<PlainPrivateDataEntry>> = match priv_file.protection.as_str()
-        {
-          "hmcl-obfuscated-v1" => {
-            if let (Some(nonce), Some(arr)) = (priv_file.nonce, priv_file.payload.as_array()) {
-              decrypt_hmcl_payload(&nonce, arr)
-            } else {
-              None
-            }
-          }
-          "plain" => serde_json::from_value(priv_file.payload).ok(),
-          _ => None,
-        };
-
-        if let Some(entries) = parsed_payload {
-          for entry in entries {
-            private_data_map.insert(entry.account_id, entry.private_data);
-          }
+  if hmcl_private_data_path.is_file()
+    && let Ok(private_json_str) = fs::read_to_string(&hmcl_private_data_path)
+    && let Ok(priv_file) = serde_json::from_str::<HmclPrivateDataFile>(&private_json_str)
+  {
+    // https://github.com/HMCL-dev/HMCL/blob/f0fcc4ac5edde1aa6c63aa74c0ea0fa73d99a0d4/HMCL/src/main/java/org/jackhuang/hmcl/setting/ProtectedPayload.java
+    let parsed_payload: Option<Vec<PlainPrivateDataEntry>> = match priv_file.protection.as_str() {
+      "hmcl-obfuscated-v1" => {
+        if let (Some(nonce), Some(arr)) = (priv_file.nonce, priv_file.payload.as_array()) {
+          decrypt_hmcl_payload(&nonce, arr)
+        } else {
+          None
         }
+      }
+      "plain" => serde_json::from_value(priv_file.payload).ok(),
+      _ => None,
+    };
+
+    if let Some(entries) = parsed_payload {
+      for entry in entries {
+        private_data_map.insert(entry.account_id, entry.private_data);
       }
     }
   }
-
   let mut hmcl_entries: Vec<HmclAccountEntry> = Vec::new();
 
   for mut node in account_nodes {
-    if let Some(account_id) = node.get("accountID").and_then(|v| v.as_str()) {
-      if let Some(private_obj) = private_data_map.get(account_id) {
-        if let (Some(base_map), Some(priv_map)) = (node.as_object_mut(), private_obj.as_object()) {
-          for (k, v) in priv_map {
-            base_map.insert(k.clone(), v.clone());
-          }
-        }
+    if let Some(account_id) = node.get("accountID").and_then(|v| v.as_str())
+      && let Some(private_obj) = private_data_map.get(account_id)
+      && let (Some(base_map), Some(priv_map)) = (node.as_object_mut(), private_obj.as_object())
+    {
+      for (k, v) in priv_map {
+        base_map.insert(k.clone(), v.clone());
       }
     }
 
