@@ -12,6 +12,7 @@ use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
 use crate::account::helpers::authlib_injector::{self};
 use crate::account::helpers::import::ImportLauncherType;
 use crate::account::helpers::import::hmcl::retrieve_hmcl_account_info;
+use crate::account::helpers::import::legacy_hmcl::retrieve_legacy_hmcl_account_info;
 use crate::account::helpers::import::multimc::retrieve_multimc_account_info;
 use crate::account::helpers::microsoft::models::{MicrosoftFriendAction, MicrosoftFriendList};
 use crate::account::helpers::{microsoft, misc, offline};
@@ -574,6 +575,7 @@ pub async fn retrieve_other_launcher_account_info(
 ) -> SJMCLResult<(Vec<Player>, Vec<AuthServer>)> {
   let (mut player_infos, urls) = match launcher_type {
     ImportLauncherType::HMCL => retrieve_hmcl_account_info(&app).await?,
+    ImportLauncherType::LegacyHMCL => retrieve_legacy_hmcl_account_info(&app).await?,
     ImportLauncherType::MultiMC => retrieve_multimc_account_info(&app).await?,
     _ => return Ok((vec![], vec![])),
   };

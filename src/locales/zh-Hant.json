@@ -1404,8 +1404,14 @@
     "header": {
       "title": "從其他啟動器匯入帳戶資訊"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
