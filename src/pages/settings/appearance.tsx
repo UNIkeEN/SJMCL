@@ -219,6 +219,7 @@ const AppearanceSettingsPage = () => {
         value={value}
         onSelect={(v) => onChange(v as string)}
         placeholder={buildFontName(value)}
+        isLazy
         menuListProps={{ maxH: "40vh", overflowY: "auto" }}
       />
     );
