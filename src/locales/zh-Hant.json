@@ -296,6 +296,9 @@
           "title": "介面字型",
           "default": "預設"
         },
+        "logFontFamily": {
+          "title": "日誌字型"
+        },
         "fontSize": {
           "title": "字型大小",
           "small": "小",
