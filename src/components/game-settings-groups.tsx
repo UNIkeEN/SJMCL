@@ -538,7 +538,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
 
   return (
     <>
-      <VStack overflow="auto" align="stretch" spacing={4} flex="1">
+      <VStack align="stretch" spacing={4} flex="1">
         {settingGroups.map((group, index) => (
           <OptionItemGroup
             title={group.title}

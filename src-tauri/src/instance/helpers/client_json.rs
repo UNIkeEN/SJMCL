@@ -1,20 +1,21 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::models::misc::{Instance, ModLoaderType};
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::models::OptiFineResourceInfo;
-use crate::utils::fs::get_app_resource_filepath;
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use serde_with::formats::PreferMany;
 use serde_with::{OneOrMany, serde_as};
 use sjmcl_macros::serialize_skip_none;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs;
 use std::str::FromStr;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+
+use crate::instance::models::misc::{Instance, ModLoaderType};
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::models::OptiFineResourceInfo;
+use crate::utils::fs::get_app_resource_filepath;
 
 #[serialize_skip_none]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]

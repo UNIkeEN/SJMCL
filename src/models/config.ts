@@ -88,6 +88,7 @@ export interface LauncherConfig {
     };
     font: {
       fontFamily: string;
+      logFontFamily: string;
       fontSize: number;
     };
     background: {
@@ -268,6 +269,7 @@ export const defaultConfig: LauncherConfig = {
     font: {
       fontFamily: "%built-in",
       fontSize: 100,
+      logFontFamily: "%built-in",
     },
     background: {
       choice: "%built-in:Florwyn",

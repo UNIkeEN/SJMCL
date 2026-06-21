@@ -1,3 +1,19 @@
+use std::collections::{HashMap, HashSet};
+use std::fs;
+use std::str::FromStr;
+
+use base64::{Engine as _, engine::general_purpose::STANDARD};
+use chacha20poly1305::aead::{Aead, KeyInit};
+use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce};
+use serde::Deserialize;
+use serde_json::Value;
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Manager};
+use url::Url;
+use uuid::Uuid;
+
+use sjmcl_types::error::SJMCLResult;
+
 use crate::account::helpers::authlib_injector::common::parse_profile;
 use crate::account::helpers::authlib_injector::models::{
   MinecraftProfile, MinecraftProfileProperty,
@@ -9,20 +25,6 @@ use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::error::SJMCLResult;
-use base64::{Engine as _, engine::general_purpose::STANDARD};
-use chacha20poly1305::aead::{Aead, KeyInit};
-use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce};
-use serde::Deserialize;
-use serde_json::Value;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::fs;
-use std::str::FromStr;
-use tauri::path::BaseDirectory;
-use tauri::{AppHandle, Manager};
-use url::Url;
-use uuid::Uuid;
 
 // https://github.com/HMCL-dev/HMCL/blob/f0fcc4ac5edde1aa6c63aa74c0ea0fa73d99a0d4/HMCL/src/main/java/org/jackhuang/hmcl/setting/ProtectedPayload.java#L107
 const HMCL_PROTECTION_KEY: &[u8; 32] = &[

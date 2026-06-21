@@ -1,6 +1,17 @@
+use base64::Engine;
+use base64::engine::general_purpose;
+use serde::{self, Deserialize, Serialize};
+use serde_json::Value;
+use shlex::try_quote;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::borrow::Cow;
+use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+
 use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
 use crate::account::models::{AccountError, PlayerType};
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
@@ -11,16 +22,6 @@ use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
-use base64::Engine;
-use base64::engine::general_purpose;
-use serde::{self, Deserialize, Serialize};
-use serde_json::Value;
-use shlex::try_quote;
-use std::borrow::Cow;
-use std::collections::{HashMap, HashSet};
-use std::path::PathBuf;
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchArguments {

@@ -1,13 +1,14 @@
-use crate::error::SJMCLResult;
-use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
-use crate::instance::models::misc::InstanceSubdirType;
 use mc_server_status::{McClient, McError, ServerData, ServerEdition, ServerInfo, ServerStatus};
 use quartz_nbt::io::Flavor;
 use serde::{self, Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tauri::AppHandle;
 use tauri::async_runtime;
+
+use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
+use crate::instance::models::misc::InstanceSubdirType;
 
 pub const SERVERS_DAT_FILENAME: &str = "servers.dat";
 
