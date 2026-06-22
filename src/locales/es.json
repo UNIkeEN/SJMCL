@@ -550,10 +550,13 @@
       "title": "Fuente",
       "settings": {
         "strategy": {
-          "title": "Estrategia de Selección de Fuente de Descarga",
+          "title": "Estrategia de Fuente de Descarga de Recursos del Juego",
           "auto": "Selección Automática",
           "official": "Priorizar Fuente Oficial",
-          "mirror": "Priorizar Fuente Espejo"
+          "mirror": "Priorizar Fuente Espejo",
+          "custom": "Espejo Personalizado",
+          "customEndpoint": "Endpoint de Espejo Personalizado",
+          "customEndpointInvalid": "URL de endpoint de espejo no válida. Ingrese una URL válida (incluido el protocolo)"
         }
       }
     },

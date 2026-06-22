@@ -550,10 +550,13 @@
       "title": "源",
       "settings": {
         "strategy": {
-          "title": "下載源選擇策略",
+          "title": "遊戲資源下載源策略",
           "auto": "自動選擇",
           "official": "官方源優先",
-          "mirror": "鏡像源優先"
+          "mirror": "鏡像源優先",
+          "custom": "自訂義鏡像源",
+          "customEndpoint": "自訂義鏡像源端點",
+          "customEndpointInvalid": "鏡像源端點URL無效，請輸入有效的URL（包含協議頭）"
         }
       }
     },

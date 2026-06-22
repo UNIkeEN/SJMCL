@@ -104,6 +104,7 @@ export interface LauncherConfig {
   download: {
     source: {
       strategy: string;
+      customEndpoint: string;
     };
     transmission: {
       autoConcurrent: boolean;
@@ -284,6 +285,7 @@ export const defaultConfig: LauncherConfig = {
   download: {
     source: {
       strategy: "auto",
+      customEndpoint: "",
     },
     transmission: {
       autoConcurrent: true,

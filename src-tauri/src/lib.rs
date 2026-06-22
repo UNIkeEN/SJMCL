@@ -206,6 +206,11 @@ pub async fn run() {
         let mut launcher_config: LauncherConfig = LauncherConfig::load().unwrap_or_default();
         launcher_config.setup_with_app(app.handle()).unwrap();
         launcher_config.save().unwrap();
+        if launcher_config.download.source.strategy == "custom" {
+          resource::helpers::misc::set_custom_mirror_endpoint(
+            launcher_config.download.source.custom_endpoint.clone(),
+          );
+        }
         let version = launcher_config.basic_info.launcher_version.clone();
         let os = launcher_config.basic_info.platform.clone();
         let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();

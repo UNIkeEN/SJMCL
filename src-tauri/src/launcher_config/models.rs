@@ -248,6 +248,8 @@ structstruck::strike! {
       pub source: struct {
         #[default = "auto"]
         pub strategy: String,
+        #[default = ""]
+        pub custom_endpoint: String,
       },
       pub transmission: struct {
         #[default = true]
