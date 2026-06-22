@@ -53,7 +53,9 @@ SJMCL/
 │   │   ├── tasks/                  # 后台任务系统（现主要用于下载）
 │   │   └── utils/                  # 后端工具函数
 │   ├── assets/                     # 后端静态资源
-│   ├── libs/                       # 内部 Rust 宏/辅助库
+│   ├── crates/                     # 计划分拆后端功能到对应crate，此为装载目录
+│   │   ├── sjmcl-types/            # 后端通用Types以及Traits
+│   │   └── sjmcl-macros/           # 后端所使用的过程宏包
 │   └── infoplist/                  # macOS InfoPlist 资源
 ├── public/                         # 前端静态资源
 ├── docs/                           # 文档
