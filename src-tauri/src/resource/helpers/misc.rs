@@ -15,18 +15,35 @@ use crate::resource::models::{
   SourceType,
 };
 
+const DEFAULT_MIRROR_BASE: &str = "https://bmclapi2.bangbang93.com";
+
 static CUSTOM_MIRROR_ENDPOINT: RwLock<String> = RwLock::new(String::new());
 
+// Validates and stores the custom mirror endpoint. An empty value clears the
+// override (falling back to the default mirror). Invalid URLs are rejected so
+// they can never enter global state — the frontend validates too, but this
+// guards against hand-edited or migrated config files.
 pub fn set_custom_mirror_endpoint(endpoint: String) {
-  *CUSTOM_MIRROR_ENDPOINT.write().unwrap() = endpoint;
+  let trimmed = endpoint.trim().trim_end_matches('/');
+  let mut guard = CUSTOM_MIRROR_ENDPOINT.write().unwrap();
+  if trimmed.is_empty() {
+    *guard = String::new();
+    return;
+  }
+  if Url::parse(trimmed).is_ok() {
+    *guard = trimmed.to_string();
+  } else {
+    log::warn!("Invalid custom mirror endpoint ignored: {trimmed}");
+    *guard = String::new();
+  }
 }
 
 fn get_effective_mirror_base() -> String {
   let custom = CUSTOM_MIRROR_ENDPOINT.read().unwrap();
   if custom.is_empty() {
-    "https://bmclapi2.bangbang93.com".to_string()
+    DEFAULT_MIRROR_BASE.to_string()
   } else {
-    custom.trim_end_matches('/').to_string()
+    custom.clone()
   }
 }
 
