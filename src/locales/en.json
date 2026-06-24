@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Provides Simplified Chinese translations for mod information"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "Thanks to the SCL developers for the ongoing communication and mutual inspiration with us"

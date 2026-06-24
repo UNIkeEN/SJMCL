@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "ログインフローの設計について LittleSkin 及び @tnqzh123 さんのご協力に感謝します。"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "MOD情報の簡体字中国語翻訳を提供"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "SCL開発者の皆さん、絶え間ない交流と相互の刺激に感謝。"

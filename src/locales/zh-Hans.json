@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "感谢 LittleSkin 和 @tnqzh123 对登录流程设计的帮助"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "提供模组信息的简体中文翻译"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "感谢 SCL 开发团队与我们的持续交流与相互启发"
