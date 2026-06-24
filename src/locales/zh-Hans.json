@@ -593,7 +593,8 @@
       "headExtra": "以下设置重启后生效",
       "settings": {
         "enabled": {
-          "title": "启用代理"
+          "title": "启用代理",
+          "description": "此项关闭时，启动器将自动使用系统代理"
         },
         "type": {
           "title": "代理类型"
@@ -1256,7 +1257,7 @@
         },
         "customInfo": {
           "title": "自定义信息",
-          "description": "将显示在游戏主界面左下角与 F3 调试页面左上角"
+          "description": "将显示在游戏主界面左下角与 F3 调试页面左上角（仅在 Minecraft 26.1 之前的版本生效）"
         }
       }
     },

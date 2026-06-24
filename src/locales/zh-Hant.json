@@ -593,7 +593,8 @@
       "headExtra": "需要重新啟動",
       "settings": {
         "enabled": {
-          "title": "啟用 Proxy"
+          "title": "啟用 Proxy",
+          "description": "此項關閉時，啟動器將自動使用系統代理"
         },
         "type": {
           "title": "Proxy 類型"
@@ -1256,7 +1257,7 @@
         },
         "customInfo": {
           "title": "自訂資訊",
-          "description": "將顯示在遊戲主介面左下角與 F3 除錯頁面左上角"
+          "description": "將顯示在遊戲主介面左下角與 F3 除錯頁面左上角（僅在 Minecraft 26.1 之前的版本生效）"
         }
       }
     },

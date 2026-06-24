@@ -593,7 +593,8 @@
       "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
-          "title": "Activer le proxy"
+          "title": "Activer le proxy",
+          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système"
         },
         "type": {
           "title": "Type de proxy"
@@ -1256,7 +1257,7 @@
         },
         "customInfo": {
           "title": "Informations personnalisées",
-          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3"
+          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3 (uniquement pour les versions de Minecraft antérieures à 26.1)."
         }
       }
     },

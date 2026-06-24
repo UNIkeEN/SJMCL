@@ -593,7 +593,8 @@
       "headExtra": "Restart Required",
       "settings": {
         "enabled": {
-          "title": "Enable Proxy"
+          "title": "Enable Proxy",
+          "description": "When disabled, the launcher will use the system proxy automatically"
         },
         "type": {
           "title": "Proxy Type"
@@ -1256,7 +1257,7 @@
         },
         "customInfo": {
           "title": "Custom Information",
-          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page."
+          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page (only effective for Minecraft versions before 26.1)."
         }
       }
     },

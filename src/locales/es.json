@@ -593,7 +593,8 @@
       "headExtra": "Requiere Reinicio",
       "settings": {
         "enabled": {
-          "title": "Habilitar Proxy"
+          "title": "Habilitar Proxy",
+          "description": "Al desactivarlo, el lanzador usará automáticamente el proxy del sistema"
         },
         "type": {
           "title": "Tipo de Proxy"
@@ -1256,7 +1257,7 @@
         },
         "customInfo": {
           "title": "Información Personalizada",
-          "description": "Se muestra en la esquina inferior izquierda de la pantalla principal del juego y en la esquina superior izquierda de la página de depuración F3."
+          "description": "Se muestra en la esquina inferior izquierda de la pantalla principal del juego y en la esquina superior izquierda de la página de depuración F3 (solo para versiones de Minecraft anteriores a la 26.1)."
         }
       }
     },
