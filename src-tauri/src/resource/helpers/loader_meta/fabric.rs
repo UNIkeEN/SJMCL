@@ -46,7 +46,8 @@ pub async fn get_fabric_meta_by_game_version(
                   loader_type: ModLoaderType::Fabric,
                   version: info.loader.version,
                   description: String::new(),
-                  stable: info.loader.stable,
+                  // stable: info.loader.stable,
+                  stable: None,
                   branch: None,
                 })
                 .collect(),

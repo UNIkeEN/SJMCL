@@ -180,7 +180,7 @@ pub struct ModLoaderResourceInfo {
   pub loader_type: ModLoaderType,
   pub version: String,
   pub description: String,
-  pub stable: bool,
+  pub stable: Option<bool>,
   pub branch: Option<String>,
 }
 
