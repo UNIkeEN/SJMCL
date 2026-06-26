@@ -55,14 +55,14 @@ pub async fn get_quilt_meta_by_game_version(
                 .into_iter()
                 .map(|info| {
                   let version = info.loader.version;
-                  // let stable = !version.contains("beta")
-                  //   && !version.contains("alpha")
-                  //   && !version.contains("rc");
+                  let stable = !version.contains("beta")
+                    && !version.contains("alpha")
+                    && !version.contains("rc");
                   ModLoaderResourceInfo {
                     loader_type: ModLoaderType::Quilt,
                     version,
                     description: String::new(),
-                    stable: None,
+                    stable: Some(stable),
                     branch: None,
                   }
                 })
