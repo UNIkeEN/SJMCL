@@ -35,7 +35,7 @@ async fn resolve_mod_loader(
       loader_type: ModLoaderType::Unknown,
       version: String::new(),
       description: String::new(),
-      stable: true,
+      stable: None,
       branch: None,
     });
   }
@@ -50,7 +50,7 @@ async fn resolve_mod_loader(
 
   versions
     .iter()
-    .find(|item| item.stable)
+    .find(|item| item.stable.unwrap_or(true))
     .cloned()
     .or_else(|| versions.into_iter().next())
     .ok_or_else(|| ResourceError::ParseError.into())

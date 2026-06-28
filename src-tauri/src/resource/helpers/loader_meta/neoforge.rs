@@ -83,9 +83,11 @@ async fn get_neoforge_meta_by_game_version_official(
             loader_type: ModLoaderType::NeoForge,
             version: version.to_string(),
             description: String::new(),
-            stable: versions
-              .get("is_snapshot")
-              .is_none_or(|v| !v.as_bool().unwrap_or(false)),
+            stable: Some(
+              versions
+                .get("is_snapshot")
+                .is_none_or(|v| !v.as_bool().unwrap_or(false)),
+            ),
             branch: None,
           },
         ));
@@ -185,7 +187,7 @@ async fn get_neoforge_meta_by_game_version_official(
               loader_type: ModLoaderType::NeoForge,
               version: version.to_string(),
               description: String::new(),
-              stable,
+              stable: Some(stable),
               branch: None,
             },
           ));
@@ -239,7 +241,7 @@ async fn get_neoforge_meta_by_game_version_bmcl(
                   loader_type: ModLoaderType::NeoForge,
                   version,
                   description: String::new(),
-                  stable,
+                  stable: Some(stable),
                   branch: None,
                 }
               })

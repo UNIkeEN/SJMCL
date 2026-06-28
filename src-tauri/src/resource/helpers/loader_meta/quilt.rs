@@ -62,7 +62,7 @@ pub async fn get_quilt_meta_by_game_version(
                     loader_type: ModLoaderType::Quilt,
                     version,
                     description: String::new(),
-                    stable,
+                    stable: Some(stable),
                     branch: None,
                   }
                 })

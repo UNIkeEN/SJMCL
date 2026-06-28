@@ -95,7 +95,6 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
       loaderType: summary.modLoader.loaderType,
       version: summary.modLoader.version || "",
       description: "",
-      stable: true,
     };
   }, [summary]);
 
