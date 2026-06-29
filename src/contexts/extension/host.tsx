@@ -1254,6 +1254,12 @@ const ActiveExtensionHostContextProvider: React.FC<{
     [getScriptUrl]
   );
 
+  // Skip home widget and settings page registration in standalone windows,
+  // since neither is rendered outside the main window.
+  const isStandalonePageRef = useRef(
+    router.pathname.startsWith("/standalone/")
+  );
+
   const activateExtension = useCallback(
     async (extension: ExtensionInfo, signature: string) => {
       const { factory, scriptElement } = await loadExtensionFactory(
@@ -1291,7 +1297,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
         ...(registration.homeWidgets || []),
       ];
 
-      if (homeWidgetDefinitions.length > 0) {
+      if (!isStandalonePageRef.current && homeWidgetDefinitions.length > 0) {
         setHomeWidgetMap((prev) => ({
           ...prev,
           [extension.identifier]: homeWidgetDefinitions.map(
@@ -1315,7 +1321,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
       }
 
       // ------- settings-page -------
-      if (registration.settingsPage) {
+      if (!isStandalonePageRef.current && registration.settingsPage) {
         setSettingsPageMap((prev) => ({
           ...prev,
           [extension.identifier]: {
