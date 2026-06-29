@@ -1,7 +1,9 @@
 use super::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::error::SJMCLResult;
 use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
-use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
+use crate::instance::helpers::client_json::{
+  McClientInfo, remove_mod_loader_from_client_info, replace_native_libraries,
+};
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -1438,12 +1440,6 @@ pub async fn change_mod_loader(
     .find(|p| p.id.to_lowercase().contains("optifine"))
     .cloned();
 
-  let vanilla_info = current_info
-    .patches
-    .first()
-    .cloned()
-    .ok_or(InstanceError::NotSupportChangeModLoader)?;
-
   let game_version = instance.version.clone();
   let old_optifine = instance.optifine.clone();
   let subdirs = get_instance_subdir_paths(
@@ -1468,17 +1464,10 @@ pub async fn change_mod_loader(
     }
   }
 
-  let mut version_info: McClientInfo = if new_mod_loader.is_some() {
-    let mut version_info = vanilla_info.clone();
-    version_info.id = current_info.id.clone();
-    version_info.jar = Some(instance.name.clone());
-    version_info.java_version = current_info.java_version.clone();
-    version_info.client_version = Some(instance.version.clone());
-    version_info.patches = vec![vanilla_info.clone()];
-    version_info
-  } else {
-    current_info.clone()
-  };
+  let mut version_info = current_info.clone();
+  if new_mod_loader.is_some() {
+    remove_mod_loader_from_client_info(&mut version_info, instance.mod_loader.loader_type);
+  }
 
   let mut modloader_task_params: Vec<PTaskParam> = Vec::new();
   let mut optifine_task_params: Vec<PTaskParam> = Vec::new();

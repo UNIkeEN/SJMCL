@@ -290,9 +290,11 @@ pub async fn download_forge_libraries(
     let forge_info: McClientInfo = serde_json::from_str(&version)?;
     client_info.main_class = forge_info.main_class.clone();
 
+    let mut loader_libraries = vec![];
     for lib in forge_info.libraries.iter() {
       let name = &lib.name;
       add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+      add_library_entry(&mut loader_libraries, name, Some(lib.clone()))?;
 
       let url = lib
         .downloads
@@ -343,6 +345,7 @@ pub async fn download_forge_libraries(
       main_class: forge_info.main_class.clone(),
       arguments,
       minecraft_arguments,
+      libraries: loader_libraries,
       ..Default::default()
     });
 
