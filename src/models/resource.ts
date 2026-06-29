@@ -64,7 +64,7 @@ export interface ModLoaderResourceInfo {
   loaderType: ModLoaderType;
   version: string;
   description: string;
-  stable: boolean;
+  stable?: boolean;
   branch?: string;
 }
 
@@ -72,7 +72,6 @@ export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {
   loaderType: ModLoaderType.Unknown,
   version: "",
   description: "",
-  stable: true,
 };
 
 export interface OptiFineResourceInfo {

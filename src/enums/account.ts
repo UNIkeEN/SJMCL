@@ -21,6 +21,7 @@ export enum TextureType {
 
 export enum ImportLauncherType {
   HMCL = "HMCL",
+  LegacyHMCL = "LegacyHMCL",
   MultiMC = "MultiMC",
   SCL = "SCL",
 }

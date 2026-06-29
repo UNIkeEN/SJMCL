@@ -1,3 +1,4 @@
+use sjmcl_types::error::SJMCLResult;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -5,7 +6,6 @@ use std::process::Command;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
-use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
 use crate::instance::helpers::loader::forge::{InstallProfile, install_forge_loader};

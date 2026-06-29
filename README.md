@@ -1,7 +1,7 @@
 <img src="docs/figs/banner.png" alt="SJMCL" />
 
 [![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
-![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?style=for-the-badge)
+![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?logo=github&style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)
 ![Runs](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&label=runs&query=$.total_count_str&url=https%3A%2F%2Fmc.sjtu.cn%2Fapi-sjmcl%2Fcount)
 [![Deepwiki](https://img.shields.io/badge/Ask-DeepWiki-20B2AA?logo=&style=for-the-badge)](https://deepwiki.com/UNIkeEN/SJMCL)
@@ -35,29 +35,37 @@ SJMCL currently supports the following platforms:
 
 | Platform  | Versions            | Architectures              | Provided Bundles                        |
 |-----------|---------------------|----------------------------|-----------------------------------------|
-| Windows   | 7 and above         | `aarch64`, `i686`, `x86_64`| installer `.exe`, portable `.exe`                 |
+| Windows   | 10 and above       | `aarch64`, `i686`, `x86_64`| installer `.exe`, portable `.exe`                 |
 | macOS     | 10.15 and above     | `aarch64`, `x86_64`        | `.app`, `.dmg`                          |
 | Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `aarch64`, `x86_64`   | `.deb`, `.rpm`, portable binary |
 
 To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs).
 
-### Windows 7
-
-If you need to run SJMCL on Windows 7, please first [download the Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download) and install it. We recommend choosing the 'Evergreen Bootstrapper'.
-
 <details>
 <summary><h3>Install from Command Line</h3></summary>
 
 <details>
-<summary><h4>Arch Linux</h4></summary>
+<summary><h4>Linux</h4></summary>
 
-SJMCL is available on the Arch User Repository (AUR). You can install it using a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
+Install the latest stable release with the Linux installer:
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --source sjmc
+```
+
+Install the portable Linux build without root access:
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --portable --source sjmc
+```
+
+Install from the Arch User Repository (AUR) with a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
 
 ```bash
 yay -S sjmcl-bin
 ```
 
-Manual installation without an AUR helper:
+If you do not use an AUR helper, you can also install manually:
 
 ```bash
 git clone https://aur.archlinux.org/sjmcl-bin.git
@@ -65,7 +73,44 @@ cd sjmcl-bin
 makepkg -si
 ```
 
+Install from Snap Store:
+
+```bash
+sudo snap install sjmcl
+```
+
+> [!WARNING]
+> When installing via Snap, game data may be stored in a sandboxed directory by default. Before uninstalling the launcher, please back up important data such as saves, resource packs, and mods in a timely manner.
+
 </details>
+
+<details>
+<summary><h4>macOS</h4></summary>
+
+Install with Homebrew:
+
+```bash
+brew install --cask SJMC-Dev/SJMCL/sjmcl
+```
+
+</details>
+
+<details>
+<summary><h4>Windows</h4></summary>
+
+Install with Winget:
+
+```powershell
+winget install SJMC.SJMCL
+```
+
+> [!WARNING]
+> The Winget index is publicly maintained. Before installing, consider running `winget show SJMC.SJMCL` to inspect the installer URL, and make sure the download source is from `github.com/UNIkeEN/SJMCL` or `sjmcl.club`.
+
+</details>
+
+For more installation options and platform notes, see the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs/install).
+
 </details>
 
 ## Development and Contributing

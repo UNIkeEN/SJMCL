@@ -1,8 +1,9 @@
-use crate::account::models::SkinModel;
-use crate::utils::image::ImageWrapper;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString};
 use uuid::Uuid;
+
+use crate::account::models::SkinModel;
+use crate::utils::image::ImageWrapper;
 
 #[derive(Deserialize, Debug)]
 pub struct MinecraftProfile {

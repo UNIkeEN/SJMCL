@@ -1,8 +1,7 @@
-use crate::IS_PORTABLE;
-use crate::error::{SJMCLError, SJMCLResult};
 use regex::Regex;
 use sha1::{Digest, Sha1};
 use sha2::Sha256;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::ffi::OsStr;
 use std::io::Read;
 use std::path::{Component, Path, PathBuf};
@@ -11,6 +10,8 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
+
+use crate::IS_PORTABLE;
 
 /// Recursively copies the contents of a source directory to a destination directory.
 ///
@@ -586,4 +587,34 @@ where
   }
 
   Ok(())
+}
+
+/// RAII guard that removes a directory on drop unless [`commit`](RemoveDirGuard::commit) is called.
+///
+/// Useful for transactional directory creation: create the guard after verifying the path is
+/// free, do fallible work, and call `commit()` only on success. Any early `?` return
+/// automatically triggers cleanup.
+pub struct RemoveDirGuard {
+  path: Option<PathBuf>,
+}
+
+impl RemoveDirGuard {
+  pub fn new(path: PathBuf) -> Self {
+    Self { path: Some(path) }
+  }
+
+  /// Disarms the guard so the directory is kept on drop.
+  pub fn commit(mut self) {
+    self.path = None;
+  }
+}
+
+impl Drop for RemoveDirGuard {
+  fn drop(&mut self) {
+    if let Some(path) = &self.path
+      && path.exists()
+    {
+      let _ = fs::remove_dir_all(path);
+    }
+  }
 }

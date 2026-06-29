@@ -1,8 +1,9 @@
-use crate::error::SJMCLResult;
-use crate::resource::helpers::misc::get_download_api;
-use crate::resource::models::{OptiFineResourceInfo, ResourceError, ResourceType, SourceType};
+use sjmcl_types::error::SJMCLResult;
 use tauri::Manager;
 use tauri_plugin_http::reqwest;
+
+use crate::resource::helpers::misc::get_download_api;
+use crate::resource::models::{OptiFineResourceInfo, ResourceError, ResourceType, SourceType};
 
 fn get_optifine_sort_key(info: &OptiFineResourceInfo) -> (u32, u32, u32) {
   let Some((_, suffix)) = info.filename.rsplit_once("_HD_U_") else {

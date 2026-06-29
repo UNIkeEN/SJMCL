@@ -35,10 +35,11 @@ const AboutSettingsPage = () => {
 
   const ackList = {
     skinview3d: "https://github.com/bs-community/skinview3d",
+    mcim: "https://www.mcimirror.top",
     bmclapi: "https://bmclapidoc.bangbang93.com/",
     hmcl: "https://hmcl.huangyuhui.net/",
     littleskin: "https://github.com/LittleSkinChina",
-    sinter: "https://m.ui.cn/details/615564",
+    sinter: "https://www.ui.cn/detail/615564",
     scl: "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/",
   };
 
@@ -64,7 +65,7 @@ const AboutSettingsPage = () => {
     setCheckingUpdate(false);
   }, [handleCheckLauncherUpdate, t, toast, closeToast, openSharedModal]);
 
-  const avatarUserList = ["UNIkeEN", "Reqwey", "SundayChen"];
+  const avatarUserList = ["UNIkeEN", "xunying123", "SundayChen"];
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -116,7 +117,7 @@ const AboutSettingsPage = () => {
                 ))}
               </AvatarGroup>
               <CommonIconButton
-                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors?all=1"
                 icon="external"
                 withTooltip
                 tooltipPlacement="bottom-end"
@@ -124,7 +125,7 @@ const AboutSettingsPage = () => {
                 h={18}
                 onClick={() => {
                   openUrl(
-                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors?all=1"
                   );
                 }}
               />

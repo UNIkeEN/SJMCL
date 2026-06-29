@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "ログインフローの設計について LittleSkin 及び @tnqzh123 さんのご協力に感謝します。"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "MOD情報の簡体字中国語翻訳を提供"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "SCL開発者の皆さん、絶え間ない交流と相互の刺激に感謝。"
@@ -112,12 +116,6 @@
         "title": "サーバーダウンロード",
         "description": "各バージョンのヴァニラサーバーファイルをダウンロード"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "モッドパックをインポート",
-      "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
     }
   },
   "AddAuthServerModal": {
@@ -301,6 +299,9 @@
         "fontFamily": {
           "title": "UIフォント",
           "default": "デフォルト"
+        },
+        "logFontFamily": {
+          "title": "ログフォント"
         },
         "fontSize": {
           "title": "フォントサイズ",
@@ -596,7 +597,8 @@
       "headExtra": "再起動が必要",
       "settings": {
         "enabled": {
-          "title": "プロキシ有効化"
+          "title": "プロキシ有効化",
+          "description": "無効時、システムプロキシを自動的に使用します"
         },
         "type": {
           "title": "プロキシタイプ"
@@ -621,6 +623,13 @@
       "alpha": "アルファ版",
       "beta": "ベータ版",
       "release": "正式版"
+    },
+    "button": {
+      "cancel": "キャンセル",
+      "download": "ダウンロード",
+      "installToInstance": "インスタンスにインストール",
+      "installToCurrentInstance": "現在のインスタンスにインストール",
+      "install": "インストール"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +658,7 @@
       "resourcepack": "リソースパック",
       "shader": "シェーダーパック",
       "modpack": "モッドパック",
+      "modpack-wo-install": "モッドパック",
       "datapack": "データパック",
       "patch-files": "ゲームファイルを修復 {{param}}",
       "mod-update": "モッドを更新",
@@ -893,6 +903,67 @@
         }
       }
     },
+    "graphics": {
+      "title": "グラフィック",
+      "settings": {
+        "api": {
+          "title": "グラフィック API",
+          "default": {
+            "label": "デフォルト",
+            "desc": "Minecraft とドライバーのデフォルト設定を使用します。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "OpenGL レンダラーと任意の Mesa ドライバー上書きを使用します。"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Vulkan レンダラーと任意の ICD ドライバー選択を使用します。"
+          }
+        },
+        "renderer": {
+          "title": "レンダラー / ドライバー",
+          "default": {
+            "label": "デフォルト",
+            "desc": "レンダラー固有の環境変数を設定しません。"
+          },
+          "llvmpipe": {
+            "label": "LLVMpipe",
+            "desc": "Mesa のソフトウェア OpenGL レンダラー。"
+          },
+          "zink": {
+            "label": "Zink",
+            "desc": "Mesa により Vulkan 上で OpenGL を実行します。"
+          },
+          "d3d12": {
+            "label": "D3D12",
+            "desc": "DirectX 12 ベースの Mesa OpenGL ドライバー。"
+          },
+          "lavapipe": {
+            "label": "Lavapipe",
+            "desc": "Mesa のソフトウェア Vulkan ドライバー。"
+          },
+          "dozen": {
+            "label": "Dozen",
+            "desc": "DirectX 12 ベースの Mesa Vulkan ドライバー。"
+          },
+          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
+          "nvidia_nvk": { "label": "NVK" },
+          "amdvlk": { "label": "AMDVLK" },
+          "amd_radv": { "label": "RADV" },
+          "intel_vulkan": { "label": "Intel Vulkan" },
+          "intel_anv": { "label": "ANV" },
+          "intel_hasvk": { "label": "HASVK" },
+          "qualcomm": { "label": "Qualcomm Vulkan" },
+          "turnip": { "label": "Turnip" },
+          "moltenvk": { "label": "MoltenVK" },
+          "kosmickrisp": { "label": "KosmicKrisp" },
+          "powervr": { "label": "PowerVR" },
+          "panvk": { "label": "PanVK" },
+          "v3dv": { "label": "V3DV" }
+        }
+      }
+    },
     "jvm": {
       "title": "Java 仮想マシン設定",
       "settings": {
@@ -928,7 +999,10 @@
           "title": "ファイル整合性チェックポリシー",
           "disable": "チェックしない",
           "normal": "一般チェック",
-          "full": "強化チェック"
+          "full": "強化チェック",
+          "disableDesc": "",
+          "normalDesc": "ファイルの存在を確認し、欠損時は自動補完",
+          "fullDesc": "ファイルの SHA1 整合性を確認し、欠損時は自動補完（時間がかかる）"
         },
         "dontCheckJvmValidity": {
           "title": "JVM とゲームの整合性をチェックしない"
@@ -937,8 +1011,15 @@
           "title": "ローカルライブラリの自動置換をしない"
         },
         "useLwjglUnsafeAgent": {
-          "title": "LWJGL Unsafe Agent を有効にする",
+          "title": "LWJGL Unsafe Agent を利用する",
           "description": "影響を受ける Minecraft バージョンでは、HMCL の <hmcl>LWJGL Unsafe Agent</hmcl> を自動的に使用してパフォーマンス問題を修正します。"
+        },
+        "useCustomAuthlibInjector": {
+          "title": "カスタム Authlib Injector を利用する",
+          "description": {
+            "notSet": "カスタムパスが未設定です。内蔵版を使用します"
+          },
+          "select": "変更"
         },
         "useNativeGlfw": {
           "title": "システム GLFW を利用（Linux のみ）"
@@ -1134,7 +1215,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "インスタンス言語を自動設定",
-          "description": "中国語のみ利用できます。"
+          "description": "有効にすると、新しいインスタンスはランチャーの言語に従い、ゲーム内のアクセシビリティ設定画面をスキップします。"
         }
       }
     },
@@ -1232,14 +1313,16 @@
       "settings": {
         "resolution": {
           "title": "ゲーム解像度",
-          "switch": "フルスクリーン"
+          "preset": "プリセット",
+          "switch": "フルスクリーン",
+          "warning": "モニター上限を超える可能性あり"
         },
         "customTitle": {
           "title": "カスタムウィンドウタイトル"
         },
         "customInfo": {
           "title": "カスタムメッセージ",
-          "description": "ゲームメイン画面の左下及び F3 デバッグ画面の左上に表示される。"
+          "description": "ゲームメイン画面の左下及び F3 デバッグ画面の左上に表示される（Minecraft 26.1 より前のバージョンのみ有効）。"
         }
       }
     },
@@ -1354,6 +1437,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "世界一番の Minecraft モッドライブラリ"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "オープンソースでモダンな Minecraft リソースプラットフォーム"
         }
       }
     },
@@ -1383,8 +1470,14 @@
     "header": {
       "title": "他のランチャーからアカウント情報をインポート"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1630,6 +1723,17 @@
       "description": "この Java を削除しますか。（この Java てゲームの起動ができなくなりますが、 Java ファイルの削除はしません。）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英語",
+      "es": "スペイン語",
+      "fr": "フランス語",
+      "ja": "",
+      "lzh": "漢文",
+      "zh-Hans": "中国語（簡体字）",
+      "zh-Hant": "中国語（繁体字）"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "前回の実行は異常終了しました",
@@ -1677,6 +1781,12 @@
     "notCompatibleWith": "{{item}} に非互換",
     "noVersionSelected": "バージョンを選択していない"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "モッドパックをインポート",
+      "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
   },
@@ -1685,7 +1795,7 @@
     "default": "デフォルト",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "ローカルアップロード",
+    "upload": "ローカルスキンを選択",
     "skin": "スキン",
     "cape": "ケープ",
     "model": {

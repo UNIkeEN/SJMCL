@@ -1,9 +1,9 @@
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};

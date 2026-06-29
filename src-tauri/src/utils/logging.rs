@@ -1,6 +1,5 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::utils::fs::get_files_with_regex;
 use regex::Regex;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fmt::Arguments;
 use std::fs::create_dir_all;
 use std::path::PathBuf;
@@ -12,6 +11,8 @@ use tauri_plugin_log::fern::FormatCallback;
 use tauri_plugin_log::{Target, TargetKind, TimezoneStrategy};
 use time::macros::format_description;
 use tokio::fs;
+
+use crate::utils::fs::get_files_with_regex;
 
 static LOG_FILENAME: LazyLock<String> = LazyLock::new(|| {
   let launching_id = SystemTime::now()

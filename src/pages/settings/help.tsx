@@ -99,6 +99,22 @@ const HelpSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t("HelpSettingsPage.minecraft.settings.modrinth.title"),
+          description: t(
+            "HelpSettingsPage.minecraft.settings.modrinth.description"
+          ),
+          children: (
+            <CommonIconButton
+              label="https://modrinth.com/discover/mods"
+              icon="external"
+              withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              onClick={() => openUrl("https://modrinth.com/discover/mods")}
+            />
+          ),
+        },
       ],
     },
     {

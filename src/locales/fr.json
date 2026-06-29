@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Merci à LittleSkin et @tnqzh123 pour l'aide sur la conception du processus de connexion"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Fournit des traductions en chinois simplifié des informations des mods"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "Merci aux développeurs de SCL pour la communication continue et l'inspiration mutuelle avec nous"
@@ -112,12 +116,6 @@
         "title": "Télécharger le serveur",
         "description": "Télécharger les fichiers serveur de toutes les versions officielles du jeu"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "Importer un modpack",
-      "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -301,6 +299,9 @@
         "fontFamily": {
           "title": "Polices d'interface",
           "default": "Par défaut"
+        },
+        "logFontFamily": {
+          "title": "Police du journal"
         },
         "fontSize": {
           "title": "Taille de la police",
@@ -596,7 +597,8 @@
       "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
-          "title": "Activer le proxy"
+          "title": "Activer le proxy",
+          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système"
         },
         "type": {
           "title": "Type de proxy"
@@ -621,6 +623,13 @@
       "alpha": "Alpha",
       "beta": "Bêta",
       "release": "Version stable"
+    },
+    "button": {
+      "cancel": "Annuler",
+      "download": "Télécharger",
+      "installToInstance": "Installer dans une instance",
+      "installToCurrentInstance": "Installer dans l'instance actuelle",
+      "install": "Installer"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +658,7 @@
       "resourcepack": "Pack de ressources",
       "shader": "Shaders",
       "modpack": "Pack modifié",
+      "modpack-wo-install": "Pack modifié",
       "datapack": "Paquet de données",
       "patch-files": "Réparer les fichiers du jeu {{param}}",
       "mod-update": "Mettre à jour les mods.",
@@ -893,6 +903,67 @@
         }
       }
     },
+    "graphics": {
+      "title": "Graphismes",
+      "settings": {
+        "api": {
+          "title": "API graphique",
+          "default": {
+            "label": "Par défaut",
+            "desc": "Utiliser les paramètres par défaut de Minecraft et du pilote."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Utiliser le moteur OpenGL et les remplacements facultatifs du pilote Mesa."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Utiliser le moteur Vulkan et la sélection facultative du pilote ICD."
+          }
+        },
+        "renderer": {
+          "title": "Moteur de rendu / pilote",
+          "default": {
+            "label": "Par défaut",
+            "desc": "Ne pas définir de variables d'environnement propres au moteur de rendu."
+          },
+          "llvmpipe": {
+            "label": "LLVMpipe",
+            "desc": "Moteur OpenGL logiciel de Mesa."
+          },
+          "zink": {
+            "label": "Zink",
+            "desc": "Exécuter OpenGL au-dessus de Vulkan via Mesa."
+          },
+          "d3d12": {
+            "label": "D3D12",
+            "desc": "Pilote OpenGL Mesa basé sur DirectX 12."
+          },
+          "lavapipe": {
+            "label": "Lavapipe",
+            "desc": "Pilote Vulkan logiciel de Mesa."
+          },
+          "dozen": {
+            "label": "Dozen",
+            "desc": "Pilote Vulkan Mesa basé sur DirectX 12."
+          },
+          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
+          "nvidia_nvk": { "label": "NVK" },
+          "amdvlk": { "label": "AMDVLK" },
+          "amd_radv": { "label": "RADV" },
+          "intel_vulkan": { "label": "Intel Vulkan" },
+          "intel_anv": { "label": "ANV" },
+          "intel_hasvk": { "label": "HASVK" },
+          "qualcomm": { "label": "Qualcomm Vulkan" },
+          "turnip": { "label": "Turnip" },
+          "moltenvk": { "label": "MoltenVK" },
+          "kosmickrisp": { "label": "KosmicKrisp" },
+          "powervr": { "label": "PowerVR" },
+          "panvk": { "label": "PanVK" },
+          "v3dv": { "label": "V3DV" }
+        }
+      }
+    },
     "jvm": {
       "title": "Paramètres de la machine virtuelle Java",
       "settings": {
@@ -928,7 +999,10 @@
           "title": "Stratégie de vérification de l'intégrité des fichiers du jeu",
           "disable": "Ne pas vérifier",
           "normal": "Vérification normale",
-          "full": "Vérification renforcée"
+          "full": "Vérification renforcée",
+          "disableDesc": "",
+          "normalDesc": "Vérifier l'existence des fichiers, télécharger les manquants",
+          "fullDesc": "Vérifier l'intégrité SHA1 des fichiers, télécharger les manquants (plus long)"
         },
         "dontCheckJvmValidity": {
           "title": "Ne pas vérifier la compatibilité de la JVM avec le jeu"
@@ -937,8 +1011,15 @@
           "title": "Ne pas tenter de remplacer automatiquement les bibliothèques natives"
         },
         "useLwjglUnsafeAgent": {
-          "title": "Activer LWJGL Unsafe Agent",
+          "title": "Utiliser LWJGL Unsafe Agent",
           "description": "Utiliser automatiquement le <hmcl>LWJGL Unsafe Agent</hmcl> de HMCL sur les versions de Minecraft concernées pour corriger les problèmes de performances."
+        },
+        "useCustomAuthlibInjector": {
+          "title": "Utiliser un Authlib Injector personnalisé",
+          "description": {
+            "notSet": "Aucun chemin personnalisé défini, la version intégrée sera utilisée"
+          },
+          "select": "Modifier"
         },
         "useNativeGlfw": {
           "title": "Utiliser GLFW du système (Linux uniquement)"
@@ -1134,7 +1215,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "Définir automatiquement la langue de l'instance",
-          "description": "%only available in zh-Hans"
+          "description": "Lorsque cette option est activée, les nouvelles instances utiliseront la langue du launcher et ignoreront l'écran de configuration d'accessibilité du jeu."
         }
       }
     },
@@ -1232,14 +1313,16 @@
       "settings": {
         "resolution": {
           "title": "Résolution du jeu",
-          "switch": "Plein écran"
+          "preset": "Préréglage",
+          "switch": "Plein écran",
+          "warning": "La résolution peut dépasser la limite du moniteur"
         },
         "customTitle": {
           "title": "Titre de la fenêtre personnalisée"
         },
         "customInfo": {
           "title": "Informations personnalisées",
-          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3"
+          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3 (uniquement pour les versions de Minecraft antérieures à 26.1)."
         }
       }
     },
@@ -1354,6 +1437,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "Explorez le plus grand dépôt de mods Minecraft au monde"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "Une plateforme de ressources Minecraft moderne et open source"
         }
       }
     },
@@ -1383,8 +1470,14 @@
     "header": {
       "title": "Importer des comptes depuis d'autres launchers"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1630,6 +1723,17 @@
       "description": "Êtes-vous sûr de vouloir supprimer cette version de Java ? (SJMCL ne pourra plus l'utiliser pour lancer le jeu, mais les fichiers ne seront pas supprimés du disque)"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "Anglais",
+      "es": "Espagnol",
+      "fr": "",
+      "ja": "Japonais",
+      "lzh": "Chinois littéraire",
+      "zh-Hans": "Chinois simplifié",
+      "zh-Hant": "Chinois traditionnel"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "La dernière exécution s'est terminée anormalement",
@@ -1677,6 +1781,12 @@
     "notCompatibleWith": "Incompatible avec {{item}}",
     "noVersionSelected": "Version non sélectionnée"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Importer un modpack",
+      "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "Cette page est fournie par l'extension {{name}}"
   },
@@ -1685,7 +1795,7 @@
     "default": "Par défaut",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "Téléchargement local",
+    "upload": "Choisir un skin local",
     "skin": "Skin",
     "cape": "Cape",
     "model": {

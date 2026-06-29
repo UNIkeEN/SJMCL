@@ -1,3 +1,10 @@
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
+use std::path::Path;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use url::Url;
+
 use crate::account::helpers::authlib_injector::info::{
   fetch_auth_server_info, fetch_auth_url, get_auth_server_info_by_url,
 };
@@ -5,6 +12,7 @@ use crate::account::helpers::authlib_injector::jar::check_authlib_jar;
 use crate::account::helpers::authlib_injector::{self};
 use crate::account::helpers::import::ImportLauncherType;
 use crate::account::helpers::import::hmcl::retrieve_hmcl_account_info;
+use crate::account::helpers::import::legacy_hmcl::retrieve_legacy_hmcl_account_info;
 use crate::account::helpers::import::multimc::retrieve_multimc_account_info;
 use crate::account::helpers::microsoft::models::{MicrosoftFriendAction, MicrosoftFriendList};
 use crate::account::helpers::{microsoft, misc, offline};
@@ -12,15 +20,9 @@ use crate::account::models::{
   AccountError, AccountInfo, AuthServer, DeviceAuthResponseInfo, Player, PlayerInfo, PlayerType,
   PresetRole, SkinModel, TextureType,
 };
-use crate::error::SJMCLResult;
 use crate::launcher_config::models::LauncherConfig;
-use crate::storage::Storage;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::web::normalize_url;
-use std::path::Path;
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
-use url::Url;
 
 #[tauri::command]
 pub fn retrieve_player_list(app: AppHandle) -> SJMCLResult<Vec<Player>> {
@@ -573,6 +575,7 @@ pub async fn retrieve_other_launcher_account_info(
 ) -> SJMCLResult<(Vec<Player>, Vec<AuthServer>)> {
   let (mut player_infos, urls) = match launcher_type {
     ImportLauncherType::HMCL => retrieve_hmcl_account_info(&app).await?,
+    ImportLauncherType::LegacyHMCL => retrieve_legacy_hmcl_account_info(&app).await?,
     ImportLauncherType::MultiMC => retrieve_multimc_account_info(&app).await?,
     _ => return Ok((vec![], vec![])),
   };

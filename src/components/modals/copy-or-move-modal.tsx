@@ -278,6 +278,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
       scrollBehavior="inside"
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

@@ -78,6 +78,7 @@ const GenericConfirmDialog: React.FC<GenericConfirmDialogProps> = ({
       leastDestructiveRef={cancelRef}
       onClose={handleCancel}
       autoFocus={false}
+      returnFocusOnClose={false}
       isCentered
       {...props}
     >

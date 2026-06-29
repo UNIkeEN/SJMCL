@@ -1,16 +1,17 @@
-use crate::error::SJMCLResult;
-use crate::launcher_config::commands::retrieve_custom_background_list;
-use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
-use crate::partial::{PartialAccess, PartialUpdate};
-use crate::utils::fs::calculate_sha256;
-use crate::utils::portable::extract_assets;
-use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 use rand::Rng;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::partial::{PartialAccess, PartialUpdate};
 use std::fs;
 use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
+
+use crate::launcher_config::commands::retrieve_custom_background_list;
+use crate::launcher_config::models::{BasicInfo, GameConfig, GameDirectory, LauncherConfig};
+use crate::utils::fs::calculate_sha256;
+use crate::utils::portable::extract_assets;
+use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -19,6 +20,7 @@ impl LauncherConfig {
     let version = match (is_dev, app.package_info().version.to_string().as_str()) {
       (true, _) => "dev".to_string(),
       (false, "0.0.0") => "nightly".to_string(),
+      (false, "0.0.1") => "test-build".to_string(),
       (false, v) => v.to_string(),
     };
 
@@ -217,7 +219,8 @@ pub fn check_exe_path_availability(app: &AppHandle) -> bool {
       || exe_str.starts_with("/var/tmp/")
       || exe_str.starts_with("/var/cache/")
       || exe_str.starts_with("/dev/shm/")
-      || exe_str.starts_with("/run/")
+      // /run is tmpfs, while /run/media is a common mount point on some Linux distributions.
+      || (exe_str.starts_with("/run/") && !exe_str.starts_with("/run/media/"))
       || exe_str.contains("/Trash/"))
   }
 

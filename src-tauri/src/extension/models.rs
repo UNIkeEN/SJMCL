@@ -1,8 +1,9 @@
-use crate::utils::image::ImageWrapper;
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 use strum_macros::Display;
+
+use crate::utils::image::ImageWrapper;
 
 structstruck::strike! {
   #[strikethrough[derive(Debug, Clone, Serialize, Deserialize)]]

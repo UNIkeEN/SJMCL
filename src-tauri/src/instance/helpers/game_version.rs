@@ -1,7 +1,3 @@
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::misc::get_source_priority_list;
-use crate::resource::helpers::version_manifest::get_game_version_manifest;
-use crate::utils::fs::get_app_resource_filepath;
 use regex::Regex;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -10,6 +6,11 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
+
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::version_manifest::get_game_version_manifest;
+use crate::utils::fs::get_app_resource_filepath;
 
 fn load_versions(app: &AppHandle, path: &str, from_cache: bool) -> Vec<String> {
   let list_file_path: Option<PathBuf> = if from_cache {

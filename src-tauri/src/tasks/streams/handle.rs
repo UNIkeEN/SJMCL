@@ -1,9 +1,10 @@
-use crate::tasks::streams::desc::{PDesc, PStatus};
-use crate::tasks::streams::reporter::{Reporter, Sink};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::task::{Context, Waker};
 use tokio::time::{Duration, Interval, interval};
+
+use crate::tasks::streams::desc::{PDesc, PStatus};
+use crate::tasks::streams::reporter::{Reporter, Sink};
 
 pub struct PHandle<S, P>
 where
