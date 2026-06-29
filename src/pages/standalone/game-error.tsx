@@ -93,6 +93,8 @@ const GameErrorPage: React.FC = () => {
 
   // retrieve states and logs (for crash analysis)
   useEffect(() => {
+    if (!launchingId) return;
+
     LaunchService.retrieveGameLaunchingState(launchingId).then((response) => {
       if (response.status === "success") {
         setInstanceInfo(response.data.selectedInstance);
@@ -262,7 +264,7 @@ const GameErrorPage: React.FC = () => {
           javaInfo,
         }).map((props, index) => (
           <Button
-            key={`ext-btn-${index}`}
+            key={props.id || `ext-btn-${index}`}
             colorScheme={primaryColor}
             variant="solid"
             {...props}
