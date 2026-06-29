@@ -18,10 +18,12 @@ import {
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
+import { useExtensionHost } from "@/contexts/extension/host";
+import { ExtensionUISlotKey } from "@/enums/extension";
 import { InstanceSummary } from "@/models/instance/misc";
 import { JavaInfo } from "@/models/system-info";
 import { LaunchService } from "@/services/launch";
@@ -37,6 +39,8 @@ const GameErrorPage: React.FC = () => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
+  const { getExtensionSlotItems } = useExtensionHost();
+
   const [basicInfoParams, setBasicInfoParams] = useState(
     new Map<string, string>()
   );
@@ -44,6 +48,11 @@ const GameErrorPage: React.FC = () => {
   const [javaInfo, setJavaInfo] = useState<JavaInfo>();
   const [reason, setReason] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+
+  const launchingId = useMemo(() => {
+    if (typeof window === "undefined") return 0;
+    return parseIdFromWindowLabel(getCurrentWebviewWindow().label);
+  }, []);
 
   const platformName = useCallback(() => {
     let name = config.basicInfo.platform
@@ -84,8 +93,6 @@ const GameErrorPage: React.FC = () => {
 
   // retrieve states and logs (for crash analysis)
   useEffect(() => {
-    let launchingId = parseIdFromWindowLabel(getCurrentWebviewWindow().label);
-
     LaunchService.retrieveGameLaunchingState(launchingId).then((response) => {
       if (response.status === "success") {
         setInstanceInfo(response.data.selectedInstance);
@@ -105,7 +112,7 @@ const GameErrorPage: React.FC = () => {
         );
       }
     });
-  }, [t]);
+  }, [t, launchingId]);
 
   const renderStats = ({
     title,
@@ -133,9 +140,6 @@ const GameErrorPage: React.FC = () => {
   };
 
   const handleOpenLogWindow = async () => {
-    let launchingId = parseIdFromWindowLabel(
-      getCurrentWebviewWindow()?.label || ""
-    );
     if (launchingId) {
       await LaunchService.openGameLogWindow(launchingId);
     }
@@ -150,7 +154,6 @@ const GameErrorPage: React.FC = () => {
     const savePath = await save({
       defaultPath: `minecraft-exported-crash-info-${timestamp}.zip`,
     });
-    let launchingId = parseIdFromWindowLabel(getCurrentWebviewWindow().label);
     if (!savePath || !launchingId) return;
     setIsLoading(true);
     const res = await LaunchService.exportGameCrashInfo(launchingId, savePath);
@@ -252,6 +255,20 @@ const GameErrorPage: React.FC = () => {
         <Button colorScheme={primaryColor} variant="solid">
           {t("GameErrorPage.button.help")}
         </Button>
+        {getExtensionSlotItems(ExtensionUISlotKey.GameErrorWindowOperations, {
+          instanceId: instanceInfo?.id,
+          summary: instanceInfo,
+          launchingId,
+          javaInfo,
+        }).map((props, index) => (
+          <Button
+            key={`ext-btn-${index}`}
+            colorScheme={primaryColor}
+            variant="solid"
+            {...props}
+            size="sm" // keep default size
+          />
+        ))}
         <Icon ml={2} as={LuCircleAlert} color="red.500" />
         <Text fontSize="xs-sm" color="red.500">
           {t("GameErrorPage.bottomAlert")}

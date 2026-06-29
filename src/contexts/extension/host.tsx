@@ -350,10 +350,7 @@ export const ExtensionHostContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
 
-  if (
-    router.pathname === "/standalone/game-log" ||
-    router.pathname === "/standalone/game-error"
-  ) {
+  if (router.pathname === "/standalone/game-log") {
     return <>{children}</>;
   }
 
